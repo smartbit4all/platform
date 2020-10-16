@@ -3,16 +3,16 @@ package org.smartbit4all.sql.config;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.PostConstruct;
 import org.smartbit4all.domain.config.DomainConfig;
 import org.smartbit4all.sql.service.SQLCrudServiceConfiguration;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 @Configuration
 @Import({DomainConfig.class, SQLCrudServiceConfiguration.class, SQLServiceConfig.class})
-public class SQLConfig {
+public class SQLConfig implements InitializingBean {
 
   /**
    * The database configurations by name. The name in this case means that we add specific
@@ -24,8 +24,8 @@ public class SQLConfig {
   Map<String, SQLDBParameter> databaseConfigs = new HashMap<>();
 
   /**
-   * This list is autowired by Spring. All the {@link SQLDBParameter} based beans will be added to the
-   * list.
+   * This list is autowired by Spring. All the {@link SQLDBParameter} based beans will be added to
+   * the list.
    */
   @Autowired
   private List<SQLDBParameter> databaseConfigList;
@@ -33,8 +33,8 @@ public class SQLConfig {
   /**
    * Initializing the databaseConfigs based on the autowired {@link #databaseConfigList}.
    */
-  @PostConstruct
-  public void init() {
+  @Override
+  public void afterPropertiesSet() {
     databaseConfigList.forEach(db -> {
       databaseConfigs.put(db.getName(), db);
     });
