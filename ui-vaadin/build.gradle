@@ -1,0 +1,47 @@
+plugins {
+    id 'io.spring.dependency-management'
+    id 'com.vaadin' version '0.7.0'
+}
+
+repositories {
+	maven {
+        url "http://maven.vaadin.com/vaadin-addons"
+    }
+}
+
+configurations {
+	developmentOnly
+	runtimeClasspath {
+		extendsFrom developmentOnly
+	}
+}
+
+ext {
+	set('vaadinVersion', "14.3.3")
+}
+
+vaadin {
+  pnpmEnable = true
+}
+
+
+dependencies {
+	api 'com.vaadin:vaadin-charts-flow'
+	api 'com.vaadin:vaadin-board-flow'
+	
+	api project(':domain')
+	api project(':ui-common')
+	
+	api 'dev.mett.vaadin:tooltip:1.5.0-alpha'
+	api 'com.google.code.gson:gson:2.8.6'
+
+	testImplementation 'com.vaadin:vaadin-testbench'
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "com.vaadin:vaadin-bom:${vaadinVersion}"
+	}
+}
+
+

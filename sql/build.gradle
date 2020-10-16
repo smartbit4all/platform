@@ -1,0 +1,4 @@
+dependencies {
+	api project(':domain')
+	compile group: 'org.springframework', name: 'spring-jdbc', version: '5.2.3.RELEASE'
+}

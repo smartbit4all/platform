@@ -1,0 +1,80 @@
+plugins  {
+	id 'org.springframework.boot' version '2.2.4.RELEASE' apply false
+	id 'io.spring.dependency-management' version '1.0.9.RELEASE' apply false
+}
+
+subprojects {
+	
+    repositories {
+        jcenter() 
+    }
+
+    apply plugin: 'java-library'
+    apply plugin: 'maven-publish'
+
+    sourceCompatibility = 8
+    targetCompatibility = 8
+
+    compileJava.options.encoding = "UTF-8"
+    compileTestJava.options.encoding = "UTF-8"
+
+    group "org.smartbit4all.platform"
+    version "0.1-SNAPSHOT"
+
+    dependencies {
+    	implementation 'org.slf4j:slf4j-api:1.7.30'
+        implementation 'com.google.guava:guava:28.1-jre'
+    	testImplementation 'org.slf4j:slf4j-simple:1.7.30'
+        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.1'
+        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.1'
+    }
+
+	java {
+		withSourcesJar()
+	}
+
+    test {
+        useJUnitPlatform()
+    }
+
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                from components.java
+            }
+        }
+
+	    repositories {
+	        maven {
+	            name = 'local-maven-repo'
+	            url = "file://${projectDir}/../local-maven-repo"
+	        }
+	    }
+    }
+
+
+}
+
+task clean {
+	subprojects.each { dependsOn("${it.name}:clean") }
+}
+
+task jar {
+	subprojects.each { dependsOn("${it.name}:jar") }
+}
+
+task sourcesJar {
+	subprojects.each { dependsOn("${it.name}:sourcesJar") }
+}
+
+task publish {
+	dependsOn 'jar'
+	dependsOn 'sourcesJar'
+	subprojects.each { dependsOn("${it.name}:publish") }
+}
+
+task publishToMavenLocal {
+	dependsOn 'jar'
+	dependsOn 'sourcesJar'
+	subprojects.each { dependsOn("${it.name}:publishToMavenLocal") }
+}
