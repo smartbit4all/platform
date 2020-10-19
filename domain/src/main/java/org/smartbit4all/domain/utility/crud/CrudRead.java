@@ -43,13 +43,23 @@ public class CrudRead<E extends EntityDefinition> implements Query<E> {
     return this;
   }
 
-  @SuppressWarnings("unchecked")
+  @Override
+  public void execute() throws Exception {
+    if (result() == null) {
+      throw new IllegalStateException(
+          "CrudQuery execute can not be called without the result set! Maybe you"
+              + " want to use the executeIntoTableData() function instead!");
+    }
+    query.from(entityDef);
+    query.execute();
+  }
+
   public TableData<E> executeIntoTableData() throws Exception {
     if (query.result() == null) {
       TableData<E> result = new TableData<>(entityDef);
       query.into(result);
     }
-    query.execute();
+    this.execute();
     return query.result();
   }
 
@@ -63,16 +73,6 @@ public class CrudRead<E extends EntityDefinition> implements Query<E> {
     query.limit(rowNum);
     TableData<E> result = executeIntoTableData();
     return result.rows();
-  }
-
-  @Override
-  public void execute() throws Exception {
-    if (result() == null) {
-      throw new IllegalStateException(
-          "CrudQuery execute can not be called without the result set! Maybe you"
-              + " want to use the executeIntoTableData() function instead!");
-    }
-    query.execute();
   }
 
   @Override
@@ -245,8 +245,8 @@ public class CrudRead<E extends EntityDefinition> implements Query<E> {
 
   @Override
   public <B> Query<E> select(Class<B> beanClass) throws Exception {
-    // TODO Auto-generated method stub
-    return null;
+    query.select(beanClass);
+    return this;
   }
 
   @Override
@@ -256,14 +256,12 @@ public class CrudRead<E extends EntityDefinition> implements Query<E> {
 
   @Override
   public TableData<E> listData() throws Exception {
-    // TODO Auto-generated method stub
-    return null;
+    return query.listData();
   }
 
   @Override
   public <B> List<B> list(Class<B> beanClass) throws Exception {
-    // TODO Auto-generated method stub
-    return null;
+    return query.list(beanClass);
   }
 
 }
