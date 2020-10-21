@@ -1,0 +1,7 @@
+
+dependencies {
+	api project(':api')
+	api project(':domain')
+	
+	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.1'
+}
