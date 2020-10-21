@@ -24,7 +24,7 @@ openApiGenerate {
     generatorName = "spring"
     inputSpec = "$rootDir/api/src/main/resources/descriptors/query-api.yaml".toString()
     outputDir = "${projectDir}/${srcGenMainJava}" 
-    modelPackage = "org.smartbit4all.api.query"
+    modelPackage = "org.smartbit4all.api.query.bean"
     systemProperties = [
     	models: "", // with this only the model files (the beans) will be generated
     	//apis: ""

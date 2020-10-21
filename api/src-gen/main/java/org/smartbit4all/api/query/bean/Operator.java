@@ -1,22 +1,28 @@
-package org.smartbit4all.api.query;
+package org.smartbit4all.api.query.bean;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
- * Bool operators fol clauses
+ * The operator to use
  */
-public enum BoolOperator {
+public enum Operator {
   
-  AND("AND"),
+  EQ("EQ"),
   
-  OR("OR"),
+  LT("LT"),
   
-  XOR("XOR");
+  LE("LE"),
+  
+  GT("GT"),
+  
+  GE("GE"),
+  
+  LIKE("LIKE");
 
   private String value;
 
-  BoolOperator(String value) {
+  Operator(String value) {
     this.value = value;
   }
 
@@ -31,8 +37,8 @@ public enum BoolOperator {
   }
 
   @JsonCreator
-  public static BoolOperator fromValue(String value) {
-    for (BoolOperator b : BoolOperator.values()) {
+  public static Operator fromValue(String value) {
+    for (Operator b : Operator.values()) {
       if (b.value.equals(value)) {
         return b;
       }

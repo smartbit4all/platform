@@ -1,4 +1,4 @@
-package org.smartbit4all.api.query;
+package org.smartbit4all.api.query.bean;
 
 import java.util.Objects;
 import javax.validation.constraints.NotNull;
@@ -6,14 +6,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
- * ExpressionIsNull
+ * ExpressionBoolean
  */
 
-public class ExpressionIsNull   {
+public class ExpressionBoolean   {
   @JsonProperty("operand")
   private String operand;
 
-  public ExpressionIsNull operand(String operand) {
+  @JsonProperty("value")
+  private Boolean value = true;
+
+  public ExpressionBoolean operand(String operand) {
     this.operand = operand;
     return this;
   }
@@ -34,6 +37,27 @@ public class ExpressionIsNull   {
     this.operand = operand;
   }
 
+  public ExpressionBoolean value(Boolean value) {
+    this.value = value;
+    return this;
+  }
+
+  /**
+   * The boolean value of the property
+   * @return value
+  */
+  @ApiModelProperty(required = true, value = "The boolean value of the property")
+  @NotNull
+
+
+  public Boolean getValue() {
+    return value;
+  }
+
+  public void setValue(Boolean value) {
+    this.value = value;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -43,21 +67,23 @@ public class ExpressionIsNull   {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    ExpressionIsNull expressionIsNull = (ExpressionIsNull) o;
-    return Objects.equals(this.operand, expressionIsNull.operand);
+    ExpressionBoolean expressionBoolean = (ExpressionBoolean) o;
+    return Objects.equals(this.operand, expressionBoolean.operand) &&
+        Objects.equals(this.value, expressionBoolean.value);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(operand);
+    return Objects.hash(operand, value);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class ExpressionIsNull {\n");
+    sb.append("class ExpressionBoolean {\n");
     
     sb.append("    operand: ").append(toIndentedString(operand)).append("\n");
+    sb.append("    value: ").append(toIndentedString(value)).append("\n");
     sb.append("}");
     return sb.toString();
   }

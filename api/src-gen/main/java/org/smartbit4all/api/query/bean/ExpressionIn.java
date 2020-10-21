@@ -1,4 +1,4 @@
-package org.smartbit4all.api.query;
+package org.smartbit4all.api.query.bean;
 
 import java.util.ArrayList;
 import java.util.List;

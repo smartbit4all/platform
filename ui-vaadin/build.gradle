@@ -17,7 +17,7 @@ configurations {
 }
 
 ext {
-	set('vaadinVersion', "14.3.3")
+	set('vaadinVersion', "14.4.1")
 }
 
 vaadin {
