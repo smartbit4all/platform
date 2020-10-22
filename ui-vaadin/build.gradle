@@ -29,7 +29,7 @@ dependencies {
 	api 'com.vaadin:vaadin-charts-flow'
 	api 'com.vaadin:vaadin-board-flow'
 	
-	api project(':domain')
+	//implementation project(':domain')
 	api project(':ui-common')
 	
 	api 'dev.mett.vaadin:tooltip:1.5.0-alpha'
