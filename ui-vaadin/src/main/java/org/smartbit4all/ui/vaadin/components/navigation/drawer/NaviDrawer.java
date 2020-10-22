@@ -1,7 +1,6 @@
 package org.smartbit4all.ui.vaadin.components.navigation.drawer;
 
 import org.smartbit4all.ui.vaadin.util.UIUtils;
-
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.UI;
@@ -14,7 +13,6 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationObserver;
-
 import elemental.json.JsonObject;
 
 @CssImport("./styles/components/navi-drawer.css")
@@ -49,14 +47,14 @@ public class NaviDrawer extends Div implements AfterNavigationObserver {
 		close();
 	}
 
-	public NaviDrawer(String title) {
+	public NaviDrawer(String title, String imageName) {
 		this.title = title;
 		setClassName(CLASS_NAME);
 
 		initScrim();
 		initMainContent();
 
-		initHeader();
+		initHeader(imageName);
 //		initSearch();
 
 		initScrollableArea();
@@ -79,8 +77,8 @@ public class NaviDrawer extends Div implements AfterNavigationObserver {
 		add(mainContent);
 	}
 
-	private void initHeader() {
-		mainContent.add(new BrandExpression(title));
+	private void initHeader(String imageName) {
+		mainContent.add(new BrandExpression(title, imageName));
 	}
 
 	private void initSearch() {

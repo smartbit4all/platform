@@ -14,10 +14,10 @@ public class BrandExpression extends Div {
   private Image logo;
   private Label title;
 
-  public BrandExpression(String text) {
+  public BrandExpression(String text, String imageName) {
     setClassName(CLASS_NAME);
 
-    logo = new Image(UIUtils.IMG_PATH + "bee-v1.jpg", "");
+    logo = new Image(UIUtils.IMG_PATH + imageName, "");
     logo.setAlt(text + " logo");
     logo.setClassName(CLASS_NAME + "__logo");
 
