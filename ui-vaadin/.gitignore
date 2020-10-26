@@ -1,26 +1,6 @@
-# The following files are generated/updated by vaadin-gradle-plugin
-node_modules/
-webpack.generated.js
-target
-out
-
-# Ignore Gradle project-specific stuff
+# Ignore Gradle project-specific cache directory
 .gradle
 
-build/*
-!build/vaadin-generated/
-build/vaadin-generated/META-INF/VAADIN/config/flow-build-info.json
-
-**/org.eclipse.buildship.core.prefs
-
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
-out/
-
-
+# Ignore Gradle build output directory
+build
 bin
-
-.dbeaver

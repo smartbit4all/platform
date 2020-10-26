@@ -33,3 +33,5 @@ org.eclipse.buildship.core.prefs
 
 # Ignore local-maven-repo
 local-maven-repo
+
+.dbeaver
