@@ -14,28 +14,29 @@ import org.smartbit4all.ui.vaadin.util.UIUtils;
 
 public class DetailsDrawerFooter extends FlexBoxLayout {
 
-	private Button save;
-	private Button cancel;
+	private Button view;
+	private Button delete;
 
 	public DetailsDrawerFooter() {
 		setBackgroundColor(LumoStyles.Color.Contrast._5);
 		setPadding(Horizontal.RESPONSIVE_L, Vertical.S);
 		setSpacing(Right.S);
+		setJustifyContentMode(JustifyContentMode.EVENLY);
 		setWidthFull();
 
-		save = UIUtils.createPrimaryButton(getTranslation("title.save"));
-		cancel = UIUtils.createTertiaryButton(getTranslation("title.cancel"));
-		add(save, cancel);
+		view = UIUtils.createPrimaryButton(getTranslation("title.view"));
+		delete = UIUtils.createTertiaryButton(getTranslation("title.delete"));
+		add(view, delete);
 	}
 
-	public Registration addSaveListener(
+	public Registration addViewListener(
 			ComponentEventListener<ClickEvent<Button>> listener) {
-		return save.addClickListener(listener);
+		return view.addClickListener(listener);
 	}
 
-	public Registration addCancelListener(
+	public Registration addDeleteListener(
 			ComponentEventListener<ClickEvent<Button>> listener) {
-		return cancel.addClickListener(listener);
+		return delete.addClickListener(listener);
 	}
 
 }
