@@ -74,6 +74,11 @@ public class CrudRead<E extends EntityDefinition> implements Query<E> {
     TableData<E> result = executeIntoTableData();
     return result.rows();
   }
+  
+  public CrudRead<E> selectAllProperties() {
+    query.select(entityDef.allProperties());
+    return this;
+  }
 
   @Override
   public CrudRead<E> select(List<Property<?>> properties) {
