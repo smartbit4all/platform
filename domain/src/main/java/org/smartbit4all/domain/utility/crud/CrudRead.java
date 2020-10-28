@@ -134,7 +134,7 @@ public class CrudRead<E extends EntityDefinition> implements Query<E> {
 
   private <T> Optional<T> getValueFromResult(Property<T> property, TableData<E> result) {
     List<DataRow> resultRows = result.rows();
-    if(resultRows.size() > 0) {
+    if(!resultRows.isEmpty()) {
       T value = resultRows.get(0).get(property);
       return Optional.ofNullable(value);
     } else {
