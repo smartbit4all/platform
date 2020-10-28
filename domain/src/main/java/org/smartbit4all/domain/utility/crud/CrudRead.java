@@ -75,6 +75,73 @@ public class CrudRead<E extends EntityDefinition> implements Query<E> {
     return result.rows();
   }
   
+  public <T> Optional<T> firstRowValue(Property<T> property) throws Exception {
+    query.limit(1);
+    TableData<E> result = executeIntoTableData();
+    checkResultProperty(property, result);
+    return getValueFromResult(property, result);
+  }
+
+  /**
+   * @param msg exception message when there are more than one result rows 
+   * @return
+   * @throws Exception
+   */
+  public Optional<DataRow> onlyOne(String multipleRowsExceptionMessage) throws Exception {
+    TableData<E> result = executeIntoTableData();
+    checkResultSize(multipleRowsExceptionMessage, result);
+    return Optional.ofNullable(result.rows().get(0));
+  }
+  
+  /**
+   * @return the optional first result row
+   * @throws IllegalArgumentException when there are more then one result rows. 
+   */
+  public Optional<DataRow> onlyOne() throws Exception {
+    return onlyOne("There are more than one results on read!");
+  }
+
+  public <T> Optional<T> onlyOneValue(Property<T> property, String multipleRowsExceptionMessage) throws Exception {
+    TableData<E> result = executeIntoTableData();
+    checkResultSize(multipleRowsExceptionMessage, result);
+    checkResultProperty(property, result);
+    return getValueFromResult(property, result);
+  }
+
+  /**
+   * 
+   * @param <T> the value type of the property
+   * @param property
+   * @return
+   * @throws Exception
+   */
+  public <T> Optional<T> onlyOneValue(Property<T> property) throws Exception {
+    return onlyOneValue(property, "There are more than one results on read!");
+  }
+
+  private void checkResultSize(String multipleRowsExceptionMessage, TableData<E> result)
+      throws IllegalAccessError {
+    if(result.size() > 1) {
+      throw new IllegalAccessError(multipleRowsExceptionMessage);
+    }
+  }
+
+  private <T> void checkResultProperty(Property<T> property, TableData<E> result) {
+    if(result.getColumn(property) == null) {
+      throw new IllegalArgumentException("The given property does not occure in the result TableData");
+    }
+  }
+
+  private <T> Optional<T> getValueFromResult(Property<T> property, TableData<E> result) {
+    Optional<DataRow> onlyRow = Optional.ofNullable(result.rows().get(0));
+    if(onlyRow.isPresent()) {
+      T value = onlyRow.get().get(property);
+      return Optional.ofNullable(value);
+    } else {
+      return Optional.empty();
+    }
+  }
+  
   public CrudRead<E> selectAllProperties() {
     query.select(entityDef.allProperties());
     return this;
