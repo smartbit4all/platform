@@ -1,4 +1,4 @@
-package org.smartbit4all.core.utility;
+package org.smartbit4all.types.binarydata;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;

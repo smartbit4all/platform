@@ -1,7 +1,7 @@
 package org.smartbit4all.domain.meta.jdbc.impl;
 
-import org.smartbit4all.core.utility.BinaryData;
 import org.smartbit4all.domain.meta.jdbc.JDBCBinaryData;
+import org.smartbit4all.types.binarydata.BinaryData;
 
 /**
  * There is no need to convert. We use the {@link BinaryData} as basic type for blob access at JDBC

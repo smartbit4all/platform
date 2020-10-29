@@ -1,4 +1,4 @@
-package org.smartbit4all.core.utility;
+package org.smartbit4all.types.binarydata;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -6,10 +6,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.lang.ref.PhantomReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.task.TaskExecutor;
 
 /**
  * The BinaryData is responsible for Binary Large Objects that could be stored in temporary files
@@ -38,9 +36,9 @@ public class BinaryData {
   /**
    * If true then at the end of life cycle the data file must be deleted explicitly.
    * 
-   * TODO Implement with {@link PhantomReference} and Spring {@link TaskExecutor}.
+   * TODO Implement with PhantomReference and Spring TaskExecutor.
    */
-  private boolean deleteDataFile = true;
+  //private boolean deleteDataFile = true;
 
   /**
    * The number of bytes stored in the binary data.
