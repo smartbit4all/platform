@@ -165,6 +165,11 @@ public class CrudRead<E extends EntityDefinition> implements Query<E> {
   }
 
   @Override
+  public SB4CompositeFunction<QueryInput<E>, QueryOutput<E>> getPreSection() {
+    return query.getPreSection();
+  }
+
+  @Override
   public CrudRead<E> select(Property<?>... propertySet) {
     query.select(propertySet);
     return this;
@@ -173,6 +178,11 @@ public class CrudRead<E extends EntityDefinition> implements Query<E> {
   @Override
   public SB4CompositeFunction<QueryInput<E>, QueryOutput<E>> post() {
     return query.post();
+  }
+
+  @Override
+  public SB4CompositeFunction<QueryInput<E>, QueryOutput<E>> getPostSection() {
+    return query.getPostSection();
   }
 
   @Override

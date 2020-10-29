@@ -41,14 +41,16 @@ public interface SB4Function<I, O> extends SB4Service {
   O output();
 
   /**
-   * The predecessor of the given function. Optional.
+   * The predecessor of the given function. Optional. This call will create the pre() section and we
+   * can add a new post function with call function.
    * 
    * @return
    */
   SB4CompositeFunction<I, O> pre();
 
   /**
-   * The successor of the function. Optional.
+   * The successor of the function. Optional. This call will create the post() section and we can
+   * add a new post function with call function.
    * 
    * @return
    */
@@ -57,4 +59,19 @@ public interface SB4Function<I, O> extends SB4Service {
   void setInput(I input);
 
   void setOutput(O output);
+
+  /**
+   * The predecessor of the given function. It's the accessor of the section.
+   * 
+   * @return Return null if we don't have any.
+   */
+  SB4CompositeFunction<I, O> getPreSection();
+
+  /**
+   * The successor of the function. It's the accessor of the section.
+   * 
+   * @return Return null if we don't have any.
+   */
+  SB4CompositeFunction<I, O> getPostSection();
+
 }

@@ -32,7 +32,10 @@ public abstract class SB4FunctionImpl<I, O> implements SB4Function<I, O> {
 
   @Override
   public SB4CompositeFunction<I, O> post() {
-    return null;
+    if (post == null) {
+      post = new SB4CompositeFunctionImpl<I, O>();
+    }
+    return post;
   }
 
   @Override
@@ -44,7 +47,7 @@ public abstract class SB4FunctionImpl<I, O> implements SB4Function<I, O> {
   public O output() {
     return output;
   }
-  
+
   @Override
   public void setInput(I input) {
     this.input = input;
@@ -54,5 +57,15 @@ public abstract class SB4FunctionImpl<I, O> implements SB4Function<I, O> {
   public void setOutput(O output) {
     this.output = output;
   }
-  
+
+  @Override
+  public SB4CompositeFunction<I, O> getPreSection() {
+    return pre;
+  }
+
+  @Override
+  public SB4CompositeFunction<I, O> getPostSection() {
+    return post;
+  }
+
 }
