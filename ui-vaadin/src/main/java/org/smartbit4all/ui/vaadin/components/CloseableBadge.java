@@ -5,14 +5,18 @@ import org.smartbit4all.ui.vaadin.util.css.lumo.BadgeShape;
 import org.smartbit4all.ui.vaadin.util.css.lumo.BadgeSize;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.dependency.CssImport;
 
-@Tag(value = "sb4-closeablebadge")
+@CssImport("./styles/components/closeable-badge.css")
 public class CloseableBadge extends Badge {
 
+  private String CLASS_NAME = "sb4-closeablebadge";
+  
   private Button btnClose;
 
   public CloseableBadge(String text, BadgeColor color, BadgeSize size, BadgeShape shape) {
     super(text, color, size, shape);
+    setClassName(CLASS_NAME);
     btnClose = new Button("x");
     this.add(btnClose);
   }

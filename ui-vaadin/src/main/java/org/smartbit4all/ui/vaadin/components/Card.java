@@ -3,16 +3,17 @@ package org.smartbit4all.ui.vaadin.components;
 import java.util.ArrayList;
 import java.util.List;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.board.Row;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
-@Tag(value = "sb4-card")
+@CssImport("./styles/components/card.css")
 public class Card<T> extends FlexLayout {
 
+  private String CLASS_NAME = "sb4-card";
   private Label label;
   private ArrayList<Row> rows;
   private ButtonBar buttonBar;
@@ -21,6 +22,7 @@ public class Card<T> extends FlexLayout {
   private T controllObject;
 
   public Card(Label label, T controllObject) {
+    setClassName(CLASS_NAME);
     this.controllObject = controllObject;
     rows = new ArrayList<Row>();
     rows.add(new Row());
