@@ -19,11 +19,11 @@ public class Card<T> extends FlexLayout {
   private ButtonBar buttonBar;
   private VerticalLayout verticalLayout;
   private FlexLayout header;
-  private T controllObject;
+  private T dataObject;
 
   public Card(Label label, T controllObject) {
     setClassName(CLASS_NAME);
-    this.controllObject = controllObject;
+    this.dataObject = controllObject;
     rows = new ArrayList<Row>();
     rows.add(new Row());
     this.label = label;
@@ -40,12 +40,12 @@ public class Card<T> extends FlexLayout {
     return label;
   }
 
-  public T getControllObject() {
-    return controllObject;
+  public T getData() {
+    return dataObject;
   }
 
-  public void setControllObject(T controllObject) {
-    this.controllObject = controllObject;
+  public void setData(T dataObject) {
+    this.dataObject = dataObject;
   }
 
   public void setComponentsAt(int rowNum, int colNum, Component... components) {
