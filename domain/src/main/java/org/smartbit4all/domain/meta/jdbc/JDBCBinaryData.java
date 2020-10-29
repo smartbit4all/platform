@@ -1,8 +1,8 @@
 package org.smartbit4all.domain.meta.jdbc;
 
 import java.sql.Types;
-import org.smartbit4all.core.utility.BinaryData;
 import org.smartbit4all.domain.meta.JDBCDataConverter;
+import org.smartbit4all.types.binarydata.BinaryData;
 
 /**
  * The interface of the {@link BinaryData} application type. There is no conversion we use the same

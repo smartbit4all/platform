@@ -1,6 +1,5 @@
 plugins {
     id 'io.spring.dependency-management'
-    id 'com.vaadin' version '0.7.0'
 }
 
 repositories {
@@ -20,16 +19,10 @@ ext {
 	set('vaadinVersion', "14.4.1")
 }
 
-vaadin {
-  pnpmEnable = true
-}
-
-
 dependencies {
 	api 'com.vaadin:vaadin-charts-flow'
 	api 'com.vaadin:vaadin-board-flow'
 	
-	//implementation project(':domain')
 	api project(':ui-common')
 	
 	api 'dev.mett.vaadin:tooltip:1.5.0-alpha'

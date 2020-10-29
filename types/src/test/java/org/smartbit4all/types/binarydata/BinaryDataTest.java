@@ -1,9 +1,11 @@
-package org.smartbit4all.core.utility;
+package org.smartbit4all.types.binarydata;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import org.junit.jupiter.api.Test;
+import org.smartbit4all.types.binarydata.BinaryData;
+import org.smartbit4all.types.binarydata.BinaryDataOutputStream;
 
 class BinaryDataTest {
 
