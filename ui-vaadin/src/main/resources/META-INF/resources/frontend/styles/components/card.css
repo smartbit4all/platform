@@ -1,12 +1,17 @@
 .sb4-card {
-	background-color: #233348;
 	flex-basis: auto;
 	border-radius: 7px;
 	box-shadow: 1px 1px 4px #233348;
+	width: 30%;
 }
 
 .sb4-card vaadin-board-row div {
 	width: 100px;
+}
+
+.sb4-card vaadin-board-row {
+	flex-flow: inherit;
+    width: -webkit-fill-available;
 }
 
 .sb4-card vaadin-vertical-layout {
