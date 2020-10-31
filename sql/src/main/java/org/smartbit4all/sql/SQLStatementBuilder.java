@@ -515,11 +515,23 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
 
       case DOUBLE:
         return convertFromJdbcToAppType((JDBCDataConverter<T, Double>) typeHandler,
-            () -> resultSet.getDouble(colIdx));
+            () -> {
+              double res = resultSet.getDouble(colIdx);
+              if (resultSet.wasNull()) {
+                return null;
+              }
+              return res;
+            });
 
       case LONG:
         return convertFromJdbcToAppType((JDBCDataConverter<T, Long>) typeHandler,
-            () -> resultSet.getLong(colIdx));
+            () -> {
+              long res = resultSet.getLong(colIdx);
+              if (resultSet.wasNull()) {
+                return null;
+              }
+              return res;
+            });
 
       case STRING:
         return convertFromJdbcToAppType((JDBCDataConverter<T, String>) typeHandler,
