@@ -1,24 +1,25 @@
-.sb4-card {
+sb4-card {
 	flex-basis: auto;
 	border-radius: 7px;
 	box-shadow: 1px 1px 4px #233348;
-	width: 30%;
+	width: 400px;
+	background-color: #233348;
 }
 
-.sb4-card vaadin-board-row div {
+sb4-card vaadin-board-row div {
 	width: 100px;
 }
 
-.sb4-card vaadin-board-row {
+sb4-card vaadin-board-row {
 	flex-flow: inherit;
     width: -webkit-fill-available;
 }
 
-.sb4-card vaadin-vertical-layout {
+sb4-card vaadin-vertical-layout {
 	align-items: center;
 }
 
-.sb4-card label {
+sb4-card label {
 	padding-right: 15px;
 	padding-left: 15px;
 }
