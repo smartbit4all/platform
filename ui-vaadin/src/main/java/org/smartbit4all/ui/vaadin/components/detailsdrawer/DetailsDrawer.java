@@ -1,9 +1,8 @@
 package org.smartbit4all.ui.vaadin.components.detailsdrawer;
 
+import org.smartbit4all.ui.vaadin.components.FlexBoxLayout;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.dependency.CssImport;
-
-import org.smartbit4all.ui.vaadin.components.FlexBoxLayout;
 
 @CssImport("./styles/components/details-drawer.css")
 public class DetailsDrawer extends FlexBoxLayout {
@@ -49,10 +48,24 @@ public class DetailsDrawer extends FlexBoxLayout {
 		this.content.add(components);
 	}
 
+    public FlexBoxLayout getContent() {
+        return this.content;
+    }
+    
 	public void setFooter(Component... components) {
 		this.footer.removeAll();
 		this.footer.add(components);
 	}
+
+    public FlexBoxLayout getFooter() {
+        return this.footer;
+    }
+    
+    public void clearComponents() {
+      this.header.removeAll();
+      this.content.removeAll();
+      this.footer.removeAll();
+    }
 
 	public void setPosition(Position position) {
 		getElement().setAttribute("position", position.name().toLowerCase());
