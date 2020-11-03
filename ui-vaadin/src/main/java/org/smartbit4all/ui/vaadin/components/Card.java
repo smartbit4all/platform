@@ -16,7 +16,6 @@ import com.vaadin.flow.dom.ShadowRoot;
 @Tag("sb4-card")
 public class Card<T> extends FlexLayout {
 
-//  private String CLASS_NAME = "sb4-card";
   private Label label;
   private ArrayList<Row> rows;
   private ButtonBar buttonBar;
@@ -26,7 +25,6 @@ public class Card<T> extends FlexLayout {
 
   public Card(Label label, T controllObject) {
     ShadowRoot shadowRoot = getElement().attachShadow();
-//    setClassName(CLASS_NAME);
     this.dataObject = controllObject;
     rows = new ArrayList<Row>();
     rows.add(new Row());
