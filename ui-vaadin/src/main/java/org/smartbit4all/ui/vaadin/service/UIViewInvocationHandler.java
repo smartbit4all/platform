@@ -6,6 +6,7 @@ import java.lang.reflect.Method;
 import org.smartbit4all.ui.common.service.UIControllerInvocationHandler;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.server.Command;
+import com.vaadin.flow.shared.communication.PushMode;
 
 public class UIViewInvocationHandler implements InvocationHandler {
 
@@ -17,6 +18,7 @@ public class UIViewInvocationHandler implements InvocationHandler {
     super();
     this.vaadinUI = vaadinUI;
     this.originalUI = originalUI;
+    vaadinUI.getPushConfiguration().setPushMode(PushMode.AUTOMATIC);
   }
 
   @Override
