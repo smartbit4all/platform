@@ -65,8 +65,15 @@ public class CrudRead<E extends EntityDefinition> implements Query<E> {
 
   public Optional<DataRow> firstRow() throws Exception {
     query.limit(1);
+    
     TableData<E> result = executeIntoTableData();
-    return Optional.ofNullable(result.rows().get(0));
+    List<DataRow> resultRows = result.rows();
+    
+    if(resultRows.isEmpty()) {
+      return Optional.empty();
+    }
+    
+    return Optional.ofNullable(resultRows.get(0));
   }
 
   public List<DataRow> firstRows(int rowNum) throws Exception {
