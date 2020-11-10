@@ -1,14 +1,14 @@
 sb4-card {
 	flex-basis: auto;
 	border-radius: 7px;
-	box-shadow: 1px 1px 4px #233348;
+	box-shadow: 1px 1px 4px var(--lumo-primary-color);
 	width: 400px;
-	background-color: #233348;
+	background-color: var(--lumo-primary-color);
 }
 
 sb4-card vaadin-board-row div {
 	width: 100px;
-	color: #00ffff;
+	color: var(--lumo-primary-color);
 }
 
 sb4-card vaadin-board-row {

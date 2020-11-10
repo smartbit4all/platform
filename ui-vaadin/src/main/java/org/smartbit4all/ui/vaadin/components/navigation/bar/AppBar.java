@@ -37,6 +37,7 @@ public class AppBar extends FlexBoxLayout {
   private H4 title;
   private FlexBoxLayout actionItems;
   private Icon avatar;
+  private Button themeButton;
 
   private FlexBoxLayout tabContainer;
   private NaviTabs tabs;
@@ -61,10 +62,17 @@ public class AppBar extends FlexBoxLayout {
     initContextIcon();
     initTitle(title);
     initSearch();
+    initThemeButton();
     initAvatar();
     initActionItems();
     initContainer();
     initTabs(tabs);
+  }
+
+  private void initThemeButton() {
+    themeButton = new Button(new Icon(VaadinIcon.ADJUST));
+    themeButton.addClassName(CLASS_NAME + "__theme-button");
+    
   }
 
   public void setNaviMode(NaviMode mode) {
@@ -123,7 +131,7 @@ public class AppBar extends FlexBoxLayout {
   }
 
   private void initContainer() {
-    container = new FlexBoxLayout(menuIcon, contextIcon, this.title, search, actionItems, avatar);
+    container = new FlexBoxLayout(menuIcon, contextIcon, this.title, search, actionItems, themeButton,avatar);
     container.addClassName(CLASS_NAME + "__container");
     container.setAlignItems(FlexComponent.Alignment.CENTER);
     container.setFlexGrow(1, search);
@@ -210,6 +218,12 @@ public class AppBar extends FlexBoxLayout {
 
   public Icon getAvatar() {
     return avatar;
+  }
+  
+  /* === THEME BUTTON == */
+  
+  public Button getThemeButton() {
+    return themeButton;
   }
 
   /* === TABS === */
