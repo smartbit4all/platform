@@ -3,12 +3,12 @@ package org.smartbit4all.api.dynamicfilter.bean;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
 import org.smartbit4all.api.dynamicfilter.bean.DynamicFilter;
+import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterGroupType;
 import org.openapitools.jackson.nullable.JsonNullable;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
@@ -19,43 +19,8 @@ import javax.validation.constraints.*;
 @ApiModel(description = "AND / OR group of filters / groups.")
 
 public class DynamicFilterGroup   {
-  /**
-   * Gets or Sets type
-   */
-  public enum TypeEnum {
-    AND("AND"),
-    
-    OR("OR");
-
-    private String value;
-
-    TypeEnum(String value) {
-      this.value = value;
-    }
-
-    @JsonValue
-    public String getValue() {
-      return value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static TypeEnum fromValue(String value) {
-      for (TypeEnum b : TypeEnum.values()) {
-        if (b.value.equals(value)) {
-          return b;
-        }
-      }
-      throw new IllegalArgumentException("Unexpected value '" + value + "'");
-    }
-  }
-
   @JsonProperty("type")
-  private TypeEnum type;
+  private DynamicFilterGroupType type;
 
   @JsonProperty("filters")
   @Valid
@@ -71,7 +36,7 @@ public class DynamicFilterGroup   {
   @JsonProperty("isExpanded")
   private Boolean isExpanded;
 
-  public DynamicFilterGroup type(TypeEnum type) {
+  public DynamicFilterGroup type(DynamicFilterGroupType type) {
     this.type = type;
     return this;
   }
@@ -82,12 +47,13 @@ public class DynamicFilterGroup   {
   */
   @ApiModelProperty(value = "")
 
+  @Valid
 
-  public TypeEnum getType() {
+  public DynamicFilterGroupType getType() {
     return type;
   }
 
-  public void setType(TypeEnum type) {
+  public void setType(DynamicFilterGroupType type) {
     this.type = type;
   }
 

@@ -55,15 +55,17 @@ components:
         possibleValues:
           type: string
           format: uri
+    DynamicFilterGroupType:
+      type: string
+      enum: [
+          AND, OR
+        ]
     DynamicFilterGroup:
       type: object
       description: 'AND / OR group of filters / groups.'
       properties:
         type:
-          type: string
-          enum:
-          - AND
-          - OR
+          $ref: '#/components/schemas/DynamicFilterGroupType'
         filters:
           type: array
           items:
