@@ -1,0 +1,95 @@
+openapi: 3.0.1
+info:
+  title: Dynamic Filter UI API
+  description: Dynamic Filter UI API
+  termsOfService: ''
+  contact:
+    email: info@it4all.hu
+  version: 1.0.0
+tags:
+  - name: dynamic-filter
+    description: Dynamic filter
+paths:
+  /nope:
+    post:
+      summary: Placeholder for generation
+      responses:
+        '200':
+          description: nope
+components:
+  schemas:
+    DynamicFilterOperation:
+      type: object
+      description: 'Operations supported by dynamic filter api.'
+      properties:
+        code:
+          type: string
+        displayValue:
+          type: string
+        icon:
+          type: string
+    DynamicFilterDescriptor:
+      type: object
+      description: 'Descriptor of a possible filter field. This field doesn''t have to correspond to an existing entity''s property, it is simple a way of filtering.'
+      properties:
+        name:
+          type: string
+          description: 'Name of the filterable field.'
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/DynamicFilterOption'
+    DynamicFilterOption:
+      type: object
+      description: 'Defines a possible way of using a filter field. For example: exact match, like, sounds like, interval, etc.'
+      properties:
+        filterView:
+          type: string
+          description: 'Declarative name of a DynamicFilterOptionUI, which will handle this option.'
+        operation:
+          $ref: '#/components/schemas/DynamicFilterOperation'
+        field1:
+          type: string
+        field2:
+          type: string
+        possibleValues:
+          type: string
+          format: uri
+    DynamicFilterGroup:
+      type: object
+      description: 'AND / OR group of filters / groups.'
+      properties:
+        type:
+          type: string
+          enum:
+          - AND
+          - OR
+        filters:
+          type: array
+          items:
+            $ref: '#/components/schemas/DynamicFilter'
+        groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/DynamicFilterGroup'
+        isNegated:
+          type: boolean
+        isExpanded:
+          type: boolean
+    DynamicFilter:
+      type: object
+      properties:
+        option:
+          $ref: '#/components/schemas/DynamicFilterOption'
+        value1:
+          type: string
+        value2:
+          type: string
+        selectedValues:
+          type: array
+          items:
+            type: string
+        isIncluded:
+          type: boolean
+        isEditable:
+          type: boolean
