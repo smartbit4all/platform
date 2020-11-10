@@ -1,0 +1,57 @@
+openapi: 3.0.1
+info:
+  title: smartbit4all navigation api
+  description: smartbit4all navigation api
+  termsOfService: ''
+  contact:
+    email: info@it4all.hu
+  version: 1.0.0
+paths:
+  /nope:
+    post:
+      summary: Placeholder for generation
+      responses:
+        '200':
+          description: nope
+components:
+  schemas:
+    NavigationEntry:
+      type: object
+      required: [uri, name]
+      properties:
+        uri:
+          type: string
+          description: 'The resource identifier of the given navigation entry. The format is: navigation://navigationpath#id where the navigation path is specific for the given navigation.'
+        name:
+          type: string
+          description: 'The name of the entry'
+        icon:
+          type: string
+          description: 'The name of the icon resource'
+        styles:
+          description: 'The string list of the abstract styles that can be applied to the given entry'
+          type: array
+          items:
+            type: string
+        views:
+          description: 'The string list of the abstract views that are supported by the UI that we have. This view will get the navigation entry as parameter.'
+          type: array
+          items:
+            $ref: '#/components/schemas/NavigationView'
+    NavigationView:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          description: 'The symbolic name of the view that must be supported by the given UI implementation.'
+        parameters:
+          type: string
+          additionalProperties:
+            properties:
+              parameter:
+                type: string
+                description: 'The key of the parameter'
+              value:
+                type: string
+                description: 'The value of the parameter'
