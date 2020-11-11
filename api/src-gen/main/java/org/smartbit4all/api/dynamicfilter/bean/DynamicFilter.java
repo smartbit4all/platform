@@ -1,24 +1,19 @@
 package org.smartbit4all.api.dynamicfilter.bean;
 
-import java.util.Objects;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
-import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterOption;
-import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.Objects;
 import javax.validation.Valid;
-import javax.validation.constraints.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * DynamicFilter
  */
 
 public class DynamicFilter   {
-  @JsonProperty("option")
-  private DynamicFilterOption option;
+  @JsonProperty("operation")
+  private DynamicFilterOperation operation;
 
   @JsonProperty("value1")
   private String value1;
@@ -36,25 +31,25 @@ public class DynamicFilter   {
   @JsonProperty("isEditable")
   private Boolean isEditable;
 
-  public DynamicFilter option(DynamicFilterOption option) {
-    this.option = option;
+  public DynamicFilter operation(DynamicFilterOperation operation) {
+    this.operation = operation;
     return this;
   }
 
   /**
-   * Get option
-   * @return option
+   * Get operation
+   * @return operation
   */
   @ApiModelProperty(value = "")
 
   @Valid
 
-  public DynamicFilterOption getOption() {
-    return option;
+  public DynamicFilterOperation getOperation() {
+    return operation;
   }
 
-  public void setOption(DynamicFilterOption option) {
-    this.option = option;
+  public void setOperation(DynamicFilterOperation operation) {
+    this.operation = operation;
   }
 
   public DynamicFilter value1(String value1) {
@@ -175,7 +170,7 @@ public class DynamicFilter   {
       return false;
     }
     DynamicFilter dynamicFilter = (DynamicFilter) o;
-    return Objects.equals(this.option, dynamicFilter.option) &&
+    return Objects.equals(this.operation, dynamicFilter.operation) &&
         Objects.equals(this.value1, dynamicFilter.value1) &&
         Objects.equals(this.value2, dynamicFilter.value2) &&
         Objects.equals(this.selectedValues, dynamicFilter.selectedValues) &&
@@ -185,7 +180,7 @@ public class DynamicFilter   {
 
   @Override
   public int hashCode() {
-    return Objects.hash(option, value1, value2, selectedValues, isIncluded, isEditable);
+    return Objects.hash(operation, value1, value2, selectedValues, isIncluded, isEditable);
   }
 
   @Override
@@ -193,7 +188,7 @@ public class DynamicFilter   {
     StringBuilder sb = new StringBuilder();
     sb.append("class DynamicFilter {\n");
     
-    sb.append("    option: ").append(toIndentedString(option)).append("\n");
+    sb.append("    operation: ").append(toIndentedString(operation)).append("\n");
     sb.append("    value1: ").append(toIndentedString(value1)).append("\n");
     sb.append("    value2: ").append(toIndentedString(value2)).append("\n");
     sb.append("    selectedValues: ").append(toIndentedString(selectedValues)).append("\n");

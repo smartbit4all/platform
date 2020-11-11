@@ -1,16 +1,12 @@
 package org.smartbit4all.api.dynamicfilter.bean;
 
-import java.util.Objects;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
-import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterOption;
-import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.Objects;
 import javax.validation.Valid;
-import javax.validation.constraints.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * Descriptor of a possible filter field. This field doesn&#39;t have to correspond to an existing entity&#39;s property, it is simple a way of filtering.
@@ -21,9 +17,9 @@ public class DynamicFilterDescriptor   {
   @JsonProperty("name")
   private String name;
 
-  @JsonProperty("options")
+  @JsonProperty("operations")
   @Valid
-  private List<DynamicFilterOption> options = null;
+  private List<DynamicFilterOperation> operations = null;
 
   public DynamicFilterDescriptor name(String name) {
     this.name = name;
@@ -45,33 +41,33 @@ public class DynamicFilterDescriptor   {
     this.name = name;
   }
 
-  public DynamicFilterDescriptor options(List<DynamicFilterOption> options) {
-    this.options = options;
+  public DynamicFilterDescriptor operations(List<DynamicFilterOperation> operations) {
+    this.operations = operations;
     return this;
   }
 
-  public DynamicFilterDescriptor addOptionsItem(DynamicFilterOption optionsItem) {
-    if (this.options == null) {
-      this.options = new ArrayList<>();
+  public DynamicFilterDescriptor addOperationsItem(DynamicFilterOperation operationsItem) {
+    if (this.operations == null) {
+      this.operations = new ArrayList<>();
     }
-    this.options.add(optionsItem);
+    this.operations.add(operationsItem);
     return this;
   }
 
   /**
-   * Get options
-   * @return options
+   * Get operations
+   * @return operations
   */
   @ApiModelProperty(value = "")
 
   @Valid
 
-  public List<DynamicFilterOption> getOptions() {
-    return options;
+  public List<DynamicFilterOperation> getOperations() {
+    return operations;
   }
 
-  public void setOptions(List<DynamicFilterOption> options) {
-    this.options = options;
+  public void setOperations(List<DynamicFilterOperation> operations) {
+    this.operations = operations;
   }
 
 
@@ -85,12 +81,12 @@ public class DynamicFilterDescriptor   {
     }
     DynamicFilterDescriptor dynamicFilterDescriptor = (DynamicFilterDescriptor) o;
     return Objects.equals(this.name, dynamicFilterDescriptor.name) &&
-        Objects.equals(this.options, dynamicFilterDescriptor.options);
+        Objects.equals(this.operations, dynamicFilterDescriptor.operations);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, options);
+    return Objects.hash(name, operations);
   }
 
   @Override
@@ -99,7 +95,7 @@ public class DynamicFilterDescriptor   {
     sb.append("class DynamicFilterDescriptor {\n");
     
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
-    sb.append("    options: ").append(toIndentedString(options)).append("\n");
+    sb.append("    operations: ").append(toIndentedString(operations)).append("\n");
     sb.append("}");
     return sb.toString();
   }

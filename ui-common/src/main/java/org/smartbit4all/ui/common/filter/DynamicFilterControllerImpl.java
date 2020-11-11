@@ -8,7 +8,7 @@ import org.smartbit4all.api.dynamicfilter.bean.DynamicFilter;
 import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterDescriptor;
 import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterGroup;
 import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterGroupType;
-import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterOption;
+import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterOperation;
 import org.smartbit4all.api.filter.DynamicFilterApi;
 
 public class DynamicFilterControllerImpl implements DynamicFilterController {
@@ -51,7 +51,7 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
   public void addFilter(String groupId, String descriptorName) {
     DynamicFilterGroup parentGroup = groupsById.get(groupId);
     DynamicFilterDescriptor descriptor = descriptorsByName.get(descriptorName);
-    List<DynamicFilterOption> filterOptions = descriptor.getOptions();
+    List<DynamicFilterOperation> filterOptions = descriptor.getOperations();
     
     DynamicFilter dynamicFilter = createFilter(descriptor);
     String filterId = createIdentifier(); 
@@ -70,9 +70,9 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
   
   private DynamicFilter createFilter(DynamicFilterDescriptor descriptor) {
     DynamicFilter filter = new DynamicFilter();
-    List<DynamicFilterOption> options = descriptor.getOptions();
+    List<DynamicFilterOperation> options = descriptor.getOperations();
     if(options != null && !options.isEmpty()) {
-      filter.setOption(options.get(0));
+      filter.setOperation(options.get(0));
     }
     return filter;
   }
@@ -96,12 +96,12 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
     String descName = descriptorNameByFilterId.get(filterId);
     DynamicFilterDescriptor descriptor = descriptorsByName.get(descName);
     DynamicFilter dynamicFilter = filtersById.get(filterId);
-    List<DynamicFilterOption> filterOptions = descriptor.getOptions();
+    List<DynamicFilterOperation> filterOptions = descriptor.getOperations();
     if(filterOptions == null || filterOptions.size() <= filterOptionIdx) {
       throw new IllegalArgumentException("Invalid filter option index!");
     }
-    DynamicFilterOption filterOption = filterOptions.get(filterOptionIdx);
-    dynamicFilter.setOption(filterOption);
+    DynamicFilterOperation filterOption = filterOptions.get(filterOptionIdx);
+    dynamicFilter.setOperation(filterOption);
     ui.renderFilter(filterId, dynamicFilter);
   }
   

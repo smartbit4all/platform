@@ -18,16 +18,6 @@ paths:
           description: nope
 components:
   schemas:
-    DynamicFilterOperation:
-      type: object
-      description: 'Operations supported by dynamic filter api.'
-      properties:
-        code:
-          type: string
-        displayValue:
-          type: string
-        icon:
-          type: string
     DynamicFilterDescriptor:
       type: object
       description: 'Descriptor of a possible filter field. This field doesn''t have to correspond to an existing entity''s property, it is simple a way of filtering.'
@@ -35,19 +25,17 @@ components:
         name:
           type: string
           description: 'Name of the filterable field.'
-        options:
+        operations:
           type: array
           items:
-            $ref: '#/components/schemas/DynamicFilterOption'
-    DynamicFilterOption:
+            $ref: '#/components/schemas/DynamicFilterOperation'
+    DynamicFilterOperation:
       type: object
       description: 'Defines a possible way of using a filter field. For example: exact match, like, sounds like, interval, etc.'
       properties:
         filterView:
           type: string
-          description: 'Declarative name of a DynamicFilterOptionUI, which will handle this option.'
-        operation:
-          $ref: '#/components/schemas/DynamicFilterOperation'
+          description: 'Declarative name of a DynamicFilterOperationUI, which will handle this operation.'
         field1:
           type: string
         field2:
@@ -55,6 +43,12 @@ components:
         possibleValues:
           type: string
           format: uri
+        code:
+          type: string
+        displayValue:
+          type: string
+        icon:
+          type: string
     DynamicFilterGroupType:
       type: string
       enum: [
@@ -81,8 +75,8 @@ components:
     DynamicFilter:
       type: object
       properties:
-        option:
-          $ref: '#/components/schemas/DynamicFilterOption'
+        operation:
+          $ref: '#/components/schemas/DynamicFilterOperation'
         value1:
           type: string
         value2:
