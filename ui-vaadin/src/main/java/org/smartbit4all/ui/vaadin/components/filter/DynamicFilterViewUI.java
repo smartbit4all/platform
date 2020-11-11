@@ -7,8 +7,10 @@ import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterGroup;
 import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterOption;
 import org.smartbit4all.ui.common.filter.DynamicFilterController;
 import org.smartbit4all.ui.common.filter.DynamicFilterView;
+import org.smartbit4all.ui.vaadin.components.FlexBoxLayout;
+import com.vaadin.flow.component.Composite;
 
-public class DynamicFilterViewUI implements DynamicFilterView {
+public class DynamicFilterViewUI extends Composite<FlexBoxLayout> implements DynamicFilterView {
 
   private DynamicFilterController controller;
   
