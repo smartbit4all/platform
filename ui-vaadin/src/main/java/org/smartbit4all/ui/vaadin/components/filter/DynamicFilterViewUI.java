@@ -8,6 +8,7 @@ import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterGroup;
 import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterOperation;
 import org.smartbit4all.ui.common.filter.DynamicFilterController;
 import org.smartbit4all.ui.common.filter.DynamicFilterView;
+import org.smartbit4all.ui.vaadin.util.UIUtils;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.HasComponents;
@@ -18,6 +19,7 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.upload.UploadI18N;
 
 @CssImport("./views/dynamic-filter-view.css")
 public class DynamicFilterViewUI implements DynamicFilterView {
@@ -41,17 +43,11 @@ public class DynamicFilterViewUI implements DynamicFilterView {
 
   @Override
   public void renderFilterConfig(List<DynamicFilterDescriptor> filterConfig) {
-    // TODO Auto-generated method stub
-//    filterConfig = new ArrayList<>();
-//    for (int i=0; i<15; i++) {
-//      DynamicFilterDescriptor e = new DynamicFilterDescriptor();
-//      e.setName("AAAAAAAAAAAAAAAAAAAAA");
-//      filterConfig.add(e);
-//    }
     VerticalLayout descriptorsLayout = new VerticalLayout();
     descriptorsLayout.addClassName("descriptors-layout");
     for (DynamicFilterDescriptor descriptor : filterConfig) {
-      Label label = new Label(descriptor.getName());
+      Label label = new Label();
+      label.setText(label.getTranslation(descriptor.getName()));
       label.addClassName("descriptor-name");
       Button button = new Button(new Icon(VaadinIcon.PLUS));
       button.addClickListener(addFilterListener());
@@ -60,12 +56,13 @@ public class DynamicFilterViewUI implements DynamicFilterView {
     }
     
     descriptorHolder.add(descriptorsLayout);
-    groupHolder.add(new Label("Here comes the filter group root"));
+//    groupHolder.add(new Label("Here comes the filter group root"));
   }
 
   private ComponentEventListener<ClickEvent<Button>> addFilterListener() {
-    // TODO Auto-generated method stub
-    return null;
+    return e -> {
+      UIUtils.showNotification("Button Pressed.");
+    };
   }
 
   @Override
