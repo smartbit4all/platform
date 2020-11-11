@@ -8,7 +8,7 @@ sb4-card {
 
 sb4-card vaadin-board-row div {
 	width: 100px;
-	color: var(--lumo-primary-color);
+	color: var(--lumo-secondary-text-color);
 }
 
 sb4-card vaadin-board-row {
