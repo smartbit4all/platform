@@ -1,0 +1,30 @@
+openapi: 3.0.1
+info:
+  title: smartbit4all value api
+  description: smartbit4all value api
+  termsOfService: ''
+  contact:
+    email: info@it4all.hu
+  version: 1.0.0
+paths:
+  /nope:
+    post:
+      summary: Placeholder for generation
+      responses:
+        '200':
+          description: nope
+components:
+  schemas:
+    Value:
+      type: object
+      required: [code, value]
+      properties:
+        code:
+          type: string
+          description: 'The code the value can be referenced by'
+        value: 
+          type: string
+          description: 'The string value of the literal'
+        typeQName:
+          type: string
+          description: 'The qualified name of the type of the value'
