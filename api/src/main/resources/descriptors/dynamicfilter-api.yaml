@@ -75,6 +75,8 @@ components:
     DynamicFilter:
       type: object
       properties:
+        descriptorName:
+          type: string
         operation:
           $ref: '#/components/schemas/DynamicFilterOperation'
         value1:
