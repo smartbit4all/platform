@@ -16,62 +16,63 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
   private DynamicFilterApi api;
   private DynamicFilterView ui;
   private String uri;
-  
+
   private DynamicFilterGroup rootFilterGroup;
-  
+
   private Map<String, DynamicFilterDescriptor> descriptorsByName = new HashMap<>();
   private Map<String, DynamicFilter> filtersById = new HashMap<>();
   private Map<String, DynamicFilterGroup> groupsById = new HashMap<>();
   private Map<String, String> descriptorNameByFilterId = new HashMap<>();
-  
-  
+
+
   public DynamicFilterControllerImpl(DynamicFilterApi api, String uri) {
     this.api = api;
     this.uri = uri;
     rootFilterGroup = new DynamicFilterGroup();
     groupsById.put(ROOT_FILTER_GROUP, rootFilterGroup);
-    
+
   }
-  
+
   @Override
   public void setUi(DynamicFilterView dynamicFilterView) {
     this.ui = dynamicFilterView;
-    loadData(); // TODO self.loadData
-    
+
   }
 
   @Override
   public void loadData() {
     List<DynamicFilterDescriptor> filterConfig = api.getFilterConfig(uri);
-    filterConfig.forEach( dfd -> descriptorsByName.put(dfd.getName(), dfd));
+    filterConfig.forEach(dfd -> descriptorsByName.put(dfd.getName(), dfd));
     ui.renderFilterConfig(filterConfig);
   }
-  
+
   @Override
   public void addFilter(String groupId, String descriptorName) {
     DynamicFilterGroup parentGroup = groupsById.get(groupId);
     DynamicFilterDescriptor descriptor = descriptorsByName.get(descriptorName);
     List<DynamicFilterOperation> filterOptions = descriptor.getOperations();
-    
+
     DynamicFilter dynamicFilter = createFilter(descriptor);
-    String filterId = createIdentifier(); 
+    String filterId = createIdentifier();
     parentGroup.addFiltersItem(dynamicFilter);
-    
+
     updateControllerModel(groupId, descriptorName, dynamicFilter, filterId);
-    
+
     ui.renderFilter(groupId, filterId, dynamicFilter, filterOptions);
   }
 
-  protected void updateControllerModel(String groupId, String descriptorName, DynamicFilter dynamicFilter,
+  protected void updateControllerModel(String groupId, String descriptorName,
+      DynamicFilter dynamicFilter,
       String filterId) {
     filtersById.put(filterId, dynamicFilter);
     descriptorNameByFilterId.put(filterId, descriptorName);
   }
-  
+
   private DynamicFilter createFilter(DynamicFilterDescriptor descriptor) {
     DynamicFilter filter = new DynamicFilter();
+    filter.setDescriptorName(descriptor.getName());
     List<DynamicFilterOperation> options = descriptor.getOperations();
-    if(options != null && !options.isEmpty()) {
+    if (options != null && !options.isEmpty()) {
       filter.setOperation(options.get(0));
     }
     return filter;
@@ -87,39 +88,39 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
     groupsById.put(childGroupId, childGroup);
     ui.renderGroup(parentGroupId, childGroupId, childGroup);
   }
-  
+
   // TODO removeFilterGroup
   // TODO removeFilter
-  
+
   @Override
   public void filterOptionChanged(String filterId, int filterOptionIdx) {
     String descName = descriptorNameByFilterId.get(filterId);
     DynamicFilterDescriptor descriptor = descriptorsByName.get(descName);
     DynamicFilter dynamicFilter = filtersById.get(filterId);
     List<DynamicFilterOperation> filterOptions = descriptor.getOperations();
-    if(filterOptions == null || filterOptions.size() <= filterOptionIdx) {
+    if (filterOptions == null || filterOptions.size() <= filterOptionIdx) {
       throw new IllegalArgumentException("Invalid filter option index!");
     }
     DynamicFilterOperation filterOption = filterOptions.get(filterOptionIdx);
     dynamicFilter.setOperation(filterOption);
     ui.renderFilter(filterId, dynamicFilter);
   }
-  
+
   public void filterValueChanged(String filterId, String... values) {
     // TODO
   }
-  
+
   // TODO filterSelectionChanged
-  
-  
-  
+
+
+
   @Override
   public DynamicFilterGroup getFilters() {
     return rootFilterGroup;
   }
-  
+
   protected String createIdentifier() {
     return UUID.randomUUID().toString();
   }
-  
+
 }

@@ -2,7 +2,28 @@
     background-color: var(--lumo-base-color);
 }
 
+.descriptor-layout {
+	
+}
+
 .descriptor-name {
     margin-top: 10px;
     margin-right: 10px;
+}
+
+.dynamic-filtergroup {
+	background-color: blue;
+	display: flex;
+	flex-wrap: wrap;
+    justify-content: flex-start;
+}
+
+.dynamic-filter {
+	background-color: red;
+	margin: 0.25em;
+}
+
+.dynamic-filter-onefield {
+	background-color: yellow;
+	width: 12em;
 }
