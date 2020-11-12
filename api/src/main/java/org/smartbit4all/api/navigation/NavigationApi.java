@@ -1,5 +1,6 @@
 package org.smartbit4all.api.navigation;
 
+import java.net.URI;
 import java.util.List;
 import org.smartbit4all.api.navigation.bean.NavigationEntry;
 
@@ -11,7 +12,7 @@ import org.smartbit4all.api.navigation.bean.NavigationEntry;
  * 
  * The basic concept of the API is the {@link NavigationEntry} that is identified by an URI:
  * 
- * navigation://navigationPath#id
+ * navigation://navigationPath
  * 
  * example:
  * 
@@ -35,7 +36,7 @@ public interface NavigationApi {
    * @param uri
    * @return
    */
-  NavigationEntry get(NavigationURI uri);
+  NavigationEntry get(URI uri);
 
   /**
    * The children of the navigation entry identified by the uri.
@@ -43,7 +44,7 @@ public interface NavigationApi {
    * @param uri
    * @return
    */
-  List<NavigationEntry> children(NavigationURI uri);
+  List<NavigationEntry> children(URI uri);
 
   /**
    * The parent entry of the navigation entry identified by the uri.
@@ -51,6 +52,6 @@ public interface NavigationApi {
    * @param uri
    * @return
    */
-  NavigationEntry parent(NavigationURI uri);
+  NavigationEntry parent(URI uri);
 
 }

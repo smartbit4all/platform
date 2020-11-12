@@ -21,7 +21,11 @@ components:
       properties:
         uri:
           type: string
+          format: uri
           description: 'The resource identifier of the given navigation entry. The format is: navigation://navigationpath#id where the navigation path is specific for the given navigation.'
+        correlationId:
+          type: string
+          description: 'The navigation entry refers a given resource. Like entity, docuemnt, folder or anything else. This resourse for the given API is identified by this id.'
         name:
           type: string
           description: 'The name of the entry'

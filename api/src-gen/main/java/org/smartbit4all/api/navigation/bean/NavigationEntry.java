@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import org.smartbit4all.api.navigation.bean.NavigationView;
@@ -18,7 +19,10 @@ import javax.validation.constraints.*;
 
 public class NavigationEntry   {
   @JsonProperty("uri")
-  private String uri;
+  private URI uri;
+
+  @JsonProperty("correlationId")
+  private String correlationId;
 
   @JsonProperty("name")
   private String name;
@@ -34,7 +38,7 @@ public class NavigationEntry   {
   @Valid
   private List<NavigationView> views = null;
 
-  public NavigationEntry uri(String uri) {
+  public NavigationEntry uri(URI uri) {
     this.uri = uri;
     return this;
   }
@@ -46,13 +50,34 @@ public class NavigationEntry   {
   @ApiModelProperty(required = true, value = "The resource identifier of the given navigation entry. The format is: navigation://navigationpath#id where the navigation path is specific for the given navigation.")
   @NotNull
 
+  @Valid
 
-  public String getUri() {
+  public URI getUri() {
     return uri;
   }
 
-  public void setUri(String uri) {
+  public void setUri(URI uri) {
     this.uri = uri;
+  }
+
+  public NavigationEntry correlationId(String correlationId) {
+    this.correlationId = correlationId;
+    return this;
+  }
+
+  /**
+   * The navigation entry refers a given resource. Like entity, docuemnt, folder or anything else. This resourse for the given API is identified by this id.
+   * @return correlationId
+  */
+  @ApiModelProperty(value = "The navigation entry refers a given resource. Like entity, docuemnt, folder or anything else. This resourse for the given API is identified by this id.")
+
+
+  public String getCorrelationId() {
+    return correlationId;
+  }
+
+  public void setCorrelationId(String correlationId) {
+    this.correlationId = correlationId;
   }
 
   public NavigationEntry name(String name) {
@@ -164,6 +189,7 @@ public class NavigationEntry   {
     }
     NavigationEntry navigationEntry = (NavigationEntry) o;
     return Objects.equals(this.uri, navigationEntry.uri) &&
+        Objects.equals(this.correlationId, navigationEntry.correlationId) &&
         Objects.equals(this.name, navigationEntry.name) &&
         Objects.equals(this.icon, navigationEntry.icon) &&
         Objects.equals(this.styles, navigationEntry.styles) &&
@@ -172,7 +198,7 @@ public class NavigationEntry   {
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, name, icon, styles, views);
+    return Objects.hash(uri, correlationId, name, icon, styles, views);
   }
 
   @Override
@@ -181,6 +207,7 @@ public class NavigationEntry   {
     sb.append("class NavigationEntry {\n");
     
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
+    sb.append("    correlationId: ").append(toIndentedString(correlationId)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    icon: ").append(toIndentedString(icon)).append("\n");
     sb.append("    styles: ").append(toIndentedString(styles)).append("\n");

@@ -1,12 +1,12 @@
 package org.smartbit4all.api.impl.navigation;
 
+import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.smartbit4all.api.navigation.NavigationApi;
 import org.smartbit4all.api.navigation.NavigationImpl;
-import org.smartbit4all.api.navigation.NavigationURI;
 import org.smartbit4all.api.navigation.bean.NavigationEntry;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * 
  * @author Peter Boros
  */
-public class NavigationPrimary extends NavigationImpl implements InitializingBean {
+public class NavigationApiPrimary extends NavigationImpl implements InitializingBean {
 
   public static final String PRIMARY = "NavigationPrimary";
 
@@ -33,7 +33,7 @@ public class NavigationPrimary extends NavigationImpl implements InitializingBea
    */
   Map<String, NavigationApi> apiByName = new HashMap<>();
 
-  public NavigationPrimary() {
+  public NavigationApiPrimary() {
     super(PRIMARY);
   }
 
@@ -48,20 +48,20 @@ public class NavigationPrimary extends NavigationImpl implements InitializingBea
   }
 
   @Override
-  public NavigationEntry get(NavigationURI uri) {
-    NavigationApi api = apiByName.get(uri.getNavigation());
+  public NavigationEntry get(URI uri) {
+    NavigationApi api = apiByName.get(uri.getScheme());
     return api != null ? api.get(uri) : null;
   }
 
   @Override
-  public List<NavigationEntry> children(NavigationURI uri) {
-    NavigationApi api = apiByName.get(uri.getNavigation());
+  public List<NavigationEntry> children(URI uri) {
+    NavigationApi api = apiByName.get(uri.getScheme());
     return api != null ? api.children(uri) : Collections.emptyList();
   }
 
   @Override
-  public NavigationEntry parent(NavigationURI uri) {
-    NavigationApi api = apiByName.get(uri.getNavigation());
+  public NavigationEntry parent(URI uri) {
+    NavigationApi api = apiByName.get(uri.getScheme());
     return api != null ? api.parent(uri) : null;
   }
 
