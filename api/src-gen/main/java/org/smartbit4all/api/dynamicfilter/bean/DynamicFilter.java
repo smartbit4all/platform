@@ -12,6 +12,9 @@ import io.swagger.annotations.ApiModelProperty;
  */
 
 public class DynamicFilter   {
+  @JsonProperty("descriptorName")
+  private String descriptorName;
+
   @JsonProperty("operation")
   private DynamicFilterOperation operation;
 
@@ -30,6 +33,26 @@ public class DynamicFilter   {
 
   @JsonProperty("isEditable")
   private Boolean isEditable;
+
+  public DynamicFilter descriptorName(String descriptorName) {
+    this.descriptorName = descriptorName;
+    return this;
+  }
+
+  /**
+   * Get descriptorName
+   * @return descriptorName
+  */
+  @ApiModelProperty(value = "")
+
+
+  public String getDescriptorName() {
+    return descriptorName;
+  }
+
+  public void setDescriptorName(String descriptorName) {
+    this.descriptorName = descriptorName;
+  }
 
   public DynamicFilter operation(DynamicFilterOperation operation) {
     this.operation = operation;
@@ -170,7 +193,8 @@ public class DynamicFilter   {
       return false;
     }
     DynamicFilter dynamicFilter = (DynamicFilter) o;
-    return Objects.equals(this.operation, dynamicFilter.operation) &&
+    return Objects.equals(this.descriptorName, dynamicFilter.descriptorName) &&
+        Objects.equals(this.operation, dynamicFilter.operation) &&
         Objects.equals(this.value1, dynamicFilter.value1) &&
         Objects.equals(this.value2, dynamicFilter.value2) &&
         Objects.equals(this.selectedValues, dynamicFilter.selectedValues) &&
@@ -180,7 +204,7 @@ public class DynamicFilter   {
 
   @Override
   public int hashCode() {
-    return Objects.hash(operation, value1, value2, selectedValues, isIncluded, isEditable);
+    return Objects.hash(descriptorName, operation, value1, value2, selectedValues, isIncluded, isEditable);
   }
 
   @Override
@@ -188,6 +212,7 @@ public class DynamicFilter   {
     StringBuilder sb = new StringBuilder();
     sb.append("class DynamicFilter {\n");
     
+    sb.append("    descriptorName: ").append(toIndentedString(descriptorName)).append("\n");
     sb.append("    operation: ").append(toIndentedString(operation)).append("\n");
     sb.append("    value1: ").append(toIndentedString(value1)).append("\n");
     sb.append("    value2: ").append(toIndentedString(value2)).append("\n");
