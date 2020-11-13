@@ -6,6 +6,6 @@ import org.smartbit4all.api.value.bean.Value;
 
 public interface ValueApi {
 
-  List<Value> getPossibleValues(URI uri);
+  List<Value> getPossibleValues(URI uri) throws Exception;
   
 }

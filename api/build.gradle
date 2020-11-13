@@ -37,7 +37,6 @@ dir.eachFileRecurse(FileType.FILES) { file ->
 
 // Iterate on all descriptor files and generate a task for each one with the nomenclature openApiGenerate + api name
 descriptorList.each {
-    println it.path
     def apiName = it.getName().replace("-api.yaml", "");
 
     tasks.create("openApiGenerate" + apiName.capitalize(), GenerateTask.class, {

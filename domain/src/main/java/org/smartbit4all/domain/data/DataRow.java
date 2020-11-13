@@ -329,7 +329,11 @@ public final class DataRow {
    * @return
    */
   public <T> T get(Property<T> column) {
-    return tableData.get(tableData.getColumn(column), this);
+    DataColumn<T> dataColumn = tableData.getColumn(column);
+    if(dataColumn == null) {
+      throw new RuntimeException("There is no column in the referred TableData with the given Property: " + column.getName());
+    }
+    return tableData.get(dataColumn, this);
   }
 
   /**
