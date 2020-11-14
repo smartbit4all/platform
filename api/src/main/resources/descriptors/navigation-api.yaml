@@ -19,10 +19,9 @@ components:
       type: object
       required: [uri, name]
       properties:
-        uri:
+        id:
           type: string
-          format: uri
-          description: 'The resource identifier of the given navigation entry. The format is: navigation://navigationpath#id where the navigation path is specific for the given navigation.'
+          description: 'The unique identifier of the given entry - UUID'
         correlationId:
           type: string
           description: 'The navigation entry refers a given resource. Like entity, docuemnt, folder or anything else. This resourse for the given API is identified by this id.'
@@ -42,6 +41,13 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/NavigationView'
+        children:
+          description: 'The children of the current entry.'
+          type: array
+          items:
+            $ref: '#/components/schemas/NavigationEntry'
+        parent:
+          $ref: '#/components/schemas/NavigationEntry'
     NavigationView:
       type: object
       required: [name]

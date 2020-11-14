@@ -1,7 +1,7 @@
 package org.smartbit4all.api.navigation;
 
-import java.net.URI;
 import java.util.List;
+import org.smartbit4all.api.ApiItemChangeEvent;
 import org.smartbit4all.api.navigation.bean.NavigationEntry;
 
 /**
@@ -31,27 +31,31 @@ public interface NavigationApi {
   String name();
 
   /**
-   * This can retrieve the navigation entry identified by the uri.
+   * If we have a navigation then we can start a navigation session by calling the {@link #start()}
+   * to retrieve the entries directly attached into the root. The {@link NavigationEntry} we get
+   * back will contains every information to navigate further.
    * 
-   * @param uri
-   * @return
+   * @return The list of the first level entries.
    */
-  NavigationEntry get(URI uri);
+  List<NavigationEntry> start();
 
   /**
-   * The children of the navigation entry identified by the uri.
+   * The expand will retrieve the available entries starting from the given entry. The expand will
+   * retrieve the related entries from the underlying api.
    * 
-   * @param uri
-   * @return
+   * @param entry The entry to expand. The entry will be filled with new entries as children.
+   * @return The api will return the newly created entries for further processing.
    */
-  List<NavigationEntry> children(URI uri);
+  List<ApiItemChangeEvent<NavigationEntry>> expand(NavigationEntry entry);
 
   /**
-   * The parent entry of the navigation entry identified by the uri.
+   * This function will retrieve again the navigation entries and it's children. The object
+   * structure will be refreshed but also we get back the list of changes in an
+   * {@link ApiItemChangeEvent} list with the changed {@link NavigationEntry}s.
    * 
-   * @param uri
+   * @param entry The entry to refresh. The refresh
    * @return
    */
-  NavigationEntry parent(URI uri);
+  List<ApiItemChangeEvent<NavigationEntry>> refresh(NavigationEntry entry);
 
 }

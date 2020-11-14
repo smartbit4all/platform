@@ -1,25 +1,20 @@
 package org.smartbit4all.api.navigation.bean;
 
-import java.util.Objects;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import org.smartbit4all.api.navigation.bean.NavigationView;
-import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.Objects;
 import javax.validation.Valid;
-import javax.validation.constraints.*;
+import javax.validation.constraints.NotNull;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * NavigationEntry
  */
 
 public class NavigationEntry   {
-  @JsonProperty("uri")
-  private URI uri;
+  @JsonProperty("id")
+  private String id;
 
   @JsonProperty("correlationId")
   private String correlationId;
@@ -38,26 +33,31 @@ public class NavigationEntry   {
   @Valid
   private List<NavigationView> views = null;
 
-  public NavigationEntry uri(URI uri) {
-    this.uri = uri;
+  @JsonProperty("children")
+  @Valid
+  private List<NavigationEntry> children = null;
+
+  @JsonProperty("parent")
+  private NavigationEntry parent;
+
+  public NavigationEntry id(String id) {
+    this.id = id;
     return this;
   }
 
   /**
-   * The resource identifier of the given navigation entry. The format is: navigation://navigationpath#id where the navigation path is specific for the given navigation.
-   * @return uri
+   * The unique identifier of the given entry - UUID
+   * @return id
   */
-  @ApiModelProperty(required = true, value = "The resource identifier of the given navigation entry. The format is: navigation://navigationpath#id where the navigation path is specific for the given navigation.")
-  @NotNull
+  @ApiModelProperty(value = "The unique identifier of the given entry - UUID")
 
-  @Valid
 
-  public URI getUri() {
-    return uri;
+  public String getId() {
+    return id;
   }
 
-  public void setUri(URI uri) {
-    this.uri = uri;
+  public void setId(String id) {
+    this.id = id;
   }
 
   public NavigationEntry correlationId(String correlationId) {
@@ -178,6 +178,56 @@ public class NavigationEntry   {
     this.views = views;
   }
 
+  public NavigationEntry children(List<NavigationEntry> children) {
+    this.children = children;
+    return this;
+  }
+
+  public NavigationEntry addChildrenItem(NavigationEntry childrenItem) {
+    if (this.children == null) {
+      this.children = new ArrayList<>();
+    }
+    this.children.add(childrenItem);
+    return this;
+  }
+
+  /**
+   * The children of the current entry.
+   * @return children
+  */
+  @ApiModelProperty(value = "The children of the current entry.")
+
+  @Valid
+
+  public List<NavigationEntry> getChildren() {
+    return children;
+  }
+
+  public void setChildren(List<NavigationEntry> children) {
+    this.children = children;
+  }
+
+  public NavigationEntry parent(NavigationEntry parent) {
+    this.parent = parent;
+    return this;
+  }
+
+  /**
+   * Get parent
+   * @return parent
+  */
+  @ApiModelProperty(value = "")
+
+  @Valid
+
+  public NavigationEntry getParent() {
+    return parent;
+  }
+
+  public void setParent(NavigationEntry parent) {
+    this.parent = parent;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -188,17 +238,19 @@ public class NavigationEntry   {
       return false;
     }
     NavigationEntry navigationEntry = (NavigationEntry) o;
-    return Objects.equals(this.uri, navigationEntry.uri) &&
+    return Objects.equals(this.id, navigationEntry.id) &&
         Objects.equals(this.correlationId, navigationEntry.correlationId) &&
         Objects.equals(this.name, navigationEntry.name) &&
         Objects.equals(this.icon, navigationEntry.icon) &&
         Objects.equals(this.styles, navigationEntry.styles) &&
-        Objects.equals(this.views, navigationEntry.views);
+        Objects.equals(this.views, navigationEntry.views) &&
+        Objects.equals(this.children, navigationEntry.children) &&
+        Objects.equals(this.parent, navigationEntry.parent);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, correlationId, name, icon, styles, views);
+    return Objects.hash(id, correlationId, name, icon, styles, views, children, parent);
   }
 
   @Override
@@ -206,12 +258,14 @@ public class NavigationEntry   {
     StringBuilder sb = new StringBuilder();
     sb.append("class NavigationEntry {\n");
     
-    sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    correlationId: ").append(toIndentedString(correlationId)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    icon: ").append(toIndentedString(icon)).append("\n");
     sb.append("    styles: ").append(toIndentedString(styles)).append("\n");
     sb.append("    views: ").append(toIndentedString(views)).append("\n");
+    sb.append("    children: ").append(toIndentedString(children)).append("\n");
+    sb.append("    parent: ").append(toIndentedString(parent)).append("\n");
     sb.append("}");
     return sb.toString();
   }
