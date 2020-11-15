@@ -48,10 +48,6 @@ public class SQLWhere implements SQLStatementNode {
   @Override
   public void render(SQLStatementBuilderIF b) {
 
-    b.append(SQLConstant.SEGMENTSEPARATOR);
-    b.append(SQLConstant.WHERE);
-    b.append(SQLConstant.SEGMENTSEPARATOR);
-
     ExpressionVisitor visitor = new ExpressionVisitor() {
       @Override
       public void visitClause(ExpressionClause expression) {

@@ -128,6 +128,7 @@ public class SQLSelectStatement implements SQLStatementNode {
     rootFromNode.render(b, null, null);
     if (where != null) {
       b.preProcessWhere();
+      b.preProcessSelectWhere();
       where.render(b);
       b.postProcessWhere();
     } else {

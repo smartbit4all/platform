@@ -41,6 +41,7 @@ public class SQLDeleteStatement implements SQLStatementNode {
   public void render(SQLStatementBuilderIF b) {
     b.deleteFrom(table);
     if (where != null) {
+      b.preProcessWhere();
       where.render(b);
     }
   }

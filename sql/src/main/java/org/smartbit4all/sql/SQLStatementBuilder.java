@@ -392,7 +392,7 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
     if (queryLimit <= 0) {
       return this;
     }
-    if (target == SupportedDatabase.ORACLE) {
+    if (target == SupportedDatabase.ORACLE && hasOrderBy) {
       String currentStmt = b.toString();
       b.setLength(0);
       b.append(SQLConstant.SELECT).append(StringConstant.SPACE).append(StringConstant.ASTERISK)
@@ -971,6 +971,13 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
 
   @Override
   public void preProcessWhere() {
+    b.append(SQLConstant.SEGMENTSEPARATOR);
+    b.append(SQLConstant.WHERE);
+    b.append(SQLConstant.SEGMENTSEPARATOR);
+  }
+  
+  @Override
+  public void preProcessSelectWhere() {
     if (queryLimit > 0) {
       switch (target) {
         case ORACLE:
@@ -982,7 +989,7 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
         default:
           break;
       }
-    }
+    }    
   }
 
   @Override
@@ -991,8 +998,7 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
       switch (target) {
         case ORACLE:
           if (!hasOrderBy) {
-            b.append(StringConstant.RIGHT_PARENTHESIS).append(StringConstant.SPACE)
-                .append(SQLConstant.AND).append(StringConstant.SPACE)
+            b.append(StringConstant.RIGHT_PARENTHESIS).append(SQLConstant.AND)
                 .append(SQLConstant.ROWNUM_ORA).append(StringConstant.SPACE)
                 .append(StringConstant.LESSOREQUAL).append(StringConstant.SPACE).append(queryLimit)
                 .append(StringConstant.SPACE);

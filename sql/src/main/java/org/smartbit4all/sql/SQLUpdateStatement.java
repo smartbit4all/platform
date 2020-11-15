@@ -45,6 +45,8 @@ public final class SQLUpdateStatement implements SQLStatementNode {
   public void render(SQLStatementBuilderIF b) {
     b.update(table);
     values.render(b);
+
+    b.preProcessWhere();
     where.render(b);
   }
 

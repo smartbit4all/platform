@@ -329,6 +329,11 @@ public interface SQLStatementBuilderIF extends SB4Service {
   void preProcessWhere();
 
   /**
+   * Before the a where in a select statement we can add tokens or whatever.
+   */
+  void preProcessSelectWhere();
+
+  /**
    * After the where we can add tokens or whatever.
    */
   void postProcessWhere();
