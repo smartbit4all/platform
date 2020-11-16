@@ -1,12 +1,16 @@
 package org.smartbit4all.api.dynamicfilter.bean;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-import javax.validation.Valid;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.util.ArrayList;
+import java.util.List;
+import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterOperation;
+import org.openapitools.jackson.nullable.JsonNullable;
+import javax.validation.Valid;
+import javax.validation.constraints.*;
 
 /**
  * Descriptor of a possible filter field. This field doesn&#39;t have to correspond to an existing entity&#39;s property, it is simple a way of filtering.
@@ -16,6 +20,9 @@ import io.swagger.annotations.ApiModelProperty;
 public class DynamicFilterDescriptor   {
   @JsonProperty("name")
   private String name;
+
+  @JsonProperty("groupName")
+  private String groupName;
 
   @JsonProperty("operations")
   @Valid
@@ -39,6 +46,26 @@ public class DynamicFilterDescriptor   {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public DynamicFilterDescriptor groupName(String groupName) {
+    this.groupName = groupName;
+    return this;
+  }
+
+  /**
+   * Get groupName
+   * @return groupName
+  */
+  @ApiModelProperty(value = "")
+
+
+  public String getGroupName() {
+    return groupName;
+  }
+
+  public void setGroupName(String groupName) {
+    this.groupName = groupName;
   }
 
   public DynamicFilterDescriptor operations(List<DynamicFilterOperation> operations) {
@@ -81,12 +108,13 @@ public class DynamicFilterDescriptor   {
     }
     DynamicFilterDescriptor dynamicFilterDescriptor = (DynamicFilterDescriptor) o;
     return Objects.equals(this.name, dynamicFilterDescriptor.name) &&
+        Objects.equals(this.groupName, dynamicFilterDescriptor.groupName) &&
         Objects.equals(this.operations, dynamicFilterDescriptor.operations);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, operations);
+    return Objects.hash(name, groupName, operations);
   }
 
   @Override
@@ -95,6 +123,7 @@ public class DynamicFilterDescriptor   {
     sb.append("class DynamicFilterDescriptor {\n");
     
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    groupName: ").append(toIndentedString(groupName)).append("\n");
     sb.append("    operations: ").append(toIndentedString(operations)).append("\n");
     sb.append("}");
     return sb.toString();

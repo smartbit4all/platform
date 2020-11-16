@@ -1,12 +1,17 @@
 package org.smartbit4all.api.dynamicfilter.bean;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-import javax.validation.Valid;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.util.ArrayList;
+import java.util.List;
+import org.smartbit4all.api.dynamicfilter.bean.DynamicFilter;
+import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterGroupType;
+import org.openapitools.jackson.nullable.JsonNullable;
+import javax.validation.Valid;
+import javax.validation.constraints.*;
 
 /**
  * AND / OR group of filters / groups.
@@ -14,6 +19,12 @@ import io.swagger.annotations.ApiModelProperty;
 @ApiModel(description = "AND / OR group of filters / groups.")
 
 public class DynamicFilterGroup   {
+  @JsonProperty("name")
+  private String name;
+
+  @JsonProperty("icon")
+  private String icon;
+
   @JsonProperty("type")
   private DynamicFilterGroupType type;
 
@@ -30,6 +41,46 @@ public class DynamicFilterGroup   {
 
   @JsonProperty("isExpanded")
   private Boolean isExpanded;
+
+  public DynamicFilterGroup name(String name) {
+    this.name = name;
+    return this;
+  }
+
+  /**
+   * Get name
+   * @return name
+  */
+  @ApiModelProperty(value = "")
+
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public DynamicFilterGroup icon(String icon) {
+    this.icon = icon;
+    return this;
+  }
+
+  /**
+   * Get icon
+   * @return icon
+  */
+  @ApiModelProperty(value = "")
+
+
+  public String getIcon() {
+    return icon;
+  }
+
+  public void setIcon(String icon) {
+    this.icon = icon;
+  }
 
   public DynamicFilterGroup type(DynamicFilterGroupType type) {
     this.type = type;
@@ -160,7 +211,9 @@ public class DynamicFilterGroup   {
       return false;
     }
     DynamicFilterGroup dynamicFilterGroup = (DynamicFilterGroup) o;
-    return Objects.equals(this.type, dynamicFilterGroup.type) &&
+    return Objects.equals(this.name, dynamicFilterGroup.name) &&
+        Objects.equals(this.icon, dynamicFilterGroup.icon) &&
+        Objects.equals(this.type, dynamicFilterGroup.type) &&
         Objects.equals(this.filters, dynamicFilterGroup.filters) &&
         Objects.equals(this.groups, dynamicFilterGroup.groups) &&
         Objects.equals(this.isNegated, dynamicFilterGroup.isNegated) &&
@@ -169,7 +222,7 @@ public class DynamicFilterGroup   {
 
   @Override
   public int hashCode() {
-    return Objects.hash(type, filters, groups, isNegated, isExpanded);
+    return Objects.hash(name, icon, type, filters, groups, isNegated, isExpanded);
   }
 
   @Override
@@ -177,6 +230,8 @@ public class DynamicFilterGroup   {
     StringBuilder sb = new StringBuilder();
     sb.append("class DynamicFilterGroup {\n");
     
+    sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    icon: ").append(toIndentedString(icon)).append("\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("    filters: ").append(toIndentedString(filters)).append("\n");
     sb.append("    groups: ").append(toIndentedString(groups)).append("\n");

@@ -5,8 +5,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.smartbit4all.api.dynamicfilter.bean.DynamicFilter;
+import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterConfig;
 import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterDescriptor;
 import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterGroup;
+import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterGroupDescriptor;
 import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterGroupType;
 import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterOperation;
 import org.smartbit4all.api.filter.DynamicFilterApi;
@@ -19,11 +21,12 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
 
   private DynamicFilterGroup rootFilterGroup;
 
-  private Map<String, DynamicFilterDescriptor> descriptorsByName = new HashMap<>();
+  private Map<String, DynamicFilterDescriptor> filterDescriptorsByName = new HashMap<>();
+  private Map<String, DynamicFilterGroupDescriptor> filterGroupDescriptorsByName = new HashMap<>();
   private Map<String, DynamicFilter> filtersById = new HashMap<>();
   private Map<String, DynamicFilterGroup> groupsById = new HashMap<>();
   private Map<String, String> descriptorNameByFilterId = new HashMap<>();
-
+  private Map<String, DynamicFilterGroup> groupsByDescriptorName = new HashMap<>();
 
   public DynamicFilterControllerImpl(DynamicFilterApi api, String uri) {
     this.api = api;
@@ -41,21 +44,34 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
 
   @Override
   public void loadData() {
-    List<DynamicFilterDescriptor> filterConfig = api.getFilterConfig(uri);
-    filterConfig.forEach(dfd -> descriptorsByName.put(dfd.getName(), dfd));
+    DynamicFilterConfig filterConfig = api.getFilterConfig(uri);
+    filterConfig.getDynamicFilterDescriptors()
+        .forEach(filter -> filterDescriptorsByName.put(filter.getName(), filter));
+    filterConfig.getDynamicFilterGroupDescriptors()
+        .forEach(group -> filterGroupDescriptorsByName.put(group.getName(), group));
     ui.renderFilterConfig(filterConfig);
   }
 
   @Override
-  public void addFilter(String groupId, String descriptorName) {
-    DynamicFilterGroup parentGroup = groupsById.get(groupId);
-    DynamicFilterDescriptor descriptor = descriptorsByName.get(descriptorName);
+  public void addFilter(String groupName, String descriptorName) {
+    DynamicFilterGroupDescriptor groupDescriptor = filterGroupDescriptorsByName.get(groupName);
+    DynamicFilterGroup filterGroup = groupsByDescriptorName.get(groupDescriptor.getName());
+    if (filterGroup == null) {
+      String filterGroupId = addFilterGroup(ROOT_FILTER_GROUP, groupDescriptor.getType());
+      filterGroup = groupsById.get(filterGroupId);
+      filterGroup.setName(groupDescriptor.getName());
+      groupsByDescriptorName.put(groupDescriptor.getName(), filterGroup);
+    }
+    DynamicFilterDescriptor descriptor = filterDescriptorsByName.get(descriptorName);
     List<DynamicFilterOperation> filterOptions = descriptor.getOperations();
 
     DynamicFilter dynamicFilter = createFilter(descriptor);
     String filterId = createIdentifier();
-    parentGroup.addFiltersItem(dynamicFilter);
-
+    filterGroup.addFiltersItem(dynamicFilter);
+    // TODO clear up hack&slash
+    DynamicFilterGroup groupToSearch = filterGroup;
+    String groupId = groupsById.entrySet().stream()
+        .filter(entry -> entry.getValue().equals(groupToSearch)).findFirst().get().getKey();
     updateControllerModel(groupId, descriptorName, dynamicFilter, filterId);
 
     ui.renderFilter(groupId, filterId, dynamicFilter, filterOptions);
@@ -79,7 +95,7 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
   }
 
   @Override
-  public void addFilterGroup(String parentGroupId, DynamicFilterGroupType groupType) {
+  public String addFilterGroup(String parentGroupId, DynamicFilterGroupType groupType) {
     DynamicFilterGroup parentGroup = groupsById.get(parentGroupId);
     DynamicFilterGroup childGroup = new DynamicFilterGroup();
     childGroup.setType(groupType);
@@ -87,6 +103,7 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
     String childGroupId = createIdentifier();
     groupsById.put(childGroupId, childGroup);
     ui.renderGroup(parentGroupId, childGroupId, childGroup);
+    return childGroupId;
   }
 
   // TODO removeFilterGroup
@@ -95,7 +112,7 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
   @Override
   public void filterOptionChanged(String filterId, int filterOptionIdx) {
     String descName = descriptorNameByFilterId.get(filterId);
-    DynamicFilterDescriptor descriptor = descriptorsByName.get(descName);
+    DynamicFilterDescriptor descriptor = filterDescriptorsByName.get(descName);
     DynamicFilter dynamicFilter = filtersById.get(filterId);
     List<DynamicFilterOperation> filterOptions = descriptor.getOperations();
     if (filterOptions == null || filterOptions.size() <= filterOptionIdx) {

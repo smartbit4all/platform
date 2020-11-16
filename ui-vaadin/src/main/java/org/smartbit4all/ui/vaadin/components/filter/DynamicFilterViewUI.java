@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.smartbit4all.api.dynamicfilter.bean.DynamicFilter;
+import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterConfig;
 import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterDescriptor;
 import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterGroup;
 import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterOperation;
@@ -52,14 +53,17 @@ public class DynamicFilterViewUI implements DynamicFilterView {
   }
 
   @Override
-  public void renderFilterConfig(List<DynamicFilterDescriptor> filterConfig) {
+  public void renderFilterConfig(DynamicFilterConfig filterConfig) {
     descriptorHolder.add(createDescriptorsLayout(filterConfig));
   }
 
-  private VerticalLayout createDescriptorsLayout(List<DynamicFilterDescriptor> filterConfig) {
+  private VerticalLayout createDescriptorsLayout(DynamicFilterConfig filterConfig) {
     VerticalLayout descriptorsLayout = new VerticalLayout();
     descriptorsLayout.addClassName("descriptors-layout");
-    for (DynamicFilterDescriptor descriptor : filterConfig) {
+    // TODO render dynamic filter group descriptors (accordion / something?)
+    // TODO ability to add whole group to active filterPanel
+    // TODO render dynamic filter descriptors inside groups
+    for (DynamicFilterDescriptor descriptor : filterConfig.getDynamicFilterDescriptors()) {
       descriptorsLayout.add(createDescriptorUI(descriptor));
     }
     return descriptorsLayout;
@@ -70,21 +74,22 @@ public class DynamicFilterViewUI implements DynamicFilterView {
     label.setText(label.getTranslation(descriptor.getName()));
     label.addClassName("descriptor-name");
     Button button = new Button(new Icon(VaadinIcon.PLUS));
-    button.addClickListener(addFilterListener(descriptor.getName()));
+    button.addClickListener(addFilterListener(descriptor.getGroupName(), descriptor.getName()));
     FlexLayout descriptorUI = new FlexLayout(label, button);
     descriptorUI.addClassName("descriptor-layout");
     return descriptorUI;
   }
 
-  private ComponentEventListener<ClickEvent<Button>> addFilterListener(String descriptorName) {
+  private ComponentEventListener<ClickEvent<Button>> addFilterListener(String groupName,
+      String descriptorName) {
     return e -> {
-      controller.addFilter(activeGroupId, descriptorName);
+      controller.addFilter(groupName, descriptorName);
     };
   }
 
   @Override
   public void renderFilter(String groupId, String filterId, DynamicFilter dynamicFilter,
-      List<DynamicFilterOperation> filterOptions) {
+      List<DynamicFilterOperation> filterOperations) {
     DynamicFilterGroupUI groupUI = groupsById.get(groupId);
     if (groupUI == null) {
       throw new IllegalArgumentException("No groupUI found with '" + groupId + "' groupId!");
@@ -121,7 +126,17 @@ public class DynamicFilterViewUI implements DynamicFilterView {
   @Override
   public void renderGroup(String parentGroupId, String childGroupId,
       DynamicFilterGroup childGroup) {
-    // TODO Auto-generated method stub
+
+    DynamicFilterGroupUI parentGroupUI = groupsById.get(parentGroupId);
+    if (parentGroupUI == null) {
+      throw new IllegalArgumentException(
+          "No parentGroupUI found with '" + parentGroupId + "' groupId!");
+    }
+    DynamicFilterGroupUI childGroupUI = new DynamicFilterGroupUI();
+    groupsById.put(childGroupId, childGroupUI);
+    // TODO set groupUI properties according to childGroup
+    parentGroupUI.add(childGroupUI);
+
   }
 
 }
