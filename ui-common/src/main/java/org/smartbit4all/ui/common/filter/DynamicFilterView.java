@@ -18,4 +18,6 @@ public interface DynamicFilterView extends UIView {
 
   void renderGroup(String parentGroupId, String childGroupId, DynamicFilterGroup childGroup);
 
+  void removeFilter(String filterId);
+  
 }

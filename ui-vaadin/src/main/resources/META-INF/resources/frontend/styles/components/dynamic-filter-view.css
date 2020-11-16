@@ -1,9 +1,11 @@
 .descriptors-layout {
-    background-color: var(--lumo-base-color);
+	background-color: var(--lumo-base-color);
+	width: 180px;
 }
 
 .descriptor-layout {
-	
+	width: 100%;
+    justify-content: space-between;
 }
 
 .descriptor-name {
@@ -12,18 +14,39 @@
 }
 
 .dynamic-filtergroup {
-	background-color: blue;
+	/* background-color: blue; */
 	display: flex;
 	flex-wrap: wrap;
     justify-content: flex-start;
 }
 
 .dynamic-filter {
-	background-color: red;
+	border-radius: 5px;
+	background-color: var(--lumo-base-color);
 	margin: 0.25em;
 }
 
 .dynamic-filter-onefield {
-	background-color: yellow;
 	width: 12em;
+}
+
+.close-button {
+	min-width: 0px;
+	border-radius: 30px;
+	height: 30px;
+	padding-bottom: 5px;
+	margin-right: 3px;
+}
+
+.filter-row {
+	margin-left: 5px;
+}
+
+.descriptors-layout vaadin-details::part(content) {
+	margin-left: 20px;
+}
+
+.summary {
+	align-items: center;
+	
 }

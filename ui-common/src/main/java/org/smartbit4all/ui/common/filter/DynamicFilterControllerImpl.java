@@ -140,4 +140,10 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
     return UUID.randomUUID().toString();
   }
 
+  @Override
+  public void removeFilter(String filterId) {
+    filtersById.remove(filterId);
+    ui.removeFilter(filterId);
+  }
+
 }

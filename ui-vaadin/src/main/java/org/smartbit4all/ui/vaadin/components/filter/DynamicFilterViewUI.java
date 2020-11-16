@@ -7,14 +7,18 @@ import org.smartbit4all.api.dynamicfilter.bean.DynamicFilter;
 import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterConfig;
 import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterDescriptor;
 import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterGroup;
+import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterGroupDescriptor;
 import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterOperation;
 import org.smartbit4all.ui.common.filter.DynamicFilterController;
 import org.smartbit4all.ui.common.filter.DynamicFilterView;
+import org.smartbit4all.ui.vaadin.util.UIUtils;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.HasComponents;
+import com.vaadin.flow.component.accordion.Accordion;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.details.Details;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -30,6 +34,7 @@ public class DynamicFilterViewUI implements DynamicFilterView {
   private Map<String, DynamicFilterGroupUI> groupsById = new HashMap<>();
   private Map<String, DynamicFilterUI> filtersById = new HashMap<>();
   private String activeGroupId;
+  private Map<String, Details> detailsByGroupName;
 
   public DynamicFilterViewUI(DynamicFilterController controller, HasComponents descriptorHolder,
       HasComponents groupHolder) {
@@ -63,10 +68,51 @@ public class DynamicFilterViewUI implements DynamicFilterView {
     // TODO render dynamic filter group descriptors (accordion / something?)
     // TODO ability to add whole group to active filterPanel
     // TODO render dynamic filter descriptors inside groups
-    for (DynamicFilterDescriptor descriptor : filterConfig.getDynamicFilterDescriptors()) {
-      descriptorsLayout.add(createDescriptorUI(descriptor));
+    
+    detailsByGroupName = new HashMap<>();
+    for (DynamicFilterGroupDescriptor descriptor : filterConfig.getDynamicFilterGroupDescriptors()) {
+      if (!detailsByGroupName.containsKey(descriptor.getName())) {
+        Details details = new Details();
+        detailsByGroupName.put(descriptor.getName(), details);
+      }
     }
+    
+    for (DynamicFilterDescriptor descriptor : filterConfig.getDynamicFilterDescriptors()) {
+      if (detailsByGroupName.containsKey(descriptor.getGroupName())) {
+        detailsByGroupName.get(descriptor.getGroupName()).addContent(createDescriptorUI(descriptor));
+      }
+    }
+    
+    for (Map.Entry<String, Details> entry : detailsByGroupName.entrySet()) {
+      descriptorsLayout.add(entry.getValue());
+      
+      Label summaryText = new Label(entry.getKey());
+      Button btnChooseGroup = new Button(new Icon(VaadinIcon.PLUS));
+      btnChooseGroup.addClickListener(groupSelectButtonListener());
+      
+      FlexLayout summary = new FlexLayout(summaryText, btnChooseGroup);
+      summary.addClassName("summary");
+      
+      entry.getValue().setSummary(summary);
+      entry.getValue().setOpened(true);
+    }
+    
+   
     return descriptorsLayout;
+  }
+
+  private ComponentEventListener<ClickEvent<Button>> groupSelectButtonListener() {
+    return e -> {
+      UIUtils.showNotification("Megnyomva");
+    };
+  }
+
+
+
+
+  private ComponentEventListener<ClickEvent<Icon>> groupSelectListener() {
+    // TODO Auto-generated method stub
+    return null;
   }
 
   private Component createDescriptorUI(DynamicFilterDescriptor descriptor) {
@@ -120,7 +166,7 @@ public class DynamicFilterViewUI implements DynamicFilterView {
     // TODO honor dynamicFilter.getOperation()
     DynamicFilterOperationOneFieldUI operationUI =
         new DynamicFilterOperationOneFieldUI(dynamicFilter.getDescriptorName());
-    filterUI.add(operationUI);
+    filterUI.addOperation(operationUI);
   }
 
   @Override
@@ -138,5 +184,12 @@ public class DynamicFilterViewUI implements DynamicFilterView {
     parentGroupUI.add(childGroupUI);
 
   }
+
+  @Override
+  public void removeFilter(String filterId) {
+    // TODO Auto-generated method stub
+    
+  }
+  
 
 }

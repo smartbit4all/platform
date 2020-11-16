@@ -19,4 +19,6 @@ public interface DynamicFilterController extends UIController {
   void filterOptionChanged(String filterId, int filterOptionIdx);
 
   DynamicFilterGroup getFilters();
+  
+  void removeFilter(String filterId);
 }

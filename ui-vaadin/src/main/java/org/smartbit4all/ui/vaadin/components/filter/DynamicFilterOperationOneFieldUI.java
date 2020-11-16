@@ -9,6 +9,7 @@ public class DynamicFilterOperationOneFieldUI extends Div {
 
   public DynamicFilterOperationOneFieldUI(String label) {
     addClassName("dynamic-filter-onefield");
+    label = getTranslation(label);
     text = new TextField(label);
     add(text);
   }
