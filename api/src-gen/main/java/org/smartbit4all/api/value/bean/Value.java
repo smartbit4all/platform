@@ -23,6 +23,9 @@ public class Value   {
   @JsonProperty("typeQName")
   private String typeQName;
 
+  @JsonProperty("iconCode")
+  private String iconCode;
+
   public Value code(String code) {
     this.code = code;
     return this;
@@ -85,6 +88,26 @@ public class Value   {
     this.typeQName = typeQName;
   }
 
+  public Value iconCode(String iconCode) {
+    this.iconCode = iconCode;
+    return this;
+  }
+
+  /**
+   * The code of icon that can be associatied with the value. It may be a uri.
+   * @return iconCode
+  */
+  @ApiModelProperty(value = "The code of icon that can be associatied with the value. It may be a uri.")
+
+
+  public String getIconCode() {
+    return iconCode;
+  }
+
+  public void setIconCode(String iconCode) {
+    this.iconCode = iconCode;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -97,12 +120,13 @@ public class Value   {
     Value value = (Value) o;
     return Objects.equals(this.code, value.code) &&
         Objects.equals(this.value, value.value) &&
-        Objects.equals(this.typeQName, value.typeQName);
+        Objects.equals(this.typeQName, value.typeQName) &&
+        Objects.equals(this.iconCode, value.iconCode);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(code, value, typeQName);
+    return Objects.hash(code, value, typeQName, iconCode);
   }
 
   @Override
@@ -113,6 +137,7 @@ public class Value   {
     sb.append("    code: ").append(toIndentedString(code)).append("\n");
     sb.append("    value: ").append(toIndentedString(value)).append("\n");
     sb.append("    typeQName: ").append(toIndentedString(typeQName)).append("\n");
+    sb.append("    iconCode: ").append(toIndentedString(iconCode)).append("\n");
     sb.append("}");
     return sb.toString();
   }

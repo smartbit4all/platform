@@ -8,4 +8,7 @@ public interface ValueApi {
 
   List<Value> getPossibleValues(URI uri) throws Exception;
   
+  //TODO getDefaultValue
+  //TODO getDisabledValues
+  
 }

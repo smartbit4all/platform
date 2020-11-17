@@ -28,3 +28,6 @@ components:
         typeQName:
           type: string
           description: 'The qualified name of the type of the value'
+        iconCode:
+          type: string
+          description: 'The code of icon that can be associatied with the value. It may be a uri.'
