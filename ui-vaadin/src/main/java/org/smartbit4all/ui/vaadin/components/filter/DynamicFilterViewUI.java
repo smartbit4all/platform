@@ -3,7 +3,6 @@ package org.smartbit4all.ui.vaadin.components.filter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import org.smartbit4all.api.dynamicfilter.bean.DynamicFilter;
 import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterConfig;
 import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterDescriptor;
@@ -17,7 +16,6 @@ import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.HasComponents;
-import com.vaadin.flow.component.accordion.Accordion;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.details.Details;
 import com.vaadin.flow.component.html.Label;
@@ -60,44 +58,46 @@ public class DynamicFilterViewUI implements DynamicFilterView {
 
   @Override
   public void renderFilterConfig(DynamicFilterConfig filterConfig) {
-    descriptorHolder.add(createDescriptorsLayout(filterConfig));
+    descriptorHolder.add(createFilterDescriptorsLayout(filterConfig));
   }
 
-  private VerticalLayout createDescriptorsLayout(DynamicFilterConfig filterConfig) {
+  private VerticalLayout createFilterDescriptorsLayout(DynamicFilterConfig filterConfig) {
     VerticalLayout descriptorsLayout = new VerticalLayout();
     descriptorsLayout.addClassName("descriptors-layout");
     // TODO ability to add whole group to active filterPanel
     // TODO render dynamic filter descriptors inside groups
-    
+
     detailsByGroupName = new HashMap<>();
-    for (DynamicFilterGroupDescriptor descriptor : filterConfig.getDynamicFilterGroupDescriptors()) {
-      if (!detailsByGroupName.containsKey(descriptor.getName())) {
-        Details details = new Details();
-        detailsByGroupName.put(descriptor.getName(), details);
+    for (DynamicFilterGroupDescriptor filterDescriptor : filterConfig
+        .getDynamicFilterGroupDescriptors()) {
+      if (!detailsByGroupName.containsKey(filterDescriptor.getName())) {
+        Details details = createDescriptorLayout(filterDescriptor);
+        descriptorsLayout.add(details);
+        detailsByGroupName.put(filterDescriptor.getName(), details);
       }
     }
-    
+
     for (DynamicFilterDescriptor descriptor : filterConfig.getDynamicFilterDescriptors()) {
       if (detailsByGroupName.containsKey(descriptor.getGroupName())) {
-        detailsByGroupName.get(descriptor.getGroupName()).addContent(createDescriptorUI(descriptor));
+        detailsByGroupName.get(descriptor.getGroupName())
+            .addContent(createDescriptorUI(descriptor));
       }
     }
-    
-    for (Map.Entry<String, Details> entry : detailsByGroupName.entrySet()) {
-      descriptorsLayout.add(entry.getValue());
-      
-      Label summaryText = new Label(entry.getKey());
-      Button btnChooseGroup = new Button(new Icon(VaadinIcon.PLUS));
-      btnChooseGroup.addClickListener(groupSelectButtonListener());
-      
-      FlexLayout summary = new FlexLayout(summaryText, btnChooseGroup);
-      
-      entry.getValue().setSummary(summary);
-      entry.getValue().setOpened(true);
-    }
-    
-   
+
     return descriptorsLayout;
+  }
+
+  private Details createDescriptorLayout(DynamicFilterGroupDescriptor filterDescriptor) {
+    Details details = new Details();
+    Label summaryText = new Label(details.getTranslation(filterDescriptor.getName()));
+    Button btnChooseGroup = new Button(new Icon(VaadinIcon.PLUS));
+    btnChooseGroup.addClickListener(groupSelectButtonListener());
+
+    FlexLayout summary = new FlexLayout(summaryText, btnChooseGroup);
+
+    details.setSummary(summary);
+    details.setOpened(true);
+    return details;
   }
 
   private ComponentEventListener<ClickEvent<Button>> groupSelectButtonListener() {
@@ -105,7 +105,6 @@ public class DynamicFilterViewUI implements DynamicFilterView {
       UIUtils.showNotification("Megnyomva");
     };
   }
-
 
 
 
@@ -188,8 +187,8 @@ public class DynamicFilterViewUI implements DynamicFilterView {
   @Override
   public void removeFilter(String filterId) {
     DynamicFilterUI filter = filtersById.get(filterId);
-    filter.getGroup().remove(filter);    
+    filter.getGroup().remove(filter);
   }
-  
+
 
 }
