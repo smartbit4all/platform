@@ -2,7 +2,6 @@ package org.smartbit4all.ui.vaadin.components.navigation.tree;
 
 import java.util.List;
 import org.smartbit4all.api.ApiItemChangeEvent;
-import org.smartbit4all.api.navigation.bean.NavigationEntry;
 import org.smartbit4all.api.navigation.bean.NavigationNode;
 import org.smartbit4all.api.navigation.bean.NavigationReference;
 import org.smartbit4all.ui.common.navigation.NavigationController;
@@ -14,7 +13,7 @@ public class NavigationTreeView implements NavigationView {
   /**
    * The tree component that visualize the navigation nodes.
    */
-  private TreeGrid<NavigationEntry> tree;
+  private TreeGrid<NavigationNode> tree;
 
   /**
    * The controller for accessing the presentation logic.
@@ -22,14 +21,15 @@ public class NavigationTreeView implements NavigationView {
   NavigationController controller;
 
   public NavigationTreeView(NavigationController controller,
-      TreeGrid<NavigationEntry> treeComponent) {
+      TreeGrid<NavigationNode> treeComponent) {
     super();
     this.tree = treeComponent;
     // Adapt the given tree and add the necessary parameters.
 
     // tree.addSelectionListener(selection -> controller.treeNodeSelected(selection));
     // tree.addColumn(i -> concetanateIconAndName(i.getIconResource(), i.getName())).setHeader("");
-    tree.addHierarchyColumn(i -> i.getName());
+    tree.addExpandListener(e -> e.getItems().stream().forEach(n -> controller.expandAll(n)));
+    // tree.addHierarchyColumn(i -> i.getName());
   }
 
   @Override

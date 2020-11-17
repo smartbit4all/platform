@@ -1,24 +1,23 @@
 package org.smartbit4all.api.navigation.bean;
 
-import java.util.Objects;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import org.smartbit4all.api.navigation.bean.NavigationAssociationMeta;
-import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.Objects;
 import javax.validation.Valid;
-import javax.validation.constraints.*;
+import javax.validation.constraints.NotNull;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
- * API: This meta describes and entry that collabortes in a navigation. This is part of the configuration.
+ * API: This meta describes and entry that collabortes in a navigation. This is part of the
+ * configuration.
  */
-@ApiModel(description = "API: This meta describes and entry that collabortes in a navigation. This is part of the configuration.")
+@ApiModel(
+    description = "API: This meta describes and entry that collabortes in a navigation. This is part of the configuration.")
 
-public class NavigationEntryMeta   {
+public class NavigationEntryMeta {
   @JsonProperty("uri")
   private URI uri;
 
@@ -36,9 +35,11 @@ public class NavigationEntryMeta   {
 
   /**
    * The uri of the resource that uniquely identifies the given entry inside the navigation api.
+   * 
    * @return uri
-  */
-  @ApiModelProperty(required = true, value = "The uri of the resource that uniquely identifies the given entry inside the navigation api.")
+   */
+  @ApiModelProperty(required = true,
+      value = "The uri of the resource that uniquely identifies the given entry inside the navigation api.")
   @NotNull
 
   @Valid
@@ -58,8 +59,9 @@ public class NavigationEntryMeta   {
 
   /**
    * The well-formed name of the association.
+   * 
    * @return name
-  */
+   */
   @ApiModelProperty(required = true, value = "The well-formed name of the association.")
   @NotNull
 
@@ -87,8 +89,9 @@ public class NavigationEntryMeta   {
 
   /**
    * Get associations
+   * 
    * @return associations
-  */
+   */
   @ApiModelProperty(value = "")
 
   @Valid
@@ -118,14 +121,14 @@ public class NavigationEntryMeta   {
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, name, associations);
+    return Objects.hash(uri, name);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class NavigationEntryMeta {\n");
-    
+
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    associations: ").append(toIndentedString(associations)).append("\n");
@@ -134,8 +137,7 @@ public class NavigationEntryMeta   {
   }
 
   /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
+   * Convert the given object to string with each line indented by 4 spaces (except the first line).
    */
   private String toIndentedString(java.lang.Object o) {
     if (o == null) {
