@@ -51,7 +51,8 @@ public class DynamicFilterViewUI implements DynamicFilterView {
   }
 
   private void layoutComponents() {
-    DynamicFilterGroupUI rootGroupUI = new DynamicFilterGroupUI();
+    DynamicFilterGroupUI rootGroupUI = new DynamicFilterGroupUI(true, null);
+    // rootGroupUI.removeClassName("dynamic-filtergroup");
     groupsById.put(DynamicFilterController.ROOT_FILTER_GROUP, rootGroupUI);
     groupHolder.add(rootGroupUI);
   }
@@ -144,7 +145,7 @@ public class DynamicFilterViewUI implements DynamicFilterView {
           "Existing filterUI found when creating new filterUI with '" + filterId + "' filterId!");
     }
     filterUI = new DynamicFilterUI(groupUI);
-    filterUI.getButton().addClickListener(e -> controller.removeFilter(filterId));
+    filterUI.getButton().addClickListener(e -> controller.removeFilter(groupId, filterId));
     filtersById.put(filterId, filterUI);
     // TODO special handling when putting into groupUI?
     groupUI.add(filterUI);
@@ -177,7 +178,7 @@ public class DynamicFilterViewUI implements DynamicFilterView {
       throw new IllegalArgumentException(
           "No parentGroupUI found with '" + parentGroupId + "' groupId!");
     }
-    DynamicFilterGroupUI childGroupUI = new DynamicFilterGroupUI();
+    DynamicFilterGroupUI childGroupUI = new DynamicFilterGroupUI(false, parentGroupUI);
     groupsById.put(childGroupId, childGroupUI);
     // TODO set groupUI properties according to childGroup
     parentGroupUI.add(childGroupUI);
@@ -190,5 +191,15 @@ public class DynamicFilterViewUI implements DynamicFilterView {
     filter.getGroup().remove(filter);
   }
 
+  @Override
+  public void removeGroup(String groupId) {
+    DynamicFilterGroupUI groupUI = groupsById.get(groupId);
+    groupsById.remove(groupId);
+    if (groupUI.getParentGroupId() != null) {
+      groupUI.getParentGroupId().remove(groupUI);
+    } else {
+      throw new RuntimeException("Trying to remove root group UI!");
+    }
+  }
 
 }

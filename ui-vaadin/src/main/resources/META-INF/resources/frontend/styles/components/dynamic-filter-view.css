@@ -12,11 +12,23 @@
     margin-right: 10px;
 }
 
+.dynamic-filtergroup-root {
+	display: flex;
+	width: 100%;
+	flex-direction: column;
+}
+
 .dynamic-filtergroup {
-	/* background-color: blue; */
 	display: flex;
 	flex-wrap: wrap;
     justify-content: flex-start;
+	width: 100%;
+	background-color: var(--lumo-base-color);
+    border-radius: var(--lumo-border-radius-s);
+    box-shadow: var(--lumo-box-shadow-xs);
+    padding-top: var(--lumo-space-s);
+    padding-bottom: var(--lumo-space-s);
+    margin-bottom: var(--lumo-space-s);
 }
 
 .dynamic-filter {

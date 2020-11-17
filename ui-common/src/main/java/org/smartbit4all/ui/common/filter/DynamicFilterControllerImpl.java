@@ -3,6 +3,7 @@ package org.smartbit4all.ui.common.filter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
 import org.smartbit4all.api.dynamicfilter.bean.DynamicFilter;
 import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterConfig;
@@ -141,9 +142,32 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
   }
 
   @Override
-  public void removeFilter(String filterId) {
+  public void removeFilter(String groupId, String filterId) {
+    DynamicFilterGroup group = groupsById.get(groupId);
+    DynamicFilter filter = filtersById.get(filterId);
     filtersById.remove(filterId);
     ui.removeFilter(filterId);
+    group.getFilters().remove(filter);
+    if (group.getFilters().isEmpty()) {
+      removeGroup(groupId);
+    }
+  }
+
+  @Override
+  public void removeGroup(String groupId) {
+    ui.removeGroup(groupId);
+    DynamicFilterGroup group = groupsById.get(groupId);
+    // FIXME DynamicFilterGroup should know it's meta id (descriptorName)
+    String groupMetaName = null;
+    for (Entry<String, DynamicFilterGroup> entry : groupsByDescriptorName.entrySet()) {
+      if (entry.getValue() == group) {
+        groupMetaName = entry.getKey();
+        break;
+      }
+    }
+    if (groupMetaName != null) {
+      groupsByDescriptorName.remove(groupMetaName);
+    }
   }
 
 }
