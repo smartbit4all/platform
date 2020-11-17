@@ -96,7 +96,7 @@
 
 .operation-name {	
 	margin-left: 8px;
-    margin-top: 12px;
-    color: var(--lumo-contrast-80pct);
+    margin-top: 16px;
+    color: var(--lumo-contrast-50pct);
     font: menu;
 }

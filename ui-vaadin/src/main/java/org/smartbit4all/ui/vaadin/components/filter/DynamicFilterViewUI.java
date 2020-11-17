@@ -74,7 +74,6 @@ public class DynamicFilterViewUI implements DynamicFilterView {
         .getDynamicFilterGroupDescriptors()) {
       if (!detailsByGroupName.containsKey(filterDescriptor.getName())) {
         Details details = createDescriptorLayout(filterDescriptor);
-        details.addThemeVariants(DetailsVariant.FILLED);
         descriptorsLayout.add(details);
         detailsByGroupName.put(filterDescriptor.getName(), details);
       }
@@ -92,9 +91,10 @@ public class DynamicFilterViewUI implements DynamicFilterView {
 
   private Details createDescriptorLayout(DynamicFilterGroupDescriptor filterDescriptor) {
     Details details = new Details();
+    details.addThemeVariants(DetailsVariant.FILLED);
     Label summaryText = new Label(details.getTranslation(filterDescriptor.getName()));
-//    Button btnChooseGroup = new Button(new Icon(VaadinIcon.PLUS));
-//    btnChooseGroup.addClickListener(groupSelectButtonListener());
+    // Button btnChooseGroup = new Button(new Icon(VaadinIcon.PLUS));
+    // btnChooseGroup.addClickListener(groupSelectButtonListener());
 
     FlexLayout summary = new FlexLayout(summaryText);
 
