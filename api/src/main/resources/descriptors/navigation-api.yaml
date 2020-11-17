@@ -15,16 +15,130 @@ paths:
           description: nope
 components:
   schemas:
+    NavigationConfig:
+      type: object
+      description: 'API: Describes all the entries and associations in the given navigation.'
+      properties:
+        entries:
+          description: 'The available entries in the given navigation config.'
+          type: array
+          items:
+            $ref: '#/components/schemas/NavigationEntryMeta'
+        associations:
+          description: 'The navigable associations in the given navigation. In case of a navigation tree these are the openable sub trees.'
+          type: array
+          items:
+            $ref: '#/components/schemas/NavigationAssociationMeta'
+    NavigationAssociationMeta:
+      type: object
+      description: 'API: The association meta describes a possible navigation between entry metas. It is part of the configuration.'
+      required: [uri, name, startEntry, endEntry]
+      properties:
+        uri:
+          type: string
+          format: uri
+          description: 'The uri of the resource that uniquely identifies the given navigation inside the navigation api.'
+        name:
+          type: string
+          description: 'The well-formed name of the association.'
+        startEntry:
+          $ref: '#/components/schemas/NavigationEntryMeta'
+        endEntry:
+          $ref: '#/components/schemas/NavigationEntryMeta'
+        associationEntry:
+          $ref: '#/components/schemas/NavigationEntryMeta'
+    NavigationEntryMeta:
+      type: object
+      description: 'API: This meta describes and entry that collabortes in a navigation. This is part of the configuration.'
+      required: [uri, name]
+      properties:
+        uri:
+          type: string
+          format: uri
+          description: 'The uri of the resource that uniquely identifies the given entry inside the navigation api.'
+        name:
+          type: string
+          description: 'The well-formed name of the association.'
+        associations:
+          type: array
+          items:
+            $ref: '#/components/schemas/NavigationAssociationMeta'
+    NavigationNode:
+      type: object
+      description: 'UI: The stateful object on the client side. Contains the reference to the NavigationEntry and also the references to the parent and to the children'
+      required: [id, entry]
+      properties:
+        id:
+          type: string
+          description: 'The unique identifier of the given node - UUID'
+        entry:
+          $ref: '#/components/schemas/NavigationEntry'
+        associations:
+          description: 'The possible navigation directions.'
+          type: array
+          items:
+            $ref: '#/components/schemas/NavigationAssociation'
+    NavigationAssociation:
+      type: object
+      description: 'UI: The navigable associations belong to the given node.'
+      required: [id, node]
+      properties:
+        id:
+          type: string
+          description: 'The unique identifier of the given association - UUID'
+        node:
+          $ref: '#/components/schemas/NavigationNode'
+        meta:
+          $ref: '#/components/schemas/NavigationAssociationMeta'
+        lastNavigation:
+          type: integer
+          description: 'The last navigation time (in millis) when the given association was retrieved. If null then it has never been navigated.'
+        hidden:
+          type: boolean
+          description: 'The association can be hidden. If a node has only one association then it can be an option.'
+        references:
+          description: 'The navigation association instances.'
+          type: array
+          items:
+            $ref: '#/components/schemas/NavigationReference'
+    NavigationReference:
+      type: object
+      description: 'UI: The instance of the association. It is a directed from source to target. If we have data entry on the association itself then we can set this entry to the associationEntry.'
+      required: [startNode, endNode]
+      properties:
+        id:
+          type: string
+          description: 'The unique identifier of the given association - UUID'
+        startNode:
+          $ref: '#/components/schemas/NavigationNode'
+        endNode:
+          $ref: '#/components/schemas/NavigationNode'
+        associationNode:
+          $ref: '#/components/schemas/NavigationNode'
+    NavigationReferenceEntry:
+      type: object
+      description: 'API: The instance of the association. It is a directed from source to target. If we have data entry on the association itself then we can set this entry to the associationEntry.'
+      required: [id, startNode, endNode]
+      properties:
+        id:
+          type: string
+          description: 'The identifier of the reference that is constructed as startEntry.uri + [ "-" assocEntry.uri + ] "-" + endEntry.uri'
+        startEntry:
+          $ref: '#/components/schemas/NavigationEntry'
+        endEntry:
+          $ref: '#/components/schemas/NavigationEntry'
+        associationEntry:
+          $ref: '#/components/schemas/NavigationEntry'
     NavigationEntry:
       type: object
       required: [uri, name]
       properties:
-        id:
+        uri:
           type: string
-          description: 'The unique identifier of the given entry - UUID'
-        correlationId:
-          type: string
-          description: 'The navigation entry refers a given resource. Like entity, docuemnt, folder or anything else. This resourse for the given API is identified by this id.'
+          format: uri
+          description: 'The unique identifier of the given entry - it is the data itself in the navigation'
+        meta:
+          $ref: '#/components/schemas/NavigationEntryMeta'
         name:
           type: string
           description: 'The name of the entry'
@@ -41,13 +155,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/NavigationView'
-        children:
-          description: 'The children of the current entry.'
-          type: array
-          items:
-            $ref: '#/components/schemas/NavigationEntry'
-        parent:
-          $ref: '#/components/schemas/NavigationEntry'
     NavigationView:
       type: object
       required: [name]

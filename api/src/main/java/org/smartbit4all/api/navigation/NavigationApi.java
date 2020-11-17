@@ -1,13 +1,17 @@
 package org.smartbit4all.api.navigation;
 
 import java.util.List;
-import org.smartbit4all.api.ApiItemChangeEvent;
+import java.util.Map;
+import org.smartbit4all.api.navigation.bean.NavigationAssociationMeta;
+import org.smartbit4all.api.navigation.bean.NavigationConfig;
 import org.smartbit4all.api.navigation.bean.NavigationEntry;
+import org.smartbit4all.api.navigation.bean.NavigationReferenceEntry;
 
 /**
- * The platform level collaboration API for navigating the data nodes. In an application there can
- * be more navigation identified by a unique name. The APIs have a primary one that is responsible
- * for delegating the request to the appropriate instance.
+ * The platform level collaboration API for navigating the data nodes. The api is built on the
+ * {@link NavigationConfig} that describes the possible navigations in an situation. The navigation
+ * can be generic and can support wide range of possibilities but the configuration can tailor it to
+ * an exact requirement.
  * 
  * 
  * The basic concept of the API is the {@link NavigationEntry} that is identified by an URI:
@@ -31,31 +35,16 @@ public interface NavigationApi {
   String name();
 
   /**
-   * If we have a navigation then we can start a navigation session by calling the {@link #start()}
-   * to retrieve the entries directly attached into the root. The {@link NavigationEntry} we get
-   * back will contains every information to navigate further.
+   * The navigate will queries all the data sources to populate the associations starts from the
+   * given entry.
    * 
-   * @return The list of the first level entries.
+   * @param entry The navigation entry that is the starting point of the navigation.
+   * @param associations The list of associations to identify the direction we want to navigate. If
+   *        we skip this parameter (null) then we will have all the associations defined in the
+   *        {@link NavigationEntry} meta.
+   * @return The map of the references by the association meta we required.
    */
-  List<NavigationEntry> start();
-
-  /**
-   * The expand will retrieve the available entries starting from the given entry. The expand will
-   * retrieve the related entries from the underlying api.
-   * 
-   * @param entry The entry to expand. The entry will be filled with new entries as children.
-   * @return The api will return the newly created entries for further processing.
-   */
-  List<ApiItemChangeEvent<NavigationEntry>> expand(NavigationEntry entry);
-
-  /**
-   * This function will retrieve again the navigation entries and it's children. The object
-   * structure will be refreshed but also we get back the list of changes in an
-   * {@link ApiItemChangeEvent} list with the changed {@link NavigationEntry}s.
-   * 
-   * @param entry The entry to refresh. The refresh
-   * @return
-   */
-  List<ApiItemChangeEvent<NavigationEntry>> refresh(NavigationEntry entry);
+  Map<NavigationAssociationMeta, List<NavigationReferenceEntry>> navigate(NavigationEntry entry,
+      List<NavigationAssociationMeta> associations);
 
 }

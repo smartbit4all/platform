@@ -1,23 +1,29 @@
 package org.smartbit4all.api.navigation.bean;
 
+import java.util.Objects;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import org.smartbit4all.api.navigation.bean.NavigationEntryMeta;
+import org.smartbit4all.api.navigation.bean.NavigationView;
+import org.openapitools.jackson.nullable.JsonNullable;
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
+import javax.validation.constraints.*;
 
 /**
  * NavigationEntry
  */
 
 public class NavigationEntry   {
-  @JsonProperty("id")
-  private String id;
+  @JsonProperty("uri")
+  private URI uri;
 
-  @JsonProperty("correlationId")
-  private String correlationId;
+  @JsonProperty("meta")
+  private NavigationEntryMeta meta;
 
   @JsonProperty("name")
   private String name;
@@ -33,51 +39,47 @@ public class NavigationEntry   {
   @Valid
   private List<NavigationView> views = null;
 
-  @JsonProperty("children")
+  public NavigationEntry uri(URI uri) {
+    this.uri = uri;
+    return this;
+  }
+
+  /**
+   * The unique identifier of the given entry - it is the data itself in the navigation
+   * @return uri
+  */
+  @ApiModelProperty(required = true, value = "The unique identifier of the given entry - it is the data itself in the navigation")
+  @NotNull
+
   @Valid
-  private List<NavigationEntry> children = null;
 
-  @JsonProperty("parent")
-  private NavigationEntry parent;
+  public URI getUri() {
+    return uri;
+  }
 
-  public NavigationEntry id(String id) {
-    this.id = id;
+  public void setUri(URI uri) {
+    this.uri = uri;
+  }
+
+  public NavigationEntry meta(NavigationEntryMeta meta) {
+    this.meta = meta;
     return this;
   }
 
   /**
-   * The unique identifier of the given entry - UUID
-   * @return id
+   * Get meta
+   * @return meta
   */
-  @ApiModelProperty(value = "The unique identifier of the given entry - UUID")
+  @ApiModelProperty(value = "")
 
+  @Valid
 
-  public String getId() {
-    return id;
+  public NavigationEntryMeta getMeta() {
+    return meta;
   }
 
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  public NavigationEntry correlationId(String correlationId) {
-    this.correlationId = correlationId;
-    return this;
-  }
-
-  /**
-   * The navigation entry refers a given resource. Like entity, docuemnt, folder or anything else. This resourse for the given API is identified by this id.
-   * @return correlationId
-  */
-  @ApiModelProperty(value = "The navigation entry refers a given resource. Like entity, docuemnt, folder or anything else. This resourse for the given API is identified by this id.")
-
-
-  public String getCorrelationId() {
-    return correlationId;
-  }
-
-  public void setCorrelationId(String correlationId) {
-    this.correlationId = correlationId;
+  public void setMeta(NavigationEntryMeta meta) {
+    this.meta = meta;
   }
 
   public NavigationEntry name(String name) {
@@ -178,56 +180,6 @@ public class NavigationEntry   {
     this.views = views;
   }
 
-  public NavigationEntry children(List<NavigationEntry> children) {
-    this.children = children;
-    return this;
-  }
-
-  public NavigationEntry addChildrenItem(NavigationEntry childrenItem) {
-    if (this.children == null) {
-      this.children = new ArrayList<>();
-    }
-    this.children.add(childrenItem);
-    return this;
-  }
-
-  /**
-   * The children of the current entry.
-   * @return children
-  */
-  @ApiModelProperty(value = "The children of the current entry.")
-
-  @Valid
-
-  public List<NavigationEntry> getChildren() {
-    return children;
-  }
-
-  public void setChildren(List<NavigationEntry> children) {
-    this.children = children;
-  }
-
-  public NavigationEntry parent(NavigationEntry parent) {
-    this.parent = parent;
-    return this;
-  }
-
-  /**
-   * Get parent
-   * @return parent
-  */
-  @ApiModelProperty(value = "")
-
-  @Valid
-
-  public NavigationEntry getParent() {
-    return parent;
-  }
-
-  public void setParent(NavigationEntry parent) {
-    this.parent = parent;
-  }
-
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -238,19 +190,17 @@ public class NavigationEntry   {
       return false;
     }
     NavigationEntry navigationEntry = (NavigationEntry) o;
-    return Objects.equals(this.id, navigationEntry.id) &&
-        Objects.equals(this.correlationId, navigationEntry.correlationId) &&
+    return Objects.equals(this.uri, navigationEntry.uri) &&
+        Objects.equals(this.meta, navigationEntry.meta) &&
         Objects.equals(this.name, navigationEntry.name) &&
         Objects.equals(this.icon, navigationEntry.icon) &&
         Objects.equals(this.styles, navigationEntry.styles) &&
-        Objects.equals(this.views, navigationEntry.views) &&
-        Objects.equals(this.children, navigationEntry.children) &&
-        Objects.equals(this.parent, navigationEntry.parent);
+        Objects.equals(this.views, navigationEntry.views);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, correlationId, name, icon, styles, views, children, parent);
+    return Objects.hash(uri, meta, name, icon, styles, views);
   }
 
   @Override
@@ -258,14 +208,12 @@ public class NavigationEntry   {
     StringBuilder sb = new StringBuilder();
     sb.append("class NavigationEntry {\n");
     
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    correlationId: ").append(toIndentedString(correlationId)).append("\n");
+    sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
+    sb.append("    meta: ").append(toIndentedString(meta)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    icon: ").append(toIndentedString(icon)).append("\n");
     sb.append("    styles: ").append(toIndentedString(styles)).append("\n");
     sb.append("    views: ").append(toIndentedString(views)).append("\n");
-    sb.append("    children: ").append(toIndentedString(children)).append("\n");
-    sb.append("    parent: ").append(toIndentedString(parent)).append("\n");
     sb.append("}");
     return sb.toString();
   }
