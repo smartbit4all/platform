@@ -1,6 +1,5 @@
 .descriptors-layout {
 	background-color: var(--lumo-base-color);
-	width: 180px;
 }
 
 .descriptor-layout {
@@ -46,7 +45,10 @@
 	margin-left: 20px;
 }
 
-.summary {
-	align-items: center;
-	
+.descriptors-layout vaadin-details {
+	width: 100%;
+}
+
+.description-selector {
+	width: 240px;
 }

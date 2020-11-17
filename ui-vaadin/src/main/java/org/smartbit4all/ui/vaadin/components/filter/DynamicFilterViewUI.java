@@ -3,6 +3,7 @@ package org.smartbit4all.ui.vaadin.components.filter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.smartbit4all.api.dynamicfilter.bean.DynamicFilter;
 import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterConfig;
 import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterDescriptor;
@@ -65,7 +66,6 @@ public class DynamicFilterViewUI implements DynamicFilterView {
   private VerticalLayout createDescriptorsLayout(DynamicFilterConfig filterConfig) {
     VerticalLayout descriptorsLayout = new VerticalLayout();
     descriptorsLayout.addClassName("descriptors-layout");
-    // TODO render dynamic filter group descriptors (accordion / something?)
     // TODO ability to add whole group to active filterPanel
     // TODO render dynamic filter descriptors inside groups
     
@@ -91,7 +91,6 @@ public class DynamicFilterViewUI implements DynamicFilterView {
       btnChooseGroup.addClickListener(groupSelectButtonListener());
       
       FlexLayout summary = new FlexLayout(summaryText, btnChooseGroup);
-      summary.addClassName("summary");
       
       entry.getValue().setSummary(summary);
       entry.getValue().setOpened(true);
@@ -145,7 +144,8 @@ public class DynamicFilterViewUI implements DynamicFilterView {
       throw new IllegalArgumentException(
           "Existing filterUI found when creating new filterUI with '" + filterId + "' filterId!");
     }
-    filterUI = new DynamicFilterUI();
+    filterUI = new DynamicFilterUI(groupUI);
+    filterUI.getButton().addClickListener(e -> controller.removeFilter(filterId));
     filtersById.put(filterId, filterUI);
     // TODO special handling when putting into groupUI?
     groupUI.add(filterUI);
@@ -187,8 +187,8 @@ public class DynamicFilterViewUI implements DynamicFilterView {
 
   @Override
   public void removeFilter(String filterId) {
-    // TODO Auto-generated method stub
-    
+    DynamicFilterUI filter = filtersById.get(filterId);
+    filter.getGroup().remove(filter);    
   }
   
 
