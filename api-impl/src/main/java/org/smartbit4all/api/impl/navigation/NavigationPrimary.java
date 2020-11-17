@@ -57,17 +57,15 @@ public class NavigationPrimary extends NavigationImpl implements InitializingBea
           assocList = new ArrayList<>();
         }
         assocList.add(associationMeta);
+        assocByApi.put(api, assocList);
       }
     }
-    Map<NavigationAssociationMeta, List<NavigationReferenceEntry>> result = null;
+    Map<NavigationAssociationMeta, List<NavigationReferenceEntry>> result = new HashMap<>();
     for (Entry<NavigationApi, List<NavigationAssociationMeta>> requestEntry : assocByApi
         .entrySet()) {
       // Call the given api with the list as parameter and merge the result.
       Map<NavigationAssociationMeta, List<NavigationReferenceEntry>> navigate =
           requestEntry.getKey().navigate(entry, requestEntry.getValue());
-      if (result == null && navigate != null && !navigate.isEmpty()) {
-        result = new HashMap<>();
-      }
       result.putAll(navigate);
     }
     return result == null ? Collections.emptyMap() : result;
@@ -75,6 +73,7 @@ public class NavigationPrimary extends NavigationImpl implements InitializingBea
 
   @Override
   public void afterPropertiesSet() throws Exception {
+    apiByName = new HashMap<>();
     if (apis != null) {
       for (NavigationApi api : apis) {
         apiByName.put(api.name(), api);

@@ -55,11 +55,11 @@ public class ApiItemChangeEvent<T> {
   /**
    * @return The api object itself.
    */
-  T item() {
+  public T item() {
     return item;
   }
 
-  ApiItemOperation operation() {
+  public ApiItemOperation operation() {
     return operation;
   }
 

@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
 import org.smartbit4all.api.ApiItemChangeEvent;
 import org.smartbit4all.api.ApiItemOperation;
 import org.smartbit4all.api.navigation.bean.NavigationAssociation;
@@ -36,9 +35,9 @@ public class Navigation {
   protected NavigationConfig config;
 
   /**
-   * All the node we already have in this navigation. Identified by their UUID.
+   * All the node we already have in this navigation. Identified by their UUID as string.
    */
-  protected Map<UUID, NavigationNode> nodes = new HashMap<>();
+  protected Map<String, NavigationNode> nodes = new HashMap<>();
 
   /**
    * All the node we already have in this navigation. Identified by the URI of the entry.
@@ -48,7 +47,7 @@ public class Navigation {
   /**
    * All the references we already have in this navigation. Identified by their UUID.
    */
-  protected Map<UUID, NavigationReference> references = new HashMap<>();
+  protected Map<String, NavigationReference> references = new HashMap<>();
 
   /**
    * The API for the navigation.
@@ -75,7 +74,7 @@ public class Navigation {
    * @return The list of newly created api items.
    */
   public List<ApiItemChangeEvent<NavigationReference>> expandAll(NavigationNode node) {
-    Map<@Valid NavigationAssociationMeta, NavigationAssociation> map =
+    Map<NavigationAssociationMeta, NavigationAssociation> map =
         node.getAssociations().stream().filter(a -> a.getLastNavigation() == null)
             .collect(Collectors.toMap(a -> a.getMeta(), a -> a));
     Map<NavigationAssociationMeta, List<NavigationReferenceEntry>> navigation =
@@ -92,6 +91,10 @@ public class Navigation {
     return result;
   }
 
+  public void setRoot(NavigationNode root) {
+    registerNode(root);
+  }
+
   /**
    * Merge the reference list of the given association with the reference list from the parameter.
    * 
@@ -103,13 +106,20 @@ public class Navigation {
       NavigationAssociation association, List<NavigationReferenceEntry> references) {
     // TODO implement merge!
     // Naive impl: By default we clear the current references.
-    List<ApiItemChangeEvent<NavigationReference>> result = association.getReferences().stream()
-        .map(r -> new ApiItemChangeEvent<NavigationReference>(ApiItemOperation.DELETED, r))
-        .collect(Collectors.toList());
+    List<ApiItemChangeEvent<NavigationReference>> result = null;
+    if (association.getReferences() != null && !association.getReferences().isEmpty()) {
+      association.getReferences().forEach(r -> this.references.remove(r.getId()));
+      result = association.getReferences().stream()
+          .map(r -> new ApiItemChangeEvent<NavigationReference>(ApiItemOperation.DELETED, r))
+          .collect(Collectors.toList());
+    } else {
+      result = new ArrayList<>();
+    }
     // We add all the references as new.
     List<NavigationReference> newReferences =
         references.stream().map(r -> registerReferenceEntry(association, r))
             .collect(Collectors.toList());
+    newReferences.stream().forEach(r -> this.references.put(r.getId(), r));
     result.addAll(newReferences.stream()
         .map(r -> new ApiItemChangeEvent<NavigationReference>(ApiItemOperation.NEW, r))
         .collect(Collectors.toList()));
@@ -140,7 +150,13 @@ public class Navigation {
     if (node == null) {
       node = of(entry);
     }
+    registerNode(node);
     return node;
+  }
+
+  private final void registerNode(NavigationNode node) {
+    nodes.put(node.getId(), node);
+    nodesByUri.put(node.getEntry().getUri(), node);
   }
 
   public static NavigationNode of(NavigationEntry entry) {
