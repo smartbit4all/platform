@@ -1,5 +1,6 @@
 .descriptors-layout {
 	background-color: var(--lumo-base-color);
+	height: 100%;
 }
 
 .descriptor-layout {
@@ -35,18 +36,27 @@
 	border-radius: 5px;
 	background-color: var(--lumo-base-color);
 	margin: 0.25em;
+	box-shadow: 1px 1px 7px grey;
+	margin-left: 0.5em;
+	margin-right: 5px;
+}
+
+.dynamic-filter vaadin-text-field {
+	width: 100%;
 }
 
 .dynamic-filter-onefield {
 	width: 12em;
+	margin-right: 4px;
 }
 
 .close-button {
 	min-width: 0px;
 	border-radius: 30px;
 	height: 30px;
-	padding-bottom: 5px;
 	margin-right: 3px;
+	background: 0;
+	margin-bottom: -8px;
 }
 
 .filter-row {
@@ -54,13 +64,39 @@
 }
 
 .descriptors-layout vaadin-details::part(content) {
-	margin-left: 20px;
+	margin-left: 35px;
 }
 
 .descriptors-layout vaadin-details {
 	width: 100%;
 }
 
+.descriptors-layout vaadin-details::part(summary-content) {
+	width: 100%;
+}
+
 .description-selector {
-	width: 240px;
+	width: 300px;
+}
+
+.plus-button {
+	background: 0;
+}
+
+.filter-header {
+	width: 100%;
+	justify-content: space-between;
+    align-items: center;
+}
+
+.filter-name {
+	margin-left: 8px;
+    margin-top: 12px;
+}
+
+.operation-name {	
+	margin-left: 8px;
+    margin-top: 12px;
+    color: var(--lumo-contrast-80pct);
+    font: menu;
 }

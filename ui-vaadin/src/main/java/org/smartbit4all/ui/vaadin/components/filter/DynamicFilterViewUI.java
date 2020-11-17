@@ -18,6 +18,7 @@ import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.details.Details;
+import com.vaadin.flow.component.details.DetailsVariant;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -73,6 +74,7 @@ public class DynamicFilterViewUI implements DynamicFilterView {
         .getDynamicFilterGroupDescriptors()) {
       if (!detailsByGroupName.containsKey(filterDescriptor.getName())) {
         Details details = createDescriptorLayout(filterDescriptor);
+        details.addThemeVariants(DetailsVariant.FILLED);
         descriptorsLayout.add(details);
         detailsByGroupName.put(filterDescriptor.getName(), details);
       }
@@ -91,10 +93,10 @@ public class DynamicFilterViewUI implements DynamicFilterView {
   private Details createDescriptorLayout(DynamicFilterGroupDescriptor filterDescriptor) {
     Details details = new Details();
     Label summaryText = new Label(details.getTranslation(filterDescriptor.getName()));
-    Button btnChooseGroup = new Button(new Icon(VaadinIcon.PLUS));
-    btnChooseGroup.addClickListener(groupSelectButtonListener());
+//    Button btnChooseGroup = new Button(new Icon(VaadinIcon.PLUS));
+//    btnChooseGroup.addClickListener(groupSelectButtonListener());
 
-    FlexLayout summary = new FlexLayout(summaryText, btnChooseGroup);
+    FlexLayout summary = new FlexLayout(summaryText);
 
     details.setSummary(summary);
     details.setOpened(true);
@@ -119,6 +121,7 @@ public class DynamicFilterViewUI implements DynamicFilterView {
     label.setText(label.getTranslation(descriptor.getName()));
     label.addClassName("descriptor-name");
     Button button = new Button(new Icon(VaadinIcon.PLUS));
+    button.addClassName("plus-button");
     button.addClickListener(addFilterListener(descriptor.getGroupName(), descriptor.getName()));
     FlexLayout descriptorUI = new FlexLayout(label, button);
     descriptorUI.addClassName("descriptor-layout");
@@ -146,6 +149,7 @@ public class DynamicFilterViewUI implements DynamicFilterView {
     }
     filterUI = new DynamicFilterUI(groupUI);
     filterUI.getButton().addClickListener(e -> controller.removeFilter(groupId, filterId));
+    filterUI.setLabel(filterOperations.get(0).getDisplayValue());
     filtersById.put(filterId, filterUI);
     // TODO special handling when putting into groupUI?
     groupUI.add(filterUI);

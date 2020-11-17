@@ -6,6 +6,11 @@
   z-index: 1;
 }
 
+/* Theme button */
+.app-bar__theme-button {
+	background: 0;
+}
+
 /* Container */
 .app-bar__container {
   padding-left: var(--lumo-space-r-l);
