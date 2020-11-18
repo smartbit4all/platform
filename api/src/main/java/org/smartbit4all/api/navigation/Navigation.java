@@ -67,6 +67,51 @@ public class Navigation {
     this.api = api;
   }
 
+  public int numberOfChildren(String nodeId) {
+    NavigationNode node = nodes.get(nodeId);
+    if (node == null || node.getAssociations() == null || node.getAssociations().isEmpty()) {
+      return 0;
+    }
+    int result = 0;
+    for (NavigationAssociation assoc : node.getAssociations()) {
+      if (assoc.getReferences() != null) {
+        for (NavigationReference reference : assoc.getReferences()) {
+          result++;
+        }
+      }
+    }
+    return result;
+  }
+
+  public List<NavigationNode> getCildrens(String parentId) {
+    NavigationNode parent = nodes.get(parentId);
+    if (parent == null || parent.getAssociations() == null || parent.getAssociations().isEmpty()) {
+      return new ArrayList<>();
+    }
+    List<NavigationNode> childrens = new ArrayList<>();
+    for (NavigationAssociation assoc : parent.getAssociations()) {
+      if (assoc.getReferences() != null) {
+        assoc.getReferences().forEach(r -> childrens.add(r.getEndNode()));
+      }
+    }
+
+    return childrens;
+  }
+
+  public boolean hasChildren(String nodeId) {
+    NavigationNode node = nodes.get(nodeId);
+    if (node == null || node.getAssociations() == null || node.getAssociations().isEmpty()) {
+      return false;
+    }
+    for (NavigationAssociation assoc : node.getAssociations()) {
+      if (assoc.getReferences() != null && assoc.getReferences().size() > 0) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+
   /**
    * The expand all navigate the associations that hasn't been navigated yet.
    * 

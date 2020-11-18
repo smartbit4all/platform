@@ -1,24 +1,22 @@
 package org.smartbit4all.api.navigation.bean;
 
-import java.util.Objects;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
-import org.smartbit4all.api.navigation.bean.NavigationAssociation;
-import org.smartbit4all.api.navigation.bean.NavigationEntry;
-import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.Objects;
 import javax.validation.Valid;
-import javax.validation.constraints.*;
+import javax.validation.constraints.NotNull;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
- * UI: The stateful object on the client side. Contains the reference to the NavigationEntry and also the references to the parent and to the children
+ * UI: The stateful object on the client side. Contains the reference to the NavigationEntry and
+ * also the references to the parent and to the children
  */
-@ApiModel(description = "UI: The stateful object on the client side. Contains the reference to the NavigationEntry and also the references to the parent and to the children")
+@ApiModel(
+    description = "UI: The stateful object on the client side. Contains the reference to the NavigationEntry and also the references to the parent and to the children")
 
-public class NavigationNode   {
+public class NavigationNode {
   @JsonProperty("id")
   private String id;
 
@@ -118,14 +116,14 @@ public class NavigationNode   {
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, entry, associations);
+    return Objects.hash(id, entry);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class NavigationNode {\n");
-    
+
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    entry: ").append(toIndentedString(entry)).append("\n");
     sb.append("    associations: ").append(toIndentedString(associations)).append("\n");
