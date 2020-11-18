@@ -33,10 +33,10 @@
 }
 
 .dynamic-filter {
-	border-radius: 5px;
+	border-radius: var(--lumo-border-radius-s);
 	background-color: var(--lumo-base-color);
 	margin: 0.25em;
-	box-shadow: 1px 1px 7px grey;
+	box-shadow: 1px 1px 7px var(--lumo-contrast-20pct);
 	margin-left: 0.5em;
 	margin-right: 5px;
 }
