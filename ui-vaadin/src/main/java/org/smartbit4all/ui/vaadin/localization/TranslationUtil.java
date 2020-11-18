@@ -10,6 +10,8 @@ public class TranslationUtil {
 
   private static TranslationUtil instance;
   
+  private static PossibleTranslationProvider possibleTranslationProvider = new PossibleTranslationProvider(); 
+  
   private TranslationUtil() {
   }
   
@@ -29,6 +31,10 @@ public class TranslationUtil {
           return "!{" + key + "}!";
       }
       return getI18NProvider().getTranslation(key, locale, params);
+  }
+  
+  public String getPossibleTranslation(String key, Object... params) {
+    return possibleTranslationProvider.getTranslation(key, getLocale(), params);
   }
 
   private I18NProvider getI18NProvider() {

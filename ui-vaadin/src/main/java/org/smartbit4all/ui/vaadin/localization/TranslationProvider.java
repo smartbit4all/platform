@@ -50,14 +50,18 @@ public class TranslationProvider implements I18NProvider {
     try {
       value = bundle.getString(key);
     } catch (final MissingResourceException e) {
-      LoggerFactory.getLogger(TranslationProvider.class.getName()).warn("Missing resource", e);
-      String translation = "!" + derivedLocale.getLanguage() + ": " + key;
-      return translation;
+      return handleMissingKey(key, derivedLocale, e);
     }
     if (params.length > 0) {
       value = MessageFormat.format(value, params);
     }
     return value;
+  }
+
+  protected String handleMissingKey(String key, Locale derivedLocale, final MissingResourceException e) {
+    LoggerFactory.getLogger(TranslationProvider.class.getName()).warn("Missing resource", e);
+    String translation = "!" + derivedLocale.getLanguage() + ": " + key;
+    return translation;
   }
 }
 
