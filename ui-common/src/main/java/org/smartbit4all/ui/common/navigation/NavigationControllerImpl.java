@@ -1,5 +1,6 @@
 package org.smartbit4all.ui.common.navigation;
 
+import java.util.stream.Stream;
 import org.smartbit4all.api.navigation.Navigation;
 import org.smartbit4all.api.navigation.NavigationApi;
 import org.smartbit4all.api.navigation.bean.NavigationAssociation;
@@ -18,6 +19,12 @@ public class NavigationControllerImpl implements NavigationController {
 
   @Autowired
   protected NavigationApi api;
+
+  private NavigationNode root;
+
+  public NavigationControllerImpl(NavigationApi api) {
+    this.api = api;
+  }
 
   @Override
   public void setUI(NavigationView view) {
@@ -38,6 +45,15 @@ public class NavigationControllerImpl implements NavigationController {
   }
 
   @Override
+  public void setRoot(NavigationNode root) {
+    this.root = root;
+    if (navigationState != null) {
+      navigationState.setRoot(root);
+      navigationState.expandAll(root);
+    }
+  }
+
+  @Override
   public void expandAll(NavigationNode node) {
     if (navigationState != null) {
       view.render(node, navigationState.expandAll(node));
@@ -45,8 +61,37 @@ public class NavigationControllerImpl implements NavigationController {
   }
 
   @Override
+  public boolean hasChildren(NavigationNode node) {
+    if (node == null)
+      return navigationState.hasChildren(root.getId());
+    navigationState.expandAll(node);
+    return navigationState.hasChildren(node.getId());
+  }
+
+  @Override
+  public int getChildCount(NavigationNode node) {
+    if (node == null)
+      return navigationState.numberOfChildren(root.getId());
+    return navigationState.numberOfChildren(node.getId());
+  }
+
+  @Override
+  public Stream<NavigationNode> getChildrens(NavigationNode parent) {
+    if (parent != null)
+      return navigationState.getCildrens(parent.getId()).stream();
+    return navigationState.getCildrens(root.getId()).stream();
+
+  }
+
+  @Override
   public void expand(NavigationAssociation association) {
     // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void loadRootNodes() {
+    expandAll(root);
 
   }
 
