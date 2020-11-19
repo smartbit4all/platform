@@ -10,7 +10,7 @@ public interface MainLayout {
   public static MainLayout get() {
     return (MainLayout) UI.getCurrent().getChildren()
         .filter(component -> MainLayout.class.isInstance(component)).findFirst()
-        .get();
+        .orElse(null);
   }
 
   public AppBar getAppBar();
