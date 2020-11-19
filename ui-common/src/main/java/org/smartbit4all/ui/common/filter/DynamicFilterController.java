@@ -12,9 +12,10 @@ public interface DynamicFilterController extends UIController {
 
   void loadData();
 
-  void addFilter(String groupId, String filterMetaName);
+  void addFilter(String groupId, String filterMetaName, boolean isClosable);
 
-  String addFilterGroup(String parentGroupId, DynamicFilterGroupType groupType);
+  String addFilterGroup(String parentGroupId, String groupName, String groupIcon,
+      DynamicFilterGroupType groupType, boolean isClosable);
 
   void filterOptionChanged(String filterId, int filterOptionIdx);
 

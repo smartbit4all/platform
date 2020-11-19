@@ -54,14 +54,13 @@ public class DynamicFilterViewUI implements DynamicFilterView {
   }
 
   private void layoutComponents() {
-    DynamicFilterGroupUI rootGroupUI = new DynamicFilterGroupUI(true, null);
-    // rootGroupUI.removeClassName("dynamic-filtergroup");
+    DynamicFilterGroupUI rootGroupUI = new DynamicFilterGroupUI(true, null, false);
     groupsById.put(DynamicFilterController.ROOT_FILTER_GROUP, rootGroupUI);
     filterHolder.add(rootGroupUI);
   }
 
   @Override
-  public void renderFilterConfig(DynamicFilterConfig filterConfig) {
+  public void renderFilterSelectors(DynamicFilterConfig filterConfig) {
     filterSelectorHolder.add(createFilterSelectorLayout(filterConfig));
   }
 
@@ -135,13 +134,13 @@ public class DynamicFilterViewUI implements DynamicFilterView {
   private ComponentEventListener<ClickEvent<Button>> addFilterListener(String groupName,
       String filterMetaName) {
     return e -> {
-      controller.addFilter(groupName, filterMetaName);
+      controller.addFilter(groupName, filterMetaName, true);
     };
   }
 
   @Override
   public void renderFilter(String groupId, String filterId, DynamicFilter dynamicFilter,
-      List<DynamicFilterOperation> filterOperations) {
+      List<DynamicFilterOperation> filterOperations, boolean isClosable) {
     DynamicFilterGroupUI groupUI = groupsById.get(groupId);
     if (groupUI == null) {
       throw new IllegalArgumentException("No groupUI found with '" + groupId + "' groupId!");
@@ -151,9 +150,12 @@ public class DynamicFilterViewUI implements DynamicFilterView {
       throw new IllegalArgumentException(
           "Existing filterUI found when creating new filterUI with '" + filterId + "' filterId!");
     }
-    filterUI = new DynamicFilterUI(groupUI);
-    filterUI.getButton().addClickListener(e -> controller.removeFilter(groupId, filterId));
+    filterUI = new DynamicFilterUI(groupUI, isClosable);
     filterUI.setLabel(filterOperations.get(0).getDisplayValue());
+    if (isClosable) {
+      filterUI.getCloseButton()
+          .addClickListener(e -> controller.removeFilter(groupId, filterId));
+    }
     filtersById.put(filterId, filterUI);
     // TODO special handling when putting into groupUI?
     groupUI.add(filterUI);
@@ -178,18 +180,18 @@ public class DynamicFilterViewUI implements DynamicFilterView {
   }
 
   @Override
-  public void renderGroup(String parentGroupId, String childGroupId,
-      DynamicFilterGroup childGroup) {
+  public void renderGroup(String parentGroupId, String groupId, DynamicFilterGroup group,
+      boolean isClosable) {
 
     DynamicFilterGroupUI parentGroupUI = groupsById.get(parentGroupId);
     if (parentGroupUI == null) {
       throw new IllegalArgumentException(
           "No parentGroupUI found with '" + parentGroupId + "' groupId!");
     }
-    DynamicFilterGroupUI childGroupUI = new DynamicFilterGroupUI(false, parentGroupUI);
-    groupsById.put(childGroupId, childGroupUI);
-    // TODO set groupUI properties according to childGroup
-    parentGroupUI.add(childGroupUI);
+    DynamicFilterGroupUI groupUI = new DynamicFilterGroupUI(false, parentGroupUI, isClosable);
+    groupsById.put(groupId, groupUI);
+    // TODO set groupUI properties according to group
+    parentGroupUI.add(groupUI);
 
   }
 

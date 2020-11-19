@@ -1,6 +1,5 @@
 package org.smartbit4all.ui.vaadin.components.filter;
 
-import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.board.Row;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Label;
@@ -14,9 +13,9 @@ public class DynamicFilterUI extends FlexLayout {
   private DynamicFilterGroupUI group;
   private Label lblOperation;
   private Label lblFilterName;
-  
 
-  public DynamicFilterUI(DynamicFilterGroupUI group) {
+
+  public DynamicFilterUI(DynamicFilterGroupUI group, boolean isClosable) {
     setFlexDirection(FlexDirection.COLUMN);
     addClassName("dynamic-filter");
     this.group = group;
@@ -27,34 +26,39 @@ public class DynamicFilterUI extends FlexLayout {
     lblFilterName = new Label();
     lblOperation = new Label();
     lblOperation.addClassName("operation-name");
-    btnClose = new Button("x");
+    header.add(lblFilterName, lblOperation);
+    btnClose = new Button(" ");
     btnClose.addClassName("close-button");
-    
-    header.add(lblFilterName, lblOperation, btnClose);
+    header.add(btnClose);
+    if (isClosable) {
+      btnClose.setText("x");
+    } else {
+      btnClose.setEnabled(false);
+    }
     add(header);
     add(row);
   }
-  
+
   public void addOperation(DynamicFilterOperationOneFieldUI component) {
     row.add(component);
-    
+
     lblFilterName.setText(getTranslation(component.getLabel()));
     lblFilterName.addClassName("filter-name");
     component.setLabel("");
   }
-  
-  
+
+
   public DynamicFilterGroupUI getGroup() {
     return group;
   }
-  
-  public Button getButton() {
+
+  public Button getCloseButton() {
     return btnClose;
   }
-  
+
   public void setLabel(String label) {
     lblOperation.setText(getTranslation(label));
   }
 
-  
+
 }

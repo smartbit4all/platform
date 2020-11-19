@@ -9,14 +9,15 @@ import org.smartbit4all.ui.common.view.UIView;
 
 public interface DynamicFilterView extends UIView {
 
-  void renderFilterConfig(DynamicFilterConfig filterConfig);
+  void renderFilterSelectors(DynamicFilterConfig filterConfig);
 
   void renderFilter(String groupId, String filterId, DynamicFilter dynamicFilter,
-      List<DynamicFilterOperation> filterOptions);
+      List<DynamicFilterOperation> filterOptions, boolean isClosable);
 
   void renderFilter(String filterId, DynamicFilter dynamicFilter);
 
-  void renderGroup(String parentGroupId, String childGroupId, DynamicFilterGroup childGroup);
+  void renderGroup(String parentGroupId, String groupId, DynamicFilterGroup group,
+      boolean isClosable);
 
   void removeFilter(String filterId);
 

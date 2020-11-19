@@ -7,7 +7,8 @@ public class DynamicFilterGroupUI extends FlexLayout {
 
   private DynamicFilterGroupUI parentGroupUI;
 
-  public DynamicFilterGroupUI(boolean isRoot, DynamicFilterGroupUI parentGroupUI) {
+  public DynamicFilterGroupUI(boolean isRoot, DynamicFilterGroupUI parentGroupUI,
+      boolean isClosable) {
     // TODO maybe we can skip isRoot parameter and use: isRoot = parentGroupUI == null;
     this.parentGroupUI = parentGroupUI;
 
@@ -16,6 +17,8 @@ public class DynamicFilterGroupUI extends FlexLayout {
     } else {
       addClassName("dynamic-filtergroup");
     }
+
+    // TODO handle isCloseable, add close button if true.
   }
 
   public DynamicFilterGroupUI getParentGroupId() {
