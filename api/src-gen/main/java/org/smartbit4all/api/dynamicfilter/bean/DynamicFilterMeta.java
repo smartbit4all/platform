@@ -20,6 +20,9 @@ public class DynamicFilterMeta   {
   @JsonProperty("groupName")
   private String groupName;
 
+  @JsonProperty("style")
+  private String style;
+
   @JsonProperty("operations")
   @Valid
   private List<DynamicFilterOperation> operations = null;
@@ -64,6 +67,26 @@ public class DynamicFilterMeta   {
     this.groupName = groupName;
   }
 
+  public DynamicFilterMeta style(String style) {
+    this.style = style;
+    return this;
+  }
+
+  /**
+   * Get style
+   * @return style
+  */
+  @ApiModelProperty(value = "")
+
+
+  public String getStyle() {
+    return style;
+  }
+
+  public void setStyle(String style) {
+    this.style = style;
+  }
+
   public DynamicFilterMeta operations(List<DynamicFilterOperation> operations) {
     this.operations = operations;
     return this;
@@ -105,12 +128,13 @@ public class DynamicFilterMeta   {
     DynamicFilterMeta dynamicFilterMeta = (DynamicFilterMeta) o;
     return Objects.equals(this.name, dynamicFilterMeta.name) &&
         Objects.equals(this.groupName, dynamicFilterMeta.groupName) &&
+        Objects.equals(this.style, dynamicFilterMeta.style) &&
         Objects.equals(this.operations, dynamicFilterMeta.operations);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, groupName, operations);
+    return Objects.hash(name, groupName, style, operations);
   }
 
   @Override
@@ -120,6 +144,7 @@ public class DynamicFilterMeta   {
     
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    groupName: ").append(toIndentedString(groupName)).append("\n");
+    sb.append("    style: ").append(toIndentedString(style)).append("\n");
     sb.append("    operations: ").append(toIndentedString(operations)).append("\n");
     sb.append("}");
     return sb.toString();

@@ -23,6 +23,12 @@ public class DynamicFilterConfig   {
   @JsonProperty("mode")
   private DynamicFilterConfigMode mode;
 
+  @JsonProperty("defaultFilterStyle")
+  private String defaultFilterStyle;
+
+  @JsonProperty("defaultFilterGroupStyle")
+  private String defaultFilterGroupStyle;
+
   public DynamicFilterConfig dynamicFilterMetas(List<DynamicFilterMeta> dynamicFilterMetas) {
     this.dynamicFilterMetas = dynamicFilterMetas;
     return this;
@@ -102,6 +108,46 @@ public class DynamicFilterConfig   {
     this.mode = mode;
   }
 
+  public DynamicFilterConfig defaultFilterStyle(String defaultFilterStyle) {
+    this.defaultFilterStyle = defaultFilterStyle;
+    return this;
+  }
+
+  /**
+   * Get defaultFilterStyle
+   * @return defaultFilterStyle
+  */
+  @ApiModelProperty(value = "")
+
+
+  public String getDefaultFilterStyle() {
+    return defaultFilterStyle;
+  }
+
+  public void setDefaultFilterStyle(String defaultFilterStyle) {
+    this.defaultFilterStyle = defaultFilterStyle;
+  }
+
+  public DynamicFilterConfig defaultFilterGroupStyle(String defaultFilterGroupStyle) {
+    this.defaultFilterGroupStyle = defaultFilterGroupStyle;
+    return this;
+  }
+
+  /**
+   * Get defaultFilterGroupStyle
+   * @return defaultFilterGroupStyle
+  */
+  @ApiModelProperty(value = "")
+
+
+  public String getDefaultFilterGroupStyle() {
+    return defaultFilterGroupStyle;
+  }
+
+  public void setDefaultFilterGroupStyle(String defaultFilterGroupStyle) {
+    this.defaultFilterGroupStyle = defaultFilterGroupStyle;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -114,12 +160,14 @@ public class DynamicFilterConfig   {
     DynamicFilterConfig dynamicFilterConfig = (DynamicFilterConfig) o;
     return Objects.equals(this.dynamicFilterMetas, dynamicFilterConfig.dynamicFilterMetas) &&
         Objects.equals(this.dynamicFilterGroupMetas, dynamicFilterConfig.dynamicFilterGroupMetas) &&
-        Objects.equals(this.mode, dynamicFilterConfig.mode);
+        Objects.equals(this.mode, dynamicFilterConfig.mode) &&
+        Objects.equals(this.defaultFilterStyle, dynamicFilterConfig.defaultFilterStyle) &&
+        Objects.equals(this.defaultFilterGroupStyle, dynamicFilterConfig.defaultFilterGroupStyle);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(dynamicFilterMetas, dynamicFilterGroupMetas, mode);
+    return Objects.hash(dynamicFilterMetas, dynamicFilterGroupMetas, mode, defaultFilterStyle, defaultFilterGroupStyle);
   }
 
   @Override
@@ -130,6 +178,8 @@ public class DynamicFilterConfig   {
     sb.append("    dynamicFilterMetas: ").append(toIndentedString(dynamicFilterMetas)).append("\n");
     sb.append("    dynamicFilterGroupMetas: ").append(toIndentedString(dynamicFilterGroupMetas)).append("\n");
     sb.append("    mode: ").append(toIndentedString(mode)).append("\n");
+    sb.append("    defaultFilterStyle: ").append(toIndentedString(defaultFilterStyle)).append("\n");
+    sb.append("    defaultFilterGroupStyle: ").append(toIndentedString(defaultFilterGroupStyle)).append("\n");
     sb.append("}");
     return sb.toString();
   }

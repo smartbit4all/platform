@@ -16,6 +16,9 @@ public class DynamicFilterGroupMeta   {
   @JsonProperty("icon")
   private String icon;
 
+  @JsonProperty("style")
+  private String style;
+
   @JsonProperty("type")
   private DynamicFilterGroupType type;
 
@@ -59,6 +62,26 @@ public class DynamicFilterGroupMeta   {
     this.icon = icon;
   }
 
+  public DynamicFilterGroupMeta style(String style) {
+    this.style = style;
+    return this;
+  }
+
+  /**
+   * Get style
+   * @return style
+  */
+  @ApiModelProperty(value = "")
+
+
+  public String getStyle() {
+    return style;
+  }
+
+  public void setStyle(String style) {
+    this.style = style;
+  }
+
   public DynamicFilterGroupMeta type(DynamicFilterGroupType type) {
     this.type = type;
     return this;
@@ -92,12 +115,13 @@ public class DynamicFilterGroupMeta   {
     DynamicFilterGroupMeta dynamicFilterGroupMeta = (DynamicFilterGroupMeta) o;
     return Objects.equals(this.name, dynamicFilterGroupMeta.name) &&
         Objects.equals(this.icon, dynamicFilterGroupMeta.icon) &&
+        Objects.equals(this.style, dynamicFilterGroupMeta.style) &&
         Objects.equals(this.type, dynamicFilterGroupMeta.type);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, icon, type);
+    return Objects.hash(name, icon, style, type);
   }
 
   @Override
@@ -107,6 +131,7 @@ public class DynamicFilterGroupMeta   {
     
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    icon: ").append(toIndentedString(icon)).append("\n");
+    sb.append("    style: ").append(toIndentedString(style)).append("\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("}");
     return sb.toString();

@@ -34,6 +34,10 @@ components:
             $ref: '#/components/schemas/DynamicFilterGroupMeta'
         mode:
           $ref: '#/components/schemas/DynamicFilterConfigMode'
+        defaultFilterStyle:
+          type: string
+        defaultFilterGroupStyle:
+          type: string
     DynamicFilterMeta:
       type: object
       description: "Descriptor of a possible filter field. This field doesn't have to correspond to an existing entity's property, it is simple a way of filtering."
@@ -42,6 +46,8 @@ components:
           type: string
           description: 'Name of the filterable field.'
         groupName:
+          type: string
+        style:
           type: string
         operations:
           type: array
@@ -53,6 +59,8 @@ components:
         name:
           type: string
         icon:
+          type: string
+        style:
           type: string
         type:
           $ref: '#/components/schemas/DynamicFilterGroupType'
