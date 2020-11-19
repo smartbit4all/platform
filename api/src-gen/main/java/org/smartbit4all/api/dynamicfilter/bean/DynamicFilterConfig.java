@@ -20,6 +20,9 @@ public class DynamicFilterConfig   {
   @Valid
   private List<DynamicFilterGroupMeta> dynamicFilterGroupMetas = null;
 
+  @JsonProperty("mode")
+  private DynamicFilterConfigMode mode;
+
   public DynamicFilterConfig dynamicFilterMetas(List<DynamicFilterMeta> dynamicFilterMetas) {
     this.dynamicFilterMetas = dynamicFilterMetas;
     return this;
@@ -78,6 +81,27 @@ public class DynamicFilterConfig   {
     this.dynamicFilterGroupMetas = dynamicFilterGroupMetas;
   }
 
+  public DynamicFilterConfig mode(DynamicFilterConfigMode mode) {
+    this.mode = mode;
+    return this;
+  }
+
+  /**
+   * Get mode
+   * @return mode
+  */
+  @ApiModelProperty(value = "")
+
+  @Valid
+
+  public DynamicFilterConfigMode getMode() {
+    return mode;
+  }
+
+  public void setMode(DynamicFilterConfigMode mode) {
+    this.mode = mode;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -89,12 +113,13 @@ public class DynamicFilterConfig   {
     }
     DynamicFilterConfig dynamicFilterConfig = (DynamicFilterConfig) o;
     return Objects.equals(this.dynamicFilterMetas, dynamicFilterConfig.dynamicFilterMetas) &&
-        Objects.equals(this.dynamicFilterGroupMetas, dynamicFilterConfig.dynamicFilterGroupMetas);
+        Objects.equals(this.dynamicFilterGroupMetas, dynamicFilterConfig.dynamicFilterGroupMetas) &&
+        Objects.equals(this.mode, dynamicFilterConfig.mode);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(dynamicFilterMetas, dynamicFilterGroupMetas);
+    return Objects.hash(dynamicFilterMetas, dynamicFilterGroupMetas, mode);
   }
 
   @Override
@@ -104,6 +129,7 @@ public class DynamicFilterConfig   {
     
     sb.append("    dynamicFilterMetas: ").append(toIndentedString(dynamicFilterMetas)).append("\n");
     sb.append("    dynamicFilterGroupMetas: ").append(toIndentedString(dynamicFilterGroupMetas)).append("\n");
+    sb.append("    mode: ").append(toIndentedString(mode)).append("\n");
     sb.append("}");
     return sb.toString();
   }

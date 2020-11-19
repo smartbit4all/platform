@@ -18,6 +18,9 @@ paths:
           description: nope
 components:
   schemas:
+    DynamicFilterConfigMode:
+      type: string
+      enum: [static, simple_dynamic, dynamic, research]
     DynamicFilterConfig:
       type: object
       properties:
@@ -29,9 +32,11 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/DynamicFilterGroupMeta'
+        mode:
+          $ref: '#/components/schemas/DynamicFilterConfigMode'
     DynamicFilterMeta:
       type: object
-      description: 'Descriptor of a possible filter field. This field doesn''t have to correspond to an existing entity''s property, it is simple a way of filtering.'
+      description: "Descriptor of a possible filter field. This field doesn't have to correspond to an existing entity's property, it is simple a way of filtering."
       properties:
         name:
           type: string
@@ -110,7 +115,6 @@ components:
           description: Name of the referenced DynamicFilterMeta.
         operation:
           $ref: '#/components/schemas/DynamicFilterOperation'
-          description: Name of the referenced DynamicFilterMeta.
         value1:
           type: string
         value2:
