@@ -1,87 +1,81 @@
 package org.smartbit4all.api.dynamicfilter.bean;
 
-import java.util.Objects;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
-import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterDescriptor;
-import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterGroupDescriptor;
-import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.Objects;
 import javax.validation.Valid;
-import javax.validation.constraints.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * DynamicFilterConfig
  */
 
 public class DynamicFilterConfig   {
-  @JsonProperty("dynamicFilterDescriptors")
+  @JsonProperty("dynamicFilterMetas")
   @Valid
-  private List<DynamicFilterDescriptor> dynamicFilterDescriptors = null;
+  private List<DynamicFilterMeta> dynamicFilterMetas = null;
 
-  @JsonProperty("dynamicFilterGroupDescriptors")
+  @JsonProperty("dynamicFilterGroupMetas")
   @Valid
-  private List<DynamicFilterGroupDescriptor> dynamicFilterGroupDescriptors = null;
+  private List<DynamicFilterGroupMeta> dynamicFilterGroupMetas = null;
 
-  public DynamicFilterConfig dynamicFilterDescriptors(List<DynamicFilterDescriptor> dynamicFilterDescriptors) {
-    this.dynamicFilterDescriptors = dynamicFilterDescriptors;
+  public DynamicFilterConfig dynamicFilterMetas(List<DynamicFilterMeta> dynamicFilterMetas) {
+    this.dynamicFilterMetas = dynamicFilterMetas;
     return this;
   }
 
-  public DynamicFilterConfig addDynamicFilterDescriptorsItem(DynamicFilterDescriptor dynamicFilterDescriptorsItem) {
-    if (this.dynamicFilterDescriptors == null) {
-      this.dynamicFilterDescriptors = new ArrayList<>();
+  public DynamicFilterConfig addDynamicFilterMetasItem(DynamicFilterMeta dynamicFilterMetasItem) {
+    if (this.dynamicFilterMetas == null) {
+      this.dynamicFilterMetas = new ArrayList<>();
     }
-    this.dynamicFilterDescriptors.add(dynamicFilterDescriptorsItem);
+    this.dynamicFilterMetas.add(dynamicFilterMetasItem);
     return this;
   }
 
   /**
-   * Get dynamicFilterDescriptors
-   * @return dynamicFilterDescriptors
+   * Get dynamicFilterMetas
+   * @return dynamicFilterMetas
   */
   @ApiModelProperty(value = "")
 
   @Valid
 
-  public List<DynamicFilterDescriptor> getDynamicFilterDescriptors() {
-    return dynamicFilterDescriptors;
+  public List<DynamicFilterMeta> getDynamicFilterMetas() {
+    return dynamicFilterMetas;
   }
 
-  public void setDynamicFilterDescriptors(List<DynamicFilterDescriptor> dynamicFilterDescriptors) {
-    this.dynamicFilterDescriptors = dynamicFilterDescriptors;
+  public void setDynamicFilterMetas(List<DynamicFilterMeta> dynamicFilterMetas) {
+    this.dynamicFilterMetas = dynamicFilterMetas;
   }
 
-  public DynamicFilterConfig dynamicFilterGroupDescriptors(List<DynamicFilterGroupDescriptor> dynamicFilterGroupDescriptors) {
-    this.dynamicFilterGroupDescriptors = dynamicFilterGroupDescriptors;
+  public DynamicFilterConfig dynamicFilterGroupMetas(List<DynamicFilterGroupMeta> dynamicFilterGroupMetas) {
+    this.dynamicFilterGroupMetas = dynamicFilterGroupMetas;
     return this;
   }
 
-  public DynamicFilterConfig addDynamicFilterGroupDescriptorsItem(DynamicFilterGroupDescriptor dynamicFilterGroupDescriptorsItem) {
-    if (this.dynamicFilterGroupDescriptors == null) {
-      this.dynamicFilterGroupDescriptors = new ArrayList<>();
+  public DynamicFilterConfig addDynamicFilterGroupMetasItem(DynamicFilterGroupMeta dynamicFilterGroupMetasItem) {
+    if (this.dynamicFilterGroupMetas == null) {
+      this.dynamicFilterGroupMetas = new ArrayList<>();
     }
-    this.dynamicFilterGroupDescriptors.add(dynamicFilterGroupDescriptorsItem);
+    this.dynamicFilterGroupMetas.add(dynamicFilterGroupMetasItem);
     return this;
   }
 
   /**
-   * Get dynamicFilterGroupDescriptors
-   * @return dynamicFilterGroupDescriptors
+   * Get dynamicFilterGroupMetas
+   * @return dynamicFilterGroupMetas
   */
   @ApiModelProperty(value = "")
 
   @Valid
 
-  public List<DynamicFilterGroupDescriptor> getDynamicFilterGroupDescriptors() {
-    return dynamicFilterGroupDescriptors;
+  public List<DynamicFilterGroupMeta> getDynamicFilterGroupMetas() {
+    return dynamicFilterGroupMetas;
   }
 
-  public void setDynamicFilterGroupDescriptors(List<DynamicFilterGroupDescriptor> dynamicFilterGroupDescriptors) {
-    this.dynamicFilterGroupDescriptors = dynamicFilterGroupDescriptors;
+  public void setDynamicFilterGroupMetas(List<DynamicFilterGroupMeta> dynamicFilterGroupMetas) {
+    this.dynamicFilterGroupMetas = dynamicFilterGroupMetas;
   }
 
 
@@ -94,13 +88,13 @@ public class DynamicFilterConfig   {
       return false;
     }
     DynamicFilterConfig dynamicFilterConfig = (DynamicFilterConfig) o;
-    return Objects.equals(this.dynamicFilterDescriptors, dynamicFilterConfig.dynamicFilterDescriptors) &&
-        Objects.equals(this.dynamicFilterGroupDescriptors, dynamicFilterConfig.dynamicFilterGroupDescriptors);
+    return Objects.equals(this.dynamicFilterMetas, dynamicFilterConfig.dynamicFilterMetas) &&
+        Objects.equals(this.dynamicFilterGroupMetas, dynamicFilterConfig.dynamicFilterGroupMetas);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(dynamicFilterDescriptors, dynamicFilterGroupDescriptors);
+    return Objects.hash(dynamicFilterMetas, dynamicFilterGroupMetas);
   }
 
   @Override
@@ -108,8 +102,8 @@ public class DynamicFilterConfig   {
     StringBuilder sb = new StringBuilder();
     sb.append("class DynamicFilterConfig {\n");
     
-    sb.append("    dynamicFilterDescriptors: ").append(toIndentedString(dynamicFilterDescriptors)).append("\n");
-    sb.append("    dynamicFilterGroupDescriptors: ").append(toIndentedString(dynamicFilterGroupDescriptors)).append("\n");
+    sb.append("    dynamicFilterMetas: ").append(toIndentedString(dynamicFilterMetas)).append("\n");
+    sb.append("    dynamicFilterGroupMetas: ").append(toIndentedString(dynamicFilterGroupMetas)).append("\n");
     sb.append("}");
     return sb.toString();
   }

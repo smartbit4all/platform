@@ -1,24 +1,19 @@
 package org.smartbit4all.api.dynamicfilter.bean;
 
-import java.util.Objects;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
-import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterOperation;
-import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.Objects;
 import javax.validation.Valid;
-import javax.validation.constraints.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * DynamicFilter
  */
 
 public class DynamicFilter   {
-  @JsonProperty("descriptorName")
-  private String descriptorName;
+  @JsonProperty("metaName")
+  private String metaName;
 
   @JsonProperty("operation")
   private DynamicFilterOperation operation;
@@ -33,30 +28,30 @@ public class DynamicFilter   {
   @Valid
   private List<String> selectedValues = null;
 
-  @JsonProperty("isIncluded")
-  private Boolean isIncluded;
+  @JsonProperty("included")
+  private Boolean included;
 
-  @JsonProperty("isEditable")
-  private Boolean isEditable;
+  @JsonProperty("editable")
+  private Boolean editable;
 
-  public DynamicFilter descriptorName(String descriptorName) {
-    this.descriptorName = descriptorName;
+  public DynamicFilter metaName(String metaName) {
+    this.metaName = metaName;
     return this;
   }
 
   /**
-   * Get descriptorName
-   * @return descriptorName
+   * Name of the referenced DynamicFilterMeta.
+   * @return metaName
   */
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Name of the referenced DynamicFilterMeta.")
 
 
-  public String getDescriptorName() {
-    return descriptorName;
+  public String getMetaName() {
+    return metaName;
   }
 
-  public void setDescriptorName(String descriptorName) {
-    this.descriptorName = descriptorName;
+  public void setMetaName(String metaName) {
+    this.metaName = metaName;
   }
 
   public DynamicFilter operation(DynamicFilterOperation operation) {
@@ -148,44 +143,44 @@ public class DynamicFilter   {
     this.selectedValues = selectedValues;
   }
 
-  public DynamicFilter isIncluded(Boolean isIncluded) {
-    this.isIncluded = isIncluded;
+  public DynamicFilter included(Boolean included) {
+    this.included = included;
     return this;
   }
 
   /**
-   * Get isIncluded
-   * @return isIncluded
+   * Get included
+   * @return included
   */
   @ApiModelProperty(value = "")
 
 
-  public Boolean getIsIncluded() {
-    return isIncluded;
+  public Boolean getIncluded() {
+    return included;
   }
 
-  public void setIsIncluded(Boolean isIncluded) {
-    this.isIncluded = isIncluded;
+  public void setIncluded(Boolean included) {
+    this.included = included;
   }
 
-  public DynamicFilter isEditable(Boolean isEditable) {
-    this.isEditable = isEditable;
+  public DynamicFilter editable(Boolean editable) {
+    this.editable = editable;
     return this;
   }
 
   /**
-   * Get isEditable
-   * @return isEditable
+   * Get editable
+   * @return editable
   */
   @ApiModelProperty(value = "")
 
 
-  public Boolean getIsEditable() {
-    return isEditable;
+  public Boolean getEditable() {
+    return editable;
   }
 
-  public void setIsEditable(Boolean isEditable) {
-    this.isEditable = isEditable;
+  public void setEditable(Boolean editable) {
+    this.editable = editable;
   }
 
 
@@ -198,18 +193,18 @@ public class DynamicFilter   {
       return false;
     }
     DynamicFilter dynamicFilter = (DynamicFilter) o;
-    return Objects.equals(this.descriptorName, dynamicFilter.descriptorName) &&
+    return Objects.equals(this.metaName, dynamicFilter.metaName) &&
         Objects.equals(this.operation, dynamicFilter.operation) &&
         Objects.equals(this.value1, dynamicFilter.value1) &&
         Objects.equals(this.value2, dynamicFilter.value2) &&
         Objects.equals(this.selectedValues, dynamicFilter.selectedValues) &&
-        Objects.equals(this.isIncluded, dynamicFilter.isIncluded) &&
-        Objects.equals(this.isEditable, dynamicFilter.isEditable);
+        Objects.equals(this.included, dynamicFilter.included) &&
+        Objects.equals(this.editable, dynamicFilter.editable);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(descriptorName, operation, value1, value2, selectedValues, isIncluded, isEditable);
+    return Objects.hash(metaName, operation, value1, value2, selectedValues, included, editable);
   }
 
   @Override
@@ -217,13 +212,13 @@ public class DynamicFilter   {
     StringBuilder sb = new StringBuilder();
     sb.append("class DynamicFilter {\n");
     
-    sb.append("    descriptorName: ").append(toIndentedString(descriptorName)).append("\n");
+    sb.append("    metaName: ").append(toIndentedString(metaName)).append("\n");
     sb.append("    operation: ").append(toIndentedString(operation)).append("\n");
     sb.append("    value1: ").append(toIndentedString(value1)).append("\n");
     sb.append("    value2: ").append(toIndentedString(value2)).append("\n");
     sb.append("    selectedValues: ").append(toIndentedString(selectedValues)).append("\n");
-    sb.append("    isIncluded: ").append(toIndentedString(isIncluded)).append("\n");
-    sb.append("    isEditable: ").append(toIndentedString(isEditable)).append("\n");
+    sb.append("    included: ").append(toIndentedString(included)).append("\n");
+    sb.append("    editable: ").append(toIndentedString(editable)).append("\n");
     sb.append("}");
     return sb.toString();
   }

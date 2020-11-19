@@ -1,17 +1,12 @@
 package org.smartbit4all.api.dynamicfilter.bean;
 
-import java.util.Objects;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
-import org.smartbit4all.api.dynamicfilter.bean.DynamicFilter;
-import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterGroupType;
-import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.Objects;
 import javax.validation.Valid;
-import javax.validation.constraints.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * AND / OR group of filters / groups.
@@ -24,6 +19,9 @@ public class DynamicFilterGroup   {
 
   @JsonProperty("icon")
   private String icon;
+
+  @JsonProperty("metaName")
+  private String metaName;
 
   @JsonProperty("type")
   private DynamicFilterGroupType type;
@@ -48,10 +46,10 @@ public class DynamicFilterGroup   {
   }
 
   /**
-   * Get name
+   * Name of the group.
    * @return name
   */
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Name of the group.")
 
 
   public String getName() {
@@ -80,6 +78,26 @@ public class DynamicFilterGroup   {
 
   public void setIcon(String icon) {
     this.icon = icon;
+  }
+
+  public DynamicFilterGroup metaName(String metaName) {
+    this.metaName = metaName;
+    return this;
+  }
+
+  /**
+   * Name of the referenced DynamicFilterGroupMeta, if this group is created from any.
+   * @return metaName
+  */
+  @ApiModelProperty(value = "Name of the referenced DynamicFilterGroupMeta, if this group is created from any.")
+
+
+  public String getMetaName() {
+    return metaName;
+  }
+
+  public void setMetaName(String metaName) {
+    this.metaName = metaName;
   }
 
   public DynamicFilterGroup type(DynamicFilterGroupType type) {
@@ -213,6 +231,7 @@ public class DynamicFilterGroup   {
     DynamicFilterGroup dynamicFilterGroup = (DynamicFilterGroup) o;
     return Objects.equals(this.name, dynamicFilterGroup.name) &&
         Objects.equals(this.icon, dynamicFilterGroup.icon) &&
+        Objects.equals(this.metaName, dynamicFilterGroup.metaName) &&
         Objects.equals(this.type, dynamicFilterGroup.type) &&
         Objects.equals(this.filters, dynamicFilterGroup.filters) &&
         Objects.equals(this.groups, dynamicFilterGroup.groups) &&
@@ -222,7 +241,7 @@ public class DynamicFilterGroup   {
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, icon, type, filters, groups, isNegated, isExpanded);
+    return Objects.hash(name, icon, metaName, type, filters, groups, isNegated, isExpanded);
   }
 
   @Override
@@ -232,6 +251,7 @@ public class DynamicFilterGroup   {
     
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    icon: ").append(toIndentedString(icon)).append("\n");
+    sb.append("    metaName: ").append(toIndentedString(metaName)).append("\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("    filters: ").append(toIndentedString(filters)).append("\n");
     sb.append("    groups: ").append(toIndentedString(groups)).append("\n");

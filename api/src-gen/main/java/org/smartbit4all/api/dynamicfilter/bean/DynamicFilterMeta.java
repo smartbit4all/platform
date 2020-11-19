@@ -1,23 +1,19 @@
 package org.smartbit4all.api.dynamicfilter.bean;
 
-import java.util.Objects;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
-import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterOperation;
-import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.Objects;
 import javax.validation.Valid;
-import javax.validation.constraints.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * Descriptor of a possible filter field. This field doesn&#39;t have to correspond to an existing entity&#39;s property, it is simple a way of filtering.
  */
 @ApiModel(description = "Descriptor of a possible filter field. This field doesn't have to correspond to an existing entity's property, it is simple a way of filtering.")
 
-public class DynamicFilterDescriptor   {
+public class DynamicFilterMeta   {
   @JsonProperty("name")
   private String name;
 
@@ -28,7 +24,7 @@ public class DynamicFilterDescriptor   {
   @Valid
   private List<DynamicFilterOperation> operations = null;
 
-  public DynamicFilterDescriptor name(String name) {
+  public DynamicFilterMeta name(String name) {
     this.name = name;
     return this;
   }
@@ -48,7 +44,7 @@ public class DynamicFilterDescriptor   {
     this.name = name;
   }
 
-  public DynamicFilterDescriptor groupName(String groupName) {
+  public DynamicFilterMeta groupName(String groupName) {
     this.groupName = groupName;
     return this;
   }
@@ -68,12 +64,12 @@ public class DynamicFilterDescriptor   {
     this.groupName = groupName;
   }
 
-  public DynamicFilterDescriptor operations(List<DynamicFilterOperation> operations) {
+  public DynamicFilterMeta operations(List<DynamicFilterOperation> operations) {
     this.operations = operations;
     return this;
   }
 
-  public DynamicFilterDescriptor addOperationsItem(DynamicFilterOperation operationsItem) {
+  public DynamicFilterMeta addOperationsItem(DynamicFilterOperation operationsItem) {
     if (this.operations == null) {
       this.operations = new ArrayList<>();
     }
@@ -106,10 +102,10 @@ public class DynamicFilterDescriptor   {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    DynamicFilterDescriptor dynamicFilterDescriptor = (DynamicFilterDescriptor) o;
-    return Objects.equals(this.name, dynamicFilterDescriptor.name) &&
-        Objects.equals(this.groupName, dynamicFilterDescriptor.groupName) &&
-        Objects.equals(this.operations, dynamicFilterDescriptor.operations);
+    DynamicFilterMeta dynamicFilterMeta = (DynamicFilterMeta) o;
+    return Objects.equals(this.name, dynamicFilterMeta.name) &&
+        Objects.equals(this.groupName, dynamicFilterMeta.groupName) &&
+        Objects.equals(this.operations, dynamicFilterMeta.operations);
   }
 
   @Override
@@ -120,7 +116,7 @@ public class DynamicFilterDescriptor   {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class DynamicFilterDescriptor {\n");
+    sb.append("class DynamicFilterMeta {\n");
     
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    groupName: ").append(toIndentedString(groupName)).append("\n");

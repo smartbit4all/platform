@@ -1,16 +1,20 @@
-.descriptors-layout {
+.filterselector-layout {
 	background-color: var(--lumo-base-color);
 	height: 100%;
 }
 
-.descriptor-layout {
+.filtermeta-layout {
 	width: 100%;
     justify-content: space-between;
 }
 
-.descriptor-name {
+.filtermeta-layout vaadin-label {
     margin-top: 10px;
     margin-right: 10px;
+}
+
+.filtermeta-layout button {
+	background: 0;
 }
 
 .dynamic-filtergroup-root {
@@ -63,24 +67,16 @@
 	margin-left: 5px;
 }
 
-.descriptors-layout vaadin-details::part(content) {
+.filterselector-layout vaadin-details::part(content) {
 	margin-left: 35px;
 }
 
-.descriptors-layout vaadin-details {
+.filterselector-layout vaadin-details {
 	width: 100%;
 }
 
-.descriptors-layout vaadin-details::part(summary-content) {
+.filterselector-layout vaadin-details::part(summary-content) {
 	width: 100%;
-}
-
-.description-selector {
-	width: 300px;
-}
-
-.plus-button {
-	background: 0;
 }
 
 .filter-header {

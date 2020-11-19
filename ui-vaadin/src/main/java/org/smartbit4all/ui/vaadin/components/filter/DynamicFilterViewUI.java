@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.Map;
 import org.smartbit4all.api.dynamicfilter.bean.DynamicFilter;
 import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterConfig;
-import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterDescriptor;
 import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterGroup;
-import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterGroupDescriptor;
+import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterGroupMeta;
+import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterMeta;
 import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterOperation;
 import org.smartbit4all.ui.common.filter.DynamicFilterController;
 import org.smartbit4all.ui.common.filter.DynamicFilterView;
@@ -28,19 +28,19 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 public class DynamicFilterViewUI implements DynamicFilterView {
 
   private DynamicFilterController controller;
-  private HasComponents descriptorHolder;
-  private HasComponents groupHolder;
+  private HasComponents filterSelectorHolder;
+  private HasComponents filterHolder;
 
   private Map<String, DynamicFilterGroupUI> groupsById = new HashMap<>();
   private Map<String, DynamicFilterUI> filtersById = new HashMap<>();
   private String activeGroupId;
   private Map<String, Details> detailsByGroupName;
 
-  public DynamicFilterViewUI(DynamicFilterController controller, HasComponents descriptorHolder,
-      HasComponents groupHolder) {
+  public DynamicFilterViewUI(DynamicFilterController controller, HasComponents filterSelectorHolder,
+      HasComponents filterHolder) {
     this.controller = controller;
-    this.descriptorHolder = descriptorHolder;
-    this.groupHolder = groupHolder;
+    this.filterSelectorHolder = filterSelectorHolder;
+    this.filterHolder = filterHolder;
     this.activeGroupId = DynamicFilterController.ROOT_FILTER_GROUP;
     layoutComponents();
     controller.setUi(this);
@@ -55,44 +55,44 @@ public class DynamicFilterViewUI implements DynamicFilterView {
     DynamicFilterGroupUI rootGroupUI = new DynamicFilterGroupUI(true, null);
     // rootGroupUI.removeClassName("dynamic-filtergroup");
     groupsById.put(DynamicFilterController.ROOT_FILTER_GROUP, rootGroupUI);
-    groupHolder.add(rootGroupUI);
+    filterHolder.add(rootGroupUI);
   }
 
   @Override
   public void renderFilterConfig(DynamicFilterConfig filterConfig) {
-    descriptorHolder.add(createFilterDescriptorsLayout(filterConfig));
+    filterSelectorHolder.add(createFilterSelectorLayout(filterConfig));
   }
 
-  private VerticalLayout createFilterDescriptorsLayout(DynamicFilterConfig filterConfig) {
-    VerticalLayout descriptorsLayout = new VerticalLayout();
-    descriptorsLayout.addClassName("descriptors-layout");
+  private VerticalLayout createFilterSelectorLayout(DynamicFilterConfig filterConfig) {
+    VerticalLayout filterSelectorLayout = new VerticalLayout();
+    filterSelectorLayout.addClassName("filterselector-layout");
+    // metaLayout.addClassName("descriptors-layout");
     // TODO ability to add whole group to active filterPanel
-    // TODO render dynamic filter descriptors inside groups
 
     detailsByGroupName = new HashMap<>();
-    for (DynamicFilterGroupDescriptor filterDescriptor : filterConfig
-        .getDynamicFilterGroupDescriptors()) {
-      if (!detailsByGroupName.containsKey(filterDescriptor.getName())) {
-        Details details = createDescriptorLayout(filterDescriptor);
-        descriptorsLayout.add(details);
-        detailsByGroupName.put(filterDescriptor.getName(), details);
+    for (DynamicFilterGroupMeta groupMeta : filterConfig
+        .getDynamicFilterGroupMetas()) {
+      if (!detailsByGroupName.containsKey(groupMeta.getName())) {
+        Details details = createGroupMetaLayout(groupMeta);
+        filterSelectorLayout.add(details);
+        detailsByGroupName.put(groupMeta.getName(), details);
       }
     }
 
-    for (DynamicFilterDescriptor descriptor : filterConfig.getDynamicFilterDescriptors()) {
-      if (detailsByGroupName.containsKey(descriptor.getGroupName())) {
-        detailsByGroupName.get(descriptor.getGroupName())
-            .addContent(createDescriptorUI(descriptor));
+    for (DynamicFilterMeta filterMeta : filterConfig.getDynamicFilterMetas()) {
+      if (detailsByGroupName.containsKey(filterMeta.getGroupName())) {
+        detailsByGroupName.get(filterMeta.getGroupName())
+            .addContent(createFilterMetaUI(filterMeta));
       }
     }
 
-    return descriptorsLayout;
+    return filterSelectorLayout;
   }
 
-  private Details createDescriptorLayout(DynamicFilterGroupDescriptor filterDescriptor) {
+  private Details createGroupMetaLayout(DynamicFilterGroupMeta groupMeta) {
     Details details = new Details();
     details.addThemeVariants(DetailsVariant.FILLED);
-    Label summaryText = new Label(details.getTranslation(filterDescriptor.getName()));
+    Label summaryText = new Label(details.getTranslation(groupMeta.getName()));
     // Button btnChooseGroup = new Button(new Icon(VaadinIcon.PLUS));
     // btnChooseGroup.addClickListener(groupSelectButtonListener());
 
@@ -116,22 +116,24 @@ public class DynamicFilterViewUI implements DynamicFilterView {
     return null;
   }
 
-  private Component createDescriptorUI(DynamicFilterDescriptor descriptor) {
+  private Component createFilterMetaUI(DynamicFilterMeta filterMeta) {
     Label label = new Label();
-    label.setText(label.getTranslation(descriptor.getName()));
-    label.addClassName("descriptor-name");
+    label.setText(label.getTranslation(filterMeta.getName()));
+    // label.addClassName("filtermeta-name");
+    // label.addClassName("descriptor-name");
     Button button = new Button(new Icon(VaadinIcon.PLUS));
-    button.addClassName("plus-button");
-    button.addClickListener(addFilterListener(descriptor.getGroupName(), descriptor.getName()));
-    FlexLayout descriptorUI = new FlexLayout(label, button);
-    descriptorUI.addClassName("descriptor-layout");
-    return descriptorUI;
+    // button.addClassName("plus-button");
+    button.addClickListener(addFilterListener(filterMeta.getGroupName(), filterMeta.getName()));
+    FlexLayout filterMetaUI = new FlexLayout(label, button);
+    filterMetaUI.addClassName("filtermeta-layout");
+    // filterMetaUI.addClassName("descriptor-layout");
+    return filterMetaUI;
   }
 
   private ComponentEventListener<ClickEvent<Button>> addFilterListener(String groupName,
-      String descriptorName) {
+      String filterMetaName) {
     return e -> {
-      controller.addFilter(groupName, descriptorName);
+      controller.addFilter(groupName, filterMetaName);
     };
   }
 
@@ -169,7 +171,7 @@ public class DynamicFilterViewUI implements DynamicFilterView {
   private void renderFilter(DynamicFilterUI filterUI, DynamicFilter dynamicFilter) {
     // TODO honor dynamicFilter.getOperation()
     DynamicFilterOperationOneFieldUI operationUI =
-        new DynamicFilterOperationOneFieldUI(dynamicFilter.getDescriptorName());
+        new DynamicFilterOperationOneFieldUI(dynamicFilter.getMetaName());
     filterUI.addOperation(operationUI);
   }
 

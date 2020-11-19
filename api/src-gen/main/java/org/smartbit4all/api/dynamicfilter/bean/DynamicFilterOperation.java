@@ -1,14 +1,11 @@
 package org.smartbit4all.api.dynamicfilter.bean;
 
+import java.net.URI;
 import java.util.Objects;
+import javax.validation.Valid;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.net.URI;
-import org.openapitools.jackson.nullable.JsonNullable;
-import javax.validation.Valid;
-import javax.validation.constraints.*;
 
 /**
  * Defines a possible way of using a filter field. For example: exact match, like, sounds like, interval, etc.

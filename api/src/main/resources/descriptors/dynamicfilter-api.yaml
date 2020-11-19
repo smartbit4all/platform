@@ -21,15 +21,15 @@ components:
     DynamicFilterConfig:
       type: object
       properties:
-        dynamicFilterDescriptors:
+        dynamicFilterMetas:
           type: array
           items:
-            $ref: '#/components/schemas/DynamicFilterDescriptor'
-        dynamicFilterGroupDescriptors:
+            $ref: '#/components/schemas/DynamicFilterMeta'
+        dynamicFilterGroupMetas:
           type: array
           items:
-            $ref: '#/components/schemas/DynamicFilterGroupDescriptor'
-    DynamicFilterDescriptor:
+            $ref: '#/components/schemas/DynamicFilterGroupMeta'
+    DynamicFilterMeta:
       type: object
       description: 'Descriptor of a possible filter field. This field doesn''t have to correspond to an existing entity''s property, it is simple a way of filtering.'
       properties:
@@ -42,7 +42,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/DynamicFilterOperation'
-    DynamicFilterGroupDescriptor:
+    DynamicFilterGroupMeta:
       type: object
       properties:
         name:
@@ -51,8 +51,6 @@ components:
           type: string
         type:
           $ref: '#/components/schemas/DynamicFilterGroupType'
-        isDefaultSelected:
-          type: boolean
     DynamicFilterOperation:
       type: object
       description: 'Defines a possible way of using a filter field. For example: exact match, like, sounds like, interval, etc.'
@@ -84,8 +82,12 @@ components:
       properties:
         name:
           type: string
+          description: Name of the group.
         icon:
           type: string
+        metaName:
+          type: string
+          description: Name of the referenced DynamicFilterGroupMeta, if this group is created from any. 
         type:
           $ref: '#/components/schemas/DynamicFilterGroupType'
         filters:
@@ -103,10 +105,12 @@ components:
     DynamicFilter:
       type: object
       properties:
-        descriptorName:
+        metaName:
           type: string
+          description: Name of the referenced DynamicFilterMeta.
         operation:
           $ref: '#/components/schemas/DynamicFilterOperation'
+          description: Name of the referenced DynamicFilterMeta.
         value1:
           type: string
         value2:
@@ -115,7 +119,7 @@ components:
           type: array
           items:
             type: string
-        isIncluded:
+        included:
           type: boolean
-        isEditable:
+        editable:
           type: boolean

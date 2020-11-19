@@ -1,20 +1,15 @@
 package org.smartbit4all.api.dynamicfilter.bean;
 
 import java.util.Objects;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterGroupType;
-import org.openapitools.jackson.nullable.JsonNullable;
 import javax.validation.Valid;
-import javax.validation.constraints.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
- * DynamicFilterGroupDescriptor
+ * DynamicFilterGroupMeta
  */
 
-public class DynamicFilterGroupDescriptor   {
+public class DynamicFilterGroupMeta   {
   @JsonProperty("name")
   private String name;
 
@@ -24,10 +19,7 @@ public class DynamicFilterGroupDescriptor   {
   @JsonProperty("type")
   private DynamicFilterGroupType type;
 
-  @JsonProperty("isDefaultSelected")
-  private Boolean isDefaultSelected;
-
-  public DynamicFilterGroupDescriptor name(String name) {
+  public DynamicFilterGroupMeta name(String name) {
     this.name = name;
     return this;
   }
@@ -47,7 +39,7 @@ public class DynamicFilterGroupDescriptor   {
     this.name = name;
   }
 
-  public DynamicFilterGroupDescriptor icon(String icon) {
+  public DynamicFilterGroupMeta icon(String icon) {
     this.icon = icon;
     return this;
   }
@@ -67,7 +59,7 @@ public class DynamicFilterGroupDescriptor   {
     this.icon = icon;
   }
 
-  public DynamicFilterGroupDescriptor type(DynamicFilterGroupType type) {
+  public DynamicFilterGroupMeta type(DynamicFilterGroupType type) {
     this.type = type;
     return this;
   }
@@ -88,26 +80,6 @@ public class DynamicFilterGroupDescriptor   {
     this.type = type;
   }
 
-  public DynamicFilterGroupDescriptor isDefaultSelected(Boolean isDefaultSelected) {
-    this.isDefaultSelected = isDefaultSelected;
-    return this;
-  }
-
-  /**
-   * Get isDefaultSelected
-   * @return isDefaultSelected
-  */
-  @ApiModelProperty(value = "")
-
-
-  public Boolean getIsDefaultSelected() {
-    return isDefaultSelected;
-  }
-
-  public void setIsDefaultSelected(Boolean isDefaultSelected) {
-    this.isDefaultSelected = isDefaultSelected;
-  }
-
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -117,27 +89,25 @@ public class DynamicFilterGroupDescriptor   {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    DynamicFilterGroupDescriptor dynamicFilterGroupDescriptor = (DynamicFilterGroupDescriptor) o;
-    return Objects.equals(this.name, dynamicFilterGroupDescriptor.name) &&
-        Objects.equals(this.icon, dynamicFilterGroupDescriptor.icon) &&
-        Objects.equals(this.type, dynamicFilterGroupDescriptor.type) &&
-        Objects.equals(this.isDefaultSelected, dynamicFilterGroupDescriptor.isDefaultSelected);
+    DynamicFilterGroupMeta dynamicFilterGroupMeta = (DynamicFilterGroupMeta) o;
+    return Objects.equals(this.name, dynamicFilterGroupMeta.name) &&
+        Objects.equals(this.icon, dynamicFilterGroupMeta.icon) &&
+        Objects.equals(this.type, dynamicFilterGroupMeta.type);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, icon, type, isDefaultSelected);
+    return Objects.hash(name, icon, type);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class DynamicFilterGroupDescriptor {\n");
+    sb.append("class DynamicFilterGroupMeta {\n");
     
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    icon: ").append(toIndentedString(icon)).append("\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
-    sb.append("    isDefaultSelected: ").append(toIndentedString(isDefaultSelected)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -12,7 +12,7 @@ public interface DynamicFilterController extends UIController {
 
   void loadData();
 
-  void addFilter(String groupId, String descriptorName);
+  void addFilter(String groupId, String filterMetaName);
 
   String addFilterGroup(String parentGroupId, DynamicFilterGroupType groupType);
 
