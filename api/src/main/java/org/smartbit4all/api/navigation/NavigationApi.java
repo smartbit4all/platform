@@ -1,8 +1,8 @@
 package org.smartbit4all.api.navigation;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
-import org.smartbit4all.api.navigation.bean.NavigationAssociationMeta;
 import org.smartbit4all.api.navigation.bean.NavigationConfig;
 import org.smartbit4all.api.navigation.bean.NavigationEntry;
 import org.smartbit4all.api.navigation.bean.NavigationReferenceEntry;
@@ -44,7 +44,7 @@ public interface NavigationApi {
    *        {@link NavigationEntry} meta.
    * @return The map of the references by the association meta we required.
    */
-  Map<NavigationAssociationMeta, List<NavigationReferenceEntry>> navigate(NavigationEntry entry,
-      List<NavigationAssociationMeta> associations);
+  Map<URI, List<NavigationReferenceEntry>> navigate(NavigationEntry entry,
+      List<URI> associations);
 
 }

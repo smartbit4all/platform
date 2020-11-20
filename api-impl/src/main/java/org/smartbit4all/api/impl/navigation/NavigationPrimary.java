@@ -1,5 +1,6 @@
 package org.smartbit4all.api.impl.navigation;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -40,31 +41,31 @@ public class NavigationPrimary extends NavigationImpl implements InitializingBea
   }
 
   @Override
-  public Map<NavigationAssociationMeta, List<NavigationReferenceEntry>> navigate(
-      NavigationEntry entry, List<NavigationAssociationMeta> associations) {
+  public Map<URI, List<NavigationReferenceEntry>> navigate(
+      NavigationEntry entry, List<URI> associations) {
     // In this case the scheme of the uri in the NavigationAssociationMeta identifies the api to
     // delegate.
-    List<NavigationAssociationMeta> toNavigate = getAssociationsToNavigate(entry, associations);
+    List<URI> toNavigate = getAssociationsToNavigate(entry, associations);
     if (toNavigate == null || toNavigate.isEmpty()) {
       return Collections.emptyMap();
     }
-    Map<NavigationApi, List<NavigationAssociationMeta>> assocByApi = new HashMap<>();
-    for (NavigationAssociationMeta associationMeta : toNavigate) {
-      NavigationApi api = apiByName.get(associationMeta.getUri().getScheme());
+    Map<NavigationApi, List<URI>> assocByApi = new HashMap<>();
+    for (URI associationUri : toNavigate) {
+      NavigationApi api = apiByName.get(associationUri.getScheme());
       if (api != null) {
-        List<NavigationAssociationMeta> assocList = assocByApi.get(api);
+        List<URI> assocList = assocByApi.get(api);
         if (assocList == null) {
           assocList = new ArrayList<>();
         }
-        assocList.add(associationMeta);
+        assocList.add(associationUri);
         assocByApi.put(api, assocList);
       }
     }
-    Map<NavigationAssociationMeta, List<NavigationReferenceEntry>> result = new HashMap<>();
-    for (Entry<NavigationApi, List<NavigationAssociationMeta>> requestEntry : assocByApi
+    Map<URI, List<NavigationReferenceEntry>> result = new HashMap<>();
+    for (Entry<NavigationApi, List<URI>> requestEntry : assocByApi
         .entrySet()) {
       // Call the given api with the list as parameter and merge the result.
-      Map<NavigationAssociationMeta, List<NavigationReferenceEntry>> navigate =
+      Map<URI, List<NavigationReferenceEntry>> navigate =
           requestEntry.getKey().navigate(entry, requestEntry.getValue());
       result.putAll(navigate);
     }

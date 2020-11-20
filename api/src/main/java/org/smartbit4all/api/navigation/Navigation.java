@@ -119,14 +119,14 @@ public class Navigation {
    * @return The list of newly created api items.
    */
   public List<ApiItemChangeEvent<NavigationReference>> expandAll(NavigationNode node) {
-    Map<NavigationAssociationMeta, NavigationAssociation> map =
+    Map<URI, NavigationAssociation> map =
         node.getAssociations().stream().filter(a -> a.getLastNavigation() == null)
-            .collect(Collectors.toMap(a -> a.getMeta(), a -> a));
-    Map<NavigationAssociationMeta, List<NavigationReferenceEntry>> navigation =
+            .collect(Collectors.toMap(a -> a.getMeta().getUri(), a -> a));
+    Map<URI, List<NavigationReferenceEntry>> navigation =
         api.navigate(node.getEntry(),
-            new ArrayList<NavigationAssociationMeta>(map.keySet()));
+            new ArrayList<>(map.keySet()));
     List<ApiItemChangeEvent<NavigationReference>> result = new ArrayList<>();
-    for (Entry<NavigationAssociationMeta, List<NavigationReferenceEntry>> entry : navigation
+    for (Entry<URI, List<NavigationReferenceEntry>> entry : navigation
         .entrySet()) {
       NavigationAssociation association = map.get(entry.getKey());
       List<NavigationReferenceEntry> references = entry.getValue();
@@ -251,6 +251,24 @@ public class Navigation {
     result.setStartEntry(startEntry);
     result.setEndEntry(endEntry);
     result.setAssociationEntry(associationEntry);
+    return result;
+  }
+
+  public static NavigationAssociationMeta of(URI uri, String name, NavigationEntryMeta startEntry,
+      NavigationEntryMeta endEntry, NavigationEntryMeta associationEntry) {
+    NavigationAssociationMeta result = new NavigationAssociationMeta();
+    result.setUri(uri);
+    result.setName(name);
+    result.setStartEntry(startEntry);
+    result.setEndEntry(endEntry);
+    result.setAssociationEntry(associationEntry);
+    return result;
+  }
+
+  public static NavigationEntryMeta of(URI uri, String name) {
+    NavigationEntryMeta result = new NavigationEntryMeta();
+    result.setUri(uri);
+    result.setName(name);
     return result;
   }
 

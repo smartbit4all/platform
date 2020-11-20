@@ -110,6 +110,8 @@ public class StringConstant {
 
   public static final String UNDERLINE = "_";
 
+  public static final String UNKNOWN = "N/A";
+
   public static final String VERTICAL_BAR = "|";
 
   public static final String ZERO = "0";
