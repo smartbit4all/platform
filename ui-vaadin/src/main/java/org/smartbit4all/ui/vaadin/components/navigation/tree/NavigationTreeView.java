@@ -35,6 +35,16 @@ public class NavigationTreeView implements NavigationView {
     // tree.addColumn(i -> concetanateIconAndName(i.getIconResource(), i.getName())).setHeader("");
 
     tree.addHierarchyColumn(i -> i.getEntry().getName());
+    tree.addSelectionListener(selection -> {
+      selection.getFirstSelectedItem().ifPresent(s -> {
+        if (s.getEntry().getViews() != null && !s.getEntry().getViews().isEmpty()) {
+          // TODO Here we need a more sophisticated solution to offer the potential views.
+          org.smartbit4all.api.navigation.bean.NavigationView navigationView =
+              s.getEntry().getViews().get(0);
+          tree.getUI().ifPresent(ui -> ui.navigate(navigationView.getName()));
+        }
+      });
+    });
     setDataProviderForTree();
   }
 
