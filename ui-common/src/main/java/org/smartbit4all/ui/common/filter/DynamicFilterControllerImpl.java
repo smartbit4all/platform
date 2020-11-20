@@ -31,9 +31,11 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
   private Map<String, String> descriptorNameByFilterId = new HashMap<>();
   private Map<String, DynamicFilterGroup> groupsByName = new HashMap<>();
 
-  public DynamicFilterControllerImpl(DynamicFilterApi api, String uri) {
+  public DynamicFilterControllerImpl(DynamicFilterApi api, String uri,
+      DynamicFilterConfigMode filterConfigMode) {
     this.api = api;
     this.uri = uri;
+    this.filterConfigMode = filterConfigMode;
     rootFilterGroup = new DynamicFilterGroup();
     groupsById.put(ROOT_FILTER_GROUP, rootFilterGroup);
 
@@ -52,7 +54,6 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
         .forEach(filter -> filterMetaByName.put(filter.getName(), filter));
     filterConfig.getDynamicFilterGroupMetas()
         .forEach(group -> filterGroupMetaByName.put(group.getName(), group));
-    filterConfigMode = filterConfig.getMode();
     if (filterConfigMode == null) {
       filterConfigMode = DynamicFilterConfigMode.SIMPLE_DYNAMIC;
     }
