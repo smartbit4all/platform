@@ -158,7 +158,7 @@ public class DynamicFilterViewUI implements DynamicFilterView {
     }
     filtersById.put(filterId, filterUI);
     // TODO special handling when putting into groupUI?
-    groupUI.add(filterUI);
+    groupUI.addToFilterGroup(filterUI);
     renderFilter(filterUI, dynamicFilter);
   }
 
@@ -199,15 +199,15 @@ public class DynamicFilterViewUI implements DynamicFilterView {
   @Override
   public void removeFilter(String filterId) {
     DynamicFilterUI filter = filtersById.get(filterId);
-    filter.getGroup().remove(filter);
+    filter.getGroup().getFiltersLayout().remove(filter);
   }
 
   @Override
   public void removeGroup(String groupId) {
     DynamicFilterGroupUI groupUI = groupsById.get(groupId);
     groupsById.remove(groupId);
-    if (groupUI.getParentGroupId() != null) {
-      groupUI.getParentGroupId().remove(groupUI);
+    if (groupUI.getParentGroupUI() != null) {
+      groupUI.getParentGroupUI().remove(groupUI);
     } else {
       throw new RuntimeException("Trying to remove root group UI!");
     }

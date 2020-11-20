@@ -24,8 +24,8 @@
 }
 
 .dynamic-filtergroup {
+	flex-direction: row;
 	display: flex;
-	flex-wrap: wrap;
     justify-content: flex-start;
 	width: 100%;
 	background-color: var(--lumo-base-color);
@@ -103,6 +103,7 @@
 }
 
 .icon-layout {
+	min-width: 210px;
 	align-items: center;
 	width: 210px;
 }
@@ -113,4 +114,8 @@
 
 .filter-label {
 	margin-left: 10px;
+}
+
+.filters-group-layout {
+	flex-wrap: wrap;
 }
