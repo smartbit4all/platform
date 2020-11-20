@@ -37,6 +37,7 @@
 }
 
 .dynamic-filter {
+	flex-direction: row;
 	border-radius: var(--lumo-border-radius-s);
 	background-color: var(--lumo-base-color);
 	margin: 0.25em;
@@ -95,4 +96,22 @@
     margin-top: 16px;
     color: var(--lumo-contrast-50pct);
     font: menu;
+}
+
+.filter-layout {
+	flex-direction: column;
+	margin-left: 25px;
+}
+
+.icon-layout {
+	align-items: center;
+	width: 210px;
+}
+
+.filter-icon {
+	margin-left: 10px;
+}
+
+.filter-label {
+	margin-left: 10px;
 }

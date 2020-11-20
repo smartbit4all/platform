@@ -189,6 +189,7 @@ public class DynamicFilterViewUI implements DynamicFilterView {
           "No parentGroupUI found with '" + parentGroupId + "' groupId!");
     }
     DynamicFilterGroupUI groupUI = new DynamicFilterGroupUI(false, parentGroupUI, isClosable);
+    groupUI.setIconLayout(group.getIcon(), group.getName());
     groupsById.put(groupId, groupUI);
     // TODO set groupUI properties according to group
     parentGroupUI.add(groupUI);
