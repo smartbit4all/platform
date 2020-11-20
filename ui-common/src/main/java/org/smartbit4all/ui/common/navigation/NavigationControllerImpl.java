@@ -3,7 +3,6 @@ package org.smartbit4all.ui.common.navigation;
 import java.util.stream.Stream;
 import org.smartbit4all.api.navigation.Navigation;
 import org.smartbit4all.api.navigation.NavigationApi;
-import org.smartbit4all.api.navigation.bean.NavigationAssociation;
 import org.smartbit4all.api.navigation.bean.NavigationConfig;
 import org.smartbit4all.api.navigation.bean.NavigationNode;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,49 +48,28 @@ public class NavigationControllerImpl implements NavigationController {
     this.root = root;
     if (navigationState != null) {
       navigationState.setRoot(root);
-      navigationState.expandAll(root);
-    }
-  }
-
-  @Override
-  public void expandAll(NavigationNode node) {
-    if (navigationState != null) {
-      view.render(node, navigationState.expandAll(node));
     }
   }
 
   @Override
   public boolean hasChildren(NavigationNode node) {
-    if (node == null)
-      return navigationState.hasChildren(root.getId());
-    navigationState.expandAll(node);
-    return navigationState.hasChildren(node.getId());
+    NavigationNode nodeToProcess = node == null ? root : node;
+    navigationState.expandAll(nodeToProcess);
+    return navigationState.hasChildren(nodeToProcess.getId());
   }
 
   @Override
   public int getChildCount(NavigationNode node) {
-    if (node == null)
-      return navigationState.numberOfChildren(root.getId());
-    return navigationState.numberOfChildren(node.getId());
+    NavigationNode nodeToProcess = node == null ? root : node;
+    navigationState.expandAll(nodeToProcess);
+    return navigationState.numberOfChildren(nodeToProcess.getId());
   }
 
   @Override
   public Stream<NavigationNode> getChildrens(NavigationNode parent) {
-    if (parent != null)
-      return navigationState.getCildrens(parent.getId()).stream();
-    return navigationState.getCildrens(root.getId()).stream();
-
-  }
-
-  @Override
-  public void expand(NavigationAssociation association) {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
-  public void loadRootNodes() {
-    expandAll(root);
+    NavigationNode nodeToProcess = parent == null ? root : parent;
+    navigationState.expandAll(nodeToProcess);
+    return navigationState.getCildrens(nodeToProcess.getId()).stream();
 
   }
 

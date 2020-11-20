@@ -9,6 +9,8 @@ import org.smartbit4all.ui.common.view.UIView;
 
 public interface DynamicFilterView extends UIView {
 
+  void init();
+
   void renderFilterSelectors(DynamicFilterConfig filterConfig);
 
   void renderFilter(String groupId, String filterId, DynamicFilter dynamicFilter,

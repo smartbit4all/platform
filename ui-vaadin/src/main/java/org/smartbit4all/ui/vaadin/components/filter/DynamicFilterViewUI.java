@@ -46,10 +46,10 @@ public class DynamicFilterViewUI implements DynamicFilterView {
     this.activeGroupId = DynamicFilterController.ROOT_FILTER_GROUP;
     layoutComponents();
     controller.setUi(this);
-    init();
   }
 
-  private void init() {
+  @Override
+  public void init() {
     controller.loadData();
   }
 

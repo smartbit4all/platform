@@ -13,7 +13,6 @@ public interface NavigationView extends UIView {
    * 
    * @param root
    */
-  void setRoot(NavigationNode root);
 
   void render(NavigationNode node, List<ApiItemChangeEvent<NavigationReference>> changes);
 

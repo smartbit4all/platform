@@ -48,6 +48,9 @@ descriptorList.each {
 	    	models: "", // with this only the model files (the beans) will be generated
 	    	//apis: ""
 	    ]
+	    //importMappings = [
+	    //	"Value": "org.smartbit4all.api.value.bean.Value"
+	    //]
 	    configOptions = [
 	        dateLibrary: "java8",
 	        unhandledException: 'true',
