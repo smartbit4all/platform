@@ -32,8 +32,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/DynamicFilterGroupMeta'
-        mode:
-          $ref: '#/components/schemas/DynamicFilterConfigMode'
         defaultFilterStyle:
           type: string
         defaultFilterGroupStyle:
@@ -131,6 +129,7 @@ components:
           type: array
           items:
             type: string
+            #$ref: 'value-api.yaml#/components/schemas/Value'
         included:
           type: boolean
         editable:
