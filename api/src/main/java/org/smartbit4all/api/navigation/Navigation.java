@@ -169,6 +169,7 @@ public class Navigation {
         .map(r -> new ApiItemChangeEvent<NavigationReference>(ApiItemOperation.NEW, r))
         .collect(Collectors.toList()));
     association.setReferences(newReferences);
+    association.setLastNavigation(Integer.valueOf((int) System.currentTimeMillis()));
     return result;
   }
 

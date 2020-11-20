@@ -24,8 +24,6 @@ public class NavigationTreeView implements NavigationView {
    */
   NavigationController controller;
 
-  NavigationNode root;
-
   public NavigationTreeView(NavigationController controller,
       TreeGrid<NavigationNode> treeComponent) {
     super();
@@ -34,10 +32,8 @@ public class NavigationTreeView implements NavigationView {
     controller.setUI(this);
     // Adapt the given tree and add the necessary parameters.
 
-    // tree.addSelectionListener(selection -> controller.treeNodeSelected(selection));
     // tree.addColumn(i -> concetanateIconAndName(i.getIconResource(), i.getName())).setHeader("");
 
-    tree.addExpandListener(e -> e.getItems().stream().forEach(n -> controller.expandAll(n)));
     tree.addHierarchyColumn(i -> i.getEntry().getName());
     setDataProviderForTree();
   }
@@ -66,20 +62,7 @@ public class NavigationTreeView implements NavigationView {
 
   }
 
-  // private void loadRootNodes() {
-  // controller.loadRootNodes();
-  // }
-
   @Override
-  public void setRoot(NavigationNode root) {
-    controller.setRoot(root);
-
-  }
-
-  @Override
-  public void render(NavigationNode node, List<ApiItemChangeEvent<NavigationReference>> changes) {
-    // TODO Auto-generated method stub
-
-  }
+  public void render(NavigationNode node, List<ApiItemChangeEvent<NavigationReference>> changes) {}
 
 }
