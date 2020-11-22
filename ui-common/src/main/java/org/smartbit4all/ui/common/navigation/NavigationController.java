@@ -27,4 +27,6 @@ public interface NavigationController extends UIController {
 
   boolean hasChildren(NavigationNode node);
 
+  void setupViewParameters(NavigationNode node);
+
 }

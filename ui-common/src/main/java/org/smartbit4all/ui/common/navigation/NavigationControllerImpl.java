@@ -6,6 +6,7 @@ import org.smartbit4all.api.navigation.NavigationApi;
 import org.smartbit4all.api.navigation.bean.NavigationConfig;
 import org.smartbit4all.api.navigation.bean.NavigationNode;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 
 public class NavigationControllerImpl implements NavigationController {
 
@@ -18,6 +19,9 @@ public class NavigationControllerImpl implements NavigationController {
 
   @Autowired
   protected NavigationApi api;
+
+  @Autowired
+  protected ApplicationContext ctx;
 
   private NavigationNode root;
 
@@ -73,23 +77,10 @@ public class NavigationControllerImpl implements NavigationController {
 
   }
 
-  // /**
-  // * The expand will retrieve the available entries starting from the given entry. The expand will
-  // * retrieve the related entries from the underlying api.
-  // *
-  // * @param entry The entry to expand. The entry will be filled with new entries as children.
-  // * @return The api will return the newly created entries for further processing.
-  // */
-  // List<ApiItemChangeEvent<NavigationEntry>> expand(NavigationEntry entry);
-  //
-  // /**
-  // * This function will retrieve again the navigation entries and it's children. The object
-  // * structure will be refreshed but also we get back the list of changes in an
-  // * {@link ApiItemChangeEvent} list with the changed {@link NavigationEntry}s.
-  // *
-  // * @param entry The entry to refresh. The refresh
-  // * @return
-  // */
-  // List<ApiItemChangeEvent<NavigationEntry>> refresh(NavigationEntry entry);
+  @Override
+  public void setupViewParameters(NavigationNode node) {
+    NavigationViewParameter param = ctx.getBean(NavigationViewParameter.class);
+    param.setEntryUri(node.getEntry().getUri());
+  }
 
 }

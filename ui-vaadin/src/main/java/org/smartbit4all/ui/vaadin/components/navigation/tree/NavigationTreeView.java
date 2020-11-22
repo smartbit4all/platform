@@ -7,6 +7,7 @@ import org.smartbit4all.api.navigation.bean.NavigationNode;
 import org.smartbit4all.api.navigation.bean.NavigationReference;
 import org.smartbit4all.ui.common.navigation.NavigationController;
 import org.smartbit4all.ui.common.navigation.NavigationView;
+import org.springframework.context.ApplicationContext;
 import com.vaadin.flow.component.treegrid.TreeGrid;
 import com.vaadin.flow.data.provider.hierarchy.AbstractBackEndHierarchicalDataProvider;
 import com.vaadin.flow.data.provider.hierarchy.HierarchicalDataProvider;
@@ -25,7 +26,7 @@ public class NavigationTreeView implements NavigationView {
   NavigationController controller;
 
   public NavigationTreeView(NavigationController controller,
-      TreeGrid<NavigationNode> treeComponent) {
+      TreeGrid<NavigationNode> treeComponent, ApplicationContext ctx) {
     super();
     this.tree = treeComponent;
     this.controller = controller;
@@ -41,6 +42,7 @@ public class NavigationTreeView implements NavigationView {
           // TODO Here we need a more sophisticated solution to offer the potential views.
           org.smartbit4all.api.navigation.bean.NavigationView navigationView =
               s.getEntry().getViews().get(0);
+          controller.setupViewParameters(s);
           tree.getUI().ifPresent(ui -> ui.navigate(navigationView.getName()));
         }
       });
