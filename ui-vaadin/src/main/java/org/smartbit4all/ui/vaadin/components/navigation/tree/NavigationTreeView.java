@@ -7,7 +7,6 @@ import org.smartbit4all.api.navigation.bean.NavigationNode;
 import org.smartbit4all.api.navigation.bean.NavigationReference;
 import org.smartbit4all.ui.common.navigation.NavigationController;
 import org.smartbit4all.ui.common.navigation.NavigationView;
-import org.springframework.context.ApplicationContext;
 import com.vaadin.flow.component.treegrid.TreeGrid;
 import com.vaadin.flow.data.provider.hierarchy.AbstractBackEndHierarchicalDataProvider;
 import com.vaadin.flow.data.provider.hierarchy.HierarchicalDataProvider;
@@ -26,7 +25,7 @@ public class NavigationTreeView implements NavigationView {
   NavigationController controller;
 
   public NavigationTreeView(NavigationController controller,
-      TreeGrid<NavigationNode> treeComponent, ApplicationContext ctx) {
+      TreeGrid<NavigationNode> treeComponent) {
     super();
     this.tree = treeComponent;
     this.controller = controller;
