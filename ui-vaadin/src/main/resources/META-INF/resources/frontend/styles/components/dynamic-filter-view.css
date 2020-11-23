@@ -120,7 +120,3 @@
 .filters-group-layout {
 	flex-wrap: wrap;
 }
-
-.filter-grid-layout {
-	overflow: auto;
-}
