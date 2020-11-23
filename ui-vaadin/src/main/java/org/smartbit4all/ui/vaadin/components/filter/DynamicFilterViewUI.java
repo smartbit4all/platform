@@ -175,9 +175,17 @@ public class DynamicFilterViewUI implements DynamicFilterView {
 
   private void renderFilter(DynamicFilterUI filterUI, DynamicFilter dynamicFilter) {
     // TODO honor dynamicFilter.getOperation()
-    DynamicFilterOperationOneFieldUI operationUI =
-        new DynamicFilterOperationOneFieldUI(dynamicFilter.getMetaName());
-    filterUI.addOperation(operationUI);
+
+//    if (dynamicFilter.getOperation().getFilterView().equals("filterop.txt.eq")) {
+      DynamicFilterOperationOneFieldUI operationUI =
+          new DynamicFilterOperationOneFieldUI(dynamicFilter.getMetaName());
+      filterUI.addOperation(operationUI);
+//    } else if (dynamicFilter.getOperation().getFilterView().equals("filterop.multi.eq")) {
+//      DynamicFilterOperationMultiSelectUI operationUI = new DynamicFilterOperationMultiSelectUI(dynamicFilter.getOperation())
+//    }
+    
+    
+    
   }
 
   @Override
