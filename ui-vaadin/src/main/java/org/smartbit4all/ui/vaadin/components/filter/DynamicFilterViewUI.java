@@ -10,6 +10,7 @@ import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterGroupMeta;
 import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterMeta;
 import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterOperation;
 import org.smartbit4all.ui.common.filter.DynamicFilterController;
+import org.smartbit4all.ui.common.filter.DynamicFilterLabelPosition;
 import org.smartbit4all.ui.common.filter.DynamicFilterView;
 import org.smartbit4all.ui.vaadin.util.UIUtils;
 import com.vaadin.flow.component.ClickEvent;
@@ -134,13 +135,13 @@ public class DynamicFilterViewUI implements DynamicFilterView {
   private ComponentEventListener<ClickEvent<Button>> addFilterListener(String groupName,
       String filterMetaName) {
     return e -> {
-      controller.addFilter(groupName, filterMetaName, true);
+      controller.addFilter(groupName, filterMetaName, true, DynamicFilterLabelPosition.ON_LEFT);
     };
   }
 
   @Override
   public void renderFilter(String groupId, String filterId, DynamicFilter dynamicFilter,
-      List<DynamicFilterOperation> filterOperations, boolean isClosable) {
+      List<DynamicFilterOperation> filterOperations, boolean isClosable, DynamicFilterLabelPosition position) {
     DynamicFilterGroupUI groupUI = groupsById.get(groupId);
     if (groupUI == null) {
       throw new IllegalArgumentException("No groupUI found with '" + groupId + "' groupId!");
@@ -150,7 +151,7 @@ public class DynamicFilterViewUI implements DynamicFilterView {
       throw new IllegalArgumentException(
           "Existing filterUI found when creating new filterUI with '" + filterId + "' filterId!");
     }
-    filterUI = new DynamicFilterUI(groupUI, isClosable);
+    filterUI = new DynamicFilterUI(groupUI, isClosable, position);
     filterUI.setLabel(filterOperations.get(0).getDisplayValue());
     if (isClosable) {
       filterUI.getCloseButton()

@@ -79,7 +79,7 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
       addFilterGroup(ROOT_FILTER_GROUP, group.getName(), group.getIcon(), group.getType(), false);
     }
     for (DynamicFilterMeta filter : filterConfig.getDynamicFilterMetas()) {
-      addFilter(filter.getGroupName(), filter.getName(), false);
+      addFilter(filter.getGroupName(), filter.getName(), false, DynamicFilterLabelPosition.PLACEHOLDER);
     }
   }
 
@@ -96,7 +96,7 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
   }
 
   @Override
-  public void addFilter(String groupName, String descriptorName, boolean isClosable) {
+  public void addFilter(String groupName, String descriptorName, boolean isClosable, DynamicFilterLabelPosition position) {
     DynamicFilterGroupMeta groupMeta = filterGroupMetaByName.get(groupName);
     DynamicFilterGroup filterGroup = groupsByName.get(groupMeta.getName());
     if (filterGroup == null) {
@@ -116,7 +116,7 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
         .filter(entry -> entry.getValue().equals(groupToSearch)).findFirst().get().getKey();
     updateControllerModel(groupId, descriptorName, dynamicFilter, filterId);
 
-    ui.renderFilter(groupId, filterId, dynamicFilter, filterOptions, isClosable);
+    ui.renderFilter(groupId, filterId, dynamicFilter, filterOptions, isClosable, position);
   }
 
   protected void updateControllerModel(String groupId, String descriptorName,

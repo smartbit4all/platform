@@ -24,4 +24,8 @@ public class DynamicFilterOperationOneFieldUI extends Div {
     text.setLabel(label);  
   }
   
+  public TextField getTextField() {
+    return text;
+  }
+  
 }

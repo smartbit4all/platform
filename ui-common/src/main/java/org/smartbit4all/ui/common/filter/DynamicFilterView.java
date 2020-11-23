@@ -14,7 +14,7 @@ public interface DynamicFilterView extends UIView {
   void renderFilterSelectors(DynamicFilterConfig filterConfig);
 
   void renderFilter(String groupId, String filterId, DynamicFilter dynamicFilter,
-      List<DynamicFilterOperation> filterOptions, boolean isClosable);
+      List<DynamicFilterOperation> filterOptions, boolean isClosable, DynamicFilterLabelPosition position);
 
   void renderFilter(String filterId, DynamicFilter dynamicFilter);
 
