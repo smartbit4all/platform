@@ -1,12 +1,17 @@
 package org.smartbit4all.ui.common.navigation;
 
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Stream;
 import org.smartbit4all.api.navigation.Navigation;
 import org.smartbit4all.api.navigation.NavigationApi;
 import org.smartbit4all.api.navigation.bean.NavigationConfig;
 import org.smartbit4all.api.navigation.bean.NavigationNode;
+import org.smartbit4all.ui.common.navigation.NavigationTreeNode.Kind;
+import org.smartbit4all.ui.common.view.UIViewShowCommand;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 
 public class NavigationControllerImpl implements NavigationController {
 
@@ -20,10 +25,16 @@ public class NavigationControllerImpl implements NavigationController {
   @Autowired
   protected NavigationApi api;
 
-  @Autowired
-  protected ApplicationContext ctx;
+  /**
+   * When starting the navigation we can setup the root nodes. These are the first nodes in the
+   * {@link Navigation} instance.
+   */
+  private List<NavigationNode> rootNodes = new ArrayList<>();
 
-  private NavigationNode root;
+  /**
+   * The view options for the navigation.
+   */
+  private NavigationViewOption options = new NavigationViewOption();
 
   public NavigationControllerImpl(NavigationApi api) {
     this.api = api;
@@ -48,39 +59,55 @@ public class NavigationControllerImpl implements NavigationController {
   }
 
   @Override
-  public void setRoot(NavigationNode root) {
-    this.root = root;
+  public void addRoot(URI rootUri) {
     if (navigationState != null) {
-      navigationState.setRoot(root);
+      navigationState.addIndependentEntries(Arrays.asList(rootUri));
     }
   }
 
   @Override
-  public boolean hasChildren(NavigationNode node) {
-    NavigationNode nodeToProcess = node == null ? root : node;
-    navigationState.expandAll(nodeToProcess);
-    return navigationState.hasChildren(nodeToProcess.getId());
+  public boolean hasChildren(NavigationTreeNode node) {
+    return node == null ? !rootNodes.isEmpty() : navigationState.hasChildren(node.getIdentifier());
   }
 
   @Override
-  public int getChildCount(NavigationNode node) {
-    NavigationNode nodeToProcess = node == null ? root : node;
-    navigationState.expandAll(nodeToProcess);
-    return navigationState.numberOfChildren(nodeToProcess.getId());
+  public int getChildCount(NavigationTreeNode node) {
+    return node == null ? rootNodes.size() : navigationState.numberOfChildren(node.getIdentifier());
   }
 
   @Override
-  public Stream<NavigationNode> getChildrens(NavigationNode parent) {
-    NavigationNode nodeToProcess = parent == null ? root : parent;
-    navigationState.expandAll(nodeToProcess);
-    return navigationState.getCildrens(nodeToProcess.getId()).stream();
+  public Stream<NavigationTreeNode> getChildrens(NavigationTreeNode parent) {
+    if (parent == null) {
+      return rootNodes.stream().map(
+          n -> new NavigationTreeNode(Kind.ENTRY, n.getId(), n.getEntry().getName(), null,
+              n.getEntry().getIcon(), null));
+    }
+    // Kind kind, String identifier, String caption, String shortDescription,
+    // String icon, String[] styles
+    NavigationNode node = navigationState.getNode(parent.getIdentifier());
+    if (node != null) {
+      navigationState.expandAll(node);
+    }
+    return navigationState.getCildrens(parent.getIdentifier()).stream()
+        .map(n -> new NavigationTreeNode(Kind.ENTRY, n.getId(), n.getEntry().getName(), null,
+            n.getEntry().getIcon(), null));
 
   }
 
   @Override
-  public void setupViewParameters(NavigationNode node) {
-    NavigationViewParameter param = ctx.getBean(NavigationViewParameter.class);
-    param.setEntryUri(node.getEntry().getUri());
+  public UIViewShowCommand getViewCommand(NavigationTreeNode node) {
+    if (node.isKind(Kind.ENTRY)) {
+      NavigationNode navigationNode = navigationState.getNode(node.getIdentifier());
+      if (navigationNode != null && navigationNode.getEntry().getViews() != null
+          && !navigationNode.getEntry().getViews().isEmpty()) {
+        UIViewShowCommand viewCommand =
+            new UIViewShowCommand(navigationNode.getEntry().getViews().get(0).getName());
+        viewCommand.addParameter("entry",
+            Arrays.asList(navigationNode.getEntry().getUri().toString()));
+        return viewCommand;
+      }
+    }
+    return null;
   }
 
 }

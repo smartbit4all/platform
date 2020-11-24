@@ -1,14 +1,17 @@
 package org.smartbit4all.api.navigation;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import javax.validation.Valid;
 import org.smartbit4all.api.ApiItemChangeEvent;
 import org.smartbit4all.api.ApiItemOperation;
 import org.smartbit4all.api.navigation.bean.NavigationAssociation;
@@ -42,7 +45,7 @@ public class Navigation {
   /**
    * All the node we already have in this navigation. Identified by the URI of the entry.
    */
-  protected Map<URI, NavigationNode> nodesByUri = new HashMap<>();
+  protected Map<URI, NavigationEntry> entriesByUri = new HashMap<>();
 
   /**
    * All the references we already have in this navigation. Identified by their UUID.
@@ -111,6 +114,10 @@ public class Navigation {
     return false;
   }
 
+  public NavigationNode getNode(String identifier) {
+    return nodes.get(identifier);
+  }
+
 
   /**
    * The expand all navigate the associations that hasn't been navigated yet.
@@ -136,8 +143,21 @@ public class Navigation {
     return result;
   }
 
-  public void setRoot(NavigationNode root) {
-    registerNode(root);
+  /**
+   * This call will add the given entries by uri. These entries must be independent from each other
+   * to act like the root nodes of a navigation.
+   * 
+   * @return
+   */
+  public List<NavigationNode> addIndependentEntries(List<URI> uris) {
+    List<NavigationEntry> entries = api.getEntries(uris);
+    List<NavigationNode> result = new ArrayList<>();
+    for (NavigationEntry navigationEntry : entries) {
+      NavigationNode node = of(navigationEntry);
+      registerNode(node);
+      result.add(node);
+    }
+    return result;
   }
 
   /**
@@ -192,17 +212,14 @@ public class Navigation {
   }
 
   private NavigationNode registerEntry(NavigationEntry entry) {
-    NavigationNode node = nodesByUri.get(entry.getUri());
-    if (node == null) {
-      node = of(entry);
-    }
+    entriesByUri.put(entry.getUri(), entry);
+    NavigationNode node = of(entry);
     registerNode(node);
     return node;
   }
 
   private final void registerNode(NavigationNode node) {
     nodes.put(node.getId(), node);
-    nodesByUri.put(node.getEntry().getUri(), node);
   }
 
   public static NavigationNode of(NavigationEntry entry) {
@@ -211,8 +228,11 @@ public class Navigation {
     node.setEntry(entry);
     node.setId(UUID.randomUUID().toString());
     // Instantiate the associations by the meta.
-    node.setAssociations(
-        entry.getMeta().getAssociations().stream().map(a -> of(a)).collect(Collectors.toList()));
+    @Valid
+    List<NavigationAssociationMeta> associations = entry.getMeta().getAssociations();
+    node.setAssociations(associations == null || associations.isEmpty() ? Collections.emptyList()
+        : associations.stream().map(a -> of(a, node))
+            .collect(Collectors.toList()));
     return node;
   }
 
@@ -226,18 +246,25 @@ public class Navigation {
     return result;
   }
 
-  public static NavigationAssociation of(NavigationAssociationMeta assocMeta) {
+  public static NavigationAssociation of(NavigationAssociationMeta assocMeta, NavigationNode node) {
     NavigationAssociation result = new NavigationAssociation();
     result.setHidden(true); // TODO default by meta!
     result.setId(UUID.randomUUID().toString());
     result.setLastNavigation(null);
     result.setMeta(assocMeta);
+    result.setNode(node);
     return result;
   }
 
   public static NavigationEntry of(NavigationEntryMeta meta, URI uri, String name) {
     NavigationEntry result = new NavigationEntry();
-    result.setUri(uri);
+    URI entryURI;
+    try {
+      entryURI = new URI(meta.getUri().getScheme(), null, meta.getUri().getPath(), uri.toString());
+    } catch (URISyntaxException e) {
+      entryURI = uri;
+    }
+    result.setUri(entryURI);
     result.setName(name);
     result.setMeta(meta);
     return result;

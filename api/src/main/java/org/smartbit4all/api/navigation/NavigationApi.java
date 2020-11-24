@@ -43,8 +43,18 @@ public interface NavigationApi {
    *        we skip this parameter (null) then we will have all the associations defined in the
    *        {@link NavigationEntry} meta.
    * @return The map of the references by the association meta we required.
+   * @throws Exception
    */
   Map<URI, List<NavigationReferenceEntry>> navigate(NavigationEntry entry,
       List<URI> associations);
+
+  /**
+   * Retrieve the entries from the navigations.
+   * 
+   * @param uris The {@link URI} list that we have.
+   * @return The list of navigation entries.
+   * @throws Exception
+   */
+  List<NavigationEntry> getEntries(List<URI> uris);
 
 }
