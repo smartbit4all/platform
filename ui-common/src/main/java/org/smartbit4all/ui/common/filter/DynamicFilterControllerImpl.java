@@ -1,5 +1,6 @@
 package org.smartbit4all.ui.common.filter;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,12 +15,15 @@ import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterGroupType;
 import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterMeta;
 import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterOperation;
 import org.smartbit4all.api.filter.DynamicFilterApi;
+import org.smartbit4all.api.value.ValueApi;
+import org.smartbit4all.api.value.bean.Value;
 
 public class DynamicFilterControllerImpl implements DynamicFilterController {
 
   private DynamicFilterApi api;
   private DynamicFilterView ui;
   private String uri;
+  private ValueApi valueApi;
 
   private DynamicFilterGroup rootFilterGroup;
   private DynamicFilterConfigMode filterConfigMode;
@@ -32,10 +36,11 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
   private Map<String, DynamicFilterGroup> groupsByName = new HashMap<>();
 
   public DynamicFilterControllerImpl(DynamicFilterApi api, String uri,
-      DynamicFilterConfigMode filterConfigMode) {
+      DynamicFilterConfigMode filterConfigMode, ValueApi valueApi) {
     this.api = api;
     this.uri = uri;
     this.filterConfigMode = filterConfigMode;
+    this.valueApi = valueApi;
     rootFilterGroup = new DynamicFilterGroup();
     groupsById.put(ROOT_FILTER_GROUP, rootFilterGroup);
 
@@ -116,7 +121,25 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
         .filter(entry -> entry.getValue().equals(groupToSearch)).findFirst().get().getKey();
     updateControllerModel(groupId, descriptorName, dynamicFilter, filterId);
 
-    ui.renderFilter(groupId, filterId, dynamicFilter, filterOptions, isClosable, position);
+    List<Value> possibleValues = getPossibleValues(dynamicFilter);
+    ui.renderFilter(groupId, filterId, dynamicFilter, filterOptions, isClosable, position, possibleValues);
+  }
+
+  private List<Value> getPossibleValues(DynamicFilter dynamicFilter) {
+    URI uri = dynamicFilter.getOperation().getPossibleValues();
+    
+    if (uri == null) {
+      return null;
+    }
+    
+    List<Value> possibleValues;
+    try {
+      possibleValues = valueApi.getPossibleValues(uri);
+    } catch (Exception e) {
+      // TODO handle this better
+      throw new RuntimeException(e);
+    }
+    return possibleValues;
   }
 
   protected void updateControllerModel(String groupId, String descriptorName,
@@ -166,7 +189,8 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
     }
     DynamicFilterOperation filterOption = filterOptions.get(filterOptionIdx);
     dynamicFilter.setOperation(filterOption);
-    ui.renderFilter(filterId, dynamicFilter);
+    List<Value> possibleValues = getPossibleValues(dynamicFilter);
+    ui.renderFilter(filterId, dynamicFilter, possibleValues);
   }
 
   public void filterValueChanged(String filterId, String... values) {

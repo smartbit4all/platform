@@ -3,29 +3,27 @@ package org.smartbit4all.ui.vaadin.components.filter;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.textfield.TextField;
 
-public class DynamicFilterOperationOneFieldUI extends Div {
+public class DynamicFilterOperationOneFieldUI extends DynamicFilterOperationUI{
 
-  private TextField text;
-  private String label;
+  private TextField textField;
+  private String filterName;
 
-  public DynamicFilterOperationOneFieldUI(String label) {
+  public DynamicFilterOperationOneFieldUI(String filterName) {
     addClassName("dynamic-filter-onefield");
-    this.label = label;
-    label = getTranslation(label);
-    text = new TextField(label);
-    add(text);
+    this.filterName = filterName;
+    textField = new TextField();
+    add(textField);
   }
   
-  public String getLabel() {
-    return label;
+  public String getFilterName() {
+    return filterName;
   }
   
-  public void setLabel(String label) {
-    text.setLabel(label);  
-  }
-  
-  public TextField getTextField() {
-    return text;
+
+  @Override
+  public void setPlaceholder(String placeHolderText) {
+    textField.setPlaceholder(placeHolderText);
+    
   }
   
 }

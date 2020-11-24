@@ -9,6 +9,7 @@ import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterGroup;
 import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterGroupMeta;
 import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterMeta;
 import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterOperation;
+import org.smartbit4all.api.value.bean.Value;
 import org.smartbit4all.ui.common.filter.DynamicFilterController;
 import org.smartbit4all.ui.common.filter.DynamicFilterLabelPosition;
 import org.smartbit4all.ui.common.filter.DynamicFilterView;
@@ -135,13 +136,14 @@ public class DynamicFilterViewUI implements DynamicFilterView {
   private ComponentEventListener<ClickEvent<Button>> addFilterListener(String groupName,
       String filterMetaName) {
     return e -> {
-      controller.addFilter(groupName, filterMetaName, true, DynamicFilterLabelPosition.ON_LEFT);
+      controller.addFilter(groupName, filterMetaName, true, DynamicFilterLabelPosition.ON_TOP);
     };
   }
 
   @Override
   public void renderFilter(String groupId, String filterId, DynamicFilter dynamicFilter,
-      List<DynamicFilterOperation> filterOperations, boolean isClosable, DynamicFilterLabelPosition position) {
+      List<DynamicFilterOperation> filterOperations, boolean isClosable,
+      DynamicFilterLabelPosition position, List<Value> possibleValues) {
     DynamicFilterGroupUI groupUI = groupsById.get(groupId);
     if (groupUI == null) {
       throw new IllegalArgumentException("No groupUI found with '" + groupId + "' groupId!");
@@ -152,7 +154,7 @@ public class DynamicFilterViewUI implements DynamicFilterView {
           "Existing filterUI found when creating new filterUI with '" + filterId + "' filterId!");
     }
     filterUI = new DynamicFilterUI(groupUI, isClosable, position);
-    filterUI.setLabel(filterOperations.get(0).getDisplayValue());
+    filterUI.setOperationText(filterOperations.get(0).getDisplayValue());
     if (isClosable) {
       filterUI.getCloseButton()
           .addClickListener(e -> controller.removeFilter(groupId, filterId));
@@ -160,32 +162,40 @@ public class DynamicFilterViewUI implements DynamicFilterView {
     filtersById.put(filterId, filterUI);
     // TODO special handling when putting into groupUI?
     groupUI.addToFilterGroup(filterUI);
-    renderFilter(filterUI, dynamicFilter);
+    renderFilter(filterUI, dynamicFilter, possibleValues);
   }
 
   @Override
-  public void renderFilter(String filterId, DynamicFilter dynamicFilter) {
+  public void renderFilter(String filterId, DynamicFilter dynamicFilter, List<Value> possibleValues) {
     DynamicFilterUI filterUI = filtersById.get(filterId);
     if (filterUI == null) {
       throw new IllegalArgumentException("No filterUI found with '" + filterId + "' filterId!");
     }
-    renderFilter(filterUI, dynamicFilter);
+    renderFilter(filterUI, dynamicFilter, possibleValues);
   }
 
 
-  private void renderFilter(DynamicFilterUI filterUI, DynamicFilter dynamicFilter) {
+  private void renderFilter(DynamicFilterUI filterUI, DynamicFilter dynamicFilter, List<Value> possibleValues) {
     // TODO honor dynamicFilter.getOperation()
+    // TODO get strings from static finals
 
-//    if (dynamicFilter.getOperation().getFilterView().equals("filterop.txt.eq")) {
+    String filterView = dynamicFilter.getOperation().getFilterView();
+    if ("filterop.txt.eq".equals(filterView)) {
       DynamicFilterOperationOneFieldUI operationUI =
           new DynamicFilterOperationOneFieldUI(dynamicFilter.getMetaName());
-      filterUI.addOperation(operationUI);
-//    } else if (dynamicFilter.getOperation().getFilterView().equals("filterop.multi.eq")) {
-//      DynamicFilterOperationMultiSelectUI operationUI = new DynamicFilterOperationMultiSelectUI(dynamicFilter.getOperation())
-//    }
-    
-    
-    
+      filterUI.addOperationUI(operationUI);
+    } else if ("filterop.date.eq".equals(filterView)) {
+      DynamicFilterOperationOneFieldUI operationUI =
+          new DynamicFilterOperationOneFieldUI(dynamicFilter.getMetaName());
+      filterUI.addOperationUI(operationUI);
+    } else if ("filterop.multi.eq".equals(filterView)) {
+      DynamicFilterOperationComboBoxUI operationUI =
+          new DynamicFilterOperationComboBoxUI(dynamicFilter.getMetaName());
+      filterUI.addOperationUI(operationUI);
+      operationUI.setItems(possibleValues);
+      
+    }
+
   }
 
   @Override

@@ -29,6 +29,7 @@ public class DynamicFilterUI extends FlexLayout {
     this.position = position;
     
     lblFilterName = new Label();
+    lblFilterName.addClassName("filter-name");
     lblOperation = new Label();    
     lblOperation.addClassName("operation-name");
     row = new Row();
@@ -55,22 +56,20 @@ public class DynamicFilterUI extends FlexLayout {
     
   }
 
-  public void addOperation(DynamicFilterOperationOneFieldUI component) {
-    row.add(component);
-
-    lblFilterName.setText(getTranslation(component.getLabel()));
-    lblFilterName.addClassName("filter-name");
+  public void addOperationUI(DynamicFilterOperationUI operationUI) {
+    row.add(operationUI);
     
     if (position.equals(DynamicFilterLabelPosition.PLACEHOLDER)) {
       lblFilterName.setText("");
-      component.getTextField().setPlaceholder(getTranslation(component.getLabel()));
+      operationUI.setPlaceholder(getTranslation(operationUI.getFilterName()));
     } else if (position.equals(DynamicFilterLabelPosition.ON_LEFT)){
-      addClassName("filter-side-label");
+      lblFilterName.setText(getTranslation(operationUI.getFilterName()));
       filterLayout.setFlexDirection(FlexDirection.ROW);
       header.remove(btnClose);
       filterLayout.add(btnClose);
+    } else {
+      lblFilterName.setText(getTranslation(operationUI.getFilterName()));
     }
-    component.setLabel("");
   }
 
 
@@ -82,7 +81,7 @@ public class DynamicFilterUI extends FlexLayout {
     return btnClose;
   }
 
-  public void setLabel(String label) {
+  public void setOperationText(String label) {
     lblOperation.setText(getTranslation(label));
   }
   
