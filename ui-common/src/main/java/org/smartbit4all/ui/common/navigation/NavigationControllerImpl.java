@@ -61,7 +61,7 @@ public class NavigationControllerImpl implements NavigationController {
   @Override
   public void addRoot(URI rootUri) {
     if (navigationState != null) {
-      navigationState.addIndependentEntries(Arrays.asList(rootUri));
+      rootNodes.addAll(navigationState.addIndependentEntries(Arrays.asList(rootUri)));
     }
   }
 

@@ -300,4 +300,8 @@ public class Navigation {
     return result;
   }
 
+  public static URI uriOf(NavigationEntryMeta meta, URI uri) throws URISyntaxException {
+    return new URI(meta.getUri().getScheme(), null, meta.getUri().getPath(), uri.toString());
+  }
+
 }
