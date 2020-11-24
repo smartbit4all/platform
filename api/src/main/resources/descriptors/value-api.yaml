@@ -1,18 +1,37 @@
 openapi: 3.0.1
 info:
-  title: smartbit4all value api
-  description: smartbit4all value api
+  title: value api
+  description: value api
   termsOfService: ''
   contact:
     email: info@it4all.hu
   version: 1.0.0
+tags:
+- name: Value
 paths:
-  /nope:
-    post:
-      summary: Placeholder for generation
+  /possibleValues/{fieldUri}:
+    get:
+      tags:
+      - Value
+      summary: Returns the possible value set for the given URI
+      operationId: 'possibleValues'
+      parameters: 
+        - in: path
+          name: fieldUri
+          schema:
+            type: string
+            format: uri
+          required: true
+          description: 'The URI of the field the possible values are requested for'
       responses:
         '200':
-          description: nope
+          description: 'The requested possible values'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Value'
 components:
   schemas:
     Value:
