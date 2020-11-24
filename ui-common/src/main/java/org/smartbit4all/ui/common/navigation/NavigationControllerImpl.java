@@ -67,12 +67,28 @@ public class NavigationControllerImpl implements NavigationController {
 
   @Override
   public boolean hasChildren(NavigationTreeNode node) {
-    return node == null ? !rootNodes.isEmpty() : navigationState.hasChildren(node.getIdentifier());
+    if (node == null) {
+      return !rootNodes.isEmpty();
+    }
+    NavigationNode navigationNode = navigationState.getNode(node.getIdentifier());
+    if (navigationNode != null) {
+      navigationState.expandAll(navigationNode);
+    }
+    return navigationState.hasChildren(node.getIdentifier());
   }
 
   @Override
   public int getChildCount(NavigationTreeNode node) {
-    return node == null ? rootNodes.size() : navigationState.numberOfChildren(node.getIdentifier());
+    // return node == null ? rootNodes.size() :
+    // navigationState.numberOfChildren(node.getIdentifier());
+    if (node == null) {
+      return rootNodes.size();
+    }
+    NavigationNode navigationNode = navigationState.getNode(node.getIdentifier());
+    if (navigationNode != null) {
+      navigationState.expandAll(navigationNode);
+    }
+    return navigationState.numberOfChildren(node.getIdentifier());
   }
 
   @Override
