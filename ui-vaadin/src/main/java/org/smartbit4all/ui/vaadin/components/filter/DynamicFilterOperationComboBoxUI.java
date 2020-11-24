@@ -13,6 +13,7 @@ public class DynamicFilterOperationComboBoxUI extends DynamicFilterOperationUI{
   public DynamicFilterOperationComboBoxUI(String filterName) {
     this.filterName = filterName;
     comboBox = new ComboBox<>();
+    comboBox.addClassName("dynamic-filter-combobox");
     comboBox.setItemLabelGenerator(v -> v.getValue());
     add(comboBox);
   }

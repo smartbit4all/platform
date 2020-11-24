@@ -60,7 +60,7 @@ public class DynamicFilterUI extends FlexLayout {
     row.add(operationUI);
     
     if (position.equals(DynamicFilterLabelPosition.PLACEHOLDER)) {
-      lblFilterName.setText("");
+      header.remove(lblFilterName);
       operationUI.setPlaceholder(getTranslation(operationUI.getFilterName()));
     } else if (position.equals(DynamicFilterLabelPosition.ON_LEFT)){
       lblFilterName.setText(getTranslation(operationUI.getFilterName()));
