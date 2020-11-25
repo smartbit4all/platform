@@ -1,6 +1,7 @@
 package org.smartbit4all.ui.common.navigation;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -118,8 +119,13 @@ public class NavigationControllerImpl implements NavigationController {
           && !navigationNode.getEntry().getViews().isEmpty()) {
         UIViewShowCommand viewCommand =
             new UIViewShowCommand(navigationNode.getEntry().getViews().get(0).getName());
-        viewCommand.addParameter("entry",
-            Arrays.asList(navigationNode.getEntry().getUri().toString()));
+        try {
+          viewCommand.addParameter("entry",
+              new URI(navigationNode.getEntry().getUri().getFragment()));
+        } catch (URISyntaxException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
         return viewCommand;
       }
     }

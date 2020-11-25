@@ -1,7 +1,6 @@
 package org.smartbit4all.ui.common.view;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import org.smartbit4all.ui.common.controller.UIController;
 
@@ -20,7 +19,7 @@ public class UIViewShowCommand {
    * Parameters (because of the limited capabilities of the Vaadin QueryParameter) it's a map of
    * values.
    */
-  private Map<String, List<String>> parameters;
+  private Map<String, Object> parameters;
 
   public UIViewShowCommand(String viewName) {
     super();
@@ -36,12 +35,12 @@ public class UIViewShowCommand {
     this.viewName = viewName;
   }
 
-  public final Map<String, List<String>> getParameters() {
+  public final Map<String, Object> getParameters() {
     return parameters;
   }
 
-  public final UIViewShowCommand addParameter(String name, List<String> values) {
-    parameters.put(name, values);
+  public final UIViewShowCommand addParameter(String name, Object value) {
+    parameters.put(name, value);
     return this;
   }
 

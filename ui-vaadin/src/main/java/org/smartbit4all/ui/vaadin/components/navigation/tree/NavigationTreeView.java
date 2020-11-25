@@ -2,6 +2,8 @@ package org.smartbit4all.ui.vaadin.components.navigation.tree;
 
 import java.util.List;
 import java.util.stream.Stream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.ApiItemChangeEvent;
 import org.smartbit4all.api.navigation.bean.NavigationNode;
 import org.smartbit4all.api.navigation.bean.NavigationReference;
@@ -9,13 +11,15 @@ import org.smartbit4all.ui.common.navigation.NavigationController;
 import org.smartbit4all.ui.common.navigation.NavigationTreeNode;
 import org.smartbit4all.ui.common.navigation.NavigationView;
 import org.smartbit4all.ui.common.view.UIViewShowCommand;
+import org.smartbit4all.ui.vaadin.view.UIViewParameterVaadinTransition;
 import com.vaadin.flow.component.treegrid.TreeGrid;
 import com.vaadin.flow.data.provider.hierarchy.AbstractBackEndHierarchicalDataProvider;
 import com.vaadin.flow.data.provider.hierarchy.HierarchicalDataProvider;
 import com.vaadin.flow.data.provider.hierarchy.HierarchicalQuery;
-import com.vaadin.flow.router.QueryParameters;
 
 public class NavigationTreeView implements NavigationView {
+
+  private static Logger log = LoggerFactory.getLogger(NavigationTreeView.class);
 
   /**
    * The tree component that visualize the navigation nodes.
@@ -42,8 +46,13 @@ public class NavigationTreeView implements NavigationView {
       selection.getFirstSelectedItem().ifPresent(s -> {
         UIViewShowCommand showCommand = controller.getViewCommand(s);
         if (showCommand != null) {
-          QueryParameters params = new QueryParameters(showCommand.getParameters());
-          tree.getUI().ifPresent(ui -> ui.navigate(showCommand.getViewName(), params));
+          try (UIViewParameterVaadinTransition param =
+              new UIViewParameterVaadinTransition(showCommand.getParameters())) {
+
+            tree.getUI().ifPresent(ui -> ui.navigate(showCommand.getViewName(), param.construct()));
+          } catch (Exception e) {
+            log.error("Unable to pass parameters", e);
+          }
         }
         // if (s.getEntry().getViews() != null && !s.getEntry().getViews().isEmpty()) {
         // // TODO Here we need a more sophisticated solution to offer the potential views.
