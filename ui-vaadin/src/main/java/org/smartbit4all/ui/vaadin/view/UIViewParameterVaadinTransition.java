@@ -59,7 +59,8 @@ public class UIViewParameterVaadinTransition implements AutoCloseable {
     if (list == null || list.size() != 1) {
       return Collections.emptyMap();
     }
-    return parameterMap.get(list.get(0));
+    Map<String, Object> result = parameterMap.get(list.get(0));
+    return result == null ? Collections.emptyMap() : result;
   }
 
   @Override

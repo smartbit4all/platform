@@ -22,6 +22,7 @@ import org.smartbit4all.api.navigation.bean.NavigationEntryMeta;
 import org.smartbit4all.api.navigation.bean.NavigationNode;
 import org.smartbit4all.api.navigation.bean.NavigationReference;
 import org.smartbit4all.api.navigation.bean.NavigationReferenceEntry;
+import org.smartbit4all.api.navigation.bean.NavigationView;
 
 /**
  * This is the instance of a navigation. It has some configuration and it contains all the nodes and
@@ -256,7 +257,8 @@ public class Navigation {
     return result;
   }
 
-  public static NavigationEntry of(NavigationEntryMeta meta, URI uri, String name) {
+  public static NavigationEntry of(NavigationEntryMeta meta, URI uri, String name,
+      NavigationView... views) {
     NavigationEntry result = new NavigationEntry();
     URI entryURI;
     try {
@@ -267,6 +269,11 @@ public class Navigation {
     result.setUri(entryURI);
     result.setName(name);
     result.setMeta(meta);
+    if (views != null) {
+      for (int i = 0; i < views.length; i++) {
+        result.addViewsItem(views[i]);
+      }
+    }
     return result;
   }
 
