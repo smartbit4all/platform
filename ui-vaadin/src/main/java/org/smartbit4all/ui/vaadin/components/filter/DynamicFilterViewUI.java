@@ -11,6 +11,10 @@ import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterMeta;
 import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterOperation;
 import org.smartbit4all.ui.common.filter.DynamicFilterController;
 import org.smartbit4all.ui.common.filter.DynamicFilterView;
+import org.smartbit4all.ui.common.filter.FilterFieldUIState;
+import org.smartbit4all.ui.common.filter.FilterGroupUIState;
+import org.smartbit4all.ui.common.filter.FilterSelectorGroupUIState;
+import org.smartbit4all.ui.common.filter.FilterSelectorUIState;
 import org.smartbit4all.ui.vaadin.util.UIUtils;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;
@@ -64,10 +68,54 @@ public class DynamicFilterViewUI implements DynamicFilterView {
     filterSelectorHolder.add(createFilterSelectorLayout(filterConfig));
   }
 
+  public void renderFilterSelectors(List<FilterSelectorGroupUIState> filterSelectorGroups) {
+    VerticalLayout filterSelectorLayout = new VerticalLayout();
+    filterSelectorLayout.addClassName("filterselector-layout");
+    for (FilterSelectorGroupUIState group : filterSelectorGroups) {
+      Details filterSelectorGroupUI = createFilterSelectorGroupUI(group);
+
+
+    }
+
+  }
+
+  private Details createFilterSelectorGroupUI(FilterSelectorGroupUIState filterSelectorGroup) {
+    Details details = new Details();
+    details.addThemeVariants(DetailsVariant.FILLED);
+    Label summaryText = new Label(details.getTranslation(filterSelectorGroup.getLabelCode()));
+    // Button btnChooseGroup = new Button(new Icon(VaadinIcon.PLUS));
+    // btnChooseGroup.addClickListener(groupSelectButtonListener());
+
+    FlexLayout summary = new FlexLayout(summaryText);
+
+    details.setSummary(summary);
+    details.setOpened(true);
+    return details;
+
+  }
+
+  private Component createFilterSelectorUI(FilterSelectorUIState filterSelector) {
+    Label label = new Label();
+    label.setText(label.getTranslation(filterSelector.getLabelCode()));
+    Button button = new Button(new Icon(VaadinIcon.PLUS));
+    button.addClickListener(addFilterSelectorListener(filterSelector.getId()));
+    FlexLayout filterMetaUI = new FlexLayout(label, button);
+    filterMetaUI.addClassName("filtermeta-layout");
+    // filterMetaUI.addClassName("descriptor-layout");
+    return filterMetaUI;
+  }
+
+  private ComponentEventListener<ClickEvent<Button>> addFilterSelectorListener(
+      String filterSelectorId) {
+    return e -> {
+      controller.addFilter(filterSelectorId);
+    };
+  }
+
+
   private VerticalLayout createFilterSelectorLayout(DynamicFilterConfig filterConfig) {
     VerticalLayout filterSelectorLayout = new VerticalLayout();
     filterSelectorLayout.addClassName("filterselector-layout");
-    // metaLayout.addClassName("descriptors-layout");
     // TODO ability to add whole group to active filterPanel
 
     detailsByGroupName = new HashMap<>();
@@ -138,6 +186,32 @@ public class DynamicFilterViewUI implements DynamicFilterView {
     };
   }
 
+  public void renderFilter(FilterFieldUIState filter) {
+    DynamicFilterGroupUI groupUI = groupsById.get(filter.getGroupId());
+    if (groupUI == null) {
+      throw new IllegalArgumentException(
+          "No groupUI found with '" + filter.getGroupId() + "' groupId!");
+    }
+    DynamicFilterUI filterUI = filtersById.get(filter.getId());
+    if (filterUI != null) {
+      throw new IllegalArgumentException(
+          "Existing filterUI found when creating new filterUI with '" + filter.getId()
+              + "' filterId!");
+    }
+    filterUI = new DynamicFilterUI(groupUI, filter.isCloseable());
+    filterUI.setLabel(filterUI.getTranslation(filter.getLabelCode()));
+    // filterUI.setLabel(filterOperations.get(0).getDisplayValue());
+    // if (isClosable) {
+    // filterUI.getCloseButton()
+    // .addClickListener(e -> controller.removeFilter(groupId, filterId));
+    // }
+    // filtersById.put(filterId, filterUI);
+    // // TODO special handling when putting into groupUI?
+    // groupUI.addToFilterGroup(filterUI);
+    // renderFilter(filterUI, dynamicFilter);
+
+  }
+
   @Override
   public void renderFilter(String groupId, String filterId, DynamicFilter dynamicFilter,
       List<DynamicFilterOperation> filterOperations, boolean isClosable) {
@@ -177,6 +251,20 @@ public class DynamicFilterViewUI implements DynamicFilterView {
     DynamicFilterOperationOneFieldUI operationUI =
         new DynamicFilterOperationOneFieldUI(dynamicFilter.getMetaName());
     filterUI.addOperation(operationUI);
+  }
+
+  public void renderGroup(FilterGroupUIState group) {
+    DynamicFilterGroupUI parentGroupUI = groupsById.get(group.getParentGroupId());
+    if (parentGroupUI == null) {
+      throw new IllegalArgumentException(
+          "No parentGroupUI found with '" + group.getParentGroupId() + "' groupId!");
+    }
+    DynamicFilterGroupUI groupUI =
+        new DynamicFilterGroupUI(false, parentGroupUI, group.isCloseable());
+    groupUI.setIconLayout(group.getIconCode(), group.getLabelCode());
+    groupsById.put(group.getId(), groupUI);
+    // TODO set groupUI properties according to group
+    parentGroupUI.add(groupUI);
   }
 
   @Override
