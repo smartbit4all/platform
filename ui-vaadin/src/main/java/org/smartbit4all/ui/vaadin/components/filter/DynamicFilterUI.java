@@ -1,18 +1,15 @@
 package org.smartbit4all.ui.vaadin.components.filter;
 
-import org.smartbit4all.ui.vaadin.util.IconSize;
-import org.smartbit4all.ui.vaadin.util.TextColor;
-import org.smartbit4all.ui.vaadin.util.UIUtils;
+import org.smartbit4all.ui.common.filter.FilterFieldUIState;
 import com.vaadin.flow.component.board.Row;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Label;
-import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 
 public class DynamicFilterUI extends FlexLayout {
 
   private FlexLayout header;
+  // TODO remove Row
   private Row row;
   private Button btnClose;
   private DynamicFilterGroupUI group;
@@ -20,6 +17,32 @@ public class DynamicFilterUI extends FlexLayout {
   private Label lblFilterName;
   private FlexLayout filterLayout;
 
+  public DynamicFilterUI(DynamicFilterGroupUI group, FilterFieldUIState uiState) {
+    addClassName("dynamic-filter");
+    this.group = group;
+    row = new Row();
+    row.addClassName("filter-row");
+    header = new FlexLayout();
+    header.addClassName("filter-header");
+    lblFilterName = new Label();
+    lblOperation = new Label();
+    lblOperation.addClassName("operation-name");
+    header.add(lblFilterName, lblOperation);
+    btnClose = new Button(" ");
+    btnClose.addClassName("close-button");
+    header.add(btnClose);
+    if (uiState.isCloseable()) {
+      btnClose.setText("x");
+    } else {
+      btnClose.setEnabled(false);
+    }
+    filterLayout = new FlexLayout();
+    filterLayout.addClassName("filter-layout");
+    filterLayout.add(header, row);
+
+    add(filterLayout);
+
+  }
 
   public DynamicFilterUI(DynamicFilterGroupUI group, boolean isClosable) {
     addClassName("dynamic-filter");
@@ -43,7 +66,7 @@ public class DynamicFilterUI extends FlexLayout {
     filterLayout = new FlexLayout();
     filterLayout.addClassName("filter-layout");
     filterLayout.add(header, row);
-    
+
     add(filterLayout);
   }
 
@@ -67,7 +90,7 @@ public class DynamicFilterUI extends FlexLayout {
   public void setLabel(String label) {
     lblOperation.setText(getTranslation(label));
   }
-  
+
 
 
 }

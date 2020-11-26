@@ -7,15 +7,18 @@ public class FilterFieldUIState extends AbstractUIState {
   private String labelCode;
 
   private FilterGroupUIState group;
+  private DynamicFilter filter;
   private boolean isCloseable;
 
-  public FilterFieldUIState(DynamicFilter filter) {
+  public FilterFieldUIState(DynamicFilter filter, FilterGroupUIState group) {
     super();
+    this.group = group;
     applyFilterData(filter);
   }
 
   void applyFilterData(DynamicFilter filter) {
     labelCode = filter.getMetaName();
+    this.filter = filter;
     // TODO set isCloseable
   }
 
@@ -29,6 +32,14 @@ public class FilterFieldUIState extends AbstractUIState {
 
   public boolean isCloseable() {
     return isCloseable;
+  }
+
+  public FilterGroupUIState getGroup() {
+    return group;
+  }
+
+  public DynamicFilter getFilter() {
+    return filter;
   }
 
 }

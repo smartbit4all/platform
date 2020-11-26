@@ -50,6 +50,8 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
   @Override
   public void setUi(DynamicFilterView dynamicFilterView) {
     this.ui = dynamicFilterView;
+    // visible / not visible?
+    ui.renderGroup(uiState.rootGroup);
   }
 
   @Override
@@ -60,10 +62,7 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
         .forEach(filter -> filterMetaByName.put(filter.getName(), filter));
     filterConfig.getDynamicFilterGroupMetas()
         .forEach(group -> filterGroupMetaByName.put(group.getName(), group));
-    if (filterConfigMode == null) {
-      filterConfigMode = DynamicFilterConfigMode.SIMPLE_DYNAMIC;
-    }
-    switch (filterConfigMode) {
+    switch (uiState.getFilterConfigMode()) {
       case STATIC:
         renderStaticFilterConfig(filterConfig);
         break;
@@ -90,11 +89,11 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
   }
 
   private void renderSimpleFilterConfig(DynamicFilterConfig filterConfig) {
-    ui.renderFilterSelectors(filterConfig);
+    ui.renderFilterSelectors(uiState.filterSelectorGroups);
   }
 
   private void renderDynamicFilterConfig(DynamicFilterConfig filterConfig) {
-    ui.renderFilterSelectors(filterConfig);
+    ui.renderFilterSelectors(uiState.filterSelectorGroups);
   }
 
   private void renderResearchFilterConfig(DynamicFilterConfig filterConfig) {
@@ -103,11 +102,14 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
 
   @Override
   public void addFilter(String filterSelectorId) {
+    FilterFieldUIState filterUIState = uiState.createFilter(filterSelectorId);
+    ui.renderFilter(filterUIState);
     FilterSelectorUIState filterSelector = uiState.getFilterSelectorById(filterSelectorId);
     FilterSelectorGroupUIState filterSelectorGroup = filterSelector.getGroup();
 
     DynamicFilterGroup filterGroup = groupsByName.get(filterSelectorGroup.getName());
     if (filterGroup == null) {
+      // TODO filterGroup = addFilterGroup(ROOT_FILTER_GROUP,filterSelectorGroup);
       // TODO filterGroup = addFilterGroup(ROOT_FILTER_GROUP,filterSelectorGroup);
       String filterGroupId = addFilterGroup(ROOT_FILTER_GROUP,
           filterSelectorGroup.getName(),
@@ -116,8 +118,8 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
           filterSelectorGroup.isCloseable());
       filterGroup = groupsById.get(filterGroupId);
     }
-    DynamicFilterMeta filterMeta = filterMetaByName.get(filterMetaName);
-    List<DynamicFilterOperation> filterOptions = filterMeta.getOperations();
+    DynamicFilterMeta filterMeta = filterMetaByName.get(filterSelector.getName());
+    // List<DynamicFilterOperation> filterOptions = filterMeta.getOperations();
 
     DynamicFilter dynamicFilter = createFilter(filterMeta);
     String filterId = createIdentifier();
@@ -126,9 +128,9 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
     DynamicFilterGroup groupToSearch = filterGroup;
     String groupId = groupsById.entrySet().stream()
         .filter(entry -> entry.getValue().equals(groupToSearch)).findFirst().get().getKey();
-    updateControllerModel(groupId, filterMetaName, dynamicFilter, filterId);
-
-    ui.renderFilter(groupId, filterId, dynamicFilter, filterOptions, isClosable);
+    updateControllerModel(groupId, filterSelector.getName(), dynamicFilter, filterId);
+    ui.renderFilter(filterUIState);
+    // ui.renderFilter(groupId, filterId, dynamicFilter, filterOptions, isClosable);
   }
 
   @Override
@@ -224,6 +226,7 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
 
   @Override
   public void removeFilter(String groupId, String filterId) {
+    // TODO use uiState
     DynamicFilterGroup group = groupsById.get(groupId);
     DynamicFilter filter = filtersById.get(filterId);
     filtersById.remove(filterId);

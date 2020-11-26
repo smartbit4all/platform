@@ -10,18 +10,30 @@ public class FilterGroupUIState extends AbstractUIState {
   private String labelCode;
   private String iconCode;
   private String parentGroupId;
+  private FilterGroupUIState parentGroup;
   private boolean isCloseable;
+  private boolean isRoot;
 
-  public FilterGroupUIState(DynamicFilterGroup group, FilterGroupUIState parentGroup) {
+  public FilterGroupUIState(DynamicFilterGroup group, FilterGroupUIState parentGroup,
+      boolean isCloseable) {
     super();
+    this.isCloseable = isCloseable;
     applyGroupData(group, parentGroup);
   }
 
   void applyGroupData(DynamicFilterGroup group, FilterGroupUIState parentGroup) {
-    this.type = group.getType();
-    this.labelCode = group.getName();
-    this.iconCode = group.getIcon();
-    this.parentGroupId = parentGroup == null ? null : parentGroup.getId();
+    type = group.getType();
+    labelCode = group.getName();
+    iconCode = group.getIcon();
+    if (parentGroup == null) {
+      isRoot = true;
+      parentGroupId = null;
+      this.parentGroup = null;
+    } else {
+      isRoot = false;
+      parentGroupId = parentGroup.getId();
+      this.parentGroup = parentGroup;
+    }
     // TODO closeable
   }
 
@@ -43,6 +55,14 @@ public class FilterGroupUIState extends AbstractUIState {
 
   public boolean isCloseable() {
     return isCloseable;
+  }
+
+  public boolean isRoot() {
+    return isRoot;
+  }
+
+  public FilterGroupUIState getParentGroup() {
+    return parentGroup;
   }
 
 }
