@@ -1,5 +1,6 @@
 package org.smartbit4all.ui.common.filter;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,12 +15,15 @@ import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterGroupType;
 import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterMeta;
 import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterOperation;
 import org.smartbit4all.api.filter.DynamicFilterApi;
+import org.smartbit4all.api.value.ValueApi;
+import org.smartbit4all.api.value.bean.Value;
 
 public class DynamicFilterControllerImpl implements DynamicFilterController {
 
   private DynamicFilterApi api;
   private DynamicFilterView ui;
   private String uri;
+  private ValueApi valueApi;
 
   private DynamicFilterGroup rootFilterGroup;
 
@@ -38,9 +42,10 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
   private DynamicFilterViewUIState uiState;
 
   public DynamicFilterControllerImpl(DynamicFilterApi api, String uri,
-      DynamicFilterConfigMode filterConfigMode) {
+      DynamicFilterConfigMode filterConfigMode, ValueApi valueApi) {
     this.api = api;
     this.uri = uri;
+    this.valueApi = valueApi;
     rootFilterGroup = new DynamicFilterGroup();
     this.uiState = new DynamicFilterViewUIState(filterConfigMode, rootFilterGroup);
     groupsById.put(ROOT_FILTER_GROUP, rootFilterGroup);
@@ -80,11 +85,8 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
 
   private void renderStaticFilterConfig(DynamicFilterConfig filterConfig) {
     // no filterSelector
-    for (DynamicFilterGroupMeta group : filterConfig.getDynamicFilterGroupMetas()) {
-      addFilterGroup(ROOT_FILTER_GROUP, group.getName(), group.getIcon(), group.getType(), false);
-    }
-    for (DynamicFilterMeta filter : filterConfig.getDynamicFilterMetas()) {
-      addFilter(filter.getGroupName(), filter.getName(), false);
+    for (FilterSelectorUIState selector : uiState.filterSelectors) {
+      addFilter(selector.getId());
     }
   }
 
@@ -103,38 +105,44 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
   @Override
   public void addFilter(String filterSelectorId) {
     FilterFieldUIState filterUIState = uiState.createFilter(filterSelectorId);
-    ui.renderFilter(filterUIState);
-    FilterSelectorUIState filterSelector = uiState.getFilterSelectorById(filterSelectorId);
-    FilterSelectorGroupUIState filterSelectorGroup = filterSelector.getGroup();
+    String filterMetaName = filterUIState.getFilter().getMetaName();
+    DynamicFilterMeta filterMeta = filterMetaByName.get(filterMetaName);
+    List<DynamicFilterOperation> filterOptions = filterMeta.getOperations();
+    List<Value> possibleValues = getPossibleValues(filterUIState.getFilter());
 
-    DynamicFilterGroup filterGroup = groupsByName.get(filterSelectorGroup.getName());
-    if (filterGroup == null) {
-      // TODO filterGroup = addFilterGroup(ROOT_FILTER_GROUP,filterSelectorGroup);
-      // TODO filterGroup = addFilterGroup(ROOT_FILTER_GROUP,filterSelectorGroup);
-      String filterGroupId = addFilterGroup(ROOT_FILTER_GROUP,
-          filterSelectorGroup.getName(),
-          filterSelectorGroup.getIconCode(),
-          filterSelectorGroup.getType(),
-          filterSelectorGroup.isCloseable());
-      filterGroup = groupsById.get(filterGroupId);
-    }
-    DynamicFilterMeta filterMeta = filterMetaByName.get(filterSelector.getName());
-    // List<DynamicFilterOperation> filterOptions = filterMeta.getOperations();
-
-    DynamicFilter dynamicFilter = createFilter(filterMeta);
-    String filterId = createIdentifier();
-    filterGroup.addFiltersItem(dynamicFilter);
-    // TODO clear up hack&slash
-    DynamicFilterGroup groupToSearch = filterGroup;
-    String groupId = groupsById.entrySet().stream()
-        .filter(entry -> entry.getValue().equals(groupToSearch)).findFirst().get().getKey();
-    updateControllerModel(groupId, filterSelector.getName(), dynamicFilter, filterId);
-    ui.renderFilter(filterUIState);
-    // ui.renderFilter(groupId, filterId, dynamicFilter, filterOptions, isClosable);
+    ui.renderFilter(filterUIState, filterOptions, possibleValues);
+    // FilterSelectorUIState filterSelector = uiState.getFilterSelectorById(filterSelectorId);
+    // FilterSelectorGroupUIState filterSelectorGroup = filterSelector.getGroup();
+    //
+    // DynamicFilterGroup filterGroup = groupsByName.get(filterSelectorGroup.getName());
+    // if (filterGroup == null) {
+    // // TODO filterGroup = addFilterGroup(ROOT_FILTER_GROUP,filterSelectorGroup);
+    // // TODO filterGroup = addFilterGroup(ROOT_FILTER_GROUP,filterSelectorGroup);
+    // String filterGroupId = addFilterGroup(ROOT_FILTER_GROUP,
+    // filterSelectorGroup.getName(),
+    // filterSelectorGroup.getIconCode(),
+    // filterSelectorGroup.getType(),
+    // filterSelectorGroup.isCloseable());
+    // filterGroup = groupsById.get(filterGroupId);
+    // }
+    // DynamicFilterMeta filterMeta = filterMetaByName.get(filterSelector.getName());
+    // // List<DynamicFilterOperation> filterOptions = filterMeta.getOperations();
+    //
+    // DynamicFilter dynamicFilter = createFilter(filterMeta);
+    // String filterId = createIdentifier();
+    // filterGroup.addFiltersItem(dynamicFilter);
+    // // TODO clear up hack&slash
+    // DynamicFilterGroup groupToSearch = filterGroup;
+    // String groupId = groupsById.entrySet().stream()
+    // .filter(entry -> entry.getValue().equals(groupToSearch)).findFirst().get().getKey();
+    // updateControllerModel(groupId, filterSelector.getName(), dynamicFilter, filterId);
+    // ui.renderFilter(filterUIState);
+    // // ui.renderFilter(groupId, filterId, dynamicFilter, filterOptions, isClosable);
   }
 
   @Override
-  public void addFilter(String groupName, String filterMetaName, boolean isClosable) {
+  public void addFilter(String groupName, String filterMetaName, boolean isClosable,
+      DynamicFilterLabelPosition position) {
     DynamicFilterGroupMeta groupMeta = filterGroupMetaByName.get(groupName);
     DynamicFilterGroup filterGroup = groupsByName.get(groupMeta.getName());
     if (filterGroup == null) {
@@ -154,7 +162,26 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
         .filter(entry -> entry.getValue().equals(groupToSearch)).findFirst().get().getKey();
     updateControllerModel(groupId, filterMetaName, dynamicFilter, filterId);
 
-    ui.renderFilter(groupId, filterId, dynamicFilter, filterOptions, isClosable);
+    List<Value> possibleValues = getPossibleValues(dynamicFilter);
+    ui.renderFilter(groupId, filterId, dynamicFilter, filterOptions, isClosable, position,
+        possibleValues);
+  }
+
+  private List<Value> getPossibleValues(DynamicFilter dynamicFilter) {
+    URI uri = dynamicFilter.getOperation().getPossibleValues();
+
+    if (uri == null) {
+      return null;
+    }
+
+    List<Value> possibleValues;
+    try {
+      possibleValues = valueApi.getPossibleValues(uri);
+    } catch (Exception e) {
+      // TODO handle this better
+      throw new RuntimeException(e);
+    }
+    return possibleValues;
   }
 
   protected void updateControllerModel(String groupId, String descriptorName,
@@ -204,7 +231,8 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
     }
     DynamicFilterOperation filterOption = filterOptions.get(filterOptionIdx);
     dynamicFilter.setOperation(filterOption);
-    ui.renderFilter(filterId, dynamicFilter);
+    List<Value> possibleValues = getPossibleValues(dynamicFilter);
+    ui.renderFilter(filterId, dynamicFilter, possibleValues);
   }
 
   public void filterValueChanged(String filterId, String... values) {

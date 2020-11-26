@@ -1,5 +1,6 @@
 package org.smartbit4all.ui.vaadin.components.filter;
 
+import org.smartbit4all.ui.common.filter.DynamicFilterLabelPosition;
 import org.smartbit4all.ui.common.filter.FilterFieldUIState;
 import com.vaadin.flow.component.board.Row;
 import com.vaadin.flow.component.button.Button;
@@ -16,66 +17,89 @@ public class DynamicFilterUI extends FlexLayout {
   private Label lblOperation;
   private Label lblFilterName;
   private FlexLayout filterLayout;
+  private DynamicFilterLabelPosition position;
 
   public DynamicFilterUI(DynamicFilterGroupUI group, FilterFieldUIState uiState) {
     addClassName("dynamic-filter");
     this.group = group;
-    row = new Row();
-    row.addClassName("filter-row");
-    header = new FlexLayout();
-    header.addClassName("filter-header");
+    this.position = uiState.getPosition();
+
     lblFilterName = new Label();
+    lblFilterName.addClassName("filter-name");
     lblOperation = new Label();
     lblOperation.addClassName("operation-name");
-    header.add(lblFilterName, lblOperation);
+    row = new Row();
+    row.addClassName("filter-row");
+
     btnClose = new Button(" ");
     btnClose.addClassName("close-button");
-    header.add(btnClose);
+
+
+    header = new FlexLayout();
+    header.addClassName("filter-header");
+    header.add(lblFilterName, lblOperation, btnClose);
+
+    filterLayout = new FlexLayout();
+    filterLayout.addClassName("filter-layout");
+    filterLayout.add(header, row);
+    add(filterLayout);
+
     if (uiState.isCloseable()) {
       btnClose.setText("x");
     } else {
       btnClose.setEnabled(false);
     }
-    filterLayout = new FlexLayout();
-    filterLayout.addClassName("filter-layout");
-    filterLayout.add(header, row);
-
-    add(filterLayout);
 
   }
 
-  public DynamicFilterUI(DynamicFilterGroupUI group, boolean isClosable) {
+  public DynamicFilterUI(DynamicFilterGroupUI group, boolean isClosable,
+      DynamicFilterLabelPosition position) {
     addClassName("dynamic-filter");
     this.group = group;
-    row = new Row();
-    row.addClassName("filter-row");
-    header = new FlexLayout();
-    header.addClassName("filter-header");
+    this.position = position;
+
     lblFilterName = new Label();
+    lblFilterName.addClassName("filter-name");
     lblOperation = new Label();
     lblOperation.addClassName("operation-name");
-    header.add(lblFilterName, lblOperation);
+    row = new Row();
+    row.addClassName("filter-row");
+
     btnClose = new Button(" ");
     btnClose.addClassName("close-button");
-    header.add(btnClose);
+
+
+    header = new FlexLayout();
+    header.addClassName("filter-header");
+    header.add(lblFilterName, lblOperation, btnClose);
+
+    filterLayout = new FlexLayout();
+    filterLayout.addClassName("filter-layout");
+    filterLayout.add(header, row);
+    add(filterLayout);
+
     if (isClosable) {
       btnClose.setText("x");
     } else {
       btnClose.setEnabled(false);
     }
-    filterLayout = new FlexLayout();
-    filterLayout.addClassName("filter-layout");
-    filterLayout.add(header, row);
 
-    add(filterLayout);
   }
 
-  public void addOperation(DynamicFilterOperationOneFieldUI component) {
-    row.add(component);
+  public void addOperationUI(DynamicFilterOperationUI operationUI) {
+    row.add(operationUI);
 
-    lblFilterName.setText(getTranslation(component.getLabel()));
-    lblFilterName.addClassName("filter-name");
-    component.setLabel("");
+    if (position.equals(DynamicFilterLabelPosition.PLACEHOLDER)) {
+      header.remove(lblFilterName);
+      operationUI.setPlaceholder(getTranslation(operationUI.getFilterName()));
+    } else if (position.equals(DynamicFilterLabelPosition.ON_LEFT)) {
+      lblFilterName.setText(getTranslation(operationUI.getFilterName()));
+      filterLayout.setFlexDirection(FlexDirection.ROW);
+      header.remove(btnClose);
+      filterLayout.add(btnClose);
+    } else {
+      lblFilterName.setText(getTranslation(operationUI.getFilterName()));
+    }
   }
 
 
@@ -87,7 +111,7 @@ public class DynamicFilterUI extends FlexLayout {
     return btnClose;
   }
 
-  public void setLabel(String label) {
+  public void setOperationText(String label) {
     lblOperation.setText(getTranslation(label));
   }
 

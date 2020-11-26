@@ -10,15 +10,19 @@ public class FilterFieldUIState extends AbstractUIState {
   private DynamicFilter filter;
   private boolean isCloseable;
 
-  public FilterFieldUIState(DynamicFilter filter, FilterGroupUIState group) {
+  private DynamicFilterLabelPosition position;
+
+  public FilterFieldUIState(DynamicFilter filter, FilterGroupUIState group,
+      DynamicFilterLabelPosition position) {
     super();
     this.group = group;
-    applyFilterData(filter);
+    applyFilterData(filter, position);
   }
 
-  void applyFilterData(DynamicFilter filter) {
+  void applyFilterData(DynamicFilter filter, DynamicFilterLabelPosition position) {
     labelCode = filter.getMetaName();
     this.filter = filter;
+    this.position = position;
     // TODO set isCloseable
   }
 
@@ -40,6 +44,10 @@ public class FilterFieldUIState extends AbstractUIState {
 
   public DynamicFilter getFilter() {
     return filter;
+  }
+
+  public DynamicFilterLabelPosition getPosition() {
+    return position;
   }
 
 }

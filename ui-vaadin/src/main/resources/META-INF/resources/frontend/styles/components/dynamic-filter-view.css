@@ -24,6 +24,7 @@
 }
 
 .dynamic-filtergroup {
+	flex-wrap: wrap;
 	flex-direction: row;
 	display: flex;
     justify-content: flex-start;
@@ -52,11 +53,10 @@
 
 .dynamic-filter-onefield {
 	width: 12em;
-	margin-right: 4px;
 }
 
 .close-button {
-	min-width: 0px;
+	min-width: auto;
 	border-radius: 30px;
 	height: 30px;
 	margin-right: 3px;
@@ -65,7 +65,7 @@
 }
 
 .filter-row {
-	margin-left: 5px;
+	
 }
 
 .filterselector-layout vaadin-details::part(content) {
@@ -100,6 +100,8 @@
 
 .filter-layout {
 	flex-direction: column;
+	padding-left: 5px;
+    padding-right: 5px;
 }
 
 .icon-layout {
@@ -118,4 +120,12 @@
 
 .filters-group-layout {
 	flex-wrap: wrap;
+}
+
+.dynamic-filter-combobox {
+	width: 100%;
+}
+
+.filtermeta-layout label {
+	margin-top: 8px;
 }

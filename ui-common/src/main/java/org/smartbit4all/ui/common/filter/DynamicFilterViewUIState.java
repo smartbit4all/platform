@@ -44,12 +44,14 @@ public class DynamicFilterViewUIState {
     Map<String, FilterSelectorGroupUIState> groupsByName = new HashMap<>();
     for (DynamicFilterGroupMeta group : this.filterConfig.getDynamicFilterGroupMetas()) {
       FilterSelectorGroupUIState groupUIState = new FilterSelectorGroupUIState(group);
+      filterSelectorGroups.add(groupUIState);
       filterSelectorGroupsById.put(groupUIState.getId(), groupUIState);
       groupsByName.put(group.getName(), groupUIState);
     }
     for (DynamicFilterMeta field : this.filterConfig.getDynamicFilterMetas()) {
       FilterSelectorGroupUIState group = groupsByName.get(field.getGroupName());
       FilterSelectorUIState fieldUIState = new FilterSelectorUIState(group, field);
+      filterSelectors.add(fieldUIState);
       filterSelectorsById.put(fieldUIState.getId(), fieldUIState);
       group.addFilterSelector(fieldUIState);
     }
@@ -78,7 +80,8 @@ public class DynamicFilterViewUIState {
   FilterFieldUIState createFilter(String filterSelectorId) {
     FilterSelectorUIState filterSelector = getFilterSelectorById(filterSelectorId);
     FilterGroupUIState group;
-    if (filterConfigMode == DynamicFilterConfigMode.SIMPLE_DYNAMIC) {
+    if (filterConfigMode == DynamicFilterConfigMode.SIMPLE_DYNAMIC
+        || filterConfigMode == DynamicFilterConfigMode.STATIC) {
       group = filterSelector.getGroup().currentGroupUIState;
       if (group == null) {
         group = createFilterGroup(filterSelector.getGroup(), rootGroup, false);
@@ -94,10 +97,11 @@ public class DynamicFilterViewUIState {
     if (options != null && !options.isEmpty()) {
       filter.setOperation(options.get(0));
     }
-    FilterFieldUIState filterUIState = new FilterFieldUIState(filter, group);
+    FilterFieldUIState filterUIState =
+        new FilterFieldUIState(filter, group, DynamicFilterLabelPosition.ON_LEFT);
     filterUIStatesById.put(filterUIState.getId(), filterUIState);
     filtersById.put(filterUIState.getId(), filter);
-    return null;
+    return filterUIState;
   }
 
   FilterGroupUIState createFilterGroup(FilterSelectorGroupUIState groupMeta,

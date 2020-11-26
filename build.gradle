@@ -45,10 +45,18 @@ subprojects {
         }
 
 	    repositories {
-	        maven {
-	            name = 'local-maven-repo'
-	            url = "file://${projectDir}/../local-maven-repo"
-	        }
+//	        maven {
+//	            name = 'local-maven-repo'
+//	            url = "file://${projectDir}/../local-maven-repo"
+//	        }
+			maven {
+	            name = "GitHubPackages"
+	            url = uri("https://maven.pkg.github.com/it4all-hungary/p001")
+	            credentials {
+	                username = project.findProperty("gpr.user") ?: System.getenv("GitHub_Username_it4all")
+	                password = project.findProperty("gpr.key") ?: System.getenv("GitHub_Token_it4all_package")
+	            }
+        	}
 	    }
     }
 

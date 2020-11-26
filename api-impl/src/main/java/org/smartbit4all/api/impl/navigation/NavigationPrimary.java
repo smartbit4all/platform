@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.navigation.Navigation;
 import org.smartbit4all.api.navigation.NavigationApi;
 import org.smartbit4all.api.navigation.NavigationImpl;
@@ -25,7 +27,10 @@ import org.springframework.beans.factory.annotation.Autowired;
  * 
  * @author Peter Boros
  */
-public class NavigationPrimary extends NavigationImpl implements InitializingBean {
+public final class NavigationPrimary extends NavigationImpl implements InitializingBean {
+
+
+  private static final Logger log = LoggerFactory.getLogger(NavigationPrimary.class);
 
   /**
    * The registered {@link NavigationApi}s by name. The name is the scheme part of the
@@ -51,7 +56,7 @@ public class NavigationPrimary extends NavigationImpl implements InitializingBea
     }
     Map<NavigationApi, List<URI>> assocByApi = new HashMap<>();
     for (URI associationUri : toNavigate) {
-      NavigationApi api = apiByName.get(associationUri.getScheme());
+      NavigationApi api = api(associationUri);
       if (api != null) {
         List<URI> assocList = assocByApi.get(api);
         if (assocList == null) {
@@ -70,6 +75,34 @@ public class NavigationPrimary extends NavigationImpl implements InitializingBea
       result.putAll(navigate);
     }
     return result == null ? Collections.emptyMap() : result;
+  }
+
+  private NavigationApi api(URI associationUri) {
+    NavigationApi api = apiByName.get(associationUri.getScheme());
+    return api;
+  }
+
+  @Override
+  public List<NavigationEntry> getEntries(List<URI> uris) {
+    Map<NavigationApi, List<URI>> urisByApi = new HashMap<>();
+    for (URI uri : uris) {
+      NavigationApi api = api(uri);
+      if (api != null) {
+        List<URI> list = urisByApi.get(api);
+        if (list == null) {
+          list = new ArrayList<>();
+          urisByApi.put(api, list);
+        }
+        list.add(uri);
+      } else {
+        log.warn("Unable to find navigation api for the " + uri);
+      }
+    }
+    List<NavigationEntry> result = new ArrayList<>();
+    for (Entry<NavigationApi, List<URI>> entry : urisByApi.entrySet()) {
+      result.addAll(entry.getKey().getEntries(entry.getValue()));
+    }
+    return result;
   }
 
   @Override
