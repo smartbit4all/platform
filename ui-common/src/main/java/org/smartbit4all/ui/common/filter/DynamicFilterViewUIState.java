@@ -57,28 +57,12 @@ public class DynamicFilterViewUIState {
     }
   }
 
-  FilterSelectorGroupUIState getFilterSelectorGroupById(String id) {
-    return filterSelectorGroupsById.get(id);
-  }
-
-  FilterSelectorUIState getFilterSelectorById(String id) {
-    return filterSelectorsById.get(id);
-  }
-
-  FilterGroupUIState getFilterGroupById(String id) {
-    return groupUIStatesById.get(id);
-  }
-
-  FilterFieldUIState getFilterById(String id) {
-    return filterUIStatesById.get(id);
-  }
-
   DynamicFilterConfigMode getFilterConfigMode() {
     return filterConfigMode;
   }
 
   FilterFieldUIState createFilter(String filterSelectorId) {
-    FilterSelectorUIState filterSelector = getFilterSelectorById(filterSelectorId);
+    FilterSelectorUIState filterSelector = filterSelectorsById.get(filterSelectorId);
     FilterGroupUIState group;
     if (filterConfigMode == DynamicFilterConfigMode.SIMPLE_DYNAMIC
         || filterConfigMode == DynamicFilterConfigMode.STATIC) {
@@ -92,6 +76,7 @@ public class DynamicFilterViewUIState {
     }
     DynamicFilter filter = new DynamicFilter();
     filter.setMetaName(filterSelector.getName());
+    group.addDynamicFilter(filter);
     List<DynamicFilterOperation> options = filterSelector.getOperations();
     // TODO default operation handling
     if (options != null && !options.isEmpty()) {

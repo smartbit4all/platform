@@ -254,10 +254,9 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
 
   @Override
   public void removeFilter(String groupId, String filterId) {
-    // TODO use uiState
-    DynamicFilterGroup group = groupsById.get(groupId);
-    DynamicFilter filter = filtersById.get(filterId);
-    filtersById.remove(filterId);
+    DynamicFilterGroup group = uiState.groupsById.get(groupId);
+    DynamicFilter filter = uiState.filtersById.get(filterId);
+    uiState.filtersById.remove(filterId);
     ui.removeFilter(filterId);
     group.getFilters().remove(filter);
     if (group.getFilters().isEmpty()) {
@@ -268,7 +267,7 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
   @Override
   public void removeGroup(String groupId) {
     ui.removeGroup(groupId);
-    DynamicFilterGroup group = groupsById.get(groupId);
+    DynamicFilterGroup group = uiState.groupsById.get(groupId);
     // FIXME DynamicFilterGroup should know it's meta id (descriptorName)
     String groupMetaName = null;
     for (Entry<String, DynamicFilterGroup> entry : groupsByName.entrySet()) {
@@ -280,6 +279,16 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
     if (groupMetaName != null) {
       groupsByName.remove(groupMetaName);
     }
+    // FIXME this should be in DynamicViewUIState!
+    uiState.groupsById.remove(groupId);
+    FilterGroupUIState groupUIState = uiState.groupUIStatesById.get(groupId);
+    for (FilterSelectorGroupUIState selectorGroup : uiState.filterSelectorGroups) {
+      if (selectorGroup.currentGroupUIState == groupUIState) {
+        selectorGroup.currentGroupUIState = null;
+        break;
+      }
+    }
+    uiState.groupUIStatesById.remove(groupId);
   }
 
 }

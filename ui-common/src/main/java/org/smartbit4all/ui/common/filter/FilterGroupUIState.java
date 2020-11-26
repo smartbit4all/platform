@@ -1,5 +1,6 @@
 package org.smartbit4all.ui.common.filter;
 
+import org.smartbit4all.api.dynamicfilter.bean.DynamicFilter;
 import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterGroup;
 import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterGroupType;
 
@@ -11,6 +12,7 @@ public class FilterGroupUIState extends AbstractUIState {
   private String iconCode;
   private String parentGroupId;
   private FilterGroupUIState parentGroup;
+  private DynamicFilterGroup group;
   private boolean isCloseable;
   private boolean isRoot;
 
@@ -18,6 +20,7 @@ public class FilterGroupUIState extends AbstractUIState {
       boolean isCloseable) {
     super();
     this.isCloseable = isCloseable;
+    this.group = group;
     type = group.getType();
     labelCode = group.getName();
     iconCode = group.getIcon();
@@ -61,4 +64,7 @@ public class FilterGroupUIState extends AbstractUIState {
     return parentGroup;
   }
 
+  public void addDynamicFilter(DynamicFilter filter) {
+    group.addFiltersItem(filter);
+  }
 }
