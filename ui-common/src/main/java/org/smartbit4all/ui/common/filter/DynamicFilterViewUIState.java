@@ -97,8 +97,13 @@ public class DynamicFilterViewUIState {
     if (options != null && !options.isEmpty()) {
       filter.setOperation(options.get(0));
     }
+    DynamicFilterLabelPosition position = DynamicFilterLabelPosition.ON_TOP; // default
+    if (filterConfigMode == DynamicFilterConfigMode.STATIC) {
+      position = DynamicFilterLabelPosition.PLACEHOLDER;
+    }
+    boolean isCloseable = !(filterConfigMode == DynamicFilterConfigMode.STATIC);
     FilterFieldUIState filterUIState =
-        new FilterFieldUIState(filter, group, DynamicFilterLabelPosition.ON_LEFT);
+        new FilterFieldUIState(filter, group, position, isCloseable);
     filterUIStatesById.put(filterUIState.getId(), filterUIState);
     filtersById.put(filterUIState.getId(), filter);
     return filterUIState;

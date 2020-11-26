@@ -2,8 +2,8 @@ package org.smartbit4all.ui.vaadin.components.filter;
 
 import org.smartbit4all.ui.common.filter.DynamicFilterLabelPosition;
 import org.smartbit4all.ui.common.filter.FilterFieldUIState;
-import com.vaadin.flow.component.board.Row;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 
@@ -11,7 +11,7 @@ public class DynamicFilterUI extends FlexLayout {
 
   private FlexLayout header;
   // TODO remove Row
-  private Row row;
+  private Div row;
   private Button btnClose;
   private DynamicFilterGroupUI group;
   private Label lblOperation;
@@ -28,7 +28,7 @@ public class DynamicFilterUI extends FlexLayout {
     lblFilterName.addClassName("filter-name");
     lblOperation = new Label();
     lblOperation.addClassName("operation-name");
-    row = new Row();
+    row = new Div();
     row.addClassName("filter-row");
 
     btnClose = new Button(" ");
@@ -62,7 +62,7 @@ public class DynamicFilterUI extends FlexLayout {
     lblFilterName.addClassName("filter-name");
     lblOperation = new Label();
     lblOperation.addClassName("operation-name");
-    row = new Row();
+    row = new Div();
     row.addClassName("filter-row");
 
     btnClose = new Button(" ");

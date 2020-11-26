@@ -13,17 +13,13 @@ public class FilterFieldUIState extends AbstractUIState {
   private DynamicFilterLabelPosition position;
 
   public FilterFieldUIState(DynamicFilter filter, FilterGroupUIState group,
-      DynamicFilterLabelPosition position) {
+      DynamicFilterLabelPosition position, boolean isCloseable) {
     super();
     this.group = group;
-    applyFilterData(filter, position);
-  }
-
-  void applyFilterData(DynamicFilter filter, DynamicFilterLabelPosition position) {
     labelCode = filter.getMetaName();
     this.filter = filter;
     this.position = position;
-    // TODO set isCloseable
+    this.isCloseable = isCloseable;
   }
 
   public String getLabelCode() {

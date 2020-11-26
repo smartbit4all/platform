@@ -18,10 +18,6 @@ public class FilterSelectorGroupUIState extends AbstractUIState {
 
   public FilterSelectorGroupUIState(DynamicFilterGroupMeta filterGroupMeta) {
     super();
-    applyDataFrom(filterGroupMeta);
-  }
-
-  void applyDataFrom(DynamicFilterGroupMeta filterGroupMeta) {
     this.labelCode = filterGroupMeta.getName();
     this.iconCode = filterGroupMeta.getIcon();
     this.name = filterGroupMeta.getName();

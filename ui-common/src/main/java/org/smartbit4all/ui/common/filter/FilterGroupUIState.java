@@ -18,10 +18,6 @@ public class FilterGroupUIState extends AbstractUIState {
       boolean isCloseable) {
     super();
     this.isCloseable = isCloseable;
-    applyGroupData(group, parentGroup);
-  }
-
-  void applyGroupData(DynamicFilterGroup group, FilterGroupUIState parentGroup) {
     type = group.getType();
     labelCode = group.getName();
     iconCode = group.getIcon();
