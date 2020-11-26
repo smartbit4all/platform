@@ -12,6 +12,8 @@ public interface DynamicFilterController extends UIController {
 
   void loadData();
 
+  void addFilter(String filterSelectorId);
+
   void addFilter(String groupId, String filterMetaName, boolean isClosable, DynamicFilterLabelPosition position);
 
   String addFilterGroup(String parentGroupId, String groupName, String groupIcon,

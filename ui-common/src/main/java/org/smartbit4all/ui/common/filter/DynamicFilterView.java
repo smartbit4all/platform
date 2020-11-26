@@ -12,12 +12,20 @@ public interface DynamicFilterView extends UIView {
 
   void init();
 
+  void renderFilterSelectors(List<FilterSelectorGroupUIState> filterSelectorGroups);
+
   void renderFilterSelectors(DynamicFilterConfig filterConfig);
 
+  void renderFilter(FilterFieldUIState filter, List<DynamicFilterOperation> filterOperations,
+      List<Value> possibleValues);
+
   void renderFilter(String groupId, String filterId, DynamicFilter dynamicFilter,
-      List<DynamicFilterOperation> filterOptions, boolean isClosable, DynamicFilterLabelPosition position, List<Value> possibleValues);
+      List<DynamicFilterOperation> filterOptions, boolean isClosable,
+      DynamicFilterLabelPosition position, List<Value> possibleValues);
 
   void renderFilter(String filterId, DynamicFilter dynamicFilter, List<Value> possibleValues);
+
+  void renderGroup(FilterGroupUIState group);
 
   void renderGroup(String parentGroupId, String groupId, DynamicFilterGroup group,
       boolean isClosable);

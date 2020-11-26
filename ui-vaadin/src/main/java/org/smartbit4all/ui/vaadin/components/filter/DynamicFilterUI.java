@@ -1,20 +1,17 @@
 package org.smartbit4all.ui.vaadin.components.filter;
 
 import org.smartbit4all.ui.common.filter.DynamicFilterLabelPosition;
-import org.smartbit4all.ui.vaadin.util.IconSize;
-import org.smartbit4all.ui.vaadin.util.TextColor;
-import org.smartbit4all.ui.vaadin.util.UIUtils;
-import com.vaadin.flow.component.board.Row;
+import org.smartbit4all.ui.common.filter.FilterFieldUIState;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Label;
-import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 
 public class DynamicFilterUI extends FlexLayout {
 
   private FlexLayout header;
-  private Row row;
+  // TODO remove Row
+  private Div row;
   private Button btnClose;
   private DynamicFilterGroupUI group;
   private Label lblOperation;
@@ -22,23 +19,22 @@ public class DynamicFilterUI extends FlexLayout {
   private FlexLayout filterLayout;
   private DynamicFilterLabelPosition position;
 
-
-  public DynamicFilterUI(DynamicFilterGroupUI group, boolean isClosable, DynamicFilterLabelPosition position) {
+  public DynamicFilterUI(DynamicFilterGroupUI group, FilterFieldUIState uiState) {
     addClassName("dynamic-filter");
     this.group = group;
-    this.position = position;
-    
+    this.position = uiState.getPosition();
+
     lblFilterName = new Label();
     lblFilterName.addClassName("filter-name");
-    lblOperation = new Label();    
+    lblOperation = new Label();
     lblOperation.addClassName("operation-name");
-    row = new Row();
+    row = new Div();
     row.addClassName("filter-row");
-    
+
     btnClose = new Button(" ");
     btnClose.addClassName("close-button");
-    
-    
+
+
     header = new FlexLayout();
     header.addClassName("filter-header");
     header.add(lblFilterName, lblOperation, btnClose);
@@ -47,22 +43,56 @@ public class DynamicFilterUI extends FlexLayout {
     filterLayout.addClassName("filter-layout");
     filterLayout.add(header, row);
     add(filterLayout);
-    
+
+    if (uiState.isCloseable()) {
+      btnClose.setText("x");
+    } else {
+      btnClose.setEnabled(false);
+    }
+
+  }
+
+  public DynamicFilterUI(DynamicFilterGroupUI group, boolean isClosable,
+      DynamicFilterLabelPosition position) {
+    addClassName("dynamic-filter");
+    this.group = group;
+    this.position = position;
+
+    lblFilterName = new Label();
+    lblFilterName.addClassName("filter-name");
+    lblOperation = new Label();
+    lblOperation.addClassName("operation-name");
+    row = new Div();
+    row.addClassName("filter-row");
+
+    btnClose = new Button(" ");
+    btnClose.addClassName("close-button");
+
+
+    header = new FlexLayout();
+    header.addClassName("filter-header");
+    header.add(lblFilterName, lblOperation, btnClose);
+
+    filterLayout = new FlexLayout();
+    filterLayout.addClassName("filter-layout");
+    filterLayout.add(header, row);
+    add(filterLayout);
+
     if (isClosable) {
       btnClose.setText("x");
     } else {
       btnClose.setEnabled(false);
     }
-    
+
   }
 
   public void addOperationUI(DynamicFilterOperationUI operationUI) {
     row.add(operationUI);
-    
+
     if (position.equals(DynamicFilterLabelPosition.PLACEHOLDER)) {
       header.remove(lblFilterName);
       operationUI.setPlaceholder(getTranslation(operationUI.getFilterName()));
-    } else if (position.equals(DynamicFilterLabelPosition.ON_LEFT)){
+    } else if (position.equals(DynamicFilterLabelPosition.ON_LEFT)) {
       lblFilterName.setText(getTranslation(operationUI.getFilterName()));
       filterLayout.setFlexDirection(FlexDirection.ROW);
       header.remove(btnClose);
@@ -84,7 +114,7 @@ public class DynamicFilterUI extends FlexLayout {
   public void setOperationText(String label) {
     lblOperation.setText(getTranslation(label));
   }
-  
+
 
 
 }
