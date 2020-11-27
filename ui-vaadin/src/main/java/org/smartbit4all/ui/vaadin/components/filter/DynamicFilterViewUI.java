@@ -275,11 +275,14 @@ public class DynamicFilterViewUI implements DynamicFilterView {
           new DynamicFilterOperationOneFieldUI(dynamicFilter.getMetaName());
       filterUI.addOperationUI(operationUI);
     } else if ("filterop.multi.eq".equals(filterView)) {
-      DynamicFilterOperationComboBoxUI operationUI =
-          new DynamicFilterOperationComboBoxUI(dynamicFilter.getMetaName());
+      DynamicFilterOperationMultiSelectUI operationUI =
+          new DynamicFilterOperationMultiSelectUI(dynamicFilter.getMetaName());
       filterUI.addOperationUI(operationUI);
       operationUI.setItems(possibleValues);
-
+    } else if ("filterop.combo.eq".equals(filterView)) {
+      DynamicFilterOperationComboBoxUI operationUI = new DynamicFilterOperationComboBoxUI(dynamicFilter.getMetaName());
+      filterUI.addOperationUI(operationUI);
+      operationUI.setItems(possibleValues);
     }
 
   }
