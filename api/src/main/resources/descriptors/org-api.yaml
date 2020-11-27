@@ -1,0 +1,189 @@
+openapi: 3.0.1
+info:
+  title: org api
+  description: org api
+  termsOfService: ''
+  contact:
+    email: info@it4all.hu
+  version: 1.0.0
+tags:
+- name: User
+- name: Group
+paths:
+
+  #### USER ####
+
+  /getUser/{userUri}:
+    get:
+      tags:
+      - User
+      summary: 'Returns the requested User object'
+      operationId: 'getUser'
+      parameters: 
+        - in: path
+          name: userUri
+          schema:
+            type: string
+            format: uri
+          required: true
+          description: 'The URI of the user the data is requested for'
+      responses:
+        '200':
+          description: 'Returns the requested User object'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+                
+  /getAllUsers:
+    get:
+      tags:
+      - User
+      summary: 'Returns all users'
+      operationId: 'getAllUsers'
+      responses:
+        '200':
+          description: 'Returns all users'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+    
+  /getUsersOfGorup/{groupUri}:
+    get:
+      tags:
+      - User
+      summary: 'Returns all users of the specified group'
+      operationId: 'getUsersOfGorup'
+      parameters: 
+        - in: path
+          name: groupUri
+          schema:
+            type: string
+            format: uri
+          required: true
+          description: 'The URI of the group the users are requested from'
+      responses:
+        '200':
+          description: 'Returns all users of the specified group'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+  /getGroupsOfUser/{userUri}:
+    get:
+      tags:
+      - User
+      summary: 'Returns the groups of the specified user'
+      operationId: 'getGroupsOfUser'
+      parameters: 
+        - in: path
+          name: userUri
+          schema:
+            type: string
+            format: uri
+          required: true
+          description: 'The URI of the user the groups are requested from'
+      responses:
+        '200':
+          description: 'Returns the groups of the specified user'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Group'
+                  
+  #### GROUP ####                
+                  
+  /getGroup/{groupUri}:
+    get:
+      tags:
+      - Group
+      summary: 'Returns the requested Group object'
+      operationId: 'getGroup'
+      parameters: 
+        - in: path
+          name: groupUri
+          schema:
+            type: string
+            format: uri
+          required: true
+          description: 'The URI of the group the data is requested for'
+      responses:
+        '200':
+          description: 'Returns the requested Group object'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Group'
+                
+  /getRootGroups:
+    get:
+      tags:
+      - Group
+      summary: 'Returns the groups without parent'
+      operationId: 'getRootGroups'
+      responses:
+        '200':
+          description: 'Returns the groups without parent'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Group'              
+                
+components:
+  schemas:
+    User:
+      type: object
+      required: [uri]
+      properties:
+        uri:
+          type: string
+          format: uri
+          description: 'The uri of the user'
+        username: 
+          type: string
+          description: 'The username'
+        email:
+          type: string
+          format: email
+          description: 'The registered email address that indentifies the user'
+        password:
+          type: string
+          format: password
+          description: 'The encripted password of the user'
+    Group:
+      type: object
+      required: [uri, name, kind]
+      properties:
+        uri:
+          type: string
+          format: uri
+          description: 'The uri of the group'
+        name:
+          type: string
+          description: 'The name of the group'
+        description:
+          type: string
+          description: 'The description of the group'
+        kind:
+          type: string
+          format: uri
+          description: 'The uri of the kind of the group. Eg.: role, organization, team etc.'
+        parent:
+          type: string
+          format: uri
+          description: 'The uri of the parent group'
+        children:
+          type: array
+          items:
+            type: string
+            format: uri
+          description: 'The uris of the child groups'
