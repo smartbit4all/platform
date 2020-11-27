@@ -262,7 +262,8 @@ public class Navigation {
     NavigationEntry result = new NavigationEntry();
     URI entryURI;
     try {
-      entryURI = new URI(meta.getUri().getScheme(), null, meta.getUri().getPath(), uri.toString());
+      entryURI = new URI(meta.getUri().getScheme(), null, meta.getUri().getPath(),
+          uri != null ? uri.toString() : null);
     } catch (URISyntaxException e) {
       entryURI = uri;
     }
@@ -308,7 +309,8 @@ public class Navigation {
   }
 
   public static URI uriOf(NavigationEntryMeta meta, URI uri) throws URISyntaxException {
-    return new URI(meta.getUri().getScheme(), null, meta.getUri().getPath(), uri.toString());
+    return new URI(meta.getUri().getScheme(), null, meta.getUri().getPath(),
+        uri != null ? uri.toString() : null);
   }
 
 }
