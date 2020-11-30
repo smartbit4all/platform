@@ -129,3 +129,12 @@
 .filtermeta-layout label {
 	margin-top: 8px;
 }
+
+.dynamic-filter-date {
+	min-width: 670px;
+	justify-content: space-between;
+}
+
+.dynamic-filter-multi vaadin-custom-field {
+	width: 100%;
+}

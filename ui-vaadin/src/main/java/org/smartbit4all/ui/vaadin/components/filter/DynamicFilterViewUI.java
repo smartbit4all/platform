@@ -271,8 +271,8 @@ public class DynamicFilterViewUI implements DynamicFilterView {
           new DynamicFilterOperationOneFieldUI(dynamicFilter.getMetaName());
       filterUI.addOperationUI(operationUI);
     } else if ("filterop.date.eq".equals(filterView)) {
-      DynamicFilterOperationOneFieldUI operationUI =
-          new DynamicFilterOperationOneFieldUI(dynamicFilter.getMetaName());
+      DynamicFilterOperationDateIntervalPicker operationUI =
+          new DynamicFilterOperationDateIntervalPicker(dynamicFilter.getMetaName());
       filterUI.addOperationUI(operationUI);
     } else if ("filterop.multi.eq".equals(filterView)) {
       DynamicFilterOperationMultiSelectUI operationUI =
