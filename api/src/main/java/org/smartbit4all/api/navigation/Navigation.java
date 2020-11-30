@@ -44,11 +44,6 @@ public class Navigation {
   protected Map<String, NavigationNode> nodes = new HashMap<>();
 
   /**
-   * All the node we already have in this navigation. Identified by the URI of the entry.
-   */
-  protected Map<URI, NavigationEntry> entriesByUri = new HashMap<>();
-
-  /**
    * All the references we already have in this navigation. Identified by their UUID.
    */
   protected Map<String, NavigationReference> references = new HashMap<>();
@@ -213,7 +208,6 @@ public class Navigation {
   }
 
   private NavigationNode registerEntry(NavigationEntry entry) {
-    entriesByUri.put(entry.getUri(), entry);
     NavigationNode node = of(entry);
     registerNode(node);
     return node;
@@ -257,7 +251,7 @@ public class Navigation {
     return result;
   }
 
-  public static NavigationEntry of(NavigationEntryMeta meta, URI uri, String name,
+  public static NavigationEntry of(NavigationEntryMeta meta, URI uri, URI objectUri, String name,
       NavigationView... views) {
     NavigationEntry result = new NavigationEntry();
     URI entryURI;
@@ -268,6 +262,7 @@ public class Navigation {
       entryURI = uri;
     }
     result.setUri(entryURI);
+    result.setObjectUri(objectUri);
     result.setName(name);
     result.setMeta(meta);
     if (views != null) {

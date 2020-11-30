@@ -1,18 +1,13 @@
 package org.smartbit4all.api.navigation.bean;
 
-import java.util.Objects;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import org.smartbit4all.api.navigation.bean.NavigationEntryMeta;
-import org.smartbit4all.api.navigation.bean.NavigationView;
-import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.Objects;
 import javax.validation.Valid;
-import javax.validation.constraints.*;
+import javax.validation.constraints.NotNull;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * NavigationEntry
@@ -21,6 +16,9 @@ import javax.validation.constraints.*;
 public class NavigationEntry   {
   @JsonProperty("uri")
   private URI uri;
+
+  @JsonProperty("objectUri")
+  private URI objectUri;
 
   @JsonProperty("meta")
   private NavigationEntryMeta meta;
@@ -59,6 +57,27 @@ public class NavigationEntry   {
 
   public void setUri(URI uri) {
     this.uri = uri;
+  }
+
+  public NavigationEntry objectUri(URI objectUri) {
+    this.objectUri = objectUri;
+    return this;
+  }
+
+  /**
+   * The URI identifies the so called API object.
+   * @return objectUri
+  */
+  @ApiModelProperty(value = "The URI identifies the so called API object.")
+
+  @Valid
+
+  public URI getObjectUri() {
+    return objectUri;
+  }
+
+  public void setObjectUri(URI objectUri) {
+    this.objectUri = objectUri;
   }
 
   public NavigationEntry meta(NavigationEntryMeta meta) {
@@ -191,6 +210,7 @@ public class NavigationEntry   {
     }
     NavigationEntry navigationEntry = (NavigationEntry) o;
     return Objects.equals(this.uri, navigationEntry.uri) &&
+        Objects.equals(this.objectUri, navigationEntry.objectUri) &&
         Objects.equals(this.meta, navigationEntry.meta) &&
         Objects.equals(this.name, navigationEntry.name) &&
         Objects.equals(this.icon, navigationEntry.icon) &&
@@ -200,7 +220,7 @@ public class NavigationEntry   {
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, meta, name, icon, styles, views);
+    return Objects.hash(uri, objectUri, meta, name, icon, styles, views);
   }
 
   @Override
@@ -209,6 +229,7 @@ public class NavigationEntry   {
     sb.append("class NavigationEntry {\n");
     
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
+    sb.append("    objectUri: ").append(toIndentedString(objectUri)).append("\n");
     sb.append("    meta: ").append(toIndentedString(meta)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    icon: ").append(toIndentedString(icon)).append("\n");
