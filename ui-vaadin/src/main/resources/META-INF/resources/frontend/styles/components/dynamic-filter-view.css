@@ -138,3 +138,16 @@
 .dynamic-filter-multi vaadin-custom-field {
 	width: 100%;
 }
+
+vaadin-date-time-picker-date-picker {
+	max-width: 140px;
+}
+
+vaadin-date-time-picker-time-picker {
+	max-width: 90px;
+}
+
+.dynamic-filter-date-time {
+	min-width: 480px;
+    justify-content: space-between;
+}

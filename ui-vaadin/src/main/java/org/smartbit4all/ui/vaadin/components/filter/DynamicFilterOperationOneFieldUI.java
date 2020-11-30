@@ -1,9 +1,9 @@
 package org.smartbit4all.ui.vaadin.components.filter;
 
-import com.vaadin.flow.component.html.Div;
+import java.util.List;
 import com.vaadin.flow.component.textfield.TextField;
 
-public class DynamicFilterOperationOneFieldUI extends DynamicFilterOperationUI{
+public class DynamicFilterOperationOneFieldUI extends DynamicFilterOperationUI {
 
   private TextField textField;
   private String filterName;
@@ -14,16 +14,22 @@ public class DynamicFilterOperationOneFieldUI extends DynamicFilterOperationUI{
     textField = new TextField();
     add(textField);
   }
-  
+
   public String getFilterName() {
     return filterName;
   }
-  
+
 
   @Override
   public void setPlaceholder(String placeHolderText) {
     textField.setPlaceholder(placeHolderText);
-    
+
   }
-  
+
+  @Override
+  public List<String> getPossibleOperations() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
 }

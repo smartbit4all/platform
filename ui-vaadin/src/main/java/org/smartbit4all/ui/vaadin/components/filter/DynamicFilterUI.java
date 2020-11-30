@@ -1,8 +1,13 @@
 package org.smartbit4all.ui.vaadin.components.filter;
 
+import java.util.List;
+import org.smartbit4all.ui.common.filter.DynamicFilterDateOperation;
 import org.smartbit4all.ui.common.filter.DynamicFilterLabelPosition;
 import org.smartbit4all.ui.common.filter.FilterFieldUIState;
+import com.vaadin.flow.component.ClickEvent;
+import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
@@ -18,6 +23,11 @@ public class DynamicFilterUI extends FlexLayout {
   private Label lblFilterName;
   private FlexLayout filterLayout;
   private DynamicFilterLabelPosition position;
+  private FlexLayout operationWrapper;
+  private Dialog operationSelector;
+  private DynamicFilterDateOperation operation;
+  private List<String> possibleOperations;
+  private DynamicFilterOperationUI operationUI;
 
   public DynamicFilterUI(DynamicFilterGroupUI group, FilterFieldUIState uiState) {
     addClassName("dynamic-filter");
@@ -26,8 +36,11 @@ public class DynamicFilterUI extends FlexLayout {
 
     lblFilterName = new Label();
     lblFilterName.addClassName("filter-name");
+
+    operationWrapper = new FlexLayout();
     lblOperation = new Label();
     lblOperation.addClassName("operation-name");
+    operationWrapper.add(lblOperation);
     row = new Div();
     row.addClassName("filter-row");
 
@@ -37,7 +50,7 @@ public class DynamicFilterUI extends FlexLayout {
 
     header = new FlexLayout();
     header.addClassName("filter-header");
-    header.add(lblFilterName, lblOperation, btnClose);
+    header.add(lblFilterName, operationWrapper, btnClose);
 
     filterLayout = new FlexLayout();
     filterLayout.addClassName("filter-layout");
@@ -88,6 +101,7 @@ public class DynamicFilterUI extends FlexLayout {
 
   public void addOperationUI(DynamicFilterOperationUI operationUI) {
     row.add(operationUI);
+    this.operationUI = operationUI;
 
     if (position.equals(DynamicFilterLabelPosition.PLACEHOLDER)) {
       header.remove(lblFilterName);
@@ -100,6 +114,7 @@ public class DynamicFilterUI extends FlexLayout {
     } else {
       lblFilterName.setText(getTranslation(operationUI.getFilterName()));
     }
+
   }
 
 
@@ -111,8 +126,54 @@ public class DynamicFilterUI extends FlexLayout {
     return btnClose;
   }
 
-  public void setOperationText(String label) {
+  public void setOperation(String label) {
     lblOperation.setText(getTranslation(label));
+
+  }
+
+  public void setPossibleOperations(List<String> possibleOperations) {
+    this.possibleOperations = possibleOperations;
+
+    operationWrapper.addClickListener(operationClickListener());
+    operationSelector = new Dialog();
+
+    FlexLayout dialogOptionsLayout = new FlexLayout();
+    dialogOptionsLayout.setFlexDirection(FlexDirection.COLUMN);
+    operationSelector.add(dialogOptionsLayout);
+
+    if (possibleOperations != null) {
+      for (String operation : possibleOperations) {
+        Button button = new Button(operation);
+        dialogOptionsLayout.add(button);
+        button.addClickListener(e -> row.remove(operationUI));
+        button.addClickListener(e -> operationSelector.close());
+        if (operation.contentEquals("Intervallum")) {
+          button.addClickListener(
+              e -> {
+                DynamicFilterOperationDateTimeInterval dynamicFilterOperationDateTimeInterval =
+                    new DynamicFilterOperationDateTimeInterval("Intervallum");
+                operationUI = dynamicFilterOperationDateTimeInterval;
+                row.add(dynamicFilterOperationDateTimeInterval);
+                lblOperation.setText("Intervallum");
+              });
+        } else {
+          button.addClickListener(
+              e -> {
+                DynamicFilterOperationDateIntervalPicker dynamicFilterOperationDateIntervalPicker =
+                    new DynamicFilterOperationDateIntervalPicker("Időszakok");
+                operationUI = dynamicFilterOperationDateIntervalPicker;
+                row.add(dynamicFilterOperationDateIntervalPicker);
+                lblOperation.setText("Időszakok");
+              });
+        }
+      }
+    }
+  }
+
+  private ComponentEventListener<ClickEvent<FlexLayout>> operationClickListener() {
+    return e -> {
+      operationSelector.open();
+    };
   }
 
 

@@ -1,5 +1,6 @@
 package org.smartbit4all.ui.vaadin.components.filter;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -211,7 +212,7 @@ public class DynamicFilterViewUI implements DynamicFilterView {
       groupUI = groupsById.get(groupUIState.getId());
     }
     filterUI = new DynamicFilterUI(groupUI, filterUIState);
-    filterUI.setOperationText(filterOperations.get(0).getDisplayValue());
+    filterUI.setOperation(filterOperations.get(0).getDisplayValue());
     if (filterUIState.isCloseable()) {
       filterUI.getCloseButton()
           .addClickListener(
@@ -238,7 +239,7 @@ public class DynamicFilterViewUI implements DynamicFilterView {
           "Existing filterUI found when creating new filterUI with '" + filterId + "' filterId!");
     }
     filterUI = new DynamicFilterUI(groupUI, isClosable, position);
-    filterUI.setOperationText(filterOperations.get(0).getDisplayValue());
+    filterUI.setOperation(filterOperations.get(0).getDisplayValue());
     if (isClosable) {
       filterUI.getCloseButton()
           .addClickListener(e -> controller.removeFilter(groupId, filterId));
@@ -271,16 +272,21 @@ public class DynamicFilterViewUI implements DynamicFilterView {
           new DynamicFilterOperationOneFieldUI(dynamicFilter.getMetaName());
       filterUI.addOperationUI(operationUI);
     } else if ("filterop.date.eq".equals(filterView)) {
-      DynamicFilterOperationDateIntervalPicker operationUI =
-          new DynamicFilterOperationDateIntervalPicker(dynamicFilter.getMetaName());
+      DynamicFilterOperationDateTimeInterval operationUI =
+          new DynamicFilterOperationDateTimeInterval(dynamicFilter.getMetaName());
       filterUI.addOperationUI(operationUI);
+      ArrayList<String> possibleOperations = new ArrayList<String>();
+      possibleOperations.add("Intervallum");
+      possibleOperations.add("Időszakok");
+      filterUI.setPossibleOperations(possibleOperations);
     } else if ("filterop.multi.eq".equals(filterView)) {
       DynamicFilterOperationMultiSelectUI operationUI =
           new DynamicFilterOperationMultiSelectUI(dynamicFilter.getMetaName());
       filterUI.addOperationUI(operationUI);
       operationUI.setItems(possibleValues);
     } else if ("filterop.combo.eq".equals(filterView)) {
-      DynamicFilterOperationComboBoxUI operationUI = new DynamicFilterOperationComboBoxUI(dynamicFilter.getMetaName());
+      DynamicFilterOperationComboBoxUI operationUI =
+          new DynamicFilterOperationComboBoxUI(dynamicFilter.getMetaName());
       filterUI.addOperationUI(operationUI);
       operationUI.setItems(possibleValues);
     }

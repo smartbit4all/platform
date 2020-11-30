@@ -3,34 +3,33 @@ package org.smartbit4all.ui.vaadin.components.filter;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import org.smartbit4all.ui.common.filter.StatisticsTimeFilterOptions;
+import java.util.List;
+import org.smartbit4all.ui.common.filter.TimeFilterOptions;
 import org.smartbit4all.ui.vaadin.components.FlexBoxLayout;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.timepicker.TimePicker;
-// import hu.idomsoft.nova.border.stat.ui.api.chart.model.StatisticsTimeFilterOptions;
-// import hu.idomsoft.nova.border.stat.ui.common.statview.StatisticsViewController;
-// import hu.idomsoft.nova.border.stat.ui.common.statview.StatisticsViewController.FilterGroupIds;
-// import hu.idomsoft.nova.border.stat.ui.vaadin.utils.StatUIUtils;
+
 
 public class DynamicFilterOperationDateIntervalPicker extends DynamicFilterOperationUI {
 
   String filterName;
-  ComboBox<StatisticsTimeFilterOptions> cbTimeFilterOption;
+  ComboBox<TimeFilterOptions> cbTimeFilterOption;
   DatePicker startDate;
   DatePicker endDate;
   TimePicker startTime;
   TimePicker endTime;
 
+
   public DynamicFilterOperationDateIntervalPicker(String filterName) {
     this.filterName = filterName;
     addClassName("dynamic-filter-date");
     cbTimeFilterOption = new ComboBox<>();
-    cbTimeFilterOption.setItems(StatisticsTimeFilterOptions.values());
+    cbTimeFilterOption.setItems(TimeFilterOptions.values());
     cbTimeFilterOption.setItemLabelGenerator(option -> getTranslation(option.getLabel()));
     cbTimeFilterOption.setRequired(true);
-//    cbTimeFilterOption.addValueChangeListener(
-//        e -> executeControllerCall(e, StatisticsViewController::changeTimeFilterOption));
+    // cbTimeFilterOption.addValueChangeListener(
+    // e -> executeControllerCall(e, StatisticsViewController::changeTimeFilterOption));
 
     LocalDate today = LocalDate.now();
 
@@ -89,6 +88,12 @@ public class DynamicFilterOperationDateIntervalPicker extends DynamicFilterOpera
   @Override
   public String getFilterName() {
     return filterName;
+  }
+
+  @Override
+  public List<String> getPossibleOperations() {
+    // TODO Auto-generated method stub
+    return null;
   }
 
 }

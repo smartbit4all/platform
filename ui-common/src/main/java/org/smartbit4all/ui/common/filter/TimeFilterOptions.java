@@ -1,6 +1,6 @@
 package org.smartbit4all.ui.common.filter;
 
-public enum StatisticsTimeFilterOptions {
+public enum TimeFilterOptions {
 
 	LAST_WEEK("statistics.filter.time.last_week"), THIS_MONTH("statistics.filter.time.this_month"),
 	LAST_MONTH("statistics.filter.time.last_month"), YESTERDAY("statistics.filter.time.yesterday"),
@@ -8,7 +8,7 @@ public enum StatisticsTimeFilterOptions {
 
 	private String label;
 
-	private StatisticsTimeFilterOptions(String filerLabel) {
+	private TimeFilterOptions(String filerLabel) {
 		this.label = filerLabel;
 	}
 
