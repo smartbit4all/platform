@@ -8,13 +8,11 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
- * UI: The instance of the association. It is a directed from source to target. If we have data
- * entry on the association itself then we can set this entry to the associationEntry.
+ * UI: The instance of the association. It is a directed from source to target. If we have data entry on the association itself then we can set this entry to the associationEntry.
  */
-@ApiModel(
-    description = "UI: The instance of the association. It is a directed from source to target. If we have data entry on the association itself then we can set this entry to the associationEntry.")
+@ApiModel(description = "UI: The instance of the association. It is a directed from source to target. If we have data entry on the association itself then we can set this entry to the associationEntry.")
 
-public class NavigationReference {
+public class NavigationReference   {
   @JsonProperty("id")
   private String id;
 
@@ -130,14 +128,14 @@ public class NavigationReference {
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, startNode, endNode);
+    return Objects.hash(id, startNode, endNode, associationNode);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class NavigationReference {\n");
-
+    
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    startNode: ").append(toIndentedString(startNode)).append("\n");
     sb.append("    endNode: ").append(toIndentedString(endNode)).append("\n");

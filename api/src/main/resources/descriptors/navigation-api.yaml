@@ -137,6 +137,10 @@ components:
           type: string
           format: uri
           description: 'The unique identifier of the given entry - it is the data itself in the navigation'
+        objectUri:
+          type: string
+          format: uri
+          description: 'The URI identifies the so called API object.'
         meta:
           $ref: '#/components/schemas/NavigationEntryMeta'
         name:

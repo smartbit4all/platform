@@ -1,15 +1,12 @@
 package org.smartbit4all.api.navigation.bean;
 
+import java.net.URI;
 import java.util.Objects;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.net.URI;
-import org.smartbit4all.api.navigation.bean.NavigationEntryMeta;
-import org.openapitools.jackson.nullable.JsonNullable;
-import javax.validation.Valid;
-import javax.validation.constraints.*;
 
 /**
  * API: The association meta describes a possible navigation between entry metas. It is part of the configuration.

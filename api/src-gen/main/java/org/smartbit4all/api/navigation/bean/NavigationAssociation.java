@@ -1,18 +1,13 @@
 package org.smartbit4all.api.navigation.bean;
 
-import java.util.Objects;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
-import org.smartbit4all.api.navigation.bean.NavigationAssociationMeta;
-import org.smartbit4all.api.navigation.bean.NavigationNode;
-import org.smartbit4all.api.navigation.bean.NavigationReference;
-import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.Objects;
 import javax.validation.Valid;
-import javax.validation.constraints.*;
+import javax.validation.constraints.NotNull;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * UI: The navigable associations belong to the given node.

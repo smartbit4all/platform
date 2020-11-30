@@ -10,13 +10,11 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
- * UI: The stateful object on the client side. Contains the reference to the NavigationEntry and
- * also the references to the parent and to the children
+ * UI: The stateful object on the client side. Contains the reference to the NavigationEntry and also the references to the parent and to the children
  */
-@ApiModel(
-    description = "UI: The stateful object on the client side. Contains the reference to the NavigationEntry and also the references to the parent and to the children")
+@ApiModel(description = "UI: The stateful object on the client side. Contains the reference to the NavigationEntry and also the references to the parent and to the children")
 
-public class NavigationNode {
+public class NavigationNode   {
   @JsonProperty("id")
   private String id;
 
@@ -116,14 +114,14 @@ public class NavigationNode {
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, entry);
+    return Objects.hash(id, entry, associations);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class NavigationNode {\n");
-
+    
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    entry: ").append(toIndentedString(entry)).append("\n");
     sb.append("    associations: ").append(toIndentedString(associations)).append("\n");
