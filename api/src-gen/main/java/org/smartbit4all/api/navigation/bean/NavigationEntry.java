@@ -14,9 +14,6 @@ import io.swagger.annotations.ApiModelProperty;
  */
 
 public class NavigationEntry   {
-  @JsonProperty("uri")
-  private URI uri;
-
   @JsonProperty("objectUri")
   private URI objectUri;
 
@@ -36,28 +33,6 @@ public class NavigationEntry   {
   @JsonProperty("views")
   @Valid
   private List<NavigationView> views = null;
-
-  public NavigationEntry uri(URI uri) {
-    this.uri = uri;
-    return this;
-  }
-
-  /**
-   * The unique identifier of the given entry - it is the data itself in the navigation
-   * @return uri
-  */
-  @ApiModelProperty(required = true, value = "The unique identifier of the given entry - it is the data itself in the navigation")
-  @NotNull
-
-  @Valid
-
-  public URI getUri() {
-    return uri;
-  }
-
-  public void setUri(URI uri) {
-    this.uri = uri;
-  }
 
   public NavigationEntry objectUri(URI objectUri) {
     this.objectUri = objectUri;
@@ -209,8 +184,7 @@ public class NavigationEntry   {
       return false;
     }
     NavigationEntry navigationEntry = (NavigationEntry) o;
-    return Objects.equals(this.uri, navigationEntry.uri) &&
-        Objects.equals(this.objectUri, navigationEntry.objectUri) &&
+    return Objects.equals(this.objectUri, navigationEntry.objectUri) &&
         Objects.equals(this.meta, navigationEntry.meta) &&
         Objects.equals(this.name, navigationEntry.name) &&
         Objects.equals(this.icon, navigationEntry.icon) &&
@@ -220,7 +194,7 @@ public class NavigationEntry   {
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, objectUri, meta, name, icon, styles, views);
+    return Objects.hash(objectUri, meta, name, icon, styles, views);
   }
 
   @Override
@@ -228,7 +202,6 @@ public class NavigationEntry   {
     StringBuilder sb = new StringBuilder();
     sb.append("class NavigationEntry {\n");
     
-    sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    objectUri: ").append(toIndentedString(objectUri)).append("\n");
     sb.append("    meta: ").append(toIndentedString(meta)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");

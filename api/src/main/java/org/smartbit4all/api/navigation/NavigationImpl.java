@@ -43,4 +43,16 @@ public abstract class NavigationImpl implements NavigationApi {
     return null;
   }
 
+  protected URI appendUriPath(URI baseUri, String pathPostfix) {
+    try {
+      return new URI(baseUri.getScheme(), baseUri.getHost(),
+          (baseUri.getPath().endsWith("/") ? baseUri.getPath()
+              : baseUri.getPath() + "/") + pathPostfix,
+          baseUri.getFragment());
+    } catch (URISyntaxException e) {
+      log.error("Unable to construct URI" + baseUri + " + path " + pathPostfix, e);
+      return baseUri;
+    }
+  }
+
 }

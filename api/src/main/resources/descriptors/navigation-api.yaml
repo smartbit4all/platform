@@ -123,8 +123,10 @@ components:
         id:
           type: string
           description: 'The identifier of the reference that is constructed as startEntry.uri + [ "-" assocEntry.uri + ] "-" + endEntry.uri'
-        startEntry:
-          $ref: '#/components/schemas/NavigationEntry'
+        startEntryUri:
+          type: string
+          format: uri
+          description: 'The URI of the start entry'
         endEntry:
           $ref: '#/components/schemas/NavigationEntry'
         associationEntry:
@@ -133,10 +135,6 @@ components:
       type: object
       required: [uri, name]
       properties:
-        uri:
-          type: string
-          format: uri
-          description: 'The unique identifier of the given entry - it is the data itself in the navigation'
         objectUri:
           type: string
           format: uri

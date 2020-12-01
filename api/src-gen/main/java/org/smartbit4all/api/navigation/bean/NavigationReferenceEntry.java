@@ -1,5 +1,6 @@
 package org.smartbit4all.api.navigation.bean;
 
+import java.net.URI;
 import java.util.Objects;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -16,8 +17,8 @@ public class NavigationReferenceEntry   {
   @JsonProperty("id")
   private String id;
 
-  @JsonProperty("startEntry")
-  private NavigationEntry startEntry;
+  @JsonProperty("startEntryUri")
+  private URI startEntryUri;
 
   @JsonProperty("endEntry")
   private NavigationEntry endEntry;
@@ -46,25 +47,25 @@ public class NavigationReferenceEntry   {
     this.id = id;
   }
 
-  public NavigationReferenceEntry startEntry(NavigationEntry startEntry) {
-    this.startEntry = startEntry;
+  public NavigationReferenceEntry startEntryUri(URI startEntryUri) {
+    this.startEntryUri = startEntryUri;
     return this;
   }
 
   /**
-   * Get startEntry
-   * @return startEntry
+   * The URI of the start entry
+   * @return startEntryUri
   */
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "The URI of the start entry")
 
   @Valid
 
-  public NavigationEntry getStartEntry() {
-    return startEntry;
+  public URI getStartEntryUri() {
+    return startEntryUri;
   }
 
-  public void setStartEntry(NavigationEntry startEntry) {
-    this.startEntry = startEntry;
+  public void setStartEntryUri(URI startEntryUri) {
+    this.startEntryUri = startEntryUri;
   }
 
   public NavigationReferenceEntry endEntry(NavigationEntry endEntry) {
@@ -120,14 +121,14 @@ public class NavigationReferenceEntry   {
     }
     NavigationReferenceEntry navigationReferenceEntry = (NavigationReferenceEntry) o;
     return Objects.equals(this.id, navigationReferenceEntry.id) &&
-        Objects.equals(this.startEntry, navigationReferenceEntry.startEntry) &&
+        Objects.equals(this.startEntryUri, navigationReferenceEntry.startEntryUri) &&
         Objects.equals(this.endEntry, navigationReferenceEntry.endEntry) &&
         Objects.equals(this.associationEntry, navigationReferenceEntry.associationEntry);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, startEntry, endEntry, associationEntry);
+    return Objects.hash(id, startEntryUri, endEntry, associationEntry);
   }
 
   @Override
@@ -136,7 +137,7 @@ public class NavigationReferenceEntry   {
     sb.append("class NavigationReferenceEntry {\n");
     
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    startEntry: ").append(toIndentedString(startEntry)).append("\n");
+    sb.append("    startEntryUri: ").append(toIndentedString(startEntryUri)).append("\n");
     sb.append("    endEntry: ").append(toIndentedString(endEntry)).append("\n");
     sb.append("    associationEntry: ").append(toIndentedString(associationEntry)).append("\n");
     sb.append("}");

@@ -74,9 +74,7 @@ public class Navigation {
     int result = 0;
     for (NavigationAssociation assoc : node.getAssociations()) {
       if (assoc.getReferences() != null) {
-        for (NavigationReference reference : assoc.getReferences()) {
-          result++;
-        }
+        result += assoc.getReferences().size();
       }
     }
     return result;
@@ -126,7 +124,7 @@ public class Navigation {
         node.getAssociations().stream().filter(a -> a.getLastNavigation() == null)
             .collect(Collectors.toMap(a -> a.getMeta().getUri(), a -> a));
     Map<URI, List<NavigationReferenceEntry>> navigation =
-        api.navigate(node.getEntry(),
+        api.navigate(node.getEntry().getObjectUri(),
             new ArrayList<>(map.keySet()));
     List<ApiItemChangeEvent<NavigationReference>> result = new ArrayList<>();
     for (Entry<URI, List<NavigationReferenceEntry>> entry : navigation
@@ -134,26 +132,29 @@ public class Navigation {
       NavigationAssociation association = map.get(entry.getKey());
       List<NavigationReferenceEntry> references = entry.getValue();
       // Merge into
-      result.addAll(merge(association, references));
+      result.addAll(merge(node, association, references));
     }
     return result;
   }
 
   /**
-   * This call will add the given entries by uri. These entries must be independent from each other
-   * to act like the root nodes of a navigation.
+   * This call will add the given entries by the URI of the navigation entry meta. It's necessary to
+   * identify the {@link NavigationApi} that is responsible for the given kind of entry. And we need
+   * the object URI that identifies the api object on the specific api. The navigation will retrieve
+   * the entry from the api and add it to the navigation state but won't examine if it's connected
+   * with the currently existing nodes! So be careful and use this only for adding root nodes for
+   * the navigation.
+   * 
+   * @param entryMeta An existing meta descriptor for the navigation we have.
+   * @param objectUri The URI of the Api object exposed by the original API.
    * 
    * @return
    */
-  public List<NavigationNode> addIndependentEntries(List<URI> uris) {
-    List<NavigationEntry> entries = api.getEntries(uris);
-    List<NavigationNode> result = new ArrayList<>();
-    for (NavigationEntry navigationEntry : entries) {
-      NavigationNode node = of(navigationEntry);
-      registerNode(node);
-      result.add(node);
-    }
-    return result;
+  public NavigationNode addRootNode(NavigationEntryMeta entryMeta, URI objectUri) {
+    NavigationEntry entry = api.getEntry(entryMeta.getUri(), objectUri);
+    NavigationNode node = of(entry);
+    registerNode(node);
+    return node;
   }
 
   /**
@@ -164,6 +165,7 @@ public class Navigation {
    * @return
    */
   private final Collection<? extends ApiItemChangeEvent<NavigationReference>> merge(
+      NavigationNode startNode,
       NavigationAssociation association, List<NavigationReferenceEntry> references) {
     // TODO implement merge!
     // Naive impl: By default we clear the current references.
@@ -178,7 +180,7 @@ public class Navigation {
     }
     // We add all the references as new.
     List<NavigationReference> newReferences =
-        references.stream().map(r -> registerReferenceEntry(association, r))
+        references.stream().map(r -> registerReferenceEntry(startNode, association, r))
             .collect(Collectors.toList());
     newReferences.stream().forEach(r -> this.references.put(r.getId(), r));
     result.addAll(newReferences.stream()
@@ -198,9 +200,9 @@ public class Navigation {
    * @param referenceEntry
    * @return
    */
-  private NavigationReference registerReferenceEntry(NavigationAssociation association,
+  private NavigationReference registerReferenceEntry(NavigationNode startNode,
+      NavigationAssociation association,
       NavigationReferenceEntry referenceEntry) {
-    NavigationNode startNode = registerEntry(referenceEntry.getStartEntry());
     NavigationNode endNode = registerEntry(referenceEntry.getEndEntry());
     NavigationNode assocNode = referenceEntry.getAssociationEntry() == null ? null
         : registerEntry(referenceEntry.getAssociationEntry());
@@ -251,17 +253,9 @@ public class Navigation {
     return result;
   }
 
-  public static NavigationEntry of(NavigationEntryMeta meta, URI uri, URI objectUri, String name,
+  public static NavigationEntry of(NavigationEntryMeta meta, URI objectUri, String name,
       NavigationView... views) {
     NavigationEntry result = new NavigationEntry();
-    URI entryURI;
-    try {
-      entryURI = new URI(meta.getUri().getScheme(), null, meta.getUri().getPath(),
-          uri != null ? uri.toString() : null);
-    } catch (URISyntaxException e) {
-      entryURI = uri;
-    }
-    result.setUri(entryURI);
     result.setObjectUri(objectUri);
     result.setName(name);
     result.setMeta(meta);
@@ -273,13 +267,13 @@ public class Navigation {
     return result;
   }
 
-  public static NavigationReferenceEntry of(NavigationEntry startEntry, NavigationEntry endEntry,
+  public static NavigationReferenceEntry of(URI startEntryUri, NavigationEntry endEntry,
       NavigationEntry associationEntry) {
     NavigationReferenceEntry result = new NavigationReferenceEntry();
-    result.setId(startEntry.getUri()
-        + (associationEntry == null ? " --> " : " -- " + associationEntry.getUri() + " -->")
-        + endEntry.getUri());
-    result.setStartEntry(startEntry);
+    result.setId(startEntryUri
+        + (associationEntry == null ? " --> " : " -- " + associationEntry.getObjectUri() + " -->")
+        + endEntry.getObjectUri());
+    result.setStartEntryUri(startEntryUri);
     result.setEndEntry(endEntry);
     result.setAssociationEntry(associationEntry);
     return result;

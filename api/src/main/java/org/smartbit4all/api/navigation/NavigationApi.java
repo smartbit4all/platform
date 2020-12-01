@@ -38,23 +38,23 @@ public interface NavigationApi {
    * The navigate will queries all the data sources to populate the associations starts from the
    * given entry.
    * 
-   * @param entry The navigation entry that is the starting point of the navigation.
-   * @param associations The list of associations to identify the direction we want to navigate. If
+   * @param objectUri The URI of the api object that is the starting point of the navigation. It must
+   *        be a valid URI that can be the starting point of the associations we provided.
+   * @param associationMetaUris The list of associations to identify the direction we want to navigate. If
    *        we skip this parameter (null) then we will have all the associations defined in the
    *        {@link NavigationEntry} meta.
-   * @return The map of the references by the association meta we required.
+   * @return The map of the references by the URI of association meta we passed in the associations
+   *         parameter.
    * @throws Exception
    */
-  Map<URI, List<NavigationReferenceEntry>> navigate(NavigationEntry entry,
-      List<URI> associations);
+  Map<URI, List<NavigationReferenceEntry>> navigate(URI objectUri, List<URI> associationMetaUris);
 
   /**
    * Retrieve the entries from the navigations.
    * 
    * @param uris The {@link URI} list that we have.
-   * @return The list of navigation entries.
-   * @throws Exception
+   * @return The navigation entry if we found it or null if missing.
    */
-  List<NavigationEntry> getEntries(List<URI> uris);
+  NavigationEntry getEntry(URI entryMetaUri, URI objectUri);
 
 }

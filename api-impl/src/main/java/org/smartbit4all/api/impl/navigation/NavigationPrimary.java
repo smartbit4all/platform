@@ -46,16 +46,14 @@ public final class NavigationPrimary extends NavigationImpl implements Initializ
   }
 
   @Override
-  public Map<URI, List<NavigationReferenceEntry>> navigate(
-      NavigationEntry entry, List<URI> associations) {
+  public Map<URI, List<NavigationReferenceEntry>> navigate(URI entryUri, List<URI> associations) {
     // In this case the scheme of the uri in the NavigationAssociationMeta identifies the api to
     // delegate.
-    List<URI> toNavigate = getAssociationsToNavigate(entry, associations);
-    if (toNavigate == null || toNavigate.isEmpty()) {
+    if (associations == null || associations.isEmpty()) {
       return Collections.emptyMap();
     }
     Map<NavigationApi, List<URI>> assocByApi = new HashMap<>();
-    for (URI associationUri : toNavigate) {
+    for (URI associationUri : associations) {
       NavigationApi api = api(associationUri);
       if (api != null) {
         List<URI> assocList = assocByApi.get(api);
@@ -66,12 +64,15 @@ public final class NavigationPrimary extends NavigationImpl implements Initializ
         assocByApi.put(api, assocList);
       }
     }
+    if (assocByApi.isEmpty()) {
+      return Collections.emptyMap();
+    }
     Map<URI, List<NavigationReferenceEntry>> result = new HashMap<>();
     for (Entry<NavigationApi, List<URI>> requestEntry : assocByApi
         .entrySet()) {
       // Call the given api with the list as parameter and merge the result.
       Map<URI, List<NavigationReferenceEntry>> navigate =
-          requestEntry.getKey().navigate(entry, requestEntry.getValue());
+          requestEntry.getKey().navigate(entryUri, requestEntry.getValue());
       result.putAll(navigate);
     }
     return result == null ? Collections.emptyMap() : result;
@@ -83,26 +84,15 @@ public final class NavigationPrimary extends NavigationImpl implements Initializ
   }
 
   @Override
-  public List<NavigationEntry> getEntries(List<URI> uris) {
-    Map<NavigationApi, List<URI>> urisByApi = new HashMap<>();
-    for (URI uri : uris) {
-      NavigationApi api = api(uri);
-      if (api != null) {
-        List<URI> list = urisByApi.get(api);
-        if (list == null) {
-          list = new ArrayList<>();
-          urisByApi.put(api, list);
-        }
-        list.add(uri);
-      } else {
-        log.warn("Unable to find navigation api for the " + uri);
-      }
+  public NavigationEntry getEntry(URI entryMetaUri, URI objectUri) {
+    NavigationApi api = api(entryMetaUri);
+    if (api != null) {
+      return api.getEntry(entryMetaUri, objectUri);
+    } else {
+      log.warn(
+          "Unable to find navigation api for the meta: " + entryMetaUri + " (" + objectUri + ")");
     }
-    List<NavigationEntry> result = new ArrayList<>();
-    for (Entry<NavigationApi, List<URI>> entry : urisByApi.entrySet()) {
-      result.addAll(entry.getKey().getEntries(entry.getValue()));
-    }
-    return result;
+    return null;
   }
 
   @Override
