@@ -2,4 +2,5 @@
 dependencies {
 	api 'org.springframework.security:spring-security-config:5.3.5.RELEASE'
 	api 'org.springframework.security:spring-security-web:5.3.5.RELEASE'
+	implementation 'javax.servlet:javax.servlet-api:4.0.1'
 }
