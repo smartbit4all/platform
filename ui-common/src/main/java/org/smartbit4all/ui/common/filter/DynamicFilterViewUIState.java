@@ -28,15 +28,20 @@ public class DynamicFilterViewUIState {
   private DynamicFilterConfig filterConfig;
   private DynamicFilterConfigMode filterConfigMode;
 
-  public DynamicFilterViewUIState(DynamicFilterConfigMode filterConfigMode,
-      DynamicFilterGroup rootGroup) {
-    this.rootGroup = new FilterGroupUIState(rootGroup, null, false);
-    this.activeGroup = this.rootGroup;
-    groupUIStatesById.put(this.rootGroup.getId(), this.rootGroup);
+  public DynamicFilterViewUIState(DynamicFilterConfigMode filterConfigMode) {
+    createRootGroup();
     this.filterConfigMode = filterConfigMode;
     if (this.filterConfigMode == null) {
       this.filterConfigMode = DynamicFilterConfigMode.SIMPLE_DYNAMIC;
     }
+  }
+
+  private void createRootGroup() {
+    DynamicFilterGroup rootFilterGroup = new DynamicFilterGroup();
+    rootGroup = new FilterGroupUIState(rootFilterGroup, null, false);
+    activeGroup = rootGroup;
+    groupUIStatesById.put(rootGroup.getId(), rootGroup);
+    groupsById.put(rootGroup.getId(), rootFilterGroup);
   }
 
   void setFilterConfig(DynamicFilterConfig filterConfig) {
@@ -77,10 +82,10 @@ public class DynamicFilterViewUIState {
     DynamicFilter filter = new DynamicFilter();
     filter.setMetaName(filterSelector.getName());
     group.addDynamicFilter(filter);
-    List<DynamicFilterOperation> options = filterSelector.getOperations();
+    List<DynamicFilterOperation> operations = filterSelector.getOperations();
     // TODO default operation handling
-    if (options != null && !options.isEmpty()) {
-      filter.setOperation(options.get(0));
+    if (operations != null && !operations.isEmpty()) {
+      filter.setOperation(operations.get(0));
     }
     DynamicFilterLabelPosition position = DynamicFilterLabelPosition.ON_TOP; // default
     if (filterConfigMode == DynamicFilterConfigMode.STATIC) {
@@ -88,7 +93,7 @@ public class DynamicFilterViewUIState {
     }
     boolean isCloseable = !(filterConfigMode == DynamicFilterConfigMode.STATIC);
     FilterFieldUIState filterUIState =
-        new FilterFieldUIState(filter, group, position, isCloseable);
+        new FilterFieldUIState(filter, group, position, isCloseable, operations);
     filterUIStatesById.put(filterUIState.getId(), filterUIState);
     filtersById.put(filterUIState.getId(), filter);
     return filterUIState;
@@ -105,4 +110,17 @@ public class DynamicFilterViewUIState {
     groupsById.put(groupUIState.getId(), group);
     return groupUIState;
   }
+
+  void removeFilterGroup(String groupId) {
+    groupsById.remove(groupId);
+    FilterGroupUIState groupUIState = groupUIStatesById.get(groupId);
+    for (FilterSelectorGroupUIState selectorGroup : filterSelectorGroups) {
+      if (selectorGroup.currentGroupUIState == groupUIState) {
+        selectorGroup.currentGroupUIState = null;
+        break;
+      }
+    }
+    groupUIStatesById.remove(groupId);
+  }
+
 }

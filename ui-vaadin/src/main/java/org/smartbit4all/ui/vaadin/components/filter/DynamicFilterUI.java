@@ -5,6 +5,7 @@ import org.smartbit4all.ui.common.filter.DynamicFilterDateOperation;
 import org.smartbit4all.ui.common.filter.DynamicFilterLabelPosition;
 import org.smartbit4all.ui.common.filter.FilterFieldUIState;
 import com.vaadin.flow.component.ClickEvent;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -29,7 +30,8 @@ public class DynamicFilterUI extends FlexLayout {
   private List<String> possibleOperations;
   private DynamicFilterOperationUI operationUI;
 
-  public DynamicFilterUI(DynamicFilterGroupUI group, FilterFieldUIState uiState) {
+  public <T extends Component> DynamicFilterUI(DynamicFilterGroupUI group,
+      FilterFieldUIState uiState, Runnable close) {
     addClassName("dynamic-filter");
     this.group = group;
     this.position = uiState.getPosition();
@@ -59,44 +61,16 @@ public class DynamicFilterUI extends FlexLayout {
 
     if (uiState.isCloseable()) {
       btnClose.setText("x");
+      btnClose.addClickListener(e -> close.run());
     } else {
       btnClose.setEnabled(false);
     }
 
   }
 
-  public DynamicFilterUI(DynamicFilterGroupUI group, boolean isClosable,
-      DynamicFilterLabelPosition position) {
-    addClassName("dynamic-filter");
-    this.group = group;
-    this.position = position;
-
-    lblFilterName = new Label();
-    lblFilterName.addClassName("filter-name");
-    lblOperation = new Label();
-    lblOperation.addClassName("operation-name");
-    row = new Div();
-    row.addClassName("filter-row");
-
-    btnClose = new Button(" ");
-    btnClose.addClassName("close-button");
-
-
-    header = new FlexLayout();
-    header.addClassName("filter-header");
-    header.add(lblFilterName, lblOperation, btnClose);
-
-    filterLayout = new FlexLayout();
-    filterLayout.addClassName("filter-layout");
-    filterLayout.add(header, row);
-    add(filterLayout);
-
-    if (isClosable) {
-      btnClose.setText("x");
-    } else {
-      btnClose.setEnabled(false);
-    }
-
+  public DynamicFilterUI(DynamicFilterGroupUI groupUI, FilterFieldUIState filterUIState,
+      Object close) {
+    // TODO Auto-generated constructor stub
   }
 
   public void addOperationUI(DynamicFilterOperationUI operationUI) {
@@ -120,10 +94,6 @@ public class DynamicFilterUI extends FlexLayout {
 
   public DynamicFilterGroupUI getGroup() {
     return group;
-  }
-
-  public Button getCloseButton() {
-    return btnClose;
   }
 
   public void setOperation(String label) {
@@ -175,7 +145,5 @@ public class DynamicFilterUI extends FlexLayout {
       operationSelector.open();
     };
   }
-
-
 
 }
