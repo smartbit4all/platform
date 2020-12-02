@@ -152,7 +152,7 @@ public class Navigation {
    */
   public NavigationNode addRootNode(NavigationEntryMeta entryMeta, URI objectUri) {
     NavigationEntry entry = api.getEntry(entryMeta.getUri(), objectUri);
-    NavigationNode node = of(entry);
+    NavigationNode node = node(entry);
     registerNode(node);
     return node;
   }
@@ -210,7 +210,7 @@ public class Navigation {
   }
 
   private NavigationNode registerEntry(NavigationEntry entry) {
-    NavigationNode node = of(entry);
+    NavigationNode node = node(entry);
     registerNode(node);
     return node;
   }
@@ -219,7 +219,7 @@ public class Navigation {
     nodes.put(node.getId(), node);
   }
 
-  public static NavigationNode of(NavigationEntry entry) {
+  public static NavigationNode node(NavigationEntry entry) {
     NavigationNode node;
     node = new NavigationNode();
     node.setEntry(entry);
@@ -253,7 +253,7 @@ public class Navigation {
     return result;
   }
 
-  public static NavigationEntry of(NavigationEntryMeta meta, URI objectUri, String name,
+  public static NavigationEntry entry(NavigationEntryMeta meta, URI objectUri, String name,
       NavigationView... views) {
     NavigationEntry result = new NavigationEntry();
     result.setObjectUri(objectUri);
@@ -279,7 +279,7 @@ public class Navigation {
     return result;
   }
 
-  public static NavigationAssociationMeta of(URI uri, String name, NavigationEntryMeta startEntry,
+  public static NavigationAssociationMeta assocMeta(URI uri, String name, NavigationEntryMeta startEntry,
       NavigationEntryMeta endEntry, NavigationEntryMeta associationEntry) {
     NavigationAssociationMeta result = new NavigationAssociationMeta();
     result.setUri(uri);
@@ -290,7 +290,7 @@ public class Navigation {
     return result;
   }
 
-  public static NavigationEntryMeta of(URI uri, String name) {
+  public static NavigationEntryMeta entryMeta(URI uri, String name) {
     NavigationEntryMeta result = new NavigationEntryMeta();
     result.setUri(uri);
     result.setName(name);

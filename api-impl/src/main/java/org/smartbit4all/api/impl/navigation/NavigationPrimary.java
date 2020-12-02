@@ -46,21 +46,21 @@ public final class NavigationPrimary extends NavigationImpl implements Initializ
   }
 
   @Override
-  public Map<URI, List<NavigationReferenceEntry>> navigate(URI entryUri, List<URI> associations) {
+  public Map<URI, List<NavigationReferenceEntry>> navigate(URI objectUri, List<URI> associationMetaUris) {
     // In this case the scheme of the uri in the NavigationAssociationMeta identifies the api to
     // delegate.
-    if (associations == null || associations.isEmpty()) {
+    if (associationMetaUris == null || associationMetaUris.isEmpty()) {
       return Collections.emptyMap();
     }
     Map<NavigationApi, List<URI>> assocByApi = new HashMap<>();
-    for (URI associationUri : associations) {
-      NavigationApi api = api(associationUri);
+    for (URI associationMetaUri : associationMetaUris) {
+      NavigationApi api = api(associationMetaUri);
       if (api != null) {
         List<URI> assocList = assocByApi.get(api);
         if (assocList == null) {
           assocList = new ArrayList<>();
         }
-        assocList.add(associationUri);
+        assocList.add(associationMetaUri);
         assocByApi.put(api, assocList);
       }
     }
@@ -72,7 +72,7 @@ public final class NavigationPrimary extends NavigationImpl implements Initializ
         .entrySet()) {
       // Call the given api with the list as parameter and merge the result.
       Map<URI, List<NavigationReferenceEntry>> navigate =
-          requestEntry.getKey().navigate(entryUri, requestEntry.getValue());
+          requestEntry.getKey().navigate(objectUri, requestEntry.getValue());
       result.putAll(navigate);
     }
     return result == null ? Collections.emptyMap() : result;
