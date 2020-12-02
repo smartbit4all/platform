@@ -10,6 +10,8 @@ public interface DynamicFilterView extends UIView {
 
   void renderFilterSelectors(List<FilterSelectorGroupUIState> filterSelectorGroups);
 
+  void updateFilterSelector(FilterSelectorUIState filterSelector);
+
   void renderFilter(FilterFieldUIState filter, List<Value> possibleValues);
 
   void renderGroup(FilterGroupUIState group);

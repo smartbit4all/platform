@@ -2,7 +2,6 @@ package org.smartbit4all.ui.common.filter;
 
 import java.net.URI;
 import java.util.List;
-import java.util.UUID;
 import org.smartbit4all.api.dynamicfilter.bean.DynamicFilter;
 import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterConfig;
 import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterConfigMode;
@@ -59,6 +58,7 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
   private void renderStaticFilterConfig(DynamicFilterConfig filterConfig) {
     // no filterSelector
     for (FilterSelectorUIState selector : uiState.filterSelectors) {
+      selector.setEnabled(false);
       addFilter(selector.getId());
     }
   }
@@ -78,6 +78,11 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
   @Override
   public void addFilter(String filterSelectorId) {
     FilterFieldUIState filterUIState = uiState.createFilter(filterSelectorId);
+    if (uiState.getFilterConfigMode() == DynamicFilterConfigMode.SIMPLE_DYNAMIC) {
+      FilterSelectorUIState filterSelector = uiState.filterSelectorsById.get(filterSelectorId);
+      filterSelector.setEnabled(false);
+      ui.updateFilterSelector(filterSelector);
+    }
     ui.renderFilter(filterUIState, getPossibleValues(filterUIState.getFilter()));
   }
 
@@ -119,19 +124,26 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
 
   // TODO filterSelectionChanged
 
-  protected String createIdentifier() {
-    return UUID.randomUUID().toString();
-  }
-
   @Override
   public void removeFilter(String groupId, String filterId) {
+    // TODO move to uiState.removeFilter()
     DynamicFilterGroup group = uiState.groupsById.get(groupId);
     DynamicFilter filter = uiState.filtersById.get(filterId);
     uiState.filtersById.remove(filterId);
     ui.removeFilter(filterId);
     group.getFilters().remove(filter);
-    if (group.getFilters().isEmpty()) {
-      removeGroup(groupId);
+    if (uiState.getFilterConfigMode() == DynamicFilterConfigMode.SIMPLE_DYNAMIC) {
+      // find selector
+      for (FilterSelectorUIState selector : uiState.filterSelectors) {
+        if (selector.getName().equals(filter.getMetaName())) {
+          selector.setEnabled(true);
+          ui.updateFilterSelector(selector);
+          break;
+        }
+      }
+      if (group.getFilters().isEmpty()) {
+        removeGroup(groupId);
+      }
     }
   }
 

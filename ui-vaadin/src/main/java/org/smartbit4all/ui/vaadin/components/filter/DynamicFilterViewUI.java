@@ -12,18 +12,10 @@ import org.smartbit4all.ui.common.filter.FilterFieldUIState;
 import org.smartbit4all.ui.common.filter.FilterGroupUIState;
 import org.smartbit4all.ui.common.filter.FilterSelectorGroupUIState;
 import org.smartbit4all.ui.common.filter.FilterSelectorUIState;
-import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.HasComponents;
-import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.details.Details;
-import com.vaadin.flow.component.details.DetailsVariant;
-import com.vaadin.flow.component.html.Label;
-import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 @CssImport("./styles/components/dynamic-filter-view.css")
@@ -35,6 +27,8 @@ public class DynamicFilterViewUI implements DynamicFilterView {
 
   private Map<String, DynamicFilterGroupUI> groupsById = new HashMap<>();
   private Map<String, DynamicFilterUI> filtersById = new HashMap<>();
+  private Map<String, FilterSelectorGroupUI> selectorGroupsById = new HashMap<>();
+  private Map<String, FilterSelectorUI> selectorsById = new HashMap<>();
 
   public DynamicFilterViewUI(DynamicFilterController controller, HasComponents filterSelectorHolder,
       HasComponents filterHolder) {
@@ -67,37 +61,27 @@ public class DynamicFilterViewUI implements DynamicFilterView {
     filterSelectorHolder.add(filterSelectorLayout);
   }
 
+  @Override
+  public void updateFilterSelector(FilterSelectorUIState filterSelector) {
+    FilterSelectorUI selectorUI = selectorsById.get(filterSelector.getId());
+    if (selectorUI == null) {
+      throw new RuntimeException("FilterSelectorUI not found! (" + filterSelector.getName() + ")");
+    }
+    selectorUI.updateState(filterSelector);
+  }
+
   private Details createFilterSelectorGroupUI(FilterSelectorGroupUIState filterSelectorGroup) {
-    Details details = new Details();
-    details.addThemeVariants(DetailsVariant.FILLED);
-    Label summaryText = new Label(details.getTranslation(filterSelectorGroup.getLabelCode()));
-    // Button btnChooseGroup = new Button(new Icon(VaadinIcon.PLUS));
-    // btnChooseGroup.addClickListener(groupSelectButtonListener());
-
-    FlexLayout summary = new FlexLayout(summaryText);
-
-    details.setSummary(summary);
-    details.setOpened(true);
-    return details;
-
+    FilterSelectorGroupUI selectorGroupUI = new FilterSelectorGroupUI(filterSelectorGroup);
+    selectorGroupsById.put(filterSelectorGroup.getId(), selectorGroupUI);
+    return selectorGroupUI;
   }
 
   private Component createFilterSelectorUI(FilterSelectorUIState filterSelector) {
-    Label label = new Label();
-    label.setText(label.getTranslation(filterSelector.getLabelCode()));
-    Button button = new Button(new Icon(VaadinIcon.PLUS));
-    button.addClickListener(addFilterSelectorListener(filterSelector.getId()));
-    FlexLayout filterMetaUI = new FlexLayout(label, button);
-    filterMetaUI.addClassName("filtermeta-layout");
-    // filterMetaUI.addClassName("descriptor-layout");
-    return filterMetaUI;
-  }
-
-  private ComponentEventListener<ClickEvent<Button>> addFilterSelectorListener(
-      String filterSelectorId) {
-    return e -> {
-      controller.addFilter(filterSelectorId);
-    };
+    String id = filterSelector.getId();
+    FilterSelectorUI selectorUI =
+        new FilterSelectorUI(filterSelector, () -> controller.addFilter(id));
+    selectorsById.put(id, selectorUI);
+    return selectorUI;
   }
 
   @Override

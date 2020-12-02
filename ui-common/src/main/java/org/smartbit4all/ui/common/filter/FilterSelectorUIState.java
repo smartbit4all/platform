@@ -11,6 +11,7 @@ public class FilterSelectorUIState extends AbstractUIState {
   private List<DynamicFilterOperation> operations;
 
   private FilterSelectorGroupUIState group;
+  private boolean enabled;
 
   public FilterSelectorUIState(FilterSelectorGroupUIState group, DynamicFilterMeta filterMeta) {
     super();
@@ -18,6 +19,7 @@ public class FilterSelectorUIState extends AbstractUIState {
     this.name = filterMeta.getName();
     this.operations = filterMeta.getOperations();
     this.group = group;
+    this.enabled = true;
   }
 
   public String getLabelCode() {
@@ -34,5 +36,13 @@ public class FilterSelectorUIState extends AbstractUIState {
 
   public List<DynamicFilterOperation> getOperations() {
     return operations;
+  }
+
+  public boolean isEnabled() {
+    return enabled;
+  }
+
+  public void setEnabled(boolean enabled) {
+    this.enabled = enabled;
   }
 }
