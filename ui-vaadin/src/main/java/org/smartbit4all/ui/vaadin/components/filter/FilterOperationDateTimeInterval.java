@@ -13,7 +13,7 @@ public class FilterOperationDateTimeInterval extends FilterOperationUI {
 
   public FilterOperationDateTimeInterval(String filterName) {
     this.filterName = filterName;
-    addClassName("dynamic-filter-date-time");
+    addClassName("filter-date-time");
 
     beginDateTime = new DateTimePicker();
     LocalDateTime now = LocalDateTime.now();

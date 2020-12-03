@@ -11,7 +11,7 @@ public class FilterOperationComboBoxUI extends FilterOperationUI {
   public FilterOperationComboBoxUI(String filterName) {
     this.filterName = filterName;
     comboBox = new ComboBox<>();
-    comboBox.addClassName("dynamic-filter-combobox");
+    comboBox.addClassName("filter-combobox");
     comboBox.setItemLabelGenerator(v -> v.getValue());
     add(comboBox);
   }

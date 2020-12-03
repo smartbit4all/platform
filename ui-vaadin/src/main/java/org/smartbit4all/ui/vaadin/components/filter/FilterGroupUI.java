@@ -27,37 +27,16 @@ public class FilterGroupUI extends FlexLayout {
     filtersLayout.addClassName("filters-group-layout");
     add(filtersLayout);
 
-    if (uiState.isRoot()) {
-      addClassName("dynamic-filtergroup-root");
-    } else {
-      addClassName("dynamic-filtergroup");
+    if (uiState.isVisible()) {
+      addClassName("filtergroup");
       setIconLayout(uiState.getIconCode(), uiState.getLabelCode());
+    } else {
+      addClassName("filtergroup-transparent");
     }
 
     if (uiState.isCloseable()) {
       // TODO handle isCloseable, add close button if true.
     }
-  }
-
-  public FilterGroupUI(boolean isRoot, FilterGroupUI parentGroupUI,
-      boolean isClosable) {
-    // TODO maybe we can skip isRoot parameter and use: isRoot = parentGroupUI == null;
-    this.parentGroupUI = parentGroupUI;
-    iconLayout = new FlexLayout();
-    iconLayout.addClassName("icon-layout");
-    add(iconLayout);
-
-    filtersLayout = new FlexLayout();
-    filtersLayout.addClassName("filters-group-layout");
-    add(filtersLayout);
-
-    if (isRoot) {
-      addClassName("dynamic-filtergroup-root");
-    } else {
-      addClassName("dynamic-filtergroup");
-    }
-
-    // TODO handle isCloseable, add close button if true.
   }
 
   public FilterGroupUI getParentGroupUI() {
@@ -66,12 +45,15 @@ public class FilterGroupUI extends FlexLayout {
 
   public void setIconLayout(String icon, String label) {
     iconLayout.removeAll();
-    VaadinIcon vaadinIcon = VaadinIcon.valueOf(icon.toUpperCase());
-    Icon filterIcon = UIUtils.createIcon(IconSize.S, TextColor.TERTIARY, vaadinIcon);
-    filterIcon.addClassName("filter-icon");
+    if (icon != null && icon.length() > 0) {
+      VaadinIcon vaadinIcon = VaadinIcon.valueOf(icon.toUpperCase());
+      Icon filterIcon = UIUtils.createIcon(IconSize.S, TextColor.TERTIARY, vaadinIcon);
+      filterIcon.addClassName("filter-icon");
+      iconLayout.add(filterIcon);
+    }
     Label filterLabel = UIUtils.createH4Label(getTranslation(label));
     filterLabel.addClassName("filter-label");
-    iconLayout.add(filterIcon, filterLabel);
+    iconLayout.add(filterLabel);
   }
 
   public void addToFilterGroup(FilterFieldUI filter) {

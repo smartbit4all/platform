@@ -2,8 +2,8 @@ package org.smartbit4all.ui.vaadin.components.filter;
 
 import java.util.List;
 import org.smartbit4all.ui.common.filter.FilterDateOperation;
-import org.smartbit4all.ui.common.filter.FilterLabelPosition;
 import org.smartbit4all.ui.common.filter.FilterFieldUIState;
+import org.smartbit4all.ui.common.filter.FilterLabelPosition;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -32,7 +32,7 @@ public class FilterFieldUI extends FlexLayout {
 
   public <T extends Component> FilterFieldUI(FilterGroupUI group,
       FilterFieldUIState uiState, Runnable close) {
-    addClassName("dynamic-filter");
+    addClassName("filterfield");
     this.group = group;
     this.position = uiState.getPosition();
 

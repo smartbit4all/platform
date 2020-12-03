@@ -12,7 +12,7 @@ public class FilterOperationMultiSelectUI extends FilterOperationUI {
 
   public FilterOperationMultiSelectUI(String filterName) {
     this.filterName = filterName;
-    addClassName("dynamic-filter-multi");
+    addClassName("filter-multi");
     popUp = new MultiSelectPopUp<>();
     popUp.setRequired(false);
     // popUp.setFilter(filter); TODO

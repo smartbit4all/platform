@@ -17,13 +17,13 @@
 	background: 0;
 }
 
-.dynamic-filtergroup-root {
+.filtergroup-transparent {
 	display: flex;
 	width: 100%;
 	flex-direction: column;
 }
 
-.dynamic-filtergroup {
+.filtergroup {
 	flex-wrap: wrap;
 	flex-direction: row;
 	display: flex;
@@ -37,7 +37,7 @@
     margin-bottom: var(--lumo-space-s);
 }
 
-.dynamic-filter {
+.filterfield {
 	flex-direction: row;
 	border-radius: var(--lumo-border-radius-s);
 	background-color: var(--lumo-base-color);
@@ -47,11 +47,11 @@
 	margin-right: 5px;
 }
 
-.dynamic-filter vaadin-text-field {
+.filterfield vaadin-text-field {
 	width: 100%;
 }
 
-.dynamic-filter-onefield {
+.filter-onefield {
 	width: 12em;
 }
 
@@ -122,7 +122,7 @@
 	flex-wrap: wrap;
 }
 
-.dynamic-filter-combobox {
+.filter-combobox {
 	width: 100%;
 }
 
@@ -130,12 +130,12 @@
 	margin-top: 8px;
 }
 
-.dynamic-filter-date {
+.filter-date {
 	min-width: 670px;
 	justify-content: space-between;
 }
 
-.dynamic-filter-multi vaadin-custom-field {
+.filter-multi vaadin-custom-field {
 	width: 100%;
 }
 
@@ -147,7 +147,7 @@ vaadin-date-time-picker-time-picker {
 	max-width: 90px;
 }
 
-.dynamic-filter-date-time {
+.filter-date-time {
 	min-width: 480px;
     justify-content: space-between;
 }

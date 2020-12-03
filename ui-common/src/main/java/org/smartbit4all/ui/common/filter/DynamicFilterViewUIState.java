@@ -10,6 +10,7 @@ import org.smartbit4all.api.filter.bean.FilterField;
 import org.smartbit4all.api.filter.bean.FilterFieldMeta;
 import org.smartbit4all.api.filter.bean.FilterGroup;
 import org.smartbit4all.api.filter.bean.FilterGroupMeta;
+import org.smartbit4all.api.filter.bean.FilterGroupType;
 import org.smartbit4all.api.filter.bean.FilterOperation;
 
 public class DynamicFilterViewUIState {
@@ -29,16 +30,19 @@ public class DynamicFilterViewUIState {
   private FilterConfigMode filterConfigMode;
 
   public DynamicFilterViewUIState(FilterConfigMode filterConfigMode) {
-    createRootGroup();
     this.filterConfigMode = filterConfigMode;
     if (this.filterConfigMode == null) {
       this.filterConfigMode = FilterConfigMode.SIMPLE_DYNAMIC;
     }
+    createRootGroup();
   }
 
   private void createRootGroup() {
     FilterGroup rootFilterGroup = new FilterGroup();
-    rootGroup = new FilterGroupUIState(rootFilterGroup, null, false);
+    rootFilterGroup.setType(FilterGroupType.AND);
+    rootFilterGroup.setName("filter.root");
+    boolean isRootVisible = filterConfigMode == FilterConfigMode.DYNAMIC;
+    rootGroup = new FilterGroupUIState(rootFilterGroup, null, false, isRootVisible);
     activeGroup = rootGroup;
     groupUIStatesById.put(rootGroup.getId(), rootGroup);
     groupsById.put(rootGroup.getId(), rootFilterGroup);
@@ -105,7 +109,7 @@ public class DynamicFilterViewUIState {
     group.setType(groupMeta.getType());
     group.setName(groupMeta.getName());
     group.setIcon(groupMeta.getIconCode());
-    FilterGroupUIState groupUIState = new FilterGroupUIState(group, parentGroup, isCloseable);
+    FilterGroupUIState groupUIState = new FilterGroupUIState(group, parentGroup, isCloseable, true);
     groupUIStatesById.put(groupUIState.getId(), groupUIState);
     groupsById.put(groupUIState.getId(), group);
     return groupUIState;

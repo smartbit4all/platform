@@ -15,11 +15,13 @@ public class FilterGroupUIState extends AbstractUIState {
   private FilterGroup group;
   private boolean isCloseable;
   private boolean isRoot;
+  private boolean isVisible;
 
   public FilterGroupUIState(FilterGroup group, FilterGroupUIState parentGroup,
-      boolean isCloseable) {
+      boolean isCloseable, boolean isVisible) {
     super();
     this.isCloseable = isCloseable;
+    this.isVisible = isVisible;
     this.group = group;
     type = group.getType();
     labelCode = group.getName();
@@ -67,4 +69,9 @@ public class FilterGroupUIState extends AbstractUIState {
   public void addDynamicFilter(FilterField filter) {
     group.addFilterFieldsItem(filter);
   }
+
+  public boolean isVisible() {
+    return isVisible;
+  }
+
 }

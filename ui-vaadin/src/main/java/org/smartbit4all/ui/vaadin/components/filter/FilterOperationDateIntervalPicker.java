@@ -23,7 +23,7 @@ public class FilterOperationDateIntervalPicker extends FilterOperationUI {
 
   public FilterOperationDateIntervalPicker(String filterName) {
     this.filterName = filterName;
-    addClassName("dynamic-filter-date");
+    addClassName("filter-date");
     cbTimeFilterOption = new ComboBox<>();
     cbTimeFilterOption.setItems(TimeFilterOptions.values());
     cbTimeFilterOption.setItemLabelGenerator(option -> getTranslation(option.getLabel()));
