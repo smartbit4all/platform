@@ -1,6 +1,5 @@
 package org.smartbit4all.ui.vaadin.components.filter;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -99,12 +98,11 @@ public class DynamicFilterViewUI implements DynamicFilterView {
       groupUI = groupsById.get(groupUIState.getId());
     }
     filterUI = new FilterFieldUI(groupUI, filterUIState,
-        () -> controller.removeFilter(groupUIState.getId(), filterUIState.getId()));
-    filterUI.setOperation(filterUIState.getSelectedOperation().getDisplayValue());
+        () -> controller.removeFilter(groupUIState.getId(), filterUIState.getId()), possibleValues);
     filtersById.put(filterUIState.getId(), filterUI);
     // // TODO special handling when putting into groupUI?
     groupUI.addToFilterGroup(filterUI);
-    renderFilter(filterUI, filterUIState.getFilter(), possibleValues);
+    // renderFilter(filterUI, filterUIState.getFilter(), possibleValues);
 
   }
 
@@ -113,30 +111,29 @@ public class DynamicFilterViewUI implements DynamicFilterView {
     // TODO honor dynamicFilter.getOperation()
     // TODO get strings from static finals
 
-    String filterView = dynamicFilter.getOperation().getFilterView();
-    if ("filterop.txt.eq".equals(filterView)) {
-      FilterOperationOneFieldUI operationUI =
-          new FilterOperationOneFieldUI(dynamicFilter.getMetaName());
-      filterUI.addOperationUI(operationUI);
-    } else if ("filterop.date.eq".equals(filterView)) {
-      FilterOperationDateTimeInterval operationUI =
-          new FilterOperationDateTimeInterval(dynamicFilter.getMetaName());
-      filterUI.addOperationUI(operationUI);
-      ArrayList<String> possibleOperations = new ArrayList<>();
-      possibleOperations.add("Intervallum");
-      possibleOperations.add("Időszakok");
-      filterUI.setPossibleOperations(possibleOperations);
-    } else if ("filterop.multi.eq".equals(filterView)) {
-      FilterOperationMultiSelectUI operationUI =
-          new FilterOperationMultiSelectUI(dynamicFilter.getMetaName());
-      filterUI.addOperationUI(operationUI);
-      operationUI.setItems(possibleValues);
-    } else if ("filterop.combo.eq".equals(filterView)) {
-      FilterOperationComboBoxUI operationUI =
-          new FilterOperationComboBoxUI(dynamicFilter.getMetaName());
-      filterUI.addOperationUI(operationUI);
-      operationUI.setItems(possibleValues);
-    }
+    // String filterView = dynamicFilter.getOperation().getFilterView();
+    // if ("filterop.txt.eq".equals(filterView)) {
+    // FilterOperationOneFieldUI operationUI =
+    // new FilterOperationOneFieldUI();
+    // filterUI.addOperationUI(operationUI);
+    // } else if ("filterop.date.eq".equals(filterView)) {
+    // FilterOperationDateTimeInterval operationUI =
+    // new FilterOperationDateTimeInterval();
+    // filterUI.addOperationUI(operationUI);
+    // // ArrayList<String> possibleOperations = new ArrayList<>();
+    // // possibleOperations.add("Intervallum");
+    // // possibleOperations.add("Időszakok");
+    // } else if ("filterop.multi.eq".equals(filterView)) {
+    // FilterOperationMultiSelectUI operationUI =
+    // new FilterOperationMultiSelectUI();
+    // filterUI.addOperationUI(operationUI);
+    // operationUI.setItems(possibleValues);
+    // } else if ("filterop.combo.eq".equals(filterView)) {
+    // FilterOperationComboBoxUI operationUI =
+    // new FilterOperationComboBoxUI();
+    // filterUI.addOperationUI(operationUI);
+    // operationUI.setItems(possibleValues);
+    // }
 
   }
 

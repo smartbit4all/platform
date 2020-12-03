@@ -1,18 +1,14 @@
 package org.smartbit4all.ui.vaadin.components.filter;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import org.smartbit4all.ui.vaadin.components.FlexBoxLayout;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 
 public class FilterOperationDateTimeInterval extends FilterOperationUI {
 
-  String filterName;
   DateTimePicker beginDateTime;
   DateTimePicker endDateTime;
 
-  public FilterOperationDateTimeInterval(String filterName) {
-    this.filterName = filterName;
+  public FilterOperationDateTimeInterval() {
     addClassName("filter-date-time");
 
     beginDateTime = new DateTimePicker();
@@ -24,31 +20,11 @@ public class FilterOperationDateTimeInterval extends FilterOperationUI {
     endDateTime.setMax(now);
     endDateTime.setValue(now);
 
-    FlexBoxLayout startBox = new FlexBoxLayout(beginDateTime);
-    startBox.setAlignItems(Alignment.END);
-    startBox.setJustifyContentMode(JustifyContentMode.CENTER);
-    add(startBox);
-    FlexBoxLayout endBox = new FlexBoxLayout(endDateTime);
-    endBox.setAlignItems(Alignment.END);
-    endBox.setJustifyContentMode(JustifyContentMode.CENTER);
-    add(endBox);
+    add(beginDateTime, endDateTime);
   }
 
   @Override
   public void setPlaceholder(String placeHolderText) {
-
-
+    // TODO
   }
-
-  @Override
-  public String getFilterName() {
-    return filterName;
-  }
-
-  @Override
-  public List<String> getPossibleOperations() {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
 }

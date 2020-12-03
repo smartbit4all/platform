@@ -1,7 +1,8 @@
 package org.smartbit4all.ui.vaadin.components.filter;
 
 import java.util.List;
-import org.smartbit4all.ui.common.filter.FilterDateOperation;
+import org.smartbit4all.api.filter.bean.FilterOperation;
+import org.smartbit4all.api.value.bean.Value;
 import org.smartbit4all.ui.common.filter.FilterFieldUIState;
 import org.smartbit4all.ui.common.filter.FilterLabelPosition;
 import com.vaadin.flow.component.ClickEvent;
@@ -26,15 +27,18 @@ public class FilterFieldUI extends FlexLayout {
   private FilterLabelPosition position;
   private FlexLayout operationWrapper;
   private Dialog operationSelector;
-  private FilterDateOperation operation;
-  private List<String> possibleOperations;
   private FilterOperationUI operationUI;
+  private FilterFieldUIState uiState;
+  private List<Value> possibleValues;
+
 
   public <T extends Component> FilterFieldUI(FilterGroupUI group,
-      FilterFieldUIState uiState, Runnable close) {
+      FilterFieldUIState uiState, Runnable close, List<Value> possibleValues) {
     addClassName("filterfield");
+    this.uiState = uiState;
     this.group = group;
     this.position = uiState.getPosition();
+    this.possibleValues = possibleValues;
 
     lblFilterName = new Label();
     lblFilterName.addClassName("filter-name");
@@ -66,43 +70,52 @@ public class FilterFieldUI extends FlexLayout {
       btnClose.setEnabled(false);
     }
 
+    addOperationUI(uiState.getFilter().getOperation().getFilterView());
+    setPossibleOperations();
+
   }
 
-  public FilterFieldUI(FilterGroupUI groupUI, FilterFieldUIState filterUIState,
-      Object close) {
-    // TODO Auto-generated constructor stub
-  }
+  public void addOperationUI(String filterView) {
 
-  public void addOperationUI(FilterOperationUI operationUI) {
+    if ("filterop.txt.eq".equals(filterView)) {
+      operationUI = new FilterOperationOneFieldUI();
+    } else if ("filterop.date.interval".equals(filterView)) {
+      operationUI = new FilterOperationDateTimeInterval();
+    } else if ("filterop.multi.eq".equals(filterView)) {
+      operationUI = new FilterOperationMultiSelectUI(possibleValues);
+    } else if ("filterop.combo.eq".equals(filterView)) {
+      operationUI = new FilterOperationComboBoxUI(possibleValues);
+    } else if ("filterop.date.interval.cb".equals(filterView)) {
+      operationUI = new FilterOperationDateTimeComboBoxPicker();
+    }
+
+    row.removeAll();
     row.add(operationUI);
-    this.operationUI = operationUI;
+    // TODO selected operation doesn't change
+    setOperationText(uiState.getSelectedOperation().getDisplayValue());
 
     if (position.equals(FilterLabelPosition.PLACEHOLDER)) {
       header.remove(lblFilterName);
-      operationUI.setPlaceholder(getTranslation(operationUI.getFilterName()));
+      operationUI.setPlaceholder(getTranslation(uiState.getLabelCode()));
     } else if (position.equals(FilterLabelPosition.ON_LEFT)) {
-      lblFilterName.setText(getTranslation(operationUI.getFilterName()));
+      lblFilterName.setText(getTranslation(uiState.getLabelCode()));
       filterLayout.setFlexDirection(FlexDirection.ROW);
       header.remove(btnClose);
       filterLayout.add(btnClose);
     } else {
-      lblFilterName.setText(getTranslation(operationUI.getFilterName()));
+      lblFilterName.setText(getTranslation(uiState.getLabelCode()));
     }
-
   }
-
 
   public FilterGroupUI getGroup() {
     return group;
   }
 
-  public void setOperation(String label) {
+  public void setOperationText(String label) {
     lblOperation.setText(getTranslation(label));
-
   }
 
-  public void setPossibleOperations(List<String> possibleOperations) {
-    this.possibleOperations = possibleOperations;
+  public void setPossibleOperations() {
 
     operationWrapper.addClickListener(operationClickListener());
     operationSelector = new Dialog();
@@ -111,31 +124,17 @@ public class FilterFieldUI extends FlexLayout {
     dialogOptionsLayout.setFlexDirection(FlexDirection.COLUMN);
     operationSelector.add(dialogOptionsLayout);
 
+    List<FilterOperation> possibleOperations = uiState.getOperations();
     if (possibleOperations != null) {
-      for (String operation : possibleOperations) {
-        Button button = new Button(operation);
+      for (FilterOperation operation : possibleOperations) {
+        String displayValue = operation.getDisplayValue();
+        Button button = new Button(displayValue);
         dialogOptionsLayout.add(button);
         button.addClickListener(e -> row.remove(operationUI));
         button.addClickListener(e -> operationSelector.close());
-        if (operation.contentEquals("Intervallum")) {
-          button.addClickListener(
-              e -> {
-                FilterOperationDateTimeInterval dynamicFilterOperationDateTimeInterval =
-                    new FilterOperationDateTimeInterval("Intervallum");
-                operationUI = dynamicFilterOperationDateTimeInterval;
-                row.add(dynamicFilterOperationDateTimeInterval);
-                lblOperation.setText("Intervallum");
-              });
-        } else {
-          button.addClickListener(
-              e -> {
-                FilterOperationDateIntervalPicker dynamicFilterOperationDateIntervalPicker =
-                    new FilterOperationDateIntervalPicker("Időszakok");
-                operationUI = dynamicFilterOperationDateIntervalPicker;
-                row.add(dynamicFilterOperationDateIntervalPicker);
-                lblOperation.setText("Időszakok");
-              });
-        }
+        button.addClickListener(e -> {
+          addOperationUI(displayValue);
+        });
       }
     }
   }

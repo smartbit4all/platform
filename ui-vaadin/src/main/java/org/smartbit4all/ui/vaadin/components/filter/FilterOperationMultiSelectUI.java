@@ -8,12 +8,11 @@ import org.smartbit4all.ui.vaadin.util.UIUtils;
 public class FilterOperationMultiSelectUI extends FilterOperationUI {
 
   private MultiSelectPopUp<Value> popUp;
-  private String filterName;
 
-  public FilterOperationMultiSelectUI(String filterName) {
-    this.filterName = filterName;
+  public FilterOperationMultiSelectUI(List<Value> possibleValues) {
     addClassName("filter-multi");
     popUp = new MultiSelectPopUp<>();
+    popUp.setItems(possibleValues);
     popUp.setRequired(false);
     // popUp.setFilter(filter); TODO
     popUp.setItemDisplayValueProvider(v -> v.getValue());
@@ -30,18 +29,4 @@ public class FilterOperationMultiSelectUI extends FilterOperationUI {
     popUp.setPlaceholder(placeHolderText);
   }
 
-  @Override
-  public String getFilterName() {
-    return filterName;
-  }
-
-  public void setItems(List<Value> items) {
-    popUp.setItems(items);
-  }
-
-  @Override
-  public List<String> getPossibleOperations() {
-    // TODO Auto-generated method stub
-    return null;
-  }
 }
