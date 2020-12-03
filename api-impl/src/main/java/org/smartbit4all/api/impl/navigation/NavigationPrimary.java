@@ -46,7 +46,8 @@ public final class NavigationPrimary extends NavigationImpl implements Initializ
   }
 
   @Override
-  public Map<URI, List<NavigationReferenceEntry>> navigate(URI objectUri, List<URI> associationMetaUris) {
+  public Map<URI, List<NavigationReferenceEntry>> navigate(URI objectUri,
+      List<URI> associationMetaUris) {
     // In this case the scheme of the uri in the NavigationAssociationMeta identifies the api to
     // delegate.
     if (associationMetaUris == null || associationMetaUris.isEmpty()) {
@@ -59,9 +60,9 @@ public final class NavigationPrimary extends NavigationImpl implements Initializ
         List<URI> assocList = assocByApi.get(api);
         if (assocList == null) {
           assocList = new ArrayList<>();
+          assocByApi.put(api, assocList);
         }
         assocList.add(associationMetaUri);
-        assocByApi.put(api, assocList);
       }
     }
     if (assocByApi.isEmpty()) {
