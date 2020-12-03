@@ -25,8 +25,8 @@ public class DynamicFilterViewUI implements DynamicFilterView {
   private HasComponents filterSelectorHolder;
   private HasComponents filterHolder;
 
-  private Map<String, DynamicFilterGroupUI> groupsById = new HashMap<>();
-  private Map<String, DynamicFilterUI> filtersById = new HashMap<>();
+  private Map<String, FilterGroupUI> groupsById = new HashMap<>();
+  private Map<String, FilterFieldUI> filtersById = new HashMap<>();
   private Map<String, FilterSelectorGroupUI> selectorGroupsById = new HashMap<>();
   private Map<String, FilterSelectorUI> selectorsById = new HashMap<>();
 
@@ -87,8 +87,8 @@ public class DynamicFilterViewUI implements DynamicFilterView {
   @Override
   public void renderFilter(FilterFieldUIState filterUIState, List<Value> possibleValues) {
     FilterGroupUIState groupUIState = filterUIState.getGroup();
-    DynamicFilterGroupUI groupUI = groupsById.get(groupUIState.getId());
-    DynamicFilterUI filterUI = filtersById.get(filterUIState.getId());
+    FilterGroupUI groupUI = groupsById.get(groupUIState.getId());
+    FilterFieldUI filterUI = filtersById.get(filterUIState.getId());
     if (filterUI != null) {
       throw new IllegalArgumentException(
           "Existing filterUI found when creating new filterUI with '" + filterUIState.getId()
@@ -98,7 +98,7 @@ public class DynamicFilterViewUI implements DynamicFilterView {
       renderGroup(groupUIState);
       groupUI = groupsById.get(groupUIState.getId());
     }
-    filterUI = new DynamicFilterUI(groupUI, filterUIState,
+    filterUI = new FilterFieldUI(groupUI, filterUIState,
         () -> controller.removeFilter(groupUIState.getId(), filterUIState.getId()));
     filterUI.setOperation(filterUIState.getSelectedOperation().getDisplayValue());
     filtersById.put(filterUIState.getId(), filterUI);
@@ -108,32 +108,32 @@ public class DynamicFilterViewUI implements DynamicFilterView {
 
   }
 
-  private void renderFilter(DynamicFilterUI filterUI, FilterField dynamicFilter,
+  private void renderFilter(FilterFieldUI filterUI, FilterField dynamicFilter,
       List<Value> possibleValues) {
     // TODO honor dynamicFilter.getOperation()
     // TODO get strings from static finals
 
     String filterView = dynamicFilter.getOperation().getFilterView();
     if ("filterop.txt.eq".equals(filterView)) {
-      DynamicFilterOperationOneFieldUI operationUI =
-          new DynamicFilterOperationOneFieldUI(dynamicFilter.getMetaName());
+      FilterOperationOneFieldUI operationUI =
+          new FilterOperationOneFieldUI(dynamicFilter.getMetaName());
       filterUI.addOperationUI(operationUI);
     } else if ("filterop.date.eq".equals(filterView)) {
-      DynamicFilterOperationDateTimeInterval operationUI =
-          new DynamicFilterOperationDateTimeInterval(dynamicFilter.getMetaName());
+      FilterOperationDateTimeInterval operationUI =
+          new FilterOperationDateTimeInterval(dynamicFilter.getMetaName());
       filterUI.addOperationUI(operationUI);
       ArrayList<String> possibleOperations = new ArrayList<>();
       possibleOperations.add("Intervallum");
       possibleOperations.add("Időszakok");
       filterUI.setPossibleOperations(possibleOperations);
     } else if ("filterop.multi.eq".equals(filterView)) {
-      DynamicFilterOperationMultiSelectUI operationUI =
-          new DynamicFilterOperationMultiSelectUI(dynamicFilter.getMetaName());
+      FilterOperationMultiSelectUI operationUI =
+          new FilterOperationMultiSelectUI(dynamicFilter.getMetaName());
       filterUI.addOperationUI(operationUI);
       operationUI.setItems(possibleValues);
     } else if ("filterop.combo.eq".equals(filterView)) {
-      DynamicFilterOperationComboBoxUI operationUI =
-          new DynamicFilterOperationComboBoxUI(dynamicFilter.getMetaName());
+      FilterOperationComboBoxUI operationUI =
+          new FilterOperationComboBoxUI(dynamicFilter.getMetaName());
       filterUI.addOperationUI(operationUI);
       operationUI.setItems(possibleValues);
     }
@@ -142,7 +142,7 @@ public class DynamicFilterViewUI implements DynamicFilterView {
 
   @Override
   public void renderGroup(FilterGroupUIState groupUIState) {
-    DynamicFilterGroupUI parentGroupUI;
+    FilterGroupUI parentGroupUI;
     if (groupUIState.isRoot()) {
       parentGroupUI = null;
     } else {
@@ -152,7 +152,7 @@ public class DynamicFilterViewUI implements DynamicFilterView {
         parentGroupUI = groupsById.get(groupUIState.getParentGroupId());
       }
     }
-    DynamicFilterGroupUI groupUI = new DynamicFilterGroupUI(groupUIState, parentGroupUI);
+    FilterGroupUI groupUI = new FilterGroupUI(groupUIState, parentGroupUI);
     groupsById.put(groupUIState.getId(), groupUI);
     if (parentGroupUI == null) {
       filterHolder.add(groupUI);
@@ -163,13 +163,13 @@ public class DynamicFilterViewUI implements DynamicFilterView {
 
   @Override
   public void removeFilter(String filterId) {
-    DynamicFilterUI filter = filtersById.get(filterId);
+    FilterFieldUI filter = filtersById.get(filterId);
     filter.getGroup().getFiltersLayout().remove(filter);
   }
 
   @Override
   public void removeGroup(String groupId) {
-    DynamicFilterGroupUI groupUI = groupsById.get(groupId);
+    FilterGroupUI groupUI = groupsById.get(groupId);
     groupsById.remove(groupId);
     if (groupUI.getParentGroupUI() != null) {
       groupUI.getParentGroupUI().remove(groupUI);

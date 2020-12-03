@@ -12,14 +12,14 @@ public class FilterFieldUIState extends AbstractUIState {
   private FilterGroupUIState group;
   private boolean isCloseable;
 
-  private DynamicFilterLabelPosition position;
+  private FilterLabelPosition position;
 
   private List<FilterOperation> operations;
 
 
   public FilterFieldUIState(FilterField filter,
       FilterGroupUIState group,
-      DynamicFilterLabelPosition position, boolean isCloseable,
+      FilterLabelPosition position, boolean isCloseable,
       List<FilterOperation> operations) {
     super();
     this.filter = filter;
@@ -50,7 +50,7 @@ public class FilterFieldUIState extends AbstractUIState {
     return filter;
   }
 
-  public DynamicFilterLabelPosition getPosition() {
+  public FilterLabelPosition getPosition() {
     return position;
   }
 

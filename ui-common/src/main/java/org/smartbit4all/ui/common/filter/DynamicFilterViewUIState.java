@@ -87,9 +87,9 @@ public class DynamicFilterViewUIState {
     if (operations != null && !operations.isEmpty()) {
       filter.setOperation(operations.get(0));
     }
-    DynamicFilterLabelPosition position = DynamicFilterLabelPosition.ON_TOP; // default
+    FilterLabelPosition position = FilterLabelPosition.ON_TOP; // default
     if (filterConfigMode == FilterConfigMode.STATIC) {
-      position = DynamicFilterLabelPosition.PLACEHOLDER;
+      position = FilterLabelPosition.PLACEHOLDER;
     }
     boolean isCloseable = !(filterConfigMode == FilterConfigMode.STATIC);
     FilterFieldUIState filterUIState =

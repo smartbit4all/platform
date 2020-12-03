@@ -5,13 +5,13 @@ import java.util.List;
 import org.smartbit4all.ui.vaadin.components.FlexBoxLayout;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 
-public class DynamicFilterOperationDateTimeInterval extends DynamicFilterOperationUI {
+public class FilterOperationDateTimeInterval extends FilterOperationUI {
 
   String filterName;
   DateTimePicker beginDateTime;
   DateTimePicker endDateTime;
 
-  public DynamicFilterOperationDateTimeInterval(String filterName) {
+  public FilterOperationDateTimeInterval(String filterName) {
     this.filterName = filterName;
     addClassName("dynamic-filter-date-time");
 

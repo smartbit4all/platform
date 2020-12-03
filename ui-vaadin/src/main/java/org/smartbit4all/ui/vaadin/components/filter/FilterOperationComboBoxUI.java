@@ -4,11 +4,11 @@ import java.util.List;
 import org.smartbit4all.api.value.bean.Value;
 import com.vaadin.flow.component.combobox.ComboBox;
 
-public class DynamicFilterOperationComboBoxUI extends DynamicFilterOperationUI {
+public class FilterOperationComboBoxUI extends FilterOperationUI {
   ComboBox<Value> comboBox;
   private String filterName;
 
-  public DynamicFilterOperationComboBoxUI(String filterName) {
+  public FilterOperationComboBoxUI(String filterName) {
     this.filterName = filterName;
     comboBox = new ComboBox<>();
     comboBox.addClassName("dynamic-filter-combobox");

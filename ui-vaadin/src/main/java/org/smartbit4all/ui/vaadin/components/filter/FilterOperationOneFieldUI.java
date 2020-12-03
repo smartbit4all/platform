@@ -3,12 +3,12 @@ package org.smartbit4all.ui.vaadin.components.filter;
 import java.util.List;
 import com.vaadin.flow.component.textfield.TextField;
 
-public class DynamicFilterOperationOneFieldUI extends DynamicFilterOperationUI {
+public class FilterOperationOneFieldUI extends FilterOperationUI {
 
   private TextField textField;
   private String filterName;
 
-  public DynamicFilterOperationOneFieldUI(String filterName) {
+  public FilterOperationOneFieldUI(String filterName) {
     addClassName("dynamic-filter-onefield");
     this.filterName = filterName;
     textField = new TextField();

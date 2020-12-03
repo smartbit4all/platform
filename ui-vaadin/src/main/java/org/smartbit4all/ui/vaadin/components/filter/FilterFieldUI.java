@@ -1,8 +1,8 @@
 package org.smartbit4all.ui.vaadin.components.filter;
 
 import java.util.List;
-import org.smartbit4all.ui.common.filter.DynamicFilterDateOperation;
-import org.smartbit4all.ui.common.filter.DynamicFilterLabelPosition;
+import org.smartbit4all.ui.common.filter.FilterDateOperation;
+import org.smartbit4all.ui.common.filter.FilterLabelPosition;
 import org.smartbit4all.ui.common.filter.FilterFieldUIState;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;
@@ -13,24 +13,24 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 
-public class DynamicFilterUI extends FlexLayout {
+public class FilterFieldUI extends FlexLayout {
 
   private FlexLayout header;
   // TODO remove Row
   private Div row;
   private Button btnClose;
-  private DynamicFilterGroupUI group;
+  private FilterGroupUI group;
   private Label lblOperation;
   private Label lblFilterName;
   private FlexLayout filterLayout;
-  private DynamicFilterLabelPosition position;
+  private FilterLabelPosition position;
   private FlexLayout operationWrapper;
   private Dialog operationSelector;
-  private DynamicFilterDateOperation operation;
+  private FilterDateOperation operation;
   private List<String> possibleOperations;
-  private DynamicFilterOperationUI operationUI;
+  private FilterOperationUI operationUI;
 
-  public <T extends Component> DynamicFilterUI(DynamicFilterGroupUI group,
+  public <T extends Component> FilterFieldUI(FilterGroupUI group,
       FilterFieldUIState uiState, Runnable close) {
     addClassName("dynamic-filter");
     this.group = group;
@@ -68,19 +68,19 @@ public class DynamicFilterUI extends FlexLayout {
 
   }
 
-  public DynamicFilterUI(DynamicFilterGroupUI groupUI, FilterFieldUIState filterUIState,
+  public FilterFieldUI(FilterGroupUI groupUI, FilterFieldUIState filterUIState,
       Object close) {
     // TODO Auto-generated constructor stub
   }
 
-  public void addOperationUI(DynamicFilterOperationUI operationUI) {
+  public void addOperationUI(FilterOperationUI operationUI) {
     row.add(operationUI);
     this.operationUI = operationUI;
 
-    if (position.equals(DynamicFilterLabelPosition.PLACEHOLDER)) {
+    if (position.equals(FilterLabelPosition.PLACEHOLDER)) {
       header.remove(lblFilterName);
       operationUI.setPlaceholder(getTranslation(operationUI.getFilterName()));
-    } else if (position.equals(DynamicFilterLabelPosition.ON_LEFT)) {
+    } else if (position.equals(FilterLabelPosition.ON_LEFT)) {
       lblFilterName.setText(getTranslation(operationUI.getFilterName()));
       filterLayout.setFlexDirection(FlexDirection.ROW);
       header.remove(btnClose);
@@ -92,7 +92,7 @@ public class DynamicFilterUI extends FlexLayout {
   }
 
 
-  public DynamicFilterGroupUI getGroup() {
+  public FilterGroupUI getGroup() {
     return group;
   }
 
@@ -120,8 +120,8 @@ public class DynamicFilterUI extends FlexLayout {
         if (operation.contentEquals("Intervallum")) {
           button.addClickListener(
               e -> {
-                DynamicFilterOperationDateTimeInterval dynamicFilterOperationDateTimeInterval =
-                    new DynamicFilterOperationDateTimeInterval("Intervallum");
+                FilterOperationDateTimeInterval dynamicFilterOperationDateTimeInterval =
+                    new FilterOperationDateTimeInterval("Intervallum");
                 operationUI = dynamicFilterOperationDateTimeInterval;
                 row.add(dynamicFilterOperationDateTimeInterval);
                 lblOperation.setText("Intervallum");
@@ -129,8 +129,8 @@ public class DynamicFilterUI extends FlexLayout {
         } else {
           button.addClickListener(
               e -> {
-                DynamicFilterOperationDateIntervalPicker dynamicFilterOperationDateIntervalPicker =
-                    new DynamicFilterOperationDateIntervalPicker("Időszakok");
+                FilterOperationDateIntervalPicker dynamicFilterOperationDateIntervalPicker =
+                    new FilterOperationDateIntervalPicker("Időszakok");
                 operationUI = dynamicFilterOperationDateIntervalPicker;
                 row.add(dynamicFilterOperationDateIntervalPicker);
                 lblOperation.setText("Időszakok");

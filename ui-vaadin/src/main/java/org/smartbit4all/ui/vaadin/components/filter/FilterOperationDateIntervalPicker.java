@@ -11,7 +11,7 @@ import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.timepicker.TimePicker;
 
 
-public class DynamicFilterOperationDateIntervalPicker extends DynamicFilterOperationUI {
+public class FilterOperationDateIntervalPicker extends FilterOperationUI {
 
   String filterName;
   ComboBox<TimeFilterOptions> cbTimeFilterOption;
@@ -21,7 +21,7 @@ public class DynamicFilterOperationDateIntervalPicker extends DynamicFilterOpera
   TimePicker endTime;
 
 
-  public DynamicFilterOperationDateIntervalPicker(String filterName) {
+  public FilterOperationDateIntervalPicker(String filterName) {
     this.filterName = filterName;
     addClassName("dynamic-filter-date");
     cbTimeFilterOption = new ComboBox<>();

@@ -9,14 +9,14 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 
-public class DynamicFilterGroupUI extends FlexLayout {
+public class FilterGroupUI extends FlexLayout {
 
 
-  private DynamicFilterGroupUI parentGroupUI;
+  private FilterGroupUI parentGroupUI;
   private FlexLayout iconLayout;
   private FlexLayout filtersLayout;
 
-  public DynamicFilterGroupUI(FilterGroupUIState uiState, DynamicFilterGroupUI parentGroupUI) {
+  public FilterGroupUI(FilterGroupUIState uiState, FilterGroupUI parentGroupUI) {
     // TODO maybe we can skip isRoot parameter and use: isRoot = parentGroupUI == null;
     this.parentGroupUI = parentGroupUI;
     iconLayout = new FlexLayout();
@@ -39,7 +39,7 @@ public class DynamicFilterGroupUI extends FlexLayout {
     }
   }
 
-  public DynamicFilterGroupUI(boolean isRoot, DynamicFilterGroupUI parentGroupUI,
+  public FilterGroupUI(boolean isRoot, FilterGroupUI parentGroupUI,
       boolean isClosable) {
     // TODO maybe we can skip isRoot parameter and use: isRoot = parentGroupUI == null;
     this.parentGroupUI = parentGroupUI;
@@ -60,7 +60,7 @@ public class DynamicFilterGroupUI extends FlexLayout {
     // TODO handle isCloseable, add close button if true.
   }
 
-  public DynamicFilterGroupUI getParentGroupUI() {
+  public FilterGroupUI getParentGroupUI() {
     return parentGroupUI;
   }
 
@@ -74,7 +74,7 @@ public class DynamicFilterGroupUI extends FlexLayout {
     iconLayout.add(filterIcon, filterLabel);
   }
 
-  public void addToFilterGroup(DynamicFilterUI filter) {
+  public void addToFilterGroup(FilterFieldUI filter) {
     filtersLayout.add(filter);
   }
 
