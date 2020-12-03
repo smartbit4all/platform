@@ -10,6 +10,7 @@ public class FilterOperationComboBoxUI extends FilterOperationUI {
   public FilterOperationComboBoxUI(List<Value> possibleValues) {
     comboBox = new ComboBox<>();
     comboBox.addClassName("filter-combobox");
+    comboBox.setItems(possibleValues);
     comboBox.setItemLabelGenerator(v -> v.getValue());
     add(comboBox);
   }
