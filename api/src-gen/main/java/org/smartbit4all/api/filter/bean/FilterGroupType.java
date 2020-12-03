@@ -1,12 +1,12 @@
-package org.smartbit4all.api.dynamicfilter.bean;
+package org.smartbit4all.api.filter.bean;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
- * Gets or Sets DynamicFilterGroupType
+ * Gets or Sets FilterGroupType
  */
-public enum DynamicFilterGroupType {
+public enum FilterGroupType {
   
   AND("AND"),
   
@@ -14,7 +14,7 @@ public enum DynamicFilterGroupType {
 
   private String value;
 
-  DynamicFilterGroupType(String value) {
+  FilterGroupType(String value) {
     this.value = value;
   }
 
@@ -29,8 +29,8 @@ public enum DynamicFilterGroupType {
   }
 
   @JsonCreator
-  public static DynamicFilterGroupType fromValue(String value) {
-    for (DynamicFilterGroupType b : DynamicFilterGroupType.values()) {
+  public static FilterGroupType fromValue(String value) {
+    for (FilterGroupType b : FilterGroupType.values()) {
       if (b.value.equals(value)) {
         return b;
       }

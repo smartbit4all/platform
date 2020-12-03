@@ -1,14 +1,14 @@
 openapi: 3.0.1
 info:
-  title: Dynamic Filter UI API
-  description: Dynamic Filter UI API
+  title: Filter API
+  description: Filter API
   termsOfService: ''
   contact:
     email: info@it4all.hu
   version: 1.0.0
 tags:
-  - name: dynamic-filter
-    description: Dynamic filter
+  - name: filter
+    description: filter
 paths:
   /nope:
     post:
@@ -18,25 +18,25 @@ paths:
           description: nope
 components:
   schemas:
-    DynamicFilterConfigMode:
+    FilterConfigMode:
       type: string
       enum: [static, simple_dynamic, dynamic, research]
-    DynamicFilterConfig:
+    FilterConfig:
       type: object
       properties:
-        dynamicFilterMetas:
+        filterFieldMetas:
           type: array
           items:
-            $ref: '#/components/schemas/DynamicFilterMeta'
-        dynamicFilterGroupMetas:
+            $ref: '#/components/schemas/FilterFieldMeta'
+        filterGroupMetas:
           type: array
           items:
-            $ref: '#/components/schemas/DynamicFilterGroupMeta'
+            $ref: '#/components/schemas/FilterGroupMeta'
         defaultFilterStyle:
           type: string
         defaultFilterGroupStyle:
           type: string
-    DynamicFilterMeta:
+    FilterFieldMeta:
       type: object
       description: "Descriptor of a possible filter field. This field doesn't have to correspond to an existing entity's property, it is simple a way of filtering."
       properties:
@@ -50,8 +50,8 @@ components:
         operations:
           type: array
           items:
-            $ref: '#/components/schemas/DynamicFilterOperation'
-    DynamicFilterGroupMeta:
+            $ref: '#/components/schemas/FilterOperation'
+    FilterGroupMeta:
       type: object
       properties:
         name:
@@ -61,14 +61,14 @@ components:
         style:
           type: string
         type:
-          $ref: '#/components/schemas/DynamicFilterGroupType'
-    DynamicFilterOperation:
+          $ref: '#/components/schemas/FilterGroupType'
+    FilterOperation:
       type: object
       description: 'Defines a possible way of using a filter field. For example: exact match, like, sounds like, interval, etc.'
       properties:
         filterView:
           type: string
-          description: 'Declarative name of a DynamicFilterOperationUI, which will handle this operation.'
+          description: 'Declarative name of a FilterOperationUI, which will handle this operation.'
         field1:
           type: string
         field2:
@@ -82,12 +82,12 @@ components:
           type: string
         icon:
           type: string
-    DynamicFilterGroupType:
+    FilterGroupType:
       type: string
       enum: [
           AND, OR
         ]
-    DynamicFilterGroup:
+    FilterGroup:
       type: object
       description: 'AND / OR group of filters / groups.'
       properties:
@@ -98,29 +98,29 @@ components:
           type: string
         metaName:
           type: string
-          description: Name of the referenced DynamicFilterGroupMeta, if this group is created from any. 
+          description: Name of the referenced FilterGroupMeta, if this group is created from any. 
         type:
-          $ref: '#/components/schemas/DynamicFilterGroupType'
-        filters:
+          $ref: '#/components/schemas/FilterGroupType'
+        filterFields:
           type: array
           items:
-            $ref: '#/components/schemas/DynamicFilter'
-        groups:
+            $ref: '#/components/schemas/FilterField'
+        filterGroups:
           type: array
           items:
-            $ref: '#/components/schemas/DynamicFilterGroup'
+            $ref: '#/components/schemas/FilterGroup'
         isNegated:
           type: boolean
         isExpanded:
           type: boolean
-    DynamicFilter:
+    FilterField:
       type: object
       properties:
         metaName:
           type: string
-          description: Name of the referenced DynamicFilterMeta.
+          description: Name of the referenced FilterFieldMeta.
         operation:
-          $ref: '#/components/schemas/DynamicFilterOperation'
+          $ref: '#/components/schemas/FilterOperation'
         value1:
           type: string
         value2:

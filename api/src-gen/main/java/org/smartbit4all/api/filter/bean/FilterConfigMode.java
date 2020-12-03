@@ -1,12 +1,12 @@
-package org.smartbit4all.api.dynamicfilter.bean;
+package org.smartbit4all.api.filter.bean;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
- * Gets or Sets DynamicFilterConfigMode
+ * Gets or Sets FilterConfigMode
  */
-public enum DynamicFilterConfigMode {
+public enum FilterConfigMode {
   
   STATIC("static"),
   
@@ -18,7 +18,7 @@ public enum DynamicFilterConfigMode {
 
   private String value;
 
-  DynamicFilterConfigMode(String value) {
+  FilterConfigMode(String value) {
     this.value = value;
   }
 
@@ -33,8 +33,8 @@ public enum DynamicFilterConfigMode {
   }
 
   @JsonCreator
-  public static DynamicFilterConfigMode fromValue(String value) {
-    for (DynamicFilterConfigMode b : DynamicFilterConfigMode.values()) {
+  public static FilterConfigMode fromValue(String value) {
+    for (FilterConfigMode b : FilterConfigMode.values()) {
       if (b.value.equals(value)) {
         return b;
       }

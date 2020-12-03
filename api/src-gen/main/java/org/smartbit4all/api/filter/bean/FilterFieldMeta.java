@@ -1,4 +1,4 @@
-package org.smartbit4all.api.dynamicfilter.bean;
+package org.smartbit4all.api.filter.bean;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +13,7 @@ import io.swagger.annotations.ApiModelProperty;
  */
 @ApiModel(description = "Descriptor of a possible filter field. This field doesn't have to correspond to an existing entity's property, it is simple a way of filtering.")
 
-public class DynamicFilterMeta   {
+public class FilterFieldMeta   {
   @JsonProperty("name")
   private String name;
 
@@ -25,9 +25,9 @@ public class DynamicFilterMeta   {
 
   @JsonProperty("operations")
   @Valid
-  private List<DynamicFilterOperation> operations = null;
+  private List<FilterOperation> operations = null;
 
-  public DynamicFilterMeta name(String name) {
+  public FilterFieldMeta name(String name) {
     this.name = name;
     return this;
   }
@@ -47,7 +47,7 @@ public class DynamicFilterMeta   {
     this.name = name;
   }
 
-  public DynamicFilterMeta groupName(String groupName) {
+  public FilterFieldMeta groupName(String groupName) {
     this.groupName = groupName;
     return this;
   }
@@ -67,7 +67,7 @@ public class DynamicFilterMeta   {
     this.groupName = groupName;
   }
 
-  public DynamicFilterMeta style(String style) {
+  public FilterFieldMeta style(String style) {
     this.style = style;
     return this;
   }
@@ -87,12 +87,12 @@ public class DynamicFilterMeta   {
     this.style = style;
   }
 
-  public DynamicFilterMeta operations(List<DynamicFilterOperation> operations) {
+  public FilterFieldMeta operations(List<FilterOperation> operations) {
     this.operations = operations;
     return this;
   }
 
-  public DynamicFilterMeta addOperationsItem(DynamicFilterOperation operationsItem) {
+  public FilterFieldMeta addOperationsItem(FilterOperation operationsItem) {
     if (this.operations == null) {
       this.operations = new ArrayList<>();
     }
@@ -108,11 +108,11 @@ public class DynamicFilterMeta   {
 
   @Valid
 
-  public List<DynamicFilterOperation> getOperations() {
+  public List<FilterOperation> getOperations() {
     return operations;
   }
 
-  public void setOperations(List<DynamicFilterOperation> operations) {
+  public void setOperations(List<FilterOperation> operations) {
     this.operations = operations;
   }
 
@@ -125,11 +125,11 @@ public class DynamicFilterMeta   {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    DynamicFilterMeta dynamicFilterMeta = (DynamicFilterMeta) o;
-    return Objects.equals(this.name, dynamicFilterMeta.name) &&
-        Objects.equals(this.groupName, dynamicFilterMeta.groupName) &&
-        Objects.equals(this.style, dynamicFilterMeta.style) &&
-        Objects.equals(this.operations, dynamicFilterMeta.operations);
+    FilterFieldMeta filterFieldMeta = (FilterFieldMeta) o;
+    return Objects.equals(this.name, filterFieldMeta.name) &&
+        Objects.equals(this.groupName, filterFieldMeta.groupName) &&
+        Objects.equals(this.style, filterFieldMeta.style) &&
+        Objects.equals(this.operations, filterFieldMeta.operations);
   }
 
   @Override
@@ -140,7 +140,7 @@ public class DynamicFilterMeta   {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class DynamicFilterMeta {\n");
+    sb.append("class FilterFieldMeta {\n");
     
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    groupName: ").append(toIndentedString(groupName)).append("\n");

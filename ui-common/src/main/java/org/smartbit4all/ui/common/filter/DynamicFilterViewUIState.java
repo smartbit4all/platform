@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.smartbit4all.api.dynamicfilter.bean.DynamicFilter;
-import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterConfig;
-import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterConfigMode;
-import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterGroup;
-import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterGroupMeta;
-import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterMeta;
-import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterOperation;
+import org.smartbit4all.api.filter.bean.FilterConfig;
+import org.smartbit4all.api.filter.bean.FilterConfigMode;
+import org.smartbit4all.api.filter.bean.FilterField;
+import org.smartbit4all.api.filter.bean.FilterFieldMeta;
+import org.smartbit4all.api.filter.bean.FilterGroup;
+import org.smartbit4all.api.filter.bean.FilterGroupMeta;
+import org.smartbit4all.api.filter.bean.FilterOperation;
 
 public class DynamicFilterViewUIState {
 
@@ -21,39 +21,39 @@ public class DynamicFilterViewUIState {
   Map<String, FilterSelectorUIState> filterSelectorsById = new HashMap<>();
   Map<String, FilterGroupUIState> groupUIStatesById = new HashMap<>();
   Map<String, FilterFieldUIState> filterUIStatesById = new HashMap<>();
-  Map<String, DynamicFilterGroup> groupsById = new HashMap<>();
-  Map<String, DynamicFilter> filtersById = new HashMap<>();
+  Map<String, FilterGroup> groupsById = new HashMap<>();
+  Map<String, FilterField> filtersById = new HashMap<>();
   FilterGroupUIState activeGroup;
 
-  private DynamicFilterConfig filterConfig;
-  private DynamicFilterConfigMode filterConfigMode;
+  private FilterConfig filterConfig;
+  private FilterConfigMode filterConfigMode;
 
-  public DynamicFilterViewUIState(DynamicFilterConfigMode filterConfigMode) {
+  public DynamicFilterViewUIState(FilterConfigMode filterConfigMode) {
     createRootGroup();
     this.filterConfigMode = filterConfigMode;
     if (this.filterConfigMode == null) {
-      this.filterConfigMode = DynamicFilterConfigMode.SIMPLE_DYNAMIC;
+      this.filterConfigMode = FilterConfigMode.SIMPLE_DYNAMIC;
     }
   }
 
   private void createRootGroup() {
-    DynamicFilterGroup rootFilterGroup = new DynamicFilterGroup();
+    FilterGroup rootFilterGroup = new FilterGroup();
     rootGroup = new FilterGroupUIState(rootFilterGroup, null, false);
     activeGroup = rootGroup;
     groupUIStatesById.put(rootGroup.getId(), rootGroup);
     groupsById.put(rootGroup.getId(), rootFilterGroup);
   }
 
-  void setFilterConfig(DynamicFilterConfig filterConfig) {
+  void setFilterConfig(FilterConfig filterConfig) {
     this.filterConfig = filterConfig;
     Map<String, FilterSelectorGroupUIState> groupsByName = new HashMap<>();
-    for (DynamicFilterGroupMeta group : this.filterConfig.getDynamicFilterGroupMetas()) {
+    for (FilterGroupMeta group : this.filterConfig.getFilterGroupMetas()) {
       FilterSelectorGroupUIState groupUIState = new FilterSelectorGroupUIState(group);
       filterSelectorGroups.add(groupUIState);
       filterSelectorGroupsById.put(groupUIState.getId(), groupUIState);
       groupsByName.put(group.getName(), groupUIState);
     }
-    for (DynamicFilterMeta field : this.filterConfig.getDynamicFilterMetas()) {
+    for (FilterFieldMeta field : this.filterConfig.getFilterFieldMetas()) {
       FilterSelectorGroupUIState group = groupsByName.get(field.getGroupName());
       FilterSelectorUIState fieldUIState = new FilterSelectorUIState(group, field);
       filterSelectors.add(fieldUIState);
@@ -62,15 +62,15 @@ public class DynamicFilterViewUIState {
     }
   }
 
-  DynamicFilterConfigMode getFilterConfigMode() {
+  FilterConfigMode getFilterConfigMode() {
     return filterConfigMode;
   }
 
   FilterFieldUIState createFilter(String filterSelectorId) {
     FilterSelectorUIState filterSelector = filterSelectorsById.get(filterSelectorId);
     FilterGroupUIState group;
-    if (filterConfigMode == DynamicFilterConfigMode.SIMPLE_DYNAMIC
-        || filterConfigMode == DynamicFilterConfigMode.STATIC) {
+    if (filterConfigMode == FilterConfigMode.SIMPLE_DYNAMIC
+        || filterConfigMode == FilterConfigMode.STATIC) {
       group = filterSelector.getGroup().currentGroupUIState;
       if (group == null) {
         group = createFilterGroup(filterSelector.getGroup(), rootGroup, false);
@@ -79,19 +79,19 @@ public class DynamicFilterViewUIState {
     } else {
       group = activeGroup;
     }
-    DynamicFilter filter = new DynamicFilter();
+    FilterField filter = new FilterField();
     filter.setMetaName(filterSelector.getName());
     group.addDynamicFilter(filter);
-    List<DynamicFilterOperation> operations = filterSelector.getOperations();
+    List<FilterOperation> operations = filterSelector.getOperations();
     // TODO default operation handling
     if (operations != null && !operations.isEmpty()) {
       filter.setOperation(operations.get(0));
     }
     DynamicFilterLabelPosition position = DynamicFilterLabelPosition.ON_TOP; // default
-    if (filterConfigMode == DynamicFilterConfigMode.STATIC) {
+    if (filterConfigMode == FilterConfigMode.STATIC) {
       position = DynamicFilterLabelPosition.PLACEHOLDER;
     }
-    boolean isCloseable = !(filterConfigMode == DynamicFilterConfigMode.STATIC);
+    boolean isCloseable = !(filterConfigMode == FilterConfigMode.STATIC);
     FilterFieldUIState filterUIState =
         new FilterFieldUIState(filter, group, position, isCloseable, operations);
     filterUIStatesById.put(filterUIState.getId(), filterUIState);
@@ -101,7 +101,7 @@ public class DynamicFilterViewUIState {
 
   FilterGroupUIState createFilterGroup(FilterSelectorGroupUIState groupMeta,
       FilterGroupUIState parentGroup, boolean isCloseable) {
-    DynamicFilterGroup group = new DynamicFilterGroup();
+    FilterGroup group = new FilterGroup();
     group.setType(groupMeta.getType());
     group.setName(groupMeta.getName());
     group.setIcon(groupMeta.getIconCode());

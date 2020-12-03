@@ -3,8 +3,8 @@ package org.smartbit4all.ui.common.filter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterGroupMeta;
-import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterGroupType;
+import org.smartbit4all.api.filter.bean.FilterGroupMeta;
+import org.smartbit4all.api.filter.bean.FilterGroupType;
 
 public class FilterSelectorGroupUIState extends AbstractUIState {
 
@@ -16,7 +16,7 @@ public class FilterSelectorGroupUIState extends AbstractUIState {
 
   FilterGroupUIState currentGroupUIState;
 
-  public FilterSelectorGroupUIState(DynamicFilterGroupMeta filterGroupMeta) {
+  public FilterSelectorGroupUIState(FilterGroupMeta filterGroupMeta) {
     super();
     this.labelCode = filterGroupMeta.getName();
     this.iconCode = filterGroupMeta.getIcon();
@@ -44,9 +44,9 @@ public class FilterSelectorGroupUIState extends AbstractUIState {
     return isCloseable;
   }
 
-  public DynamicFilterGroupType getType() {
+  public FilterGroupType getType() {
     // TODO should we handle anything else on selector level?
-    return DynamicFilterGroupType.AND;
+    return FilterGroupType.AND;
   }
 
   public List<FilterSelectorUIState> filterSelectors() {

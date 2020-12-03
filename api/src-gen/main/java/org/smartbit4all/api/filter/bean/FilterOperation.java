@@ -1,4 +1,4 @@
-package org.smartbit4all.api.dynamicfilter.bean;
+package org.smartbit4all.api.filter.bean;
 
 import java.net.URI;
 import java.util.Objects;
@@ -12,7 +12,7 @@ import io.swagger.annotations.ApiModelProperty;
  */
 @ApiModel(description = "Defines a possible way of using a filter field. For example: exact match, like, sounds like, interval, etc.")
 
-public class DynamicFilterOperation   {
+public class FilterOperation   {
   @JsonProperty("filterView")
   private String filterView;
 
@@ -34,16 +34,16 @@ public class DynamicFilterOperation   {
   @JsonProperty("icon")
   private String icon;
 
-  public DynamicFilterOperation filterView(String filterView) {
+  public FilterOperation filterView(String filterView) {
     this.filterView = filterView;
     return this;
   }
 
   /**
-   * Declarative name of a DynamicFilterOperationUI, which will handle this operation.
+   * Declarative name of a FilterOperationUI, which will handle this operation.
    * @return filterView
   */
-  @ApiModelProperty(value = "Declarative name of a DynamicFilterOperationUI, which will handle this operation.")
+  @ApiModelProperty(value = "Declarative name of a FilterOperationUI, which will handle this operation.")
 
 
   public String getFilterView() {
@@ -54,7 +54,7 @@ public class DynamicFilterOperation   {
     this.filterView = filterView;
   }
 
-  public DynamicFilterOperation field1(String field1) {
+  public FilterOperation field1(String field1) {
     this.field1 = field1;
     return this;
   }
@@ -74,7 +74,7 @@ public class DynamicFilterOperation   {
     this.field1 = field1;
   }
 
-  public DynamicFilterOperation field2(String field2) {
+  public FilterOperation field2(String field2) {
     this.field2 = field2;
     return this;
   }
@@ -94,7 +94,7 @@ public class DynamicFilterOperation   {
     this.field2 = field2;
   }
 
-  public DynamicFilterOperation possibleValues(URI possibleValues) {
+  public FilterOperation possibleValues(URI possibleValues) {
     this.possibleValues = possibleValues;
     return this;
   }
@@ -115,7 +115,7 @@ public class DynamicFilterOperation   {
     this.possibleValues = possibleValues;
   }
 
-  public DynamicFilterOperation code(String code) {
+  public FilterOperation code(String code) {
     this.code = code;
     return this;
   }
@@ -135,7 +135,7 @@ public class DynamicFilterOperation   {
     this.code = code;
   }
 
-  public DynamicFilterOperation displayValue(String displayValue) {
+  public FilterOperation displayValue(String displayValue) {
     this.displayValue = displayValue;
     return this;
   }
@@ -155,7 +155,7 @@ public class DynamicFilterOperation   {
     this.displayValue = displayValue;
   }
 
-  public DynamicFilterOperation icon(String icon) {
+  public FilterOperation icon(String icon) {
     this.icon = icon;
     return this;
   }
@@ -184,14 +184,14 @@ public class DynamicFilterOperation   {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    DynamicFilterOperation dynamicFilterOperation = (DynamicFilterOperation) o;
-    return Objects.equals(this.filterView, dynamicFilterOperation.filterView) &&
-        Objects.equals(this.field1, dynamicFilterOperation.field1) &&
-        Objects.equals(this.field2, dynamicFilterOperation.field2) &&
-        Objects.equals(this.possibleValues, dynamicFilterOperation.possibleValues) &&
-        Objects.equals(this.code, dynamicFilterOperation.code) &&
-        Objects.equals(this.displayValue, dynamicFilterOperation.displayValue) &&
-        Objects.equals(this.icon, dynamicFilterOperation.icon);
+    FilterOperation filterOperation = (FilterOperation) o;
+    return Objects.equals(this.filterView, filterOperation.filterView) &&
+        Objects.equals(this.field1, filterOperation.field1) &&
+        Objects.equals(this.field2, filterOperation.field2) &&
+        Objects.equals(this.possibleValues, filterOperation.possibleValues) &&
+        Objects.equals(this.code, filterOperation.code) &&
+        Objects.equals(this.displayValue, filterOperation.displayValue) &&
+        Objects.equals(this.icon, filterOperation.icon);
   }
 
   @Override
@@ -202,7 +202,7 @@ public class DynamicFilterOperation   {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class DynamicFilterOperation {\n");
+    sb.append("class FilterOperation {\n");
     
     sb.append("    filterView: ").append(toIndentedString(filterView)).append("\n");
     sb.append("    field1: ").append(toIndentedString(field1)).append("\n");

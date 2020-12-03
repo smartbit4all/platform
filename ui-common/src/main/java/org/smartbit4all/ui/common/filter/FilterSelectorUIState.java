@@ -1,19 +1,19 @@
 package org.smartbit4all.ui.common.filter;
 
 import java.util.List;
-import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterMeta;
-import org.smartbit4all.api.dynamicfilter.bean.DynamicFilterOperation;
+import org.smartbit4all.api.filter.bean.FilterFieldMeta;
+import org.smartbit4all.api.filter.bean.FilterOperation;
 
 public class FilterSelectorUIState extends AbstractUIState {
 
   private String labelCode;
   private String name;
-  private List<DynamicFilterOperation> operations;
+  private List<FilterOperation> operations;
 
   private FilterSelectorGroupUIState group;
   private boolean enabled;
 
-  public FilterSelectorUIState(FilterSelectorGroupUIState group, DynamicFilterMeta filterMeta) {
+  public FilterSelectorUIState(FilterSelectorGroupUIState group, FilterFieldMeta filterMeta) {
     super();
     this.labelCode = filterMeta.getName();
     this.name = filterMeta.getName();
@@ -34,7 +34,7 @@ public class FilterSelectorUIState extends AbstractUIState {
     return group;
   }
 
-  public List<DynamicFilterOperation> getOperations() {
+  public List<FilterOperation> getOperations() {
     return operations;
   }
 

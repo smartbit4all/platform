@@ -1,4 +1,4 @@
-package org.smartbit4all.api.dynamicfilter.bean;
+package org.smartbit4all.api.filter.bean;
 
 import java.util.Objects;
 import javax.validation.Valid;
@@ -6,10 +6,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
- * DynamicFilterGroupMeta
+ * FilterGroupMeta
  */
 
-public class DynamicFilterGroupMeta   {
+public class FilterGroupMeta   {
   @JsonProperty("name")
   private String name;
 
@@ -20,9 +20,9 @@ public class DynamicFilterGroupMeta   {
   private String style;
 
   @JsonProperty("type")
-  private DynamicFilterGroupType type;
+  private FilterGroupType type;
 
-  public DynamicFilterGroupMeta name(String name) {
+  public FilterGroupMeta name(String name) {
     this.name = name;
     return this;
   }
@@ -42,7 +42,7 @@ public class DynamicFilterGroupMeta   {
     this.name = name;
   }
 
-  public DynamicFilterGroupMeta icon(String icon) {
+  public FilterGroupMeta icon(String icon) {
     this.icon = icon;
     return this;
   }
@@ -62,7 +62,7 @@ public class DynamicFilterGroupMeta   {
     this.icon = icon;
   }
 
-  public DynamicFilterGroupMeta style(String style) {
+  public FilterGroupMeta style(String style) {
     this.style = style;
     return this;
   }
@@ -82,7 +82,7 @@ public class DynamicFilterGroupMeta   {
     this.style = style;
   }
 
-  public DynamicFilterGroupMeta type(DynamicFilterGroupType type) {
+  public FilterGroupMeta type(FilterGroupType type) {
     this.type = type;
     return this;
   }
@@ -95,11 +95,11 @@ public class DynamicFilterGroupMeta   {
 
   @Valid
 
-  public DynamicFilterGroupType getType() {
+  public FilterGroupType getType() {
     return type;
   }
 
-  public void setType(DynamicFilterGroupType type) {
+  public void setType(FilterGroupType type) {
     this.type = type;
   }
 
@@ -112,11 +112,11 @@ public class DynamicFilterGroupMeta   {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    DynamicFilterGroupMeta dynamicFilterGroupMeta = (DynamicFilterGroupMeta) o;
-    return Objects.equals(this.name, dynamicFilterGroupMeta.name) &&
-        Objects.equals(this.icon, dynamicFilterGroupMeta.icon) &&
-        Objects.equals(this.style, dynamicFilterGroupMeta.style) &&
-        Objects.equals(this.type, dynamicFilterGroupMeta.type);
+    FilterGroupMeta filterGroupMeta = (FilterGroupMeta) o;
+    return Objects.equals(this.name, filterGroupMeta.name) &&
+        Objects.equals(this.icon, filterGroupMeta.icon) &&
+        Objects.equals(this.style, filterGroupMeta.style) &&
+        Objects.equals(this.type, filterGroupMeta.type);
   }
 
   @Override
@@ -127,7 +127,7 @@ public class DynamicFilterGroupMeta   {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class DynamicFilterGroupMeta {\n");
+    sb.append("class FilterGroupMeta {\n");
     
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    icon: ").append(toIndentedString(icon)).append("\n");

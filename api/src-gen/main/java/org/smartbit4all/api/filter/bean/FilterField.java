@@ -1,4 +1,4 @@
-package org.smartbit4all.api.dynamicfilter.bean;
+package org.smartbit4all.api.filter.bean;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,15 +8,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
- * DynamicFilter
+ * FilterField
  */
 
-public class DynamicFilter   {
+public class FilterField   {
   @JsonProperty("metaName")
   private String metaName;
 
   @JsonProperty("operation")
-  private DynamicFilterOperation operation;
+  private FilterOperation operation;
 
   @JsonProperty("value1")
   private String value1;
@@ -34,16 +34,16 @@ public class DynamicFilter   {
   @JsonProperty("editable")
   private Boolean editable;
 
-  public DynamicFilter metaName(String metaName) {
+  public FilterField metaName(String metaName) {
     this.metaName = metaName;
     return this;
   }
 
   /**
-   * Name of the referenced DynamicFilterMeta.
+   * Name of the referenced FilterFieldMeta.
    * @return metaName
   */
-  @ApiModelProperty(value = "Name of the referenced DynamicFilterMeta.")
+  @ApiModelProperty(value = "Name of the referenced FilterFieldMeta.")
 
 
   public String getMetaName() {
@@ -54,7 +54,7 @@ public class DynamicFilter   {
     this.metaName = metaName;
   }
 
-  public DynamicFilter operation(DynamicFilterOperation operation) {
+  public FilterField operation(FilterOperation operation) {
     this.operation = operation;
     return this;
   }
@@ -67,15 +67,15 @@ public class DynamicFilter   {
 
   @Valid
 
-  public DynamicFilterOperation getOperation() {
+  public FilterOperation getOperation() {
     return operation;
   }
 
-  public void setOperation(DynamicFilterOperation operation) {
+  public void setOperation(FilterOperation operation) {
     this.operation = operation;
   }
 
-  public DynamicFilter value1(String value1) {
+  public FilterField value1(String value1) {
     this.value1 = value1;
     return this;
   }
@@ -95,7 +95,7 @@ public class DynamicFilter   {
     this.value1 = value1;
   }
 
-  public DynamicFilter value2(String value2) {
+  public FilterField value2(String value2) {
     this.value2 = value2;
     return this;
   }
@@ -115,12 +115,12 @@ public class DynamicFilter   {
     this.value2 = value2;
   }
 
-  public DynamicFilter selectedValues(List<String> selectedValues) {
+  public FilterField selectedValues(List<String> selectedValues) {
     this.selectedValues = selectedValues;
     return this;
   }
 
-  public DynamicFilter addSelectedValuesItem(String selectedValuesItem) {
+  public FilterField addSelectedValuesItem(String selectedValuesItem) {
     if (this.selectedValues == null) {
       this.selectedValues = new ArrayList<>();
     }
@@ -143,7 +143,7 @@ public class DynamicFilter   {
     this.selectedValues = selectedValues;
   }
 
-  public DynamicFilter included(Boolean included) {
+  public FilterField included(Boolean included) {
     this.included = included;
     return this;
   }
@@ -163,7 +163,7 @@ public class DynamicFilter   {
     this.included = included;
   }
 
-  public DynamicFilter editable(Boolean editable) {
+  public FilterField editable(Boolean editable) {
     this.editable = editable;
     return this;
   }
@@ -192,14 +192,14 @@ public class DynamicFilter   {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    DynamicFilter dynamicFilter = (DynamicFilter) o;
-    return Objects.equals(this.metaName, dynamicFilter.metaName) &&
-        Objects.equals(this.operation, dynamicFilter.operation) &&
-        Objects.equals(this.value1, dynamicFilter.value1) &&
-        Objects.equals(this.value2, dynamicFilter.value2) &&
-        Objects.equals(this.selectedValues, dynamicFilter.selectedValues) &&
-        Objects.equals(this.included, dynamicFilter.included) &&
-        Objects.equals(this.editable, dynamicFilter.editable);
+    FilterField filterField = (FilterField) o;
+    return Objects.equals(this.metaName, filterField.metaName) &&
+        Objects.equals(this.operation, filterField.operation) &&
+        Objects.equals(this.value1, filterField.value1) &&
+        Objects.equals(this.value2, filterField.value2) &&
+        Objects.equals(this.selectedValues, filterField.selectedValues) &&
+        Objects.equals(this.included, filterField.included) &&
+        Objects.equals(this.editable, filterField.editable);
   }
 
   @Override
@@ -210,7 +210,7 @@ public class DynamicFilter   {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class DynamicFilter {\n");
+    sb.append("class FilterField {\n");
     
     sb.append("    metaName: ").append(toIndentedString(metaName)).append("\n");
     sb.append("    operation: ").append(toIndentedString(operation)).append("\n");

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.smartbit4all.api.dynamicfilter.bean.DynamicFilter;
+import org.smartbit4all.api.filter.bean.FilterField;
 import org.smartbit4all.api.value.bean.Value;
 import org.smartbit4all.ui.common.filter.DynamicFilterController;
 import org.smartbit4all.ui.common.filter.DynamicFilterView;
@@ -108,7 +108,7 @@ public class DynamicFilterViewUI implements DynamicFilterView {
 
   }
 
-  private void renderFilter(DynamicFilterUI filterUI, DynamicFilter dynamicFilter,
+  private void renderFilter(DynamicFilterUI filterUI, FilterField dynamicFilter,
       List<Value> possibleValues) {
     // TODO honor dynamicFilter.getOperation()
     // TODO get strings from static finals

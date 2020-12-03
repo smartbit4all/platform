@@ -1,4 +1,4 @@
-package org.smartbit4all.api.dynamicfilter.bean;
+package org.smartbit4all.api.filter.bean;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +13,7 @@ import io.swagger.annotations.ApiModelProperty;
  */
 @ApiModel(description = "AND / OR group of filters / groups.")
 
-public class DynamicFilterGroup   {
+public class FilterGroup   {
   @JsonProperty("name")
   private String name;
 
@@ -24,15 +24,15 @@ public class DynamicFilterGroup   {
   private String metaName;
 
   @JsonProperty("type")
-  private DynamicFilterGroupType type;
+  private FilterGroupType type;
 
-  @JsonProperty("filters")
+  @JsonProperty("filterFields")
   @Valid
-  private List<DynamicFilter> filters = null;
+  private List<FilterField> filterFields = null;
 
-  @JsonProperty("groups")
+  @JsonProperty("filterGroups")
   @Valid
-  private List<DynamicFilterGroup> groups = null;
+  private List<FilterGroup> filterGroups = null;
 
   @JsonProperty("isNegated")
   private Boolean isNegated;
@@ -40,7 +40,7 @@ public class DynamicFilterGroup   {
   @JsonProperty("isExpanded")
   private Boolean isExpanded;
 
-  public DynamicFilterGroup name(String name) {
+  public FilterGroup name(String name) {
     this.name = name;
     return this;
   }
@@ -60,7 +60,7 @@ public class DynamicFilterGroup   {
     this.name = name;
   }
 
-  public DynamicFilterGroup icon(String icon) {
+  public FilterGroup icon(String icon) {
     this.icon = icon;
     return this;
   }
@@ -80,16 +80,16 @@ public class DynamicFilterGroup   {
     this.icon = icon;
   }
 
-  public DynamicFilterGroup metaName(String metaName) {
+  public FilterGroup metaName(String metaName) {
     this.metaName = metaName;
     return this;
   }
 
   /**
-   * Name of the referenced DynamicFilterGroupMeta, if this group is created from any.
+   * Name of the referenced FilterGroupMeta, if this group is created from any.
    * @return metaName
   */
-  @ApiModelProperty(value = "Name of the referenced DynamicFilterGroupMeta, if this group is created from any.")
+  @ApiModelProperty(value = "Name of the referenced FilterGroupMeta, if this group is created from any.")
 
 
   public String getMetaName() {
@@ -100,7 +100,7 @@ public class DynamicFilterGroup   {
     this.metaName = metaName;
   }
 
-  public DynamicFilterGroup type(DynamicFilterGroupType type) {
+  public FilterGroup type(FilterGroupType type) {
     this.type = type;
     return this;
   }
@@ -113,73 +113,73 @@ public class DynamicFilterGroup   {
 
   @Valid
 
-  public DynamicFilterGroupType getType() {
+  public FilterGroupType getType() {
     return type;
   }
 
-  public void setType(DynamicFilterGroupType type) {
+  public void setType(FilterGroupType type) {
     this.type = type;
   }
 
-  public DynamicFilterGroup filters(List<DynamicFilter> filters) {
-    this.filters = filters;
+  public FilterGroup filterFields(List<FilterField> filterFields) {
+    this.filterFields = filterFields;
     return this;
   }
 
-  public DynamicFilterGroup addFiltersItem(DynamicFilter filtersItem) {
-    if (this.filters == null) {
-      this.filters = new ArrayList<>();
+  public FilterGroup addFilterFieldsItem(FilterField filterFieldsItem) {
+    if (this.filterFields == null) {
+      this.filterFields = new ArrayList<>();
     }
-    this.filters.add(filtersItem);
+    this.filterFields.add(filterFieldsItem);
     return this;
   }
 
   /**
-   * Get filters
-   * @return filters
+   * Get filterFields
+   * @return filterFields
   */
   @ApiModelProperty(value = "")
 
   @Valid
 
-  public List<DynamicFilter> getFilters() {
-    return filters;
+  public List<FilterField> getFilterFields() {
+    return filterFields;
   }
 
-  public void setFilters(List<DynamicFilter> filters) {
-    this.filters = filters;
+  public void setFilterFields(List<FilterField> filterFields) {
+    this.filterFields = filterFields;
   }
 
-  public DynamicFilterGroup groups(List<DynamicFilterGroup> groups) {
-    this.groups = groups;
+  public FilterGroup filterGroups(List<FilterGroup> filterGroups) {
+    this.filterGroups = filterGroups;
     return this;
   }
 
-  public DynamicFilterGroup addGroupsItem(DynamicFilterGroup groupsItem) {
-    if (this.groups == null) {
-      this.groups = new ArrayList<>();
+  public FilterGroup addFilterGroupsItem(FilterGroup filterGroupsItem) {
+    if (this.filterGroups == null) {
+      this.filterGroups = new ArrayList<>();
     }
-    this.groups.add(groupsItem);
+    this.filterGroups.add(filterGroupsItem);
     return this;
   }
 
   /**
-   * Get groups
-   * @return groups
+   * Get filterGroups
+   * @return filterGroups
   */
   @ApiModelProperty(value = "")
 
   @Valid
 
-  public List<DynamicFilterGroup> getGroups() {
-    return groups;
+  public List<FilterGroup> getFilterGroups() {
+    return filterGroups;
   }
 
-  public void setGroups(List<DynamicFilterGroup> groups) {
-    this.groups = groups;
+  public void setFilterGroups(List<FilterGroup> filterGroups) {
+    this.filterGroups = filterGroups;
   }
 
-  public DynamicFilterGroup isNegated(Boolean isNegated) {
+  public FilterGroup isNegated(Boolean isNegated) {
     this.isNegated = isNegated;
     return this;
   }
@@ -199,7 +199,7 @@ public class DynamicFilterGroup   {
     this.isNegated = isNegated;
   }
 
-  public DynamicFilterGroup isExpanded(Boolean isExpanded) {
+  public FilterGroup isExpanded(Boolean isExpanded) {
     this.isExpanded = isExpanded;
     return this;
   }
@@ -228,33 +228,33 @@ public class DynamicFilterGroup   {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    DynamicFilterGroup dynamicFilterGroup = (DynamicFilterGroup) o;
-    return Objects.equals(this.name, dynamicFilterGroup.name) &&
-        Objects.equals(this.icon, dynamicFilterGroup.icon) &&
-        Objects.equals(this.metaName, dynamicFilterGroup.metaName) &&
-        Objects.equals(this.type, dynamicFilterGroup.type) &&
-        Objects.equals(this.filters, dynamicFilterGroup.filters) &&
-        Objects.equals(this.groups, dynamicFilterGroup.groups) &&
-        Objects.equals(this.isNegated, dynamicFilterGroup.isNegated) &&
-        Objects.equals(this.isExpanded, dynamicFilterGroup.isExpanded);
+    FilterGroup filterGroup = (FilterGroup) o;
+    return Objects.equals(this.name, filterGroup.name) &&
+        Objects.equals(this.icon, filterGroup.icon) &&
+        Objects.equals(this.metaName, filterGroup.metaName) &&
+        Objects.equals(this.type, filterGroup.type) &&
+        Objects.equals(this.filterFields, filterGroup.filterFields) &&
+        Objects.equals(this.filterGroups, filterGroup.filterGroups) &&
+        Objects.equals(this.isNegated, filterGroup.isNegated) &&
+        Objects.equals(this.isExpanded, filterGroup.isExpanded);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, icon, metaName, type, filters, groups, isNegated, isExpanded);
+    return Objects.hash(name, icon, metaName, type, filterFields, filterGroups, isNegated, isExpanded);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class DynamicFilterGroup {\n");
+    sb.append("class FilterGroup {\n");
     
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    icon: ").append(toIndentedString(icon)).append("\n");
     sb.append("    metaName: ").append(toIndentedString(metaName)).append("\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
-    sb.append("    filters: ").append(toIndentedString(filters)).append("\n");
-    sb.append("    groups: ").append(toIndentedString(groups)).append("\n");
+    sb.append("    filterFields: ").append(toIndentedString(filterFields)).append("\n");
+    sb.append("    filterGroups: ").append(toIndentedString(filterGroups)).append("\n");
     sb.append("    isNegated: ").append(toIndentedString(isNegated)).append("\n");
     sb.append("    isExpanded: ").append(toIndentedString(isExpanded)).append("\n");
     sb.append("}");
