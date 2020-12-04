@@ -254,11 +254,12 @@ public class Navigation {
   }
 
   public static NavigationEntry entry(NavigationEntryMeta meta, URI objectUri, String name,
-      NavigationView... views) {
+      String icon, NavigationView... views) {
     NavigationEntry result = new NavigationEntry();
     result.setObjectUri(objectUri);
     result.setName(name);
     result.setMeta(meta);
+    result.setIcon(icon);
     if (views != null) {
       for (int i = 0; i < views.length; i++) {
         result.addViewsItem(views[i]);
