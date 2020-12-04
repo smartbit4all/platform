@@ -86,6 +86,10 @@ public class DynamicFilterViewUI implements DynamicFilterView {
     FilterGroupUIState groupUIState = filterUIState.getGroup();
     FilterGroupUI groupUI = groupsById.get(groupUIState.getId());
     FilterFieldUI filterUI = filtersById.get(filterUIState.getId());
+    if (groupUI == null) {
+      renderGroup(groupUIState);
+      groupUI = groupsById.get(groupUIState.getId());
+    }
     if (filterUI == null) {
       filterUI = new FilterFieldUI(groupUI, filterUIState,
           () -> controller.removeFilter(groupUIState.getId(), filterUIState.getId()),
@@ -93,10 +97,6 @@ public class DynamicFilterViewUI implements DynamicFilterView {
       filtersById.put(filterUIState.getId(), filterUI);
     } else {
       filterUI.updateState(filterUIState);
-    }
-    if (groupUI == null) {
-      renderGroup(groupUIState);
-      groupUI = groupsById.get(groupUIState.getId());
     }
     groupUI.addToFilterGroup(filterUI);
   }
