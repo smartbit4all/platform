@@ -120,6 +120,8 @@ public class NavigationControllerImpl implements NavigationController {
             new UIViewShowCommand(navigationNode.getEntry().getViews().get(0).getName());
         viewCommand.addParameter("entry",
             navigationNode.getEntry().getObjectUri());
+        viewCommand.addParameter("icon",
+            navigationNode.getEntry().getIcon());
         return viewCommand;
       }
     }
