@@ -83,7 +83,8 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
       filterSelector.setEnabled(false);
       ui.updateFilterSelector(filterSelector);
     }
-    ui.renderFilter(filterUIState, getPossibleValues(filterUIState.getFilter()));
+    filterUIState.setPossibleValues(getPossibleValues(filterUIState.getFilter()));
+    ui.renderFilter(filterUIState);
   }
 
   private List<Value> getPossibleValues(FilterField dynamicFilter) {
@@ -104,7 +105,7 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
   }
 
   @Override
-  public void filterOptionChanged(String filterId, int filterOptionIdx) {
+  public void filterOptionChanged(String filterId, String filterOperation) {
     // String descName = descriptorNameByFilterId.get(filterId);
     // DynamicFilterMeta descriptor = filterMetaByName.get(descName);
     // DynamicFilter dynamicFilter = filtersById.get(filterId);

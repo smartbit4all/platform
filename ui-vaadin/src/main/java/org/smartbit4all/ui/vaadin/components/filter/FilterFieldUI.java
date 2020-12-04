@@ -1,6 +1,7 @@
 package org.smartbit4all.ui.vaadin.components.filter;
 
 import java.util.List;
+import java.util.function.Consumer;
 import org.smartbit4all.api.filter.bean.FilterOperation;
 import org.smartbit4all.api.value.bean.Value;
 import org.smartbit4all.ui.common.filter.FilterFieldUIState;
@@ -30,15 +31,17 @@ public class FilterFieldUI extends FlexLayout {
   private FilterOperationUI operationUI;
   private FilterFieldUIState uiState;
   private List<Value> possibleValues;
+  private Consumer<String> operationChange;
 
 
   public <T extends Component> FilterFieldUI(FilterGroupUI group,
-      FilterFieldUIState uiState, Runnable close, List<Value> possibleValues) {
+      FilterFieldUIState uiState, Runnable close, Consumer<String> operationChange) {
     addClassName("filterfield");
     this.uiState = uiState;
     this.group = group;
     this.position = uiState.getPosition();
-    this.possibleValues = possibleValues;
+    this.operationChange = operationChange;
+    this.possibleValues = uiState.getPossibleValues();
 
     lblFilterName = new Label();
     lblFilterName.addClassName("filter-name");
@@ -70,12 +73,13 @@ public class FilterFieldUI extends FlexLayout {
       btnClose.setEnabled(false);
     }
 
-    addOperationUI(uiState.getFilter().getOperation().getFilterView());
+
+    // updateOperationUI(uiState.getFilter().getOperation().getFilterView());
     setPossibleOperations();
 
   }
 
-  public void addOperationUI(String filterView) {
+  public void updateOperationUI(String filterView) {
 
     if ("filterop.txt.eq".equals(filterView)) {
       operationUI = new FilterOperationOneFieldUI();
@@ -130,11 +134,16 @@ public class FilterFieldUI extends FlexLayout {
         String displayValue = operation.getDisplayValue();
         Button button = new Button(displayValue);
         dialogOptionsLayout.add(button);
-        button.addClickListener(e -> row.remove(operationUI));
-        button.addClickListener(e -> operationSelector.close());
         button.addClickListener(e -> {
-          addOperationUI(displayValue);
+          operationChange.accept(displayValue);
+          operationSelector.close();
+          updateOperationUI(displayValue);
+
         });
+        // button.addClickListener(e -> operationSelector.close());
+        // button.addClickListener(e -> {
+        // addOperationUI(displayValue);
+        // });
       }
     }
   }

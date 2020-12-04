@@ -12,7 +12,7 @@ public interface DynamicFilterController extends UIController {
 
   void addFilter(String filterSelectorId);
 
-  void filterOptionChanged(String filterId, int filterOptionIdx);
+  void filterOptionChanged(String filterId, String filterOperation);
 
   void removeFilter(String groupId, String filterId);
 

@@ -3,6 +3,7 @@ package org.smartbit4all.ui.common.filter;
 import java.util.List;
 import org.smartbit4all.api.filter.bean.FilterField;
 import org.smartbit4all.api.filter.bean.FilterOperation;
+import org.smartbit4all.api.value.bean.Value;
 
 public class FilterFieldUIState extends AbstractUIState {
 
@@ -11,10 +12,9 @@ public class FilterFieldUIState extends AbstractUIState {
   private FilterField filter;
   private FilterGroupUIState group;
   private boolean isCloseable;
-
   private FilterLabelPosition position;
-
   private List<FilterOperation> operations;
+  private List<Value> possibleValues;
 
 
   public FilterFieldUIState(FilterField filter,
@@ -60,6 +60,14 @@ public class FilterFieldUIState extends AbstractUIState {
 
   public FilterOperation getSelectedOperation() {
     return filter.getOperation();
+  }
+
+  public void setPossibleValues(List<Value> possibleValues) {
+    this.possibleValues = possibleValues;
+  }
+
+  public List<Value> getPossibleValues() {
+    return possibleValues;
   }
 
 }

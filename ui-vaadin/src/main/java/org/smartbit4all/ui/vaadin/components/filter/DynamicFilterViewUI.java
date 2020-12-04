@@ -3,8 +3,6 @@ package org.smartbit4all.ui.vaadin.components.filter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.smartbit4all.api.filter.bean.FilterField;
-import org.smartbit4all.api.value.bean.Value;
 import org.smartbit4all.ui.common.filter.DynamicFilterController;
 import org.smartbit4all.ui.common.filter.DynamicFilterView;
 import org.smartbit4all.ui.common.filter.FilterFieldUIState;
@@ -84,57 +82,22 @@ public class DynamicFilterViewUI implements DynamicFilterView {
   }
 
   @Override
-  public void renderFilter(FilterFieldUIState filterUIState, List<Value> possibleValues) {
+  public void renderFilter(FilterFieldUIState filterUIState) {
     FilterGroupUIState groupUIState = filterUIState.getGroup();
     FilterGroupUI groupUI = groupsById.get(groupUIState.getId());
     FilterFieldUI filterUI = filtersById.get(filterUIState.getId());
-    if (filterUI != null) {
-      throw new IllegalArgumentException(
-          "Existing filterUI found when creating new filterUI with '" + filterUIState.getId()
-              + "' filterId!");
+    if (filterUI == null) {
+      filterUI = new FilterFieldUI(groupUI, filterUIState,
+          () -> controller.removeFilter(groupUIState.getId(), filterUIState.getId()),
+          operation -> controller.filterOptionChanged(filterUIState.getId(), operation));
+      filtersById.put(filterUIState.getId(), filterUI);
     }
+    filterUI.updateOperationUI(filterUIState.getFilter().getOperation().getFilterView());
     if (groupUI == null) {
       renderGroup(groupUIState);
       groupUI = groupsById.get(groupUIState.getId());
     }
-    filterUI = new FilterFieldUI(groupUI, filterUIState,
-        () -> controller.removeFilter(groupUIState.getId(), filterUIState.getId()), possibleValues);
-    filtersById.put(filterUIState.getId(), filterUI);
-    // // TODO special handling when putting into groupUI?
     groupUI.addToFilterGroup(filterUI);
-    // renderFilter(filterUI, filterUIState.getFilter(), possibleValues);
-
-  }
-
-  private void renderFilter(FilterFieldUI filterUI, FilterField dynamicFilter,
-      List<Value> possibleValues) {
-    // TODO honor dynamicFilter.getOperation()
-    // TODO get strings from static finals
-
-    // String filterView = dynamicFilter.getOperation().getFilterView();
-    // if ("filterop.txt.eq".equals(filterView)) {
-    // FilterOperationOneFieldUI operationUI =
-    // new FilterOperationOneFieldUI();
-    // filterUI.addOperationUI(operationUI);
-    // } else if ("filterop.date.eq".equals(filterView)) {
-    // FilterOperationDateTimeInterval operationUI =
-    // new FilterOperationDateTimeInterval();
-    // filterUI.addOperationUI(operationUI);
-    // // ArrayList<String> possibleOperations = new ArrayList<>();
-    // // possibleOperations.add("Intervallum");
-    // // possibleOperations.add("Időszakok");
-    // } else if ("filterop.multi.eq".equals(filterView)) {
-    // FilterOperationMultiSelectUI operationUI =
-    // new FilterOperationMultiSelectUI();
-    // filterUI.addOperationUI(operationUI);
-    // operationUI.setItems(possibleValues);
-    // } else if ("filterop.combo.eq".equals(filterView)) {
-    // FilterOperationComboBoxUI operationUI =
-    // new FilterOperationComboBoxUI();
-    // filterUI.addOperationUI(operationUI);
-    // operationUI.setItems(possibleValues);
-    // }
-
   }
 
   @Override
