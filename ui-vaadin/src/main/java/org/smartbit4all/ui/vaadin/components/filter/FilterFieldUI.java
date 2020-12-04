@@ -25,23 +25,19 @@ public class FilterFieldUI extends FlexLayout {
   private Label lblOperation;
   private Label lblFilterName;
   private FlexLayout filterLayout;
-  private FilterLabelPosition position;
   private FlexLayout operationWrapper;
   private Dialog operationSelector;
   private FilterOperationUI operationUI;
-  private FilterFieldUIState uiState;
-  private List<Value> possibleValues;
+  private Runnable close;
   private Consumer<String> operationChange;
 
 
   public <T extends Component> FilterFieldUI(FilterGroupUI group,
       FilterFieldUIState uiState, Runnable close, Consumer<String> operationChange) {
     addClassName("filterfield");
-    this.uiState = uiState;
     this.group = group;
-    this.position = uiState.getPosition();
     this.operationChange = operationChange;
-    this.possibleValues = uiState.getPossibleValues();
+    this.close = close;
 
     lblFilterName = new Label();
     lblFilterName.addClassName("filter-name");
@@ -66,20 +62,16 @@ public class FilterFieldUI extends FlexLayout {
     filterLayout.add(header, row);
     add(filterLayout);
 
-    if (uiState.isCloseable()) {
-      btnClose.setText("x");
-      btnClose.addClickListener(e -> close.run());
-    } else {
-      btnClose.setEnabled(false);
-    }
-
 
     // updateOperationUI(uiState.getFilter().getOperation().getFilterView());
-    setPossibleOperations();
-
+    updateState(uiState);
   }
 
-  public void updateOperationUI(String filterView) {
+  public void updateState(FilterFieldUIState uiState) {
+
+    String filterView = uiState.getSelectedOperation().getFilterView();
+    FilterLabelPosition position = uiState.getPosition();
+    List<Value> possibleValues = uiState.getPossibleValues();
 
     if ("filterop.txt.eq".equals(filterView)) {
       operationUI = new FilterOperationOneFieldUI();
@@ -118,6 +110,17 @@ public class FilterFieldUI extends FlexLayout {
     } else {
       lblFilterName.setText(getTranslation(uiState.getLabelCode()));
     }
+
+    setPossibleOperations(uiState.getOperations());
+
+    if (uiState.isCloseable()) {
+      btnClose.setText("x");
+      btnClose.addClickListener(e -> close.run());
+    } else {
+      btnClose.setText("");
+      btnClose.setEnabled(false);
+    }
+
   }
 
   public FilterGroupUI getGroup() {
@@ -128,8 +131,11 @@ public class FilterFieldUI extends FlexLayout {
     lblOperation.setText(getTranslation(label));
   }
 
-  public void setPossibleOperations() {
+  private void setPossibleOperations(List<FilterOperation> possibleOperations) {
 
+    if (operationSelector != null && operationSelector.isOpened()) {
+      operationSelector.close();
+    }
     operationWrapper.addClickListener(operationClickListener());
     operationSelector = new Dialog();
 
@@ -137,17 +143,14 @@ public class FilterFieldUI extends FlexLayout {
     dialogOptionsLayout.setFlexDirection(FlexDirection.COLUMN);
     operationSelector.add(dialogOptionsLayout);
 
-    List<FilterOperation> possibleOperations = uiState.getOperations();
     if (possibleOperations != null) {
       for (FilterOperation operation : possibleOperations) {
         String displayValue = operation.getDisplayValue();
         Button button = new Button(displayValue);
         dialogOptionsLayout.add(button);
         button.addClickListener(e -> {
-          operationChange.accept(displayValue);
-          operationSelector.close();
-          updateOperationUI(displayValue);
-
+          // operationSelector.close();
+          operationChange.accept(operation.getCode());
         });
       }
     }

@@ -7,6 +7,7 @@ import org.smartbit4all.api.filter.bean.FilterConfig;
 import org.smartbit4all.api.filter.bean.FilterConfigMode;
 import org.smartbit4all.api.filter.bean.FilterField;
 import org.smartbit4all.api.filter.bean.FilterGroup;
+import org.smartbit4all.api.filter.bean.FilterOperation;
 import org.smartbit4all.api.value.ValueApi;
 import org.smartbit4all.api.value.bean.Value;
 
@@ -106,17 +107,23 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
 
   @Override
   public void filterOptionChanged(String filterId, String filterOperation) {
-    // String descName = descriptorNameByFilterId.get(filterId);
-    // DynamicFilterMeta descriptor = filterMetaByName.get(descName);
-    // DynamicFilter dynamicFilter = filtersById.get(filterId);
-    // List<DynamicFilterOperation> filterOptions = descriptor.getOperations();
-    // if (filterOptions == null || filterOptions.size() <= filterOptionIdx) {
-    // throw new IllegalArgumentException("Invalid filter option index!");
-    // }
-    // DynamicFilterOperation filterOption = filterOptions.get(filterOptionIdx);
-    // dynamicFilter.setOperation(filterOption);
-    // List<Value> possibleValues = getPossibleValues(dynamicFilter);
-    // ui.renderFilter(filterId, dynamicFilter, possibleValues);
+    if (filterOperation == null) {
+      throw new NullPointerException("FilterOperation cannot be null!");
+    }
+    FilterFieldUIState filterUIState = uiState.filterUIStatesById.get(filterId);
+    FilterField filter = filterUIState.getFilter();
+    if (filterOperation.equals(filter.getOperation().getCode())) {
+      // no change
+      return;
+    }
+    for (FilterOperation operation : filterUIState.getOperations()) {
+      if (filterOperation.equals(operation.getCode())) {
+        filterUIState.getFilter().setOperation(operation);
+        ui.renderFilter(filterUIState);
+        return;
+      }
+    }
+    throw new RuntimeException("No filterOperation found by code " + filterOperation + "!");
   }
 
   public void filterValueChanged(String filterId, String... values) {

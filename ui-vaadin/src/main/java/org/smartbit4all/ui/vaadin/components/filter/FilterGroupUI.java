@@ -57,6 +57,7 @@ public class FilterGroupUI extends FlexLayout {
   }
 
   public void addToFilterGroup(FilterFieldUI filter) {
+    // TODO don't add if it is already there..
     filtersLayout.add(filter);
   }
 
