@@ -83,15 +83,24 @@ public class FilterFieldUI extends FlexLayout {
 
     if ("filterop.txt.eq".equals(filterView)) {
       operationUI = new FilterOperationOneFieldUI();
-    } else if ("filterop.date.interval".equals(filterView)) {
-      operationUI = new FilterOperationDateTimeInterval();
     } else if ("filterop.multi.eq".equals(filterView)) {
       operationUI = new FilterOperationMultiSelectUI(possibleValues);
     } else if ("filterop.combo.eq".equals(filterView)) {
       operationUI = new FilterOperationComboBoxUI(possibleValues);
-    } else if ("filterop.date.interval.cb".equals(filterView)) {
+    } else if ("filterop.date.time.interval".equals(filterView)) {
+      operationUI = new FilterOperationDateTimeInterval();
+    } else if ("filterop.date.time.interval.cb".equals(filterView)) {
       operationUI = new FilterOperationDateTimeComboBoxPicker();
+    } else if ("filterop.date.time.eq".equals(filterView)) {
+      operationUI = new FilterOperationDateTimeEquals();
+    } else if ("filterop.date.interval".equals(filterView)) {
+      operationUI = new FilterOperationDateInterval();
+    } else if ("filterop.date.interval.cb".equals(filterView)) {
+      operationUI = new FilterOperationDateComboBoxPicker();
+    } else if ("filterop.date.eq".equals(filterView)) {
+      operationUI = new FilterOperationDateEquals();
     }
+
 
     row.removeAll();
     row.add(operationUI);
@@ -140,10 +149,6 @@ public class FilterFieldUI extends FlexLayout {
           updateOperationUI(displayValue);
 
         });
-        // button.addClickListener(e -> operationSelector.close());
-        // button.addClickListener(e -> {
-        // addOperationUI(displayValue);
-        // });
       }
     }
   }
