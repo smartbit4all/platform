@@ -1,0 +1,14 @@
+.user-component {
+	margin-left: var(--lumo-space-s);
+	margin-right: var(--lumo-space-s);
+	height: 100%;
+	align-items: center;
+}
+
+.user-component .user-component-photo {
+	border-radius: 50%;
+    flex-shrink: 0;
+    height: var(--lumo-size-l);
+    margin-right: var(--lumo-space-s);
+    width: var(--lumo-size-l);
+}
