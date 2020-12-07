@@ -1,5 +1,6 @@
 package org.smartbit4all.api.org;
 
+import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
 import org.smartbit4all.api.org.bean.Group;
@@ -18,4 +19,8 @@ public interface OrgApi {
   Group getGroup(URI groupUri);
   
   List<Group> getRootGroups();
+
+  InputStream getUserImage(URI userUri);
+
+  InputStream getGroupImage(URI groupUri);
 }
