@@ -11,7 +11,7 @@ import io.swagger.annotations.ApiModelProperty;
  * FilterField
  */
 
-public class FilterField   {
+public class FilterField {
   @JsonProperty("metaName")
   private String metaName;
 
@@ -28,12 +28,6 @@ public class FilterField   {
   @Valid
   private List<String> selectedValues = null;
 
-  @JsonProperty("included")
-  private Boolean included;
-
-  @JsonProperty("editable")
-  private Boolean editable;
-
   public FilterField metaName(String metaName) {
     this.metaName = metaName;
     return this;
@@ -41,8 +35,9 @@ public class FilterField   {
 
   /**
    * Name of the referenced FilterFieldMeta.
+   * 
    * @return metaName
-  */
+   */
   @ApiModelProperty(value = "Name of the referenced FilterFieldMeta.")
 
 
@@ -61,8 +56,9 @@ public class FilterField   {
 
   /**
    * Get operation
+   * 
    * @return operation
-  */
+   */
   @ApiModelProperty(value = "")
 
   @Valid
@@ -82,8 +78,9 @@ public class FilterField   {
 
   /**
    * Get value1
+   * 
    * @return value1
-  */
+   */
   @ApiModelProperty(value = "")
 
 
@@ -102,8 +99,9 @@ public class FilterField   {
 
   /**
    * Get value2
+   * 
    * @return value2
-  */
+   */
   @ApiModelProperty(value = "")
 
 
@@ -130,8 +128,9 @@ public class FilterField   {
 
   /**
    * Get selectedValues
+   * 
    * @return selectedValues
-  */
+   */
   @ApiModelProperty(value = "")
 
 
@@ -141,46 +140,6 @@ public class FilterField   {
 
   public void setSelectedValues(List<String> selectedValues) {
     this.selectedValues = selectedValues;
-  }
-
-  public FilterField included(Boolean included) {
-    this.included = included;
-    return this;
-  }
-
-  /**
-   * Get included
-   * @return included
-  */
-  @ApiModelProperty(value = "")
-
-
-  public Boolean getIncluded() {
-    return included;
-  }
-
-  public void setIncluded(Boolean included) {
-    this.included = included;
-  }
-
-  public FilterField editable(Boolean editable) {
-    this.editable = editable;
-    return this;
-  }
-
-  /**
-   * Get editable
-   * @return editable
-  */
-  @ApiModelProperty(value = "")
-
-
-  public Boolean getEditable() {
-    return editable;
-  }
-
-  public void setEditable(Boolean editable) {
-    this.editable = editable;
   }
 
 
@@ -197,35 +156,30 @@ public class FilterField   {
         Objects.equals(this.operation, filterField.operation) &&
         Objects.equals(this.value1, filterField.value1) &&
         Objects.equals(this.value2, filterField.value2) &&
-        Objects.equals(this.selectedValues, filterField.selectedValues) &&
-        Objects.equals(this.included, filterField.included) &&
-        Objects.equals(this.editable, filterField.editable);
+        Objects.equals(this.selectedValues, filterField.selectedValues);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(metaName, operation, value1, value2, selectedValues, included, editable);
+    return Objects.hash(metaName, operation, value1, value2, selectedValues);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class FilterField {\n");
-    
+
     sb.append("    metaName: ").append(toIndentedString(metaName)).append("\n");
     sb.append("    operation: ").append(toIndentedString(operation)).append("\n");
     sb.append("    value1: ").append(toIndentedString(value1)).append("\n");
     sb.append("    value2: ").append(toIndentedString(value2)).append("\n");
     sb.append("    selectedValues: ").append(toIndentedString(selectedValues)).append("\n");
-    sb.append("    included: ").append(toIndentedString(included)).append("\n");
-    sb.append("    editable: ").append(toIndentedString(editable)).append("\n");
     sb.append("}");
     return sb.toString();
   }
 
   /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
+   * Convert the given object to string with each line indented by 4 spaces (except the first line).
    */
   private String toIndentedString(java.lang.Object o) {
     if (o == null) {

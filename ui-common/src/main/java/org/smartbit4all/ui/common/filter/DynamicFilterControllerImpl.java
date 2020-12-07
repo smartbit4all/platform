@@ -50,9 +50,6 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
       case DYNAMIC:
         renderDynamicFilterConfig(filterConfig);
         break;
-      case RESEARCH:
-        renderResearchFilterConfig(filterConfig);
-        break;
     }
   }
 
@@ -70,10 +67,6 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
 
   private void renderDynamicFilterConfig(FilterConfig filterConfig) {
     ui.renderFilterSelectors(uiState.filterSelectorGroups);
-  }
-
-  private void renderResearchFilterConfig(FilterConfig filterConfig) {
-    // TODO
   }
 
   @Override

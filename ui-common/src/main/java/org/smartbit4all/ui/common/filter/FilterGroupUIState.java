@@ -18,14 +18,14 @@ public class FilterGroupUIState extends AbstractUIState {
   private boolean isVisible;
 
   public FilterGroupUIState(FilterGroup group, FilterGroupUIState parentGroup,
-      boolean isCloseable, boolean isVisible) {
+      String iconCode, boolean isCloseable, boolean isVisible) {
     super();
     this.isCloseable = isCloseable;
     this.isVisible = isVisible;
     this.group = group;
-    type = group.getType();
-    labelCode = group.getName();
-    iconCode = group.getIcon();
+    this.type = group.getType();
+    this.labelCode = group.getName();
+    this.iconCode = iconCode;
     if (parentGroup == null) {
       isRoot = true;
       parentGroupId = null;
@@ -35,7 +35,6 @@ public class FilterGroupUIState extends AbstractUIState {
       parentGroupId = parentGroup.getId();
       this.parentGroup = parentGroup;
     }
-    // TODO closeable
   }
 
   public FilterGroupType getType() {

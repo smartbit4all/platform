@@ -20,7 +20,7 @@ components:
   schemas:
     FilterConfigMode:
       type: string
-      enum: [static, simple_dynamic, dynamic, research]
+      enum: [static, simple_dynamic, dynamic]
     FilterConfig:
       type: object
       properties:
@@ -94,11 +94,6 @@ components:
         name:
           type: string
           description: Name of the group.
-        icon:
-          type: string
-        metaName:
-          type: string
-          description: Name of the referenced FilterGroupMeta, if this group is created from any. 
         type:
           $ref: '#/components/schemas/FilterGroupType'
         filterFields:
@@ -110,8 +105,6 @@ components:
           items:
             $ref: '#/components/schemas/FilterGroup'
         isNegated:
-          type: boolean
-        isExpanded:
           type: boolean
     FilterField:
       type: object
@@ -130,7 +123,3 @@ components:
           items:
             type: string
             #$ref: 'value-api.yaml#/components/schemas/Value'
-        included:
-          type: boolean
-        editable:
-          type: boolean

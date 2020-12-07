@@ -9,7 +9,7 @@ import io.swagger.annotations.ApiModelProperty;
  * FilterGroupMeta
  */
 
-public class FilterGroupMeta   {
+public class FilterGroupMeta {
   @JsonProperty("name")
   private String name;
 
@@ -29,8 +29,9 @@ public class FilterGroupMeta   {
 
   /**
    * Get name
+   * 
    * @return name
-  */
+   */
   @ApiModelProperty(value = "")
 
 
@@ -49,8 +50,9 @@ public class FilterGroupMeta   {
 
   /**
    * Get icon
+   * 
    * @return icon
-  */
+   */
   @ApiModelProperty(value = "")
 
 
@@ -69,8 +71,9 @@ public class FilterGroupMeta   {
 
   /**
    * Get style
+   * 
    * @return style
-  */
+   */
   @ApiModelProperty(value = "")
 
 
@@ -89,8 +92,9 @@ public class FilterGroupMeta   {
 
   /**
    * Get type
+   * 
    * @return type
-  */
+   */
   @ApiModelProperty(value = "")
 
   @Valid
@@ -128,7 +132,7 @@ public class FilterGroupMeta   {
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class FilterGroupMeta {\n");
-    
+
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    icon: ").append(toIndentedString(icon)).append("\n");
     sb.append("    style: ").append(toIndentedString(style)).append("\n");
@@ -138,8 +142,7 @@ public class FilterGroupMeta   {
   }
 
   /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
+   * Convert the given object to string with each line indented by 4 spaces (except the first line).
    */
   private String toIndentedString(java.lang.Object o) {
     if (o == null) {

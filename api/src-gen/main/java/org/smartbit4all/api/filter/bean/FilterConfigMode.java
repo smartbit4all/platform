@@ -7,14 +7,12 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets FilterConfigMode
  */
 public enum FilterConfigMode {
-  
+
   STATIC("static"),
-  
+
   SIMPLE_DYNAMIC("simple_dynamic"),
-  
-  DYNAMIC("dynamic"),
-  
-  RESEARCH("research");
+
+  DYNAMIC("dynamic");
 
   private String value;
 

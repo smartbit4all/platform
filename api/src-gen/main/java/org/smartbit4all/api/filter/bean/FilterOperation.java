@@ -8,11 +8,13 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
- * Defines a possible way of using a filter field. For example: exact match, like, sounds like, interval, etc.
+ * Defines a possible way of using a filter field. For example: exact match, like, sounds like,
+ * interval, etc.
  */
-@ApiModel(description = "Defines a possible way of using a filter field. For example: exact match, like, sounds like, interval, etc.")
+@ApiModel(
+    description = "Defines a possible way of using a filter field. For example: exact match, like, sounds like, interval, etc.")
 
-public class FilterOperation   {
+public class FilterOperation {
   @JsonProperty("filterView")
   private String filterView;
 
@@ -41,9 +43,11 @@ public class FilterOperation   {
 
   /**
    * Declarative name of a FilterOperationUI, which will handle this operation.
+   * 
    * @return filterView
-  */
-  @ApiModelProperty(value = "Declarative name of a FilterOperationUI, which will handle this operation.")
+   */
+  @ApiModelProperty(
+      value = "Declarative name of a FilterOperationUI, which will handle this operation.")
 
 
   public String getFilterView() {
@@ -61,8 +65,9 @@ public class FilterOperation   {
 
   /**
    * Get field1
+   * 
    * @return field1
-  */
+   */
   @ApiModelProperty(value = "")
 
 
@@ -81,8 +86,9 @@ public class FilterOperation   {
 
   /**
    * Get field2
+   * 
    * @return field2
-  */
+   */
   @ApiModelProperty(value = "")
 
 
@@ -101,8 +107,9 @@ public class FilterOperation   {
 
   /**
    * Get possibleValues
+   * 
    * @return possibleValues
-  */
+   */
   @ApiModelProperty(value = "")
 
   @Valid
@@ -122,8 +129,9 @@ public class FilterOperation   {
 
   /**
    * Get code
+   * 
    * @return code
-  */
+   */
   @ApiModelProperty(value = "")
 
 
@@ -142,8 +150,9 @@ public class FilterOperation   {
 
   /**
    * Get displayValue
+   * 
    * @return displayValue
-  */
+   */
   @ApiModelProperty(value = "")
 
 
@@ -162,8 +171,9 @@ public class FilterOperation   {
 
   /**
    * Get icon
+   * 
    * @return icon
-  */
+   */
   @ApiModelProperty(value = "")
 
 
@@ -203,7 +213,7 @@ public class FilterOperation   {
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class FilterOperation {\n");
-    
+
     sb.append("    filterView: ").append(toIndentedString(filterView)).append("\n");
     sb.append("    field1: ").append(toIndentedString(field1)).append("\n");
     sb.append("    field2: ").append(toIndentedString(field2)).append("\n");
@@ -216,8 +226,7 @@ public class FilterOperation   {
   }
 
   /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
+   * Convert the given object to string with each line indented by 4 spaces (except the first line).
    */
   private String toIndentedString(java.lang.Object o) {
     if (o == null) {

@@ -13,15 +13,9 @@ import io.swagger.annotations.ApiModelProperty;
  */
 @ApiModel(description = "AND / OR group of filters / groups.")
 
-public class FilterGroup   {
+public class FilterGroup {
   @JsonProperty("name")
   private String name;
-
-  @JsonProperty("icon")
-  private String icon;
-
-  @JsonProperty("metaName")
-  private String metaName;
 
   @JsonProperty("type")
   private FilterGroupType type;
@@ -37,9 +31,6 @@ public class FilterGroup   {
   @JsonProperty("isNegated")
   private Boolean isNegated;
 
-  @JsonProperty("isExpanded")
-  private Boolean isExpanded;
-
   public FilterGroup name(String name) {
     this.name = name;
     return this;
@@ -47,8 +38,9 @@ public class FilterGroup   {
 
   /**
    * Name of the group.
+   * 
    * @return name
-  */
+   */
   @ApiModelProperty(value = "Name of the group.")
 
 
@@ -60,46 +52,6 @@ public class FilterGroup   {
     this.name = name;
   }
 
-  public FilterGroup icon(String icon) {
-    this.icon = icon;
-    return this;
-  }
-
-  /**
-   * Get icon
-   * @return icon
-  */
-  @ApiModelProperty(value = "")
-
-
-  public String getIcon() {
-    return icon;
-  }
-
-  public void setIcon(String icon) {
-    this.icon = icon;
-  }
-
-  public FilterGroup metaName(String metaName) {
-    this.metaName = metaName;
-    return this;
-  }
-
-  /**
-   * Name of the referenced FilterGroupMeta, if this group is created from any.
-   * @return metaName
-  */
-  @ApiModelProperty(value = "Name of the referenced FilterGroupMeta, if this group is created from any.")
-
-
-  public String getMetaName() {
-    return metaName;
-  }
-
-  public void setMetaName(String metaName) {
-    this.metaName = metaName;
-  }
-
   public FilterGroup type(FilterGroupType type) {
     this.type = type;
     return this;
@@ -107,8 +59,9 @@ public class FilterGroup   {
 
   /**
    * Get type
+   * 
    * @return type
-  */
+   */
   @ApiModelProperty(value = "")
 
   @Valid
@@ -136,8 +89,9 @@ public class FilterGroup   {
 
   /**
    * Get filterFields
+   * 
    * @return filterFields
-  */
+   */
   @ApiModelProperty(value = "")
 
   @Valid
@@ -165,8 +119,9 @@ public class FilterGroup   {
 
   /**
    * Get filterGroups
+   * 
    * @return filterGroups
-  */
+   */
   @ApiModelProperty(value = "")
 
   @Valid
@@ -186,8 +141,9 @@ public class FilterGroup   {
 
   /**
    * Get isNegated
+   * 
    * @return isNegated
-  */
+   */
   @ApiModelProperty(value = "")
 
 
@@ -197,26 +153,6 @@ public class FilterGroup   {
 
   public void setIsNegated(Boolean isNegated) {
     this.isNegated = isNegated;
-  }
-
-  public FilterGroup isExpanded(Boolean isExpanded) {
-    this.isExpanded = isExpanded;
-    return this;
-  }
-
-  /**
-   * Get isExpanded
-   * @return isExpanded
-  */
-  @ApiModelProperty(value = "")
-
-
-  public Boolean getIsExpanded() {
-    return isExpanded;
-  }
-
-  public void setIsExpanded(Boolean isExpanded) {
-    this.isExpanded = isExpanded;
   }
 
 
@@ -230,40 +166,33 @@ public class FilterGroup   {
     }
     FilterGroup filterGroup = (FilterGroup) o;
     return Objects.equals(this.name, filterGroup.name) &&
-        Objects.equals(this.icon, filterGroup.icon) &&
-        Objects.equals(this.metaName, filterGroup.metaName) &&
         Objects.equals(this.type, filterGroup.type) &&
         Objects.equals(this.filterFields, filterGroup.filterFields) &&
         Objects.equals(this.filterGroups, filterGroup.filterGroups) &&
-        Objects.equals(this.isNegated, filterGroup.isNegated) &&
-        Objects.equals(this.isExpanded, filterGroup.isExpanded);
+        Objects.equals(this.isNegated, filterGroup.isNegated);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, icon, metaName, type, filterFields, filterGroups, isNegated, isExpanded);
+    return Objects.hash(name, type, filterFields, filterGroups, isNegated);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class FilterGroup {\n");
-    
+
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
-    sb.append("    icon: ").append(toIndentedString(icon)).append("\n");
-    sb.append("    metaName: ").append(toIndentedString(metaName)).append("\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("    filterFields: ").append(toIndentedString(filterFields)).append("\n");
     sb.append("    filterGroups: ").append(toIndentedString(filterGroups)).append("\n");
     sb.append("    isNegated: ").append(toIndentedString(isNegated)).append("\n");
-    sb.append("    isExpanded: ").append(toIndentedString(isExpanded)).append("\n");
     sb.append("}");
     return sb.toString();
   }
 
   /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
+   * Convert the given object to string with each line indented by 4 spaces (except the first line).
    */
   private String toIndentedString(java.lang.Object o) {
     if (o == null) {

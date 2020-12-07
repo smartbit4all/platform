@@ -7,9 +7,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets FilterGroupType
  */
 public enum FilterGroupType {
-  
+
   AND("AND"),
-  
+
   OR("OR");
 
   private String value;
