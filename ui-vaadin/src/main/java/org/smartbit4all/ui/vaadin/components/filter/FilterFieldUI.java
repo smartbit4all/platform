@@ -11,11 +11,12 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.dnd.DragSource;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 
-public class FilterFieldUI extends FlexLayout {
+public class FilterFieldUI extends FlexLayout implements DragSource<FilterFieldUI> {
 
   private FlexLayout header;
   // TODO remove Row
@@ -34,6 +35,8 @@ public class FilterFieldUI extends FlexLayout {
 
   public <T extends Component> FilterFieldUI(FilterGroupUI group,
       FilterFieldUIState uiState, Runnable close, Consumer<String> operationChange) {
+    setDraggable(true);
+    setDragData(this);
     addClassName("filterfield");
     this.group = group;
     this.operationChange = operationChange;
