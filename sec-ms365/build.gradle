@@ -1,4 +1,25 @@
+plugins {
+	id 'org.springframework.boot'
+ 	id 'io.spring.dependency-management'
+}
 
 dependencies {
+	api project(':sec')
+	api project(':api')
 	
+	api 'com.microsoft.azure:azure-active-directory-spring-boot-starter'
+	api 'org.springframework.security:spring-security-oauth2-client'
+	api 'org.springframework.security:spring-security-oauth2-jose'
+	
+	implementation 'com.microsoft.graph:microsoft-graph:2.4.1'
+}
+
+ext {
+  set('azureVersion', "2.3.5")
+}
+
+dependencyManagement {
+  imports {
+    mavenBom "com.microsoft.azure:azure-spring-boot-bom:${azureVersion}"
+  }
 }

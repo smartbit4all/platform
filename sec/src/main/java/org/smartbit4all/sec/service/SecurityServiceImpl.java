@@ -1,6 +1,7 @@
 package org.smartbit4all.sec.service;
 
 import java.util.Collection;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,7 +20,9 @@ public class SecurityServiceImpl implements SecurityService {
 
   @Override
   public boolean isAuthenticated() {
-    return SecurityContextHolder.getContext().getAuthentication().isAuthenticated();
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    return authentication != null && !(authentication instanceof AnonymousAuthenticationToken)
+        && authentication.isAuthenticated();
   }
 
   @Override
