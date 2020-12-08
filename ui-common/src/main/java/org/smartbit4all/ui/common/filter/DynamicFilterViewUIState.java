@@ -128,14 +128,17 @@ public class DynamicFilterViewUIState {
         groupMeta.getType());
   }
 
-  void removeFilterGroup(String groupId) {
+  FilterGroupUIState removeFilterGroup(String groupId) {
     FilterGroup group = groupsById.get(groupId);
     groupsById.remove(groupId);
     FilterGroupUIState groupUIState = groupUIStatesById.get(groupId);
     groupUIState.clearChildren();
-    if (groupUIState.getParentGroup() != null) {
-      FilterGroupUIState parentGroup = groupUIState.getParentGroup();
+    FilterGroupUIState parentGroup = groupUIState.getParentGroup();
+    if (parentGroup != null) {
       parentGroup.removeFilterGroup(group);
+      if (groupUIState.isActive()) {
+        setActiveGroup(parentGroup.getId());
+      }
     }
     for (FilterSelectorGroupUIState selectorGroup : filterSelectorGroups) {
       if (selectorGroup.currentGroupUIState == groupUIState) {
@@ -144,6 +147,7 @@ public class DynamicFilterViewUIState {
       }
     }
     groupUIStatesById.remove(groupId);
+    return parentGroup;
   }
 
   String getActiveGroupId() {

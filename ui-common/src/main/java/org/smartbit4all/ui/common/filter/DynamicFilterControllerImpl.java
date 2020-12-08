@@ -152,7 +152,8 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
   @Override
   public void removeFilterGroup(String groupId) {
     ui.removeGroup(groupId);
-    uiState.removeFilterGroup(groupId);
+    FilterGroupUIState filterGroup = uiState.removeFilterGroup(groupId);
+    ui.changeActiveGroup(filterGroup, filterGroup);
   }
 
   @Override
