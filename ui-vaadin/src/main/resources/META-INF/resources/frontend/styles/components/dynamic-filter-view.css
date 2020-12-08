@@ -120,6 +120,7 @@
 
 .filters-group-layout {
 	flex-wrap: wrap;
+	flex: 1 1 auto;
 }
 
 .filter-combobox {
@@ -166,4 +167,18 @@ vaadin-date-time-picker-time-picker {
 
 .filtergroup.child-group {
     margin: 0.5em;
+}
+
+.filter-buttons {
+	display: flex;
+	flex-direction: column;
+	padding: 0 0.5em;
+}
+
+.filter-addchildgroup {
+	background-color: var(--lumo-success-color-50pct);
+}
+
+.filter-removegroup {
+	background-color: var(--lumo-error-color-50pct);
 }

@@ -87,7 +87,7 @@ public class DynamicFilterViewUIState {
     }
     FilterField filter = new FilterField();
     filter.setMetaName(filterSelector.getName());
-    group.addDynamicFilter(filter);
+    group.addFilterField(filter);
     List<FilterOperation> operations = filterSelector.getOperations();
     // TODO default operation handling
     if (operations != null && !operations.isEmpty()) {
@@ -110,6 +110,7 @@ public class DynamicFilterViewUIState {
     FilterGroup group = new FilterGroup();
     group.setName(name);
     group.setType(type);
+    parentGroup.addFilterGroup(group);
     boolean isCloseable = filterConfigMode == FilterConfigMode.DYNAMIC;
     boolean isChildGroupAllowed = filterConfigMode == FilterConfigMode.DYNAMIC;
 
@@ -128,8 +129,14 @@ public class DynamicFilterViewUIState {
   }
 
   void removeFilterGroup(String groupId) {
+    FilterGroup group = groupsById.get(groupId);
     groupsById.remove(groupId);
     FilterGroupUIState groupUIState = groupUIStatesById.get(groupId);
+    groupUIState.clearChildren();
+    if (groupUIState.getParentGroup() != null) {
+      FilterGroupUIState parentGroup = groupUIState.getParentGroup();
+      parentGroup.removeFilterGroup(group);
+    }
     for (FilterSelectorGroupUIState selectorGroup : filterSelectorGroups) {
       if (selectorGroup.currentGroupUIState == groupUIState) {
         selectorGroup.currentGroupUIState = null;

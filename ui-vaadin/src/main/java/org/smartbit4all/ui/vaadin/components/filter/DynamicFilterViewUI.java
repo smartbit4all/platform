@@ -115,7 +115,8 @@ public class DynamicFilterViewUI implements DynamicFilterView {
     }
     FilterGroupUI groupUI = new FilterGroupUI(groupUIState, parentGroupUI,
         groupId -> controller.activeFilterGroupChanged(groupId),
-        parentGroupId -> controller.addFilterGroup(parentGroupId));
+        parentGroupId -> controller.addFilterGroup(parentGroupId),
+        groupId -> controller.removeFilterGroup(groupId));
     groupsById.put(groupUIState.getId(), groupUI);
     if (parentGroupUI == null) {
       filterHolder.add(groupUI);

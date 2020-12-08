@@ -68,8 +68,29 @@ public class FilterGroupUIState extends AbstractUIState {
     return parentGroup;
   }
 
-  public void addDynamicFilter(FilterField filter) {
-    group.addFilterFieldsItem(filter);
+  public void addFilterField(FilterField filterField) {
+    group.addFilterFieldsItem(filterField);
+  }
+
+  public void addFilterGroup(FilterGroup filterGroup) {
+    group.addFilterGroupsItem(filterGroup);
+  }
+
+  public void removeFilterField(FilterField filterField) {
+    group.getFilterFields().remove(filterField);
+  }
+
+  public void removeFilterGroup(FilterGroup filterGroup) {
+    group.getFilterGroups().remove(filterGroup);
+  }
+
+  public void clearChildren() {
+    if (group.getFilterFields() != null) {
+      group.getFilterFields().clear();
+    }
+    if (group.getFilterGroups() != null) {
+      group.getFilterGroups().clear();
+    }
   }
 
   public boolean isVisible() {

@@ -20,17 +20,22 @@ public class FilterGroupUI extends FlexLayout {
   private FilterGroupUI parentGroupUI;
   private FlexLayout iconLayout;
   private FlexLayout filtersLayout;
-  private Button btnAddFilter;
+  private FlexLayout buttonsLayout;
+  private Button btnAddChildGroup;
+  private Button btnRemoveGroup;
   private Consumer<String> activeGroupChange;
   private Consumer<String> addChildGroup;
+  private Consumer<String> removeGroup;
   private String groupId;
 
   public FilterGroupUI(FilterGroupUIState uiState, FilterGroupUI parentGroupUI,
-      Consumer<String> activeGroupChange, Consumer<String> addChildGroup) {
+      Consumer<String> activeGroupChange, Consumer<String> addChildGroup,
+      Consumer<String> removeGroup) {
     // TODO maybe we can skip isRoot parameter and use: isRoot = parentGroupUI == null;
     this.parentGroupUI = parentGroupUI;
     this.activeGroupChange = activeGroupChange;
     this.addChildGroup = addChildGroup;
+    this.removeGroup = removeGroup;
     this.groupId = uiState.getId();
     iconLayout = new FlexLayout();
     iconLayout.addClassName("icon-layout");
@@ -54,20 +59,30 @@ public class FilterGroupUI extends FlexLayout {
     filtersLayout.addClassName("filters-group-layout");
     add(filtersLayout);
 
-    btnAddFilter = new Button("+");
-    btnAddFilter.addClickListener(addFilterListener());
-    btnAddFilter.getElement().addEventListener("click", e -> {
-    }).addEventData("event.stopPropagation()");
+    buttonsLayout = new FlexLayout();
+    buttonsLayout.addClassName("filter-buttons");
+
+    btnAddChildGroup = new Button("+");
+    btnAddChildGroup.addClickListener(addChildGroupListener());
+    btnAddChildGroup.addClassName("filter-addchildgroup");
+    UIUtils.stopClickEventPropagation(btnAddChildGroup);
+    btnRemoveGroup = new Button("x");
+    btnRemoveGroup.addClickListener(removeGroupListener());
+    btnRemoveGroup.addClassName("filter-removegroup");
+    UIUtils.stopClickEventPropagation(btnRemoveGroup);
 
     if (uiState.isChildGroupAllowed()) {
-      add(btnAddFilter);
+      buttonsLayout.add(btnAddChildGroup);
       addClickListener(groupChangeListener());
-      getElement().addEventListener("click", e -> {
-      }).addEventData("event.stopPropagation()");
+      UIUtils.stopClickEventPropagation(this);
     }
 
     if (uiState.isCloseable()) {
-      // TODO handle isCloseable, add close button if true.
+      buttonsLayout.add(btnRemoveGroup);
+    }
+
+    if (buttonsLayout.getComponentCount() > 0) {
+      add(buttonsLayout);
     }
   }
 
@@ -85,9 +100,15 @@ public class FilterGroupUI extends FlexLayout {
     };
   }
 
-  private ComponentEventListener<ClickEvent<Button>> addFilterListener() {
+  private ComponentEventListener<ClickEvent<Button>> addChildGroupListener() {
     return e -> {
       addChildGroup.accept(groupId);
+    };
+  }
+
+  private ComponentEventListener<ClickEvent<Button>> removeGroupListener() {
+    return e -> {
+      removeGroup.accept(groupId);
     };
   }
 
