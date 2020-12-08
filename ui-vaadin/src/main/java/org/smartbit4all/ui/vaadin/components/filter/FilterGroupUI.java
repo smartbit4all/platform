@@ -8,12 +8,14 @@ import org.smartbit4all.ui.vaadin.util.UIUtils;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.dnd.DropEvent;
+import com.vaadin.flow.component.dnd.DropTarget;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 
-public class FilterGroupUI extends FlexLayout {
+public class FilterGroupUI extends FlexLayout implements DropTarget<FlexLayout> {
 
   private static final String ACTIVE_GROUP = "active-group";
 
@@ -28,12 +30,15 @@ public class FilterGroupUI extends FlexLayout {
   public FilterGroupUI(FilterGroupUIState uiState, FilterGroupUI parentGroupUI,
       Consumer<String> activeGroupChange, Consumer<String> addChildGroup) {
     // TODO maybe we can skip isRoot parameter and use: isRoot = parentGroupUI == null;
+    setActive(true);
     this.parentGroupUI = parentGroupUI;
     this.activeGroupChange = activeGroupChange;
     this.addChildGroup = addChildGroup;
     this.groupId = uiState.getId();
     iconLayout = new FlexLayout();
     iconLayout.addClassName("icon-layout");
+
+    addDropListener(createDropListener());
 
     if (uiState.isVisible()) {
       addClassName("filtergroup");
@@ -69,6 +74,14 @@ public class FilterGroupUI extends FlexLayout {
     if (uiState.isCloseable()) {
       // TODO handle isCloseable, add close button if true.
     }
+  }
+
+  private ComponentEventListener<DropEvent<FlexLayout>> createDropListener() {
+    return e -> {
+      e.getDragData().ifPresent(data -> {
+        addToFilterGroup((FilterFieldUI) data);
+      });
+    };
   }
 
   public void updateState(FilterGroupUIState uiState) {
