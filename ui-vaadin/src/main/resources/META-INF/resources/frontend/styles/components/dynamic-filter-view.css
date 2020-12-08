@@ -182,8 +182,12 @@ vaadin-date-time-picker-time-picker {
 
 .filter-addchildgroup {
 	background-color: var(--lumo-success-color-50pct);
+	min-width: 0;
+	flex-grow: 1;
 }
 
 .filter-removegroup {
 	background-color: var(--lumo-error-color-50pct);
+	min-width: 0;
+	flex-grow: 1;
 }
