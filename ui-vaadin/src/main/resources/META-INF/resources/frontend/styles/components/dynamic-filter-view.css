@@ -31,7 +31,7 @@
 	width: 100%;
 	background-color: var(--lumo-base-color);
     border-radius: var(--lumo-border-radius-s);
-    box-shadow: var(--lumo-box-shadow-xs);
+	box-shadow: 1px 1px 7px var(--lumo-contrast-20pct);
     padding-top: var(--lumo-space-s);
     padding-bottom: var(--lumo-space-s);
     margin-bottom: var(--lumo-space-s);
@@ -152,17 +152,18 @@ vaadin-date-time-picker-time-picker {
     justify-content: space-between;
 }
 
-/*
 .filtergroup.active-group {
-	background-color: var(--lumo-success-color-10pct);
+	background-color: var(--lumo-primary-color-50pct);
+    border: var(--lumo-contrast-50pct);
+    border-style: dashed;
 }
-*/
 
 .filtergroup.child-group.active-group {
 	background-color: var(--lumo-primary-color-50pct);
+    border: var(--lumo-contrast-50pct);
+    border-style: dashed;
 }
 
 .filtergroup.child-group {
     margin: 0.5em;
-    background-color: var(--lumo-contrast-5pct);
 }
