@@ -7,6 +7,7 @@ import org.smartbit4all.api.filter.bean.FilterConfig;
 import org.smartbit4all.api.filter.bean.FilterConfigMode;
 import org.smartbit4all.api.filter.bean.FilterField;
 import org.smartbit4all.api.filter.bean.FilterGroup;
+import org.smartbit4all.api.filter.bean.FilterGroupMeta;
 import org.smartbit4all.api.filter.bean.FilterOperation;
 import org.smartbit4all.api.value.ValueApi;
 import org.smartbit4all.api.value.bean.Value;
@@ -152,6 +153,28 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
   public void removeGroup(String groupId) {
     ui.removeGroup(groupId);
     uiState.removeFilterGroup(groupId);
+  }
+
+  @Override
+  public void activeFilterGroupChanged(String filterGroupId) {
+    String previousGroupId = uiState.setActiveGroup(filterGroupId);
+    FilterGroupUIState previousFilterGroupUIState = uiState.groupUIStatesById.get(previousGroupId);
+    FilterGroupUIState newFilterGroupUIState = uiState.groupUIStatesById.get(filterGroupId);
+    ui.changeActiveGroup(previousFilterGroupUIState, newFilterGroupUIState);
+
+  }
+
+  @Override
+  public void addSubGroup(String parentGroupId) {
+    FilterGroupMeta meta = new FilterGroupMeta();
+    meta.setIcon(null);
+    meta.setName(null);
+    meta.setType(null);
+    FilterSelectorGroupUIState groupMeta = new FilterSelectorGroupUIState(meta);
+    FilterGroupUIState parentGroup = uiState.groupUIStatesById.get(parentGroupId);
+    FilterGroupUIState filterGroup = uiState.createFilterGroup(groupMeta, parentGroup);
+    ui.renderGroup(filterGroup);
+    activeFilterGroupChanged(filterGroup.getId());
   }
 
 }

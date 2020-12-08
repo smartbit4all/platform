@@ -151,3 +151,11 @@ vaadin-date-time-picker-time-picker {
 	min-width: 480px;
     justify-content: space-between;
 }
+
+.active-group {
+	background-color: var(--lumo-primary-color-10pct);
+}
+
+.filtergroup.sub-group {
+    margin: 15px;
+}

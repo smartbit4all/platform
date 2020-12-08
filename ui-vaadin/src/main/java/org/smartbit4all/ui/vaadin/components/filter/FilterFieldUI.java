@@ -149,7 +149,6 @@ public class FilterFieldUI extends FlexLayout {
         Button button = new Button(displayValue);
         dialogOptionsLayout.add(button);
         button.addClickListener(e -> {
-          // operationSelector.close();
           operationChange.accept(operation.getCode());
         });
       }

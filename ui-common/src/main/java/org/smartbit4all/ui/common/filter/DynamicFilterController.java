@@ -18,4 +18,8 @@ public interface DynamicFilterController extends UIController {
 
   void removeGroup(String groupId);
 
+  void activeFilterGroupChanged(String filterGroupId);
+
+  void addSubGroup(String parentGroupId);
+
 }

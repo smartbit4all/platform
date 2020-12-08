@@ -113,7 +113,9 @@ public class DynamicFilterViewUI implements DynamicFilterView {
         parentGroupUI = groupsById.get(groupUIState.getParentGroupId());
       }
     }
-    FilterGroupUI groupUI = new FilterGroupUI(groupUIState, parentGroupUI);
+    FilterGroupUI groupUI = new FilterGroupUI(groupUIState, parentGroupUI,
+        groupId -> controller.activeFilterGroupChanged(groupId),
+        parentGroupId -> controller.addSubGroup(parentGroupId));
     groupsById.put(groupUIState.getId(), groupUI);
     if (parentGroupUI == null) {
       filterHolder.add(groupUI);
@@ -137,6 +139,13 @@ public class DynamicFilterViewUI implements DynamicFilterView {
     } else {
       throw new RuntimeException("Trying to remove root group UI!");
     }
+  }
+
+  @Override
+  public void changeActiveGroup(FilterGroupUIState prevGroupState,
+      FilterGroupUIState newGroupState) {
+    groupsById.get(prevGroupState.getId()).updateState(prevGroupState);
+    groupsById.get(newGroupState.getId()).updateState(newGroupState);
   }
 
 }

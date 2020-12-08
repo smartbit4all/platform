@@ -19,4 +19,6 @@ public interface DynamicFilterView extends UIView {
 
   void removeGroup(String groupId);
 
+  void changeActiveGroup(FilterGroupUIState prevGroupState, FilterGroupUIState newGroupState);
+
 }
