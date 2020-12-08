@@ -10,6 +10,7 @@ import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dnd.DropEvent;
 import com.vaadin.flow.component.dnd.DropTarget;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -87,7 +88,10 @@ public class FilterGroupUI extends FlexLayout implements DropTarget<FlexLayout> 
     }
 
     if (buttonsLayout.getComponentCount() > 0) {
-      add(buttonsLayout);
+      Div flexibleSeparator = new Div();
+      flexibleSeparator.addClassName("filter-buttons-separator");
+      filtersLayout.add(flexibleSeparator);
+      filtersLayout.add(buttonsLayout);
     }
   }
 

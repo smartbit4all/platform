@@ -169,10 +169,15 @@ vaadin-date-time-picker-time-picker {
     margin: 0.5em;
 }
 
+.filter-buttons-separator {
+	flex: 1 1 auto;
+	order: 998;
+}
 .filter-buttons {
 	display: flex;
 	flex-direction: column;
 	padding: 0 0.5em;
+	order: 999;
 }
 
 .filter-addchildgroup {
