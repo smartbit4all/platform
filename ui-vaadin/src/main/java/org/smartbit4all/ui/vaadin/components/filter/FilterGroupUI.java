@@ -1,6 +1,6 @@
 package org.smartbit4all.ui.vaadin.components.filter;
 
-import java.util.function.Consumer;
+import org.smartbit4all.ui.common.filter.DynamicFilterController;
 import org.smartbit4all.ui.common.filter.FilterGroupUIState;
 import org.smartbit4all.ui.vaadin.util.IconSize;
 import org.smartbit4all.ui.vaadin.util.TextColor;
@@ -26,21 +26,16 @@ public class FilterGroupUI extends FlexLayout implements DropTarget<FlexLayout> 
   private FlexLayout buttonsLayout;
   private Button btnAddChildGroup;
   private Button btnRemoveGroup;
-  private Consumer<String> activeGroupChange;
-  private Consumer<String> addChildGroup;
-  private Consumer<String> removeGroup;
   private String groupId;
+  private DynamicFilterController controller;
 
   public FilterGroupUI(FilterGroupUIState uiState, FilterGroupUI parentGroupUI,
-      Consumer<String> activeGroupChange, Consumer<String> addChildGroup,
-      Consumer<String> removeGroup) {
+      DynamicFilterController controller) {
     // TODO maybe we can skip isRoot parameter and use: isRoot = parentGroupUI == null;
     setActive(true);
     this.parentGroupUI = parentGroupUI;
-    this.activeGroupChange = activeGroupChange;
-    this.addChildGroup = addChildGroup;
-    this.removeGroup = removeGroup;
     this.groupId = uiState.getId();
+    this.controller = controller;
     iconLayout = new FlexLayout();
     iconLayout.addClassName("icon-layout");
 
@@ -67,6 +62,11 @@ public class FilterGroupUI extends FlexLayout implements DropTarget<FlexLayout> 
 
     buttonsLayout = new FlexLayout();
     buttonsLayout.addClassName("filter-buttons");
+
+    Button btnOperation = new Button("ÉS");
+    btnOperation.addClickListener(operationChangeListener());
+    buttonsLayout.add(btnOperation);
+    UIUtils.stopClickEventPropagation(btnOperation);
 
     btnAddChildGroup = new Button("+");
     btnAddChildGroup.addClickListener(addChildGroupListener());
@@ -95,10 +95,25 @@ public class FilterGroupUI extends FlexLayout implements DropTarget<FlexLayout> 
     }
   }
 
+  private ComponentEventListener<ClickEvent<Button>> operationChangeListener() {
+    return e -> {
+      if (e.getSource().getText().equals("ÉS")) {
+        e.getSource().setText("VAGY");
+      } else {
+        e.getSource().setText("ÉS");
+      }
+    };
+  }
+
   private ComponentEventListener<DropEvent<FlexLayout>> createDropListener() {
     return e -> {
       e.getDragData().ifPresent(data -> {
-        addToFilterGroup((FilterFieldUI) data);
+        if (data instanceof FilterFieldUI) {
+          addToFilterGroup((FilterFieldUI) data);
+        } else if (data instanceof FilterSelectorUI) {
+          controller.activeFilterGroupChanged(groupId);
+          controller.addFilterField(((FilterSelectorUI) data).getSelectorId());
+        }
       });
     };
   }
@@ -113,19 +128,19 @@ public class FilterGroupUI extends FlexLayout implements DropTarget<FlexLayout> 
 
   private ComponentEventListener<ClickEvent<FlexLayout>> groupChangeListener() {
     return e -> {
-      activeGroupChange.accept(groupId);
+      controller.activeFilterGroupChanged(groupId);
     };
   }
 
   private ComponentEventListener<ClickEvent<Button>> addChildGroupListener() {
     return e -> {
-      addChildGroup.accept(groupId);
+      controller.addFilterGroup(groupId);
     };
   }
 
   private ComponentEventListener<ClickEvent<Button>> removeGroupListener() {
     return e -> {
-      removeGroup.accept(groupId);
+      controller.removeFilterGroup(groupId);
     };
   }
 
