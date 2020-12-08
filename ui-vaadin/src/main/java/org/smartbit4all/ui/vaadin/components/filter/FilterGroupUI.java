@@ -63,10 +63,15 @@ public class FilterGroupUI extends FlexLayout implements DropTarget<FlexLayout> 
     buttonsLayout = new FlexLayout();
     buttonsLayout.addClassName("filter-buttons");
 
+    FlexLayout ctrlButtonsLayout = new FlexLayout();
+
+
     Button btnOperation = new Button("ÉS");
     btnOperation.addClickListener(operationChangeListener());
     buttonsLayout.add(btnOperation);
     UIUtils.stopClickEventPropagation(btnOperation);
+
+    buttonsLayout.add(ctrlButtonsLayout);
 
     btnAddChildGroup = new Button("+");
     btnAddChildGroup.addClickListener(addChildGroupListener());
@@ -78,13 +83,13 @@ public class FilterGroupUI extends FlexLayout implements DropTarget<FlexLayout> 
     UIUtils.stopClickEventPropagation(btnRemoveGroup);
 
     if (uiState.isChildGroupAllowed()) {
-      buttonsLayout.add(btnAddChildGroup);
+      ctrlButtonsLayout.add(btnAddChildGroup);
       addClickListener(groupChangeListener());
       UIUtils.stopClickEventPropagation(this);
     }
 
     if (uiState.isCloseable()) {
-      buttonsLayout.add(btnRemoveGroup);
+      ctrlButtonsLayout.add(btnRemoveGroup);
     }
 
     if (buttonsLayout.getComponentCount() > 0) {
