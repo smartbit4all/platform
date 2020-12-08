@@ -22,15 +22,15 @@ public class FilterGroupUI extends FlexLayout {
   private FlexLayout filtersLayout;
   private Button btnAddFilter;
   private Consumer<String> activeGroupChange;
-  private Consumer<String> addSubGroup;
+  private Consumer<String> addChildGroup;
   private String groupId;
 
   public FilterGroupUI(FilterGroupUIState uiState, FilterGroupUI parentGroupUI,
-      Consumer<String> activeGroupChange, Consumer<String> addSubGroup) {
+      Consumer<String> activeGroupChange, Consumer<String> addChildGroup) {
     // TODO maybe we can skip isRoot parameter and use: isRoot = parentGroupUI == null;
     this.parentGroupUI = parentGroupUI;
     this.activeGroupChange = activeGroupChange;
-    this.addSubGroup = addSubGroup;
+    this.addChildGroup = addChildGroup;
     this.groupId = uiState.getId();
     iconLayout = new FlexLayout();
     iconLayout.addClassName("icon-layout");
@@ -43,7 +43,7 @@ public class FilterGroupUI extends FlexLayout {
     }
 
     if (uiState.isChildGroupAllowed() && !uiState.isRoot()) {
-      addClassName("sub-group");
+      addClassName("child-group");
     }
 
     if (iconLayout.getComponentCount() != 0) {
@@ -87,7 +87,7 @@ public class FilterGroupUI extends FlexLayout {
 
   private ComponentEventListener<ClickEvent<Button>> addFilterListener() {
     return e -> {
-      addSubGroup.accept(groupId);
+      addChildGroup.accept(groupId);
     };
   }
 

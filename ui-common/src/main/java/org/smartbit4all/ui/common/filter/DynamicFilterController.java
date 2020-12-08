@@ -10,16 +10,16 @@ public interface DynamicFilterController extends UIController {
 
   void loadData();
 
-  void addFilter(String filterSelectorId);
+  void addFilterField(String filterSelectorId);
+
+  void addFilterGroup(String parentGroupId);
+
+  void removeFilterField(String groupId, String filterId);
+
+  void removeFilterGroup(String groupId);
 
   void filterOptionChanged(String filterId, String filterOperation);
 
-  void removeFilter(String groupId, String filterId);
-
-  void removeGroup(String groupId);
-
   void activeFilterGroupChanged(String filterGroupId);
-
-  void addSubGroup(String parentGroupId);
 
 }

@@ -76,7 +76,7 @@ public class DynamicFilterViewUI implements DynamicFilterView {
   private Component createFilterSelectorUI(FilterSelectorUIState filterSelector) {
     String id = filterSelector.getId();
     FilterSelectorUI selectorUI =
-        new FilterSelectorUI(filterSelector, () -> controller.addFilter(id));
+        new FilterSelectorUI(filterSelector, () -> controller.addFilterField(id));
     selectorsById.put(id, selectorUI);
     return selectorUI;
   }
@@ -92,7 +92,7 @@ public class DynamicFilterViewUI implements DynamicFilterView {
     }
     if (filterUI == null) {
       filterUI = new FilterFieldUI(groupUI, filterUIState,
-          () -> controller.removeFilter(groupUIState.getId(), filterUIState.getId()),
+          () -> controller.removeFilterField(groupUIState.getId(), filterUIState.getId()),
           operation -> controller.filterOptionChanged(filterUIState.getId(), operation));
       filtersById.put(filterUIState.getId(), filterUI);
     } else {
@@ -115,7 +115,7 @@ public class DynamicFilterViewUI implements DynamicFilterView {
     }
     FilterGroupUI groupUI = new FilterGroupUI(groupUIState, parentGroupUI,
         groupId -> controller.activeFilterGroupChanged(groupId),
-        parentGroupId -> controller.addSubGroup(parentGroupId));
+        parentGroupId -> controller.addFilterGroup(parentGroupId));
     groupsById.put(groupUIState.getId(), groupUI);
     if (parentGroupUI == null) {
       filterHolder.add(groupUI);

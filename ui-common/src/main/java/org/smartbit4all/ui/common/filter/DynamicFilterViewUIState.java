@@ -105,20 +105,26 @@ public class DynamicFilterViewUIState {
     return filterUIState;
   }
 
-  FilterGroupUIState createFilterGroup(FilterSelectorGroupUIState groupMeta,
-      FilterGroupUIState parentGroup) {
+  FilterGroupUIState createFilterGroup(FilterGroupUIState parentGroup, String name, String iconCode,
+      FilterGroupType type) {
     FilterGroup group = new FilterGroup();
-    group.setType(groupMeta.getType());
-    group.setName(groupMeta.getName());
+    group.setName(name);
+    group.setType(type);
     boolean isCloseable = filterConfigMode == FilterConfigMode.DYNAMIC;
     boolean isChildGroupAllowed = filterConfigMode == FilterConfigMode.DYNAMIC;
 
     FilterGroupUIState groupUIState =
-        new FilterGroupUIState(group, parentGroup, groupMeta.getIconCode(), isCloseable, true,
+        new FilterGroupUIState(group, parentGroup, iconCode, isCloseable, true,
             isChildGroupAllowed);
     groupUIStatesById.put(groupUIState.getId(), groupUIState);
     groupsById.put(groupUIState.getId(), group);
     return groupUIState;
+  }
+
+  FilterGroupUIState createFilterGroup(FilterSelectorGroupUIState groupMeta,
+      FilterGroupUIState parentGroup) {
+    return createFilterGroup(parentGroup, groupMeta.getName(), groupMeta.getIconCode(),
+        groupMeta.getType());
   }
 
   void removeFilterGroup(String groupId) {

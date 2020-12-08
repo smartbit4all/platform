@@ -152,10 +152,17 @@ vaadin-date-time-picker-time-picker {
     justify-content: space-between;
 }
 
-.active-group {
-	background-color: var(--lumo-primary-color-10pct);
+/*
+.filtergroup.active-group {
+	background-color: var(--lumo-success-color-10pct);
+}
+*/
+
+.filtergroup.child-group.active-group {
+	background-color: var(--lumo-primary-color-50pct);
 }
 
-.filtergroup.sub-group {
-    margin: 15px;
+.filtergroup.child-group {
+    margin: 0.5em;
+    background-color: var(--lumo-contrast-5pct);
 }
