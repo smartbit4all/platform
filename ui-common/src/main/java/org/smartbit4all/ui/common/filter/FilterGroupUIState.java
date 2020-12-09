@@ -7,7 +7,7 @@ import org.smartbit4all.api.filter.bean.FilterGroupType;
 public class FilterGroupUIState extends AbstractUIState {
 
 
-  private FilterGroupType type;
+  private FilterGroupType groupType;
   private String labelCode;
   private String iconCode;
   private String parentGroupId;
@@ -18,17 +18,20 @@ public class FilterGroupUIState extends AbstractUIState {
   private boolean isVisible;
   private boolean isActive;
   private boolean isChildGroupAllowed;
+  private boolean isGroupTypeChangeEnabled;
 
   public FilterGroupUIState(FilterGroup group, FilterGroupUIState parentGroup,
-      String iconCode, boolean isCloseable, boolean isVisible, boolean isChildGroupAllowed) {
+      String iconCode, boolean isCloseable, boolean isVisible, boolean isChildGroupAllowed,
+      boolean isGroupTypeChangeEnabled) {
     super();
     this.isCloseable = isCloseable;
     this.isVisible = isVisible;
     this.group = group;
-    this.type = group.getType();
+    this.groupType = group.getType();
     this.labelCode = group.getName();
     this.iconCode = iconCode;
     this.isChildGroupAllowed = isChildGroupAllowed;
+    this.isGroupTypeChangeEnabled = isGroupTypeChangeEnabled;
     if (parentGroup == null) {
       isRoot = true;
       parentGroupId = null;
@@ -40,8 +43,8 @@ public class FilterGroupUIState extends AbstractUIState {
     }
   }
 
-  public FilterGroupType getType() {
-    return type;
+  public FilterGroupType getGroupType() {
+    return groupType;
   }
 
   public String getLabelCode() {
@@ -107,6 +110,10 @@ public class FilterGroupUIState extends AbstractUIState {
 
   public boolean isChildGroupAllowed() {
     return isChildGroupAllowed;
+  }
+
+  public boolean isGroupTypeChangeEnabled() {
+    return isGroupTypeChangeEnabled;
   }
 
 }

@@ -43,8 +43,10 @@ public class DynamicFilterViewUIState {
     rootFilterGroup.setName("filter.root");
     boolean isRootVisible = filterConfigMode == FilterConfigMode.DYNAMIC;
     boolean isChildGroupAllowed = filterConfigMode == FilterConfigMode.DYNAMIC;
+    boolean isGroupTypeChangeEnabled = filterConfigMode == FilterConfigMode.DYNAMIC;
+
     rootGroup = new FilterGroupUIState(rootFilterGroup, null, null, false, isRootVisible,
-        isChildGroupAllowed);
+        isChildGroupAllowed, isGroupTypeChangeEnabled);
     activeGroup = rootGroup;
     groupUIStatesById.put(rootGroup.getId(), rootGroup);
     groupsById.put(rootGroup.getId(), rootFilterGroup);
@@ -113,10 +115,11 @@ public class DynamicFilterViewUIState {
     parentGroup.addFilterGroup(group);
     boolean isCloseable = filterConfigMode == FilterConfigMode.DYNAMIC;
     boolean isChildGroupAllowed = filterConfigMode == FilterConfigMode.DYNAMIC;
+    boolean isGroupTypeChangeEnabled = filterConfigMode == FilterConfigMode.DYNAMIC;
 
     FilterGroupUIState groupUIState =
         new FilterGroupUIState(group, parentGroup, iconCode, isCloseable, true,
-            isChildGroupAllowed);
+            isChildGroupAllowed, isGroupTypeChangeEnabled);
     groupUIStatesById.put(groupUIState.getId(), groupUIState);
     groupsById.put(groupUIState.getId(), group);
     return groupUIState;

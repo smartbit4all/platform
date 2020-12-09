@@ -60,28 +60,30 @@ public class FilterGroupUI extends FlexLayout implements DropTarget<FlexLayout> 
     filtersLayout.addClassName("filters-group-layout");
     add(filtersLayout);
 
-    buttonsLayout = new FlexLayout();
-    buttonsLayout.addClassName("filter-buttons");
-
-    FlexLayout ctrlButtonsLayout = new FlexLayout();
 
 
-    Button btnOperation = new Button("ÉS");
-    btnOperation.addClickListener(operationChangeListener());
-    buttonsLayout.add(btnOperation);
-    UIUtils.stopClickEventPropagation(btnOperation);
-
-    buttonsLayout.add(ctrlButtonsLayout);
+    Button btnGroupType = new Button("ÉS");
+    btnGroupType.addClickListener(groupTypeChangeListener());
+    UIUtils.stopClickEventPropagation(btnGroupType);
 
     btnAddChildGroup = new Button("+");
     btnAddChildGroup.addClickListener(addChildGroupListener());
     btnAddChildGroup.addClassName("filter-addchildgroup");
     UIUtils.stopClickEventPropagation(btnAddChildGroup);
+
     btnRemoveGroup = new Button("x");
     btnRemoveGroup.addClickListener(removeGroupListener());
     btnRemoveGroup.addClassName("filter-removegroup");
     UIUtils.stopClickEventPropagation(btnRemoveGroup);
 
+    buttonsLayout = new FlexLayout();
+    buttonsLayout.addClassName("filter-buttons");
+
+    if (uiState.isGroupTypeChangeEnabled()) {
+      buttonsLayout.add(btnGroupType);
+    }
+
+    FlexLayout ctrlButtonsLayout = new FlexLayout();
     if (uiState.isChildGroupAllowed()) {
       ctrlButtonsLayout.add(btnAddChildGroup);
       addClickListener(groupChangeListener());
@@ -92,6 +94,9 @@ public class FilterGroupUI extends FlexLayout implements DropTarget<FlexLayout> 
       ctrlButtonsLayout.add(btnRemoveGroup);
     }
 
+    if (ctrlButtonsLayout.getComponentCount() > 0) {
+      buttonsLayout.add(ctrlButtonsLayout);
+    }
     if (buttonsLayout.getComponentCount() > 0) {
       Div flexibleSeparator = new Div();
       flexibleSeparator.addClassName("filter-buttons-separator");
@@ -100,7 +105,7 @@ public class FilterGroupUI extends FlexLayout implements DropTarget<FlexLayout> 
     }
   }
 
-  private ComponentEventListener<ClickEvent<Button>> operationChangeListener() {
+  private ComponentEventListener<ClickEvent<Button>> groupTypeChangeListener() {
     return e -> {
       if (e.getSource().getText().equals("ÉS")) {
         e.getSource().setText("VAGY");
