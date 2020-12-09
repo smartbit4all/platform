@@ -23,3 +23,10 @@ dependencyManagement {
     mavenBom "com.microsoft.azure:azure-spring-boot-bom:${azureVersion}"
   }
 }
+
+configurations {
+    [apiElements, runtimeElements].each {
+        it.outgoing.artifacts.removeIf { it.buildDependencies.getDependencies(null).contains(jar) }
+        it.outgoing.artifact(bootJar)
+    }
+}
