@@ -9,8 +9,8 @@ import org.smartbit4all.api.org.OrgApi;
 import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.secms365.service.MsGraphService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.annotation.SessionScope;
 import com.microsoft.graph.requests.extensions.IGroupCollectionPage;
 import com.microsoft.graph.requests.extensions.IGroupCollectionWithReferencesPage;
 import com.microsoft.graph.requests.extensions.IUserCollectionPage;
@@ -18,12 +18,16 @@ import com.microsoft.graph.requests.extensions.IUserCollectionRequestBuilder;
 import com.microsoft.graph.requests.extensions.IUserCollectionWithReferencesPage;
 
 @Service
+@SessionScope
 public class OrgApiImpl implements OrgApi {
   
   private static final String USER_SELECT = "Id,DisplayName,Mail";
 
-  @Autowired
   private MsGraphService graphService;
+  
+  public OrgApiImpl(MsGraphService graphService) {
+    this.graphService = graphService;
+  }
   
   @Override
   public User getUser(URI userUri) {
