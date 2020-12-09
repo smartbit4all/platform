@@ -9,7 +9,7 @@ info:
 tags:
 - name: Value
 paths:
-  /possibleValues/{fieldUri}:
+  /possibleValues/{objectUri}:
     get:
       tags:
       - Value
@@ -17,10 +17,9 @@ paths:
       operationId: 'possibleValues'
       parameters: 
         - in: path
-          name: fieldUri
+          name: objectUri
           schema:
             type: string
-            format: uri
           required: true
           description: 'The URI of the field the possible values are requested for'
       responses:
@@ -36,17 +35,15 @@ components:
   schemas:
     Value:
       type: object
-      required: [code, value]
+      required: [objectUri, displayValue]
       properties:
-        code:
+        objectUri:
           type: string
-          description: 'The code the value can be referenced by'
-        value: 
+          format: uri
+          description: 'The uri the object of the value can be accessed.'
+        displayValue: 
           type: string
-          description: 'The string value of the literal'
-        typeQName:
-          type: string
-          description: 'The qualified name of the type of the value'
+          description: 'The string value that can be shown on ui. It might be a label code or the exact label.'
         iconCode:
           type: string
           description: 'The code of icon that can be associatied with the value. It may be a uri.'

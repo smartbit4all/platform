@@ -1,56 +1,39 @@
 package org.smartbit4all.api.org;
 
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.function.Supplier;
+import org.smartbit4all.api.UriUtils;
 
-public class OrgUris {
+public class OrgUris extends UriUtils {
 
   public static final String ORG_SCHEME = "org";
   public static final String HOST_USER = "user";
   public static final String HOST_GROUP = "group";
   public static final String PATH_ID = "/id";
   
+  private OrgUris() {
+  }
+  
   public static URI createUserUri(String userId) {
-    try {
-      return new URI(ORG_SCHEME, HOST_USER, PATH_ID, userId);
-    } catch (URISyntaxException e) {
-      throw new RuntimeException(e);
-    }
+    return createUri(ORG_SCHEME, HOST_USER, PATH_ID, userId);
   }
   
   public static URI createGroupUri(String groupId) {
-    try {
-      return new URI(ORG_SCHEME, HOST_GROUP, PATH_ID, groupId);
-    } catch (URISyntaxException e) {
-      throw new RuntimeException(e);
-    }
+    return createUri(ORG_SCHEME, HOST_GROUP, PATH_ID, groupId);
   }
   
   public static String getUserId(URI userUri) {
-    checkURI(userUri, HOST_USER, PATH_ID);
+    checkOrgURI(userUri, HOST_USER, PATH_ID);
     return userUri.getFragment();
   }
   
   public static String getGroupId(URI groupUri) {
-    checkURI(groupUri, HOST_GROUP, PATH_ID);
+    checkOrgURI(groupUri, HOST_GROUP, PATH_ID);
     return groupUri.getFragment();
   }
   
-  private static void checkURI(URI uriToCheck, String host, String path) {
-    try {
-      checkURIPart(ORG_SCHEME, uriToCheck::getScheme);
-      checkURIPart(host, uriToCheck::getHost);
-      checkURIPart(path, uriToCheck::getPath);
-    } catch (IllegalAccessException e) {
-      throw new RuntimeException(e.getMessage() +" URI: " + uriToCheck.toString(), e);
-    }
+  private static void checkOrgURI(URI uriToCheck, String host, String path) {
+    checkURI(uriToCheck, ORG_SCHEME, host, path);
   }
   
-  private static void checkURIPart(String partValue, Supplier<String> partSupplier) throws IllegalAccessException {
-    if(!partValue.equals(partSupplier.get())) {
-      throw new IllegalAccessException("The given uri's format is not acceptable!");
-    }
-  }
   
 }

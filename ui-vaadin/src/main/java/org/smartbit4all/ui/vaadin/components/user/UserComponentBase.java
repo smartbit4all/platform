@@ -105,13 +105,8 @@ public class UserComponentBase extends Composite<FlexBoxLayout> implements UserC
 
   @Override
   public void navigate(String route) {
-//    UI.getCurrent().navigate(route);
-    
-//    SecurityContextHolder.clearContext();
-//    UI.getCurrent().open("j_spring_security_logout", null);
     if("logout".equals(route)) {
       UI.getCurrent().getPage().executeJs("window.open(\"/logout\", \"_self\");");
-//      UI.getCurrent().navigate("welcome");
     }
   }
 

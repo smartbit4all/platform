@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.net.URI;
 import org.openapitools.jackson.nullable.JsonNullable;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
@@ -14,78 +15,56 @@ import javax.validation.constraints.*;
  */
 
 public class Value   {
-  @JsonProperty("code")
-  private String code;
+  @JsonProperty("objectUri")
+  private URI objectUri;
 
-  @JsonProperty("value")
-  private String value;
-
-  @JsonProperty("typeQName")
-  private String typeQName;
+  @JsonProperty("displayValue")
+  private String displayValue;
 
   @JsonProperty("iconCode")
   private String iconCode;
 
-  public Value code(String code) {
-    this.code = code;
+  public Value objectUri(URI objectUri) {
+    this.objectUri = objectUri;
     return this;
   }
 
   /**
-   * The code the value can be referenced by
-   * @return code
+   * The uri the object of the value can be accessed.
+   * @return objectUri
   */
-  @ApiModelProperty(required = true, value = "The code the value can be referenced by")
+  @ApiModelProperty(required = true, value = "The uri the object of the value can be accessed.")
+  @NotNull
+
+  @Valid
+
+  public URI getObjectUri() {
+    return objectUri;
+  }
+
+  public void setObjectUri(URI objectUri) {
+    this.objectUri = objectUri;
+  }
+
+  public Value displayValue(String displayValue) {
+    this.displayValue = displayValue;
+    return this;
+  }
+
+  /**
+   * The string value that can be shown on ui. It might be a label code or the exact label.
+   * @return displayValue
+  */
+  @ApiModelProperty(required = true, value = "The string value that can be shown on ui. It might be a label code or the exact label.")
   @NotNull
 
 
-  public String getCode() {
-    return code;
+  public String getDisplayValue() {
+    return displayValue;
   }
 
-  public void setCode(String code) {
-    this.code = code;
-  }
-
-  public Value value(String value) {
-    this.value = value;
-    return this;
-  }
-
-  /**
-   * The string value of the literal
-   * @return value
-  */
-  @ApiModelProperty(required = true, value = "The string value of the literal")
-  @NotNull
-
-
-  public String getValue() {
-    return value;
-  }
-
-  public void setValue(String value) {
-    this.value = value;
-  }
-
-  public Value typeQName(String typeQName) {
-    this.typeQName = typeQName;
-    return this;
-  }
-
-  /**
-   * The qualified name of the type of the value
-   * @return typeQName
-  */
-  @ApiModelProperty(value = "The qualified name of the type of the value")
-
-
-  public String getTypeQName() {
-    return typeQName;
-  }
-
-  public void setTypeQName(String typeQName) {
-    this.typeQName = typeQName;
+  public void setDisplayValue(String displayValue) {
+    this.displayValue = displayValue;
   }
 
   public Value iconCode(String iconCode) {
@@ -118,15 +97,14 @@ public class Value   {
       return false;
     }
     Value value = (Value) o;
-    return Objects.equals(this.code, value.code) &&
-        Objects.equals(this.value, value.value) &&
-        Objects.equals(this.typeQName, value.typeQName) &&
+    return Objects.equals(this.objectUri, value.objectUri) &&
+        Objects.equals(this.displayValue, value.displayValue) &&
         Objects.equals(this.iconCode, value.iconCode);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(code, value, typeQName, iconCode);
+    return Objects.hash(objectUri, displayValue, iconCode);
   }
 
   @Override
@@ -134,9 +112,8 @@ public class Value   {
     StringBuilder sb = new StringBuilder();
     sb.append("class Value {\n");
     
-    sb.append("    code: ").append(toIndentedString(code)).append("\n");
-    sb.append("    value: ").append(toIndentedString(value)).append("\n");
-    sb.append("    typeQName: ").append(toIndentedString(typeQName)).append("\n");
+    sb.append("    objectUri: ").append(toIndentedString(objectUri)).append("\n");
+    sb.append("    displayValue: ").append(toIndentedString(displayValue)).append("\n");
     sb.append("    iconCode: ").append(toIndentedString(iconCode)).append("\n");
     sb.append("}");
     return sb.toString();

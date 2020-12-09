@@ -15,7 +15,7 @@ public class FilterOperationMultiSelectUI extends FilterOperationUI {
     popUp.setItems(possibleValues);
     popUp.setRequired(false);
     // popUp.setFilter(filter); TODO
-    popUp.setItemDisplayValueProvider(v -> v.getValue());
+    popUp.setItemDisplayValueProvider(v -> v.getDisplayValue());
 
     popUp.addValueChangeListener(e -> {
       UIUtils.showNotification("value changed");
