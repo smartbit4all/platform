@@ -126,10 +126,9 @@ public class CrudRead<E extends EntityDefinition> implements Query<E> {
     return onlyOneValue(property, "There are more than one results on read!");
   }
 
-  private void checkResultSize(String multipleRowsExceptionMessage, TableData<E> result)
-      throws IllegalAccessError {
+  private void checkResultSize(String multipleRowsExceptionMessage, TableData<E> result) {
     if(result.size() > 1) {
-      throw new IllegalAccessError(multipleRowsExceptionMessage);
+      throw new IllegalArgumentException(multipleRowsExceptionMessage);
     }
   }
 
