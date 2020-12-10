@@ -12,18 +12,17 @@ import org.smartbit4all.domain.service.dataset.DataSetEntry;
  * 
  * It manages the API for the {@link DataSetEntry}s.
  * 
- * @author Peter Boros
  */
-public interface EntitiesApi {
+public interface EntityManager {
 
   /**
    * Retrieves an {@link EntityDefinition} identified by it's URI. The URI looks like:
    * 
-   * scheme:/path
+   * scheme:/host/path
    * 
    * Where:
-   * 
-   * scheme is the name of the module defining the entity. The path is the name of the entity
+   * scheme is the 'entity' key identifying the uri target
+   * host is the name of the source defining the entity. The path is the name of the entity
    * itself.
    * 
    * @param uri
@@ -32,5 +31,6 @@ public interface EntitiesApi {
   EntityDefinition definition(URI uri);
 
   Property<?> property(URI uri);
+  
 
 }
