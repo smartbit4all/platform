@@ -22,6 +22,7 @@ import org.smartbit4all.domain.meta.PropertyRef;
 import org.smartbit4all.domain.meta.PropertySet;
 import org.smartbit4all.domain.meta.Reference;
 import org.smartbit4all.domain.meta.Reference.Join;
+import org.springframework.util.Assert;
 
 /**
  * The SmartBit4all basic api is build upon the documented enterprise pattern from Martin Fowler.
@@ -129,6 +130,21 @@ public final class TableData<E extends EntityDefinition> {
     return result;
   }
 
+  /**
+   * The values from the given property in an ordered list.
+   * 
+   * @param <T>
+   * @param property The property.
+   * @return The list of values from the given property.
+   */
+  public <T> List<T> values(Property<T> property) {
+    DataColumn<T> column = getColumn(property);
+    
+    Assert.notNull(column, "No column found for the property in the table data");
+    
+    return values(column);
+  }
+  
   /**
    * The values from the given column in an ordered list.
    * 
