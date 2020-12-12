@@ -1,5 +1,6 @@
 package org.smartbit4all.domain.meta;
 
+import java.net.URI;
 import java.util.List;
 import org.smartbit4all.core.SB4Service;
 import org.smartbit4all.core.utility.StringConstant;
@@ -85,8 +86,10 @@ public interface EntityDefinition extends SB4Service {
    */
   Reference<?, ?> getReference(String referenceName);
 
-  Property<?> getReferredPropertyByPath(List<Reference<?, ?>> joinPath,
+  Property<?> findOrCreateReferredProperty(List<Reference<?, ?>> joinPath,
       Property<?> referredProperty);
+
+  Property<?> findOrCreateReferredProperty(String[] joinPath, String referredPropertyName);
 
   /**
    * It will return the properties of the primary key.
@@ -116,5 +119,15 @@ public interface EntityDefinition extends SB4Service {
   EntityService<?> services();
 
   PropertySet allProperties();
+  
+  /**
+   * @return The domain of the entity definition.
+   */
+  String getDomain();
+  
+  /**
+   * @return The URI that refers to this entity definition.
+   */
+  URI getUri();
 
 }

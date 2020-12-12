@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.meta.Reference.Join;
 
@@ -135,16 +136,23 @@ public class PropertyRef<T> extends Property<T> {
    */
   public static final String constructName(List<Reference<?, ?>> joinPath,
       Property<?> referredProperty) {
+    String[] joinPathNames = joinPath.stream()
+        .map(r -> r.getName())
+        .collect(Collectors.toList())
+        .toArray(new String[joinPath.size()]);
+    return constructName(joinPathNames, referredProperty.getName());
+  }
+  
+  public static final String constructName(String[] joinPath,
+      String referredPropertyName) {
     /*
      * The name of the referenced column comes from the join path plus the name of the referred
      * property at the end of the path.
      */
     StringBuilder sb = new StringBuilder();
-    for (Reference<?, ?> reference : joinPath) {
-      sb.append(reference.getName());
-      sb.append(".");
-    }
-    sb.append(referredProperty.getName());
+    sb.append(String.join(".", joinPath));
+    sb.append(".");
+    sb.append(referredPropertyName);
     return sb.toString();
   }
 

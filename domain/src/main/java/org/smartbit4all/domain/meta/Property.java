@@ -1,5 +1,6 @@
 package org.smartbit4all.domain.meta;
 
+import java.net.URI;
 import java.sql.PreparedStatement;
 import java.util.Collection;
 import java.util.Comparator;
@@ -9,6 +10,7 @@ import org.smartbit4all.domain.meta.logic.Avg;
 import org.smartbit4all.domain.meta.logic.Max;
 import org.smartbit4all.domain.meta.logic.Min;
 import org.smartbit4all.domain.meta.logic.Sum;
+import org.smartbit4all.domain.service.entity.EntityUris;
 
 /**
  * It describes the property of the entities. The subclasses are responsible for describing the data
@@ -434,6 +436,20 @@ public abstract class Property<T> {
    */
   void setComparator(Comparator<? super T> comparator) {
     this.comparator = comparator;
+  }
+  
+  /**
+   * @return The URI that refers to this property
+   */
+  public final URI getUri() {
+    if(entityDef == null) {
+      throw new IllegalStateException(
+          "There is no EntityDefinition set to this property! "
+          + "This way the URI can not be constructed for this property!");
+    }
+    String domain = entityDef.getDomain();
+    String entityName = entityDef.entityDefName();
+    return EntityUris.createPropertyUri(domain, entityName, name);
   }
 
 }

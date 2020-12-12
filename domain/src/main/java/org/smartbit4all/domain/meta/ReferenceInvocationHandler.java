@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import org.smartbit4all.domain.data.DataColumn;
 
 /**
  * <P>
@@ -92,11 +93,7 @@ public class ReferenceInvocationHandler implements InvocationHandler {
 
   private Property<?> findOrCreateRefProperty(EntityDefinition sourceEntity,
       List<Reference<?, ?>> joinPath, Property<?> referredProperty) {
-    Property<?> property = sourceEntity.getReferredPropertyByPath(joinPath, referredProperty);
-    if (property == null) {
-      property = new PropertyRef<>(null, joinPath, referredProperty);
-      property.setEntityDef(sourceEntity);
-    }
+    Property<?> property = sourceEntity.findOrCreateReferredProperty(joinPath, referredProperty);
     return property;
   }
 

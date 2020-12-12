@@ -112,13 +112,8 @@ public class Reference<S extends EntityDefinition, T extends EntityDefinition> {
     public PropertyRef<V> propRef(List<Reference<?, ?>> joinPath) {
       EntityDefinition sourceEntity = joinPath.get(0).getSource();
       Property<?> existingProperty =
-          sourceEntity.getReferredPropertyByPath(joinPath, sourceProperty);
-      if (existingProperty != null) {
-        return (PropertyRef<V>) existingProperty;
-      }
-      PropertyRef<V> property = new PropertyRef<>(null, joinPath, sourceProperty);
-      property.setEntityDef(sourceEntity);
-      return property;
+          sourceEntity.findOrCreateReferredProperty(joinPath, sourceProperty);
+      return (PropertyRef<V>) existingProperty;
     }
 
   }

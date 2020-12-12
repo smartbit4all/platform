@@ -4,6 +4,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -25,6 +26,7 @@ import org.smartbit4all.domain.annotation.property.Table;
 import org.smartbit4all.domain.annotation.property.ValueComparator;
 import org.smartbit4all.domain.meta.jdbc.JDBCDataConverterHelper;
 import org.smartbit4all.domain.meta.logic.Count;
+import org.smartbit4all.domain.service.entity.EntityUris;
 import org.smartbit4all.domain.utility.SupportedDatabase;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -380,23 +382,62 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
       if (method.isAnnotationPresent(ReferenceProperty.class)) {
         ReferenceProperty annot = method.getAnnotation(ReferenceProperty.class);
         String[] path = annot.path();
-        List<Reference<?, ?>> joinPath = new ArrayList<>();
-        // TODO getBean by name?
-        EntityDefinition currentEntity = ctx.getBean(entityDefClazz);
-        for (int i = 0; i < path.length; i++) {
-          String referenceName = path[i];
-          Reference<?, ?> reference = currentEntity.getReference(referenceName);
-          joinPath.add(reference);
-          currentEntity = reference.getTarget();
-        }
         String propertyName = getName(annot.name(), method);
-        Property<?> referredProperty = currentEntity.getProperty(annot.property());
-        PropertyRef<?> property = new PropertyRef<>(propertyName, joinPath, referredProperty);
+        String regerredPropertyName = annot.property();
+        Property<?> property = createRefPropertyByPath(propertyName, regerredPropertyName, path);
         registerProperty(method, property);
-        referredPropertiesByPath.put(PropertyRef.constructName(joinPath, referredProperty),
-            property);
       }
     }
+  }
+
+  private Property<?> createRefPropertyByPath(String propertyName, String referredPropertyName, String[] path) {
+    List<Reference<?, ?>> joinPath = new ArrayList<>();
+    // TODO getBean by name?
+    EntityDefinition currentEntity = ctx.getBean(entityDefClazz);
+    for (int i = 0; i < path.length; i++) {
+      String referenceName = path[i];
+      Reference<?, ?> reference = currentEntity.getReference(referenceName);
+      joinPath.add(reference);
+      currentEntity = reference.getTarget();
+    }
+    Property<?> referredProperty = currentEntity.getProperty(referredPropertyName);
+    Property<?> property = createRefProperty(propertyName, joinPath, referredProperty);
+    return property;
+  }
+  
+
+  @Override
+  public Property<?> findOrCreateReferredProperty(List<Reference<?, ?>> joinPath,
+      Property<?> referredProperty) {
+    String refPath = PropertyRef.constructName(joinPath, referredProperty);
+    Property<?> property = referredPropertiesByPath.get(refPath);
+    if(property == null) {
+      property = createRefProperty(null, joinPath, referredProperty, refPath);
+    }
+    return property;
+  }
+  
+  @Override
+  public Property<?> findOrCreateReferredProperty(String[] joinPath, String referredPropertyName) {
+    String refPath = PropertyRef.constructName(joinPath, referredPropertyName);
+    Property<?> property = referredPropertiesByPath.get(refPath);
+    if(property == null) {
+      property = createRefPropertyByPath(referredPropertyName, referredPropertyName, joinPath);
+    }
+    return property;
+  }
+
+  private Property<?> createRefProperty(String propertyName, List<Reference<?, ?>> joinPath, Property<?> referredProperty) {
+    String refPath = PropertyRef.constructName(joinPath, referredProperty);
+    return createRefProperty(propertyName, joinPath, referredProperty, refPath);
+  }
+
+  private Property<?> createRefProperty(String propertyName, List<Reference<?, ?>> joinPath, Property<?> referredProperty,
+      String refPath) {
+    Property<?> property = new PropertyRef<>(propertyName, joinPath, referredProperty);
+    property.setEntityDef(this);
+    referredPropertiesByPath.put(refPath, property);
+    return property;
   }
 
   @Override
@@ -415,12 +456,6 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
   @Override
   public Reference<?, ?> getReference(String referenceName) {
     return referencesByName.get(referenceName);
-  }
-
-  @Override
-  public Property<?> getReferredPropertyByPath(List<Reference<?, ?>> joinPath,
-      Property<?> referredProperty) {
-    return referredPropertiesByPath.get(PropertyRef.constructName(joinPath, referredProperty));
   }
 
   @Override
@@ -463,6 +498,17 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
   @Override
   public PropertySet allProperties() {
     return allProperties;
+  }
+
+  @Override
+  public String getDomain() {
+    // TODO it should come from constructor or from annotation
+    return "security";
+  }
+
+  @Override
+  public URI getUri() {
+    return EntityUris.createEntityUri(getDomain(), entityDefName());
   }
 
 }
