@@ -19,7 +19,7 @@ public class SourceBasedValueApi implements ValueApi {
 
   public SourceBasedValueApi(List<ValueSource> sources) {
     sources.forEach(source -> {
-      String formatedUriSource = UriUtils.formatUriSource(source.getSourceId());
+      String formatedUriSource = UriUtils.formatUriHost(source.getSourceId());
       sourcesById.put(formatedUriSource, source);
       List<String> providedObjectCodes = source.getProvidedObjectCodes();
       if (providedObjectCodes != null) {

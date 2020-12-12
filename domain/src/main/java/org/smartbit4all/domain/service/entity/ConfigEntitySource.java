@@ -1,6 +1,5 @@
 package org.smartbit4all.domain.service.entity;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -19,7 +18,6 @@ public class ConfigEntitySource implements EntitySource {
   private ApplicationContext appCtx;
   
   private Map<String, EntityDefinition> entityDefsByName = new HashMap<>();
-  private Map<String, Property<?>> propertyCache = new HashMap<>();
   
   public ConfigEntitySource(String sourceId, Class<? extends EntityConfiguration> entityConfig, ApplicationContext appCtx) {
     this.sourceId = sourceId;
@@ -30,7 +28,6 @@ public class ConfigEntitySource implements EntitySource {
   private void collectEntityDefs(Class<? extends EntityConfiguration> entityConfigClazz) {
     Method[] configMethods = entityConfigClazz.getMethods();
     
-    // here we assume the generated registrations always add the entity name to the bean annot
     List<String> registeredEntityDefNames = Arrays.stream(configMethods)
       .filter(m -> m.isAnnotationPresent(Bean.class) && 
                    EntityDefinition.class.isAssignableFrom(m.getReturnType()))
@@ -74,34 +71,16 @@ public class ConfigEntitySource implements EntitySource {
     checkPropertyName(propertyName);
     
     if(entityPath.contains("/")) {
-      //create a ref property?
-      
+      String[] path = entityPath.split("/");
+      String entityName = path[0];
+      path = Arrays.copyOfRange(path, 1, path.length);
+      EntityDefinition entityDef = entityDefsByName.get(entityName);
+      Property<?> refProperty = entityDef.findOrCreateReferredProperty(path, propertyName);
+      return refProperty;
     } else {
-      String propCacheKey = createPropertyCacheKey(entityPath, propertyName);
-      Property<?> property = propertyCache.get(propCacheKey);
-      if(property == null) {
-        EntityDefinition entityDef = entityDefsByName.get(entityPath);
-        Method[] methods = entityDef.getClass().getMethods();
-        Method propertyMethod = Arrays.stream(methods)
-          .filter(m -> m.getParameterCount() == 0 &&
-                       m.getReturnType().equals(Property.class) &&
-                       m.getName().equals(propertyName))
-          .findFirst()
-          .orElseThrow(() -> new RuntimeException("There is no property with the given name: " + propertyName));
-        try {
-          property = (Property<?>) propertyMethod.invoke(entityDef);
-          propertyCache.put(propCacheKey, property);
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-          throw new RuntimeException("Unable to call property method.", e);
-        }
-      }
-      return property;
+      EntityDefinition entityDef = entityDefsByName.get(entityPath);
+      return entityDef.getProperty(propertyName);
     }
-    return null;
-  }
-  
-  private String createPropertyCacheKey(String entityName, String propertyName) {
-    return entityName.concat(".").concat(propertyName);
   }
 
   private void checkEntityPath(String entityPath) {

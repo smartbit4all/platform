@@ -10,15 +10,15 @@ public abstract class EntityUris {
   private EntityUris() {
   }
   
-  public static URI createEntityUri(String source, String entityPath) {
-    return createUri(SCHEME_ENTITY, source, entityPath, null);
+  public static URI createEntityUri(String domain, String entityPath) {
+    return createUri(SCHEME_ENTITY, domain, entityPath, null);
   }
   
-  public static URI createPropertyUri(String source, String entityPath, String property) {
-    return createUri(SCHEME_ENTITY, source, entityPath, property);
+  public static URI createPropertyUri(String domain, String entityPath, String property) {
+    return createUri(SCHEME_ENTITY, domain, entityPath, property);
   }
   
-  public static String getSource(URI uri) {
+  public static String getDomain(URI uri) {
     checkScheme(uri);
     return uri.getAuthority();
   }

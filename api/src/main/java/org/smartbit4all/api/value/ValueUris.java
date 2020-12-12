@@ -37,7 +37,7 @@ public class ValueUris extends UriUtils {
    * @return
    */
   public static URI createUri(String source, String objectCode, String valueId) {
-    String formattedSource = formatUriSource(source);
+    String formattedSource = formatUriHost(source);
     
     objectCode = objectCode == null ? null : "/" + objectCode;
     return createUri(VALUE_SCHEME, formattedSource, objectCode, valueId);

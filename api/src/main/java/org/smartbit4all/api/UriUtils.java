@@ -34,7 +34,7 @@ public abstract class UriUtils {
     }
   }
   
-  public static String formatUriSource(String source) {
+  public static String formatUriHost(String source) {
     String formattedSource = source.replace(".", "-").replace("_", "-");
     if(!formattedSource.equals(source)) {
       log.info("The given source can not be set to the uri in this form because of illegal characters.\n"

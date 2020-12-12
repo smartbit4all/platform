@@ -12,6 +12,7 @@ import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.domain.security.SecurityEntityConfiguration;
 import org.smartbit4all.domain.security.UserAccountDef;
 import org.smartbit4all.domain.service.entity.EntityManager;
+import org.smartbit4all.domain.service.entity.EntityManagerImpl;
 import org.smartbit4all.domain.service.entity.EntityUris;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
@@ -19,6 +20,10 @@ public class EntityManagerTest {
 
   private static final String EXPECTED_USERACCDEF_URI = "entity://security/userAccountDef";
   private static final String EXPECTED_PROPERTY_URI = "entity://security/userAccountDef#firstname";
+  
+  private static final String EXPECTED_PROPERTY_ON_ASSOC_URI = "entity://security/userAccountDef/primaryAddressRef#zipcode";
+  private static final String EXPECTED_PROPERTY_ON_ASSOC_URI2 = "entity://security/userAccountDef#primaryZipcode";
+  
   protected static AnnotationConfigApplicationContext ctx;
 
   @BeforeAll
@@ -26,7 +31,8 @@ public class EntityManagerTest {
     ctx = new AnnotationConfigApplicationContext();
     ctx.register(MetaConfiguration.class);
     ctx.register(SecurityEntityConfiguration.class);
-    ctx.register(EntityManagerTestConfig.class);
+//    ctx.register(EntityManagerTestConfig.class);
+    ctx.register(EntityManagerImpl.class);
     ctx.refresh();
   }
 
@@ -62,6 +68,29 @@ public class EntityManagerTest {
     assertEquals(EXPECTED_PROPERTY_URI, propertyUri.toString());
     
     Property<?> actualProperty = entityManager.property(propertyUri);
+    assertEquals(expectedProperty, actualProperty);
+  }
+  
+  @Test
+  void testEntityManagerReferencedPropertyGetter() {
+    EntityManager entityManager = ctx.getBean(EntityManager.class);
+    
+    UserAccountDef userAccountDef = ctx.getBean(UserAccountDef.class);
+    Property<String> expectedProperty = userAccountDef.primaryZipcode();
+    
+    URI propertyUri = EntityUris.createPropertyUri(EntityManagerTestConfig.ENTITY_SOUCE_SEC, "userAccountDef/primaryAddressRef", "zipcode");
+    assertEquals(EXPECTED_PROPERTY_ON_ASSOC_URI, propertyUri.toString());
+    
+    Property<?> actualProperty = entityManager.property(propertyUri);
+    assertEquals(expectedProperty, actualProperty);
+    
+    expectedProperty = userAccountDef.primaryAddress().zipcode();
+    assertEquals(expectedProperty, actualProperty);
+    
+    propertyUri = EntityUris.createPropertyUri(EntityManagerTestConfig.ENTITY_SOUCE_SEC, "userAccountDef", "primaryZipcode");
+    assertEquals(EXPECTED_PROPERTY_ON_ASSOC_URI2, propertyUri.toString());
+    
+    actualProperty = entityManager.property(propertyUri);
     assertEquals(expectedProperty, actualProperty);
   }
   

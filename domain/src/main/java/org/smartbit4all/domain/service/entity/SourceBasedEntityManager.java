@@ -35,7 +35,7 @@ public class SourceBasedEntityManager implements EntityManager {
   }
 
   private EntitySource getSource(URI uri) {
-    String sourceId = EntityUris.getSource(uri);
+    String sourceId = EntityUris.getDomain(uri);
     EntitySource source = sourcesById.get(sourceId);
     if(source == null) {
       throw new IllegalStateException("There is no entity source registered with id: " + sourceId);
