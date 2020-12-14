@@ -80,6 +80,7 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
     }
     filterUIState.setPossibleValues(getPossibleValues(filterUIState.getFilter()));
     ui.renderFilter(filterUIState);
+    System.out.println(uiState.getRootFilterGroup().toString());
   }
 
   private List<Value> getPossibleValues(FilterField dynamicFilter) {
@@ -147,6 +148,7 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
         removeFilterGroup(groupId);
       }
     }
+    System.out.println(uiState.getRootFilterGroup().toString());
   }
 
   @Override
@@ -154,6 +156,7 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
     ui.removeGroup(groupId);
     FilterGroupUIState filterGroup = uiState.removeFilterGroup(groupId);
     ui.changeActiveGroup(filterGroup, filterGroup);
+    System.out.println(uiState.getRootFilterGroup().toString());
   }
 
   @Override
@@ -172,6 +175,7 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
         uiState.createFilterGroup(parentGroup, null, null, FilterGroupType.AND);
     ui.renderGroup(filterGroup);
     activeFilterGroupChanged(filterGroup.getId());
+    System.out.println(uiState.getRootFilterGroup().toString());
   }
 
 }

@@ -28,6 +28,11 @@ public class DynamicFilterViewUIState {
 
   private FilterConfig filterConfig;
   private FilterConfigMode filterConfigMode;
+  private FilterGroup rootFilterGroup;
+
+  public FilterGroup getRootFilterGroup() {
+    return rootFilterGroup;
+  }
 
   public DynamicFilterViewUIState(FilterConfigMode filterConfigMode) {
     this.filterConfigMode = filterConfigMode;
@@ -38,7 +43,7 @@ public class DynamicFilterViewUIState {
   }
 
   private void createRootGroup() {
-    FilterGroup rootFilterGroup = new FilterGroup();
+    rootFilterGroup = new FilterGroup();
     rootFilterGroup.setType(FilterGroupType.AND);
     rootFilterGroup.setName("filter.root");
     boolean isRootVisible = filterConfigMode == FilterConfigMode.DYNAMIC;
