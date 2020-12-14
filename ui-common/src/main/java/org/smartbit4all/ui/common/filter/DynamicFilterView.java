@@ -21,4 +21,6 @@ public interface DynamicFilterView extends UIView {
 
   void changeActiveGroup(FilterGroupUIState prevGroupState, FilterGroupUIState newGroupState);
 
+  void moveFilter(String groupId, String filterId);
+
 }

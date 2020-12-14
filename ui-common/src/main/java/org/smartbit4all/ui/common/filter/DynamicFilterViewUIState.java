@@ -170,4 +170,14 @@ public class DynamicFilterViewUIState {
     return prevActiveGroup;
   }
 
+  void moveFilter(String oldGroupId, String newGroupId, String filterId) {
+    FilterGroup oldFilterGroup = groupsById.get(oldGroupId);
+    FilterGroup newFilterGroup = groupsById.get(newGroupId);
+    FilterField filterField = filtersById.get(filterId);
+
+    oldFilterGroup.getFilterFields().remove(filterField);
+    newFilterGroup.addFilterFieldsItem(filterField);
+
+  }
+
 }

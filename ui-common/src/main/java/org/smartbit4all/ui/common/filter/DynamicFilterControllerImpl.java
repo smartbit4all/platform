@@ -178,4 +178,11 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
     System.out.println(uiState.getRootFilterGroup().toString());
   }
 
+  public void changeGroup(String oldGroupId, String newGroupId, String filterId) {
+    ui.moveFilter(newGroupId, filterId);
+    uiState.moveFilter(oldGroupId, newGroupId, filterId);
+    System.out.println(uiState.getRootFilterGroup().toString());
+  }
+
+
 }

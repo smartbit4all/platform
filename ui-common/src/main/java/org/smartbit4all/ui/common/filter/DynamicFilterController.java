@@ -22,4 +22,6 @@ public interface DynamicFilterController extends UIController {
 
   void activeFilterGroupChanged(String filterGroupId);
 
+  void changeGroup(String oldGroupId, String newGroupId, String filterId);
+
 }

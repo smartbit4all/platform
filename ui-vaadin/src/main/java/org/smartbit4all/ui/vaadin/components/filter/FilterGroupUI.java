@@ -119,7 +119,8 @@ public class FilterGroupUI extends FlexLayout implements DropTarget<FlexLayout> 
     return e -> {
       e.getDragData().ifPresent(data -> {
         if (data instanceof FilterFieldUI) {
-          addToFilterGroup((FilterFieldUI) data);
+          controller.changeGroup(((FilterFieldUI) data).getGroup().groupId, groupId,
+              ((FilterFieldUI) data).getFilterId());
         } else if (data instanceof FilterSelectorUI) {
           controller.activeFilterGroupChanged(groupId);
           controller.addFilterField(((FilterSelectorUI) data).getSelectorId());

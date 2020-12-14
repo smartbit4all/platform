@@ -147,4 +147,12 @@ public class DynamicFilterViewUI implements DynamicFilterView {
     groupsById.get(newGroupState.getId()).updateState(newGroupState);
   }
 
+  @Override
+  public void moveFilter(String groupId, String filterId) {
+    FilterFieldUI filterUI = filtersById.get(filterId);
+    FilterGroupUI groupUI = groupsById.get(groupId);
+    filterUI.setGroup(groupUI);
+    groupUI.addToFilterGroup(filterUI);
+  }
+
 }

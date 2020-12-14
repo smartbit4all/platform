@@ -31,10 +31,12 @@ public class FilterFieldUI extends FlexLayout implements DragSource<FilterFieldU
   private FilterOperationUI operationUI;
   private Runnable close;
   private Consumer<String> operationChange;
+  private String filterId;
 
 
   public <T extends Component> FilterFieldUI(FilterGroupUI group,
       FilterFieldUIState uiState, Runnable close, Consumer<String> operationChange) {
+    this.filterId = uiState.getId();
     setDraggable(true);
     setDragData(this);
     addClassName("filterfield");
@@ -68,6 +70,10 @@ public class FilterFieldUI extends FlexLayout implements DragSource<FilterFieldU
 
     // updateOperationUI(uiState.getFilter().getOperation().getFilterView());
     updateState(uiState);
+  }
+
+  public String getFilterId() {
+    return filterId;
   }
 
   public void updateState(FilterFieldUIState uiState) {
@@ -128,6 +134,10 @@ public class FilterFieldUI extends FlexLayout implements DragSource<FilterFieldU
 
   public FilterGroupUI getGroup() {
     return group;
+  }
+
+  public void setGroup(FilterGroupUI group) {
+    this.group = group;
   }
 
   public void setOperationText(String label) {
