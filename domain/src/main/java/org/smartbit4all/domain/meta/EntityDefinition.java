@@ -120,6 +120,8 @@ public interface EntityDefinition extends SB4Service {
 
   PropertySet allProperties();
   
+  List<Reference<?,?>> allReferences();
+  
   /**
    * @return The domain of the entity definition.
    */

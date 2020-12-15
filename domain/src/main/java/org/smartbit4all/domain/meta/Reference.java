@@ -1,6 +1,7 @@
 package org.smartbit4all.domain.meta;
 
 import java.lang.reflect.Proxy;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -8,6 +9,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.smartbit4all.core.utility.ListBasedMap;
 import org.smartbit4all.domain.data.DataRow;
+import org.smartbit4all.domain.service.entity.EntityUris;
 
 /**
  * The instances of this class defines the reference meta data between two Entity. At meta level the
@@ -56,6 +58,8 @@ public class Reference<S extends EntityDefinition, T extends EntityDefinition> {
    * false but at setup time we can make it mandatory.
    */
   private Boolean mandatory;
+  
+  private URI uri;
 
   /**
    * A Join represents a {@link Property} pair, where {@link #sourceProperty} is in
@@ -112,7 +116,7 @@ public class Reference<S extends EntityDefinition, T extends EntityDefinition> {
     public PropertyRef<V> propRef(List<Reference<?, ?>> joinPath) {
       EntityDefinition sourceEntity = joinPath.get(0).getSource();
       Property<?> existingProperty =
-          sourceEntity.findOrCreateReferredProperty(joinPath, sourceProperty);
+          sourceEntity.findOrCreateReferredProperty(joinPath, targetProperty);
       return (PropertyRef<V>) existingProperty;
     }
 
@@ -141,6 +145,11 @@ public class Reference<S extends EntityDefinition, T extends EntityDefinition> {
     this.source = source;
     this.target = target;
     this.name = name;
+    this.uri = createUri();
+  }
+
+  private URI createUri() {
+    return EntityUris.createReferenceUri(source.getDomain(), source.entityDefName(), name);
   }
 
   /**
@@ -179,11 +188,9 @@ public class Reference<S extends EntityDefinition, T extends EntityDefinition> {
   /**
    * The join conditions that are the pairs.
    * 
-   * @param <V>
-   * 
    * @return
    */
-  public <V extends Comparable<V>> List<Join<?>> joins() {
+  public List<Join<?>> joins() {
     return joins;
   }
 
@@ -242,4 +249,8 @@ public class Reference<S extends EntityDefinition, T extends EntityDefinition> {
     }
   }
 
+  public URI getUri() {
+    return uri;
+  }
+  
 }

@@ -384,13 +384,13 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
         String[] path = annot.path();
         String propertyName = getName(annot.name(), method);
         String regerredPropertyName = annot.property();
-        Property<?> property = createRefPropertyByPath(propertyName, regerredPropertyName, path);
+        PropertyRef<?> property = createRefPropertyByPath(propertyName, regerredPropertyName, path);
         registerProperty(method, property);
       }
     }
   }
 
-  private Property<?> createRefPropertyByPath(String propertyName, String referredPropertyName, String[] path) {
+  private PropertyRef<?> createRefPropertyByPath(String propertyName, String referredPropertyName, String[] path) {
     List<Reference<?, ?>> joinPath = new ArrayList<>();
     // TODO getBean by name?
     EntityDefinition currentEntity = ctx.getBean(entityDefClazz);
@@ -401,7 +401,7 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
       currentEntity = reference.getTarget();
     }
     Property<?> referredProperty = currentEntity.getProperty(referredPropertyName);
-    Property<?> property = createRefProperty(propertyName, joinPath, referredProperty);
+    PropertyRef<?> property = createRefProperty(propertyName, joinPath, referredProperty);
     return property;
   }
   
@@ -427,14 +427,14 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
     return property;
   }
 
-  private Property<?> createRefProperty(String propertyName, List<Reference<?, ?>> joinPath, Property<?> referredProperty) {
+  private PropertyRef<?> createRefProperty(String propertyName, List<Reference<?, ?>> joinPath, Property<?> referredProperty) {
     String refPath = PropertyRef.constructName(joinPath, referredProperty);
     return createRefProperty(propertyName, joinPath, referredProperty, refPath);
   }
 
-  private Property<?> createRefProperty(String propertyName, List<Reference<?, ?>> joinPath, Property<?> referredProperty,
+  private PropertyRef<?> createRefProperty(String propertyName, List<Reference<?, ?>> joinPath, Property<?> referredProperty,
       String refPath) {
-    Property<?> property = new PropertyRef<>(propertyName, joinPath, referredProperty);
+    PropertyRef<?> property = new PropertyRef<>(propertyName, joinPath, referredProperty);
     property.setEntityDef(this);
     referredPropertiesByPath.put(refPath, property);
     return property;
@@ -498,6 +498,11 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
   @Override
   public PropertySet allProperties() {
     return allProperties;
+  }
+  
+  @Override
+  public List<Reference<?,?>> allReferences() {
+    return new ArrayList<>(referencesByName.values());
   }
 
   @Override

@@ -1,8 +1,10 @@
 package org.smartbit4all.domain.service.entity;
 
 import java.net.URI;
+import java.util.List;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Property;
+import org.smartbit4all.domain.meta.Reference;
 import org.smartbit4all.domain.service.dataset.DataSetEntry;
 
 /**
@@ -31,6 +33,10 @@ public interface EntityManager {
   EntityDefinition definition(URI uri);
 
   Property<?> property(URI uri);
+
+  List<EntityDefinition> allDefinitions();
+
+  Reference<?, ?> reference(URI referenceUri);
   
 
 }

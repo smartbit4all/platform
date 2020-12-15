@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Property;
+import org.smartbit4all.domain.meta.Reference;
 
 public class SourceBasedEntityManager implements EntityManager {
 
@@ -41,6 +42,18 @@ public class SourceBasedEntityManager implements EntityManager {
       throw new IllegalStateException("There is no entity source registered with id: " + sourceId);
     }
     return source;
+  }
+
+  @Override
+  public List<EntityDefinition> allDefinitions() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public Reference<?, ?> reference(URI referenceUri) {
+    // TODO Auto-generated method stub
+    return null;
   }
 
 }
