@@ -1,3 +1,19 @@
+/*******************************************************************************
+ * Copyright (C) 2020 - 2020 it4all Hungary Kft.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ ******************************************************************************/
 package org.smartbit4all.ui.common.filter;
 
 import java.util.ArrayList;
@@ -28,6 +44,11 @@ public class DynamicFilterViewUIState {
 
   private FilterConfig filterConfig;
   private FilterConfigMode filterConfigMode;
+  private FilterGroup rootFilterGroup;
+
+  public FilterGroup getRootFilterGroup() {
+    return rootFilterGroup;
+  }
 
   public DynamicFilterViewUIState(FilterConfigMode filterConfigMode) {
     this.filterConfigMode = filterConfigMode;
@@ -38,7 +59,7 @@ public class DynamicFilterViewUIState {
   }
 
   private void createRootGroup() {
-    FilterGroup rootFilterGroup = new FilterGroup();
+    rootFilterGroup = new FilterGroup();
     rootFilterGroup.setType(FilterGroupType.AND);
     rootFilterGroup.setName("filter.root");
     boolean isRootVisible = filterConfigMode == FilterConfigMode.DYNAMIC;
@@ -163,6 +184,16 @@ public class DynamicFilterViewUIState {
     activeGroup = groupUIStatesById.get(groupId);
     activeGroup.setActive(true);
     return prevActiveGroup;
+  }
+
+  void moveFilter(String oldGroupId, String newGroupId, String filterId) {
+    FilterGroup oldFilterGroup = groupsById.get(oldGroupId);
+    FilterGroup newFilterGroup = groupsById.get(newGroupId);
+    FilterField filterField = filtersById.get(filterId);
+
+    oldFilterGroup.getFilterFields().remove(filterField);
+    newFilterGroup.addFilterFieldsItem(filterField);
+
   }
 
 }
