@@ -120,16 +120,23 @@ public class Navigation {
    * @return The list of newly created api items.
    */
   public List<ApiItemChangeEvent<NavigationReference>> expandAll(NavigationNode node) {
-    Map<URI, NavigationAssociation> map =
-        node.getAssociations().stream().filter(a -> a.getLastNavigation() == null)
-            .collect(Collectors.toMap(a -> a.getMeta().getUri(), a -> a));
+    Map<URI, NavigationAssociation> naviAssocByMetaUri = node.getAssociations()
+          .stream()
+          .filter(a -> a.getLastNavigation() == null)
+          .collect(Collectors.toMap(a -> a.getMeta().getUri(),
+                                    a -> a));
+    
+    URI currentObjectUri = node.getEntry().getObjectUri();
+    ArrayList<URI> assocMetaUris = new ArrayList<>(naviAssocByMetaUri.keySet());
+    assocMetaUris.removeIf(assocMetaUri -> !isConfigContainsAssocMeta(assocMetaUri));
+    
     Map<URI, List<NavigationReferenceEntry>> navigation =
-        api.navigate(node.getEntry().getObjectUri(),
-            new ArrayList<>(map.keySet()));
+        api.navigate(currentObjectUri, assocMetaUris);
+    
     List<ApiItemChangeEvent<NavigationReference>> result = new ArrayList<>();
     for (Entry<URI, List<NavigationReferenceEntry>> entry : navigation
         .entrySet()) {
-      NavigationAssociation association = map.get(entry.getKey());
+      NavigationAssociation association = naviAssocByMetaUri.get(entry.getKey());
       List<NavigationReferenceEntry> references = entry.getValue();
       // Merge into
       result.addAll(merge(node, association, references));
@@ -151,10 +158,37 @@ public class Navigation {
    * @return
    */
   public NavigationNode addRootNode(NavigationEntryMeta entryMeta, URI objectUri) {
+    
+    if(!isConfigContainsEntryMeta(entryMeta)) {
+      throw new RuntimeException(
+          "The given NavigationEntryMeta can not be set as root because the configuration of this "
+          + "navigation does not contain it. entryMeta: " + entryMeta.toString());
+    }
+    
     NavigationEntry entry = api.getEntry(entryMeta.getUri(), objectUri);
     NavigationNode node = node(entry);
     registerNode(node);
     return node;
+  }
+  
+  private boolean isConfigContainsEntryMeta(NavigationEntryMeta entryMeta) {
+    if(config == null) {
+      return true;
+    }
+    return config.getEntries()
+        .stream()
+        .anyMatch(entry -> 
+          entry.getUri().equals(entryMeta.getUri()));
+  }
+
+  private boolean isConfigContainsAssocMeta(URI assocMetaUri) {
+    if(config == null) {
+      return true;
+    }
+    return config.getAssociations()
+        .stream()
+        .anyMatch(assocMeta -> 
+          assocMeta.getUri().equals(assocMetaUri));
   }
 
   /**
@@ -206,7 +240,7 @@ public class Navigation {
     NavigationNode endNode = registerEntry(referenceEntry.getEndEntry());
     NavigationNode assocNode = referenceEntry.getAssociationEntry() == null ? null
         : registerEntry(referenceEntry.getAssociationEntry());
-    return of(startNode, endNode, assocNode);
+    return reference(startNode, endNode, assocNode);
   }
 
   private NavigationNode registerEntry(NavigationEntry entry) {
@@ -228,12 +262,12 @@ public class Navigation {
     @Valid
     List<NavigationAssociationMeta> associations = entry.getMeta().getAssociations();
     node.setAssociations(associations == null || associations.isEmpty() ? Collections.emptyList()
-        : associations.stream().map(a -> of(a, node))
+        : associations.stream().map(a -> association(a, node))
             .collect(Collectors.toList()));
     return node;
   }
 
-  public static NavigationReference of(NavigationNode startNode, NavigationNode endNode,
+  public static NavigationReference reference(NavigationNode startNode, NavigationNode endNode,
       NavigationNode associationNode) {
     NavigationReference result = new NavigationReference();
     result.setId(UUID.randomUUID().toString());
@@ -243,7 +277,7 @@ public class Navigation {
     return result;
   }
 
-  public static NavigationAssociation of(NavigationAssociationMeta assocMeta, NavigationNode node) {
+  public static NavigationAssociation association(NavigationAssociationMeta assocMeta, NavigationNode node) {
     NavigationAssociation result = new NavigationAssociation();
     result.setHidden(true); // TODO default by meta!
     result.setId(UUID.randomUUID().toString());
@@ -268,7 +302,7 @@ public class Navigation {
     return result;
   }
 
-  public static NavigationReferenceEntry of(URI startEntryUri, NavigationEntry endEntry,
+  public static NavigationReferenceEntry referenceEntry(URI startEntryUri, NavigationEntry endEntry,
       NavigationEntry associationEntry) {
     NavigationReferenceEntry result = new NavigationReferenceEntry();
     result.setId(startEntryUri
