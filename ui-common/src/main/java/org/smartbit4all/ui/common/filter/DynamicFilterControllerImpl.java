@@ -117,7 +117,7 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
   }
 
   @Override
-  public void filterOptionChanged(String filterId, String filterOperation) {
+  public void filterOperationChanged(String filterId, String filterOperation) {
     if (filterOperation == null) {
       throw new NullPointerException("FilterOperation cannot be null!");
     }

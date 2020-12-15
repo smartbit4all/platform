@@ -34,7 +34,7 @@ public interface DynamicFilterController extends UIController {
 
   void removeFilterGroup(String groupId);
 
-  void filterOptionChanged(String filterId, String filterOperation);
+  void filterOperationChanged(String filterId, String filterOperation);
 
   void activeFilterGroupChanged(String filterGroupId);
 

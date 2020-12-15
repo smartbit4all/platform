@@ -1,25 +1,23 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
  * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 package org.smartbit4all.ui.vaadin.components.filter;
 
 import java.util.List;
-import java.util.function.Consumer;
 import org.smartbit4all.api.filter.bean.FilterOperation;
 import org.smartbit4all.api.value.bean.Value;
+import org.smartbit4all.ui.common.filter.DynamicFilterController;
 import org.smartbit4all.ui.common.filter.FilterFieldUIState;
 import org.smartbit4all.ui.common.filter.FilterLabelPosition;
 import com.vaadin.flow.component.ClickEvent;
@@ -45,20 +43,18 @@ public class FilterFieldUI extends FlexLayout implements DragSource<FilterFieldU
   private FlexLayout operationWrapper;
   private Dialog operationSelector;
   private FilterOperationUI operationUI;
-  private Runnable close;
-  private Consumer<String> operationChange;
   private String filterId;
+  private DynamicFilterController controller;
 
 
   public <T extends Component> FilterFieldUI(FilterGroupUI group,
-      FilterFieldUIState uiState, Runnable close, Consumer<String> operationChange) {
+      FilterFieldUIState uiState, DynamicFilterController controller) {
     this.filterId = uiState.getId();
+    this.controller = controller;
     setDraggable(true);
     setDragData(this);
     addClassName("filterfield");
     this.group = group;
-    this.operationChange = operationChange;
-    this.close = close;
 
     lblFilterName = new Label();
     lblFilterName.addClassName("filter-name");
@@ -140,7 +136,7 @@ public class FilterFieldUI extends FlexLayout implements DragSource<FilterFieldU
 
     if (uiState.isCloseable()) {
       btnClose.setText("x");
-      btnClose.addClickListener(e -> close.run());
+      btnClose.addClickListener(e -> controller.removeFilterField(group.getGroupId(), filterId));
     } else {
       btnClose.setText("");
       btnClose.setEnabled(false);
@@ -178,7 +174,7 @@ public class FilterFieldUI extends FlexLayout implements DragSource<FilterFieldU
         Button button = new Button(displayValue);
         dialogOptionsLayout.add(button);
         button.addClickListener(e -> {
-          operationChange.accept(operation.getCode());
+          controller.filterOperationChanged(filterId, operation.getCode());
         });
       }
     }
