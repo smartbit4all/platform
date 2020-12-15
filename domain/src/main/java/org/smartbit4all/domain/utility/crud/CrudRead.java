@@ -97,6 +97,9 @@ public class CrudRead<E extends EntityDefinition> implements Query<E> {
   public Optional<DataRow> onlyOne(String multipleRowsExceptionMessage) throws Exception {
     TableData<E> result = executeIntoTableData();
     checkResultSize(multipleRowsExceptionMessage, result);
+    if(result.rows().isEmpty()) {
+      return Optional.empty();
+    }
     return Optional.ofNullable(result.rows().get(0));
   }
   
