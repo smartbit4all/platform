@@ -45,6 +45,7 @@ public class FilterFieldUI extends FlexLayout implements DragSource<FilterFieldU
   private FilterOperationUI operationUI;
   private String filterId;
   private DynamicFilterController controller;
+  private String currentFilterView;
 
 
   public <T extends Component> FilterFieldUI(FilterGroupUI group,
@@ -94,32 +95,37 @@ public class FilterFieldUI extends FlexLayout implements DragSource<FilterFieldU
     FilterLabelPosition position = uiState.getPosition();
     List<Value> possibleValues = uiState.getPossibleValues();
 
-    if ("filterop.txt.eq".equals(filterView)) {
-      operationUI = new FilterOperationOneFieldUI();
-    } else if ("filterop.multi.eq".equals(filterView)) {
-      operationUI = new FilterOperationMultiSelectUI(possibleValues);
-    } else if ("filterop.combo.eq".equals(filterView)) {
-      operationUI = new FilterOperationComboBoxUI(possibleValues);
-    } else if ("filterop.date.time.interval".equals(filterView)) {
-      operationUI = new FilterOperationDateTimeInterval();
-    } else if ("filterop.date.time.interval.cb".equals(filterView)) {
-      operationUI = new FilterOperationDateTimeComboBoxPicker();
-    } else if ("filterop.date.time.eq".equals(filterView)) {
-      operationUI = new FilterOperationDateTimeEquals();
-    } else if ("filterop.date.interval".equals(filterView)) {
-      operationUI = new FilterOperationDateInterval();
-    } else if ("filterop.date.interval.cb".equals(filterView)) {
-      operationUI = new FilterOperationDateComboBoxPicker();
-    } else if ("filterop.date.eq".equals(filterView)) {
-      operationUI = new FilterOperationDateEquals();
+    if (!filterView.equals(currentFilterView)) {
+      currentFilterView = filterView;
+      if ("filterop.txt.eq".equals(filterView)) {
+        operationUI = new FilterOperationOneFieldUI();
+      } else if ("filterop.multi.eq".equals(filterView)) {
+        operationUI = new FilterOperationMultiSelectUI(possibleValues);
+      } else if ("filterop.combo.eq".equals(filterView)) {
+        operationUI = new FilterOperationComboBoxUI(possibleValues);
+      } else if ("filterop.date.time.interval".equals(filterView)) {
+        operationUI = new FilterOperationDateTimeInterval();
+      } else if ("filterop.date.time.interval.cb".equals(filterView)) {
+        operationUI = new FilterOperationDateTimeComboBoxPicker();
+      } else if ("filterop.date.time.eq".equals(filterView)) {
+        operationUI = new FilterOperationDateTimeEquals();
+      } else if ("filterop.date.interval".equals(filterView)) {
+        operationUI = new FilterOperationDateInterval();
+      } else if ("filterop.date.interval.cb".equals(filterView)) {
+        operationUI = new FilterOperationDateComboBoxPicker();
+      } else if ("filterop.date.eq".equals(filterView)) {
+        operationUI = new FilterOperationDateEquals();
+      }
+
+      // TODO set FIlterFieldUI
+      row.removeAll();
+      row.add(operationUI);
     }
+
 
     operationUI.setValues(uiState.getFilter().getValue1(), uiState.getFilter().getValue2());
     operationUI.setSelection(uiState.getFilter().getSelectedValues());
 
-
-    row.removeAll();
-    row.add(operationUI);
     // TODO selected operation doesn't change
     setOperationText(uiState.getSelectedOperation().getDisplayValue());
 

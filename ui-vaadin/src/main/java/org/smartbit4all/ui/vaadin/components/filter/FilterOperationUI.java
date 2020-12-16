@@ -26,4 +26,5 @@ public abstract class FilterOperationUI extends FlexLayout {
 
   public abstract void setSelection(List<URI> list);
 
+
 }

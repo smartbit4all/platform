@@ -30,6 +30,12 @@ public class FilterOperationDateTimeEquals extends FilterOperationUI {
     dateTime.setMax(now);
     dateTime.setValue(now);
 
+    dateTime.addValueChangeListener(e -> {
+      if (e.isFromClient()) {
+        getValueChanged().run();
+      }
+    });
+
     add(dateTime);
   }
 
