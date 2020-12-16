@@ -167,4 +167,11 @@ public class DynamicFilterViewUI implements DynamicFilterView {
     groupUI.addToFilterGroup(filterUI);
   }
 
+
+  @Override
+  public void updateFilterState(FilterFieldUIState filterFieldUiState) {
+    FilterFieldUI filterFieldUI = filtersById.get(filterFieldUiState.getId());
+    filterFieldUI.updateState(filterFieldUiState);
+  }
+
 }

@@ -114,6 +114,9 @@ public class FilterFieldUI extends FlexLayout implements DragSource<FilterFieldU
       operationUI = new FilterOperationDateEquals();
     }
 
+    operationUI.setValues(uiState.getFilter().getValue1(), uiState.getFilter().getValue2());
+    operationUI.setSelection(uiState.getFilter().getSelectedValues());
+
 
     row.removeAll();
     row.add(operationUI);

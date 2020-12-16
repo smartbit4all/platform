@@ -1,5 +1,6 @@
 package org.smartbit4all.api.filter.bean;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -26,7 +27,7 @@ public class FilterField {
 
   @JsonProperty("selectedValues")
   @Valid
-  private List<String> selectedValues = null;
+  private List<URI> selectedValues = null;
 
   public FilterField metaName(String metaName) {
     this.metaName = metaName;
@@ -113,12 +114,12 @@ public class FilterField {
     this.value2 = value2;
   }
 
-  public FilterField selectedValues(List<String> selectedValues) {
+  public FilterField selectedValues(List<URI> selectedValues) {
     this.selectedValues = selectedValues;
     return this;
   }
 
-  public FilterField addSelectedValuesItem(String selectedValuesItem) {
+  public FilterField addSelectedValuesItem(URI selectedValuesItem) {
     if (this.selectedValues == null) {
       this.selectedValues = new ArrayList<>();
     }
@@ -133,12 +134,13 @@ public class FilterField {
    */
   @ApiModelProperty(value = "")
 
+  @Valid
 
-  public List<String> getSelectedValues() {
+  public List<URI> getSelectedValues() {
     return selectedValues;
   }
 
-  public void setSelectedValues(List<String> selectedValues) {
+  public void setSelectedValues(List<URI> selectedValues) {
     this.selectedValues = selectedValues;
   }
 
