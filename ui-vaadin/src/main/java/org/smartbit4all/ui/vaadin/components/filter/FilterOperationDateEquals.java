@@ -18,6 +18,8 @@ import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
 import org.smartbit4all.ui.common.filter.DateConverter;
+import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
+import com.vaadin.flow.component.HasValue.ValueChangeListener;
 import com.vaadin.flow.component.datepicker.DatePicker;
 
 public class FilterOperationDateEquals extends FilterOperationUI {
@@ -28,9 +30,18 @@ public class FilterOperationDateEquals extends FilterOperationUI {
     date = new DatePicker();
     LocalDate now = LocalDate.now();
     date.setMax(now);
-    date.setValue(now);
+    date.addValueChangeListener(valueChangeListener());
 
     add(date);
+  }
+
+  private ValueChangeListener<? super ComponentValueChangeEvent<DatePicker, LocalDate>> valueChangeListener() {
+    return e -> {
+      if (e.isFromClient()) {
+        String[] values = {date.getValue().toString()};
+        valueChanged(getFilterId(), values);
+      }
+    };
   }
 
   @Override
@@ -42,13 +53,13 @@ public class FilterOperationDateEquals extends FilterOperationUI {
   @Override
   public void setValues(String... values) {
     if (values == null || values[0] == null) {
-      date.setValue(LocalDate.now());
+      date.setValue(null);
       return;
     }
-    if (values.length != 2) {
-      throw new RuntimeException(
-          "This method accepts 1 Date, but " + values.length + " were given!");
-    }
+    // if (values.length != 1) {
+    // throw new RuntimeException(
+    // "This method accepts 1 Date, but " + values.length + " were given!");
+    // }
 
     date.setValue(DateConverter.getDate(values[0]));
 

@@ -15,9 +15,12 @@
 package org.smartbit4all.ui.vaadin.components.filter;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.smartbit4all.api.value.bean.Value;
+import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
+import com.vaadin.flow.component.HasValue.ValueChangeListener;
 import com.vaadin.flow.component.combobox.ComboBox;
 
 public class FilterOperationComboBoxUI extends FilterOperationUI {
@@ -30,9 +33,20 @@ public class FilterOperationComboBoxUI extends FilterOperationUI {
     comboBox.addClassName("filter-combobox");
     comboBox.setItems(possibleValues);
     comboBox.setItemLabelGenerator(v -> v.getDisplayValue());
+    comboBox.addValueChangeListener(valueChangeListener());
 
 
     add(comboBox);
+  }
+
+  private ValueChangeListener<? super ComponentValueChangeEvent<ComboBox<Value>, Value>> valueChangeListener() {
+    return e -> {
+      if (e.isFromClient()) {
+        List<URI> uriList = new ArrayList<>();
+        uriList.add(comboBox.getValue().getObjectUri());
+        selectionChanged(getFilterId(), uriList);
+      }
+    };
   }
 
   @Override

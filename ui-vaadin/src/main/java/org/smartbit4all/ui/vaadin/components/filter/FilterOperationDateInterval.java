@@ -18,6 +18,8 @@ import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
 import org.smartbit4all.ui.common.filter.DateConverter;
+import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
+import com.vaadin.flow.component.HasValue.ValueChangeListener;
 import com.vaadin.flow.component.datepicker.DatePicker;
 
 public class FilterOperationDateInterval extends FilterOperationUI {
@@ -29,14 +31,27 @@ public class FilterOperationDateInterval extends FilterOperationUI {
     beginDate = new DatePicker();
     LocalDate now = LocalDate.now();
     beginDate.setMax(now);
-    beginDate.setValue(now);
+    beginDate.addValueChangeListener(valueChangeListener());
 
     endDate = new DatePicker();
     endDate.setMax(now);
-    endDate.setValue(now);
+    endDate.addValueChangeListener(valueChangeListener());
 
     add(beginDate, endDate);
   }
+
+  private ValueChangeListener<? super ComponentValueChangeEvent<DatePicker, LocalDate>> valueChangeListener() {
+    return e -> {
+      if (e.isFromClient()) {
+        String beginDateString =
+            beginDate.getValue() == null ? null : beginDate.getValue().toString();
+        String endDateString = endDate.getValue() == null ? null : endDate.getValue().toString();
+        String[] values = {beginDateString, endDateString};
+        valueChanged(getFilterId(), values);
+      }
+    };
+  }
+
 
   @Override
   public void setPlaceholder(String placeHolderText) {
@@ -47,8 +62,10 @@ public class FilterOperationDateInterval extends FilterOperationUI {
   @Override
   public void setValues(String... values) {
     if (values == null || values[0] == null) {
-      beginDate.setValue(LocalDate.now());
-      endDate.setValue(LocalDate.now());
+      beginDate.setValue(null);
+      return;
+    } else if (values[1] == null) {
+      endDate.setValue(null);
       return;
     }
 

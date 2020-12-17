@@ -30,8 +30,6 @@ public class FilterOperationDateTimeEquals extends FilterOperationUI {
     dateTime = new DateTimePicker();
     LocalDateTime now = LocalDateTime.now();
     dateTime.setMax(now);
-    dateTime.setValue(now);
-
     dateTime.addValueChangeListener(valueChangeListener());
 
     add(dateTime);
@@ -55,13 +53,9 @@ public class FilterOperationDateTimeEquals extends FilterOperationUI {
   @Override
   public void setValues(String... values) {
     if (values == null || values.length == 0 || values[0] == null) {
-      dateTime.setValue(LocalDateTime.now());
+      dateTime.setValue(null);
       return;
     }
-    // if (values.length != 1) {
-    // throw new RuntimeException(
-    // "This method accepts 1 DateTime, but " + values.length + " were given!");
-    // }
 
     dateTime.setValue(DateConverter.getDateTime(values[0]));
   }

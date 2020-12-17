@@ -120,11 +120,12 @@ public class FilterFieldUI extends FlexLayout implements DragSource<FilterFieldU
       row.removeAll();
       row.add(operationUI);
       operationUI.setFilterFieldUI(this);
+    } else {
+      operationUI.setValues(uiState.getFilter().getValue1(), uiState.getFilter().getValue2());
+      operationUI.setSelection(uiState.getFilter().getSelectedValues());
     }
 
 
-    operationUI.setValues(uiState.getFilter().getValue1(), uiState.getFilter().getValue2());
-    operationUI.setSelection(uiState.getFilter().getSelectedValues());
 
     // TODO selected operation doesn't change
     setOperationText(uiState.getSelectedOperation().getDisplayValue());

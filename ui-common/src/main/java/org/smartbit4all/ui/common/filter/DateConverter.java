@@ -34,8 +34,10 @@ public class DateConverter {
 
   public static LocalDate getDate(String dateString) {
     String[] dateParts = dateString.split("-");
-    return LocalDate.of(Integer.parseInt(dateParts[0]), Integer.parseInt(dateParts[1]),
-        Integer.parseInt(dateParts[2]));
+    LocalDate localDate =
+        LocalDate.of(Integer.parseInt(dateParts[0]), Integer.parseInt(dateParts[1]),
+            Integer.parseInt(dateParts[2].substring(0, 2)));
+    return localDate;
   }
 
   private static LocalTime getTime(String timeString) {

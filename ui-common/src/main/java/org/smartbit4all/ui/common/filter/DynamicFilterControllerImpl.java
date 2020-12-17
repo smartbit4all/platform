@@ -123,12 +123,16 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
     FilterField filter = filterUIState.getFilter();
     if (filterOperation.equals(filter.getOperation().getCode())) {
       // no change
+      System.out.println(uiState.getRootFilterGroup().toString());
       return;
     }
     for (FilterOperation operation : filterUIState.getOperations()) {
       if (filterOperation.equals(operation.getCode())) {
         filterUIState.getFilter().setOperation(operation);
+        filterUIState.getFilter().setValue1(null);
+        filterUIState.getFilter().setValue2(null);
         ui.renderFilter(filterUIState);
+        System.out.println(uiState.getRootFilterGroup().toString());
         return;
       }
     }
@@ -138,6 +142,7 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
   @Override
   public void filterValueChanged(String filterId, String... values) {
     FilterFieldUIState filterFieldState = uiState.filterUIStatesById.get(filterId);
+
     filterFieldState.getFilter().setValue1(values[0]);
     if (values.length > 1 && values[1] != null) {
       filterFieldState.getFilter().setValue2(values[1]);
@@ -148,10 +153,12 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
 
   @Override
   public void filterSelectionChanged(String filterId, List<URI> values) {
+    FilterFieldUIState filterFieldState = uiState.filterUIStatesById.get(filterId);
 
+    filterFieldState.getFilter().setSelectedValues(values);
+    ui.updateFilterState(filterFieldState);
+    System.out.println(uiState.getRootFilterGroup().toString());
   }
-
-  // TODO filterSelectionChanged
 
   @Override
   public void removeFilterField(String groupId, String filterId) {
