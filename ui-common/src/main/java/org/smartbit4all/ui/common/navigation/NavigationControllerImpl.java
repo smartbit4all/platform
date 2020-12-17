@@ -19,10 +19,12 @@ package org.smartbit4all.ui.common.navigation;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 import org.smartbit4all.api.navigation.Navigation;
 import org.smartbit4all.api.navigation.NavigationApi;
 import org.smartbit4all.api.navigation.bean.NavigationConfig;
+import org.smartbit4all.api.navigation.bean.NavigationEntry;
 import org.smartbit4all.api.navigation.bean.NavigationEntryMeta;
 import org.smartbit4all.api.navigation.bean.NavigationNode;
 import org.smartbit4all.ui.common.navigation.NavigationTreeNode.Kind;
@@ -132,12 +134,17 @@ public class NavigationControllerImpl implements NavigationController {
       NavigationNode navigationNode = navigationState.getNode(node.getIdentifier());
       if (navigationNode != null && navigationNode.getEntry().getViews() != null
           && !navigationNode.getEntry().getViews().isEmpty()) {
-        UIViewShowCommand viewCommand =
-            new UIViewShowCommand(navigationNode.getEntry().getViews().get(0).getName());
-        viewCommand.addParameter("entry",
-            navigationNode.getEntry().getObjectUri());
-        viewCommand.addParameter("icon",
-            navigationNode.getEntry().getIcon());
+        
+        NavigationEntry navigationEntry = navigationNode.getEntry();
+        org.smartbit4all.api.navigation.bean.NavigationView defaulView = navigationEntry.getViews().get(0);
+        
+        UIViewShowCommand viewCommand = new UIViewShowCommand(defaulView.getName());
+        viewCommand.addParameter("entry", navigationEntry.getObjectUri());
+        viewCommand.addParameter("icon", navigationEntry.getIcon());
+        Map<String, Object> viewParams = defaulView.getParameters();
+        if(viewParams != null) {
+          viewCommand.getParameters().putAll(viewParams);
+        }
         return viewCommand;
       }
     }

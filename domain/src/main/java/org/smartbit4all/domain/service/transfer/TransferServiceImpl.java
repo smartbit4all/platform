@@ -205,7 +205,7 @@ public class TransferServiceImpl implements TransferService, InitializingBean {
       }
       String propertyCandidateName = getPropertyCandidateName(method);
       if (method.getParameters().length == 1
-          && (method.getReturnType().equals(Void.class)
+          && (method.getReturnType().equals(Void.TYPE)
               || method.getReturnType().equals(beanClazz))) {
         // This is a property setter method.
         BindingCandidate bindingCandidate = bindings.get(propertyCandidateName);
@@ -273,9 +273,16 @@ public class TransferServiceImpl implements TransferService, InitializingBean {
     if (method.isAnnotationPresent(PropertyAccessor.class)) {
       PropertyAccessor propertyAccessor = method.getAnnotation(PropertyAccessor.class);
       return propertyAccessor.value();
+    } else {
+      // the name of the method may match the target property
+      String name = method.getName();
+      if(name.startsWith("get") || name.startsWith("set")) {
+        name = name.substring(3);
+        String startLetter = name.substring(0, 1);
+        name = startLetter.toLowerCase() + name.substring(1);
+      }
+      return name;
     }
-    // the name of the method may match the target property
-    return method.getName();
   }
 
   @SuppressWarnings("unchecked")

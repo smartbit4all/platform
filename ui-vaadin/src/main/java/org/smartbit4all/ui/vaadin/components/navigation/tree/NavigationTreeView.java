@@ -57,7 +57,7 @@ public class NavigationTreeView implements NavigationView {
 
     // tree.addColumn(i -> concetanateIconAndName(i.getIconResource(), i.getName())).setHeader("");
 
-    tree.addHierarchyColumn(i -> i.getCaption());
+    tree.addHierarchyColumn(i -> i.getCaption()).setAutoWidth(true);
     tree.addSelectionListener(selection -> {
       selection.getFirstSelectedItem().ifPresent(s -> {
         UIViewShowCommand showCommand = controller.getViewCommand(s);
