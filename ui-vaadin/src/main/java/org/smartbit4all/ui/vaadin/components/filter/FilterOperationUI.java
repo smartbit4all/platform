@@ -20,11 +20,29 @@ import com.vaadin.flow.component.orderedlayout.FlexLayout;
 
 public abstract class FilterOperationUI extends FlexLayout {
 
+  FilterFieldUI filterFieldUi;
+
   public abstract void setPlaceholder(String placeHolderText);
 
   public abstract void setValues(String... values);
 
   public abstract void setSelection(List<URI> list);
+
+  public void setFilterFieldUI(FilterFieldUI filterFieldUI) {
+    this.filterFieldUi = filterFieldUI;
+  }
+
+  public void valueChanged(String filterId, String... values) {
+    filterFieldUi.getController().filterValueChanged(filterId, values);
+  }
+
+  public void selectionChanged(String filterId, List<URI> values) {
+    filterFieldUi.getController().filterSelectionChanged(filterId, values);
+  }
+
+  public String getFilterId() {
+    return filterFieldUi.getFilterId();
+  }
 
 
 }

@@ -139,8 +139,11 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
   public void filterValueChanged(String filterId, String... values) {
     FilterFieldUIState filterFieldState = uiState.filterUIStatesById.get(filterId);
     filterFieldState.getFilter().setValue1(values[0]);
-    filterFieldState.getFilter().setValue1(values[1]);
+    if (values.length > 1 && values[1] != null) {
+      filterFieldState.getFilter().setValue2(values[1]);
+    }
     ui.updateFilterState(filterFieldState);
+    System.out.println(uiState.getRootFilterGroup().toString());
   }
 
   @Override

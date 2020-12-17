@@ -39,7 +39,7 @@ public class DateConverter {
   }
 
   private static LocalTime getTime(String timeString) {
-    String[] timeParts = timeString.split("-");
+    String[] timeParts = timeString.split(":");
     return LocalTime.of(Integer.parseInt(timeParts[0]), Integer.parseInt(timeParts[1]));
   }
 

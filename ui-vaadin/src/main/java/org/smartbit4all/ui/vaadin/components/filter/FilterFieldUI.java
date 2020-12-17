@@ -117,9 +117,9 @@ public class FilterFieldUI extends FlexLayout implements DragSource<FilterFieldU
         operationUI = new FilterOperationDateEquals();
       }
 
-      // TODO set FIlterFieldUI
       row.removeAll();
       row.add(operationUI);
+      operationUI.setFilterFieldUI(this);
     }
 
 
@@ -195,4 +195,7 @@ public class FilterFieldUI extends FlexLayout implements DragSource<FilterFieldU
     };
   }
 
+  public DynamicFilterController getController() {
+    return controller;
+  }
 }

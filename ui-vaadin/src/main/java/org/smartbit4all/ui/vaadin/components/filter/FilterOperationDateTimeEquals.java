@@ -18,6 +18,8 @@ import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.smartbit4all.ui.common.filter.DateConverter;
+import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
+import com.vaadin.flow.component.HasValue.ValueChangeListener;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 
 public class FilterOperationDateTimeEquals extends FilterOperationUI {
@@ -30,13 +32,18 @@ public class FilterOperationDateTimeEquals extends FilterOperationUI {
     dateTime.setMax(now);
     dateTime.setValue(now);
 
-    dateTime.addValueChangeListener(e -> {
-      if (e.isFromClient()) {
-        getValueChanged().run();
-      }
-    });
+    dateTime.addValueChangeListener(valueChangeListener());
 
     add(dateTime);
+  }
+
+  private ValueChangeListener<? super ComponentValueChangeEvent<DateTimePicker, LocalDateTime>> valueChangeListener() {
+    return e -> {
+      if (e.isFromClient()) {
+        String[] values = {dateTime.getValue().toString()};
+        valueChanged(getFilterId(), values);
+      }
+    };
   }
 
   @Override
@@ -47,14 +54,14 @@ public class FilterOperationDateTimeEquals extends FilterOperationUI {
 
   @Override
   public void setValues(String... values) {
-    if (values == null || values.length == 0) {
+    if (values == null || values.length == 0 || values[0] == null) {
       dateTime.setValue(LocalDateTime.now());
       return;
     }
-    if (values.length != 1) {
-      throw new RuntimeException(
-          "This method accepts 1 DateTime, but " + values.length + " were given!");
-    }
+    // if (values.length != 1) {
+    // throw new RuntimeException(
+    // "This method accepts 1 DateTime, but " + values.length + " were given!");
+    // }
 
     dateTime.setValue(DateConverter.getDateTime(values[0]));
   }
