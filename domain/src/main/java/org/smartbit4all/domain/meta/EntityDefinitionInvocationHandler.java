@@ -523,8 +523,8 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
 
   @Override
   public String getDomain() {
-    // TODO it should come from constructor or from annotation
-    return "security";
+    // TODO it should come from annotation
+    return "default";
   }
 
   @Override

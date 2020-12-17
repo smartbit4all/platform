@@ -62,7 +62,7 @@ public class EntityNavigation extends NavigationImpl {
     this.entityManager = entityManager;
     this.navigationEntryProvider = navigationEntryProvider;
     
-    // can't init here becaute the entitydef reflectionst are not ready...
+    // can't init here because the entitydef reflections are not ready yet...
 //    init(entityManager.allDefinitions());
   }
 

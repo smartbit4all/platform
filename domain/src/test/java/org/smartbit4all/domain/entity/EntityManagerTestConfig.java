@@ -29,7 +29,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class EntityManagerTestConfig {
 
-  public static final String ENTITY_SOUCE_SEC = "security";
+  public static final String ENTITY_SOURCE_SEC = "default";
 
   @Bean
   public EntityManager entityManager(List<EntitySource> sources) {
@@ -38,7 +38,7 @@ public class EntityManagerTestConfig {
   
   @Bean
   public EntitySource securityEntitySource(ApplicationContext appCtx) {
-    return new ConfigEntitySource(ENTITY_SOUCE_SEC, SecurityEntityConfiguration.class, appCtx);
+    return new ConfigEntitySource(ENTITY_SOURCE_SEC, SecurityEntityConfiguration.class, appCtx);
   }
   
 }
