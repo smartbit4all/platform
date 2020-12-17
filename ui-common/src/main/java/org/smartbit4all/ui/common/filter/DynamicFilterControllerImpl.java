@@ -1,18 +1,16 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
  * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 package org.smartbit4all.ui.common.filter;
 
@@ -117,7 +115,7 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
   }
 
   @Override
-  public void filterOptionChanged(String filterId, String filterOperation) {
+  public void filterOperationChanged(String filterId, String filterOperation) {
     if (filterOperation == null) {
       throw new NullPointerException("FilterOperation cannot be null!");
     }
@@ -137,8 +135,20 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
     throw new RuntimeException("No filterOperation found by code " + filterOperation + "!");
   }
 
+  @Override
   public void filterValueChanged(String filterId, String... values) {
-    // TODO
+    FilterFieldUIState filterFieldState = uiState.filterUIStatesById.get(filterId);
+    filterFieldState.getFilter().setValue1(values[0]);
+    if (values.length > 1 && values[1] != null) {
+      filterFieldState.getFilter().setValue2(values[1]);
+    }
+    ui.updateFilterState(filterFieldState);
+    System.out.println(uiState.getRootFilterGroup().toString());
+  }
+
+  @Override
+  public void filterSelectionChanged(String filterId, List<URI> values) {
+
   }
 
   // TODO filterSelectionChanged
