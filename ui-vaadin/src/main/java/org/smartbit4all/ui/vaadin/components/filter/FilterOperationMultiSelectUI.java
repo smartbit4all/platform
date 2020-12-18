@@ -15,6 +15,7 @@
 package org.smartbit4all.ui.vaadin.components.filter;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -37,7 +38,11 @@ public class FilterOperationMultiSelectUI extends FilterOperationUI {
 
     popUp.addValueChangeListener(e -> {
       if (e.isFromClient()) {
-
+        List<URI> uriList = new ArrayList<>();
+        for (Value value : popUp.getValue()) {
+          uriList.add(value.getObjectUri());
+        }
+        selectionChanged(getFilterId(), uriList);
       }
     });
 

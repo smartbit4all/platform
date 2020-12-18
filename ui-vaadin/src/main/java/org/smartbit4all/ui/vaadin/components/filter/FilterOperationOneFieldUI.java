@@ -35,6 +35,15 @@ public class FilterOperationOneFieldUI extends FilterOperationUI {
 
   @Override
   public void setValues(String... values) {
+    if (values == null || values[0] == null) {
+      textField.setValue(null);
+      return;
+    }
+
+    if (values.length != 1) {
+      throw new RuntimeException(
+          "This method accepts 1 value, but " + values.length + " was given");
+    }
     textField.setValue(values[0]);
   }
 

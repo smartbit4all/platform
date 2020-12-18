@@ -19,6 +19,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import org.smartbit4all.ui.common.filter.DateConverter;
 import org.smartbit4all.ui.common.filter.TimeFilterOptions;
+import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
+import com.vaadin.flow.component.HasValue.ValueChangeListener;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 
@@ -42,13 +44,26 @@ public class FilterOperationDateTimeComboBoxPicker extends FilterOperationUI {
     beginDateTime = new DateTimePicker();
     LocalDateTime now = LocalDateTime.now();
     beginDateTime.setMax(now);
-    beginDateTime.setValue(now);
+    beginDateTime.addValueChangeListener(valueChangeListener());
 
     endDateTime = new DateTimePicker();
     endDateTime.setMax(now);
-    endDateTime.setValue(now);
+    endDateTime.addValueChangeListener(valueChangeListener());
 
     add(cbTimeFilterOption, beginDateTime, endDateTime);
+  }
+
+  private ValueChangeListener<? super ComponentValueChangeEvent<DateTimePicker, LocalDateTime>> valueChangeListener() {
+    return e -> {
+      if (e.isFromClient()) {
+        String beginDateString =
+            beginDateTime.getValue() == null ? null : beginDateTime.getValue().toString();
+        String endDateString =
+            endDateTime.getValue() == null ? null : endDateTime.getValue().toString();
+        String[] values = {beginDateString, endDateString};
+        valueChanged(getFilterId(), values);
+      }
+    };
   }
 
   @Override
@@ -59,8 +74,10 @@ public class FilterOperationDateTimeComboBoxPicker extends FilterOperationUI {
   @Override
   public void setValues(String... values) {
     if (values == null || values[0] == null) {
-      beginDateTime.setValue(LocalDateTime.now());
-      endDateTime.setValue(LocalDateTime.now());
+      beginDateTime.setValue(null);
+      return;
+    } else if (values[1] == null) {
+      endDateTime.setValue(null);
       return;
     }
 
