@@ -14,6 +14,7 @@
  ******************************************************************************/
 package org.smartbit4all.ui.vaadin.components.filter;
 
+import org.smartbit4all.api.filter.bean.FilterGroupType;
 import org.smartbit4all.ui.common.filter.DynamicFilterController;
 import org.smartbit4all.ui.common.filter.FilterGroupUIState;
 import org.smartbit4all.ui.vaadin.util.IconSize;
@@ -42,6 +43,8 @@ public class FilterGroupUI extends FlexLayout implements DropTarget<FlexLayout> 
   private Button btnRemoveGroup;
   private String groupId;
   private DynamicFilterController controller;
+  private Button btnGroupType;
+  private FilterGroupType groupType;
 
   public FilterGroupUI(FilterGroupUIState uiState, FilterGroupUI parentGroupUI,
       DynamicFilterController controller) {
@@ -74,7 +77,8 @@ public class FilterGroupUI extends FlexLayout implements DropTarget<FlexLayout> 
     filtersLayout.addClassName("filters-group-layout");
     add(filtersLayout);
 
-    Button btnGroupType = new Button("ÉS");
+    groupType = FilterGroupType.AND;
+    btnGroupType = new Button(groupType.getValue());
     btnGroupType.addClickListener(groupTypeChangeListener());
     UIUtils.stopClickEventPropagation(btnGroupType);
 
@@ -119,11 +123,9 @@ public class FilterGroupUI extends FlexLayout implements DropTarget<FlexLayout> 
 
   private ComponentEventListener<ClickEvent<Button>> groupTypeChangeListener() {
     return e -> {
-      if (e.getSource().getText().equals("ÉS")) {
-        e.getSource().setText("VAGY");
-      } else {
-        e.getSource().setText("ÉS");
-      }
+      FilterGroupType newGroupType =
+          groupType == FilterGroupType.AND ? FilterGroupType.OR : FilterGroupType.AND;
+      controller.changeFilterGroupType(groupId, newGroupType);
     };
   }
 
@@ -200,6 +202,11 @@ public class FilterGroupUI extends FlexLayout implements DropTarget<FlexLayout> 
 
   public String getGroupId() {
     return groupId;
+  }
+
+  public void setFilterGroupType(FilterGroupType groupType) {
+    this.groupType = groupType;
+    btnGroupType.setText(groupType.getValue());
   }
 
 

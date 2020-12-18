@@ -217,5 +217,12 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
     System.out.println(uiState.getRootFilterGroup().toString());
   }
 
+  @Override
+  public void changeFilterGroupType(String filterGroupId, FilterGroupType type) {
+    uiState.groupsById.get(filterGroupId).setType(type);
+    ui.changeFilterGroupType(filterGroupId, type);
+    System.out.println(uiState.getRootFilterGroup().toString());
+  }
+
 
 }

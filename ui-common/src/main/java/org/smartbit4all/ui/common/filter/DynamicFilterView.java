@@ -15,6 +15,7 @@
 package org.smartbit4all.ui.common.filter;
 
 import java.util.List;
+import org.smartbit4all.api.filter.bean.FilterGroupType;
 import org.smartbit4all.ui.common.view.UIView;
 
 public interface DynamicFilterView extends UIView {
@@ -38,5 +39,7 @@ public interface DynamicFilterView extends UIView {
   void moveFilter(String groupId, String filterId);
 
   void updateFilterState(FilterFieldUIState filterFieldUiState);
+
+  void changeFilterGroupType(String filterGroupId, FilterGroupType type);
 
 }

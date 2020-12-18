@@ -16,6 +16,7 @@ package org.smartbit4all.ui.vaadin.components.filter;
 
 import java.net.URI;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.ui.common.filter.DateConverter;
 import org.smartbit4all.ui.common.filter.TimeFilterOptions;
@@ -29,12 +30,14 @@ public class FilterOperationDateComboBoxPicker extends FilterOperationUI {
   DatePicker beginDate;
   DatePicker endDate;
   ComboBox<TimeFilterOptions> cbTimeFilterOption;
+  private List<TimeFilterOptions> possibleValues;
 
   public FilterOperationDateComboBoxPicker() {
     cbTimeFilterOption = new ComboBox<>();
     cbTimeFilterOption.setItems(TimeFilterOptions.values());
     cbTimeFilterOption.setItemLabelGenerator(option -> getTranslation(option.getLabel()));
     cbTimeFilterOption.setRequired(true);
+    this.possibleValues = Arrays.asList(TimeFilterOptions.values());
     // cbTimeFilterOption.addValueChangeListener(
     // e -> executeControllerCall(e, StatisticsViewController::changeTimeFilterOption));
 
@@ -98,8 +101,23 @@ public class FilterOperationDateComboBoxPicker extends FilterOperationUI {
 
   @Override
   public void setSelection(List<URI> list) {
-    // TODO Auto-generated method stub
 
+    if (list == null || list.isEmpty()) {
+      cbTimeFilterOption.setValue(null);
+      return;
+    }
+    if (list.size() > 1) {
+      throw new RuntimeException("More than one value is not allowed!");
+    }
+
+    // URI uri = list.get(0);
+    // Optional<Value> value =
+    // possibleValues.stream().filter(v -> v.getObjectUri().equals(uri)).findFirst();
+    // if (value.isPresent()) {
+    // comboBox.setValue(value.get());
+    // } else {
+    // throw new RuntimeException("URI is not in given possibleValues list: " + uri);
+    // }
   }
 
 }

@@ -17,6 +17,7 @@ package org.smartbit4all.ui.vaadin.components.filter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.smartbit4all.api.filter.bean.FilterGroupType;
 import org.smartbit4all.ui.common.filter.DynamicFilterController;
 import org.smartbit4all.ui.common.filter.DynamicFilterView;
 import org.smartbit4all.ui.common.filter.FilterFieldUIState;
@@ -172,6 +173,12 @@ public class DynamicFilterViewUI implements DynamicFilterView {
   public void updateFilterState(FilterFieldUIState filterFieldUiState) {
     FilterFieldUI filterFieldUI = filtersById.get(filterFieldUiState.getId());
     filterFieldUI.updateState(filterFieldUiState);
+  }
+
+  @Override
+  public void changeFilterGroupType(String filterGroupId, FilterGroupType type) {
+    FilterGroupUI filterGroupUI = groupsById.get(filterGroupId);
+    filterGroupUI.setFilterGroupType(type);
   }
 
 }
