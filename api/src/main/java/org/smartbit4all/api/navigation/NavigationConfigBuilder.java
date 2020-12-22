@@ -39,14 +39,19 @@ public class NavigationConfigBuilder {
   }
 
   public NavigationConfigBuilder contribute(NavigationAssociationMeta associationMeta) {
-    // Check the entries. If they are available in the current config then we use them instead of
-    // the new instance.
-    config.addAssociationsItem(associationMeta);
-    associationMeta.setStartEntry(registerEntry(associationMeta.getStartEntry()));
-    associationMeta.setStartEntry(registerEntry(associationMeta.getEndEntry()));
+    // create a copy of the assoc for the configuration
+    // create copies of entries as well keeping the connections with the added assoc metas
+    NavigationAssociationMeta configAssocMeta = new NavigationAssociationMeta()
+        .uri(associationMeta.getUri())
+        .name(associationMeta.getName());
+    NavigationEntryMeta startConfigEntry = registerEntry(associationMeta.getStartEntry());
+    startConfigEntry.addAssociationsItem(configAssocMeta);
+    configAssocMeta.setStartEntry(startConfigEntry);
+    configAssocMeta.setEndEntry(registerEntry(associationMeta.getEndEntry()));
     if (associationMeta.getAssociationEntry() != null) {
-      associationMeta.setAssociationEntry(registerEntry(associationMeta.getAssociationEntry()));
+      configAssocMeta.setAssociationEntry(registerEntry(associationMeta.getAssociationEntry()));
     }
+    config.addAssociationsItem(configAssocMeta);
     return this;
   }
 
@@ -54,11 +59,14 @@ public class NavigationConfigBuilder {
     return config;
   }
 
-  private NavigationEntryMeta registerEntry(NavigationEntryMeta startEntry) {
-    NavigationEntryMeta entryMeta = entries.get(startEntry.getUri());
+  private NavigationEntryMeta registerEntry(NavigationEntryMeta entry) {
+    NavigationEntryMeta entryMeta = entries.get(entry.getUri());
     if (entryMeta == null) {
-      entries.put(startEntry.getUri(), startEntry);
-      entryMeta = startEntry;
+      // creating copy from the entry
+      entryMeta = new NavigationEntryMeta()
+          .uri(entry.getUri())
+          .name(entry.getName());
+      entries.put(entry.getUri(), entryMeta);
       config.addEntriesItem(entryMeta);
     }
     return entryMeta;

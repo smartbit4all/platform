@@ -27,7 +27,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
 import org.smartbit4all.api.ApiItemChangeEvent;
 import org.smartbit4all.api.ApiItemOperation;
 import org.smartbit4all.api.navigation.bean.NavigationAssociation;
@@ -144,7 +143,6 @@ public class Navigation {
     
     URI currentObjectUri = node.getEntry().getObjectUri();
     ArrayList<URI> assocMetaUris = new ArrayList<>(naviAssocByMetaUri.keySet());
-    assocMetaUris.removeIf(assocMetaUri -> !isConfigContainsAssocMeta(assocMetaUri));
     
     Map<URI, List<NavigationReferenceEntry>> navigation =
         api.navigate(currentObjectUri, assocMetaUris);
@@ -175,38 +173,12 @@ public class Navigation {
    */
   public NavigationNode addRootNode(NavigationEntryMeta entryMeta, URI objectUri) {
     
-    if(!isConfigContainsEntryMeta(entryMeta)) {
-      throw new RuntimeException(
-          "The given NavigationEntryMeta can not be set as root because the configuration of this "
-          + "navigation does not contain it. entryMeta: " + entryMeta.toString());
-    }
-    
     NavigationEntry entry = api.getEntry(entryMeta.getUri(), objectUri);
-    NavigationNode node = node(entry);
+    NavigationNode node = node(entry, config);
     registerNode(node);
     return node;
   }
   
-  private boolean isConfigContainsEntryMeta(NavigationEntryMeta entryMeta) {
-    if(config == null) {
-      return true;
-    }
-    return config.getEntries()
-        .stream()
-        .anyMatch(entry -> 
-          entry.getUri().equals(entryMeta.getUri()));
-  }
-
-  private boolean isConfigContainsAssocMeta(URI assocMetaUri) {
-    if(config == null) {
-      return true;
-    }
-    return config.getAssociations()
-        .stream()
-        .anyMatch(assocMeta -> 
-          assocMeta.getUri().equals(assocMetaUri));
-  }
-
   /**
    * Merge the reference list of the given association with the reference list from the parameter.
    * 
@@ -260,7 +232,7 @@ public class Navigation {
   }
 
   private NavigationNode registerEntry(NavigationEntry entry) {
-    NavigationNode node = node(entry);
+    NavigationNode node = node(entry, config);
     registerNode(node);
     return node;
   }
@@ -269,19 +241,28 @@ public class Navigation {
     nodes.put(node.getId(), node);
   }
 
-  public static NavigationNode node(NavigationEntry entry) {
+  public static NavigationNode node(NavigationEntry entry, NavigationConfig config) {
     NavigationNode node;
     node = new NavigationNode();
     node.setEntry(entry);
     node.setId(UUID.randomUUID().toString());
     // Instantiate the associations by the meta.
-    @Valid
-    List<NavigationAssociationMeta> associations = entry.getMeta().getAssociations();
-    node.setAssociations(associations == null || associations.isEmpty() ? Collections.emptyList()
-        : associations.stream().map(a -> association(a, node))
+    /* It's important that the meta held by the NavigationEntry here is the meta served by the NavigationApi and it's 
+       associations are most likely different from the currently configured associations.*/
+    List<NavigationAssociationMeta> associations = new ArrayList<>();
+    config.getEntries()
+        .stream()
+        .filter(e -> e.getName().equals(entry.getMeta().getName()))
+        .findFirst()
+        .ifPresent(e -> associations.addAll(
+            e.getAssociations() != null ? e.getAssociations() : Collections.emptyList()));
+    node.setAssociations(associations.isEmpty() ? Collections.emptyList()
+        : associations.stream()
+            .map(a -> association(a, node))
             .collect(Collectors.toList()));
     return node;
   }
+  
 
   public static NavigationReference reference(NavigationNode startNode, NavigationNode endNode,
       NavigationNode associationNode) {

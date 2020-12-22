@@ -18,7 +18,6 @@ package org.smartbit4all.api.impl.navigation.entity;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -93,9 +92,8 @@ public class EntityNavigation extends NavigationImpl {
       return naviResult;
     }
     for(URI assocMetaUri : associationMetaUris) {
+      List<NavigationReferenceEntry> resultNaviReferenceEntries = new ArrayList<>();
       String refSourceEntityName = EntityUris.getEntityName(assocMetaUri);
-      
-      
       
       if(objectEntityName.equals(refSourceEntityName)) {
         // it's a ref
@@ -104,10 +102,8 @@ public class EntityNavigation extends NavigationImpl {
         Property<?> fkProperty = reference.joins().get(0).getSourceProperty(); // TODO multiple joins
         String id = objectData.get(fkProperty).toString();
         URI entryObjectUri = EntityUris.createEntityObjectUri(reference.getTarget().getUri(), id);
-        NavigationEntry entry = navigationEntryProvider.getEntry(entryObjectUri);
-        entry.setMeta(assocMeta.getEndEntry());
-        NavigationReferenceEntry referenceEntry = Navigation.referenceEntry(objectUri, entry, null);
-        naviResult.put(assocMetaUri, Collections.singletonList(referenceEntry));
+        NavigationReferenceEntry referenceEntry = createReferenceEntry(objectUri, assocMeta, entryObjectUri);
+        resultNaviReferenceEntries.add(referenceEntry);
         
       } else {
         // it's a detail
@@ -120,7 +116,6 @@ public class EntityNavigation extends NavigationImpl {
         Object fkValue = objectData.get(targetProperty);
         Map<String, Property<?>> detPkPropsByName = getPropertiesByName(detEntityDef.PRIMARYKEYDEF());
         
-        List<NavigationReferenceEntry> resultNaviReferenceEntries = new ArrayList<>();
         
         List<DataRow> detailRows = queryDetailRows(detEntityDef, fkProperty, fkValue);
         for(DataRow row : detailRows) {
@@ -129,20 +124,26 @@ public class EntityNavigation extends NavigationImpl {
             Object pkValue = row.get(pkProp);
             
             URI entryObjectUri = EntityUris.createEntityObjectUri(detEntityDef.getUri(), pkValue.toString());
-            NavigationEntry entry = navigationEntryProvider.getEntry(entryObjectUri);
-            entry.setMeta(assocMeta.getEndEntry());
-            NavigationReferenceEntry referenceEntry = Navigation.referenceEntry(objectUri, entry, null);
+            NavigationReferenceEntry referenceEntry = createReferenceEntry(objectUri, assocMeta, entryObjectUri);
             resultNaviReferenceEntries.add(referenceEntry);
           } else {
             // handle multiple keys
           }
           
         }
-        naviResult.put(assocMetaUri, resultNaviReferenceEntries);
       }
+      naviResult.put(assocMetaUri, resultNaviReferenceEntries);
       
     }
     return naviResult;
+  }
+
+  private NavigationReferenceEntry createReferenceEntry(URI objectUri, NavigationAssociationMeta assocMeta,
+      URI entryObjectUri) {
+    NavigationEntry entry = navigationEntryProvider.getEntry(entryObjectUri);
+    entry.setMeta(assocMeta.getEndEntry());
+    NavigationReferenceEntry referenceEntry = Navigation.referenceEntry(objectUri, entry, null);
+    return referenceEntry;
   }
   
   private Map<String, Property<?>> getPropertiesByName(PropertySet propSet) {
@@ -193,19 +194,23 @@ public class EntityNavigation extends NavigationImpl {
   @Override
   public NavigationEntry getEntry(URI entryMetaUri, URI objectUri) {
     // not a good place to init..
-    if(!isInitialized) {
-      init(entityManager.allDefinitions());
-      isInitialized = true;
-    }
+    initIfNeeded();
     
-    NavigationEntryMeta entryMeta = getEntryMeta(entryMetaUri);
+    NavigationEntryMeta entryMeta = getEntryMetaWithCheck(entryMetaUri);
     NavigationEntry entry = navigationEntryProvider.getEntry(objectUri);
     entry.setMeta(entryMeta);
     return entry;
   }
+
+  private void initIfNeeded() {
+    if(!isInitialized) {
+      init(entityManager.allDefinitions());
+      isInitialized = true;
+    }
+  }
   
-  private NavigationEntryMeta getEntryMeta(URI entryMetaUri) {
-    NavigationEntryMeta navigationEntryMeta = entryMetasByEntityDefUri.get(entryMetaUri);
+  private NavigationEntryMeta getEntryMetaWithCheck(URI entryMetaUri) {
+    NavigationEntryMeta navigationEntryMeta = getEntryMeta(entryMetaUri);
     if(navigationEntryMeta == null) {
       throw new RuntimeException("There is no NavigatinEntryMeta for uri: " + entryMetaUri);
     }
@@ -285,4 +290,18 @@ public class EntityNavigation extends NavigationImpl {
     detAssocMetasByEntityReferenceUri.put(referenceUri, backwardAssocMeta);
   }
 
+  public NavigationEntryMeta getEntryMeta(URI entityUri) {
+    initIfNeeded();
+    return entryMetasByEntityDefUri.get(entityUri);
+  }
+  
+  public NavigationAssociationMeta getRefAssocMeta(URI referenceUri) {
+    initIfNeeded();
+    return refAssocMetasByEntityReferenceUri.get(referenceUri);
+  }
+  
+  public NavigationAssociationMeta getDetAssocMeta(URI referenceUri) {
+    initIfNeeded();
+    return detAssocMetasByEntityReferenceUri.get(referenceUri);
+  }
 }
