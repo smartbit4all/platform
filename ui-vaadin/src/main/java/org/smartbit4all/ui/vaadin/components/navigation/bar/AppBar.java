@@ -1,23 +1,20 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
  * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 package org.smartbit4all.ui.vaadin.components.navigation.bar;
 
 import java.util.ArrayList;
-import org.smartbit4all.ui.vaadin.components.FlexBoxLayout;
 import org.smartbit4all.ui.vaadin.components.navigation.tab.NaviTab;
 import org.smartbit4all.ui.vaadin.components.navigation.tab.NaviTabs;
 import org.smartbit4all.ui.vaadin.util.LumoStyles;
@@ -35,27 +32,28 @@ import com.vaadin.flow.component.html.H4;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.shared.Registration;
 
 @CssImport("./styles/components/app-bar.css")
-public class AppBar extends FlexBoxLayout {
+public class AppBar extends FlexLayout {
 
   private String CLASS_NAME = "app-bar";
 
-  private FlexBoxLayout container;
+  private FlexLayout container;
 
   private Button menuIcon;
   private Button contextIcon;
 
   private H4 title;
-  private FlexBoxLayout actionItems;
+  private FlexLayout actionItems;
   private Icon avatar;
   private Button themeButton;
 
-  private FlexBoxLayout tabContainer;
+  private FlexLayout tabContainer;
   private NaviTabs tabs;
   private ArrayList<Registration> tabSelectionListeners;
   private Button addTab;
@@ -88,7 +86,7 @@ public class AppBar extends FlexBoxLayout {
   private void initThemeButton() {
     themeButton = new Button(new Icon(VaadinIcon.ADJUST));
     themeButton.addClassName(CLASS_NAME + "__theme-button");
-    
+
   }
 
   public void setNaviMode(NaviMode mode) {
@@ -141,13 +139,14 @@ public class AppBar extends FlexBoxLayout {
   }
 
   private void initActionItems() {
-    actionItems = new FlexBoxLayout();
+    actionItems = new FlexLayout();
     actionItems.addClassName(CLASS_NAME + "__action-items");
     actionItems.setVisible(false);
   }
 
   private void initContainer() {
-    container = new FlexBoxLayout(menuIcon, contextIcon, this.title, search, actionItems, themeButton,avatar);
+    container = new FlexLayout(menuIcon, contextIcon, this.title, search, actionItems,
+        themeButton, avatar);
     container.addClassName(CLASS_NAME + "__container");
     container.setAlignItems(FlexComponent.Alignment.CENTER);
     container.setFlexGrow(1, search);
@@ -168,7 +167,7 @@ public class AppBar extends FlexBoxLayout {
 
     this.tabSelectionListeners = new ArrayList<>();
 
-    tabContainer = new FlexBoxLayout(this.tabs, addTab);
+    tabContainer = new FlexLayout(this.tabs, addTab);
     tabContainer.addClassName(CLASS_NAME + "__tab-container");
     tabContainer.setAlignItems(FlexComponent.Alignment.CENTER);
     add(tabContainer);
@@ -235,9 +234,9 @@ public class AppBar extends FlexBoxLayout {
   public Icon getAvatar() {
     return avatar;
   }
-  
+
   /* === THEME BUTTON == */
-  
+
   public Button getThemeButton() {
     return themeButton;
   }

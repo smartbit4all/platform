@@ -1,18 +1,16 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
  * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 package org.smartbit4all.ui.vaadin.components;
 
@@ -26,6 +24,7 @@ import com.vaadin.flow.component.board.Row;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.FlexLayout.FlexDirection;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
@@ -33,11 +32,11 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 public class Card<T> extends Composite<TagHack> {
 
   @Tag("sb4-card")
-  public static class TagHack extends FlexBoxLayout {
-    
+  public static class TagHack extends FlexLayout {
+
   }
-  
-  private ArrayList<Row> rows = new ArrayList<Row>();
+
+  private ArrayList<Row> rows = new ArrayList<>();
   private ButtonBar buttonBar;
   private VerticalLayout content;
   private Component header;
@@ -46,12 +45,12 @@ public class Card<T> extends Composite<TagHack> {
   public Card(String headerTxt, T dataObject) {
     this(new Label(headerTxt), dataObject);
   }
-  
+
   public Card(Component header, T dataObject) {
     super();
     this.header = header;
     this.dataObject = dataObject;
-    
+
     this.getContent().setFlexDirection(FlexDirection.COLUMN);
 
     content = new VerticalLayout();
@@ -67,10 +66,11 @@ public class Card<T> extends Composite<TagHack> {
   }
 
   public void setComponentAt(int rowNum, int colNum, Component component) {
-    if(colNum > 3) {
-      throw new IllegalArgumentException("Only four columns can be placed, so colNum can't be more then 3!");
+    if (colNum > 3) {
+      throw new IllegalArgumentException(
+          "Only four columns can be placed, so colNum can't be more then 3!");
     }
-    while(rowNum >= rows.size()) {
+    while (rowNum >= rows.size()) {
       Row newRow = new Row();
       rows.add(newRow);
       content.add(newRow);
@@ -84,7 +84,7 @@ public class Card<T> extends Composite<TagHack> {
       row.addComponentAtIndex(colNum, component);
     }
   }
-  
+
   public void addButton(Button buttonToAdd) {
     if (buttonBar == null) {
       buttonBar = new ButtonBar();
@@ -100,7 +100,7 @@ public class Card<T> extends Composite<TagHack> {
   public Component getHeader() {
     return header;
   }
-  
+
   public void setHeader(Component header) {
     getContent().remove(this.header);
     this.header = header;

@@ -1,18 +1,16 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
  * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 package org.smartbit4all.ui.vaadin.components.form;
 
@@ -21,13 +19,13 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import org.smartbit4all.ui.vaadin.components.FlexBoxLayout;
 import com.vaadin.flow.component.Composite;
+import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.FlexLayout.FlexWrap;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 
-public class DynamicForm<BEAN> extends Composite<FlexBoxLayout> {
+public class DynamicForm<BEAN> extends Composite<FlexLayout> {
 
   private Binder<BEAN> binder;
 
@@ -36,7 +34,7 @@ public class DynamicForm<BEAN> extends Composite<FlexBoxLayout> {
     this.getContent().setFlexWrap(FlexWrap.WRAP);
     init(beanClazz);
   }
-  
+
   public void setBean(BEAN bean) {
     binder.setBean(bean);
   }
@@ -72,21 +70,22 @@ public class DynamicForm<BEAN> extends Composite<FlexBoxLayout> {
         }
       }
     }
-    
+
     binder = new Binder<>();
-    for(Entry<String, BindingCandidate> bindingEntry : bindings.entrySet()) {
+    for (Entry<String, BindingCandidate> bindingEntry : bindings.entrySet()) {
       BindingCandidate binding = bindingEntry.getValue();
-      if(binding.getter.getReturnType().equals(String.class)) {
+      if (binding.getter.getReturnType().equals(String.class)) {
         String propertyName = bindingEntry.getKey();
         TextField textField = new TextField(propertyName);
-  //      binder.bind(textField, propertyName);
-        binder.bind(textField, bean -> invokeGetter(binding, bean), (bean, value) -> invokeSetter(binding, bean, value));
+        // binder.bind(textField, propertyName);
+        binder.bind(textField, bean -> invokeGetter(binding, bean),
+            (bean, value) -> invokeSetter(binding, bean, value));
         this.getContent().add(textField);
       }
     }
-    
+
   }
-  
+
   private <T> T invokeGetter(BindingCandidate binding, BEAN bean) {
     try {
       return (T) binding.getter.invoke(bean);
@@ -94,7 +93,7 @@ public class DynamicForm<BEAN> extends Composite<FlexBoxLayout> {
       throw new RuntimeException(e);
     }
   }
-  
+
   private <T> void invokeSetter(BindingCandidate binding, BEAN bean, T value) {
     try {
       binding.setter.invoke(bean, value);
@@ -102,22 +101,22 @@ public class DynamicForm<BEAN> extends Composite<FlexBoxLayout> {
       throw new RuntimeException(e);
     }
   }
-  
+
   private String getPropertyCandidateName(Method method) {
-//    // if the method is annotated, the annotation describes the property
-//    if (method.isAnnotationPresent(PropertyAccessor.class)) {
-//      PropertyAccessor propertyAccessor = method.getAnnotation(PropertyAccessor.class);
-//      return propertyAccessor.value();
-//    }
-//    // the name of the method may match the target property
-    
+    // // if the method is annotated, the annotation describes the property
+    // if (method.isAnnotationPresent(PropertyAccessor.class)) {
+    // PropertyAccessor propertyAccessor = method.getAnnotation(PropertyAccessor.class);
+    // return propertyAccessor.value();
+    // }
+    // // the name of the method may match the target property
+
     String name = method.getName();
-    if(name.startsWith("get") || name.startsWith("set")) {
+    if (name.startsWith("get") || name.startsWith("set")) {
       name = name.substring(3);
     }
     return name;
   }
-  
+
   static class BindingCandidate {
 
     Method getter;
@@ -131,5 +130,5 @@ public class DynamicForm<BEAN> extends Composite<FlexBoxLayout> {
     }
 
   }
-  
+
 }
