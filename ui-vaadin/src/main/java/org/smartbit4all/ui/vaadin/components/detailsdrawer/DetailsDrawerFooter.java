@@ -15,7 +15,7 @@
 package org.smartbit4all.ui.vaadin.components.detailsdrawer;
 
 import java.util.function.Supplier;
-import org.smartbit4all.ui.vaadin.util.UIUtils;
+import org.smartbit4all.ui.vaadin.util.Buttons;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
@@ -24,44 +24,39 @@ import com.vaadin.flow.shared.Registration;
 
 public class DetailsDrawerFooter extends FlexLayout {
 
+  private String CLASS_NAME = "details-drawer-footer";
+
   private Button view;
   private Button delete;
   private Button save;
   private Button cancel;
 
   public DetailsDrawerFooter() {
-    getStyle().set("background-color", "var(--lumo-contrast-5pct)");
-    getStyle().set("padding-left", "var(--lumo-space-r-l)");
-    getStyle().set("padding-right", "var(--lumo-space-r-l)");
-    getStyle().set("padding-top", "var(--lumo-space-s)");
-    getStyle().set("padding-bottom", "var(--lumo-space-s)");
-    addClassName("spacing-r-l");
-    setJustifyContentMode(JustifyContentMode.EVENLY);
-    setWidthFull();
+    setClassName(CLASS_NAME);
   }
 
   public Registration addViewListener(
       ComponentEventListener<ClickEvent<Button>> listener) {
-    view = addButton(view, () -> UIUtils.createPrimaryButton(getTranslation("title.view")));
+    view = addButton(view, () -> Buttons.createPrimaryButton(getTranslation("title.view")));
     return view.addClickListener(listener);
   }
 
   public Registration addDeleteListener(
       ComponentEventListener<ClickEvent<Button>> listener) {
-    delete = addButton(delete, () -> UIUtils.createTertiaryButton(getTranslation("title.delete")));
+    delete = addButton(delete, () -> Buttons.createTertiaryButton(getTranslation("title.delete")));
     return delete.addClickListener(listener);
   }
 
   public Registration addSaveListener(
       ComponentEventListener<ClickEvent<Button>> listener) {
-    save = addButton(save, () -> UIUtils.createPrimaryButton(getTranslation("title.save")));
+    save = addButton(save, () -> Buttons.createPrimaryButton(getTranslation("title.save")));
     return save.addClickListener(listener);
   }
 
   public Registration addCancelListener(
       ComponentEventListener<ClickEvent<Button>> listener) {
 
-    cancel = addButton(cancel, () -> UIUtils.createTertiaryButton(getTranslation("title.cancel")));
+    cancel = addButton(cancel, () -> Buttons.createTertiaryButton(getTranslation("title.cancel")));
     return cancel.addClickListener(listener);
   }
 

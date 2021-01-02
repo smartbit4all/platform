@@ -12,34 +12,26 @@
  * You should have received a copy of the GNU Lesser General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package org.smartbit4all.ui.vaadin.components.navigation.drawer;
+package org.smartbit4all.ui.vaadin.util;
 
-import org.smartbit4all.ui.vaadin.util.Css;
-import org.smartbit4all.ui.vaadin.util.Labels;
-import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Image;
+import org.smartbit4all.ui.vaadin.util.Css.TextColor;
 import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.Notification.Position;
 
-@CssImport("./styles/components/brand-expression.css")
-public class BrandExpression extends Div {
+public class Notifications {
 
-  private String CLASS_NAME = "brand-expression";
+  public static void showNotification(String text) {
+    Notification.show(text, 3000, Notification.Position.BOTTOM_CENTER);
+  }
 
-  private Image logo;
-  private Label title;
-
-  public BrandExpression(String text, String imageName) {
-    setClassName(CLASS_NAME);
-
-    logo = new Image(Css.IMG_PATH + imageName, "");
-    logo.setAlt(text + " logo");
-    logo.setClassName(CLASS_NAME + "__logo");
-
-    title = Labels.createH3Label(text);
-    title.addClassName(CLASS_NAME + "__title");
-
-    add(logo, title);
+  public static void showErrorNotification(String message) {
+    Label content = new Label(message);
+    Css.setTextColor(TextColor.ERROR, content);
+    Notification notification = new Notification(content);
+    notification.setDuration(3000);
+    notification.setPosition(Position.BOTTOM_CENTER);
+    notification.open();
   }
 
 }

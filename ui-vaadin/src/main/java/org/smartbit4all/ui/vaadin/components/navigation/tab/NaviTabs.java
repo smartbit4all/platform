@@ -1,23 +1,21 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
  * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 package org.smartbit4all.ui.vaadin.components.navigation.tab;
 
-import org.smartbit4all.ui.vaadin.util.UIUtils;
-import org.smartbit4all.ui.vaadin.util.css.Overflow;
+import org.smartbit4all.ui.vaadin.util.Css;
+import org.smartbit4all.ui.vaadin.util.Css.Overflow;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.UI;
@@ -25,123 +23,122 @@ import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
 
 /**
- * NaviTabs supports tabs that can be closed, and that can navigate to a
- * specific target when clicked.
+ * NaviTabs supports tabs that can be closed, and that can navigate to a specific target when
+ * clicked.
  */
 public class NaviTabs extends Tabs {
 
-	private ComponentEventListener<SelectedChangeEvent> listener = (ComponentEventListener<SelectedChangeEvent>) selectedChangeEvent -> navigateToSelectedTab();
+  private ComponentEventListener<SelectedChangeEvent> listener =
+      (ComponentEventListener<SelectedChangeEvent>) selectedChangeEvent -> navigateToSelectedTab();
 
-	private Class<? extends Component> homeView;
-	
-	public NaviTabs(Class<? extends Component> homeView) {
-	    this.homeView = homeView;
-		addSelectedChangeListener(listener);
-		getElement().setAttribute("overflow", "end");
-		UIUtils.setOverflow(Overflow.HIDDEN, this);
-	}
+  private Class<? extends Component> homeView;
 
-	/**
-	 * When adding the first tab, the selection change event is triggered. This
-	 * will cause the app to navigate to that tab's navigation target (if any).
-	 * This constructor allows you to add the tabs before the event listener is
-	 * set.
-	 */
-	public NaviTabs(Class<? extends Component> homeView, NaviTab... naviTabs) {
-		this(homeView);
-		add(naviTabs);
-	}
+  public NaviTabs(Class<? extends Component> homeView) {
+    this.homeView = homeView;
+    addSelectedChangeListener(listener);
+    getElement().setAttribute("overflow", "end");
+    Css.setOverflow(Overflow.HIDDEN, this);
+  }
 
-	/**
-	 * Creates a regular tab without any click listeners.
-	 */
-	public Tab addTab(String text) {
-		Tab tab = new Tab(text);
-		add(tab);
-		return tab;
-	}
+  /**
+   * When adding the first tab, the selection change event is triggered. This will cause the app to
+   * navigate to that tab's navigation target (if any). This constructor allows you to add the tabs
+   * before the event listener is set.
+   */
+  public NaviTabs(Class<? extends Component> homeView, NaviTab... naviTabs) {
+    this(homeView);
+    add(naviTabs);
+  }
 
-	/**
-	 * Creates a tab that when clicked navigates to the specified target.
-	 */
-	public Tab addTab(String text,
-	                  Class<? extends Component> navigationTarget) {
-		Tab tab = new NaviTab(text, navigationTarget);
-		add(tab);
-		return tab;
-	}
+  /**
+   * Creates a regular tab without any click listeners.
+   */
+  public Tab addTab(String text) {
+    Tab tab = new Tab(text);
+    add(tab);
+    return tab;
+  }
 
-	/**
-	 * Creates a (closable) tab that when clicked navigates to the specified
-	 * target.
-	 */
-	public Tab addClosableTab(String text,
-	                          Class<? extends Component> navigationTarget) {
-		ClosableNaviTab tab = new ClosableNaviTab(text, navigationTarget);
-		add(tab);
+  /**
+   * Creates a tab that when clicked navigates to the specified target.
+   */
+  public Tab addTab(String text,
+      Class<? extends Component> navigationTarget) {
+    Tab tab = new NaviTab(text, navigationTarget);
+    add(tab);
+    return tab;
+  }
 
-		tab.getCloseButton().addClickListener(event -> {
-			remove(tab);
-			navigateToSelectedTab();
-		});
+  /**
+   * Creates a (closable) tab that when clicked navigates to the specified target.
+   */
+  public Tab addClosableTab(String text,
+      Class<? extends Component> navigationTarget) {
+    ClosableNaviTab tab = new ClosableNaviTab(text, navigationTarget);
+    add(tab);
 
-		return tab;
-	}
+    tab.getCloseButton().addClickListener(event -> {
+      remove(tab);
+      navigateToSelectedTab();
+    });
 
-	/**
-	 * Navigates to the selected tab's navigation target if available.
-	 */
-	public void navigateToSelectedTab() {
-		if (getSelectedTab() instanceof NaviTab) {
-			try {
-				UI.getCurrent().navigate(
-						((NaviTab) getSelectedTab()).getNavigationTarget());
-			} catch (Exception e) {
-				// @todo this is an code flow by exception anti-pattern. Either
-				// handle the case without the exception, or
-				// @todo at least document meticulously why this can't be done
-				// any other way and what kind of exceptions are we catching
-				// @todo and when they can occur.
-				// @todo this block consumes all exceptions, even
-				// backend-originated, and may result in exceptions disappearing
-				// mysteriously.
+    return tab;
+  }
 
-				// If the right-most tab is closed, the Tabs component does not
-				// auto-select tabs on the left.
-				if (getTabCount() > 0) {
-					setSelectedIndex(getTabCount() - 1);
-				} else {
-					UI.getCurrent().navigate(homeView);
-				}
-			}
-		}
-	}
+  /**
+   * Navigates to the selected tab's navigation target if available.
+   */
+  public void navigateToSelectedTab() {
+    if (getSelectedTab() instanceof NaviTab) {
+      try {
+        UI.getCurrent().navigate(
+            ((NaviTab) getSelectedTab()).getNavigationTarget());
+      } catch (Exception e) {
+        // @todo this is an code flow by exception anti-pattern. Either
+        // handle the case without the exception, or
+        // @todo at least document meticulously why this can't be done
+        // any other way and what kind of exceptions are we catching
+        // @todo and when they can occur.
+        // @todo this block consumes all exceptions, even
+        // backend-originated, and may result in exceptions disappearing
+        // mysteriously.
 
-	/**
-	 * Updates the current tab's name and navigation target.
-	 */
-	public void updateSelectedTab(String text,
-	                              Class<? extends Component> navigationTarget) {
-		Tab tab = getSelectedTab();
-		tab.setLabel(text);
+        // If the right-most tab is closed, the Tabs component does not
+        // auto-select tabs on the left.
+        if (getTabCount() > 0) {
+          setSelectedIndex(getTabCount() - 1);
+        } else {
+          UI.getCurrent().navigate(homeView);
+        }
+      }
+    }
+  }
 
-		if (tab instanceof NaviTab) {
-			((NaviTab) tab).setNavigationTarget(navigationTarget);
-		}
+  /**
+   * Updates the current tab's name and navigation target.
+   */
+  public void updateSelectedTab(String text,
+      Class<? extends Component> navigationTarget) {
+    Tab tab = getSelectedTab();
+    tab.setLabel(text);
 
-		if (tab instanceof ClosableNaviTab) {
-			tab.add(((ClosableNaviTab) tab).getCloseButton());
-		}
+    if (tab instanceof NaviTab) {
+      ((NaviTab) tab).setNavigationTarget(navigationTarget);
+    }
 
-		navigateToSelectedTab();
-	}
+    if (tab instanceof ClosableNaviTab) {
+      tab.add(((ClosableNaviTab) tab).getCloseButton());
+    }
 
-	/**
-	 * Returns the number of tabs.
-	 */
-	public int getTabCount() {
-		return Math.toIntExact(getChildren()
-				.filter(component -> component instanceof Tab).count());
-	}
+    navigateToSelectedTab();
+  }
+
+  /**
+   * Returns the number of tabs.
+   */
+  public int getTabCount() {
+    return Math.toIntExact(getChildren()
+        .filter(component -> component instanceof Tab).count());
+  }
 
 }

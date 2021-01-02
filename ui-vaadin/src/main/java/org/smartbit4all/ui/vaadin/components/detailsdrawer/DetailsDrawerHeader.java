@@ -14,39 +14,34 @@
  ******************************************************************************/
 package org.smartbit4all.ui.vaadin.components.detailsdrawer;
 
-import org.smartbit4all.ui.vaadin.util.BoxShadowBorders;
-import org.smartbit4all.ui.vaadin.util.UIUtils;
+import org.smartbit4all.ui.vaadin.util.Buttons;
+import org.smartbit4all.ui.vaadin.util.Css;
+import org.smartbit4all.ui.vaadin.util.Labels;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.tabs.Tabs;
 
 public class DetailsDrawerHeader extends FlexLayout {
 
+  private String CLASS_NAME = "details-drawer-header";
+
   private Button close;
   private Label title;
 
   public DetailsDrawerHeader(String title) {
-    addClassName(BoxShadowBorders.BOTTOM);
-    setFlexDirection(FlexDirection.COLUMN);
-    setWidthFull();
+    setClassName(CLASS_NAME);
 
-    this.close = UIUtils.createTertiaryInlineButton(VaadinIcon.CLOSE);
-    UIUtils.setLineHeight("1", this.close);
+    this.close = Buttons.createTertiaryInlineButton(VaadinIcon.CLOSE);
+    Css.setLineHeight("1", this.close);
 
-    this.title = UIUtils.createH4Label(title);
+    this.title = Labels.createH4Label(title);
 
     FlexLayout wrapper = new FlexLayout(this.close, this.title);
-    wrapper.setAlignItems(FlexComponent.Alignment.CENTER);
-    wrapper.getStyle().set("padding-left", "var(--lumo-space-r-l)");
-    wrapper.getStyle().set("padding-right", "var(--lumo-space-r-l)");
-    wrapper.getStyle().set("padding-top", "var(--lumo-space-m)");
-    wrapper.getStyle().set("padding-bottom", "var(--lumo-space-m)");
-    wrapper.addClassName("spacing-r-l");
+    wrapper.setClassName(CLASS_NAME + "__wrapper");
     add(wrapper);
   }
 

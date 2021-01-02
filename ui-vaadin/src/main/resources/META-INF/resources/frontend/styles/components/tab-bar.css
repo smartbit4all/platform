@@ -2,8 +2,8 @@
   align-items: center;
   background-color: var(--lumo-base-color);
   box-shadow: var(--lumo-box-shadow-s);
-  padding-left: var(--lumo-space-r-l);
-  padding-right: var(--lumo-space-r-l);
+  padding-left: var(--lumo-space-resp-l);
+  padding-right: var(--lumo-space-resp-l);
   position: relative;
   z-index: 1;
 }

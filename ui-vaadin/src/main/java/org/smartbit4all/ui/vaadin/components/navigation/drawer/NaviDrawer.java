@@ -1,22 +1,21 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
  * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 package org.smartbit4all.ui.vaadin.components.navigation.drawer;
 
-import org.smartbit4all.ui.vaadin.util.UIUtils;
+import org.smartbit4all.ui.vaadin.util.Buttons;
+import org.smartbit4all.ui.vaadin.util.Css;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.UI;
@@ -35,147 +34,152 @@ import elemental.json.JsonObject;
 @JsModule("./swipe-away.js")
 public class NaviDrawer extends Div implements AfterNavigationObserver {
 
-	private String CLASS_NAME = "navi-drawer";
-	private String RAIL = "rail";
-	private String OPEN = "open";
+  private String CLASS_NAME = "navi-drawer";
+  private String RAIL = "rail";
+  private String OPEN = "open";
 
-	private Div scrim;
+  private Div scrim;
 
-	private Div mainContent;
-	private TextField search;
-	private Div scrollableArea;
+  private Div mainContent;
+  private TextField search;
+  private Div scrollableArea;
 
-	private Button railButton;
-	private NaviMenu menu;
-	
-	private String title;
+  private Button railButton;
+  private NaviMenu menu;
 
-	@Override
-	protected void onAttach(AttachEvent attachEvent) {
-		super.onAttach(attachEvent);
-		UI ui = attachEvent.getUI();
-		ui.getPage().executeJavaScript("window.addSwipeAway($0,$1,$2,$3)", mainContent.getElement(), this,
-				"onSwipeAway", scrim.getElement());
-	}
+  private String title;
 
-	@ClientCallable
-	public void onSwipeAway(JsonObject data) {
-		close();
-	}
+  @Override
+  protected void onAttach(AttachEvent attachEvent) {
+    super.onAttach(attachEvent);
+    UI ui = attachEvent.getUI();
+    ui.getPage().executeJavaScript("window.addSwipeAway($0,$1,$2,$3)", mainContent.getElement(),
+        this,
+        "onSwipeAway", scrim.getElement());
+  }
 
-	public NaviDrawer(String title, String imageName) {
-		this.title = title;
-		setClassName(CLASS_NAME);
+  @ClientCallable
+  public void onSwipeAway(JsonObject data) {
+    close();
+  }
 
-		initScrim();
-		initMainContent();
+  public NaviDrawer(String title, String imageName) {
+    this.title = title;
+    setClassName(CLASS_NAME);
 
-		initHeader(imageName);
-//		initSearch();
+    initScrim();
+    initMainContent();
 
-		initScrollableArea();
-		initMenu();
+    initHeader(imageName);
+    // initSearch();
 
-		initFooter();
-	}
+    initScrollableArea();
+    initMenu();
 
-	private void initScrim() {
-		// Backdrop on small viewports
-		scrim = new Div();
-		scrim.addClassName(CLASS_NAME + "__scrim");
-		scrim.addClickListener(event -> close());
-		add(scrim);
-	}
+    initFooter();
+  }
 
-	private void initMainContent() {
-		mainContent = new Div();
-		mainContent.addClassName(CLASS_NAME + "__content");
-		add(mainContent);
-	}
+  private void initScrim() {
+    // Backdrop on small viewports
+    scrim = new Div();
+    scrim.addClassName(CLASS_NAME + "__scrim");
+    scrim.addClickListener(event -> close());
+    add(scrim);
+  }
 
-	private void initHeader(String imageName) {
-		mainContent.add(new BrandExpression(title, imageName));
-	}
+  private void initMainContent() {
+    mainContent = new Div();
+    mainContent.addClassName(CLASS_NAME + "__content");
+    add(mainContent);
+  }
 
-	private void initSearch() {
-		search = new TextField();
-		search.addValueChangeListener(e -> menu.filter(search.getValue()));
-		search.setClearButtonVisible(true);
-		search.setPlaceholder("Search");
-		search.setPrefixComponent(new Icon(VaadinIcon.SEARCH));
-		mainContent.add(search);
-	}
+  private void initHeader(String imageName) {
+    mainContent.add(new BrandExpression(title, imageName));
+  }
 
-	private void initScrollableArea() {
-		scrollableArea = new Div();
-		scrollableArea.addClassName(CLASS_NAME + "__scroll-area");
-		mainContent.add(scrollableArea);
-	}
+  private void initSearch() {
+    search = new TextField();
+    search.addValueChangeListener(e -> menu.filter(search.getValue()));
+    search.setClearButtonVisible(true);
+    search.setPlaceholder("Search");
+    search.setPrefixComponent(new Icon(VaadinIcon.SEARCH));
+    mainContent.add(search);
+  }
 
-	private void initMenu() {
-		menu = new NaviMenu();
-		scrollableArea.add(menu);
-	}
+  private void initScrollableArea() {
+    scrollableArea = new Div();
+    scrollableArea.addClassName(CLASS_NAME + "__scroll-area");
+    mainContent.add(scrollableArea);
+  }
 
-	private void initFooter() {
-		railButton = UIUtils.createSmallButton(getTranslation("navidrawer.collapse"), VaadinIcon.CHEVRON_LEFT_SMALL);
-		railButton.addClassName(CLASS_NAME + "__footer");
-		railButton.addClickListener(event -> toggleRailMode());
-		railButton.getElement().setAttribute("aria-label", getTranslation("navidrawer.collapse.menu"));
-		mainContent.add(railButton);
-	}
+  private void initMenu() {
+    menu = new NaviMenu();
+    scrollableArea.add(menu);
+  }
 
-	private void toggleRailMode() {
-		if (getElement().hasAttribute(RAIL)) {
-			getElement().setAttribute(RAIL, false);
-			railButton.setIcon(new Icon(VaadinIcon.CHEVRON_LEFT_SMALL));
-			railButton.setText(getTranslation("navidrawer.collapse"));
-			UIUtils.setAriaLabel(getTranslation("navidrawer.collapse.menu"), railButton);
+  private void initFooter() {
+    railButton = Buttons.createSmallButton(getTranslation("navidrawer.collapse"),
+        VaadinIcon.CHEVRON_LEFT_SMALL);
+    railButton.addClassName(CLASS_NAME + "__footer");
+    railButton.addClickListener(event -> toggleRailMode());
+    railButton.getElement().setAttribute("aria-label", getTranslation("navidrawer.collapse.menu"));
+    mainContent.add(railButton);
+  }
 
-		} else {
-			getElement().setAttribute(RAIL, true);
-			railButton.setIcon(new Icon(VaadinIcon.CHEVRON_RIGHT_SMALL));
-			railButton.setText(getTranslation("navidrawer.expand"));
-			UIUtils.setAriaLabel(getTranslation("navidrawer.expand.menu"), railButton);
-			getUI().get().getPage().executeJavaScript("var originalStyle = getComputedStyle($0).pointerEvents;" //
-					+ "$0.style.pointerEvents='none';" //
-					+ "setTimeout(function() {$0.style.pointerEvents=originalStyle;}, 170);", getElement());
-		}
-	}
+  private void toggleRailMode() {
+    if (getElement().hasAttribute(RAIL)) {
+      getElement().setAttribute(RAIL, false);
+      railButton.setIcon(new Icon(VaadinIcon.CHEVRON_LEFT_SMALL));
+      railButton.setText(getTranslation("navidrawer.collapse"));
+      Css.setAriaLabel(getTranslation("navidrawer.collapse.menu"), railButton);
 
-	public void toggle() {
-		if (getElement().hasAttribute(OPEN)) {
-			close();
-		} else {
-			open();
-		}
-	}
+    } else {
+      getElement().setAttribute(RAIL, true);
+      railButton.setIcon(new Icon(VaadinIcon.CHEVRON_RIGHT_SMALL));
+      railButton.setText(getTranslation("navidrawer.expand"));
+      Css.setAriaLabel(getTranslation("navidrawer.expand.menu"), railButton);
+      getUI().get().getPage()
+          .executeJavaScript("var originalStyle = getComputedStyle($0).pointerEvents;" //
+              + "$0.style.pointerEvents='none';" //
+              + "setTimeout(function() {$0.style.pointerEvents=originalStyle;}, 170);",
+              getElement());
+    }
+  }
 
-	private void open() {
-		getElement().setAttribute(OPEN, true);
-	}
+  public void toggle() {
+    if (getElement().hasAttribute(OPEN)) {
+      close();
+    } else {
+      open();
+    }
+  }
 
-	private void close() {
-		getElement().setAttribute(OPEN, false);
-		applyIOS122Workaround();
-	}
+  private void open() {
+    getElement().setAttribute(OPEN, true);
+  }
 
-	private void applyIOS122Workaround() {
-		// iOS 12.2 sometimes fails to animate the menu away.
-		// It should be gone after 240ms
-		// This will make sure it disappears even when the browser fails.
-		getUI().get().getPage().executeJavaScript("var originalStyle = getComputedStyle($0).transitionProperty;" //
-				+ "setTimeout(function() {$0.style.transitionProperty='padding'; requestAnimationFrame(function() {$0.style.transitionProperty=originalStyle})}, 250);",
-				mainContent.getElement());
-	}
+  private void close() {
+    getElement().setAttribute(OPEN, false);
+    applyIOS122Workaround();
+  }
 
-	public NaviMenu getMenu() {
-		return menu;
-	}
+  private void applyIOS122Workaround() {
+    // iOS 12.2 sometimes fails to animate the menu away.
+    // It should be gone after 240ms
+    // This will make sure it disappears even when the browser fails.
+    getUI().get().getPage()
+        .executeJavaScript("var originalStyle = getComputedStyle($0).transitionProperty;" //
+            + "setTimeout(function() {$0.style.transitionProperty='padding'; requestAnimationFrame(function() {$0.style.transitionProperty=originalStyle})}, 250);",
+            mainContent.getElement());
+  }
 
-	@Override
-	public void afterNavigation(AfterNavigationEvent afterNavigationEvent) {
-		close();
-	}
+  public NaviMenu getMenu() {
+    return menu;
+  }
+
+  @Override
+  public void afterNavigation(AfterNavigationEvent afterNavigationEvent) {
+    close();
+  }
 
 }

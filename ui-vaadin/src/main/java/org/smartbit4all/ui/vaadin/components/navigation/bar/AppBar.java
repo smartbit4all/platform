@@ -17,8 +17,8 @@ package org.smartbit4all.ui.vaadin.components.navigation.bar;
 import java.util.ArrayList;
 import org.smartbit4all.ui.vaadin.components.navigation.tab.NaviTab;
 import org.smartbit4all.ui.vaadin.components.navigation.tab.NaviTabs;
-import org.smartbit4all.ui.vaadin.util.LumoStyles;
-import org.smartbit4all.ui.vaadin.util.UIUtils;
+import org.smartbit4all.ui.vaadin.util.Buttons;
+import org.smartbit4all.ui.vaadin.util.Css;
 import org.smartbit4all.ui.vaadin.view.MainLayout;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -100,19 +100,19 @@ public class AppBar extends FlexLayout {
   }
 
   private void initMenuIcon() {
-    menuIcon = UIUtils.createTertiaryInlineButton(VaadinIcon.MENU);
+    menuIcon = Buttons.createTertiaryInlineButton(VaadinIcon.MENU);
     menuIcon.addClassName(CLASS_NAME + "__navi-icon");
     menuIcon.addClickListener(e -> MainLayout.get().getNaviDrawer().toggle());
-    UIUtils.setAriaLabel("Menu", menuIcon);
-    UIUtils.setLineHeight("1", menuIcon);
+    Css.setAriaLabel("Menu", menuIcon);
+    Css.setLineHeight("1", menuIcon);
   }
 
   private void initContextIcon() {
-    contextIcon = UIUtils.createTertiaryInlineButton(VaadinIcon.ARROW_LEFT);
+    contextIcon = Buttons.createTertiaryInlineButton(VaadinIcon.ARROW_LEFT);
     contextIcon.addClassNames(CLASS_NAME + "__context-icon");
     contextIcon.setVisible(false);
-    UIUtils.setAriaLabel("Back", contextIcon);
-    UIUtils.setLineHeight("1", contextIcon);
+    Css.setAriaLabel("Back", contextIcon);
+    Css.setLineHeight("1", contextIcon);
   }
 
   private void initTitle(String title) {
@@ -154,7 +154,7 @@ public class AppBar extends FlexLayout {
   }
 
   private void initTabs(NaviTab... tabs) {
-    addTab = UIUtils.createSmallButton(VaadinIcon.PLUS);
+    addTab = Buttons.createSmallButton(VaadinIcon.PLUS);
     addTab.addClickListener(e -> this.tabs.setSelectedTab(addClosableNaviTab("New Tab", homeView)));
     addTab.setVisible(false);
 
@@ -219,7 +219,7 @@ public class AppBar extends FlexLayout {
 
   public Button addActionItem(VaadinIcon icon) {
     Button button =
-        UIUtils.createButton(icon, ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_TERTIARY);
+        Buttons.createButton(icon, ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_TERTIARY);
     addActionItem(button);
     return button;
   }
@@ -244,7 +244,8 @@ public class AppBar extends FlexLayout {
   /* === TABS === */
 
   public void centerTabs() {
-    tabs.addClassName(LumoStyles.Margin.Horizontal.AUTO);
+    tabs.getStyle().set("margin-left", "auto");
+    tabs.getStyle().set("margin-right", "auto");
   }
 
   private void configureTab(Tab tab) {

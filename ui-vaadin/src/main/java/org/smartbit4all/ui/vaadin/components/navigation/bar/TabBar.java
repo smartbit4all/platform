@@ -14,10 +14,9 @@
  ******************************************************************************/
 package org.smartbit4all.ui.vaadin.components.navigation.bar;
 
-import static org.smartbit4all.ui.vaadin.util.UIUtils.IMG_PATH;
+import static org.smartbit4all.ui.vaadin.util.Css.IMG_PATH;
 import org.smartbit4all.ui.vaadin.components.navigation.tab.NaviTabs;
-import org.smartbit4all.ui.vaadin.util.LumoStyles;
-import org.smartbit4all.ui.vaadin.util.UIUtils;
+import org.smartbit4all.ui.vaadin.util.Buttons;
 import org.smartbit4all.ui.vaadin.view.MainLayout;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -47,7 +46,7 @@ public class TabBar extends FlexLayout {
 
     this.homeView = homeView;
 
-    menuIcon = UIUtils.createTertiaryInlineButton(VaadinIcon.MENU);
+    menuIcon = Buttons.createTertiaryInlineButton(VaadinIcon.MENU);
     menuIcon.addClassName(CLASS_NAME + "__navi-icon");
     menuIcon.addClickListener(e -> MainLayout.get().getNaviDrawer().toggle());
 
@@ -64,7 +63,7 @@ public class TabBar extends FlexLayout {
         e -> Notification.show("Not implemented yet.", 3000,
             Notification.Position.BOTTOM_CENTER));
 
-    addTab = UIUtils.createSmallButton(VaadinIcon.PLUS);
+    addTab = Buttons.createSmallButton(VaadinIcon.PLUS);
     addTab.addClickListener(e -> tabs
         .setSelectedTab(addClosableTab("New Tab", homeView)));
     addTab.setClassName(CLASS_NAME + "__add-tab");
@@ -84,7 +83,8 @@ public class TabBar extends FlexLayout {
   /* === TABS === */
 
   public void centerTabs() {
-    tabs.addClassName(LumoStyles.Margin.Horizontal.AUTO);
+    tabs.getStyle().set("margin-left", "auto");
+    tabs.getStyle().set("margin-right", "auto");
   }
 
   private void configureTab(Tab tab) {

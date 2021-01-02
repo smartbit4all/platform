@@ -20,11 +20,15 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.smartbit4all.ui.vaadin.layout.size.Bottom;
-import org.smartbit4all.ui.vaadin.util.IconSize;
-import org.smartbit4all.ui.vaadin.util.TextColor;
-import org.smartbit4all.ui.vaadin.util.UIUtils;
-import org.smartbit4all.ui.vaadin.util.css.AlignSelf;
+import org.smartbit4all.ui.vaadin.util.Buttons;
+import org.smartbit4all.ui.vaadin.util.Css;
+import org.smartbit4all.ui.vaadin.util.Css.AlignSelf;
+import org.smartbit4all.ui.vaadin.util.Css.IconSize;
+import org.smartbit4all.ui.vaadin.util.Css.Size;
+import org.smartbit4all.ui.vaadin.util.Css.SizeType;
+import org.smartbit4all.ui.vaadin.util.Css.TextColor;
+import org.smartbit4all.ui.vaadin.util.Icons;
+import org.smartbit4all.ui.vaadin.util.Labels;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -95,17 +99,17 @@ public class MultiSelectPopUp<T> extends CustomField<Set<T>> implements HasDataP
     displayField = new TextField();
     displayField.setPlaceholder(getPlaceHolder());
 
-    btnClear = UIUtils.createTertiaryButton(VaadinIcon.CLOSE_SMALL);
-    icnInfo = UIUtils.createIcon(IconSize.S, TextColor.TERTIARY, VaadinIcon.INFO_CIRCLE_O);
-    ((Icon) btnClear.getIcon()).setColor(TextColor.TERTIARY.getValue());
+    btnClear = Buttons.createTertiaryButton(VaadinIcon.CLOSE_SMALL);
+    icnInfo = Icons.createIcon(IconSize.S, TextColor.TERTIARY, VaadinIcon.INFO_CIRCLE_O);
+    ((Icon) btnClear.getIcon()).setColor(TextColor.TERTIARY);
     btnClear.getElement().getStyle().set("margin-top", "0px");
     btnClear.getElement().getStyle().set("padding-right", "0px");
     icnInfo.getElement().getStyle().set("margin-top", "12px");
     icnInfo.getElement().getStyle().set("padding-right", "8px");
     buttonBox = new FlexLayout(btnClear, icnInfo);
     buttonBox.getStyle().set("position", "absolute");
-    UIUtils.setAlignSelf(AlignSelf.FLEX_END, buttonBox);
-    UIUtils.setZIndex(5, buttonBox);
+    Css.setAlignSelf(AlignSelf.FLEX_END, buttonBox);
+    Css.setZIndex(5, buttonBox);
 
     FlexLayout layout = new FlexLayout();
     layout.setWidthFull();
@@ -141,14 +145,14 @@ public class MultiSelectPopUp<T> extends CustomField<Set<T>> implements HasDataP
     dialogLayout.setSizeFull();
     dialogLayout.setFlexDirection(FlexDirection.COLUMN);
 
-    dialogHeader = UIUtils.createH4Label(getPlaceHolder());
-    UIUtils.setMargin(Bottom.M, dialogHeader);
+    dialogHeader = Labels.createH4Label(getPlaceHolder());
+    Css.setMargin(SizeType.BOTTOM, Size.M, dialogHeader);
 
     FlexLayout dialogButtonLayout = new FlexLayout();
     dialogButtonLayout.setJustifyContentMode(JustifyContentMode.EVENLY);
     dialogButtonLayout.getStyle().set("margin-top", "var(--lumo-space-m)");
-    btndDialogSave = UIUtils.createPrimaryButton(getTranslation("title.ok"));
-    btnDialogCancel = UIUtils.createButton(getTranslation("title.cancel"));
+    btndDialogSave = Buttons.createPrimaryButton(getTranslation("title.ok"));
+    btnDialogCancel = Buttons.createButton(getTranslation("title.cancel"));
     dialogButtonLayout.add(btndDialogSave, btnDialogCancel);
 
     dialogLayout.add(dialogHeader, grid, dialogButtonLayout);
