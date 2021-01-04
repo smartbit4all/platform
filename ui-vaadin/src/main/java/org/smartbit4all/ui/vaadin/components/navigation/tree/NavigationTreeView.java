@@ -101,7 +101,7 @@ public class NavigationTreeView implements NavigationView {
           @Override
           protected Stream<NavigationTreeNode> fetchChildrenFromBackEnd(
               HierarchicalQuery<NavigationTreeNode, Void> query) {
-            return controller.getChildrens(query.getParent());
+            return controller.getChildren(query.getParent());
           }
         };
     tree.setDataProvider(dataProvider);

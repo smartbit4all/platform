@@ -41,7 +41,7 @@ public interface NavigationController extends UIController {
 
   int getChildCount(NavigationTreeNode node);
 
-  Stream<NavigationTreeNode> getChildrens(NavigationTreeNode parent);
+  Stream<NavigationTreeNode> getChildren(NavigationTreeNode parent);
 
   boolean hasChildren(NavigationTreeNode node);
 

@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 import org.smartbit4all.api.navigation.Navigation;
 import org.smartbit4all.api.navigation.NavigationApi;
-import org.smartbit4all.api.navigation.bean.NavigationConfig;
+import org.smartbit4all.api.navigation.NavigationConfig;
 import org.smartbit4all.api.navigation.bean.NavigationEntry;
 import org.smartbit4all.api.navigation.bean.NavigationEntryMeta;
 import org.smartbit4all.api.navigation.bean.NavigationNode;
@@ -110,7 +110,7 @@ public class NavigationControllerImpl implements NavigationController {
   }
 
   @Override
-  public Stream<NavigationTreeNode> getChildrens(NavigationTreeNode parent) {
+  public Stream<NavigationTreeNode> getChildren(NavigationTreeNode parent) {
     if (parent == null) {
       return rootNodes.stream().map(
           n -> new NavigationTreeNode(Kind.ENTRY, n.getId(), n.getEntry().getName(), null,
@@ -122,7 +122,7 @@ public class NavigationControllerImpl implements NavigationController {
     if (node != null) {
       navigationState.expandAll(node);
     }
-    return navigationState.getCildrens(parent.getIdentifier()).stream()
+    return navigationState.getChildren(parent.getIdentifier()).stream()
         .map(n -> new NavigationTreeNode(Kind.ENTRY, n.getId(), n.getEntry().getName(), null,
             n.getEntry().getIcon(), null));
 
