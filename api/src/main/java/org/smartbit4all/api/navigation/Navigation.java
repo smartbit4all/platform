@@ -31,7 +31,6 @@ import org.smartbit4all.api.ApiItemChangeEvent;
 import org.smartbit4all.api.ApiItemOperation;
 import org.smartbit4all.api.navigation.bean.NavigationAssociation;
 import org.smartbit4all.api.navigation.bean.NavigationAssociationMeta;
-import org.smartbit4all.api.navigation.bean.NavigationConfig;
 import org.smartbit4all.api.navigation.bean.NavigationEntry;
 import org.smartbit4all.api.navigation.bean.NavigationEntryMeta;
 import org.smartbit4all.api.navigation.bean.NavigationNode;
@@ -95,19 +94,19 @@ public class Navigation {
     return result;
   }
 
-  public List<NavigationNode> getCildrens(String parentId) {
+  public List<NavigationNode> getChildren(String parentId) {
     NavigationNode parent = nodes.get(parentId);
     if (parent == null || parent.getAssociations() == null || parent.getAssociations().isEmpty()) {
       return new ArrayList<>();
     }
-    List<NavigationNode> childrens = new ArrayList<>();
+    List<NavigationNode> children = new ArrayList<>();
     for (NavigationAssociation assoc : parent.getAssociations()) {
       if (assoc.getReferences() != null) {
-        assoc.getReferences().forEach(r -> childrens.add(r.getEndNode()));
+        assoc.getReferences().forEach(r -> children.add(r.getEndNode()));
       }
     }
 
-    return childrens;
+    return children;
   }
 
   public boolean hasChildren(String nodeId) {
@@ -138,7 +137,7 @@ public class Navigation {
     Map<URI, NavigationAssociation> naviAssocByMetaUri = node.getAssociations()
           .stream()
           .filter(a -> a.getLastNavigation() == null)
-          .collect(Collectors.toMap(a -> a.getMeta().getUri(),
+          .collect(Collectors.toMap(a -> a.getMetaUri(),
                                     a -> a));
     
     URI currentObjectUri = node.getEntry().getObjectUri();
@@ -216,7 +215,7 @@ public class Navigation {
   /**
    * Constructs the {@link NavigationReference} based on the entry. If we find all the
    * {@link NavigationEntry}s as {@link NavigationNode} in the registry then we attach to the
-   * existing ones. Else we add the {@link NavigationEntry} as node and we refers the newly added
+   * existing ones. Else we add the {@link NavigationEntry} as node and we refer the newly added
    * node.
    * 
    * @param referenceEntry
@@ -241,25 +240,41 @@ public class Navigation {
     nodes.put(node.getId(), node);
   }
 
+  /**
+   * Creates a new {@link NavigationNode} with the given {@link NavigationEntry} and the
+   * {@link NavigationAssociation}-s provided by the corresponding meta of the given 
+   * {@link NavigationConfig}.
+   * 
+   * @param entry
+   *            The entry of the new node.
+   * @param config
+   *            The configuration that provides the possible associations from the node.
+   * @return A new {@link NavigationNode} instance.
+   */
   public static NavigationNode node(NavigationEntry entry, NavigationConfig config) {
-    NavigationNode node;
-    node = new NavigationNode();
+    NavigationNode node = new NavigationNode();
     node.setEntry(entry);
     node.setId(UUID.randomUUID().toString());
     // Instantiate the associations by the meta.
     /* It's important that the meta held by the NavigationEntry here is the meta served by the NavigationApi and it's 
        associations are most likely different from the currently configured associations.*/
-    List<NavigationAssociationMeta> associations = new ArrayList<>();
-    config.getEntries()
-        .stream()
-        .filter(e -> e.getName().equals(entry.getMeta().getName()))
-        .findFirst()
-        .ifPresent(e -> associations.addAll(
-            e.getAssociations() != null ? e.getAssociations() : Collections.emptyList()));
-    node.setAssociations(associations.isEmpty() ? Collections.emptyList()
-        : associations.stream()
-            .map(a -> association(a, node))
+    List<URI> assocMetaUris = config.getAssocMetaUris(entry.getMeta().getUri());
+    node.setAssociations(assocMetaUris == null || assocMetaUris.isEmpty() ? Collections.emptyList()
+        : assocMetaUris.stream()
+            .map(assocMetaUri -> association(assocMetaUri, node, config))
             .collect(Collectors.toList()));
+//    List<NavigationAssociationMeta> assocMetas = new ArrayList<>();
+//    config.getEntries()
+//        .stream()
+//        .filter(e -> e.getName().equals(entry.getMeta().getName()))
+//        .findFirst()
+//        .ifPresent(e -> assocMetas.addAll(
+//            e.getAssociations() != null ? e.getAssociations() : Collections.emptyList()));
+//    node.setAssociations(assocMetas.isEmpty() ? Collections.emptyList()
+//        : assocMetas.stream()
+//            .map(assocMeta -> association(assocMeta.getUri(), node))
+//            .collect(Collectors.toList()));
+    
     return node;
   }
   
@@ -274,12 +289,12 @@ public class Navigation {
     return result;
   }
 
-  public static NavigationAssociation association(NavigationAssociationMeta assocMeta, NavigationNode node) {
+  public static NavigationAssociation association(URI assocMetaUri, NavigationNode node, NavigationConfig config) {
     NavigationAssociation result = new NavigationAssociation();
-    result.setHidden(true); // TODO default by meta!
+    result.setHidden(config.isAssocVisible(assocMetaUri));
     result.setId(UUID.randomUUID().toString());
     result.setLastNavigation(null);
-    result.setMeta(assocMeta);
+    result.setMetaUri(assocMetaUri);
     result.setNode(node);
     return result;
   }

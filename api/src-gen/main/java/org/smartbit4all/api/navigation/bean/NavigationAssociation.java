@@ -1,5 +1,6 @@
 package org.smartbit4all.api.navigation.bean;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -21,8 +22,8 @@ public class NavigationAssociation   {
   @JsonProperty("node")
   private NavigationNode node;
 
-  @JsonProperty("meta")
-  private NavigationAssociationMeta meta;
+  @JsonProperty("metaUri")
+  private URI metaUri;
 
   @JsonProperty("lastNavigation")
   private Integer lastNavigation;
@@ -77,25 +78,25 @@ public class NavigationAssociation   {
     this.node = node;
   }
 
-  public NavigationAssociation meta(NavigationAssociationMeta meta) {
-    this.meta = meta;
+  public NavigationAssociation metaUri(URI metaUri) {
+    this.metaUri = metaUri;
     return this;
   }
 
   /**
-   * Get meta
-   * @return meta
+   * Get metaUri
+   * @return metaUri
   */
   @ApiModelProperty(value = "")
 
   @Valid
 
-  public NavigationAssociationMeta getMeta() {
-    return meta;
+  public URI getMetaUri() {
+    return metaUri;
   }
 
-  public void setMeta(NavigationAssociationMeta meta) {
-    this.meta = meta;
+  public void setMetaUri(URI metaUri) {
+    this.metaUri = metaUri;
   }
 
   public NavigationAssociation lastNavigation(Integer lastNavigation) {
@@ -179,7 +180,7 @@ public class NavigationAssociation   {
     NavigationAssociation navigationAssociation = (NavigationAssociation) o;
     return Objects.equals(this.id, navigationAssociation.id) &&
         Objects.equals(this.node, navigationAssociation.node) &&
-        Objects.equals(this.meta, navigationAssociation.meta) &&
+        Objects.equals(this.metaUri, navigationAssociation.metaUri) &&
         Objects.equals(this.lastNavigation, navigationAssociation.lastNavigation) &&
         Objects.equals(this.hidden, navigationAssociation.hidden) &&
         Objects.equals(this.references, navigationAssociation.references);
@@ -187,7 +188,7 @@ public class NavigationAssociation   {
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, node, meta, lastNavigation, hidden, references);
+    return Objects.hash(id, node, metaUri, lastNavigation, hidden, references);
   }
 
   @Override
@@ -197,7 +198,7 @@ public class NavigationAssociation   {
     
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    node: ").append(toIndentedString(node)).append("\n");
-    sb.append("    meta: ").append(toIndentedString(meta)).append("\n");
+    sb.append("    metaUri: ").append(toIndentedString(metaUri)).append("\n");
     sb.append("    lastNavigation: ").append(toIndentedString(lastNavigation)).append("\n");
     sb.append("    hidden: ").append(toIndentedString(hidden)).append("\n");
     sb.append("    references: ").append(toIndentedString(references)).append("\n");
