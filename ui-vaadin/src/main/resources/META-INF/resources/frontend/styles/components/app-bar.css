@@ -13,8 +13,8 @@
 
 /* Container */
 .app-bar__container {
-  padding-left: var(--lumo-space-r-l);
-  padding-right: var(--lumo-space-r-l);
+  padding-left: var(--lumo-space-resp-l);
+  padding-right: var(--lumo-space-resp-l);
   transition: padding var(--transition-duration-m);
 }
 
@@ -62,8 +62,8 @@
 
 /* Tabs */
 .app-bar__tab-container {
-  padding-left: var(--lumo-space-r-l);
-  padding-right: var(--lumo-space-r-l);
+  padding-left: var(--lumo-space-resp-l);
+  padding-right: var(--lumo-space-resp-l);
 }
 
 .app-bar__tabs {

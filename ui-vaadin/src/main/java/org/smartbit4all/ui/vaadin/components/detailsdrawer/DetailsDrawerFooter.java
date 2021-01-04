@@ -1,34 +1,30 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
  * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 package org.smartbit4all.ui.vaadin.components.detailsdrawer;
 
 import java.util.function.Supplier;
-import org.smartbit4all.ui.vaadin.components.FlexBoxLayout;
-import org.smartbit4all.ui.vaadin.layout.size.Horizontal;
-import org.smartbit4all.ui.vaadin.layout.size.Right;
-import org.smartbit4all.ui.vaadin.layout.size.Vertical;
-import org.smartbit4all.ui.vaadin.util.LumoStyles;
-import org.smartbit4all.ui.vaadin.util.UIUtils;
+import org.smartbit4all.ui.vaadin.util.Buttons;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.shared.Registration;
 
-public class DetailsDrawerFooter extends FlexBoxLayout {
+public class DetailsDrawerFooter extends FlexLayout {
+
+  private String CLASS_NAME = "details-drawer-footer";
 
   private Button view;
   private Button delete;
@@ -36,45 +32,41 @@ public class DetailsDrawerFooter extends FlexBoxLayout {
   private Button cancel;
 
   public DetailsDrawerFooter() {
-    setBackgroundColor(LumoStyles.Color.Contrast._5);
-    setPadding(Horizontal.RESPONSIVE_L, Vertical.S);
-    setSpacing(Right.S);
-    setJustifyContentMode(JustifyContentMode.EVENLY);
-    setWidthFull();
+    setClassName(CLASS_NAME);
   }
 
   public Registration addViewListener(
       ComponentEventListener<ClickEvent<Button>> listener) {
-    view = addButton(view, () -> UIUtils.createPrimaryButton(getTranslation("title.view")));
+    view = addButton(view, () -> Buttons.createPrimaryButton(getTranslation("title.view")));
     return view.addClickListener(listener);
   }
 
   public Registration addDeleteListener(
       ComponentEventListener<ClickEvent<Button>> listener) {
-    delete = addButton(delete, () -> UIUtils.createTertiaryButton(getTranslation("title.delete")));
+    delete = addButton(delete, () -> Buttons.createTertiaryButton(getTranslation("title.delete")));
     return delete.addClickListener(listener);
   }
 
   public Registration addSaveListener(
       ComponentEventListener<ClickEvent<Button>> listener) {
-    save = addButton(save, () -> UIUtils.createPrimaryButton(getTranslation("title.save")));
+    save = addButton(save, () -> Buttons.createPrimaryButton(getTranslation("title.save")));
     return save.addClickListener(listener);
   }
 
   public Registration addCancelListener(
       ComponentEventListener<ClickEvent<Button>> listener) {
 
-    cancel = addButton(cancel, () -> UIUtils.createTertiaryButton(getTranslation("title.cancel")));
+    cancel = addButton(cancel, () -> Buttons.createTertiaryButton(getTranslation("title.cancel")));
     return cancel.addClickListener(listener);
   }
 
   private Button addButton(Button buttonField, Supplier<Button> buttonFactory) {
-    if(buttonField != null) {
+    if (buttonField != null) {
       remove(buttonField);
     }
     buttonField = buttonFactory.get();
     add(buttonField);
     return buttonField;
   }
-  
+
 }

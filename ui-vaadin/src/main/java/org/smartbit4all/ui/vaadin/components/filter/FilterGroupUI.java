@@ -17,9 +17,11 @@ package org.smartbit4all.ui.vaadin.components.filter;
 import org.smartbit4all.api.filter.bean.FilterGroupType;
 import org.smartbit4all.ui.common.filter.DynamicFilterController;
 import org.smartbit4all.ui.common.filter.FilterGroupUIState;
-import org.smartbit4all.ui.vaadin.util.IconSize;
-import org.smartbit4all.ui.vaadin.util.TextColor;
-import org.smartbit4all.ui.vaadin.util.UIUtils;
+import org.smartbit4all.ui.vaadin.util.Css;
+import org.smartbit4all.ui.vaadin.util.Css.IconSize;
+import org.smartbit4all.ui.vaadin.util.Css.TextColor;
+import org.smartbit4all.ui.vaadin.util.Icons;
+import org.smartbit4all.ui.vaadin.util.Labels;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
@@ -80,17 +82,17 @@ public class FilterGroupUI extends FlexLayout implements DropTarget<FlexLayout> 
     groupType = FilterGroupType.AND;
     btnGroupType = new Button(groupType.getValue());
     btnGroupType.addClickListener(groupTypeChangeListener());
-    UIUtils.stopClickEventPropagation(btnGroupType);
+    Css.stopClickEventPropagation(btnGroupType);
 
     btnAddChildGroup = new Button("+");
     btnAddChildGroup.addClickListener(addChildGroupListener());
     btnAddChildGroup.addClassName("filter-addchildgroup");
-    UIUtils.stopClickEventPropagation(btnAddChildGroup);
+    Css.stopClickEventPropagation(btnAddChildGroup);
 
     btnRemoveGroup = new Button("x");
     btnRemoveGroup.addClickListener(removeGroupListener());
     btnRemoveGroup.addClassName("filter-removegroup");
-    UIUtils.stopClickEventPropagation(btnRemoveGroup);
+    Css.stopClickEventPropagation(btnRemoveGroup);
 
     buttonsLayout = new FlexLayout();
     buttonsLayout.addClassName("filter-buttons");
@@ -103,7 +105,7 @@ public class FilterGroupUI extends FlexLayout implements DropTarget<FlexLayout> 
     if (uiState.isChildGroupAllowed()) {
       ctrlButtonsLayout.add(btnAddChildGroup);
       addClickListener(groupChangeListener());
-      UIUtils.stopClickEventPropagation(this);
+      Css.stopClickEventPropagation(this);
     }
 
     if (uiState.isCloseable()) {
@@ -177,13 +179,13 @@ public class FilterGroupUI extends FlexLayout implements DropTarget<FlexLayout> 
     iconLayout.removeAll();
     if (icon != null && icon.length() > 0) {
       VaadinIcon vaadinIcon = VaadinIcon.valueOf(icon.toUpperCase());
-      Icon filterIcon = UIUtils.createIcon(IconSize.S, TextColor.TERTIARY, vaadinIcon);
+      Icon filterIcon = Icons.createIcon(IconSize.S, TextColor.TERTIARY, vaadinIcon);
       filterIcon.addClassName("filter-icon");
       iconLayout.add(filterIcon);
     }
 
     if (label != null && label.length() > 0) {
-      Label filterLabel = UIUtils.createH4Label(getTranslation(label));
+      Label filterLabel = Labels.createH4Label(getTranslation(label));
       filterLabel.addClassName("filter-label");
       iconLayout.add(filterLabel);
     }

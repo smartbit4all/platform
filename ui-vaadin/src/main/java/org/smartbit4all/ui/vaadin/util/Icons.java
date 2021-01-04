@@ -12,34 +12,18 @@
  * You should have received a copy of the GNU Lesser General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package org.smartbit4all.ui.vaadin.components.navigation.drawer;
+package org.smartbit4all.ui.vaadin.util;
 
-import org.smartbit4all.ui.vaadin.util.Css;
-import org.smartbit4all.ui.vaadin.util.Labels;
-import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Image;
-import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 
-@CssImport("./styles/components/brand-expression.css")
-public class BrandExpression extends Div {
+public class Icons {
 
-  private String CLASS_NAME = "brand-expression";
-
-  private Image logo;
-  private Label title;
-
-  public BrandExpression(String text, String imageName) {
-    setClassName(CLASS_NAME);
-
-    logo = new Image(Css.IMG_PATH + imageName, "");
-    logo.setAlt(text + " logo");
-    logo.setClassName(CLASS_NAME + "__logo");
-
-    title = Labels.createH3Label(text);
-    title.addClassName(CLASS_NAME + "__title");
-
-    add(logo, title);
+  public static Icon createIcon(String size, String color, VaadinIcon icon) {
+    Icon i = new Icon(icon);
+    Css.setSize(size, i);
+    Css.setTextColor(color, i);
+    return i;
   }
 
 }

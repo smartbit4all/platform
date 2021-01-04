@@ -1,0 +1,18 @@
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+  width: 100%;
+}
+
+vaadin-grid-cell-content {
+  text-overflow: ellipsis;
+}
+
+vaadin-text-field {
+  align-self: auto;
+}
+
+vaadin-grid-cell-content vaadin-checkbox {
+    width: 100%;
+}
