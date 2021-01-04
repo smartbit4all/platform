@@ -6,15 +6,90 @@ info:
   contact:
     email: info@it4all.hu
   version: 1.0.0
+tags:
+- name: Navigation
 paths:
-  /nope:
+  /entry:
     post:
-      summary: Placeholder for generation
+      tags:
+      - Navigation
+      summary: 'Retrieve the entries from the navigations.'
+      operationId: 'getEntry'
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties: 
+                entryMetaUri:
+                  type: string
+                  format: uri
+                objectUri:
+                  type: string
+                  format: uri
+            encoding:
+              entryMetaUri:
+                contentType: application/json
+              objectUri:
+                contentType: application/json
       responses:
         '200':
-          description: nope
+          description: 'The navigation entry if we found it or null if missing'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NavigationEntry'
+  /navigate:
+    post:
+      tags:
+      - Navigation
+      summary: 'Queries all data sources to populate the associations starting from the given entry.'
+      operationId: 'navigate'
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required: [objectUri, associationMetaUris]
+              properties:
+                objectUri:
+                  description: 'The URI of the api object that is the starting point of the navigation. It must be a valid URI that can be the starting point of the associations we provided.'
+                  type: string
+                  format: uri
+                associationMetaUris:
+                  description: 'The list of associations to identify the direction we want to navigate. If we skip this parameter (null) then we will have all the associations defined in the meta'
+                  type: array
+                  items:
+                    type: string
+                    format: uri
+            encoding:
+              objectUri:
+                contentType: application/json
+              associationMetaUris:
+                contentType: application/json
+      responses:
+        '200':
+          description: 'The map of the references by the URI of association meta we passed in the associations parameter.'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NavigationResponse'
 components:
   schemas:
+    NavigationResponse:
+      type: object
+      properties:
+        associationMetaUri:
+          type: string
+          format: uri
+        referenceEntries:
+          type: array
+          items:
+            $ref: '#/components/schemas/NavigationReferenceEntry'
     NavigationConfig:
       type: object
       description: 'API: Describes all the entries and associations in the given navigation.'
@@ -88,8 +163,9 @@ components:
           description: 'The unique identifier of the given association - UUID'
         node:
           $ref: '#/components/schemas/NavigationNode'
-        meta:
-          $ref: '#/components/schemas/NavigationAssociationMeta'
+        metaUri:
+          type: string
+          format: uri
         lastNavigation:
           type: integer
           description: 'The last navigation time (in millis) when the given association was retrieved. If null then it has never been navigated.'
