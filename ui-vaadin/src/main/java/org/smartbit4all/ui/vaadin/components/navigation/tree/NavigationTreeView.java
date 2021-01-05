@@ -61,15 +61,7 @@ public class NavigationTreeView implements NavigationView {
     tree.addSelectionListener(selection -> {
       selection.getFirstSelectedItem().ifPresent(s -> {
         UIViewShowCommand showCommand = controller.getViewCommand(s);
-        if (showCommand != null) {
-          try (UIViewParameterVaadinTransition param =
-              new UIViewParameterVaadinTransition(showCommand.getParameters())) {
-
-            tree.getUI().ifPresent(ui -> ui.navigate(showCommand.getViewName(), param.construct()));
-          } catch (Exception e) {
-            log.error("Unable to pass parameters", e);
-          }
-        }
+        showSelected(showCommand);
         // if (s.getEntry().getViews() != null && !s.getEntry().getViews().isEmpty()) {
         // // TODO Here we need a more sophisticated solution to offer the potential views.
         // org.smartbit4all.api.navigation.bean.NavigationView navigationView =
@@ -83,6 +75,20 @@ public class NavigationTreeView implements NavigationView {
     setDataProviderForTree();
 
   }
+
+
+  protected void showSelected(UIViewShowCommand showCommand) {
+    if (showCommand != null) {
+      try (UIViewParameterVaadinTransition param =
+          new UIViewParameterVaadinTransition(showCommand.getParameters())) {
+
+        tree.getUI().ifPresent(ui -> ui.navigate(showCommand.getViewName(), param.construct()));
+      } catch (Exception e) {
+        log.error("Unable to pass parameters", e);
+      }
+    }
+  }
+  
 
   private void setDataProviderForTree() {
     HierarchicalDataProvider<NavigationTreeNode, Void> dataProvider =
