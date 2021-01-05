@@ -71,7 +71,8 @@ public class FilterOperationDateComboBoxPicker extends FilterOperationUI {
   private void propagateValueChange() {
     String fromString = beginDate.getValue() == null ? null : beginDate.getValue().toString();
     String toString = endDate.getValue() == null ? null : endDate.getValue().toString();
-    String filterOption = cbTimeFilterOption.getValue().toString();
+    String filterOption =
+        cbTimeFilterOption.getValue() == null ? null : cbTimeFilterOption.getValue().toString();
     FilterOperandValue value1 =
         new FilterOperandValue().type(LocalDate.class.getName()).value(fromString);
     FilterOperandValue value2 =
@@ -102,7 +103,9 @@ public class FilterOperationDateComboBoxPicker extends FilterOperationUI {
       endDate.setValue(DateConverter.getDate(value2.getValue()));
     }
     if (value3 == null || value3.getValue() == null) {
-      // cbTimeFilterOption.setValue(null);
+      if (cbTimeFilterOption.getValue() != null) {
+        cbTimeFilterOption.setValue(null);
+      }
     } else {
       TimeFilterOptions newValue = TimeFilterOptions.valueOf(value3.getValue());
       TimeFilterOptions oldValue = cbTimeFilterOption.getValue();
@@ -115,7 +118,7 @@ public class FilterOperationDateComboBoxPicker extends FilterOperationUI {
 
   @Override
   public void setSelection(List<URI> list) {
-    // NONE
+    // NOP
   }
 
 }

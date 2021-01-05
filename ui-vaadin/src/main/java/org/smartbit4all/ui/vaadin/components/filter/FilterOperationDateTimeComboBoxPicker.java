@@ -17,6 +17,7 @@ package org.smartbit4all.ui.vaadin.components.filter;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import org.smartbit4all.api.filter.bean.FilterOperandValue;
 import org.smartbit4all.ui.common.filter.DateConverter;
 import org.smartbit4all.ui.common.filter.TimeFilterOptions;
@@ -73,7 +74,8 @@ public class FilterOperationDateTimeComboBoxPicker extends FilterOperationUI {
     String fromString =
         beginDateTime.getValue() == null ? null : beginDateTime.getValue().toString();
     String toString = endDateTime.getValue() == null ? null : endDateTime.getValue().toString();
-    String filterOption = cbTimeFilterOption.getValue().toString();
+    String filterOption =
+        cbTimeFilterOption.getValue() == null ? null : cbTimeFilterOption.getValue().toString();
     FilterOperandValue value1 =
         new FilterOperandValue().type(LocalDateTime.class.getName()).value(fromString);
     FilterOperandValue value2 =
@@ -102,15 +104,21 @@ public class FilterOperationDateTimeComboBoxPicker extends FilterOperationUI {
       endDateTime.setValue(DateConverter.getDateTime(value2.getValue()));
     }
     if (value3 == null || value3.getValue() == null) {
-      cbTimeFilterOption.setValue(null);
+      if (cbTimeFilterOption.getValue() != null) {
+        cbTimeFilterOption.setValue(null);
+      }
     } else {
-      cbTimeFilterOption.setValue(TimeFilterOptions.valueOf(value3.getValue()));
+      TimeFilterOptions newValue = TimeFilterOptions.valueOf(value3.getValue());
+      TimeFilterOptions oldValue = cbTimeFilterOption.getValue();
+      if (!Objects.equals(newValue, oldValue)) {
+        cbTimeFilterOption.setValue(newValue);
+      }
     }
   }
 
   @Override
   public void setSelection(List<URI> list) {
-
+    // NOP
   }
 
 }
