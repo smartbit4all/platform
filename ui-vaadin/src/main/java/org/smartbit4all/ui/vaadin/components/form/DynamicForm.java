@@ -112,7 +112,8 @@ public class DynamicForm<BEAN> extends Composite<FlexLayout> {
 
     String name = method.getName();
     if (name.startsWith("get") || name.startsWith("set")) {
-      name = name.substring(3);
+      // cut the first three letters and lowercase the new first one.
+      name = name.substring(3, 4).toLowerCase() + name.substring(4);
     }
     return name;
   }
