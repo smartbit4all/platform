@@ -16,6 +16,7 @@ package org.smartbit4all.ui.vaadin.components.filter;
 
 import java.net.URI;
 import java.util.List;
+import org.smartbit4all.api.filter.bean.FilterOperandValue;
 import com.vaadin.flow.component.textfield.TextField;
 
 public class FilterOperationOneFieldUI extends FilterOperationUI {
@@ -34,17 +35,13 @@ public class FilterOperationOneFieldUI extends FilterOperationUI {
   }
 
   @Override
-  public void setValues(String... values) {
-    if (values == null || values[0] == null) {
+  public void setValues(FilterOperandValue value1, FilterOperandValue value2,
+      FilterOperandValue value3) {
+    if (value1 == null || value1.getValue() == null) {
       textField.setValue(null);
       return;
     }
-
-    if (values.length != 1) {
-      throw new RuntimeException(
-          "This method accepts 1 value, but " + values.length + " was given");
-    }
-    textField.setValue(values[0]);
+    textField.setValue(value1.getValue());
   }
 
   @Override

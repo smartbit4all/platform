@@ -77,7 +77,7 @@ public class DynamicFilterViewUI implements DynamicFilterView {
   public void updateFilterSelector(FilterSelectorUIState filterSelector) {
     FilterSelectorUI selectorUI = selectorsById.get(filterSelector.getId());
     if (selectorUI == null) {
-      throw new RuntimeException("FilterSelectorUI not found! (" + filterSelector.getName() + ")");
+      throw new RuntimeException("FilterSelectorUI not found! (" + filterSelector.getId() + ")");
     }
     selectorUI.updateState(filterSelector);
   }

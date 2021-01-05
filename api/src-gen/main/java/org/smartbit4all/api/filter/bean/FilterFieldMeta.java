@@ -16,11 +16,11 @@ import io.swagger.annotations.ApiModelProperty;
     description = "Descriptor of a possible filter field. This field doesn't have to correspond to an existing entity's property, it is simple a way of filtering.")
 
 public class FilterFieldMeta {
-  @JsonProperty("name")
-  private String name;
+  @JsonProperty("labelCode")
+  private String labelCode;
 
-  @JsonProperty("groupName")
-  private String groupName;
+  @JsonProperty("iconCode")
+  private String iconCode;
 
   @JsonProperty("style")
   private String style;
@@ -29,46 +29,46 @@ public class FilterFieldMeta {
   @Valid
   private List<FilterOperation> operations = null;
 
-  public FilterFieldMeta name(String name) {
-    this.name = name;
+  public FilterFieldMeta labelCode(String labelCode) {
+    this.labelCode = labelCode;
     return this;
   }
 
   /**
-   * Name of the filterable field.
+   * Code of label to display for this filter field selector.
    * 
-   * @return name
+   * @return labelCode
    */
-  @ApiModelProperty(value = "Name of the filterable field.")
+  @ApiModelProperty(value = "Code of label to display for this filter field selector.")
 
 
-  public String getName() {
-    return name;
+  public String getLabelCode() {
+    return labelCode;
   }
 
-  public void setName(String name) {
-    this.name = name;
+  public void setLabelCode(String labelCode) {
+    this.labelCode = labelCode;
   }
 
-  public FilterFieldMeta groupName(String groupName) {
-    this.groupName = groupName;
+  public FilterFieldMeta iconCode(String iconCode) {
+    this.iconCode = iconCode;
     return this;
   }
 
   /**
-   * Get groupName
+   * Code of icon to display for this filter field selector.
    * 
-   * @return groupName
+   * @return iconCode
    */
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Code of icon to display for this filter field selector.")
 
 
-  public String getGroupName() {
-    return groupName;
+  public String getIconCode() {
+    return iconCode;
   }
 
-  public void setGroupName(String groupName) {
-    this.groupName = groupName;
+  public void setIconCode(String iconCode) {
+    this.iconCode = iconCode;
   }
 
   public FilterFieldMeta style(String style) {
@@ -132,15 +132,15 @@ public class FilterFieldMeta {
       return false;
     }
     FilterFieldMeta filterFieldMeta = (FilterFieldMeta) o;
-    return Objects.equals(this.name, filterFieldMeta.name) &&
-        Objects.equals(this.groupName, filterFieldMeta.groupName) &&
+    return Objects.equals(this.labelCode, filterFieldMeta.labelCode) &&
+        Objects.equals(this.iconCode, filterFieldMeta.iconCode) &&
         Objects.equals(this.style, filterFieldMeta.style) &&
         Objects.equals(this.operations, filterFieldMeta.operations);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, groupName, style, operations);
+    return Objects.hash(labelCode, iconCode, style, operations);
   }
 
   @Override
@@ -148,8 +148,8 @@ public class FilterFieldMeta {
     StringBuilder sb = new StringBuilder();
     sb.append("class FilterFieldMeta {\n");
 
-    sb.append("    name: ").append(toIndentedString(name)).append("\n");
-    sb.append("    groupName: ").append(toIndentedString(groupName)).append("\n");
+    sb.append("    labelCode: ").append(toIndentedString(labelCode)).append("\n");
+    sb.append("    iconCode: ").append(toIndentedString(iconCode)).append("\n");
     sb.append("    style: ").append(toIndentedString(style)).append("\n");
     sb.append("    operations: ").append(toIndentedString(operations)).append("\n");
     sb.append("}");

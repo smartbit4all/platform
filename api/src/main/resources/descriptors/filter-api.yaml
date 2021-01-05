@@ -24,10 +24,6 @@ components:
     FilterConfig:
       type: object
       properties:
-        filterFieldMetas:
-          type: array
-          items:
-            $ref: '#/components/schemas/FilterFieldMeta'
         filterGroupMetas:
           type: array
           items:
@@ -40,11 +36,12 @@ components:
       type: object
       description: "Descriptor of a possible filter field. This field doesn't have to correspond to an existing entity's property, it is simple a way of filtering."
       properties:
-        name:
+        labelCode:
           type: string
-          description: 'Name of the filterable field.'
-        groupName:
+          description: 'Code of label to display for this filter field selector.'
+        iconCode:
           type: string
+          description: 'Code of icon to display for this filter field selector.'
         style:
           type: string
         operations:
@@ -54,9 +51,13 @@ components:
     FilterGroupMeta:
       type: object
       properties:
-        name:
+        filterFieldMetas:
+          type: array
+          items:
+            $ref: '#/components/schemas/FilterFieldMeta'
+        labelCode:
           type: string
-        icon:
+        iconCode:
           type: string
         style:
           type: string
@@ -64,24 +65,35 @@ components:
           $ref: '#/components/schemas/FilterGroupType'
     FilterOperation:
       type: object
-      description: 'Defines a possible way of using a filter field. For example: exact match, like, sounds like, interval, etc.'
+      description: 'Defines a possible way of using a filter field, with specifying Properties as well. For example: exact match, like, sounds like, interval, etc.'
       properties:
+        id:
+          type: string
+          description: 'Identifier of the filter operation within the possible filter operations list of a filter field.'
         filterView:
           type: string
           description: 'Declarative name of a FilterOperationUI, which will handle this operation.'
-        field1:
-          type: string
-        field2:
-          type: string
-        possibleValues:
+        propertyUri1:
           type: string
           format: uri
-        code:
+          description: 'Property identifier, specifies which property should be used in this filter.'
+        propertyUri2:
           type: string
-        displayValue:
+          format: uri
+          description: 'Property identifier, specifies which property should be used in this filter.'
+        possibleValuesUri:
           type: string
-        icon:
+          format: uri
+          description: 'Value set identifer for selections. Values can be aquired by ValueAPI.'
+        operationCode:
           type: string
+          description: 'Operation code, specifies the operator of the condition.'
+        labelCode:
+          type: string
+          description: 'Code of label to display for this operation.'
+        iconCode:
+          type: string
+          description: 'Icon'
     FilterGroupType:
       type: string
       enum: [
@@ -106,21 +118,35 @@ components:
             $ref: '#/components/schemas/FilterGroup'
         isNegated:
           type: boolean
+    FilterOperandValue:
+      type: object
+      properties:
+        type:
+          type: string
+        value:
+          type: string
     FilterField:
       type: object
       properties:
-        metaName:
+        propertyUri1:
           type: string
-          description: Name of the referenced FilterFieldMeta.
-        operation:
-          $ref: '#/components/schemas/FilterOperation'
+          format: uri
+          description: 'Property identifier, specifies which property should be used in this filter.'
+        propertyUri2:
+          type: string
+          format: uri
+          description: 'Property identifier, specifies which property should be used in this filter.'
+        operationCode:
+          type: string
+          description: 'Operation code, specifies the operator of the condition.'
         value1:
-          type: string
+          $ref: '#/components/schemas/FilterOperandValue'
         value2:
-          type: string
+          $ref: '#/components/schemas/FilterOperandValue'
+        value3:
+          $ref: '#/components/schemas/FilterOperandValue'
         selectedValues:
           type: array
           items:
             type: string
             format: uri
-            #$ref: 'value-api.yaml#/components/schemas/Value'

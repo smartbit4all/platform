@@ -17,6 +17,7 @@ package org.smartbit4all.ui.vaadin.components.filter;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
+import org.smartbit4all.api.filter.bean.FilterOperandValue;
 import org.smartbit4all.ui.common.filter.DateConverter;
 import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
 import com.vaadin.flow.component.HasValue.ValueChangeListener;
@@ -43,11 +44,13 @@ public class FilterOperationDateInterval extends FilterOperationUI {
   private ValueChangeListener<? super ComponentValueChangeEvent<DatePicker, LocalDate>> valueChangeListener() {
     return e -> {
       if (e.isFromClient()) {
-        String beginDateString =
-            beginDate.getValue() == null ? null : beginDate.getValue().toString();
-        String endDateString = endDate.getValue() == null ? null : endDate.getValue().toString();
-        String[] values = {beginDateString, endDateString};
-        valueChanged(getFilterId(), values);
+        String fromString = beginDate.getValue() == null ? null : beginDate.getValue().toString();
+        String toString = endDate.getValue() == null ? null : endDate.getValue().toString();
+        FilterOperandValue value1 =
+            new FilterOperandValue().type(LocalDate.class.getName()).value(fromString);
+        FilterOperandValue value2 =
+            new FilterOperandValue().type(LocalDate.class.getName()).value(toString);
+        valueChanged(getFilterId(), value1, value2, null);
       }
     };
   }
@@ -60,23 +63,18 @@ public class FilterOperationDateInterval extends FilterOperationUI {
   }
 
   @Override
-  public void setValues(String... values) {
-    if (values == null || values[0] == null) {
+  public void setValues(FilterOperandValue value1, FilterOperandValue value2,
+      FilterOperandValue value3) {
+    if (value1 == null || value1.getValue() == null) {
       beginDate.setValue(null);
-      return;
-    } else if (values[1] == null) {
+    } else {
+      beginDate.setValue(DateConverter.getDate(value1.getValue()));
+    }
+    if (value2 == null || value2.getValue() == null) {
       endDate.setValue(null);
-      return;
+    } else {
+      endDate.setValue(DateConverter.getDate(value2.getValue()));
     }
-
-    if (values.length != 2) {
-      throw new RuntimeException(
-          "This method accepts 2 Dates, but " + values.length + " were given!");
-    }
-
-    beginDate.setValue(DateConverter.getDate(values[0]));
-    endDate.setValue(DateConverter.getDate(values[1]));
-
   }
 
   @Override

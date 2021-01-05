@@ -18,6 +18,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.smartbit4all.api.filter.bean.FilterOperandValue;
 import org.smartbit4all.api.value.bean.Value;
 import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
 import com.vaadin.flow.component.HasValue.ValueChangeListener;
@@ -55,7 +56,8 @@ public class FilterOperationComboBoxUI extends FilterOperationUI {
   }
 
   @Override
-  public void setValues(String... values) {
+  public void setValues(FilterOperandValue value1, FilterOperandValue value2,
+      FilterOperandValue value3) {
     // TODO Auto-generated method stub
 
   }

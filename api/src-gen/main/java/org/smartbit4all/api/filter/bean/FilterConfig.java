@@ -12,10 +12,6 @@ import io.swagger.annotations.ApiModelProperty;
  */
 
 public class FilterConfig {
-  @JsonProperty("filterFieldMetas")
-  @Valid
-  private List<FilterFieldMeta> filterFieldMetas = null;
-
   @JsonProperty("filterGroupMetas")
   @Valid
   private List<FilterGroupMeta> filterGroupMetas = null;
@@ -25,36 +21,6 @@ public class FilterConfig {
 
   @JsonProperty("defaultFilterGroupStyle")
   private String defaultFilterGroupStyle;
-
-  public FilterConfig filterFieldMetas(List<FilterFieldMeta> filterFieldMetas) {
-    this.filterFieldMetas = filterFieldMetas;
-    return this;
-  }
-
-  public FilterConfig addFilterFieldMetasItem(FilterFieldMeta filterFieldMetasItem) {
-    if (this.filterFieldMetas == null) {
-      this.filterFieldMetas = new ArrayList<>();
-    }
-    this.filterFieldMetas.add(filterFieldMetasItem);
-    return this;
-  }
-
-  /**
-   * Get filterFieldMetas
-   * 
-   * @return filterFieldMetas
-   */
-  @ApiModelProperty(value = "")
-
-  @Valid
-
-  public List<FilterFieldMeta> getFilterFieldMetas() {
-    return filterFieldMetas;
-  }
-
-  public void setFilterFieldMetas(List<FilterFieldMeta> filterFieldMetas) {
-    this.filterFieldMetas = filterFieldMetas;
-  }
 
   public FilterConfig filterGroupMetas(List<FilterGroupMeta> filterGroupMetas) {
     this.filterGroupMetas = filterGroupMetas;
@@ -138,16 +104,14 @@ public class FilterConfig {
       return false;
     }
     FilterConfig filterConfig = (FilterConfig) o;
-    return Objects.equals(this.filterFieldMetas, filterConfig.filterFieldMetas) &&
-        Objects.equals(this.filterGroupMetas, filterConfig.filterGroupMetas) &&
+    return Objects.equals(this.filterGroupMetas, filterConfig.filterGroupMetas) &&
         Objects.equals(this.defaultFilterStyle, filterConfig.defaultFilterStyle) &&
         Objects.equals(this.defaultFilterGroupStyle, filterConfig.defaultFilterGroupStyle);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(filterFieldMetas, filterGroupMetas, defaultFilterStyle,
-        defaultFilterGroupStyle);
+    return Objects.hash(filterGroupMetas, defaultFilterStyle, defaultFilterGroupStyle);
   }
 
   @Override
@@ -155,7 +119,6 @@ public class FilterConfig {
     StringBuilder sb = new StringBuilder();
     sb.append("class FilterConfig {\n");
 
-    sb.append("    filterFieldMetas: ").append(toIndentedString(filterFieldMetas)).append("\n");
     sb.append("    filterGroupMetas: ").append(toIndentedString(filterGroupMetas)).append("\n");
     sb.append("    defaultFilterStyle: ").append(toIndentedString(defaultFilterStyle)).append("\n");
     sb.append("    defaultFilterGroupStyle: ").append(toIndentedString(defaultFilterGroupStyle))

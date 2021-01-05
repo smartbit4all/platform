@@ -22,6 +22,7 @@ import org.smartbit4all.api.filter.bean.FilterConfigMode;
 import org.smartbit4all.api.filter.bean.FilterField;
 import org.smartbit4all.api.filter.bean.FilterGroup;
 import org.smartbit4all.api.filter.bean.FilterGroupType;
+import org.smartbit4all.api.filter.bean.FilterOperandValue;
 import org.smartbit4all.api.filter.bean.FilterOperation;
 import org.smartbit4all.api.value.ValueApi;
 import org.smartbit4all.api.value.bean.Value;
@@ -92,13 +93,13 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
       filterSelector.setEnabled(false);
       ui.updateFilterSelector(filterSelector);
     }
-    filterUIState.setPossibleValues(getPossibleValues(filterUIState.getFilter()));
+    filterUIState.setPossibleValues(getPossibleValues(filterUIState));
     ui.renderFilter(filterUIState);
     System.out.println(uiState.getRootFilterGroup().toString());
   }
 
-  private List<Value> getPossibleValues(FilterField dynamicFilter) {
-    URI uri = dynamicFilter.getOperation().getPossibleValues();
+  private List<Value> getPossibleValues(FilterFieldUIState filterUIState) {
+    URI uri = filterUIState.getSelectedOperation().getPossibleValuesUri();
 
     if (uri == null) {
       return null;
@@ -115,38 +116,36 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
   }
 
   @Override
-  public void filterOperationChanged(String filterId, String filterOperation) {
-    if (filterOperation == null) {
+  public void filterOperationChanged(String filterId, String filterOperationId) {
+    if (filterOperationId == null) {
       throw new NullPointerException("FilterOperation cannot be null!");
     }
     FilterFieldUIState filterUIState = uiState.filterUIStatesById.get(filterId);
+
     FilterField filter = filterUIState.getFilter();
-    if (filterOperation.equals(filter.getOperation().getCode())) {
-      // no change
-      System.out.println(uiState.getRootFilterGroup().toString());
-      return;
-    }
     for (FilterOperation operation : filterUIState.getOperations()) {
-      if (filterOperation.equals(operation.getCode())) {
-        filterUIState.getFilter().setOperation(operation);
-        filterUIState.getFilter().setValue1(null);
-        filterUIState.getFilter().setValue2(null);
-        ui.renderFilter(filterUIState);
+      if (filterOperationId.equals(operation.getId())) {
+        if (filterUIState.getSelectedOperation() == operation) {
+          // no change
+          return;
+        }
+        filterUIState.setSelectedOperation(operation);
         System.out.println(uiState.getRootFilterGroup().toString());
+        ui.renderFilter(filterUIState);
         return;
       }
     }
-    throw new RuntimeException("No filterOperation found by code " + filterOperation + "!");
+    throw new RuntimeException("No filterOperation found by code " + filterOperationId + "!");
   }
 
   @Override
-  public void filterValueChanged(String filterId, String... values) {
+  public void filterValueChanged(String filterId, FilterOperandValue value1,
+      FilterOperandValue value2, FilterOperandValue value3) {
     FilterFieldUIState filterFieldState = uiState.filterUIStatesById.get(filterId);
 
-    filterFieldState.getFilter().setValue1(values[0]);
-    if (values.length > 1 && values[1] != null) {
-      filterFieldState.getFilter().setValue2(values[1]);
-    }
+    filterFieldState.getFilter().setValue1(value1);
+    filterFieldState.getFilter().setValue2(value2);
+    filterFieldState.getFilter().setValue3(value3);
     ui.updateFilterState(filterFieldState);
     System.out.println(uiState.getRootFilterGroup().toString());
   }
@@ -170,13 +169,11 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
     group.getFilterFields().remove(filter);
     if (uiState.getFilterConfigMode() == FilterConfigMode.SIMPLE_DYNAMIC) {
       // find selector
-      for (FilterSelectorUIState selector : uiState.filterSelectors) {
-        if (selector.getName().equals(filter.getMetaName())) {
-          selector.setEnabled(true);
-          ui.updateFilterSelector(selector);
-          break;
-        }
-      }
+      FilterFieldUIState filterUIState = uiState.filterUIStatesById.get(filterId);
+      FilterSelectorUIState selector =
+          uiState.filterSelectorsById.get(filterUIState.getSelectorId());
+      selector.setEnabled(true);
+      ui.updateFilterSelector(selector);
       if (group.getFilterFields().isEmpty()) {
         removeFilterGroup(groupId);
       }
@@ -211,6 +208,7 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
     System.out.println(uiState.getRootFilterGroup().toString());
   }
 
+  @Override
   public void changeGroup(String oldGroupId, String newGroupId, String filterId) {
     ui.moveFilter(newGroupId, filterId);
     uiState.moveFilter(oldGroupId, newGroupId, filterId);

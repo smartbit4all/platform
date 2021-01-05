@@ -17,6 +17,7 @@ package org.smartbit4all.ui.vaadin.components.filter;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
+import org.smartbit4all.api.filter.bean.FilterOperandValue;
 import org.smartbit4all.ui.common.filter.DateConverter;
 import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
 import com.vaadin.flow.component.HasValue.ValueChangeListener;
@@ -38,8 +39,10 @@ public class FilterOperationDateEquals extends FilterOperationUI {
   private ValueChangeListener<? super ComponentValueChangeEvent<DatePicker, LocalDate>> valueChangeListener() {
     return e -> {
       if (e.isFromClient()) {
-        String[] values = {date.getValue().toString()};
-        valueChanged(getFilterId(), values);
+        String dateString = date.getValue() == null ? null : date.getValue().toString();
+        FilterOperandValue value1 =
+            new FilterOperandValue().type(LocalDate.class.getName()).value(dateString);
+        valueChanged(getFilterId(), value1, null, null);
       }
     };
   }
@@ -51,18 +54,13 @@ public class FilterOperationDateEquals extends FilterOperationUI {
   }
 
   @Override
-  public void setValues(String... values) {
-    if (values == null || values[0] == null) {
+  public void setValues(FilterOperandValue value1, FilterOperandValue value2,
+      FilterOperandValue value3) {
+    if (value1 == null || value1.getValue() == null) {
       date.setValue(null);
       return;
     }
-    // if (values.length != 1) {
-    // throw new RuntimeException(
-    // "This method accepts 1 Date, but " + values.length + " were given!");
-    // }
-
-    date.setValue(DateConverter.getDate(values[0]));
-
+    date.setValue(DateConverter.getDate(value1.getValue()));
   }
 
   @Override

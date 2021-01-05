@@ -21,31 +21,31 @@ import org.smartbit4all.api.value.bean.Value;
 
 public class FilterFieldUIState extends AbstractUIState {
 
-  private String labelCode;
-
   private FilterField filter;
   private FilterGroupUIState group;
+  private FilterSelectorUIState selector;
   private boolean isCloseable;
   private FilterLabelPosition position;
-  private List<FilterOperation> operations;
+  private FilterOperation selectedOperation;
   private List<Value> possibleValues;
 
-
   public FilterFieldUIState(FilterField filter,
-      FilterGroupUIState group,
-      FilterLabelPosition position, boolean isCloseable,
-      List<FilterOperation> operations) {
+      FilterSelectorUIState selector, FilterGroupUIState group,
+      FilterLabelPosition position, boolean isCloseable) {
     super();
     this.filter = filter;
     this.group = group;
-    this.labelCode = filter.getMetaName();
+    this.selector = selector;
     this.position = position;
     this.isCloseable = isCloseable;
-    this.operations = operations;
   }
 
   public String getLabelCode() {
-    return labelCode;
+    return selector.getLabelCode();
+  }
+
+  public Object getSelectorId() {
+    return selector.getId();
   }
 
   public Object getGroupId() {
@@ -69,11 +69,21 @@ public class FilterFieldUIState extends AbstractUIState {
   }
 
   public List<FilterOperation> getOperations() {
-    return operations;
+    return selector.getOperations();
   }
 
   public FilterOperation getSelectedOperation() {
-    return filter.getOperation();
+    return selectedOperation;
+  }
+
+  public void setSelectedOperation(FilterOperation selectedOperation) {
+    this.selectedOperation = selectedOperation;
+    filter.setOperationCode(selectedOperation.getOperationCode());
+    filter.setPropertyUri1(selectedOperation.getPropertyUri1());
+    filter.setPropertyUri2(selectedOperation.getPropertyUri2());
+    // TODO default values? maybe value caching for different operations?
+    filter.setValue1(null);
+    filter.setValue2(null);
   }
 
   public void setPossibleValues(List<Value> possibleValues) {

@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.smartbit4all.api.filter.bean.FilterOperandValue;
 import org.smartbit4all.api.value.bean.Value;
 import org.smartbit4all.ui.vaadin.components.selector.MultiSelectPopUp;
 
@@ -55,7 +56,8 @@ public class FilterOperationMultiSelectUI extends FilterOperationUI {
   }
 
   @Override
-  public void setValues(String... values) {
+  public void setValues(FilterOperandValue value1, FilterOperandValue value2,
+      FilterOperandValue value3) {
     // TODO
   }
 

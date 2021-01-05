@@ -13,66 +13,96 @@ import io.swagger.annotations.ApiModelProperty;
  */
 
 public class FilterField {
-  @JsonProperty("metaName")
-  private String metaName;
+  @JsonProperty("propertyUri1")
+  private URI propertyUri1;
 
-  @JsonProperty("operation")
-  private FilterOperation operation;
+  @JsonProperty("propertyUri2")
+  private URI propertyUri2;
+
+  @JsonProperty("operationCode")
+  private String operationCode;
 
   @JsonProperty("value1")
-  private String value1;
+  private FilterOperandValue value1;
 
   @JsonProperty("value2")
-  private String value2;
+  private FilterOperandValue value2;
+
+  @JsonProperty("value3")
+  private FilterOperandValue value3;
 
   @JsonProperty("selectedValues")
   @Valid
   private List<URI> selectedValues = null;
 
-  public FilterField metaName(String metaName) {
-    this.metaName = metaName;
+  public FilterField propertyUri1(URI propertyUri1) {
+    this.propertyUri1 = propertyUri1;
     return this;
   }
 
   /**
-   * Name of the referenced FilterFieldMeta.
+   * Property identifier, specifies which property should be used in this filter.
    * 
-   * @return metaName
+   * @return propertyUri1
    */
-  @ApiModelProperty(value = "Name of the referenced FilterFieldMeta.")
-
-
-  public String getMetaName() {
-    return metaName;
-  }
-
-  public void setMetaName(String metaName) {
-    this.metaName = metaName;
-  }
-
-  public FilterField operation(FilterOperation operation) {
-    this.operation = operation;
-    return this;
-  }
-
-  /**
-   * Get operation
-   * 
-   * @return operation
-   */
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(
+      value = "Property identifier, specifies which property should be used in this filter.")
 
   @Valid
 
-  public FilterOperation getOperation() {
-    return operation;
+  public URI getPropertyUri1() {
+    return propertyUri1;
   }
 
-  public void setOperation(FilterOperation operation) {
-    this.operation = operation;
+  public void setPropertyUri1(URI propertyUri1) {
+    this.propertyUri1 = propertyUri1;
   }
 
-  public FilterField value1(String value1) {
+  public FilterField propertyUri2(URI propertyUri2) {
+    this.propertyUri2 = propertyUri2;
+    return this;
+  }
+
+  /**
+   * Property identifier, specifies which property should be used in this filter.
+   * 
+   * @return propertyUri2
+   */
+  @ApiModelProperty(
+      value = "Property identifier, specifies which property should be used in this filter.")
+
+  @Valid
+
+  public URI getPropertyUri2() {
+    return propertyUri2;
+  }
+
+  public void setPropertyUri2(URI propertyUri2) {
+    this.propertyUri2 = propertyUri2;
+  }
+
+  public FilterField operationCode(String operationCode) {
+    this.operationCode = operationCode;
+    return this;
+  }
+
+  /**
+   * Operation code, specifies the operator of the condition.
+   * 
+   * @return operationCode
+   */
+  @ApiModelProperty(value = "Operation code, specifies the operator of the condition.")
+
+
+  public String getOperationCode() {
+    return operationCode;
+  }
+
+  public void setOperationCode(String operationCode) {
+    this.operationCode = operationCode;
+  }
+
+  public FilterField value1(FilterOperandValue value1) {
     this.value1 = value1;
     return this;
   }
@@ -84,16 +114,17 @@ public class FilterField {
    */
   @ApiModelProperty(value = "")
 
+  @Valid
 
-  public String getValue1() {
+  public FilterOperandValue getValue1() {
     return value1;
   }
 
-  public void setValue1(String value1) {
+  public void setValue1(FilterOperandValue value1) {
     this.value1 = value1;
   }
 
-  public FilterField value2(String value2) {
+  public FilterField value2(FilterOperandValue value2) {
     this.value2 = value2;
     return this;
   }
@@ -105,13 +136,36 @@ public class FilterField {
    */
   @ApiModelProperty(value = "")
 
+  @Valid
 
-  public String getValue2() {
+  public FilterOperandValue getValue2() {
     return value2;
   }
 
-  public void setValue2(String value2) {
+  public void setValue2(FilterOperandValue value2) {
     this.value2 = value2;
+  }
+
+  public FilterField value3(FilterOperandValue value3) {
+    this.value3 = value3;
+    return this;
+  }
+
+  /**
+   * Get value3
+   * 
+   * @return value3
+   */
+  @ApiModelProperty(value = "")
+
+  @Valid
+
+  public FilterOperandValue getValue3() {
+    return value3;
+  }
+
+  public void setValue3(FilterOperandValue value3) {
+    this.value3 = value3;
   }
 
   public FilterField selectedValues(List<URI> selectedValues) {
@@ -154,16 +208,19 @@ public class FilterField {
       return false;
     }
     FilterField filterField = (FilterField) o;
-    return Objects.equals(this.metaName, filterField.metaName) &&
-        Objects.equals(this.operation, filterField.operation) &&
+    return Objects.equals(this.propertyUri1, filterField.propertyUri1) &&
+        Objects.equals(this.propertyUri2, filterField.propertyUri2) &&
+        Objects.equals(this.operationCode, filterField.operationCode) &&
         Objects.equals(this.value1, filterField.value1) &&
         Objects.equals(this.value2, filterField.value2) &&
+        Objects.equals(this.value3, filterField.value3) &&
         Objects.equals(this.selectedValues, filterField.selectedValues);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(metaName, operation, value1, value2, selectedValues);
+    return Objects.hash(propertyUri1, propertyUri2, operationCode, value1, value2, value3,
+        selectedValues);
   }
 
   @Override
@@ -171,10 +228,12 @@ public class FilterField {
     StringBuilder sb = new StringBuilder();
     sb.append("class FilterField {\n");
 
-    sb.append("    metaName: ").append(toIndentedString(metaName)).append("\n");
-    sb.append("    operation: ").append(toIndentedString(operation)).append("\n");
+    sb.append("    propertyUri1: ").append(toIndentedString(propertyUri1)).append("\n");
+    sb.append("    propertyUri2: ").append(toIndentedString(propertyUri2)).append("\n");
+    sb.append("    operationCode: ").append(toIndentedString(operationCode)).append("\n");
     sb.append("    value1: ").append(toIndentedString(value1)).append("\n");
     sb.append("    value2: ").append(toIndentedString(value2)).append("\n");
+    sb.append("    value3: ").append(toIndentedString(value3)).append("\n");
     sb.append("    selectedValues: ").append(toIndentedString(selectedValues)).append("\n");
     sb.append("}");
     return sb.toString();

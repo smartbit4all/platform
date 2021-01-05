@@ -17,6 +17,7 @@ package org.smartbit4all.ui.common.filter;
 import java.net.URI;
 import java.util.List;
 import org.smartbit4all.api.filter.bean.FilterGroupType;
+import org.smartbit4all.api.filter.bean.FilterOperandValue;
 import org.smartbit4all.ui.common.controller.UIController;
 
 public interface DynamicFilterController extends UIController {
@@ -35,7 +36,7 @@ public interface DynamicFilterController extends UIController {
 
   void removeFilterGroup(String groupId);
 
-  void filterOperationChanged(String filterId, String filterOperation);
+  void filterOperationChanged(String filterId, String filterOperationId);
 
   void activeFilterGroupChanged(String filterGroupId);
 
@@ -43,7 +44,8 @@ public interface DynamicFilterController extends UIController {
 
   void filterSelectionChanged(String filterId, List<URI> values);
 
-  void filterValueChanged(String filterId, String... values);
+  void filterValueChanged(String filterId, FilterOperandValue value1, FilterOperandValue value2,
+      FilterOperandValue value3);
 
   void changeFilterGroupType(String filterGroupId, FilterGroupType type);
 

@@ -16,8 +16,9 @@ package org.smartbit4all.ui.vaadin.components.filter;
 
 import java.net.URI;
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import org.smartbit4all.api.filter.bean.FilterOperandValue;
 import org.smartbit4all.ui.common.filter.DateConverter;
 import org.smartbit4all.ui.common.filter.TimeFilterOptions;
 import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
@@ -30,41 +31,54 @@ public class FilterOperationDateComboBoxPicker extends FilterOperationUI {
   DatePicker beginDate;
   DatePicker endDate;
   ComboBox<TimeFilterOptions> cbTimeFilterOption;
-  private List<TimeFilterOptions> possibleValues;
 
   public FilterOperationDateComboBoxPicker() {
     cbTimeFilterOption = new ComboBox<>();
     cbTimeFilterOption.setItems(TimeFilterOptions.values());
     cbTimeFilterOption.setItemLabelGenerator(option -> getTranslation(option.getLabel()));
     cbTimeFilterOption.setRequired(true);
-    this.possibleValues = Arrays.asList(TimeFilterOptions.values());
-    // cbTimeFilterOption.addValueChangeListener(
-    // e -> executeControllerCall(e, StatisticsViewController::changeTimeFilterOption));
-
+    cbTimeFilterOption.addValueChangeListener(cbListener());
 
     beginDate = new DatePicker();
     LocalDate now = LocalDate.now();
     beginDate.setMax(now);
-    beginDate.addValueChangeListener(valueChangeListener());
+    beginDate.addValueChangeListener(dateListener());
 
     endDate = new DatePicker();
     endDate.setMax(now);
-    endDate.addValueChangeListener(valueChangeListener());
+    endDate.addValueChangeListener(dateListener());
 
     add(cbTimeFilterOption, beginDate, endDate);
   }
 
 
-  private ValueChangeListener<? super ComponentValueChangeEvent<DatePicker, LocalDate>> valueChangeListener() {
+  private ValueChangeListener<? super ComponentValueChangeEvent<DatePicker, LocalDate>> dateListener() {
     return e -> {
       if (e.isFromClient()) {
-        String beginDateString =
-            beginDate.getValue() == null ? null : beginDate.getValue().toString();
-        String endDateString = endDate.getValue() == null ? null : endDate.getValue().toString();
-        String[] values = {beginDateString, endDateString};
-        valueChanged(getFilterId(), values);
+        propagateValueChange();
       }
     };
+  }
+
+  private ValueChangeListener<? super ComponentValueChangeEvent<ComboBox<TimeFilterOptions>, TimeFilterOptions>> cbListener() {
+    return e -> {
+      if (e.isFromClient()) {
+        propagateValueChange();
+      }
+    };
+  }
+
+  private void propagateValueChange() {
+    String fromString = beginDate.getValue() == null ? null : beginDate.getValue().toString();
+    String toString = endDate.getValue() == null ? null : endDate.getValue().toString();
+    String filterOption = cbTimeFilterOption.getValue().toString();
+    FilterOperandValue value1 =
+        new FilterOperandValue().type(LocalDate.class.getName()).value(fromString);
+    FilterOperandValue value2 =
+        new FilterOperandValue().type(LocalDate.class.getName()).value(toString);
+    FilterOperandValue value3 =
+        new FilterOperandValue().type(String.class.getName()).value(filterOption);
+    valueChanged(getFilterId(), value1, value2, value3);
   }
 
 
@@ -75,49 +89,33 @@ public class FilterOperationDateComboBoxPicker extends FilterOperationUI {
 
 
   @Override
-  public void setValues(String... values) {
-    if (values == null || values[0] == null) {
+  public void setValues(FilterOperandValue value1, FilterOperandValue value2,
+      FilterOperandValue value3) {
+    if (value1 == null || value1.getValue() == null) {
       beginDate.setValue(null);
-      return;
-    } else if (values[1] == null) {
+    } else {
+      beginDate.setValue(DateConverter.getDate(value1.getValue()));
+    }
+    if (value2 == null || value2.getValue() == null) {
       endDate.setValue(null);
-      return;
+    } else {
+      endDate.setValue(DateConverter.getDate(value2.getValue()));
     }
-
-    if (values.length != 2) {
-      throw new RuntimeException(
-          "This method accepts 2 Dates, but " + values.length + " were given!");
+    if (value3 == null || value3.getValue() == null) {
+      // cbTimeFilterOption.setValue(null);
+    } else {
+      TimeFilterOptions newValue = TimeFilterOptions.valueOf(value3.getValue());
+      TimeFilterOptions oldValue = cbTimeFilterOption.getValue();
+      if (!Objects.equals(newValue, oldValue)) {
+        cbTimeFilterOption.setValue(newValue);
+      }
     }
-
-    beginDate.setValue(DateConverter.getDate(values[0]));
-    endDate.setValue(DateConverter.getDate(values[1]));
-
-
-
-    // TODO combobox
-
   }
 
 
   @Override
   public void setSelection(List<URI> list) {
-
-    if (list == null || list.isEmpty()) {
-      cbTimeFilterOption.setValue(null);
-      return;
-    }
-    if (list.size() > 1) {
-      throw new RuntimeException("More than one value is not allowed!");
-    }
-
-    // URI uri = list.get(0);
-    // Optional<Value> value =
-    // possibleValues.stream().filter(v -> v.getObjectUri().equals(uri)).findFirst();
-    // if (value.isPresent()) {
-    // comboBox.setValue(value.get());
-    // } else {
-    // throw new RuntimeException("URI is not in given possibleValues list: " + uri);
-    // }
+    // NONE
   }
 
 }

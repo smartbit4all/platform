@@ -15,6 +15,7 @@
 package org.smartbit4all.ui.vaadin.components.filter;
 
 import java.util.List;
+import org.smartbit4all.api.filter.bean.FilterField;
 import org.smartbit4all.api.filter.bean.FilterOperation;
 import org.smartbit4all.api.value.bean.Value;
 import org.smartbit4all.ui.common.filter.DynamicFilterController;
@@ -121,14 +122,15 @@ public class FilterFieldUI extends FlexLayout implements DragSource<FilterFieldU
       row.add(operationUI);
       operationUI.setFilterFieldUI(this);
     } else {
-      operationUI.setValues(uiState.getFilter().getValue1(), uiState.getFilter().getValue2());
-      operationUI.setSelection(uiState.getFilter().getSelectedValues());
+      FilterField filter = uiState.getFilter();
+      operationUI.setValues(filter.getValue1(), filter.getValue2(), filter.getValue3());
+      operationUI.setSelection(filter.getSelectedValues());
     }
 
 
 
     // TODO selected operation doesn't change
-    setOperationText(uiState.getSelectedOperation().getDisplayValue());
+    setOperationText(uiState.getSelectedOperation().getLabelCode());
 
     if (position.equals(FilterLabelPosition.PLACEHOLDER)) {
       header.remove(lblFilterName);
@@ -180,11 +182,11 @@ public class FilterFieldUI extends FlexLayout implements DragSource<FilterFieldU
 
     if (possibleOperations != null) {
       for (FilterOperation operation : possibleOperations) {
-        String displayValue = operation.getDisplayValue();
-        Button button = new Button(displayValue);
+        String labelCode = operation.getLabelCode();
+        Button button = new Button(labelCode);
         dialogOptionsLayout.add(button);
         button.addClickListener(e -> {
-          controller.filterOperationChanged(filterId, operation.getCode());
+          controller.filterOperationChanged(filterId, operation.getId());
         });
       }
     }

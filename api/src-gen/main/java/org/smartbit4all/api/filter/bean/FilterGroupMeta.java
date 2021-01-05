@@ -1,5 +1,7 @@
 package org.smartbit4all.api.filter.bean;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import javax.validation.Valid;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -10,11 +12,15 @@ import io.swagger.annotations.ApiModelProperty;
  */
 
 public class FilterGroupMeta {
-  @JsonProperty("name")
-  private String name;
+  @JsonProperty("filterFieldMetas")
+  @Valid
+  private List<FilterFieldMeta> filterFieldMetas = null;
 
-  @JsonProperty("icon")
-  private String icon;
+  @JsonProperty("labelCode")
+  private String labelCode;
+
+  @JsonProperty("iconCode")
+  private String iconCode;
 
   @JsonProperty("style")
   private String style;
@@ -22,46 +28,76 @@ public class FilterGroupMeta {
   @JsonProperty("type")
   private FilterGroupType type;
 
-  public FilterGroupMeta name(String name) {
-    this.name = name;
+  public FilterGroupMeta filterFieldMetas(List<FilterFieldMeta> filterFieldMetas) {
+    this.filterFieldMetas = filterFieldMetas;
+    return this;
+  }
+
+  public FilterGroupMeta addFilterFieldMetasItem(FilterFieldMeta filterFieldMetasItem) {
+    if (this.filterFieldMetas == null) {
+      this.filterFieldMetas = new ArrayList<>();
+    }
+    this.filterFieldMetas.add(filterFieldMetasItem);
     return this;
   }
 
   /**
-   * Get name
+   * Get filterFieldMetas
    * 
-   * @return name
+   * @return filterFieldMetas
    */
   @ApiModelProperty(value = "")
 
+  @Valid
 
-  public String getName() {
-    return name;
+  public List<FilterFieldMeta> getFilterFieldMetas() {
+    return filterFieldMetas;
   }
 
-  public void setName(String name) {
-    this.name = name;
+  public void setFilterFieldMetas(List<FilterFieldMeta> filterFieldMetas) {
+    this.filterFieldMetas = filterFieldMetas;
   }
 
-  public FilterGroupMeta icon(String icon) {
-    this.icon = icon;
+  public FilterGroupMeta labelCode(String labelCode) {
+    this.labelCode = labelCode;
     return this;
   }
 
   /**
-   * Get icon
+   * Get labelCode
    * 
-   * @return icon
+   * @return labelCode
    */
   @ApiModelProperty(value = "")
 
 
-  public String getIcon() {
-    return icon;
+  public String getLabelCode() {
+    return labelCode;
   }
 
-  public void setIcon(String icon) {
-    this.icon = icon;
+  public void setLabelCode(String labelCode) {
+    this.labelCode = labelCode;
+  }
+
+  public FilterGroupMeta iconCode(String iconCode) {
+    this.iconCode = iconCode;
+    return this;
+  }
+
+  /**
+   * Get iconCode
+   * 
+   * @return iconCode
+   */
+  @ApiModelProperty(value = "")
+
+
+  public String getIconCode() {
+    return iconCode;
+  }
+
+  public void setIconCode(String iconCode) {
+    this.iconCode = iconCode;
   }
 
   public FilterGroupMeta style(String style) {
@@ -117,15 +153,16 @@ public class FilterGroupMeta {
       return false;
     }
     FilterGroupMeta filterGroupMeta = (FilterGroupMeta) o;
-    return Objects.equals(this.name, filterGroupMeta.name) &&
-        Objects.equals(this.icon, filterGroupMeta.icon) &&
+    return Objects.equals(this.filterFieldMetas, filterGroupMeta.filterFieldMetas) &&
+        Objects.equals(this.labelCode, filterGroupMeta.labelCode) &&
+        Objects.equals(this.iconCode, filterGroupMeta.iconCode) &&
         Objects.equals(this.style, filterGroupMeta.style) &&
         Objects.equals(this.type, filterGroupMeta.type);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, icon, style, type);
+    return Objects.hash(filterFieldMetas, labelCode, iconCode, style, type);
   }
 
   @Override
@@ -133,8 +170,9 @@ public class FilterGroupMeta {
     StringBuilder sb = new StringBuilder();
     sb.append("class FilterGroupMeta {\n");
 
-    sb.append("    name: ").append(toIndentedString(name)).append("\n");
-    sb.append("    icon: ").append(toIndentedString(icon)).append("\n");
+    sb.append("    filterFieldMetas: ").append(toIndentedString(filterFieldMetas)).append("\n");
+    sb.append("    labelCode: ").append(toIndentedString(labelCode)).append("\n");
+    sb.append("    iconCode: ").append(toIndentedString(iconCode)).append("\n");
     sb.append("    style: ").append(toIndentedString(style)).append("\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("}");

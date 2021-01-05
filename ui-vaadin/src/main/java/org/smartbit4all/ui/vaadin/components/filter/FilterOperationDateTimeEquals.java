@@ -17,6 +17,7 @@ package org.smartbit4all.ui.vaadin.components.filter;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
+import org.smartbit4all.api.filter.bean.FilterOperandValue;
 import org.smartbit4all.ui.common.filter.DateConverter;
 import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
 import com.vaadin.flow.component.HasValue.ValueChangeListener;
@@ -38,8 +39,10 @@ public class FilterOperationDateTimeEquals extends FilterOperationUI {
   private ValueChangeListener<? super ComponentValueChangeEvent<DateTimePicker, LocalDateTime>> valueChangeListener() {
     return e -> {
       if (e.isFromClient()) {
-        String[] values = {dateTime.getValue().toString()};
-        valueChanged(getFilterId(), values);
+        String dateString = dateTime.getValue() == null ? null : dateTime.getValue().toString();
+        FilterOperandValue value1 =
+            new FilterOperandValue().type(LocalDateTime.class.getName()).value(dateString);
+        valueChanged(getFilterId(), value1, null, null);
       }
     };
   }
@@ -51,13 +54,13 @@ public class FilterOperationDateTimeEquals extends FilterOperationUI {
   }
 
   @Override
-  public void setValues(String... values) {
-    if (values == null || values.length == 0 || values[0] == null) {
+  public void setValues(FilterOperandValue value1, FilterOperandValue value2,
+      FilterOperandValue value3) {
+    if (value1 == null || value1.getValue() == null) {
       dateTime.setValue(null);
       return;
     }
-
-    dateTime.setValue(DateConverter.getDateTime(values[0]));
+    dateTime.setValue(DateConverter.getDateTime(value1.getValue()));
   }
 
   @Override
