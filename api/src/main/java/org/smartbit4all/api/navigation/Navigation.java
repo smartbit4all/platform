@@ -170,9 +170,9 @@ public class Navigation {
    * 
    * @return
    */
-  public NavigationNode addRootNode(NavigationEntryMeta entryMeta, URI objectUri) {
+  public NavigationNode addRootNode(URI entryMetaUri, URI objectUri) {
     
-    NavigationEntry entry = api.getEntry(entryMeta.getUri(), objectUri);
+    NavigationEntry entry = api.getEntry(entryMetaUri, objectUri);
     NavigationNode node = node(entry, config);
     registerNode(node);
     return node;
@@ -258,7 +258,7 @@ public class Navigation {
     // Instantiate the associations by the meta.
     /* It's important that the meta held by the NavigationEntry here is the meta served by the NavigationApi and it's 
        associations are most likely different from the currently configured associations.*/
-    List<URI> assocMetaUris = config.getAssocMetaUris(entry.getMeta().getUri());
+    List<URI> assocMetaUris = config.getAssocMetaUris(entry.getMetaUri());
     node.setAssociations(assocMetaUris == null || assocMetaUris.isEmpty() ? Collections.emptyList()
         : assocMetaUris.stream()
             .map(assocMetaUri -> association(assocMetaUri, node, config))
@@ -304,7 +304,7 @@ public class Navigation {
     NavigationEntry result = new NavigationEntry();
     result.setObjectUri(objectUri);
     result.setName(name);
-    result.setMeta(meta);
+    result.setMetaUri(meta.getUri());
     result.setIcon(icon);
     if (views != null) {
       for (int i = 0; i < views.length; i++) {

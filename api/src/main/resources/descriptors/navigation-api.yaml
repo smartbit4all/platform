@@ -21,6 +21,7 @@ paths:
           application/x-www-form-urlencoded:
             schema:
               type: object
+              required: [entryMetaUri, objectUri]
               properties: 
                 entryMetaUri:
                   type: string
@@ -52,7 +53,7 @@ paths:
           application/x-www-form-urlencoded:
             schema:
               type: object
-              required: [objectUri, associationMetaUris]
+              required: [objectUri]
               properties:
                 objectUri:
                   description: 'The URI of the api object that is the starting point of the navigation. It must be a valid URI that can be the starting point of the associations we provided.'
@@ -215,8 +216,10 @@ components:
           type: string
           format: uri
           description: 'The URI identifies the so called API object.'
-        meta:
-          $ref: '#/components/schemas/NavigationEntryMeta'
+        metaUri:
+          type: string
+          format: uri
+          description: 'The URI identifies the meta object of the entry'
         name:
           type: string
           description: 'The name of the entry'

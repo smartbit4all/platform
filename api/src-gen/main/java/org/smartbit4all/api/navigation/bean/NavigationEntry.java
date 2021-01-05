@@ -17,8 +17,8 @@ public class NavigationEntry   {
   @JsonProperty("objectUri")
   private URI objectUri;
 
-  @JsonProperty("meta")
-  private NavigationEntryMeta meta;
+  @JsonProperty("metaUri")
+  private URI metaUri;
 
   @JsonProperty("name")
   private String name;
@@ -55,25 +55,25 @@ public class NavigationEntry   {
     this.objectUri = objectUri;
   }
 
-  public NavigationEntry meta(NavigationEntryMeta meta) {
-    this.meta = meta;
+  public NavigationEntry metaUri(URI metaUri) {
+    this.metaUri = metaUri;
     return this;
   }
 
   /**
-   * Get meta
-   * @return meta
+   * The URI identifies the meta object of the entry
+   * @return metaUri
   */
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "The URI identifies the meta object of the entry")
 
   @Valid
 
-  public NavigationEntryMeta getMeta() {
-    return meta;
+  public URI getMetaUri() {
+    return metaUri;
   }
 
-  public void setMeta(NavigationEntryMeta meta) {
-    this.meta = meta;
+  public void setMetaUri(URI metaUri) {
+    this.metaUri = metaUri;
   }
 
   public NavigationEntry name(String name) {
@@ -185,7 +185,7 @@ public class NavigationEntry   {
     }
     NavigationEntry navigationEntry = (NavigationEntry) o;
     return Objects.equals(this.objectUri, navigationEntry.objectUri) &&
-        Objects.equals(this.meta, navigationEntry.meta) &&
+        Objects.equals(this.metaUri, navigationEntry.metaUri) &&
         Objects.equals(this.name, navigationEntry.name) &&
         Objects.equals(this.icon, navigationEntry.icon) &&
         Objects.equals(this.styles, navigationEntry.styles) &&
@@ -194,7 +194,7 @@ public class NavigationEntry   {
 
   @Override
   public int hashCode() {
-    return Objects.hash(objectUri, meta, name, icon, styles, views);
+    return Objects.hash(objectUri, metaUri, name, icon, styles, views);
   }
 
   @Override
@@ -203,7 +203,7 @@ public class NavigationEntry   {
     sb.append("class NavigationEntry {\n");
     
     sb.append("    objectUri: ").append(toIndentedString(objectUri)).append("\n");
-    sb.append("    meta: ").append(toIndentedString(meta)).append("\n");
+    sb.append("    metaUri: ").append(toIndentedString(metaUri)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    icon: ").append(toIndentedString(icon)).append("\n");
     sb.append("    styles: ").append(toIndentedString(styles)).append("\n");

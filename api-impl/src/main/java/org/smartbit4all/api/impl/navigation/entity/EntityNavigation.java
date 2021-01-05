@@ -141,7 +141,7 @@ public class EntityNavigation extends NavigationImpl {
   private NavigationReferenceEntry createReferenceEntry(URI objectUri, NavigationAssociationMeta assocMeta,
       URI entryObjectUri) {
     NavigationEntry entry = navigationEntryProvider.getEntry(entryObjectUri);
-    entry.setMeta(assocMeta.getEndEntry());
+    entry.setMetaUri(assocMeta.getEndEntry().getUri());
     NavigationReferenceEntry referenceEntry = Navigation.referenceEntry(objectUri, entry, null);
     return referenceEntry;
   }
@@ -198,7 +198,7 @@ public class EntityNavigation extends NavigationImpl {
     
     NavigationEntryMeta entryMeta = getEntryMetaWithCheck(entryMetaUri);
     NavigationEntry entry = navigationEntryProvider.getEntry(objectUri);
-    entry.setMeta(entryMeta);
+    entry.setMetaUri(entryMetaUri);
     return entry;
   }
 

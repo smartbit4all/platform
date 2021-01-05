@@ -25,7 +25,6 @@ import org.smartbit4all.api.navigation.Navigation;
 import org.smartbit4all.api.navigation.NavigationApi;
 import org.smartbit4all.api.navigation.NavigationConfig;
 import org.smartbit4all.api.navigation.bean.NavigationEntry;
-import org.smartbit4all.api.navigation.bean.NavigationEntryMeta;
 import org.smartbit4all.api.navigation.bean.NavigationNode;
 import org.smartbit4all.ui.common.navigation.NavigationTreeNode.Kind;
 import org.smartbit4all.ui.common.view.UIViewShowCommand;
@@ -77,9 +76,9 @@ public class NavigationControllerImpl implements NavigationController {
   }
 
   @Override
-  public void addRoot(NavigationEntryMeta entryMeta, URI rootObjectURI) {
+  public void addRoot(URI entryMetaUri, URI rootObjectURI) {
     if (navigationState != null) {
-      rootNodes.add(navigationState.addRootNode(entryMeta, rootObjectURI));
+      rootNodes.add(navigationState.addRootNode(entryMetaUri, rootObjectURI));
     }
   }
 
