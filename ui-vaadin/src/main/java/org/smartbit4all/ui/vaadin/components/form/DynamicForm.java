@@ -16,12 +16,18 @@ package org.smartbit4all.ui.vaadin.components.form;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.function.Function;
+import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.FlexLayout.FlexWrap;
+import com.vaadin.flow.component.textfield.BigDecimalField;
+import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 
@@ -40,6 +46,74 @@ public class DynamicForm<BEAN> extends Composite<FlexLayout> {
   }
 
   private void init(Class<BEAN> beanClazz) {
+    Map<String, BindingCandidate> bindings = collectBindings(beanClazz);
+
+    binder = new Binder<>();
+    for (Entry<String, BindingCandidate> bindingEntry : bindings.entrySet()) {
+      BindingCandidate binding = bindingEntry.getValue();
+      if (binding.isComplete()) {
+        String propertyName = bindingEntry.getKey();
+        AbstractField<?,?> field = null;
+        if (isGetterReturnMatches(binding, String.class)) {
+          field = new TextField(propertyName);
+          binder.bind(field, bean -> invokeGetter(binding, bean, null),
+              (bean, value) -> invokeSetter(binding, bean, value, null));
+        }
+        if (isGetterReturnMatches(binding, Integer.class)) {
+          field = new IntegerField(propertyName);
+          binder.bind((IntegerField)field,
+              bean -> invokeGetter(binding, bean, null),
+              (bean, value) -> invokeSetter(binding, bean, value, null));
+        }
+        if (isGetterReturnMatches(binding, Long.class)) {
+          field = new BigDecimalField(propertyName);
+          BinderValueConverter<Long, BigDecimal> converter = createConverter(
+              bigdec -> bigdec.longValue(),
+              longValue -> BigDecimal.valueOf(longValue)); 
+          binder.bind((BigDecimalField)field,
+              bean -> invokeGetter(binding, bean, converter),
+              (bean, value) -> invokeSetter(binding, bean, value, converter));
+        }
+        // binder.bind(textField, propertyName);
+        this.getContent().add(field);
+      }
+    }
+
+  }
+  
+  private <BEANTYPE, BINDERTYPE> BinderValueConverter<BEANTYPE, BINDERTYPE> createConverter(Function<BINDERTYPE, BEANTYPE> binderToBean, Function<BEANTYPE, BINDERTYPE> beanToBinder) {
+    return new BinderValueConverter<BEANTYPE, BINDERTYPE>() {
+
+      @Override
+      public BEANTYPE binderToBean(BINDERTYPE valueToSet) {
+        return binderToBean.apply(valueToSet);
+      }
+
+      @Override
+      public BINDERTYPE beanToBinder(BEANTYPE valueFromBean) {
+        return beanToBinder.apply(valueFromBean);
+      }
+      
+    };
+  }
+  
+  private static interface BinderValueConverter<BEANTYPE, BINDERTYPE> {
+    public BEANTYPE binderToBean(BINDERTYPE valueToSet);
+    public BINDERTYPE beanToBinder(BEANTYPE valueFromBean);
+  }
+  
+  private boolean isGetterReturnMatches(BindingCandidate binding, Class<?>... classesToCheck) {
+    Objects.requireNonNull(classesToCheck);
+    Class<?> returnType = binding.getter.getReturnType();
+    for(Class<?> classToCheck : classesToCheck) {
+      if(returnType.equals(classToCheck)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private Map<String, BindingCandidate> collectBindings(Class<BEAN> beanClazz) {
     Map<String, BindingCandidate> bindings = new HashMap<>();
     for (int i = 0; i < beanClazz.getMethods().length; i++) {
       Method method = beanClazz.getMethods()[i];
@@ -70,33 +144,28 @@ public class DynamicForm<BEAN> extends Composite<FlexLayout> {
         }
       }
     }
-
-    binder = new Binder<>();
-    for (Entry<String, BindingCandidate> bindingEntry : bindings.entrySet()) {
-      BindingCandidate binding = bindingEntry.getValue();
-      if (binding.getter.getReturnType().equals(String.class)) {
-        String propertyName = bindingEntry.getKey();
-        TextField textField = new TextField(propertyName);
-        // binder.bind(textField, propertyName);
-        binder.bind(textField, bean -> invokeGetter(binding, bean),
-            (bean, value) -> invokeSetter(binding, bean, value));
-        this.getContent().add(textField);
-      }
-    }
-
+    return bindings;
   }
 
-  private <T> T invokeGetter(BindingCandidate binding, BEAN bean) {
+  private <BINDERTYPE, BEANTYPE> BINDERTYPE invokeGetter(BindingCandidate binding, BEAN bean,
+      BinderValueConverter<BEANTYPE, BINDERTYPE> converter) {
     try {
-      return (T) binding.getter.invoke(bean);
+      Object getterResult = binding.getter.invoke(bean);
+      if(converter == null) {
+        return (BINDERTYPE) getterResult;
+      } else {
+        return converter.beanToBinder((BEANTYPE) getterResult);
+      }
     } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
       throw new RuntimeException(e);
     }
   }
 
-  private <T> void invokeSetter(BindingCandidate binding, BEAN bean, T value) {
+  private <BINDERTYPE, BEANTYPE> void invokeSetter(BindingCandidate binding, BEAN bean, BINDERTYPE value,
+      BinderValueConverter<BEANTYPE, BINDERTYPE> converter) {
     try {
-      binding.setter.invoke(bean, value);
+      BEANTYPE beanValue = converter == null? (BEANTYPE) value : converter.binderToBean(value);
+      binding.setter.invoke(bean, beanValue);
     } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
       throw new RuntimeException(e);
     }
@@ -130,6 +199,10 @@ public class DynamicForm<BEAN> extends Composite<FlexLayout> {
       this.setter = setter;
     }
 
+    public boolean isComplete() {
+      return getter != null && setter != null;
+    }
+    
   }
 
 }
