@@ -1,18 +1,16 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
  * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 package org.smartbit4all.domain.service.transfer;
 
@@ -237,7 +235,7 @@ public class TransferServiceImpl implements TransferService, InitializingBean {
         if (isCandidateValid(candidate, property, beanClazz.getName())) {
           Converter<?, ?> converter = null;
           if (!property.type().equals(candidate.getter.getReturnType())) {
-            converter = converter(null, candidate.getter.getReturnType(), property.type());
+            converter = converterByType(candidate.getter.getReturnType(), property.type());
           }
           result.add(property, candidate.getter, candidate.setter, converter);
         }
@@ -276,7 +274,7 @@ public class TransferServiceImpl implements TransferService, InitializingBean {
     } else {
       // the name of the method may match the target property
       String name = method.getName();
-      if(name.startsWith("get") || name.startsWith("set")) {
+      if (name.startsWith("get") || name.startsWith("set")) {
         name = name.substring(3);
         String startLetter = name.substring(0, 1);
         name = startLetter.toLowerCase() + name.substring(1);
@@ -287,9 +285,20 @@ public class TransferServiceImpl implements TransferService, InitializingBean {
 
   @SuppressWarnings("unchecked")
   @Override
-  public <F, T> Converter<F, T> converter(String name, Class<F> fromType, Class<T> toType) {
-    String searchName = name == null ? generateName(fromType, toType) : name;
-    return (Converter<F, T>) converterMap.get(searchName);
+  public <F, T> Converter<F, T> converterByName(String name, Class<F> fromType, Class<T> toType) {
+    return (Converter<F, T>) converterMap.get(name);
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public <F, T> Converter<F, T> converterByType(Class<F> fromType, Class<T> toType) {
+    return (Converter<F, T>) converterMap.get(generateName(fromType, toType));
+  }
+
+  @Override
+  public <F, T> Converter<F, T> converterDefault(String name, Class<F> fromType, Class<T> toType) {
+    Converter<F, T> converter = converterByName(name, fromType, toType);
+    return converter == null ? converterByType(fromType, toType) : converter;
   }
 
   /**

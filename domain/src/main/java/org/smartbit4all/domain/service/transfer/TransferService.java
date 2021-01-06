@@ -1,18 +1,16 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
  * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 package org.smartbit4all.domain.service.transfer;
 
@@ -53,8 +51,36 @@ public interface TransferService {
       throws Exception;
 
   /**
-   * The converter will find the right converter for the type conversion between the fromType and
+   * The operation finds the right converter for the type conversion between the fromType and toType
+   * by its name.
+   * 
+   * @param <F> The type of the from value.
+   * @param <T> The type of the to value.
+   * @param name If we have a conversion with a given name then we try to find this conversion by
+   *        this name and return.
+   * @param fromType The class of the from value.
+   * @param toType The class of the to value.
+   * @return If we have name for the conversion then we try to find it by this name. If this
+   *         converter is missing then we get null.
+   */
+  <F, T> Converter<F, T> converterByName(String name, Class<F> fromType, Class<T> toType);
+
+  /**
+   * The operation finds the right converter for the type conversion between the fromType and
    * toType.
+   * 
+   * @param <F> The type of the from value.
+   * @param <T> The type of the to value.
+   * @param fromType The class of the from value.
+   * @param toType The class of the to value.
+   * @return
+   */
+  <F, T> Converter<F, T> converterByType(Class<F> fromType, Class<T> toType);
+
+  /**
+   * The operation finds the right converter for the type conversion between the fromType and
+   * toType. It tries to find the converter by name. If it's not exist then try to find by the
+   * types.
    * 
    * @param <F> The type of the from value.
    * @param <T> The type of the to value.
@@ -66,6 +92,6 @@ public interface TransferService {
    *         converter is missing then we get null. Else if the name is null then we try to find the
    *         conversion by the types. In this case we assume only the unnamed conversions.
    */
-  <F, T> Converter<F, T> converter(String name, Class<F> fromType, Class<T> toType);
+  <F, T> Converter<F, T> converterDefault(String name, Class<F> fromType, Class<T> toType);
 
 }

@@ -46,6 +46,21 @@
         </packagedElement>
       </packagedElement>
     </packagedElement>
+    <packagedElement xmi:type="uml:Package" xmi:id="_TXKP4D9xEeuGe7W1xWWvZg" name="Methodology samples">
+      <packagedElement xmi:type="uml:Package" xmi:id="_WpAbID9xEeuGe7W1xWWvZg" name="Architecture">
+        <packagedElement xmi:type="uml:Component" xmi:id="_a2JxAD9xEeuGe7W1xWWvZg" name="Business logic">
+          <ownedAttribute xmi:type="uml:Port" xmi:id="_mhldYD9xEeuGe7W1xWWvZg" name="UI API" aggregation="composite"/>
+          <packagedElement xmi:type="uml:Interface" xmi:id="_DNtI8D-FEeuGe7W1xWWvZg" name="UI API (REST, WS)">
+            <ownedOperation xmi:type="uml:Operation" xmi:id="_FC360D-FEeuGe7W1xWWvZg" name="login"/>
+            <ownedOperation xmi:type="uml:Operation" xmi:id="_G9RK8D-FEeuGe7W1xWWvZg" name="getTasks"/>
+            <ownedOperation xmi:type="uml:Operation" xmi:id="_I3_LMD-FEeuGe7W1xWWvZg" name="logout"/>
+          </packagedElement>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Component" xmi:id="_pv2wMD9xEeuGe7W1xWWvZg" name="UI Presentation">
+          <packagedElement xmi:type="uml:Usage" xmi:id="_1g5VUD9xEeuGe7W1xWWvZg" client="_pv2wMD9xEeuGe7W1xWWvZg" supplier="_mhldYD9xEeuGe7W1xWWvZg"/>
+        </packagedElement>
+      </packagedElement>
+    </packagedElement>
     <profileApplication xmi:type="uml:ProfileApplication" xmi:id="_gzSvYAlvEeuTwZds3fdDqg">
       <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_gzVLoAlvEeuTwZds3fdDqg" source="http://www.eclipse.org/uml2/2.0.0/UML">
         <references xmi:type="ecore:EPackage" href="http://www.smartbit4all.org/SB4UMLProfile#/"/>
