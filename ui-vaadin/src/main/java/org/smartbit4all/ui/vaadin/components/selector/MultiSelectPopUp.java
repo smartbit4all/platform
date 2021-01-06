@@ -24,8 +24,8 @@ import org.smartbit4all.ui.vaadin.util.Buttons;
 import org.smartbit4all.ui.vaadin.util.Css;
 import org.smartbit4all.ui.vaadin.util.Css.AlignSelf;
 import org.smartbit4all.ui.vaadin.util.Css.IconSize;
-import org.smartbit4all.ui.vaadin.util.Css.Size;
-import org.smartbit4all.ui.vaadin.util.Css.SizeType;
+import org.smartbit4all.ui.vaadin.util.Css.SpaceType;
+import org.smartbit4all.ui.vaadin.util.Css.Space;
 import org.smartbit4all.ui.vaadin.util.Css.TextColor;
 import org.smartbit4all.ui.vaadin.util.Icons;
 import org.smartbit4all.ui.vaadin.util.Labels;
@@ -146,7 +146,7 @@ public class MultiSelectPopUp<T> extends CustomField<Set<T>> implements HasDataP
     dialogLayout.setFlexDirection(FlexDirection.COLUMN);
 
     dialogHeader = Labels.createH4Label(getPlaceHolder());
-    Css.setMargin(SizeType.BOTTOM, Size.M, dialogHeader);
+    Css.setMargin(SpaceType.BOTTOM, Space.Uniform.M, dialogHeader);
 
     FlexLayout dialogButtonLayout = new FlexLayout();
     dialogButtonLayout.setJustifyContentMode(JustifyContentMode.EVENLY);

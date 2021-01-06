@@ -185,7 +185,7 @@ public class Css {
     public static final String XL = "var(--lumo-size-xl)";
   }
 
-  public enum SizeType {
+  public enum SpaceType {
     ALL, TOP, BOTTOM, LEFT, RIGHT, HORIZONTAL, VERTICAL
   }
 
@@ -235,24 +235,24 @@ public class Css {
     public static final String SUCCESS_CONTRAST = "var(--lumo-success-contrast-color)";
   }
 
-  private static Map<SizeType, String[]> marginBySizeType = new HashMap<>();
-  private static Map<SizeType, String[]> paddingBySizeType = new HashMap<>();
+  private static Map<SpaceType, String[]> marginBySizeType = new HashMap<>();
+  private static Map<SpaceType, String[]> paddingBySizeType = new HashMap<>();
 
   static {
-    marginBySizeType.put(SizeType.ALL, new String[] {"margin"});
-    marginBySizeType.put(SizeType.TOP, new String[] {"margin-top"});
-    marginBySizeType.put(SizeType.BOTTOM, new String[] {"margin-bottom"});
-    marginBySizeType.put(SizeType.LEFT, new String[] {"margin-left"});
-    marginBySizeType.put(SizeType.RIGHT, new String[] {"margin-right"});
-    marginBySizeType.put(SizeType.HORIZONTAL, new String[] {"margin-left", "margin-right"});
-    marginBySizeType.put(SizeType.VERTICAL, new String[] {"margin-top", "margin-bottom"});
-    paddingBySizeType.put(SizeType.ALL, new String[] {"padding"});
-    paddingBySizeType.put(SizeType.TOP, new String[] {"padding-top"});
-    paddingBySizeType.put(SizeType.BOTTOM, new String[] {"padding-bottom"});
-    paddingBySizeType.put(SizeType.LEFT, new String[] {"padding-left"});
-    paddingBySizeType.put(SizeType.RIGHT, new String[] {"padding-right"});
-    paddingBySizeType.put(SizeType.HORIZONTAL, new String[] {"padding-left", "padding-right"});
-    paddingBySizeType.put(SizeType.VERTICAL, new String[] {"padding-top", "padding-bottom"});
+    marginBySizeType.put(SpaceType.ALL, new String[] {"margin"});
+    marginBySizeType.put(SpaceType.TOP, new String[] {"margin-top"});
+    marginBySizeType.put(SpaceType.BOTTOM, new String[] {"margin-bottom"});
+    marginBySizeType.put(SpaceType.LEFT, new String[] {"margin-left"});
+    marginBySizeType.put(SpaceType.RIGHT, new String[] {"margin-right"});
+    marginBySizeType.put(SpaceType.HORIZONTAL, new String[] {"margin-left", "margin-right"});
+    marginBySizeType.put(SpaceType.VERTICAL, new String[] {"margin-top", "margin-bottom"});
+    paddingBySizeType.put(SpaceType.ALL, new String[] {"padding"});
+    paddingBySizeType.put(SpaceType.TOP, new String[] {"padding-top"});
+    paddingBySizeType.put(SpaceType.BOTTOM, new String[] {"padding-bottom"});
+    paddingBySizeType.put(SpaceType.LEFT, new String[] {"padding-left"});
+    paddingBySizeType.put(SpaceType.RIGHT, new String[] {"padding-right"});
+    paddingBySizeType.put(SpaceType.HORIZONTAL, new String[] {"padding-left", "padding-right"});
+    paddingBySizeType.put(SpaceType.VERTICAL, new String[] {"padding-top", "padding-bottom"});
   }
 
   // CSS UTILITIES
@@ -293,7 +293,7 @@ public class Css {
     setStyle("line-height", lineHeight, components);
   }
 
-  public static void setMargin(SizeType type, String size, Component... components) {
+  public static void setMargin(SpaceType type, String size, Component... components) {
     setStyles(marginBySizeType.get(type), size, components);
   }
 
@@ -305,7 +305,7 @@ public class Css {
     setStyle("overflow", overflow, components);
   }
 
-  public static void setPadding(SizeType type, String size, Component... components) {
+  public static void setPadding(SpaceType type, String size, Component... components) {
     setStyles(paddingBySizeType.get(type), size, components);
   }
 
