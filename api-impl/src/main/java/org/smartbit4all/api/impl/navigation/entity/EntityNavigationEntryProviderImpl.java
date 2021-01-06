@@ -54,7 +54,7 @@ public class EntityNavigationEntryProviderImpl implements EntityNavigationEntryP
           String objectId = EntityUris.getEntityObjectId(entityObjectUri);
           String entityName = EntityUris.getEntityName(entityObjectUri);
           NavigationView naviView = new NavigationView()
-              .name(entityObjectUri.toString())
+              .name(entityName)
               .putParametersItem("id", objectId);
           
           NavigationEntry entry = new NavigationEntry()
@@ -64,7 +64,7 @@ public class EntityNavigationEntryProviderImpl implements EntityNavigationEntryP
               .addViewsItem(naviView);
           return entry;
         }
-        
+
         @Override
         boolean supports(URI entityUri) {
           return true;
@@ -73,5 +73,4 @@ public class EntityNavigationEntryProviderImpl implements EntityNavigationEntryP
     }
     return defaultProvider;
   }
-  
 }
