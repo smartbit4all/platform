@@ -17,16 +17,30 @@ package org.smartbit4all.ui.vaadin.components.filter;
 import java.net.URI;
 import java.util.List;
 import org.smartbit4all.api.filter.bean.FilterOperandValue;
+import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
+import com.vaadin.flow.component.HasValue.ValueChangeListener;
 import com.vaadin.flow.component.textfield.TextField;
 
-public class FilterOperationOneFieldUI extends FilterOperationUI {
+public class FilterOperationTxtEqualsUI extends FilterOperationUI {
 
   private TextField textField;
 
-  public FilterOperationOneFieldUI() {
+  public FilterOperationTxtEqualsUI() {
     addClassName("filter-onefield");
     textField = new TextField();
+    textField.addValueChangeListener(valueChangeListener());
+
     add(textField);
+  }
+
+  private ValueChangeListener<? super ComponentValueChangeEvent<TextField, String>> valueChangeListener() {
+    return e -> {
+      if (e.isFromClient()) {
+        FilterOperandValue value1 =
+            new FilterOperandValue().type(String.class.getName()).value(textField.getValue());
+        valueChanged(getFilterId(), value1, null, null);
+      }
+    };
   }
 
   @Override

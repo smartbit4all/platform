@@ -99,7 +99,7 @@ public class FilterFieldUI extends FlexLayout implements DragSource<FilterFieldU
     if (!filterView.equals(currentFilterView)) {
       currentFilterView = filterView;
       if ("filterop.txt.eq".equals(filterView)) {
-        operationUI = new FilterOperationOneFieldUI();
+        operationUI = new FilterOperationTxtEqualsUI();
       } else if ("filterop.multi.eq".equals(filterView)) {
         operationUI = new FilterOperationMultiSelectUI(possibleValues);
       } else if ("filterop.combo.eq".equals(filterView)) {
@@ -183,7 +183,7 @@ public class FilterFieldUI extends FlexLayout implements DragSource<FilterFieldU
     if (possibleOperations != null) {
       for (FilterOperation operation : possibleOperations) {
         String labelCode = operation.getLabelCode();
-        Button button = new Button(labelCode);
+        Button button = new Button(getTranslation(labelCode));
         dialogOptionsLayout.add(button);
         button.addClickListener(e -> {
           controller.filterOperationChanged(filterId, operation.getId());
