@@ -28,11 +28,13 @@ public class FilterFieldUIState extends AbstractUIState {
   private FilterLabelPosition position;
   private FilterOperation selectedOperation;
   private List<Value> possibleValues;
+  private boolean isDraggable;
 
   public FilterFieldUIState(FilterField filter,
       FilterSelectorUIState selector, FilterGroupUIState group,
       FilterLabelPosition position, boolean isCloseable) {
     super();
+    this.isDraggable = false;
     this.filter = filter;
     this.group = group;
     this.selector = selector;
@@ -96,6 +98,14 @@ public class FilterFieldUIState extends AbstractUIState {
 
   public void setGroup(FilterGroupUIState group) {
     this.group = group;
+  }
+
+  public boolean isDraggable() {
+    return isDraggable;
+  }
+
+  public void setDraggable(boolean isDraggable) {
+    this.isDraggable = isDraggable;
   }
 
 }

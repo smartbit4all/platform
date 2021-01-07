@@ -93,6 +93,9 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
       filterSelector.setEnabled(false);
       ui.updateFilterSelector(filterSelector);
     }
+    if (uiState.getFilterConfigMode() == FilterConfigMode.DYNAMIC) {
+      filterUIState.setDraggable(true);
+    }
     filterUIState.setPossibleValues(getPossibleValues(filterUIState));
     ui.renderFilter(filterUIState);
     System.out.println(uiState.getRootFilterGroup().toString());
@@ -226,5 +229,5 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
   public FilterGroup getRootFilterGroup() {
     return uiState.getRootFilterGroup();
   }
-  
+
 }

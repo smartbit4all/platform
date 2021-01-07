@@ -53,7 +53,9 @@ public class FilterFieldUI extends FlexLayout implements DragSource<FilterFieldU
       FilterFieldUIState uiState, DynamicFilterController controller) {
     this.filterId = uiState.getId();
     this.controller = controller;
-    setDraggable(true);
+    if (uiState.isDraggable()) {
+      setDraggable(true);
+    }
     setDragData(this);
     addClassName("filterfield");
     this.group = group;
