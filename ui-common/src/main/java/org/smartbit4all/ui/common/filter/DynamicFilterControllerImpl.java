@@ -222,5 +222,9 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
     System.out.println(uiState.getRootFilterGroup().toString());
   }
 
-
+  @Override
+  public FilterGroup getRootFilterGroup() {
+    return uiState.getRootFilterGroup();
+  }
+  
 }
