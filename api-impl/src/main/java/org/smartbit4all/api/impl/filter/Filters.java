@@ -1,16 +1,23 @@
 package org.smartbit4all.api.impl.filter;
 
+import static java.time.temporal.ChronoField.DAY_OF_MONTH;
+import static java.time.temporal.ChronoUnit.MONTHS;
+import static java.time.temporal.ChronoUnit.WEEKS;
 import java.net.URI;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.smartbit4all.api.filter.bean.FilterField;
 import org.smartbit4all.api.filter.bean.FilterGroup;
 import org.smartbit4all.api.filter.bean.FilterGroupType;
 import org.smartbit4all.api.filter.bean.FilterOperandValue;
+import org.smartbit4all.api.value.ValueUris;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Expression;
 import org.smartbit4all.domain.meta.ExpressionClause;
@@ -42,12 +49,15 @@ public class Filters {
   public static final String MULTI_SEL = "multi.eq";
   public static final String COMBO_SEL = "combo.eq";
 
+  private static enum TimeFilterOptions{
+    LAST_WEEK, THIS_MONTH, LAST_MONTH, YESTERDAY, TODAY, OTHER
+  }
   public static final String LAST_WEEK = "statistics.filter.time.last_week";
   public static final String THIS_MONTH = "statistics.filter.time.this_month";
   public static final String LAST_MONTH = "statistics.filter.time.last_month";
   public static final String YESTERDAY = "statistics.filter.time.yesterday";
   public static final String TODAY = "statistics.filter.time.today";
-  public static final String OTHER = "statistics.filter.time.other";
+  public static final String OTHER = "OTHER";
 
   // -----------------------------------------------------
 
@@ -79,7 +89,7 @@ public class Filters {
             : Expression.createOrClause();
     recurseGroups(filterGroup, starterClause);
 
-    return starterClause;
+    return starterClause.expressions().isEmpty() ? null : starterClause;
   }
 
   /**
@@ -105,35 +115,23 @@ public class Filters {
       Expression expressionOfField = null;
       
       String operationCode = filterField.getOperationCode();
-      URI firstSelectedValue = getFirstSelectedValue(filterField);
       
-      if (DATE_INTERVAL.equals(operationCode) || (DATE_INTERVAL_CB.equals(operationCode)
-          && OTHER.equals(firstSelectedValue.toString()))) {
+      if (DATE_INTERVAL.equals(operationCode) || DATE_TIME_INTERVAL.equals(operationCode)) {
+        expressionOfField = createDateIntervalClause(filterField);
         
-        expressionOfField = createDateIntervalClause(groupClause, filterField);
-      } else if (DATE_INTERVAL_CB.equals(operationCode) && firstSelectedValue != null) {
-        // In this case we have an instruction about the interval. This section will produce the
-        // LocalDate variables and later on there will be a conversion if we need LocalDateTime.
-        LocalDate value1 = null;
-        LocalDate value2 = null;
-        LocalDate today = LocalDate.now();
-        if (firstSelectedValue.toString().equals(LAST_WEEK)) {
-        } else if (firstSelectedValue.toString().equals(THIS_MONTH)) {
-
-        } else if (firstSelectedValue.toString().equals(LAST_MONTH)) {
-
-        } else if (firstSelectedValue.toString().equals(YESTERDAY)) {
-
-        } else if (firstSelectedValue.toString().equals(TODAY)) {
-
-        }
-      } else if (DATE_EQ.equals(operationCode)) {
-      } else if (DATE_TIME_INTERVAL.equals(operationCode)) {
-      } else if (DATE_TIME_INTERVAL_CB.equals(operationCode)) {
-      } else if (DATE_TIME_EQ.equals(operationCode)) {
+      } else if (DATE_INTERVAL_CB.equals(operationCode) || DATE_TIME_INTERVAL_CB.equals(operationCode)) {
+        expressionOfField = createDateIntervalCbClause(filterField);
+        
+      } else if (DATE_EQ.equals(operationCode) || DATE_TIME_EQ.equals(operationCode)) {
+        expressionOfField = createDateEqClause(filterField);
+        
       } else if (TXT_EQ.equals(operationCode)) {
+        expressionOfField = createTxtEqClause(filterField);
+        
       } else if (MULTI_SEL.equals(operationCode)) {
+        expressionOfField = createMultiSelClause(filterField);
       } else if (COMBO_SEL.equals(operationCode)) {
+        expressionOfField = createComboSelClause(filterField);
       }
       
       if(expressionOfField != null) {
@@ -142,17 +140,138 @@ public class Filters {
     }
   }
 
-  private URI getFirstSelectedValue(FilterField filterField) {
-    Objects.requireNonNull(filterField);
+  private Expression createTxtEqClause(FilterField filterField) {
+    Expression expressionOfField = null;
+    Property<?> property = getProperty(filterField.getPropertyUri1());
+    String value = filterField.getValue1().getValue();
+    if(value != null && !value.isEmpty()) {
+      // TODO handle other types based on filterField.getValue1().getType()!
+      Property<String> propertyAsString = (Property<String>) property;
+      expressionOfField = propertyAsString.eq(value);
+    }
+    return expressionOfField;
+  }
+  
+  private Expression createMultiSelClause(FilterField filterField) {
+    // TODO there is no enough information in filter field for multi selection:
+    // missing property or value type
+    // for now we assume that it is always String
+    Expression expressionOfField = null;
+    Property<?> property = getProperty(filterField.getPropertyUri1());
     List<URI> selectedValues = filterField.getSelectedValues();
-    URI firstSelectedValue =
-        (selectedValues != null && !selectedValues.isEmpty())
-            ? selectedValues.get(0)
-            : null;
-    return firstSelectedValue;
+    if(selectedValues != null && !selectedValues.isEmpty()) {
+      List<String> valueIds = selectedValues.stream().map(uri -> ValueUris.getValueId(uri)).collect(Collectors.toList());
+      Property<String> propertyAsString = (Property<String>) property;
+      
+      expressionOfField = propertyAsString.in(valueIds);
+    }
+    return expressionOfField;
+  }
+  
+  private Expression createComboSelClause(FilterField filterField) {
+    // TODO there is no enough information in filter field for combo selection:
+    // missing property or value type
+    // for now we assume that it is always String
+    Expression expressionOfField = null;
+    Property<?> property = getProperty(filterField.getPropertyUri1());
+    List<URI> selectedValues = filterField.getSelectedValues();
+    if(selectedValues != null && !selectedValues.isEmpty()) {
+      URI selectedValue = selectedValues.get(0);
+      String valueId = ValueUris.getValueId(selectedValue);
+      Property<String> propertyAsString = (Property<String>) property;
+      
+      expressionOfField = propertyAsString.eq(valueId);
+    }
+    return expressionOfField;
   }
 
-  private Expression createDateIntervalClause(ExpressionClause groupClause, FilterField filterField) {
+  private Property<?> getProperty(URI propertyUri) {
+    Objects.requireNonNull(propertyUri, "The 'propertyUri' parameter can not be null!");
+    Property<?> property = entityManager.property(propertyUri);
+    return property;
+  }
+
+  private Expression createDateIntervalCbClause(FilterField filterField) {
+    // In this case we have an instruction about the interval. This section will produce the
+    // LocalDate variables and later on there will be a conversion if we need LocalDateTime.
+    LocalTime now = LocalTime.now();
+    LocalDate today = LocalDate.now();
+    LocalTime startTime = LocalTime.of(0, 0);
+    LocalTime endTime = LocalTime.of(23, 59, 59);
+    LocalDate startDate = null;
+    LocalDate endDate = null;
+    
+    FilterOperandValue operandValue3 = filterField.getValue3();
+    TimeFilterOptions selectedTimeOption = TimeFilterOptions.valueOf(operandValue3.getValue());
+    switch(selectedTimeOption) {
+      case LAST_MONTH:
+        startDate = today.with(DAY_OF_MONTH, 1).minus(1, MONTHS);
+        endDate = today.with(DAY_OF_MONTH, 1).minusDays(1);
+        break;
+      case LAST_WEEK:
+        startDate = today.with(DayOfWeek.MONDAY).minus(1, WEEKS);
+        endDate = today.with(DayOfWeek.MONDAY).minusDays(1);
+        break;
+      case THIS_MONTH:
+        startDate = today.with(DAY_OF_MONTH, 1);
+        endDate = today;
+        endTime = now;
+        break;
+      case TODAY:
+        startDate = today;
+        endDate = today;
+        endTime = now;
+        break;
+      case YESTERDAY:
+        startDate = today.minusDays(1);
+        endDate = today.minusDays(1);
+        break;
+      case OTHER:
+      default:
+        return createDateIntervalClause(filterField);
+    }
+    setOperandDateValue(filterField.getValue1(), startDate, startTime);
+    setOperandDateValue(filterField.getValue2(), endDate, endTime);
+    Expression expressionOfField = createDateIntervalClause(filterField);
+    return expressionOfField;
+  }
+  
+  private void setOperandDateValue(FilterOperandValue operand, LocalDate date, LocalTime time) {
+    if (LocalDate.class.getName().equals(operand.getType())) {
+      operand.setValue(date.toString());
+    } else {
+      operand.setValue(LocalDateTime.of(date, time).toString());
+    }
+  }
+
+  private Expression createDateEqClause(FilterField filterField) {
+    Property<?> property =
+        filterField.getPropertyUri1() == null ? null
+            : entityManager.property(filterField.getPropertyUri1());
+
+    FilterOperandValue valueOperand = filterField.getValue1();
+    Class<?> propertyType = property.type();
+    if (LocalDate.class.equals(propertyType)) {
+      return createEqExpression(property, valueOperand, this::convertToLocalDate);
+    }
+    if (LocalDateTime.class.equals(propertyType)) {
+      return createEqExpression(property, valueOperand, this::convertToLocalDateTime);
+    }
+    return null;
+  }
+  
+  private <T> Expression createEqExpression(Property<?> property,
+      FilterOperandValue valueOperand, Function<FilterOperandValue, T> operandConverter) {
+    T value = operandConverter.apply(valueOperand);
+    if(value != null) {
+      @SuppressWarnings("unchecked")
+      Property<T> actualProperty = (Property<T>) property;
+      return actualProperty.eq(value);
+    }
+    return null;
+  }
+
+  private Expression createDateIntervalClause(FilterField filterField) {
     Property<?> property1 =
         filterField.getPropertyUri1() == null ? null
             : entityManager.property(filterField.getPropertyUri1());
@@ -184,7 +303,7 @@ public class Filters {
     } else if (value1 != null && value2 == null) {
       // Greater or equal than the lower bound
       return actualProperty.ge(value1);
-    } else if (value1 == null && value2 != null) {
+    } else if (value1 != null && value2 != null) {
       return actualProperty.between(value1, value2);
     }
     return null;
