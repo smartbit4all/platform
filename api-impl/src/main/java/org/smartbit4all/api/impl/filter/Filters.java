@@ -5,6 +5,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Function;
 import org.smartbit4all.api.filter.bean.FilterField;
 import org.smartbit4all.api.filter.bean.FilterGroup;
 import org.smartbit4all.api.filter.bean.FilterGroupType;
@@ -56,7 +58,7 @@ public class Filters {
   private TransferService transferService;
 
   /**
-   * Transform the filter using the {@link EntityManager} to access the {@link Property}s.
+   * Transforms the filter using the {@link EntityManager} to access the {@link Property}s.
    * 
    * @param filterGroup Assume that the filter must refer to one and only one
    *        {@link EntityDefinition}.
@@ -77,7 +79,7 @@ public class Filters {
             : Expression.createOrClause();
     recurseGroups(filterGroup, starterClause);
 
-    return null;
+    return starterClause;
   }
 
   /**
@@ -95,61 +97,20 @@ public class Filters {
       groupClause.add(subGroupClause.BRACKET());
       recurseGroups(subGroup, subGroupClause);
     }
+    
     // Now we add all the filters from the current group as simple expressions
     List<FilterField> filterFields = filterGroup.getFilterFields() == null ? Collections.emptyList()
         : filterGroup.getFilterFields();
     for (FilterField filterField : filterFields) {
+      Expression expressionOfField = null;
+      
       String operationCode = filterField.getOperationCode();
-      URI firstSelectedValue =
-          (filterField.getSelectedValues() != null && filterField.getSelectedValues().size() > 0)
-              ? filterField.getSelectedValues().get(0)
-              : null;
+      URI firstSelectedValue = getFirstSelectedValue(filterField);
+      
       if (DATE_INTERVAL.equals(operationCode) || (DATE_INTERVAL_CB.equals(operationCode)
-          || OTHER.equals(firstSelectedValue.toString()))) {
-        Property<?> property1 =
-            filterField.getPropertyUri1() == null ? null
-                : entityManager.property(filterField.getPropertyUri1());
-
-        FilterOperandValue value1Operand = filterField.getValue1();
-        FilterOperandValue value2Operand = filterField.getValue2();
-        if (LocalDate.class.getName().equals(property1.getClass().getName())) {
-          // If we have LocaDate in the filter field as values then OK. Else we have to transfer it
-          // to LocaDate because the property itself is LocalDate type.
-
-          LocalDate value1 = convertToLocalDate(value1Operand);
-          LocalDate value2 = convertToLocalDate(value2Operand);
-
-          value2 = value2.plusDays(1);
-
-          @SuppressWarnings("unchecked")
-          Property<LocalDate> actualProperty = (Property<LocalDate>) property1;
-          if (value1 == null && value2 != null) {
-            // Less than upper bound.
-            groupClause.add(actualProperty.lt(value2));
-          } else if (value1 != null && value2 == null) {
-            // Greater or equal than the lower bound
-            groupClause.add(actualProperty.ge(value2));
-          } else if (value1 == null && value2 != null) {
-            groupClause.add(actualProperty.between(value1, value2));
-          }
-        }
-        if (LocalDateTime.class.getName().equals(property1.getClass().getName())) {
-          // If we have LocaDate in the filter field as values then OK. Else we have to transfer it
-          // to LocaDate because the property itself is LocalDate type.
-          LocalDateTime value1 = convertToLocalDateTime(value1Operand);
-          LocalDateTime value2 = convertToLocalDateTime(value2Operand);
-          @SuppressWarnings("unchecked")
-          Property<LocalDateTime> actualProperty = (Property<LocalDateTime>) property1;
-          if (value1 == null && value2 != null) {
-            // Less than upper bound.
-            groupClause.add(actualProperty.lt(value2));
-          } else if (value1 != null && value2 == null) {
-            // Greater or equal than the lower bound
-            groupClause.add(actualProperty.ge(value2));
-          } else if (value1 == null && value2 != null) {
-            groupClause.add(actualProperty.between(value1, value2));
-          }
-        }
+          && OTHER.equals(firstSelectedValue.toString()))) {
+        
+        expressionOfField = createDateIntervalClause(groupClause, filterField);
       } else if (DATE_INTERVAL_CB.equals(operationCode) && firstSelectedValue != null) {
         // In this case we have an instruction about the interval. This section will produce the
         // LocalDate variables and later on there will be a conversion if we need LocalDateTime.
@@ -174,39 +135,97 @@ public class Filters {
       } else if (MULTI_SEL.equals(operationCode)) {
       } else if (COMBO_SEL.equals(operationCode)) {
       }
+      
+      if(expressionOfField != null) {
+        groupClause.add(expressionOfField);
+      }
     }
   }
 
-  private LocalDate convertToLocalDate(FilterOperandValue value1Operand) {
-    LocalDate value1 = null;
-    if (LocalDate.class.getName().equals(value1Operand.getType())) {
-      // TODO More sophisticated converter search.
-      Converter<String, LocalDate> converter =
-          transferService.converterByType(String.class, LocalDate.class);
-      value1 = converter.convertTo(value1Operand.getValue());
-    } else if (LocalDateTime.class.getName().equals(value1Operand.getType())) {
-      Converter<String, LocalDateTime> converter =
-          transferService.converterByType(String.class, LocalDateTime.class);
-      // Truncate the time from the local date time.
-      value1 = converter.convertTo(value1Operand.getValue()).toLocalDate();
-    }
-    return value1;
+  private URI getFirstSelectedValue(FilterField filterField) {
+    Objects.requireNonNull(filterField);
+    List<URI> selectedValues = filterField.getSelectedValues();
+    URI firstSelectedValue =
+        (selectedValues != null && !selectedValues.isEmpty())
+            ? selectedValues.get(0)
+            : null;
+    return firstSelectedValue;
   }
 
-  private LocalDateTime convertToLocalDateTime(FilterOperandValue value1Operand) {
-    LocalDateTime value1 = null;
-    if (LocalDate.class.getName().equals(value1Operand.getType())) {
+  private Expression createDateIntervalClause(ExpressionClause groupClause, FilterField filterField) {
+    Property<?> property1 =
+        filterField.getPropertyUri1() == null ? null
+            : entityManager.property(filterField.getPropertyUri1());
+
+    FilterOperandValue value1Operand = filterField.getValue1();
+    FilterOperandValue value2Operand = filterField.getValue2();
+    Class<?> propertyType = property1.type();
+    if (LocalDate.class.equals(propertyType)) {
+      // If we have LocaDate in the filter field as values then OK. Else we have to transfer it
+      // to LocaDate because the property itself is LocalDate type.
+      return createDateIntervalExpression(property1, value1Operand, value2Operand, this::convertToLocalDate);
+    }
+    if (LocalDateTime.class.equals(propertyType)) {
+      return createDateIntervalExpression(property1, value1Operand, value2Operand, this::convertToLocalDateTime);
+    }
+    return null;
+  }
+
+  private <T> Expression createDateIntervalExpression(Property<?> property,
+      FilterOperandValue value1Operand, FilterOperandValue value2Operand,
+      Function<FilterOperandValue, T> operandConverter) {
+    T value1 = operandConverter.apply(value1Operand);
+    T value2 = operandConverter.apply(value2Operand);
+    @SuppressWarnings("unchecked")
+    Property<T> actualProperty = (Property<T>) property;
+    if (value1 == null && value2 != null) {
+      // Less than upper bound.
+      return actualProperty.lt(value2);
+    } else if (value1 != null && value2 == null) {
+      // Greater or equal than the lower bound
+      return actualProperty.ge(value1);
+    } else if (value1 == null && value2 != null) {
+      return actualProperty.between(value1, value2);
+    }
+    return null;
+  }
+  
+  private LocalDate convertToLocalDate(FilterOperandValue valueOperand) {
+    LocalDate value = null;
+    if(valueOperand == null) {
+      return value;
+    }
+    if (LocalDate.class.getName().equals(valueOperand.getType())) {
       // TODO More sophisticated converter search.
       Converter<String, LocalDate> converter =
           transferService.converterByType(String.class, LocalDate.class);
-      value1 = converter.convertTo(value1Operand.getValue()).atStartOfDay();
-    } else if (LocalDateTime.class.getName().equals(value1Operand.getType())) {
+      value = converter.convertTo(valueOperand.getValue());
+    } else if (LocalDateTime.class.getName().equals(valueOperand.getType())) {
       Converter<String, LocalDateTime> converter =
           transferService.converterByType(String.class, LocalDateTime.class);
       // Truncate the time from the local date time.
-      value1 = converter.convertTo(value1Operand.getValue());
+      value = converter.convertTo(valueOperand.getValue()).toLocalDate();
     }
-    return value1;
+    return value;
+  }
+
+  private LocalDateTime convertToLocalDateTime(FilterOperandValue valueOperand) {
+    if(valueOperand == null || valueOperand.getValue() == null) {
+      return null;
+    }
+    LocalDateTime value = null;
+    if (LocalDate.class.getName().equals(valueOperand.getType())) {
+      // TODO More sophisticated converter search.
+      Converter<String, LocalDate> converter =
+          transferService.converterByType(String.class, LocalDate.class);
+      value = converter.convertTo(valueOperand.getValue()).atStartOfDay();
+    } else if (LocalDateTime.class.getName().equals(valueOperand.getType())) {
+      Converter<String, LocalDateTime> converter =
+          transferService.converterByType(String.class, LocalDateTime.class);
+      // Truncate the time from the local date time.
+      value = converter.convertTo(valueOperand.getValue());
+    }
+    return value;
   }
 
   public static LocalDate[] getPreviousWeekFirstDay(LocalDate date) {

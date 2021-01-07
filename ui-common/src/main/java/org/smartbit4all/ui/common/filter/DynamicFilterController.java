@@ -16,6 +16,7 @@ package org.smartbit4all.ui.common.filter;
 
 import java.net.URI;
 import java.util.List;
+import org.smartbit4all.api.filter.bean.FilterGroup;
 import org.smartbit4all.api.filter.bean.FilterGroupType;
 import org.smartbit4all.api.filter.bean.FilterOperandValue;
 import org.smartbit4all.ui.common.controller.UIController;
@@ -48,5 +49,7 @@ public interface DynamicFilterController extends UIController {
       FilterOperandValue value3);
 
   void changeFilterGroupType(String filterGroupId, FilterGroupType type);
+
+  FilterGroup getRootFilterGroup();
 
 }
