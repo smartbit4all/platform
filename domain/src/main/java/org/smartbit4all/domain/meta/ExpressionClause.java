@@ -82,6 +82,7 @@ public class ExpressionClause extends Expression {
     // If we have only one expression then we delegate simply.
     if (expressions.size() == 1) {
       expressions.get(0).accept(visitor);
+      return;
     }
     // If we have more expression then we simulate that we have boolean formulas cascaded into each
     // other.
