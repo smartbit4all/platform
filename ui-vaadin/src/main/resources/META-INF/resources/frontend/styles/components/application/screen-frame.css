@@ -1,0 +1,28 @@
+.screen-frame {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  overflow: hidden;
+}
+
+.screen-frame__header {
+  z-index: 2;
+}
+
+.screen-frame__wrapper {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.screen-frame__content {
+  flex: 1;
+  overflow-x: hidden;
+  overflow-y: auto;
+  position: relative;
+  -webkit-overflow-scrolling: touch;
+}
+
+.screen-frame__footer {
+  z-index: 2;
+}

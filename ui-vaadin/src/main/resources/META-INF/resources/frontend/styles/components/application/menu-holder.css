@@ -1,0 +1,150 @@
+.menu-holder {
+  z-index: 2;
+}
+
+.menu-holder[open] + * {
+  pointer-events: none;
+}
+
+/* Scrim */
+.menu-holder__scrim {
+  animation: var(--transition-duration-m) lumo-overlay-backdrop-enter both;
+  background-color: var(--lumo-shade-20pct);
+  bottom: 0;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  will-change: opacity;
+}
+
+/* Content */
+.menu-holder__content {
+  background-color: var(--lumo-base-color);
+  box-shadow: var(--lumo-box-shadow-s);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+  transition: margin var(--transition-duration-m);
+  width: var(--menu-holder-width);
+  z-index: 2;
+}
+
+/* Search */
+.menu-holder vaadin-text-field {
+  box-shadow: inset 0 -1px var(--lumo-contrast-10pct);
+  box-sizing: border-box;
+  padding: var(--lumo-space-m);
+  width: 100%;
+}
+
+/* Scrollable area */
+.menu-holder__scroll-area {
+  box-shadow: inset 0 -1px var(--lumo-contrast-10pct);
+  flex: 1;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Footer button */
+.menu-holder__footer {
+  border-radius: 0;
+  margin-bottom: 0;
+  margin-top: auto;
+  min-width: 0;
+}
+
+/* Rail navigation */
+.menu-holder[rail]:not([open]) .menu-holder__content {
+  left: 0;
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  transition: width var(--transition-duration-s);
+  width: var(--menu-holder-rail-width);
+}
+
+.menu-holder[rail]:not([open]):hover .menu-holder__content {
+  width: var(--menu-holder-width);
+}
+
+/* Push the content in rail mode. */
+.menu-holder[rail]:not([open]) + .root__column {
+  padding-left: var(--menu-holder-rail-width);
+}
+
+@media (max-width: 1023px) {
+  /* Show scrim when drawer is open */
+  .menu-holder[open] .menu-holder__scrim {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  /* Don't push the content in rail mode on narrow viewports. */
+  .menu-holder[rail]:not([open]) + .root__column {
+    padding-left: 0;
+  }
+
+  /* Fixed positioning on narrow viewports. */
+  .menu-holder__content {
+    bottom: 0;
+    position: absolute;
+    top: 0;
+  }
+
+  /* Push the drawer out of view */
+  .menu-holder:not([open]) .menu-holder__content {
+    margin-left: calc(var(--menu-holder-width) * -1.2);
+  }
+
+  /* Hide the footer */
+  .menu-holder__footer {
+    display: none;
+  }
+}
+
+@media (min-width: 1024px) {
+  .menu-holder[rail]:not([open]):not(:hover) .account-switcher__avatar,
+  .menu-holder[rail]:not([open]):not(:hover) .navi-item__link iron-icon {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .menu-holder[rail]:not([open]):not(:hover) .account-switcher__title,
+  .menu-holder[rail]:not([open]):not(:hover) .account-switcher__email,
+  .menu-holder[rail]:not([open]):not(:hover) .brand-expression__title,
+  .menu-holder[rail]:not([open]):not(:hover) .navi-item[level],
+  .menu-holder[rail]:not([open]):not(:hover) .navi-item__link span,
+  .menu-holder[rail]:not([open]):not(:hover) .navi-item vaadin-button {
+    display: none;
+  }
+
+  .menu-holder[rail]:not([open]):not(:hover) .menu-holder__footer iron-icon {
+    margin-left: 0.25em;
+    margin-right: -0.25em;
+    width: var(--menu-holder-rail-width);
+  }
+}
+
+/* === IE 11 workarounds === */
+@media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+  .menu-holder__scrim,
+  .menu-holder__content {
+    /* z-index is needed on each level for IE11 support. */
+    z-index: 2
+  }
+
+  .brand-expression .h3 {
+    font-size: 1.375rem;
+  }
+}
+
+@media all and (max-width: 1023px) and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+  .menu-holder:not([open]) .menu-holder__content {
+    /* IE11 doesn't understand nested calculations. */
+    margin-left: -18.9rem;
+  }
+}

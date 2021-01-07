@@ -1,12 +1,12 @@
 :root {
-  /* MainView, AppBar, Navi properties */
-  --app-bar-height: var(--lumo-size-xl);
 
-  --navi-drawer-width: calc(var(--lumo-size-m) * 7);
-  --navi-drawer-rail-width: calc(var(--lumo-size-m) * 1.75);
-  --navi-item-indentation: calc(var(--lumo-icon-size-s) + var(--lumo-space-l));
+  --main-toolbar-height: var(--lumo-size-xl);
 
-  --details-drawer-width: calc(var(--lumo-size-m) * 11);
+  --menu-holder-width: calc(var(--lumo-size-m) * 7);
+  --menu-holder-rail-width: calc(var(--lumo-size-m) * 1.75);
+  --menu-item-indentation: calc(var(--lumo-icon-size-s) + var(--lumo-space-l));
+
+  --screen-detail-width: calc(var(--lumo-size-m) * 11);
 
   --transition-duration-s: 160ms;
   --transition-duration-m: 240ms;

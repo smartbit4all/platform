@@ -27,7 +27,7 @@ import org.smartbit4all.ui.common.navigation.NavigationController;
 import org.smartbit4all.ui.common.navigation.NavigationTreeNode;
 import org.smartbit4all.ui.common.navigation.NavigationView;
 import org.smartbit4all.ui.common.view.UIViewShowCommand;
-import org.smartbit4all.ui.vaadin.view.UIViewParameterVaadinTransition;
+import org.smartbit4all.ui.vaadin.components.navigation.UIViewParameterVaadinTransition;
 import com.vaadin.flow.component.treegrid.TreeGrid;
 import com.vaadin.flow.data.provider.hierarchy.AbstractBackEndHierarchicalDataProvider;
 import com.vaadin.flow.data.provider.hierarchy.HierarchicalDataProvider;

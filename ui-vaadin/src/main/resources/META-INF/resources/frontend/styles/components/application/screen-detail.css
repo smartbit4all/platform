@@ -1,0 +1,104 @@
+.screen-detail {
+  background: var(--lumo-base-color);
+  flex-direction: column;
+  height: 100%;
+  max-height: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.screen-detail[open] {
+  box-shadow: var(--lumo-box-shadow-m);
+}
+
+.screen-detail__header {
+  flex-shrink: 0;
+}
+
+.screen-detail-header {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  box-shadow: inset 0 -1px var(--lumo-contrast-10pct);
+}
+
+.screen-detail-header__wrapper {
+  display: flex;
+  align-items: center;
+  padding-left: var(--lumo-space-resp-l);
+  padding-right: var(--lumo-space-resp-l);
+  padding-top: var(--lumo-space-m);
+  padding-bottom: var(--lumo-space-m);
+}
+
+.screen-detail-header__wrapper > *:not(:last-child) {
+  margin-right: var(--lumo-space-l);
+}
+
+.screen-detail__header vaadin-tabs {
+  box-shadow: none;
+}
+
+.screen-detail__content {
+  flex: 1;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.screen-detail__footer {
+  flex-shrink: 0;
+}
+
+.screen-detail-footer {
+  display: flex;
+  width: 100%;
+  justify-content: space-evenly;
+  background-color: var(--lumo-contrast-5pct);
+  padding-left: var(--lumo-space-resp-l);
+  padding-right: var(--lumo-space-resp-l);
+  padding-top: var(--lumo-space-s);
+  padding-bottom: var(--lumo-space-s);
+}
+
+.screen-detail-footer > *:not(:last-child) {
+  margin-right: var(--lumo-space-l);
+}
+
+
+@media(max-width: 719px) {
+  .screen-detail {
+    left: 0;
+    margin: 0;
+    min-width: 100%;
+    position: fixed;
+    top: 0;
+    z-index: 3;
+  }
+
+  .screen-detail:not([open])[position="right"] {
+    transform: translateX(100%);
+  }
+
+  .screen-detail:not([open])[position="bottom"] {
+    transform: translateY(100%);
+  }
+}
+
+@media(min-width: 720px) {
+  .screen-detail[position="bottom"] {
+    height: 400px;
+  }
+
+  .screen-detail:not([open])[position="bottom"] {
+    margin-bottom: -400px;
+  }
+
+  .screen-detail[position="right"] {
+    width: var(--screen-detail-width);
+  }
+
+  .screen-detail:not([open])[position="right"] {
+    margin-right: calc(var(--screen-detail-width) * -1);
+  }
+}

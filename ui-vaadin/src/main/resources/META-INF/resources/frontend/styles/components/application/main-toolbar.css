@@ -1,0 +1,54 @@
+.main-toolbar {
+  background-color: var(--lumo-base-color);
+  box-shadow: var(--lumo-box-shadow-s);
+  flex-direction: column;
+  position: relative;
+  z-index: 1;
+}
+
+.main-toolbar__theme-button {
+	background: 0;
+}
+
+.main-toolbar__container {
+  padding-left: var(--lumo-space-resp-l);
+  padding-right: var(--lumo-space-resp-l);
+  transition: padding var(--transition-duration-m);
+}
+
+.main-toolbar__menu-icon,
+
+/* Title */
+.main-toolbar__title {
+  flex-grow: 1;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.main-toolbar__title:not(:empty) {
+  margin-bottom: calc((var(--main-toolbar-height) - (var(--lumo-font-size-l) * var(--lumo-line-height-xs))) / 2);
+  margin-top: calc((var(--main-toolbar-height) - (var(--lumo-font-size-l) * var(--lumo-line-height-xs))) / 2);
+}
+
+/* Action items */
+.main-toolbar__action-items > *:not(:last-child) {
+  margin-right: var(--lumo-space-s);
+}
+
+/* Avatar */
+.main-toolbar__avatar {
+  border-radius: 100%;
+  flex-shrink: 0;
+  height: var(--lumo-size-s);
+  margin-left: var(--lumo-space-m);
+  width: var(--lumo-size-s);
+}
+
+/* Hide the menu button on 'wide' viewports */
+@media (min-width: 1024px) {
+  .main-toolbar__menu-icon {
+    display: none;
+  }
+}
