@@ -74,19 +74,19 @@ public class EntityManagerImpl implements EntityManager {
     Map<String, EntityDefinition> entityDefsByName = getEntitiesByNameForDomain(uri);
     String entityPath = EntityUris.getEntityPath(uri);
     checkEntityPath(entityPath);
-    String propertyName = EntityUris.getProperty(uri);
-    checkPropertyName(propertyName);
+    String propertyPath = EntityUris.getProperty(uri);
+    checkPropertyName(propertyPath);
     
-    if(entityPath.contains("/")) {
-      String[] path = entityPath.split("/");
-      String entityName = path[0];
-      path = Arrays.copyOfRange(path, 1, path.length);
-      EntityDefinition entityDef = entityDefsByName.get(entityName);
+    if(propertyPath.contains(".")) {
+      String[] path = propertyPath.split("\\.");
+      String propertyName = path[path.length-1];
+      path = Arrays.copyOfRange(path, 0, path.length-1);
+      EntityDefinition entityDef = entityDefsByName.get(entityPath);
       Property<?> refProperty = entityDef.findOrCreateReferredProperty(path, propertyName);
       return refProperty;
     } else {
       EntityDefinition entityDef = entityDefsByName.get(entityPath);
-      return entityDef.getProperty(propertyName);
+      return entityDef.getProperty(propertyPath);
     }
   }
   
