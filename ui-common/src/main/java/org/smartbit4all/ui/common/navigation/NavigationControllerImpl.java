@@ -1,34 +1,35 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
  * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 package org.smartbit4all.ui.common.navigation;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 import org.smartbit4all.api.navigation.Navigation;
 import org.smartbit4all.api.navigation.NavigationApi;
 import org.smartbit4all.api.navigation.NavigationConfig;
+import org.smartbit4all.api.navigation.bean.NavigationAssociation;
 import org.smartbit4all.api.navigation.bean.NavigationEntry;
 import org.smartbit4all.api.navigation.bean.NavigationNode;
 import org.smartbit4all.ui.common.navigation.NavigationTreeNode.Kind;
 import org.smartbit4all.ui.common.view.UIViewShowCommand;
 import org.springframework.beans.factory.annotation.Autowired;
+import com.google.common.collect.Streams;
 
 public class NavigationControllerImpl implements NavigationController {
 
@@ -84,14 +85,7 @@ public class NavigationControllerImpl implements NavigationController {
 
   @Override
   public boolean hasChildren(NavigationTreeNode node) {
-    if (node == null) {
-      return !rootNodes.isEmpty();
-    }
-    NavigationNode navigationNode = navigationState.getNode(node.getIdentifier());
-    if (navigationNode != null) {
-      navigationState.expandAll(navigationNode);
-    }
-    return navigationState.hasChildren(node.getIdentifier());
+    return getChildCount(node) > 0;
   }
 
   @Override
@@ -101,11 +95,15 @@ public class NavigationControllerImpl implements NavigationController {
     if (node == null) {
       return rootNodes.size();
     }
+    if (node.isKind(Kind.ASSOCIATION)) {
+      // In case of association we have the references as counter.
+      return navigationState.numberOfReferences(node.getIdentifier());
+    }
     NavigationNode navigationNode = navigationState.getNode(node.getIdentifier());
     if (navigationNode != null) {
       navigationState.expandAll(navigationNode);
     }
-    return navigationState.numberOfChildren(node.getIdentifier());
+    return navigationState.numberOfChildren(node.getIdentifier(), true);
   }
 
   @Override
@@ -117,13 +115,29 @@ public class NavigationControllerImpl implements NavigationController {
     }
     // Kind kind, String identifier, String caption, String shortDescription,
     // String icon, String[] styles
+    if (parent.isKind(Kind.ASSOCIATION)) {
+      // In case of association we call the children of the association directly.
+      // TODO Later on manage the reference kind also!
+      return navigationState.getReferencedNodes(parent.getIdentifier()).stream()
+          .map(n -> new NavigationTreeNode(Kind.ENTRY, n.getId(), n.getEntry().getName(), null,
+              n.getEntry().getIcon(), null));
+    }
     NavigationNode node = navigationState.getNode(parent.getIdentifier());
     if (node != null) {
       navigationState.expandAll(node);
     }
-    return navigationState.getChildren(parent.getIdentifier()).stream()
-        .map(n -> new NavigationTreeNode(Kind.ENTRY, n.getId(), n.getEntry().getName(), null,
-            n.getEntry().getIcon(), null));
+    List<NavigationAssociation> associations =
+        node.getAssociations() == null ? Collections.emptyList() : node.getAssociations();
+    // TODO Correct name for the association
+    Stream<NavigationTreeNode> assocStream = associations.stream().filter(a -> a.getHidden())
+        .map(a -> new NavigationTreeNode(Kind.ASSOCIATION, a.getId(), a.getMetaUri().toString(),
+            null,
+            null, null));
+    Stream<NavigationTreeNode> nodeStream =
+        navigationState.getChildrenNodes(parent.getIdentifier(), true).stream()
+            .map(n -> new NavigationTreeNode(Kind.ENTRY, n.getId(), n.getEntry().getName(), null,
+                n.getEntry().getIcon(), null));
+    return Streams.concat(assocStream, nodeStream);
 
   }
 
@@ -133,15 +147,16 @@ public class NavigationControllerImpl implements NavigationController {
       NavigationNode navigationNode = navigationState.getNode(node.getIdentifier());
       if (navigationNode != null && navigationNode.getEntry().getViews() != null
           && !navigationNode.getEntry().getViews().isEmpty()) {
-        
+
         NavigationEntry navigationEntry = navigationNode.getEntry();
-        org.smartbit4all.api.navigation.bean.NavigationView defaulView = navigationEntry.getViews().get(0);
-        
+        org.smartbit4all.api.navigation.bean.NavigationView defaulView =
+            navigationEntry.getViews().get(0);
+
         UIViewShowCommand viewCommand = new UIViewShowCommand(defaulView.getName());
         viewCommand.addParameter("entry", navigationEntry.getObjectUri());
         viewCommand.addParameter("icon", navigationEntry.getIcon());
         Map<String, Object> viewParams = defaulView.getParameters();
-        if(viewParams != null) {
+        if (viewParams != null) {
           viewCommand.getParameters().putAll(viewParams);
         }
         return viewCommand;
