@@ -38,7 +38,7 @@ public class DynamicForm<BEAN> extends Composite<FlexLayout> {
   private Binder<BEAN> binder;
 
   public DynamicForm(Class<BEAN> beanClazz) {
-    this.getContent().setSizeFull();
+    this.getContent().setWidthFull();
     this.getContent().setFlexWrap(FlexWrap.WRAP);
     this.getContent().addClassName("dynaform");
     this.getContent().addClassName(toKebabCase(beanClazz.getSimpleName()));
@@ -48,7 +48,7 @@ public class DynamicForm<BEAN> extends Composite<FlexLayout> {
   public void setBean(BEAN bean) {
     binder.setBean(bean);
   }
-  
+
   public void setReadOnly(boolean readOnly) {
     binder.setReadOnly(readOnly);
   }
@@ -62,8 +62,8 @@ public class DynamicForm<BEAN> extends Composite<FlexLayout> {
       if (binding.isComplete()) {
         String propertyName = bindingEntry.getKey();
         String label = getLabel(propertyName);
-        AbstractField<?,?> field = null;
-        
+        AbstractField<?, ?> field = null;
+
         if (isGetterReturnMatches(binding, String.class)) {
           field = new TextField(label);
           binder.bind(field, bean -> invokeGetter(binding, bean, null),
@@ -71,7 +71,7 @@ public class DynamicForm<BEAN> extends Composite<FlexLayout> {
         }
         if (isGetterReturnMatches(binding, Integer.class)) {
           field = new IntegerField(label);
-          binder.bind((IntegerField)field,
+          binder.bind((IntegerField) field,
               bean -> invokeGetter(binding, bean, null),
               (bean, value) -> invokeSetter(binding, bean, value, null));
         }
@@ -79,14 +79,14 @@ public class DynamicForm<BEAN> extends Composite<FlexLayout> {
           field = new BigDecimalField(label);
           BinderValueConverter<Long, BigDecimal> converter = createConverter(
               bigdec -> bigdec.longValue(),
-              longValue -> BigDecimal.valueOf(longValue)); 
-          binder.bind((BigDecimalField)field,
+              longValue -> BigDecimal.valueOf(longValue));
+          binder.bind((BigDecimalField) field,
               bean -> invokeGetter(binding, bean, converter),
               (bean, value) -> invokeSetter(binding, bean, value, converter));
         }
-        
-        if(field instanceof HasStyle) {
-          String className = propertyName.substring(propertyName.lastIndexOf(".")+1);
+
+        if (field instanceof HasStyle) {
+          String className = propertyName.substring(propertyName.lastIndexOf(".") + 1);
           ((HasStyle) field).setClassName(toKebabCase(className));
         }
         this.getContent().add(field);
@@ -94,12 +94,13 @@ public class DynamicForm<BEAN> extends Composite<FlexLayout> {
     }
 
   }
-  
+
   private String toKebabCase(String str) {
     return str.replaceAll("([a-z0-9])([A-Z])", "$1-$2").toLowerCase();
   }
-  
-  private <BEANTYPE, BINDERTYPE> BinderValueConverter<BEANTYPE, BINDERTYPE> createConverter(Function<BINDERTYPE, BEANTYPE> binderToBean, Function<BEANTYPE, BINDERTYPE> beanToBinder) {
+
+  private <BEANTYPE, BINDERTYPE> BinderValueConverter<BEANTYPE, BINDERTYPE> createConverter(
+      Function<BINDERTYPE, BEANTYPE> binderToBean, Function<BEANTYPE, BINDERTYPE> beanToBinder) {
     return new BinderValueConverter<BEANTYPE, BINDERTYPE>() {
 
       @Override
@@ -111,20 +112,21 @@ public class DynamicForm<BEAN> extends Composite<FlexLayout> {
       public BINDERTYPE beanToBinder(BEANTYPE valueFromBean) {
         return beanToBinder.apply(valueFromBean);
       }
-      
+
     };
   }
-  
+
   private static interface BinderValueConverter<BEANTYPE, BINDERTYPE> {
     public BEANTYPE binderToBean(BINDERTYPE valueToSet);
+
     public BINDERTYPE beanToBinder(BEANTYPE valueFromBean);
   }
-  
+
   private boolean isGetterReturnMatches(BindingCandidate binding, Class<?>... classesToCheck) {
     Objects.requireNonNull(classesToCheck);
     Class<?> returnType = binding.getter.getReturnType();
-    for(Class<?> classToCheck : classesToCheck) {
-      if(returnType.equals(classToCheck)) {
+    for (Class<?> classToCheck : classesToCheck) {
+      if (returnType.equals(classToCheck)) {
         return true;
       }
     }
@@ -169,7 +171,7 @@ public class DynamicForm<BEAN> extends Composite<FlexLayout> {
       BinderValueConverter<BEANTYPE, BINDERTYPE> converter) {
     try {
       Object getterResult = binding.getter.invoke(bean);
-      if(converter == null) {
+      if (converter == null) {
         return (BINDERTYPE) getterResult;
       } else {
         return converter.beanToBinder((BEANTYPE) getterResult);
@@ -179,10 +181,11 @@ public class DynamicForm<BEAN> extends Composite<FlexLayout> {
     }
   }
 
-  private <BINDERTYPE, BEANTYPE> void invokeSetter(BindingCandidate binding, BEAN bean, BINDERTYPE value,
+  private <BINDERTYPE, BEANTYPE> void invokeSetter(BindingCandidate binding, BEAN bean,
+      BINDERTYPE value,
       BinderValueConverter<BEANTYPE, BINDERTYPE> converter) {
     try {
-      BEANTYPE beanValue = converter == null? (BEANTYPE) value : converter.binderToBean(value);
+      BEANTYPE beanValue = converter == null ? (BEANTYPE) value : converter.binderToBean(value);
       binding.setter.invoke(bean, beanValue);
     } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
       throw new RuntimeException(e);
@@ -200,7 +203,7 @@ public class DynamicForm<BEAN> extends Composite<FlexLayout> {
 
   private String getLabel(String propertyName) {
     String possibleTranslation = TranslationUtil.INSTANCE().getPossibleTranslation(propertyName);
-    if(propertyName == possibleTranslation) {
+    if (propertyName == possibleTranslation) {
       return propertyName.substring(propertyName.lastIndexOf(".") + 1);
     }
     return possibleTranslation;
@@ -221,7 +224,7 @@ public class DynamicForm<BEAN> extends Composite<FlexLayout> {
     public boolean isComplete() {
       return getter != null && setter != null;
     }
-    
+
   }
 
 }

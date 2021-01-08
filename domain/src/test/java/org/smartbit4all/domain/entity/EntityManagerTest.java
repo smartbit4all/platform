@@ -37,7 +37,7 @@ public class EntityManagerTest {
   private static final String EXPECTED_USERACCDEF_URI = "entity://default/userAccountDef";
   private static final String EXPECTED_PROPERTY_URI = "entity://default/userAccountDef#firstname";
   
-  private static final String EXPECTED_PROPERTY_ON_ASSOC_URI = "entity://default/userAccountDef/primaryAddressRef#zipcode";
+  private static final String EXPECTED_PROPERTY_ON_ASSOC_URI = "entity://default/userAccountDef#primaryAddressRef.zipcode";
   private static final String EXPECTED_PROPERTY_ON_ASSOC_URI2 = "entity://default/userAccountDef#primaryZipcode";
   
   protected static AnnotationConfigApplicationContext ctx;
@@ -94,14 +94,17 @@ public class EntityManagerTest {
     UserAccountDef userAccountDef = ctx.getBean(UserAccountDef.class);
     Property<String> expectedProperty = userAccountDef.primaryZipcode();
     
-    URI propertyUri = EntityUris.createPropertyUri(EntityManagerTestConfig.ENTITY_SOURCE_SEC, "userAccountDef/primaryAddressRef", "zipcode");
+    URI propertyUri = EntityUris.createPropertyUri(EntityManagerTestConfig.ENTITY_SOURCE_SEC, "userAccountDef", "primaryAddressRef", "zipcode");
     assertEquals(EXPECTED_PROPERTY_ON_ASSOC_URI, propertyUri.toString());
     
     Property<?> actualProperty = entityManager.property(propertyUri);
     assertEquals(expectedProperty, actualProperty);
     
-    expectedProperty = userAccountDef.primaryAddress().zipcode();
-    assertEquals(expectedProperty, actualProperty);
+    propertyUri = EntityUris.createPropertyUri(EntityManagerTestConfig.ENTITY_SOURCE_SEC, "userAccountDef", "primaryAddressRef", "city");
+    assertEquals(userAccountDef.primaryAddress().city().getUri().toString(), propertyUri.toString());
+    
+    actualProperty = entityManager.property(propertyUri);
+    assertEquals(userAccountDef.primaryAddress().city(), actualProperty);
     
     propertyUri = EntityUris.createPropertyUri(EntityManagerTestConfig.ENTITY_SOURCE_SEC, "userAccountDef", "primaryZipcode");
     assertEquals(EXPECTED_PROPERTY_ON_ASSOC_URI2, propertyUri.toString());
