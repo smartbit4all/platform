@@ -49,9 +49,10 @@ public class Filters {
   public static final String MULTI_SEL = "multi.eq";
   public static final String COMBO_SEL = "combo.eq";
 
-  private static enum TimeFilterOptions{
+  private static enum TimeFilterOptions {
     LAST_WEEK, THIS_MONTH, LAST_MONTH, YESTERDAY, TODAY, OTHER
   }
+
   public static final String LAST_WEEK = "statistics.filter.time.last_week";
   public static final String THIS_MONTH = "statistics.filter.time.this_month";
   public static final String LAST_MONTH = "statistics.filter.time.last_month";
@@ -107,34 +108,35 @@ public class Filters {
       groupClause.add(subGroupClause.BRACKET());
       recurseGroups(subGroup, subGroupClause);
     }
-    
+
     // Now we add all the filters from the current group as simple expressions
     List<FilterField> filterFields = filterGroup.getFilterFields() == null ? Collections.emptyList()
         : filterGroup.getFilterFields();
     for (FilterField filterField : filterFields) {
       Expression expressionOfField = null;
-      
+
       String operationCode = filterField.getOperationCode();
-      
+
       if (DATE_INTERVAL.equals(operationCode) || DATE_TIME_INTERVAL.equals(operationCode)) {
         expressionOfField = createDateIntervalClause(filterField);
-        
-      } else if (DATE_INTERVAL_CB.equals(operationCode) || DATE_TIME_INTERVAL_CB.equals(operationCode)) {
+
+      } else if (DATE_INTERVAL_CB.equals(operationCode)
+          || DATE_TIME_INTERVAL_CB.equals(operationCode)) {
         expressionOfField = createDateIntervalCbClause(filterField);
-        
+
       } else if (DATE_EQ.equals(operationCode) || DATE_TIME_EQ.equals(operationCode)) {
         expressionOfField = createDateEqClause(filterField);
-        
+
       } else if (TXT_EQ.equals(operationCode)) {
         expressionOfField = createTxtEqClause(filterField);
-        
+
       } else if (MULTI_SEL.equals(operationCode)) {
         expressionOfField = createMultiSelClause(filterField);
       } else if (COMBO_SEL.equals(operationCode)) {
         expressionOfField = createComboSelClause(filterField);
       }
-      
-      if(expressionOfField != null) {
+
+      if (expressionOfField != null) {
         groupClause.add(expressionOfField);
       }
     }
@@ -144,14 +146,14 @@ public class Filters {
     Expression expressionOfField = null;
     Property<?> property = getProperty(filterField.getPropertyUri1());
     String value = filterField.getValue1().getValue();
-    if(value != null && !value.isEmpty()) {
+    if (value != null && !value.isEmpty()) {
       // TODO handle other types based on filterField.getValue1().getType()!
       Property<String> propertyAsString = (Property<String>) property;
       expressionOfField = propertyAsString.eq(value);
     }
     return expressionOfField;
   }
-  
+
   private Expression createMultiSelClause(FilterField filterField) {
     // TODO there is no enough information in filter field for multi selection:
     // missing property or value type
@@ -159,15 +161,16 @@ public class Filters {
     Expression expressionOfField = null;
     Property<?> property = getProperty(filterField.getPropertyUri1());
     List<URI> selectedValues = filterField.getSelectedValues();
-    if(selectedValues != null && !selectedValues.isEmpty()) {
-      List<String> valueIds = selectedValues.stream().map(uri -> ValueUris.getValueId(uri)).collect(Collectors.toList());
+    if (selectedValues != null && !selectedValues.isEmpty()) {
+      List<String> valueIds = selectedValues.stream().map(uri -> ValueUris.getValueId(uri))
+          .collect(Collectors.toList());
       Property<String> propertyAsString = (Property<String>) property;
-      
+
       expressionOfField = propertyAsString.in(valueIds);
     }
     return expressionOfField;
   }
-  
+
   private Expression createComboSelClause(FilterField filterField) {
     // TODO there is no enough information in filter field for combo selection:
     // missing property or value type
@@ -175,11 +178,11 @@ public class Filters {
     Expression expressionOfField = null;
     Property<?> property = getProperty(filterField.getPropertyUri1());
     List<URI> selectedValues = filterField.getSelectedValues();
-    if(selectedValues != null && !selectedValues.isEmpty()) {
+    if (selectedValues != null && !selectedValues.isEmpty()) {
       URI selectedValue = selectedValues.get(0);
       String valueId = ValueUris.getValueId(selectedValue);
       Property<String> propertyAsString = (Property<String>) property;
-      
+
       expressionOfField = propertyAsString.eq(valueId);
     }
     return expressionOfField;
@@ -200,10 +203,10 @@ public class Filters {
     LocalTime endTime = LocalTime.of(23, 59, 59);
     LocalDate startDate = null;
     LocalDate endDate = null;
-    
+
     FilterOperandValue operandValue3 = filterField.getValue3();
     TimeFilterOptions selectedTimeOption = TimeFilterOptions.valueOf(operandValue3.getValue());
-    switch(selectedTimeOption) {
+    switch (selectedTimeOption) {
       case LAST_MONTH:
         startDate = today.with(DAY_OF_MONTH, 1).minus(1, MONTHS);
         endDate = today.with(DAY_OF_MONTH, 1).minusDays(1);
@@ -235,7 +238,7 @@ public class Filters {
     Expression expressionOfField = createDateIntervalClause(filterField);
     return expressionOfField;
   }
-  
+
   private void setOperandDateValue(FilterOperandValue operand, LocalDate date, LocalTime time) {
     if (LocalDate.class.getName().equals(operand.getType())) {
       operand.setValue(date.toString());
@@ -259,11 +262,11 @@ public class Filters {
     }
     return null;
   }
-  
+
   private <T> Expression createEqExpression(Property<?> property,
       FilterOperandValue valueOperand, Function<FilterOperandValue, T> operandConverter) {
     T value = operandConverter.apply(valueOperand);
-    if(value != null) {
+    if (value != null) {
       @SuppressWarnings("unchecked")
       Property<T> actualProperty = (Property<T>) property;
       return actualProperty.eq(value);
@@ -282,10 +285,12 @@ public class Filters {
     if (LocalDate.class.equals(propertyType)) {
       // If we have LocaDate in the filter field as values then OK. Else we have to transfer it
       // to LocaDate because the property itself is LocalDate type.
-      return createDateIntervalExpression(property1, value1Operand, value2Operand, this::convertToLocalDate);
+      return createDateIntervalExpression(property1, value1Operand, value2Operand,
+          this::convertToLocalDate);
     }
     if (LocalDateTime.class.equals(propertyType)) {
-      return createDateIntervalExpression(property1, value1Operand, value2Operand, this::convertToLocalDateTime);
+      return createDateIntervalExpression(property1, value1Operand, value2Operand,
+          this::convertToLocalDateTime);
     }
     return null;
   }
@@ -308,10 +313,10 @@ public class Filters {
     }
     return null;
   }
-  
+
   private LocalDate convertToLocalDate(FilterOperandValue valueOperand) {
     LocalDate value = null;
-    if(valueOperand == null) {
+    if (valueOperand == null) {
       return value;
     }
     if (LocalDate.class.getName().equals(valueOperand.getType())) {
@@ -329,7 +334,7 @@ public class Filters {
   }
 
   private LocalDateTime convertToLocalDateTime(FilterOperandValue valueOperand) {
-    if(valueOperand == null || valueOperand.getValue() == null) {
+    if (valueOperand == null || valueOperand.getValue() == null) {
       return null;
     }
     LocalDateTime value = null;
@@ -360,6 +365,76 @@ public class Filters {
     final LocalDate to = from.plusMonths(1).minusDays(1);
 
     return new LocalDate[] {from, to};
+  }
+
+  /**
+   * Returns if the group has any filterField among its own filterFields or in any of its
+   * filterGroups, which has some value.
+   * 
+   * @param group
+   * @return
+   */
+  public static boolean hasAnyFilterField(FilterGroup group) {
+    if (group == null) {
+      return false;
+    }
+    List<FilterGroup> filterGroups = group.getFilterGroups();
+    if (filterGroups != null) {
+      for (FilterGroup filterGroup : filterGroups) {
+        if (hasAnyFilterField(filterGroup)) {
+          return true;
+        }
+      }
+    }
+    List<FilterField> filterFields = group.getFilterFields();
+    if (filterFields != null) {
+      for (FilterField filterField : filterFields) {
+        if (hasAnyValue(filterField)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  public static boolean hasAnyValue(FilterField filter) {
+    if (filter == null) {
+      return false;
+    }
+    if (isValuePresent(filter.getValue1())) {
+      return true;
+    }
+    if (isValuePresent(filter.getValue2())) {
+      return true;
+    }
+    if (isValuePresent(filter.getValue3())) {
+      return true;
+    }
+    if (filter.getSelectedValues() != null && filter.getSelectedValues().size() > 0) {
+      return true;
+    }
+    return false;
+  }
+
+  public static boolean isValuePresent(FilterOperandValue value) {
+    return value != null && value.getValue() != null;
+  }
+
+  public static boolean isIntervalValid(FilterField timeFilter) {
+    if (!hasAnyValue(timeFilter)) {
+      return false;
+    }
+    FilterOperandValue valueFrom = timeFilter.getValue1();
+    FilterOperandValue valueTo = timeFilter.getValue2();
+    if (!isValuePresent(valueFrom) && !isValuePresent(valueTo)) {
+      // from and to empty, option must not be other!
+      TimeFilterOptions timeFilterOption =
+          TimeFilterOptions.valueOf(timeFilter.getValue3().getValue());
+      if (timeFilterOption == TimeFilterOptions.OTHER) {
+        return false;
+      }
+    }
+    return true;
   }
 
 }
