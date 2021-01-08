@@ -17,13 +17,16 @@ package org.smartbit4all.ui.vaadin.components.form;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.function.Function;
 import org.smartbit4all.ui.vaadin.localization.TranslationUtil;
 import com.vaadin.flow.component.AbstractField;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
@@ -37,11 +40,23 @@ public class DynamicForm<BEAN> extends Composite<FlexLayout> {
 
   private Binder<BEAN> binder;
 
+  public DynamicForm() {
+
+  }
+
   public DynamicForm(Class<BEAN> beanClazz) {
+    initBean(beanClazz);
+  }
+
+  protected void preInit(Class<BEAN> beanClazz) {
     this.getContent().setWidthFull();
     this.getContent().setFlexWrap(FlexWrap.WRAP);
     this.getContent().addClassName("dynaform");
     this.getContent().addClassName(toKebabCase(beanClazz.getSimpleName()));
+  }
+
+  protected void initBean(Class<BEAN> beanClazz) {
+    preInit(beanClazz);
     init(beanClazz);
   }
 
@@ -53,8 +68,10 @@ public class DynamicForm<BEAN> extends Composite<FlexLayout> {
     binder.setReadOnly(readOnly);
   }
 
-  private void init(Class<BEAN> beanClazz) {
+  protected void init(Class<BEAN> beanClazz) {
     Map<String, BindingCandidate> bindings = collectBindings(beanClazz);
+
+    List<Component> componentList = new ArrayList<>();
 
     binder = new Binder<>();
     for (Entry<String, BindingCandidate> bindingEntry : bindings.entrySet()) {
@@ -89,8 +106,17 @@ public class DynamicForm<BEAN> extends Composite<FlexLayout> {
           String className = propertyName.substring(propertyName.lastIndexOf(".") + 1);
           ((HasStyle) field).setClassName(toKebabCase(className));
         }
-        this.getContent().add(field);
+        componentList.add(field);
+        // this.getContent().add(field);
       }
+    }
+    addComponentsToContent(componentList);
+
+  }
+
+  protected void addComponentsToContent(List<Component> componentList) {
+    for (Component component : componentList) {
+      this.getContent().add(component);
     }
 
   }
