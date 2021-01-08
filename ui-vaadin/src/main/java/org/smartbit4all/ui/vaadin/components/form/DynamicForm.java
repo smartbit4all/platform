@@ -17,6 +17,7 @@ package org.smartbit4all.ui.vaadin.components.form;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -29,6 +30,7 @@ import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.HasStyle;
+import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.FlexLayout.FlexWrap;
 import com.vaadin.flow.component.textfield.BigDecimalField;
@@ -96,10 +98,16 @@ public class DynamicForm<BEAN> extends Composite<FlexLayout> {
           field = new BigDecimalField(label);
           BinderValueConverter<Long, BigDecimal> converter = createConverter(
               bigdec -> bigdec.longValue(),
-              longValue -> BigDecimal.valueOf(longValue));
+              longValue -> longValue == null ? null : BigDecimal.valueOf(longValue));
           binder.bind((BigDecimalField) field,
               bean -> invokeGetter(binding, bean, converter),
               (bean, value) -> invokeSetter(binding, bean, value, converter));
+        }
+        if (isGetterReturnMatches(binding, LocalDate.class)) {
+          field = new DatePicker(label);
+          binder.bind((DatePicker) field,
+              bean -> invokeGetter(binding, bean, null),
+              (bean, value) -> invokeSetter(binding, bean, value, null));
         }
 
         if (field instanceof HasStyle) {

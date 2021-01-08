@@ -53,7 +53,7 @@ public class DomainServiceConfig extends SB4Configuration {
   @Bean
   public Converter<Long, String> long2StringConverter() {
     return new ConverterImpl<Long, String>(String.class,
-        (Long l) -> l.toString(), Long.class, (String s) -> Long.valueOf(s));
+        (Long l) -> l.toString(), Long.class, (String s) -> s == null ? null : Long.valueOf(s));
   }
 
 }
