@@ -16,8 +16,8 @@
  ******************************************************************************/
 package org.smartbit4all.domain.security;
 
-import org.smartbit4all.domain.meta.EventHandler;
+import org.smartbit4all.domain.meta.ComputationLogic;
 
-public interface UserTitle extends EventHandler {
+public interface UserTitle extends ComputationLogic {
 
 }

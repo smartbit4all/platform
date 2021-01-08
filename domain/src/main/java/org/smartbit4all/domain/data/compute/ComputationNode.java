@@ -16,10 +16,10 @@
  ******************************************************************************/
 package org.smartbit4all.domain.data.compute;
 
-import org.smartbit4all.domain.meta.EventHandler;
+import org.smartbit4all.domain.meta.ComputationLogic;
 
 class ComputationNode {
 
-  EventHandler logic;
+  ComputationLogic logic;
 
 }

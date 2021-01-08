@@ -32,10 +32,10 @@ import com.google.common.cache.CacheBuilder;
  * 
  * @author Peter Boros
  */
-public abstract class EventHandlerImpl extends SB4FunctionImpl<EventParameter, EventParameter>
-    implements EventHandler {
+public abstract class ComputationLogicImpl extends SB4FunctionImpl<ComputationParameter, ComputationParameter>
+    implements ComputationLogic {
 
-  private static final Logger log = LoggerFactory.getLogger(EventHandlerImpl.class);
+  private static final Logger log = LoggerFactory.getLogger(ComputationLogicImpl.class);
 
   /**
    * The root entity of the computation. The naming starts from here.
@@ -47,16 +47,16 @@ public abstract class EventHandlerImpl extends SB4FunctionImpl<EventParameter, E
    * 
    * @param entity
    */
-  protected EventHandlerImpl(EntityDefinition entity) {
+  protected ComputationLogicImpl(EntityDefinition entity) {
     super();
     this.entity = entity;
   }
 
   /**
-   * This cache contains the pre-processed dependency descriptors for the {@link EventHandler}s that
+   * This cache contains the pre-processed dependency descriptors for the {@link ComputationLogic}s that
    * was already used in the JVM before.
    */
-  private static final Cache<Class<? extends EventHandler>, EventParameterMeta> dependenciesByComputations =
+  private static final Cache<Class<? extends ComputationLogic>, ComputationParameterMeta> dependenciesByComputations =
       CacheBuilder.newBuilder().build();
 
   /**
@@ -64,44 +64,44 @@ public abstract class EventHandlerImpl extends SB4FunctionImpl<EventParameter, E
    * 
    * The instance level parameter object that contains the related parameters and logics.
    */
-  private EventParameter parameter;
+  private ComputationParameter parameter;
 
   /**
    * It contains all the meta level parameters of the
    */
-  private EventParameterMeta meta;
+  private ComputationParameterMeta meta;
 
   @Override
-  public EventParameter input() {
+  public ComputationParameter input() {
     return parameter();
   }
 
   @Override
-  public EventParameter output() {
+  public ComputationParameter output() {
     return parameter();
   }
 
   @Override
-  public EventParameterMeta meta() {
+  public ComputationParameterMeta meta() {
     return meta;
   }
 
   @Override
-  public EventParameter parameter() {
+  public ComputationParameter parameter() {
     if (parameter != null) {
       return parameter;
     }
     try {
-      parameter = new EventParameter(this,
-          dependenciesByComputations.get(this.getClass(), new Callable<EventParameterMeta>() {
+      parameter = new ComputationParameter(this,
+          dependenciesByComputations.get(this.getClass(), new Callable<ComputationParameterMeta>() {
 
             @Override
-            public EventParameterMeta call() {
+            public ComputationParameterMeta call() {
               // TODO Could be problematic if the there is field overriding in the type hierarchy!
               Set<Field> properyFields = ReflectionUtility.allFields(this.getClass(),
                   f -> (f.getAnnotationsByType(PropertyWired.class).length
                       + f.getAnnotationsByType(PropertyDynamic.class).length) > 0);
-              return new EventParameterMeta(properyFields);
+              return new ComputationParameterMeta(properyFields);
             }
 
           }));
@@ -109,7 +109,7 @@ public abstract class EventHandlerImpl extends SB4FunctionImpl<EventParameter, E
       log.error("Error occured while analyzing the dependencies of the {} computation logic.", this,
           e);
     }
-    return EventParameter.voidParameter;
+    return ComputationParameter.voidParameter;
   }
 
   @Override

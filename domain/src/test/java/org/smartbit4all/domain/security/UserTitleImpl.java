@@ -17,12 +17,12 @@
 package org.smartbit4all.domain.security;
 
 import org.smartbit4all.core.utility.StringConstant;
-import org.smartbit4all.domain.meta.EventHandlerImpl;
+import org.smartbit4all.domain.meta.ComputationLogicImpl;
 import org.smartbit4all.domain.meta.InputValue;
 import org.smartbit4all.domain.meta.OutputValue;
 import org.smartbit4all.domain.meta.PropertyWired;
 
-public class UserTitleImpl extends EventHandlerImpl implements UserTitle {
+public class UserTitleImpl extends ComputationLogicImpl implements UserTitle {
 
   @PropertyWired(UserAccountDef.TITLE_CODE)
   InputValue<String> titleCode;

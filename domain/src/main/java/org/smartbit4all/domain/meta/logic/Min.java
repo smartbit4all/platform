@@ -16,7 +16,7 @@
  ******************************************************************************/
 package org.smartbit4all.domain.meta.logic;
 
-import org.smartbit4all.domain.meta.EventHandler;
+import org.smartbit4all.domain.meta.ComputationLogic;
 import org.smartbit4all.domain.meta.PropertyComputed;
 
 /**
@@ -27,7 +27,7 @@ import org.smartbit4all.domain.meta.PropertyComputed;
  * 
  * @author Peter Boros
  */
-public interface Min extends EventHandler {
+public interface Min extends ComputationLogic {
 
   /**
    * The constant for the naming.

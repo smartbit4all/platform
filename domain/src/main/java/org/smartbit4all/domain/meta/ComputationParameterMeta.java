@@ -31,9 +31,9 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Peter Boros
  */
-class EventParameterMeta {
+class ComputationParameterMeta {
 
-  private static final Logger log = LoggerFactory.getLogger(EventParameterMeta.class);
+  private static final Logger log = LoggerFactory.getLogger(ComputationParameterMeta.class);
 
   /**
    * The {@link InputValue}s including the {@link InOutValue}s. This field are annotated by
@@ -69,7 +69,7 @@ class EventParameterMeta {
    * 
    * @param parameters
    */
-  EventParameterMeta(Set<Field> parameters) {
+  ComputationParameterMeta(Set<Field> parameters) {
     super();
     this.parameters = new ArrayList<>(parameters);
   }
@@ -95,11 +95,11 @@ class EventParameterMeta {
         inputs.add(field);
       }
       if (field.isAnnotationPresent(InputProvider.class)
-          && field.getType().isAssignableFrom(EventHandler.class)) {
+          && field.getType().isAssignableFrom(ComputationLogic.class)) {
         inputProviders.add(field);
       }
       if (field.isAnnotationPresent(OutputConsumer.class)
-          && field.getType().isAssignableFrom(EventHandler.class)) {
+          && field.getType().isAssignableFrom(ComputationLogic.class)) {
         outputConsumers.add(field);
       }
     }
@@ -111,7 +111,7 @@ class EventParameterMeta {
    * @param logic The logic instance.
    * @return The {@link Iterable} for the values.
    */
-  Iterable<InputValue<?>> inputs(EventHandler logic) {
+  Iterable<InputValue<?>> inputs(ComputationLogic logic) {
     return values(logic, inputs);
   }
 
@@ -121,7 +121,7 @@ class EventParameterMeta {
    * @param logic The logic instance.
    * @return The {@link Iterable} for the values.
    */
-  Iterable<OutputValue<?>> outputs(EventHandler logic) {
+  Iterable<OutputValue<?>> outputs(ComputationLogic logic) {
     return values(logic, outputs);
   }
 
@@ -131,7 +131,7 @@ class EventParameterMeta {
    * @param logic The logic instance.
    * @return The {@link Iterable} for the values.
    */
-  Iterable<EventHandler> inputProviders(EventHandler logic) {
+  Iterable<ComputationLogic> inputProviders(ComputationLogic logic) {
     return values(logic, inputProviders);
   }
 
@@ -141,7 +141,7 @@ class EventParameterMeta {
    * @param logic The logic instance.
    * @return The {@link Iterable} for the values.
    */
-  Iterable<EventHandler> outputConsumers(EventHandler logic) {
+  Iterable<ComputationLogic> outputConsumers(ComputationLogic logic) {
     return values(logic, outputConsumers);
   }
 

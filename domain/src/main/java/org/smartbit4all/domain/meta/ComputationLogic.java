@@ -37,21 +37,21 @@ import org.smartbit4all.core.SB4Function;
  * @author Peter Boros
  *
  */
-public interface EventHandler extends SB4Function<EventParameter, EventParameter> {
+public interface ComputationLogic extends SB4Function<ComputationParameter, ComputationParameter> {
 
   /**
    * The input/output parameters of the logic.
    * 
    * @return
    */
-  EventParameter parameter();
+  ComputationParameter parameter();
 
   /**
    * The meta level parameters
    * 
    * @return
    */
-  EventParameterMeta meta();
+  ComputationParameterMeta meta();
 
   /**
    * The entity that is the root of this computation.

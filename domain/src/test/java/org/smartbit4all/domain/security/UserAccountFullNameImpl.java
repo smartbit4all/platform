@@ -17,7 +17,7 @@
 package org.smartbit4all.domain.security;
 
 import org.smartbit4all.core.utility.StringConstant;
-import org.smartbit4all.domain.meta.EventHandlerImpl;
+import org.smartbit4all.domain.meta.ComputationLogicImpl;
 import org.smartbit4all.domain.meta.InputProvider;
 import org.smartbit4all.domain.meta.InputValue;
 import org.smartbit4all.domain.meta.OutputValue;
@@ -25,7 +25,7 @@ import org.smartbit4all.domain.meta.PropertyDynamic;
 import org.smartbit4all.domain.meta.PropertyWired;
 import com.google.common.base.Strings;
 
-public class UserAccountFullNameImpl extends EventHandlerImpl implements UserAccountFullName {
+public class UserAccountFullNameImpl extends ComputationLogicImpl implements UserAccountFullName {
 
   @PropertyWired(UserAccountDef.TITLE)
   InputValue<String> title;

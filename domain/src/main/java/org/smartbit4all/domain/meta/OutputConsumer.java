@@ -22,7 +22,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * We can annotate the given field in a {@link EventHandler} that it's an output consumer.
+ * We can annotate the given field in a {@link ComputationLogic} that it's an output consumer.
  * 
  * @author Peter Boros
  */
