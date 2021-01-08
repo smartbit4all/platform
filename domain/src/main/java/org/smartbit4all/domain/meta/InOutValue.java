@@ -17,7 +17,7 @@
 package org.smartbit4all.domain.meta;
 
 /**
- * The input and output value for the {@link EventHandler}.
+ * The input and output value for the {@link ComputationLogic}.
  * 
  * @author Peter Boros
  *

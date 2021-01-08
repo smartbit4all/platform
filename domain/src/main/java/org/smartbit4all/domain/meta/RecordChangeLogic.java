@@ -22,6 +22,6 @@ package org.smartbit4all.domain.meta;
  * 
  * @author Peter Boros
  */
-public interface RecordChangeLogic extends EventHandler {
+public interface RecordChangeLogic extends ComputationLogic {
 
 }

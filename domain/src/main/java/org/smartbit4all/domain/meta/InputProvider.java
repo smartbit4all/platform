@@ -22,7 +22,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * We can annotate the given field in a {@link EventHandler} that it's an input provider for us.
+ * We can annotate the given field in a {@link ComputationLogic} that it's an input provider for us.
  * 
  * @author Peter Boros
  */

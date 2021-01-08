@@ -21,6 +21,6 @@ package org.smartbit4all.domain.meta;
  * 
  * @author Peter Boros
  */
-public interface ValueChangeLogic extends EventHandler {
+public interface ValueChangeLogic extends ComputationLogic {
 
 }

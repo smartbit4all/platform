@@ -20,7 +20,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
-import org.smartbit4all.domain.meta.EventHandler;
+import org.smartbit4all.domain.meta.ComputationLogic;
 import org.smartbit4all.domain.meta.Property;
 
 @Retention(RUNTIME)
@@ -33,6 +33,6 @@ public @interface ComputedProperty {
    */
   String name() default "";
 
-  Class<? extends EventHandler> implementation();
+  Class<? extends ComputationLogic> implementation();
 
 }

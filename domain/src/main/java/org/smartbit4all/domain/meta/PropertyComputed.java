@@ -28,7 +28,7 @@ import org.smartbit4all.domain.meta.logic.Min;
 import org.smartbit4all.domain.meta.logic.Sum;
 
 /**
- * This property is computed by an algorithm represented by a {@link EventHandler}. For the
+ * This property is computed by an algorithm represented by a {@link ComputationLogic}. For the
  * computation there are other necessary properties to include.
  * 
  * @author Peter Boros
@@ -49,7 +49,7 @@ public class PropertyComputed<T> extends Property<T> {
 
   }
 
-  private static final Map<Class<? extends EventHandler>, BasicComputation> basicComputationMap =
+  private static final Map<Class<? extends ComputationLogic>, BasicComputation> basicComputationMap =
       new ListBasedMap<>();
 
   static {
@@ -66,7 +66,7 @@ public class PropertyComputed<T> extends Property<T> {
    * logic itself is always instantiated at the given place. So the same computation logic can have
    * more then one implementation depending on the context that we currently have.
    */
-  private Class<? extends EventHandler> logic;
+  private Class<? extends ComputationLogic> logic;
 
   /**
    * At setup time we identify if the given computation is a basic one handled at platform level.
@@ -88,12 +88,12 @@ public class PropertyComputed<T> extends Property<T> {
    * @param type
    * @param logic
    */
-  public PropertyComputed(String name, Class<T> type, Class<? extends EventHandler> logic) {
+  public PropertyComputed(String name, Class<T> type, Class<? extends ComputationLogic> logic) {
     this(name, type, null, logic);
   }
 
   public PropertyComputed(String name, Class<T> type, JDBCDataConverter<T, ?> jdbcConverter,
-      Class<? extends EventHandler> logic) {
+      Class<? extends ComputationLogic> logic) {
     super(name, type, jdbcConverter);
     this.logic = logic;
     BasicComputation basicComputation = basicComputationMap.get(logic);
@@ -107,7 +107,7 @@ public class PropertyComputed<T> extends Property<T> {
    * 
    * @return
    */
-  public Class<? extends EventHandler> getLogic() {
+  public Class<? extends ComputationLogic> getLogic() {
     return logic;
   }
 
@@ -144,7 +144,7 @@ public class PropertyComputed<T> extends Property<T> {
   }
 
   public static <T> PropertyComputed<T> create(String name, Class<T> type,
-      JDBCDataConverterHelper jdbcDataConverterHelper, Class<? extends EventHandler> logic) {
+      JDBCDataConverterHelper jdbcDataConverterHelper, Class<? extends ComputationLogic> logic) {
     return new PropertyComputed<T>(name, type, jdbcDataConverterHelper.from(type), logic);
   }
 }

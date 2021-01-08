@@ -35,8 +35,12 @@ public abstract class EntityUris {
     return createUri(SCHEME_ENTITY, domain, entityPath, null);
   }
   
-  public static URI createPropertyUri(String domain, String entityPath, String property) {
-    return createUri(SCHEME_ENTITY, domain, entityPath, property);
+  public static URI createPropertyUri(String domain, String entityName, String property) {
+    return createUri(SCHEME_ENTITY, domain, entityName, property);
+  }
+  
+  public static URI createPropertyUri(String domain, String entityName, String refPath, String property) {
+    return createUri(SCHEME_ENTITY, domain, entityName, refPath + "." + property);
   }
   
   public static URI createReferenceUri(String domain, String entityName, String referenceName) {

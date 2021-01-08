@@ -51,7 +51,7 @@ public interface ComputationFramework extends SB4Service {
    *        is the context that must contain the given logic class.
    * @param logicClass
    */
-  void install(EntityDefinition entityDef, Class<? extends EventHandler> logicClass);
+  void install(EntityDefinition entityDef, Class<? extends ComputationLogic> logicClass);
 
   void start();
 

@@ -23,15 +23,15 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * The parameter for the {@link EventHandler} that defines all the {@link InputValue},
+ * The parameter for the {@link ComputationLogic} that defines all the {@link InputValue},
  * {@link OutputValue} and {@link InOutValue} parameters.
  * 
  * @author Peter Boros
  */
-public class EventParameter {
+public class ComputationParameter {
 
   /**
-   * If we need to serialize somehow the execution order of the {@link EventHandler}s then we need
+   * If we need to serialize somehow the execution order of the {@link ComputationLogic}s then we need
    * to know what is the relation between them. It's a kind of compare. If we are the predecessor
    * then we must run earlier then the other. If we are the successor then we must run later then
    * the other. If the relation is none then there is no direct relation between the two parameter
@@ -61,19 +61,19 @@ public class EventParameter {
    * are produced or they can have direct reference for this. They must run later to have all the
    * necessary input. They are the direct successor
    */
-  Set<EventHandler> outputConsumers = new HashSet<>();
+  Set<ComputationLogic> outputConsumers = new HashSet<>();
 
   /**
    * The qualified name of the result properties. The qualified name means the qualified name of the
    * entity definition class + dot + name of the property. If we have a one entity related logic
    * then it look unnecessary but in case of a complex logic it's a must.
    */
-  Set<EventHandler> inputProviders = new HashSet<>();
+  Set<ComputationLogic> inputProviders = new HashSet<>();
 
   /**
    * The class level meta holding the fields for accessing the instance level parameters.
    */
-  protected final EventParameterMeta meta;
+  protected final ComputationParameterMeta meta;
 
   /**
    * Constructs the parameter instance for the logic. At that point all the parameter field must be
@@ -82,7 +82,7 @@ public class EventParameter {
    * @param logic
    * @param meta
    */
-  EventParameter(EventHandler logic, EventParameterMeta meta) {
+  ComputationParameter(ComputationLogic logic, ComputationParameterMeta meta) {
     super();
     this.meta = meta;
     // The direct references to the inputProviders and outputConsumers will be evaluated later.
@@ -102,14 +102,14 @@ public class EventParameter {
         hasAnyMissing = true;
       }
     }
-    for (EventHandler input : meta.inputProviders(logic)) {
+    for (ComputationLogic input : meta.inputProviders(logic)) {
       if (input != null) {
         inputProviders.add(input);
       } else {
         hasAnyMissing = true;
       }
     }
-    for (EventHandler output : meta.outputConsumers(logic)) {
+    for (ComputationLogic output : meta.outputConsumers(logic)) {
       if (output != null) {
         outputConsumers.add(output);
       } else {
@@ -131,16 +131,16 @@ public class EventParameter {
    * @param producedBy Contains the logics by the property fully qualified name they produce.
    * @param consumedBy Contains the logics by the property fully qualified name they consume.
    */
-  final void analyzeDependencies(Map<Property<?>, EventHandler> producedBy,
-      Map<Property<?>, List<EventHandler>> consumedBy) {
+  final void analyzeDependencies(Map<Property<?>, ComputationLogic> producedBy,
+      Map<Property<?>, List<ComputationLogic>> consumedBy) {
     // Those logics that are producing any of our inputs will be added to inputProviders.
     for (InputValue<?> input : inputs) {
-      EventHandler logic = producedBy.get(input.property());
+      ComputationLogic logic = producedBy.get(input.property());
       inputProviders.add(logic);
     }
     // Those logics that are producing any of our inputs will be added to inputProviders.
     for (OutputValue<?> output : outputs) {
-      List<EventHandler> consumerLogics = consumedBy.get(output.property());
+      List<ComputationLogic> consumerLogics = consumedBy.get(output.property());
       outputConsumers.addAll(consumerLogics);
     }
   }
@@ -148,6 +148,6 @@ public class EventParameter {
   /**
    * If a computation doesn't have any parameter.
    */
-  public static final EventParameter voidParameter = new EventParameter(null, null);
+  public static final ComputationParameter voidParameter = new ComputationParameter(null, null);
 
 }
