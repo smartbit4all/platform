@@ -114,6 +114,7 @@ public class Css {
   }
 
   public class Display {
+    public static final String NONE = "none";
     public static final String BLOCK = "block";
     public static final String INLINE = "inline";
     public static final String FLEX = "flex";
