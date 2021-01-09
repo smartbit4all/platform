@@ -30,6 +30,10 @@ import org.smartbit4all.ui.common.navigation.NavigationView;
 import org.smartbit4all.ui.common.view.UIViewShowCommand;
 import org.smartbit4all.ui.vaadin.components.navigation.UIViewParameterVaadinTransition;
 import org.smartbit4all.ui.vaadin.localization.TranslationUtil;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.treegrid.TreeGrid;
 import com.vaadin.flow.data.provider.hierarchy.AbstractBackEndHierarchicalDataProvider;
 import com.vaadin.flow.data.provider.hierarchy.HierarchicalDataProvider;
@@ -57,7 +61,7 @@ public class NavigationTreeView implements NavigationView {
     controller.setUI(this);
     // Adapt the given tree and add the necessary parameters.
 
-    tree.addHierarchyColumn(this::getNodeTitle).setAutoWidth(true);
+    tree.addComponentHierarchyColumn(this::getRowComponent).setAutoWidth(true);
     tree.addSelectionListener(selection -> {
       selection.getFirstSelectedItem().ifPresent(s -> {
         UIViewShowCommand showCommand = controller.getViewCommand(s);
@@ -69,9 +73,20 @@ public class NavigationTreeView implements NavigationView {
 
   }
 
+  private Component getRowComponent(NavigationTreeNode node) {
+    Objects.requireNonNull(node);
+    String iconKey = node.getIcon();
+    String title = getNodeTitle(node);
+    Label label = new Label(title);
+    if(iconKey != null) {
+      Icon icon = new Icon(iconKey);
+      return new HorizontalLayout(icon, label);
+    } else {
+      return label;
+    }
+  }
 
   private String getNodeTitle(NavigationTreeNode node) {
-    Objects.requireNonNull(node);
     String caption = node.getCaption();
     if(caption == null) {
       return "n/a";
