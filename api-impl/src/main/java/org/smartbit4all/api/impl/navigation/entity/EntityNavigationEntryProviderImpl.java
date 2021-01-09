@@ -28,26 +28,26 @@ import org.springframework.stereotype.Service;
 @Primary
 public class EntityNavigationEntryProviderImpl implements EntityNavigationEntryProvider {
 
-  private List<EntityNavigationEntryProviderBase> providers;
+  private List<EntityNavigationEntryProvider> providers;
   
-  private EntityNavigationEntryProviderBase defaultProvider;
+  private EntityNavigationEntryProvider defaultProvider;
   
-  public EntityNavigationEntryProviderImpl(List<EntityNavigationEntryProviderBase> providers) {
+  public EntityNavigationEntryProviderImpl(List<EntityNavigationEntryProvider> providers) {
     this.providers = providers;
   }
 
   @Override
   public NavigationEntry getEntry(URI entityObjectUri) {
-    EntityNavigationEntryProviderBase provider = providers.stream()
+    EntityNavigationEntryProvider provider = providers.stream()
         .filter(p -> p.supports(entityObjectUri))
         .findFirst()
         .orElseGet(this::getDefaultProvider);
     return provider.getEntry(entityObjectUri);
   }
   
-  private EntityNavigationEntryProviderBase getDefaultProvider() {
+  private EntityNavigationEntryProvider getDefaultProvider() {
     if(defaultProvider == null) {
-      defaultProvider = new EntityNavigationEntryProviderBase() {
+      defaultProvider = new EntityNavigationEntryProvider() {
         
         @Override
         public NavigationEntry getEntry(URI entityObjectUri) {
@@ -56,6 +56,7 @@ public class EntityNavigationEntryProviderImpl implements EntityNavigationEntryP
           NavigationView naviView = new NavigationView()
               .name(entityName)
               .putParametersItem("id", objectId);
+              
           
           NavigationEntry entry = new NavigationEntry()
               .objectUri(entityObjectUri)
@@ -66,11 +67,16 @@ public class EntityNavigationEntryProviderImpl implements EntityNavigationEntryP
         }
 
         @Override
-        boolean supports(URI entityUri) {
+        public boolean supports(URI entityUri) {
           return true;
         }
       };
     }
     return defaultProvider;
+  }
+
+  @Override
+  public boolean supports(URI entityUri) {
+    return false;
   }
 }
