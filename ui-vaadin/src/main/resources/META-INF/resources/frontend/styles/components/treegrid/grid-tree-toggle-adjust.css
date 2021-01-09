@@ -1,0 +1,11 @@
+/* This snippet makes only the triangle to toggle the hierarchy and allow you to click 
+ * over the text to select the row.  
+ * Source: https://github.com/vaadin/vaadin-grid/issues/1934#issuecomment-522529275 */
+
+:host {
+  pointer-events: none;
+}
+
+[part="toggle"] {
+  pointer-events: auto;
+}
