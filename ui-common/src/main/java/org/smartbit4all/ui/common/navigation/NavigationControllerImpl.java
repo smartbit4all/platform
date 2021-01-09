@@ -130,7 +130,7 @@ public class NavigationControllerImpl implements NavigationController {
         node.getAssociations() == null ? Collections.emptyList() : node.getAssociations();
     // TODO Correct name for the association
     Stream<NavigationTreeNode> assocStream = associations.stream().filter(a -> a.getHidden())
-        .map(a -> new NavigationTreeNode(Kind.ASSOCIATION, a.getId(), a.getMetaUri().toString(),
+        .map(a -> new NavigationTreeNode(Kind.ASSOCIATION, a.getId(), getAssociationNodeCaption(a.getMetaUri()),
             null,
             null, null));
     Stream<NavigationTreeNode> nodeStream =
@@ -139,6 +139,13 @@ public class NavigationControllerImpl implements NavigationController {
                 n.getEntry().getIcon(), null));
     return Streams.concat(assocStream, nodeStream);
 
+  }
+  
+  private String getAssociationNodeCaption(URI assocMetaUri) {
+    String caption = assocMetaUri.toString().replace(":/", ".")
+                                            .replace("/", ".")
+                                            .replace("#", ".");
+    return caption;
   }
 
   @Override

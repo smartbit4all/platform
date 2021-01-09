@@ -17,6 +17,7 @@
 package org.smartbit4all.ui.vaadin.components.navigation.tree;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +29,7 @@ import org.smartbit4all.ui.common.navigation.NavigationTreeNode;
 import org.smartbit4all.ui.common.navigation.NavigationView;
 import org.smartbit4all.ui.common.view.UIViewShowCommand;
 import org.smartbit4all.ui.vaadin.components.navigation.UIViewParameterVaadinTransition;
+import org.smartbit4all.ui.vaadin.localization.TranslationUtil;
 import com.vaadin.flow.component.treegrid.TreeGrid;
 import com.vaadin.flow.data.provider.hierarchy.AbstractBackEndHierarchicalDataProvider;
 import com.vaadin.flow.data.provider.hierarchy.HierarchicalDataProvider;
@@ -55,7 +57,7 @@ public class NavigationTreeView implements NavigationView {
     controller.setUI(this);
     // Adapt the given tree and add the necessary parameters.
 
-    tree.addHierarchyColumn(node -> node.getCaption()).setAutoWidth(true);
+    tree.addHierarchyColumn(this::getNodeTitle).setAutoWidth(true);
     tree.addSelectionListener(selection -> {
       selection.getFirstSelectedItem().ifPresent(s -> {
         UIViewShowCommand showCommand = controller.getViewCommand(s);
@@ -65,6 +67,17 @@ public class NavigationTreeView implements NavigationView {
 
     setDataProviderForTree();
 
+  }
+
+
+  private String getNodeTitle(NavigationTreeNode node) {
+    Objects.requireNonNull(node);
+    String caption = node.getCaption();
+    if(caption == null) {
+      return "n/a";
+    }
+    String title = TranslationUtil.INSTANCE().getPossibleTranslation(caption);
+    return title;
   }
 
 
