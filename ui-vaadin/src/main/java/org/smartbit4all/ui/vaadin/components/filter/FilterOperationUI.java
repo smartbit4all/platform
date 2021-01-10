@@ -17,11 +17,20 @@ package org.smartbit4all.ui.vaadin.components.filter;
 import java.net.URI;
 import java.util.List;
 import org.smartbit4all.api.filter.bean.FilterOperandValue;
+import org.smartbit4all.ui.common.filter.FilterFieldUIState;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 
 public abstract class FilterOperationUI extends FlexLayout {
 
-  FilterFieldUI filterFieldUi;
+  /**
+   * ID if related {@link FilterFieldUIState}. Not present in constructor!
+   */
+  protected String filterId;
+
+  // TODO maybe a constructor parameter in all instances?
+  public void setFilterId(String filterId) {
+    this.filterId = filterId;
+  }
 
   public abstract void setPlaceholder(String placeHolderText);
 
@@ -29,23 +38,5 @@ public abstract class FilterOperationUI extends FlexLayout {
       FilterOperandValue value3);
 
   public abstract void setSelection(List<URI> list);
-
-  public void setFilterFieldUI(FilterFieldUI filterFieldUI) {
-    this.filterFieldUi = filterFieldUI;
-  }
-
-  public void valueChanged(String filterId, FilterOperandValue value1, FilterOperandValue value2,
-      FilterOperandValue value3) {
-    filterFieldUi.getController().filterValueChanged(filterId, value1, value2, value3);
-  }
-
-  public void selectionChanged(String filterId, List<URI> values) {
-    filterFieldUi.getController().filterSelectionChanged(filterId, values);
-  }
-
-  public String getFilterId() {
-    return filterFieldUi.getFilterId();
-  }
-
 
 }

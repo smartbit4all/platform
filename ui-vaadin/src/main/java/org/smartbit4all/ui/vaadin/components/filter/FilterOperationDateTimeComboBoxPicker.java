@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Objects;
 import org.smartbit4all.api.filter.bean.FilterOperandValue;
 import org.smartbit4all.ui.common.filter.DateConverter;
+import org.smartbit4all.ui.common.filter.FilterValueChangeListener;
 import org.smartbit4all.ui.common.filter.TimeFilterOptions;
 import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
 import com.vaadin.flow.component.HasValue.ValueChangeListener;
@@ -29,12 +30,17 @@ import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 
 public class FilterOperationDateTimeComboBoxPicker extends FilterOperationUI {
 
-  ComboBox<TimeFilterOptions> cbTimeFilterOption;
-  DateTimePicker beginDateTime;
-  DateTimePicker endDateTime;
+  private FilterValueChangeListener filterValueChangeListener;
+
+  private ComboBox<TimeFilterOptions> cbTimeFilterOption;
+  private DateTimePicker beginDateTime;
+  private DateTimePicker endDateTime;
 
 
-  public FilterOperationDateTimeComboBoxPicker() {
+  public FilterOperationDateTimeComboBoxPicker(
+      FilterValueChangeListener filterValueChangeListener) {
+    this.filterValueChangeListener = filterValueChangeListener;
+
     addClassName("dynamic-filter-date");
     cbTimeFilterOption = new ComboBox<>();
     cbTimeFilterOption.setItems(TimeFilterOptions.values());
@@ -82,7 +88,7 @@ public class FilterOperationDateTimeComboBoxPicker extends FilterOperationUI {
         new FilterOperandValue().type(LocalDateTime.class.getName()).value(toString);
     FilterOperandValue value3 =
         new FilterOperandValue().type(String.class.getName()).value(filterOption);
-    valueChanged(getFilterId(), value1, value2, value3);
+    filterValueChangeListener.filterValueChanged(filterId, value1, value2, value3);
   }
 
   @Override

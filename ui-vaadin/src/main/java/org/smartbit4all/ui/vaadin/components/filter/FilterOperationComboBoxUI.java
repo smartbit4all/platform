@@ -20,17 +20,24 @@ import java.util.List;
 import java.util.Optional;
 import org.smartbit4all.api.filter.bean.FilterOperandValue;
 import org.smartbit4all.api.value.bean.Value;
+import org.smartbit4all.ui.common.filter.FilterSelectionChangeListener;
 import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
 import com.vaadin.flow.component.HasValue.ValueChangeListener;
 import com.vaadin.flow.component.combobox.ComboBox;
 
 public class FilterOperationComboBoxUI extends FilterOperationUI {
-  ComboBox<Value> comboBox;
+
+  private FilterSelectionChangeListener filterSelectionChangeListener;
+
+  private ComboBox<Value> comboBox;
   private List<Value> possibleValues;
 
-  public FilterOperationComboBoxUI(List<Value> possibleValues) {
-    comboBox = new ComboBox<>();
+  public FilterOperationComboBoxUI(FilterSelectionChangeListener filterSelectionChangeListener,
+      List<Value> possibleValues) {
+    this.filterSelectionChangeListener = filterSelectionChangeListener;
     this.possibleValues = possibleValues;
+
+    comboBox = new ComboBox<>();
     comboBox.addClassName("filter-combobox");
     comboBox.setItems(possibleValues);
     comboBox.setItemLabelGenerator(v -> v.getDisplayValue());
@@ -45,7 +52,7 @@ public class FilterOperationComboBoxUI extends FilterOperationUI {
       if (e.isFromClient()) {
         List<URI> uriList = new ArrayList<>();
         uriList.add(comboBox.getValue().getObjectUri());
-        selectionChanged(getFilterId(), uriList);
+        filterSelectionChangeListener.filterSelectionChanged(filterId, uriList);
       }
     };
   }

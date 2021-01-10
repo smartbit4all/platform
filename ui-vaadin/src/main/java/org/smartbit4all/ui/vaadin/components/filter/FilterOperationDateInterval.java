@@ -19,16 +19,21 @@ import java.time.LocalDate;
 import java.util.List;
 import org.smartbit4all.api.filter.bean.FilterOperandValue;
 import org.smartbit4all.ui.common.filter.DateConverter;
+import org.smartbit4all.ui.common.filter.FilterValueChangeListener;
 import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
 import com.vaadin.flow.component.HasValue.ValueChangeListener;
 import com.vaadin.flow.component.datepicker.DatePicker;
 
 public class FilterOperationDateInterval extends FilterOperationUI {
 
-  DatePicker beginDate;
-  DatePicker endDate;
+  private FilterValueChangeListener filterValueChangeListener;
 
-  public FilterOperationDateInterval() {
+  private DatePicker beginDate;
+  private DatePicker endDate;
+
+  public FilterOperationDateInterval(FilterValueChangeListener filterValueChangeListener) {
+    this.filterValueChangeListener = filterValueChangeListener;
+
     beginDate = new DatePicker();
     LocalDate now = LocalDate.now();
     beginDate.setMax(now);
@@ -50,7 +55,7 @@ public class FilterOperationDateInterval extends FilterOperationUI {
             new FilterOperandValue().type(LocalDate.class.getName()).value(fromString);
         FilterOperandValue value2 =
             new FilterOperandValue().type(LocalDate.class.getName()).value(toString);
-        valueChanged(getFilterId(), value1, value2, null);
+        filterValueChangeListener.filterValueChanged(filterId, value1, value2, null);
       }
     };
   }

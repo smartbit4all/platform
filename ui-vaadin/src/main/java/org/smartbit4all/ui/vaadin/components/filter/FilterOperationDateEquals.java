@@ -19,15 +19,20 @@ import java.time.LocalDate;
 import java.util.List;
 import org.smartbit4all.api.filter.bean.FilterOperandValue;
 import org.smartbit4all.ui.common.filter.DateConverter;
+import org.smartbit4all.ui.common.filter.FilterValueChangeListener;
 import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
 import com.vaadin.flow.component.HasValue.ValueChangeListener;
 import com.vaadin.flow.component.datepicker.DatePicker;
 
 public class FilterOperationDateEquals extends FilterOperationUI {
 
-  DatePicker date;
+  private FilterValueChangeListener filterValueChangeListener;
 
-  public FilterOperationDateEquals() {
+  private DatePicker date;
+
+  public FilterOperationDateEquals(FilterValueChangeListener filterValueChangeListener) {
+    this.filterValueChangeListener = filterValueChangeListener;
+
     date = new DatePicker();
     LocalDate now = LocalDate.now();
     date.setMax(now);
@@ -42,7 +47,7 @@ public class FilterOperationDateEquals extends FilterOperationUI {
         String dateString = date.getValue() == null ? null : date.getValue().toString();
         FilterOperandValue value1 =
             new FilterOperandValue().type(LocalDate.class.getName()).value(dateString);
-        valueChanged(getFilterId(), value1, null, null);
+        filterValueChangeListener.filterValueChanged(filterId, value1, null, null);
       }
     };
   }

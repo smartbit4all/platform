@@ -55,8 +55,8 @@ public class FilterFieldUI extends FlexLayout implements DragSource<FilterFieldU
     this.controller = controller;
     if (uiState.isDraggable()) {
       setDraggable(true);
+      setDragData(this);
     }
-    setDragData(this);
     addClassName("filterfield");
     this.group = group;
 
@@ -101,34 +101,36 @@ public class FilterFieldUI extends FlexLayout implements DragSource<FilterFieldU
     if (!filterView.equals(currentFilterView)) {
       currentFilterView = filterView;
       if ("filterop.txt.eq".equals(filterView)) {
-        operationUI = new FilterOperationTxtEqualsUI();
+        operationUI = new FilterOperationTxtEqualsUI(controller);
       } else if ("filterop.multi.eq".equals(filterView)) {
-        operationUI = new FilterOperationMultiSelectUI(possibleValues);
+        operationUI = new FilterOperationMultiSelectUI(controller, possibleValues);
       } else if ("filterop.combo.eq".equals(filterView)) {
-        operationUI = new FilterOperationComboBoxUI(possibleValues);
+        operationUI = new FilterOperationComboBoxUI(controller, possibleValues);
       } else if ("filterop.date.time.interval".equals(filterView)) {
-        operationUI = new FilterOperationDateTimeInterval();
+        operationUI = new FilterOperationDateTimeInterval(controller);
       } else if ("filterop.date.time.interval.cb".equals(filterView)) {
-        operationUI = new FilterOperationDateTimeComboBoxPicker();
+        operationUI = new FilterOperationDateTimeComboBoxPicker(controller);
       } else if ("filterop.date.time.eq".equals(filterView)) {
-        operationUI = new FilterOperationDateTimeEquals();
+        operationUI = new FilterOperationDateTimeEquals(controller);
       } else if ("filterop.date.interval".equals(filterView)) {
-        operationUI = new FilterOperationDateInterval();
+        operationUI = new FilterOperationDateInterval(controller);
       } else if ("filterop.date.interval.cb".equals(filterView)) {
-        operationUI = new FilterOperationDateComboBoxPicker();
+        operationUI = new FilterOperationDateComboBoxPicker(controller);
       } else if ("filterop.date.eq".equals(filterView)) {
-        operationUI = new FilterOperationDateEquals();
+        operationUI = new FilterOperationDateEquals(controller);
+      } else {
+        throw new IllegalArgumentException("Invalid filterView parameter (" + filterView
+            + ") in filter " + uiState.getLabelCode() + "!");
       }
 
       row.removeAll();
       row.add(operationUI);
-      operationUI.setFilterFieldUI(this);
     } else {
       FilterField filter = uiState.getFilter();
       operationUI.setValues(filter.getValue1(), filter.getValue2(), filter.getValue3());
       operationUI.setSelection(filter.getSelectedValues());
     }
-
+    operationUI.setFilterId(filterId);
 
 
     // TODO selected operation doesn't change
@@ -200,7 +202,4 @@ public class FilterFieldUI extends FlexLayout implements DragSource<FilterFieldU
     };
   }
 
-  public DynamicFilterController getController() {
-    return controller;
-  }
 }

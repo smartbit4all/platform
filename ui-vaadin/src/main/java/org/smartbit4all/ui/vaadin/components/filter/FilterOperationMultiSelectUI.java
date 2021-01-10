@@ -21,18 +21,23 @@ import java.util.List;
 import java.util.Set;
 import org.smartbit4all.api.filter.bean.FilterOperandValue;
 import org.smartbit4all.api.value.bean.Value;
+import org.smartbit4all.ui.common.filter.FilterSelectionChangeListener;
 import org.smartbit4all.ui.vaadin.components.selector.MultiSelectPopUp;
 
 public class FilterOperationMultiSelectUI extends FilterOperationUI {
 
+  private FilterSelectionChangeListener filterSelectionChangeListener;
+
   private MultiSelectPopUp<Value> popUp;
   private List<Value> possibleValues;
 
-  public FilterOperationMultiSelectUI(List<Value> possibleValues) {
+  public FilterOperationMultiSelectUI(FilterSelectionChangeListener filterSelectionChangeListener,
+      List<Value> possibleValues) {
+    this.filterSelectionChangeListener = filterSelectionChangeListener;
+    this.possibleValues = possibleValues;
     addClassName("filter-multi");
     popUp = new MultiSelectPopUp<>();
     popUp.setItems(possibleValues);
-    this.possibleValues = possibleValues;
     popUp.setRequired(false);
     // popUp.setFilter(filter); TODO
     popUp.setItemDisplayValueProvider(v -> v.getDisplayValue());
@@ -43,7 +48,7 @@ public class FilterOperationMultiSelectUI extends FilterOperationUI {
         for (Value value : popUp.getValue()) {
           uriList.add(value.getObjectUri());
         }
-        selectionChanged(getFilterId(), uriList);
+        filterSelectionChangeListener.filterSelectionChanged(filterId, uriList);
       }
     });
 

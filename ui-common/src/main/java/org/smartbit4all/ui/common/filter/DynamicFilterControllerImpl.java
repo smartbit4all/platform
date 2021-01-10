@@ -129,7 +129,6 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
     }
     FilterFieldUIState filterUIState = uiState.filterUIStatesById.get(filterId);
 
-    FilterField filter = filterUIState.getFilter();
     for (FilterOperation operation : filterUIState.getOperations()) {
       if (filterOperationId.equals(operation.getId())) {
         if (filterUIState.getSelectedOperation() == operation) {
@@ -150,9 +149,10 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
       FilterOperandValue value2, FilterOperandValue value3) {
     FilterFieldUIState filterFieldState = uiState.filterUIStatesById.get(filterId);
 
-    filterFieldState.getFilter().setValue1(value1);
-    filterFieldState.getFilter().setValue2(value2);
-    filterFieldState.getFilter().setValue3(value3);
+    FilterField filter = filterFieldState.getFilter();
+    filter.setValue1(value1);
+    filter.setValue2(value2);
+    filter.setValue3(value3);
     ui.updateFilterState(filterFieldState);
     logRootFilterGroupState();
   }
@@ -238,5 +238,6 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
     if (log.isDebugEnabled()) {
       log.debug(uiState.getRootFilterGroup().toString());
     }
+    log.error(uiState.getRootFilterGroup().toString());
   }
 }
