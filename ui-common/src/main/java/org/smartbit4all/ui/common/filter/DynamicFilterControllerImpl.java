@@ -16,6 +16,8 @@ package org.smartbit4all.ui.common.filter;
 
 import java.net.URI;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.filter.FilterApi;
 import org.smartbit4all.api.filter.bean.FilterConfig;
 import org.smartbit4all.api.filter.bean.FilterConfigMode;
@@ -28,6 +30,8 @@ import org.smartbit4all.api.value.ValueApi;
 import org.smartbit4all.api.value.bean.Value;
 
 public class DynamicFilterControllerImpl implements DynamicFilterController {
+
+  private static final Logger log = LoggerFactory.getLogger(DynamicFilterController.class);
 
   private FilterApi api;
   private DynamicFilterView ui;
@@ -98,7 +102,7 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
     }
     filterUIState.setPossibleValues(getPossibleValues(filterUIState));
     ui.renderFilter(filterUIState);
-    System.out.println(uiState.getRootFilterGroup().toString());
+    logRootFilterGroupState();
   }
 
   private List<Value> getPossibleValues(FilterFieldUIState filterUIState) {
@@ -133,7 +137,7 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
           return;
         }
         filterUIState.setSelectedOperation(operation);
-        System.out.println(uiState.getRootFilterGroup().toString());
+        logRootFilterGroupState();
         ui.renderFilter(filterUIState);
         return;
       }
@@ -150,7 +154,7 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
     filterFieldState.getFilter().setValue2(value2);
     filterFieldState.getFilter().setValue3(value3);
     ui.updateFilterState(filterFieldState);
-    System.out.println(uiState.getRootFilterGroup().toString());
+    logRootFilterGroupState();
   }
 
   @Override
@@ -159,7 +163,7 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
 
     filterFieldState.getFilter().setSelectedValues(values);
     ui.updateFilterState(filterFieldState);
-    System.out.println(uiState.getRootFilterGroup().toString());
+    logRootFilterGroupState();
   }
 
   @Override
@@ -181,7 +185,7 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
         removeFilterGroup(groupId);
       }
     }
-    System.out.println(uiState.getRootFilterGroup().toString());
+    logRootFilterGroupState();
   }
 
   @Override
@@ -189,7 +193,7 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
     ui.removeGroup(groupId);
     FilterGroupUIState filterGroup = uiState.removeFilterGroup(groupId);
     ui.changeActiveGroup(filterGroup, filterGroup);
-    System.out.println(uiState.getRootFilterGroup().toString());
+    logRootFilterGroupState();
   }
 
   @Override
@@ -208,21 +212,21 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
         uiState.createFilterGroup(parentGroup, null, null, FilterGroupType.AND);
     ui.renderGroup(filterGroup);
     activeFilterGroupChanged(filterGroup.getId());
-    System.out.println(uiState.getRootFilterGroup().toString());
+    logRootFilterGroupState();
   }
 
   @Override
   public void changeGroup(String oldGroupId, String newGroupId, String filterId) {
     ui.moveFilter(newGroupId, filterId);
     uiState.moveFilter(oldGroupId, newGroupId, filterId);
-    System.out.println(uiState.getRootFilterGroup().toString());
+    logRootFilterGroupState();
   }
 
   @Override
   public void changeFilterGroupType(String filterGroupId, FilterGroupType type) {
     uiState.groupsById.get(filterGroupId).setType(type);
     ui.changeFilterGroupType(filterGroupId, type);
-    System.out.println(uiState.getRootFilterGroup().toString());
+    logRootFilterGroupState();
   }
 
   @Override
@@ -230,4 +234,9 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
     return uiState.getRootFilterGroup();
   }
 
+  protected void logRootFilterGroupState() {
+    if (log.isDebugEnabled()) {
+      log.debug(uiState.getRootFilterGroup().toString());
+    }
+  }
 }
