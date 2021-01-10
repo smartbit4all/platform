@@ -36,6 +36,9 @@ components:
       type: object
       description: "Descriptor of a possible filter field. This field doesn't have to correspond to an existing entity's property, it is simple a way of filtering."
       properties:
+        id:
+          type: string
+          description: 'Identifier of the filter field metadata. Not mandatory, specify only if in use.'
         labelCode:
           type: string
           description: 'Code of label to display for this filter field selector.'
@@ -51,6 +54,9 @@ components:
     FilterGroupMeta:
       type: object
       properties:
+        id:
+          type: string
+          description: 'Identifier of the filter group metadata. Not mandatory, specify only if in use.'
         filterFieldMetas:
           type: array
           items:

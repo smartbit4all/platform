@@ -84,7 +84,6 @@ public class FilterFieldUI extends FlexLayout implements DragSource<FilterFieldU
     add(filterLayout);
 
 
-    // updateOperationUI(uiState.getFilter().getOperation().getFilterView());
     updateState(uiState);
   }
 

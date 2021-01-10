@@ -40,6 +40,8 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
 
   private DynamicFilterViewUIState uiState;
 
+  private FilterConfig filterConfig;
+
   public DynamicFilterControllerImpl(FilterApi api, String uri,
       FilterConfigMode filterConfigMode, ValueApi valueApi) {
     this.api = api;
@@ -58,7 +60,7 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
 
   @Override
   public void loadData() {
-    FilterConfig filterConfig = api.getFilterConfig(uri);
+    filterConfig = api.getFilterConfig(uri);
     uiState.setFilterConfig(filterConfig);
     switch (uiState.getFilterConfigMode()) {
       case STATIC:
@@ -240,4 +242,29 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
     }
     log.error(uiState.getRootFilterGroup().toString());
   }
+
+  @Override
+  public void setSelectorGroupVisible(String filterGroupMetaId, boolean visible) {
+    FilterSelectorGroupUIState filterSelectorGroupUIState =
+        uiState.filterSelectorGroupsByMetaId.get(filterGroupMetaId);
+    if (filterSelectorGroupUIState != null && visible != filterSelectorGroupUIState.isVisible()) {
+      filterSelectorGroupUIState.setVisible(visible);
+      ui.renderFilterSelectors(uiState.filterSelectorGroups);
+      // TODO hide filterGroupUIs
+      uiState.groupUIStatesById.values().stream()
+          .filter(group -> group.getLabelCode().equals(filterGroupMetaId)) // TODO use some ID match
+                                                                           // instead
+          .findFirst()
+          .ifPresent(group -> {
+            uiState.filterUIStatesById.values().stream()
+                .filter(field -> field.getGroup() == group)
+                .forEach(field -> removeFilterField(group.getId(), field.getId()));
+            // removing all fields in a group also removes group in SIMPLE_DYNAMIC case
+            if (uiState.groupsById.get(group.getId()) != null) {
+              removeFilterGroup(group.getId());
+            }
+          });
+    }
+  }
+
 }

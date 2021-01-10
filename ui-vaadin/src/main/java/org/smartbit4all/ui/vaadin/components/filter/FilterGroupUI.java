@@ -35,6 +35,8 @@ import com.vaadin.flow.component.orderedlayout.FlexLayout;
 
 public class FilterGroupUI extends FlexLayout implements DropTarget<FlexLayout> {
 
+  private static final String VISIBLE_GROUP = "filtergroup";
+  private static final String INVISIBLE_GROUP = "filtergroup-transparent";
   private static final String ACTIVE_GROUP = "active-group";
 
   private FilterGroupUI parentGroupUI;
@@ -60,19 +62,8 @@ public class FilterGroupUI extends FlexLayout implements DropTarget<FlexLayout> 
 
     addDropListener(createDropListener());
 
-    if (uiState.isVisible()) {
-      addClassName("filtergroup");
-      setIconLayout(uiState.getIconCode(), uiState.getLabelCode());
-    } else {
-      addClassName("filtergroup-transparent");
-    }
-
     if (uiState.isChildGroupAllowed() && !uiState.isRoot()) {
       addClassName("child-group");
-    }
-
-    if (iconLayout.getComponentCount() != 0) {
-      add(iconLayout);
     }
 
     filtersLayout = new FlexLayout();
@@ -121,6 +112,30 @@ public class FilterGroupUI extends FlexLayout implements DropTarget<FlexLayout> 
       filtersLayout.add(flexibleSeparator);
       filtersLayout.add(buttonsLayout);
     }
+
+    updateState(uiState);
+  }
+
+  public void updateState(FilterGroupUIState uiState) {
+    if (uiState.isVisible()) {
+      removeClassName(INVISIBLE_GROUP);
+      addClassName(VISIBLE_GROUP);
+      setIconLayout(uiState.getIconCode(), uiState.getLabelCode());
+      if (iconLayout.getComponentCount() != 0) {
+        addComponentAsFirst(iconLayout);
+      }
+    } else {
+      removeClassName(VISIBLE_GROUP);
+      addClassName(INVISIBLE_GROUP);
+      iconLayout.removeAll();
+      remove(iconLayout);
+    }
+
+    if (uiState.isActive()) {
+      addClassName(ACTIVE_GROUP);
+    } else {
+      removeClassName(ACTIVE_GROUP);
+    }
   }
 
   private ComponentEventListener<ClickEvent<Button>> groupTypeChangeListener() {
@@ -143,14 +158,6 @@ public class FilterGroupUI extends FlexLayout implements DropTarget<FlexLayout> 
         }
       });
     };
-  }
-
-  public void updateState(FilterGroupUIState uiState) {
-    if (uiState.isActive()) {
-      addClassName(ACTIVE_GROUP);
-    } else {
-      removeClassName(ACTIVE_GROUP);
-    }
   }
 
   private ComponentEventListener<ClickEvent<FlexLayout>> groupChangeListener() {

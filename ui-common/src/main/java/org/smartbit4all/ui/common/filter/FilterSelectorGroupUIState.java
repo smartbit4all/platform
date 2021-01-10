@@ -26,6 +26,7 @@ public class FilterSelectorGroupUIState extends AbstractUIState {
   private String iconCode;
   private List<FilterSelectorUIState> filterSelectors = new ArrayList<>();
   private boolean isCloseable;
+  private boolean isVisible;
 
   FilterGroupUIState currentGroupUIState;
 
@@ -33,6 +34,7 @@ public class FilterSelectorGroupUIState extends AbstractUIState {
     super();
     this.labelCode = filterGroupMeta.getLabelCode();
     this.iconCode = filterGroupMeta.getIconCode();
+    this.isVisible = true;
     // TODO handle isCloseable
   }
 
@@ -59,5 +61,13 @@ public class FilterSelectorGroupUIState extends AbstractUIState {
 
   public List<FilterSelectorUIState> filterSelectors() {
     return Collections.unmodifiableList(filterSelectors);
+  }
+
+  public boolean isVisible() {
+    return isVisible;
+  }
+
+  public void setVisible(boolean isVisible) {
+    this.isVisible = isVisible;
   }
 }

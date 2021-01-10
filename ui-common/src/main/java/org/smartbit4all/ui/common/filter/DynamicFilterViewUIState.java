@@ -14,6 +14,7 @@
  ******************************************************************************/
 package org.smartbit4all.ui.common.filter;
 
+import static com.google.common.base.Strings.isNullOrEmpty;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,7 +34,9 @@ public class DynamicFilterViewUIState {
   List<FilterSelectorUIState> filterSelectors = new ArrayList<>();
   FilterGroupUIState rootGroup;
   Map<String, FilterSelectorGroupUIState> filterSelectorGroupsById = new HashMap<>();
+  Map<String, FilterSelectorGroupUIState> filterSelectorGroupsByMetaId = new HashMap<>();
   Map<String, FilterSelectorUIState> filterSelectorsById = new HashMap<>();
+  Map<String, FilterSelectorUIState> filterSelectorsByMetaId = new HashMap<>();
   Map<String, FilterGroupUIState> groupUIStatesById = new HashMap<>();
   Map<String, FilterFieldUIState> filterUIStatesById = new HashMap<>();
   Map<String, FilterGroup> groupsById = new HashMap<>();
@@ -74,16 +77,22 @@ public class DynamicFilterViewUIState {
   void setFilterConfig(FilterConfig filterConfig) {
     this.filterConfig = filterConfig;
     Map<String, FilterSelectorGroupUIState> groupsByName = new HashMap<>();
-    for (FilterGroupMeta group : this.filterConfig.getFilterGroupMetas()) {
-      FilterSelectorGroupUIState groupUIState = new FilterSelectorGroupUIState(group);
+    for (FilterGroupMeta groupMeta : this.filterConfig.getFilterGroupMetas()) {
+      FilterSelectorGroupUIState groupUIState = new FilterSelectorGroupUIState(groupMeta);
       filterSelectorGroups.add(groupUIState);
       filterSelectorGroupsById.put(groupUIState.getId(), groupUIState);
-      groupsByName.put(group.getLabelCode(), groupUIState);
-      for (FilterFieldMeta field : group.getFilterFieldMetas()) {
-        FilterSelectorUIState fieldUIState = new FilterSelectorUIState(groupUIState, field);
+      if (!isNullOrEmpty(groupMeta.getId())) {
+        filterSelectorGroupsByMetaId.put(groupMeta.getId(), groupUIState);
+      }
+      groupsByName.put(groupMeta.getLabelCode(), groupUIState);
+      for (FilterFieldMeta fieldMeta : groupMeta.getFilterFieldMetas()) {
+        FilterSelectorUIState fieldUIState = new FilterSelectorUIState(groupUIState, fieldMeta);
         filterSelectors.add(fieldUIState);
         filterSelectorsById.put(fieldUIState.getId(), fieldUIState);
         groupUIState.addFilterSelector(fieldUIState);
+        if (!isNullOrEmpty(fieldMeta.getId())) {
+          filterSelectorsByMetaId.put(fieldMeta.getId(), fieldUIState);
+        }
       }
     }
   }

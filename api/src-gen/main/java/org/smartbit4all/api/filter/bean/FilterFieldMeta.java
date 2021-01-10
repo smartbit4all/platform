@@ -16,6 +16,9 @@ import io.swagger.annotations.ApiModelProperty;
     description = "Descriptor of a possible filter field. This field doesn't have to correspond to an existing entity's property, it is simple a way of filtering.")
 
 public class FilterFieldMeta {
+  @JsonProperty("id")
+  private String id;
+
   @JsonProperty("labelCode")
   private String labelCode;
 
@@ -28,6 +31,28 @@ public class FilterFieldMeta {
   @JsonProperty("operations")
   @Valid
   private List<FilterOperation> operations = null;
+
+  public FilterFieldMeta id(String id) {
+    this.id = id;
+    return this;
+  }
+
+  /**
+   * Identifier of the filter field metadata. Not mandatory, specify only if in use.
+   * 
+   * @return id
+   */
+  @ApiModelProperty(
+      value = "Identifier of the filter field metadata. Not mandatory, specify only if in use.")
+
+
+  public String getId() {
+    return id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
 
   public FilterFieldMeta labelCode(String labelCode) {
     this.labelCode = labelCode;
@@ -132,7 +157,8 @@ public class FilterFieldMeta {
       return false;
     }
     FilterFieldMeta filterFieldMeta = (FilterFieldMeta) o;
-    return Objects.equals(this.labelCode, filterFieldMeta.labelCode) &&
+    return Objects.equals(this.id, filterFieldMeta.id) &&
+        Objects.equals(this.labelCode, filterFieldMeta.labelCode) &&
         Objects.equals(this.iconCode, filterFieldMeta.iconCode) &&
         Objects.equals(this.style, filterFieldMeta.style) &&
         Objects.equals(this.operations, filterFieldMeta.operations);
@@ -140,7 +166,7 @@ public class FilterFieldMeta {
 
   @Override
   public int hashCode() {
-    return Objects.hash(labelCode, iconCode, style, operations);
+    return Objects.hash(id, labelCode, iconCode, style, operations);
   }
 
   @Override
@@ -148,6 +174,7 @@ public class FilterFieldMeta {
     StringBuilder sb = new StringBuilder();
     sb.append("class FilterFieldMeta {\n");
 
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    labelCode: ").append(toIndentedString(labelCode)).append("\n");
     sb.append("    iconCode: ").append(toIndentedString(iconCode)).append("\n");
     sb.append("    style: ").append(toIndentedString(style)).append("\n");

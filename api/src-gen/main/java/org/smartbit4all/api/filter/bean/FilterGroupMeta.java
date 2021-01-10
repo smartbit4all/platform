@@ -12,6 +12,9 @@ import io.swagger.annotations.ApiModelProperty;
  */
 
 public class FilterGroupMeta {
+  @JsonProperty("id")
+  private String id;
+
   @JsonProperty("filterFieldMetas")
   @Valid
   private List<FilterFieldMeta> filterFieldMetas = null;
@@ -27,6 +30,28 @@ public class FilterGroupMeta {
 
   @JsonProperty("type")
   private FilterGroupType type;
+
+  public FilterGroupMeta id(String id) {
+    this.id = id;
+    return this;
+  }
+
+  /**
+   * Identifier of the filter group metadata. Not mandatory, specify only if in use.
+   * 
+   * @return id
+   */
+  @ApiModelProperty(
+      value = "Identifier of the filter group metadata. Not mandatory, specify only if in use.")
+
+
+  public String getId() {
+    return id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
 
   public FilterGroupMeta filterFieldMetas(List<FilterFieldMeta> filterFieldMetas) {
     this.filterFieldMetas = filterFieldMetas;
@@ -153,7 +178,8 @@ public class FilterGroupMeta {
       return false;
     }
     FilterGroupMeta filterGroupMeta = (FilterGroupMeta) o;
-    return Objects.equals(this.filterFieldMetas, filterGroupMeta.filterFieldMetas) &&
+    return Objects.equals(this.id, filterGroupMeta.id) &&
+        Objects.equals(this.filterFieldMetas, filterGroupMeta.filterFieldMetas) &&
         Objects.equals(this.labelCode, filterGroupMeta.labelCode) &&
         Objects.equals(this.iconCode, filterGroupMeta.iconCode) &&
         Objects.equals(this.style, filterGroupMeta.style) &&
@@ -162,7 +188,7 @@ public class FilterGroupMeta {
 
   @Override
   public int hashCode() {
-    return Objects.hash(filterFieldMetas, labelCode, iconCode, style, type);
+    return Objects.hash(id, filterFieldMetas, labelCode, iconCode, style, type);
   }
 
   @Override
@@ -170,6 +196,7 @@ public class FilterGroupMeta {
     StringBuilder sb = new StringBuilder();
     sb.append("class FilterGroupMeta {\n");
 
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    filterFieldMetas: ").append(toIndentedString(filterFieldMetas)).append("\n");
     sb.append("    labelCode: ").append(toIndentedString(labelCode)).append("\n");
     sb.append("    iconCode: ").append(toIndentedString(iconCode)).append("\n");

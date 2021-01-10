@@ -57,6 +57,7 @@ public class DynamicFilterViewUI implements DynamicFilterView {
 
   @Override
   public void renderFilterSelectors(List<FilterSelectorGroupUIState> filterSelectorGroups) {
+    filterSelectorHolder.removeAll();
     if (filterSelectorGroups.isEmpty()) {
       // no selector available, no need to render anything
       return;
@@ -64,10 +65,12 @@ public class DynamicFilterViewUI implements DynamicFilterView {
     VerticalLayout filterSelectorLayout = new VerticalLayout();
     filterSelectorLayout.addClassName("filterselector-layout");
     for (FilterSelectorGroupUIState group : filterSelectorGroups) {
-      Details selectorGroupUI = createFilterSelectorGroupUI(group);
-      filterSelectorLayout.add(selectorGroupUI);
-      for (FilterSelectorUIState field : group.filterSelectors()) {
-        selectorGroupUI.addContent(createFilterSelectorUI(field));
+      if (group.isVisible()) {
+        Details selectorGroupUI = createFilterSelectorGroupUI(group);
+        filterSelectorLayout.add(selectorGroupUI);
+        for (FilterSelectorUIState field : group.filterSelectors()) {
+          selectorGroupUI.addContent(createFilterSelectorUI(field));
+        }
       }
     }
     filterSelectorHolder.add(filterSelectorLayout);
@@ -127,12 +130,17 @@ public class DynamicFilterViewUI implements DynamicFilterView {
         parentGroupUI = groupsById.get(groupUIState.getParentGroupId());
       }
     }
-    FilterGroupUI groupUI = new FilterGroupUI(groupUIState, parentGroupUI, controller);
-    groupsById.put(groupUIState.getId(), groupUI);
-    if (parentGroupUI == null) {
-      filterHolder.add(groupUI);
+    FilterGroupUI groupUI = groupsById.get(groupUIState.getId());
+    if (groupUI == null) {
+      groupUI = new FilterGroupUI(groupUIState, parentGroupUI, controller);
+      groupsById.put(groupUIState.getId(), groupUI);
+      if (parentGroupUI == null) {
+        filterHolder.add(groupUI);
+      } else {
+        parentGroupUI.add(groupUI);
+      }
     } else {
-      parentGroupUI.add(groupUI);
+      groupUI.updateState(groupUIState);
     }
   }
 
