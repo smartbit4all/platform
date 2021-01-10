@@ -101,6 +101,8 @@ public class FilterFieldUI extends FlexLayout implements DragSource<FilterFieldU
       currentFilterView = filterView;
       if ("filterop.txt.eq".equals(filterView)) {
         operationUI = new FilterOperationTxtEqualsUI(controller);
+      } else if ("filterop.txt.like".equals(filterView)) {
+        operationUI = new FilterOperationTxtLikeUI(controller);
       } else if ("filterop.multi.eq".equals(filterView)) {
         operationUI = new FilterOperationMultiSelectUI(controller, possibleValues);
       } else if ("filterop.combo.eq".equals(filterView)) {
