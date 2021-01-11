@@ -242,7 +242,6 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
     if (log.isDebugEnabled()) {
       log.debug(uiState.getRootFilterGroup().toString());
     }
-    log.error(uiState.getRootFilterGroup().toString());
   }
 
   @Override
