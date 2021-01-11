@@ -114,36 +114,42 @@ public class Filters {
     List<FilterField> filterFields = filterGroup.getFilterFields() == null ? Collections.emptyList()
         : filterGroup.getFilterFields();
     for (FilterField filterField : filterFields) {
-      Expression expressionOfField = null;
 
-      String operationCode = filterField.getOperationCode();
-
-      if (DATE_INTERVAL.equals(operationCode) || DATE_TIME_INTERVAL.equals(operationCode)) {
-        expressionOfField = createDateIntervalClause(filterField);
-
-      } else if (DATE_INTERVAL_CB.equals(operationCode)
-          || DATE_TIME_INTERVAL_CB.equals(operationCode)) {
-        expressionOfField = createDateIntervalCbClause(filterField);
-
-      } else if (DATE_EQ.equals(operationCode) || DATE_TIME_EQ.equals(operationCode)) {
-        expressionOfField = createDateEqClause(filterField);
-
-      } else if (TXT_EQ.equals(operationCode)) {
-        expressionOfField = createTxtEqClause(filterField);
-        
-      } else if (TXT_LIKE.equals(operationCode)) {
-        expressionOfField = createTxtLikeClause(filterField);
-
-      } else if (MULTI_SEL.equals(operationCode)) {
-        expressionOfField = createMultiSelClause(filterField);
-      } else if (COMBO_SEL.equals(operationCode)) {
-        expressionOfField = createComboSelClause(filterField);
-      }
+       Expression expressionOfField = expressionOfField(filterField);
 
       if (expressionOfField != null) {
         groupClause.add(expressionOfField);
       }
     }
+  }
+
+  public Expression expressionOfField(FilterField filterField) {
+    Expression expressionOfField = null;
+    
+    String operationCode = filterField.getOperationCode();
+
+    if (DATE_INTERVAL.equals(operationCode) || DATE_TIME_INTERVAL.equals(operationCode)) {
+      expressionOfField = createDateIntervalClause(filterField);
+
+    } else if (DATE_INTERVAL_CB.equals(operationCode)
+        || DATE_TIME_INTERVAL_CB.equals(operationCode)) {
+      expressionOfField = createDateIntervalCbClause(filterField);
+
+    } else if (DATE_EQ.equals(operationCode) || DATE_TIME_EQ.equals(operationCode)) {
+      expressionOfField = createDateEqClause(filterField);
+
+    } else if (TXT_EQ.equals(operationCode)) {
+      expressionOfField = createTxtEqClause(filterField);
+      
+    } else if (TXT_LIKE.equals(operationCode)) {
+      expressionOfField = createTxtLikeClause(filterField);
+
+    } else if (MULTI_SEL.equals(operationCode)) {
+      expressionOfField = createMultiSelClause(filterField);
+    } else if (COMBO_SEL.equals(operationCode)) {
+      expressionOfField = createComboSelClause(filterField);
+    }
+    return expressionOfField;
   }
 
   private Expression createTxtLikeClause(FilterField filterField) {
