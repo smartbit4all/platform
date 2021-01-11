@@ -46,6 +46,7 @@ public class Filters {
   public static final String DATE_TIME_INTERVAL_CB = "date.time.interval.cb";
   public static final String DATE_TIME_EQ = "date.time.eq";
   public static final String TXT_EQ = "txt.eq";
+  public static final String TXT_LIKE = "txt.like";
   public static final String MULTI_SEL = "multi.eq";
   public static final String COMBO_SEL = "combo.eq";
 
@@ -129,6 +130,9 @@ public class Filters {
 
       } else if (TXT_EQ.equals(operationCode)) {
         expressionOfField = createTxtEqClause(filterField);
+        
+      } else if (TXT_LIKE.equals(operationCode)) {
+        expressionOfField = createTxtLikeClause(filterField);
 
       } else if (MULTI_SEL.equals(operationCode)) {
         expressionOfField = createMultiSelClause(filterField);
@@ -142,6 +146,18 @@ public class Filters {
     }
   }
 
+  private Expression createTxtLikeClause(FilterField filterField) {
+    Expression expressionOfField = null;
+    Property<?> property = getProperty(filterField.getPropertyUri1());
+    String value = filterField.getValue1().getValue();
+    if (value != null && !value.isEmpty()) {
+      // TODO handle other types based on filterField.getValue1().getType()!
+      Property<String> propertyAsString = (Property<String>) property;
+      expressionOfField = propertyAsString.like(value);
+    }
+    return expressionOfField;
+  }
+  
   private Expression createTxtEqClause(FilterField filterField) {
     Expression expressionOfField = null;
     Property<?> property = getProperty(filterField.getPropertyUri1());
