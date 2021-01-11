@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU Lesser General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package org.smartbit4all.ui.common.filter;
+package org.smartbit4all.api.filter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -21,6 +21,8 @@ import java.time.LocalTime;
 /**
  * Converts the String given by LocalDateTime's or LocalDate's toString() method to a LocalDateTime
  * or LocalDate.
+ * 
+ * TODO use generic data converter based on exact formatting
  * 
  * @author Zsombor Nyilas
  *
