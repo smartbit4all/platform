@@ -28,9 +28,9 @@ public interface DynamicFilterController
 
   void loadData();
 
-  void addFilterField(String filterSelectorId);
+  String addFilterField(String filterSelectorId);
 
-  void addFilterGroup(String parentGroupId);
+  String addFilterGroup(String parentGroupId);
 
   void removeFilterField(String groupId, String filterId);
 

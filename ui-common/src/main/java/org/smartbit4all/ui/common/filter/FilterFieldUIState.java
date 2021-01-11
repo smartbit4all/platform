@@ -14,6 +14,7 @@
  ******************************************************************************/
 package org.smartbit4all.ui.common.filter;
 
+import java.util.Collections;
 import java.util.List;
 import org.smartbit4all.api.filter.bean.FilterField;
 import org.smartbit4all.api.filter.bean.FilterOperation;
@@ -86,6 +87,8 @@ public class FilterFieldUIState extends AbstractUIState {
     // TODO default values? maybe value caching for different operations?
     filter.setValue1(null);
     filter.setValue2(null);
+    filter.setValue3(null);
+    filter.setSelectedValues(Collections.emptyList());
   }
 
   public void setPossibleValues(List<Value> possibleValues) {

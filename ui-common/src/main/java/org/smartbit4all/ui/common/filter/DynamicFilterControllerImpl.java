@@ -38,7 +38,7 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
   private String uri;
   private ValueApi valueApi;
 
-  private DynamicFilterViewUIState uiState;
+  protected DynamicFilterViewUIState uiState;
 
   private FilterConfig filterConfig;
 
@@ -92,7 +92,7 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
   }
 
   @Override
-  public void addFilterField(String filterSelectorId) {
+  public String addFilterField(String filterSelectorId) {
     FilterFieldUIState filterUIState = uiState.createFilter(filterSelectorId);
     if (uiState.getFilterConfigMode() == FilterConfigMode.SIMPLE_DYNAMIC) {
       FilterSelectorUIState filterSelector = uiState.filterSelectorsById.get(filterSelectorId);
@@ -105,6 +105,7 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
     filterUIState.setPossibleValues(getPossibleValues(filterUIState));
     ui.renderFilter(filterUIState);
     logRootFilterGroupState();
+    return filterUIState.getId();
   }
 
   private List<Value> getPossibleValues(FilterFieldUIState filterUIState) {
@@ -208,13 +209,14 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
   }
 
   @Override
-  public void addFilterGroup(String parentGroupId) {
+  public String addFilterGroup(String parentGroupId) {
     FilterGroupUIState parentGroup = uiState.groupUIStatesById.get(parentGroupId);
     FilterGroupUIState filterGroup =
         uiState.createFilterGroup(parentGroup, null, null, FilterGroupType.AND);
     ui.renderGroup(filterGroup);
     activeFilterGroupChanged(filterGroup.getId());
     logRootFilterGroupState();
+    return filterGroup.getId();
   }
 
   @Override

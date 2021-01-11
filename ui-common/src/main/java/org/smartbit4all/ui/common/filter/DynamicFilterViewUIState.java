@@ -47,16 +47,20 @@ public class DynamicFilterViewUIState {
   private FilterConfigMode filterConfigMode;
   private FilterGroup rootFilterGroup;
 
-  public FilterGroup getRootFilterGroup() {
-    return rootFilterGroup;
-  }
-
   public DynamicFilterViewUIState(FilterConfigMode filterConfigMode) {
     this.filterConfigMode = filterConfigMode;
     if (this.filterConfigMode == null) {
       this.filterConfigMode = FilterConfigMode.SIMPLE_DYNAMIC;
     }
     createRootGroup();
+  }
+
+  public FilterGroup getRootFilterGroup() {
+    return rootFilterGroup;
+  }
+
+  public FilterFieldUIState getFilterFieldUIState(String id) {
+    return filterUIStatesById.get(id);
   }
 
   private void createRootGroup() {
