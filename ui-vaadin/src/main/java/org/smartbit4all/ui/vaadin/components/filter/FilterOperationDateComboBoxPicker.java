@@ -18,10 +18,10 @@ import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
+import org.smartbit4all.api.filter.TimeFilterOption;
 import org.smartbit4all.api.filter.bean.FilterOperandValue;
 import org.smartbit4all.ui.common.filter.DateConverter;
 import org.smartbit4all.ui.common.filter.FilterValueChangeListener;
-import org.smartbit4all.ui.common.filter.TimeFilterOptions;
 import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
 import com.vaadin.flow.component.HasValue.ValueChangeListener;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -33,13 +33,13 @@ public class FilterOperationDateComboBoxPicker extends FilterOperationUI {
 
   private DatePicker beginDate;
   private DatePicker endDate;
-  private ComboBox<TimeFilterOptions> cbTimeFilterOption;
+  private ComboBox<TimeFilterOption> cbTimeFilterOption;
 
   public FilterOperationDateComboBoxPicker(FilterValueChangeListener filterValueChangeListener) {
     this.filterValueChangeListener = filterValueChangeListener;
 
     cbTimeFilterOption = new ComboBox<>();
-    cbTimeFilterOption.setItems(TimeFilterOptions.values());
+    cbTimeFilterOption.setItems(TimeFilterOption.values());
     cbTimeFilterOption.setItemLabelGenerator(option -> getTranslation(option.getLabel()));
     cbTimeFilterOption.setRequired(true);
     cbTimeFilterOption.addValueChangeListener(cbListener());
@@ -65,7 +65,7 @@ public class FilterOperationDateComboBoxPicker extends FilterOperationUI {
     };
   }
 
-  private ValueChangeListener<? super ComponentValueChangeEvent<ComboBox<TimeFilterOptions>, TimeFilterOptions>> cbListener() {
+  private ValueChangeListener<? super ComponentValueChangeEvent<ComboBox<TimeFilterOption>, TimeFilterOption>> cbListener() {
     return e -> {
       if (e.isFromClient()) {
         propagateValueChange();
@@ -112,8 +112,8 @@ public class FilterOperationDateComboBoxPicker extends FilterOperationUI {
         cbTimeFilterOption.setValue(null);
       }
     } else {
-      TimeFilterOptions newValue = TimeFilterOptions.valueOf(value3.getValue());
-      TimeFilterOptions oldValue = cbTimeFilterOption.getValue();
+      TimeFilterOption newValue = TimeFilterOption.valueOf(value3.getValue());
+      TimeFilterOption oldValue = cbTimeFilterOption.getValue();
       if (!Objects.equals(newValue, oldValue)) {
         cbTimeFilterOption.setValue(newValue);
       }
