@@ -24,8 +24,8 @@ import org.smartbit4all.ui.vaadin.util.Buttons;
 import org.smartbit4all.ui.vaadin.util.Css;
 import org.smartbit4all.ui.vaadin.util.Css.AlignSelf;
 import org.smartbit4all.ui.vaadin.util.Css.IconSize;
-import org.smartbit4all.ui.vaadin.util.Css.SpaceType;
 import org.smartbit4all.ui.vaadin.util.Css.Space;
+import org.smartbit4all.ui.vaadin.util.Css.SpaceType;
 import org.smartbit4all.ui.vaadin.util.Css.TextColor;
 import org.smartbit4all.ui.vaadin.util.Icons;
 import org.smartbit4all.ui.vaadin.util.Labels;
@@ -268,11 +268,19 @@ public class MultiSelectPopUp<T> extends CustomField<Set<T>> implements HasDataP
     } else if (selectionSize == 1) {
       return getSelectedItemsDisplayText();
     } else if (grid.getDataProvider().size(new Query<>()) == selectionSize) {
-      // return getPlaceHolder() + " - " + getTranslation("multiselect.allselected");
-      return getTranslation("multiselect.allselected") + " - " + getPlaceHolder();
+      String allSelectedTxt = getTranslation("multiselect.allselected");
+      String placeHolder = getPlaceHolder();
+      if(placeHolder != null && !placeHolder.isEmpty()) {
+        allSelectedTxt = allSelectedTxt + " - " + getPlaceHolder();
+      } 
+      return allSelectedTxt;
     } else {
-      // return getPlaceHolder() + " - " + String.valueOf(selectionSize);
-      return String.valueOf(selectionSize) + " - " + getPlaceHolder();
+      String placeHolder = getPlaceHolder();
+      if(placeHolder == null || placeHolder.isEmpty()) {
+        return String.valueOf(selectionSize) + " - " + getSelectedItemsDisplayText(", ");
+      } else {
+        return String.valueOf(selectionSize) + " - " + getPlaceHolder();
+      }
     }
   }
 
@@ -292,21 +300,24 @@ public class MultiSelectPopUp<T> extends CustomField<Set<T>> implements HasDataP
   }
 
   private String getSelectedItemsDisplayText() {
-    StringBuilder sb = new StringBuilder();
+    return getSelectedItemsDisplayText("\n");
+  }
+  
+  private String getSelectedItemsDisplayText(String separator) {
     List<?> displayItems = getSelectedItemsDisplay();
 
-    for (Object itemDisplay : displayItems) {
+    List<String> displayItemsAsString = displayItems.stream().map(itemDisplay -> {
       if (itemDisplay instanceof Component) {
         String componentHtml = ((Component) itemDisplay).getElement().getOuterHTML();
         String componentHtmlWithoutTagsAndNewlines = componentHtml.replaceAll("\\<[^>]*>", "")
             .replaceAll("\\r|\\n", "");
-        sb.append(componentHtmlWithoutTagsAndNewlines);
+        return componentHtmlWithoutTagsAndNewlines;
       } else {
-        sb.append(String.valueOf(itemDisplay));
+        return String.valueOf(itemDisplay);
       }
-      sb.append("\n");
-    }
-    return sb.toString();
+    }).collect(Collectors.toList());
+    
+    return String.join(separator, displayItemsAsString);
   }
 
   /**
