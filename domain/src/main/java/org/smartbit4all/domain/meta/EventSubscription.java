@@ -37,7 +37,7 @@ public class EventSubscription<E> {
    * @param listener
    * @return
    */
-  EventSubscription<E> add(EventListener<E> listener) {
+  public EventSubscription<E> add(EventListener<E> listener) {
     listeners.add(listener);
     return this;
   }
@@ -48,11 +48,23 @@ public class EventSubscription<E> {
    * @param eventObject
    * @return
    */
-  void fire(E eventObject) {
+  final void fire(E eventObject) {
+    if (!checkEvent(eventObject)) {
+      return;
+    }
     // The default operation is simple. The event is always fired.
     for (EventListener<E> eventListener : listeners) {
       eventListener.accept(eventObject);
     }
+  }
+
+  /**
+   * To implement specific subscriptions override this method.
+   * 
+   * @return
+   */
+  public boolean checkEvent(E eventObject) {
+    return true;
   }
 
 }

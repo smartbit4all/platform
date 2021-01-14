@@ -7,11 +7,11 @@ import org.junit.jupiter.api.Test;
 
 class EventPublisherHelperTest {
 
-  private static EventPublisherHelper<EventPublisherTest> helper;
+  private static EventPublisherHelper<MyEventPublisher> helper;
 
   @BeforeAll
   static void setUpBeforeClass() throws Exception {
-    helper = new EventPublisherHelper<>(EventPublisherTest.class, "api:/myApi");
+    helper = new EventPublisherHelper<>(MyEventPublisher.class, "api:/myApi");
   }
 
   @AfterAll
@@ -22,16 +22,19 @@ class EventPublisherHelperTest {
     EventDefinitionString stringEvent = helper.publisher().stringEvent();
     Assertions.assertEquals(stringEvent.getUri().toString(), "api:/myApi/stringEvent");
 
-    helper.publisher().stringEvent().subscribe().add(new EventListener<String>() {
+    EventDefinitionString stringEvent2 = helper.publisher().stringEvent2();
+    Assertions.assertEquals(stringEvent2.getUri().toString(), "api:/myApi/stringEvent2");
 
-      @Override
-      public void accept(String t) {
-        System.out.println(t);
-      }
+    helper.publisher().stringEvent().subscribe().add(s -> System.out.println(s))
+        .add(s -> System.out.println(s.toUpperCase()));
 
-    });
+    helper.publisher().myEvent().subscribe().whenStartWith("prefix.")
+        .add(s -> System.out.println(s));
 
     helper.fire(helper.publisher().stringEvent(), "Alma");
+
+    helper.fire(helper.publisher().myEvent(), "Alma");
+    helper.fire(helper.publisher().myEvent(), "prefix.Korte");
 
   }
 
