@@ -18,6 +18,7 @@ package org.smartbit4all.ui.common.navigation;
 
 import java.net.URI;
 import java.util.stream.Stream;
+import org.smartbit4all.ui.common.action.NavigationActionListener;
 import org.smartbit4all.ui.common.controller.UIController;
 import org.smartbit4all.ui.common.view.UIViewShowCommand;
 
@@ -45,5 +46,9 @@ public interface NavigationController extends UIController {
   boolean hasChildren(NavigationTreeNode node);
 
   UIViewShowCommand getViewCommand(NavigationTreeNode node);
+  
+  void nodeSelected(NavigationTreeNode node);
+  
+  void registerNavigationActionListener(NavigationActionListener listener);
 
 }

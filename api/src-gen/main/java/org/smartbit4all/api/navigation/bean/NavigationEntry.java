@@ -1,13 +1,17 @@
 package org.smartbit4all.api.navigation.bean;
 
+import java.util.Objects;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import org.smartbit4all.api.navigation.bean.NavigationView;
+import org.openapitools.jackson.nullable.JsonNullable;
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
+import javax.validation.constraints.*;
 
 /**
  * NavigationEntry
@@ -33,6 +37,10 @@ public class NavigationEntry   {
   @JsonProperty("views")
   @Valid
   private List<NavigationView> views = null;
+
+  @JsonProperty("actions")
+  @Valid
+  private List<URI> actions = null;
 
   public NavigationEntry objectUri(URI objectUri) {
     this.objectUri = objectUri;
@@ -174,6 +182,35 @@ public class NavigationEntry   {
     this.views = views;
   }
 
+  public NavigationEntry actions(List<URI> actions) {
+    this.actions = actions;
+    return this;
+  }
+
+  public NavigationEntry addActionsItem(URI actionsItem) {
+    if (this.actions == null) {
+      this.actions = new ArrayList<>();
+    }
+    this.actions.add(actionsItem);
+    return this;
+  }
+
+  /**
+   * The executable actions
+   * @return actions
+  */
+  @ApiModelProperty(value = "The executable actions")
+
+  @Valid
+
+  public List<URI> getActions() {
+    return actions;
+  }
+
+  public void setActions(List<URI> actions) {
+    this.actions = actions;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -189,12 +226,13 @@ public class NavigationEntry   {
         Objects.equals(this.name, navigationEntry.name) &&
         Objects.equals(this.icon, navigationEntry.icon) &&
         Objects.equals(this.styles, navigationEntry.styles) &&
-        Objects.equals(this.views, navigationEntry.views);
+        Objects.equals(this.views, navigationEntry.views) &&
+        Objects.equals(this.actions, navigationEntry.actions);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(objectUri, metaUri, name, icon, styles, views);
+    return Objects.hash(objectUri, metaUri, name, icon, styles, views, actions);
   }
 
   @Override
@@ -208,6 +246,7 @@ public class NavigationEntry   {
     sb.append("    icon: ").append(toIndentedString(icon)).append("\n");
     sb.append("    styles: ").append(toIndentedString(styles)).append("\n");
     sb.append("    views: ").append(toIndentedString(views)).append("\n");
+    sb.append("    actions: ").append(toIndentedString(actions)).append("\n");
     sb.append("}");
     return sb.toString();
   }

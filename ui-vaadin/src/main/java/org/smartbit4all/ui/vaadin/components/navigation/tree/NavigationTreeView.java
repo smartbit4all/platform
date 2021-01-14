@@ -33,6 +33,7 @@ import org.smartbit4all.ui.vaadin.localization.TranslationUtil;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.treegrid.TreeGrid;
 import com.vaadin.flow.data.provider.hierarchy.AbstractBackEndHierarchicalDataProvider;
@@ -61,16 +62,55 @@ public class NavigationTreeView implements NavigationView {
     controller.setUI(this);
     // Adapt the given tree and add the necessary parameters.
 
+    
+//    tree.addComponentHierarchyColumn(i -> {
+//      HorizontalLayout layout = new HorizontalLayout();
+//      Label label = new Label(i.getCaption());
+//      Icon icon = new Icon(i.getIcon());
+//      if (i.getIcon() != null) {
+//        layout.add(VaadinIcon.valueOf(i.getIcon()).create(), label);
+//      } else {
+//        layout.add(label);
+//      }
+//     return layout; 
+//    });
     tree.addComponentHierarchyColumn(this::getRowComponent).setAutoWidth(true);
+//    tree.addSelectionListener(selection -> {
+//      selection.getFirstSelectedItem().ifPresent(s -> {
+//        UIViewShowCommand showCommand = controller.getViewCommand(s);
+//        showSelected(showCommand);
+//      });
+//    });
+    
     tree.addSelectionListener(selection -> {
       selection.getFirstSelectedItem().ifPresent(s -> {
-        UIViewShowCommand showCommand = controller.getViewCommand(s);
-        showSelected(showCommand);
+        controller.nodeSelected(s);
+                // if (s.getEntry().getViews() != null && !s.getEntry().getViews().isEmpty()) {
+        // // TODO Here we need a more sophisticated solution to offer the potential views.
+        // org.smartbit4all.api.navigation.bean.NavigationView navigationView =
+        // s.getEntry().getViews().get(0);
+        // controller.setupViewParameters(s);
+        // tree.getUI().ifPresent(ui -> ui.navigate(navigationView.getName()));
+        // }
       });
     });
 
     setDataProviderForTree();
 
+  }
+  
+  @Override
+  public void navigateTo(UIViewShowCommand command) {
+    if (command != null) {
+      try (UIViewParameterVaadinTransition param =
+          new UIViewParameterVaadinTransition(command.getParameters())) {
+
+        tree.getUI().ifPresent(ui -> ui.navigate(command.getViewName(), param.construct()));
+        
+      } catch (Exception e) {
+        log.error("Unable to pass parameters", e);
+      }
+    }
   }
 
   private Component getRowComponent(NavigationTreeNode node) {
@@ -94,20 +134,6 @@ public class NavigationTreeView implements NavigationView {
     String title = TranslationUtil.INSTANCE().getPossibleTranslation(caption);
     return title;
   }
-
-
-  protected void showSelected(UIViewShowCommand showCommand) {
-    if (showCommand != null) {
-      try (UIViewParameterVaadinTransition param =
-          new UIViewParameterVaadinTransition(showCommand.getParameters())) {
-
-        tree.getUI().ifPresent(ui -> ui.navigate(showCommand.getViewName(), param.construct()));
-      } catch (Exception e) {
-        log.error("Unable to pass parameters", e);
-      }
-    }
-  }
-  
 
   private void setDataProviderForTree() {
     HierarchicalDataProvider<NavigationTreeNode, Void> dataProvider =

@@ -236,6 +236,12 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/NavigationView'
+        actions:
+          description: 'The executable actions'
+          type: array
+          items:
+            type: string
+            format: uri
     NavigationView:
       type: object
       required: [name]

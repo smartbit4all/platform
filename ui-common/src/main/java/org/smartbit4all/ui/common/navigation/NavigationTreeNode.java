@@ -16,6 +16,8 @@
  ******************************************************************************/
 package org.smartbit4all.ui.common.navigation;
 
+import java.net.URI;
+import java.util.List;
 import org.smartbit4all.api.navigation.Navigation;
 import org.smartbit4all.api.navigation.bean.NavigationAssociation;
 import org.smartbit4all.api.navigation.bean.NavigationNode;
@@ -64,6 +66,8 @@ public class NavigationTreeNode {
    * The logical name of an icon, resolved on the UI.
    */
   private String icon;
+  
+  private List<URI> actions;
 
   /**
    * The symbolic names of styles to apply on the UI.
@@ -71,7 +75,7 @@ public class NavigationTreeNode {
   private String styles[];
 
   public NavigationTreeNode(Kind kind, String identifier, String caption, String shortDescription,
-      String icon, String[] styles) {
+      String icon, String[] styles, List<URI> actions) {
     super();
     this.kind = kind;
     this.identifier = identifier;
@@ -79,6 +83,7 @@ public class NavigationTreeNode {
     this.shortDescription = shortDescription;
     this.icon = icon;
     this.styles = styles;
+    this.actions = actions;
   }
 
   public final String getCaption() {
@@ -131,6 +136,10 @@ public class NavigationTreeNode {
 
   public final void setIdentifier(String identifier) {
     this.identifier = identifier;
+  }
+  
+  public List<URI> getActions() {
+    return actions;
   }
 
 }
