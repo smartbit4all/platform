@@ -14,7 +14,7 @@
  ******************************************************************************/
 package org.smartbit4all.domain.meta;
 
-import java.util.function.Function;
+import java.util.function.Consumer;
 
 /**
  * The functional interface of the event listeners.
@@ -23,6 +23,6 @@ import java.util.function.Function;
  *
  * @param <R>
  */
-public interface EventListener<R> extends Function<Void, R> {
+public interface EventListener<E> extends Consumer<E> {
 
 }

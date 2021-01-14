@@ -14,45 +14,23 @@
  ******************************************************************************/
 package org.smartbit4all.domain.meta;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
- * The super class and basic implementation of the subscription.
+ * This extension for the APIs is used to publish {@link EntityDefinition}s and subscription API for
+ * the consumers. The consumers register {@link EventListener}s to receive the relevant events. An
+ * API is event aware if it implements this interface and publish events for subscription.
  * 
  * @author Peter Boros
  *
- * @param <E> The {@link EventDefinition} of the subscription.
  */
-public class EventSubscription<E> {
+public interface EventAware {
 
   /**
-   * The event listeners for the given subscription.
-   */
-  private List<EventListener<E>> listeners = new ArrayList<>();
-
-  /**
-   * Add a new listener to the given subscription.
+   * If an API implements this interface then the caller can access the published event definitions
+   * via this operation. It returns a registry where we can get every event definition. Using this
+   * event definition we can construct a subscription.
    * 
-   * @param listener
    * @return
    */
-  EventSubscription<E> add(EventListener<E> listener) {
-    listeners.add(listener);
-    return this;
-  }
-
-  /**
-   * Fire the event if it's relevant for the subscription or not.
-   * 
-   * @param eventObject
-   * @return
-   */
-  void fire(E eventObject) {
-    // The default operation is simple. The event is always fired.
-    for (EventListener<E> eventListener : listeners) {
-      eventListener.accept(eventObject);
-    }
-  }
+  EventPublisher events();
 
 }

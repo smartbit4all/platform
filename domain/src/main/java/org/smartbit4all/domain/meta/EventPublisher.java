@@ -14,45 +14,12 @@
  ******************************************************************************/
 package org.smartbit4all.domain.meta;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
- * The super class and basic implementation of the subscription.
+ * A marker interface for the {@link EventAware}s to offer the {@link EventDefinition} for the
+ * consumers. The implementations will have the named operation for every event.
  * 
  * @author Peter Boros
- *
- * @param <E> The {@link EventDefinition} of the subscription.
  */
-public class EventSubscription<E> {
-
-  /**
-   * The event listeners for the given subscription.
-   */
-  private List<EventListener<E>> listeners = new ArrayList<>();
-
-  /**
-   * Add a new listener to the given subscription.
-   * 
-   * @param listener
-   * @return
-   */
-  EventSubscription<E> add(EventListener<E> listener) {
-    listeners.add(listener);
-    return this;
-  }
-
-  /**
-   * Fire the event if it's relevant for the subscription or not.
-   * 
-   * @param eventObject
-   * @return
-   */
-  void fire(E eventObject) {
-    // The default operation is simple. The event is always fired.
-    for (EventListener<E> eventListener : listeners) {
-      eventListener.accept(eventObject);
-    }
-  }
+public interface EventPublisher {
 
 }
