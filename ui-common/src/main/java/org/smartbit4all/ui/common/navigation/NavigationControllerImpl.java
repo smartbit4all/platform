@@ -218,4 +218,23 @@ public class NavigationControllerImpl implements NavigationController {
     actionListeners.add(listener);
   }
 
+  @Override
+  public NavigationTreeNode getSelectedNode() {
+    return selectedNode;
+  }
+
+  @Override
+  public NavigationEntry getNavigationEntry(NavigationTreeNode navigationTreeNode) {
+    if (navigationTreeNode.isKind(Kind.ENTRY)) {
+      NavigationNode navigationNode = navigationState.getNode(navigationTreeNode.getIdentifier());
+      if (navigationNode != null && navigationNode.getEntry().getViews() != null
+          && !navigationNode.getEntry().getViews().isEmpty()) {
+
+        NavigationEntry navigationEntry = navigationNode.getEntry();
+        return navigationEntry;
+      }
+    }
+    return null;
+  }
+
 }
