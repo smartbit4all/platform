@@ -177,37 +177,50 @@ public class Filters {
   }
 
   private Expression createMultiSelClause(FilterField filterField) {
-    // TODO there is no enough information in filter field for multi selection:
-    // missing property or value type
-    // for now we assume that it is always String
     Expression expressionOfField = null;
     Property<?> property = getProperty(filterField.getPropertyUri1());
     List<URI> selectedValues = filterField.getSelectedValues();
     if (selectedValues != null && !selectedValues.isEmpty()) {
-      List<String> valueIds = selectedValues.stream().map(uri -> ValueUris.getValueId(uri))
-          .collect(Collectors.toList());
-      Property<String> propertyAsString = (Property<String>) property;
-
-      expressionOfField = propertyAsString.in(valueIds);
+      expressionOfField = createInExpression(property, property.type(), selectedValues);
     }
     return expressionOfField;
   }
+  
+  @SuppressWarnings("unchecked") // type casts are based on the propertyType parameter and are checked by that
+  private <T> Expression createInExpression(Property<?> property, Class<T> propertyType, List<URI> selectedValues) {
+    List<T> values = selectedValues.stream().map(uri -> {
+      return convertValueUriId(propertyType, uri);
+    }).collect(Collectors.toList());
+    return ((Property<T>) property).in(values);
+  }
+
+  @SuppressWarnings("unchecked")
+  private <T> T convertValueUriId(Class<T> propertyType, URI uri) {
+    Converter<String, T> valueConverter = transferService.converterByType(String.class, propertyType);
+    String value = ValueUris.getValueId(uri);
+    if(valueConverter != null) {
+      return valueConverter.convertTo(value);
+    } else if(String.class == propertyType){
+      return (T) value;
+    } else {
+      throw new RuntimeException("Unable to typecast the selected values to create expression for the configured property!");
+    }
+  }
 
   private Expression createComboSelClause(FilterField filterField) {
-    // TODO there is no enough information in filter field for combo selection:
-    // missing property or value type
-    // for now we assume that it is always String
     Expression expressionOfField = null;
     Property<?> property = getProperty(filterField.getPropertyUri1());
     List<URI> selectedValues = filterField.getSelectedValues();
     if (selectedValues != null && !selectedValues.isEmpty()) {
       URI selectedValue = selectedValues.get(0);
-      String valueId = ValueUris.getValueId(selectedValue);
-      Property<String> propertyAsString = (Property<String>) property;
-
-      expressionOfField = propertyAsString.eq(valueId);
+      expressionOfField = createEqExpression(property, property.type(), selectedValue);
     }
     return expressionOfField;
+  }
+  
+  private <T> Expression createEqExpression(Property<?> property, Class<T> propertyType, URI selectedValueUri) {
+    T value = convertValueUriId(propertyType, selectedValueUri);
+    return ((Property<T>) property).eq(value);
   }
 
   private Property<?> getProperty(URI propertyUri) {
