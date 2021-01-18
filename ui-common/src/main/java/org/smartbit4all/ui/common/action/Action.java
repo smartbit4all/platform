@@ -3,7 +3,6 @@ package org.smartbit4all.ui.common.action;
 import java.net.URI;
 import java.util.List;
 import java.util.Objects;
-import io.swagger.annotations.ApiModelProperty;
 
 /**
  * Action
@@ -69,9 +68,6 @@ public class Action {
    * 
    * @return iconCode
    */
-  @ApiModelProperty(value = "The icon code.")
-
-
   public String getIconCode() {
     return iconCode;
   }
@@ -90,9 +86,6 @@ public class Action {
    * 
    * @return kind
    */
-  @ApiModelProperty(value = "The kind of the action.")
-
-
   public String getKind() {
     return kind;
   }

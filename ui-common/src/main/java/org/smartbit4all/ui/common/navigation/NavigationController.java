@@ -56,4 +56,8 @@ public interface NavigationController extends UIController {
   
   NavigationEntry getNavigationEntry(NavigationTreeNode navigationTreeNode);
 
+  NavigationEntry getSelectedEntry();
+  
+  void navigateTo(UIViewShowCommand command);
+
 }

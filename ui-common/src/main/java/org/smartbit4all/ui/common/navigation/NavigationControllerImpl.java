@@ -28,6 +28,7 @@ import org.smartbit4all.api.navigation.bean.NavigationEntry;
 import org.smartbit4all.api.navigation.bean.NavigationNode;
 import org.smartbit4all.ui.common.action.Action;
 import org.smartbit4all.ui.common.action.Actions;
+import org.smartbit4all.ui.common.action.NavigationAction;
 import org.smartbit4all.ui.common.action.NavigationActionListener;
 import org.smartbit4all.ui.common.navigation.NavigationTreeNode.Kind;
 import org.smartbit4all.ui.common.view.UIViewShowCommand;
@@ -207,6 +208,10 @@ public class NavigationControllerImpl implements NavigationController {
         Action action = actions.get(uri);
         if (action != null) {
           actionList.add(action);
+          
+          if (action instanceof NavigationAction) {
+            ((NavigationAction) action).setNavigationController(this);
+          }
         }
       }
     }
@@ -235,6 +240,16 @@ public class NavigationControllerImpl implements NavigationController {
       }
     }
     return null;
+  }
+
+  @Override
+  public NavigationEntry getSelectedEntry() {
+    return getNavigationEntry(selectedNode);
+  }
+
+  @Override
+  public void navigateTo(UIViewShowCommand command) {
+    view.navigateTo(command);
   }
 
 }
