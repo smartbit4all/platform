@@ -14,15 +14,57 @@
  ******************************************************************************/
 package org.smartbit4all.domain.meta;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * Every {@link EventDefinition} provides a builder API to setup a subscription for the
+ * The super class and basic implementation of the subscription.
  * 
  * @author Peter Boros
  *
  * @param <E> The {@link EventDefinition} of the subscription.
  */
-public interface EventSubscription<E extends EventDefinition> {
+public class EventSubscription<E> {
 
-  void subscribe();
+  /**
+   * The event listeners for the given subscription.
+   */
+  private List<EventListener<E>> listeners = new ArrayList<>();
+
+  /**
+   * Add a new listener to the given subscription.
+   * 
+   * @param listener
+   * @return
+   */
+  public EventSubscription<E> add(EventListener<E> listener) {
+    listeners.add(listener);
+    return this;
+  }
+
+  /**
+   * Fire the event if it's relevant for the subscription or not.
+   * 
+   * @param eventObject
+   * @return
+   */
+  final void fire(E eventObject) {
+    if (!checkEvent(eventObject)) {
+      return;
+    }
+    // The default operation is simple. The event is always fired.
+    for (EventListener<E> eventListener : listeners) {
+      eventListener.accept(eventObject);
+    }
+  }
+
+  /**
+   * To implement specific subscriptions override this method.
+   * 
+   * @return
+   */
+  public boolean checkEvent(E eventObject) {
+    return true;
+  }
 
 }

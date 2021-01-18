@@ -14,15 +14,12 @@
  ******************************************************************************/
 package org.smartbit4all.domain.meta;
 
-import java.util.function.Consumer;
-
 /**
- * The functional interface of the event listeners.
+ * A marker interface for the {@link EventAware}s to offer the {@link EventDefinition} for the
+ * consumers. The implementations will have the named operation for every event.
  * 
  * @author Peter Boros
- *
- * @param <R>
  */
-public interface EventListener<E> extends Consumer<E> {
+public interface EventPublisher {
 
 }

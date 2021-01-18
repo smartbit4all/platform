@@ -15,11 +15,11 @@
 package org.smartbit4all.ui.common.filter;
 
 import java.net.URI;
+import java.util.Collections;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.filter.FilterApi;
-import org.smartbit4all.api.filter.bean.FilterConfig;
 import org.smartbit4all.api.filter.bean.FilterConfigMode;
 import org.smartbit4all.api.filter.bean.FilterField;
 import org.smartbit4all.api.filter.bean.FilterGroup;
@@ -33,19 +33,17 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
 
   private static final Logger log = LoggerFactory.getLogger(DynamicFilterController.class);
 
-  private FilterApi api;
+  private FilterApi filterApi;
   private DynamicFilterView ui;
-  private String uri;
+  private String filterConfigUri;
   private ValueApi valueApi;
 
   protected DynamicFilterViewUIState uiState;
 
-  private FilterConfig filterConfig;
-
   public DynamicFilterControllerImpl(FilterApi api, String uri,
       FilterConfigMode filterConfigMode, ValueApi valueApi) {
-    this.api = api;
-    this.uri = uri;
+    this.filterApi = api;
+    this.filterConfigUri = uri;
     this.valueApi = valueApi;
     this.uiState = new DynamicFilterViewUIState(filterConfigMode);
 
@@ -60,22 +58,21 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
 
   @Override
   public void loadData() {
-    filterConfig = api.getFilterConfig(uri);
-    uiState.setFilterConfig(filterConfig);
+    uiState.setFilterConfig(filterApi.getFilterConfig(filterConfigUri));
     switch (uiState.getFilterConfigMode()) {
       case STATIC:
-        renderStaticFilterConfig(filterConfig);
+        renderStaticFilterConfig();
         break;
       case SIMPLE_DYNAMIC:
-        renderSimpleFilterConfig(filterConfig);
+        renderSimpleFilterConfig();
         break;
       case DYNAMIC:
-        renderDynamicFilterConfig(filterConfig);
+        renderDynamicFilterConfig();
         break;
     }
   }
 
-  private void renderStaticFilterConfig(FilterConfig filterConfig) {
+  private void renderStaticFilterConfig() {
     // no filterSelector
     for (FilterSelectorUIState selector : uiState.filterSelectors) {
       selector.setEnabled(false);
@@ -83,11 +80,11 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
     }
   }
 
-  private void renderSimpleFilterConfig(FilterConfig filterConfig) {
+  private void renderSimpleFilterConfig() {
     ui.renderFilterSelectors(uiState.filterSelectorGroups);
   }
 
-  private void renderDynamicFilterConfig(FilterConfig filterConfig) {
+  private void renderDynamicFilterConfig() {
     ui.renderFilterSelectors(uiState.filterSelectorGroups);
   }
 
@@ -112,7 +109,7 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
     URI uri = filterUIState.getSelectedOperation().getPossibleValuesUri();
 
     if (uri == null) {
-      return null;
+      return Collections.emptyList();
     }
 
     List<Value> possibleValues;

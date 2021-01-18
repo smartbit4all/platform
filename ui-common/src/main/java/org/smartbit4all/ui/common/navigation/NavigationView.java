@@ -21,6 +21,7 @@ import org.smartbit4all.api.ApiItemChangeEvent;
 import org.smartbit4all.api.navigation.bean.NavigationNode;
 import org.smartbit4all.api.navigation.bean.NavigationReference;
 import org.smartbit4all.ui.common.view.UIView;
+import org.smartbit4all.ui.common.view.UIViewShowCommand;
 
 public interface NavigationView extends UIView {
 
@@ -31,5 +32,7 @@ public interface NavigationView extends UIView {
    */
 
   void render(NavigationNode node, List<ApiItemChangeEvent<NavigationReference>> changes);
+  
+  void navigateTo(UIViewShowCommand command);
 
 }

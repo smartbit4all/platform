@@ -14,6 +14,8 @@
  ******************************************************************************/
 package org.smartbit4all.domain.meta;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Proxy;
 import java.net.URI;
 
 /**
@@ -21,19 +23,18 @@ import java.net.URI;
  * system. The meta data is available via the operations of the event definitions implementing this
  * interface. The meta data can be used to setup a subscription for an event. The EventProvider
  * publishes the {@link EventDefinition}s for the listeners. The listeners can subscribe for the
- * given event.
+ * given event. This interface doesn't have any implementation but can have several {@link Proxy} -
+ * {@link InvocationHandler}.
  * 
  * This theory is published by Martin Fowler in 2002.
- * 
  * 
  * @see <a href="https://martinfowler.com/eaaDev/DomainEvent.html">Martin Fowler - Domain Event
  *      concept</a>
  * 
- * 
  * @author Peter Boros
  *
  */
-public interface EventDefinition {
+public interface EventDefinition<E> {
 
   /**
    * The unique identifier of the given event. It's structured like this:
@@ -48,19 +49,20 @@ public interface EventDefinition {
   URI getUri();
 
   /**
-   * The identifier is the business name of the given event.
+   * The business name of the given event. It must be unique in a context (in an API)
    * 
    * @return
    */
-  String getIdentifier();
+  String getName();
 
   /**
-   * The definition provides a builder API for the subscription. After parameterizing the
-   * subscription we must call the {@link EventSubscription#subscribe()} to start listening to the
-   * given event.
+   * The definition provides a builder API for the subscription. We can add listeners to the given
+   * subscription.
    * 
-   * @return
+   * @return Return a specific {@link EventSubscription} typed with the parameter of the Listeners.
+   *         The definitions will always define the specific subscription extension as a builder api
+   *         for subscribing.
    */
-  EventSubscription<?> subscription();
+  EventSubscription<E> subscribe();
 
 }

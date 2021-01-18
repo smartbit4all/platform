@@ -26,6 +26,10 @@ import org.smartbit4all.api.navigation.NavigationConfig;
 import org.smartbit4all.api.navigation.bean.NavigationAssociation;
 import org.smartbit4all.api.navigation.bean.NavigationEntry;
 import org.smartbit4all.api.navigation.bean.NavigationNode;
+import org.smartbit4all.ui.common.action.Action;
+import org.smartbit4all.ui.common.action.Actions;
+import org.smartbit4all.ui.common.action.NavigationAction;
+import org.smartbit4all.ui.common.action.NavigationActionListener;
 import org.smartbit4all.ui.common.navigation.NavigationTreeNode.Kind;
 import org.smartbit4all.ui.common.view.UIViewShowCommand;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +57,14 @@ public class NavigationControllerImpl implements NavigationController {
    * The view options for the navigation.
    */
   private NavigationViewOption options = new NavigationViewOption();
+
+  
+  @Autowired
+  protected Actions actions;
+
+  private NavigationTreeNode selectedNode;
+  
+  private List<NavigationActionListener> actionListeners = new ArrayList<>();
 
   public NavigationControllerImpl(NavigationApi api) {
     this.api = api;
@@ -111,7 +123,7 @@ public class NavigationControllerImpl implements NavigationController {
     if (parent == null) {
       return rootNodes.stream().map(
           n -> new NavigationTreeNode(Kind.ENTRY, n.getId(), n.getEntry().getName(), null,
-              n.getEntry().getIcon(), null));
+              n.getEntry().getIcon(), null, n.getEntry().getActions()));
     }
     // Kind kind, String identifier, String caption, String shortDescription,
     // String icon, String[] styles
@@ -120,7 +132,7 @@ public class NavigationControllerImpl implements NavigationController {
       // TODO Later on manage the reference kind also!
       return navigationState.getReferencedNodes(parent.getIdentifier()).stream()
           .map(n -> new NavigationTreeNode(Kind.ENTRY, n.getId(), n.getEntry().getName(), null,
-              n.getEntry().getIcon(), null));
+              n.getEntry().getIcon(), null, n.getEntry().getActions()));
     }
     NavigationNode node = navigationState.getNode(parent.getIdentifier());
     if (node != null) {
@@ -132,11 +144,11 @@ public class NavigationControllerImpl implements NavigationController {
     Stream<NavigationTreeNode> assocStream = associations.stream().filter(a -> a.getHidden())
         .map(a -> new NavigationTreeNode(Kind.ASSOCIATION, a.getId(), getAssociationNodeCaption(a.getMetaUri()),
             null,
-            null, null));
+            null, null, null));
     Stream<NavigationTreeNode> nodeStream =
         navigationState.getChildrenNodes(parent.getIdentifier(), true).stream()
             .map(n -> new NavigationTreeNode(Kind.ENTRY, n.getId(), n.getEntry().getName(), null,
-                n.getEntry().getIcon(), null));
+                n.getEntry().getIcon(), null, n.getEntry().getActions()));
     return Streams.concat(assocStream, nodeStream);
 
   }
@@ -170,6 +182,74 @@ public class NavigationControllerImpl implements NavigationController {
       }
     }
     return null;
+  }
+  
+  @Override
+  public void nodeSelected(NavigationTreeNode node) {
+    view.navigateTo(getViewCommand(node));
+    
+    showNodeActions(node);
+    selectedNode = node; 
+  }
+
+  private void showNodeActions(NavigationTreeNode node) {
+    List<Action> actionsToHide = getNodeActions(selectedNode);
+    List<Action> actionsToShow = getNodeActions(node);
+    for (NavigationActionListener navigationActionListener : actionListeners) {
+      navigationActionListener.onHideActions(actionsToHide);
+      navigationActionListener.onShowActions(actionsToShow);
+    }
+  }
+
+  private List<Action> getNodeActions(NavigationTreeNode node) {
+    List<Action> actionList = new ArrayList<Action>();
+    if (node != null && node.getActions() != null) {
+      for (URI uri : node.getActions()) {
+        Action action = actions.get(uri);
+        if (action != null) {
+          actionList.add(action);
+          
+          if (action instanceof NavigationAction) {
+            ((NavigationAction) action).setNavigationController(this);
+          }
+        }
+      }
+    }
+    return actionList;
+  }
+  
+  @Override
+  public void registerNavigationActionListener(NavigationActionListener listener) {
+    actionListeners.add(listener);
+  }
+
+  @Override
+  public NavigationTreeNode getSelectedNode() {
+    return selectedNode;
+  }
+
+  @Override
+  public NavigationEntry getNavigationEntry(NavigationTreeNode navigationTreeNode) {
+    if (navigationTreeNode.isKind(Kind.ENTRY)) {
+      NavigationNode navigationNode = navigationState.getNode(navigationTreeNode.getIdentifier());
+      if (navigationNode != null && navigationNode.getEntry().getViews() != null
+          && !navigationNode.getEntry().getViews().isEmpty()) {
+
+        NavigationEntry navigationEntry = navigationNode.getEntry();
+        return navigationEntry;
+      }
+    }
+    return null;
+  }
+
+  @Override
+  public NavigationEntry getSelectedEntry() {
+    return getNavigationEntry(selectedNode);
+  }
+
+  @Override
+  public void navigateTo(UIViewShowCommand command) {
+    view.navigateTo(command);
   }
 
 }

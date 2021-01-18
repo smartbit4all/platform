@@ -115,7 +115,7 @@ public class Filters {
         : filterGroup.getFilterFields();
     for (FilterField filterField : filterFields) {
 
-       Expression expressionOfField = expressionOfField(filterField);
+      Expression expressionOfField = expressionOfField(filterField);
 
       if (expressionOfField != null) {
         groupClause.add(expressionOfField);
@@ -125,7 +125,7 @@ public class Filters {
 
   public Expression expressionOfField(FilterField filterField) {
     Expression expressionOfField = null;
-    
+
     String operationCode = filterField.getOperationCode();
 
     if (DATE_INTERVAL.equals(operationCode) || DATE_TIME_INTERVAL.equals(operationCode)) {
@@ -140,7 +140,7 @@ public class Filters {
 
     } else if (TXT_EQ.equals(operationCode)) {
       expressionOfField = createTxtEqClause(filterField);
-      
+
     } else if (TXT_LIKE.equals(operationCode)) {
       expressionOfField = createTxtLikeClause(filterField);
 
@@ -163,7 +163,7 @@ public class Filters {
     }
     return expressionOfField;
   }
-  
+
   private Expression createTxtEqClause(FilterField filterField) {
     Expression expressionOfField = null;
     Property<?> property = getProperty(filterField.getPropertyUri1());
@@ -287,13 +287,15 @@ public class Filters {
         filterField.getPropertyUri1() == null ? null
             : entityManager.property(filterField.getPropertyUri1());
 
-    FilterOperandValue valueOperand = filterField.getValue1();
-    Class<?> propertyType = property.type();
-    if (LocalDate.class.equals(propertyType)) {
-      return createEqExpression(property, valueOperand, this::convertToLocalDate);
-    }
-    if (LocalDateTime.class.equals(propertyType)) {
-      return createEqExpression(property, valueOperand, this::convertToLocalDateTime);
+    if (property != null) {
+      FilterOperandValue valueOperand = filterField.getValue1();
+      Class<?> propertyType = property.type();
+      if (LocalDate.class.equals(propertyType)) {
+        return createEqExpression(property, valueOperand, this::convertToLocalDate);
+      }
+      if (LocalDateTime.class.equals(propertyType)) {
+        return createEqExpression(property, valueOperand, this::convertToLocalDateTime);
+      }
     }
     return null;
   }
@@ -314,18 +316,20 @@ public class Filters {
         filterField.getPropertyUri1() == null ? null
             : entityManager.property(filterField.getPropertyUri1());
 
-    FilterOperandValue value1Operand = filterField.getValue1();
-    FilterOperandValue value2Operand = filterField.getValue2();
-    Class<?> propertyType = property1.type();
-    if (LocalDate.class.equals(propertyType)) {
-      // If we have LocaDate in the filter field as values then OK. Else we have to transfer it
-      // to LocaDate because the property itself is LocalDate type.
-      return createDateIntervalExpression(property1, value1Operand, value2Operand,
-          this::convertToLocalDate);
-    }
-    if (LocalDateTime.class.equals(propertyType)) {
-      return createDateIntervalExpression(property1, value1Operand, value2Operand,
-          this::convertToLocalDateTime);
+    if (property1 != null) {
+      FilterOperandValue value1Operand = filterField.getValue1();
+      FilterOperandValue value2Operand = filterField.getValue2();
+      Class<?> propertyType = property1.type();
+      if (LocalDate.class.equals(propertyType)) {
+        // If we have LocaDate in the filter field as values then OK. Else we have to transfer it
+        // to LocaDate because the property itself is LocalDate type.
+        return createDateIntervalExpression(property1, value1Operand, value2Operand,
+            this::convertToLocalDate);
+      }
+      if (LocalDateTime.class.equals(propertyType)) {
+        return createDateIntervalExpression(property1, value1Operand, value2Operand,
+            this::convertToLocalDateTime);
+      }
     }
     return null;
   }
@@ -389,14 +393,14 @@ public class Filters {
 
   public static LocalDate[] getPreviousWeekFirstDay(LocalDate date) {
     final int dayOfWeek = date.getDayOfWeek().getValue();
-    final LocalDate from = date.minusDays(dayOfWeek + 6); // (dayOfWeek - 1) + 7
+    final LocalDate from = date.minusDays((long) dayOfWeek + 6); // (dayOfWeek - 1) + 7
     final LocalDate to = date.minusDays(dayOfWeek);
 
     return new LocalDate[] {from, to};
   }
 
   public static LocalDate[] getPreviousMonth(LocalDate date) {
-    final LocalDate from = date.minusDays(date.getDayOfMonth() - 1).minusMonths(1);
+    final LocalDate from = date.minusDays((long) date.getDayOfMonth() - 1).minusMonths(1);
     final LocalDate to = from.plusMonths(1).minusDays(1);
 
     return new LocalDate[] {from, to};
@@ -445,7 +449,7 @@ public class Filters {
     if (isValuePresent(filter.getValue3())) {
       return true;
     }
-    if (filter.getSelectedValues() != null && filter.getSelectedValues().size() > 0) {
+    if (filter.getSelectedValues() != null && !filter.getSelectedValues().isEmpty()) {
       return true;
     }
     return false;

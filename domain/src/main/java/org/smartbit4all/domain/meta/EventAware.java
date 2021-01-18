@@ -14,15 +14,23 @@
  ******************************************************************************/
 package org.smartbit4all.domain.meta;
 
-import java.util.function.Consumer;
-
 /**
- * The functional interface of the event listeners.
+ * This extension for the APIs is used to publish {@link EntityDefinition}s and subscription API for
+ * the consumers. The consumers register {@link EventListener}s to receive the relevant events. An
+ * API is event aware if it implements this interface and publish events for subscription.
  * 
  * @author Peter Boros
  *
- * @param <R>
  */
-public interface EventListener<E> extends Consumer<E> {
+public interface EventAware {
+
+  /**
+   * If an API implements this interface then the caller can access the published event definitions
+   * via this operation. It returns a registry where we can get every event definition. Using this
+   * event definition we can construct a subscription.
+   * 
+   * @return
+   */
+  EventPublisher events();
 
 }

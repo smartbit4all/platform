@@ -15,11 +15,17 @@
 package org.smartbit4all.domain.meta;
 
 /**
- * A marker interface for the {@link EventProvider}s to offer the {@link EventDefinition} for the
- * consumers. The implementations will have the named operation for every event.
+ * The instance of an event. This works like a builder API to setup the parameters of the event and
+ * at the end we can call fire to notify the subscribers about the event.
+ * 
+ * TODO May be use the {@link java.util.EventObject}?
  * 
  * @author Peter Boros
+ * @param <E> The event object itself is parameterized with type of the event content object itself.
+ *        If the event is about a simple String then we have String here like EventObject<String>.
  */
-public interface EventProviderRegistry {
+public interface EventObject<E> {
+
+  void fire();
 
 }
