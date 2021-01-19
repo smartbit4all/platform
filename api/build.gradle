@@ -6,7 +6,7 @@ plugins {
 }
 
 dependencies {
-	api project(':types')
+	api project(':domain')
 	
 	// its needed for the openApi spring codegen
 	implementation 'org.openapitools:jackson-databind-nullable:0.2.1'
