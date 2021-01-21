@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Supplier;
 import org.smartbit4all.core.utility.StringConstant;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -233,16 +234,38 @@ public class EventPublisherHelper<P extends EventPublisher> implements Invocatio
    * @param <E> The type of the event object
    * @param eventDefinition The event definition returned by the publisher interface. Like
    *        events().someEvent()
+   * @param eventObjectSupplier The supplier lambda for the value object of the event. If there is
+   *        no subscriber for the given event then we can skip constructing this.
+   */
+  public <E> void fire(EventDefinition<E> eventDefinition, Supplier<E> eventObjectSupplier) {
+    EventDefinitionInstance definitionIH =
+        (EventDefinitionInstance) Proxy.getInvocationHandler(eventDefinition);
+    if (definitionIH != null && !definitionIH.subscriptions.isEmpty()) {
+      E eventObject = eventObjectSupplier.get();
+      callSubscribers(eventObject, definitionIH);
+    }
+  }
+
+  /**
+   * We can fire an event using the function.
+   * 
+   * @param <E> The type of the event object
+   * @param eventDefinition The event definition returned by the publisher interface. Like
+   *        events().someEvent()
    * @param eventObject The value object of the event. It must be constructed prior.
    */
-  @SuppressWarnings("unchecked")
   public <E> void fire(EventDefinition<E> eventDefinition, E eventObject) {
     EventDefinitionInstance definitionIH =
         (EventDefinitionInstance) Proxy.getInvocationHandler(eventDefinition);
     if (definitionIH != null) {
-      for (EventSubscription<?> subscription : definitionIH.subscriptions) {
-        ((EventSubscription<E>) subscription).fire(eventObject);
-      }
+      callSubscribers(eventObject, definitionIH);
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  private final <E> void callSubscribers(E eventObject, EventDefinitionInstance definitionIH) {
+    for (EventSubscription<?> subscription : definitionIH.subscriptions) {
+      ((EventSubscription<E>) subscription).fire(eventObject);
     }
   }
 
