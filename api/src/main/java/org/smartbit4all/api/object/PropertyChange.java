@@ -1,6 +1,6 @@
 package org.smartbit4all.api.object;
 
-import java.net.URI;
+import java.util.UUID;
 
 /**
  * The property change event for the property of an instance. The property change can be primitive
@@ -21,8 +21,8 @@ public class PropertyChange<P> extends ChangeItem {
    */
   private final P newValue;
 
-  PropertyChange(URI parentObjectURI, String name, P oldValue, P newValue) {
-    super(parentObjectURI, name);
+  PropertyChange(UUID parentId, String name, P oldValue, P newValue) {
+    super(parentId, name);
     this.oldValue = oldValue;
     this.newValue = newValue;
   }

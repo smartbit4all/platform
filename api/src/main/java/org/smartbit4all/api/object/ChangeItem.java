@@ -1,16 +1,23 @@
 package org.smartbit4all.api.object;
 
-import java.net.URI;
+import java.util.UUID;
 
+/**
+ * The super class of item change events of an object. They can be {@link PropertyChange},
+ * {@link ReferenceChange} and {@link CollectionChange} instances.
+ * 
+ * @author Peter Boros
+ *
+ */
 public abstract class ChangeItem {
 
   /**
-   * The URI of the API object that embeds the given property, reference or collection. It's the
-   * parent reference of these items. Inside an object we can see only our parent not the grannies.
-   * If we no that we have grandparents then we have to subscribe for their references or
+   * The unique identifier of the object that embeds the given property, reference or collection.
+   * It's the parent reference of these items. Inside an object we can see only our parent not the
+   * grannies. If we no that we have grandparents then we have to subscribe for their references or
    * collections to have higher level of notification about them.
    */
-  private final URI parentObjectURI;
+  private final UUID parentID;
 
   /**
    * The item name inside the given object. Properties, references and collections are also
@@ -23,9 +30,9 @@ public abstract class ChangeItem {
    * 
    * @param uri
    */
-  ChangeItem(URI parentObjectURI, String name) {
+  ChangeItem(UUID parentID, String name) {
     super();
-    this.parentObjectURI = parentObjectURI;
+    this.parentID = parentID;
     this.name = name;
   }
 
@@ -37,10 +44,16 @@ public abstract class ChangeItem {
    * 
    * @return
    */
-  public final URI getParentObjectURI() {
-    return parentObjectURI;
+  public final UUID getParentId() {
+    return parentID;
   }
 
+  /**
+   * The name of the given item. All the items inside an object are in the same name space so they
+   * must have unique names inside an object.
+   * 
+   * @return
+   */
   public final String getName() {
     return name;
   }

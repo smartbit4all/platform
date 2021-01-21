@@ -3,6 +3,7 @@ package org.smartbit4all.api.object;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * The instance change means a new or deleted instance. The modification is not necessary as an
@@ -18,28 +19,56 @@ import java.util.List;
  */
 public class ObjectChange {
 
-  URI uri;
+  /**
+   * The objects have global uri that identifies the api, responsible for the given object.
+   */
+  private final URI objectUri;
+
+  private final UUID id;
 
   /**
    * The changes of the properties.
    */
-  List<PropertyChange<?>> properties = new ArrayList<>();
+  private final List<PropertyChange<?>> properties = new ArrayList<>();
 
   /**
    * The changes of the references.
    */
-  List<ReferenceChange> references = new ArrayList<>();
+  private final List<ReferenceChange> references = new ArrayList<>();
 
   /**
    * The changes of the collections.
    */
-  List<CollectionChange> collections = new ArrayList<>();
+  private final List<CollectionChange> collections = new ArrayList<>();
 
   /**
-   * @param uri
+   * @param objectUri
    */
-  ObjectChange(URI uri) {
-    this.uri = uri;
+  ObjectChange(URI objectUri, UUID id) {
+    this.objectUri = objectUri;
+    this.id = id;
   }
+
+  public final URI getObjectUri() {
+    return objectUri;
+  }
+
+  public final UUID getId() {
+    return id;
+  }
+
+  public final List<PropertyChange<?>> getProperties() {
+    return properties;
+  }
+
+  public final List<ReferenceChange> getReferences() {
+    return references;
+  }
+
+  public final List<CollectionChange> getCollections() {
+    return collections;
+  }
+
+
 
 }

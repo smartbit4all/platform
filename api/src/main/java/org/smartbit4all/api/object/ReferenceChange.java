@@ -1,6 +1,6 @@
 package org.smartbit4all.api.object;
 
-import java.net.URI;
+import java.util.UUID;
 
 /**
  * The specific version of property change. In this case we have reference points to another object
@@ -15,8 +15,8 @@ public class ReferenceChange extends ChangeItem {
    */
   private final ObjectChange changedReference;
 
-  ReferenceChange(URI parentObjectURI, String name, ObjectChange changedReference) {
-    super(parentObjectURI, name);
+  ReferenceChange(UUID parentId, String name, ObjectChange changedReference) {
+    super(parentId, name);
     this.changedReference = changedReference;
   }
 

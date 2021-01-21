@@ -1,8 +1,8 @@
 package org.smartbit4all.api.object;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * The change of a collection with instance changes inside.
@@ -16,8 +16,8 @@ public class CollectionChange extends ChangeItem {
    */
   private final List<CollectionItemChange> changes = new ArrayList<>();
 
-  CollectionChange(URI parentObjectURI, String name) {
-    super(parentObjectURI, name);
+  CollectionChange(UUID parentId, String name) {
+    super(parentId, name);
   }
 
   /**
