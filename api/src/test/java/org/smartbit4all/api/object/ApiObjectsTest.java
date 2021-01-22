@@ -21,12 +21,15 @@ class ApiObjectsTest {
     BeanMeta meta = ApiObjects.meta(SampleBean.class);
     String description = meta.getDescription();
     System.out.println(description);
-    Assertions.assertEquals(description, "org.smartbit4all.api.object.SampleBean\r\n" +
-        "\tClass(java.lang.Class) get: getClass set: -\r\n" +
-        "\tCounter(long) get: getCounter set: setCounter\r\n" +
-        "\tName(java.lang.String) get: getName set: setName\r\n" +
-        "\tReadOnlyLong(java.lang.Long) get: getReadOnlyLong set: -\r\n" +
-        "\tStringList(java.util.List) get: getStringList set: setStringList");
+    String br = System.lineSeparator();
+    StringBuilder expectedDescBuilder = new StringBuilder();
+    expectedDescBuilder.append("org.smartbit4all.api.object.SampleBean").append(br)
+      .append("\tClass(java.lang.Class) get: getClass set: -").append(br)
+      .append("\tCounter(long) get: getCounter set: setCounter").append(br)
+      .append("\tName(java.lang.String) get: getName set: setName").append(br)
+      .append("\tReadOnlyLong(java.lang.Long) get: getReadOnlyLong set: -").append(br)
+      .append("\tStringList(java.util.List) get: getStringList set: setStringList");
+    Assertions.assertEquals(expectedDescBuilder.toString(), description);
     // fail("Not yet implemented");
   }
 
