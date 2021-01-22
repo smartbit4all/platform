@@ -18,6 +18,7 @@ import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -132,6 +133,17 @@ public class ApiObjectRef<O> {
               + meta.getClazz().getName());
     }
   }
+  
+  public <T> void setValue(BiConsumer<O, T> setter, T value) {
+    try {
+      setter.accept(object, value);
+    } catch (Exception e) {
+      throw new IllegalArgumentException(
+          setter.getClass() + " property is not set to " + value + " in "
+              + meta.getClazz().getName());
+    }
+  }
+  
 
   public <T> T getValue(Supplier<T> getter) {
     return getter.get();

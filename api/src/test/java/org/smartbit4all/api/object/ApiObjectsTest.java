@@ -43,8 +43,12 @@ class ApiObjectsTest {
     Assertions.assertEquals(bean1.getCounter(), Long.valueOf(1));
 
     bean1Ref.setValue(bean1::setName, "myName-2");
+    
 
     Assertions.assertEquals("myName-2", bean1.getName());
+    
+    bean1Ref.setValue(SampleBean::setName, "myName-3");
+    Assertions.assertEquals("myName-3", bean1.getName());
   }
 
 }
