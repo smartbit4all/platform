@@ -17,17 +17,36 @@
 package org.smartbit4all.ui.common.filter;
 
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.smartbit4all.domain.meta.EventAware;
+import org.smartbit4all.domain.meta.EventPublisherHelper;
 
-public abstract class AbstractUIState {
+public abstract class AbstractUIState implements EventAware {
 
+  private static final Logger log = LoggerFactory.getLogger(AbstractUIState.class);
+  
   protected String id;
+  
+  protected EventPublisherHelper<UIStateEvent> helper;
 
   public AbstractUIState() {
     this.id = UUID.randomUUID().toString();
+    try {
+      helper = new EventPublisherHelper<UIStateEvent>(UIStateEvent.class, "api:/AbstractUIStateEventApi");
+    } catch (ExecutionException e) {
+      log.error("Error setting up EventPublisher for " + this.getClass().getSimpleName() + "!");
+    }
   }
 
   public String getId() {
     return id;
   }
-
+  
+  @Override
+  public UIStateEvent events() {
+    return helper.publisher();
+  }
+  
 }
