@@ -523,8 +523,7 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
 
   @Override
   public String getDomain() {
-    // TODO it should come from annotation
-    return "default";
+    return entityDefClazz.getPackage().getName();
   }
 
   @Override
