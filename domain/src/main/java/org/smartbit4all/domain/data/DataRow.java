@@ -512,7 +512,14 @@ public final class DataRow {
           } else {
             value = entry.getValue().converter.backward().apply(tableData.get(column, this));
           }
-          entry.getKey().invoke(result, value);
+          try {
+            entry.getKey().invoke(result, value);
+          } catch (IllegalArgumentException e) {
+            throw new IllegalStateException(
+                "Type mismatch during EntityDef-Bean conversion on property: " + column.getName()
+                    + "; converting bean class: " + beanClass.getName(),
+                e);
+          }
         }
       }
     }
