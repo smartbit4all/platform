@@ -49,12 +49,12 @@ public class FilterOperationDateInterval extends FilterOperationUI {
   private ValueChangeListener<? super ComponentValueChangeEvent<DatePicker, LocalDate>> valueChangeListener() {
     return e -> {
       if (e.isFromClient()) {
-        String fromString = beginDate.getValue() == null ? null : beginDate.getValue().toString();
-        String toString = endDate.getValue() == null ? null : endDate.getValue().toString();
+        String fromValue = beginDate.getValue() == null ? null : beginDate.getValue().toString();
+        String toValue = endDate.getValue() == null ? null : endDate.getValue().toString();
         FilterOperandValue value1 =
-            new FilterOperandValue().type(LocalDate.class.getName()).value(fromString);
+            new FilterOperandValue().type(LocalDate.class.getName()).value(fromValue);
         FilterOperandValue value2 =
-            new FilterOperandValue().type(LocalDate.class.getName()).value(toString);
+            new FilterOperandValue().type(LocalDate.class.getName()).value(toValue);
         filterValueChangeListener.filterValueChanged(filterId, value1, value2, null);
       }
     };

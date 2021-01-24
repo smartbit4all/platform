@@ -18,6 +18,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -25,12 +26,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.function.Function;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartbit4all.ui.vaadin.localization.TranslationUtil;
 import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.FlexLayout.FlexWrap;
 import com.vaadin.flow.component.textfield.BigDecimalField;
@@ -40,6 +44,8 @@ import com.vaadin.flow.data.binder.Binder;
 
 public class DynamicForm<BEAN> extends Composite<FlexLayout> {
 
+  private static final Logger log = LoggerFactory.getLogger(DynamicForm.class);
+  
   private Binder<BEAN> binder;
 
   public DynamicForm() {
@@ -83,6 +89,7 @@ public class DynamicForm<BEAN> extends Composite<FlexLayout> {
         String label = getLabel(propertyName);
         AbstractField<?, ?> field = null;
 
+        // TODO refactor the underlying if blocks to handle types from a static map
         if (isGetterReturnMatches(binding, String.class)) {
           field = new TextField(label);
           binder.bind(field, bean -> invokeGetter(binding, bean, null),
@@ -109,13 +116,22 @@ public class DynamicForm<BEAN> extends Composite<FlexLayout> {
               bean -> invokeGetter(binding, bean, null),
               (bean, value) -> invokeSetter(binding, bean, value, null));
         }
-
-        if (field instanceof HasStyle) {
-          String className = propertyName.substring(propertyName.lastIndexOf(".") + 1);
-          ((HasStyle) field).setClassName(toKebabCase(className));
+        if (isGetterReturnMatches(binding, LocalDateTime.class)) {
+          field = new DateTimePicker(label);
+          binder.bind((DateTimePicker) field,
+              bean -> invokeGetter(binding, bean, null),
+              (bean, value) -> invokeSetter(binding, bean, value, null));
         }
-        componentList.add(field);
-        // this.getContent().add(field);
+
+        if(field != null) {
+          if (field instanceof HasStyle) {
+            String className = propertyName.substring(propertyName.lastIndexOf(".") + 1);
+            ((HasStyle) field).setClassName(toKebabCase(className));
+          }
+          componentList.add(field);
+        } else {
+          log.warn("There was no field created for property '" + propertyName + "' due its unhandled type!");
+        }
       }
     }
     addComponentsToContent(componentList);
@@ -126,7 +142,6 @@ public class DynamicForm<BEAN> extends Composite<FlexLayout> {
     for (Component component : componentList) {
       this.getContent().add(component);
     }
-
   }
 
   private String toKebabCase(String str) {
