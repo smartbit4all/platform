@@ -29,7 +29,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class EntityManagerTestConfig {
 
-  public static final String ENTITY_SOURCE_SEC = "default";
+  public static final String ENTITY_SOURCE_SEC = "org.smartbit4all.domain.security";
 
   @Bean
   public EntityManager entityManager(List<EntitySource> sources) {

@@ -34,11 +34,11 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
 public class EntityManagerTest {
 
-  private static final String EXPECTED_USERACCDEF_URI = "entity://default/userAccountDef";
-  private static final String EXPECTED_PROPERTY_URI = "entity://default/userAccountDef#firstname";
+  private static final String EXPECTED_USERACCDEF_URI = "entity://org.smartbit4all.domain.security/userAccountDef";
+  private static final String EXPECTED_PROPERTY_URI = "entity://org.smartbit4all.domain.security/userAccountDef#firstname";
   
-  private static final String EXPECTED_PROPERTY_ON_ASSOC_URI = "entity://default/userAccountDef#primaryAddressRef.zipcode";
-  private static final String EXPECTED_PROPERTY_ON_ASSOC_URI2 = "entity://default/userAccountDef#primaryZipcode";
+  private static final String EXPECTED_PROPERTY_ON_ASSOC_URI = "entity://org.smartbit4all.domain.security/userAccountDef#primaryAddressRef.zipcode";
+  private static final String EXPECTED_PROPERTY_ON_ASSOC_URI2 = "entity://org.smartbit4all.domain.security/userAccountDef#primaryZipcode";
   
   protected static AnnotationConfigApplicationContext ctx;
 
