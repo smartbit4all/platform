@@ -86,6 +86,9 @@ public class EntityManagerImpl implements EntityManager {
       return refProperty;
     } else {
       EntityDefinition entityDef = entityDefsByName.get(entityPath);
+      if(entityDef == null) {
+        throw new IllegalStateException("There is no entity registered for name: " + entityPath);
+      }
       return entityDef.getProperty(propertyPath);
     }
   }

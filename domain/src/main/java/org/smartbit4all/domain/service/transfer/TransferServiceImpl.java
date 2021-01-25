@@ -17,6 +17,7 @@ package org.smartbit4all.domain.service.transfer;
 import java.beans.BeanDescriptor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,6 +75,8 @@ public class TransferServiceImpl implements TransferService, InitializingBean {
 
   @Autowired
   private List<Converter<?, ?>> converters;
+  
+  private static final List<String> beanPropertiesToSkip = Arrays.asList("toString", "hashCode", "equals");
 
   /**
    * Get the descriptor from the cache.
@@ -198,7 +201,7 @@ public class TransferServiceImpl implements TransferService, InitializingBean {
     Map<String, BindingCandidate> bindings = new HashMap<>();
     for (int i = 0; i < beanClazz.getMethods().length; i++) {
       Method method = beanClazz.getMethods()[i];
-      if (method.getDeclaringClass().equals(Object.class)) {
+      if (method.getDeclaringClass().equals(Object.class) || beanPropertiesToSkip.contains(method.getName())) {
         continue;
       }
       String propertyCandidateName = getPropertyCandidateName(method);
