@@ -1,38 +1,26 @@
 package org.smartbit4all.ui.vaadin.components.binder;
 
-import java.lang.reflect.Method;
+import java.util.function.Consumer;
 import org.smartbit4all.ui.common.filter.AbstractUIState;
 import com.vaadin.flow.component.button.Button;
 
-public class VaadinButtonBinder {
+public class VaadinButtonBinder<S extends AbstractUIState> {
 
   protected Button button;
 
-  protected AbstractUIState uiState;
+  protected S uiState;
 
-  protected String opertation;
+  protected Consumer<S> function;
 
-  public VaadinButtonBinder(Button button, AbstractUIState uiState, String opertation) {
-    super();
+  public VaadinButtonBinder(Button button, S uiState, Consumer<S> function) {
     this.button = button;
     this.uiState = uiState;
-    this.opertation = opertation;
-
-    registerComboBoxChangeListener();
+    this.function = function;
+    registerButtonClickListener();
   }
 
-  protected void registerComboBoxChangeListener() {
-    button.addClickListener(event -> callUIState());
-  }
-
-  protected void callUIState() {
-    try {
-      Method method = uiState.getClass().getMethod(opertation);
-      method.invoke(uiState);
-    } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
+  protected void registerButtonClickListener() {
+    button.addClickListener(event -> function.accept(uiState));
   }
 
 }

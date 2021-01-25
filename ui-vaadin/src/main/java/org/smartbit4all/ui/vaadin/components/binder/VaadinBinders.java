@@ -1,6 +1,7 @@
 package org.smartbit4all.ui.vaadin.components.binder;
 
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import org.smartbit4all.ui.common.filter.AbstractUIState;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -11,8 +12,8 @@ import com.vaadin.flow.component.textfield.TextField;
 
 public class VaadinBinders {
 
-  public static void bind(Button button, AbstractUIState uiState, String opertation) {
-    new VaadinButtonBinder(button, uiState, opertation);
+  public static <S extends AbstractUIState> VaadinButtonBinder bind(Button button, S uiState, Consumer<S> function) {
+    return new VaadinButtonBinder(button, uiState, function);
   }
 
   public static <S extends AbstractUIState> VaadinTextFieldBinder<S> bind(TextField textField,
