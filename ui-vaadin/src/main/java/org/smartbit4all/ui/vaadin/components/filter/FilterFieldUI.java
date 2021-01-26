@@ -72,6 +72,8 @@ public class FilterFieldUI extends FlexLayout implements DragSource<FilterFieldU
 
     btnClose = new Button(" ");
     btnClose.addClassName("close-button");
+    btnClose.setEnabled(false);
+    btnClose.addClickListener(e -> controller.removeFilterField(group.getGroupId(), filterId));
 
 
     header = new FlexLayout();
@@ -151,10 +153,11 @@ public class FilterFieldUI extends FlexLayout implements DragSource<FilterFieldU
 
     setPossibleOperations(uiState.getOperations());
 
-    if (uiState.isCloseable()) {
+    if (uiState.isCloseable() && !btnClose.isEnabled()) {
       btnClose.setText("x");
-      btnClose.addClickListener(e -> controller.removeFilterField(group.getGroupId(), filterId));
-    } else {
+      btnClose.setEnabled(true);
+    } 
+    if(!uiState.isCloseable() && btnClose.isEnabled()){
       btnClose.setText("");
       btnClose.setEnabled(false);
     }
