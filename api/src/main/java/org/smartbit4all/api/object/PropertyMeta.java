@@ -13,6 +13,11 @@ import org.smartbit4all.domain.service.transfer.convert.Converter;
 class PropertyMeta {
 
   /**
+   * The bean meta that contains the given property.
+   */
+  private final BeanMeta beanMeta;
+
+  /**
    * The name calculated by the name of the setter / getter method.
    */
   private final String name;
@@ -40,10 +45,37 @@ class PropertyMeta {
    */
   private final Class<?> type;
 
-  PropertyMeta(String name, Class<?> type) {
+  /**
+   * The kind is by default the {@link PropertyKind#VALUE}. Can be modified later on during the
+   * discovering of the class.
+   */
+  private PropertyKind kind = PropertyKind.VALUE;
+
+  /**
+   * The kind of the property meta.
+   * 
+   * @author Peter Boros
+   */
+  enum PropertyKind {
+    /**
+     * The value a property that holds a value that can be changed as is.
+     */
+    VALUE,
+    /**
+     * The reference is a named reference to another api object.
+     */
+    REFERENCE,
+    /**
+     * The collection is a container of references to other api objects.
+     */
+    COLLECTION
+  }
+
+  PropertyMeta(String name, Class<?> type, BeanMeta beanMeta) {
     super();
     this.name = name;
     this.type = type;
+    this.beanMeta = beanMeta;
   }
 
   public final String getWarning() {
@@ -74,6 +106,14 @@ class PropertyMeta {
     return name;
   }
 
+  public final PropertyKind getKind() {
+    return kind;
+  }
+
+  final void setKind(PropertyKind kind) {
+    this.kind = kind;
+  }
+
   final void appendTo(StringBuilder sb) {
     sb.append(name);
     sb.append(StringConstant.LEFT_PARENTHESIS);
@@ -87,6 +127,23 @@ class PropertyMeta {
     sb.append(ApiObjects.SET);
     sb.append(StringConstant.COLON_SPACE);
     sb.append(setter == null ? StringConstant.MINUS_SIGN : setter.getName());
+  }
+
+  Object getValue(Object object) {
+    if (getter == null) {
+      throw new IllegalArgumentException("Unable to read " +
+          getName() + " property in " + beanMeta.getClazz().getName());
+    }
+    try {
+      return getter.invoke(object);
+    } catch (Exception e) {
+      throw new IllegalArgumentException(
+          getName() + " property can't be retreived in " + beanMeta.getClazz().getName());
+    }
+  }
+
+  public final BeanMeta getBeanMeta() {
+    return beanMeta;
   }
 
 }

@@ -22,20 +22,20 @@ import java.util.UUID;
  * 
  * @author Peter Boros
  */
-public class PropertyChange<P> extends ChangeItem {
+public class PropertyChange extends ChangeItem {
 
   /**
    * The old value of the given property. The old value can be null if we have no idea what was the
    * original value.
    */
-  private final P oldValue;
+  private final Object oldValue;
 
   /**
    * The new value of the property is mandatory.
    */
-  private final P newValue;
+  private Object newValue;
 
-  PropertyChange(UUID parentId, String name, P oldValue, P newValue) {
+  PropertyChange(UUID parentId, String name, Object oldValue, Object newValue) {
     super(parentId, name);
     this.oldValue = oldValue;
     this.newValue = newValue;
@@ -45,15 +45,19 @@ public class PropertyChange<P> extends ChangeItem {
    * The old value of the given property. It's optional because we might have no idea about the old
    * value.
    */
-  public final P getOldValue() {
+  public final Object getOldValue() {
     return oldValue;
   }
 
   /**
    * The new value of the property that is mandatory.
    */
-  public final P getNewValue() {
+  public final Object getNewValue() {
     return newValue;
+  }
+
+  public final void setNewValue(Object newValue) {
+    this.newValue = newValue;
   }
 
 }

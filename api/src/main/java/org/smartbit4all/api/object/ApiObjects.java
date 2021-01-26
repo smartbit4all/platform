@@ -2,9 +2,12 @@ package org.smartbit4all.api.object;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+import org.smartbit4all.api.object.PropertyMeta.PropertyKind;
 import org.smartbit4all.core.utility.ReflectionUtility;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -25,7 +28,17 @@ public class ApiObjects {
     super();
   }
 
-  public static final BeanMeta meta(Class<?> apiClass) throws ExecutionException {
+  /**
+   * The meta descriptor for the given api class.
+   * 
+   * @param apiClass
+   * @param allDomainClasses The related classes are the other bean classes referred by the object
+   *        hierarchy.
+   * @return The BeanMeta descriptor.
+   * @throws ExecutionException
+   */
+  public static final BeanMeta meta(Class<?> apiClass, Map<Class<?>, ApiBeanDescriptor> descriptors)
+      throws ExecutionException {
     return cache.get(apiClass, new Callable<BeanMeta>() {
 
       @Override
@@ -39,7 +52,7 @@ public class ApiObjects {
         for (Method method : methods) {
           // We assume only the get / set methods.
           if (method.getName().startsWith(GET) || method.getName().startsWith(SET)) {
-            processMethod(meta, method);
+            processMethod(meta, method, descriptors.get(apiClass));
           }
         }
         return meta;
@@ -48,7 +61,8 @@ public class ApiObjects {
     });
   }
 
-  private static final void processMethod(BeanMeta meta, Method method) {
+  private static final void processMethod(BeanMeta meta, Method method,
+      ApiBeanDescriptor descriptor) {
     String propertyName;
     propertyName = method.getName().substring(3);
     String propertyKey = propertyName.toUpperCase();
@@ -63,7 +77,7 @@ public class ApiObjects {
     }
     PropertyMeta propertyMeta = meta.getProperties().get(propertyKey);
     if (propertyMeta == null) {
-      propertyMeta = new PropertyMeta(propertyName, propertyType);
+      propertyMeta = new PropertyMeta(propertyName, propertyType, meta);
       meta.getProperties().put(propertyKey, propertyMeta);
     }
     if (isGetter) {
@@ -71,5 +85,22 @@ public class ApiObjects {
     } else {
       propertyMeta.setSetter(method);
     }
+    // We can detect the references and the related collections by the allClasses set. If we have a
+    // property with the type of a bean class.
+    if (descriptor.getAllApiBeanClass().contains(propertyType)) {
+      // In this case it's a direct reference to another api object.
+      propertyMeta.setKind(PropertyKind.REFERENCE);
+    }
+    // We identifies the collection as list of references. In any other cases the list is just a
+    // value that can be set as a list of value at once.
+    if (propertyType.isAssignableFrom(List.class)) {
+      ApiBeanDescriptor apiBeanDescriptor =
+          descriptor.getDetailDescriptors().get(propertyMeta.getName());
+      // If have a list of api object then set collection as kind.
+      if (apiBeanDescriptor != null) {
+        propertyMeta.setKind(PropertyKind.COLLECTION);
+      }
+    }
   }
+
 }

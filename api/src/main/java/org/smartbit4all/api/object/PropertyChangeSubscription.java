@@ -17,15 +17,25 @@ package org.smartbit4all.api.object;
 import java.net.URI;
 import org.smartbit4all.domain.meta.EventSubscription;
 
-public class PropertyChangeSubscription extends EventSubscription<PropertyChange<?>> {
+public class PropertyChangeSubscription extends EventSubscription<PropertyChange> {
 
   private URI parentURI;
 
   private String propertyName;
 
+  /**
+   * The expected type of the property change. The value will be converted
+   */
+  private Class<?> expectedType;
+
   public PropertyChangeSubscription property(URI parentURI, String propertyName) {
     this.parentURI = parentURI;
     this.propertyName = propertyName;
+    return this;
+  }
+
+  public PropertyChangeSubscription as(Class<?> expectedType) {
+    this.expectedType = expectedType;
     return this;
   }
 

@@ -1,8 +1,9 @@
 package org.smartbit4all.api.object;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class SampleBean {
+public class MasterBean {
 
   private String name;
 
@@ -11,6 +12,10 @@ public class SampleBean {
   private List<String> stringList;
 
   private Long readOnlyLong;
+
+  private List<MasterDetailBean> details = new ArrayList<>();
+
+  private ReferredBean referred;
 
   public final String getName() {
     return name;
@@ -38,6 +43,22 @@ public class SampleBean {
 
   public final Long getReadOnlyLong() {
     return readOnlyLong;
+  }
+
+  public final List<MasterDetailBean> getDetails() {
+    return details;
+  }
+
+  public final void setDetails(List<MasterDetailBean> details) {
+    this.details = details;
+  }
+
+  public final ReferredBean getReferred() {
+    return referred;
+  }
+
+  public final void setReferred(ReferredBean referred) {
+    this.referred = referred;
   }
 
 }

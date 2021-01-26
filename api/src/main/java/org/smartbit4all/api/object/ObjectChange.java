@@ -43,7 +43,7 @@ public class ObjectChange {
   /**
    * The changes of the properties.
    */
-  private final List<PropertyChange<?>> properties = new ArrayList<>();
+  private final List<PropertyChange> properties = new ArrayList<>();
 
   /**
    * The changes of the references.
@@ -71,7 +71,7 @@ public class ObjectChange {
     return id;
   }
 
-  public final List<PropertyChange<?>> getProperties() {
+  public final List<PropertyChange> getProperties() {
     return properties;
   }
 
