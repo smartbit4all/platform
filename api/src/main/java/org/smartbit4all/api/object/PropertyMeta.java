@@ -130,15 +130,25 @@ class PropertyMeta {
   }
 
   Object getValue(Object object) {
-    if (getter == null) {
-      throw new IllegalArgumentException("Unable to read " +
-          getName() + " property in " + beanMeta.getClazz().getName());
-    }
     try {
       return getter.invoke(object);
     } catch (Exception e) {
       throw new IllegalArgumentException(
           getName() + " property can't be retreived in " + beanMeta.getClazz().getName());
+    }
+  }
+
+  void setValue(Object object, Object value) {
+    if (setter == null) {
+      throw new IllegalArgumentException("Unable to write read only " +
+          getName() + " property in " + beanMeta.getClazz().getName());
+    }
+    try {
+      setter.invoke(object, value);
+    } catch (Exception e) {
+      throw new IllegalArgumentException(
+          getName() + " property can't be set to " + value + " in "
+              + beanMeta.getClazz().getName());
     }
   }
 

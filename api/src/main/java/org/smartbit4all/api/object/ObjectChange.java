@@ -14,10 +14,8 @@
  ******************************************************************************/
 package org.smartbit4all.api.object;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * The instance change means a new or deleted instance. The modification is not necessary as an
@@ -33,12 +31,12 @@ import java.util.UUID;
  */
 public class ObjectChange {
 
-  /**
-   * The objects have global uri that identifies the api, responsible for the given object.
-   */
-  private final URI objectUri;
+  private final String path;
 
-  private final UUID id;
+  /**
+   * Can be new or modified. The deletion is managed in the modification of the parent context.
+   */
+  private final ChangeState operation;
 
   /**
    * The changes of the properties.
@@ -58,17 +56,13 @@ public class ObjectChange {
   /**
    * @param objectUri
    */
-  ObjectChange(URI objectUri, UUID id) {
-    this.objectUri = objectUri;
-    this.id = id;
+  ObjectChange(String path, ChangeState operation) {
+    this.path = path;
+    this.operation = operation;
   }
 
-  public final URI getObjectUri() {
-    return objectUri;
-  }
-
-  public final UUID getId() {
-    return id;
+  public String getPath() {
+    return path;
   }
 
   public final List<PropertyChange> getProperties() {
@@ -81,6 +75,10 @@ public class ObjectChange {
 
   public final List<CollectionChange> getCollections() {
     return collections;
+  }
+
+  public final ChangeState getOperation() {
+    return operation;
   }
 
 

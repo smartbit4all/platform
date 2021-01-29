@@ -14,8 +14,6 @@
  ******************************************************************************/
 package org.smartbit4all.api.object;
 
-import java.util.UUID;
-
 /**
  * The property change event for the property of an instance. The property change can be primitive
  * type but can be a reference for another object.
@@ -35,8 +33,8 @@ public class PropertyChange extends ChangeItem {
    */
   private Object newValue;
 
-  PropertyChange(UUID parentId, String name, Object oldValue, Object newValue) {
-    super(parentId, name);
+  PropertyChange(String parentPath, String name, Object oldValue, Object newValue) {
+    super(parentPath, name);
     this.oldValue = oldValue;
     this.newValue = newValue;
   }

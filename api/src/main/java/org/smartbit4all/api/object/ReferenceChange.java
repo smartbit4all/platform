@@ -14,8 +14,6 @@
  ******************************************************************************/
 package org.smartbit4all.api.object;
 
-import java.util.UUID;
-
 /**
  * The specific version of property change. In this case we have reference points to another object
  * that is part of the object hierarchy and managed.
@@ -29,8 +27,8 @@ public class ReferenceChange extends ChangeItem {
    */
   private final ObjectChange changedReference;
 
-  ReferenceChange(UUID parentId, String name, ObjectChange changedReference) {
-    super(parentId, name);
+  ReferenceChange(String parentPath, String name, ObjectChange changedReference) {
+    super(parentPath, name);
     this.changedReference = changedReference;
   }
 

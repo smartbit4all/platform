@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 import org.smartbit4all.api.object.PropertyMeta.PropertyKind;
 import org.smartbit4all.core.utility.ReflectionUtility;
 import com.google.common.cache.Cache;
@@ -46,7 +47,8 @@ public class ApiObjects {
         Set<Method> methods = ReflectionUtility.allMethods(apiClass, m -> {
           // We assume the methods with one parameter and void return value or the return value
           // without any parameter.
-          return Modifier.isPublic(m.getModifiers()) && m.getParameterCount() < 2;
+          return Modifier.isPublic(m.getModifiers()) && m.getParameterCount() < 2
+              && !m.getName().equals("getClass");
         });
         BeanMeta meta = new BeanMeta(apiClass);
         for (Method method : methods) {
@@ -55,6 +57,11 @@ public class ApiObjects {
             processMethod(meta, method, descriptors.get(apiClass));
           }
         }
+        // Clean up the invalid properties
+        List<String> invalidPropertyNames =
+            meta.getProperties().values().stream().filter(p -> p.getGetter() == null)
+                .map(PropertyMeta::getName).collect(Collectors.toList());
+        invalidPropertyNames.forEach(meta.getProperties()::remove);
         return meta;
       }
 

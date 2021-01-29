@@ -7,7 +7,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
+import org.smartbit4all.core.utility.StringConstant;
 
 /**
  * The {@link ApiObjectRef}s might have references to other ApiObjects and also can have collections
@@ -22,10 +25,15 @@ import java.util.stream.Collectors;
 public class ApiObjectCollection implements List<ApiObjectRef> {
 
   /**
+   * The path of the given collection.
+   */
+  private final String path;
+
+  /**
    * The {@link ApiObjectRef} of the parent object. It contains the property that is reference of
    * the collection.
    */
-  ApiObjectRef objectRef;
+  final ApiObjectRef objectRef;
 
   /**
    * The property that is reference of the given connection in the parent object.
@@ -40,20 +48,26 @@ public class ApiObjectCollection implements List<ApiObjectRef> {
   /**
    * The list of object references in a specific collection owned by an other {@link ApiObjectRef}.
    */
-  private List<ApiObjectRef> items = new ArrayList<>();
+  private final List<ApiObjectRef> items = new ArrayList<>();
 
   /**
    * The item map to find the reference quickly with the original object.
    */
-  private Map<Object, ApiObjectRef> itemsByObject = new HashMap<>();
+  private final Map<Object, ApiObjectRef> itemsByObject = new HashMap<>();
 
   /**
    * If an object reference is removed from the collection then we remember this till the event
    * rendering.
    */
-  private List<ApiObjectRef> removedObjects = new ArrayList<>();
+  private final List<ApiObjectRef> removedObjects = new ArrayList<>();
 
+  /**
+   * The reference of the original collection in the bean. It can be replace at once and can be
+   * edited item by item.
+   */
   private List originalCollection;
+
+  private AtomicLong sequence = new AtomicLong();
 
   /**
    * Constructs a collection reference that manages the changes of a collection
@@ -65,6 +79,7 @@ public class ApiObjectCollection implements List<ApiObjectRef> {
     super();
     this.objectRef = objectRef;
     this.property = collectionProperty;
+    this.path = objectRef.getPath() + StringConstant.SLASH + collectionProperty.getName();
     build();
   }
 
@@ -79,12 +94,25 @@ public class ApiObjectCollection implements List<ApiObjectRef> {
       for (Object refObject : originalCollection) {
         // TODO What would be the expectation in case of null in the list?
         if (refObject != null) {
-          ApiObjectRef ref = new ApiObjectRef(refObject, null, objectRef.getDescriptors());
+          ApiObjectRef ref = constructObjectRef(refObject);
           addRef(ref);
         }
       }
     }
 
+  }
+
+  /**
+   * Constructs a new item in the list.
+   * 
+   * @param refObject
+   * @return
+   */
+  private final ApiObjectRef constructObjectRef(Object refObject) {
+    ApiObjectRef ref =
+        new ApiObjectRef(path + StringConstant.SLASH + sequence.getAndIncrement(), refObject,
+            objectRef.getDescriptors());
+    return ref;
   }
 
   /**
@@ -138,6 +166,15 @@ public class ApiObjectCollection implements List<ApiObjectRef> {
     addRef(e);
     originalCollection.add(e.getObject());
     return true;
+  }
+
+  public ApiObjectRef addObject(Object o) {
+    if (o != null) {
+      ApiObjectRef itemRef = constructObjectRef(o);
+      add(itemRef);
+      return itemRef;
+    }
+    return null;
   }
 
   @Override
@@ -282,5 +319,29 @@ public class ApiObjectCollection implements List<ApiObjectRef> {
     return items.subList(fromIndex, toIndex);
   }
 
+  /**
+   * If we have a new collection then
+   */
+  final Optional<CollectionChange> renderAndCleanChanges() {
+    CollectionChange result = null;
+    // state == ChangeState.NEW ? new CollectionChange(objectRef.getPath(), property.getName())
+    // : null;
+    for (ApiObjectRef ref : removedObjects) {
+      if (result == null) {
+        result = new CollectionChange(objectRef.getPath(), property.getName());
+      }
+      result.getChanges().add(new ObjectChange(ref.getPath(), ChangeState.DELETED));
+    }
+    for (ApiObjectRef item : items) {
+      Optional<ObjectChange> itemChange = item.renderAndCleanChanges();
+      if (itemChange.isPresent()) {
+        if (result == null) {
+          result = new CollectionChange(objectRef.getPath(), property.getName());
+        }
+        result.getChanges().add(itemChange.get());
+      }
+    }
+    return Optional.ofNullable(result);
+  }
 
 }

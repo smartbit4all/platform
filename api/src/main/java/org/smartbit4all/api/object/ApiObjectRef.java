@@ -14,24 +14,36 @@
  ******************************************************************************/
 package org.smartbit4all.api.object;
 
-import java.lang.reflect.Method;
-import java.net.URI;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.UUID;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
-import java.util.function.BiConsumer;
 import java.util.function.Supplier;
+import org.smartbit4all.api.object.PropertyMeta.PropertyKind;
+import org.smartbit4all.core.utility.StringConstant;
 
 /**
  * The API object reference is a pair for the object participate in an object hierarchy. It refers
  * to the object itself, contains the unique identifier of the object. This identifies the given
  * occurrence not the object itself! The bare reference is not typed. The types version is an
  * extension.
+ * 
+ * The API object has a naming that ensure the uniqueness of the api object elements inside the
+ * {@link ApiObjectRef} hierarchy.
+ * 
+ * The root has an empty path. If we would like to name its properties then they its name is
+ * /myProperty. If it's a reference then we can continue the path with the properties of the
+ * referenced bean like /myReference/refProperty and so on.
+ * 
+ * In case of collection the naming contains the ordinal number also. But the ApiObjectRef of the
+ * collection aren't contain their parent in their path. Because changing the order of the list it
+ * could lead to a changing the identifiers. So it would be hard to identify the subscriptions for
+ * the given object. Therefore we can subscribe to the changes of the collection and independently
+ * we can subscribe to the changes of the given item inside. If we change the object itself then
+ * it's not the change of the collection. But if we modify the collection itself then we can manage
+ * it at higher level. At higher level we can go through the inner object changes if we need. So we
+ * can manage the collections as a complex change also.
  * 
  * TODO There can be a common interface like ApiObject to hide the implementation of the API object
  * itself.
@@ -41,15 +53,14 @@ import java.util.function.Supplier;
 public class ApiObjectRef {
 
   /**
-   * The unique identifier generate at the construction.
+   * The path identifies the object reference inside the namespace. The namespace is an object
+   * hierarchy starting from an object and recursively contains the references path. Using this we
+   * can uniquely name the properties. In case of a collection the collection itself is also a
+   * property of the master hierarchy but every item of the collection starts a new hierarchy with
+   * the same naming. From master level the objects of a collection can be accessed by knowing it's
+   * ordinal number. But it is not necessary!
    */
-  private final UUID id;
-
-  /**
-   * The URI of the object that can be used to identify the referred API object on the publishing
-   * API.
-   */
-  private final URI objectUri;
+  private final String path;
 
   /**
    * The reference of the original object.
@@ -62,27 +73,19 @@ public class ApiObjectRef {
   private final BeanMeta meta;
 
   /**
-   * To reserve the order of changes and to ensure the fast access of the change objects we use this
-   * map.
+   * The properties of the given api object instance. The property name as a key is upper case so we
+   * can search in case insensitive mode.
    */
-  private LinkedHashMap<PropertyMeta, PropertyChange> propertyChanges = new LinkedHashMap<>();
-
-  /**
-   * This is a map about the referenced objects mapped by the property that owns the reference..
-   */
-  private Map<PropertyMeta, ApiObjectRef> references = new HashMap<>();
-
-  /**
-   * To reserve the order of changes and to ensure the fast access of the change objects we use this
-   * map.
-   */
-  private Map<PropertyMeta, ApiObjectCollection> collections = new HashMap<>();
+  private Map<String, PropertyEntry> properties = new HashMap<>();
 
   /**
    * The classes of the domain beans. We need them to be able to identify the Api objects.
    */
   private final ApiBeanDescriptor descriptor;
 
+  /**
+   * The descriptors for the domain includes the given bean.
+   */
   private final Map<Class<?>, ApiBeanDescriptor> descriptors;
 
   /**
@@ -92,24 +95,23 @@ public class ApiObjectRef {
 
   /**
    * Constructs a new api object reference.
-   * 
-   * @param object
-   * @param objectUri
+   *
+   * @param path The path for the current ApiObjectRef instance. The root is an empty path.
+   * @param object The api object managed by the reference.
    * @param allBeanClasses All the bean classes we have in this api domain.
    */
-  ApiObjectRef(Object object, URI objectUri, Map<Class<?>, ApiBeanDescriptor> descriptors) {
+  ApiObjectRef(String path, Object object, Map<Class<?>, ApiBeanDescriptor> descriptors) {
     super();
     this.descriptors = descriptors;
     if (object == null) {
       throw new IllegalArgumentException("The object must be set in an ApiObjectRef");
     }
-    this.id = UUID.randomUUID();
-    this.objectUri = objectUri;
+    this.path = (path == null ? StringConstant.EMPTY : path);
     this.object = object;
     try {
       this.descriptor = descriptors.get(object.getClass());
       meta = ApiObjects.meta(object.getClass(), descriptors);
-      init();
+      init(path);
     } catch (ExecutionException e) {
       throw new IllegalArgumentException(
           "The object can't be processed as bean " + object.getClass(), e);
@@ -119,16 +121,18 @@ public class ApiObjectRef {
   /**
    * Discover the current values of the object to identify the initial set of events.
    */
-  private final void init() {
+  private final void init(String path) {
     for (PropertyMeta propertyMeta : meta.getProperties().values()) {
+      PropertyEntry entry =
+          new PropertyEntry(path, propertyMeta);
+      properties.put(propertyMeta.getName().toUpperCase(), entry);
       switch (propertyMeta.getKind()) {
         case VALUE:
           // If we have a non null value in the given property then we add a property changes from
           // null to new value.
           Object value = propertyMeta.getValue(object);
           if (value != null) {
-            propertyChanges.put(propertyMeta,
-                new PropertyChange(id, propertyMeta.getName(), null, value));
+            entry.setChangedValue(null, value);
           }
           break;
 
@@ -138,8 +142,8 @@ public class ApiObjectRef {
           Object reference = propertyMeta.getValue(object);
           if (reference != null) {
             // Construct the ApiObject reference and save it.
-            ApiObjectRef ref = new ApiObjectRef(reference, null, descriptors);
-            references.put(propertyMeta, ref);
+            ApiObjectRef ref = new ApiObjectRef(entry.getPath(), reference, descriptors);
+            entry.setReference(ref);
           }
 
           break;
@@ -149,7 +153,7 @@ public class ApiObjectRef {
           // construct all the existing object as reference.
           // TODO Later on we can manage other containers but list.
           ApiObjectCollection collection = new ApiObjectCollection(this, propertyMeta);
-          collections.put(propertyMeta, collection);
+          entry.setCollection(collection);
 
           break;
         default:
@@ -158,39 +162,71 @@ public class ApiObjectRef {
     }
   }
 
-  public final UUID getId() {
-    return id;
-  }
 
-  public final URI getObjectUri() {
-    return objectUri;
+  public String getPath() {
+    return path;
   }
 
   public final Object getObject() {
     return object;
   }
 
+  /**
+   * The setValue is the generic value modification function on the {@link ApiObjectRef} interface.
+   * If we set a simple value then the subscribers will be notified with {@link PropertyChange}.
+   * 
+   * If we set a reference as a value then it's must be implemented as a replacement of the current
+   * reference.
+   * 
+   * If we set a collections as an object then we implement this as a compare and apply on the
+   * current collection.
+   * 
+   * @param propertyName
+   * @param value
+   */
   public void setValue(String propertyName, Object value) {
-    PropertyMeta propertyMeta = meta.getProperties().get(propertyName.toUpperCase());
-    if (propertyMeta == null) {
+    PropertyEntry entry = properties.get(propertyName.toUpperCase());
+    if (entry == null) {
       throw new IllegalArgumentException(
           propertyName + " property not found in " + meta.getClazz().getName());
     }
-    Method setter = propertyMeta.getSetter();
-    if (setter == null) {
-      throw new IllegalArgumentException("Unable to set read only " +
-          propertyName + " property to " + value + " in " + meta.getClazz().getName());
-    }
     try {
-      setter.invoke(object, value);
-      PropertyChange propertyChange = propertyChanges.get(propertyMeta);
-      if (propertyChange == null) {
-        // We create a new change.
-        propertyChange = new PropertyChange(id, propertyName, null, value);
-        propertyChanges.put(propertyMeta, propertyChange);
-      } else {
-        // We append the change.
-        propertyChange.setNewValue(value);
+      switch (entry.getMeta().getKind()) {
+        case VALUE:
+          entry.setChangedValue(entry.getMeta().getValue(object), value);
+          // At last we set the value
+          entry.getMeta().setValue(object, value);
+
+          break;
+
+        case REFERENCE:
+          // If the reference is not the same then we assume it as a brand new object. We build it
+          // again.
+          if (entry.getReference() == null && value != null) {
+            // We setup a new reference from scratch.
+            ApiObjectRef newRef = new ApiObjectRef(entry.getPath(), value, descriptors);
+            entry.setReference(newRef);
+          } else {
+            // TODO Manage the deletion of a reference.
+          }
+          break;
+
+        case COLLECTION:
+          ApiObjectCollection collection = entry.getCollection();
+          collection.clear();
+          @SuppressWarnings("unchecked")
+          Collection<Object> values = (Collection<Object>) value;
+          if (values != null) {
+            for (Object myValue : values) {
+              ApiObjectRef valueRef = new ApiObjectRef(null, myValue, descriptors);
+              collection.add(valueRef);
+            }
+          }
+
+          break;
+
+        default:
+          break;
       }
     } catch (Exception e) {
       throw new IllegalArgumentException(
@@ -198,25 +234,43 @@ public class ApiObjectRef {
     }
   }
 
+  /**
+   * In case of {@link PropertyKind#VALUE} we get the value itself. But if it's a
+   * {@link PropertyKind#REFERENCE} or a {@link PropertyKind#COLLECTION} we get back the
+   * {@link ApiObjectRef} or the {@link ApiObjectCollection}.
+   * 
+   * @param propertyName The name of the property.
+   * @return
+   */
   public Object getValue(String propertyName) {
-    PropertyMeta propertyMeta = meta.getProperties().get(propertyName.toUpperCase());
-    if (propertyMeta == null) {
+    PropertyEntry propertyEntry = properties.get(propertyName.toUpperCase());
+    if (propertyEntry == null) {
       throw new IllegalArgumentException(
           propertyName + " property not found in " + meta.getClazz().getName());
     }
-    return propertyMeta.getValue(object);
+    switch (propertyEntry.getMeta().getKind()) {
+      case VALUE:
+        return propertyEntry.getMeta().getValue(object);
+      case COLLECTION:
+        return propertyEntry.getCollection();
+      case REFERENCE:
+        return propertyEntry.getReference();
+      default:
+        break;
+    }
+    return null;
   }
 
-  @SuppressWarnings("unchecked")
-  public <O, T> void setValue(BiConsumer<O, T> setter, T value) {
-    try {
-      setter.accept(((O) object), value);
-    } catch (Exception e) {
-      throw new IllegalArgumentException(
-          setter.getClass() + " property is not set to " + value + " in "
-              + meta.getClazz().getName());
-    }
-  }
+  // @SuppressWarnings("unchecked")
+  // public <O, T> void setValue(BiConsumer<O, T> setter, T value) {
+  // try {
+  // setter.accept(((O) object), value);
+  // } catch (Exception e) {
+  // throw new IllegalArgumentException(
+  // setter.getClass() + " property is not set to " + value + " in "
+  // + meta.getClazz().getName());
+  // }
+  // }
 
 
   public <T> T getValue(Supplier<T> getter) {
@@ -239,25 +293,69 @@ public class ApiObjectRef {
     return descriptors;
   }
 
-  public final List<ChangeItem> renderAndCleanChanges() {
-    List<ChangeItem> result = new ArrayList<>();
-    renderAndCleanChangesReq(null, "root", result);
-    return result;
-  }
-
-  final void renderAndCleanChangesReq(UUID parentId, String name, List<ChangeItem> result) {
-    if (currentState != ChangeState.NOP) {
-      // In this case we start with a new or modified reference.
-      result.add(new ReferenceChange(null, "root", new ObjectChange(null, id)));
+  /**
+   * Constructs the changes by the current modification state and clear the modification states. The
+   * {@link ApiObjectRef} is a specific wrapper around the api objects that provides a modification
+   * api with collecting the changes. After a transaction we can get back changes. All the modified
+   * root objects will produce one ObjectChange. If we have a simple referential hierarchy then we
+   * will have one change item. But if we have collections then all the modified items will produce
+   * one individual {@link ObjectChange}. The path of the root is empty but the path of the
+   * collections will contains the path of the property that holds the collection itself. Plus a
+   * uniquely generated identifier (a simple number) that can be used in the subscription mechanism
+   * as unique identifier.
+   * 
+   * @return The {@link ObjectChange} in the order of hierarchy traversal. We will find first the
+   *         changes of the context object and later we will find the item changes of the inner
+   *         collections.
+   */
+  public final Optional<ObjectChange> renderAndCleanChanges() {
+    ObjectChange result = null;
+    if (currentState == ChangeState.NEW) {
+      // In this case we have a change on the object. The modified comes from the modification of
+      // the properties.
+      result = new ObjectChange(path, ChangeState.NEW);
       currentState = ChangeState.NOP;
     }
-    result.addAll(propertyChanges.values());
-    propertyChanges.clear();
-    // Find the modified references.
-    for (Entry<PropertyMeta, ApiObjectRef> referenceEntry : references.entrySet()) {
-      referenceEntry.getValue().renderAndCleanChangesReq(id, referenceEntry.getKey().getName(),
-          result);
+    for (PropertyEntry entry : properties.values()) {
+      switch (entry.getMeta().getKind()) {
+        case VALUE:
+          if (entry.getValueChange() != null) {
+            if (result == null) {
+              result = new ObjectChange(path, ChangeState.MODIFIED);
+            }
+            result.getProperties().add(entry.getValueChange());
+            entry.clearValueChange();
+          }
+          break;
+        case COLLECTION:
+          Optional<CollectionChange> collectionChange =
+              entry.getCollection().renderAndCleanChanges();
+          if (collectionChange.isPresent()) {
+            if (result == null) {
+              result = new ObjectChange(path, ChangeState.MODIFIED);
+            }
+            result.getCollections()
+                .add(collectionChange.get());
+          }
+          break;
+        case REFERENCE:
+          if (entry.getReference() != null) {
+            Optional<ObjectChange> refChange = entry.getReference().renderAndCleanChanges();
+            if (refChange.isPresent()) {
+              if (result == null) {
+                result = new ObjectChange(path, ChangeState.MODIFIED);
+              }
+              result.getReferences()
+                  .add(new ReferenceChange(path, entry.getMeta().getName(), refChange.get()));
+            }
+          }
+          break;
+
+        default:
+          break;
+      }
     }
+    return Optional.ofNullable(result);
   }
 
 }
