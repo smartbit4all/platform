@@ -268,6 +268,7 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
    */
   @Override
   public final SQLStatementBuilderIF append(BooleanOperator booleanOperator) {
+    b.append(StringConstant.SPACE);
     b.append(booleanOperator.toString());
     return this;
   }
@@ -700,6 +701,7 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
 
     append(result, expression.getOp());
 
+    b.append(StringConstant.SPACE);
     if (expression.isNegate()) {
       b.append(SQLConstant.ISNOTNULL);
     } else {
@@ -989,7 +991,6 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
   public void preProcessWhere() {
     b.append(SQLConstant.SEGMENTSEPARATOR);
     b.append(SQLConstant.WHERE);
-    b.append(SQLConstant.SEGMENTSEPARATOR);
   }
   
   @Override
@@ -1005,7 +1006,7 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
         default:
           break;
       }
-    }    
+    }
   }
 
   @Override
