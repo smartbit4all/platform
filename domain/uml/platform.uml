@@ -17,6 +17,7 @@
       <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_dncjwKsPEeqI-_Il1SnNWw" name="CodeIdentifier"/>
       <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_VCEM4KsQEeqI-_Il1SnNWw" name="StringIdentifier"/>
       <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_-oX34Bm5EeuxK5qlWk_M0A" name="StringData"/>
+      <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_uhFJgGPOEeuafYkI7xKV0Q" name="URI"/>
     </packagedElement>
     <packagedElement xmi:type="uml:Package" xmi:id="_Ct5swLEVEeqF9Zc6twRobA" name="Architecture">
       <packagedElement xmi:type="uml:Component" xmi:id="_OtcA4LEVEeqF9Zc6twRobA" name="Platform module 1">
@@ -61,6 +62,47 @@
         </packagedElement>
       </packagedElement>
     </packagedElement>
+    <packagedElement xmi:type="uml:Package" xmi:id="_WhGiUGPOEeuafYkI7xKV0Q" name="Platform API">
+      <packagedElement xmi:type="uml:Package" xmi:id="_YjqP8GPOEeuafYkI7xKV0Q" name="Filter API">
+        <packagedElement xmi:type="uml:Interface" xmi:id="_SHzKUGPPEeuafYkI7xKV0Q" name="FilterField">
+          <ownedAttribute xmi:type="uml:Property" xmi:id="_vQ6OgGPPEeuafYkI7xKV0Q" name="propertyUri1" visibility="public" type="_uhFJgGPOEeuafYkI7xKV0Q"/>
+          <ownedAttribute xmi:type="uml:Property" xmi:id="_0EBYMGPPEeuafYkI7xKV0Q" name="propertyUri2" visibility="public" type="_uhFJgGPOEeuafYkI7xKV0Q"/>
+          <ownedAttribute xmi:type="uml:Property" xmi:id="__9hVwGPPEeuafYkI7xKV0Q" name="operationCode" visibility="public"/>
+          <ownedAttribute xmi:type="uml:Property" xmi:id="_CVeEkGPQEeuafYkI7xKV0Q" name="value1" visibility="public" type="_e4sp8GPPEeuafYkI7xKV0Q"/>
+          <ownedAttribute xmi:type="uml:Property" xmi:id="_E_RYYGPQEeuafYkI7xKV0Q" name="value2" visibility="public" type="_e4sp8GPPEeuafYkI7xKV0Q"/>
+          <ownedAttribute xmi:type="uml:Property" xmi:id="_FEOw4GPQEeuafYkI7xKV0Q" name="value3" visibility="public" type="_e4sp8GPPEeuafYkI7xKV0Q"/>
+          <ownedAttribute xmi:type="uml:Property" xmi:id="_JFUnwGPQEeuafYkI7xKV0Q" name="selectedValues" visibility="public" type="_uhFJgGPOEeuafYkI7xKV0Q">
+            <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_KPnQoGPQEeuafYkI7xKV0Q"/>
+            <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_KPxBoGPQEeuafYkI7xKV0Q" value="*"/>
+          </ownedAttribute>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Interface" xmi:id="_T2uxUGPPEeuafYkI7xKV0Q" name="FilterGroup">
+          <ownedAttribute xmi:type="uml:Property" xmi:id="_UfMqEGPQEeuafYkI7xKV0Q" name="name" visibility="public" type="_-oX34Bm5EeuxK5qlWk_M0A"/>
+          <ownedAttribute xmi:type="uml:Property" xmi:id="_YvdlYGPQEeuafYkI7xKV0Q" name="type" visibility="public" type="_gpq4UGPPEeuafYkI7xKV0Q"/>
+          <ownedAttribute xmi:type="uml:Property" xmi:id="_aBf1AGPQEeuafYkI7xKV0Q" name="filterFields" visibility="public" type="_SHzKUGPPEeuafYkI7xKV0Q">
+            <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_cdmEAGPQEeuafYkI7xKV0Q"/>
+            <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_cJAUEGPQEeuafYkI7xKV0Q" value="*"/>
+          </ownedAttribute>
+          <ownedAttribute xmi:type="uml:Property" xmi:id="_fN954GPQEeuafYkI7xKV0Q" name="filterGroups" visibility="public" type="_T2uxUGPPEeuafYkI7xKV0Q"/>
+          <ownedAttribute xmi:type="uml:Property" xmi:id="_i3gzcGPQEeuafYkI7xKV0Q" name="isNegated" visibility="public" type="_arzSAKsPEeqI-_Il1SnNWw"/>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Interface" xmi:id="_e4sp8GPPEeuafYkI7xKV0Q" name="FilterOperandValue">
+          <ownedAttribute xmi:type="uml:Property" xmi:id="_Oj5wUGPQEeuafYkI7xKV0Q" name="type" visibility="public" type="_-oX34Bm5EeuxK5qlWk_M0A"/>
+          <ownedAttribute xmi:type="uml:Property" xmi:id="_QLjDkGPQEeuafYkI7xKV0Q" name="value" visibility="public" type="_-oX34Bm5EeuxK5qlWk_M0A"/>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Enumeration" xmi:id="_gpq4UGPPEeuafYkI7xKV0Q" name="FilterGroupType">
+          <ownedLiteral xmi:type="uml:EnumerationLiteral" xmi:id="_ix7lUGPPEeuafYkI7xKV0Q" name="AND"/>
+          <ownedLiteral xmi:type="uml:EnumerationLiteral" xmi:id="_kG2J0GPPEeuafYkI7xKV0Q" name="OR"/>
+        </packagedElement>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Package" xmi:id="_Z35fAGPOEeuafYkI7xKV0Q" name="Value API">
+        <packagedElement xmi:type="uml:Interface" xmi:id="_kFsIsGPOEeuafYkI7xKV0Q" name="Value">
+          <ownedAttribute xmi:type="uml:Property" xmi:id="_l1Zy0GPOEeuafYkI7xKV0Q" name="objectUri" visibility="public" type="_uhFJgGPOEeuafYkI7xKV0Q"/>
+          <ownedAttribute xmi:type="uml:Property" xmi:id="_HOMjgGPPEeuafYkI7xKV0Q" name="displayValue" visibility="public" type="_-oX34Bm5EeuxK5qlWk_M0A"/>
+          <ownedAttribute xmi:type="uml:Property" xmi:id="_OxYBEGPPEeuafYkI7xKV0Q" name="iconCode" visibility="public" type="_-oX34Bm5EeuxK5qlWk_M0A"/>
+        </packagedElement>
+      </packagedElement>
+    </packagedElement>
     <profileApplication xmi:type="uml:ProfileApplication" xmi:id="_gzSvYAlvEeuTwZds3fdDqg">
       <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_gzVLoAlvEeuTwZds3fdDqg" source="http://www.eclipse.org/uml2/2.0.0/UML">
         <references xmi:type="ecore:EPackage" href="http://www.smartbit4all.org/SB4UMLProfile#/"/>
@@ -79,4 +121,5 @@
   <SB4UMLProfile:EntityDataType xmi:id="_N4LYABm8Eeu8s7Q_MLF6vA" javaType="String" sqlType="VARCHAR2(250)" base_DataType="_aryq8KsPEeqI-_Il1SnNWw" yamlType="string"/>
   <SB4UMLProfile:EntityDataType xmi:id="_TspRABm8Eeu8s7Q_MLF6vA" javaType="String" sqlType="VARCHAR2(2000)" base_DataType="_arnEwKsPEeqI-_Il1SnNWw" yamlType="string"/>
   <SB4UMLProfile:EntityDataType xmi:id="_53MZEDLtEeuAtIx1FYKDkg" javaType="String" sqlType="VARCHAR2(25)" base_DataType="_dncjwKsPEeqI-_Il1SnNWw" yamlType="string"/>
+  <SB4UMLProfile:EntityDataType xmi:id="_zxwY8GPOEeuafYkI7xKV0Q" javaType="URI" sqlType="VARCHAR2(250)" javaImport="java.net.URI" base_DataType="_uhFJgGPOEeuafYkI7xKV0Q" yamlType="string" yamlFormat="uri"/>
 </xmi:XMI>
