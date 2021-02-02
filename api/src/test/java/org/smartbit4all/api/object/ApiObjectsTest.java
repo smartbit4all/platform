@@ -1,6 +1,5 @@
 package org.smartbit4all.api.object;
 
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
@@ -12,8 +11,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.core.utility.StringConstant;
-import org.springframework.cglib.proxy.Enhancer;
-import org.springframework.cglib.proxy.InvocationHandler;
 
 class ApiObjectsTest {
 
@@ -68,20 +65,6 @@ class ApiObjectsTest {
 
     ApiObjectRef bean1Ref =
         new ApiObjectRef(null, bean1, descriptors);
-
-    Enhancer enhancer = new Enhancer();
-    enhancer.setSuperclass(MasterBean.class);
-    enhancer.setCallback(new InvocationHandler() {
-
-      @Override
-      public Object invoke(Object arg0, Method arg1, Object[] arg2) throws Throwable {
-        System.out.println("alma");
-        return null;
-      }
-    });
-
-    MasterBean bean1Proxy = (MasterBean) enhancer.create();
-    bean1Proxy.setName("test");
 
     bean1Ref.setValue("name", "myName");
     bean1Ref.setValue("Counter", 1);
@@ -174,6 +157,32 @@ class ApiObjectsTest {
 
     Assertions.assertEquals(changesText1, changesText2);
 
+  }
+
+  /**
+   * The Bean is already filled with data we check the events.
+   */
+  @Test
+  void testModificationWithWrapper() {
+    // Setup the bean before the managing phase with ApiObjectRef. All the preset properties will
+    // appear in the events.
+    MasterBean bean1 = new MasterBean();
+
+    ApiObjectRef bean1Ref =
+        new ApiObjectRef(null, bean1, descriptors);
+
+    MasterBean beanWrapper1 = bean1Ref.getWrapper(MasterBean.class);
+
+    beanWrapper1.setCounter(1);
+    beanWrapper1.setName("name by wrapper");
+
+    Optional<ObjectChange> objectChange1 = bean1Ref.renderAndCleanChanges();
+
+    Assertions.assertTrue(objectChange1.isPresent());
+
+    String br = StringConstant.NEW_LINE;
+    String changesText1 = objectChange1.get().toString();
+    System.out.println("testModificationWithWrapper - Changes1:" + br + changesText1);
 
   }
 

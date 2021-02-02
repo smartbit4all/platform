@@ -4,11 +4,11 @@ public class MasterDetailBean {
 
   private String detailName;
 
-  public final String getDetailName() {
+  public String getDetailName() {
     return detailName;
   }
 
-  public final void setDetailName(String detailName) {
+  public void setDetailName(String detailName) {
     this.detailName = detailName;
   }
 

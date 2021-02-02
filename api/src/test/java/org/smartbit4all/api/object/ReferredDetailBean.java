@@ -4,11 +4,11 @@ public class ReferredDetailBean {
 
   private String name;
 
-  public final String getName() {
+  public String getName() {
     return name;
   }
 
-  public final void setName(String name) {
+  public void setName(String name) {
     this.name = name;
   }
 

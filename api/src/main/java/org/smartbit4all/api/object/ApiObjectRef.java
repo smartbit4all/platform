@@ -14,6 +14,7 @@
  ******************************************************************************/
 package org.smartbit4all.api.object;
 
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +23,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
 import org.smartbit4all.api.object.PropertyMeta.PropertyKind;
 import org.smartbit4all.core.utility.StringConstant;
+import org.springframework.cglib.proxy.Enhancer;
+import org.springframework.cglib.proxy.InvocationHandler;
 
 /**
  * The API object reference is a pair for the object participate in an object hierarchy. It refers
@@ -79,6 +82,11 @@ public class ApiObjectRef {
   private Map<String, PropertyEntry> properties = new HashMap<>();
 
   /**
+   * The property entries can be accessed in an optimized way by the method reference.
+   */
+  private Map<Method, PropertyEntry> propertiesByMethod = new HashMap<>();
+
+  /**
    * The classes of the domain beans. We need them to be able to identify the Api objects.
    */
   private final ApiBeanDescriptor descriptor;
@@ -126,6 +134,10 @@ public class ApiObjectRef {
       PropertyEntry entry =
           new PropertyEntry(path, propertyMeta);
       properties.put(propertyMeta.getName().toUpperCase(), entry);
+      propertiesByMethod.put(propertyMeta.getGetter(), entry);
+      if (propertyMeta.getSetter() != null) {
+        propertiesByMethod.put(propertyMeta.getSetter(), entry);
+      }
       switch (propertyMeta.getKind()) {
         case VALUE:
           // If we have a non null value in the given property then we add a property changes from
@@ -190,6 +202,11 @@ public class ApiObjectRef {
       throw new IllegalArgumentException(
           propertyName + " property not found in " + meta.getClazz().getName());
     }
+    setValueInner(value, entry);
+  }
+
+  private void setValueInner(Object value, PropertyEntry entry) {
+    String propertyName = entry.getMeta().getName();
     try {
       switch (entry.getMeta().getKind()) {
         case VALUE:
@@ -356,6 +373,31 @@ public class ApiObjectRef {
       }
     }
     return Optional.ofNullable(result);
+  }
+
+  @SuppressWarnings("unchecked")
+  public <T> T getWrapper(Class<T> beanClass) {
+    Enhancer enhancer = new Enhancer();
+    enhancer.setSuperclass(beanClass);
+    enhancer.setCallback(new InvocationHandler() {
+
+      @Override
+      public Object invoke(Object arg0, Method arg1, Object[] arg2) throws Throwable {
+        PropertyEntry propertyEntry = propertiesByMethod.get(arg1);
+        if (propertyEntry != null) {
+          if (arg1.equals(propertyEntry.getMeta().getGetter())) {
+            // TODO Return Enhancer in case of reference or collection.
+            return arg1.invoke(object, arg2);
+          } else if (arg1.equals(propertyEntry.getMeta().getSetter())) {
+            setValueInner(arg2[0], propertyEntry);
+            return null;
+          }
+        }
+        return arg1.invoke(object, arg2);
+      }
+    });
+
+    return (T) enhancer.create();
   }
 
 }

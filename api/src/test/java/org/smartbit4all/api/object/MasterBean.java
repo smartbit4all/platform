@@ -17,47 +17,47 @@ public class MasterBean {
 
   private ReferredBean referred;
 
-  public final String getName() {
+  public String getName() {
     return name;
   }
 
-  public final void setName(String name) {
+  public void setName(String name) {
     this.name = name;
   }
 
-  public final long getCounter() {
+  public long getCounter() {
     return counter;
   }
 
-  public final void setCounter(long counter) {
+  public void setCounter(long counter) {
     this.counter = counter;
   }
 
-  public final List<String> getStringList() {
+  public List<String> getStringList() {
     return stringList;
   }
 
-  public final void setStringList(List<String> stringList) {
+  public void setStringList(List<String> stringList) {
     this.stringList = stringList;
   }
 
-  public final Long getReadOnlyLong() {
+  public Long getReadOnlyLong() {
     return readOnlyLong;
   }
 
-  public final List<MasterDetailBean> getDetails() {
+  public List<MasterDetailBean> getDetails() {
     return details;
   }
 
-  public final void setDetails(List<MasterDetailBean> details) {
+  public void setDetails(List<MasterDetailBean> details) {
     this.details = details;
   }
 
-  public final ReferredBean getReferred() {
+  public ReferredBean getReferred() {
     return referred;
   }
 
-  public final void setReferred(ReferredBean referred) {
+  public void setReferred(ReferredBean referred) {
     this.referred = referred;
   }
 
