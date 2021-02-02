@@ -16,6 +16,7 @@ package org.smartbit4all.api.object;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.smartbit4all.core.utility.StringConstant;
 
 /**
  * The instance change means a new or deleted instance. The modification is not necessary as an
@@ -81,6 +82,24 @@ public class ObjectChange {
     return operation;
   }
 
-
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append(operation);
+    // The toString() of the property changes in alphabetic order.
+    properties.stream().sorted((i1, i2) -> i1.getName().compareTo(i2.getName())).forEach(i -> {
+      sb.append(StringConstant.NEW_LINE);
+      sb.append(i.toString());
+    });
+    references.stream().sorted((i1, i2) -> i1.getName().compareTo(i2.getName())).forEach(i -> {
+      sb.append(StringConstant.NEW_LINE);
+      sb.append(i.toString());
+    });
+    collections.stream().sorted((i1, i2) -> i1.getName().compareTo(i2.getName())).forEach(i -> {
+      sb.append(StringConstant.NEW_LINE);
+      sb.append(i.toString());
+    });
+    return sb.toString();
+  }
 
 }

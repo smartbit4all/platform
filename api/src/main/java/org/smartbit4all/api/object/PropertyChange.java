@@ -14,6 +14,8 @@
  ******************************************************************************/
 package org.smartbit4all.api.object;
 
+import org.smartbit4all.core.utility.StringConstant;
+
 /**
  * The property change event for the property of an instance. The property change can be primitive
  * type but can be a reference for another object.
@@ -56,6 +58,12 @@ public class PropertyChange extends ChangeItem {
 
   public final void setNewValue(Object newValue) {
     this.newValue = newValue;
+  }
+
+  @Override
+  public String toString() {
+    return name + StringConstant.COLON_SPACE + StringConstant.LEFT_PARENTHESIS + oldValue
+        + StringConstant.ARROW + newValue + StringConstant.RIGHT_PARENTHESIS;
   }
 
 }

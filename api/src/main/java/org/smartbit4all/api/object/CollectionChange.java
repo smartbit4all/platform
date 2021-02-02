@@ -16,6 +16,7 @@ package org.smartbit4all.api.object;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.smartbit4all.core.utility.StringConstant;
 
 /**
  * The change of a collection with instance changes inside.
@@ -24,6 +25,8 @@ import java.util.List;
  */
 public class CollectionChange extends ChangeItem {
 
+  private static final String ITEM = "item";
+  private static final String COLLECTION = "collection";
   /**
    * The instance changes for the given collection. New and deleted items will be included.
    */
@@ -40,6 +43,23 @@ public class CollectionChange extends ChangeItem {
    */
   public final List<ObjectChange> getChanges() {
     return changes;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append(name);
+    sb.append(StringConstant.DOT);
+    sb.append(COLLECTION);
+    sb.append(StringConstant.COLON);
+    changes.forEach(c -> {
+      sb.append(StringConstant.NEW_LINE).append(name).append(StringConstant.DOT).append(ITEM)
+          .append(StringConstant.SPACE_HYPHEN_SPACE).append(StringConstant.LEFT_CURLY)
+          .append(StringConstant.NEW_LINE);
+      sb.append(c.toString()).append(StringConstant.NEW_LINE);
+      sb.append(StringConstant.RIGHT_CURLY);
+    });
+    return sb.toString();
   }
 
 }

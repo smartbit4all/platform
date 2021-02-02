@@ -14,6 +14,8 @@
  ******************************************************************************/
 package org.smartbit4all.api.object;
 
+import org.smartbit4all.core.utility.StringConstant;
+
 /**
  * The specific version of property change. In this case we have reference points to another object
  * that is part of the object hierarchy and managed.
@@ -37,6 +39,12 @@ public class ReferenceChange extends ChangeItem {
    */
   public final ObjectChange getChangedReference() {
     return changedReference;
+  }
+
+  @Override
+  public String toString() {
+    return name + StringConstant.COLON_SPACE + StringConstant.LEFT_CURLY + StringConstant.NEW_LINE
+        + changedReference.toString() + StringConstant.NEW_LINE + StringConstant.RIGHT_CURLY;
   }
 
 }
