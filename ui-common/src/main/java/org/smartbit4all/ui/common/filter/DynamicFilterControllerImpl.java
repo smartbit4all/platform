@@ -265,4 +265,15 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
     }
   }
 
+  @Override
+  public void saveRootGroup(String title, String description) {
+    try {
+      filterApi.saveFilters(title, description, uiState.getRootFilterGroup());
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
+  }
+
 }

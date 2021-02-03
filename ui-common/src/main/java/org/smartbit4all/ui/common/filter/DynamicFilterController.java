@@ -46,4 +46,6 @@ public interface DynamicFilterController
 
   void setSelectorGroupVisible(String filterGroupMetaId, boolean visible);
 
+  void saveRootGroup(String title, String description);
+
 }
