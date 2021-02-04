@@ -48,4 +48,6 @@ public interface DynamicFilterController
 
   void saveRootGroup(String title, String description);
 
+  void loadFilters(FilterGroup filterGroup);
+
 }

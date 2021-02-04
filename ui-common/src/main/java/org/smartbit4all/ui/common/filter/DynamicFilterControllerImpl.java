@@ -276,4 +276,13 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
 
   }
 
+  @Override
+  public void loadFilters(FilterGroup filterGroup) {
+    FilterGroup parentGroup = getRootFilterGroup();
+    parentGroup.addFilterGroupsItem(filterGroup);
+    ui.renderGroup(uiState.rootGroup);
+
+  }
+
+
 }
