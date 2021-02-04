@@ -156,4 +156,8 @@ class PropertyMeta {
     return beanMeta;
   }
 
+  public final Class<?> getType() {
+    return type;
+  }
+
 }

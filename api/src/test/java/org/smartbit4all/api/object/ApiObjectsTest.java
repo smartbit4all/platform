@@ -2,6 +2,7 @@ package org.smartbit4all.api.object;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -176,6 +177,29 @@ class ApiObjectsTest {
     beanWrapper1.setCounter(1);
     beanWrapper1.setName("name by wrapper");
 
+    beanWrapper1.setReferred(new ReferredBean());
+
+    beanWrapper1.getReferred().setName("referred name by wrapper");
+
+    List<ReferredDetailBean> details = beanWrapper1.getReferred().getDetails();
+    {
+      ReferredDetailBean referredDetailBean = new ReferredDetailBean();
+      details.add(referredDetailBean);
+    }
+    {
+      ReferredDetailBean referredDetailBean = new ReferredDetailBean();
+      details.add(referredDetailBean);
+    }
+    {
+      ReferredDetailBean referredDetailBean = new ReferredDetailBean();
+      details.add(referredDetailBean);
+    }
+
+    int number = 1;
+    for (ReferredDetailBean refDetailBean : details) {
+      refDetailBean.setName("referredDetailBean - name " + number++);
+    }
+
     Optional<ObjectChange> objectChange1 = bean1Ref.renderAndCleanChanges();
 
     Assertions.assertTrue(objectChange1.isPresent());
@@ -183,6 +207,29 @@ class ApiObjectsTest {
     String br = StringConstant.NEW_LINE;
     String changesText1 = objectChange1.get().toString();
     System.out.println("testModificationWithWrapper - Changes1:" + br + changesText1);
+
+    String expected = "NEW" + br +
+        "Counter: (null->1)" + br +
+        "Name: (null->name by wrapper)" + br +
+        "Referred: {" + br +
+        "NEW" + br +
+        "Name: (null->referred name by wrapper)" + br +
+        "Details.collection:" + br +
+        "Details.item - {" + br +
+        "NEW" + br +
+        "Name: (null->referredDetailBean - name 1)" + br +
+        "}" + br +
+        "Details.item - {" + br +
+        "NEW" + br +
+        "Name: (null->referredDetailBean - name 2)" + br +
+        "}" + br +
+        "Details.item - {" + br +
+        "NEW" + br +
+        "Name: (null->referredDetailBean - name 3)" + br +
+        "}" + br +
+        "}";
+
+    Assertions.assertEquals(expected, changesText1);
 
   }
 

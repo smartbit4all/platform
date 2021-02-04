@@ -109,10 +109,8 @@ public class ApiObjectCollection implements List<ApiObjectRef> {
    * @return
    */
   private final ApiObjectRef constructObjectRef(Object refObject) {
-    ApiObjectRef ref =
-        new ApiObjectRef(path + StringConstant.SLASH + sequence.getAndIncrement(), refObject,
-            objectRef.getDescriptors());
-    return ref;
+    return new ApiObjectRef(path + StringConstant.SLASH + sequence.getAndIncrement(), refObject,
+        objectRef.getDescriptors());
   }
 
   /**
@@ -138,6 +136,10 @@ public class ApiObjectCollection implements List<ApiObjectRef> {
   @Override
   public boolean contains(Object o) {
     return items.contains(o);
+  }
+
+  public boolean containsObject(Object o) {
+    return originalCollection.contains(o);
   }
 
   @Override
@@ -168,6 +170,12 @@ public class ApiObjectCollection implements List<ApiObjectRef> {
     return true;
   }
 
+  /**
+   * Add a new object of the original list. It will create the {@link ApiObjectRef}.
+   * 
+   * @param o
+   * @return
+   */
   public ApiObjectRef addObject(Object o) {
     if (o != null) {
       ApiObjectRef itemRef = constructObjectRef(o);
@@ -190,9 +198,30 @@ public class ApiObjectCollection implements List<ApiObjectRef> {
     return true;
   }
 
+  /**
+   * Removes an object by the content of the original collection.
+   * 
+   * @param o
+   * @return
+   */
+  public boolean removeObject(Object o) {
+    ApiObjectRef apiObjectRef = itemsByObject.remove(o);
+    if (apiObjectRef != null) {
+      items.remove(apiObjectRef);
+      removedObjects.add(apiObjectRef);
+      originalCollection.remove(o);
+    }
+    return false;
+  }
+
   @Override
   public boolean containsAll(Collection<?> c) {
     return items.containsAll(c);
+  }
+
+  @SuppressWarnings("unchecked")
+  public boolean containsAllObject(Collection<?> c) {
+    return originalCollection.containsAll(c);
   }
 
   @SuppressWarnings("unchecked")
@@ -272,6 +301,20 @@ public class ApiObjectCollection implements List<ApiObjectRef> {
     return null;
   }
 
+  public ApiObjectRef setObject(int index, Object o) {
+    // Implement as a removal and an insertion at the same time.
+    ApiObjectRef currentRef = items.get(index);
+    if (currentRef != null) {
+      ApiObjectRef element = constructObjectRef(o);
+      element.setCurrentState(ChangeState.NEW);
+      items.set(index, element);
+      removedObjects.add(currentRef);
+      itemsByObject.remove(currentRef.getObject());
+      return currentRef;
+    }
+    return null;
+  }
+
   @SuppressWarnings("unchecked")
   @Override
   public void add(int index, ApiObjectRef element) {
@@ -299,9 +342,17 @@ public class ApiObjectCollection implements List<ApiObjectRef> {
     return items.indexOf(o);
   }
 
+  public int indexOfObject(Object o) {
+    return originalCollection.indexOf(o);
+  }
+
   @Override
   public int lastIndexOf(Object o) {
     return items.lastIndexOf(o);
+  }
+
+  public int lastIndexOfObject(Object o) {
+    return originalCollection.lastIndexOf(o);
   }
 
   @Override
@@ -342,6 +393,27 @@ public class ApiObjectCollection implements List<ApiObjectRef> {
       }
     }
     return Optional.ofNullable(result);
+  }
+
+  /**
+   * The Proxy for the original list.
+   */
+  private ApiObjectListProxy<?> proxy = null;
+
+  /**
+   * Creates and returns a Proxy for a list that hides away the {@link ApiObjectCollection} itself.
+   * We can use this list to add and remove items without knowing that it is an instrumented
+   * {@link ApiObjectCollection} in the background. The Proxy is created for the original list
+   * reference. So if we replace the whole list then the previously retrieved Proxy becomes invalid!
+   * 
+   * @return
+   */
+  @SuppressWarnings("rawtypes")
+  public List<?> getProxy() {
+    if (proxy == null) {
+      proxy = new ApiObjectListProxy(this);
+    }
+    return proxy;
   }
 
 }

@@ -79,12 +79,12 @@ public class ApiObjectRef {
    * The properties of the given api object instance. The property name as a key is upper case so we
    * can search in case insensitive mode.
    */
-  private Map<String, PropertyEntry> properties = new HashMap<>();
+  final Map<String, PropertyEntry> properties = new HashMap<>();
 
   /**
    * The property entries can be accessed in an optimized way by the method reference.
    */
-  private Map<Method, PropertyEntry> propertiesByMethod = new HashMap<>();
+  final Map<Method, PropertyEntry> propertiesByMethod = new HashMap<>();
 
   /**
    * The classes of the domain beans. We need them to be able to identify the Api objects.
@@ -205,7 +205,7 @@ public class ApiObjectRef {
     setValueInner(value, entry);
   }
 
-  private void setValueInner(Object value, PropertyEntry entry) {
+  final void setValueInner(Object value, PropertyEntry entry) {
     String propertyName = entry.getMeta().getName();
     try {
       switch (entry.getMeta().getKind()) {
@@ -226,6 +226,8 @@ public class ApiObjectRef {
           } else {
             // TODO Manage the deletion of a reference.
           }
+          // We set the value as a property at the end.
+          entry.getMeta().setValue(object, value);
           break;
 
         case COLLECTION:
@@ -265,6 +267,10 @@ public class ApiObjectRef {
       throw new IllegalArgumentException(
           propertyName + " property not found in " + meta.getClazz().getName());
     }
+    return getValueInner(propertyEntry);
+  }
+
+  final Object getValueInner(PropertyEntry propertyEntry) {
     switch (propertyEntry.getMeta().getKind()) {
       case VALUE:
         return propertyEntry.getMeta().getValue(object);
@@ -375,29 +381,52 @@ public class ApiObjectRef {
     return Optional.ofNullable(result);
   }
 
+  /**
+   * The wrapper is the single instance of {@link Enhancer} proxy that was created for this
+   * reference.
+   */
+  private Object wrapper = null;
+
+  public Object getWrapper() {
+    return getWrapper(getMeta().getClazz());
+  }
+
   @SuppressWarnings("unchecked")
   public <T> T getWrapper(Class<T> beanClass) {
-    Enhancer enhancer = new Enhancer();
-    enhancer.setSuperclass(beanClass);
-    enhancer.setCallback(new InvocationHandler() {
+    if (wrapper == null) {
 
-      @Override
-      public Object invoke(Object arg0, Method arg1, Object[] arg2) throws Throwable {
-        PropertyEntry propertyEntry = propertiesByMethod.get(arg1);
-        if (propertyEntry != null) {
-          if (arg1.equals(propertyEntry.getMeta().getGetter())) {
-            // TODO Return Enhancer in case of reference or collection.
-            return arg1.invoke(object, arg2);
-          } else if (arg1.equals(propertyEntry.getMeta().getSetter())) {
-            setValueInner(arg2[0], propertyEntry);
-            return null;
+      Enhancer enhancer = new Enhancer();
+      enhancer.setSuperclass(beanClass);
+      enhancer.setCallback(new InvocationHandler() {
+
+        @Override
+        public Object invoke(Object arg0, Method arg1, Object[] arg2) throws Throwable {
+          PropertyEntry propertyEntry = propertiesByMethod.get(arg1);
+          if (propertyEntry != null) {
+            if (arg1.equals(propertyEntry.getMeta().getGetter())) {
+              Object valueInner = getValueInner(propertyEntry);
+              if (valueInner instanceof ApiObjectRef) {
+                return ((ApiObjectRef) valueInner).getWrapper(propertyEntry.getMeta().getType());
+              } else if (valueInner instanceof ApiObjectCollection) {
+                return ((ApiObjectCollection) valueInner).getProxy();
+              }
+              return valueInner;
+            } else if (arg1.equals(propertyEntry.getMeta().getSetter())) {
+              setValueInner(arg2[0], propertyEntry);
+              return null;
+            }
           }
+          return arg1.invoke(object, arg2);
         }
-        return arg1.invoke(object, arg2);
-      }
-    });
+      });
+      wrapper = enhancer.create();
+    }
 
-    return (T) enhancer.create();
+    return (T) wrapper;
+  }
+
+  public final BeanMeta getMeta() {
+    return meta;
   }
 
 }
