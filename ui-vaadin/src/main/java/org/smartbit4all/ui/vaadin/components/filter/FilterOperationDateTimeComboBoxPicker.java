@@ -49,12 +49,12 @@ public class FilterOperationDateTimeComboBoxPicker extends FilterOperationUI {
     cbTimeFilterOption.addValueChangeListener(cbListener());
 
     beginDateTime = new DateTimePicker();
-    LocalDateTime now = LocalDateTime.now();
-    beginDateTime.setMax(now);
+    LocalDateTime todayMidnight = LocalDateTime.now().withHour(23).withMinute(59);
+    beginDateTime.setMax(todayMidnight);
     beginDateTime.addValueChangeListener(dateTimeListener());
 
     endDateTime = new DateTimePicker();
-    endDateTime.setMax(now);
+    endDateTime.setMax(todayMidnight);
     endDateTime.addValueChangeListener(dateTimeListener());
 
     add(cbTimeFilterOption, beginDateTime, endDateTime);
