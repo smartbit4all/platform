@@ -25,11 +25,6 @@ import org.smartbit4all.domain.meta.EventPublisher;
  * We can subscribe with the following configurations:
  * 
  * <ul>
- * <li><b>Object change event - {@link ObjectChange} </b> - We cann't directly subscribe to this
- * event. We can subscribe for a reference change with empty empty context that means the root
- * object instance. An event publisher can have more root objects but in this case we wont define
- * the exact instance. If we subscribe for events of inner objects then we need the context URI
- * where the given reference or collection is defined.</li>
  * <li><b>Property change event - {@link PropertyChange}</b> - We must add a context to define the
  * instance that owns the property. Or we can say that we would like to be notified about the
  * modification of the given property it doesn't matter in which context.</li>

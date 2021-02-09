@@ -202,6 +202,10 @@ class ApiObjectsTest {
 
     Optional<ObjectChange> objectChange1 = bean1Ref.renderAndCleanChanges();
 
+    // ObjectChangePublisherImpl publisher = new ObjectChangePublisherImpl();
+    //
+    // publisher.notify(objectChange1.get());
+
     Assertions.assertTrue(objectChange1.isPresent());
 
     String br = StringConstant.NEW_LINE;

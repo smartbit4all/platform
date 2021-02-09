@@ -14,6 +14,8 @@
  ******************************************************************************/
 package org.smartbit4all.api.object;
 
+import org.smartbit4all.core.utility.StringConstant;
+
 /**
  * The super class of item change events of an object. They can be {@link PropertyChange},
  * {@link ReferenceChange} and {@link CollectionChange} instances.
@@ -68,6 +70,11 @@ public abstract class ChangeItem {
    */
   public final String getName() {
     return name;
+  }
+
+  public final String fullyQualifiedName() {
+    return (parentPath == null || parentPath.isEmpty()) ? name
+        : parentPath + StringConstant.SLASH + name;
   }
 
 }
