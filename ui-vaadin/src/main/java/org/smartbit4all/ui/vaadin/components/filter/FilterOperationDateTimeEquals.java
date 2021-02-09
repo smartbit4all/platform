@@ -20,6 +20,7 @@ import java.util.List;
 import org.smartbit4all.api.filter.DateConverter;
 import org.smartbit4all.api.filter.bean.FilterOperandValue;
 import org.smartbit4all.ui.common.filter.FilterValueChangeListener;
+import org.smartbit4all.ui.vaadin.localization.ComponentLocalizations;
 import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
 import com.vaadin.flow.component.HasValue.ValueChangeListener;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
@@ -37,6 +38,8 @@ public class FilterOperationDateTimeEquals extends FilterOperationUI {
     LocalDateTime now = LocalDateTime.now();
     dateTime.setMax(now);
     dateTime.addValueChangeListener(valueChangeListener());
+    
+    ComponentLocalizations.localize(dateTime);
 
     add(dateTime);
   }

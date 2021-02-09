@@ -22,6 +22,7 @@ import org.smartbit4all.api.filter.DateConverter;
 import org.smartbit4all.api.filter.TimeFilterOption;
 import org.smartbit4all.api.filter.bean.FilterOperandValue;
 import org.smartbit4all.ui.common.filter.FilterValueChangeListener;
+import org.smartbit4all.ui.vaadin.localization.ComponentLocalizations;
 import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
 import com.vaadin.flow.component.HasValue.ValueChangeListener;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -56,6 +57,9 @@ public class FilterOperationDateTimeComboBoxPicker extends FilterOperationUI {
     endDateTime = new DateTimePicker();
     endDateTime.setMax(todayMidnight);
     endDateTime.addValueChangeListener(dateTimeListener());
+    
+    ComponentLocalizations.localize(beginDateTime);
+    ComponentLocalizations.localize(endDateTime);
 
     add(cbTimeFilterOption, beginDateTime, endDateTime);
   }
