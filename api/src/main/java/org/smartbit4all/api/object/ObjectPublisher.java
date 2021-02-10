@@ -49,7 +49,7 @@ import org.smartbit4all.domain.meta.EventPublisher;
  * 
  * @author Peter Boros
  */
-public interface ObjectChangePublisher extends EventPublisher {
+public interface ObjectPublisher extends EventPublisher {
 
   /**
    * The event definition of the properties.

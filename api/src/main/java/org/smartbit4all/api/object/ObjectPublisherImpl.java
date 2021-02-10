@@ -7,13 +7,13 @@ import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.meta.EventListener;
 
 /**
- * The base implementation of the {@link ObjectChangePublisher} interface that can be used in the
+ * The base implementation of the {@link ObjectPublisher} interface that can be used in the
  * Api implementations.
  * 
  * @author Peter Boros
  *
  */
-public class ObjectChangePublisherImpl implements ObjectChangePublisher {
+public class ObjectPublisherImpl implements ObjectPublisher {
 
   /**
    * The listeners by the fully qualified name of the property.
@@ -31,22 +31,22 @@ public class ObjectChangePublisherImpl implements ObjectChangePublisher {
   Map<String, List<EventListener<CollectionChange>>> collectionListeners = new HashMap<>();
 
   public void notify(ObjectChange change) {
-    notifyReq(StringConstant.EMPTY, change);
+    notifyRec(StringConstant.EMPTY, change);
   }
 
-  private final void notifyReq(String path, ObjectChange objectChange) {
+  private final void notifyRec(String path, ObjectChange objectChange) {
     notifyListeners(objectChange.getProperties(), propertyListeners);
     notifyListeners(objectChange.getReferences(), referenceListeners);
     notifyListeners(objectChange.getCollections(), collectionListeners);
     // After manage the changes at the actual level. Let's start recursion on the references and on
     // the collection items.
     for (ReferenceChange referenceChange : objectChange.getReferences()) {
-      notifyReq(referenceChange.fullyQualifiedName(), referenceChange.getChangedReference());
+      notifyRec(referenceChange.fullyQualifiedName(), referenceChange.getChangedReference());
     }
     for (CollectionChange collectionChange : objectChange.getCollections()) {
       for (ObjectChange collectionItem : collectionChange.getChanges()) {
         if (collectionItem.getOperation() != ChangeState.DELETED) {
-          notifyReq(collectionChange.fullyQualifiedName(), collectionItem);
+          notifyRec(collectionChange.fullyQualifiedName(), collectionItem);
         }
       }
     }

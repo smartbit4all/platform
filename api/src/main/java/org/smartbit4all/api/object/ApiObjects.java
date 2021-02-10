@@ -13,7 +13,12 @@ import org.smartbit4all.core.utility.ReflectionUtility;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
-public class ApiObjects {
+/**
+ * The APi object reflection utility.
+ * 
+ * @author Peter Boros
+ */
+class ApiObjects {
 
   static final String SET = "set";
   static final String GET = "get";
