@@ -35,6 +35,6 @@ public @interface OwnProperty {
   /**
    * The name as the property is stored in the database
    */
-  String columnName();
+  String columnName() default "";
   
 }
