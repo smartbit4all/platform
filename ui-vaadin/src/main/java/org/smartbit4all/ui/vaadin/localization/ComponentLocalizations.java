@@ -17,6 +17,8 @@ import com.vaadin.flow.i18n.I18NProvider;
 @Component
 public class ComponentLocalizations {
 
+  private static final Locale DEFAULT_LOCALE = new Locale("en");
+
   private static final Logger log = LoggerFactory.getLogger(ComponentLocalizations.class);
 
   private static ComponentLocalizations INSTANCE;
@@ -62,58 +64,63 @@ public class ComponentLocalizations {
   }
 
   /**
-   * Sets the localization string to the given {@link DatePicker} based on the current Locale 
+   * Sets the localization string to the given {@link DatePicker} based on the current Locale
+   * 
    * @param datePicker
    */
   public static void localize(DatePicker datePicker) {
-    if (!checkInstance()) {
-      return;
-    }
-    ComponentLocalizer componentLocalizer = getLocalizer();
-    componentLocalizer.localize(datePicker);
+    getLocalizer().ifPresent(localizer -> localizer.localize(datePicker));
   }
 
   /**
-   * Sets the localization string to the given {@link DateTimePicker} based on the current Locale 
+   * Sets the localization string to the given {@link DateTimePicker} based on the current Locale
+   * 
    * @param dateTimePicker
    */
   public static void localize(DateTimePicker dateTimePicker) {
-    if (!checkInstance()) {
-      return;
-    }
-    ComponentLocalizer componentLocalizer = getLocalizer();
-    componentLocalizer.localize(dateTimePicker);
+    getLocalizer().ifPresent(localizer -> localizer.localize(dateTimePicker));
   }
 
   /**
-   * Sets the localization string to the given {@link Upload} based on the current Locale 
+   * Sets the localization string to the given {@link Upload} based on the current Locale
+   * 
    * @param upload
    */
   public static void localize(Upload upload) {
-    if (!checkInstance()) {
-      return;
-    }
-    ComponentLocalizer componentLocalizer = getLocalizer();
-    componentLocalizer.localize(upload);
+    getLocalizer().ifPresent(localizer -> localizer.localize(upload));
   }
 
-  private static ComponentLocalizer getLocalizer() {
+  private static Optional<ComponentLocalizer> getLocalizer() {
+    if (!isInstancePresent()) {
+      return Optional.empty();
+    }
+    Locale locale = getLocale();
+    if (isDefaultLocale(locale)) {
+      return Optional.empty();
+    }
     if (INSTANCE.localizersByLocale.isEmpty()) {
       throw new IllegalStateException("There is no ComponentLocalizer object registered!");
     }
-    ComponentLocalizer componentLocalizer = INSTANCE.localizersByLocale.get(getLocale());
+    ComponentLocalizer componentLocalizer = INSTANCE.localizersByLocale.get(locale);
     if (componentLocalizer == null) {
       componentLocalizer = INSTANCE.localizersByLocale.values().stream().findFirst().orElse(null);
     }
-    return componentLocalizer;
+    return Optional.of(componentLocalizer);
   }
 
-  private static boolean checkInstance() {
+  private static boolean isInstancePresent() {
     if (INSTANCE == null) {
       log.debug("There is no ComponentLocalizationProvider instantiated by the framework!");
       return false;
     }
     return true;
+  }
+
+  private static boolean isDefaultLocale(Locale locale) {
+    if (locale.getLanguage().equals(DEFAULT_LOCALE.getLanguage())) {
+      return true;
+    }
+    return false;
   }
 
 
