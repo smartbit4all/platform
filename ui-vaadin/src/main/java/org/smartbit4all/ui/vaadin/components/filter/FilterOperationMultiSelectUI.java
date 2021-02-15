@@ -23,6 +23,7 @@ import org.smartbit4all.api.filter.bean.FilterOperandValue;
 import org.smartbit4all.api.value.bean.Value;
 import org.smartbit4all.ui.common.filter.FilterSelectionChangeListener;
 import org.smartbit4all.ui.vaadin.components.selector.MultiSelectPopUp;
+import org.springframework.util.StringUtils;
 
 public class FilterOperationMultiSelectUI extends FilterOperationUI {
 
@@ -39,7 +40,11 @@ public class FilterOperationMultiSelectUI extends FilterOperationUI {
     popUp = new MultiSelectPopUp<>();
     popUp.setItems(possibleValues);
     popUp.setRequired(false);
-    // popUp.setFilter(filter); TODO
+    popUp.setFilter((value, filterValue) -> {
+      String displayedValue = value.getDisplayValue();
+      String filter = String.valueOf(filterValue);
+      return StringUtils.startsWithIgnoreCase(displayedValue, filter);
+    }); 
     popUp.setItemDisplayValueProvider(v -> v.getDisplayValue());
 
     popUp.addValueChangeListener(e -> {
