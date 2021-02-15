@@ -17,10 +17,12 @@ package org.smartbit4all.api.object;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import org.smartbit4all.api.object.PropertyMeta.PropertyKind;
 import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.cglib.proxy.Enhancer;
@@ -80,6 +82,11 @@ public class ApiObjectRef {
    * can search in case insensitive mode.
    */
   final Map<String, PropertyEntry> properties = new HashMap<>();
+
+  /**
+   * The list of the properties in alphabetic order.
+   */
+  List<PropertyEntry> propertyList = null;
 
   /**
    * The property entries can be accessed in an optimized way by the method reference.
@@ -427,6 +434,20 @@ public class ApiObjectRef {
 
   public final BeanMeta getMeta() {
     return meta;
+  }
+
+  /**
+   * The list of the properties in alphabetic order.
+   * 
+   * @return
+   */
+  public final List<PropertyEntry> getProperties() {
+    if (propertyList == null) {
+      propertyList = properties.values().stream()
+          .sorted((p1, p2) -> p1.getMeta().getName().compareTo(p2.getMeta().getName()))
+          .collect(Collectors.toList());
+    }
+    return propertyList;
   }
 
 }

@@ -7,6 +7,6 @@ package org.smartbit4all.api.constraint;
  */
 public enum ConstraintEntryScope {
 
-  ITEM, CHILDREN, SUBTREE
+  NOTSET, ITEM, CHILDREN, SUBTREE
 
 }

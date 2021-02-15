@@ -10,7 +10,7 @@ import org.smartbit4all.domain.service.transfer.convert.Converter;
  * 
  * @author Peter Boros
  */
-class PropertyMeta {
+public class PropertyMeta {
 
   /**
    * The bean meta that contains the given property.
@@ -56,7 +56,7 @@ class PropertyMeta {
    * 
    * @author Peter Boros
    */
-  enum PropertyKind {
+  public static enum PropertyKind {
     /**
      * The value a property that holds a value that can be changed as is.
      */

@@ -3,7 +3,9 @@ package org.smartbit4all.api.constraint;
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
+import javax.validation.constraints.NotNull;
 import org.smartbit4all.core.utility.StringConstant;
+import com.google.common.base.Objects;
 
 /**
  * The constraint entry is the item in the constraint hierarchy that defines a constraint and add
@@ -31,12 +33,22 @@ final class ConstraintEntry<C> {
   /**
    * The path that the constraint is related to.
    */
-  private String context;
+  private final String path;
+
+  /**
+   * If we change the scope of the scope of the given entry we save the old value.
+   */
+  private ConstraintEntryScope oldScope;
 
   /**
    * The scope of the given entry.
    */
   private ConstraintEntryScope scope;
+
+  /**
+   * The changed flag is set if the scope is new or modified.
+   */
+  private boolean scopeChanged;
 
   /**
    * If we change the constraint then we save the old value.
@@ -52,43 +64,40 @@ final class ConstraintEntry<C> {
   /**
    * The changed flag is set if the given constraint is new or modified.
    */
-  private boolean changed;
+  private boolean valueChanged;
 
   /**
    * Construct a new entry with parent.
    * 
    * @param parent
-   * @param context
+   * @param name
    * @param scope
    * @param constraint
    */
-  public ConstraintEntry(ConstraintEntry<C> parent, String context,
+  public ConstraintEntry(ConstraintEntry<C> parent, String name,
       ConstraintEntryScope scope, C constraint) {
-    this(context, scope, constraint);
-    this.parentRef = new WeakReference<>(parent);
-    parent.children.put(context, this);
-  }
-
-  /**
-   * Construct a new entry without parent.
-   * 
-   * @param context
-   * @param scope
-   * @param constraint
-   */
-  public ConstraintEntry(String context, ConstraintEntryScope scope, C constraint) {
-    super();
-    this.context = context;
+    if (parent != null) {
+      this.parentRef = new WeakReference<>(parent);
+      parent.children.put(name, this);
+      path = parent.getPath().isEmpty() ? name : parent.getPath() + StringConstant.SLASH + name;
+    } else {
+      this.path = StringConstant.EMPTY;
+    }
     this.scope = scope;
     this.value = constraint;
   }
 
-  public final String getContext() {
-    return context;
-  }
-
-  public final void setContext(String context) {
-    this.context = context;
+  /**
+   * Construct a new entry without parent. It's a root that is {@link ConstraintEntryScope#SUBTREE}
+   * and must have a value to serve as default value for the given constraint.
+   * 
+   * @param constraint
+   */
+  public ConstraintEntry(@NotNull C constraint) {
+    super();
+    this.path = StringConstant.EMPTY;
+    this.scope = ConstraintEntryScope.SUBTREE;
+    this.value = constraint;
   }
 
   public final ConstraintEntryScope getScope() {
@@ -96,6 +105,14 @@ final class ConstraintEntry<C> {
   }
 
   public final void setScope(ConstraintEntryScope scope) {
+    if (!scopeChanged && this.scope != scope) {
+      oldScope = this.scope;
+      scopeChanged = true;
+    }
+    if (scopeChanged && this.scope == scope) {
+      scopeChanged = false;
+      oldScope = null;
+    }
     this.scope = scope;
   }
 
@@ -103,24 +120,17 @@ final class ConstraintEntry<C> {
     return value;
   }
 
-  public final void setValue(C constraint) {
-    this.value = constraint;
-  }
-
-  public final C getOldValue() {
-    return oldValue;
-  }
-
-  public final void setOldValue(C oldValue) {
-    this.oldValue = oldValue;
-  }
-
-  public final boolean isChanged() {
-    return changed;
-  }
-
-  public final void setChanged(boolean changed) {
-    this.changed = changed;
+  public final void setValue(C value) {
+    boolean equal = Objects.equal(this.value, value);
+    if (!valueChanged && !equal) {
+      oldValue = this.value;
+      valueChanged = true;
+    }
+    if (valueChanged && equal) {
+      valueChanged = false;
+      oldValue = null;
+    }
+    this.value = value;
   }
 
   /**
@@ -140,18 +150,83 @@ final class ConstraintEntry<C> {
 
   @Override
   public String toString() {
-    Object valueString = value == null ? StringConstant.SPACE_HYPHEN_SPACE : value;
-    Object oldValueString = oldValue == null ? StringConstant.SPACE_HYPHEN_SPACE : oldValue;
-    return (context == null || context.isEmpty() ? StringConstant.EMPTY
-        : context + StringConstant.SPACE)
-        + StringConstant.LEFT_PARENTHESIS + scope
+    String[] split = path.split(StringConstant.SLASH);
+    return (split[split.length - 1].isEmpty() ? StringConstant.EMPTY
+        : split[split.length - 1] + StringConstant.SPACE)
+        + StringConstant.LEFT_PARENTHESIS
+        + (scopeChanged ? oldScope + StringConstant.ARROW + scope : scope)
         + StringConstant.SEMICOLON_SPACE
-        + (changed
-            ? (oldValueString
+        + (valueChanged
+            ? (oldValue
                 + StringConstant.ARROW
-                + valueString)
-            : valueString)
+                + value)
+            : value)
         + StringConstant.RIGHT_PARENTHESIS;
+  }
+
+  public final ConstraintEntryScope getOldScope() {
+    return oldScope;
+  }
+
+  public final boolean isScopeChanged() {
+    return scopeChanged;
+  }
+
+  public final void setScopeChanged(boolean scopeChanged) {
+    this.scopeChanged = scopeChanged;
+  }
+
+  public final boolean isValueChanged() {
+    return valueChanged;
+  }
+
+  public final void setValueChanged(boolean valueChanged) {
+    this.valueChanged = valueChanged;
+  }
+
+  public final boolean isChanged() {
+    return valueChanged || scopeChanged;
+  }
+
+  public final ConstraintEntryScope getScopePrevious() {
+    return scopeChanged ? oldScope : scope;
+  }
+
+  public final C getValuePrevious() {
+    return valueChanged ? oldValue : value;
+  }
+
+  public final ConstraintChange<C> getValueChange() {
+    if (isValueChanged()) {
+      return new ConstraintChange<>(path, value);
+    }
+    return null;
+  }
+
+  /**
+   * Go up in the tree until reach the root or find a relevant changed entry. It must be the first
+   * parent with children scope or any upper ancestor with sub tree scope.
+   * 
+   * @return
+   */
+  public final ConstraintEntry<C> getChangedParentEntry() {
+    ConstraintEntry<C> parentEntry = parentRef.get();
+    if (parentEntry != null && parentEntry.isChanged()
+        && parentEntry.scope == ConstraintEntryScope.CHILDREN) {
+      return parentEntry;
+    }
+    parentEntry = parentEntry.parentRef.get();
+    while (parentEntry != null) {
+      if (parentEntry.isChanged() && parentEntry.scope == ConstraintEntryScope.SUBTREE) {
+        return parentEntry;
+      }
+      parentEntry = parentEntry.parentRef.get();
+    }
+    return null;
+  }
+
+  public final String getPath() {
+    return path;
   }
 
 }

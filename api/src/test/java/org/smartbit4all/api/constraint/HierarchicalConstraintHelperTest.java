@@ -22,9 +22,9 @@ class HierarchicalConstraintHelperTest {
 
     {
       String expected = "(SUBTREE; true)" + br +
-          "\treferred (ITEM;  - )" + br +
-          "\t\trefproperty (ITEM;  - )" + br +
-          "\t\t\tproperty (SUBTREE; true)";
+          "\treferred (ITEM; null)" + br +
+          "\t\trefproperty (ITEM; null)" + br +
+          "\t\t\tproperty (ITEM->SUBTREE; null->true)";
       String actual = helper.toString();
       System.out.println(actual);
       Assertions.assertEquals(expected, actual);
@@ -33,9 +33,9 @@ class HierarchicalConstraintHelperTest {
     helper.set("referred", ConstraintEntryScope.ITEM, false);
     {
       String expected = "(SUBTREE; true)" + br +
-          "\treferred (ITEM; false)" + br +
-          "\t\trefproperty (ITEM;  - )" + br +
-          "\t\t\tproperty (SUBTREE; true)";
+          "\treferred (ITEM; null->false)" + br +
+          "\t\trefproperty (ITEM; null)" + br +
+          "\t\t\tproperty (ITEM->SUBTREE; null->true)";
       String actual = helper.toString();
       System.out.println(actual);
       Assertions.assertEquals(expected, actual);
@@ -43,10 +43,10 @@ class HierarchicalConstraintHelperTest {
 
     helper.set("", ConstraintEntryScope.SUBTREE, false);
     {
-      String expected = "(SUBTREE; false)" + br +
-          "\treferred (ITEM; false)" + br +
-          "\t\trefproperty (ITEM;  - )" + br +
-          "\t\t\tproperty (SUBTREE; true)";
+      String expected = "(SUBTREE; true->false)" + br +
+          "\treferred (ITEM; null->false)" + br +
+          "\t\trefproperty (ITEM; null)" + br +
+          "\t\t\tproperty (ITEM->SUBTREE; null->true)";
       String actual = helper.toString();
       System.out.println(actual);
       Assertions.assertEquals(expected, actual);
@@ -54,16 +54,34 @@ class HierarchicalConstraintHelperTest {
 
     helper.set("property", ConstraintEntryScope.ITEM, true);
     {
-      String expected = "(SUBTREE; false)" + br +
-          "\tproperty (ITEM; true)" + br +
-          "\treferred (ITEM; false)" + br +
-          "\t\trefproperty (ITEM;  - )" + br +
-          "\t\t\tproperty (SUBTREE; true)";
+      String expected = "(SUBTREE; true->false)" + br +
+          "\tproperty (ITEM; null->true)" + br +
+          "\treferred (ITEM; null->false)" + br +
+          "\t\trefproperty (ITEM; null)" + br +
+          "\t\t\tproperty (ITEM->SUBTREE; null->true)";
       String actual = helper.toString();
       System.out.println(actual);
       Assertions.assertEquals(expected, actual);
     }
 
+    {
+      ConstraintEntry<Boolean> related = helper.findRelated("referred/refproperty/property");
+      System.out.println(related);
+      Assertions.assertEquals("property (ITEM->SUBTREE; null->true)", related.toString());
+    }
+
+    {
+      ConstraintEntry<Boolean> related = helper.findRelated("notExisting");
+      System.out.println(related);
+      Assertions.assertEquals("(SUBTREE; true->false)", related.toString());
+    }
+
+    {
+      ConstraintEntry<Boolean> related =
+          helper.findRelated("referred/refproperty/property/notExisting");
+      System.out.println(related);
+      Assertions.assertEquals("property (ITEM->SUBTREE; null->true)", related.toString());
+    }
   }
 
 }

@@ -9,7 +9,7 @@ import org.smartbit4all.core.utility.StringConstant;
  * 
  * @author Peter Boros
  */
-final class PropertyEntry {
+public final class PropertyEntry {
 
   PropertyEntry(String parentPath, PropertyMeta meta) {
     super();
