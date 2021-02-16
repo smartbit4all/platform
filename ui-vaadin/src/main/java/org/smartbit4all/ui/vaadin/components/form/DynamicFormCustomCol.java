@@ -25,6 +25,9 @@ public class DynamicFormCustomCol<BEAN> extends DynamicForm<BEAN> {
   @Override
   protected void addComponentsToContent(List<Component> componentList) {
     int rowNum = componentList.size() / colNum;
+    if(componentList.size() % colNum != 0) {
+      rowNum++;
+    }
     columns = new ArrayList<>();
 
     for (int i = 0; i < colNum; i++) {
@@ -36,18 +39,20 @@ public class DynamicFormCustomCol<BEAN> extends DynamicForm<BEAN> {
 
     if (fillVerticalFirst) {
       for (int i = 0; i < colNum; i++) {
-        // FlexLayout actualCol = columns.remove(0);
-        for (int j = 0; j < rowNum; j++) {
-          // actualCol.add(componentList.remove(0));
-          columns.get(i).add(componentList.remove(0));
+        FlexLayout column = columns.get(i);
+        for (int j = 0; j < rowNum && !componentList.isEmpty(); j++) {
+          column.add(componentList.remove(0));
         }
       }
     } else {
       for (int i = 0; i < rowNum; i++) {
-        for (int j = 0; j < colNum; j++) {
+        for (int j = 0; j < colNum && !componentList.isEmpty(); j++) {
           columns.get(j).add(componentList.remove(0));
         }
       }
+    }
+    if(!componentList.isEmpty()) {
+      
     }
   }
 

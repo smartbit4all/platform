@@ -20,11 +20,11 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.TreeMap;
 import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +33,7 @@ import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.HasStyle;
+import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
@@ -122,6 +123,12 @@ public class DynamicForm<BEAN> extends Composite<FlexLayout> {
               bean -> invokeGetter(binding, bean, null),
               (bean, value) -> invokeSetter(binding, bean, value, null));
         }
+        if (isGetterReturnMatches(binding, Boolean.class)) {
+          field = new Checkbox(label);
+          binder.bind((Checkbox) field,
+              bean -> invokeGetter(binding, bean, null),
+              (bean, value) -> invokeSetter(binding, bean, value, null));
+        }
 
         if(field != null) {
           if (field instanceof HasStyle) {
@@ -183,9 +190,10 @@ public class DynamicForm<BEAN> extends Composite<FlexLayout> {
   }
 
   private Map<String, BindingCandidate> collectBindings(Class<BEAN> beanClazz) {
-    Map<String, BindingCandidate> bindings = new LinkedHashMap<>();
-    for (int i = 0; i < beanClazz.getMethods().length; i++) {
-      Method method = beanClazz.getMethods()[i];
+    Map<String, BindingCandidate> bindings = new TreeMap<>();
+    Method[] methods = beanClazz.getMethods();
+    for (int i = 0; i < methods.length; i++) {
+      Method method = methods[i];
       if (method.getDeclaringClass().equals(Object.class)) {
         continue;
       }
