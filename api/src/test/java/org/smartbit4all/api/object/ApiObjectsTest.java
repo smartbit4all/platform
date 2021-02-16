@@ -13,27 +13,33 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.core.utility.StringConstant;
 
-class ApiObjectsTest {
+public class ApiObjectsTest {
 
-  private static Set<Class<?>> domainBeans;
   private static Map<Class<?>, ApiBeanDescriptor> descriptors;
 
   @BeforeAll
   static void setUpBeforeClass() throws Exception {
+    descriptors = constructDomain();
+  }
+
+  public static Map<Class<?>, ApiBeanDescriptor> constructDomain() {
+    Set<Class<?>> domainBeans;
+    Map<Class<?>, ApiBeanDescriptor> result;
     domainBeans = new HashSet<>();
     domainBeans.add(MasterBean.class);
     domainBeans.add(MasterDetailBean.class);
     domainBeans.add(ReferredBean.class);
     domainBeans.add(ReferredDetailBean.class);
-    descriptors = ApiBeanDescriptor.of(domainBeans);
+    result = ApiBeanDescriptor.of(domainBeans);
     {
-      ApiBeanDescriptor descriptor = descriptors.get(MasterBean.class);
-      descriptor.getDetailDescriptors().put("Details", descriptors.get(MasterDetailBean.class));
+      ApiBeanDescriptor descriptor = result.get(MasterBean.class);
+      descriptor.getDetailDescriptors().put("Details", result.get(MasterDetailBean.class));
     }
     {
-      ApiBeanDescriptor descriptor = descriptors.get(ReferredBean.class);
-      descriptor.getDetailDescriptors().put("Details", descriptors.get(ReferredDetailBean.class));
+      ApiBeanDescriptor descriptor = result.get(ReferredBean.class);
+      descriptor.getDetailDescriptors().put("Details", result.get(ReferredDetailBean.class));
     }
+    return result;
   }
 
   @AfterAll

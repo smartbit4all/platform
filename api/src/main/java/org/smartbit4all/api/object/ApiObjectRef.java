@@ -115,7 +115,7 @@ public class ApiObjectRef {
    * @param object The api object managed by the reference.
    * @param allBeanClasses All the bean classes we have in this api domain.
    */
-  ApiObjectRef(String path, Object object, Map<Class<?>, ApiBeanDescriptor> descriptors) {
+  public ApiObjectRef(String path, Object object, Map<Class<?>, ApiBeanDescriptor> descriptors) {
     super();
     this.descriptors = descriptors;
     if (object == null) {

@@ -229,4 +229,14 @@ final class ConstraintEntry<C> {
     return path;
   }
 
+  void commitChange() {
+    scopeChanged = false;
+    oldScope = null;
+    valueChanged = false;
+    oldValue = null;
+    for (ConstraintEntry<C> childEntry : children.values()) {
+      childEntry.commitChange();
+    }
+  }
+
 }

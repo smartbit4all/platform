@@ -1,5 +1,7 @@
 package org.smartbit4all.api.constraint;
 
+import org.smartbit4all.core.utility.StringConstant;
+
 /**
  * The change object of the constraint change. We will have a list of changes after rendering the
  * result of the current transaction.
@@ -22,6 +24,15 @@ public class ConstraintChange<C> {
 
   public final C getNewValue() {
     return newValue;
+  }
+
+  public final String getPath() {
+    return path;
+  }
+
+  @Override
+  public String toString() {
+    return path + StringConstant.COLON_SPACE + newValue;
   }
 
 }

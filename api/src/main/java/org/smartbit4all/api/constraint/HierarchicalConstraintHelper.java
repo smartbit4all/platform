@@ -98,9 +98,27 @@ public final class HierarchicalConstraintHelper<C> {
    * @return
    */
   public final List<ConstraintChange<C>> renderAndCleanChanges(ApiObjectRef apiObjectRef) {
-    ArrayList<ConstraintChange<C>> changeList = new ArrayList<>();
-    return renderAndCleanChangesRec(changeList, apiObjectRef,
+    List<ConstraintChange<C>> changeList = new ArrayList<>();
+    changeList = renderAndCleanChangesRec(changeList, apiObjectRef,
         apiObjectRef.getCurrentState() == ChangeState.NEW, root, root, root.getValue());
+    root.commitChange();
+    return changeList;
+  }
+
+  /**
+   * This function collect the changes on the constraint hierarchy itself.
+   * 
+   * @return
+   */
+  public final List<ConstraintChange<C>> renderAndCleanChanges() {
+    List<ConstraintChange<C>> result = new ArrayList<>();
+    renderAndCleanChangesRec(root, result);
+    return result;
+  }
+
+  private final void renderAndCleanChangesRec(ConstraintEntry<C> entry,
+      List<ConstraintChange<C>> result) {
+    entry.getValueChange();
   }
 
   /**
@@ -147,8 +165,9 @@ public final class HierarchicalConstraintHelper<C> {
           actualEntry == null ? null : actualEntry.children.get(propertyName);
       if (propery.getMeta().getKind() == PropertyKind.VALUE) {
         ConstraintChange<C> change =
-            evaluateEntry(childEntry, nextNearestEntry, path + StringConstant.SLASH + propertyName,
-                nextActualValue);
+            evaluateEntry(newObject, childEntry, nextNearestEntry,
+                nextActualValue,
+                path.isEmpty() ? propertyName : path + StringConstant.SLASH + propertyName);
         if (change != null) {
           changeList.add(change);
         }
@@ -184,7 +203,7 @@ public final class HierarchicalConstraintHelper<C> {
     }
     if (result == null) {
       result =
-          evaluateEntry(actualEntry, nearestExistingEntry, path, actualValue);
+          evaluateEntryInner(actualEntry, nearestExistingEntry, path, actualValue);
     }
     return result;
   }
@@ -197,7 +216,7 @@ public final class HierarchicalConstraintHelper<C> {
    * @param nearestExistingEntry The nearest existing entry.
    * @return If there is an effective change in the tree then it will be the result.
    */
-  private final ConstraintChange<C> evaluateEntry(ConstraintEntry<C> actualEntry,
+  private final ConstraintChange<C> evaluateEntryInner(ConstraintEntry<C> actualEntry,
       @NotNull ConstraintEntry<C> nearestExistingEntry, @NotNull String path, C actualValue) {
     ConstraintChange<C> result = null;
     ConstraintEntry<C> effectiveEntry = actualEntry == null ? nearestExistingEntry : actualEntry;

@@ -1,21 +1,35 @@
 package org.smartbit4all.api.constraint;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.smartbit4all.api.object.ApiBeanDescriptor;
+import org.smartbit4all.api.object.ApiObjectRef;
+import org.smartbit4all.api.object.ApiObjectsTest;
+import org.smartbit4all.api.object.MasterBean;
+import org.smartbit4all.api.object.MasterDetailBean;
+import org.smartbit4all.api.object.ReferredBean;
+import org.smartbit4all.api.object.ReferredDetailBean;
 import org.smartbit4all.core.utility.StringConstant;
 
 class HierarchicalConstraintHelperTest {
 
+  private static Map<Class<?>, ApiBeanDescriptor> descriptors;
+
   @BeforeAll
-  static void setUpBeforeClass() throws Exception {}
+  static void setUpBeforeClass() throws Exception {
+    descriptors = ApiObjectsTest.constructDomain();
+  }
 
   @AfterAll
   static void tearDownAfterClass() throws Exception {}
 
   @Test
-  void test() {
+  void testHierarchy() {
     HierarchicalConstraintHelper<Boolean> helper = new HierarchicalConstraintHelper<>(true);
     helper.set("referred/refproperty/property", ConstraintEntryScope.SUBTREE, true);
     String br = StringConstant.NEW_LINE;
@@ -82,6 +96,50 @@ class HierarchicalConstraintHelperTest {
       System.out.println(related);
       Assertions.assertEquals("property (ITEM->SUBTREE; null->true)", related.toString());
     }
+  }
+
+  @Test
+  void testChanges() {
+    MasterBean bean = constructBean();
+    ApiObjectRef beanRef = new ApiObjectRef(null, bean, descriptors);
+    HierarchicalConstraintHelper<Boolean> editables = new HierarchicalConstraintHelper<>(true);
+    editables.set("Referred/Name", ConstraintEntryScope.ITEM, false);
+    System.out.println(editables);
+    List<ConstraintChange<Boolean>> changes = editables.renderAndCleanChanges(beanRef);
+    System.out.println(changes);
+  }
+
+  private MasterBean constructBean() {
+    MasterBean bean1 = new MasterBean();
+    bean1.setCounter(1);
+    bean1.setName("name");
+    bean1.setStringList(Arrays.asList("first", "second"));
+    {
+      ReferredBean refBean = new ReferredBean();
+      refBean.setName("refname");
+      {
+        ReferredDetailBean detBean = new ReferredDetailBean();
+        detBean.setName("refDetailName1");
+        refBean.getDetails().add(detBean);
+      }
+      {
+        ReferredDetailBean detBean = new ReferredDetailBean();
+        detBean.setName("refDetailName2");
+        refBean.getDetails().add(detBean);
+      }
+      bean1.setReferred(refBean);
+    }
+    {
+      MasterDetailBean detBean = new MasterDetailBean();
+      detBean.setDetailName("detailName1");
+      bean1.getDetails().add(detBean);
+    }
+    {
+      MasterDetailBean detBean = new MasterDetailBean();
+      detBean.setDetailName("detailName2");
+      bean1.getDetails().add(detBean);
+    }
+    return bean1;
   }
 
 }
