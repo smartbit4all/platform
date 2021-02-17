@@ -95,9 +95,14 @@ public class Navigation {
     }
     int result = 0;
     for (NavigationAssociation assoc : node.getAssociations()) {
-      if (!assumeVisibilityOfAssociations || !assoc.getHidden()) {
-        if (assoc.getReferences() != null) {
-          result += assoc.getReferences().size();
+      List<NavigationReference> assocRefs = assoc.getReferences();
+      if (!assumeVisibilityOfAssociations || assoc.getHidden()) {
+        if (assocRefs != null) {
+          result += assocRefs.size();
+        }
+      } else {
+        if (assocRefs != null && !assocRefs.isEmpty()) {
+          result++;
         }
       }
     }
@@ -113,7 +118,7 @@ public class Navigation {
     List<NavigationNode> children = new ArrayList<>();
     for (NavigationAssociation assoc : parent.getAssociations()) {
       // If the association is hidden then we get the references directly.
-      if (!assumeVisibilityOfAssociations || !assoc.getHidden()) {
+      if (!assumeVisibilityOfAssociations || assoc.getHidden()) {
         if (assoc.getReferences() != null) {
           assoc.getReferences().forEach(r -> children.add(r.getEndNode()));
         }
@@ -325,7 +330,7 @@ public class Navigation {
   public static NavigationAssociation association(URI assocMetaUri, NavigationNode node,
       NavigationConfig config) {
     NavigationAssociation result = new NavigationAssociation();
-    result.setHidden(config.isAssocVisible(assocMetaUri));
+    result.setHidden(!config.isAssocVisible(assocMetaUri));
     result.setId(UUID.randomUUID().toString());
     result.setLastNavigation(null);
     result.setMetaUri(assocMetaUri);

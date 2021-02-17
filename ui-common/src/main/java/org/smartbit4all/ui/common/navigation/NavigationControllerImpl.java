@@ -141,7 +141,7 @@ public class NavigationControllerImpl implements NavigationController {
     List<NavigationAssociation> associations =
         node.getAssociations() == null ? Collections.emptyList() : node.getAssociations();
     // TODO Correct name for the association
-    Stream<NavigationTreeNode> assocStream = associations.stream().filter(a -> a.getHidden())
+    Stream<NavigationTreeNode> assocStream = associations.stream().filter(a -> !a.getHidden())
         .map(a -> new NavigationTreeNode(Kind.ASSOCIATION, a.getId(), getAssociationNodeCaption(a.getMetaUri()),
             null,
             null, null, null));
