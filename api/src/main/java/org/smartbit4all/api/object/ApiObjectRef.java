@@ -24,6 +24,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import org.smartbit4all.api.object.PropertyMeta.PropertyKind;
+import org.smartbit4all.core.utility.PathUtility;
 import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.cglib.proxy.Enhancer;
 import org.springframework.cglib.proxy.InvocationHandler;
@@ -257,6 +258,107 @@ public class ApiObjectRef {
     } catch (Exception e) {
       throw new IllegalArgumentException(
           propertyName + " property is not set to " + value + " in " + meta.getClazz().getName());
+    }
+  }
+  
+  public void setValueByPath(String path, Object value) {
+    //TODO
+    path = path.toUpperCase();
+    
+    String propertyName = PathUtility.getRootPath(path);
+    PropertyEntry propertyEntry = properties.get(propertyName);
+    
+    switch (propertyEntry.getMeta().getKind()) {
+      case VALUE:
+        setValueInner(value, propertyEntry);
+        break;
+      case REFERENCE:
+        // Call the setValueByPath on reference with new path
+        propertyEntry.getReference().setValueByPath(PathUtility.nextFullPath(path), value);
+        break;
+      case COLLECTION:
+        ApiObjectCollection collection = propertyEntry.getCollection();
+        if (PathUtility.getPathSize(path) == 2) {
+          // Set the collection element to the value
+          String newPath = PathUtility.nextFullPath(path);
+          String collectionId = PathUtility.getRootPath(newPath);
+          collection.setObject(Integer.valueOf(collectionId), value);
+        } else {
+          // call the setValueByPath on the collection element
+          String nextPath = PathUtility.nextFullPath(path);
+          String collectionId = PathUtility.getRootPath(nextPath);
+          ApiObjectRef nextRef = collection.getByIdx(collectionId);
+          nextRef.setValueByPath(PathUtility.nextFullPath(nextPath), value);
+        }
+        break;
+      default:
+        break;
+    }
+  }
+  
+  public void addValueByPath(String path, Object value) {
+    //TODO
+    path = path.toUpperCase();
+    
+    String propertyName = PathUtility.getRootPath(path);
+    PropertyEntry propertyEntry = properties.get(propertyName);
+    
+    int pathSize = PathUtility.getPathSize(path);
+    switch (propertyEntry.getMeta().getKind()) {
+      case VALUE:
+        // TODO exception?
+        break;
+      case REFERENCE:
+        // Call the addValueByPath on reference with new path
+        propertyEntry.getReference().addValueByPath(PathUtility.nextFullPath(path), value);
+        break;
+      case COLLECTION:
+        ApiObjectCollection collection = propertyEntry.getCollection();
+        if (pathSize == 1) {
+          // Add the value to the collection
+          collection.addObject(value);
+        } else {
+          // call the setValueByPath on the collection element
+          String nextPath = PathUtility.nextFullPath(path);
+          ApiObjectRef nextRef = collection.getByIdx(PathUtility.getRootPath(nextPath));
+          nextRef.addValueByPath(PathUtility.nextFullPath(nextPath), value);
+        }
+        break;
+      default:
+        break;
+    }
+  }
+  
+  public void removeValueByPath(String path) {
+    //TODO
+    path = path.toUpperCase();
+    
+    String propertyName = PathUtility.getRootPath(path);
+    PropertyEntry propertyEntry = properties.get(propertyName);
+    
+    int pathSize = PathUtility.getPathSize(path);
+    switch (propertyEntry.getMeta().getKind()) {
+      case VALUE:
+        // TODO exception
+        break;
+      case REFERENCE:
+        // Call the removeValueByPath on reference with new path
+        propertyEntry.getReference().removeValueByPath(PathUtility.nextFullPath(path));
+        break;
+      case COLLECTION:
+        ApiObjectCollection collection = propertyEntry.getCollection();
+        if (pathSize == 2) {
+          // Remove the index to the collection
+          collection.removeByIdx(PathUtility.getLastPath(path));
+        } else {
+          // call the removeValueByPath on the collection element
+          String nextPath = PathUtility.nextFullPath(path);
+          ApiObjectRef nextRef = collection.getByIdx(PathUtility.getRootPath(nextPath));
+          nextRef.removeValueByPath(PathUtility.nextFullPath(nextPath));
+        }
+        break;
+      default:
+        break;
     }
   }
 

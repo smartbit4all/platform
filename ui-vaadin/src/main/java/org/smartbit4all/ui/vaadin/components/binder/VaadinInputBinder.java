@@ -1,34 +1,41 @@
 package org.smartbit4all.ui.vaadin.components.binder;
 
-import java.util.function.BiConsumer;
-import org.smartbit4all.ui.common.filter.AbstractUIState;
+import org.smartbit4all.api.object.ObjectEditing;
+import org.smartbit4all.api.object.PropertyChange;
+import org.smartbit4all.core.utility.PathUtility;
 
-public abstract class VaadinInputBinder<S extends AbstractUIState, T> {
+public abstract class VaadinInputBinder {
 
-  protected S uiState;
+  protected ObjectEditing editing;
   
-  protected BiConsumer<S, T> setter;
+  protected String path;
   
-  protected String propertyName;
+  protected boolean propertyChangeProgress = false;;
   
-  public VaadinInputBinder(S uiState, BiConsumer<S, T> setter, String propertyName) {
+  public VaadinInputBinder(ObjectEditing editing, String path) {
     super();
-    this.uiState = uiState;
-    this.setter = setter;
-    this.propertyName = propertyName;
+    this.editing = editing;
+    this.path = path;
     
     subscribeToUIEvent();
   }
 
   protected void subscribeToUIEvent() {
-    uiState.events().propertyChangeEvent().subscribe().onPropertyChange(propertyName)
-        .add(propertyChange -> onUIStateChanged((T) propertyChange.getValue()));    
+    editing.publisher().properties().subscribe().property(PathUtility.getParentPath(path), PathUtility.getLastPath(path)).add(value -> onPropertyChanged(value));
   }
   
-  protected abstract void onUIStateChanged(T value);
+  private Object onPropertyChanged(PropertyChange value) {
+    propertyChangeProgress = true;
+    onUIStateChanged(value);
+    propertyChangeProgress = false;
+    return null;
+  }
 
+  protected abstract void onUIStateChanged(PropertyChange value);
 
-  protected void setUIState(T value) {
-    setter.accept(uiState, value);
+  protected void setUIState(Object value) {
+    if (!propertyChangeProgress) {
+      editing.setValue(path, value);
+    }
   }
 }

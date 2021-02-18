@@ -1,28 +1,30 @@
 package org.smartbit4all.ui.vaadin.components.binder;
 
-import java.util.function.BiConsumer;
-import org.smartbit4all.ui.common.filter.AbstractUIState;
+import org.smartbit4all.api.object.ObjectEditing;
+import org.smartbit4all.api.object.PropertyChange;
 import com.vaadin.flow.component.textfield.IntegerField;
 
-public class VaadinIntegerFieldBinder<S extends AbstractUIState> extends VaadinInputBinder<S, Integer>{
+public class VaadinIntegerFieldBinder extends VaadinInputBinder {
 
   protected IntegerField integerField;
 
-  public VaadinIntegerFieldBinder(IntegerField integerField, S uiState, BiConsumer<S, Integer> setter, String propertyName) {
-    super(uiState, setter, propertyName);
+  public VaadinIntegerFieldBinder(IntegerField integerField, ObjectEditing editing,
+      String path) {
+    super(editing, path);
     this.integerField = integerField;
     registerIntegerFieldValueChangeListener();
   }
 
-  protected void onUIStateChanged(Integer value) {
+  protected void onUIStateChanged(PropertyChange value) {
     Integer currentValue = integerField.getValue();
+    Integer newValue = (Integer) value.getNewValue();
 
-    if (currentValue == null && value == null) {
+    if (currentValue == null && newValue == null) {
       return;
-    } else if (currentValue != null && value == null) {
+    } else if (currentValue != null && newValue == null) {
       integerField.setValue(null);
-    } else if ((currentValue == null && value != null) || !currentValue.equals(value)) {
-      integerField.setValue(value);
+    } else if ((currentValue == null && newValue != null) || !currentValue.equals(newValue)) {
+      integerField.setValue(newValue);
     }
   }
 

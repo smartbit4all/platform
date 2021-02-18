@@ -232,8 +232,7 @@ public class NavigationControllerImpl implements NavigationController {
   public NavigationEntry getNavigationEntry(NavigationTreeNode navigationTreeNode) {
     if (navigationTreeNode.isKind(Kind.ENTRY)) {
       NavigationNode navigationNode = navigationState.getNode(navigationTreeNode.getIdentifier());
-      if (navigationNode != null && navigationNode.getEntry().getViews() != null
-          && !navigationNode.getEntry().getViews().isEmpty()) {
+      if (navigationNode != null) {
 
         NavigationEntry navigationEntry = navigationNode.getEntry();
         return navigationEntry;

@@ -1,28 +1,29 @@
 package org.smartbit4all.ui.vaadin.components.binder;
 
-import java.util.function.BiConsumer;
-import org.smartbit4all.ui.common.filter.AbstractUIState;
+import org.smartbit4all.api.object.ObjectEditing;
+import org.smartbit4all.api.object.PropertyChange;
 import com.vaadin.flow.component.textfield.TextField;
 
-public class VaadinTextFieldBinder<S extends AbstractUIState> extends VaadinInputBinder<S, String>{
+public class VaadinTextFieldBinder extends VaadinInputBinder {
 
   protected TextField textField;
 
-  public VaadinTextFieldBinder(TextField textField, S uiState, BiConsumer<S, String> setter, String propertyName) {
-    super(uiState, setter, propertyName);
+  public VaadinTextFieldBinder(TextField textField, ObjectEditing editing, String path) {
+    super(editing, path);
     this.textField = textField;
     registerTextFieldValueChangeListener();
   }
 
-  protected void onUIStateChanged(String value) {
+  protected void onUIStateChanged(PropertyChange value) {
     String currentValue = textField.getValue();
+    String newValue = (String) value.getNewValue();
 
-    if ("".equals(currentValue) && value == null) {
+    if ("".equals(currentValue) && newValue == null) {
       return;
-    } else if (!"".equals(currentValue) && value == null) {
+    } else if (!"".equals(currentValue) && newValue == null) {
       textField.setValue("");
-    } else if ((currentValue == null && value != null) || !currentValue.equals(value)) {
-      textField.setValue(String.valueOf(value));
+    } else if ((currentValue == null && newValue != null) || !currentValue.equals(newValue)) {
+      textField.setValue(newValue);
     }
   }
 

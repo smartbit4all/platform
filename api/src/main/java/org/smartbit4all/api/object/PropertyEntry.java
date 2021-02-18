@@ -1,6 +1,7 @@
 package org.smartbit4all.api.object;
 
 import org.smartbit4all.api.object.PropertyMeta.PropertyKind;
+import org.smartbit4all.core.utility.PathUtility;
 import org.smartbit4all.core.utility.StringConstant;
 
 /**
@@ -67,7 +68,7 @@ public final class PropertyEntry {
 
   void setChangedValue(Object oldValue, Object newValue) {
     if (valueChange == null) {
-      valueChange = new PropertyChange(path, meta.getName(), oldValue, newValue);
+      valueChange = new PropertyChange(PathUtility.getParentPath(path), meta.getName(), oldValue, newValue);
     } else {
       valueChange.setNewValue(newValue);
     }

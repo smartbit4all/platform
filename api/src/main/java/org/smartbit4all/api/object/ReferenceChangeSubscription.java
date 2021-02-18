@@ -14,27 +14,27 @@
  ******************************************************************************/
 package org.smartbit4all.api.object;
 
-import java.net.URI;
+import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.meta.EventSubscription;
 
 public class ReferenceChangeSubscription extends EventSubscription<ReferenceChange> {
 
-  private URI parentURI;
+  private String parentPath;
 
   private String referenceName;
 
-  public ReferenceChangeSubscription property(URI parentURI, String referenceName) {
-    this.parentURI = parentURI;
+  public ReferenceChangeSubscription property(String parentPath, String referenceName) {
+    this.parentPath = parentPath;
     this.referenceName = referenceName;
     return this;
   }
 
-  public final URI getParentURI() {
-    return parentURI;
+  public final String getParentPath() {
+    return parentPath;
   }
 
-  public final void setParentURI(URI parentURI) {
-    this.parentURI = parentURI;
+  public final void setParentPath(String parentPath) {
+    this.parentPath = parentPath;
   }
 
   public final String getReferenceName() {
@@ -43,6 +43,11 @@ public class ReferenceChangeSubscription extends EventSubscription<ReferenceChan
 
   public final void setReferenceName(String referenceName) {
     this.referenceName = referenceName;
+  }
+  
+  public final String fullyQualifiedName() {
+    return (parentPath == null || parentPath.isEmpty()) ? referenceName
+        : parentPath + StringConstant.SLASH + referenceName;
   }
 
 }

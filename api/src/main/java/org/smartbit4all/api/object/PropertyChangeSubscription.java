@@ -14,12 +14,12 @@
  ******************************************************************************/
 package org.smartbit4all.api.object;
 
-import java.net.URI;
+import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.meta.EventSubscription;
 
 public class PropertyChangeSubscription extends EventSubscription<PropertyChange> {
 
-  private URI parentURI;
+  private String parentPath;
 
   private String propertyName;
 
@@ -28,8 +28,8 @@ public class PropertyChangeSubscription extends EventSubscription<PropertyChange
    */
   private Class<?> expectedType;
 
-  public PropertyChangeSubscription property(URI parentURI, String propertyName) {
-    this.parentURI = parentURI;
+  public PropertyChangeSubscription property(String parentPath, String propertyName) {
+    this.parentPath = parentPath;
     this.propertyName = propertyName;
     return this;
   }
@@ -39,12 +39,12 @@ public class PropertyChangeSubscription extends EventSubscription<PropertyChange
     return this;
   }
 
-  public final URI getParentURI() {
-    return parentURI;
+  public final String getParentPath() {
+    return parentPath;
   }
 
-  public final void setParentURI(URI parentURI) {
-    this.parentURI = parentURI;
+  public final void setParentPath(String parentPath) {
+    this.parentPath = parentPath;
   }
 
   public final String getPropertyName() {
@@ -53,6 +53,11 @@ public class PropertyChangeSubscription extends EventSubscription<PropertyChange
 
   public final void setPropertyName(String propertyName) {
     this.propertyName = propertyName;
+  }
+  
+  public final String fullyQualifiedName() {
+    return (parentPath == null || parentPath.isEmpty()) ? propertyName
+        : parentPath + StringConstant.SLASH + propertyName;
   }
 
 }

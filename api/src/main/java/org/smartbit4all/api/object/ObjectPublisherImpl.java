@@ -1,10 +1,13 @@
 package org.smartbit4all.api.object;
 
+import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.meta.EventListener;
+import org.smartbit4all.domain.meta.EventSubscription;
 
 /**
  * The base implementation of the {@link ObjectPublisher} interface that can be used in the
@@ -30,6 +33,10 @@ public class ObjectPublisherImpl implements ObjectPublisher {
    */
   Map<String, List<EventListener<CollectionChange>>> collectionListeners = new HashMap<>();
 
+  PropertyChangeEvent propertyChangeEvent = new PropertyChangeEventImpl();
+  ReferenceChangeEvent referenceChangeEvent = new ReferenceChangeEventImpl();
+  CollectionChangeEvent collectionChangeEvent = new CollectionChangeEventImpl();
+  
   public void notify(ObjectChange change) {
     notifyRec(StringConstant.EMPTY, change);
   }
@@ -56,7 +63,7 @@ public class ObjectPublisherImpl implements ObjectPublisher {
       Map<String, List<EventListener<E>>> listenerMap) {
     for (E change : changes) {
       // Check if we have subscription for the given property.
-      String qualifiedName = change.fullyQualifiedName();
+      String qualifiedName = change.fullyQualifiedName().toUpperCase();
       List<EventListener<E>> listeners = listenerMap.get(qualifiedName);
       if (listeners != null) {
         for (EventListener<E> listener : listeners) {
@@ -68,20 +75,118 @@ public class ObjectPublisherImpl implements ObjectPublisher {
 
   @Override
   public PropertyChangeEvent properties() {
-    // TODO Auto-generated method stub
-    return null;
+    return propertyChangeEvent;
   }
 
   @Override
   public ReferenceChangeEvent references() {
-    // TODO Auto-generated method stub
-    return null;
+    return referenceChangeEvent;
   }
 
   @Override
   public CollectionChangeEvent collections() {
-    // TODO Auto-generated method stub
-    return null;
+    return collectionChangeEvent;
   }
 
+  private <E extends ChangeItem>void addToEventListeners(String name,  Map<String, List<EventListener<E>>> listenerMap, EventListener<E> listener) {
+    List<EventListener<E>> list = listenerMap.get(name);
+    if (list == null) {
+      list = new ArrayList<EventListener<E>>();
+      listenerMap.put(name.toUpperCase(), list);
+    }
+    list.add(listener);
+  }
+  
+  private class PropertyChangeEventImpl implements PropertyChangeEvent {
+
+    final List<EventSubscription<?>> subscriptions = new ArrayList<EventSubscription<?>>();
+    
+    @Override
+    public URI getUri() {
+      // TODO Auto-generated method stub
+      return null;
+    }
+
+    @Override
+    public String getName() {
+      // TODO Auto-generated method stub
+      return null;
+    }
+
+    @Override
+    public PropertyChangeSubscription subscribe() {
+      PropertyChangeSubscription propertyChangeSubscription = new PropertyChangeSubscription() {
+        @Override
+        public EventSubscription<PropertyChange> add(EventListener<PropertyChange> listener) {
+          EventSubscription<PropertyChange> eventSubscription = super.add(listener);
+          addToEventListeners(fullyQualifiedName(), propertyListeners, listener);
+          return eventSubscription;
+        }
+      };
+      subscriptions.add(propertyChangeSubscription);
+      return propertyChangeSubscription;
+    }
+  }
+  
+  private class CollectionChangeEventImpl implements CollectionChangeEvent {
+
+    final List<EventSubscription<?>> subscriptions = new ArrayList<EventSubscription<?>>();
+    
+    @Override
+    public URI getUri() {
+      // TODO Auto-generated method stub
+      return null;
+    }
+
+    @Override
+    public String getName() {
+      // TODO Auto-generated method stub
+      return null;
+    }
+
+    @Override
+    public CollectionChangeSubscription subscribe() {
+      CollectionChangeSubscription collectionChangeSubscription = new CollectionChangeSubscription() {
+        @Override
+        public EventSubscription<CollectionChange> add(EventListener<CollectionChange> listener) {
+          EventSubscription<CollectionChange> eventSubscription = super.add(listener);
+          addToEventListeners(fullyQualifiedName(), collectionListeners, listener);
+          return eventSubscription;
+        }
+      };
+      subscriptions.add(collectionChangeSubscription);
+      return collectionChangeSubscription;
+    }
+  }
+  
+  private class ReferenceChangeEventImpl implements ReferenceChangeEvent {
+
+    final List<EventSubscription<?>> subscriptions = new ArrayList<EventSubscription<?>>();
+    
+    @Override
+    public URI getUri() {
+      // TODO Auto-generated method stub
+      return null;
+    }
+
+    @Override
+    public String getName() {
+      // TODO Auto-generated method stub
+      return null;
+    }
+
+    @Override
+    public ReferenceChangeSubscription subscribe() {
+      ReferenceChangeSubscription propertyChangeSubscription = new ReferenceChangeSubscription() {
+        @Override
+        public EventSubscription<ReferenceChange> add(EventListener<ReferenceChange> listener) {
+          EventSubscription<ReferenceChange> eventSubscription = super.add(listener);
+          addToEventListeners(fullyQualifiedName(), referenceListeners, listener);
+          return eventSubscription;
+        }
+      };
+      subscriptions.add(propertyChangeSubscription);
+      return propertyChangeSubscription;
+    }
+  }
 }

@@ -1,8 +1,7 @@
 package org.smartbit4all.ui.vaadin.components.binder;
 
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import org.smartbit4all.ui.common.filter.AbstractUIState;
+import org.smartbit4all.api.object.ObjectEditing;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.html.Label;
@@ -12,31 +11,34 @@ import com.vaadin.flow.component.textfield.TextField;
 
 public class VaadinBinders {
 
-  public static <S extends AbstractUIState> VaadinButtonBinder bind(Button button, S uiState, Consumer<S> function) {
-    return new VaadinButtonBinder(button, uiState, function);
+  public static <S extends ObjectEditing> VaadinButtonBinder bind(Button button, S editing,
+      Consumer<S> function) {
+    return new VaadinButtonBinder(button, editing, function);
   }
 
-  public static <S extends AbstractUIState> VaadinTextFieldBinder<S> bind(TextField textField,
-      S uiState, BiConsumer<S, String> setter, String propertyName) {
-    return new VaadinTextFieldBinder(textField, uiState, setter, propertyName);
+  public static VaadinTextFieldBinder bind(TextField textField, ObjectEditing editing,
+      String path) {
+    return new VaadinTextFieldBinder(textField, editing, path);
   }
 
-  public static <S extends AbstractUIState> VaadinNumberFieldBinder<S> bind(
-      NumberField numberField, S uiState, BiConsumer<S, Long> setter, String propertyName) {
-    return new VaadinNumberFieldBinder(numberField, uiState, setter, propertyName);
+  public static VaadinNumberFieldBinder bind(NumberField numberField, ObjectEditing editing,
+      String path) {
+    return new VaadinNumberFieldBinder(numberField, editing, path);
   }
 
-  public static <S extends AbstractUIState> VaadinIntegerFieldBinder<S> bind(
-      IntegerField integerField, S uiState, BiConsumer<S, Integer> setter, String propertyName) {
-    return new VaadinIntegerFieldBinder(integerField, uiState, setter, propertyName);
+  public static VaadinIntegerFieldBinder bind(IntegerField integerField, ObjectEditing editing,
+      String path) {
+    return new VaadinIntegerFieldBinder(integerField, editing, path);
   }
 
-  public static void bind(Label label, AbstractUIState uiState, String opertation) {
-    new VaadinLabelBinder(label, uiState, opertation);
+  public static void bind(Label label, ObjectEditing editing,
+      String path) {
+    new VaadinLabelBinder(label, editing, path);
   }
 
-  public static <S extends AbstractUIState, T> VaadinComboBoxBinder<S, T> bind(
-      ComboBox<T> comboBox, S uiState, BiConsumer<S, T> setter, String propertyName) {
-    return new VaadinComboBoxBinder<S, T>(comboBox, uiState, setter, propertyName);
+  public static <T> VaadinComboBoxBinder<T> bind(ComboBox<T> comboBox,
+      ObjectEditing editing,
+      String path) {
+    return new VaadinComboBoxBinder<T>(comboBox, editing, path);
   }
 }

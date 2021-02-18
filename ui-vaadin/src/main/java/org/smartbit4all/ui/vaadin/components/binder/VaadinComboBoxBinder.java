@@ -1,38 +1,35 @@
 package org.smartbit4all.ui.vaadin.components.binder;
 
-import java.util.function.BiConsumer;
-import org.smartbit4all.ui.common.filter.AbstractUIState;
+import org.smartbit4all.api.object.ObjectEditing;
+import org.smartbit4all.api.object.PropertyChange;
 import com.vaadin.flow.component.combobox.ComboBox;
 
-public class VaadinComboBoxBinder<S extends AbstractUIState, T> extends VaadinInputBinder<S, T>{
+public class VaadinComboBoxBinder<T> extends VaadinInputBinder {
 
   protected ComboBox<T> comboBox;
 
-  protected AbstractUIState uiState;
-
-  protected String property;
-
-  public VaadinComboBoxBinder(ComboBox<T> comboBox, S uiState, BiConsumer<S, T> setter, String propertyName) {
-    super(uiState, setter, propertyName);
+  public VaadinComboBoxBinder(ComboBox<T> comboBox, ObjectEditing editing, String path) {
+    super(editing, path);
     this.comboBox = comboBox;
     registerComboBoxValueChangeListener();
   }
 
   @Override
-  protected void onUIStateChanged(T value) {
+  protected void onUIStateChanged(PropertyChange value) {
     T currentValue = comboBox.getValue();
+    T newValue = (T) value.getNewValue();
 
-    if (currentValue == null && value == null) {
+    if (currentValue == null && newValue == null) {
       return;
     }
-    
-    if ((currentValue == null && value != null) || !currentValue.equals(value)) {
-      comboBox.setValue(value);
-    }    
+
+    if ((currentValue == null && newValue != null) || !currentValue.equals(newValue)) {
+      comboBox.setValue(newValue);
+    }
   }
 
   protected void registerComboBoxValueChangeListener() {
-    comboBox.addValueChangeListener(event -> setUIState(event.getValue()));    
+    comboBox.addValueChangeListener(event -> setUIState(event.getValue()));
   }
 
 }

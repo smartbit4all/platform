@@ -2,14 +2,13 @@ package org.smartbit4all.api.object;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
+import org.smartbit4all.core.utility.PathUtility;
 import org.smartbit4all.core.utility.StringConstant;
 
 /**
@@ -50,10 +49,6 @@ public class ApiObjectCollection implements List<ApiObjectRef> {
    */
   private final List<ApiObjectRef> items = new ArrayList<>();
 
-  /**
-   * The item map to find the reference quickly with the original object.
-   */
-  private final Map<Object, ApiObjectRef> itemsByObject = new HashMap<>();
 
   /**
    * If an object reference is removed from the collection then we remember this till the event
@@ -79,8 +74,12 @@ public class ApiObjectCollection implements List<ApiObjectRef> {
     super();
     this.objectRef = objectRef;
     this.property = collectionProperty;
-    this.path = objectRef.getPath() + StringConstant.SLASH + collectionProperty.getName();
+    this.path = (isRefPathEmpty(objectRef) ? "" : (objectRef.getPath() + StringConstant.SLASH)) + collectionProperty.getName();
     build();
+  }
+
+  private boolean isRefPathEmpty(ApiObjectRef objectRef) {
+    return objectRef.getPath() == null || objectRef.getPath().isEmpty();
   }
 
   /**
@@ -119,7 +118,6 @@ public class ApiObjectCollection implements List<ApiObjectRef> {
   private final void addRef(ApiObjectRef objectRef) {
     if (objectRef != null) {
       items.add(objectRef);
-      itemsByObject.put(objectRef.getObject(), objectRef);
     }
   }
 
@@ -192,7 +190,6 @@ public class ApiObjectCollection implements List<ApiObjectRef> {
     }
     items.remove(o);
     ApiObjectRef apiObjectRef = (ApiObjectRef) o;
-    itemsByObject.remove(apiObjectRef.getObject());
     removedObjects.add(apiObjectRef);
     originalCollection.remove(apiObjectRef.getObject());
     return true;
@@ -205,11 +202,20 @@ public class ApiObjectCollection implements List<ApiObjectRef> {
    * @return
    */
   public boolean removeObject(Object o) {
-    ApiObjectRef apiObjectRef = itemsByObject.remove(o);
-    if (apiObjectRef != null) {
-      items.remove(apiObjectRef);
+    int index = originalCollection.indexOf(o);
+    if (index != -1) {
+      ApiObjectRef apiObjectRef = items.remove(index);
       removedObjects.add(apiObjectRef);
       originalCollection.remove(o);
+    }
+    return false;
+  }
+  
+  public boolean removeByIdx(String idxPath) {
+    for (ApiObjectRef item : items) {
+      if (idxPath.equals(PathUtility.getLastPath(item.getPath()))) {
+        return removeObject(item.getObject());
+      }
     }
     return false;
   }
@@ -231,11 +237,6 @@ public class ApiObjectCollection implements List<ApiObjectRef> {
       return false;
     }
     items.addAll(c);
-    for (ApiObjectRef apiObjectRef : c) {
-      if (apiObjectRef != null) {
-        itemsByObject.put(apiObjectRef.getObject(), apiObjectRef);
-      }
-    }
     originalCollection.addAll(c.stream().map(ApiObjectRef::getObject).collect(Collectors.toList()));
     return true;
   }
@@ -278,13 +279,21 @@ public class ApiObjectCollection implements List<ApiObjectRef> {
   public void clear() {
     removedObjects.addAll(items);
     items.clear();
-    itemsByObject.clear();
     originalCollection.clear();
   }
 
   @Override
   public ApiObjectRef get(int index) {
     return items.get(index);
+  }
+  
+  public ApiObjectRef getByIdx(String idxPath) {
+    for (ApiObjectRef item : items) {
+      if (idxPath.equals(PathUtility.getLastPath(item.getPath()))) {
+        return item;
+      }
+    }
+    return null;
   }
 
   @Override
@@ -295,7 +304,6 @@ public class ApiObjectCollection implements List<ApiObjectRef> {
       element.setCurrentState(ChangeState.NEW);
       items.set(index, element);
       removedObjects.add(currentRef);
-      itemsByObject.remove(currentRef.getObject());
       return currentRef;
     }
     return null;
@@ -309,7 +317,7 @@ public class ApiObjectCollection implements List<ApiObjectRef> {
       element.setCurrentState(ChangeState.NEW);
       items.set(index, element);
       removedObjects.add(currentRef);
-      itemsByObject.remove(currentRef.getObject());
+      originalCollection.set(index, o);
       return currentRef;
     }
     return null;
@@ -320,7 +328,6 @@ public class ApiObjectCollection implements List<ApiObjectRef> {
   public void add(int index, ApiObjectRef element) {
     if (element != null) {
       items.add(index, element);
-      itemsByObject.put(element.getObject(), element);
       originalCollection.add(index, element.getObject());
     }
   }
@@ -331,7 +338,6 @@ public class ApiObjectCollection implements List<ApiObjectRef> {
     if (currentRef != null) {
       items.remove(index);
       removedObjects.add(currentRef);
-      itemsByObject.remove(currentRef.getObject());
       return currentRef;
     }
     return null;
@@ -392,6 +398,7 @@ public class ApiObjectCollection implements List<ApiObjectRef> {
         result.getChanges().add(itemChange.get());
       }
     }
+    removedObjects.clear();
     return Optional.ofNullable(result);
   }
 
