@@ -2,14 +2,15 @@ package org.smartbit4all.api.object;
 
 public interface ObjectEditing {
 
-  @NotifiyListeners
+  @NotifyListeners
   void setValue(String propertyPath, Object value);
 
-  @NotifiyListeners
+  @NotifyListeners
   void addValue(String collectionPath, Object value);
 
-  @NotifiyListeners
+  @NotifyListeners
   void removeValue(String collectionElementPath);
 
+  @PublishEvents("OBJECT")
   ObjectPublisher publisher();
 }

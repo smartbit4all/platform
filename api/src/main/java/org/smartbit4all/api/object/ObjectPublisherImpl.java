@@ -5,18 +5,22 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.meta.EventListener;
+import org.smartbit4all.domain.meta.EventPublisherImpl;
 import org.smartbit4all.domain.meta.EventSubscription;
 
 /**
- * The base implementation of the {@link ObjectPublisher} interface that can be used in the
- * Api implementations.
+ * The base implementation of the {@link ObjectPublisher} interface that can be used in the Api
+ * implementations.
  * 
  * @author Peter Boros
  *
  */
-public class ObjectPublisherImpl implements ObjectPublisher {
+public class ObjectPublisherImpl implements ObjectPublisher, EventPublisherImpl {
+
+  ApiObjectRef ref;
 
   /**
    * The listeners by the fully qualified name of the property.
@@ -36,7 +40,7 @@ public class ObjectPublisherImpl implements ObjectPublisher {
   PropertyChangeEvent propertyChangeEvent = new PropertyChangeEventImpl();
   ReferenceChangeEvent referenceChangeEvent = new ReferenceChangeEventImpl();
   CollectionChangeEvent collectionChangeEvent = new CollectionChangeEventImpl();
-  
+
   public void notify(ObjectChange change) {
     notifyRec(StringConstant.EMPTY, change);
   }
@@ -88,7 +92,8 @@ public class ObjectPublisherImpl implements ObjectPublisher {
     return collectionChangeEvent;
   }
 
-  private <E extends ChangeItem>void addToEventListeners(String name,  Map<String, List<EventListener<E>>> listenerMap, EventListener<E> listener) {
+  private <E extends ChangeItem> void addToEventListeners(String name,
+      Map<String, List<EventListener<E>>> listenerMap, EventListener<E> listener) {
     List<EventListener<E>> list = listenerMap.get(name);
     if (list == null) {
       list = new ArrayList<EventListener<E>>();
@@ -96,11 +101,11 @@ public class ObjectPublisherImpl implements ObjectPublisher {
     }
     list.add(listener);
   }
-  
+
   private class PropertyChangeEventImpl implements PropertyChangeEvent {
 
     final List<EventSubscription<?>> subscriptions = new ArrayList<EventSubscription<?>>();
-    
+
     @Override
     public URI getUri() {
       // TODO Auto-generated method stub
@@ -127,11 +132,11 @@ public class ObjectPublisherImpl implements ObjectPublisher {
       return propertyChangeSubscription;
     }
   }
-  
+
   private class CollectionChangeEventImpl implements CollectionChangeEvent {
 
     final List<EventSubscription<?>> subscriptions = new ArrayList<EventSubscription<?>>();
-    
+
     @Override
     public URI getUri() {
       // TODO Auto-generated method stub
@@ -146,23 +151,25 @@ public class ObjectPublisherImpl implements ObjectPublisher {
 
     @Override
     public CollectionChangeSubscription subscribe() {
-      CollectionChangeSubscription collectionChangeSubscription = new CollectionChangeSubscription() {
-        @Override
-        public EventSubscription<CollectionChange> add(EventListener<CollectionChange> listener) {
-          EventSubscription<CollectionChange> eventSubscription = super.add(listener);
-          addToEventListeners(fullyQualifiedName(), collectionListeners, listener);
-          return eventSubscription;
-        }
-      };
+      CollectionChangeSubscription collectionChangeSubscription =
+          new CollectionChangeSubscription() {
+            @Override
+            public EventSubscription<CollectionChange> add(
+                EventListener<CollectionChange> listener) {
+              EventSubscription<CollectionChange> eventSubscription = super.add(listener);
+              addToEventListeners(fullyQualifiedName(), collectionListeners, listener);
+              return eventSubscription;
+            }
+          };
       subscriptions.add(collectionChangeSubscription);
       return collectionChangeSubscription;
     }
   }
-  
+
   private class ReferenceChangeEventImpl implements ReferenceChangeEvent {
 
     final List<EventSubscription<?>> subscriptions = new ArrayList<EventSubscription<?>>();
-    
+
     @Override
     public URI getUri() {
       // TODO Auto-generated method stub
@@ -188,5 +195,21 @@ public class ObjectPublisherImpl implements ObjectPublisher {
       subscriptions.add(propertyChangeSubscription);
       return propertyChangeSubscription;
     }
+  }
+
+  @Override
+  public void notifyListeners() {
+    Optional<ObjectChange> renderAndCleanChanges = ref.renderAndCleanChanges();
+    if (renderAndCleanChanges.isPresent()) {
+      notify(renderAndCleanChanges.get());
+    }
+  }
+
+  public final ApiObjectRef getRef() {
+    return ref;
+  }
+
+  public final void setRef(ApiObjectRef ref) {
+    this.ref = ref;
   }
 }

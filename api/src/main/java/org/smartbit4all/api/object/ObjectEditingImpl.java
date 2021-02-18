@@ -6,19 +6,19 @@ public class ObjectEditingImpl implements ObjectEditing{
 
   protected ObjectPublisherImpl publisher;
 
-  @NotifiyListeners
+  @NotifyListeners
   @Override
   public void setValue(String propertyPath, Object value) {
     ref.setValueByPath(propertyPath, value);
   }
 
-  @NotifiyListeners
+  @NotifyListeners
   @Override
   public void addValue(String collectionPath, Object value) {
     ref.addValueByPath(collectionPath, value);
   }
 
-  @NotifiyListeners
+  @NotifyListeners
   @Override
   public void removeValue(String collectionElementPath) {
     ref.removeValueByPath(collectionElementPath);
