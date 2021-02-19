@@ -1,21 +1,20 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
  * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 package org.smartbit4all.core.utility;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashSet;
@@ -131,6 +130,57 @@ public class ReflectionUtility {
     }
 
     return result;
+  }
+
+  /**
+   * This method is looking for the nearest annotation instance in the inheritance for the given
+   * method. If we have a direct annotation on the given method then we get it back. Else we examine
+   * all the ancestors like super classes and interfaces. In this way we can annotate the method in
+   * the interface definition and we can skip annotation in the implementation.
+   * 
+   * The traversal of the ancestors prioritize the super classes first and the interfaces next.
+   * 
+   * @param <A> The annotation class is the type.
+   * @param method The method.
+   * @param annotationType The annotation class.
+   * @return Return null if the annotation was not found.
+   */
+  private static <A extends Annotation> A getNearestAnnotation(Method method,
+      Class<A> annotationType) {
+    final Class<?> declaringClass = method.getDeclaringClass();
+    final String methodName = method.getName();
+    final Class<?>[] params = method.getParameterTypes();
+
+    final Class<?> superclass = declaringClass.getSuperclass();
+    if (superclass != null) {
+      final A annotation =
+          traverseNearestAnnotation(annotationType, superclass, methodName, params);
+      if (annotation != null)
+        return annotation;
+    }
+
+    for (final Class<?> implInterface : declaringClass.getInterfaces()) {
+      final A annotation =
+          traverseNearestAnnotation(annotationType, implInterface, methodName, params);
+      if (annotation != null)
+        return annotation;
+    }
+
+    return null;
+  }
+
+  private static <A extends Annotation> A traverseNearestAnnotation(Class<A> annotationClass,
+      Class<?> searchClass, String methodName,
+      Class<?>[] params) {
+    try {
+      final Method method = searchClass.getMethod(methodName, params);
+      final A annotation = method.getAnnotation(annotationClass);
+      if (annotation != null)
+        return annotation;
+      return getNearestAnnotation(method, annotationClass);
+    } catch (final NoSuchMethodException e) {
+      return null;
+    }
   }
 
 }
