@@ -12,3 +12,7 @@
 	width: 100%;
 	justify-content: space-evenly;
 }
+
+.virtual-keyboard-savingdialog-layout {
+	flex-direction: column;
+}
