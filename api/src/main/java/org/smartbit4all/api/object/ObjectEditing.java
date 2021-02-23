@@ -1,5 +1,7 @@
 package org.smartbit4all.api.object;
 
+import org.smartbit4all.api.constraint.ObjectConstraintPublisher;
+
 public interface ObjectEditing {
 
   @NotifyListeners
@@ -13,4 +15,7 @@ public interface ObjectEditing {
 
   @PublishEvents("OBJECT")
   ObjectPublisher publisher();
+
+  @PublishEvents("CONSTRAINTS")
+  ObjectConstraintPublisher constraints();
 }

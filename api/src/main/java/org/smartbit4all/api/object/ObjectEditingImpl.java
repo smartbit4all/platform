@@ -1,10 +1,14 @@
 package org.smartbit4all.api.object;
 
-public class ObjectEditingImpl implements ObjectEditing{
+import org.smartbit4all.api.constraint.ObjectConstraintPublisher;
+
+public class ObjectEditingImpl implements ObjectEditing {
 
   protected ApiObjectRef ref;
 
   protected ObjectPublisherImpl publisher;
+
+  protected ObjectConstraintPublisher constraints;
 
   @Override
   public void setValue(String propertyPath, Object value) {
@@ -24,6 +28,11 @@ public class ObjectEditingImpl implements ObjectEditing{
   @Override
   public ObjectPublisher publisher() {
     return publisher;
+  }
+
+  @Override
+  public ObjectConstraintPublisher constraints() {
+    return constraints;
   }
 
 }

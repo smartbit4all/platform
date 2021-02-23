@@ -96,7 +96,7 @@ public class ObjectPublisherImpl implements ObjectPublisher, EventPublisherImpl 
       Map<String, List<EventListener<E>>> listenerMap, EventListener<E> listener) {
     List<EventListener<E>> list = listenerMap.get(name);
     if (list == null) {
-      list = new ArrayList<EventListener<E>>();
+      list = new ArrayList<>();
       listenerMap.put(name.toUpperCase(), list);
     }
     list.add(listener);
@@ -104,7 +104,7 @@ public class ObjectPublisherImpl implements ObjectPublisher, EventPublisherImpl 
 
   private class PropertyChangeEventImpl implements PropertyChangeEvent {
 
-    final List<EventSubscription<?>> subscriptions = new ArrayList<EventSubscription<?>>();
+    final List<EventSubscription<?>> subscriptions = new ArrayList<>();
 
     @Override
     public URI getUri() {

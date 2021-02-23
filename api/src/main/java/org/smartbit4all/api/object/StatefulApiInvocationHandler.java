@@ -35,30 +35,30 @@ import org.smartbit4all.domain.meta.EventPublisherImpl;
  * 
  * @author Zoltan Suller
  */
-public class ObjectEditingInvocationHandler implements InvocationHandler {
+public class StatefulApiInvocationHandler implements InvocationHandler {
 
-  private static final Logger log = LoggerFactory.getLogger(ObjectEditingInvocationHandler.class);
+  private static final Logger log = LoggerFactory.getLogger(StatefulApiInvocationHandler.class);
 
-  protected ObjectEditingImpl editing;
+  protected Object apiInstance;
 
   /**
    * Contains the publishers from the api by the annotated methods of the interface.
    */
   private final Map<String, EventPublisherImpl> publishers = new HashMap<>();
 
-  public ObjectEditingInvocationHandler(ObjectEditingImpl editing) {
+  public StatefulApiInvocationHandler(Object instance) {
     super();
-    this.editing = editing;
-    Set<Method> methods = ReflectionUtility.allMethods(editing.getClass(),
+    this.apiInstance = instance;
+    Set<Method> methods = ReflectionUtility.allMethods(instance.getClass(),
         m -> m.isAnnotationPresent(PublishEvents.class) && m.getParameterCount() == 0);
     for (Method method : methods) {
       try {
-        EventPublisher publisher = (EventPublisher) method.invoke(editing);
+        EventPublisher publisher = (EventPublisher) method.invoke(instance);
         PublishEvents publishEvents = method.getAnnotation(PublishEvents.class);
         EventPublisher existingPublisher = publishers.get(publishEvents.value());
         if (existingPublisher != null) {
           throw new IllegalArgumentException("More than one publisher found with the same name. ("
-              + editing.getClass() + ": " + publishEvents.value() + ")");
+              + instance.getClass() + ": " + publishEvents.value() + ")");
         }
         if (publisher instanceof EventPublisherImpl) {
           publishers.put(publishEvents.value(), (EventPublisherImpl) publisher);
@@ -71,7 +71,7 @@ public class ObjectEditingInvocationHandler implements InvocationHandler {
 
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-    Object result = method.invoke(editing, args);
+    Object result = method.invoke(apiInstance, args);
     NotifyListeners notifiyListeners = method.getAnnotation(NotifyListeners.class);
     if (notifiyListeners != null) {
       Collection<EventPublisherImpl> publishersToCall;

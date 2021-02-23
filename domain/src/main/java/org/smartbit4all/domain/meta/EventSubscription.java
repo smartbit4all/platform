@@ -15,6 +15,7 @@
 package org.smartbit4all.domain.meta;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -65,6 +66,17 @@ public class EventSubscription<E> {
    */
   public boolean checkEvent(E eventObject) {
     return true;
+  }
+
+  /**
+   * Must be implemented if there is any specific registry for the given subscription.
+   */
+  public void unsubsribe() {
+
+  }
+
+  public final List<EventListener<E>> getListeners() {
+    return Collections.unmodifiableList(listeners);
   }
 
 }
