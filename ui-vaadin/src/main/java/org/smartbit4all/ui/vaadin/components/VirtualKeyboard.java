@@ -29,6 +29,8 @@ public class VirtualKeyboard extends Composite<Dialog> {
 
   private List<String>[] characters;
 
+  private Dialog savingDialog;
+
   public VirtualKeyboard(List<String>... characters) {
     this.characters = characters;
     init();
@@ -40,6 +42,7 @@ public class VirtualKeyboard extends Composite<Dialog> {
     workingTextField = new TextField();
     addClassNameToComponent(workingTextField, "virtual-keyboard-working-textfield");
     cbxTextFieldsOnLayout = new ComboBox<>();
+    savingDialog = initSavingDialog();
 
     Component header = createHeader();
     FlexLayout contentWrapper = createContentWrapper();
@@ -50,8 +53,35 @@ public class VirtualKeyboard extends Composite<Dialog> {
     getContent().addDialogCloseActionListener(closeAction -> close());
   }
 
+  private Dialog initSavingDialog() {
+    Dialog dialog = new Dialog();
+    Label selectLabel =
+        new Label("Kérem válassza ki a kívánt mezőt, amibe kerüljön a megadott szöveg!");
+    Button saveButton = new Button("Mentés");
+    Button cancelButton = new Button("Mégse");
+
+    FlexLayout savingDialogLayout = new FlexLayout();
+    addClassNameToComponent(savingDialogLayout, "virtual-keyboard-savingdialog-layout");
+    HorizontalLayout buttonLayout = new HorizontalLayout();
+    buttonLayout.add(saveButton, cancelButton);
+    savingDialogLayout.add(selectLabel, cbxTextFieldsOnLayout, buttonLayout);
+    dialog.add(savingDialogLayout);
+
+    saveButton.addClickListener(save -> {
+      onSaveMethods.forEach(m -> m.accept(workingTextField.getValue()));
+      cbxTextFieldsOnLayout.setValue(null);
+      dialog.close();
+    });
+    cancelButton.addClickListener(cancel -> {
+      cbxTextFieldsOnLayout.setValue(null);
+      dialog.close();
+    });
+    return dialog;
+  }
+
   protected Component createHeader() {
     FlexLayout header = new FlexLayout();
+    addClassNameToComponent(header, "virtual-keyboard-header");
     header.add(workingTextField);
     return header;
   }
@@ -59,7 +89,8 @@ public class VirtualKeyboard extends Composite<Dialog> {
   protected FlexLayout createContentWrapper() {
     FlexLayout contentWrapper = new FlexLayout();
     for (List<String> characterList : characters) {
-      VerticalLayout characterListLayout = new VerticalLayout();
+      FlexLayout characterListLayout = new FlexLayout();
+      addClassNameToComponent(characterListLayout, "character-list-layout");
       for (String character : characterList) {
         Button characterButton = new Button(character);
         characterButton.addClickListener(
@@ -102,29 +133,7 @@ public class VirtualKeyboard extends Composite<Dialog> {
   }
 
   private void save() {
-    Dialog dialog = new Dialog();
-    Label selectLabel =
-        new Label("Kérem válassza ki a kívánt mezőt, amibe kerüljön a megadott szöveg!");
-    Button saveButton = new Button("Mentés");
-    Button cancelButton = new Button("Mégse");
-
-    FlexLayout savingDialogLayout = new FlexLayout();
-    addClassNameToComponent(savingDialogLayout, "virtual-keyboard-savingdialog-layout");
-    HorizontalLayout buttonLayout = new HorizontalLayout();
-    buttonLayout.add(saveButton, cancelButton);
-    savingDialogLayout.add(selectLabel, cbxTextFieldsOnLayout, buttonLayout);
-    dialog.add(savingDialogLayout);
-
-    saveButton.addClickListener(save -> {
-      onSaveMethods.forEach(m -> m.accept(workingTextField.getValue()));
-      cbxTextFieldsOnLayout.setValue(null);
-      dialog.close();
-    });
-    cancelButton.addClickListener(cancel -> {
-      cbxTextFieldsOnLayout.setValue(null);
-      dialog.close();
-    });
-    dialog.open();
+    savingDialog.open();
   }
 
   private void addClassNameToComponent(HasStyle hasStyle, String className) {

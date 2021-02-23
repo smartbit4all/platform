@@ -2,17 +2,29 @@
 	flex-direction: column;
 }
 
+.virtual-keyboard-header {
+	width: 33%;
+	align-self: center;
+	margin-bottom: 20px;
+}
+
 .virtual-keyboard-working-textfield {
 	width: 100%;
-	margin-left: 15px;
-    margin-right: 15px;
 }
 
 .virtual-keyboard-buttonlayout {
 	width: 100%;
-	justify-content: space-evenly;
+	justify-content: center;
 }
 
 .virtual-keyboard-savingdialog-layout {
 	flex-direction: column;
+}
+
+.character-list-layout {
+	width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
 }
