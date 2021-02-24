@@ -172,7 +172,12 @@ public class VirtualKeyboard extends Composite<Dialog> {
   }
 
   private void save() {
-    savingDialog.open();
+    if (selectedTextField == null) {
+      savingDialog.open();
+    } else {
+      onSaveMethods.forEach(m -> m.accept(transliterationTextField.getValue()));
+      close();
+    }
   }
 
   private void addClassNameToComponent(HasStyle hasStyle, String className) {

@@ -14,16 +14,24 @@ public class VirtualKeyboardButton extends Composite<Button> {
   private HasOrderedComponents<Component> layout;
   private VirtualKeyboard virtualKeyboard;
   private List<TextField> textFieldsOnLayout;
+  private TextField textField;
 
   public VirtualKeyboardButton(VirtualKeyboard virtualKeyboard, HasOrderedComponents<Component> layout) {
     this.virtualKeyboard = virtualKeyboard;
     this.layout = layout;
     init();
   }
+  
+  public VirtualKeyboardButton(VirtualKeyboard virtualKeyboard, TextField textField) {
+    this.virtualKeyboard = virtualKeyboard;
+    this.textField = textField;
+    init();
+  }
 
   protected void init() {
     addButtonName("Virtual");
     getContent().addClickListener(click -> clickListener());
+    virtualKeyboard.addOnSaveMethod(value -> onVKeyboardSave(value));
   }
 
   protected void addButtonName(String name) {
@@ -31,11 +39,17 @@ public class VirtualKeyboardButton extends Composite<Button> {
   }
 
   public void clickListener() {
-    textFieldsOnLayout = getTextFieldsOnlayout(layout);
-    virtualKeyboard.setTextFieldsOnLayout(textFieldsOnLayout);
-    virtualKeyboard
-        .addOnSaveMethod(value -> virtualKeyboard.getSelectedTextField().setValue(value));
+    if (textField == null) {
+      textFieldsOnLayout = getTextFieldsOnlayout(layout);
+      virtualKeyboard.setTextFieldsOnLayout(textFieldsOnLayout);
+    } else {
+      virtualKeyboard.setSelectedTextField(textField);
+    }
     virtualKeyboard.open();
+  }
+  
+  private void onVKeyboardSave(String value) {
+    virtualKeyboard.getSelectedTextField().setValue(value);
   }
   
   protected List<TextField> getTextFieldsOnlayout(HasOrderedComponents<Component> layout) {
