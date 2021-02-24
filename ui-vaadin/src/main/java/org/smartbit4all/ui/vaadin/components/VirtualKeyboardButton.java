@@ -6,17 +6,16 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.HasOrderedComponents;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.textfield.TextField;
 
 public class VirtualKeyboardButton extends Composite<Button> {
 
   private static final String CSSCLASS = "virtual-keyboard-button";
-  private HasOrderedComponents<FlexLayout> layout;
+  private HasOrderedComponents<Component> layout;
   private VirtualKeyboard virtualKeyboard;
   private List<TextField> textFieldsOnLayout;
 
-  public VirtualKeyboardButton(VirtualKeyboard virtualKeyboard, HasOrderedComponents<FlexLayout> layout) {
+  public VirtualKeyboardButton(VirtualKeyboard virtualKeyboard, HasOrderedComponents<Component> layout) {
     this.virtualKeyboard = virtualKeyboard;
     this.layout = layout;
     init();
@@ -39,14 +38,14 @@ public class VirtualKeyboardButton extends Composite<Button> {
     virtualKeyboard.open();
   }
   
-  protected List<TextField> getTextFieldsOnlayout(HasOrderedComponents<FlexLayout> layout) {
+  protected List<TextField> getTextFieldsOnlayout(HasOrderedComponents<Component> layout) {
     ArrayList<TextField> textFieldsOnLayout = new ArrayList<>();
     for (int i = 0; i < layout.getComponentCount(); i++) {
       Component component = layout.getComponentAt(i);
       if (component instanceof TextField) {
         textFieldsOnLayout.add((TextField) component);
-      } else if (component instanceof HasOrderedComponents<?>) {
-        textFieldsOnLayout.addAll(getTextFieldsOnlayout((HasOrderedComponents<FlexLayout>)component));
+      } else if (component instanceof HasOrderedComponents) {
+        textFieldsOnLayout.addAll(getTextFieldsOnlayout((HasOrderedComponents<Component>)component));
       }
     }
     return textFieldsOnLayout;
