@@ -2,6 +2,7 @@ package org.smartbit4all.ui.vaadin.components;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Composite;
@@ -15,6 +16,7 @@ import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.value.ValueChangeMode;
 
 @CssImport("./styles/components/virtual-keyboard.css")
 public class VirtualKeyboard extends Composite<Dialog> {
@@ -24,14 +26,15 @@ public class VirtualKeyboard extends Composite<Dialog> {
   private FlexLayout wrapper;
 
   private TextField workingTextField;
+  private TextField transliterationTextField;
   private TextField selectedTextField;
   private ComboBox<TextField> cbxTextFieldsOnLayout;
 
-  private List<String>[] characters;
+  private Map<String, String>[] characters;
 
   private Dialog savingDialog;
 
-  public VirtualKeyboard(List<String>... characters) {
+  public VirtualKeyboard(Map<String, String>... characters) {
     this.characters = characters;
     init();
   }
@@ -39,8 +42,16 @@ public class VirtualKeyboard extends Composite<Dialog> {
   protected void init() {
     wrapper = new FlexLayout();
     addClassNameToComponent(wrapper, "virtual-keyboard-wrapper");
+    
     workingTextField = new TextField();
     addClassNameToComponent(workingTextField, "virtual-keyboard-working-textfield");
+    workingTextField.setReadOnly(true);
+    
+    transliterationTextField = new TextField();
+    addClassNameToComponent(transliterationTextField, "virtual-keyboard-working-textfield");
+    transliterationTextField.setValueChangeMode(ValueChangeMode.EAGER);
+    transliterationTextField.addValueChangeListener(value -> transliterationValueChanged(value.getOldValue(), value.getValue(), value.isFromClient()));
+    
     cbxTextFieldsOnLayout = new ComboBox<>();
     savingDialog = initSavingDialog();
 
@@ -51,6 +62,29 @@ public class VirtualKeyboard extends Composite<Dialog> {
     wrapper.add(header, contentWrapper, buttonWrapper);
     getContent().add(wrapper);
     getContent().addDialogCloseActionListener(closeAction -> close());
+  }
+
+  private void transliterationValueChanged(String oldValue, String newValue, boolean isFromClient) {
+    if (isFromClient && newValue.length() < oldValue.length()) {
+      String oldWorkingTextFieldValue = workingTextField.getValue();
+      String stringToBeDeleted = oldWorkingTextFieldValue.substring(oldWorkingTextFieldValue.length() - 1);
+      workingTextField.setValue(oldWorkingTextFieldValue.substring(0, oldWorkingTextFieldValue.length() - 1));
+      
+      for (Map<String, String> characterMap : characters) {
+        for (Map.Entry<String, String> mapElement : characterMap.entrySet()) {
+          if (mapElement.getKey().equals(stringToBeDeleted)) {
+            String valueToBeRemoved = mapElement.getValue();
+            String remainingValue = oldValue.substring(0, oldValue.length() - valueToBeRemoved.length());
+            transliterationTextField.setValue(remainingValue);
+          }
+        }
+      }    
+    }
+    
+    if (isFromClient && newValue.length() > oldValue.length()) {
+      String addedString = newValue.substring(oldValue.length(), newValue.length());
+      workingTextField.setValue(workingTextField.getValue() + addedString);
+    }
   }
 
   private Dialog initSavingDialog() {
@@ -68,7 +102,7 @@ public class VirtualKeyboard extends Composite<Dialog> {
     dialog.add(savingDialogLayout);
 
     saveButton.addClickListener(save -> {
-      onSaveMethods.forEach(m -> m.accept(workingTextField.getValue()));
+      onSaveMethods.forEach(m -> m.accept(transliterationTextField.getValue()));
       cbxTextFieldsOnLayout.setValue(null);
       dialog.close();
     });
@@ -82,19 +116,23 @@ public class VirtualKeyboard extends Composite<Dialog> {
   protected Component createHeader() {
     FlexLayout header = new FlexLayout();
     addClassNameToComponent(header, "virtual-keyboard-header");
-    header.add(workingTextField);
+    VerticalLayout headerLayout = new VerticalLayout(workingTextField, transliterationTextField);
+    header.add(headerLayout);
     return header;
   }
 
   protected FlexLayout createContentWrapper() {
     FlexLayout contentWrapper = new FlexLayout();
-    for (List<String> characterList : characters) {
+
+    for (Map<String, String> characterMap : characters) {
       FlexLayout characterListLayout = new FlexLayout();
       addClassNameToComponent(characterListLayout, "character-list-layout");
-      for (String character : characterList) {
-        Button characterButton = new Button(character);
-        characterButton.addClickListener(
-            click -> workingTextField.setValue(workingTextField.getValue() + character));
+      for (Map.Entry<String, String> mapElement : characterMap.entrySet()) {
+        Button characterButton = new Button(mapElement.getKey());
+        characterButton.addClickListener(click -> {
+          workingTextField.setValue(workingTextField.getValue() + mapElement.getKey());
+          transliterationTextField.setValue(transliterationTextField.getValue() + mapElement.getValue());
+        });
         characterListLayout.add(characterButton);
       }
       contentWrapper.add(characterListLayout);
@@ -123,6 +161,7 @@ public class VirtualKeyboard extends Composite<Dialog> {
 
   public void close() {
     workingTextField.setValue("");
+    transliterationTextField.setValue("");
     getContent().close();
   }
 
