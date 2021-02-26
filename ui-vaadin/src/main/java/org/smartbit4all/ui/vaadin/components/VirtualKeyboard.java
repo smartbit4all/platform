@@ -1,6 +1,7 @@
 package org.smartbit4all.ui.vaadin.components;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -28,7 +29,7 @@ public class VirtualKeyboard extends Composite<Dialog> {
   private TextField workingTextField;
   private TextField transliterationTextField;
   private TextField selectedTextField;
-  private ComboBox<TextField> cbxTextFieldsOnLayout;
+  private ComboBox<String> cbxTextFieldsOnLayout;
 
   private Map<String, String>[] characters;
 
@@ -185,10 +186,9 @@ public class VirtualKeyboard extends Composite<Dialog> {
     hasStyle.addClassName(className);
   }
 
-  public void setTextFieldsOnLayout(List<TextField> textFieldsOnLayout) {
-    cbxTextFieldsOnLayout.setItems(textFieldsOnLayout);
-    cbxTextFieldsOnLayout.setItemLabelGenerator(TextField::getLabel);
-    cbxTextFieldsOnLayout.addValueChangeListener(select -> setSelectedTextField(select.getValue()));
+  public void setTextFieldsOnLayout(Map<String, TextField> textFieldsOnLayout) {
+    cbxTextFieldsOnLayout.setItems(textFieldsOnLayout.keySet());
+    cbxTextFieldsOnLayout.addValueChangeListener(select -> setSelectedTextField(textFieldsOnLayout.get(select.getValue())));
   }
 
   public TextField getSelectedTextField() {
