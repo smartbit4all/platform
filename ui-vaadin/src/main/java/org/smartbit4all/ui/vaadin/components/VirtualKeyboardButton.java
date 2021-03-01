@@ -45,11 +45,16 @@ public class VirtualKeyboardButton extends Composite<Button> {
   public void clickListener() {
     if (textField == null) {
       textFieldsOnLayout = getTextFieldsOnlayout(layout);
-      virtualKeyboard.setTextFieldsOnLayout(textFieldsOnLayout);
+      if (textFieldsOnLayout.size() == 0) {
+        Notification.show("Nincs hova beilleszteni a speciális karaktereket!");
+      } else {
+        virtualKeyboard.setTextFieldsOnLayout(textFieldsOnLayout);
+        virtualKeyboard.open();
+      }
     } else {
       virtualKeyboard.setSelectedTextField(textField);
+      virtualKeyboard.open();
     }
-    virtualKeyboard.open();
   }
   
   private void onVKeyboardSave(String value) {
