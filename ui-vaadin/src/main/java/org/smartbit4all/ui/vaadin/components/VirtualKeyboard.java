@@ -106,6 +106,7 @@ public class VirtualKeyboard extends Composite<Dialog> {
       onSaveMethods.forEach(m -> m.accept(transliterationTextField.getValue()));
       cbxTextFieldsOnLayout.setValue(null);
       dialog.close();
+      close();
     });
     cancelButton.addClickListener(cancel -> {
       cbxTextFieldsOnLayout.setValue(null);
