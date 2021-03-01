@@ -44,9 +44,13 @@ public class VirtualKeyboardButton extends Composite<Button> {
 
   public void clickListener() {
     if (textField == null) {
+      virtualKeyboard.setSelectedTextField(null);
       textFieldsOnLayout = getTextFieldsOnlayout(layout);
       if (textFieldsOnLayout.size() == 0) {
         Notification.show("Nincs hova beilleszteni a speciális karaktereket!");
+      } else if (textFieldsOnLayout.size() == 1) {
+        virtualKeyboard.setSelectedTextField(textFieldsOnLayout.get(textFieldsOnLayout.keySet().toArray()[0]));
+        virtualKeyboard.open();
       } else {
         virtualKeyboard.setTextFieldsOnLayout(textFieldsOnLayout);
         virtualKeyboard.open();
