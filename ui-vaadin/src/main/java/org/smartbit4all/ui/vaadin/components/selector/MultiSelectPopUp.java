@@ -176,10 +176,7 @@ public class MultiSelectPopUp<T> extends CustomField<Set<T>> implements HasDataP
     // clear button and info icon only visible if there are selected items
     buttonBox.setVisible(false);
     btnClear.addClickListener(e -> {
-      grid.deselectAll();
-      selectedItems = Collections.emptySet();
-      displayField.clear();
-      buttonBox.setVisible(false);
+      this.clear();
     });
 
     // select/unselect items on rowclick
@@ -416,6 +413,8 @@ public class MultiSelectPopUp<T> extends CustomField<Set<T>> implements HasDataP
   @Override
   public void clear() {
     super.clear();
+    selectedItems = Collections.emptySet();
+    buttonBox.setVisible(false);
     grid.asMultiSelect().deselectAll();
     displayField.clear();
   }
