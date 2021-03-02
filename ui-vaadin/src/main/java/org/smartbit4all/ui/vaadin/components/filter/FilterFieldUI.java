@@ -84,8 +84,7 @@ public class FilterFieldUI extends FlexLayout implements DragSource<FilterFieldU
     filterLayout.addClassName("filter-layout");
     filterLayout.add(header, row);
     add(filterLayout);
-
-
+    
     updateState(uiState);
   }
 
@@ -143,12 +142,12 @@ public class FilterFieldUI extends FlexLayout implements DragSource<FilterFieldU
       header.remove(lblFilterName);
       operationUI.setPlaceholder(getTranslation(uiState.getLabelCode()));
     } else if (position.equals(FilterLabelPosition.ON_LEFT)) {
-      lblFilterName.setText(getTranslation(uiState.getLabelCode()));
+      lblFilterName.setText(setLblFilterNameText(getTranslation(uiState.getLabelCode()), 1));
       filterLayout.setFlexDirection(FlexDirection.ROW);
       header.remove(btnClose);
       filterLayout.add(btnClose);
     } else {
-      lblFilterName.setText(getTranslation(uiState.getLabelCode()));
+      lblFilterName.setText(setLblFilterNameText(getTranslation(uiState.getLabelCode()), 1));
     }
 
     setPossibleOperations(uiState.getOperations());
@@ -162,6 +161,25 @@ public class FilterFieldUI extends FlexLayout implements DragSource<FilterFieldU
       btnClose.setEnabled(false);
     }
 
+  }
+  
+  private String setLblFilterNameText(String label, int labelCount) {
+    FlexLayout filtersLayout = group.getFiltersLayout();
+    for (int i = 0; i < filtersLayout.getComponentCount(); i++) {
+      Component component = filtersLayout.getComponentAt(i);
+      if (component instanceof FilterFieldUI) {
+        FilterFieldUI filterFieldUI = (FilterFieldUI)component;
+        String text = filterFieldUI.lblFilterName.getText();
+        if (text.equals(label)) {
+          if (label.endsWith(")")) {
+            label = label.substring(0, label.length() - 4);
+          }
+          labelCount++;
+          return setLblFilterNameText(label + " (" + labelCount + ")", labelCount);
+        }
+      }
+    }
+    return label;
   }
 
   public FilterGroupUI getGroup() {
