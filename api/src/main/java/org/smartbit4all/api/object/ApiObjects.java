@@ -1,7 +1,10 @@
 package org.smartbit4all.api.object;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -59,7 +62,7 @@ class ApiObjects {
         for (Method method : methods) {
           // We assume only the get / set methods.
           if (method.getName().startsWith(GET) || method.getName().startsWith(SET)) {
-            processMethod(meta, method, descriptors.get(apiClass));
+            processMethod(apiClass, meta, method, descriptors.get(apiClass));
           }
         }
         // Clean up the invalid properties
@@ -73,7 +76,7 @@ class ApiObjects {
     });
   }
 
-  private static final void processMethod(BeanMeta meta, Method method,
+  private static final void processMethod(Class<?> apiClass, BeanMeta meta, Method method,
       ApiBeanDescriptor descriptor) {
     String propertyName;
     propertyName = method.getName().substring(3);
@@ -111,8 +114,36 @@ class ApiObjects {
       // If have a list of api object then set collection as kind.
       if (apiBeanDescriptor != null) {
         propertyMeta.setKind(PropertyKind.COLLECTION);
+      } else {
+        // If we don't define the detail meta then try to identify the field for the bean property.
+        Class<?> genericType = lookupFieldGenericType(apiClass, propertyName, List.class);
+        if (genericType != null && descriptor.getAllApiBeanClass().contains(genericType)) {
+          propertyMeta.setKind(PropertyKind.COLLECTION);
+        }
       }
     }
+  }
+
+  private static final Class<?> lookupFieldGenericType(Class<?> apiClass, String propertyName,
+      Class<?> type) {
+    Field[] declaredFields = apiClass.getDeclaredFields();
+    for (int i = 0; i < declaredFields.length; i++) {
+      Field field = declaredFields[i];
+      if (propertyName.equalsIgnoreCase(field.getName())
+          && field.getType().isAssignableFrom(type)) {
+        Type genericType = field.getGenericType();
+        if (genericType instanceof ParameterizedType) {
+          Type[] actualTypeArguments = ((ParameterizedType) genericType).getActualTypeArguments();
+          if (actualTypeArguments != null && actualTypeArguments.length > 0) {
+            Type typeArg = actualTypeArguments[0];
+            if (typeArg instanceof Class<?>) {
+              return (Class<?>) typeArg;
+            }
+          }
+        }
+      }
+    }
+    return null;
   }
 
 }

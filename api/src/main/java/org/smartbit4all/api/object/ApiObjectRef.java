@@ -51,9 +51,6 @@ import org.springframework.cglib.proxy.InvocationHandler;
  * it at higher level. At higher level we can go through the inner object changes if we need. So we
  * can manage the collections as a complex change also.
  * 
- * TODO There can be a common interface like ApiObject to hide the implementation of the API object
- * itself.
- * 
  * @author Peter Boros
  */
 public class ApiObjectRef {
@@ -260,14 +257,14 @@ public class ApiObjectRef {
           propertyName + " property is not set to " + value + " in " + meta.getClazz().getName());
     }
   }
-  
+
   public void setValueByPath(String path, Object value) {
-    //TODO
+    // TODO
     path = path.toUpperCase();
-    
+
     String propertyName = PathUtility.getRootPath(path);
     PropertyEntry propertyEntry = properties.get(propertyName);
-    
+
     switch (propertyEntry.getMeta().getKind()) {
       case VALUE:
         setValueInner(value, propertyEntry);
@@ -295,14 +292,14 @@ public class ApiObjectRef {
         break;
     }
   }
-  
+
   public void addValueByPath(String path, Object value) {
-    //TODO
+    // TODO
     path = path.toUpperCase();
-    
+
     String propertyName = PathUtility.getRootPath(path);
     PropertyEntry propertyEntry = properties.get(propertyName);
-    
+
     int pathSize = PathUtility.getPathSize(path);
     switch (propertyEntry.getMeta().getKind()) {
       case VALUE:
@@ -328,14 +325,14 @@ public class ApiObjectRef {
         break;
     }
   }
-  
+
   public void removeValueByPath(String path) {
-    //TODO
+    // TODO
     path = path.toUpperCase();
-    
+
     String propertyName = PathUtility.getRootPath(path);
     PropertyEntry propertyEntry = properties.get(propertyName);
-    
+
     int pathSize = PathUtility.getPathSize(path);
     switch (propertyEntry.getMeta().getKind()) {
       case VALUE:

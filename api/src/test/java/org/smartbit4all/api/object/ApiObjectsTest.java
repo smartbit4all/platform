@@ -31,14 +31,14 @@ public class ApiObjectsTest {
     domainBeans.add(ReferredBean.class);
     domainBeans.add(ReferredDetailBean.class);
     result = ApiBeanDescriptor.of(domainBeans);
-    {
-      ApiBeanDescriptor descriptor = result.get(MasterBean.class);
-      descriptor.getDetailDescriptors().put("Details", result.get(MasterDetailBean.class));
-    }
-    {
-      ApiBeanDescriptor descriptor = result.get(ReferredBean.class);
-      descriptor.getDetailDescriptors().put("Details", result.get(ReferredDetailBean.class));
-    }
+    // {
+    // ApiBeanDescriptor descriptor = result.get(MasterBean.class);
+    // descriptor.getDetailDescriptors().put("Details", result.get(MasterDetailBean.class));
+    // }
+    // {
+    // ApiBeanDescriptor descriptor = result.get(ReferredBean.class);
+    // descriptor.getDetailDescriptors().put("Details", result.get(ReferredDetailBean.class));
+    // }
     return result;
   }
 
