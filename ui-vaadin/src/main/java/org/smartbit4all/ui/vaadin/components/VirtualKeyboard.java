@@ -91,9 +91,9 @@ public class VirtualKeyboard extends Composite<Dialog> {
   private Dialog initSavingDialog() {
     Dialog dialog = new Dialog();
     Label selectLabel =
-        new Label("Kérem válassza ki a kívánt mezőt, amibe kerüljön a megadott szöveg!");
-    Button saveButton = new Button("Mentés");
-    Button cancelButton = new Button("Mégse");
+        new Label(getTranslation("virtualKeyboard.savingDialog"));
+    Button saveButton = new Button(getTranslation("title.save"));
+    Button cancelButton = new Button(getTranslation("title.cancel"));
 
     FlexLayout savingDialogLayout = new FlexLayout();
     addClassNameToComponent(savingDialogLayout, "virtual-keyboard-savingdialog-layout");
@@ -145,9 +145,9 @@ public class VirtualKeyboard extends Composite<Dialog> {
   protected FlexLayout createButtonWrapper() {
     FlexLayout buttonWrapper = new FlexLayout();
 
-    Button saveButton = new Button("Mentés");
+    Button saveButton = new Button(getTranslation("title.save"));
     saveButton.addClickListener(click -> save());
-    Button cancelButton = new Button("Mégse");
+    Button cancelButton = new Button(getTranslation("title.cancel"));
     cancelButton.addClickListener(click -> close());
 
     HorizontalLayout buttonLayout = new HorizontalLayout();

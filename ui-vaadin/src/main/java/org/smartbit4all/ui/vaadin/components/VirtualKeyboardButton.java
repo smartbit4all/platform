@@ -18,7 +18,7 @@ public class VirtualKeyboardButton extends Composite<Button> {
   private VirtualKeyboard virtualKeyboard;
   private Map<String, TextField> textFieldsOnLayout;
   private TextField textField;
-  private Label actualLabel = new Label("proba");
+  private Label actualLabel = new Label("");
 
   public VirtualKeyboardButton(VirtualKeyboard virtualKeyboard, HasOrderedComponents<Component> layout) {
     this.virtualKeyboard = virtualKeyboard;
@@ -33,7 +33,6 @@ public class VirtualKeyboardButton extends Composite<Button> {
   }
 
   protected void init() {
-    addButtonName("Virtual");
     getContent().addClickListener(click -> clickListener());
     virtualKeyboard.addOnSaveMethod(value -> onVKeyboardSave(value));
   }
@@ -47,7 +46,7 @@ public class VirtualKeyboardButton extends Composite<Button> {
       virtualKeyboard.setSelectedTextField(null);
       textFieldsOnLayout = getTextFieldsOnlayout(layout);
       if (textFieldsOnLayout.size() == 0) {
-        Notification.show("Nincs hova beilleszteni a speciális karaktereket!");
+        Notification.show(getTranslation("virtualKeyboardButton.noTextfields"));
       } else if (textFieldsOnLayout.size() == 1) {
         virtualKeyboard.setSelectedTextField(textFieldsOnLayout.get(textFieldsOnLayout.keySet().toArray()[0]));
         virtualKeyboard.open();
@@ -64,7 +63,7 @@ public class VirtualKeyboardButton extends Composite<Button> {
   private void onVKeyboardSave(String value) {
     TextField selectedTextField = virtualKeyboard.getSelectedTextField();
     if (selectedTextField == null) {
-      Notification.show("A mentés nem sikerült, kérem válasszon ki egy mezőt!");
+      Notification.show(getTranslation("virtualKeyboardButton.unsuccessfulSave"));
     } else {
       virtualKeyboard.getSelectedTextField().setValue(value);
     }
