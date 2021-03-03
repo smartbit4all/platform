@@ -138,16 +138,17 @@ public class FilterFieldUI extends FlexLayout implements DragSource<FilterFieldU
     // TODO selected operation doesn't change
     setOperationText(uiState.getSelectedOperation().getLabelCode());
 
+    String label = getLabelOfFilter(uiState);
     if (position.equals(FilterLabelPosition.PLACEHOLDER)) {
       header.remove(lblFilterName);
-      operationUI.setPlaceholder(getTranslation(uiState.getLabelCode()));
+      operationUI.setPlaceholder(label);
     } else if (position.equals(FilterLabelPosition.ON_LEFT)) {
-      lblFilterName.setText(setLblFilterNameText(getTranslation(uiState.getLabelCode()), 1));
+      lblFilterName.setText(label);
       filterLayout.setFlexDirection(FlexDirection.ROW);
       header.remove(btnClose);
       filterLayout.add(btnClose);
     } else {
-      lblFilterName.setText(setLblFilterNameText(getTranslation(uiState.getLabelCode()), 1));
+      lblFilterName.setText(label);
     }
 
     setPossibleOperations(uiState.getOperations());
@@ -162,26 +163,21 @@ public class FilterFieldUI extends FlexLayout implements DragSource<FilterFieldU
     }
 
   }
-  
-  private String setLblFilterNameText(String label, int labelCount) {
-    FlexLayout filtersLayout = group.getFiltersLayout();
-    for (int i = 0; i < filtersLayout.getComponentCount(); i++) {
-      Component component = filtersLayout.getComponentAt(i);
-      if (component instanceof FilterFieldUI) {
-        FilterFieldUI filterFieldUI = (FilterFieldUI)component;
-        String text = filterFieldUI.lblFilterName.getText();
-        if (text.equals(label)) {
-          if (label.endsWith(")")) {
-            label = label.substring(0, label.length() - 4);
-          }
-          labelCount++;
-          return setLblFilterNameText(label + " (" + labelCount + ")", labelCount);
-        }
-      }
+
+  private String getLabelOfFilter(FilterFieldUIState uiState) {
+    String label = getTranslation(uiState.getLabelCode());
+    int duplicateNum = uiState.getDuplicateNum();
+    if(duplicateNum > 0) {
+      label = createLabelWithDuplicateIndicator(label, duplicateNum);
     }
     return label;
   }
 
+  private String createLabelWithDuplicateIndicator(String label, int duplicateNum) {
+    label = label + " (" + ++duplicateNum + ")";
+    return label;
+  }
+  
   public FilterGroupUI getGroup() {
     return group;
   }

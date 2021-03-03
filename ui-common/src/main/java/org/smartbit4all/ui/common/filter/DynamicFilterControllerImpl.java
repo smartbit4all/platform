@@ -173,6 +173,7 @@ public class DynamicFilterControllerImpl implements DynamicFilterController {
     FilterField filter = uiState.filtersById.get(filterId);
     uiState.filtersById.remove(filterId);
     ui.removeFilter(filterId);
+    uiState.maintainDulFilters(filterId);
     group.getFilterFields().remove(filter);
     if (uiState.getFilterConfigMode() == FilterConfigMode.SIMPLE_DYNAMIC) {
       // find selector

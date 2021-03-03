@@ -30,10 +30,12 @@ public class FilterFieldUIState extends AbstractUIState {
   private FilterOperation selectedOperation;
   private List<Value> possibleValues;
   private boolean isDraggable;
-
+  private int duplicateNum;
+  
+  
   public FilterFieldUIState(FilterField filter,
       FilterSelectorUIState selector, FilterGroupUIState group,
-      FilterLabelPosition position, boolean isCloseable) {
+      FilterLabelPosition position, boolean isCloseable, int duplicateNum) {
     super();
     this.isDraggable = false;
     this.filter = filter;
@@ -41,14 +43,19 @@ public class FilterFieldUIState extends AbstractUIState {
     this.selector = selector;
     this.position = position;
     this.isCloseable = isCloseable;
+    this.duplicateNum = duplicateNum;
   }
 
   public String getLabelCode() {
     return selector.getLabelCode();
   }
-
+  
   public Object getSelectorId() {
     return selector.getId();
+  }
+  
+  public int getDuplicateNum() {
+    return duplicateNum;
   }
 
   public Object getGroupId() {

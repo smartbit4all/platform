@@ -43,6 +43,7 @@ public class DynamicFilterViewUIState {
   Map<String, FilterField> filtersById = new HashMap<>();
   FilterGroupUIState activeGroup;
 
+  Map<FilterSelectorUIState, List<Integer>> duplNumbersBySelectors = new HashMap<>();
   private FilterConfig filterConfig;
   private FilterConfigMode filterConfigMode;
   private FilterGroup rootFilterGroup;
@@ -126,8 +127,9 @@ public class DynamicFilterViewUIState {
       position = FilterLabelPosition.PLACEHOLDER;
     }
     boolean isCloseable = !(filterConfigMode == FilterConfigMode.STATIC);
+    int duplicateNum = getFilterDuplicateNumber(filterSelector, filter);
     FilterFieldUIState filterUIState =
-        new FilterFieldUIState(filter, filterSelector, group, position, isCloseable);
+        new FilterFieldUIState(filter, filterSelector, group, position, isCloseable, duplicateNum);
     // TODO default operation handling
     if (operations != null && !operations.isEmpty()) {
       filterUIState.setSelectedOperation(operations.get(0));
@@ -135,6 +137,40 @@ public class DynamicFilterViewUIState {
     filterUIStatesById.put(filterUIState.getId(), filterUIState);
     filtersById.put(filterUIState.getId(), filter);
     return filterUIState;
+  }
+
+  private int getFilterDuplicateNumber(FilterSelectorUIState filterSelector, FilterField filter) {
+    List<Integer> duplNumberList = duplNumbersBySelectors.get(filterSelector);
+    if(duplNumberList == null) {
+      duplNumberList = new ArrayList<>();
+      duplNumbersBySelectors.put(filterSelector, duplNumberList);
+    }
+    
+    if(duplNumberList.isEmpty()) {
+      duplNumberList.add(0);
+      return 0;
+    }
+    
+    int numCnt = 0;
+    Integer numberToAdd = null;
+    for (Integer dupNum : duplNumberList) {
+      if(dupNum == numCnt) {
+        numCnt++;
+      } else {
+        numberToAdd = numCnt;
+        break;
+      }
+    }
+    
+    if(numCnt >= duplNumberList.size()) {
+      numberToAdd = numCnt;
+    }
+    
+    if(numberToAdd != null) {
+      duplNumberList.add(numCnt, numberToAdd);
+    }
+    
+    return numCnt;
   }
 
   FilterGroupUIState createFilterGroup(FilterGroupUIState parentGroup, String name, String iconCode,
@@ -209,5 +245,17 @@ public class DynamicFilterViewUIState {
 
 
   }
-
+  
+  void maintainDulFilters(String filterId) {
+    FilterFieldUIState uiState = filterUIStatesById.get(filterId);
+    if(uiState == null) {
+      return;
+    }
+    int duplicateNum = uiState.getDuplicateNum();
+    FilterSelectorUIState selector = filterSelectorsById.get(uiState.getSelectorId());
+    List<Integer> list = duplNumbersBySelectors.get(selector);
+    if(list != null) {
+      list.remove(duplicateNum);
+    }
+  }
 }
