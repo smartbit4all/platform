@@ -16,9 +16,13 @@ package org.smartbit4all.api.filter;
 
 public enum TimeFilterOption {
 
-  LAST_WEEK("filter.time.last_week"), THIS_MONTH("filter.time.this_month"), LAST_MONTH(
-      "filter.time.last_month"), YESTERDAY(
-          "filter.time.yesterday"), TODAY("filter.time.today"), OTHER("filter.time.other");
+  LAST_WEEK("filter.time.last_week"),
+  THIS_MONTH("filter.time.this_month"),
+  LAST_MONTH("filter.time.last_month"),
+  YESTERDAY("filter.time.yesterday"),
+  TODAY("filter.time.today"),
+  LAST_FIVE_YEARS("filter.time.lastfiveyears"),
+  OTHER("filter.time.other");
 
   private String label;
 

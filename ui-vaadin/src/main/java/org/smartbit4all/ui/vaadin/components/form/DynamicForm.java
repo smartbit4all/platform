@@ -137,7 +137,7 @@ public class DynamicForm<BEAN> extends Composite<FlexLayout> {
           }
           componentList.add(field);
         } else {
-          log.warn("There was no field created for property '" + propertyName + "' due its unhandled type!");
+          log.debug("There was no field created for property '" + propertyName + "' due its unhandled type!");
         }
       }
     }
