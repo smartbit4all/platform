@@ -35,6 +35,7 @@ import org.smartbit4all.api.navigation.bean.NavigationNode;
 import org.smartbit4all.api.navigation.bean.NavigationReference;
 import org.smartbit4all.api.navigation.bean.NavigationReferenceEntry;
 import org.smartbit4all.api.navigation.bean.NavigationView;
+import org.smartbit4all.core.utility.StringConstant;
 
 /**
  * This is the instance of a navigation. It has some configuration and it contains all the nodes and
@@ -54,6 +55,8 @@ public class Navigation {
    * All the node we already have in this navigation. Identified by their UUID as string.
    */
   protected Map<String, NavigationNode> nodes = new HashMap<>();
+
+  protected List<NavigationNode> roots = new ArrayList<>();
 
   /**
    * All the references we already have in this navigation. Identified by their UUID.
@@ -146,7 +149,7 @@ public class Navigation {
       return false;
     }
     for (NavigationAssociation assoc : node.getAssociations()) {
-      if (assoc.getReferences() != null && assoc.getReferences().size() > 0) {
+      if (assoc.getReferences() != null && !assoc.getReferences().isEmpty()) {
         return true;
       }
     }
@@ -168,7 +171,7 @@ public class Navigation {
     Map<URI, NavigationAssociation> naviAssocByMetaUri = node.getAssociations()
         .stream()
         .filter(a -> a.getLastNavigation() == null)
-        .collect(Collectors.toMap(a -> a.getMetaUri(),
+        .collect(Collectors.toMap(NavigationAssociation::getMetaUri,
             a -> a));
 
     URI currentObjectUri = node.getEntry().getObjectUri();
@@ -181,9 +184,10 @@ public class Navigation {
     for (Entry<URI, List<NavigationReferenceEntry>> entry : navigation
         .entrySet()) {
       NavigationAssociation association = naviAssocByMetaUri.get(entry.getKey());
-      List<NavigationReferenceEntry> references = entry.getValue();
+      List<NavigationReferenceEntry> referenceEntries =
+          entry.getValue() != null ? entry.getValue() : Collections.emptyList();
       // Merge into
-      result.addAll(merge(node, association, references));
+      result.addAll(merge(node, association, referenceEntries));
     }
     return result;
   }
@@ -206,6 +210,7 @@ public class Navigation {
     NavigationEntry entry = api.getEntry(entryMetaUri, objectUri);
     NavigationNode node = node(entry, config);
     registerNode(node);
+    roots.add(node);
     return node;
   }
 
@@ -387,6 +392,31 @@ public class Navigation {
   public static URI uriOf(NavigationEntryMeta meta, URI uri) throws URISyntaxException {
     return new URI(meta.getUri().getScheme(), null, meta.getUri().getPath(),
         uri != null ? uri.toString() : null);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    for (NavigationNode rootNode : roots) {
+      appendToString(sb, rootNode, StringConstant.EMPTY);
+    }
+    return sb.toString();
+  }
+
+  private final void appendToString(StringBuilder sb, NavigationNode node, String indent) {
+    sb.append(indent).append(node.getEntry().getName());
+    List<NavigationAssociation> assocList =
+        node.getAssociations() != null ? node.getAssociations() : Collections.emptyList();
+    for (NavigationAssociation association : assocList) {
+      sb.append(StringConstant.NEW_LINE).append(indent).append(StringConstant.SPACE)
+          .append(StringConstant.ARROW).append(StringConstant.SPACE)
+          .append(association.getMetaUri())
+          .append(StringConstant.NEW_LINE);
+      List<NavigationReference> refList = association.getReferences();
+      for (NavigationReference ref : refList) {
+        appendToString(sb, ref.getEndNode(), indent + StringConstant.SPACE + StringConstant.SPACE);
+      }
+    }
   }
 
 }
