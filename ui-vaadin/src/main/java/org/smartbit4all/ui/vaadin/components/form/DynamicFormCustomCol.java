@@ -16,7 +16,7 @@ public class DynamicFormCustomCol<BEAN> extends DynamicForm<BEAN> {
     // super(beanClazz);
     this.colNum = colNum;
     this.fillVerticalFirst = fillVerticalFirst;
-    super.getContent().addClassName("col-based");
+    layoutInit(beanClazz);
     initBean(beanClazz);
   }
   
@@ -24,8 +24,13 @@ public class DynamicFormCustomCol<BEAN> extends DynamicForm<BEAN> {
     // super(beanClazz);
     this.colNum = colNum;
     this.fillVerticalFirst = fillVerticalFirst;
-    super.getContent().addClassName("col-based");
+    layoutInit(beanClazz);
     initBean(beanClazz, orderedPropertyNames);
+  }
+  
+  @Override
+  protected void layoutInit(Class<BEAN> beanClazz) {
+    this.getContent().addClassName("col-based");
   }
 
   @Override
