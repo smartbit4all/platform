@@ -20,12 +20,16 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.ui.vaadin.localization.TranslationUtil;
@@ -48,25 +52,28 @@ public class DynamicForm<BEAN> extends Composite<FlexLayout> {
   private static final Logger log = LoggerFactory.getLogger(DynamicForm.class);
   
   private Binder<BEAN> binder;
+  
+  Map<String, Component> componentsByPropertyName = new LinkedHashMap<>();
 
   public DynamicForm() {
 
   }
 
   public DynamicForm(Class<BEAN> beanClazz) {
+    layoutInit(beanClazz);
     initBean(beanClazz);
   }
+  
+  public DynamicForm(Class<BEAN> beanClazz, ArrayList<String> orderedPropertyNames) {
+    layoutInit(beanClazz);
+    initBean(beanClazz, orderedPropertyNames);
+  }
 
-  protected void preInit(Class<BEAN> beanClazz) {
+  protected void layoutInit(Class<BEAN> beanClazz) {
     this.getContent().setWidthFull();
     this.getContent().setFlexWrap(FlexWrap.WRAP);
     this.getContent().addClassName("dynaform");
     this.getContent().addClassName(toKebabCase(beanClazz.getSimpleName()));
-  }
-
-  protected void initBean(Class<BEAN> beanClazz) {
-    preInit(beanClazz);
-    init(beanClazz);
   }
 
   public void setBean(BEAN bean) {
@@ -76,12 +83,16 @@ public class DynamicForm<BEAN> extends Composite<FlexLayout> {
   public void setReadOnly(boolean readOnly) {
     binder.setReadOnly(readOnly);
   }
+  
+  protected void initBean(Class<BEAN> beanClazz, ArrayList<String> orderedPropertyNames)  {
+    for (String propertyName : orderedPropertyNames) {
+      componentsByPropertyName.put(propertyName, null);
+    }
+    initBean(beanClazz);
+  }
 
-  protected void init(Class<BEAN> beanClazz) {
+  protected void initBean(Class<BEAN> beanClazz) {
     Map<String, BindingCandidate> bindings = collectBindings(beanClazz);
-
-    List<Component> componentList = new ArrayList<>();
-
     binder = new Binder<>();
     for (Entry<String, BindingCandidate> bindingEntry : bindings.entrySet()) {
       BindingCandidate binding = bindingEntry.getValue();
@@ -135,13 +146,13 @@ public class DynamicForm<BEAN> extends Composite<FlexLayout> {
             String className = propertyName.substring(propertyName.lastIndexOf(".") + 1);
             ((HasStyle) field).setClassName(toKebabCase(className));
           }
-          componentList.add(field);
+          componentsByPropertyName.put(label, field);
         } else {
           log.warn("There was no field created for property '" + propertyName + "' due its unhandled type!");
         }
       }
     }
-    addComponentsToContent(componentList);
+    addComponentsToContent(componentsByPropertyName.values().stream().collect(Collectors.toList()));
 
   }
 
