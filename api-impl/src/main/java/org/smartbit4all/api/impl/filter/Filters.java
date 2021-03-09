@@ -52,7 +52,7 @@ public class Filters {
   public static final String COMBO_SEL = "combo.eq";
 
   private static enum TimeFilterOptions {
-    LAST_WEEK, THIS_MONTH, LAST_MONTH, YESTERDAY, TODAY, OTHER
+    LAST_WEEK, THIS_MONTH, LAST_MONTH, YESTERDAY, TODAY, OTHER, LAST_FIVE_YEARS
   }
 
   public static final String LAST_WEEK = "statistics.filter.time.last_week";
@@ -292,6 +292,10 @@ public class Filters {
         startDate = today.minusDays(1);
         endDate = today.minusDays(1);
         break;
+      case LAST_FIVE_YEARS:
+        startDate = today.minusYears(5);
+        endDate = today;
+        endTime = now;
       case OTHER:
       default:
         return createDateIntervalClause(filterField);
