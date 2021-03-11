@@ -7,19 +7,28 @@ import org.smartbit4all.ui.common.filter.FilterValueChangeListener;
 import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
 import com.vaadin.flow.component.HasValue.ValueChangeListener;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.binder.Binder;
 
 public class FilterOperationTxtLikeMinUI extends FilterOperationUI {
   
   private FilterValueChangeListener filterValueChangeListener;
 
   private TextField textField;
+  private Binder<String> binder;
+  private String value;
   
   public FilterOperationTxtLikeMinUI(FilterValueChangeListener filterValueChangeListener) {
     this.filterValueChangeListener = filterValueChangeListener;
     addClassName("filter-onefield");
     textField = new TextField();
     textField.addValueChangeListener(valueChangeListener());
-    textField.setMinLength(3);
+    textField.setClearButtonVisible(true);
+    binder = new Binder<>();
+    binder.forField(textField)
+        .withValidator(element -> element.length() >= 3, textField.getTranslation("textfield.minimum.length"))
+        .bind((s) -> value, (s, v) -> {
+          this.value = v;
+        });
 
     add(textField);
   }
