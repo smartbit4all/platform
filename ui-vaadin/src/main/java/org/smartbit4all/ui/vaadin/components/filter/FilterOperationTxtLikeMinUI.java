@@ -19,6 +19,7 @@ public class FilterOperationTxtLikeMinUI extends FilterOperationUI {
     addClassName("filter-onefield");
     textField = new TextField();
     textField.addValueChangeListener(valueChangeListener());
+    textField.setMinLength(3);
 
     add(textField);
   }
