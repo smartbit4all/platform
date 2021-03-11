@@ -108,8 +108,10 @@ public class Filters {
       ExpressionClause subGroupClause =
           subGroup.getType() == FilterGroupType.AND ? Expression.createAndClause()
               : Expression.createOrClause();
-      groupClause.add(subGroupClause.BRACKET());
       recurseGroups(subGroup, subGroupClause);
+      if(!subGroupClause.expressions().isEmpty()) {
+        groupClause.add(subGroupClause.BRACKET());
+      }
     }
 
     // Now we add all the filters from the current group as simple expressions
