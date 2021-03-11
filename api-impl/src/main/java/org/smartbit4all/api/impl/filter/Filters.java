@@ -48,6 +48,7 @@ public class Filters {
   public static final String DATE_TIME_EQ = "date.time.eq";
   public static final String TXT_EQ = "txt.eq";
   public static final String TXT_LIKE = "txt.like";
+  public static final String TXT_LIKE_MIN = "txt.like.min";
   public static final String MULTI_SEL = "multi.eq";
   public static final String COMBO_SEL = "combo.eq";
 
@@ -145,6 +146,9 @@ public class Filters {
     } else if (TXT_LIKE.equals(operationCode)) {
       expressionOfField = createTxtLikeClause(filterField);
 
+    } else if (TXT_LIKE_MIN.equals(operationCode)) {
+      expressionOfField = createTxtLikeMinClause(filterField);
+
     } else if (MULTI_SEL.equals(operationCode)) {
       expressionOfField = createMultiSelClause(filterField);
     } else if (COMBO_SEL.equals(operationCode)) {
@@ -166,6 +170,19 @@ public class Filters {
     return expressionOfField;
   }
 
+  private Expression createTxtLikeMinClause(FilterField filterField) {
+    Expression expressionOfField = null;
+    FilterOperandValue filterOperandValue = filterField.getValue1();
+    String value = filterOperandValue.getValue();
+    if (value != null && !value.isEmpty() && value.length() >= 3) {
+      value = "%" + value + "%";
+      Class<?> type = getValueType(filterOperandValue);
+      Property<?> property = getProperty(filterField.getPropertyUri1());
+      expressionOfField = getTypedExpression(type, property, value, Property::like);
+    }
+    return expressionOfField;
+  }
+
   private Expression createTxtEqClause(FilterField filterField) {
     Expression expressionOfField = null;
     FilterOperandValue filterOperandValue = filterField.getValue1();
@@ -177,7 +194,7 @@ public class Filters {
     }
     return expressionOfField;
   }
-  
+
   private Class<?> getValueType(FilterOperandValue value) {
     String value1TypeName = value.getType();
     try {
@@ -187,7 +204,7 @@ public class Filters {
           "There is no valid class for name given in the filter field: " + value1TypeName);
     }
   }
-  
+
   @SuppressWarnings("unchecked")
   private <T> Expression getTypedExpression(Class<T> type, Property<?> property, String value,
       BiFunction<Property<T>, T, Expression> exp) {
@@ -205,9 +222,11 @@ public class Filters {
     }
     return expressionOfField;
   }
-  
-  @SuppressWarnings("unchecked") // type casts are based on the propertyType parameter and are checked by that
-  private <T> Expression createInExpression(Property<?> property, Class<T> propertyType, List<URI> selectedValues) {
+
+  @SuppressWarnings("unchecked") // type casts are based on the propertyType parameter and are
+                                 // checked by that
+  private <T> Expression createInExpression(Property<?> property, Class<T> propertyType,
+      List<URI> selectedValues) {
     List<T> values = selectedValues.stream()
         .map(uri -> convertValueUriId(propertyType, uri))
         .collect(Collectors.toList());
@@ -218,16 +237,17 @@ public class Filters {
     String value = ValueUris.getValueId(uri);
     return convertValueToType(value, propertyType);
   }
-  
+
   @SuppressWarnings("unchecked")
   private <T> T convertValueToType(String value, Class<T> type) {
     Converter<String, T> valueConverter = transferService.converterByType(String.class, type);
-    if(valueConverter != null) {
+    if (valueConverter != null) {
       return valueConverter.convertTo(value);
-    } else if(String.class == type){
+    } else if (String.class == type) {
       return (T) value;
     } else {
-      throw new RuntimeException("Unable to typecast the selected values to create expression for the configured property!");
+      throw new RuntimeException(
+          "Unable to typecast the selected values to create expression for the configured property!");
     }
   }
 
@@ -241,9 +261,10 @@ public class Filters {
     }
     return expressionOfField;
   }
-  
+
   @SuppressWarnings("unchecked")
-  private <T> Expression createEqExpression(Property<?> property, Class<T> propertyType, URI selectedValueUri) {
+  private <T> Expression createEqExpression(Property<?> property, Class<T> propertyType,
+      URI selectedValueUri) {
     T value = convertValueUriId(propertyType, selectedValueUri);
     return ((Property<T>) property).eq(value);
   }
@@ -251,7 +272,7 @@ public class Filters {
   private Property<?> getProperty(URI propertyUri) {
     Objects.requireNonNull(propertyUri, "The 'propertyUri' parameter can not be null!");
     Property<?> property = entityManager.property(propertyUri);
-    if(property == null) {
+    if (property == null) {
       throw new IllegalStateException("There is no property registered for uri: " + propertyUri);
     }
     return property;
