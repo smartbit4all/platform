@@ -29,18 +29,30 @@ public class Crud {
   }
 
   public static <E extends EntityDefinition> void update(TableData<E> tableData) throws Exception {
+    if(tableData.isEmpty()) {
+      return;
+    }
+    
     @SuppressWarnings("unchecked")
     Update<E> update = (Update<E>) tableData.entity().services().crud().update();
     update.values(tableData).execute();
   }
 
   public static <E extends EntityDefinition> void create(TableData<E> tableData) throws Exception {
+    if(tableData.isEmpty()) {
+      return;
+    }
+    
     @SuppressWarnings("unchecked")
     Create<E> create = (Create<E>) tableData.entity().services().crud().create();
     create.values(tableData).execute();
   }
 
   public static <E extends EntityDefinition> void delete(TableData<E> tableData) throws Exception {
+    if(tableData.isEmpty()) {
+      return;
+    }
+    
     @SuppressWarnings("unchecked")
     Delete<E> delete = (Delete<E>) tableData.entity().services().crud().delete();
     delete.by(tableData).execute();
