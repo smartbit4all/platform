@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2020 - 2020 it4all Hungary Kft.
+ * Copyright (C) 2020 - 2021 it4all Hungary Kft.
  * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
@@ -14,28 +14,13 @@
  ******************************************************************************/
 package org.smartbit4all.domain.annotation.property;
 
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+/**
+ * The enumeration for the mandatory setting of a {@link ReferenceEntity} annotation.
+ * 
+ * @author Peter Boros
+ */
+public enum ReferenceMandatory {
 
-@Retention(RUNTIME)
-@Target(ElementType.METHOD)
-public @interface ReferenceEntity {
-
-  /**
-   * Name of the entity reference. If not specified, defaults to method name.
-   * 
-   * @return
-   */
-  String value() default "";
-
-  /**
-   * The reference mandatory or not. By default it's evaluated by the mandatory option of join
-   * properties. If we would like to override this then we can set this property here.
-   * 
-   * @return
-   */
-  ReferenceMandatory mandatory() default ReferenceMandatory.BYPROPERTY;
+  BYPROPERTY, TRUE, FALSE
 
 }

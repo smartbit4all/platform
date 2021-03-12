@@ -1,18 +1,16 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
  * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 package org.smartbit4all.domain.meta;
 
@@ -35,6 +33,7 @@ import org.smartbit4all.domain.annotation.property.Join;
 import org.smartbit4all.domain.annotation.property.OwnProperty;
 import org.smartbit4all.domain.annotation.property.Ref;
 import org.smartbit4all.domain.annotation.property.ReferenceEntity;
+import org.smartbit4all.domain.annotation.property.ReferenceMandatory;
 import org.smartbit4all.domain.annotation.property.ReferenceProperty;
 import org.smartbit4all.domain.annotation.property.SqlExpression;
 import org.smartbit4all.domain.annotation.property.SqlProperty;
@@ -228,7 +227,8 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
   private Property<?> createOwnedProperty(Method method) {
     OwnProperty annot = method.getAnnotation(OwnProperty.class);
     String propertyName = getName(annot.name(), method);
-    return PropertyOwned.create(propertyName, getPropertyType(method), annot.columnName(), null,
+    return PropertyOwned.create(propertyName, getPropertyType(method), annot.mandatory(),
+        annot.columnName(), null,
         dataConverterHelper);
   }
 
@@ -311,14 +311,16 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
     // referred entities
     for (Method method : entityDefClazz.getMethods()) {
       if (method.isAnnotationPresent(ReferenceEntity.class)) {
-        String referenceName = getName(method.getAnnotation(ReferenceEntity.class).value(), method);
+        ReferenceEntity referenceEntityAnnot = method.getAnnotation(ReferenceEntity.class);
+        String referenceName = getName(referenceEntityAnnot.value(), method);
         Reference<?, ?> reference = referencesByName.get(referenceName);
         if (reference == null) {
           Join[] joins = method.getAnnotationsByType(Join.class);
           @SuppressWarnings("unchecked")
           Class<? extends EntityDefinition> targetEntityClazz =
               (Class<? extends EntityDefinition>) method.getReturnType();
-          processReference(joins, targetEntityClazz, referenceName);
+          processReference(joins, targetEntityClazz, referenceName,
+              referenceEntityAnnot.mandatory());
           reference = referencesByName.get(referenceName);
         }
         EntityDefinition referencedEntity = referencedEntitiesByReferenceName.get(referenceName);
@@ -356,7 +358,7 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
    */
   private void processReference(Join[] joins,
       Class<? extends EntityDefinition> targetEntityClazz,
-      String referenceName) {
+      String referenceName, ReferenceMandatory referenceMandatory) {
     if (joins == null || joins.length == 0) {
       // joins can be specified at
       return;
@@ -366,7 +368,7 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
       String target = joins[0].target();
 
       EntityDefinition referencedEntity = createReferenceProxy(entityDefClazz, targetEntityClazz,
-          source, target, referenceName);
+          source, target, referenceName, referenceMandatory);
       referencedEntitiesByReferenceName.put(referenceName, referencedEntity);
 
     } else {
@@ -378,7 +380,7 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
   @SuppressWarnings("unchecked")
   protected final <TARGET extends EntityDefinition, PROP extends Comparable<PROP>> TARGET createReferenceProxy(
       Class<T> sourceEntityClazz, Class<TARGET> targetEntityClazz, String sourcePropertyName,
-      String targetPropertyName, String referenceName) {
+      String targetPropertyName, String referenceName, ReferenceMandatory referenceMandatory) {
 
     // TODO getBean by name?
     T sourceEntity = ctx.getBean(sourceEntityClazz);
@@ -387,6 +389,10 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
     Property<PROP> targetProperty = (Property<PROP>) targetEntity.getProperty(targetPropertyName);
     Reference<T, TARGET> reference = new Reference<>(sourceEntity, targetEntity, referenceName);
     reference.addJoin(sourceProperty, targetProperty);
+    if (referenceMandatory != ReferenceMandatory.BYPROPERTY) {
+      reference.setMandatory(
+          referenceMandatory == ReferenceMandatory.TRUE ? Boolean.TRUE : Boolean.FALSE);
+    }
     referencesByName.put(referenceName, reference);
     return reference.createProxy(targetEntityClazz);
   }
@@ -406,7 +412,8 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
     }
   }
 
-  private PropertyRef<?> createRefPropertyByPath(String propertyName, String referredPropertyName, String[] path) {
+  private PropertyRef<?> createRefPropertyByPath(String propertyName, String referredPropertyName,
+      String[] path) {
     List<Reference<?, ?>> joinPath = new ArrayList<>();
     // TODO getBean by name?
     EntityDefinition currentEntity = ctx.getBean(entityDefClazz);
@@ -420,35 +427,37 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
     PropertyRef<?> property = createRefProperty(propertyName, joinPath, referredProperty);
     return property;
   }
-  
+
 
   @Override
   public Property<?> findOrCreateReferredProperty(List<Reference<?, ?>> joinPath,
       Property<?> referredProperty) {
     String refPath = PropertyRef.constructName(joinPath, referredProperty);
     Property<?> property = referredPropertiesByPath.get(refPath);
-    if(property == null) {
+    if (property == null) {
       property = createRefProperty(null, joinPath, referredProperty, refPath);
     }
     return property;
   }
-  
+
   @Override
   public Property<?> findOrCreateReferredProperty(String[] joinPath, String referredPropertyName) {
     String refPath = PropertyRef.constructName(joinPath, referredPropertyName);
     Property<?> property = referredPropertiesByPath.get(refPath);
-    if(property == null) {
+    if (property == null) {
       property = createRefPropertyByPath(referredPropertyName, referredPropertyName, joinPath);
     }
     return property;
   }
 
-  private PropertyRef<?> createRefProperty(String propertyName, List<Reference<?, ?>> joinPath, Property<?> referredProperty) {
+  private PropertyRef<?> createRefProperty(String propertyName, List<Reference<?, ?>> joinPath,
+      Property<?> referredProperty) {
     String refPath = PropertyRef.constructName(joinPath, referredProperty);
     return createRefProperty(propertyName, joinPath, referredProperty, refPath);
   }
 
-  private PropertyRef<?> createRefProperty(String propertyName, List<Reference<?, ?>> joinPath, Property<?> referredProperty,
+  private PropertyRef<?> createRefProperty(String propertyName, List<Reference<?, ?>> joinPath,
+      Property<?> referredProperty,
       String refPath) {
     PropertyRef<?> property = new PropertyRef<>(propertyName, joinPath, referredProperty);
     property.setEntityDef(this);
@@ -515,9 +524,9 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
   public PropertySet allProperties() {
     return allProperties;
   }
-  
+
   @Override
-  public List<Reference<?,?>> allReferences() {
+  public List<Reference<?, ?>> allReferences() {
     return new ArrayList<>(referencesByName.values());
   }
 
