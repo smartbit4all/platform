@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.smartbit4all.api.object.ApiObjectRef;
+import org.smartbit4all.domain.meta.EventDefinitionBase;
 import org.smartbit4all.domain.meta.EventListener;
 import org.smartbit4all.domain.meta.EventSubscription;
 
@@ -30,11 +31,8 @@ import org.smartbit4all.domain.meta.EventSubscription;
  *
  * @param <C>
  */
-public class ObjectConstraintChangeEventImpl<C> implements ObjectConstraintChangeEvent<C> {
-
-  private URI uri;
-
-  private String name;
+public class ObjectConstraintChangeEventImpl<C> extends EventDefinitionBase<C>
+    implements ObjectConstraintChangeEvent<C> {
 
   /**
    * The helper for the constraints.
@@ -52,20 +50,8 @@ public class ObjectConstraintChangeEventImpl<C> implements ObjectConstraintChang
   private Map<String, List<EventListener<C>>> listeners = new HashMap<>();
 
   public ObjectConstraintChangeEventImpl(URI uri, String name, C defaultValue) {
-    super();
-    this.uri = uri;
-    this.name = name;
+    super(URI.create("event:/objectediting/constraint"));
     this.helper = new HierarchicalConstraintHelper<>(defaultValue);
-  }
-
-  @Override
-  public URI getUri() {
-    return uri;
-  }
-
-  @Override
-  public String getName() {
-    return name;
   }
 
   @Override

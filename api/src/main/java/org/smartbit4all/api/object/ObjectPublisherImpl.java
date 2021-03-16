@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.smartbit4all.core.utility.StringConstant;
+import org.smartbit4all.domain.meta.EventDefinitionBase;
 import org.smartbit4all.domain.meta.EventListener;
 import org.smartbit4all.domain.meta.EventPublisherImpl;
 import org.smartbit4all.domain.meta.EventSubscription;
@@ -102,18 +103,17 @@ public class ObjectPublisherImpl implements ObjectPublisher, EventPublisherImpl 
     list.add(listener);
   }
 
-  private class PropertyChangeEventImpl implements PropertyChangeEvent {
+  private class PropertyChangeEventImpl extends EventDefinitionBase<PropertyChange>
+      implements PropertyChangeEvent {
+
+    protected PropertyChangeEventImpl() {
+      super(URI.create("event:/objectediting/property"));
+    }
 
     final List<EventSubscription<?>> subscriptions = new ArrayList<>();
 
     @Override
     public URI getUri() {
-      // TODO Auto-generated method stub
-      return null;
-    }
-
-    @Override
-    public String getName() {
       // TODO Auto-generated method stub
       return null;
     }
@@ -133,21 +133,14 @@ public class ObjectPublisherImpl implements ObjectPublisher, EventPublisherImpl 
     }
   }
 
-  private class CollectionChangeEventImpl implements CollectionChangeEvent {
+  private class CollectionChangeEventImpl extends EventDefinitionBase<CollectionChange>
+      implements CollectionChangeEvent {
+
+    protected CollectionChangeEventImpl() {
+      super(URI.create("event:/objectediting/collection"));
+    }
 
     final List<EventSubscription<?>> subscriptions = new ArrayList<EventSubscription<?>>();
-
-    @Override
-    public URI getUri() {
-      // TODO Auto-generated method stub
-      return null;
-    }
-
-    @Override
-    public String getName() {
-      // TODO Auto-generated method stub
-      return null;
-    }
 
     @Override
     public CollectionChangeSubscription subscribe() {
@@ -166,21 +159,15 @@ public class ObjectPublisherImpl implements ObjectPublisher, EventPublisherImpl 
     }
   }
 
-  private class ReferenceChangeEventImpl implements ReferenceChangeEvent {
+  private class ReferenceChangeEventImpl extends EventDefinitionBase<ReferenceChange>
+      implements ReferenceChangeEvent {
 
     final List<EventSubscription<?>> subscriptions = new ArrayList<EventSubscription<?>>();
 
-    @Override
-    public URI getUri() {
-      // TODO Auto-generated method stub
-      return null;
+    protected ReferenceChangeEventImpl() {
+      super(URI.create("event:/objectediting/reference"));
     }
 
-    @Override
-    public String getName() {
-      // TODO Auto-generated method stub
-      return null;
-    }
 
     @Override
     public ReferenceChangeSubscription subscribe() {

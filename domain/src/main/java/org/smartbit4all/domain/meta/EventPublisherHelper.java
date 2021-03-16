@@ -94,31 +94,35 @@ public class EventPublisherHelper<P extends EventPublisher> implements Invocatio
    * discover and identify the publisher {@link EventDefinition}s.
    * 
    * @param publisherIF
-   * @throws ExecutionException
    */
   @SuppressWarnings("unchecked")
-  public EventPublisherHelper(Class<P> publisherIF, String apiUri) throws ExecutionException {
+  public EventPublisherHelper(Class<P> publisherIF, String apiUri) {
     super();
     this.publisherIF = publisherIF;
     this.apiUri = apiUri;
-    publisherMeta =
-        publisherCache.get((Class<EventPublisher>) publisherIF, new Callable<PublisherMeta>() {
+    try {
+      publisherMeta =
+          publisherCache.get((Class<EventPublisher>) publisherIF, new Callable<PublisherMeta>() {
 
-          @Override
-          public PublisherMeta call() throws Exception {
-            PublisherMeta result = new PublisherMeta();
-            for (int i = 0; i < publisherIF.getMethods().length; i++) {
-              Method method = publisherIF.getMethods()[i];
-              // If it's an event definition method then we register this.
-              if (EventDefinition.class.isAssignableFrom(method.getReturnType())) {
-                result.definitionsByMethods.put(method,
-                    (Class<EventDefinition<?>>) method.getReturnType());
+            @Override
+            public PublisherMeta call() throws Exception {
+              PublisherMeta result = new PublisherMeta();
+              for (int i = 0; i < publisherIF.getMethods().length; i++) {
+                Method method = publisherIF.getMethods()[i];
+                // If it's an event definition method then we register this.
+                if (EventDefinition.class.isAssignableFrom(method.getReturnType())) {
+                  result.definitionsByMethods.put(method,
+                      (Class<EventDefinition<?>>) method.getReturnType());
+                }
               }
+              return result;
             }
-            return result;
-          }
 
-        });
+          });
+    } catch (ExecutionException e) {
+      throw new IllegalArgumentException(
+          "Unable to process the " + publisherIF + " by reflection API.", e);
+    }
     publisherProxy =
         (P) Proxy.newProxyInstance(this.getClass().getClassLoader(), new Class[] {this.publisherIF},
             this);

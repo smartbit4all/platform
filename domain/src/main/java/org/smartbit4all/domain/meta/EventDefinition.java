@@ -49,13 +49,6 @@ public interface EventDefinition<E> {
   URI getUri();
 
   /**
-   * The business name of the given event. It must be unique in a context (in an API)
-   * 
-   * @return
-   */
-  String getName();
-
-  /**
    * The definition provides a builder API for the subscription. We can add listeners to the given
    * subscription.
    * 
