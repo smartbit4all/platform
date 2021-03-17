@@ -75,8 +75,9 @@ public class TransferServiceImpl implements TransferService, InitializingBean {
 
   @Autowired
   private List<Converter<?, ?>> converters;
-  
-  private static final List<String> beanPropertiesToSkip = Arrays.asList("toString", "hashCode", "equals");
+
+  private static final List<String> beanPropertiesToSkip =
+      Arrays.asList("toString", "hashCode", "equals");
 
   /**
    * Get the descriptor from the cache.
@@ -201,7 +202,8 @@ public class TransferServiceImpl implements TransferService, InitializingBean {
     Map<String, BindingCandidate> bindings = new HashMap<>();
     for (int i = 0; i < beanClazz.getMethods().length; i++) {
       Method method = beanClazz.getMethods()[i];
-      if (method.getDeclaringClass().equals(Object.class) || beanPropertiesToSkip.contains(method.getName())) {
+      if (method.getDeclaringClass().equals(Object.class)
+          || beanPropertiesToSkip.contains(method.getName())) {
         continue;
       }
       String propertyCandidateName = getPropertyCandidateName(method);
@@ -243,8 +245,8 @@ public class TransferServiceImpl implements TransferService, InitializingBean {
           result.add(property, candidate.getter, candidate.setter, converter);
         }
       } else {
-        LOG.warn("There was no property found with name [" + propertyCandidateName
-            + "] given in the [" + beanClazz.getName() + "] bean!");
+        LOG.warn("There was no property found with name [{}] given in the [{}] bean!",
+            propertyCandidateName, beanClazz.getName());
       }
     }
     return result;
@@ -254,13 +256,13 @@ public class TransferServiceImpl implements TransferService, InitializingBean {
       String beanName) {
     boolean isCandidateValid = true;
     if (candidate.getter == null) {
-      LOG.error("There is no getter methon in bean [" + beanName + "] for property ["
-          + property.getName() + "]!");
+      LOG.error("There is no getter methon in bean [{}] for property [{}]!", beanName,
+          property.getName());
       isCandidateValid = false;
     }
     if (candidate.setter == null) {
-      LOG.error("There is no setter methon in bean [" + beanName + "] for property ["
-          + property.getName() + "]!");
+      LOG.error("There is no setter methon in bean [{}] for property [{}]!", beanName,
+          property.getName());
       isCandidateValid = false;
     }
     return isCandidateValid;
