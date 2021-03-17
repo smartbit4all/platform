@@ -2,6 +2,7 @@ package org.smartbit4all.domain.transfer;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import javax.xml.datatype.XMLGregorianCalendar;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
@@ -58,6 +59,17 @@ class TransferServiceTest {
     Converter<XMLGregorianCalendar, LocalDate> convertFrom =
         transferService.converterByType(XMLGregorianCalendar.class, LocalDate.class);
     LocalDate testValue = LocalDate.now();
+    Assertions.assertEquals(testValue, convertFrom.convertTo(convertTo.convertTo(testValue)));
+  }
+
+  @Test
+  void localDateTime2OffsetDateTime() {
+    TransferService transferService = ctx.getBean(TransferService.class);
+    Converter<LocalDateTime, OffsetDateTime> convertTo =
+        transferService.converterByType(LocalDateTime.class, OffsetDateTime.class);
+    Converter<OffsetDateTime, LocalDateTime> convertFrom =
+        transferService.converterByType(OffsetDateTime.class, LocalDateTime.class);
+    LocalDateTime testValue = LocalDateTime.now();
     Assertions.assertEquals(testValue, convertFrom.convertTo(convertTo.convertTo(testValue)));
   }
 

@@ -16,6 +16,7 @@ package org.smartbit4all.domain.config;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.GregorianCalendar;
@@ -119,6 +120,23 @@ public class DomainServiceConfig extends SB4Configuration {
         (LocalDate d) -> datatypeFactory
             .newXMLGregorianCalendar(
                 GregorianCalendar.from(d.atStartOfDay(ZoneId.systemDefault()))));
+  }
+
+  @Bean
+  public Converter<LocalDateTime, OffsetDateTime> localDateTime2OffsetDateTimeConverter() {
+    return new ConverterImpl<LocalDateTime, OffsetDateTime>(OffsetDateTime.class,
+        (LocalDateTime d) -> ZonedDateTime.of(LocalDateTime.now(), ZoneId.systemDefault())
+            .toOffsetDateTime(),
+        LocalDateTime.class,
+        OffsetDateTime::toLocalDateTime);
+  }
+
+  @Bean
+  public Converter<OffsetDateTime, LocalDateTime> offsetDateTime2localDateTimeConverter() {
+    return new ConverterImpl<OffsetDateTime, LocalDateTime>(LocalDateTime.class,
+        OffsetDateTime::toLocalDateTime, OffsetDateTime.class,
+        (LocalDateTime d) -> ZonedDateTime.of(LocalDateTime.now(), ZoneId.systemDefault())
+            .toOffsetDateTime());
   }
 
 }

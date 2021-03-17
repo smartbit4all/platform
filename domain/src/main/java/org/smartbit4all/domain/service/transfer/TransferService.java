@@ -94,4 +94,15 @@ public interface TransferService {
    */
   <F, T> Converter<F, T> converterDefault(String name, Class<F> fromType, Class<T> toType);
 
+  /**
+   * Tries to execute an inline conversion by the type of the source and the type of the target.
+   * 
+   * @param <F>
+   * @param <T>
+   * @param value The value to convert. Must not be null!
+   * @param toType The class of the target to define the result.
+   * @return
+   */
+  <F, T> T convert(F value, Class<T> toType);
+
 }

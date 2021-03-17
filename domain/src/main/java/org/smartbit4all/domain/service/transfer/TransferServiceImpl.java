@@ -317,4 +317,10 @@ public class TransferServiceImpl implements TransferService, InitializingBean {
     return fromClass.getName() + StringConstant.HYPHEN + toClass.getName();
   }
 
+  @SuppressWarnings("unchecked")
+  @Override
+  public <F, T> T convert(F value, Class<T> toType) {
+    return converterByType((Class<F>) value.getClass(), toType).convertTo(value);
+  }
+
 }
