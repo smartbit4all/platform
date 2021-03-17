@@ -14,6 +14,7 @@
  ******************************************************************************/
 package org.smartbit4all.domain.config;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -38,10 +39,6 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 public class DomainServiceConfig extends SB4Configuration {
-
-  public static final String BUDAPEST_ZONE_ID = "Europe/Budapest";
-
-  public static final ZoneId SYSTEM_ZONE_ID = ZoneId.of(BUDAPEST_ZONE_ID);
 
   @Bean
   public TimeManagementService timeManagementService() {
@@ -92,6 +89,36 @@ public class DomainServiceConfig extends SB4Configuration {
         (LocalDateTime d) -> datatypeFactory
             .newXMLGregorianCalendar(
                 GregorianCalendar.from(ZonedDateTime.of(d, ZoneId.systemDefault()))));
+  }
+
+  @Bean
+  public Converter<LocalDate, XMLGregorianCalendar> localDate2XMLGregorianCalendarConverter()
+      throws DatatypeConfigurationException {
+    // Assume that the DatatypeFactory is thread safe!
+    // see:
+    // https://stackoverflow.com/questions/7346508/datatypefactory-usage-in-creating-xmlgregoriancalendar-hits-performance-badly
+    DatatypeFactory datatypeFactory = DatatypeFactory.newInstance();
+    return new ConverterImpl<LocalDate, XMLGregorianCalendar>(XMLGregorianCalendar.class,
+        (LocalDate d) -> datatypeFactory
+            .newXMLGregorianCalendar(
+                GregorianCalendar.from(d.atStartOfDay(ZoneId.systemDefault()))),
+        LocalDate.class,
+        (XMLGregorianCalendar c) -> c.toGregorianCalendar().toZonedDateTime().toLocalDate());
+  }
+
+  @Bean
+  public Converter<XMLGregorianCalendar, LocalDate> xMLGregorianCalendar2LocalDateConverter()
+      throws DatatypeConfigurationException {
+    // Assume that the DatatypeFactory is thread safe!
+    // see:
+    // https://stackoverflow.com/questions/7346508/datatypefactory-usage-in-creating-xmlgregoriancalendar-hits-performance-badly
+    DatatypeFactory datatypeFactory = DatatypeFactory.newInstance();
+    return new ConverterImpl<XMLGregorianCalendar, LocalDate>(LocalDate.class,
+        (XMLGregorianCalendar c) -> c.toGregorianCalendar().toZonedDateTime().toLocalDate(),
+        XMLGregorianCalendar.class,
+        (LocalDate d) -> datatypeFactory
+            .newXMLGregorianCalendar(
+                GregorianCalendar.from(d.atStartOfDay(ZoneId.systemDefault()))));
   }
 
 }
