@@ -1,20 +1,20 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
  * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 package org.smartbit4all.domain.meta;
+
+import java.util.List;
 
 /**
  * The abstract condition node in a condition expression. The condition tree is implemented as a
@@ -156,7 +156,7 @@ public abstract class Expression {
   public final void setNegate(boolean negate) {
     this.negate = negate;
   }
-  
+
   @Override
   public String toString() {
     return ExpressionToString.toString(this);
@@ -164,26 +164,89 @@ public abstract class Expression {
 
   /**
    * Creates a new AND clause.
+   * 
    * @return an empty {@link ExpressionClause} with {@link BooleanOperator#AND AND} operator.
    */
   public static final ExpressionClause createAndClause() {
     return new ExpressionClause(BooleanOperator.AND);
   }
-  
+
   /**
    * Creates a new OR clause.
+   * 
    * @return an empty {@link ExpressionClause} with {@link BooleanOperator#OR OR} operator.
    */
   public static final ExpressionClause createOrClause() {
     return new ExpressionClause(BooleanOperator.OR);
   }
-  
+
   /**
    * Creates a new XOR clause.
+   * 
    * @return an empty {@link ExpressionClause} with {@link BooleanOperator#XOR XOR} operator.
    */
   public static final ExpressionClause createXorClause() {
     return new ExpressionClause(BooleanOperator.XOR);
   }
-  
+
+  /**
+   * This function translates the expression and return the translated version as a result. If we
+   * setup an expression based on an {@link EntityDefinition} but later on we would like to use this
+   * expression as sub expression in another {@link EntityDefinition} that refers the original one.
+   * In this case we can use this function to construct the translated version of the expression
+   * where the {@link Property}s of original expression will be replaced with the
+   * {@link PropertyRef} ones that access the {@link Property}s with the proper reference. So the
+   * original expression can be added to the Query of the target {@link EntityDefinition}.
+   * 
+   * @param entityDef The {@link EntityDefinition} instance that is the accessor of the new entity
+   *        definition. Like contractDef.partner(), where the type of the referenced entity must be
+   *        the same that the class parameter.
+   * @return The translated Expression where the {@link Property}s are replaced with the proper
+   *         {@link PropertyRef}s starting from the new entity definition. In this example starting
+   *         from the ContractDef.
+   */
+  public final Expression translate(EntityDefinition entityDef,
+      List<Reference<?, ?>> joinPath) {
+    Expression result = copy();
+    // The Property references of the clone will be modified to use references.
+    result.accept(new ExpressionVisitor() {
+      @SuppressWarnings("unchecked")
+      @Override
+      public <T> void visit2Operand(Expression2Operand<T> expression) {
+        translateOperand(entityDef, joinPath, expression.getOp());
+      }
+
+      @Override
+      public void visitBetween(ExpressionBetween<?> expression) {
+        if (expression.getOperand() instanceof OperandProperty) {
+          translateOperand(entityDef, joinPath, (OperandProperty<?>) expression.getOperand());
+        }
+      }
+
+      @Override
+      public <T> void visitIn(ExpressionIn<T> expression) {
+        if (expression.getOperand() instanceof OperandProperty) {
+          translateOperand(entityDef, joinPath, (OperandProperty<T>) expression.getOperand());
+        }
+      }
+
+    });
+    return result;
+  }
+
+  /**
+   * The copy factory method.
+   * 
+   * @return
+   */
+  public abstract Expression copy();
+
+  @SuppressWarnings("unchecked")
+  private final <T> void translateOperand(EntityDefinition entityDef,
+      List<Reference<?, ?>> joinPath,
+      OperandProperty<T> opProperty) {
+    opProperty.setProperty((Property<T>) entityDef
+        .findOrCreateReferredProperty(joinPath, opProperty.property()));
+  }
+
 }

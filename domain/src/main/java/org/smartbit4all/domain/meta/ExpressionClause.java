@@ -1,18 +1,16 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
  * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 package org.smartbit4all.domain.meta;
 
@@ -39,6 +37,23 @@ public class ExpressionClause extends Expression {
    * The expressions of the clause
    */
   protected final List<Expression> expressions = new ArrayList<>();
+
+  @Override
+  public Expression copy() {
+    return new ExpressionClause(this);
+  }
+
+  /**
+   * The copy constructor.
+   * 
+   * @param exp
+   */
+  public ExpressionClause(ExpressionClause exp) {
+    for (Expression expression : exp.expressions) {
+      expressions.add(expression != null ? expression.copy() : null);
+    }
+    this.setNegate(exp.isNegate());
+  }
 
   /**
    * Overridden to avoid unnecessary cast.
@@ -176,7 +191,7 @@ public class ExpressionClause extends Expression {
   public List<Expression> expressions() {
     return expressions;
   }
-  
+
   /**
    * Adds an expression to the clause.
    * 
@@ -184,9 +199,9 @@ public class ExpressionClause extends Expression {
    * @return The clause itself.
    */
   public ExpressionClause add(Expression expression) {
-    if(expression instanceof ExpressionClause) {
+    if (expression instanceof ExpressionClause) {
       ExpressionClause clauseToAdd = (ExpressionClause) expression;
-      if(this.operator == clauseToAdd.operator) {
+      if (this.operator == clauseToAdd.operator) {
         this.expressions.addAll(clauseToAdd.expressions);
       } else {
         expressions.add(expression);

@@ -109,8 +109,7 @@ public class ReferenceInvocationHandler implements InvocationHandler {
 
   private Property<?> findOrCreateRefProperty(EntityDefinition sourceEntity,
       List<Reference<?, ?>> joinPath, Property<?> referredProperty) {
-    Property<?> property = sourceEntity.findOrCreateReferredProperty(joinPath, referredProperty);
-    return property;
+    return sourceEntity.findOrCreateReferredProperty(joinPath, referredProperty);
   }
 
 }
