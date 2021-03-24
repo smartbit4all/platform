@@ -363,32 +363,26 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
       // joins can be specified at
       return;
     }
-    if (joins.length <= 2) {
-      String source = joins[0].source();
-      String target = joins[0].target();
-
-      EntityDefinition referencedEntity = createReferenceProxy(entityDefClazz, targetEntityClazz,
-          source, target, referenceName, referenceMandatory);
-      referencedEntitiesByReferenceName.put(referenceName, referencedEntity);
-
-    } else {
-      throw new UnsupportedOperationException("Multiple joins not supported yet!");
-    }
+    EntityDefinition referencedEntity = createReferenceProxy(entityDefClazz, targetEntityClazz,
+        joins, referenceName, referenceMandatory);
+    referencedEntitiesByReferenceName.put(referenceName, referencedEntity);
 
   }
 
   @SuppressWarnings("unchecked")
   protected final <TARGET extends EntityDefinition, PROP extends Comparable<PROP>> TARGET createReferenceProxy(
-      Class<T> sourceEntityClazz, Class<TARGET> targetEntityClazz, String sourcePropertyName,
-      String targetPropertyName, String referenceName, ReferenceMandatory referenceMandatory) {
+      Class<T> sourceEntityClazz, Class<TARGET> targetEntityClazz, Join[] joins,
+      String referenceName, ReferenceMandatory referenceMandatory) {
 
-    // TODO getBean by name?
     T sourceEntity = ctx.getBean(sourceEntityClazz);
     TARGET targetEntity = ctx.getBean(targetEntityClazz);
-    Property<PROP> sourceProperty = (Property<PROP>) sourceEntity.getProperty(sourcePropertyName);
-    Property<PROP> targetProperty = (Property<PROP>) targetEntity.getProperty(targetPropertyName);
     Reference<T, TARGET> reference = new Reference<>(sourceEntity, targetEntity, referenceName);
-    reference.addJoin(sourceProperty, targetProperty);
+    for (int i = 0; i < joins.length; i++) {
+      Join join = joins[i];
+      Property<PROP> sourceProperty = (Property<PROP>) sourceEntity.getProperty(join.source());
+      Property<PROP> targetProperty = (Property<PROP>) targetEntity.getProperty(join.target());
+      reference.addJoin(sourceProperty, targetProperty);
+    }
     if (referenceMandatory != ReferenceMandatory.BYPROPERTY) {
       reference.setMandatory(
           referenceMandatory == ReferenceMandatory.TRUE ? Boolean.TRUE : Boolean.FALSE);
