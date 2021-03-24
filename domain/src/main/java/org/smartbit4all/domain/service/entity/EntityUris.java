@@ -60,6 +60,13 @@ public abstract class EntityUris {
     return createUri(SCHEME_ENTITY, domain, entityPath, query, null);
   }
   
+  public static boolean isEntityUri(URI uriToCheck) {
+    if (SCHEME_ENTITY.equals(uriToCheck.getScheme())) {
+      return true;
+    }
+    return false;
+  }
+  
   public static String getEntityObjectId(URI entityObjectUri) {
     return getQueryParam(entityObjectUri, ENTITYOBJECT_ID);
   }
