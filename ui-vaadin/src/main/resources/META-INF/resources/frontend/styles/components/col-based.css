@@ -1,0 +1,26 @@
+.col-based vaadin-text-field {
+	width: 385px;
+	margin-left: 10px;
+}
+
+.col-based vaadin-big-decimal-field {
+	width: 385px;
+	margin-left: 10px;
+}
+
+.col-based vaadin-date-picker {
+	width: 385px;
+	margin-left: 10px;
+}
+
+.col-based vaadin-date-time-picker {
+	width: 385px;
+	margin-left: 10px;
+}
+
+.col-based vaadin-checkbox {
+    width: 385px;
+    height: 37px;
+    margin-top: 40px;
+    margin-left: 10px;
+}

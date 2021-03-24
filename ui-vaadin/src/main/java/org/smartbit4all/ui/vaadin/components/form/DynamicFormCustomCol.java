@@ -3,9 +3,11 @@ package org.smartbit4all.ui.vaadin.components.form;
 import java.util.ArrayList;
 import java.util.List;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.FlexLayout.FlexDirection;
 
+@CssImport("./styles/components/col-based.css")
 public class DynamicFormCustomCol<BEAN> extends DynamicForm<BEAN> {
 
   int colNum;
