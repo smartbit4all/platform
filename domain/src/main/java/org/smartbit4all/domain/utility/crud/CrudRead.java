@@ -1,18 +1,16 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
  * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 package org.smartbit4all.domain.utility.crud;
 
@@ -81,14 +79,14 @@ public class CrudRead<E extends EntityDefinition> implements Query<E> {
 
   public Optional<DataRow> firstRow() throws Exception {
     query.limit(1);
-    
+
     TableData<E> result = executeIntoTableData();
     List<DataRow> resultRows = result.rows();
-    
-    if(resultRows.isEmpty()) {
+
+    if (resultRows.isEmpty()) {
       return Optional.empty();
     }
-    
+
     return Optional.ofNullable(resultRows.get(0));
   }
 
@@ -97,7 +95,7 @@ public class CrudRead<E extends EntityDefinition> implements Query<E> {
     TableData<E> result = executeIntoTableData();
     return result.rows();
   }
-  
+
   public <T> Optional<T> firstRowValue(Property<T> property) throws Exception {
     query.limit(1);
     TableData<E> result = executeIntoTableData();
@@ -106,28 +104,29 @@ public class CrudRead<E extends EntityDefinition> implements Query<E> {
   }
 
   /**
-   * @param msg exception message when there are more than one result rows 
+   * @param msg exception message when there are more than one result rows
    * @return
    * @throws Exception
    */
   public Optional<DataRow> onlyOne(String multipleRowsExceptionMessage) throws Exception {
     TableData<E> result = executeIntoTableData();
     checkResultSize(multipleRowsExceptionMessage, result);
-    if(result.rows().isEmpty()) {
+    if (result.rows().isEmpty()) {
       return Optional.empty();
     }
     return Optional.ofNullable(result.rows().get(0));
   }
-  
+
   /**
    * @return the optional first result row
-   * @throws IllegalArgumentException when there are more then one result rows. 
+   * @throws IllegalArgumentException when there are more then one result rows.
    */
   public Optional<DataRow> onlyOne() throws Exception {
     return onlyOne("There are more than one results on read!");
   }
 
-  public <T> Optional<T> onlyOneValue(Property<T> property, String multipleRowsExceptionMessage) throws Exception {
+  public <T> Optional<T> onlyOneValue(Property<T> property, String multipleRowsExceptionMessage)
+      throws Exception {
     TableData<E> result = executeIntoTableData();
     checkResultSize(multipleRowsExceptionMessage, result);
     checkResultProperty(property, result);
@@ -146,27 +145,28 @@ public class CrudRead<E extends EntityDefinition> implements Query<E> {
   }
 
   private void checkResultSize(String multipleRowsExceptionMessage, TableData<E> result) {
-    if(result.size() > 1) {
+    if (result.size() > 1) {
       throw new IllegalArgumentException(multipleRowsExceptionMessage);
     }
   }
 
   private <T> void checkResultProperty(Property<T> property, TableData<E> result) {
-    if(result.getColumn(property) == null) {
-      throw new IllegalArgumentException("The given property does not occure in the result TableData");
+    if (result.getColumn(property) == null) {
+      throw new IllegalArgumentException(
+          "The given property does not occure in the result TableData");
     }
   }
 
   private <T> Optional<T> getValueFromResult(Property<T> property, TableData<E> result) {
     List<DataRow> resultRows = result.rows();
-    if(!resultRows.isEmpty()) {
+    if (!resultRows.isEmpty()) {
       T value = resultRows.get(0).get(property);
       return Optional.ofNullable(value);
     } else {
       return Optional.empty();
     }
   }
-  
+
   public CrudRead<E> selectAllProperties() {
     query.select(entityDef.allProperties());
     return this;
@@ -253,6 +253,18 @@ public class CrudRead<E extends EntityDefinition> implements Query<E> {
   @Override
   public CrudRead<E> limit(int queryLimit) {
     query.limit(queryLimit);
+    return this;
+  }
+
+  @Override
+  public Query<E> distinct() {
+    query.distinct();
+    return this;
+  }
+
+  @Override
+  public Query<E> distinctNot() {
+    query.distinctNot();
     return this;
   }
 

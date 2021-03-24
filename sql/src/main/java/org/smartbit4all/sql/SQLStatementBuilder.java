@@ -1,18 +1,16 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
  * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 package org.smartbit4all.sql;
 
@@ -357,8 +355,8 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
    * @return Fluid API.
    */
   @Override
-  public SQLStatementBuilderIF select() {
-    b.append(SQLConstant.SELECT);
+  public SQLStatementBuilderIF select(boolean distinct) {
+    b.append(distinct ? SQLConstant.SELECT_DISTINCT : SQLConstant.SELECT);
     separate();
     if (queryLimit > 0) {
       switch (target) {
@@ -979,10 +977,12 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
   /**
    * @return The before statements in a map. If empty then we get back an empty map not a null.
    */
+  @Override
   public Map<String, StringBuilder> beforeStatements() {
     return beforeStatements == null ? Collections.emptyMap() : beforeStatements;
   }
 
+  @Override
   public void setQueryLimit(int queryLimit) {
     this.queryLimit = queryLimit;
   }
@@ -992,7 +992,7 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
     b.append(SQLConstant.SEGMENTSEPARATOR);
     b.append(SQLConstant.WHERE);
   }
-  
+
   @Override
   public void preProcessSelectWhere() {
     if (queryLimit > 0) {

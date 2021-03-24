@@ -1,18 +1,16 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
  * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 package org.smartbit4all.sql.service.query;
 
@@ -43,9 +41,9 @@ import org.smartbit4all.domain.meta.PropertyRef;
 import org.smartbit4all.domain.meta.PropertySqlComputed;
 import org.smartbit4all.domain.meta.Reference;
 import org.smartbit4all.domain.meta.Reference.Join;
+import org.smartbit4all.domain.meta.SortOrderProperty;
 import org.smartbit4all.domain.service.query.QueryImpl;
 import org.smartbit4all.domain.service.query.QueryOutput;
-import org.smartbit4all.domain.meta.SortOrderProperty;
 import org.smartbit4all.domain.utility.SupportedDatabase;
 import org.smartbit4all.sql.SQLComputedColumn;
 import org.smartbit4all.sql.SQLGroupByColumn;
@@ -142,6 +140,7 @@ public class SQLQuery<E extends EntityDefinition> extends QueryImpl<E> {
     // SQLStatementBuilderIF builder = entityDef.context().get(SQLStatementBuilderIF.class);
     SQLStatementBuilderIF builder = new SQLStatementBuilder(SupportedDatabase.ORACLE);
     select.setQueryLimit(input.limit());
+    select.setDistinctQuery(input.isDistinct());
     for (Property<?> property : input.properties()) {
       SQLSelectColumn column = setupProperty(rootTable, property, builder);
       // It's a column in the select add this column.

@@ -1,18 +1,16 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
  * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 package org.smartbit4all.domain.service.query;
 
@@ -65,6 +63,12 @@ public class QueryInput<E extends EntityDefinition> {
    * Unlimited query by default.
    */
   protected int limit = -1;
+
+  /**
+   * The global distinct flag for the query. The default is false because in case of the normal
+   * database design there is no need to add distinct.
+   */
+  protected boolean distinct = false;
 
   /**
    * The {@link EntityDefinition} that is the root for the query. All the related entities must be
@@ -166,6 +170,14 @@ public class QueryInput<E extends EntityDefinition> {
 
   public LockRequest lockRequest() {
     return lockRequest;
+  }
+
+  public final boolean isDistinct() {
+    return distinct;
+  }
+
+  public final void setDistinct(boolean distinct) {
+    this.distinct = distinct;
   }
 
 }
