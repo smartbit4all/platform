@@ -68,7 +68,8 @@ public class NavigationConfig {
   public String toString() {
     StringBuilder sb = new StringBuilder();
     assocMetaUrisByEntryMetaUri.entrySet().stream()
-        .sorted((e1, e2) -> e1.getKey().compareTo(e2.getKey())).forEach(e -> {
+//        .sorted((e1, e2) -> e1.getKey().compareTo(e2.getKey()))
+        .forEach(e -> {
           if (sb.length() > 0) {
             sb.append(StringConstant.NEW_LINE);
           }

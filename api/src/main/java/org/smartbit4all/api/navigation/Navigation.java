@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -104,31 +105,33 @@ public class Navigation {
           result += assocRefs.size();
         }
       } else {
-        if (assocRefs != null && !assocRefs.isEmpty()) {
+//        if (assocRefs != null && !assocRefs.isEmpty()) {
           result++;
-        }
+//        }
       }
     }
     return result;
   }
 
-  public List<NavigationNode> getChildrenNodes(String parentId,
+  public Map<String, List<NavigationNode>> getChildrenNodes(String parentId,
       boolean assumeVisibilityOfAssociations) {
     NavigationNode parent = nodes.get(parentId);
     if (parent == null || parent.getAssociations() == null || parent.getAssociations().isEmpty()) {
-      return new ArrayList<>();
+      return new LinkedHashMap<>();
     }
-    List<NavigationNode> children = new ArrayList<>();
+    Map<String, List<NavigationNode>> nodesByAssocs = new LinkedHashMap<>();
     for (NavigationAssociation assoc : parent.getAssociations()) {
       // If the association is hidden then we get the references directly.
       if (!assumeVisibilityOfAssociations || assoc.getHidden()) {
         if (assoc.getReferences() != null) {
+          List<NavigationNode> children = new ArrayList<>();
           assoc.getReferences().forEach(r -> children.add(r.getEndNode()));
+          nodesByAssocs.put(assoc.getId(), children);
         }
       }
     }
 
-    return children;
+    return nodesByAssocs;
   }
 
   public List<NavigationNode> getReferencedNodes(String associationId) {
@@ -302,22 +305,16 @@ public class Navigation {
      * associations.
      */
     List<URI> assocMetaUris = config.getAssocMetaUris(entry.getMetaUri());
-    node.setAssociations(assocMetaUris == null || assocMetaUris.isEmpty() ? Collections.emptyList()
-        : assocMetaUris.stream()
-            .map(assocMetaUri -> association(assocMetaUri, node, config))
-            .collect(Collectors.toList()));
-    // List<NavigationAssociationMeta> assocMetas = new ArrayList<>();
-    // config.getEntries()
-    // .stream()
-    // .filter(e -> e.getName().equals(entry.getMeta().getName()))
-    // .findFirst()
-    // .ifPresent(e -> assocMetas.addAll(
-    // e.getAssociations() != null ? e.getAssociations() : Collections.emptyList()));
-    // node.setAssociations(assocMetas.isEmpty() ? Collections.emptyList()
-    // : assocMetas.stream()
-    // .map(assocMeta -> association(assocMeta.getUri(), node))
-    // .collect(Collectors.toList()));
-
+    if(assocMetaUris == null || assocMetaUris.isEmpty()) {
+      node.setAssociations(Collections.emptyList());
+    } else {
+      List<NavigationAssociation> navigationAssociations = assocMetaUris.stream()
+          .map(assocMetaUri -> association(assocMetaUri, node, config))
+          .collect(Collectors.toList());
+      node.setAssociations(navigationAssociations);
+    }
+    
+    
     return node;
   }
 

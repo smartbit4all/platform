@@ -16,6 +16,7 @@
  ******************************************************************************/
 package org.smartbit4all.ui.vaadin.components.navigation.tree;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -33,7 +34,6 @@ import org.smartbit4all.ui.vaadin.localization.TranslationUtil;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.treegrid.TreeGrid;
 import com.vaadin.flow.data.provider.hierarchy.AbstractBackEndHierarchicalDataProvider;
@@ -113,11 +113,12 @@ public class NavigationTreeView implements NavigationView {
     }
   }
 
-  private Component getRowComponent(NavigationTreeNode node) {
+  protected Component getRowComponent(NavigationTreeNode node) {
     Objects.requireNonNull(node);
     String iconKey = node.getIcon();
     String title = getNodeTitle(node);
     Label label = new Label(title);
+    adjustStylesToNode(node, title, label);
     if(iconKey != null) {
       Icon icon = new Icon(iconKey);
       return new HorizontalLayout(icon, label);
@@ -126,7 +127,15 @@ public class NavigationTreeView implements NavigationView {
     }
   }
 
-  private String getNodeTitle(NavigationTreeNode node) {
+  protected void adjustStylesToNode(NavigationTreeNode node, String title, Label label) {
+    String[] styles = node.getStyles();
+    if(styles != null && Arrays.asList(styles).contains("empty")) {
+      label.getStyle().set("font-style", "italic");
+      label.setText(title + " (0)");
+    }
+  }
+
+  protected String getNodeTitle(NavigationTreeNode node) {
     String caption = node.getCaption();
     if(caption == null) {
       return "n/a";

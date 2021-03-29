@@ -17,8 +17,10 @@ package org.smartbit4all.ui.common.navigation;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.smartbit4all.api.navigation.Navigation;
 import org.smartbit4all.api.navigation.NavigationApi;
@@ -33,7 +35,6 @@ import org.smartbit4all.ui.common.action.NavigationActionListener;
 import org.smartbit4all.ui.common.navigation.NavigationTreeNode.Kind;
 import org.smartbit4all.ui.common.view.UIViewShowCommand;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.google.common.collect.Streams;
 
 public class NavigationControllerImpl implements NavigationController {
 
@@ -140,17 +141,49 @@ public class NavigationControllerImpl implements NavigationController {
     }
     List<NavigationAssociation> associations =
         node.getAssociations() == null ? Collections.emptyList() : node.getAssociations();
+    
+    // create map with nulls to define the order
+    LinkedHashMap<String, List<NavigationTreeNode>> treeNodesByOrderedAssocIds =
+        new LinkedHashMap<>();
+    associations.forEach(a -> {
+      treeNodesByOrderedAssocIds.put(a.getId(), null);
+    });
+    
+    Map<String, List<NavigationNode>> nodesByAssocIds =
+        navigationState.getChildrenNodes(parent.getIdentifier(), true);
+    nodesByAssocIds.forEach((assocId, nodes) -> {
+      List<NavigationTreeNode> treeNodes = nodes.stream()
+          .map(n -> new NavigationTreeNode(Kind.ENTRY, n.getId(), n.getEntry().getName(), null,
+              n.getEntry().getIcon(), null, n.getEntry().getActions()))
+          .collect(Collectors.toList());
+      treeNodesByOrderedAssocIds.put(assocId, treeNodes);
+    });
+    
+    
     // TODO Correct name for the association
-    Stream<NavigationTreeNode> assocStream = associations.stream().filter(a -> !a.getHidden())
-        .map(a -> new NavigationTreeNode(Kind.ASSOCIATION, a.getId(), getAssociationNodeCaption(a.getMetaUri()),
-            null,
-            null, null, null));
-    Stream<NavigationTreeNode> nodeStream =
-        navigationState.getChildrenNodes(parent.getIdentifier(), true).stream()
-            .map(n -> new NavigationTreeNode(Kind.ENTRY, n.getId(), n.getEntry().getName(), null,
-                n.getEntry().getIcon(), null, n.getEntry().getActions()));
-    return Streams.concat(assocStream, nodeStream);
-
+    associations.stream()
+        .filter(a -> !a.getHidden())
+        .forEach(navigationAssociation -> {
+          String[] styles = null;
+          if(navigationAssociation.getReferences() == null || navigationAssociation.getReferences().isEmpty()) {
+            styles = new String[]{"empty"};
+          }
+          NavigationTreeNode treeNode = new NavigationTreeNode(Kind.ASSOCIATION,
+              navigationAssociation.getId(),
+              getAssociationNodeCaption(navigationAssociation.getMetaUri()),
+              null, null, styles, null);
+          treeNodesByOrderedAssocIds.put(navigationAssociation.getId(), Collections.singletonList(treeNode));
+        });
+    
+    
+    List<NavigationTreeNode> resultTreeNodes = new ArrayList<>();
+    treeNodesByOrderedAssocIds.forEach((assoc, nodes) -> {
+      if(nodes != null) {
+        resultTreeNodes.addAll(nodes);
+      }
+    });
+    return resultTreeNodes.stream();
+    
   }
   
   private String getAssociationNodeCaption(URI assocMetaUri) {
