@@ -237,16 +237,7 @@ public class ApiObjectRef {
 
         case COLLECTION:
           ApiObjectCollection collection = entry.getCollection();
-          collection.clear();
-          @SuppressWarnings("unchecked")
-          Collection<Object> values = (Collection<Object>) value;
-          if (values != null) {
-            for (Object myValue : values) {
-              ApiObjectRef valueRef = new ApiObjectRef(null, myValue, descriptors);
-              collection.add(valueRef);
-            }
-          }
-
+          collection.set((Collection<Object>) value);
           break;
 
         default:
@@ -254,7 +245,7 @@ public class ApiObjectRef {
       }
     } catch (Exception e) {
       throw new IllegalArgumentException(
-          propertyName + " property is not set to " + value + " in " + meta.getClazz().getName());
+          propertyName + " property is not set to " + value + " in " + meta.getClazz().getName(), e);
     }
   }
 
@@ -324,6 +315,36 @@ public class ApiObjectRef {
       default:
         break;
     }
+  }
+  
+  public ApiObjectRef getValueRefByPath(String path) {
+    // TODO
+    path = path.toUpperCase();
+
+    String propertyName = PathUtility.getRootPath(path);
+    PropertyEntry propertyEntry = properties.get(propertyName);
+
+    int pathSize = PathUtility.getPathSize(path);
+    switch (propertyEntry.getMeta().getKind()) {
+      case VALUE:
+        return this;
+      case REFERENCE:
+        if (pathSize == 1) {
+          return propertyEntry.getReference();
+        } else {
+          return propertyEntry.getReference().getValueRefByPath(PathUtility.nextFullPath(path));
+        }
+      case COLLECTION:
+        ApiObjectCollection collection = propertyEntry.getCollection();
+        if (pathSize == 2) {
+          return collection.getByIdx(PathUtility.getLastPath(path));
+        } else {
+          return collection.getByIdx(path).getValueRefByPath(path);
+        }
+      default:
+        break;
+    }
+    return null;
   }
 
   public void removeValueByPath(String path) {

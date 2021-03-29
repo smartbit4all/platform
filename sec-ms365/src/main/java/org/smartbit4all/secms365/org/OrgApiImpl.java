@@ -28,6 +28,7 @@ import org.smartbit4all.secms365.service.MsGraphService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.SessionScope;
 import com.microsoft.graph.requests.extensions.IGroupCollectionPage;
+import com.microsoft.graph.requests.extensions.IGroupCollectionRequestBuilder;
 import com.microsoft.graph.requests.extensions.IGroupCollectionWithReferencesPage;
 import com.microsoft.graph.requests.extensions.IUserCollectionPage;
 import com.microsoft.graph.requests.extensions.IUserCollectionRequestBuilder;
@@ -71,6 +72,23 @@ public class OrgApiImpl implements OrgApi {
       }
     }
     return users;
+  }
+  
+  @Override
+  public List<Group> getAllGroups() {
+    List<Group> groups = new ArrayList<>();
+    IGroupCollectionPage groupPage = graphService.getGraphClient().groups().buildRequest().top(25).get();
+    while(groupPage != null) {
+      List<com.microsoft.graph.models.extensions.Group> currentPage = groupPage.getCurrentPage();
+      groups.addAll(currentPage.stream().map(u -> createGroup(u)).collect(Collectors.toList()));
+      IGroupCollectionRequestBuilder nextPage = groupPage.getNextPage();
+      if(nextPage == null) {
+        break;
+      } else {
+        groupPage = nextPage.buildRequest().get();
+      }
+    }
+    return groups;
   }
 
   @Override
@@ -152,5 +170,4 @@ public class OrgApiImpl implements OrgApi {
                 .name(group.displayName)
                 .description(group.description);
   }
-
 }

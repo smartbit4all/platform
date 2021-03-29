@@ -27,6 +27,8 @@ public interface OrgApi {
   User getUser(URI userUri);
   
   List<User> getAllUsers();
+
+  List<Group> getAllGroups();
   
   List<User> getUsersOfGroup(URI groupUri);
   

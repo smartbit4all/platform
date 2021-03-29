@@ -255,6 +255,31 @@ public class ApiObjectCollection implements List<ApiObjectRef> {
     // }
     return true;
   }
+  
+  public boolean set(Collection<Object> c) {
+    if (c == null) {
+      return false;
+    }
+    if (originalCollection == null) {
+      Object collectionValue = property.getValue(objectRef.getObject());
+      property.setValue(objectRef.getObject(), c);
+      build();
+    } else {
+      clear();
+      for (Object myValue : c) {
+        ApiObjectRef ref = constructObjectRef(myValue);
+        addRef(ref);
+      }
+    }
+    // TODO correct implementation
+    // items.addAll(index, c);
+    // for (ApiObjectRef apiObjectRef : c) {
+    // if (apiObjectRef != null) {
+    // itemsByObject.put(apiObjectRef.getObject(), apiObjectRef);
+    // }
+    // }
+    return true;
+  }
 
   @Override
   public boolean removeAll(Collection<?> c) {
@@ -279,7 +304,9 @@ public class ApiObjectCollection implements List<ApiObjectRef> {
   public void clear() {
     removedObjects.addAll(items);
     items.clear();
-    originalCollection.clear();
+    if (originalCollection != null) {
+      originalCollection.clear();
+    }
   }
 
   @Override

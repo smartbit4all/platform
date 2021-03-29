@@ -95,10 +95,11 @@ public class ObjectPublisherImpl implements ObjectPublisher, EventPublisherImpl 
 
   private <E extends ChangeItem> void addToEventListeners(String name,
       Map<String, List<EventListener<E>>> listenerMap, EventListener<E> listener) {
-    List<EventListener<E>> list = listenerMap.get(name);
+    String key = name.toUpperCase();
+    List<EventListener<E>> list = listenerMap.get(key);
     if (list == null) {
       list = new ArrayList<>();
-      listenerMap.put(name.toUpperCase(), list);
+      listenerMap.put(key, list);
     }
     list.add(listener);
   }
