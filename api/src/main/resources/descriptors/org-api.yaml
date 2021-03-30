@@ -151,6 +151,9 @@ components:
         username: 
           type: string
           description: 'The username'
+        name: 
+          type: string
+          description: 'The name fo the user'
         email:
           type: string
           format: email

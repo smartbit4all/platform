@@ -24,6 +24,8 @@ import org.smartbit4all.api.org.bean.User;
 
 public interface OrgApi {
 
+  User currentUser();
+
   User getUser(URI userUri);
   
   List<User> getAllUsers();
