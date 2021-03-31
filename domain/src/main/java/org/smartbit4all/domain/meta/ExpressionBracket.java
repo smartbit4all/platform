@@ -21,7 +21,7 @@ package org.smartbit4all.domain.meta;
  * @author Peter Boros
  *
  */
-public class ExpressionBracket extends Expression {
+public final class ExpressionBracket extends Expression {
 
   /**
    * The inner condition inside the bracket.

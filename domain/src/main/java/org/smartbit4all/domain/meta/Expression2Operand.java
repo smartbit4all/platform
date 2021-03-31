@@ -29,7 +29,7 @@ import org.smartbit4all.core.utility.StringConstant;
  *
  * @param <T>
  */
-public class Expression2Operand<T> extends Expression {
+public final class Expression2Operand<T> extends Expression {
 
   public static enum Operator {
     EQ, LT, LE, GT, GE, LIKE;

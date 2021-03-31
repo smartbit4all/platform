@@ -20,7 +20,7 @@ package org.smartbit4all.domain.meta;
  * @author Peter Boros
  *
  */
-public class ExpressionIsNull extends Expression {
+public final class ExpressionIsNull extends Expression {
 
   public static final String IS_NULL = " IS NULL";
   public static final String IS_NOT_NULL = " IS NOT NULL";

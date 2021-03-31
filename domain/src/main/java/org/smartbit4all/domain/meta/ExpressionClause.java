@@ -26,7 +26,7 @@ import java.util.List;
  * 
  * @author Peter Boros
  */
-public class ExpressionClause extends Expression {
+public final class ExpressionClause extends Expression {
 
   /**
    * The operator of the boole clause.

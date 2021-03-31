@@ -21,7 +21,7 @@ package org.smartbit4all.domain.meta;
  * @author Peter Boros
  *
  */
-public class ExpressionBoolean extends Expression {
+public final class ExpressionBoolean extends Expression {
 
   /**
    * The value of the logical expression.

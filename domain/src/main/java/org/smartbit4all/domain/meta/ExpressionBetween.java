@@ -27,7 +27,7 @@ import org.smartbit4all.core.utility.StringConstant;
  * @author Peter Boros
  *
  */
-public class ExpressionBetween<T> extends Expression {
+public final class ExpressionBetween<T> extends Expression {
 
   public static final String BETWEEN = "BETWEEN";
 

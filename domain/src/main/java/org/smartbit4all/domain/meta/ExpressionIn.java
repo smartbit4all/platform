@@ -29,7 +29,7 @@ import org.smartbit4all.core.utility.StringConstant;
  *
  * @param <T>
  */
-public class ExpressionIn<T> extends Expression {
+public final class ExpressionIn<T> extends Expression {
 
   public static final String NOT_IN = "NOT IN";
 
