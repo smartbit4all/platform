@@ -62,6 +62,7 @@ public class ValueUris extends UriUtils {
   public static URI createUri(URI valueUri, String valueId) {
     String source = getSource(valueUri);
     String objectCode = getObjectCode(valueUri);
+    objectCode = objectCode == null ? null : "/" + objectCode;
     return createUri(VALUE_SCHEME, source, objectCode, valueId);
   }
 
