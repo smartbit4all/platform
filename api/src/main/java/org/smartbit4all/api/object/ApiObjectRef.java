@@ -339,7 +339,8 @@ public class ApiObjectRef {
         if (pathSize == 2) {
           return collection.getByIdx(PathUtility.getLastPath(path));
         } else {
-          return collection.getByIdx(path).getValueRefByPath(path);
+          String nextPath = PathUtility.nextFullPath(path);
+          return collection.getByIdx(PathUtility.getRootPath(nextPath)).getValueRefByPath(PathUtility.nextFullPath(nextPath));
         }
       default:
         break;
