@@ -110,16 +110,17 @@
       <appliedProfile xmi:type="uml:Profile" href="pathmap://SB4UMLProfile/SB4UMLProfile.profile.uml#_pFFiEKepEeqhdJy96mVjxA"/>
     </profileApplication>
   </uml:Model>
-  <SB4UMLProfile:EntityDataType xmi:id="_sZqVkAlvEeuTwZds3fdDqg" javaType="BinaryData" sqlType="BLOB" javaImport="org.smartbit4all.core.utility.BinaryData" base_DataType="_arzSAasPEeqI-_Il1SnNWw" yamlType="string" yamlFormat="binary"/>
+  <SB4UMLProfile:EntityDataType xmi:id="_sZqVkAlvEeuTwZds3fdDqg" javaType="BinaryData" sqlType="BLOB" javaImport="org.smartbit4all.types.binarydata.BinaryData" base_DataType="_arzSAasPEeqI-_Il1SnNWw" yamlType="string" yamlFormat="binary"/>
   <SB4UMLProfile:EntityDataType xmi:id="_JEWi8AlxEeuTwZds3fdDqg" javaType="LocalDateTime" sqlType="TIMESTAMP" javaImport="java.time.LocalDateTime" base_DataType="_PZGJIKrXEeqwasKhGu9goQ" yamlType="string" yamlFormat="date-time"/>
   <SB4UMLProfile:EntityDataType xmi:id="_VJX8cBm2EeuxK5qlWk_M0A" javaType="Boolean" sqlType="VARCHAR2(5)" base_DataType="_arzSAKsPEeqI-_Il1SnNWw" yamlType="boolean"/>
   <SB4UMLProfile:EntityDataType xmi:id="_ee4d0Bm3EeuxK5qlWk_M0A" javaType="String" sqlType="VARCHAR2(60)" base_DataType="_VCEM4KsQEeqI-_Il1SnNWw" yamlType="string"/>
   <SB4UMLProfile:EntityDataType xmi:id="_XW0kEBm5EeuxK5qlWk_M0A" javaType="String" sqlType="VARCHAR2(50)" base_DataType="_W87uAKrXEeqwasKhGu9goQ" yamlType="string"/>
   <SB4UMLProfile:EntityDataType xmi:id="_-pc18Bm5EeuxK5qlWk_M0A" javaType="String" sqlType="VARCHAR2(400)" base_DataType="_-oX34Bm5EeuxK5qlWk_M0A" yamlType="string"/>
-  <SB4UMLProfile:EntityDataType xmi:id="_BkYEEBm8Eeu8s7Q_MLF6vA" javaType="LocalDateTime" sqlType="TIMESTAMP" javaImport="java.time.LocalDateTime" base_DataType="_arzSAqsPEeqI-_Il1SnNWw" yamlType="string" yamlFormat="date-time"/>
+  <SB4UMLProfile:EntityDataType xmi:id="_BkYEEBm8Eeu8s7Q_MLF6vA" javaType="LocalDate" sqlType="DATE" javaImport="java.time.LocalDate" base_DataType="_arzSAqsPEeqI-_Il1SnNWw" yamlType="string" yamlFormat="date"/>
   <SB4UMLProfile:EntityDataType xmi:id="_J8hawBm8Eeu8s7Q_MLF6vA" javaType="String" sqlType="VARCHAR2(25)" base_DataType="_aryq8asPEeqI-_Il1SnNWw" yamlType="string"/>
   <SB4UMLProfile:EntityDataType xmi:id="_N4LYABm8Eeu8s7Q_MLF6vA" javaType="String" sqlType="VARCHAR2(250)" base_DataType="_aryq8KsPEeqI-_Il1SnNWw" yamlType="string"/>
   <SB4UMLProfile:EntityDataType xmi:id="_TspRABm8Eeu8s7Q_MLF6vA" javaType="String" sqlType="VARCHAR2(2000)" base_DataType="_arnEwKsPEeqI-_Il1SnNWw" yamlType="string"/>
   <SB4UMLProfile:EntityDataType xmi:id="_53MZEDLtEeuAtIx1FYKDkg" javaType="String" sqlType="VARCHAR2(25)" base_DataType="_dncjwKsPEeqI-_Il1SnNWw" yamlType="string"/>
   <SB4UMLProfile:EntityDataType xmi:id="_zxwY8GPOEeuafYkI7xKV0Q" javaType="URI" sqlType="VARCHAR2(250)" javaImport="java.net.URI" base_DataType="_uhFJgGPOEeuafYkI7xKV0Q" yamlType="string" yamlFormat="uri"/>
+  <SB4UMLProfile:EntityDataType xmi:id="_hFBs4I13EeuButxvPAEggA" javaType="Long" sqlType="NUMBER" base_DataType="_S2n1YKrWEeqwasKhGu9goQ" yamlType="integer" yamlFormat="int64"/>
 </xmi:XMI>
