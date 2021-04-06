@@ -230,6 +230,7 @@ public class ApiObjectRef {
             entry.setReference(newRef);
           } else {
             // TODO Manage the deletion of a reference.
+            entry.setReference(null);
           }
           // We set the value as a property at the end.
           entry.getMeta().setValue(object, value);

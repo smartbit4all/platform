@@ -28,14 +28,14 @@ public class VaadinLabelBinder {
 
   protected void onUIStateChanged(PropertyChange value) {
     String currentValue = label.getText();
-    String newValue = (String) value.getNewValue();
+    Object newValue = value.getNewValue();
 
     if (currentValue == null && newValue == null) {
       return;
     }
     
     if ((currentValue == null && newValue != null) || !currentValue.equals(newValue)) {
-      label.setText(newValue);
+      label.setText(newValue.toString());
     }
   }
 
