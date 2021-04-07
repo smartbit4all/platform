@@ -38,8 +38,10 @@ public class FilterOperationTxtLikeMinUI extends FilterOperationUI {
   private ValueChangeListener<? super ComponentValueChangeEvent<TextField, String>> valueChangeListener() {
     return e -> {
       if (e.isFromClient()) {
+        String fieldValue = textField.getValue();
+        fieldValue = fieldValue == null ? null : fieldValue.toUpperCase();
         FilterOperandValue value1 =
-            new FilterOperandValue().type(String.class.getName()).value(textField.getValue());
+            new FilterOperandValue().type(String.class.getName()).value(fieldValue);
         filterValueChangeListener.filterValueChanged(filterId, value1, null, null);
       }
     };
@@ -57,7 +59,7 @@ public class FilterOperationTxtLikeMinUI extends FilterOperationUI {
       textField.setValue(null);
       return;
     }
-    textField.setValue(value1.getValue());
+    textField.setValue(value1.getValue().toUpperCase());
     
   }
 
