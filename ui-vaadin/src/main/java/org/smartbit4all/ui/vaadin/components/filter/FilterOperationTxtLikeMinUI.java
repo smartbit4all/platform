@@ -20,9 +20,11 @@ public class FilterOperationTxtLikeMinUI extends FilterOperationUI {
   public FilterOperationTxtLikeMinUI(FilterValueChangeListener filterValueChangeListener) {
     this.filterValueChangeListener = filterValueChangeListener;
     addClassName("filter-onefield");
+    addClassName("filter-txt-like-min");
     textField = new TextField();
     textField.addValueChangeListener(valueChangeListener());
     textField.setClearButtonVisible(true);
+    textField.addClassName("filter-txt-like-min-txt");
     binder = new Binder<>();
     binder.forField(textField)
         .withValidator(element -> element.length() >= 3, textField.getTranslation("textfield.minimum.length"))
@@ -45,8 +47,7 @@ public class FilterOperationTxtLikeMinUI extends FilterOperationUI {
 
   @Override
   public void setPlaceholder(String placeHolderText) {
-    // TODO Auto-generated method stub
-    
+    textField.setPlaceholder(placeHolderText);
   }
 
   @Override
