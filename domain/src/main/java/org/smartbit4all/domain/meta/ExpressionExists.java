@@ -27,7 +27,7 @@ package org.smartbit4all.domain.meta;
  * {@link EntityDefinition}. It means that we have the reference path to the referred entity. When a
  * customer entity refers its postal address the we can add an existence expression for the address
  * to the expression of the customer. In this case we need to add the reference something like this:
- * customerDef.postalAddress().exists() The parameters of the evaluation:
+ * customerDef.postalAddress().exists(ADDRESS expression) The parameters of the evaluation:
  * <ul>
  * <li><b>Join the expression into the root query or not?</b> - By default the expression will be
  * joined into the original expression and there will be only one select against the database
@@ -50,8 +50,8 @@ package org.smartbit4all.domain.meta;
  * this way we can have only the related addresses that could result much less records in this way.
  * Of course if we have a disjunction (an or) in the query for the master then the detail can use
  * only the related part of the master query. If we query the customer with a condition where we are
- * looking for the customer that (first name like ... OR (last name like ... AND EXISTS (ADDRESS))).
- * Then the address query will include only the last name filter.
+ * looking for the customer that (first name like ... OR (last name like ... AND EXISTS (ADDRESS
+ * expression))). Then the address query will include only the last name filter.
  * </p>
  * 
  * </p>
@@ -65,6 +65,11 @@ public final class ExpressionExists extends Expression {
    */
   private Expression expression;
 
+  public ExpressionExists(Expression expression) {
+    super();
+    this.expression = expression;
+  }
+
   @Override
   public Expression NOT() {
     // TODO Auto-generated method stub
@@ -73,8 +78,7 @@ public final class ExpressionExists extends Expression {
 
   @Override
   public void accept(ExpressionVisitor visitor) {
-    // TODO Auto-generated method stub
-
+    visitor.visitExists(this);
   }
 
   @Override
@@ -85,8 +89,11 @@ public final class ExpressionExists extends Expression {
 
   @Override
   public Expression copy() {
-    // TODO Auto-generated method stub
-    return null;
+    return new ExpressionExists(expression != null ? expression.copy() : null);
+  }
+
+  public final Expression getExpression() {
+    return expression;
   }
 
 }
