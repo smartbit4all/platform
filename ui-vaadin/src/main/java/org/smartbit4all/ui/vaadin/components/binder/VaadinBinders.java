@@ -2,9 +2,9 @@ package org.smartbit4all.ui.vaadin.components.binder;
 
 import java.util.function.Consumer;
 import org.smartbit4all.api.object.ObjectEditing;
+import com.vaadin.flow.component.HasText;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
-import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
@@ -31,14 +31,14 @@ public class VaadinBinders {
     return new VaadinIntegerFieldBinder(integerField, editing, path);
   }
 
-  public static void bind(Label label, ObjectEditing editing,
+  public static void bindLabel(HasText label, ObjectEditing editing,
       String path) {
-    new VaadinLabelBinder(label, editing, path);
+    new VaadinHasTextBinder(label, editing, path);
   }
 
   public static <T> VaadinComboBoxBinder<T> bind(ComboBox<T> comboBox,
       ObjectEditing editing,
       String path) {
-    return new VaadinComboBoxBinder<T>(comboBox, editing, path);
+    return new VaadinComboBoxBinder<>(comboBox, editing, path);
   }
 }

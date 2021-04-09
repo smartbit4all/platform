@@ -3,17 +3,17 @@ package org.smartbit4all.ui.vaadin.components.binder;
 import org.smartbit4all.api.object.ObjectEditing;
 import org.smartbit4all.api.object.PropertyChange;
 import org.smartbit4all.core.utility.PathUtility;
-import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.HasText;
 
-public class VaadinLabelBinder {
+public class VaadinHasTextBinder {
 
-  protected Label label;
+  protected HasText label;
 
   protected ObjectEditing editing;
 
   protected String path;
 
-  public VaadinLabelBinder(Label label, ObjectEditing editing, String path) {
+  public VaadinHasTextBinder(HasText label, ObjectEditing editing, String path) {
     super();
     this.label = label;
     this.editing = editing;
@@ -23,20 +23,22 @@ public class VaadinLabelBinder {
   }
 
   protected void subscribeToUIEvent() {
-    editing.publisher().properties().subscribe().property(PathUtility.getParentPath(path), PathUtility.getLastPath(path)).add(value -> onUIStateChanged(value));
+    editing.publisher().properties().subscribe()
+        .property(PathUtility.getParentPath(path), PathUtility.getLastPath(path))
+        .add(value -> onUIStateChanged(value));
   }
 
   protected void onUIStateChanged(PropertyChange value) {
     String currentValue = label.getText();
     Object newValue = value.getNewValue();
 
-    if (currentValue == null && newValue == null) {
-      return;
-    }
-    
-    if ((currentValue == null && newValue != null) || !currentValue.equals(newValue)) {
+    newValue = newValue == null ? "" : newValue;
+    currentValue = currentValue == null ? "" : currentValue;
+
+    if (!currentValue.equals(newValue)) {
       label.setText(newValue.toString());
     }
+
   }
 
 }
