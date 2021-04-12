@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU Lesser General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package org.smartbit4all.api.impl.navigation;
+package org.smartbit4all.api.navigation;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -23,9 +23,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.smartbit4all.api.navigation.Navigation;
-import org.smartbit4all.api.navigation.NavigationApi;
-import org.smartbit4all.api.navigation.NavigationImpl;
 import org.smartbit4all.api.navigation.bean.NavigationAssociationMeta;
 import org.smartbit4all.api.navigation.bean.NavigationConfig;
 import org.smartbit4all.api.navigation.bean.NavigationEntry;

@@ -1,4 +1,4 @@
-package org.smartbit4all.api.impl.filter;
+package org.smartbit4all.api.filter;
 
 import static java.time.temporal.ChronoField.DAY_OF_MONTH;
 import static java.time.temporal.ChronoUnit.MONTHS;

@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package org.smartbit4all.api.impl.navigation.entity;
+package org.smartbit4all.api.navigation.entity;
 
 import java.net.URI;
 import java.util.ArrayList;
