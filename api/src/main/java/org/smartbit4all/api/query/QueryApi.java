@@ -38,8 +38,7 @@ public interface QueryApi {
    * Executes the plan in the current application context.
    * 
    * @param execPlan
-   * @return TODO The state must be defined to be able to listen the execution!
    */
-  QueryExecutionPlan execute(QueryExecutionPlan execPlan);
+  QueryResult execute(QueryExecutionPlan execPlan);
 
 }

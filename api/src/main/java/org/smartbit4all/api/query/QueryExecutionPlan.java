@@ -14,6 +14,11 @@
  ******************************************************************************/
 package org.smartbit4all.api.query;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.smartbit4all.core.SB4CompositeFunction;
 import org.smartbit4all.core.SB4Function;
 
 /**
@@ -56,10 +61,49 @@ import org.smartbit4all.core.SB4Function;
  * executables. In this case we can load the constant IN lists into a named set. Next activating
  * these into the database. After this we can execute the query for the address using the SYS001 and
  * the SYS002 temporary sets. (They are already included into the query during the preparation
- * phase.) The customer id result of the query is loaded
+ * phase.) The customer id result of the query is loaded.
+ * 
+ * <p>
+ * Another aspect of the query is the recursive hierarchical query option. If we have more queries
+ * producing related records then it might be necessary to execute the queries as many times as
+ * necessary to produce all the records that can be accessed. For example if we have Customer query
+ * and the cases related to customer are also queried then we might have another set of Customers
+ * again. They need another query to identify their cases again. So it's recursion for the queries
+ * to retrieve all the data.
+ * 
+ * </p>
  * 
  * @author Peter Boros
  */
 public class QueryExecutionPlan {
+
+  /**
+   * The empty plan for the missing input parameters.
+   */
+  public static final QueryExecutionPlan EMPTY = new QueryExecutionPlan();
+
+  /**
+   * The starting nodes for the execution plan. We have more than one because we might have
+   * individual executions also. They are not related to each other, because there is no dependency
+   * among their input and output parameters
+   */
+  private final List<SB4CompositeFunction<?, ?>> startingNodes = new ArrayList<>();
+
+  /**
+   * The results are managed and merged by symbolic names generated from the structure of the query
+   * to execute. All the execution nodes will have some {@link SB4CompositeFunction#getPreSection()}
+   * that is responsible consuming the results of the previous executions. They also have a
+   * {@link SB4CompositeFunction#getPostSection()} to prepare the result for the subsequent
+   * functions.
+   */
+  private final Map<String, Object> results = new HashMap<>();
+
+  public final List<SB4CompositeFunction<?, ?>> getStartingNodes() {
+    return startingNodes;
+  }
+
+  public final Map<String, Object> getResults() {
+    return results;
+  }
 
 }

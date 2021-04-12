@@ -52,6 +52,14 @@ package org.smartbit4all.domain.meta;
  * only the related part of the master query. If we query the customer with a condition where we are
  * looking for the customer that (first name like ... OR (last name like ... AND EXISTS (ADDRESS
  * expression))). Then the address query will include only the last name filter.
+ *
+ * <pre>
+ * expression(caseDef) 
+ *      AND/OR EXISTS(caseDef.primaryPartner(), addressDef.customer(), expression(AddressDef)) 
+ *      AND/OR EXISTS(caseDef.secondaryPartner(), addressDef.customer(), expression(AddressDef))
+ *      AND/OR EXISTS(caseDef.parent(), expression(CaseDef))
+ * </pre>
+ * 
  * </p>
  * 
  * </p>

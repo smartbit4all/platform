@@ -14,28 +14,30 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package org.smartbit4all.domain.service.dataset;
+package org.smartbit4all.api.dataset;
 
 import java.net.URI;
 
 /**
- * This API is responsible for storing, accessing and using set of data. We can add a new set of
- * data by identifying it with an URI. This URI can be used to identify the data set later on. The
- * URI can be used to contribute a set. We can union, intersect, minus etc. to sets identified by an
- * URI and the result will be an updated set even if it's a new one or an existing.
+ * This API object is a descriptor for the data set. This is used by the {@link DataSetApi}.
  * 
  * @author Peter Boros
  */
-public interface DataSetApi {
+public class DataSetEntry {
 
   /**
-   * We can retrieve the {@link DataSetEntry} identified by the given URI.
-   * 
-   * @param uri
-   * @return
+   * The identification of the data set. Consists of the provider as scheme. The provider is a kind
+   * of storage for the data set. The path refers the storage inside the provider. Something like
+   * numbers or strings. Usually it is the table name for example in case of RDBMS storage. The
+   * fragment will identify the data set as a name inside the given provider.
    */
-  DataSetEntry getEntry(URI uri);
+  private URI uri;
 
-
+  /**
+   * The URI of the property that is stored in the data set. It's important to see what is the
+   * content. It can help to identify how to apply this set in a filtering situation. The URI looks
+   * like this: provider:/entity#property
+   */
+  private URI propertyUri;
 
 }
