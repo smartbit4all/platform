@@ -1,5 +1,6 @@
 package org.smartbit4all.ui.vaadin.components.binder;
 
+import java.util.function.Function;
 import org.smartbit4all.api.object.ObjectEditing;
 import org.smartbit4all.api.object.PropertyChange;
 import org.smartbit4all.core.utility.PathUtility;
@@ -13,6 +14,8 @@ public class VaadinHasTextBinder {
 
   protected String path;
 
+  private Function<Object, String> converterFunction;
+
   public VaadinHasTextBinder(HasText label, ObjectEditing editing, String path) {
     super();
     this.label = label;
@@ -20,6 +23,10 @@ public class VaadinHasTextBinder {
     this.path = path;
 
     subscribeToUIEvent();
+  }
+  
+  public void setConverterFunction(Function<Object, String> converterFunction) {
+    this.converterFunction = converterFunction;
   }
 
   protected void subscribeToUIEvent() {
@@ -36,7 +43,11 @@ public class VaadinHasTextBinder {
     currentValue = currentValue == null ? "" : currentValue;
 
     if (!currentValue.equals(newValue)) {
-      label.setText(newValue.toString());
+      if (converterFunction != null) {
+        label.setText(converterFunction.apply(newValue));
+      } else {
+        label.setText(newValue.toString());
+      }
     }
 
   }

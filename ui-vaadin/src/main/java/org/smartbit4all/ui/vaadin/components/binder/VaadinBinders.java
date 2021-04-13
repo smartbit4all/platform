@@ -13,6 +13,7 @@ import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.textfield.BigDecimalField;
 import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.NumberField;
@@ -32,7 +33,7 @@ public class VaadinBinders {
       String path) {
     return new VaadinHasValueBinder<>(field, editing, path, String.class);
   }
-
+  
   public static VaadinHasValueBinder<Double> bind(NumberField field, ObjectEditing editing,
       String path) {
     return new VaadinHasValueBinder<>(field, editing, path, Double.class);
@@ -70,9 +71,9 @@ public class VaadinBinders {
     return new VaadinHasValueBinder<>(comboBox, editing, path, valueClass);
   }
 
-  public static void bind(HasText label, ObjectEditing editing,
+  public static VaadinHasTextBinder bind(HasText label, ObjectEditing editing,
       String path) {
-    new VaadinHasTextBinder(label, editing, path);
+    return new VaadinHasTextBinder(label, editing, path);
   }
 
   public static <T, E extends ObjectEditing> VaadinGridBinder<T, E> bind(Grid<T> grid, E editing,
