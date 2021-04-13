@@ -26,6 +26,7 @@ public class VaadinHasValueBinder<V> {
     this.fieldTypeClass = fieldTypeClass;
 
     subscribeToUIEvent();
+    registerValueChangeListener();
   }
 
   protected void subscribeToUIEvent() {
@@ -63,7 +64,7 @@ public class VaadinHasValueBinder<V> {
     }
   }
 
-  protected void registerTextFieldValueChangeListener() {
+  protected void registerValueChangeListener() {
     field.addValueChangeListener(event -> setUIState(event.getValue()));
   }
 }
