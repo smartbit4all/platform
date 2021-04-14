@@ -1,11 +1,11 @@
 package org.smartbit4all.api.query;
 
-import org.smartbit4all.api.dataset.DataSetApi;
 import org.smartbit4all.core.SB4CompositeFunctionImpl;
 import org.smartbit4all.domain.meta.Expression;
 import org.smartbit4all.domain.meta.ExpressionIn;
 import org.smartbit4all.domain.meta.ExpressionVisitor;
 import org.smartbit4all.domain.meta.OperandProperty;
+import org.smartbit4all.domain.service.dataset.DataSetApi;
 import org.smartbit4all.domain.service.query.Query;
 import org.smartbit4all.domain.service.query.QueryInput;
 import org.smartbit4all.domain.service.query.QueryOutput;
@@ -34,7 +34,8 @@ public class QueryApiImpl implements QueryApi {
     if (queries == null || queries.length == 0) {
       return QueryExecutionPlan.EMPTY;
     }
-    QueryExecutionPlan result = new QueryExecutionPlan();
+    // Temporary solution to use a default path for the local in memory queries
+    QueryExecutionPlan result = new QueryExecutionPlan("local");
     for (int i = 0; i < queries.length; i++) {
       Query<?> query = queries[i];
       if (query != null) {
@@ -55,8 +56,7 @@ public class QueryApiImpl implements QueryApi {
                 if (expression.getOperand() instanceof OperandProperty<?>) {
                   OperandProperty<T> operandProperty = (OperandProperty<T>) expression.getOperand();
                   // TODO The URI structure must be defined!
-                  dataSetApi.activate(operandProperty.property().getUri(),
-                      operandProperty.property().type(), expression.values());
+                  dataSetApi.activate(operandProperty.property(), expression.values());
                 }
               }
             }

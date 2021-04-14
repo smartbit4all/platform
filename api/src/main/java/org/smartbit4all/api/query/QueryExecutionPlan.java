@@ -14,12 +14,14 @@
  ******************************************************************************/
 package org.smartbit4all.api.query;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.smartbit4all.core.SB4CompositeFunction;
 import org.smartbit4all.core.SB4Function;
+import org.smartbit4all.core.utility.StringConstant;
 
 /**
  * This is the main API object of the {@link QueryApi}. It manages the execution graph of the given
@@ -80,7 +82,7 @@ public class QueryExecutionPlan {
   /**
    * The empty plan for the missing input parameters.
    */
-  public static final QueryExecutionPlan EMPTY = new QueryExecutionPlan();
+  public static final QueryExecutionPlan EMPTY = new QueryExecutionPlan(StringConstant.SLASH);
 
   /**
    * The starting nodes for the execution plan. We have more than one because we might have
@@ -88,6 +90,12 @@ public class QueryExecutionPlan {
    * among their input and output parameters
    */
   private final List<SB4CompositeFunction<?, ?>> startingNodes = new ArrayList<>();
+
+  /**
+   * The unique identifier of the query instance. If the query itself is persisted then it will be
+   * the storage identifier also.
+   */
+  private final URI uri;
 
   /**
    * The results are managed and merged by symbolic names generated from the structure of the query
@@ -98,12 +106,21 @@ public class QueryExecutionPlan {
    */
   private final Map<String, Object> results = new HashMap<>();
 
+  public QueryExecutionPlan(String queryPath) {
+    super();
+    uri = Queries.constructQueryURI(queryPath);
+  }
+
   public final List<SB4CompositeFunction<?, ?>> getStartingNodes() {
     return startingNodes;
   }
 
   public final Map<String, Object> getResults() {
     return results;
+  }
+
+  public final URI getUri() {
+    return uri;
   }
 
 }

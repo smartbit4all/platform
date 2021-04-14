@@ -12,10 +12,10 @@
  * You should have received a copy of the GNU Lesser General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package org.smartbit4all.api.dataset;
+package org.smartbit4all.domain.service.dataset;
 
-import java.net.URI;
 import java.util.Set;
+import org.smartbit4all.domain.meta.Property;
 
 /**
  * This API is responsible for storing, accessing and using set of data. We can add a new set of
@@ -28,21 +28,13 @@ import java.util.Set;
 public interface DataSetApi {
 
   /**
-   * We can retrieve the {@link DataSetEntry} identified by the given URI.
-   * 
-   * @param uri
-   * @return
-   */
-  DataSetEntry getEntry(URI uri);
-
-  /**
    * Activates a data set with the given values.
-   * 
-   * @param uri The uri of the activated dat set. It identifies the storage api to use.
-   * @param clazz The type of the storage values for the data set.
+   *
+   * @param property The property that the set of value is saved for.
    * @param values The values itself.
-   * @return The entry for the identification of the entry.
+   * @return The entry for the identification of the entry that contains the URI as an identifier
+   *         for the given set.
    */
-  DataSetEntry activate(URI uri, Class<?> clazz, Set<?> values);
+  DataSetEntry activate(Property<?> property, Set<?> values);
 
 }
