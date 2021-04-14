@@ -13,7 +13,6 @@ import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.textfield.BigDecimalField;
 import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.NumberField;
@@ -29,50 +28,52 @@ public class VaadinBinders {
     return new VaadinButtonBinder<>(button, editing, function);
   }
 
-  public static VaadinHasValueBinder<String> bind(TextField field, ObjectEditing editing,
+  public static VaadinHasValueBinder<String, String> bind(TextField field, ObjectEditing editing,
       String path) {
-    return new VaadinHasValueBinder<>(field, editing, path, String.class);
-  }
-  
-  public static VaadinHasValueBinder<Double> bind(NumberField field, ObjectEditing editing,
-      String path) {
-    return new VaadinHasValueBinder<>(field, editing, path, Double.class);
+    return new VaadinHasValueBinder<>(field, editing, path);
   }
 
-  public static VaadinHasValueBinder<Integer> bind(IntegerField field, ObjectEditing editing,
-      String path) {
-    return new VaadinHasValueBinder<>(field, editing, path, Integer.class);
+  public static <DATA> VaadinHasValueBinder<String, DATA> bind(TextField field,
+      ObjectEditing editing, String path, Class<DATA> clazz) {
+    return new VaadinHasValueBinder<>(field, editing, path);
   }
 
-  public static VaadinHasValueBinder<BigDecimal> bind(BigDecimalField field, ObjectEditing editing,
+  public static VaadinHasValueBinder<Double, Double> bind(NumberField field, ObjectEditing editing,
       String path) {
-    return new VaadinHasValueBinder<>(field, editing, path, BigDecimal.class);
+    return new VaadinHasValueBinder<>(field, editing, path);
   }
 
-  public static VaadinHasValueBinder<LocalDate> bind(DatePicker field, ObjectEditing editing,
-      String path) {
-    return new VaadinHasValueBinder<>(field, editing, path, LocalDate.class);
+  public static VaadinHasValueBinder<Integer, Integer> bind(IntegerField field,
+      ObjectEditing editing, String path) {
+    return new VaadinHasValueBinder<>(field, editing, path);
   }
 
-  public static VaadinHasValueBinder<LocalDateTime> bind(DateTimePicker field,
-      ObjectEditing editing,
-      String path) {
-    return new VaadinHasValueBinder<>(field, editing, path, LocalDateTime.class);
+  public static VaadinHasValueBinder<BigDecimal, BigDecimal> bind(BigDecimalField field,
+      ObjectEditing editing, String path) {
+    return new VaadinHasValueBinder<>(field, editing, path);
   }
 
-  public static VaadinHasValueBinder<LocalTime> bind(TimePicker field, ObjectEditing editing,
-      String path) {
-    return new VaadinHasValueBinder<>(field, editing, path, LocalTime.class);
+  public static VaadinHasValueBinder<LocalDate, LocalDate> bind(DatePicker field,
+      ObjectEditing editing, String path) {
+    return new VaadinHasValueBinder<>(field, editing, path);
   }
 
-  public static <T> VaadinHasValueBinder<T> bind(ComboBox<T> comboBox,
-      ObjectEditing editing,
-      String path, Class<T> valueClass) {
-    return new VaadinHasValueBinder<>(comboBox, editing, path, valueClass);
+  public static VaadinHasValueBinder<LocalDateTime, LocalDateTime> bind(DateTimePicker field,
+      ObjectEditing editing, String path) {
+    return new VaadinHasValueBinder<>(field, editing, path);
   }
 
-  public static VaadinHasTextBinder bind(HasText label, ObjectEditing editing,
+  public static VaadinHasValueBinder<LocalTime, LocalTime> bind(TimePicker field,
+      ObjectEditing editing, String path) {
+    return new VaadinHasValueBinder<>(field, editing, path);
+  }
+
+  public static <T> VaadinHasValueBinder<T, T> bind(ComboBox<T> comboBox, ObjectEditing editing,
       String path) {
+    return new VaadinHasValueBinder<>(comboBox, editing, path);
+  }
+
+  public static VaadinHasTextBinder bind(HasText label, ObjectEditing editing, String path) {
     return new VaadinHasTextBinder(label, editing, path);
   }
 
