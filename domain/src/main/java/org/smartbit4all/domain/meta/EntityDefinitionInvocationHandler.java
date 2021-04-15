@@ -534,4 +534,14 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
     return EntityUris.createEntityUri(getDomain(), entityDefName());
   }
 
+  @Override
+  public Expression exists(EntityDefinition fkEntity, Expression expressionOfTarget) {
+    return new ExpressionExists(this, fkEntity, expressionOfTarget);
+  }
+  
+  @Override
+  public Expression exists(Expression expressionOfTarget) {
+    return new ExpressionExists(this, null, expressionOfTarget);
+  }
+  
 }

@@ -18,6 +18,9 @@ public class FilterField {
 
   @JsonProperty("propertyUri2")
   private URI propertyUri2;
+  
+  @JsonProperty("propertyUri3")
+  private URI propertyUri3;
 
   @JsonProperty("operationCode")
   private String operationCode;
@@ -79,6 +82,29 @@ public class FilterField {
 
   public void setPropertyUri2(URI propertyUri2) {
     this.propertyUri2 = propertyUri2;
+  }
+  
+  public FilterField propertyUri3(URI propertyUri3) {
+    this.propertyUri3 = propertyUri3;
+    return this;
+  }
+
+  /**
+   * Property identifier, specifies which property should be used in this filter.
+   * 
+   * @return propertyUri3
+   */
+  @ApiModelProperty(
+      value = "Property identifier, specifies which property should be used in this filter.")
+
+  @Valid
+
+  public URI getPropertyUri3() {
+    return propertyUri3;
+  }
+
+  public void setPropertyUri3(URI propertyUri3) {
+    this.propertyUri3 = propertyUri3;
   }
 
   public FilterField operationCode(String operationCode) {
@@ -210,6 +236,7 @@ public class FilterField {
     FilterField filterField = (FilterField) o;
     return Objects.equals(this.propertyUri1, filterField.propertyUri1) &&
         Objects.equals(this.propertyUri2, filterField.propertyUri2) &&
+        Objects.equals(this.propertyUri3, filterField.propertyUri3) &&
         Objects.equals(this.operationCode, filterField.operationCode) &&
         Objects.equals(this.value1, filterField.value1) &&
         Objects.equals(this.value2, filterField.value2) &&
@@ -219,8 +246,8 @@ public class FilterField {
 
   @Override
   public int hashCode() {
-    return Objects.hash(propertyUri1, propertyUri2, operationCode, value1, value2, value3,
-        selectedValues);
+    return Objects.hash(propertyUri1, propertyUri2, propertyUri3, operationCode, value1, value2,
+        value3, selectedValues);
   }
 
   @Override
@@ -230,6 +257,7 @@ public class FilterField {
 
     sb.append("    propertyUri1: ").append(toIndentedString(propertyUri1)).append("\n");
     sb.append("    propertyUri2: ").append(toIndentedString(propertyUri2)).append("\n");
+    sb.append("    propertyUri3: ").append(toIndentedString(propertyUri3)).append("\n");
     sb.append("    operationCode: ").append(toIndentedString(operationCode)).append("\n");
     sb.append("    value1: ").append(toIndentedString(value1)).append("\n");
     sb.append("    value2: ").append(toIndentedString(value2)).append("\n");

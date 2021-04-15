@@ -139,6 +139,15 @@ public interface EntityDefinition extends SB4Service {
   List<Reference<?,?>> allReferences();
   
   /**
+   * 
+   * @param expressionOfTarget
+   * @return Returns an exists expression for the given expression.
+   */
+  public Expression exists(EntityDefinition fkEntity, Expression expressionOfTarget);
+  
+  public Expression exists(Expression expressionOfTarget);
+  
+  /**
    * @return The domain of the entity definition.
    */
   String getDomain();

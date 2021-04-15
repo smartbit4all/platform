@@ -26,6 +26,9 @@ public class FilterOperation {
 
   @JsonProperty("propertyUri2")
   private URI propertyUri2;
+  
+  @JsonProperty("propertyUri2")
+  private URI propertyUri3;
 
   @JsonProperty("possibleValuesUri")
   private URI possibleValuesUri;
@@ -130,6 +133,29 @@ public class FilterOperation {
     this.propertyUri2 = propertyUri2;
   }
 
+  public FilterOperation propertyUri3(URI propertyUri3) {
+    this.propertyUri3 = propertyUri3;
+    return this;
+  }
+  
+  /**
+   * Property identifier, specifies which property should be used in this filter.
+   * 
+   * @return propertyUri3
+   */
+  @ApiModelProperty(
+      value = "Property identifier, specifies which property should be used in this filter.")
+  
+  @Valid
+  
+  public URI getPropertyUri3() {
+    return propertyUri3;
+  }
+  
+  public void setPropertyUri3(URI propertyUri3) {
+    this.propertyUri3 = propertyUri3;
+  }
+  
   public FilterOperation possibleValuesUri(URI possibleValuesUri) {
     this.possibleValuesUri = possibleValuesUri;
     return this;
@@ -230,6 +256,7 @@ public class FilterOperation {
         Objects.equals(this.filterView, filterOperation.filterView) &&
         Objects.equals(this.propertyUri1, filterOperation.propertyUri1) &&
         Objects.equals(this.propertyUri2, filterOperation.propertyUri2) &&
+        Objects.equals(this.propertyUri3, filterOperation.propertyUri3) &&
         Objects.equals(this.possibleValuesUri, filterOperation.possibleValuesUri) &&
         Objects.equals(this.operationCode, filterOperation.operationCode) &&
         Objects.equals(this.labelCode, filterOperation.labelCode) &&
@@ -238,7 +265,7 @@ public class FilterOperation {
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, filterView, propertyUri1, propertyUri2, possibleValuesUri,
+    return Objects.hash(id, filterView, propertyUri1, propertyUri2, propertyUri3, possibleValuesUri,
         operationCode, labelCode, iconCode);
   }
 
@@ -251,6 +278,7 @@ public class FilterOperation {
     sb.append("    filterView: ").append(toIndentedString(filterView)).append("\n");
     sb.append("    propertyUri1: ").append(toIndentedString(propertyUri1)).append("\n");
     sb.append("    propertyUri2: ").append(toIndentedString(propertyUri2)).append("\n");
+    sb.append("    propertyUri3: ").append(toIndentedString(propertyUri3)).append("\n");
     sb.append("    possibleValuesUri: ").append(toIndentedString(possibleValuesUri)).append("\n");
     sb.append("    operationCode: ").append(toIndentedString(operationCode)).append("\n");
     sb.append("    labelCode: ").append(toIndentedString(labelCode)).append("\n");

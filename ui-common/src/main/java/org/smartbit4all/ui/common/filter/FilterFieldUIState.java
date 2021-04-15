@@ -91,6 +91,7 @@ public class FilterFieldUIState extends AbstractUIState {
     filter.setOperationCode(selectedOperation.getOperationCode());
     filter.setPropertyUri1(selectedOperation.getPropertyUri1());
     filter.setPropertyUri2(selectedOperation.getPropertyUri2());
+    filter.setPropertyUri3(selectedOperation.getPropertyUri3());
     // TODO default values? maybe value caching for different operations?
     filter.setValue1(null);
     filter.setValue2(null);

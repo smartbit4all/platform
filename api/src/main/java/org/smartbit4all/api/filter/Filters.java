@@ -9,7 +9,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -51,7 +53,12 @@ public class Filters {
   public static final String TXT_LIKE_MIN = "txt.like.min";
   public static final String MULTI_SEL = "multi.eq";
   public static final String COMBO_SEL = "combo.eq";
-
+  public static final String DET_TXT_EQ = "detail.txt.eq";
+  public static final String DET_TXT_LIKE = "detail.txt.like";
+  public static final String DET_TXT_LIKE_MIN = "detail.txt.like.min";
+  public static final String DET_MULTI_SEL = "detail.multi.eq";
+  public static final String DET_COMBO_SEL = "detail.combo.eq";
+  
   private static enum TimeFilterOptions {
     LAST_WEEK, THIS_MONTH, LAST_MONTH, YESTERDAY, TODAY, OTHER, LAST_FIVE_YEARS
   }
@@ -62,7 +69,36 @@ public class Filters {
   public static final String YESTERDAY = "statistics.filter.time.yesterday";
   public static final String TODAY = "statistics.filter.time.today";
   public static final String OTHER = "OTHER";
-
+  
+  
+  private static final Map<String, Function<FilterField, Expression>> expressionFactoryByOperatationCodes =
+      new HashMap<>();
+  
+  {
+    expressionFactoryByOperatationCodes.put(DATE_INTERVAL,      this::createDateIntervalClause);
+    expressionFactoryByOperatationCodes.put(DATE_TIME_INTERVAL, this::createDateIntervalClause);
+    expressionFactoryByOperatationCodes.put(DATE_INTERVAL_CB,   this::createDateIntervalCbClause);
+    expressionFactoryByOperatationCodes.put(DATE_TIME_INTERVAL_CB, this::createDateIntervalCbClause);
+    expressionFactoryByOperatationCodes.put(DATE_EQ,            this::createDateEqClause);
+    expressionFactoryByOperatationCodes.put(DATE_TIME_EQ,       this::createDateEqClause);
+    expressionFactoryByOperatationCodes.put(TXT_EQ,             this::createTxtEqClause);
+    expressionFactoryByOperatationCodes.put(TXT_LIKE,           this::createTxtLikeClause);
+    expressionFactoryByOperatationCodes.put(TXT_LIKE_MIN,       this::createTxtLikeMinClause);
+    expressionFactoryByOperatationCodes.put(MULTI_SEL,          this::createMultiSelClause);
+    expressionFactoryByOperatationCodes.put(COMBO_SEL,          this::createComboSelClause);
+    
+    expressionFactoryByOperatationCodes.put(DET_TXT_EQ,
+                                            createDetExpression(this::createTxtEqClause));
+    expressionFactoryByOperatationCodes.put(DET_TXT_LIKE,
+                                            createDetExpression(this::createTxtLikeClause));
+    expressionFactoryByOperatationCodes.put(DET_TXT_LIKE_MIN,
+                                            createDetExpression(this::createTxtLikeMinClause));
+    expressionFactoryByOperatationCodes.put(DET_MULTI_SEL,
+                                            createDetExpression(this::createMultiSelClause));
+    expressionFactoryByOperatationCodes.put(DET_COMBO_SEL,
+                                            createDetExpression(this::createComboSelClause));
+  }
+  
   // -----------------------------------------------------
 
   @Autowired
@@ -129,33 +165,14 @@ public class Filters {
 
   public Expression expressionOfField(FilterField filterField) {
     Expression expressionOfField = null;
-
     String operationCode = filterField.getOperationCode();
-
-    if (DATE_INTERVAL.equals(operationCode) || DATE_TIME_INTERVAL.equals(operationCode)) {
-      expressionOfField = createDateIntervalClause(filterField);
-
-    } else if (DATE_INTERVAL_CB.equals(operationCode)
-        || DATE_TIME_INTERVAL_CB.equals(operationCode)) {
-      expressionOfField = createDateIntervalCbClause(filterField);
-
-    } else if (DATE_EQ.equals(operationCode) || DATE_TIME_EQ.equals(operationCode)) {
-      expressionOfField = createDateEqClause(filterField);
-
-    } else if (TXT_EQ.equals(operationCode)) {
-      expressionOfField = createTxtEqClause(filterField);
-
-    } else if (TXT_LIKE.equals(operationCode)) {
-      expressionOfField = createTxtLikeClause(filterField);
-
-    } else if (TXT_LIKE_MIN.equals(operationCode)) {
-      expressionOfField = createTxtLikeMinClause(filterField);
-
-    } else if (MULTI_SEL.equals(operationCode)) {
-      expressionOfField = createMultiSelClause(filterField);
-    } else if (COMBO_SEL.equals(operationCode)) {
-      expressionOfField = createComboSelClause(filterField);
+    
+    Function<FilterField, Expression> expressionFactory =
+        expressionFactoryByOperatationCodes.get(operationCode);
+    if(expressionFactory != null) {
+      expressionOfField = expressionFactory.apply(filterField);
     }
+
     return expressionOfField;
   }
 
@@ -195,6 +212,19 @@ public class Filters {
       expressionOfField = getTypedExpression(type, property, value, Property::eq);
     }
     return expressionOfField;
+  }
+  
+  private Function<FilterField, Expression> createDetExpression(Function<FilterField, Expression> originalFactory) {
+    return filterField -> {
+      Expression expressionOfField = null;
+      Expression expressionOfDetail = originalFactory.apply(filterField);
+      if(expressionOfDetail != null) {
+        EntityDefinition masterEntityDef = getEntityDef(filterField.getPropertyUri2());
+        EntityDefinition fkEntityDef = getEntityDef(filterField.getPropertyUri3());
+        expressionOfField = masterEntityDef.exists(fkEntityDef, expressionOfDetail);
+      }
+      return expressionOfField;
+    };
   }
 
   private Class<?> getValueType(FilterOperandValue value) {
@@ -278,6 +308,15 @@ public class Filters {
       throw new IllegalStateException("There is no property registered for uri: " + propertyUri);
     }
     return property;
+  }
+  
+  private EntityDefinition getEntityDef(URI entityDefUri) {
+    Objects.requireNonNull(entityDefUri, "The 'entityDefUri' parameter can not be null!");
+    EntityDefinition entityDef = entityManager.definition(entityDefUri);
+    if (entityDef == null) {
+      throw new IllegalStateException("There is no entityDef registered for uri: " + entityDefUri);
+    }
+    return entityDef;
   }
 
   private Expression createDateIntervalCbClause(FilterField filterField) {

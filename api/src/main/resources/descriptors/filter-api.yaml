@@ -87,6 +87,10 @@ components:
           type: string
           format: uri
           description: 'Property identifier, specifies which property should be used in this filter.'
+        propertyUri3:
+          type: string
+          format: uri
+          description: 'Property identifier, specifies which property should be used in this filter.'
         possibleValuesUri:
           type: string
           format: uri
@@ -139,6 +143,10 @@ components:
           format: uri
           description: 'Property identifier, specifies which property should be used in this filter.'
         propertyUri2:
+          type: string
+          format: uri
+          description: 'Property identifier, specifies which property should be used in this filter.'
+        propertyUri3:
           type: string
           format: uri
           description: 'Property identifier, specifies which property should be used in this filter.'

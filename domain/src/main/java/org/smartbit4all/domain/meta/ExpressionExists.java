@@ -72,10 +72,15 @@ public final class ExpressionExists extends Expression {
    * This is the expression for other entity.
    */
   private Expression expression;
+  
+  private EntityDefinition masterEntity;
+  private EntityDefinition fkEntity;
 
-  public ExpressionExists(Expression expression) {
+  public ExpressionExists(EntityDefinition masterEntity, EntityDefinition fkEntity, Expression expression) {
     super();
     this.expression = expression;
+    this.masterEntity = masterEntity;
+    this.fkEntity = fkEntity;
   }
 
   @Override
@@ -97,7 +102,7 @@ public final class ExpressionExists extends Expression {
 
   @Override
   public Expression copy() {
-    return new ExpressionExists(expression != null ? expression.copy() : null);
+    return new ExpressionExists(masterEntity, fkEntity, expression != null ? expression.copy() : null);
   }
 
   public final Expression getExpression() {
