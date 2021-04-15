@@ -1,13 +1,30 @@
-package org.smartbit4all.api.filter;
+package org.smartbit4all.api.filter.util;
 
 import static java.time.temporal.ChronoField.DAY_OF_MONTH;
 import static java.time.temporal.ChronoUnit.MONTHS;
 import static java.time.temporal.ChronoUnit.WEEKS;
+import static org.smartbit4all.api.filter.util.Filters.OperationCode.COMBO_SEL;
+import static org.smartbit4all.api.filter.util.Filters.OperationCode.DATE_EQ;
+import static org.smartbit4all.api.filter.util.Filters.OperationCode.DATE_INTERVAL;
+import static org.smartbit4all.api.filter.util.Filters.OperationCode.DATE_INTERVAL_CB;
+import static org.smartbit4all.api.filter.util.Filters.OperationCode.DATE_TIME_EQ;
+import static org.smartbit4all.api.filter.util.Filters.OperationCode.DATE_TIME_INTERVAL;
+import static org.smartbit4all.api.filter.util.Filters.OperationCode.DATE_TIME_INTERVAL_CB;
+import static org.smartbit4all.api.filter.util.Filters.OperationCode.DET_COMBO_SEL;
+import static org.smartbit4all.api.filter.util.Filters.OperationCode.DET_MULTI_SEL;
+import static org.smartbit4all.api.filter.util.Filters.OperationCode.DET_TXT_EQ;
+import static org.smartbit4all.api.filter.util.Filters.OperationCode.DET_TXT_LIKE;
+import static org.smartbit4all.api.filter.util.Filters.OperationCode.DET_TXT_LIKE_MIN;
+import static org.smartbit4all.api.filter.util.Filters.OperationCode.MULTI_SEL;
+import static org.smartbit4all.api.filter.util.Filters.OperationCode.TXT_EQ;
+import static org.smartbit4all.api.filter.util.Filters.OperationCode.TXT_LIKE;
+import static org.smartbit4all.api.filter.util.Filters.OperationCode.TXT_LIKE_MIN;
 import java.net.URI;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -41,23 +58,42 @@ import org.springframework.stereotype.Service;
 @Service
 public class Filters {
 
-  // Constants for the filter field operators.
-  public static final String DATE_INTERVAL = "date.interval";
-  public static final String DATE_INTERVAL_CB = "date.interval.cb";
-  public static final String DATE_EQ = "date.eq";
-  public static final String DATE_TIME_INTERVAL = "date.time.interval";
-  public static final String DATE_TIME_INTERVAL_CB = "date.time.interval.cb";
-  public static final String DATE_TIME_EQ = "date.time.eq";
-  public static final String TXT_EQ = "txt.eq";
-  public static final String TXT_LIKE = "txt.like";
-  public static final String TXT_LIKE_MIN = "txt.like.min";
-  public static final String MULTI_SEL = "multi.eq";
-  public static final String COMBO_SEL = "combo.eq";
-  public static final String DET_TXT_EQ = "detail.txt.eq";
-  public static final String DET_TXT_LIKE = "detail.txt.like";
-  public static final String DET_TXT_LIKE_MIN = "detail.txt.like.min";
-  public static final String DET_MULTI_SEL = "detail.multi.eq";
-  public static final String DET_COMBO_SEL = "detail.combo.eq";
+  public static enum OperationCode {
+    DATE_INTERVAL("date.interval"),
+    DATE_INTERVAL_CB("date.interval.cb"),
+    DATE_EQ("date.eq"),
+    DATE_TIME_INTERVAL("date.time.interval"),
+    DATE_TIME_INTERVAL_CB("date.time.interval.cb"),
+    DATE_TIME_EQ("date.time.eq"),
+    TXT_EQ("txt.eq"),
+    TXT_LIKE("txt.like"),
+    TXT_LIKE_MIN("txt.like.min"),
+    MULTI_SEL("multi.eq"),
+    COMBO_SEL("combo.eq"),
+    DET_TXT_EQ("detail.txt.eq"),
+    DET_TXT_LIKE("detail.txt.like"),
+    DET_TXT_LIKE_MIN("detail.txt.like.min"),
+    DET_MULTI_SEL("detail.multi.eq"),
+    DET_COMBO_SEL("detail.combo.eq");
+    
+    private String value;
+    
+    private OperationCode(String value) {
+      this.value = value;
+    }
+    
+    public String getValue() {
+      return value;
+    }
+
+    static OperationCode getEnumInstance(String operationCode) {
+      if (operationCode == null) {
+        return null;
+      }
+      return Arrays.stream(OperationCode.values())
+          .filter(c -> c.getValue().equals(operationCode)).findFirst().orElse(null);
+    }
+  }
   
   private static enum TimeFilterOptions {
     LAST_WEEK, THIS_MONTH, LAST_MONTH, YESTERDAY, TODAY, OTHER, LAST_FIVE_YEARS
@@ -71,7 +107,7 @@ public class Filters {
   public static final String OTHER = "OTHER";
   
   
-  private static final Map<String, Function<FilterField, Expression>> expressionFactoryByOperatationCodes =
+  private static final Map<OperationCode, Function<FilterField, Expression>> expressionFactoryByOperatationCodes =
       new HashMap<>();
   
   {
@@ -166,9 +202,10 @@ public class Filters {
   public Expression expressionOfField(FilterField filterField) {
     Expression expressionOfField = null;
     String operationCode = filterField.getOperationCode();
+    OperationCode opertaionCodeEnum = OperationCode.getEnumInstance(operationCode);
     
     Function<FilterField, Expression> expressionFactory =
-        expressionFactoryByOperatationCodes.get(operationCode);
+        expressionFactoryByOperatationCodes.get(opertaionCodeEnum);
     if(expressionFactory != null) {
       expressionOfField = expressionFactory.apply(filterField);
     }
