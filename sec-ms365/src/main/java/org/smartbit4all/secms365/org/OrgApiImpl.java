@@ -25,6 +25,7 @@ import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.sec.service.SecurityService;
 import org.smartbit4all.secms365.service.MsGraphService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.SessionScope;
 import com.microsoft.graph.requests.extensions.IGroupCollectionPage;
@@ -51,7 +52,8 @@ public class OrgApiImpl implements OrgApi {
 
   @Override
   public User currentUser() {
-    return (User) securityService.getCurrentAuthentication().getPrincipal();
+    DefaultOidcUser principal = (DefaultOidcUser) securityService.getCurrentAuthentication().getPrincipal();
+    return createUser(principal);
   }
 
   @Override
@@ -168,8 +170,17 @@ public class OrgApiImpl implements OrgApi {
   private User createUser(com.microsoft.graph.models.extensions.User user) {
     return new User()
         .uri(URI.create("user:/id#" + user.id))
-        .username(user.displayName)
+        .username(user.displayName.replaceAll("\\s",""))
+        .name(user.displayName)
         .email(user.mail);
+  }
+  
+  private User createUser(DefaultOidcUser user) {
+    return new User()
+        .uri(URI.create("user:/id#" + user.getAttribute("oid")))
+        .username(user.getName().replaceAll("\\s",""))
+        .name(user.getName())
+        .email(user.getEmail());
   }
 
   private Group createGroup(com.microsoft.graph.models.extensions.Group group) {
