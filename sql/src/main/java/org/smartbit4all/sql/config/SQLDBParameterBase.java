@@ -109,7 +109,7 @@ public class SQLDBParameterBase implements SQLDBParameter {
 
   @Override
   public int saveInDataSetLimit() {
-    return 10;
+    return 250;
   }
 
 }
