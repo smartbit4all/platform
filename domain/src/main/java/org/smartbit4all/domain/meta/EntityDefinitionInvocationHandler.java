@@ -42,6 +42,7 @@ import org.smartbit4all.domain.annotation.property.ValueComparator;
 import org.smartbit4all.domain.meta.jdbc.JDBCDataConverterHelper;
 import org.smartbit4all.domain.meta.logic.Count;
 import org.smartbit4all.domain.service.entity.EntityUris;
+import org.smartbit4all.domain.service.query.QueryApi;
 import org.smartbit4all.domain.utility.SupportedDatabase;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -538,10 +539,15 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
   public Expression exists(EntityDefinition fkEntity, Expression expressionOfTarget) {
     return new ExpressionExists(this, fkEntity, expressionOfTarget);
   }
-  
+
   @Override
   public Expression exists(Expression expressionOfTarget) {
     return new ExpressionExists(this, null, expressionOfTarget);
   }
-  
+
+  @Override
+  public QueryApi getQueryApi() {
+    return ctx.getBean(QueryApi.class);
+  }
+
 }

@@ -1,14 +1,14 @@
-package org.smartbit4all.api.query;
+package org.smartbit4all.domain.service.query;
 
+import org.smartbit4all.core.SB4CompositeFunction;
 import org.smartbit4all.core.SB4CompositeFunctionImpl;
+import org.smartbit4all.core.SB4Function;
 import org.smartbit4all.domain.meta.Expression;
 import org.smartbit4all.domain.meta.ExpressionIn;
 import org.smartbit4all.domain.meta.ExpressionVisitor;
 import org.smartbit4all.domain.meta.OperandProperty;
 import org.smartbit4all.domain.service.dataset.DataSetApi;
-import org.smartbit4all.domain.service.query.Query;
-import org.smartbit4all.domain.service.query.QueryInput;
-import org.smartbit4all.domain.service.query.QueryOutput;
+import org.smartbit4all.domain.service.dataset.SaveInValues;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -55,8 +55,7 @@ public class QueryApiImpl implements QueryApi {
               if (expression.values() != null && expression.values().size() > 10) {
                 if (expression.getOperand() instanceof OperandProperty<?>) {
                   OperandProperty<T> operandProperty = (OperandProperty<T>) expression.getOperand();
-                  // TODO The URI structure must be defined!
-                  dataSetApi.activate(operandProperty.property(), expression.values());
+                  queryNode.preCalls().call(new SaveInValues(dataSetApi, where, expression));
                 }
               }
             }
@@ -71,8 +70,22 @@ public class QueryApiImpl implements QueryApi {
 
   @Override
   public QueryResult execute(QueryExecutionPlan execPlan) {
-    // TODO Auto-generated method stub
-    return null;
+    QueryResult result = new QueryResult();
+    for (SB4CompositeFunction<?, ?> node : execPlan.getStartingNodes()) {
+      try {
+        node.execute();
+        for (SB4Function<?, ?> func : node.functions()) {
+          if (func instanceof Query<?>) {
+            result.getResultsInner().add((Query<?>) func);
+          }
+        }
+      } catch (Exception e) {
+        // TODO Add the exception as result!!!
+        e.printStackTrace();
+      }
+
+    }
+    return result;
   }
 
 }

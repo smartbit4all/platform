@@ -15,10 +15,9 @@
 package org.smartbit4all.domain.service.dataset;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.smartbit4all.core.utility.StringConstant;
+import org.smartbit4all.domain.meta.JDBCDataConverter;
 
 /**
  * This API object is a descriptor for the data set. This is used by the {@link DataSetApi}.
@@ -42,6 +41,8 @@ public class DataSetEntry {
    */
   private Long id;
 
+  private JDBCDataConverter<?, ?> idConverter;
+
   /**
    * The URI of the property that is stored in the data set. It's important to see what is the
    * content. It can help to identify how to apply this set in a filtering situation. The URI looks
@@ -49,16 +50,29 @@ public class DataSetEntry {
    */
   private URI propertyUri;
 
-  public DataSetEntry(URI propertyUri, Long id) {
+  /**
+   * The name of the temporary table the data set is stored in.
+   */
+  private String temporaryTableName;
+
+  /**
+   * Constructs an empty set.
+   */
+  public DataSetEntry() {
+    super();
+  }
+
+  public DataSetEntry(URI propertyUri, String temporaryTableName, Long id) {
     super();
     this.id = id;
     this.propertyUri = propertyUri;
-    try {
-      this.uri = new URI(propertyUri.toString() + StringConstant.HASH + id);
-    } catch (URISyntaxException e) {
-      log.error("Unable to construct data set uri (property=" + propertyUri + ", id = " + id + ")",
-          e);
-    }
+    this.temporaryTableName = temporaryTableName;
+    // try {
+    // this.uri = new URI(propertyUri.toString() + StringConstant.HASH + id);
+    // } catch (URISyntaxException e) {
+    // log.error("Unable to construct data set uri (property=" + propertyUri + ", id = " + id + ")",
+    // e);
+    // }
   }
 
   public final URI getUri() {
@@ -85,6 +99,25 @@ public class DataSetEntry {
     this.propertyUri = propertyUri;
   }
 
+  public final String getTemporaryTableName() {
+    return temporaryTableName;
+  }
 
+  public final void setTemporaryTableName(String temporaryTableName) {
+    this.temporaryTableName = temporaryTableName;
+  }
+
+  @Override
+  public String toString() {
+    return temporaryTableName + "(" + id + ")";
+  }
+
+  public final JDBCDataConverter<?, ?> getIdConverter() {
+    return idConverter;
+  }
+
+  public final void setIdConverter(JDBCDataConverter<?, ?> idConverter) {
+    this.idConverter = idConverter;
+  }
 
 }

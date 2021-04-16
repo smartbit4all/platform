@@ -15,6 +15,7 @@
 package org.smartbit4all.sql.config;
 
 import org.smartbit4all.domain.utility.SupportedDatabase;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
  * The interface for SQL level Database parameter. It has predecessors for every supported database
@@ -65,5 +66,11 @@ public interface SQLDBParameter {
    * @return
    */
   String getStringDataSetTableName();
+
+  int saveInDataSetLimit();
+
+  void createIntegerDataSetTable(JdbcTemplate jdbcTemplate);
+
+  void createStringDataSetTable(JdbcTemplate jdbcTemplate);
 
 }

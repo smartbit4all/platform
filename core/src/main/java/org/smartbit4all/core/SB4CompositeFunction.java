@@ -1,18 +1,16 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
  * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 package org.smartbit4all.core;
 
@@ -80,11 +78,22 @@ public interface SB4CompositeFunction<I, O> extends SB4Function<I, O>, SB4Execut
   SB4ExecutionNode call(SB4Function<?, ?> function);
 
   /**
+   * The root node of the composite function.
+   * 
+   * @return
+   */
+  SB4ExecutionNode calls();
+
+  /**
    * Check the emptiness.
    * 
    * @return Return true when there is nothing to execute.
    */
   boolean isEmpty();
+
+  SB4ExecutionNode preCalls();
+
+  SB4ExecutionNode postCalls();
 
   /**
    * The service executions of the composite service. The order of the iteration is the order of the

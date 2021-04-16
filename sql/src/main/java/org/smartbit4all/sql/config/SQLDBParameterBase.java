@@ -15,6 +15,7 @@
 package org.smartbit4all.sql.config;
 
 import org.smartbit4all.domain.utility.SupportedDatabase;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
  * The basic implementation of the database configurations. Storing the settings and adding generic
@@ -84,6 +85,31 @@ public class SQLDBParameterBase implements SQLDBParameter {
   @Override
   public String getStringDataSetTableName() {
     return SB4DSSTRING;
+  }
+
+  protected void createTemTable(JdbcTemplate jdbcTemplate, String tableName, String columnType) {
+    jdbcTemplate.execute("CREATE TABLE " + tableName
+        + " (ID NUMBER(18) NOT NULL, VAL " + columnType + " NULL)");
+    jdbcTemplate.execute("CREATE INDEX " + tableName
+        + "_ID_IDX ON " + tableName + " (ID)");
+    jdbcTemplate.execute("CREATE INDEX " + tableName
+        + "_VAL_IDX ON " + tableName + " (VAL)");
+
+  }
+
+  @Override
+  public void createIntegerDataSetTable(JdbcTemplate jdbcTemplate) {
+    createTemTable(jdbcTemplate, SQLDBParameterBase.SB4DSINT, "NUMBER(38)");
+  }
+
+  @Override
+  public void createStringDataSetTable(JdbcTemplate jdbcTemplate) {
+    createTemTable(jdbcTemplate, SQLDBParameterBase.SB4DSSTRING, "VARCHAR2(1000)");
+  }
+
+  @Override
+  public int saveInDataSetLimit() {
+    return 10;
   }
 
 }

@@ -12,9 +12,7 @@
  * You should have received a copy of the GNU Lesser General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package org.smartbit4all.api.query;
-
-import org.smartbit4all.domain.service.query.Query;
+package org.smartbit4all.domain.service.query;
 
 /**
  * This API is responsible for executing query against the current application setup. In a simple

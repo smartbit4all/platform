@@ -20,6 +20,7 @@ import org.smartbit4all.domain.config.DomainAPI;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Expression;
+import org.smartbit4all.domain.meta.ExpressionContainer;
 import org.smartbit4all.domain.meta.LockRequest;
 import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.domain.meta.PropertySet;
@@ -73,7 +74,11 @@ public abstract class QueryImpl<E extends EntityDefinition>
 
   @Override
   public Query<E> where(Expression where) {
-    input.where(where);
+    if (!(where instanceof ExpressionContainer)) {
+      input.where(Expression.createAndClause().add(where));
+    } else {
+      input.where(where);
+    }
     return this;
   }
 

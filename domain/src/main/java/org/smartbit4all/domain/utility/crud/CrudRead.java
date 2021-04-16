@@ -20,11 +20,13 @@ import org.smartbit4all.core.SB4CompositeFunction;
 import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.meta.EntityDefinition;
+import org.smartbit4all.domain.meta.EntitySetup;
 import org.smartbit4all.domain.meta.Expression;
 import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.domain.meta.PropertySet;
 import org.smartbit4all.domain.meta.SortOrderProperty;
 import org.smartbit4all.domain.service.query.Query;
+import org.smartbit4all.domain.service.query.QueryApi;
 import org.smartbit4all.domain.service.query.QueryInput;
 import org.smartbit4all.domain.service.query.QueryOutput;
 
@@ -65,9 +67,27 @@ public class CrudRead<E extends EntityDefinition> implements Query<E> {
               + " want to use the executeIntoTableData() function instead!");
     }
     query.from(entityDef);
-    query.execute();
+
+    QueryApi queryApi = null;
+    if (entityDef instanceof EntitySetup) {
+      queryApi = ((EntitySetup) entityDef).getQueryApi();
+    }
+
+    if (queryApi == null) {
+      query.execute();
+    } else {
+      queryApi.execute(queryApi.prepare(query));
+    }
+
   }
 
+  /**
+   * {@link Deprecated Use the #listData() }
+   * 
+   * @return
+   * @throws Exception
+   */
+  @Deprecated
   public TableData<E> executeIntoTableData() throws Exception {
     if (query.result() == null) {
       TableData<E> result = new TableData<>(entityDef);

@@ -1,13 +1,16 @@
 package org.smartbit4all.sql.exists;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.domain.data.TableData;
+import org.smartbit4all.domain.service.query.Query;
+import org.smartbit4all.domain.service.query.QueryApi;
+import org.smartbit4all.domain.service.query.QueryExecutionPlan;
+import org.smartbit4all.domain.service.query.QueryResult;
 import org.smartbit4all.domain.utility.crud.Crud;
 import org.smartbit4all.sql.testmodel.AddressDef;
 import org.smartbit4all.sql.testmodel.PersonDef;
@@ -18,6 +21,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.jdbc.Sql;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 @SpringBootTest(classes = {
     ExistTestConfig.class,
@@ -29,77 +35,159 @@ public class SQLExistsTests {
 
   @Autowired
   private AddressDef addressDef;
-  
+
   @Autowired
   private PersonDef personDef;
-  
+
   @Autowired
   private TicketDef ticketDef;
-  
+
+  @Autowired
+  private QueryApi queryApi;
+
   @Test
   public void initDbTest() throws Exception {
-    
+
     TableData<PersonDef> persons =
         Crud.read(personDef).select(personDef.allProperties()).listData();
-    
+
     TableData<AddressDef> addresses =
         Crud.read(addressDef).select(addressDef.allProperties()).listData();
-    
+
     TableData<TicketDef> tickets =
         Crud.read(ticketDef).select(ticketDef.allProperties()).listData();
-    
+
     System.out.println(persons);
     System.out.println(addresses);
     System.out.println(tickets);
-    
+
     assertFalse(persons.isEmpty());
     assertFalse(addresses.isEmpty());
     assertFalse(tickets.isEmpty());
   }
-  
-  //@Test
+
+  // @Test
   public void detailExistsTest_01() throws Exception {
-    
+
     // we are looking for the persons with Budapest addresses (ZIP code 10xx)
     TableData<PersonDef> tickets = Crud.read(personDef)
-      .select(personDef.id(), personDef.name())
-      .where(personDef.exists(addressDef.person(), addressDef.zip().like("10%")))
-      .listData();
-    
-    /* Expected:
-     * Matching addresses: 22,41,50 -> matching persons: 2,4,5
+        .select(personDef.id(), personDef.name())
+        .where(personDef.exists(addressDef.person(), addressDef.zip().like("10%")))
+        .listData();
+
+    /*
+     * Expected: Matching addresses: 22,41,50 -> matching persons: 2,4,5
      */
-    
-    if(tickets.isEmpty()) {
+
+    if (tickets.isEmpty()) {
       fail("Empty ticket results");
     }
     List<Long> expectedIds = Arrays.asList(Long.valueOf(2l), Long.valueOf(4l), Long.valueOf(5l));
-    List<Long> resultIds = tickets.rows().stream().map(r -> r.get(personDef.id())).collect(Collectors.toList());
+    List<Long> resultIds =
+        tickets.rows().stream().map(r -> r.get(personDef.id())).collect(Collectors.toList());
     assertTrue(resultIds.containsAll(expectedIds));
-    
+
   }
 
-  //@Test
+  // @Test
   public void detailExistsTest_02() throws Exception {
-  
+
     // we are looking for the tickets with primary persons with Budapest addresses (ZIP code 10xx)
     TableData<TicketDef> tickets = Crud.read(ticketDef)
-      .select(ticketDef.id(), ticketDef.title())
-      .where(ticketDef.primaryPerson().exists(addressDef.person(), addressDef.zip().like("10%")))
-      .listData();
-    
-    /* Expected:
-     * Matching addresses: 22,41,50 -> matching persons: 2,4,5
-     * matching tickets from 400 series: 402, 404, 405.
+        .select(ticketDef.id(), ticketDef.title())
+        .where(ticketDef.primaryPerson().exists(addressDef.person(), addressDef.zip().like("10%")))
+        .listData();
+
+    /*
+     * Expected: Matching addresses: 22,41,50 -> matching persons: 2,4,5 matching tickets from 400
+     * series: 402, 404, 405.
      */
-    
-    if(tickets.isEmpty()) {
+
+    if (tickets.isEmpty()) {
       fail("Empty ticket results");
     }
-    List<Long> expectedIds = Arrays.asList(Long.valueOf(402l), Long.valueOf(404l), Long.valueOf(405l));
-    List<Long> resultIds = tickets.rows().stream().map(r -> r.get(ticketDef.id())).collect(Collectors.toList());
+    List<Long> expectedIds =
+        Arrays.asList(Long.valueOf(402l), Long.valueOf(404l), Long.valueOf(405l));
+    List<Long> resultIds =
+        tickets.rows().stream().map(r -> r.get(ticketDef.id())).collect(Collectors.toList());
     assertTrue(resultIds.containsAll(expectedIds));
-    
+
   }
-  
+
+  @Test
+  public void tooManyValuesInTest_01() throws Exception {
+
+    Set<Long> inValues = new HashSet<>();
+    for (long i = 0; i < 1000; i++) {
+      inValues.add(i);
+    }
+
+    Query<?> query = personDef.services().crud().query()
+        .select(personDef.id(), personDef.name())
+        .where(personDef.id().in(inValues).AND(personDef.name().in(Arrays.asList("Tas", "Huba"))));
+
+    QueryExecutionPlan executionPlan = queryApi.prepare(query);
+
+    System.out.println(executionPlan);
+
+    QueryResult queryResult = queryApi.execute(executionPlan);
+
+    for (Query<?> qry : queryResult.getResults()) {
+      TableData<?> resultData = qry.output().result();
+      System.out.println(resultData);
+      List<Long> resultIds =
+          resultData.rows().stream().map(r -> r.get(personDef.id())).collect(Collectors.toList());
+      assertTrue(resultIds.containsAll(Arrays.asList(Long.valueOf(5l), Long.valueOf(6l))));
+    }
+
+  }
+
+  @Test
+  public void tooManyValuesInCrudReadTest_01() throws Exception {
+
+    Set<Long> inValues = new HashSet<>();
+    for (long i = 0; i < 1000; i++) {
+      inValues.add(i);
+    }
+
+    TableData<?> resultData = Crud.read(personDef).select(personDef.id(), personDef.name())
+        .where(personDef.id().in(inValues).AND(personDef.name().in(Arrays.asList("Tas", "Huba"))))
+        .listData();
+
+    System.out.println(resultData);
+    List<Long> resultIds =
+        resultData.rows().stream().map(r -> r.get(personDef.id())).collect(Collectors.toList());
+    assertTrue(resultIds.containsAll(Arrays.asList(Long.valueOf(5l), Long.valueOf(6l))));
+  }
+
+  @Test
+  public void tooManyValuesInTest_02() throws Exception {
+
+    Set<String> inValues = new HashSet<>();
+    inValues.add("Tas");
+    inValues.add("Huba");
+    for (long i = 0; i < 1000; i++) {
+      inValues.add("Value" + i);
+    }
+
+    Query<?> query = personDef.services().crud().query()
+        .select(personDef.id(), personDef.name())
+        .where(personDef.name().in(inValues).AND(personDef.id().in(Arrays.asList(5l, 6l))));
+
+    QueryExecutionPlan executionPlan = queryApi.prepare(query);
+
+    System.out.println(executionPlan);
+
+    QueryResult queryResult = queryApi.execute(executionPlan);
+
+    for (Query<?> qry : queryResult.getResults()) {
+      TableData<?> resultData = qry.output().result();
+      System.out.println(resultData);
+      List<Long> resultIds =
+          resultData.rows().stream().map(r -> r.get(personDef.id())).collect(Collectors.toList());
+      assertTrue(resultIds.containsAll(Arrays.asList(Long.valueOf(5l), Long.valueOf(6l))));
+    }
+
+  }
+
 }

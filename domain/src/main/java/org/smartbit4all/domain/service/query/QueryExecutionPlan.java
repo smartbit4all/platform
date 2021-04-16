@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU Lesser General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package org.smartbit4all.api.query;
+package org.smartbit4all.domain.service.query;
 
 import java.net.URI;
 import java.util.ArrayList;

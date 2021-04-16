@@ -72,6 +72,11 @@ public final class SQLConstant {
   public static final String EQUAL = StringConstant.EQUAL;
 
   /**
+   * The exists in the statement.
+   */
+  public static final String EXISTS = "EXISTS";
+
+  /**
    * The FALSE constant.
    */
   public static final String FALSE = "FALSE";

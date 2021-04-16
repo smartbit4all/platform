@@ -1,12 +1,11 @@
 package org.smartbit4all.sql.exists;
 
 import javax.sql.DataSource;
-import org.smartbit4all.domain.application.TimeManagementServiceImpl;
 import org.smartbit4all.domain.meta.jdbc.JDBCDataConverterConfig;
+import org.smartbit4all.sql.config.SQLConfig;
 import org.smartbit4all.sql.config.SQLDBParameter;
 import org.smartbit4all.sql.config.SQLDBParameterBase;
 import org.smartbit4all.sql.config.SQLDBParameterH2;
-import org.smartbit4all.sql.service.SQLCrudServiceConfiguration;
 import org.smartbit4all.sql.service.identifier.SQLIdentifierService;
 import org.smartbit4all.sql.testmodel.TestmodelEntityConfig;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -19,14 +18,12 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 
 
-
 @Configuration
 @Import({
-  SQLCrudServiceConfiguration.class,
-  SQLIdentifierService.class,
-  TimeManagementServiceImpl.class,
-  JDBCDataConverterConfig.class,
-  TestmodelEntityConfig.class
+    SQLConfig.class,
+    SQLIdentifierService.class,
+    JDBCDataConverterConfig.class,
+    TestmodelEntityConfig.class
 })
 public class ExistTestConfig {
 
@@ -52,5 +49,5 @@ public class ExistTestConfig {
   public JdbcTemplate applicationDataConnection(DataSource dataSource) {
     return new JdbcTemplate(dataSource);
   }
-  
+
 }

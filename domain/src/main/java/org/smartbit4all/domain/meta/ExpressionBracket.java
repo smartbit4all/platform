@@ -21,7 +21,7 @@ package org.smartbit4all.domain.meta;
  * @author Peter Boros
  *
  */
-public final class ExpressionBracket extends Expression {
+public final class ExpressionBracket extends Expression implements ExpressionContainer {
 
   /**
    * The inner condition inside the bracket.
@@ -64,6 +64,7 @@ public final class ExpressionBracket extends Expression {
   @Override
   public final void accept(ExpressionVisitor visitor) {
     visitor.visitBracketPre(this);
+    visitor.setParent(this);
     expression.accept(visitor);
     visitor.visitBracketPost(this);
   }
@@ -77,6 +78,15 @@ public final class ExpressionBracket extends Expression {
   public final ExpressionBracket NOT() {
     setNegate(!isNegate());
     return this;
+  }
+
+  @Override
+  public boolean replace(Expression oldExp, Expression newExp) {
+    if (expression == oldExp) {
+      expression = newExp;
+      return true;
+    }
+    return false;
   }
 
 }

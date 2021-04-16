@@ -1,4 +1,4 @@
-package org.smartbit4all.api.query;
+package org.smartbit4all.domain.service.query;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -20,7 +20,7 @@ public class Queries {
 
   public static final URI constructQueryURI(String categoryPath) {
     try {
-      return new URI("query", null, categoryPath, UUID.randomUUID().toString());
+      return new URI("query", null, "/" + categoryPath, UUID.randomUUID().toString());
     } catch (URISyntaxException e) {
       throw new RuntimeException(
           "Unable to construct the URI for the " + categoryPath + " query path", e);

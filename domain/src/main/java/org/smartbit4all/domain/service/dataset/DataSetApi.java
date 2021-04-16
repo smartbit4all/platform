@@ -37,4 +37,6 @@ public interface DataSetApi {
    */
   DataSetEntry activate(Property<?> property, Set<?> values);
 
+  int getLimit();
+
 }

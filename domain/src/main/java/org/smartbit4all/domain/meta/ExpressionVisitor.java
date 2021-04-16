@@ -30,6 +30,18 @@ package org.smartbit4all.domain.meta;
  */
 public abstract class ExpressionVisitor {
 
+  private ExpressionContainer parent;
+
+  protected final ExpressionContainer getParent() {
+    return parent;
+  }
+
+  final ExpressionContainer setParent(ExpressionContainer parent) {
+    ExpressionContainer prevParent = this.parent;
+    this.parent = parent;
+    return prevParent;
+  }
+
   /**
    * Visiting the boole formula itself. Because of the pre order traversal the A part was already
    * visited and B section will be the next.
@@ -93,5 +105,12 @@ public abstract class ExpressionVisitor {
    * @param expression
    */
   public void visitExists(ExpressionExists expression) {}
+
+  /**
+   * Typed visiting method.
+   * 
+   * @param expression
+   */
+  public void visitInDataSet(ExpressionInDataSet expressionInDataSet) {}
 
 }

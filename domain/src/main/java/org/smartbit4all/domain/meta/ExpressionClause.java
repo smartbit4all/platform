@@ -26,7 +26,7 @@ import java.util.List;
  * 
  * @author Peter Boros
  */
-public final class ExpressionClause extends Expression {
+public final class ExpressionClause extends Expression implements ExpressionContainer {
 
   /**
    * The operator of the boole clause.
@@ -96,7 +96,9 @@ public final class ExpressionClause extends Expression {
     }
     // If we have only one expression then we delegate simply.
     if (expressions.size() == 1) {
+      ExpressionContainer prev = visitor.setParent(this);
       expressions.get(0).accept(visitor);
+      visitor.setParent(prev);
       return;
     }
     // If we have more expression then we simulate that we have boolean formulas cascaded into each
@@ -107,7 +109,10 @@ public final class ExpressionClause extends Expression {
         visitor.visitClause(this);
       }
       first = false;
+      ExpressionContainer prev = visitor.setParent(this);
       expression.accept(visitor);
+      // Restore the previous.
+      visitor.setParent(prev);
     }
   }
 
@@ -210,6 +215,17 @@ public final class ExpressionClause extends Expression {
       expressions.add(expression);
     }
     return this;
+  }
+
+  @Override
+  public boolean replace(Expression oldExp, Expression newExp) {
+    for (int i = 0; i < expressions.size(); i++) {
+      if (expressions.get(i) == oldExp) {
+        expressions.set(i, newExp);
+        return true;
+      }
+    }
+    return false;
   }
 
 }

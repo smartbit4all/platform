@@ -30,6 +30,7 @@ import org.smartbit4all.domain.meta.ExpressionBetween;
 import org.smartbit4all.domain.meta.ExpressionBoolean;
 import org.smartbit4all.domain.meta.ExpressionBracket;
 import org.smartbit4all.domain.meta.ExpressionIn;
+import org.smartbit4all.domain.meta.ExpressionInDataSet;
 import org.smartbit4all.domain.meta.ExpressionIsNull;
 import org.smartbit4all.domain.meta.JDBCDataConverter;
 import org.smartbit4all.domain.meta.Operand;
@@ -247,6 +248,8 @@ public interface SQLStatementBuilderIF extends SB4Service {
   List<SQLBindValueLiteral> append(ExpressionBetween<?> expression);
 
   List<SQLBindValueLiteral> append(ExpressionIn<?> expression);
+
+  List<SQLBindValueLiteral> append(ExpressionInDataSet expressionInDataSet);
 
   List<SQLBindValueLiteral> append(ExpressionIsNull expression);
 

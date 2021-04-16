@@ -37,6 +37,7 @@ import org.smartbit4all.domain.meta.ExpressionBetween;
 import org.smartbit4all.domain.meta.ExpressionBoolean;
 import org.smartbit4all.domain.meta.ExpressionBracket;
 import org.smartbit4all.domain.meta.ExpressionIn;
+import org.smartbit4all.domain.meta.ExpressionInDataSet;
 import org.smartbit4all.domain.meta.ExpressionIsNull;
 import org.smartbit4all.domain.meta.JDBCDataConverter;
 import org.smartbit4all.domain.meta.Operand;
@@ -688,6 +689,33 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
       result.add(appendLiteral(new OperandLiteral(value, converter)));
     }
     b.append(StringConstant.RIGHT_PARENTHESIS);
+
+    return result;
+  }
+
+  @Override
+  @SuppressWarnings({"unchecked", "rawtypes"})
+  public List<SQLBindValueLiteral> append(ExpressionInDataSet expression) {
+    List<SQLBindValueLiteral> result = new ArrayList<>();
+    separate();
+
+    b.append(StringConstant.LEFT_PARENTHESIS);
+    if (expression.isNegate()) {
+      b.append(SQLConstant.NOT);
+      separate();
+    }
+    b.append(SQLConstant.EXISTS);
+    b.append(StringConstant.LEFT_PARENTHESIS);
+    b.append("select 1 from ");
+    b.append(expression.getDataSetEntry().getTemporaryTableName());
+    b.append(" tmp where val = ");
+
+    append(result, expression.getOperand());
+
+    b.append(" and id = ");
+    result.add(appendLiteral(new OperandLiteral(expression.getDataSetEntry().getId(),
+        expression.getDataSetEntry().getIdConverter())));
+    b.append(StringConstant.RIGHT_PARENTHESIS).append(StringConstant.RIGHT_PARENTHESIS);
 
     return result;
   }

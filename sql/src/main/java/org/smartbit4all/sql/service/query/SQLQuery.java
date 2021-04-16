@@ -29,6 +29,7 @@ import org.smartbit4all.domain.meta.EntityDefinition.TableDefinition;
 import org.smartbit4all.domain.meta.Expression2Operand;
 import org.smartbit4all.domain.meta.ExpressionBetween;
 import org.smartbit4all.domain.meta.ExpressionIn;
+import org.smartbit4all.domain.meta.ExpressionInDataSet;
 import org.smartbit4all.domain.meta.ExpressionIsNull;
 import org.smartbit4all.domain.meta.ExpressionVisitor;
 import org.smartbit4all.domain.meta.Operand;
@@ -44,6 +45,7 @@ import org.smartbit4all.domain.meta.Reference.Join;
 import org.smartbit4all.domain.meta.SortOrderProperty;
 import org.smartbit4all.domain.service.query.QueryImpl;
 import org.smartbit4all.domain.service.query.QueryOutput;
+import org.smartbit4all.domain.service.query.QueryResult;
 import org.smartbit4all.domain.utility.SupportedDatabase;
 import org.smartbit4all.sql.SQLComputedColumn;
 import org.smartbit4all.sql.SQLGroupByColumn;
@@ -174,6 +176,11 @@ public class SQLQuery<E extends EntityDefinition> extends QueryImpl<E> {
         @Override
         public void visitIsNull(ExpressionIsNull expression) {
           prepareOperand(expression.getOp(), rootTable, builder);
+        }
+
+        @Override
+        public void visitInDataSet(ExpressionInDataSet expressionInDataSet) {
+          prepareOperand(expressionInDataSet.getOperand(), rootTable, builder);
         }
 
       });
