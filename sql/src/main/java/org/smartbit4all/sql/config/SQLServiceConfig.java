@@ -14,9 +14,8 @@
  ******************************************************************************/
 package org.smartbit4all.sql.config;
 
-import org.smartbit4all.domain.application.TimeManagementService;
 import org.smartbit4all.domain.service.dataset.DataSetApi;
-import org.smartbit4all.sql.application.TimeManagementServiceImpl;
+import org.smartbit4all.sql.application.TimeManagementSQLSync;
 import org.smartbit4all.sql.service.dataset.DataSetApiSql;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,8 +31,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class SQLServiceConfig {
 
   @Bean
-  public TimeManagementService timeManagementService() {
-    return new TimeManagementServiceImpl();
+  public TimeManagementSQLSync timeManagementSQLSync() {
+    return new TimeManagementSQLSync();
   }
 
   @Bean

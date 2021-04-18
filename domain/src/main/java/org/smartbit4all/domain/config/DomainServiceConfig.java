@@ -24,6 +24,8 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import org.smartbit4all.core.SB4Configuration;
+import org.smartbit4all.domain.application.TimeManagementService;
+import org.smartbit4all.domain.application.TimeManagementServiceImpl;
 import org.smartbit4all.domain.service.query.QueryApi;
 import org.smartbit4all.domain.service.query.QueryApiImpl;
 import org.smartbit4all.domain.service.transfer.TransferService;
@@ -32,6 +34,7 @@ import org.smartbit4all.domain.service.transfer.convert.Converter;
 import org.smartbit4all.domain.service.transfer.convert.ConverterImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 /**
  * Must not be referred directly! Use SQL or remote.
@@ -41,10 +44,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class DomainServiceConfig extends SB4Configuration {
 
-  // @Bean
-  // public TimeManagementService timeManagementService() {
-  // return new TimeManagementServiceImpl();
-  // }
+  @Bean
+  @Primary
+  public TimeManagementService timeManagementService() {
+    return new TimeManagementServiceImpl();
+  }
 
   @Bean
   public TransferService transferService() {

@@ -26,7 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class QueryApiImpl implements QueryApi {
 
-  @Autowired
+  @Autowired(required = false)
   protected DataSetApi dataSetApi;
 
   @Override
