@@ -273,4 +273,16 @@ public class EventPublisherHelper<P extends EventPublisher> implements Invocatio
     }
   }
 
+  @SuppressWarnings("unchecked")
+  public static <T extends EventPublisher> T createNewProxyInstance(String apiUri, Class<T> clazz) {
+    return (T) Proxy.newProxyInstance(clazz.getClassLoader(),
+        new Class[] {clazz, EventPublisherImpl.class},
+        new EventPublisherHelper<>(clazz, apiUri));
+  }
+
+  @SuppressWarnings("unchecked")
+  public static <T extends EventPublisher> EventPublisherHelper<T> get(T eventPublisher) {
+    return (EventPublisherHelper<T>) Proxy.getInvocationHandler(eventPublisher);
+  }
+  
 }
