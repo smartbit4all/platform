@@ -9,8 +9,14 @@ import org.smartbit4all.domain.meta.OperandProperty;
 
 public final class SaveInValues extends SB4FunctionImpl<ExpressionIn<?>, DataSetEntry> {
 
+  /**
+   * The full expression where the exists must be replaced.
+   */
   private Expression fullExpression;
 
+  /**
+   * {@link DataSetApi} to save the result of the query.
+   */
   private DataSetApi dataSetApi;
 
   public SaveInValues(DataSetApi dataSetApi, Expression fullExpression,
@@ -23,7 +29,7 @@ public final class SaveInValues extends SB4FunctionImpl<ExpressionIn<?>, DataSet
   @Override
   public void execute() throws Exception {
     if (dataSetApi != null) {
-      // We save the dataset and replace the expression with an exists.
+      // We save the data set and replace the expression with an exists.
       DataSetEntry entry = dataSetApi
           .activate(((OperandProperty<?>) input().getOperand()).property(), input.values());
       if (entry != null) {

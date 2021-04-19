@@ -537,12 +537,14 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
 
   @Override
   public Expression exists(EntityDefinition fkEntity, Expression expressionOfTarget) {
-    return new ExpressionExists(this, fkEntity, expressionOfTarget);
+    throw new UnsupportedOperationException();
+    // return new ExpressionExists(this, fkEntity, expressionOfTarget);
   }
 
   @Override
   public Expression exists(Expression expressionOfTarget) {
-    return new ExpressionExists(this, null, expressionOfTarget);
+    throw new UnsupportedOperationException();
+    // return new ExpressionExists(this, null, expressionOfTarget);
   }
 
   @Override

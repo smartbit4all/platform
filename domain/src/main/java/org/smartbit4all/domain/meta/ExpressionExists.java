@@ -14,6 +14,8 @@
  ******************************************************************************/
 package org.smartbit4all.domain.meta;
 
+import org.smartbit4all.domain.meta.PropertyRef.JoinPath;
+
 /**
  * This expression can connect filtering on more {@link EntityDefinition}. The checking of the
  * existence could be different depending on the direction of the {@link Reference}. And we also can
@@ -69,19 +71,66 @@ package org.smartbit4all.domain.meta;
 public final class ExpressionExists extends Expression {
 
   /**
-   * This is the expression for other entity.
+   * This is the expression for the entity filtered by the exists.
    */
   private Expression expression;
 
-  private EntityDefinition masterEntity;
-  private EntityDefinition fkEntity;
+  /**
+   * The context of the {@link #expression} even if it's referred or a detail one.
+   */
+  private EntityDefinition contextEntity;
 
-  public ExpressionExists(EntityDefinition masterEntity, EntityDefinition fkEntity,
-      Expression expression) {
+  /**
+   * The master entity that is the root of the {@link #referencePath}.
+   */
+  private EntityDefinition rootEntity;
+
+  /**
+   * The join path to access the context entity of the exists. If it's a referred entity (a simple
+   * join) then it's the context of the expression. Else we have another join path to access the
+   * same entity from the direction of a detail entity. If it's empty then the master entity owns
+   * the properties directly.
+   */
+  private JoinPath referencePath;
+
+  /**
+   * If the exists related with a detail entity then this join path is the access to the master
+   * entity as a join. If it's null then the {@link #contextEntity} is referred directly by the
+   * {@link #referencePath} from the {@link #rootEntity}. If it has value then the reference path
+   * contains the join to the master entity that owns the properties referred by the
+   * {@link #masterReferencePath}.
+   */
+  private JoinPath masterReferencePath;
+
+  /**
+   * This constructor constructs an exists expression with a directly referred entity.
+   * 
+   * @param rootEntity The root entity.
+   * @param contextEntity The context entity the expression is related to.
+   * @param expression The expression.
+   * @param referencePath The reference path to access the context entity from the root.
+   */
+  public ExpressionExists(EntityDefinition rootEntity, EntityDefinition contextEntity,
+      Expression expression, JoinPath referencePath) {
     super();
+    this.rootEntity = rootEntity;
+    this.contextEntity = contextEntity;
     this.expression = expression;
-    this.masterEntity = masterEntity;
-    this.fkEntity = fkEntity;
+    this.referencePath = referencePath;
+  }
+
+  /**
+   * This constructor constructs an exists expression with a detail context entity.
+   * 
+   * @param rootEntity The root entity.
+   * @param contextEntity The context entity the expression is related to.
+   * @param expression The expression.
+   * @param referencePath The reference path to access the context entity from the root.
+   */
+  public ExpressionExists(EntityDefinition rootEntity, EntityDefinition contextEntity,
+      Expression expression, JoinPath referencePath, JoinPath masterReferencePath) {
+    this(rootEntity, contextEntity, expression, referencePath);
+    this.masterReferencePath = masterReferencePath;
   }
 
   @Override
@@ -103,12 +152,43 @@ public final class ExpressionExists extends Expression {
 
   @Override
   public Expression copy() {
-    return new ExpressionExists(masterEntity, fkEntity,
-        expression != null ? expression.copy() : null);
+    return new ExpressionExists(rootEntity, contextEntity, expression, referencePath,
+        masterReferencePath);
   }
 
   public final Expression getExpression() {
     return expression;
+  }
+
+  public final EntityDefinition getContextEntity() {
+    return contextEntity;
+  }
+
+  public final EntityDefinition getRootEntity() {
+    return rootEntity;
+  }
+
+  public final JoinPath getReferencePath() {
+    return referencePath;
+  }
+
+  public final JoinPath getMasterReferencePath() {
+    return masterReferencePath;
+  }
+
+  public final Expression getTranslatedReferredExpression() {
+    if (getMasterReferencePath() == null) {
+      // It's an exists related to a simple referred entity. We can translate the
+      // expression and attach it to the original where instead of the exists itself.
+      if (getReferencePath() != null)
+        return expression.translate(rootEntity, referencePath.references);
+    }
+    return null;
+  }
+
+  public final Property<?> getContextProperty() {
+    // TODO TBC
+    return null;
   }
 
 }

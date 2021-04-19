@@ -1,10 +1,15 @@
 package org.smartbit4all.domain.service.query;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import org.smartbit4all.core.SB4CompositeFunction;
 import org.smartbit4all.core.SB4CompositeFunctionImpl;
 import org.smartbit4all.core.SB4Function;
 import org.smartbit4all.domain.meta.Expression;
+import org.smartbit4all.domain.meta.ExpressionExists;
 import org.smartbit4all.domain.meta.ExpressionIn;
+import org.smartbit4all.domain.meta.ExpressionReplacer;
 import org.smartbit4all.domain.meta.ExpressionVisitor;
 import org.smartbit4all.domain.meta.OperandProperty;
 import org.smartbit4all.domain.service.dataset.DataSetApi;
@@ -48,18 +53,36 @@ public class QueryApiImpl implements QueryApi {
         QueryInput<?> input = query.input();
         Expression where = input.where();
         // 1. Contribution: over sized in
+        // 2. Contribute exists.
+        // TODO avoid initialization if not necessary.
+        Map<Expression, Expression> replacementMap = new HashMap<>();
         if (where != null) {
           where.accept(new ExpressionVisitor() {
             @Override
             public <T> void visitIn(ExpressionIn<T> expression) {
               if (expression.values() != null && expression.values().size() > 10) {
                 if (expression.getOperand() instanceof OperandProperty<?>) {
-                  OperandProperty<T> operandProperty = (OperandProperty<T>) expression.getOperand();
                   queryNode.preCalls().call(new SaveInValues(dataSetApi, where, expression));
                 }
               }
             }
+
+            @Override
+            public void visitExists(ExpressionExists expression) {
+              Expression translatedReferredExpression =
+                  expression.getTranslatedReferredExpression();
+              if (translatedReferredExpression != null) {
+                // It's an exists related to a simple referred entity. We can translate the
+                // expression and attach it to the original where instead of the exists itself.
+                replacementMap.put(expression, translatedReferredExpression);
+              } else if (expression.getMasterReferencePath() != null) {
+
+              }
+            }
           });
+        }
+        for (Entry<Expression, Expression> replacementEntry : replacementMap.entrySet()) {
+          ExpressionReplacer.replace(where, replacementEntry.getKey(), replacementEntry.getValue());
         }
 
         result.getStartingNodes().add(queryNode);
