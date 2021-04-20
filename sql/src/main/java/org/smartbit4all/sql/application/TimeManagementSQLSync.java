@@ -42,6 +42,7 @@ public class TimeManagementSQLSync {
   @Autowired
   private SQLConfig sqlConfig;
 
+  @Autowired
   private TimeManagementService timeManagement;
 
   @Scheduled(initialDelay = 5000, fixedRate = 60000)
