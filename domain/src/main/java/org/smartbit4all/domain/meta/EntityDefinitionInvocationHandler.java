@@ -137,8 +137,8 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
       if (!isInitialized) {
         return method.invoke(this, args);
       } else {
-        log.warn("Entity setup method called when entity is already initialized! ("
-            + entityDefClazz.getName() + "." + method.getName() + ")");
+        log.debug("Entity setup method called when entity is already initialized! ({}.{})",
+            entityDefClazz.getName(), method.getName());
         return null;
       }
     }
