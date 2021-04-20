@@ -1,6 +1,7 @@
 package org.smartbit4all.ui.vaadin.components.binder;
 
 import java.util.Locale;
+import java.util.Objects;
 import org.smartbit4all.api.object.ObjectEditing;
 import org.smartbit4all.api.object.PropertyChange;
 import org.smartbit4all.core.utility.PathUtility;
@@ -9,6 +10,8 @@ import com.vaadin.flow.component.HasValidation;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.data.binder.Result;
+import com.vaadin.flow.data.binder.ValidationResult;
+import com.vaadin.flow.data.binder.Validator;
 import com.vaadin.flow.data.binder.ValueContext;
 import com.vaadin.flow.data.converter.Converter;
 
@@ -24,6 +27,8 @@ public class VaadinHasValueBinder<WIDGET, DATA> {
 
   private Converter<WIDGET, DATA> converter;
   private ValueContext converterContext;
+
+  private Validator<? super DATA> validator;
 
   public VaadinHasValueBinder(HasValue<?, WIDGET> field, ObjectEditing editing, String path) {
     super();
@@ -48,6 +53,36 @@ public class VaadinHasValueBinder<WIDGET, DATA> {
     Component component;
     component = field instanceof Component ? (Component) field : null;
     this.converterContext = new ValueContext(component, field, locale);
+  }
+
+  public void asRequired(String errorMessage) {
+    field.setRequiredIndicatorVisible(true);
+    validator = Validator.from(
+        value -> {
+          DATA data =
+              getDataFromWidget(field.getEmptyValue()).getOrThrow(IllegalStateException::new);
+          return !Objects.equals(value, data);
+        },
+        errorMessage);
+  }
+
+  public boolean validate() {
+    if (validator != null) {
+      Result<DATA> dataResult = getDataFromWidget(field.getValue());
+      if (dataResult.isError()) {
+        setFieldInvalid(dataResult.getMessage().orElse("Invalid value"));;
+      }
+      ValidationResult validationResult =
+          validator.apply(dataResult.getOrThrow(IllegalStateException::new), converterContext);
+      if (validationResult.isError()) {
+        setFieldInvalid(validationResult.getErrorMessage());
+        return false;
+      }
+      setFieldValid();
+      return true;
+    } else {
+      return true;
+    }
   }
 
   protected void subscribeToUIEvent() {
@@ -88,26 +123,39 @@ public class VaadinHasValueBinder<WIDGET, DATA> {
 
   protected void registerValueChangeListener() {
     field.addValueChangeListener(event -> {
-      if (converter != null) {
-        Result<DATA> result = converter.convertToModel(event.getValue(), converterContext);
-        result.ifError(error -> {
-          if (field instanceof HasValidation) {
-            ((HasValidation) field).setInvalid(true);
-            ((HasValidation) field).setErrorMessage(error);
-          }
-        });
-        result.ifOk(data -> setUIState(data));
-        if (result.isError()) {
-          if (field instanceof HasValidation) {
-            ((HasValidation) field).setInvalid(true);
-            ((HasValidation) field).setErrorMessage(result.getMessage().orElse("Invalid value"));
-          } else {
-            // TODO how to show error?
-          }
-        }
+      Result<DATA> result = getDataFromWidget(event.getValue());
+      final DATA data;
+      if (result.isError()) {
+        setFieldInvalid(result.getMessage().orElse("Invalid value"));
+        return;
       } else {
-        setUIState((DATA) event.getValue());
+        if (field instanceof HasValidation) {
+          ((HasValidation) field).setInvalid(false);
+        }
+        data = result.getOrThrow(IllegalStateException::new);
       }
+      setUIState(data);
     });
+  }
+
+  private void setFieldInvalid(String errorMessage) {
+    if (field instanceof HasValidation) {
+      ((HasValidation) field).setInvalid(true);
+      ((HasValidation) field).setErrorMessage(errorMessage);
+    } // TODO else how to show error?
+  }
+
+  private void setFieldValid() {
+    if (field instanceof HasValidation) {
+      ((HasValidation) field).setInvalid(false);
+    }
+  }
+
+  protected Result<DATA> getDataFromWidget(WIDGET value) {
+    if (converter != null) {
+      return converter.convertToModel(value, converterContext);
+    } else {
+      return Result.ok((DATA) value);
+    }
   }
 }
