@@ -200,4 +200,8 @@ public class BinaryData {
     this.hash = hash;
   }
 
+  public File getDataFile() {
+    return dataFile;
+  }
+
 }
