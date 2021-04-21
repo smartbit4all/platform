@@ -9,16 +9,10 @@ import org.smartbit4all.api.filter.bean.FilterGroupMeta;
 import org.smartbit4all.api.filter.bean.FilterGroupType;
 import org.smartbit4all.api.filter.bean.FilterOperation;
 
-public class FilterConfigs {
+public abstract class FilterConfigs {
   
-  private String defaultFilterStyle;
-  private String defaultFilterGroupStyle;
-  private List<ConfigGroupBuilder> filterGroups;
-  
-  private FilterConfigs(ConfigBuilder builder) {
-    this.defaultFilterStyle = builder.defaultFilterStyle;
-    this.defaultFilterGroupStyle = builder.defaultFilterGroupStyle;
-    this.filterGroups = builder.filterGroups;
+  private FilterConfigs() {
+    
   }
   
   public static ConfigBuilder builder() {
@@ -29,10 +23,14 @@ public class FilterConfigs {
     
     private String defaultFilterStyle;
     private String defaultFilterGroupStyle;
-    private List<ConfigGroupBuilder> filterGroups;
+    private List<ConfigGroupBuilder> configGroupBuilders;
     
     private ConfigBuilder() {
-      filterGroups = new ArrayList<>();
+      configGroupBuilders = new ArrayList<>();
+    }
+    
+    private void addFilterGroups(ConfigGroupBuilder configGroupBuilder) {
+      configGroupBuilders.add(configGroupBuilder);
     }
     
     public ConfigBuilder defaultStyle(String defaultFilterStyle) {
@@ -45,10 +43,6 @@ public class FilterConfigs {
       return this;
     }
     
-    void addFilterGroups(ConfigGroupBuilder configGroupBuilder) {
-      filterGroups.add(configGroupBuilder);
-    }
-    
     public ConfigGroupBuilder addGroupMeta(String id) {
       return new ConfigGroupBuilder(id, this);
     }
@@ -58,7 +52,7 @@ public class FilterConfigs {
       filterConfig.setDefaultFilterGroupStyle(defaultFilterGroupStyle);
       filterConfig.setDefaultFilterStyle(defaultFilterStyle);
       List<FilterGroupMeta> groups = new ArrayList<>();
-      for (ConfigGroupBuilder configGroupBuilder : filterGroups) {
+      for (ConfigGroupBuilder configGroupBuilder : configGroupBuilders) {
         groups.add(configGroupBuilder.build());
       }
       filterConfig.setFilterGroupMetas(groups);
@@ -74,12 +68,31 @@ public class FilterConfigs {
     private String iconCode;
     private String style;
     private FilterGroupType type;
-    private List<ConfigFieldBuilder> fields;
+    private List<ConfigFieldBuilder> configFieldBuilders;
     
     private ConfigGroupBuilder(String id, ConfigBuilder configBuilder) {
       this.configBuilder = configBuilder;
       this.id = id;
-      fields = new ArrayList<>();
+      configFieldBuilders = new ArrayList<>();
+    }
+    
+    private void addFieldBuilder(ConfigFieldBuilder configFieldBuilder) {
+      configFieldBuilders.add(configFieldBuilder);
+    }
+    
+    private FilterGroupMeta build() {
+      FilterGroupMeta filterGroupMeta = new FilterGroupMeta();
+      filterGroupMeta.setId(id);
+      filterGroupMeta.setLabelCode(labelCode);
+      filterGroupMeta.setIconCode(iconCode);
+      filterGroupMeta.setStyle(style);
+      filterGroupMeta.setType(type);
+      List<FilterFieldMeta> filterFieldMetas = new ArrayList<>();
+      for (ConfigFieldBuilder configFieldBuilder : configFieldBuilders) {
+        filterFieldMetas.add(configFieldBuilder.build());
+      }
+      filterGroupMeta.setFilterFieldMetas(filterFieldMetas);
+      return filterGroupMeta;
     }
     
     public ConfigGroupBuilder labelCode(String labelCode) {
@@ -102,27 +115,8 @@ public class FilterConfigs {
       return this;
     }
     
-    void addFieldBuilder(ConfigFieldBuilder configFieldBuilder) {
-      fields.add(configFieldBuilder);
-    }
-    
     public ConfigFieldBuilder addFieldMeta() {
       return new ConfigFieldBuilder(this);
-    }
-    
-    FilterGroupMeta build() {
-      FilterGroupMeta filterGroupMeta = new FilterGroupMeta();
-      filterGroupMeta.setId(id);
-      filterGroupMeta.setLabelCode(labelCode);
-      filterGroupMeta.setIconCode(iconCode);
-      filterGroupMeta.setStyle(style);
-      filterGroupMeta.setType(type);
-      List<FilterFieldMeta> filterFieldMetas = new ArrayList<>();
-      for (ConfigFieldBuilder configFieldBuilder : fields) {
-        filterFieldMetas.add(configFieldBuilder.build());
-      }
-      filterGroupMeta.setFilterFieldMetas(filterFieldMetas);
-      return filterGroupMeta;
     }
     
     public ConfigBuilder done() {
@@ -138,11 +132,29 @@ public class FilterConfigs {
     private String labelCode;
     private String iconCode;
     private String style;
-    private List<ConfigOperationBuilder> operations;
+    private List<ConfigOperationBuilder> configOperationBuilders;
     
     private ConfigFieldBuilder(ConfigGroupBuilder configGroupBuilder) {
       this.configGroupBuilder = configGroupBuilder;
-      operations = new ArrayList<>();
+      configOperationBuilders = new ArrayList<>();
+    }
+    
+    private void addOperationBuilder(ConfigOperationBuilder operation) {
+      configOperationBuilders.add(operation);
+    }
+    
+    private FilterFieldMeta build(){
+      FilterFieldMeta filterFieldMeta = new FilterFieldMeta();
+      filterFieldMeta.setId(id);
+      filterFieldMeta.setLabelCode(labelCode);
+      filterFieldMeta.setIconCode(iconCode);
+      filterFieldMeta.setStyle(style);
+      List<FilterOperation> filterOperations = new ArrayList<>();
+      for (ConfigOperationBuilder configOperationBuilder : configOperationBuilders) {
+        filterOperations.add(configOperationBuilder.build());
+      }
+      filterFieldMeta.setOperations(filterOperations);
+      return filterFieldMeta;      
     }
     
     public ConfigFieldBuilder labelCode(String labelCode) {
@@ -160,26 +172,8 @@ public class FilterConfigs {
       return this;
     }
     
-    void addOperationBuilder(ConfigOperationBuilder operation) {
-      operations.add(operation);
-    }
-    
     public ConfigOperationBuilder addOperation(String id, String operationCode) {
       return new ConfigOperationBuilder(id, operationCode, this);
-    }
-    
-    FilterFieldMeta build(){
-      FilterFieldMeta filterFieldMeta = new FilterFieldMeta();
-      filterFieldMeta.setId(id);
-      filterFieldMeta.setLabelCode(labelCode);
-      filterFieldMeta.setIconCode(iconCode);
-      filterFieldMeta.setStyle(style);
-      List<FilterOperation> filterOperations = new ArrayList<>();
-      for (ConfigOperationBuilder configOperationBuilder : operations) {
-        filterOperations.add(configOperationBuilder.build());
-      }
-      filterFieldMeta.setOperations(filterOperations);
-      return filterFieldMeta;      
     }
     
     public ConfigGroupBuilder done() {
@@ -205,6 +199,20 @@ public class FilterConfigs {
       this.configFieldBuilder = configFieldBuilder;
       this.id = id;
       this.operationCode = operationCode;
+    }
+    
+    private FilterOperation build() {
+      FilterOperation filterOperation = new FilterOperation();
+      filterOperation.setId(id);
+      filterOperation.setFilterView(filterView);
+      filterOperation.setPropertyUri1(propertyUri1);
+      filterOperation.setPropertyUri2(propertyUri2);
+      filterOperation.setPropertyUri3(propertyUri3);
+      filterOperation.setPossibleValuesUri(possibleValuesUri);
+      filterOperation.setOperationCode(operationCode);
+      filterOperation.setLabelCode(labelCode);
+      filterOperation.setIconCode(iconCode);
+      return filterOperation;
     }
     
     public ConfigOperationBuilder filterView(String filterView) {
@@ -240,20 +248,6 @@ public class FilterConfigs {
     public ConfigOperationBuilder iconCode(String iconCode) {
       this.iconCode = iconCode;
       return this;
-    }
-    
-    FilterOperation build() {
-      FilterOperation filterOperation = new FilterOperation();
-      filterOperation.setId(id);
-      filterOperation.setFilterView(filterView);
-      filterOperation.setPropertyUri1(propertyUri1);
-      filterOperation.setPropertyUri2(propertyUri2);
-      filterOperation.setPropertyUri3(propertyUri3);
-      filterOperation.setPossibleValuesUri(possibleValuesUri);
-      filterOperation.setOperationCode(operationCode);
-      filterOperation.setLabelCode(labelCode);
-      filterOperation.setIconCode(iconCode);
-      return filterOperation;
     }
     
     public ConfigFieldBuilder done() {
