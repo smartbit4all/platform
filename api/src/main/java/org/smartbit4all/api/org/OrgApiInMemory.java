@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.org.bean.User;
+import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
 
 /**
@@ -18,7 +19,7 @@ import org.springframework.util.Assert;
  * @author Attila Mate
  * @since 2021.04.19.
  */
-public class OrgApiInMemory implements OrgApi {
+public class OrgApiInMemory extends OrgApiImpl {
 
   protected Map<URI, User> users;
 
@@ -26,9 +27,15 @@ public class OrgApiInMemory implements OrgApi {
 
   protected User currentUser;
 
-  public OrgApiInMemory() {
+  public OrgApiInMemory(Environment env) {
+    super(env);
     users = new HashMap<>();
     groups = new HashMap<>();
+  }
+
+  @Override
+  protected Group createGroup(String name) {
+    return new Group().name(name).uri(URI.create("userGroup:/" + name));
   }
 
   public User addTestUser(String name, String userName, String email) {
@@ -42,11 +49,7 @@ public class OrgApiInMemory implements OrgApi {
   private User createUser(String name, String userName, String email) {
     URI userUri = URI.create("user:/" + userName);
 
-    return new User()
-        .uri(userUri)
-        .name(name)
-        .username(userName)
-        .email(email);
+    return new User().uri(userUri).name(name).username(userName).email(email);
   }
 
   @Override
@@ -83,9 +86,7 @@ public class OrgApiInMemory implements OrgApi {
   }
 
   public Group addTestGroup(String name, User... users) {
-    Group newGroup = new Group()
-        .name(name)
-        .uri(URI.create("userGroup:/" + name));
+    Group newGroup = createGroup(name);
 
     for (User user : users) {
       newGroup.addChildrenItem(user.getUri());
@@ -98,9 +99,11 @@ public class OrgApiInMemory implements OrgApi {
 
   @Override
   public List<Group> getGroupsOfUser(URI userUri) {
-    return groups.values().stream()
-        .filter(group -> group.getChildren().contains(userUri))
+    List<Group> result = groups.values().stream().filter(group -> group.getChildren().contains(userUri))
         .collect(Collectors.toList());
+    
+    result.addAll(getAdditionalVirtualGroups(result));
+    return result;
   }
 
   @Override
@@ -110,8 +113,7 @@ public class OrgApiInMemory implements OrgApi {
 
   @Override
   public List<Group> getRootGroups() {
-    return groups.values().stream()
-        .filter(group -> group.getParent() == null)
+    return groups.values().stream().filter(group -> group.getParent() == null)
         .collect(Collectors.toList());
   }
 
