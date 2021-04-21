@@ -62,6 +62,11 @@ public interface EntitySetup extends ApplicationContextAware {
    */
   void finishSetup();
 
+  /**
+   * TODO Remove this and create meta infos for the query API.
+   * 
+   * @return
+   */
   QueryApi getQueryApi();
 
 }
