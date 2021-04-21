@@ -36,7 +36,7 @@ public class FilterConfigs {
     }
     
     public ConfigBuilder defaultStyle(String defaultFilterStyle) {
-      this.defaultFilterGroupStyle = defaultFilterStyle;
+      this.defaultFilterStyle = defaultFilterStyle;
       return this;
     }
     
