@@ -4,14 +4,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Tag;
-import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.ErrorParameter;
 import com.vaadin.flow.router.HasErrorParameter;
-import com.vaadin.flow.router.ParentLayout;
 
 @Tag(Tag.DIV)
-@ParentLayout(AppLayout.class)
 public class ParameterMissingHandler extends Component
     implements HasErrorParameter<ParameterMissingException> {
 
