@@ -3,13 +3,20 @@ package org.smartbit4all.api.filter.util;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import org.smartbit4all.api.filter.bean.FilterConfig;
 import org.smartbit4all.api.filter.bean.FilterFieldMeta;
 import org.smartbit4all.api.filter.bean.FilterGroupMeta;
 import org.smartbit4all.api.filter.bean.FilterGroupType;
 import org.smartbit4all.api.filter.bean.FilterOperation;
+import org.smartbit4all.api.filter.util.Filters.OperationCode;
+import org.smartbit4all.api.value.ValueUris;
+import org.smartbit4all.domain.meta.EntityDefinition;
+import org.smartbit4all.domain.meta.Property;
 
 public abstract class FilterConfigs {
+  
+  private static final String FILTEROP_PREFIX = "filterop.";
   
   private FilterConfigs() {
     
@@ -170,6 +177,101 @@ public abstract class FilterConfigs {
     public ConfigFieldBuilder style(String style) {
       this.style = style;
       return this;
+    }
+    
+    public ConfigFieldBuilder addOperationMultiSelect(Property<?> property, String possibleValueCode) {
+      String operationCodeValue = OperationCode.MULTI_SEL.getValue();
+      URI possibleValuesUri = ValueUris.createPossibleValueUri(possibleValueCode, null);
+      ConfigOperationBuilder multiSelectOperationBuilder =
+          createOperationBuilder(operationCodeValue, property, possibleValuesUri);
+      configOperationBuilders.add(multiSelectOperationBuilder);
+      return this;
+    }
+    
+    public ConfigFieldBuilder addOperationComboSelect(Property<?> property, String possibleValueCode) {
+      String operationCodeValue = OperationCode.COMBO_SEL.getValue();
+      URI possibleValuesUri = ValueUris.createPossibleValueUri(possibleValueCode, null);
+      ConfigOperationBuilder comboSelectOperationBuilder =
+          createOperationBuilder(operationCodeValue, property, possibleValuesUri);
+      configOperationBuilders.add(comboSelectOperationBuilder);
+      return this;
+    }
+    
+    public ConfigFieldBuilder addOperationDateEquals(Property<?> property, String possibleValueCode) {
+      String operationCodeValue = OperationCode.DATE_EQ.getValue();
+      URI possibleValuesUri = null;
+      ConfigOperationBuilder dateEqualsOperationBuilder =
+          createOperationBuilder(operationCodeValue, property, possibleValuesUri);
+      configOperationBuilders.add(dateEqualsOperationBuilder);
+      return this;
+    }
+    
+    public ConfigFieldBuilder addOperationDateInterval(Property<?> property, String possibleValueCode) {
+      String operationCodeValue = OperationCode.DATE_INTERVAL.getValue();
+      URI possibleValuesUri = null;
+      ConfigOperationBuilder dateIntervalOperationBuilder =
+          createOperationBuilder(operationCodeValue, property, possibleValuesUri);
+      configOperationBuilders.add(dateIntervalOperationBuilder);
+      return this;
+    }
+    
+    public ConfigFieldBuilder addOperationTextEquals(Property<?> property, String possibleValueCode) {
+      String operationCodeValue = OperationCode.TXT_EQ.getValue();
+      URI possibleValuesUri = null;
+      ConfigOperationBuilder textEqualsOperationBuilder =
+          createOperationBuilder(operationCodeValue, property, possibleValuesUri);
+      configOperationBuilders.add(textEqualsOperationBuilder);
+      return this;
+    }
+    
+    public ConfigFieldBuilder addOperationTextLike(Property<?> property, String possibleValueCode) {
+      String operationCodeValue = OperationCode.TXT_LIKE.getValue();
+      URI possibleValuesUri = null;
+      ConfigOperationBuilder textLikeOperationBuilder =
+          createOperationBuilder(operationCodeValue, property, possibleValuesUri);
+      configOperationBuilders.add(textLikeOperationBuilder);
+      return this;
+    }
+    
+    public ConfigFieldBuilder addOperationTextLikeMin(Property<?> property, String possibleValueCode) {
+      String operationCodeValue = OperationCode.TXT_LIKE_MIN.getValue();
+      URI possibleValuesUri = null;
+      ConfigOperationBuilder textLikeMinOperationBuilder =
+          createOperationBuilder(operationCodeValue, property, possibleValuesUri);
+      configOperationBuilders.add(textLikeMinOperationBuilder);
+      return this;
+    }
+    
+    public ConfigFieldBuilder addOperationDetailTextLikeMin(Property<?> propertyOfFilter,
+        EntityDefinition masterEntity, EntityDefinition fkEntity, String possibleValueCode) {
+      String operationCodeValue = OperationCode.DET_TXT_LIKE_MIN.getValue();
+      String operationCodeWithoutDet = operationCodeValue.substring(operationCodeValue.indexOf(".") + 1);
+      URI possibleValuesUri = null;
+      URI propertyUri1 = propertyOfFilter == null ? null : propertyOfFilter.getUri();
+      URI propertyUri2 = propertyOfFilter == null ? null : masterEntity.getUri();
+      URI propertyUri3 = propertyOfFilter == null ? null : fkEntity.getUri();
+      ConfigOperationBuilder detailTextLikeMinOperationBuilder = new ConfigOperationBuilder(
+          UUID.randomUUID().toString(), operationCodeValue, this);
+      detailTextLikeMinOperationBuilder.propertyUri1(propertyUri1);
+      detailTextLikeMinOperationBuilder.propertyUri2(propertyUri2);
+      detailTextLikeMinOperationBuilder.propertyUri3(propertyUri3);
+      detailTextLikeMinOperationBuilder.possibleValuesUri(possibleValuesUri);
+      detailTextLikeMinOperationBuilder.filterView(FILTEROP_PREFIX + operationCodeWithoutDet);
+      detailTextLikeMinOperationBuilder.labelCode(operationCodeWithoutDet);
+      configOperationBuilders.add(detailTextLikeMinOperationBuilder);
+      return this;
+    }
+    
+    public ConfigOperationBuilder createOperationBuilder(String operationCodeValue,
+        Property<?> property, URI possibleValuesUri) {
+      ConfigOperationBuilder configOperationBuilder = new ConfigOperationBuilder(
+          UUID.randomUUID().toString(), operationCodeValue, this);
+      URI propertyUri1 = property == null ? null : property.getUri();
+      configOperationBuilder.propertyUri1(propertyUri1);
+      configOperationBuilder.possibleValuesUri(possibleValuesUri);
+      configOperationBuilder.filterView(FILTEROP_PREFIX + operationCodeValue);
+      configOperationBuilder.labelCode(operationCodeValue);
+      return configOperationBuilder;
     }
     
     public ConfigOperationBuilder addOperation(String id, String operationCode) {
