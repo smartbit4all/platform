@@ -35,9 +35,9 @@ public class ScreenFrame extends Composite<Div> implements HasStyle {
 
   private String CLASS_NAME = "screen-frame";
 
-  private Div header;
-  private Div content;
-  private Div footer;
+  protected Div header;
+  protected Div content;
+  protected Div footer;
 
   public ScreenFrame() {
     setClassName(CLASS_NAME);
