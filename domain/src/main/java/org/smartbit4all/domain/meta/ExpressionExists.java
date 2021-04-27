@@ -14,7 +14,8 @@
  ******************************************************************************/
 package org.smartbit4all.domain.meta;
 
-import org.smartbit4all.domain.meta.PropertyRef.JoinPath;
+import java.util.Iterator;
+import org.smartbit4all.domain.meta.Reference.Join;
 
 /**
  * This expression can connect filtering on more {@link EntityDefinition}. The checking of the
@@ -172,6 +173,13 @@ public final class ExpressionExists extends Expression {
     return referencePath;
   }
 
+  final void setReferencePath(JoinPath joinPath) {
+    this.referencePath = joinPath;
+    if (!joinPath.references.isEmpty()) {
+      this.rootEntity = joinPath.firstEntity();
+    }
+  }
+
   public final JoinPath getMasterReferencePath() {
     return masterReferencePath;
   }
@@ -187,7 +195,18 @@ public final class ExpressionExists extends Expression {
   }
 
   public final Property<?> getContextProperty() {
-    // TODO TBC
+    Iterator<Join<?>> lastJoinIter = masterReferencePath.last().joins().iterator();
+    if (lastJoinIter.hasNext()) {
+      Join<?> join = lastJoinIter.next();
+      Property<?> targetProperty = join.getTargetProperty();
+      if (referencePath.references.isEmpty()) {
+        // We refer to the property of the root. There is no need to translate.
+        return targetProperty;
+      }
+      // The target property must be translated to the root entity to add the query. All the queried
+      // properties must come from the root.
+      return rootEntity.findOrCreateReferredProperty(referencePath.references, targetProperty);
+    }
     return null;
   }
 

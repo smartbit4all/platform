@@ -87,8 +87,8 @@ class SB4ExpressionTest {
     List<FoundExpression> list = ExpressionFinder.find(or, (Expression e) -> e == exp2);
 
     assertEquals(1, list.size());
-    assertEquals(exp2, list.get(0).expression);
-    assertEquals(or, list.get(0).parent);
+    assertEquals(exp2, list.get(0).getExpression());
+    assertEquals(or, list.get(0).getParent());
 
   }
 
@@ -105,8 +105,8 @@ class SB4ExpressionTest {
     List<FoundExpression> list = ExpressionFinder.find(fullExp, (Expression e) -> e == in);
 
     assertEquals(1, list.size());
-    assertEquals(in, list.get(0).expression);
-    assertEquals(fullExp, list.get(0).parent);
+    assertEquals(in, list.get(0).getExpression());
+    assertEquals(fullExp, list.get(0).getParent());
 
   }
 
@@ -130,6 +130,59 @@ class SB4ExpressionTest {
     assertEquals("id <= 100 AND primaryZipcode = \"2030\" AND fullname = \"Ccc\"",
         result.toString());
 
+  }
+
+  @Test
+  void expressionConjunctiveTest() throws Exception {
+    UserAccountDef userAccountDef = ctx.getBean(UserAccountDef.class);
+    Expression in = userAccountDef.fullname().in(Arrays.asList("Aaa", "Bbb"));
+
+    ExpressionClause restExp =
+        userAccountDef.id().lt(100l).AND(userAccountDef.primaryAddress().zipcode().eq("2030"));
+
+    ExpressionClause otherExp =
+        userAccountDef.id().gt(200l).AND(userAccountDef.primaryAddress().zipcode().eq("5000"));
+
+    ExpressionClause anOtherExp =
+        userAccountDef.id().gt(300l).AND(userAccountDef.primaryAddress().zipcode().eq("2144"));
+
+    Expression yetAnOtherExp =
+        userAccountDef.id().gt(400l);
+
+    {
+      ExpressionClause fullExp = restExp.AND(otherExp).AND(in);
+
+      Expression result = ExpressionFinder.findLargestConjunctiveClause(fullExp, in);
+
+      assertEquals(fullExp, result);
+    }
+
+    {
+      ExpressionClause clause = otherExp.AND(in);
+      ExpressionClause fullExp = restExp.OR(clause);
+
+      Expression result = ExpressionFinder.findLargestConjunctiveClause(fullExp, in);
+
+      assertEquals(clause, result);
+    }
+
+    {
+      Expression clause = otherExp.BRACKET().AND(in);
+      ExpressionClause fullExp = restExp.OR(clause);
+
+      Expression result = ExpressionFinder.findLargestConjunctiveClause(fullExp, in);
+
+      assertEquals(clause, result);
+    }
+    {
+      Expression clause = otherExp.BRACKET().AND(in)
+          .AND(Expression.createOrClause().add(anOtherExp).add(yetAnOtherExp).BRACKET());
+      ExpressionClause fullExp = restExp.OR(clause);
+
+      Expression result = ExpressionFinder.findLargestConjunctiveClause(fullExp, in);
+
+      assertEquals(clause, result);
+    }
   }
 
 }

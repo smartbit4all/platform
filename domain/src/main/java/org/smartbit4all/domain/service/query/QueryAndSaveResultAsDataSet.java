@@ -31,12 +31,22 @@ public final class QueryAndSaveResultAsDataSet extends SB4FunctionImpl<Query<?>,
    */
   private ExpressionExists originalExists;
 
+  public QueryAndSaveResultAsDataSet(DataSetApi dataSetApi, Expression fullExpression,
+      ExpressionExists originalExists) {
+    super();
+    this.dataSetApi = dataSetApi;
+    this.fullExpression = fullExpression;
+    this.originalExists = originalExists;
+  }
+
   @SuppressWarnings({"rawtypes", "unchecked"})
   @Override
   public void execute() throws Exception {
     if (dataSetApi != null) {
+      // First we execute the query.
       TableData<?> data = input().listData();
-      // We save the data set and replace the expression with an exists.
+      // We save the data set from the first column of the query result and replace the expression
+      // with an exists.
       Iterator<DataColumn<?>> iterColumn = data.columns().iterator();
       @SuppressWarnings("unchecked")
       DataSetEntry entry = null;

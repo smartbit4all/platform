@@ -65,7 +65,9 @@ public final class ExpressionBracket extends Expression implements ExpressionCon
   public final void accept(ExpressionVisitor visitor) {
     visitor.visitBracketPre(this);
     visitor.setParent(this);
+    visitor.addToStack(this);
     expression.accept(visitor);
+    visitor.removeFromStack();
     visitor.visitBracketPost(this);
   }
 

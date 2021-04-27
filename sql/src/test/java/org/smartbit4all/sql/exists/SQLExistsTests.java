@@ -66,13 +66,13 @@ public class SQLExistsTests {
     assertFalse(tickets.isEmpty());
   }
 
-  // @Test
+  @Test
   public void detailExistsTest_01() throws Exception {
 
     // we are looking for the persons with Budapest addresses (ZIP code 10xx)
     TableData<PersonDef> tickets = Crud.read(personDef)
         .select(personDef.id(), personDef.name())
-        .where(personDef.exists(addressDef.person(), addressDef.zip().like("10%")))
+        .where(personDef.exists(addressDef.person().join(), addressDef.zip().like("10%")))
         .listData();
 
     /*
@@ -89,13 +89,14 @@ public class SQLExistsTests {
 
   }
 
-  // @Test
+  @Test
   public void detailExistsTest_02() throws Exception {
 
     // we are looking for the tickets with primary persons with Budapest addresses (ZIP code 10xx)
     TableData<TicketDef> tickets = Crud.read(ticketDef)
         .select(ticketDef.id(), ticketDef.title())
-        .where(ticketDef.primaryPerson().exists(addressDef.person(), addressDef.zip().like("10%")))
+        .where(ticketDef.primaryPerson().exists(addressDef.person().join(),
+            addressDef.zip().like("10%")))
         .listData();
 
     /*
@@ -108,6 +109,30 @@ public class SQLExistsTests {
     }
     List<Long> expectedIds =
         Arrays.asList(Long.valueOf(402l), Long.valueOf(404l), Long.valueOf(405l));
+    List<Long> resultIds =
+        tickets.rows().stream().map(r -> r.get(ticketDef.id())).collect(Collectors.toList());
+    assertTrue(resultIds.containsAll(expectedIds));
+
+  }
+
+  @Test
+  public void detailExistsTest_03() throws Exception {
+
+    // we are looking for the tickets with primary persons with Budapest addresses (ZIP code 10xx)
+    TableData<TicketDef> tickets = Crud.read(ticketDef)
+        .select(ticketDef.id(), ticketDef.title())
+        .where(ticketDef.primaryPerson().exists(personDef.name().eq("Ond")))
+        .listData();
+
+    /*
+     * Expected: matching persons: 3 matching tickets from 400 series: 403.
+     */
+
+    if (tickets.isEmpty()) {
+      fail("Empty ticket results");
+    }
+    List<Long> expectedIds =
+        Arrays.asList(Long.valueOf(403l));
     List<Long> resultIds =
         tickets.rows().stream().map(r -> r.get(ticketDef.id())).collect(Collectors.toList());
     assertTrue(resultIds.containsAll(expectedIds));

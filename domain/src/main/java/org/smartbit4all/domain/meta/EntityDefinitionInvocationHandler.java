@@ -134,6 +134,10 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
       return method.invoke(this, args);
     }
     if (method.getDeclaringClass().isAssignableFrom(EntitySetup.class)) {
+      // TODO Remove this with meta extension!
+      if (method.getName().equals("getQueryApi")) {
+        return method.invoke(this, args);
+      }
       if (!isInitialized) {
         return method.invoke(this, args);
       } else {
@@ -536,20 +540,27 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
   }
 
   @Override
-  public Expression exists(EntityDefinition fkEntity, Expression expressionOfTarget) {
-    throw new UnsupportedOperationException();
-    // return new ExpressionExists(this, fkEntity, expressionOfTarget);
+  public Expression exists(JoinPath masterJoin, Expression expression) {
+    // In this case we have a reference for the root entity directly
+    return new ExpressionExists(this, masterJoin.first().getSource(), expression,
+        JoinPath.EMPTY, masterJoin);
   }
 
   @Override
-  public Expression exists(Expression expressionOfTarget) {
-    throw new UnsupportedOperationException();
-    // return new ExpressionExists(this, null, expressionOfTarget);
+  public Expression exists(Expression expression) {
+    // Normally the expression is related to the current entity definition so it's the same
+    // expression.
+    return expression;
   }
 
   @Override
   public QueryApi getQueryApi() {
     return ctx.getBean(QueryApi.class);
+  }
+
+  @Override
+  public JoinPath join() {
+    return JoinPath.EMPTY;
   }
 
 }

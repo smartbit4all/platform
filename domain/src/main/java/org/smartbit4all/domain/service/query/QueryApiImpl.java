@@ -1,19 +1,27 @@
 package org.smartbit4all.domain.service.query;
 
+import java.security.InvalidParameterException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import org.smartbit4all.core.SB4CompositeFunction;
 import org.smartbit4all.core.SB4CompositeFunctionImpl;
 import org.smartbit4all.core.SB4Function;
+import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Expression;
 import org.smartbit4all.domain.meta.ExpressionExists;
 import org.smartbit4all.domain.meta.ExpressionIn;
 import org.smartbit4all.domain.meta.ExpressionReplacer;
 import org.smartbit4all.domain.meta.ExpressionVisitor;
 import org.smartbit4all.domain.meta.OperandProperty;
+import org.smartbit4all.domain.meta.Property;
+import org.smartbit4all.domain.meta.PropertyRef;
+import org.smartbit4all.domain.meta.Reference;
 import org.smartbit4all.domain.service.dataset.DataSetApi;
 import org.smartbit4all.domain.service.dataset.SaveInValues;
+import org.smartbit4all.domain.utility.crud.Crud;
+import org.smartbit4all.domain.utility.crud.CrudRead;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -76,7 +84,50 @@ public class QueryApiImpl implements QueryApi {
                 // expression and attach it to the original where instead of the exists itself.
                 replacementMap.put(expression, translatedReferredExpression);
               } else if (expression.getMasterReferencePath() != null) {
+                EntityDefinition contextEntity = expression.getContextEntity();
+                CrudRead<EntityDefinition> preQueryRead = Crud.read(contextEntity);
+                // Add the property to query. We can use the one and only one join property. If we
+                // have more joins then it fails.
+                Reference<?, ?> lastReference = expression.getMasterReferencePath().last();
+                if (lastReference.joins().isEmpty()) {
+                  throw new InvalidParameterException("Missing join for " + lastReference
+                      + ", unable to select for this exists criteria (" + expression + ")");
+                }
+                if (lastReference.joins().size() > 1) {
+                  throw new UnsupportedOperationException(
+                      "The exists is not supporting more then one join. (" + lastReference + ", "
+                          + expression + ")");
+                }
 
+                Property<?> lastForeignKey = lastReference.joins().get(0).getSourceProperty();
+                List<Reference<?, ?>> longestPath =
+                    expression.getMasterReferencePath().getReferencesWithoutLast();
+                String lastForeignKeyQualifiedName =
+                    PropertyRef.constructName(longestPath, lastForeignKey);
+
+                Property<?> lastForeignKeyRef =
+                    contextEntity.getProperty(lastForeignKeyQualifiedName);
+
+                preQueryRead.select(lastForeignKeyRef);
+
+                // We have the base expression for the context entity.
+                Expression contextExpression = expression.getExpression();
+
+                // Find the conjunctive clause
+                // Expression conjunctiveClause =
+                // ExpressionFinder.findLargestConjunctiveClause(where, expression);
+
+                // contextExpression.AND(where.)
+
+
+                preQueryRead.where(contextExpression);
+
+                QueryAndSaveResultAsDataSet preQuery =
+                    new QueryAndSaveResultAsDataSet(dataSetApi, where, expression);
+
+                preQuery.setInput(preQueryRead.getQuery());
+
+                queryNode.preCalls().call(preQuery);
               }
             }
           });

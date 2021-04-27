@@ -1,18 +1,16 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
  * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 package org.smartbit4all.domain.meta;
 
@@ -135,26 +133,61 @@ public interface EntityDefinition extends SB4Service {
   EntityService<?> services();
 
   PropertySet allProperties();
-  
-  List<Reference<?,?>> allReferences();
-  
+
+  List<Reference<?, ?>> allReferences();
+
   /**
    * 
-   * @param expressionOfTarget
+   * This constructs an expression that is related to a detail entity. The master entity expression
+   * must be separated to be able to include it into the detail as additional expression.
+   * 
+   * ExpressionExists ex = personReg.crossingReg().exists(Exp);
+   * 
+   * vehicleDef.crossingDef().exists(ex);
+   * 
+   * ExpressionExists ex = personReg.crossingReg().exists(vehicleDef.crossingDef().join(), Exp);
+   * 
+   * exists(JoinPath<E> joinPath, Exp)
+   * 
+   * vehicleDef.crossingDef()
+   * 
+   * @param masterJoin The {@link JoinPath} from the detail entity to the master entity. The detail
+   *        entity is the first one in the join the master entity is the last one.
+   * @param expression The expression must be related to the detail entity as context.
    * @return Returns an exists expression for the given expression.
    */
-  public Expression exists(EntityDefinition fkEntity, Expression expressionOfTarget);
-  
+  public Expression exists(JoinPath masterJoin, Expression expression);
+
+  /**
+   * If we would like to add an expression for a referred entity. Like we can add
+   * personDef.address().exists(addressDef.zipcode().eq("2030")) that will be equivalent with
+   * personDef.address().zipcode().eq("2030") or even with personDef.zipcode().eq("2030") if we have
+   * ref properties.
+   * 
+   * @param expressionOfTarget
+   * @return
+   */
   public Expression exists(Expression expressionOfTarget);
-  
+
   /**
    * @return The domain of the entity definition.
    */
   String getDomain();
-  
+
   /**
    * @return The URI that refers to this entity definition.
    */
   URI getUri();
+
+  /**
+   * This is the join (the list of {@link Reference}) to access the current entity. If we ask it
+   * from an entity definition directly then it will be empty. Like personDef.join(). But if we use
+   * the dynamic references an entity have then we will have the join path with the list of
+   * references to access the final entity. Like personDef.address().settlement().join() returns the
+   * two reference in proper order.
+   * 
+   * @return
+   */
+  JoinPath join();
 
 }

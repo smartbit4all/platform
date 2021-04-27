@@ -3,7 +3,9 @@ package org.smartbit4all.domain.meta;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Finds an expression
@@ -19,14 +21,30 @@ public class ExpressionFinder extends ExpressionVisitor {
 
   public static class FoundExpression {
 
-    public ExpressionContainer parent;
+    private ExpressionContainer parent;
 
-    public Expression expression;
+    private Expression expression;
 
-    public FoundExpression(ExpressionContainer parent, Expression expression) {
+    private List<Expression> path;
+
+    public FoundExpression(ExpressionContainer parent, Expression expression,
+        List<Expression> path) {
       super();
       this.parent = parent;
       this.expression = expression;
+      this.path = path;
+    }
+
+    public final ExpressionContainer getParent() {
+      return parent;
+    }
+
+    public final Expression getExpression() {
+      return expression;
+    }
+
+    public final List<Expression> getPath() {
+      return path;
     }
 
   }
@@ -38,11 +56,12 @@ public class ExpressionFinder extends ExpressionVisitor {
     this.checkExpression = checkExpression;
   }
 
-  private void addResult(ExpressionContainer parent, Expression expression) {
+  private void addResult(ExpressionContainer parent, Expression expression, List<Expression> list) {
     if (results.isEmpty()) {
       results = new ArrayList<>();
     }
-    results.add(new FoundExpression(parent, expression));
+    results
+        .add(new FoundExpression(parent, expression, list.stream().collect(Collectors.toList())));
   }
 
   @Override
@@ -87,7 +106,7 @@ public class ExpressionFinder extends ExpressionVisitor {
 
   private final void doVisit(Expression expression) {
     if (checkExpression.test(expression)) {
-      addResult(getParent(), expression);
+      addResult(getParent(), expression, getExpressionStack());
     }
   }
 
@@ -95,6 +114,37 @@ public class ExpressionFinder extends ExpressionVisitor {
     ExpressionFinder expressionFinder = new ExpressionFinder(tester);
     exp.accept(expressionFinder);
     return expressionFinder.getResults();
+  }
+
+  /**
+   * This utility is searching for the largest conjunctive clause that contains the exp expression.
+   * We are looking for the first OR clause and we can't find any then we return the root.
+   * 
+   * @param root The root expression where we can navigate.
+   * @param exp The expression that we are looking for.
+   * @return The Expression that is the largest clause that is restrictive all the expression is
+   *         related with AND.
+   */
+  public static final Expression findLargestConjunctiveClause(Expression root, Expression exp) {
+    ListIterator<FoundExpression> find = ExpressionFinder.find(root, e -> e == exp).listIterator();
+    if (find.hasNext()) {
+      FoundExpression foundExpression = find.next();
+      ListIterator<Expression> iterPath =
+          foundExpression.getPath().listIterator(foundExpression.getPath().size());
+      Expression candidate = exp;
+      while (iterPath.hasPrevious()) {
+        Expression expression = iterPath.previous();
+        if (expression instanceof ExpressionClause) {
+          // If we have an OR then we return the candidate.
+          if (((ExpressionClause) expression).getOperator() == BooleanOperator.OR) {
+            return candidate;
+          }
+        }
+        candidate = expression;
+      }
+      return candidate;
+    }
+    return exp;
   }
 
   public final List<FoundExpression> getResults() {

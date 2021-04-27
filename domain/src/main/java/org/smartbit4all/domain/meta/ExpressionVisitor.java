@@ -14,6 +14,9 @@
  ******************************************************************************/
 package org.smartbit4all.domain.meta;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * 
  * This visitor is created for the {@link Expression} to be able to expand the process mechanisms
@@ -30,7 +33,17 @@ package org.smartbit4all.domain.meta;
  */
 public abstract class ExpressionVisitor {
 
+  /**
+   * If we enter an {@link ExpressionClause} or an {@link ExpressionBracket} then this will be the
+   * parent.
+   */
   private ExpressionContainer parent;
+
+  /**
+   * Contains the path until we reach the currently visited expression. At the first level of visit
+   * we will get an empty list. The first element is the root expression the last is the parent.
+   */
+  private final List<Expression> expressionStack = new ArrayList<>();
 
   protected final ExpressionContainer getParent() {
     return parent;
@@ -40,6 +53,20 @@ public abstract class ExpressionVisitor {
     ExpressionContainer prevParent = this.parent;
     this.parent = parent;
     return prevParent;
+  }
+
+  protected List<Expression> getExpressionStack() {
+    return expressionStack;
+  }
+
+  final void addToStack(Expression exp) {
+    expressionStack.add(exp);
+  }
+
+  final void removeFromStack() {
+    if (!expressionStack.isEmpty()) {
+      expressionStack.remove(expressionStack.size() - 1);
+    }
   }
 
   /**

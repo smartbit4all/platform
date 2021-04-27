@@ -1,29 +1,23 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
  * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 package org.smartbit4all.domain.meta;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
-import org.smartbit4all.domain.data.DataRow;
-import org.smartbit4all.domain.meta.Reference.Join;
+import org.smartbit4all.core.utility.StringConstant;
 
 /**
  * This property refers another one that is owned by a related entity. It contains the list of
@@ -35,76 +29,6 @@ import org.smartbit4all.domain.meta.Reference.Join;
  */
 public class PropertyRef<T> extends Property<T> {
 
-
-  /**
-   * JoinPath represents all the information which is used for handling a referenced property.
-   * Typically it includes the list of references leading to the referred property.
-   * 
-   * @author Attila Mate
-   *
-   */
-  public static class JoinPath {
-
-    /**
-     * The join path from the references between the entities.
-     */
-    List<Reference<?, ?>> references = Collections.emptyList();
-
-    public JoinPath(List<Reference<?, ?>> references) {
-      this.references = references;
-    }
-
-    public Reference<?, ?> last() {
-      return references.size() == 0 ? null : references.get(references.size() - 1);
-    }
-
-    /**
-     * Creates an expression representing join expression based on last reference in join path.
-     * 
-     * @param record Record containing targetProperty values on last reference in join path.
-     * @return
-     */
-    public Expression joinExpression(DataRow record) {
-      ExpressionClause andClause = Expression.createAndClause();
-      Reference<?, ?> lastRef = last();
-      if (references.size() == 1) {
-        for (Join<?> join : lastRef.joins()) {
-          andClause.add(join.eq(record));
-        }
-      } else {
-        List<Reference<?, ?>> joinPath = references.subList(0, references.size() - 1);
-        for (Join<?> join : lastRef.joins()) {
-          andClause.add(join.eq(joinPath, record));
-        }
-      }
-      return andClause;
-    }
-
-    /**
-     * Creates an expression representing join expression based on last reference in join path.
-     * 
-     * @param records Collection of Records containing targetProperty values on last reference in
-     *        join path.
-     * @return
-     */
-    public Expression joinExpression(Collection<? extends DataRow> records) {
-      Objects.requireNonNull(records);
-      ExpressionClause andClause = Expression.createAndClause();
-      Reference<?, ?> lastRef = last();
-      if (references.size() == 1) {
-        for (Join<?> join : lastRef.joins()) {
-          andClause.add(join.in(records));
-        }
-      } else {
-        List<Reference<?, ?>> joinPath = references.subList(0, references.size() - 1);
-        for (Join<?> join : lastRef.joins()) {
-          andClause.add(join.in(joinPath, records));
-        }
-      }
-      return andClause;
-    }
-
-  }
 
   /**
    * The join path leading to the referred property. If the referred property is also a
@@ -158,7 +82,7 @@ public class PropertyRef<T> extends Property<T> {
         .toArray(new String[joinPath.size()]);
     return constructName(joinPathNames, referredProperty.getName());
   }
-  
+
   public static final String constructName(String[] joinPath,
       String referredPropertyName) {
     /*
@@ -166,8 +90,8 @@ public class PropertyRef<T> extends Property<T> {
      * property at the end of the path.
      */
     StringBuilder sb = new StringBuilder();
-    sb.append(String.join(".", joinPath));
-    sb.append(".");
+    sb.append(String.join(StringConstant.DOT, joinPath));
+    sb.append(joinPath == null || joinPath.length == 0 ? StringConstant.EMPTY : StringConstant.DOT);
     sb.append(referredPropertyName);
     return sb.toString();
   }

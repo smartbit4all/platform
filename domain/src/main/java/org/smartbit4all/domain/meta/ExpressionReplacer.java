@@ -19,10 +19,10 @@ public final class ExpressionReplacer {
     List<FoundExpression> foundList =
         ExpressionFinder.find(fullExpression, (Expression e) -> e == from);
     for (FoundExpression foundExpression : foundList) {
-      if (foundExpression.parent == null) {
+      if (foundExpression.getParent() == null) {
         return to;
       }
-      foundExpression.parent.replace(from, to);
+      foundExpression.getParent().replace(from, to);
     }
     return fullExpression;
   }

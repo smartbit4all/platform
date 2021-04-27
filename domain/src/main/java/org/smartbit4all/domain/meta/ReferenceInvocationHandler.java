@@ -1,18 +1,16 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
  * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 package org.smartbit4all.domain.meta;
 
@@ -99,6 +97,32 @@ public class ReferenceInvocationHandler implements InvocationHandler {
       }
       currentJoin.remove();
       return result;
+    }
+    JoinPath joinPathObj = new JoinPath(joinPath);
+    if (invokeResult instanceof JoinPath) {
+      currentJoin.remove();
+      return joinPathObj;
+    }
+    if (invokeResult instanceof Expression && method.getName().equals("exists")) {
+      // Might be some more strict check!
+      currentJoin.remove();
+      if (invokeResult instanceof ExpressionExists) {
+        // We have a detail exists where the reference might be updated with the current join path.
+        ((ExpressionExists) invokeResult).setReferencePath(joinPathObj);
+      } else {
+        // We have an exists for a referred entity. We might add the join path and create an exist.
+        if (joinPath.isEmpty()) {
+          return invokeResult;
+        }
+        EntityDefinition rootEntity = joinPathObj.firstEntity();
+        EntityDefinition contextEntity = joinPathObj.lastEntity();
+        if (rootEntity == null || contextEntity == null) {
+          return invokeResult;
+        }
+
+        return new ExpressionExists(rootEntity, contextEntity, (Expression) invokeResult,
+            joinPathObj);
+      }
     }
     if (!(invokeResult instanceof EntityDefinition)) {
       // only EntityDefinition result would be able to continue chain -> break it

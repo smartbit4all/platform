@@ -42,6 +42,7 @@ import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Expression;
 import org.smartbit4all.domain.meta.ExpressionClause;
 import org.smartbit4all.domain.meta.Property;
+import org.smartbit4all.domain.meta.PropertyRef;
 import org.smartbit4all.domain.service.entity.EntityManager;
 import org.smartbit4all.domain.service.transfer.TransferService;
 import org.smartbit4all.domain.service.transfer.convert.Converter;
@@ -59,29 +60,20 @@ import org.springframework.stereotype.Service;
 public class Filters {
 
   public static enum OperationCode {
-    DATE_INTERVAL("date.interval"),
-    DATE_INTERVAL_CB("date.interval.cb"),
-    DATE_EQ("date.eq"),
-    DATE_TIME_INTERVAL("date.time.interval"),
-    DATE_TIME_INTERVAL_CB("date.time.interval.cb"),
-    DATE_TIME_EQ("date.time.eq"),
-    TXT_EQ("txt.eq"),
-    TXT_LIKE("txt.like"),
-    TXT_LIKE_MIN("txt.like.min"),
-    MULTI_SEL("multi.eq"),
-    COMBO_SEL("combo.eq"),
-    DET_TXT_EQ("detail.txt.eq"),
-    DET_TXT_LIKE("detail.txt.like"),
-    DET_TXT_LIKE_MIN("detail.txt.like.min"),
-    DET_MULTI_SEL("detail.multi.eq"),
-    DET_COMBO_SEL("detail.combo.eq");
-    
+    DATE_INTERVAL("date.interval"), DATE_INTERVAL_CB("date.interval.cb"), DATE_EQ(
+        "date.eq"), DATE_TIME_INTERVAL("date.time.interval"), DATE_TIME_INTERVAL_CB(
+            "date.time.interval.cb"), DATE_TIME_EQ("date.time.eq"), TXT_EQ("txt.eq"), TXT_LIKE(
+                "txt.like"), TXT_LIKE_MIN("txt.like.min"), MULTI_SEL(
+                    "multi.eq"), COMBO_SEL("combo.eq"), DET_TXT_EQ("detail.txt.eq"), DET_TXT_LIKE(
+                        "detail.txt.like"), DET_TXT_LIKE_MIN("detail.txt.like.min"), DET_MULTI_SEL(
+                            "detail.multi.eq"), DET_COMBO_SEL("detail.combo.eq");
+
     private String value;
-    
+
     private OperationCode(String value) {
       this.value = value;
     }
-    
+
     public String getValue() {
       return value;
     }
@@ -94,7 +86,7 @@ public class Filters {
           .filter(c -> c.getValue().equals(operationCode)).findFirst().orElse(null);
     }
   }
-  
+
   private static enum TimeFilterOptions {
     LAST_WEEK, THIS_MONTH, LAST_MONTH, YESTERDAY, TODAY, OTHER, LAST_FIVE_YEARS
   }
@@ -105,36 +97,37 @@ public class Filters {
   public static final String YESTERDAY = "statistics.filter.time.yesterday";
   public static final String TODAY = "statistics.filter.time.today";
   public static final String OTHER = "OTHER";
-  
-  
+
+
   private static final Map<OperationCode, Function<FilterField, Expression>> expressionFactoryByOperatationCodes =
       new HashMap<>();
-  
+
   {
-    expressionFactoryByOperatationCodes.put(DATE_INTERVAL,      this::createDateIntervalClause);
+    expressionFactoryByOperatationCodes.put(DATE_INTERVAL, this::createDateIntervalClause);
     expressionFactoryByOperatationCodes.put(DATE_TIME_INTERVAL, this::createDateIntervalClause);
-    expressionFactoryByOperatationCodes.put(DATE_INTERVAL_CB,   this::createDateIntervalCbClause);
-    expressionFactoryByOperatationCodes.put(DATE_TIME_INTERVAL_CB, this::createDateIntervalCbClause);
-    expressionFactoryByOperatationCodes.put(DATE_EQ,            this::createDateEqClause);
-    expressionFactoryByOperatationCodes.put(DATE_TIME_EQ,       this::createDateEqClause);
-    expressionFactoryByOperatationCodes.put(TXT_EQ,             this::createTxtEqClause);
-    expressionFactoryByOperatationCodes.put(TXT_LIKE,           this::createTxtLikeClause);
-    expressionFactoryByOperatationCodes.put(TXT_LIKE_MIN,       this::createTxtLikeMinClause);
-    expressionFactoryByOperatationCodes.put(MULTI_SEL,          this::createMultiSelClause);
-    expressionFactoryByOperatationCodes.put(COMBO_SEL,          this::createComboSelClause);
-    
+    expressionFactoryByOperatationCodes.put(DATE_INTERVAL_CB, this::createDateIntervalCbClause);
+    expressionFactoryByOperatationCodes.put(DATE_TIME_INTERVAL_CB,
+        this::createDateIntervalCbClause);
+    expressionFactoryByOperatationCodes.put(DATE_EQ, this::createDateEqClause);
+    expressionFactoryByOperatationCodes.put(DATE_TIME_EQ, this::createDateEqClause);
+    expressionFactoryByOperatationCodes.put(TXT_EQ, this::createTxtEqClause);
+    expressionFactoryByOperatationCodes.put(TXT_LIKE, this::createTxtLikeClause);
+    expressionFactoryByOperatationCodes.put(TXT_LIKE_MIN, this::createTxtLikeMinClause);
+    expressionFactoryByOperatationCodes.put(MULTI_SEL, this::createMultiSelClause);
+    expressionFactoryByOperatationCodes.put(COMBO_SEL, this::createComboSelClause);
+
     expressionFactoryByOperatationCodes.put(DET_TXT_EQ,
-                                            createDetExpression(this::createTxtEqClause));
+        createDetExpression(this::createTxtEqClause));
     expressionFactoryByOperatationCodes.put(DET_TXT_LIKE,
-                                            createDetExpression(this::createTxtLikeClause));
+        createDetExpression(this::createTxtLikeClause));
     expressionFactoryByOperatationCodes.put(DET_TXT_LIKE_MIN,
-                                            createDetExpression(this::createTxtLikeMinClause));
+        createDetExpression(this::createTxtLikeMinClause));
     expressionFactoryByOperatationCodes.put(DET_MULTI_SEL,
-                                            createDetExpression(this::createMultiSelClause));
+        createDetExpression(this::createMultiSelClause));
     expressionFactoryByOperatationCodes.put(DET_COMBO_SEL,
-                                            createDetExpression(this::createComboSelClause));
+        createDetExpression(this::createComboSelClause));
   }
-  
+
   // -----------------------------------------------------
 
   @Autowired
@@ -181,7 +174,7 @@ public class Filters {
           subGroup.getType() == FilterGroupType.AND ? Expression.createAndClause()
               : Expression.createOrClause();
       recurseGroups(subGroup, subGroupClause);
-      if(!subGroupClause.expressions().isEmpty()) {
+      if (!subGroupClause.expressions().isEmpty()) {
         groupClause.add(subGroupClause.BRACKET());
       }
     }
@@ -203,10 +196,10 @@ public class Filters {
     Expression expressionOfField = null;
     String operationCode = filterField.getOperationCode();
     OperationCode opertaionCodeEnum = OperationCode.getEnumInstance(operationCode);
-    
+
     Function<FilterField, Expression> expressionFactory =
         expressionFactoryByOperatationCodes.get(opertaionCodeEnum);
-    if(expressionFactory != null) {
+    if (expressionFactory != null) {
       expressionOfField = expressionFactory.apply(filterField);
     }
 
@@ -250,15 +243,20 @@ public class Filters {
     }
     return expressionOfField;
   }
-  
-  private Function<FilterField, Expression> createDetExpression(Function<FilterField, Expression> originalFactory) {
+
+  private Function<FilterField, Expression> createDetExpression(
+      Function<FilterField, Expression> originalFactory) {
     return filterField -> {
       Expression expressionOfField = null;
       Expression expressionOfDetail = originalFactory.apply(filterField);
-      if(expressionOfDetail != null) {
+      if (expressionOfDetail != null) {
         EntityDefinition masterEntityDef = getEntityDef(filterField.getPropertyUri2());
-        EntityDefinition fkEntityDef = getEntityDef(filterField.getPropertyUri3());
-        expressionOfField = masterEntityDef.exists(fkEntityDef, expressionOfDetail);
+        // TODO Use a master reference path uri and use EntityManager.getJoinPath(URI). 
+        Property<?> fkProp = getProperty(filterField.getPropertyUri3());
+        if (fkProp instanceof PropertyRef<?>) {
+          expressionOfField =
+              masterEntityDef.exists(((PropertyRef) fkProp).getJoinPath(), expressionOfDetail);
+        }
       }
       return expressionOfField;
     };
@@ -346,7 +344,7 @@ public class Filters {
     }
     return property;
   }
-  
+
   private EntityDefinition getEntityDef(URI entityDefUri) {
     Objects.requireNonNull(entityDefUri, "The 'entityDefUri' parameter can not be null!");
     EntityDefinition entityDef = entityManager.definition(entityDefUri);

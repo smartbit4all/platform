@@ -64,9 +64,8 @@ public class CrudRead<E extends EntityDefinition> implements Query<E> {
     if (result() == null) {
       throw new IllegalStateException(
           "CrudQuery execute can not be called without the result set! Maybe you"
-              + " want to use the executeIntoTableData() function instead!");
+              + " want to use the listData() or list(BeanClass) function instead!");
     }
-    query.from(entityDef);
 
     QueryApi queryApi = null;
     if (entityDef instanceof EntitySetup) {
@@ -74,11 +73,16 @@ public class CrudRead<E extends EntityDefinition> implements Query<E> {
     }
 
     if (queryApi == null) {
-      query.execute();
+      getQuery().execute();
     } else {
-      queryApi.execute(queryApi.prepare(query));
+      queryApi.execute(queryApi.prepare(getQuery()));
     }
 
+  }
+
+  public Query<E> getQuery() {
+    query.from(entityDef);
+    return query;
   }
 
   /**
@@ -89,12 +93,7 @@ public class CrudRead<E extends EntityDefinition> implements Query<E> {
    */
   @Deprecated
   public TableData<E> executeIntoTableData() throws Exception {
-    if (query.result() == null) {
-      TableData<E> result = new TableData<>(entityDef);
-      query.into(result);
-    }
-    this.execute();
-    return query.result();
+    return listData();
   }
 
   public Optional<DataRow> firstRow() throws Exception {
@@ -395,12 +394,18 @@ public class CrudRead<E extends EntityDefinition> implements Query<E> {
 
   @Override
   public TableData<E> listData() throws Exception {
-    return query.listData();
+    if (query.result() == null) {
+      TableData<E> result = new TableData<>(entityDef);
+      query.into(result);
+    }
+    execute();
+    return query.result();
   }
 
   @Override
   public <B> List<B> list(Class<B> beanClass) throws Exception {
-    return query.list(beanClass);
+    TableData<E> tableData = listData();
+    return tableData.asList(beanClass);
   }
 
 }

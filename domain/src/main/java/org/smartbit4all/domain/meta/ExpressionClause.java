@@ -97,7 +97,9 @@ public final class ExpressionClause extends Expression implements ExpressionCont
     // If we have only one expression then we delegate simply.
     if (expressions.size() == 1) {
       ExpressionContainer prev = visitor.setParent(this);
+      visitor.addToStack(this);
       expressions.get(0).accept(visitor);
+      visitor.removeFromStack();
       visitor.setParent(prev);
       return;
     }
@@ -110,7 +112,9 @@ public final class ExpressionClause extends Expression implements ExpressionCont
       }
       first = false;
       ExpressionContainer prev = visitor.setParent(this);
+      visitor.addToStack(this);
       expression.accept(visitor);
+      visitor.removeFromStack();
       // Restore the previous.
       visitor.setParent(prev);
     }
