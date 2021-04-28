@@ -1,6 +1,27 @@
 #
 # https://help.github.com/articles/dealing-with-line-endings/
 #
-# These are explicitly windows files and should use crlf
-*.bat           text eol=crlf
 
+# Set the default behavior, in case people don't have core.autocrlf set to true.
+* text=auto
+
+# Explicitly declare text files you want to always be normalized and converted
+# to native line endings on checkout.
+*.java text
+*.properties text
+*.xml text
+*.di text
+*.uml text
+*.notation text
+*.yaml text
+*.md text
+*.gradle text
+
+# Declare files that will always have CRLF line endings on checkout.
+*.bat text eol=crlf
+*.ps text eol=crlf
+
+# Denote all files that are truly binary and should not be modified.
+*.png binary
+*.jpg binary
+*.jar binary
