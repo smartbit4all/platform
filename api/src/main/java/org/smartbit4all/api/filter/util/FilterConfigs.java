@@ -188,6 +188,15 @@ public abstract class FilterConfigs {
       return this;
     }
     
+    public ConfigFieldBuilder addOperationDetailMultiSelect(Property<?> propertyOfFilter,
+        EntityDefinition masterEntity, Property<?> fkEntity, String possibleValueCode) {
+      String operationCodeValue = OperationCode.DET_MULTI_SEL.getValue();
+      ConfigOperationBuilder operationBuilder = createDetailOperationBuilder(operationCodeValue,
+          propertyOfFilter, masterEntity, fkEntity, possibleValueCode);
+      configOperationBuilders.add(operationBuilder);
+      return this;
+    }
+    
     public ConfigFieldBuilder addOperationComboSelect(Property<?> property, String possibleValueCode) {
       String operationCodeValue = OperationCode.COMBO_SEL.getValue();
       URI possibleValuesUri = ValueUris.createPossibleValueUri(possibleValueCode, null);
@@ -195,6 +204,39 @@ public abstract class FilterConfigs {
           createOperationBuilder(operationCodeValue, property, possibleValuesUri);
       configOperationBuilders.add(comboSelectOperationBuilder);
       return this;
+    }
+    
+    public ConfigFieldBuilder addOperationDetailComboSelect(Property<?> propertyOfFilter,
+        EntityDefinition masterEntity, Property<?> fkEntity, String possibleValueCode) {
+      String operationCodeValue = OperationCode.DET_COMBO_SEL.getValue();
+      ConfigOperationBuilder operationBuilder = createDetailOperationBuilder(operationCodeValue,
+          propertyOfFilter, masterEntity, fkEntity, possibleValueCode);
+      configOperationBuilders.add(operationBuilder);
+      return this;
+    }
+    
+    private ConfigOperationBuilder createDetailOperationBuilder(String operationCodeValue,
+        Property<?> propertyOfFilter, EntityDefinition masterEntity, Property<?> fkEntity,
+        String possibleValueCode) {
+      ConfigOperationBuilder operationBuilder = new ConfigOperationBuilder(
+          UUID.randomUUID().toString(), operationCodeValue, this);
+      
+      String operationCodeWithoutDet = getDetailOperationCode(operationCodeValue);
+      if(possibleValueCode != null) {
+        URI possibleValuesUri = ValueUris.createPossibleValueUri(possibleValueCode, null);
+        operationBuilder.possibleValuesUri(possibleValuesUri);
+      }
+      operationBuilder.filterView(FILTEROP_PREFIX + operationCodeWithoutDet);
+      operationBuilder.labelCode(operationCodeWithoutDet);
+
+      URI propertyUri1 = propertyOfFilter == null ? null : propertyOfFilter.getUri();
+      URI propertyUri2 = masterEntity == null ? null : masterEntity.getUri();
+      URI propertyUri3 = fkEntity == null ? null : fkEntity.getUri();
+      operationBuilder.propertyUri1(propertyUri1);
+      operationBuilder.propertyUri2(propertyUri2);
+      operationBuilder.propertyUri3(propertyUri3);
+
+      return operationBuilder;
     }
     
     public ConfigFieldBuilder addOperationDateEquals(Property<?> property, String possibleValueCode) {
@@ -243,23 +285,17 @@ public abstract class FilterConfigs {
     }
     
     public ConfigFieldBuilder addOperationDetailTextLikeMin(Property<?> propertyOfFilter,
-        EntityDefinition masterEntity, EntityDefinition fkEntity, String possibleValueCode) {
+        EntityDefinition masterEntity, Property<?> fkEntity) {
       String operationCodeValue = OperationCode.DET_TXT_LIKE_MIN.getValue();
-      String operationCodeWithoutDet = operationCodeValue.substring(operationCodeValue.indexOf(".") + 1);
-      URI possibleValuesUri = null;
-      URI propertyUri1 = propertyOfFilter == null ? null : propertyOfFilter.getUri();
-      URI propertyUri2 = propertyOfFilter == null ? null : masterEntity.getUri();
-      URI propertyUri3 = propertyOfFilter == null ? null : fkEntity.getUri();
-      ConfigOperationBuilder detailTextLikeMinOperationBuilder = new ConfigOperationBuilder(
-          UUID.randomUUID().toString(), operationCodeValue, this);
-      detailTextLikeMinOperationBuilder.propertyUri1(propertyUri1);
-      detailTextLikeMinOperationBuilder.propertyUri2(propertyUri2);
-      detailTextLikeMinOperationBuilder.propertyUri3(propertyUri3);
-      detailTextLikeMinOperationBuilder.possibleValuesUri(possibleValuesUri);
-      detailTextLikeMinOperationBuilder.filterView(FILTEROP_PREFIX + operationCodeWithoutDet);
-      detailTextLikeMinOperationBuilder.labelCode(operationCodeWithoutDet);
+      ConfigOperationBuilder detailTextLikeMinOperationBuilder = createDetailOperationBuilder(
+          operationCodeValue, propertyOfFilter, masterEntity, fkEntity, null); 
       configOperationBuilders.add(detailTextLikeMinOperationBuilder);
       return this;
+    }
+    
+    private String getDetailOperationCode(String opCode) {
+      String operationCode = opCode.substring(opCode.indexOf(".") + 1);
+      return operationCode;
     }
     
     public ConfigOperationBuilder createOperationBuilder(String operationCodeValue,
