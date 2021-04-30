@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.types.binarydata.BinaryData;
 
-class GroupEntry {
+public class GroupEntry {
 
   private static final Logger log = LoggerFactory.getLogger(GroupEntry.class);
 

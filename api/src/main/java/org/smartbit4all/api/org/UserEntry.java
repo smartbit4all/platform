@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.types.binarydata.BinaryData;
 
-class UserEntry {
+public class UserEntry {
 
   private static final Logger log = LoggerFactory.getLogger(UserEntry.class);
 
