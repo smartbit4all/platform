@@ -1,5 +1,8 @@
 package org.smartbit4all.sql.exists;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -21,9 +24,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.jdbc.Sql;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 @SpringBootTest(classes = {
     ExistTestConfig.class,
@@ -212,6 +212,32 @@ public class SQLExistsTests {
           resultData.rows().stream().map(r -> r.get(personDef.id())).collect(Collectors.toList());
       assertTrue(resultIds.containsAll(Arrays.asList(Long.valueOf(5l), Long.valueOf(6l))));
     }
+
+  }
+  
+  //@Test TODO fix the implementation
+  public void noDetailResultTest() throws Exception {
+
+    // we are looking for the persons with zip code that is not in the db
+    TableData<PersonDef> tickets = Crud.read(personDef)
+        .select(personDef.id(), personDef.name())
+        .where(personDef.exists(addressDef.person().join(), addressDef.zip().like("xxx%")))
+        .listData();
+
+    assertTrue(tickets.isEmpty());
+
+  }
+  
+  //@Test TODO fix the implementation
+  public void withNullDetailResultTest() throws Exception {
+
+    // we are looking for the persons with zip, but there are matching zips with no person set.
+    TableData<PersonDef> tickets = Crud.read(personDef)
+        .select(personDef.id(), personDef.name())
+        .where(personDef.exists(addressDef.person().join(), addressDef.zip().like("60%")))
+        .listData();
+
+    assertTrue(tickets.size() >= 3);
 
   }
 
