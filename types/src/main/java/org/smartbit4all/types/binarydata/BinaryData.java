@@ -1,18 +1,16 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
  * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 package org.smartbit4all.types.binarydata;
 
@@ -21,9 +19,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.google.common.io.ByteStreams;
 
 /**
  * The BinaryData is responsible for Binary Large Objects that could be stored in temporary files
@@ -36,6 +36,8 @@ import org.slf4j.LoggerFactory;
  * @author Peter Boros
  */
 public class BinaryData {
+
+  private static final int MEMORY_LIMIT = 8 * 1024;
 
   private static final Logger log = LoggerFactory.getLogger(BinaryData.class);
 
@@ -54,7 +56,7 @@ public class BinaryData {
    * 
    * TODO Implement with PhantomReference and Spring TaskExecutor.
    */
-  //private boolean deleteDataFile = true;
+  // private boolean deleteDataFile = true;
 
   /**
    * The number of bytes stored in the binary data.
@@ -133,6 +135,66 @@ public class BinaryData {
   }
 
 
+  public static class AutoCloseInputStream extends InputStream {
+
+    private InputStream is = null;
+
+    public AutoCloseInputStream(InputStream is) {
+      super();
+      this.is = is;
+    }
+
+    public InputStream getInnerStream() {
+      return is;
+    }
+
+    @Override
+    public int read() throws IOException {
+      if (is == null) {
+        return -1;
+      }
+      int result = is.read();
+      if (result == -1) {
+        is.close();
+        is = null;
+      }
+      return result;
+    }
+
+    @Override
+    public int available() throws IOException {
+      return is != null ? is.available() : 0;
+    }
+
+    @Override
+    public void close() throws IOException {
+      if (is != null) {
+        is.close();
+        is = null;
+      }
+    }
+
+    @Override
+    public synchronized void mark(int readlimit) {
+      if (is != null) {
+        is.mark(readlimit);
+      }
+    }
+
+    @Override
+    public boolean markSupported() {
+      return is != null ? is.markSupported() : false;
+    }
+
+    @Override
+    public synchronized void reset() throws IOException {
+      if (is != null) {
+        is.read();
+      }
+    }
+
+  }
+
 
   /**
    * If we would like to read the whole binary content then we can do this using this input stream.
@@ -145,7 +207,7 @@ public class BinaryData {
       return new ByteArrayInputStream(data);
     } else {
       try {
-        return new FileInputStream(dataFile);
+        return new AutoCloseInputStream(new FileInputStream(dataFile));
       } catch (FileNotFoundException e) {
         log.error(
             "The BinaryData doesn't have the temp file with the content. Assume that the content is empty!",
@@ -202,6 +264,27 @@ public class BinaryData {
 
   public File getDataFile() {
     return dataFile;
+  }
+
+  /**
+   * Constructs a {@link BinaryData} instance by copying the content.
+   * 
+   * @param is The input stream.
+   * @return Null of the is is null or not readable for any reason.
+   */
+  public static final BinaryData of(InputStream is) {
+    if (is == null) {
+      return null;
+    }
+    BinaryDataOutputStream bdos;
+    try {
+      bdos = new BinaryDataOutputStream(MEMORY_LIMIT);
+      ByteStreams.copy(is, bdos);
+      return bdos.data();
+    } catch (Exception e) {
+      log.error("message", e);
+      return null;
+    }
   }
 
 }

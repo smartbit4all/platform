@@ -1,27 +1,25 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
  * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 package org.smartbit4all.types.binarydata;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import org.junit.jupiter.api.Test;
-import org.smartbit4all.types.binarydata.BinaryData;
-import org.smartbit4all.types.binarydata.BinaryDataOutputStream;
+import org.smartbit4all.types.binarydata.BinaryData.AutoCloseInputStream;
+import com.google.common.io.ByteStreams;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class BinaryDataTest {
 
@@ -79,12 +77,18 @@ class BinaryDataTest {
 
     assertEquals(length, data.length());
 
-    BufferedInputStream oSBuf = new BufferedInputStream(data.inputStream());
-//
-//    String actual = new String(oSBuf.readAllBytes());
-//    oSBuf.close();
-//
-//    assertEquals(value1 + value2 + value3, actual);
+    InputStream inputStream = data.inputStream();
+    byte[] byteArray = ByteStreams.toByteArray(inputStream);
+
+
+    if (inputStream instanceof AutoCloseInputStream) {
+      assertEquals(null, ((AutoCloseInputStream) inputStream).getInnerStream(),
+          "The inner stream must be closed after reading the whole content.");
+    }
+
+    String actual = new String(byteArray);
+
+    assertEquals(value1 + value2 + value3, actual);
   }
 
 }
