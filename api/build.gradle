@@ -2,6 +2,7 @@ import groovy.io.FileType
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
+	id 'java-test-fixtures'
 	id "org.openapi.generator" version "4.3.1"
 }
 
