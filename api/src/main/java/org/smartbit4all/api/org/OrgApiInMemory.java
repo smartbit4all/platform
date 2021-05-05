@@ -34,8 +34,8 @@ public class OrgApiInMemory extends OrgApiImpl {
   }
 
   @Override
-  protected Group createGroup(String name) {
-    return new Group().name(name).uri(URI.create("userGroup:/" + name));
+    protected Group localGroupOf(String groupName) {
+    return new Group().name(groupName).uri(URI.create("local:/group#" + groupName));
   }
 
   public User addTestUser(String name, String userName, String email) {
@@ -47,7 +47,7 @@ public class OrgApiInMemory extends OrgApiImpl {
   }
 
   private User createUser(String name, String userName, String email) {
-    URI userUri = URI.create("user:/" + userName);
+    URI userUri = URI.create("local:/user#" + userName);
 
     return new User().uri(userUri).name(name).username(userName).email(email);
   }
@@ -86,7 +86,7 @@ public class OrgApiInMemory extends OrgApiImpl {
   }
 
   public Group addTestGroup(String name, User... users) {
-    Group newGroup = createGroup(name);
+    Group newGroup = localGroupOf(name);
 
     for (User user : users) {
       newGroup.addChildrenItem(user.getUri());
@@ -102,7 +102,7 @@ public class OrgApiInMemory extends OrgApiImpl {
     List<Group> result = groups.values().stream().filter(group -> group.getChildren().contains(userUri))
         .collect(Collectors.toList());
     
-    result.addAll(getAdditionalVirtualGroups(result));
+    result.addAll(getAdditionalLocalGroups(result));
     return result;
   }
 

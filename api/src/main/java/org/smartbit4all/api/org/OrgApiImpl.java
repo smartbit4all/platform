@@ -28,15 +28,15 @@ public abstract class OrgApiImpl implements OrgApi {
         if (propertySource instanceof EnumerablePropertySource) {
           for (String key : ((EnumerablePropertySource) propertySource).getPropertyNames()) {
             if (key.startsWith(SUBGROUP_PREFIX)) {
-              String groupName = key.substring(SUBGROUP_PREFIX.length());
+              String groupId = key.substring(SUBGROUP_PREFIX.length());
               List<Group> groupsList = new ArrayList<Group>();
               String property = (String) propertySource.getProperty(key);
               String[] groups = property.split(",");
               for (String group : groups) {
-                groupsList.add(createGroup(group));
+                groupsList.add(localGroupOf(group));
               }
 
-              inheritedGroups.put(groupName, groupsList);
+              inheritedGroups.put(groupId, groupsList);
             }
           }
         }
@@ -44,12 +44,12 @@ public abstract class OrgApiImpl implements OrgApi {
     }
   }
 
-  protected abstract Group createGroup(String group);
+  protected abstract Group localGroupOf(String group);
   
-  protected Set<Group> getAdditionalVirtualGroups(List<Group> groups) {
+  protected Set<Group> getAdditionalLocalGroups(List<Group> groups) {
     Set<Group> additionalGroups = new HashSet<>();
     for (Group group : groups) {
-      List<Group> virtualGroups = inheritedGroups.get(group.getName());
+      List<Group> virtualGroups = inheritedGroups.get(group.getUri().getFragment());
       if (virtualGroups != null) {
         additionalGroups.addAll(virtualGroups);
       }

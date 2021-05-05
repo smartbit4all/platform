@@ -16,17 +16,22 @@ public class UserEntry {
 
   private User user;
 
+  private BinaryData image;
+  
   /**
    * The image to be calculated.
    */
-  private FutureTask<BinaryData> imageFuture;
+//  private FutureTask<BinaryData> imageFuture;
 
   private final Map<URI, GroupEntry> groups = new HashMap<>();
+
+  private Supplier<BinaryData> imageSupplier;
 
   public UserEntry(User user, Supplier<BinaryData> imageSupplier) {
     super();
     this.user = user;
-    imageFuture = new FutureTask<>(() -> imageSupplier.get());
+    this.imageSupplier = imageSupplier;
+//    imageFuture = new FutureTask<>(() -> imageSupplier.get());
   }
 
   public final User getUser() {
@@ -39,7 +44,12 @@ public class UserEntry {
 
   public final BinaryData getImage() {
     try {
-      return imageFuture.get();
+//      return imageFuture.get();
+      if (image == null && imageSupplier != null) {
+        image = imageSupplier.get();
+        imageSupplier = null;
+      }
+      return image;
     } catch (Exception e) {
       log.error("Unable to get the avatar image for the " + user + " user.", e);
       return null;
