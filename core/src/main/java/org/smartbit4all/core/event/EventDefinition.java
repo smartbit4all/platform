@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU Lesser General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package org.smartbit4all.domain.meta;
+package org.smartbit4all.core.event;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;

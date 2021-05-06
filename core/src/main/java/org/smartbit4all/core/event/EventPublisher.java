@@ -12,25 +12,14 @@
  * You should have received a copy of the GNU Lesser General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package org.smartbit4all.domain.meta;
+package org.smartbit4all.core.event;
 
 /**
- * This extension for the APIs is used to publish {@link EntityDefinition}s and subscription API for
- * the consumers. The consumers register {@link EventListener}s to receive the relevant events. An
- * API is event aware if it implements this interface and publish events for subscription.
+ * A marker interface for the {@link EventAware}s to offer the {@link EventDefinition} for the
+ * consumers. The implementations will have the named operation for every event.
  * 
  * @author Peter Boros
- *
  */
-public interface EventAware {
-
-  /**
-   * If an API implements this interface then the caller can access the published event definitions
-   * via this operation. It returns a registry where we can get every event definition. Using this
-   * event definition we can construct a subscription.
-   * 
-   * @return
-   */
-  EventPublisher events();
+public interface EventPublisher {
 
 }

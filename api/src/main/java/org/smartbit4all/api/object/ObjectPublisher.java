@@ -14,7 +14,7 @@
  ******************************************************************************/
 package org.smartbit4all.api.object;
 
-import org.smartbit4all.domain.meta.EventPublisher;
+import org.smartbit4all.core.event.EventPublisher;
 
 /**
  * This event definition is published for accessing the modification events of an object hierarchy.
@@ -71,4 +71,5 @@ public interface ObjectPublisher extends EventPublisher {
    * @return
    */
   CollectionChangeEvent collections();
+
 }

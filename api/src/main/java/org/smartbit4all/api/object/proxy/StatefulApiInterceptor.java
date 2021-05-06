@@ -27,9 +27,9 @@ import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.object.NotifyListeners;
 import org.smartbit4all.api.object.ObjectEditing;
 import org.smartbit4all.api.object.PublishEvents;
+import org.smartbit4all.core.event.EventPublisher;
+import org.smartbit4all.core.event.EventPublisherImpl;
 import org.smartbit4all.core.utility.ReflectionUtility;
-import org.smartbit4all.domain.meta.EventPublisher;
-import org.smartbit4all.domain.meta.EventPublisherImpl;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 

@@ -15,7 +15,7 @@
 package org.smartbit4all.api.constraint;
 
 import org.smartbit4all.api.object.ApiObjectRef;
-import org.smartbit4all.domain.meta.EventDefinition;
+import org.smartbit4all.core.event.EventDefinition;
 
 /**
  * Publishes the {@link ApiObjectRef} related constraints.

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2020 - 2021 it4all Hungary Kft.
+ * Copyright (C) 2020 - 2020 it4all Hungary Kft.
  * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
@@ -12,29 +12,25 @@
  * You should have received a copy of the GNU Lesser General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package org.smartbit4all.domain.meta;
-
-import java.net.URI;
+package org.smartbit4all.core.event;
 
 /**
- * The base implementation of the {@link EventDefinition}s.
+ * This extension for the APIs is used to publish {@link EntityDefinition}s and subscription API for
+ * the consumers. The consumers register {@link EventListener}s to receive the relevant events. An
+ * API is event aware if it implements this interface and publish events for subscription.
  * 
  * @author Peter Boros
  *
- * @param <E>
  */
-public abstract class EventDefinitionBase<E> implements EventDefinition<E> {
+public interface EventAware {
 
-  private URI uri;
-
-  protected EventDefinitionBase(URI uri) {
-    super();
-    this.uri = uri;
-  }
-
-  @Override
-  public URI getUri() {
-    return uri;
-  }
+  /**
+   * If an API implements this interface then the caller can access the published event definitions
+   * via this operation. It returns a registry where we can get every event definition. Using this
+   * event definition we can construct a subscription.
+   * 
+   * @return
+   */
+  EventPublisher events();
 
 }

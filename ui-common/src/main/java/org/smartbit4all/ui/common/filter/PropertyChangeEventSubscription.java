@@ -1,6 +1,6 @@
 package org.smartbit4all.ui.common.filter;
 
-import org.smartbit4all.domain.meta.EventSubscription;
+import org.smartbit4all.core.event.EventSubscription;
 
 public class PropertyChangeEventSubscription extends EventSubscription<PropertyChange> {
 

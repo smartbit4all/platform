@@ -16,8 +16,8 @@ package org.smartbit4all.api.constraint;
 
 import java.lang.ref.WeakReference;
 import org.smartbit4all.api.object.ApiObjectRef;
+import org.smartbit4all.core.event.EventPublisherImpl;
 import org.smartbit4all.core.utility.StringConstant;
-import org.smartbit4all.domain.meta.EventPublisherImpl;
 
 /**
  * The base implementation of the {@link ObjectConstraintPublisher}.

@@ -15,8 +15,8 @@
 package org.smartbit4all.ui.common.filter;
 
 import java.util.UUID;
-import org.smartbit4all.domain.meta.EventAware;
-import org.smartbit4all.domain.meta.EventPublisherHelper;
+import org.smartbit4all.core.event.EventAware;
+import org.smartbit4all.core.event.EventPublisherHelper;
 
 public abstract class AbstractUIState implements EventAware {
 

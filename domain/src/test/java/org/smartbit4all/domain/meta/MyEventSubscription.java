@@ -1,5 +1,7 @@
 package org.smartbit4all.domain.meta;
 
+import org.smartbit4all.core.event.EventSubscription;
+
 public class MyEventSubscription extends EventSubscription<String> {
 
   private String prefix;

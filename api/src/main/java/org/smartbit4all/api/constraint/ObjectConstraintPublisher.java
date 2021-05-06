@@ -14,7 +14,7 @@
  ******************************************************************************/
 package org.smartbit4all.api.constraint;
 
-import org.smartbit4all.domain.meta.EventPublisher;
+import org.smartbit4all.core.event.EventPublisher;
 
 /**
  * This interface is the inner API interface for the stateful apis providing constraints. The

@@ -16,8 +16,8 @@ package org.smartbit4all.api.constraint;
 
 import java.lang.ref.WeakReference;
 import org.smartbit4all.api.object.ApiObjectRef;
-import org.smartbit4all.domain.meta.EventListener;
-import org.smartbit4all.domain.meta.EventSubscription;
+import org.smartbit4all.core.event.EventListener;
+import org.smartbit4all.core.event.EventSubscription;
 
 /**
  * A builder API to subscribe for the constraint changes of an {@link ApiObjectRef}. It can be

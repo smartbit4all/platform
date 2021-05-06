@@ -20,9 +20,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.smartbit4all.api.object.ApiObjectRef;
-import org.smartbit4all.domain.meta.EventDefinitionBase;
-import org.smartbit4all.domain.meta.EventListener;
-import org.smartbit4all.domain.meta.EventSubscription;
+import org.smartbit4all.core.event.EventDefinitionBase;
+import org.smartbit4all.core.event.EventListener;
+import org.smartbit4all.core.event.EventSubscription;
 
 /**
  * The implementation of the constraint change events.

@@ -1,4 +1,4 @@
-package org.smartbit4all.domain.meta;
+package org.smartbit4all.core.event;
 
 /**
  * The implementation interface for the publishers. Use this to enable automatic notification by

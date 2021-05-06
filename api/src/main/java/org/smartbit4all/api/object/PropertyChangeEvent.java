@@ -14,7 +14,7 @@
  ******************************************************************************/
 package org.smartbit4all.api.object;
 
-import org.smartbit4all.domain.meta.EventDefinition;
+import org.smartbit4all.core.event.EventDefinition;
 
 public interface PropertyChangeEvent extends EventDefinition<PropertyChange> {
 

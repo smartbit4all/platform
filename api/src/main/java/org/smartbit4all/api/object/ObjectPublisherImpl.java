@@ -6,11 +6,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.smartbit4all.core.event.EventDefinitionBase;
+import org.smartbit4all.core.event.EventListener;
+import org.smartbit4all.core.event.EventPublisherImpl;
+import org.smartbit4all.core.event.EventSubscription;
 import org.smartbit4all.core.utility.StringConstant;
-import org.smartbit4all.domain.meta.EventDefinitionBase;
-import org.smartbit4all.domain.meta.EventListener;
-import org.smartbit4all.domain.meta.EventPublisherImpl;
-import org.smartbit4all.domain.meta.EventSubscription;
 
 /**
  * The base implementation of the {@link ObjectPublisher} interface that can be used in the Api

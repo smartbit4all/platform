@@ -14,8 +14,8 @@
  ******************************************************************************/
 package org.smartbit4all.api.object;
 
+import org.smartbit4all.core.event.EventSubscription;
 import org.smartbit4all.core.utility.StringConstant;
-import org.smartbit4all.domain.meta.EventSubscription;
 
 public class CollectionChangeSubscription extends EventSubscription<CollectionChange> {
 

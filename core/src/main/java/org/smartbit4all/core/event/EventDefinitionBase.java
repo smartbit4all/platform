@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2020 - 2020 it4all Hungary Kft.
+ * Copyright (C) 2020 - 2021 it4all Hungary Kft.
  * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
@@ -12,14 +12,29 @@
  * You should have received a copy of the GNU Lesser General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package org.smartbit4all.domain.meta;
+package org.smartbit4all.core.event;
+
+import java.net.URI;
 
 /**
- * A marker interface for the {@link EventAware}s to offer the {@link EventDefinition} for the
- * consumers. The implementations will have the named operation for every event.
+ * The base implementation of the {@link EventDefinition}s.
  * 
  * @author Peter Boros
+ *
+ * @param <E>
  */
-public interface EventPublisher {
+public abstract class EventDefinitionBase<E> implements EventDefinition<E> {
+
+  private URI uri;
+
+  protected EventDefinitionBase(URI uri) {
+    super();
+    this.uri = uri;
+  }
+
+  @Override
+  public URI getUri() {
+    return uri;
+  }
 
 }
