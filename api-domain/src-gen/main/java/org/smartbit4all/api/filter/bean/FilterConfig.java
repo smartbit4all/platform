@@ -1,17 +1,22 @@
 package org.smartbit4all.api.filter.bean;
 
+import java.util.Objects;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import org.smartbit4all.api.filter.bean.FilterGroupMeta;
+import org.openapitools.jackson.nullable.JsonNullable;
 import javax.validation.Valid;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
+import javax.validation.constraints.*;
 
 /**
  * FilterConfig
  */
 
-public class FilterConfig {
+public class FilterConfig   {
   @JsonProperty("filterGroupMetas")
   @Valid
   private List<FilterGroupMeta> filterGroupMetas = null;
@@ -37,9 +42,8 @@ public class FilterConfig {
 
   /**
    * Get filterGroupMetas
-   * 
    * @return filterGroupMetas
-   */
+  */
   @ApiModelProperty(value = "")
 
   @Valid
@@ -59,9 +63,8 @@ public class FilterConfig {
 
   /**
    * Get defaultFilterStyle
-   * 
    * @return defaultFilterStyle
-   */
+  */
   @ApiModelProperty(value = "")
 
 
@@ -80,9 +83,8 @@ public class FilterConfig {
 
   /**
    * Get defaultFilterGroupStyle
-   * 
    * @return defaultFilterGroupStyle
-   */
+  */
   @ApiModelProperty(value = "")
 
 
@@ -118,17 +120,17 @@ public class FilterConfig {
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class FilterConfig {\n");
-
+    
     sb.append("    filterGroupMetas: ").append(toIndentedString(filterGroupMetas)).append("\n");
     sb.append("    defaultFilterStyle: ").append(toIndentedString(defaultFilterStyle)).append("\n");
-    sb.append("    defaultFilterGroupStyle: ").append(toIndentedString(defaultFilterGroupStyle))
-        .append("\n");
+    sb.append("    defaultFilterGroupStyle: ").append(toIndentedString(defaultFilterGroupStyle)).append("\n");
     sb.append("}");
     return sb.toString();
   }
 
   /**
-   * Convert the given object to string with each line indented by 4 spaces (except the first line).
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
    */
   private String toIndentedString(java.lang.Object o) {
     if (o == null) {

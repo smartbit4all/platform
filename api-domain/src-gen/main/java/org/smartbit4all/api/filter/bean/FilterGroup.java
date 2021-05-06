@@ -1,19 +1,24 @@
 package org.smartbit4all.api.filter.bean;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-import javax.validation.Valid;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.util.ArrayList;
+import java.util.List;
+import org.smartbit4all.api.filter.bean.FilterField;
+import org.smartbit4all.api.filter.bean.FilterGroupType;
+import org.openapitools.jackson.nullable.JsonNullable;
+import javax.validation.Valid;
+import javax.validation.constraints.*;
 
 /**
  * AND / OR group of filters / groups.
  */
 @ApiModel(description = "AND / OR group of filters / groups.")
 
-public class FilterGroup {
+public class FilterGroup   {
   @JsonProperty("name")
   private String name;
 
@@ -38,9 +43,8 @@ public class FilterGroup {
 
   /**
    * Name of the group.
-   * 
    * @return name
-   */
+  */
   @ApiModelProperty(value = "Name of the group.")
 
 
@@ -59,9 +63,8 @@ public class FilterGroup {
 
   /**
    * Get type
-   * 
    * @return type
-   */
+  */
   @ApiModelProperty(value = "")
 
   @Valid
@@ -89,9 +92,8 @@ public class FilterGroup {
 
   /**
    * Get filterFields
-   * 
    * @return filterFields
-   */
+  */
   @ApiModelProperty(value = "")
 
   @Valid
@@ -119,9 +121,8 @@ public class FilterGroup {
 
   /**
    * Get filterGroups
-   * 
    * @return filterGroups
-   */
+  */
   @ApiModelProperty(value = "")
 
   @Valid
@@ -141,9 +142,8 @@ public class FilterGroup {
 
   /**
    * Get isNegated
-   * 
    * @return isNegated
-   */
+  */
   @ApiModelProperty(value = "")
 
 
@@ -181,7 +181,7 @@ public class FilterGroup {
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class FilterGroup {\n");
-
+    
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("    filterFields: ").append(toIndentedString(filterFields)).append("\n");
@@ -192,7 +192,8 @@ public class FilterGroup {
   }
 
   /**
-   * Convert the given object to string with each line indented by 4 spaces (except the first line).
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
    */
   private String toIndentedString(java.lang.Object o) {
     if (o == null) {

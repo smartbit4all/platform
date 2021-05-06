@@ -2,13 +2,18 @@ package org.smartbit4all.api.filter.bean;
 
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.openapitools.jackson.nullable.JsonNullable;
+import javax.validation.Valid;
+import javax.validation.constraints.*;
 
 /**
  * FilterOperandValue
  */
 
-public class FilterOperandValue {
+public class FilterOperandValue   {
   @JsonProperty("type")
   private String type;
 
@@ -22,9 +27,8 @@ public class FilterOperandValue {
 
   /**
    * Get type
-   * 
    * @return type
-   */
+  */
   @ApiModelProperty(value = "")
 
 
@@ -43,9 +47,8 @@ public class FilterOperandValue {
 
   /**
    * Get value
-   * 
    * @return value
-   */
+  */
   @ApiModelProperty(value = "")
 
 
@@ -80,7 +83,7 @@ public class FilterOperandValue {
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class FilterOperandValue {\n");
-
+    
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("    value: ").append(toIndentedString(value)).append("\n");
     sb.append("}");
@@ -88,7 +91,8 @@ public class FilterOperandValue {
   }
 
   /**
-   * Convert the given object to string with each line indented by 4 spaces (except the first line).
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
    */
   private String toIndentedString(java.lang.Object o) {
     if (o == null) {

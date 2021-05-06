@@ -1,24 +1,29 @@
 package org.smartbit4all.api.filter.bean;
 
+import java.util.Objects;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import org.smartbit4all.api.filter.bean.FilterOperandValue;
+import org.openapitools.jackson.nullable.JsonNullable;
 import javax.validation.Valid;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
+import javax.validation.constraints.*;
 
 /**
  * FilterField
  */
 
-public class FilterField {
+public class FilterField   {
   @JsonProperty("propertyUri1")
   private URI propertyUri1;
 
   @JsonProperty("propertyUri2")
   private URI propertyUri2;
-  
+
   @JsonProperty("propertyUri3")
   private URI propertyUri3;
 
@@ -45,11 +50,9 @@ public class FilterField {
 
   /**
    * Property identifier, specifies which property should be used in this filter.
-   * 
    * @return propertyUri1
-   */
-  @ApiModelProperty(
-      value = "Property identifier, specifies which property should be used in this filter.")
+  */
+  @ApiModelProperty(value = "Property identifier, specifies which property should be used in this filter.")
 
   @Valid
 
@@ -68,11 +71,9 @@ public class FilterField {
 
   /**
    * Property identifier, specifies which property should be used in this filter.
-   * 
    * @return propertyUri2
-   */
-  @ApiModelProperty(
-      value = "Property identifier, specifies which property should be used in this filter.")
+  */
+  @ApiModelProperty(value = "Property identifier, specifies which property should be used in this filter.")
 
   @Valid
 
@@ -83,7 +84,7 @@ public class FilterField {
   public void setPropertyUri2(URI propertyUri2) {
     this.propertyUri2 = propertyUri2;
   }
-  
+
   public FilterField propertyUri3(URI propertyUri3) {
     this.propertyUri3 = propertyUri3;
     return this;
@@ -91,11 +92,9 @@ public class FilterField {
 
   /**
    * Property identifier, specifies which property should be used in this filter.
-   * 
    * @return propertyUri3
-   */
-  @ApiModelProperty(
-      value = "Property identifier, specifies which property should be used in this filter.")
+  */
+  @ApiModelProperty(value = "Property identifier, specifies which property should be used in this filter.")
 
   @Valid
 
@@ -114,9 +113,8 @@ public class FilterField {
 
   /**
    * Operation code, specifies the operator of the condition.
-   * 
    * @return operationCode
-   */
+  */
   @ApiModelProperty(value = "Operation code, specifies the operator of the condition.")
 
 
@@ -135,9 +133,8 @@ public class FilterField {
 
   /**
    * Get value1
-   * 
    * @return value1
-   */
+  */
   @ApiModelProperty(value = "")
 
   @Valid
@@ -157,9 +154,8 @@ public class FilterField {
 
   /**
    * Get value2
-   * 
    * @return value2
-   */
+  */
   @ApiModelProperty(value = "")
 
   @Valid
@@ -179,9 +175,8 @@ public class FilterField {
 
   /**
    * Get value3
-   * 
    * @return value3
-   */
+  */
   @ApiModelProperty(value = "")
 
   @Valid
@@ -209,9 +204,8 @@ public class FilterField {
 
   /**
    * Get selectedValues
-   * 
    * @return selectedValues
-   */
+  */
   @ApiModelProperty(value = "")
 
   @Valid
@@ -246,15 +240,14 @@ public class FilterField {
 
   @Override
   public int hashCode() {
-    return Objects.hash(propertyUri1, propertyUri2, propertyUri3, operationCode, value1, value2,
-        value3, selectedValues);
+    return Objects.hash(propertyUri1, propertyUri2, propertyUri3, operationCode, value1, value2, value3, selectedValues);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class FilterField {\n");
-
+    
     sb.append("    propertyUri1: ").append(toIndentedString(propertyUri1)).append("\n");
     sb.append("    propertyUri2: ").append(toIndentedString(propertyUri2)).append("\n");
     sb.append("    propertyUri3: ").append(toIndentedString(propertyUri3)).append("\n");
@@ -268,7 +261,8 @@ public class FilterField {
   }
 
   /**
-   * Convert the given object to string with each line indented by 4 spaces (except the first line).
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
    */
   private String toIndentedString(java.lang.Object o) {
     if (o == null) {

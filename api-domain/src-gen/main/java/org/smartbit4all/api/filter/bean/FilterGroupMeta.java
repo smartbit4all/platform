@@ -1,17 +1,23 @@
 package org.smartbit4all.api.filter.bean;
 
+import java.util.Objects;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import org.smartbit4all.api.filter.bean.FilterFieldMeta;
+import org.smartbit4all.api.filter.bean.FilterGroupType;
+import org.openapitools.jackson.nullable.JsonNullable;
 import javax.validation.Valid;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
+import javax.validation.constraints.*;
 
 /**
  * FilterGroupMeta
  */
 
-public class FilterGroupMeta {
+public class FilterGroupMeta   {
   @JsonProperty("id")
   private String id;
 
@@ -38,11 +44,9 @@ public class FilterGroupMeta {
 
   /**
    * Identifier of the filter group metadata. Not mandatory, specify only if in use.
-   * 
    * @return id
-   */
-  @ApiModelProperty(
-      value = "Identifier of the filter group metadata. Not mandatory, specify only if in use.")
+  */
+  @ApiModelProperty(value = "Identifier of the filter group metadata. Not mandatory, specify only if in use.")
 
 
   public String getId() {
@@ -68,9 +72,8 @@ public class FilterGroupMeta {
 
   /**
    * Get filterFieldMetas
-   * 
    * @return filterFieldMetas
-   */
+  */
   @ApiModelProperty(value = "")
 
   @Valid
@@ -90,9 +93,8 @@ public class FilterGroupMeta {
 
   /**
    * Get labelCode
-   * 
    * @return labelCode
-   */
+  */
   @ApiModelProperty(value = "")
 
 
@@ -111,9 +113,8 @@ public class FilterGroupMeta {
 
   /**
    * Get iconCode
-   * 
    * @return iconCode
-   */
+  */
   @ApiModelProperty(value = "")
 
 
@@ -132,9 +133,8 @@ public class FilterGroupMeta {
 
   /**
    * Get style
-   * 
    * @return style
-   */
+  */
   @ApiModelProperty(value = "")
 
 
@@ -153,9 +153,8 @@ public class FilterGroupMeta {
 
   /**
    * Get type
-   * 
    * @return type
-   */
+  */
   @ApiModelProperty(value = "")
 
   @Valid
@@ -195,7 +194,7 @@ public class FilterGroupMeta {
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class FilterGroupMeta {\n");
-
+    
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    filterFieldMetas: ").append(toIndentedString(filterFieldMetas)).append("\n");
     sb.append("    labelCode: ").append(toIndentedString(labelCode)).append("\n");
@@ -207,7 +206,8 @@ public class FilterGroupMeta {
   }
 
   /**
-   * Convert the given object to string with each line indented by 4 spaces (except the first line).
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
    */
   private String toIndentedString(java.lang.Object o) {
     if (o == null) {

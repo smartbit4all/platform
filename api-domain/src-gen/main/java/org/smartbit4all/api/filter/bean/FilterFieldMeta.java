@@ -1,21 +1,23 @@
 package org.smartbit4all.api.filter.bean;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-import javax.validation.Valid;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.util.ArrayList;
+import java.util.List;
+import org.smartbit4all.api.filter.bean.FilterOperation;
+import org.openapitools.jackson.nullable.JsonNullable;
+import javax.validation.Valid;
+import javax.validation.constraints.*;
 
 /**
- * Descriptor of a possible filter field. This field doesn&#39;t have to correspond to an existing
- * entity&#39;s property, it is simple a way of filtering.
+ * Descriptor of a possible filter field. This field doesn&#39;t have to correspond to an existing entity&#39;s property, it is simple a way of filtering.
  */
-@ApiModel(
-    description = "Descriptor of a possible filter field. This field doesn't have to correspond to an existing entity's property, it is simple a way of filtering.")
+@ApiModel(description = "Descriptor of a possible filter field. This field doesn't have to correspond to an existing entity's property, it is simple a way of filtering.")
 
-public class FilterFieldMeta {
+public class FilterFieldMeta   {
   @JsonProperty("id")
   private String id;
 
@@ -39,11 +41,9 @@ public class FilterFieldMeta {
 
   /**
    * Identifier of the filter field metadata. Not mandatory, specify only if in use.
-   * 
    * @return id
-   */
-  @ApiModelProperty(
-      value = "Identifier of the filter field metadata. Not mandatory, specify only if in use.")
+  */
+  @ApiModelProperty(value = "Identifier of the filter field metadata. Not mandatory, specify only if in use.")
 
 
   public String getId() {
@@ -61,9 +61,8 @@ public class FilterFieldMeta {
 
   /**
    * Code of label to display for this filter field selector.
-   * 
    * @return labelCode
-   */
+  */
   @ApiModelProperty(value = "Code of label to display for this filter field selector.")
 
 
@@ -82,9 +81,8 @@ public class FilterFieldMeta {
 
   /**
    * Code of icon to display for this filter field selector.
-   * 
    * @return iconCode
-   */
+  */
   @ApiModelProperty(value = "Code of icon to display for this filter field selector.")
 
 
@@ -103,9 +101,8 @@ public class FilterFieldMeta {
 
   /**
    * Get style
-   * 
    * @return style
-   */
+  */
   @ApiModelProperty(value = "")
 
 
@@ -132,9 +129,8 @@ public class FilterFieldMeta {
 
   /**
    * Get operations
-   * 
    * @return operations
-   */
+  */
   @ApiModelProperty(value = "")
 
   @Valid
@@ -173,7 +169,7 @@ public class FilterFieldMeta {
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class FilterFieldMeta {\n");
-
+    
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    labelCode: ").append(toIndentedString(labelCode)).append("\n");
     sb.append("    iconCode: ").append(toIndentedString(iconCode)).append("\n");
@@ -184,7 +180,8 @@ public class FilterFieldMeta {
   }
 
   /**
-   * Convert the given object to string with each line indented by 4 spaces (except the first line).
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
    */
   private String toIndentedString(java.lang.Object o) {
     if (o == null) {

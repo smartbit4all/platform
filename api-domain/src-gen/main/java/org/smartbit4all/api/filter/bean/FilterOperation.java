@@ -1,20 +1,21 @@
 package org.smartbit4all.api.filter.bean;
 
-import java.net.URI;
 import java.util.Objects;
-import javax.validation.Valid;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.net.URI;
+import org.openapitools.jackson.nullable.JsonNullable;
+import javax.validation.Valid;
+import javax.validation.constraints.*;
 
 /**
- * Defines a possible way of using a filter field, with specifying Properties as well. For example:
- * exact match, like, sounds like, interval, etc.
+ * Defines a possible way of using a filter field, with specifying Properties as well. For example: exact match, like, sounds like, interval, etc.
  */
-@ApiModel(
-    description = "Defines a possible way of using a filter field, with specifying Properties as well. For example: exact match, like, sounds like, interval, etc.")
+@ApiModel(description = "Defines a possible way of using a filter field, with specifying Properties as well. For example: exact match, like, sounds like, interval, etc.")
 
-public class FilterOperation {
+public class FilterOperation   {
   @JsonProperty("id")
   private String id;
 
@@ -26,8 +27,8 @@ public class FilterOperation {
 
   @JsonProperty("propertyUri2")
   private URI propertyUri2;
-  
-  @JsonProperty("propertyUri2")
+
+  @JsonProperty("propertyUri3")
   private URI propertyUri3;
 
   @JsonProperty("possibleValuesUri")
@@ -48,13 +49,10 @@ public class FilterOperation {
   }
 
   /**
-   * Identifier of the filter operation within the possible filter operations list of a filter
-   * field.
-   * 
+   * Identifier of the filter operation within the possible filter operations list of a filter field.
    * @return id
-   */
-  @ApiModelProperty(
-      value = "Identifier of the filter operation within the possible filter operations list of a filter field.")
+  */
+  @ApiModelProperty(value = "Identifier of the filter operation within the possible filter operations list of a filter field.")
 
 
   public String getId() {
@@ -72,11 +70,9 @@ public class FilterOperation {
 
   /**
    * Declarative name of a FilterOperationUI, which will handle this operation.
-   * 
    * @return filterView
-   */
-  @ApiModelProperty(
-      value = "Declarative name of a FilterOperationUI, which will handle this operation.")
+  */
+  @ApiModelProperty(value = "Declarative name of a FilterOperationUI, which will handle this operation.")
 
 
   public String getFilterView() {
@@ -94,11 +90,9 @@ public class FilterOperation {
 
   /**
    * Property identifier, specifies which property should be used in this filter.
-   * 
    * @return propertyUri1
-   */
-  @ApiModelProperty(
-      value = "Property identifier, specifies which property should be used in this filter.")
+  */
+  @ApiModelProperty(value = "Property identifier, specifies which property should be used in this filter.")
 
   @Valid
 
@@ -117,11 +111,9 @@ public class FilterOperation {
 
   /**
    * Property identifier, specifies which property should be used in this filter.
-   * 
    * @return propertyUri2
-   */
-  @ApiModelProperty(
-      value = "Property identifier, specifies which property should be used in this filter.")
+  */
+  @ApiModelProperty(value = "Property identifier, specifies which property should be used in this filter.")
 
   @Valid
 
@@ -137,25 +129,23 @@ public class FilterOperation {
     this.propertyUri3 = propertyUri3;
     return this;
   }
-  
+
   /**
    * Property identifier, specifies which property should be used in this filter.
-   * 
    * @return propertyUri3
-   */
-  @ApiModelProperty(
-      value = "Property identifier, specifies which property should be used in this filter.")
-  
+  */
+  @ApiModelProperty(value = "Property identifier, specifies which property should be used in this filter.")
+
   @Valid
-  
+
   public URI getPropertyUri3() {
     return propertyUri3;
   }
-  
+
   public void setPropertyUri3(URI propertyUri3) {
     this.propertyUri3 = propertyUri3;
   }
-  
+
   public FilterOperation possibleValuesUri(URI possibleValuesUri) {
     this.possibleValuesUri = possibleValuesUri;
     return this;
@@ -163,11 +153,9 @@ public class FilterOperation {
 
   /**
    * Value set identifer for selections. Values can be aquired by ValueAPI.
-   * 
    * @return possibleValuesUri
-   */
-  @ApiModelProperty(
-      value = "Value set identifer for selections. Values can be aquired by ValueAPI.")
+  */
+  @ApiModelProperty(value = "Value set identifer for selections. Values can be aquired by ValueAPI.")
 
   @Valid
 
@@ -186,9 +174,8 @@ public class FilterOperation {
 
   /**
    * Operation code, specifies the operator of the condition.
-   * 
    * @return operationCode
-   */
+  */
   @ApiModelProperty(value = "Operation code, specifies the operator of the condition.")
 
 
@@ -207,9 +194,8 @@ public class FilterOperation {
 
   /**
    * Code of label to display for this operation.
-   * 
    * @return labelCode
-   */
+  */
   @ApiModelProperty(value = "Code of label to display for this operation.")
 
 
@@ -228,9 +214,8 @@ public class FilterOperation {
 
   /**
    * Icon
-   * 
    * @return iconCode
-   */
+  */
   @ApiModelProperty(value = "Icon")
 
 
@@ -265,15 +250,14 @@ public class FilterOperation {
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, filterView, propertyUri1, propertyUri2, propertyUri3, possibleValuesUri,
-        operationCode, labelCode, iconCode);
+    return Objects.hash(id, filterView, propertyUri1, propertyUri2, propertyUri3, possibleValuesUri, operationCode, labelCode, iconCode);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class FilterOperation {\n");
-
+    
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    filterView: ").append(toIndentedString(filterView)).append("\n");
     sb.append("    propertyUri1: ").append(toIndentedString(propertyUri1)).append("\n");
@@ -288,7 +272,8 @@ public class FilterOperation {
   }
 
   /**
-   * Convert the given object to string with each line indented by 4 spaces (except the first line).
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
    */
   private String toIndentedString(java.lang.Object o) {
     if (o == null) {
