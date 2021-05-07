@@ -1,8 +1,8 @@
 package org.smartbit4all.ui.vaadin.components.binder;
 
 import java.util.function.Function;
-import org.smartbit4all.api.object.ObjectEditing;
-import org.smartbit4all.api.object.PropertyChange;
+import org.smartbit4all.core.object.ObjectEditing;
+import org.smartbit4all.core.object.PropertyChange;
 import org.smartbit4all.core.utility.PathUtility;
 import com.vaadin.flow.component.HasText;
 

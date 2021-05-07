@@ -17,7 +17,7 @@
 package org.smartbit4all.api.org;
 
 import java.net.URI;
-import org.smartbit4all.api.UriUtils;
+import org.smartbit4all.core.utility.UriUtils;
 
 public class OrgUris extends UriUtils {
 

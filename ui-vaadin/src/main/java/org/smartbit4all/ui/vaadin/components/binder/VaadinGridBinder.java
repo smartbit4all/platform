@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.smartbit4all.api.object.ChangeState;
-import org.smartbit4all.api.object.CollectionObjectChange;
-import org.smartbit4all.api.object.ObjectChangeSimple;
-import org.smartbit4all.api.object.ObjectEditing;
+import org.smartbit4all.core.object.ChangeState;
+import org.smartbit4all.core.object.CollectionObjectChange;
+import org.smartbit4all.core.object.ObjectChangeSimple;
+import org.smartbit4all.core.object.ObjectEditing;
 import com.vaadin.flow.component.grid.Grid;
 
 public class VaadinGridBinder<T, E extends ObjectEditing> {

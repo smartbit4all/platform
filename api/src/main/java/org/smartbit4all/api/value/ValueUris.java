@@ -19,7 +19,7 @@ package org.smartbit4all.api.value;
 import java.net.URI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.smartbit4all.api.UriUtils;
+import org.smartbit4all.core.utility.UriUtils;
 
 public class ValueUris extends UriUtils {
   

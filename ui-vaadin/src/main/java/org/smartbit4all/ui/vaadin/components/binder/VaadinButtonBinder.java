@@ -1,7 +1,7 @@
 package org.smartbit4all.ui.vaadin.components.binder;
 
 import java.util.function.Consumer;
-import org.smartbit4all.api.object.ObjectEditing;
+import org.smartbit4all.core.object.ObjectEditing;
 import com.vaadin.flow.component.button.Button;
 
 public class VaadinButtonBinder<S extends ObjectEditing> {

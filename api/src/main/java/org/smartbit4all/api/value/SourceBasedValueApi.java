@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.smartbit4all.api.UriUtils;
 import org.smartbit4all.api.value.bean.Value;
+import org.smartbit4all.core.utility.UriUtils;
 
 public class SourceBasedValueApi implements ValueApi {
 
