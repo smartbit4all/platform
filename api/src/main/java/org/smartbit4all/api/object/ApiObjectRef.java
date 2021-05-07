@@ -23,6 +23,7 @@ import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import org.smartbit4all.api.object.ApiObjectCollection.CollectionChanges;
 import org.smartbit4all.api.object.PropertyMeta.PropertyKind;
 import org.smartbit4all.core.utility.PathUtility;
 import org.smartbit4all.core.utility.StringConstant;
@@ -246,7 +247,8 @@ public class ApiObjectRef {
       }
     } catch (Exception e) {
       throw new IllegalArgumentException(
-          propertyName + " property is not set to " + value + " in " + meta.getClazz().getName(), e);
+          propertyName + " property is not set to " + value + " in " + meta.getClazz().getName(),
+          e);
     }
   }
 
@@ -317,7 +319,7 @@ public class ApiObjectRef {
         break;
     }
   }
-  
+
   public ApiObjectRef getValueRefByPath(String path) {
     // TODO
     path = path.toUpperCase();
@@ -341,7 +343,8 @@ public class ApiObjectRef {
           return collection.getByIdx(PathUtility.getLastPath(path));
         } else {
           String nextPath = PathUtility.nextFullPath(path);
-          return collection.getByIdx(PathUtility.getRootPath(nextPath)).getValueRefByPath(PathUtility.nextFullPath(nextPath));
+          return collection.getByIdx(PathUtility.getRootPath(nextPath))
+              .getValueRefByPath(PathUtility.nextFullPath(nextPath));
         }
       default:
         break;
@@ -480,14 +483,13 @@ public class ApiObjectRef {
           }
           break;
         case COLLECTION:
-          Optional<CollectionChange> collectionChange =
-              entry.getCollection().renderAndCleanChanges();
-          if (collectionChange.isPresent()) {
+          Optional<CollectionChanges> changes = entry.getCollection().renderAndCleanChanges();
+          if (changes.isPresent()) {
             if (result == null) {
               result = new ObjectChange(path, ChangeState.MODIFIED);
             }
-            result.getCollections()
-                .add(collectionChange.get());
+            result.getCollections().add(changes.get().collectionChanges);
+            result.getCollectionObjects().add(changes.get().collectionObjectChanges);
           }
           break;
         case REFERENCE:

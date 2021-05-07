@@ -38,9 +38,16 @@ public class ObjectPublisherImpl implements ObjectPublisher, EventPublisherImpl 
    */
   Map<String, List<EventListener<CollectionChange>>> collectionListeners = new HashMap<>();
 
+  /**
+   * The listeners by the fully qualified name of the property.
+   */
+  Map<String, List<EventListener<CollectionObjectChange>>> collectionObjectListeners =
+      new HashMap<>();
+
   PropertyChangeEvent propertyChangeEvent = new PropertyChangeEventImpl();
   ReferenceChangeEvent referenceChangeEvent = new ReferenceChangeEventImpl();
   CollectionChangeEvent collectionChangeEvent = new CollectionChangeEventImpl();
+  CollectionObjectChangeEvent collectionObjectChangeEvent = new CollectionObjectChangeEventImpl();
 
   public void notify(ObjectChange change) {
     notifyRec(StringConstant.EMPTY, change);
@@ -50,6 +57,7 @@ public class ObjectPublisherImpl implements ObjectPublisher, EventPublisherImpl 
     notifyListeners(objectChange.getProperties(), propertyListeners);
     notifyListeners(objectChange.getReferences(), referenceListeners);
     notifyListeners(objectChange.getCollections(), collectionListeners);
+    notifyListeners(objectChange.getCollectionObjects(), collectionObjectListeners);
     // After manage the changes at the actual level. Let's start recursion on the references and on
     // the collection items.
     for (ReferenceChange referenceChange : objectChange.getReferences()) {
@@ -91,6 +99,11 @@ public class ObjectPublisherImpl implements ObjectPublisher, EventPublisherImpl 
   @Override
   public CollectionChangeEvent collections() {
     return collectionChangeEvent;
+  }
+
+  @Override
+  public CollectionObjectChangeEvent collectionObjects() {
+    return collectionObjectChangeEvent;
   }
 
   private <E extends ChangeItem> void addToEventListeners(String name,
@@ -141,7 +154,7 @@ public class ObjectPublisherImpl implements ObjectPublisher, EventPublisherImpl 
       super(URI.create("event:/objectediting/collection"));
     }
 
-    final List<EventSubscription<?>> subscriptions = new ArrayList<EventSubscription<?>>();
+    final List<EventSubscription<?>> subscriptions = new ArrayList<>();
 
     @Override
     public CollectionChangeSubscription subscribe() {
@@ -160,10 +173,36 @@ public class ObjectPublisherImpl implements ObjectPublisher, EventPublisherImpl 
     }
   }
 
+  private class CollectionObjectChangeEventImpl extends EventDefinitionBase<CollectionObjectChange>
+      implements CollectionObjectChangeEvent {
+
+    protected CollectionObjectChangeEventImpl() {
+      super(URI.create("event:/objectediting/collectionObject"));
+    }
+
+    final List<EventSubscription<?>> subscriptions = new ArrayList<>();
+
+    @Override
+    public CollectionObjectChangeSubscription subscribe() {
+      CollectionObjectChangeSubscription collectionChangeSubscription =
+          new CollectionObjectChangeSubscription() {
+            @Override
+            public EventSubscription<CollectionObjectChange> add(
+                EventListener<CollectionObjectChange> listener) {
+              EventSubscription<CollectionObjectChange> eventSubscription = super.add(listener);
+              addToEventListeners(fullyQualifiedName(), collectionObjectListeners, listener);
+              return eventSubscription;
+            }
+          };
+      subscriptions.add(collectionChangeSubscription);
+      return collectionChangeSubscription;
+    }
+  }
+
   private class ReferenceChangeEventImpl extends EventDefinitionBase<ReferenceChange>
       implements ReferenceChangeEvent {
 
-    final List<EventSubscription<?>> subscriptions = new ArrayList<EventSubscription<?>>();
+    final List<EventSubscription<?>> subscriptions = new ArrayList<>();
 
     protected ReferenceChangeEventImpl() {
       super(URI.create("event:/objectediting/reference"));

@@ -55,6 +55,11 @@ public class ObjectChange {
   private final List<CollectionChange> collections = new ArrayList<>();
 
   /**
+   * The changes of the collection objects.
+   */
+  private final List<CollectionObjectChange> collectionObjects = new ArrayList<>();
+
+  /**
    * @param objectUri
    */
   ObjectChange(String path, ChangeState operation) {
@@ -76,6 +81,10 @@ public class ObjectChange {
 
   public final List<CollectionChange> getCollections() {
     return collections;
+  }
+
+  public final List<CollectionObjectChange> getCollectionObjects() {
+    return collectionObjects;
   }
 
   public final ChangeState getOperation() {

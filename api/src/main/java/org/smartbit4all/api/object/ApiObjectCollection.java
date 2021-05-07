@@ -74,7 +74,8 @@ public class ApiObjectCollection implements List<ApiObjectRef> {
     super();
     this.objectRef = objectRef;
     this.property = collectionProperty;
-    this.path = (isRefPathEmpty(objectRef) ? "" : (objectRef.getPath() + StringConstant.SLASH)) + collectionProperty.getName();
+    this.path = (isRefPathEmpty(objectRef) ? "" : (objectRef.getPath() + StringConstant.SLASH))
+        + collectionProperty.getName();
     build();
   }
 
@@ -210,7 +211,7 @@ public class ApiObjectCollection implements List<ApiObjectRef> {
     }
     return false;
   }
-  
+
   public boolean removeByIdx(String idxPath) {
     for (ApiObjectRef item : items) {
       if (idxPath.equals(PathUtility.getLastPath(item.getPath()))) {
@@ -255,7 +256,7 @@ public class ApiObjectCollection implements List<ApiObjectRef> {
     // }
     return true;
   }
-  
+
   public boolean set(Collection<Object> c) {
     if (c == null) {
       return false;
@@ -313,7 +314,7 @@ public class ApiObjectCollection implements List<ApiObjectRef> {
   public ApiObjectRef get(int index) {
     return items.get(index);
   }
-  
+
   public ApiObjectRef getByIdx(String idxPath) {
     for (ApiObjectRef item : items) {
       if (idxPath.equals(PathUtility.getLastPath(item.getPath()))) {
@@ -403,27 +404,36 @@ public class ApiObjectCollection implements List<ApiObjectRef> {
     return items.subList(fromIndex, toIndex);
   }
 
-  /**
-   * If we have a new collection then
-   */
-  final Optional<CollectionChange> renderAndCleanChanges() {
-    CollectionChange result = null;
-    // state == ChangeState.NEW ? new CollectionChange(objectRef.getPath(), property.getName())
-    // : null;
+  final Optional<CollectionChanges> renderAndCleanChanges() {
+    CollectionChange collectionChange = null;
+    CollectionObjectChange collectionObjectChange = null;
     for (ApiObjectRef ref : removedObjects) {
-      if (result == null) {
-        result = new CollectionChange(objectRef.getPath(), property.getName());
+      if (collectionChange == null) {
+        collectionChange = new CollectionChange(objectRef.getPath(), property.getName());
+        collectionObjectChange =
+            new CollectionObjectChange(objectRef.getPath(), property.getName());
       }
-      result.getChanges().add(new ObjectChange(ref.getPath(), ChangeState.DELETED));
+      collectionChange.getChanges().add(new ObjectChange(ref.getPath(), ChangeState.DELETED));
+      collectionObjectChange.getChanges()
+          .add(new ObjectChangeSimple(ref.getPath(), ChangeState.DELETED, ref.getObject()));
     }
     for (ApiObjectRef item : items) {
       Optional<ObjectChange> itemChange = item.renderAndCleanChanges();
       if (itemChange.isPresent()) {
-        if (result == null) {
-          result = new CollectionChange(objectRef.getPath(), property.getName());
+        if (collectionChange == null) {
+          collectionChange = new CollectionChange(objectRef.getPath(), property.getName());
+          collectionObjectChange =
+              new CollectionObjectChange(objectRef.getPath(), property.getName());
         }
-        result.getChanges().add(itemChange.get());
+        collectionChange.getChanges().add(itemChange.get());
+        collectionObjectChange.getChanges()
+            .add(new ObjectChangeSimple(item.getPath(), itemChange.get().getOperation(),
+                item.getObject()));
       }
+    }
+    CollectionChanges result = null;
+    if (collectionChange != null) {
+      result = new CollectionChanges(collectionChange, collectionObjectChange);
     }
     removedObjects.clear();
     return Optional.ofNullable(result);
@@ -450,4 +460,14 @@ public class ApiObjectCollection implements List<ApiObjectRef> {
     return proxy;
   }
 
+  static class CollectionChanges {
+    protected final CollectionChange collectionChanges;
+    protected final CollectionObjectChange collectionObjectChanges;
+
+    CollectionChanges(CollectionChange collectionChanges,
+        CollectionObjectChange collectionObjectChanges) {
+      this.collectionChanges = collectionChanges;
+      this.collectionObjectChanges = collectionObjectChanges;
+    }
+  }
 }

@@ -72,4 +72,10 @@ public interface ObjectPublisher extends EventPublisher {
    */
   CollectionChangeEvent collections();
 
+  /**
+   * The event definition of the collection object changes.
+   * 
+   * @return
+   */
+  CollectionObjectChangeEvent collectionObjects();
 }
