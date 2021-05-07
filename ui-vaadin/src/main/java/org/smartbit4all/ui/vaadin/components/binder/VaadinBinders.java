@@ -1,6 +1,5 @@
 package org.smartbit4all.ui.vaadin.components.binder;
 
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import org.smartbit4all.api.object.ObjectEditing;
 import com.vaadin.flow.component.HasText;
@@ -34,8 +33,7 @@ public class VaadinBinders {
 
   public static <T, E extends ObjectEditing> VaadinGridBinder<T, E> bind(Grid<T> grid, E editing,
       String path,
-      String collectionName,
-      BiFunction<E, String, T> itemGetter) {
-    return new VaadinGridBinder<>(grid, editing, path, collectionName, itemGetter);
+      String collectionName) {
+    return new VaadinGridBinder<>(grid, editing, path, collectionName);
   }
 }
