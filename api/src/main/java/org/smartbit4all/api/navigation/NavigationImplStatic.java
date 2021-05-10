@@ -18,6 +18,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -43,16 +44,16 @@ public class NavigationImplStatic extends NavigationImpl {
 
   private static final Logger log = LoggerFactory.getLogger(NavigationImplStatic.class);
 
-  Map<URI, NavigationEntry> entries = new HashMap<>();
+  Map<URI, NavigationEntry> entries = new LinkedHashMap<>();
 
   /**
    * The reference maps of the entries by the entry URI.
    */
   Map<URI, Map<URI, List<NavigationReferenceEntry>>> entryReferenceMaps = new HashMap<>();
 
-  Map<URI, NavigationAssociationMeta> assocMetas = new HashMap<>();
+  Map<URI, NavigationAssociationMeta> assocMetas = new LinkedHashMap<>();
 
-  Map<URI, NavigationEntryMeta> entryMetas = new HashMap<>();
+  Map<URI, NavigationEntryMeta> entryMetas = new LinkedHashMap<>();
 
   public NavigationImplStatic(String name) {
     super(name);
@@ -118,7 +119,7 @@ public class NavigationImplStatic extends NavigationImpl {
       NavigationEntry entry = Navigation.entry(navigationEntryMeta, uri, title, icon, views);
       entries.put(uri, entry);
       Map<URI, List<NavigationReferenceEntry>> entryReferenceMap =
-          entryReferenceMaps.computeIfAbsent(parentUri, u -> new HashMap<>());
+          entryReferenceMaps.computeIfAbsent(parentUri, u -> new LinkedHashMap<>());
       List<NavigationReferenceEntry> references =
           entryReferenceMap.computeIfAbsent(assocUri, u -> new ArrayList<>());
       references.add(Navigation.referenceEntry(parentUri, entry, null));
@@ -152,7 +153,7 @@ public class NavigationImplStatic extends NavigationImpl {
   @Override
   public Map<URI, List<NavigationReferenceEntry>> navigate(URI objectUri,
       List<URI> associationMetaUris) {
-    Map<URI, List<NavigationReferenceEntry>> result = new HashMap<>();
+    Map<URI, List<NavigationReferenceEntry>> result = new LinkedHashMap<>();
     Map<URI, List<NavigationReferenceEntry>> referenceMaps = entryReferenceMaps.get(objectUri);
     for (URI uri : associationMetaUris) {
       result.put(uri, referenceMaps.get(uri));
