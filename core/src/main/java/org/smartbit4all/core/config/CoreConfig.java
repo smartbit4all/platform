@@ -14,6 +14,7 @@
  ******************************************************************************/
 package org.smartbit4all.core.config;
 
+import org.smartbit4all.core.object.proxy.ProxyStatefulApiConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
@@ -26,7 +27,7 @@ import org.springframework.context.annotation.Import;
  */
 
 @Configuration
-@Import({CoreServiceConfig.class})
+@Import({CoreServiceConfig.class, ProxyStatefulApiConfiguration.class})
 public class CoreConfig {
 
 
