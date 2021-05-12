@@ -111,7 +111,6 @@ final class ExpressionEvaluation extends ExpressionVisitor {
     getCurrentPlan().addLoopExpressionStep(expression);
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public <T> void visitIn(ExpressionIn<T> expression) {
     Operand<?> operand = expression.getOperand();
