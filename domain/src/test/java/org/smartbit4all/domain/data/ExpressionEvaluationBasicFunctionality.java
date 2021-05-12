@@ -1,29 +1,25 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
  * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 package org.smartbit4all.domain.data;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.smartbit4all.domain.data.filtering.ExpressionEvaluation;
 import org.smartbit4all.domain.data.filtering.ExpressionEvaluationPlan;
 import org.smartbit4all.domain.data.index.TableDataIndexSet;
 import org.smartbit4all.domain.meta.Expression;
@@ -34,6 +30,7 @@ import org.smartbit4all.domain.security.AddressDef;
 import org.smartbit4all.domain.security.SecurityEntityConfiguration;
 import org.smartbit4all.domain.security.UserAccountDef;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Expression Evaluaton test
@@ -196,7 +193,7 @@ public class ExpressionEvaluationBasicFunctionality {
     Expression expression =
         userAccountDef.primaryAddress().city().eq("Budapest").AND(Expression.TRUE());
     System.out.println("\nExpression: " + expression.toString());
-    ExpressionEvaluationPlan plan = new ExpressionEvaluation(tableData, null, expression).plan();
+    ExpressionEvaluationPlan plan = ExpressionEvaluationPlan.of(tableData, null, expression);
     System.out.println(plan.toString());
     List<DataRow> filteredRows = plan.execute(tableData.rows());
     // System.out.println(tableData.toString(filteredRows));
@@ -206,7 +203,7 @@ public class ExpressionEvaluationBasicFunctionality {
     // A && FALSE
     expression = userAccountDef.primaryAddress().city().eq("Budapest").AND(Expression.FALSE());
     System.out.println("\nExpression: " + expression.toString());
-    plan = new ExpressionEvaluation(tableData, null, expression).plan();
+    plan = ExpressionEvaluationPlan.of(tableData, null, expression);
     System.out.println(plan.toString());
     filteredRows = plan.execute(tableData.rows());
     // System.out.println(tableData.toString(filteredRows));
@@ -216,7 +213,7 @@ public class ExpressionEvaluationBasicFunctionality {
     // A || TRUE
     expression = userAccountDef.primaryAddress().city().eq("Győr").OR(Expression.TRUE());
     System.out.println("\nExpression: " + expression.toString());
-    plan = new ExpressionEvaluation(tableData, null, expression).plan();
+    plan = ExpressionEvaluationPlan.of(tableData, null, expression);
     System.out.println(plan.toString());
     filteredRows = plan.execute(tableData.rows());
     // System.out.println(tableData.toString(filteredRows));
@@ -227,7 +224,7 @@ public class ExpressionEvaluationBasicFunctionality {
     // A || FALSE
     expression = userAccountDef.primaryAddress().city().eq("Budapest").OR(Expression.FALSE());
     System.out.println("\nExpression: " + expression.toString());
-    plan = new ExpressionEvaluation(tableData, null, expression).plan();
+    plan = ExpressionEvaluationPlan.of(tableData, null, expression);
     System.out.println(plan.toString());
     filteredRows = plan.execute(tableData.rows());
     // System.out.println(tableData.toString(filteredRows));
@@ -250,7 +247,7 @@ public class ExpressionEvaluationBasicFunctionality {
   void expressionIsNull() {
     Expression expression = userAccountDef.titleCode().isNull();
     System.out.println("\nExpression: " + expression.toString());
-    ExpressionEvaluationPlan plan = new ExpressionEvaluation(tableData, null, expression).plan();
+    ExpressionEvaluationPlan plan = ExpressionEvaluationPlan.of(tableData, null, expression);
     System.out.println(plan.toString());
     List<DataRow> filteredRows = plan.execute(tableData.rows());
     // System.out.println(tableData.toString(filteredRows));
@@ -265,7 +262,7 @@ public class ExpressionEvaluationBasicFunctionality {
   void expressionIn() {
     Expression expression = userAccountDef.id().in(Arrays.asList(2l, 3l, 5l));
     System.out.println("\nExpression: " + expression.toString());
-    ExpressionEvaluationPlan plan = new ExpressionEvaluation(tableData, null, expression).plan();
+    ExpressionEvaluationPlan plan = ExpressionEvaluationPlan.of(tableData, null, expression);
     System.out.println(plan.toString());
     List<DataRow> filteredRows = plan.execute(tableData.rows());
     // System.out.println(tableData.toString(filteredRows));
@@ -282,7 +279,7 @@ public class ExpressionEvaluationBasicFunctionality {
         .AND(userAccountDef.titleCode().eq("Dr."))
         .AND(userAccountDef.primaryAddress().zipcode().eq("1047"));
     System.out.println("\nExpression: " + expression.toString());
-    ExpressionEvaluationPlan plan = new ExpressionEvaluation(tableData, null, expression).plan();
+    ExpressionEvaluationPlan plan = ExpressionEvaluationPlan.of(tableData, null, expression);
     System.out.println(plan.toString());
     List<DataRow> filteredRows = plan.execute(tableData.rows());
     // System.out.println(tableData.toString(filteredRows));
@@ -300,7 +297,7 @@ public class ExpressionEvaluationBasicFunctionality {
             .titleCode().eq("Dr.").AND(userAccountDef.primaryAddress().zipcode().like("%00%")));
     System.out.println("Expression: " + expression.toString());
     ExpressionEvaluationPlan plan =
-        new ExpressionEvaluation(tableData, indexset, expression).plan();
+        ExpressionEvaluationPlan.of(tableData, indexset, expression);
     System.out.println(plan.toString());
     List<DataRow> filteredRows = plan.execute(tableData.rows());
     // System.out.println(tableData.toString(filteredRows));
@@ -317,7 +314,7 @@ public class ExpressionEvaluationBasicFunctionality {
         .OR(userAccountDef.titleCode().eq("Dr."))
         .OR(userAccountDef.primaryAddress().city().eq("Szolnok"));
     System.out.println("\nExpression: " + expression.toString());
-    ExpressionEvaluationPlan plan = new ExpressionEvaluation(tableData, null, expression).plan();
+    ExpressionEvaluationPlan plan = ExpressionEvaluationPlan.of(tableData, null, expression);
     System.out.println(plan.toString());
     List<DataRow> filteredRows = plan.execute(tableData.rows());
     // System.out.println(tableData.toString(filteredRows));
@@ -336,7 +333,7 @@ public class ExpressionEvaluationBasicFunctionality {
         .OR(userAccountDef.firstname().eq("Jakab"));
     System.out.println("\nExpression: " + expression.toString());
     ExpressionEvaluationPlan plan =
-        new ExpressionEvaluation(tableData, indexset, expression).plan();
+        ExpressionEvaluationPlan.of(tableData, indexset, expression);
     System.out.println(plan.toString());
     List<DataRow> filteredRows = plan.execute(tableData.rows());
     // System.out.println(tableData.toString(filteredRows));
@@ -354,7 +351,7 @@ public class ExpressionEvaluationBasicFunctionality {
         .OR(userAccountDef.titleCode().eq("Dr."))
         .AND(userAccountDef.primaryAddress().city().eq("Pécs"));
     System.out.println("\nExpression: " + expression.toString());
-    ExpressionEvaluationPlan plan = new ExpressionEvaluation(tableData, null, expression).plan();
+    ExpressionEvaluationPlan plan = ExpressionEvaluationPlan.of(tableData, null, expression);
     System.out.println(plan.toString());
     List<DataRow> filteredRows = plan.execute(tableData.rows());
     // System.out.println(tableData.toString(filteredRows));
@@ -372,7 +369,7 @@ public class ExpressionEvaluationBasicFunctionality {
         .OR(userAccountDef.primaryAddress().city().eq("Pécs"));
     System.out.println("\nExpression: " + expression.toString());
     ExpressionEvaluationPlan plan =
-        new ExpressionEvaluation(tableData, indexset, expression).plan();
+        ExpressionEvaluationPlan.of(tableData, indexset, expression);
     System.out.println(plan.toString());
     List<DataRow> filteredRows = plan.execute(tableData.rows());
     // System.out.println(tableData.toString(filteredRows));
@@ -389,7 +386,7 @@ public class ExpressionEvaluationBasicFunctionality {
         .AND(userAccountDef.primaryAddress().city().eq("Szolnok")
             .OR(userAccountDef.primaryAddress().city().eq("Nyíregyháza")).BRACKET());
     System.out.println("Expression: " + expression.toString());
-    ExpressionEvaluationPlan plan = new ExpressionEvaluation(tableData, null, expression).plan();
+    ExpressionEvaluationPlan plan = ExpressionEvaluationPlan.of(tableData, null, expression);
     System.out.println(plan.toString());
     List<DataRow> filteredRows = plan.execute(tableData.rows());
     // System.out.println(tableData.toString(filteredRows));
@@ -407,7 +404,7 @@ public class ExpressionEvaluationBasicFunctionality {
             .AND(userAccountDef.primaryAddress().zipcode().like("%00%")).BRACKET())
         .AND(userAccountDef.titleCode().eq("Dr."));
     System.out.println("Expression: " + expression.toString());
-    ExpressionEvaluationPlan plan = new ExpressionEvaluation(tableData, null, expression).plan();
+    ExpressionEvaluationPlan plan = ExpressionEvaluationPlan.of(tableData, null, expression);
     System.out.println(plan.toString());
     List<DataRow> filteredRows = plan.execute(tableData.rows());
     // System.out.println(tableData.toString(filteredRows));
@@ -425,7 +422,7 @@ public class ExpressionEvaluationBasicFunctionality {
             .OR(userAccountDef.lastname().eq("Perger").OR(userAccountDef.id().lt(3l))).BRACKET())
         .AND(userAccountDef.titleCode().eq("Dr."));
     System.out.println("Expression: " + expression.toString());
-    ExpressionEvaluationPlan plan = new ExpressionEvaluation(tableData, null, expression).plan();
+    ExpressionEvaluationPlan plan = ExpressionEvaluationPlan.of(tableData, null, expression);
     System.out.println(plan.toString());
     List<DataRow> filteredRows = plan.execute(tableData.rows());
     // System.out.println(tableData.toString(filteredRows));
@@ -444,7 +441,7 @@ public class ExpressionEvaluationBasicFunctionality {
         .OR(userAccountDef.lastname().eq("Gipsz")).BRACKET()
         .AND(userAccountDef.titleCode().eq("Dr."));
     System.out.println("Expression: " + expression.toString());
-    ExpressionEvaluationPlan plan = new ExpressionEvaluation(tableData, null, expression).plan();
+    ExpressionEvaluationPlan plan = ExpressionEvaluationPlan.of(tableData, null, expression);
     System.out.println(plan.toString());
     List<DataRow> filteredRows = plan.execute(tableData.rows());
     // System.out.println(tableData.toString(filteredRows));
