@@ -1,18 +1,16 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
  * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 package org.smartbit4all.domain.data.filtering;
 
@@ -20,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.data.TableData;
+import org.smartbit4all.domain.data.index.StorageLoader;
 import org.smartbit4all.domain.meta.Expression;
 import org.smartbit4all.domain.meta.Expression2Operand;
 import org.smartbit4all.domain.meta.ExpressionBetween;
@@ -42,10 +41,21 @@ public class EvaluationLoop extends EvaluationStep {
    */
   private Expression expression;
 
-  EvaluationLoop(Expression expression) {
+  /**
+   * If we have a loader then this loop can load the data into the table data before the evaluation.
+   */
+  private StorageLoader loader = null;
+
+  EvaluationLoop(Expression expression, StorageLoader loader) {
     super();
     this.expression = expression;
+    this.loader = loader;
   }
+
+  // EvaluationLoop(Expression expression) {
+  // super();
+  // this.expression = expression;
+  // }
 
   Expression getExpression() {
     return expression;
@@ -57,11 +67,22 @@ public class EvaluationLoop extends EvaluationStep {
 
   @Override
   List<DataRow> execute(TableData<?> tableData, List<DataRow> rows) {
+    List<DataRow> rowsToEvaluate = rows;
+    if (loader != null) {
+      if (rowsToEvaluate == null) {
+        // We have doesn't have row list so we must load all the rows available on the storage.
+        loader.loadAllRows(tableData);
+        // evaluate the whole table data
+        rowsToEvaluate = tableData.rows();
+      } else {
+        loader.fillRows(tableData, rowsToEvaluate);
+      }
+    }
     // At the very beginning we need to bind the columns of the expressions inside. We need to visit
     // every expression to set the bound value for them.
     List<BoundValueColumn<?>> boundValues = constructBoundValues(tableData);
     List<DataRow> result = new ArrayList<>();
-    for (DataRow row : rows) {
+    for (DataRow row : rowsToEvaluate) {
       for (BoundValueColumn<?> boundValue : boundValues) {
         boundValue.setRow(row);
       }

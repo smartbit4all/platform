@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.data.TableData;
+import org.smartbit4all.domain.data.index.StorageLoader;
 import org.smartbit4all.domain.data.index.TableDataIndexSet;
 import org.smartbit4all.domain.meta.Expression;
 
@@ -135,9 +136,9 @@ public class ExpressionEvaluationPlan {
    * 
    * @param step
    */
-  public void addStep(EvaluationStep step) {
+  public void addStep(EvaluationStep step, StorageLoader loader) {
     if (step instanceof EvaluationLoop) {
-      addLoopExpressionStep(((EvaluationLoop) step).getExpression());
+      addLoopExpressionStep(((EvaluationLoop) step).getExpression(), loader);
     } else {
       steps.add(step);
     }
@@ -149,9 +150,9 @@ public class ExpressionEvaluationPlan {
    * 
    * @param expression
    */
-  public void addLoopExpressionStep(Expression expression) {
+  public void addLoopExpressionStep(Expression expression, StorageLoader loader) {
     if (loopStep == null) {
-      loopStep = new EvaluationLoop(expression);
+      loopStep = new EvaluationLoop(expression, loader);
       steps.add(loopStep);
     } else {
       loopStep.addExpression(expression);
@@ -205,6 +206,23 @@ public class ExpressionEvaluationPlan {
   public static final ExpressionEvaluationPlan of(TableData<?> tableData,
       TableDataIndexSet indexSet, Expression expression) {
     return new ExpressionEvaluation(tableData, indexSet, expression).plan();
+  }
+
+  /**
+   * This is recursive function that traverse the expression tree to produce the most optimal plan
+   * for the evaluation. For this it receives a data table index structure that can help to optimize
+   * the filtering. The index must be created for the data table itself, the references and the
+   * referred data tables also. In a complex situation we can use the index for a referred data
+   * table to filter the matching rows. Later on we can use these rows as input for filtering the
+   * referrer rows from the current data table.
+   * 
+   * @param loader The storage loader that is responsible for loading the necessary rows into the
+   *        table data the evaluation is working on.
+   * @param expression The expression to evaluate.
+   * @return The plan that can be executed.
+   */
+  public static final ExpressionEvaluationPlan of(StorageLoader loader, Expression expression) {
+    return new ExpressionEvaluation(loader, expression).plan();
   }
 
   @Override

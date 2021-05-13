@@ -1,18 +1,16 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
  * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 package org.smartbit4all.domain.data.filtering;
 
@@ -20,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import org.smartbit4all.domain.data.TableData;
+import org.smartbit4all.domain.data.index.StorageLoader;
 
 /**
  * Helps with the processing of an expression. Contains the result
@@ -67,7 +66,7 @@ public class ExpressionPartEvaluationContext {
    * 
    * @param parentExpressionPlan
    */
-  void mergeToPlan(ExpressionEvaluationPlan parentExpressionPlan) {
+  void mergeToPlan(ExpressionEvaluationPlan parentExpressionPlan, StorageLoader loader) {
     unfoldPlans();
     // If the context has more than one plan then we create an EvaluationConcurrent with the plans,
     // and add this step to the parameter plan.
@@ -76,11 +75,11 @@ public class ExpressionPartEvaluationContext {
       for (ExpressionEvaluationPlan plan : plans) {
         step.addPlan(plan);
       }
-      parentExpressionPlan.addStep(step);
+      parentExpressionPlan.addStep(step, loader);
     } else {
       // If there is only one plan then we add our plan's steps to the parameter plan.
       for (EvaluationStep step : plans.get(0).getSteps()) {
-        parentExpressionPlan.addStep(step);
+        parentExpressionPlan.addStep(step, loader);
       }
     }
   }
@@ -97,8 +96,8 @@ public class ExpressionPartEvaluationContext {
    * <li>Second plan will have an {@link EvaluationConcurrent} with 2 plans to handle expression B
    * and expression C.</li>
    * </ul>
-   * In this case we can add the plans inside the {@link EvaluationConcurrent} to the main context,
-   * so it will have 3 plans.
+   * In this case we can add the steps inside the {@link EvaluationConcurrent} to the main context,
+   * so it will have 3 steps.
    */
   private void unfoldPlans() {
     List<ExpressionEvaluationPlan> plansToAdd = new ArrayList<ExpressionEvaluationPlan>();

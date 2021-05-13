@@ -1,18 +1,16 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
  * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 package org.smartbit4all.domain.data.index;
 
@@ -56,16 +54,12 @@ public class TableDataIndexSet {
    * @param property The property.
    * 
    */
+  @SuppressWarnings("unchecked")
   public <T> UniqueIndex<T> unique(Property<T> property) {
     String indexName = TableDataIndex.constructIndexName(IndexType.UNIQUE, Arrays.asList(property));
-    @SuppressWarnings("unchecked")
-    UniqueIndex<T> result =
-        (UniqueIndex<T>) indices.get(indexName);
-    if (result == null) {
-      result = new UniqueIndex<T>(tableRef.get(), property);
-      indices.put(indexName, result);
-    }
-    return result;
+    return (UniqueIndex<T>) indices.computeIfAbsent(indexName, (idxName) -> {
+      return new UniqueIndex<T>(tableRef.get(), property);
+    });
   }
 
   /**
@@ -74,18 +68,14 @@ public class TableDataIndexSet {
    * @param property The property.
    * 
    */
+  @SuppressWarnings("unchecked")
   public <T1 extends Comparable<?>, T2 extends Comparable<?>> UniqueIndex2<T1, T2> unique(
       Property<T1> property1, Property<T2> property2) {
     String indexName =
         TableDataIndex.constructIndexName(IndexType.UNIQUE, Arrays.asList(property1, property2));
-    @SuppressWarnings("unchecked")
-    UniqueIndex2<T1, T2> result =
-        (UniqueIndex2<T1, T2>) indices.get(indexName);
-    if (result == null) {
-      result = new UniqueIndex2<>(tableRef.get(), property1, property2);
-      indices.put(indexName, result);
-    }
-    return result;
+    return (UniqueIndex2<T1, T2>) indices.computeIfAbsent(indexName, (idxName) -> {
+      return new UniqueIndex2<>(tableRef.get(), property1, property2);
+    });
   }
 
   /**
@@ -94,17 +84,13 @@ public class TableDataIndexSet {
    * @param property The property.
    * 
    */
+  @SuppressWarnings("unchecked")
   public <T> UniqueIndex<T> unique(DataColumn<T> column) {
     String indexName =
         TableDataIndex.constructIndexName(IndexType.UNIQUE, Arrays.asList(column.getProperty()));
-    @SuppressWarnings("unchecked")
-    UniqueIndex<T> result =
-        (UniqueIndex<T>) indices.get(indexName);
-    if (result == null) {
-      result = new UniqueIndex<T>(tableRef.get(), column);
-      indices.put(indexName, result);
-    }
-    return result;
+    return (UniqueIndex<T>) indices.computeIfAbsent(indexName, (idxName) -> {
+      return new UniqueIndex<>(tableRef.get(), column);
+    });
   }
 
   /**
@@ -113,19 +99,15 @@ public class TableDataIndexSet {
    * @param property The property.
    * 
    */
+  @SuppressWarnings("unchecked")
   public <T1 extends Comparable<?>, T2 extends Comparable<?>> UniqueIndex2<T1, T2> unique(
       DataColumn<T1> column1, DataColumn<T2> column2) {
     String indexName =
         TableDataIndex.constructIndexName(IndexType.UNIQUE,
             Arrays.asList(column1.getProperty(), column2.getProperty()));
-    @SuppressWarnings("unchecked")
-    UniqueIndex2<T1, T2> result =
-        (UniqueIndex2<T1, T2>) indices.get(indexName);
-    if (result == null) {
-      result = new UniqueIndex2<>(tableRef.get(), column1, column2);
-      indices.put(indexName, result);
-    }
-    return result;
+    return (UniqueIndex2<T1, T2>) indices.computeIfAbsent(indexName, (idxName) -> {
+      return new UniqueIndex2<>(tableRef.get(), column1, column2);
+    });
   }
 
   /**
@@ -134,17 +116,13 @@ public class TableDataIndexSet {
    * @param property The property.
    * 
    */
+  @SuppressWarnings("unchecked")
   public <T> NonUniqueIndex<T> nonUnique(Property<T> property) {
     String indexName =
         TableDataIndex.constructIndexName(IndexType.NONUNIQUE, Arrays.asList(property));
-    @SuppressWarnings("unchecked")
-    NonUniqueIndex<T> result =
-        (NonUniqueIndex<T>) indices.get(indexName);
-    if (result == null) {
-      result = new NonUniqueIndex<T>(tableRef.get(), property);
-      indices.put(indexName, result);
-    }
-    return result;
+    return (NonUniqueIndex<T>) indices.computeIfAbsent(indexName, (idxName) -> {
+      return new NonUniqueIndex<>(tableRef.get(), property);
+    });
   }
 
   /**
@@ -153,18 +131,14 @@ public class TableDataIndexSet {
    * @param property The property.
    * 
    */
+  @SuppressWarnings("unchecked")
   public <T1 extends Comparable<?>, T2 extends Comparable<?>> NonUniqueIndex2<T1, T2> nonUnique(
       Property<T1> property1, Property<T2> property2) {
     String indexName =
         TableDataIndex.constructIndexName(IndexType.NONUNIQUE, Arrays.asList(property1, property2));
-    @SuppressWarnings("unchecked")
-    NonUniqueIndex2<T1, T2> result =
-        (NonUniqueIndex2<T1, T2>) indices.get(indexName);
-    if (result == null) {
-      result = new NonUniqueIndex2<>(tableRef.get(), property1, property2);
-      indices.put(indexName, result);
-    }
-    return result;
+    return (NonUniqueIndex2<T1, T2>) indices.computeIfAbsent(indexName, (idxName) -> {
+      return new NonUniqueIndex2<>(tableRef.get(), property1, property2);
+    });
   }
 
   /**
@@ -173,17 +147,13 @@ public class TableDataIndexSet {
    * @param property The property.
    * 
    */
+  @SuppressWarnings("unchecked")
   public <T> NonUniqueIndex<T> nonUnique(DataColumn<T> column) {
     String indexName =
         TableDataIndex.constructIndexName(IndexType.NONUNIQUE, Arrays.asList(column.getProperty()));
-    @SuppressWarnings("unchecked")
-    NonUniqueIndex<T> result =
-        (NonUniqueIndex<T>) indices.get(indexName);
-    if (result == null) {
-      result = new NonUniqueIndex<T>(tableRef.get(), column);
-      indices.put(indexName, result);
-    }
-    return result;
+    return (NonUniqueIndex<T>) indices.computeIfAbsent(indexName, (idxName) -> {
+      return new NonUniqueIndex<>(tableRef.get(), column);
+    });
   }
 
   /**
@@ -192,19 +162,15 @@ public class TableDataIndexSet {
    * @param property The property.
    * 
    */
+  @SuppressWarnings("unchecked")
   public <T1 extends Comparable<?>, T2 extends Comparable<?>> NonUniqueIndex2<T1, T2> nonUnique(
       DataColumn<T1> column1, DataColumn<T2> column2) {
     String indexName =
         TableDataIndex.constructIndexName(IndexType.NONUNIQUE,
             Arrays.asList(column1.getProperty(), column2.getProperty()));
-    @SuppressWarnings("unchecked")
-    NonUniqueIndex2<T1, T2> result =
-        (NonUniqueIndex2<T1, T2>) indices.get(indexName);
-    if (result == null) {
-      result = new NonUniqueIndex2<>(tableRef.get(), column1, column2);
-      indices.put(indexName, result);
-    }
-    return result;
+    return (NonUniqueIndex2<T1, T2>) indices.computeIfAbsent(indexName, (idxName) -> {
+      return new NonUniqueIndex2<>(tableRef.get(), column1, column2);
+    });
   }
 
   /**

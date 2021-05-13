@@ -21,6 +21,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.domain.data.filtering.ExpressionEvaluationPlan;
+import org.smartbit4all.domain.data.index.StorageLoaderTableData;
 import org.smartbit4all.domain.data.index.TableDataIndexSet;
 import org.smartbit4all.domain.meta.Expression;
 import org.smartbit4all.domain.meta.MetaConfiguration;
@@ -194,6 +195,9 @@ public class ExpressionEvaluationBasicFunctionality {
         userAccountDef.primaryAddress().city().eq("Budapest").AND(Expression.TRUE());
     System.out.println("\nExpression: " + expression.toString());
     ExpressionEvaluationPlan plan = ExpressionEvaluationPlan.of(tableData, null, expression);
+    ExpressionEvaluationPlan planStorage = ExpressionEvaluationPlan
+        .of(new StorageLoaderTableData(userAccountDef, tableData, userAccountDef.id()), expression);
+
     System.out.println(plan.toString());
     List<DataRow> filteredRows = plan.execute(tableData.rows());
     // System.out.println(tableData.toString(filteredRows));

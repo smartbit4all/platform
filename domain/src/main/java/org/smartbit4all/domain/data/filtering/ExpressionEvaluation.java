@@ -20,6 +20,9 @@ import java.util.List;
 import java.util.Stack;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.data.index.NonUniqueIndex;
+import org.smartbit4all.domain.data.index.StorageIndex;
+import org.smartbit4all.domain.data.index.StorageLoader;
+import org.smartbit4all.domain.data.index.StorageNonUniqueIndex;
 import org.smartbit4all.domain.data.index.TableDataIndex;
 import org.smartbit4all.domain.data.index.TableDataIndex.IndexType;
 import org.smartbit4all.domain.data.index.TableDataIndexSet;
@@ -58,9 +61,16 @@ final class ExpressionEvaluation extends ExpressionVisitor {
   private TableData<?> tableData;
 
   /**
-   * The index set of the columns for the better performance.
+   * The index set of the columns for the better performance. These indices are based on the already
+   * loaded data in the {@link #tableData}.
    */
   private TableDataIndexSet indexSet;
+
+  /**
+   * This loader is able to add all the rows available in the storage and can fill the missing
+   * property values in the table data for a given set of row.
+   */
+  private StorageLoader loader;
 
   /**
    * The expressionPartEvaluationContextStack contains the evaluation plans for the sub parts of the
@@ -89,7 +99,30 @@ final class ExpressionEvaluation extends ExpressionVisitor {
     // After we processed the expression we merge the context's plans to the rootplan.
     ExpressionPartEvaluationContext finalContext = expressionPartEvaluationContextStack.pop();
     rootPlan = new ExpressionEvaluationPlan(tableData);
-    finalContext.mergeToPlan(rootPlan);
+    finalContext.mergeToPlan(rootPlan, loader);
+  }
+
+  /**
+   * Initiate the visitor for the traverse algorithm.
+   * 
+   * @param currentPlan
+   */
+  public ExpressionEvaluation(StorageLoader loader,
+      Expression expression) {
+    super();
+    this.loader = loader;
+    // The table data will be constructed by the meta data of the loader and the expression.
+    this.tableData = new TableData<>(loader.getEntityDef());
+
+    // We create a context for the whole expression.
+    expressionPartEvaluationContextStack.push(new ExpressionPartEvaluationContext(tableData));
+
+    expression.accept(this);
+
+    // After we processed the expression we merge the context's plans to the rootplan.
+    ExpressionPartEvaluationContext finalContext = expressionPartEvaluationContextStack.pop();
+    rootPlan = new ExpressionEvaluationPlan(tableData);
+    finalContext.mergeToPlan(rootPlan, loader);
   }
 
   @Override
@@ -97,18 +130,18 @@ final class ExpressionEvaluation extends ExpressionVisitor {
     // We don't do anything because this is a constant expression. If it's true then we skip it. If
     // false then there is no need to execute the embedding loop.
     // TODO implement the skip later on.
-    getCurrentPlan().addLoopExpressionStep(expression);
+    getCurrentPlan().addLoopExpressionStep(expression, loader);
   }
 
 
   @Override
   public void visitBetween(ExpressionBetween<?> expression) {
-    getCurrentPlan().addLoopExpressionStep(expression);
+    getCurrentPlan().addLoopExpressionStep(expression, loader);
   }
 
   @Override
   public void visitIsNull(ExpressionIsNull expression) {
-    getCurrentPlan().addLoopExpressionStep(expression);
+    getCurrentPlan().addLoopExpressionStep(expression, loader);
   }
 
   @Override
@@ -130,22 +163,36 @@ final class ExpressionEvaluation extends ExpressionVisitor {
       if (index != null) {
         getCurrentPlan().addStep(
             new EvaluationIndexedUnique<T>((UniqueIndex<T>) index,
-                values, expression.isNegate()));
+                values, expression.isNegate()),
+            loader);
       } else {
         // Else let's try to find the non unique index.
         index = indexSet.find(IndexType.NONUNIQUE, propertyOperand.property());
         if (index != null) {
           getCurrentPlan().addStep(
               new EvaluationIndexedNonUnique<T>((NonUniqueIndex<T>) index,
-                  values, expression.isNegate()));
+                  values, expression.isNegate()),
+              loader);
         } else {
           // If we don't have any index then the fall back is a simple loop.
-          getCurrentPlan().addLoopExpressionStep(expression);
+          getCurrentPlan().addLoopExpressionStep(expression, loader);
+        }
+      }
+    } else if (loader != null) {
+      // If we have a loader with storage indices we try to construct indexed steps. Now we use the
+      // first available index.
+      for (StorageIndex idx : loader.getIndices()) {
+        if (idx.canUseFor(expression)) {
+          // TODO
+          getCurrentPlan().addStep(
+              new EvaluationIndexedNonUniqueStorage<T>(loader, (StorageNonUniqueIndex<T, ?>) idx,
+                  values, expression.isNegate()),
+              loader);
         }
       }
     } else {
       // If we don't have any index then the fall back is a simple loop.
-      getCurrentPlan().addLoopExpressionStep(expression);
+      getCurrentPlan().addLoopExpressionStep(expression, loader);
     }
   }
 
@@ -156,7 +203,7 @@ final class ExpressionEvaluation extends ExpressionVisitor {
       constructEvaluationStep(expression.getOp(), expression,
           Arrays.asList(expression.getLiteral().value()));
     } else {
-      getCurrentPlan().addLoopExpressionStep(expression);
+      getCurrentPlan().addLoopExpressionStep(expression, loader);
     }
   }
 
@@ -188,7 +235,7 @@ final class ExpressionEvaluation extends ExpressionVisitor {
         expressionPartEvaluationContextStack.pop();
     ExpressionPartEvaluationContext outerBracketContext =
         expressionPartEvaluationContextStack.peek();
-    innerBracketContext.mergeToPlan(outerBracketContext.getCurrentPlan());
+    innerBracketContext.mergeToPlan(outerBracketContext.getCurrentPlan(), loader);
   }
 
   /**
