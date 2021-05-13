@@ -1,7 +1,7 @@
 package org.smartbit4all.ui.vaadin.components.binder;
 
 import java.util.function.Function;
-import org.smartbit4all.core.object.ObjectEditing;
+import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.core.object.PropertyChange;
 import org.smartbit4all.core.utility.PathUtility;
 import com.vaadin.flow.component.HasText;
@@ -10,27 +10,27 @@ public class VaadinHasTextBinder {
 
   protected HasText label;
 
-  protected ObjectEditing editing;
+  protected ObservableObject observableObject;
 
   protected String path;
 
   private Function<Object, String> converterFunction;
 
-  public VaadinHasTextBinder(HasText label, ObjectEditing editing, String path) {
+  public VaadinHasTextBinder(HasText label, ObservableObject observableObject, String path) {
     super();
     this.label = label;
-    this.editing = editing;
+    this.observableObject = observableObject;
     this.path = path;
 
     subscribeToUIEvent();
   }
-  
+
   public void setConverterFunction(Function<Object, String> converterFunction) {
     this.converterFunction = converterFunction;
   }
 
   protected void subscribeToUIEvent() {
-    editing.publisher().properties().subscribe()
+    observableObject.properties().subscribe()
         .property(PathUtility.getParentPath(path), PathUtility.getLastPath(path))
         .add(value -> onUIStateChanged(value));
   }

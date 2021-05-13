@@ -13,13 +13,13 @@ import org.smartbit4all.core.event.EventSubscription;
 import org.smartbit4all.core.utility.StringConstant;
 
 /**
- * The base implementation of the {@link ObjectPublisher} interface that can be used in the Api
+ * Implementation of the {@link ObservableObject} interface that can be used in stateful API
  * implementations.
  * 
  * @author Peter Boros
  *
  */
-public class ObjectPublisherImpl implements ObjectPublisher, EventPublisherImpl {
+public final class ObservableObjectImpl implements ObservableObject, EventPublisherImpl {
 
   ApiObjectRef ref;
 
@@ -239,4 +239,23 @@ public class ObjectPublisherImpl implements ObjectPublisher, EventPublisherImpl 
   public final void setRef(ApiObjectRef ref) {
     this.ref = ref;
   }
+
+  @Override
+  public void setValue(String propertyPath, Object value) {
+    ref.setValueByPath(propertyPath, value);
+    notifyListeners();
+  }
+
+  @Override
+  public void addValue(String collectionPath, Object value) {
+    ref.addValueByPath(collectionPath, value);
+    notifyListeners();
+  }
+
+  @Override
+  public void removeValue(String collectionElementPath) {
+    ref.removeValueByPath(collectionElementPath);
+    notifyListeners();
+  }
+
 }

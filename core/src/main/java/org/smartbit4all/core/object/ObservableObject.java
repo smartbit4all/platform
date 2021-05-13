@@ -49,7 +49,7 @@ import org.smartbit4all.core.event.EventPublisher;
  * 
  * @author Peter Boros
  */
-public interface ObjectPublisher extends EventPublisher {
+public interface ObservableObject extends EventPublisher {
 
   /**
    * The event definition of the properties.
@@ -78,4 +78,14 @@ public interface ObjectPublisher extends EventPublisher {
    * @return
    */
   CollectionObjectChangeEvent collectionObjects();
+
+  @NotifyListeners
+  void setValue(String propertyPath, Object value);
+
+  @NotifyListeners
+  void addValue(String collectionPath, Object value);
+
+  @NotifyListeners
+  void removeValue(String collectionElementPath);
+
 }

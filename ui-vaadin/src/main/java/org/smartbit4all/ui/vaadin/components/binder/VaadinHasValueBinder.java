@@ -2,7 +2,7 @@ package org.smartbit4all.ui.vaadin.components.binder;
 
 import java.util.Locale;
 import java.util.Objects;
-import org.smartbit4all.core.object.ObjectEditing;
+import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.core.object.PropertyChange;
 import org.smartbit4all.core.utility.PathUtility;
 import com.vaadin.flow.component.Component;
@@ -17,7 +17,7 @@ import com.vaadin.flow.data.converter.Converter;
 
 public class VaadinHasValueBinder<WIDGET, DATA> {
 
-  protected ObjectEditing editing;
+  protected ObservableObject observableObject;
 
   protected String path;
 
@@ -30,10 +30,10 @@ public class VaadinHasValueBinder<WIDGET, DATA> {
 
   private Validator<? super DATA> validator;
 
-  public VaadinHasValueBinder(HasValue<?, WIDGET> field, ObjectEditing editing, String path) {
+  public VaadinHasValueBinder(HasValue<?, WIDGET> field, ObservableObject observableObject, String path) {
     super();
     this.field = field;
-    this.editing = editing;
+    this.observableObject = observableObject;
     this.path = path;
 
     subscribeToUIEvent();
@@ -86,7 +86,7 @@ public class VaadinHasValueBinder<WIDGET, DATA> {
   }
 
   protected void subscribeToUIEvent() {
-    editing.publisher().properties().subscribe()
+    observableObject.properties().subscribe()
         .property(PathUtility.getParentPath(path), PathUtility.getLastPath(path))
         .add(this::onPropertyChanged);
   }
@@ -117,7 +117,7 @@ public class VaadinHasValueBinder<WIDGET, DATA> {
 
   protected void setUIState(DATA value) {
     if (!propertyChangeProgress) {
-      editing.setValue(path, value);
+      observableObject.setValue(path, value);
     }
   }
 

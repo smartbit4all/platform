@@ -2,6 +2,7 @@ package org.smartbit4all.ui.vaadin.components.binder;
 
 import java.util.function.Consumer;
 import org.smartbit4all.core.object.ObjectEditing;
+import org.smartbit4all.core.object.ObservableObject;
 import com.vaadin.flow.component.HasText;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.button.Button;
@@ -17,22 +18,22 @@ public class VaadinBinders {
   }
 
   public static <WIDGET> VaadinHasValueBinder<WIDGET, WIDGET> bind(
-      HasValue<?, WIDGET> field, ObjectEditing editing,
+      HasValue<?, WIDGET> field, ObservableObject observableObject,
       String path) {
-    return new VaadinHasValueBinder<>(field, editing, path);
+    return new VaadinHasValueBinder<>(field, observableObject, path);
   }
 
   public static <WIDGET, DATA> VaadinHasValueBinder<WIDGET, DATA> bind(HasValue<?, WIDGET> field,
-      ObjectEditing editing, String path, Class<DATA> clazz) {
-    return new VaadinHasValueBinder<>(field, editing, path);
+      ObservableObject observableObject, String path, Class<DATA> clazz) {
+    return new VaadinHasValueBinder<>(field, observableObject, path);
   }
 
-  public static VaadinHasTextBinder bind(HasText label, ObjectEditing editing, String path) {
-    return new VaadinHasTextBinder(label, editing, path);
+  public static VaadinHasTextBinder bind(HasText label, ObservableObject observableObject,
+      String path) {
+    return new VaadinHasTextBinder(label, observableObject, path);
   }
 
-  public static <T, E extends ObjectEditing> VaadinGridBinder<T, E> bind(Grid<T> grid, E editing,
-      String path,
+  public static <T> VaadinGridBinder<T> bind(Grid<T> grid, ObservableObject editing, String path,
       String collectionName) {
     return new VaadinGridBinder<>(grid, editing, path, collectionName);
   }

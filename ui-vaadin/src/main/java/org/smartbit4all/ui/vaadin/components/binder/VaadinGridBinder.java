@@ -7,23 +7,24 @@ import java.util.Map;
 import org.smartbit4all.core.object.ChangeState;
 import org.smartbit4all.core.object.CollectionObjectChange;
 import org.smartbit4all.core.object.ObjectChangeSimple;
-import org.smartbit4all.core.object.ObjectEditing;
+import org.smartbit4all.core.object.ObservableObject;
 import com.vaadin.flow.component.grid.Grid;
 
-public class VaadinGridBinder<T, E extends ObjectEditing> {
+public class VaadinGridBinder<T> {
 
   private Grid<T> grid;
-  private E editing;
+  private ObservableObject observableObject;
 
   private List<T> items;
   private Map<String, T> itemsByPath;
 
-  public VaadinGridBinder(Grid<T> grid, E editing, String path, String collectionName) {
+  public VaadinGridBinder(Grid<T> grid, ObservableObject observableObject, String path,
+      String collectionName) {
     this.grid = grid;
-    this.editing = editing;
+    this.observableObject = observableObject;
     this.items = new ArrayList<>();
     this.itemsByPath = new HashMap<>();
-    this.editing.publisher().collectionObjects().subscribe().collection(path, collectionName)
+    this.observableObject.collectionObjects().subscribe().collection(path, collectionName)
         .add(this::onCollectionObjectChanged);
     this.grid.setItems(items);
   }
