@@ -14,11 +14,9 @@
  ******************************************************************************/
 package org.smartbit4all.core.object;
 
-import org.smartbit4all.core.utility.StringConstant;
-
 /**
  * The super class of item change events of an object. They can be {@link PropertyChange},
- * {@link ReferenceChange} and {@link CollectionChange} instances.
+ * {@link ReferenceChange}, {@link CollectionChange} and {@link CollectionObjectChange} instances.
  * 
  * @author Peter Boros
  *
@@ -31,7 +29,7 @@ public abstract class ChangeItem {
    * grannies. If we no that we have grandparents then we have to subscribe for their references or
    * collections to have higher level of notification about them.
    */
-  private final String parentPath;
+  private final String path;
 
   /**
    * The item name inside the given path. Properties, references and collections are also
@@ -44,9 +42,9 @@ public abstract class ChangeItem {
    * 
    * @param uri
    */
-  ChangeItem(String parentPath, String name) {
+  ChangeItem(String path, String name) {
     super();
-    this.parentPath = parentPath;
+    this.path = path;
     this.name = name;
   }
 
@@ -58,8 +56,8 @@ public abstract class ChangeItem {
    * 
    * @return
    */
-  public final String getParentId() {
-    return parentPath;
+  public final String getPath() {
+    return path;
   }
 
   /**
@@ -70,11 +68,6 @@ public abstract class ChangeItem {
    */
   public final String getName() {
     return name;
-  }
-
-  public final String fullyQualifiedName() {
-    return (parentPath == null || parentPath.isEmpty()) ? name
-        : parentPath + StringConstant.SLASH + name;
   }
 
 }

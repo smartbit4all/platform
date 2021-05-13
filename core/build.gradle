@@ -1,4 +1,5 @@
 dependencies {
     api 'org.springframework:spring-context:5.2.3.RELEASE'
+    api "io.reactivex.rxjava3:rxjava:3.0.12"
     implementation 'javax.validation:validation-api:2.0.1.Final'
 }

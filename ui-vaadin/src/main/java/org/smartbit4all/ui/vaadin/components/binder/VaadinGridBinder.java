@@ -24,8 +24,8 @@ public class VaadinGridBinder<T> {
     this.observableObject = observableObject;
     this.items = new ArrayList<>();
     this.itemsByPath = new HashMap<>();
-    this.observableObject.collectionObjects().subscribe().collection(path, collectionName)
-        .add(this::onCollectionObjectChanged);
+    this.observableObject.onCollectionObjectChange(path, collectionName,
+        this::onCollectionObjectChanged);
     this.grid.setItems(items);
   }
 

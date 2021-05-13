@@ -8,7 +8,7 @@ import org.smartbit4all.core.object.PublishEvents;
 public interface StatefulBeanEditing extends ObjectEditing {
 
   @PublishEvents("OBJECT")
-  ObservableObject publisher();
+  ObservableObject bean();
 
   void setBean(StatefulBean bean);
 

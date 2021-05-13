@@ -29,8 +29,8 @@ public class ReferenceChange extends ChangeItem {
    */
   private final ObjectChange changedReference;
 
-  ReferenceChange(String parentPath, String name, ObjectChange changedReference) {
-    super(parentPath, name);
+  ReferenceChange(String path, String name, ObjectChange changedReference) {
+    super(path, name);
     this.changedReference = changedReference;
   }
 

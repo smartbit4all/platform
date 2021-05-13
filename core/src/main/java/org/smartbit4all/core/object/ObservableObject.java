@@ -15,6 +15,9 @@
 package org.smartbit4all.core.object;
 
 import org.smartbit4all.core.event.EventPublisher;
+import io.reactivex.rxjava3.annotations.NonNull;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.functions.Consumer;
 
 /**
  * This event definition is published for accessing the modification events of an object hierarchy.
@@ -56,28 +59,28 @@ public interface ObservableObject extends EventPublisher {
    * 
    * @return
    */
-  PropertyChangeEvent properties();
+  Observable<PropertyChange> properties();
 
   /**
    * The event definition of the references.
    * 
    * @return
    */
-  ReferenceChangeEvent references();
+  Observable<ReferenceChange> references();
 
   /**
    * The event definition of the collections.
    * 
    * @return
    */
-  CollectionChangeEvent collections();
+  Observable<CollectionChange> collections();
 
   /**
    * The event definition of the collection object changes.
    * 
    * @return
    */
-  CollectionObjectChangeEvent collectionObjects();
+  Observable<CollectionObjectChange> collectionObjects();
 
   @NotifyListeners
   void setValue(String propertyPath, Object value);
@@ -87,5 +90,33 @@ public interface ObservableObject extends EventPublisher {
 
   @NotifyListeners
   void removeValue(String collectionElementPath);
+
+  default void onPropertyChange(String path, String property,
+      @NonNull Consumer<? super PropertyChange> onPropertyChange) {
+    properties()
+        .filter(change -> ObservableObjectHelper.pathMatch(change, path, property))
+        .subscribe(onPropertyChange);
+  }
+
+  default void onReferenceChange(String path, String reference,
+      @NonNull Consumer<? super ReferenceChange> onReferenceChange) {
+    references()
+        .filter(change -> ObservableObjectHelper.pathMatch(change, path, reference))
+        .subscribe(onReferenceChange);
+  }
+
+  default void onCollectionChange(String path, String collection,
+      @NonNull Consumer<? super CollectionChange> onCollectionChange) {
+    collections()
+        .filter(change -> ObservableObjectHelper.pathMatch(change, path, collection))
+        .subscribe(onCollectionChange);
+  }
+
+  default void onCollectionObjectChange(String path, String collection,
+      @NonNull Consumer<? super CollectionObjectChange> onCollectionObjectChange) {
+    collectionObjects()
+        .filter(change -> ObservableObjectHelper.pathMatch(change, path, collection))
+        .subscribe(onCollectionObjectChange);
+  }
 
 }

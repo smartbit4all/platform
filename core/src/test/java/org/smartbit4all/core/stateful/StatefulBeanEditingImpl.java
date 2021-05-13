@@ -9,7 +9,7 @@ import org.smartbit4all.core.object.ObservableObjectImpl;
 
 public class StatefulBeanEditingImpl extends ObjectEditingImpl implements StatefulBeanEditing {
 
-  protected ObservableObjectImpl publisher;
+  protected ObservableObjectImpl observableBean;
 
   StatefulBean bean;
 
@@ -21,12 +21,12 @@ public class StatefulBeanEditingImpl extends ObjectEditingImpl implements Statef
     super();
 
     this.descriptors = descriptors;
-    publisher = new ObservableObjectImpl();
+    observableBean = new ObservableObjectImpl();
   }
 
   @Override
-  public ObservableObject publisher() {
-    return publisher;
+  public ObservableObject bean() {
+    return observableBean;
   }
 
   @Override
@@ -35,7 +35,7 @@ public class StatefulBeanEditingImpl extends ObjectEditingImpl implements Statef
 
     ref = new ApiObjectRef(null, bean, descriptors);
     wrapper = ref.getWrapper(StatefulBean.class);
-    publisher.setRef(ref);
+    observableBean.setRef(ref);
   }
 
   @Override

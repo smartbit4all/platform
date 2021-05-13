@@ -35,8 +35,8 @@ public class PropertyChange extends ChangeItem {
    */
   private Object newValue;
 
-  PropertyChange(String parentPath, String name, Object oldValue, Object newValue) {
-    super(parentPath, name);
+  PropertyChange(String path, String name, Object oldValue, Object newValue) {
+    super(path, name);
     this.oldValue = oldValue;
     this.newValue = newValue;
   }

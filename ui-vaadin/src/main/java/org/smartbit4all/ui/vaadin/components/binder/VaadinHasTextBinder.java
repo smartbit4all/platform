@@ -30,9 +30,8 @@ public class VaadinHasTextBinder {
   }
 
   protected void subscribeToUIEvent() {
-    observableObject.properties().subscribe()
-        .property(PathUtility.getParentPath(path), PathUtility.getLastPath(path))
-        .add(value -> onUIStateChanged(value));
+    observableObject.onPropertyChange(PathUtility.getParentPath(path),
+        PathUtility.getLastPath(path), value -> onUIStateChanged(value));
   }
 
   protected void onUIStateChanged(PropertyChange value) {

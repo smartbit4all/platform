@@ -33,8 +33,8 @@ public class CollectionObjectChange extends ChangeItem {
    */
   private final List<ObjectChangeSimple> changes = new ArrayList<>();
 
-  CollectionObjectChange(String parentPath, String name) {
-    super(parentPath, name);
+  CollectionObjectChange(String path, String name) {
+    super(path, name);
   }
 
   /**

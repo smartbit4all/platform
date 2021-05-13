@@ -44,16 +44,18 @@ import com.google.common.cache.CacheBuilder;
 public class StatefulApiInterceptor implements MethodInterceptor {
 
   private static final Logger log = LoggerFactory.getLogger(StatefulApiInterceptor.class);
-  
+
   /**
    * The cache of the publishers.
    */
-  private static final Cache<Class<?>, Map<String, Method>> cache = CacheBuilder.newBuilder().build();
-  
+  private static final Cache<Class<?>, Map<String, Method>> cache =
+      CacheBuilder.newBuilder().build();
+
   @Override
   public Object invoke(MethodInvocation invocation) throws Throwable {
     Object result = invocation.proceed();
-    Map<String, Method> publishers = cache.get(invocation.getMethod().getDeclaringClass(), () -> getPublishers(invocation));
+    Map<String, Method> publishers =
+        cache.get(invocation.getMethod().getDeclaringClass(), () -> getPublishers(invocation));
     NotifyListeners notifiyListeners = invocation.getMethod().getAnnotation(NotifyListeners.class);
     Collection<Method> publishersToCall;
     if (notifiyListeners.value() == null || notifiyListeners.value().length == 0) {
@@ -67,7 +69,7 @@ public class StatefulApiInterceptor implements MethodInterceptor {
     for (Method publisherImpl : publishersToCall) {
       EventPublisher publisher = (EventPublisher) publisherImpl.invoke(invocation.getThis());
       if (publisher instanceof EventPublisherImpl) {
-        ((EventPublisherImpl)publisher).notifyListeners();
+        ((EventPublisherImpl) publisher).notifyListeners();
       }
     }
     return result;
@@ -79,7 +81,6 @@ public class StatefulApiInterceptor implements MethodInterceptor {
         m -> m.isAnnotationPresent(PublishEvents.class) && m.getParameterCount() == 0);
     for (Method method : methods) {
       try {
-//        EventPublisher publisher = (EventPublisher) method.invoke(invocation.getThis());
         PublishEvents publishEvents = method.getAnnotation(PublishEvents.class);
         Method existingPublisherMethod = publishers.get(publishEvents.value());
         if (existingPublisherMethod != null) {
@@ -87,15 +88,11 @@ public class StatefulApiInterceptor implements MethodInterceptor {
               + invocation.getMethod().getDeclaringClass() + ": " + publishEvents.value() + ")");
         }
         publishers.put(publishEvents.value(), method);
-//        if (publisher instanceof EventPublisherImpl) {
-//          publishers.put(publishEvents.value(), (EventPublisherImpl) publisher);
-//        }
       } catch (Exception e) {
         log.error("Unable to retrieve publisher " + method, e);
       }
     }
     return publishers;
   }
-  
-  
+
 }

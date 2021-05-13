@@ -30,7 +30,8 @@ public class VaadinHasValueBinder<WIDGET, DATA> {
 
   private Validator<? super DATA> validator;
 
-  public VaadinHasValueBinder(HasValue<?, WIDGET> field, ObservableObject observableObject, String path) {
+  public VaadinHasValueBinder(HasValue<?, WIDGET> field, ObservableObject observableObject,
+      String path) {
     super();
     this.field = field;
     this.observableObject = observableObject;
@@ -86,9 +87,8 @@ public class VaadinHasValueBinder<WIDGET, DATA> {
   }
 
   protected void subscribeToUIEvent() {
-    observableObject.properties().subscribe()
-        .property(PathUtility.getParentPath(path), PathUtility.getLastPath(path))
-        .add(this::onPropertyChanged);
+    observableObject.onPropertyChange(PathUtility.getParentPath(path),
+        PathUtility.getLastPath(path), this::onPropertyChanged);
   }
 
   private void onPropertyChanged(PropertyChange value) {
