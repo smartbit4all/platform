@@ -94,28 +94,28 @@ public interface ObservableObject extends EventPublisher {
   default void onPropertyChange(String path, String property,
       @NonNull Consumer<? super PropertyChange> onPropertyChange) {
     properties()
-        .filter(change -> ObservableObjectHelper.pathMatch(change, path, property))
+        .filter(change -> ObservableObjectHelper.pathEquals(change, path, property))
         .subscribe(onPropertyChange);
   }
 
   default void onReferenceChange(String path, String reference,
       @NonNull Consumer<? super ReferenceChange> onReferenceChange) {
     references()
-        .filter(change -> ObservableObjectHelper.pathMatch(change, path, reference))
+        .filter(change -> ObservableObjectHelper.pathEquals(change, path, reference))
         .subscribe(onReferenceChange);
   }
 
   default void onCollectionChange(String path, String collection,
       @NonNull Consumer<? super CollectionChange> onCollectionChange) {
     collections()
-        .filter(change -> ObservableObjectHelper.pathMatch(change, path, collection))
+        .filter(change -> ObservableObjectHelper.pathEquals(change, path, collection))
         .subscribe(onCollectionChange);
   }
 
   default void onCollectionObjectChange(String path, String collection,
       @NonNull Consumer<? super CollectionObjectChange> onCollectionObjectChange) {
     collectionObjects()
-        .filter(change -> ObservableObjectHelper.pathMatch(change, path, collection))
+        .filter(change -> ObservableObjectHelper.pathEquals(change, path, collection))
         .subscribe(onCollectionObjectChange);
   }
 
