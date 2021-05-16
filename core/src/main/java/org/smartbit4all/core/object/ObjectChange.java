@@ -113,11 +113,6 @@ public class ObjectChange {
       sb.append(StringConstant.NEW_LINE);
       sb.append(i.toString());
     });
-    referencedObjects.stream().sorted((i1, i2) -> i1.getName().compareTo(i2.getName()))
-        .forEach(i -> {
-          sb.append(StringConstant.NEW_LINE);
-          sb.append(i.toString());
-        });
     collections.stream().sorted((i1, i2) -> i1.getName().compareTo(i2.getName())).forEach(i -> {
       sb.append(StringConstant.NEW_LINE);
       sb.append(i.toString());
