@@ -19,6 +19,8 @@ public final class ObservableObjectImpl implements ObservableObject, EventPublis
 
   private PublishSubject<PropertyChange> propertyChangePublisher = PublishSubject.create();
   private PublishSubject<ReferenceChange> referenceChangePublisher = PublishSubject.create();
+  private PublishSubject<ReferencedObjectChange> referencedObjectChangePublisher =
+      PublishSubject.create();
   private PublishSubject<CollectionChange> collectionChangePublisher = PublishSubject.create();
   private PublishSubject<CollectionObjectChange> collectionObjectChangePublisher =
       PublishSubject.create();
@@ -26,6 +28,7 @@ public final class ObservableObjectImpl implements ObservableObject, EventPublis
   private void notify(ObjectChange objectChange) {
     notifyListeners(objectChange.getProperties(), propertyChangePublisher);
     notifyListeners(objectChange.getReferences(), referenceChangePublisher);
+    notifyListeners(objectChange.getReferencedObjects(), referencedObjectChangePublisher);
     notifyListeners(objectChange.getCollections(), collectionChangePublisher);
     notifyListeners(objectChange.getCollectionObjects(), collectionObjectChangePublisher);
     // After manage the changes at the actual level. Let's start recursion on the references and on
@@ -56,6 +59,11 @@ public final class ObservableObjectImpl implements ObservableObject, EventPublis
   @Override
   public Observable<ReferenceChange> references() {
     return referenceChangePublisher;
+  }
+
+  @Override
+  public Observable<ReferencedObjectChange> referencedObjects() {
+    return referencedObjectChangePublisher;
   }
 
   @Override

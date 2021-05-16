@@ -50,6 +50,11 @@ public class ObjectChange {
   private final List<ReferenceChange> references = new ArrayList<>();
 
   /**
+   * The changes of the referenced objects.
+   */
+  private final List<ReferencedObjectChange> referencedObjects = new ArrayList<>();
+
+  /**
    * The changes of the collections.
    */
   private final List<CollectionChange> collections = new ArrayList<>();
@@ -79,6 +84,10 @@ public class ObjectChange {
     return references;
   }
 
+  public final List<ReferencedObjectChange> getReferencedObjects() {
+    return referencedObjects;
+  }
+
   public final List<CollectionChange> getCollections() {
     return collections;
   }
@@ -104,6 +113,11 @@ public class ObjectChange {
       sb.append(StringConstant.NEW_LINE);
       sb.append(i.toString());
     });
+    referencedObjects.stream().sorted((i1, i2) -> i1.getName().compareTo(i2.getName()))
+        .forEach(i -> {
+          sb.append(StringConstant.NEW_LINE);
+          sb.append(i.toString());
+        });
     collections.stream().sorted((i1, i2) -> i1.getName().compareTo(i2.getName())).forEach(i -> {
       sb.append(StringConstant.NEW_LINE);
       sb.append(i.toString());

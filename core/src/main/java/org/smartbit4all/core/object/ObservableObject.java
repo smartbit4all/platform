@@ -55,28 +55,35 @@ import io.reactivex.rxjava3.functions.Consumer;
 public interface ObservableObject extends EventPublisher {
 
   /**
-   * The event definition of the properties.
+   * Publisher of {@link PropertyChange} events.
    * 
    * @return
    */
   Observable<PropertyChange> properties();
 
   /**
-   * The event definition of the references.
+   * Publisher of {@link ReferenceChange} events.
    * 
    * @return
    */
   Observable<ReferenceChange> references();
 
   /**
-   * The event definition of the collections.
+   * Publisher of {@link ReferenceChange} events.
+   * 
+   * @return
+   */
+  Observable<ReferencedObjectChange> referencedObjects();
+
+  /**
+   * Publisher of {@link CollectionChange} events.
    * 
    * @return
    */
   Observable<CollectionChange> collections();
 
   /**
-   * The event definition of the collection object changes.
+   * Publisher of {@link CollectionObjectChange} events.
    * 
    * @return
    */
@@ -103,6 +110,13 @@ public interface ObservableObject extends EventPublisher {
     references()
         .filter(change -> ObservableObjectHelper.pathEquals(change, path, reference))
         .subscribe(onReferenceChange);
+  }
+
+  default void onReferencedObjectChange(String path, String reference,
+      @NonNull Consumer<? super ReferencedObjectChange> onReferencedObjectChange) {
+    referencedObjects()
+        .filter(change -> ObservableObjectHelper.pathEquals(change, path, reference))
+        .subscribe(onReferencedObjectChange);
   }
 
   default void onCollectionChange(String path, String collection,

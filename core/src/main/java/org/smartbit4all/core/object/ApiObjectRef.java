@@ -494,13 +494,20 @@ public class ApiObjectRef {
           break;
         case REFERENCE:
           if (entry.getReference() != null) {
-            Optional<ObjectChange> refChange = entry.getReference().renderAndCleanChanges();
-            if (refChange.isPresent()) {
+            ApiObjectRef ref = entry.getReference();
+            Optional<ObjectChange> refChangeOpt = ref.renderAndCleanChanges();
+            if (refChangeOpt.isPresent()) {
+              ObjectChange refChange = refChangeOpt.get();
               if (result == null) {
                 result = new ObjectChange(path, ChangeState.MODIFIED);
               }
-              result.getReferences()
-                  .add(new ReferenceChange(path, entry.getMeta().getName(), refChange.get()));
+              result.getReferences().add(
+                  new ReferenceChange(path, entry.getMeta().getName(), refChange));
+
+              result.getReferencedObjects()
+                  .add(new ReferencedObjectChange(path, entry.getMeta().getName(),
+                      new ObjectChangeSimple(ref.getPath(), refChange.getOperation(),
+                          ref.getObject())));
             }
           }
           break;
