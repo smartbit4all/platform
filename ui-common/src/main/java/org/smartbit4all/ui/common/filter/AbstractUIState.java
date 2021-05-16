@@ -15,18 +15,13 @@
 package org.smartbit4all.ui.common.filter;
 
 import java.util.UUID;
-import org.smartbit4all.core.event.EventPublisherHelper;
 
 public abstract class AbstractUIState {
 
   protected String id;
 
-  protected EventPublisherHelper<UIStateEvent> helper;
-
   protected AbstractUIState() {
     this.id = UUID.randomUUID().toString();
-    helper =
-        new EventPublisherHelper<>(UIStateEvent.class, "api:/AbstractUIStateEventApi");
   }
 
   public String getId() {
