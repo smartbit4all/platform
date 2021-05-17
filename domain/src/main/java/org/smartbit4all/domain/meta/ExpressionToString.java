@@ -86,6 +86,11 @@ final class ExpressionToString extends ExpressionVisitor {
   public void visitInDataSet(ExpressionInDataSet expressionInDataSet) {
     builder.append(appendSpace() + expressionInDataSet);
   }
+  
+  @Override
+  public void visitExists(ExpressionExists expression) {
+    builder.append(appendSpace() + expression);
+  }
 
   /**
    * Create the textual representation for the given expression using the {@link ExpressionVisitor}

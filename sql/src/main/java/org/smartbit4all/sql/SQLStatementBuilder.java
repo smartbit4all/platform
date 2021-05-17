@@ -45,6 +45,7 @@ import org.smartbit4all.domain.meta.OperandLiteral;
 import org.smartbit4all.domain.meta.OperandProperty;
 import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.domain.meta.PropertyComputed;
+import org.smartbit4all.domain.meta.PropertyFunction;
 import org.smartbit4all.domain.meta.PropertyOwned;
 import org.smartbit4all.domain.meta.PropertyRef;
 import org.smartbit4all.domain.meta.PropertySqlComputed;
@@ -232,7 +233,7 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
       PropertyOwned<?> owned = (PropertyOwned<?>) propertyOperand.property();
       columnName = getColumn(owned.getDbExpression());
     } else if (propertyOperand.property() instanceof PropertyRef<?>) {
-      // TODO null check: getPropertyOwned will return NULL for computed referedd properties
+      // TODO null check: getPropertyOwned will return NULL for computed referred properties
       PropertyOwned<?> owned =
           ((PropertyRef<?>) propertyOperand.property()).getReferredOwnedProperty();
       columnName = getColumn(owned.getDbExpression());
@@ -240,6 +241,13 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
     if (propertyOperand.getQualifier() != null) {
       columnName = propertyOperand.getQualifier() + StringConstant.DOT + columnName;
     }
+    
+    PropertyFunction propertyFunction = propertyOperand.property().getPropertyFunction();
+    if(propertyFunction != null) {
+      columnName = propertyFunction.getStatement() 
+          + StringConstant.LEFT_PARENTHESIS + columnName + StringConstant.RIGHT_PARENTHESIS;
+    }
+    
     append(columnName);
   }
 
@@ -614,8 +622,15 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
     append(expression.operator().text());
 
     separate();
-
-    append(result, expression.getLiteral());
+    
+    PropertyFunction propertyFunction = expression.getOp().property().getPropertyFunction();
+    if(propertyFunction != null) {
+      append(propertyFunction.getStatement() + StringConstant.LEFT_PARENTHESIS);
+      append(result, expression.getLiteral());
+      append(StringConstant.RIGHT_PARENTHESIS);
+    } else {
+      append(result, expression.getLiteral());
+    }
 
     if (expression.isNegate()) {
       b.append(StringConstant.RIGHT_PARENTHESIS);
@@ -751,9 +766,19 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
   @Override
   public void append(SQLSelectColumn column) {
     SQLSelectFromNode fromNode = column.from.get();
-    b.append(fromNode.alias());
-    b.append(StringConstant.DOT);
-    b.append(column.columnName);
+    String functionName = column.getFunctionName();
+    if(functionName != null && !functionName.isEmpty() ) {
+      b.append(functionName);
+      b.append(StringConstant.LEFT_PARENTHESIS);
+      b.append(fromNode.alias());
+      b.append(StringConstant.DOT);
+      b.append(column.columnName);
+      b.append(StringConstant.RIGHT_PARENTHESIS);
+    } else {
+      b.append(fromNode.alias());
+      b.append(StringConstant.DOT);
+      b.append(column.columnName);
+    }
     separate();
     b.append(column.alias);
   }

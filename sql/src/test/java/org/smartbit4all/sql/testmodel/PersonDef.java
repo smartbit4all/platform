@@ -5,7 +5,7 @@ import org.smartbit4all.domain.annotation.property.Id;
 import org.smartbit4all.domain.annotation.property.OwnProperty;
 import org.smartbit4all.domain.annotation.property.Table;
 import org.smartbit4all.domain.meta.EntityDefinition;
-import org.smartbit4all.domain.meta.PropertyOwned;
+import org.smartbit4all.domain.meta.Property;
 
 @Entity(PersonDef.ENTITY_NAME)
 @Table(PersonDef.TABLE_NAME)
@@ -23,10 +23,10 @@ public interface PersonDef extends EntityDefinition {
   
   @Id
   @OwnProperty(name = ID, columnName = ID_COL)
-  PropertyOwned<Long> id();
+  Property<Long> id();
   
   @Id
   @OwnProperty(name = NAME, columnName = NAME_COL)
-  PropertyOwned<String> name();
+  Property<String> name();
   
 }

@@ -14,7 +14,6 @@
  ******************************************************************************/
 package org.smartbit4all.domain.meta;
 
-import java.util.EnumMap;
 import org.smartbit4all.core.utility.EnumSpecificValue;
 import org.smartbit4all.domain.meta.jdbc.JDBCDataConverterHelper;
 import org.smartbit4all.domain.utility.SupportedDatabase;
@@ -44,30 +43,35 @@ public class PropertyOwned<T> extends Property<T> {
     return dbExpression;
   }
 
-  public void setDbExpression(String defaultDbExpression,
-      EnumMap<SupportedDatabase, String> dbExpressions) {
+  public void setDbExpression(String defaultDbExpression) {
     this.dbExpression = new EnumSpecificValue<SupportedDatabase, String>(defaultDbExpression,
         SupportedDatabase.class);
   }
 
-  public PropertyOwned(String name, Class<T> type, boolean mandatory, String defaultDbExpression,
-      EnumMap<SupportedDatabase, String> dbExpressions,
+  public PropertyOwned(String name, Class<T> type, String defaultDbExpression,
       JDBCDataConverterHelper jdbcDataConverterHelper) {
-    this(name, type, defaultDbExpression, dbExpressions, jdbcDataConverterHelper.from(type));
+    this(name, type, defaultDbExpression, jdbcDataConverterHelper.from(type));
   }
 
   public PropertyOwned(String name, Class<T> type, String defaultDbExpression,
-      EnumMap<SupportedDatabase, String> dbExpressions, JDBCDataConverter<T, ?> typeHandler) {
+      JDBCDataConverter<T, ?> typeHandler) {
     super(name, type, typeHandler);
-    setDbExpression(defaultDbExpression, dbExpressions);
+    setDbExpression(defaultDbExpression);
   }
 
-  public static <T> PropertyOwned<T> create(String name, Class<T> type, boolean mandatory,
-      String defaultDbExpression,
-      EnumMap<SupportedDatabase, String> dbExpressions,
-      JDBCDataConverterHelper jdbcDataConverterHelper) {
-    return new PropertyOwned<T>(name, type, mandatory, defaultDbExpression, dbExpressions,
+  public static <T> PropertyOwned<T> create(String name, Class<T> type, boolean isMandatory, 
+      String defaultDbExpression, JDBCDataConverterHelper jdbcDataConverterHelper) {
+    // FIXME isMandatory is never used. Is it intentional?
+    return new PropertyOwned<T>(name, type, defaultDbExpression,
         jdbcDataConverterHelper);
+  }
+
+  public static <T> PropertyOwned<T> createFunctionProperty(PropertyOwned<T> baseProperty,
+      PropertyFunction function) {
+    PropertyOwned<T> funcProp = new PropertyOwned<T>(baseProperty.getName(), baseProperty.type(),
+        baseProperty.getDbExpression().get(null), baseProperty.jdbcConverter());
+    funcProp.setPropertyFunction(function);
+    return funcProp;
   }
 
 }

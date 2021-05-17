@@ -45,6 +45,9 @@ import org.smartbit4all.domain.service.entity.EntityUris;
 import org.smartbit4all.domain.service.query.QueryApi;
 import org.smartbit4all.domain.utility.SupportedDatabase;
 import org.springframework.beans.BeansException;
+import org.springframework.cglib.proxy.Enhancer;
+import org.springframework.cglib.proxy.MethodInterceptor;
+import org.springframework.cglib.proxy.MethodProxy;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -65,6 +68,7 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
   private Map<String, Property<?>> referredPropertiesByPath;
   private Map<String, Reference<?, ?>> referencesByName;
   private Map<String, EntityDefinition> referencedEntitiesByReferenceName;
+  private PropertyFunctionMapper propertyFunctionMapper;
 
   /**
    * The dynamic method handlers by the original method as key.
@@ -113,6 +117,7 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
     referencesByName = new HashMap<>();
     referencedEntitiesByReferenceName = new HashMap<>();
     allProperties = new PropertySet();
+    propertyFunctionMapper = new PropertyFunctionMapper(propertiesByName, referredPropertiesByPath);
   }
 
   static <T extends EntityDefinition> EntityDefinitionInvocationHandler<T> create(Class<T> def) {
@@ -232,9 +237,11 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
   private Property<?> createOwnedProperty(Method method) {
     OwnProperty annot = method.getAnnotation(OwnProperty.class);
     String propertyName = getName(annot.name(), method);
-    return PropertyOwned.create(propertyName, getPropertyType(method), annot.mandatory(),
-        annot.columnName(), null,
-        dataConverterHelper);
+    PropertyOwned<? extends Comparable> propertyOwned =
+        PropertyOwned.create(propertyName, getPropertyType(method), annot.mandatory(),
+            annot.columnName(), dataConverterHelper);
+    PropertyOwned<?> propertyProxy = createPropertyProxy(propertyOwned, PropertyOwned.class);
+    return propertyProxy;
   }
 
   private Property<?> createComputedProperty(Method method) {
@@ -460,10 +467,52 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
       String refPath) {
     PropertyRef<?> property = new PropertyRef<>(propertyName, joinPath, referredProperty);
     property.setEntityDef(this);
-    referredPropertiesByPath.put(refPath, property);
-    return property;
+    
+    PropertyRef<?> propertyProxy = createPropertyProxy(property, PropertyRef.class);
+    referredPropertiesByPath.put(refPath, propertyProxy);
+    return propertyProxy;
   }
 
+  @SuppressWarnings("unchecked")
+  private <P extends Property<?>> P createPropertyProxy(P property, Class<P> propClazz) {
+    Enhancer e = new Enhancer();
+    e.setClassLoader(propClazz.getClassLoader());
+    e.setSuperclass(propClazz);
+    e.setCallback(new MethodInterceptor() {
+      
+      @Override
+      public Object intercept(Object obj, Method method, Object[] args,
+          MethodProxy proxy)
+          throws Throwable {
+        String methodName = method.getName();
+        switch (methodName) {
+          case "upper":
+            return propertyFunctionMapper.getFunctionProperty(property.getName(),
+                PropertyFunction.UPPER);
+          case "lower":
+            return propertyFunctionMapper.getFunctionProperty(property.getName(),
+                PropertyFunction.LOWER);
+          default:
+            return method.invoke(property, args);
+        }
+      }
+    });
+    if(property instanceof PropertyOwned) {
+      //String name, Class<T> type, String defaultDbExpression, JDBCDataConverter<T, ?> typeHandler
+      PropertyOwned<?> p = (PropertyOwned<?>) property;
+      return (P) e.create(
+          new Class<?>[] {String.class, Class.class, String.class, JDBCDataConverter.class}, 
+          new Object[] { p.getName(), p.type(), p.getDbExpression().get(null), p.jdbcConverter() });
+    } else if(property instanceof PropertyRef) {
+      //String name, List<Reference<?, ?>> joinPath, Property<T> referredProperty
+      PropertyRef<?> p = (PropertyRef<?>) property;
+      return (P) e.create(
+          new Class<?>[] {String.class, List.class, Property.class}, 
+          new Object[] { p.getName(), p.getJoinReferences(), p.getReferredProperty()});
+    }
+    throw new RuntimeException("Can not create proxy for property subtype: " + propClazz.getName());
+  }
+  
   @Override
   public void finishSetup() {
     allProperties.addAll(propertiesByName.values());
@@ -561,6 +610,44 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
   @Override
   public JoinPath join() {
     return JoinPath.EMPTY;
+  }
+  
+  static class PropertyFunctionMapper {
+    
+    private Map<String, Property<?>> propertiesByName;
+    private Map<String, Property<?>> referredPropertiesByPath;
+    
+    private Map<String, Property<?>> functionPropertiesByName = new HashMap<>();
+    
+    public PropertyFunctionMapper(Map<String, Property<?>> propertiesByName, Map<String, Property<?>> referredPropertiesByPath) {
+      this.propertiesByName = propertiesByName;
+      this.referredPropertiesByPath = referredPropertiesByPath;
+    }
+    
+    public Property<?> getFunctionProperty(String propName, PropertyFunction function) {
+      String functionPropName = propName + "." + function.getName();
+      Property<?> funcProp = functionPropertiesByName.get(functionPropName);
+      if(funcProp == null) {
+        Property<?> baseProp = null;
+        if(propName.contains(".")) {
+          baseProp = referredPropertiesByPath.get(propName);
+        } else {
+          baseProp = propertiesByName.get(propName);
+        }
+        if(baseProp instanceof PropertyOwned) {
+          funcProp = PropertyOwned.createFunctionProperty(((PropertyOwned<?>)baseProp), function);
+          functionPropertiesByName.put(functionPropName, funcProp);
+        } else if(baseProp instanceof PropertyRef) {
+          funcProp = PropertyRef.createFunctionProperty(((PropertyRef<?>)baseProp), function);
+          functionPropertiesByName.put(functionPropName, funcProp);
+        } else {
+          functionPropertiesByName.put(functionPropName, baseProp);
+        }
+        
+      }
+      return funcProp;
+    }
+    
   }
 
 }

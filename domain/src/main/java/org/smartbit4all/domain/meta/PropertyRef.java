@@ -140,4 +140,12 @@ public class PropertyRef<T> extends Property<T> {
     return joinPath;
   }
 
+  public static Property<?> createFunctionProperty(PropertyRef<?> propertyRef,
+      PropertyFunction function) {
+    Property<?> functionProp = new PropertyRef<>(propertyRef.getName(),
+        propertyRef.getJoinReferences(), propertyRef.getReferredProperty());
+    functionProp.setPropertyFunction(function);
+    return functionProp;
+  }
+
 }

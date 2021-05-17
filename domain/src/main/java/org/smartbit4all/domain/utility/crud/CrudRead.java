@@ -99,7 +99,7 @@ public class CrudRead<E extends EntityDefinition> implements Query<E> {
   public Optional<DataRow> firstRow() throws Exception {
     query.limit(1);
 
-    TableData<E> result = executeIntoTableData();
+    TableData<E> result = listData();
     List<DataRow> resultRows = result.rows();
 
     if (resultRows.isEmpty()) {
@@ -111,13 +111,13 @@ public class CrudRead<E extends EntityDefinition> implements Query<E> {
 
   public List<DataRow> firstRows(int rowNum) throws Exception {
     query.limit(rowNum);
-    TableData<E> result = executeIntoTableData();
+    TableData<E> result = listData();
     return result.rows();
   }
 
   public <T> Optional<T> firstRowValue(Property<T> property) throws Exception {
     query.limit(1);
-    TableData<E> result = executeIntoTableData();
+    TableData<E> result = listData();
     checkResultProperty(property, result);
     return getValueFromResult(property, result);
   }
@@ -128,7 +128,7 @@ public class CrudRead<E extends EntityDefinition> implements Query<E> {
    * @throws Exception
    */
   public Optional<DataRow> onlyOne(String multipleRowsExceptionMessage) throws Exception {
-    TableData<E> result = executeIntoTableData();
+    TableData<E> result = listData();
     checkResultSize(multipleRowsExceptionMessage, result);
     if (result.rows().isEmpty()) {
       return Optional.empty();
@@ -146,7 +146,7 @@ public class CrudRead<E extends EntityDefinition> implements Query<E> {
 
   public <T> Optional<T> onlyOneValue(Property<T> property, String multipleRowsExceptionMessage)
       throws Exception {
-    TableData<E> result = executeIntoTableData();
+    TableData<E> result = listData();
     checkResultSize(multipleRowsExceptionMessage, result);
     checkResultProperty(property, result);
     return getValueFromResult(property, result);

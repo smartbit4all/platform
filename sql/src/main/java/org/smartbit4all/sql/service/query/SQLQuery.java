@@ -37,6 +37,7 @@ import org.smartbit4all.domain.meta.OperandProperty;
 import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.domain.meta.PropertyComputed;
 import org.smartbit4all.domain.meta.PropertyComputed.BasicComputation;
+import org.smartbit4all.domain.meta.PropertyFunction;
 import org.smartbit4all.domain.meta.PropertyOwned;
 import org.smartbit4all.domain.meta.PropertyRef;
 import org.smartbit4all.domain.meta.PropertySqlComputed;
@@ -386,6 +387,10 @@ public class SQLQuery<E extends EntityDefinition> extends QueryImpl<E> {
       String sqlComputedColumn = builder.getSqlComputedColumn(propertySqlComputed, requiredColumns);
 
       column = new SQLComputedColumn(table, sqlComputedColumn, propertySqlComputed.getName());
+    }
+    PropertyFunction propertyFunction = property.getPropertyFunction();
+    if(propertyFunction != null) {
+      column.setFunctionName(propertyFunction.getStatement());
     }
     return column;
   }

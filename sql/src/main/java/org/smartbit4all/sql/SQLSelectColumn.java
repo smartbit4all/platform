@@ -42,6 +42,8 @@ public class SQLSelectColumn implements SQLStatementNode {
    * The alias of the given column.
    */
   String alias;
+  
+  private String functionName;
 
 
   /**
@@ -79,6 +81,14 @@ public class SQLSelectColumn implements SQLStatementNode {
 
   public SQLSelectFromNode from() {
     return from.get();
+  }
+
+  public String getFunctionName() {
+    return functionName;
+  }
+
+  public void setFunctionName(String functionName) {
+    this.functionName = functionName;
   }
 
 }

@@ -15,6 +15,7 @@
 package org.smartbit4all.domain.meta;
 
 import java.util.Iterator;
+import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.meta.Reference.Join;
 
 /**
@@ -208,6 +209,22 @@ public final class ExpressionExists extends Expression {
       return rootEntity.findOrCreateReferredProperty(referencePath.references, targetProperty);
     }
     return null;
+  }
+  
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    builder.append("~~>");
+    builder.append(isNegate() ? "NOT" : "");
+    builder.append(StringConstant.SPACE);
+    builder.append("EXIST");
+    builder.append(StringConstant.LEFT_CURLY);
+    builder.append(contextEntity.entityDefName());
+    builder.append("->");
+    builder.append(StringConstant.SPACE);
+    builder.append(ExpressionToString.toString(expression));
+    builder.append(StringConstant.RIGHT_CURLY);
+    return builder.toString();
   }
 
 }

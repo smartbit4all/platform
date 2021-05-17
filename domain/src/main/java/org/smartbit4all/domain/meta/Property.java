@@ -104,6 +104,11 @@ public abstract class Property<T> {
    * but if the type implements Comparable then the compareTo method is used implicitly.
    */
   private Comparator<? super T> comparator;
+  
+  /**
+   * The property function that extends the property's behavior
+   */
+  private PropertyFunction propertyFunction;
 
   public Property(String name, Class<T> type, JDBCDataConverter<T, ?> jdbcConverter) {
     this.name = name;
@@ -146,6 +151,14 @@ public abstract class Property<T> {
 
   public EntityDefinition getEntityDef() {
     return entityDef;
+  }
+
+  public PropertyFunction getPropertyFunction() {
+    return propertyFunction;
+  }
+
+  public void setPropertyFunction(PropertyFunction propertyFunction) {
+    this.propertyFunction = propertyFunction;
   }
 
   /**
@@ -412,6 +425,22 @@ public abstract class Property<T> {
       sum.addRequired(this);
     }
     return sum;
+  }
+  
+  /**
+   * Applies 'upper' function on property 
+   */
+  public Property<T> upper() {
+    // handled in PropertyInvocationHandler
+    throw new RuntimeException("This method should be intercepted by a proxy!");
+  }
+  
+  /**
+   * Applies 'lower' function on property 
+   */
+  public Property<T> lower() {
+    // handled in PropertyInvocationHandler
+    throw new RuntimeException("This method should be intercepted by a proxy!");
   }
 
   /**

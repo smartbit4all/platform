@@ -8,7 +8,6 @@ import org.smartbit4all.domain.annotation.property.ReferenceEntity;
 import org.smartbit4all.domain.annotation.property.Table;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Property;
-import org.smartbit4all.domain.meta.PropertyOwned;
 
 @Entity(AddressDef.ENTITY_NAME)
 @Table(AddressDef.TABLE_NAME)
@@ -28,7 +27,7 @@ public interface AddressDef extends EntityDefinition {
 
   @Id
   @OwnProperty(name = ID, columnName = ID_COL)
-  PropertyOwned<Long> id();
+  Property<Long> id();
 
   @OwnProperty(name = ZIP, columnName = ZIP_COL)
   Property<String> zip();

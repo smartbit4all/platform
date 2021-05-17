@@ -7,7 +7,7 @@ import org.smartbit4all.domain.annotation.property.OwnProperty;
 import org.smartbit4all.domain.annotation.property.ReferenceEntity;
 import org.smartbit4all.domain.annotation.property.Table;
 import org.smartbit4all.domain.meta.EntityDefinition;
-import org.smartbit4all.domain.meta.PropertyOwned;
+import org.smartbit4all.domain.meta.Property;
 
 @Entity(TicketDef.ENTITY_NAME)
 @Table(TicketDef.TABLE_NAME)
@@ -33,19 +33,19 @@ public interface TicketDef extends EntityDefinition {
   
   @Id
   @OwnProperty(name = ID, columnName = ID_COL)
-  PropertyOwned<Long> id();
+  Property<Long> id();
   
   @OwnProperty(name = TITLE, columnName = TITLE_COL)
-  PropertyOwned<String> title();
+  Property<String> title();
   
   @OwnProperty(name = PRIMARYPERSONID, columnName = PRIMARYPERSONID_COL)
-  PropertyOwned<Long> primaryPersonId();
+  Property<Long> primaryPersonId();
   
   @OwnProperty(name = SECONDARYPERSONID, columnName = SECONDARYPERSONID_COL)
-  PropertyOwned<Long> secondaryPersonId();
+  Property<Long> secondaryPersonId();
   
   @OwnProperty(name = PARENTID, columnName = PARENTID_COL)
-  PropertyOwned<Long> parentId();
+  Property<Long> parentId();
   
   @ReferenceEntity
   @Join(source = PRIMARYPERSONID, target = PersonDef.ID)
