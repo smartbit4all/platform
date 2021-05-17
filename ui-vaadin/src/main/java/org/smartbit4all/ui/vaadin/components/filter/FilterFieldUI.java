@@ -34,7 +34,6 @@ import com.vaadin.flow.component.orderedlayout.FlexLayout;
 public class FilterFieldUI extends FlexLayout implements DragSource<FilterFieldUI> {
 
   private FlexLayout header;
-  // TODO remove Row
   private Div row;
   private Button btnClose;
   private FilterGroupUI group;
@@ -84,7 +83,7 @@ public class FilterFieldUI extends FlexLayout implements DragSource<FilterFieldU
     filterLayout.addClassName("filter-layout");
     filterLayout.add(header, row);
     add(filterLayout);
-    
+
     updateState(uiState);
   }
 
@@ -158,8 +157,8 @@ public class FilterFieldUI extends FlexLayout implements DragSource<FilterFieldU
     if (uiState.isCloseable() && !btnClose.isEnabled()) {
       btnClose.setText("x");
       btnClose.setEnabled(true);
-    } 
-    if(!uiState.isCloseable() && btnClose.isEnabled()){
+    }
+    if (!uiState.isCloseable() && btnClose.isEnabled()) {
       btnClose.setText("");
       btnClose.setEnabled(false);
     }
@@ -169,7 +168,7 @@ public class FilterFieldUI extends FlexLayout implements DragSource<FilterFieldU
   private String getLabelOfFilter(FilterFieldUIState uiState) {
     String label = getTranslation(uiState.getLabelCode());
     int duplicateNum = uiState.getDuplicateNum();
-    if(duplicateNum > 0) {
+    if (duplicateNum > 0) {
       label = createLabelWithDuplicateIndicator(label, duplicateNum);
     }
     return label;
@@ -179,7 +178,7 @@ public class FilterFieldUI extends FlexLayout implements DragSource<FilterFieldU
     label = label + " (" + ++duplicateNum + ")";
     return label;
   }
-  
+
   public FilterGroupUI getGroup() {
     return group;
   }
