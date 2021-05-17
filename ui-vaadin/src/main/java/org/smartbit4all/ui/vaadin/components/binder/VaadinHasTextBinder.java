@@ -38,15 +38,14 @@ public class VaadinHasTextBinder {
     String currentValue = label.getText();
     Object newValue = value.getNewValue();
 
+    if (converterFunction != null) {
+      newValue = converterFunction.apply(newValue);
+    }
     newValue = newValue == null ? "" : newValue;
     currentValue = currentValue == null ? "" : currentValue;
 
     if (!currentValue.equals(newValue)) {
-      if (converterFunction != null) {
-        label.setText(converterFunction.apply(newValue));
-      } else {
-        label.setText(newValue.toString());
-      }
+      label.setText(newValue.toString());
     }
 
   }
