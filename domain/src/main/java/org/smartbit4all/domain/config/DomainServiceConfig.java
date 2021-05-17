@@ -129,7 +129,7 @@ public class DomainServiceConfig extends SB4Configuration {
   @Bean
   public Converter<LocalDateTime, OffsetDateTime> localDateTime2OffsetDateTimeConverter() {
     return new ConverterImpl<LocalDateTime, OffsetDateTime>(OffsetDateTime.class,
-        (LocalDateTime d) -> ZonedDateTime.of(LocalDateTime.now(), ZoneId.systemDefault())
+        (LocalDateTime d) -> ZonedDateTime.of(d, ZoneId.systemDefault())
             .toOffsetDateTime(),
         LocalDateTime.class,
         OffsetDateTime::toLocalDateTime);
@@ -139,7 +139,7 @@ public class DomainServiceConfig extends SB4Configuration {
   public Converter<OffsetDateTime, LocalDateTime> offsetDateTime2localDateTimeConverter() {
     return new ConverterImpl<OffsetDateTime, LocalDateTime>(LocalDateTime.class,
         OffsetDateTime::toLocalDateTime, OffsetDateTime.class,
-        (LocalDateTime d) -> ZonedDateTime.of(LocalDateTime.now(), ZoneId.systemDefault())
+        (LocalDateTime d) -> ZonedDateTime.of(d, ZoneId.systemDefault())
             .toOffsetDateTime());
   }
 

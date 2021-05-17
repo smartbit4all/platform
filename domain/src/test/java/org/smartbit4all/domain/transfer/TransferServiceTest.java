@@ -63,14 +63,26 @@ class TransferServiceTest {
   }
 
   @Test
-  void localDateTime2OffsetDateTime() {
+  void localDateTime2OffsetDateTime() throws InterruptedException {
     TransferService transferService = ctx.getBean(TransferService.class);
+    
     Converter<LocalDateTime, OffsetDateTime> convertTo =
         transferService.converterByType(LocalDateTime.class, OffsetDateTime.class);
+    
     Converter<OffsetDateTime, LocalDateTime> convertFrom =
         transferService.converterByType(OffsetDateTime.class, LocalDateTime.class);
+    
     LocalDateTime testValue = LocalDateTime.now();
-    Assertions.assertEquals(testValue, convertFrom.convertTo(convertTo.convertTo(testValue)));
+    
+    // Test if it works with wait.
+    // Back the service returned the fixed LocalDateTime.now.
+    // The test did not cover this situation.
+    Thread.sleep(100L);
+    OffsetDateTime convertedTo = convertTo.convertTo(testValue);
+    Thread.sleep(100L);
+    LocalDateTime convertedBack = convertFrom.convertTo(convertedTo);
+    
+    Assertions.assertEquals(testValue, convertedBack);
   }
 
 }
