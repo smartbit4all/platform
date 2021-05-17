@@ -3,7 +3,9 @@ package org.smartbit4all.core.object;
 import java.util.List;
 import java.util.Optional;
 import org.smartbit4all.core.event.EventPublisherImpl;
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.functions.Consumer;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 
 /**
@@ -109,5 +111,91 @@ public final class ObservableObjectImpl implements ObservableObject, EventPublis
     ref.removeValueByPath(collectionElementPath);
     notifyListeners();
   }
+
+  @Override
+  public void onPropertyChange(String path, String property,
+      @NonNull Consumer<? super PropertyChange> onPropertyChange) {
+    properties()
+        .filter(change -> ObservableObjectHelper.pathEquals(change, path, property))
+        .subscribe(onPropertyChange);
+    if (ref != null) {
+      Object value = ref.getValueRefByPath(path).getValue(property);
+      if (value instanceof ApiObjectRef || value instanceof ApiObjectCollection) {
+        throw new IllegalArgumentException(
+            "Expected value, found reference/collection at " + path + "." + property);
+      }
+      PropertyChange currentChange = new PropertyChange(path, property, null, value);
+      try {
+        onPropertyChange.accept(currentChange);
+      } catch (Throwable e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+    }
+  }
+
+  @Override
+  public void onReferenceChange(String path, String reference,
+      @NonNull Consumer<? super ReferenceChange> onReferenceChange) {
+    references()
+        .filter(change -> ObservableObjectHelper.pathEquals(change, path, reference))
+        .subscribe(onReferenceChange);
+  }
+
+  @Override
+  public void onReferencedObjectChange(String path, String reference,
+      @NonNull Consumer<? super ReferencedObjectChange> onReferencedObjectChange) {
+    referencedObjects()
+        .filter(change -> ObservableObjectHelper.pathEquals(change, path, reference))
+        .subscribe(onReferencedObjectChange);
+    if (ref != null) {
+      Object value = ref.getValueRefByPath(path).getValue(reference);
+      if (!(value instanceof ApiObjectRef)) {
+        throw new IllegalArgumentException("Reference not found at " + path + "." + reference);
+      }
+      ReferencedObjectChange currentChange = new ReferencedObjectChange(path, reference,
+          new ObjectChangeSimple(path, ChangeState.NEW, ((ApiObjectRef) value).getObject()));
+      try {
+        onReferencedObjectChange.accept(currentChange);
+      } catch (Throwable e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+    }
+  }
+
+  @Override
+  public void onCollectionChange(String path, String collection,
+      @NonNull Consumer<? super CollectionChange> onCollectionChange) {
+    collections()
+        .filter(change -> ObservableObjectHelper.pathEquals(change, path, collection))
+        .subscribe(onCollectionChange);
+  }
+
+  @Override
+  public void onCollectionObjectChange(String path, String collection,
+      @NonNull Consumer<? super CollectionObjectChange> onCollectionObjectChange) {
+    collectionObjects()
+        .filter(change -> ObservableObjectHelper.pathEquals(change, path, collection))
+        .subscribe(onCollectionObjectChange);
+    if (ref != null) {
+      Object value = ref.getValueRefByPath(path).getValue(collection);
+      if (!(value instanceof ApiObjectCollection)) {
+        throw new IllegalArgumentException("Collection not found at " + path + "." + collection);
+      }
+      CollectionObjectChange currentChange = new CollectionObjectChange(path, collection);
+      for (ApiObjectRef object : (ApiObjectCollection) value) {
+        currentChange.getChanges()
+            .add(new ObjectChangeSimple(object.getPath(), ChangeState.NEW, object.getObject()));
+      }
+      try {
+        onCollectionObjectChange.accept(currentChange);
+      } catch (Throwable e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+    }
+  }
+
 
 }

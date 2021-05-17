@@ -32,10 +32,11 @@ public class StatefulApiEditingTest {
   @Test
   void testSetValue() throws ExecutionException {
     StatefulBean bean = new StatefulBean();
-    StatefulBeanEditing beanEditing = initBeanEditing(bean, "result");
+    String expectedResult = "result";
+    StatefulBeanEditing beanEditing = initBeanEditing(bean, expectedResult);
     beanEditing.setValue("value");
 
-    Assertions.assertNull(bean.getResult());
+    Assertions.assertEquals(expectedResult, bean.getResult());
   }
 
   @Test

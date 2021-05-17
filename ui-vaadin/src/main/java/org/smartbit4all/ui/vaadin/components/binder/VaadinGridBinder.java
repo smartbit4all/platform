@@ -33,20 +33,28 @@ public class VaadinGridBinder<T> {
   protected void onCollectionObjectChanged(CollectionObjectChange changes) {
     for (ObjectChangeSimple change : changes.getChanges()) {
       String itemPath = change.getPath();
-      if (change.getOperation().equals(ChangeState.NEW)) {
-        T item = (T) change.getObject();
-        items.add(item);
-        itemsByPath.put(itemPath, item);
-        grid.getDataProvider().refreshItem(item);
+      if (change.getOperation().equals(ChangeState.NEW) ||
+          change.getOperation().equals(ChangeState.MODIFIED)) {
+        T newValue = (T) change.getObject();
+        T oldValue = itemsByPath.get(itemPath);
+        if (oldValue == null) {
+          // NEW
+          items.add(newValue);
+          itemsByPath.put(itemPath, newValue);
+        } else {
+          // MODIFY
+          if (oldValue != newValue) {
+            items.replaceAll(i -> i == oldValue ? newValue : i);
+            itemsByPath.put(itemPath, newValue);
+          }
+        }
+        grid.getDataProvider().refreshItem(newValue);
       } else if (change.getOperation().equals(ChangeState.DELETED)) {
         if (itemsByPath.containsKey(itemPath)) {
           T item = itemsByPath.get(itemPath);
           items.remove(item);
           grid.getDataProvider().refreshItem(item);
         }
-      } else if (change.getOperation().equals(ChangeState.MODIFIED)) {
-        T item = (T) change.getObject();
-        grid.getDataProvider().refreshItem(item);
       }
     }
 

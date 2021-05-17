@@ -29,6 +29,7 @@ import org.smartbit4all.core.utility.PathUtility;
 import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.cglib.proxy.Enhancer;
 import org.springframework.cglib.proxy.InvocationHandler;
+import com.google.common.base.Strings;
 
 /**
  * The API object reference is a pair for the object participate in an object hierarchy. It refers
@@ -321,6 +322,9 @@ public class ApiObjectRef {
   }
 
   public ApiObjectRef getValueRefByPath(String path) {
+    if (Strings.isNullOrEmpty(path)) {
+      return this;
+    }
     // TODO
     path = path.toUpperCase();
 

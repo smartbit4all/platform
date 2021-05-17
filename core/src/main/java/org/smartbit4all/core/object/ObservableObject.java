@@ -98,39 +98,19 @@ public interface ObservableObject extends EventPublisher {
   @NotifyListeners
   void removeValue(String collectionElementPath);
 
-  default void onPropertyChange(String path, String property,
-      @NonNull Consumer<? super PropertyChange> onPropertyChange) {
-    properties()
-        .filter(change -> ObservableObjectHelper.pathEquals(change, path, property))
-        .subscribe(onPropertyChange);
-  }
+  void onPropertyChange(String path, String property,
+      @NonNull Consumer<? super PropertyChange> onPropertyChange);
 
-  default void onReferenceChange(String path, String reference,
-      @NonNull Consumer<? super ReferenceChange> onReferenceChange) {
-    references()
-        .filter(change -> ObservableObjectHelper.pathEquals(change, path, reference))
-        .subscribe(onReferenceChange);
-  }
+  void onReferenceChange(String path, String reference,
+      @NonNull Consumer<? super ReferenceChange> onReferenceChange);
 
-  default void onReferencedObjectChange(String path, String reference,
-      @NonNull Consumer<? super ReferencedObjectChange> onReferencedObjectChange) {
-    referencedObjects()
-        .filter(change -> ObservableObjectHelper.pathEquals(change, path, reference))
-        .subscribe(onReferencedObjectChange);
-  }
+  void onReferencedObjectChange(String path, String reference,
+      @NonNull Consumer<? super ReferencedObjectChange> onReferencedObjectChange);
 
-  default void onCollectionChange(String path, String collection,
-      @NonNull Consumer<? super CollectionChange> onCollectionChange) {
-    collections()
-        .filter(change -> ObservableObjectHelper.pathEquals(change, path, collection))
-        .subscribe(onCollectionChange);
-  }
+  void onCollectionChange(String path, String collection,
+      @NonNull Consumer<? super CollectionChange> onCollectionChange);
 
-  default void onCollectionObjectChange(String path, String collection,
-      @NonNull Consumer<? super CollectionObjectChange> onCollectionObjectChange) {
-    collectionObjects()
-        .filter(change -> ObservableObjectHelper.pathEquals(change, path, collection))
-        .subscribe(onCollectionObjectChange);
-  }
+  void onCollectionObjectChange(String path, String collection,
+      @NonNull Consumer<? super CollectionObjectChange> onCollectionObjectChange);
 
 }
