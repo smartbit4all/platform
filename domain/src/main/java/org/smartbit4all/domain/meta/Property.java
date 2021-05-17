@@ -495,13 +495,13 @@ public abstract class Property<T> {
    * @return The URI that refers to this property
    */
   public final URI getUri() {
-    if(entityDef == null) {
+    if(getEntityDef() == null) {
       throw new IllegalStateException(
           "There is no EntityDefinition set to this property! "
           + "This way the URI can not be constructed for this property!");
     }
-    String domain = entityDef.getDomain();
-    String entityName = entityDef.entityDefName();
+    String domain = getEntityDef().getDomain();
+    String entityName = getEntityDef().entityDefName();
     return EntityUris.createPropertyUri(domain, entityName, name);
   }
 

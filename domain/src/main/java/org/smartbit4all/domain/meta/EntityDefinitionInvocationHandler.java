@@ -466,10 +466,10 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
       Property<?> referredProperty,
       String refPath) {
     PropertyRef<?> property = new PropertyRef<>(propertyName, joinPath, referredProperty);
-    property.setEntityDef(this);
     
     PropertyRef<?> propertyProxy = createPropertyProxy(property, PropertyRef.class);
     referredPropertiesByPath.put(refPath, propertyProxy);
+    propertyProxy.setEntityDef(this);
     return propertyProxy;
   }
 

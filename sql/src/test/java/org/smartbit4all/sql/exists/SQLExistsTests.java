@@ -118,7 +118,6 @@ public class SQLExistsTests {
   @Test
   public void detailExistsTest_03() throws Exception {
 
-    // we are looking for the tickets with primary persons with Budapest addresses (ZIP code 10xx)
     TableData<TicketDef> tickets = Crud.read(ticketDef)
         .select(ticketDef.id(), ticketDef.title())
         .where(ticketDef.primaryPerson().exists(personDef.name().eq("Ond")))
