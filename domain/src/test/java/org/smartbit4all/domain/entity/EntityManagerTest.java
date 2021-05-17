@@ -84,7 +84,7 @@ public class EntityManagerTest {
     assertEquals(EXPECTED_PROPERTY_URI, propertyUri.toString());
     
     Property<?> actualProperty = entityManager.property(propertyUri);
-    assertEquals(expectedProperty, actualProperty);
+    assertEquals(expectedProperty.hashCode(), actualProperty.hashCode());
   }
   
   @Test
@@ -98,19 +98,19 @@ public class EntityManagerTest {
     assertEquals(EXPECTED_PROPERTY_ON_ASSOC_URI, propertyUri.toString());
     
     Property<?> actualProperty = entityManager.property(propertyUri);
-    assertEquals(expectedProperty, actualProperty);
+    assertEquals(expectedProperty.hashCode(), actualProperty.hashCode());
     
     propertyUri = EntityUris.createPropertyUri(EntityManagerTestConfig.ENTITY_SOURCE_SEC, "userAccountDef", "primaryAddressRef", "city");
     assertEquals(userAccountDef.primaryAddress().city().getUri().toString(), propertyUri.toString());
     
     actualProperty = entityManager.property(propertyUri);
-    assertEquals(userAccountDef.primaryAddress().city(), actualProperty);
+    assertEquals(userAccountDef.primaryAddress().city().hashCode(), actualProperty.hashCode());
     
     propertyUri = EntityUris.createPropertyUri(EntityManagerTestConfig.ENTITY_SOURCE_SEC, "userAccountDef", "primaryZipcode");
     assertEquals(EXPECTED_PROPERTY_ON_ASSOC_URI2, propertyUri.toString());
     
     actualProperty = entityManager.property(propertyUri);
-    assertEquals(expectedProperty, actualProperty);
+    assertEquals(expectedProperty.hashCode(), actualProperty.hashCode());
   }
   
 }

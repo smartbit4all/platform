@@ -66,7 +66,7 @@ public class SB4MetaInitializeTest {
         userAccountDef.primaryAddress().city().getName());
 
     // PropertyRef - defined equals on demand
-    assertEquals(userAccountDef.primaryZipcode(), userAccountDef.primaryAddress().zipcode());
+    assertEquals(userAccountDef.primaryZipcode().hashCode(), userAccountDef.primaryAddress().zipcode().hashCode());
 
     // PropertyComupted
     assertEquals(UserAccountDef.FULLNAME, userAccountDef.fullname().getName());
