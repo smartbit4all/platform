@@ -8,7 +8,7 @@ import org.smartbit4all.api.value.bean.Value;
 public class FilterFieldModel {
 
   // private String path;
-  private FilterLabel label;
+  private FilterFieldLabel label;
   private Boolean closeable;
   private Boolean draggable;
   private FilterOperation selectedOperation;
@@ -18,11 +18,11 @@ public class FilterFieldModel {
   private FilterOperandValue value2;
   private FilterOperandValue value3;
 
-  public FilterLabel getLabel() {
+  public FilterFieldLabel getLabel() {
     return label;
   }
 
-  public void setLabel(FilterLabel label) {
+  public void setLabel(FilterFieldLabel label) {
     this.label = label;
   }
 

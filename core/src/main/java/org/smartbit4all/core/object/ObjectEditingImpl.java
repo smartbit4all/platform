@@ -13,4 +13,9 @@ public class ObjectEditingImpl implements ObjectEditing {
     return constraints;
   }
 
+  @Override
+  public void executeCommand(String path, String command, Object... params) {
+    // intentionally left blank
+  }
+
 }

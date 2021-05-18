@@ -6,8 +6,13 @@ import java.util.Set;
 import org.smartbit4all.api.filter.bean.FilterOperandValue;
 import org.smartbit4all.api.filter.bean.FilterOperation;
 import org.smartbit4all.core.object.ApiBeanDescriptor;
+import org.smartbit4all.ui.common.filter2.api.DynamicFilterViewModel;
+import org.smartbit4all.ui.common.filter2.model.FilterFieldLabel;
 import org.smartbit4all.ui.common.filter2.model.FilterFieldModel;
-import org.smartbit4all.ui.common.filter2.model.FilterLabel;
+import org.smartbit4all.ui.common.filter2.model.FilterFieldSelectorModel;
+import org.smartbit4all.ui.common.filter2.model.FilterGroupLabel;
+import org.smartbit4all.ui.common.filter2.model.FilterGroupModel;
+import org.smartbit4all.ui.common.filter2.model.FilterGroupSelectorModel;
 
 public class ViewModelHelper {
 
@@ -15,8 +20,13 @@ public class ViewModelHelper {
 
   static {
     Set<Class<?>> beans = new HashSet<>();
+    beans.add(DynamicFilterViewModel.class);
+    beans.add(FilterGroupSelectorModel.class);
+    beans.add(FilterFieldSelectorModel.class);
+    beans.add(FilterGroupModel.class);
+    beans.add(FilterGroupLabel.class);
     beans.add(FilterFieldModel.class);
-    beans.add(FilterLabel.class);
+    beans.add(FilterFieldLabel.class);
     beans.add(FilterOperation.class);
     beans.add(FilterOperandValue.class);
     filterDescriptors = ApiBeanDescriptor.of(beans);

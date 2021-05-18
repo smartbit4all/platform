@@ -2,7 +2,7 @@ package org.smartbit4all.ui.common.filter2.model;
 
 import org.smartbit4all.ui.common.filter.FilterLabelPosition;
 
-public class FilterLabel {
+public class FilterFieldLabel {
 
   private String code;
   private FilterLabelPosition position;

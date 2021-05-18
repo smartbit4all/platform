@@ -8,8 +8,9 @@ import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.core.object.PropertyChange;
 import org.smartbit4all.core.object.ReferencedObjectChange;
 import org.smartbit4all.ui.common.filter.FilterLabelPosition;
-import org.smartbit4all.ui.common.filter2.model.FilterLabel;
+import org.smartbit4all.ui.common.filter2.model.FilterFieldLabel;
 import org.smartbit4all.ui.vaadin.components.binder.VaadinBinders;
+import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.dnd.DragSource;
@@ -48,7 +49,7 @@ public class FilterFieldView extends FlexLayout implements DragSource<FilterFiel
     lblOperation = new Label();
     lblOperation.addClassName("operation-name");
     operationWrapper.add(lblOperation);
-    operationWrapper.addClickListener(e -> operationSelector.open());
+    operationWrapper.addClickListener(this::openOperationSelector);
     operationSelector = new Dialog();
 
     optionsLayout = new FlexLayout();
@@ -82,6 +83,13 @@ public class FilterFieldView extends FlexLayout implements DragSource<FilterFiel
     filterField.onPropertyChange("selectedOperation", "filterView", this::operationViewChange);
     VaadinBinders.bind(lblOperation, filterField, "selectedOperation/labelCode")
         .setConverterFunction(s -> getTranslation((String) s));
+  }
+
+  private void openOperationSelector(ClickEvent<FlexLayout> e) {
+    if (optionsLayout.getComponentCount() > 1) {
+      // if 0 or 1 available operation exists, selection is not enabled
+      operationSelector.open();
+    }
   }
 
   private void onOperationsChange(CollectionObjectChange changes) {
@@ -123,7 +131,7 @@ public class FilterFieldView extends FlexLayout implements DragSource<FilterFiel
   }
 
   private void labelChange(ReferencedObjectChange change) {
-    FilterLabel label = (FilterLabel) change.getChange().getObject();
+    FilterFieldLabel label = (FilterFieldLabel) change.getChange().getObject();
     FilterLabelPosition position = label.getPosition();
     String text = getLabelOfFilter(label.getCode(), label.getDuplicateNum());
     if (position.equals(FilterLabelPosition.PLACEHOLDER)) {

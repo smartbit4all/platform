@@ -5,17 +5,19 @@ import org.smartbit4all.core.object.ObjectEditingImpl;
 import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.core.object.ObservableObjectImpl;
 import org.smartbit4all.ui.common.filter2.api.FilterFieldViewModel;
+import org.smartbit4all.ui.common.filter2.api.FilterGroupViewModel;
 import org.smartbit4all.ui.common.filter2.model.FilterFieldModel;
 
 public class FilterFieldViewModelImpl extends ObjectEditingImpl implements FilterFieldViewModel {
 
+  private ObservableObjectImpl filterField;
 
-  ObservableObjectImpl filterField;
+  private FilterFieldModel filterFieldModel;
 
-  FilterFieldModel filterFieldModel;
+  private FilterGroupViewModel parentViewModel;
 
-  public FilterFieldViewModelImpl() {
-    filterField = new ObservableObjectImpl();
+  public FilterFieldViewModelImpl(FilterGroupViewModel parentViewModel) {
+    this.parentViewModel = parentViewModel;
   }
 
   @Override
@@ -23,7 +25,6 @@ public class FilterFieldViewModelImpl extends ObjectEditingImpl implements Filte
     this.filterFieldModel = filterFieldModel;
     ref = new ApiObjectRef(null, filterFieldModel, ViewModelHelper.getFilterDescriptors());
     filterField.setRef(ref);
-    filterField.notifyListeners();
   }
 
   @Override
