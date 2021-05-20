@@ -15,6 +15,7 @@
 package org.smartbit4all.ui.vaadin.components.filter2;
 
 import org.smartbit4all.core.object.ObservableObject;
+import org.smartbit4all.core.utility.PathUtility;
 import org.smartbit4all.ui.vaadin.components.binder.VaadinBinders;
 import com.vaadin.flow.component.textfield.TextField;
 
@@ -22,12 +23,11 @@ public class FilterOperationTxtEqualsView extends FilterOperationView {
 
   private TextField textField;
 
-  public FilterOperationTxtEqualsView(ObservableObject filterField) {
+  public FilterOperationTxtEqualsView(ObservableObject filterField, String path) {
     addClassName("filter-onefield");
     textField = new TextField();
     add(textField);
-
-    VaadinBinders.bind(textField, filterField, "value1/value");
+    VaadinBinders.bind(textField, filterField, PathUtility.concatPath(path, "value1/value"));
   }
 
   @Override

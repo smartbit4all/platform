@@ -8,14 +8,14 @@ public class FilterGroupModel {
 
   private FilterGroupType groupType = FilterGroupType.AND;
   private FilterGroupLabel label;
-  private boolean closeable;
-  private boolean root;
-  private boolean visible;
-  private boolean active;
-  private boolean childGroupAllowed;
-  private boolean groupTypeChangeEnabled;
-  private final List<FilterGroupModel> filterGroupModels = new ArrayList<>();
-  private final List<FilterFieldModel> filterFieldModels = new ArrayList<>();
+  private Boolean closeable = Boolean.FALSE;
+  private Boolean root = Boolean.FALSE;
+  private Boolean visible = Boolean.TRUE;
+  private Boolean active = Boolean.FALSE;
+  private Boolean childGroupAllowed = Boolean.FALSE;
+  private Boolean groupTypeChangeEnabled = Boolean.FALSE;
+  private final List<FilterGroupModel> groups = new ArrayList<>();
+  private final List<FilterFieldModel> filters = new ArrayList<>();
 
   public FilterGroupType getGroupType() {
     return groupType;
@@ -33,60 +33,60 @@ public class FilterGroupModel {
     this.label = label;
   }
 
-  public boolean isCloseable() {
+  public Boolean getCloseable() {
     return closeable;
   }
 
-  public void setCloseable(boolean closeable) {
+  public void setCloseable(Boolean closeable) {
     this.closeable = closeable;
   }
 
-  public boolean isRoot() {
+  public Boolean getRoot() {
     return root;
   }
 
-  public void setRoot(boolean root) {
+  public void setRoot(Boolean root) {
     this.root = root;
   }
 
-  public boolean isVisible() {
+  public Boolean getVisible() {
     return visible;
   }
 
-  public void setVisible(boolean visible) {
+  public void setVisible(Boolean visible) {
     this.visible = visible;
   }
 
-  public boolean isActive() {
+  public Boolean getActive() {
     return active;
   }
 
-  public void setActive(boolean active) {
+  public void setActive(Boolean active) {
     this.active = active;
   }
 
-  public boolean isChildGroupAllowed() {
+  public Boolean getChildGroupAllowed() {
     return childGroupAllowed;
   }
 
-  public void setChildGroupAllowed(boolean childGroupAllowed) {
+  public void setChildGroupAllowed(Boolean childGroupAllowed) {
     this.childGroupAllowed = childGroupAllowed;
   }
 
-  public boolean isGroupTypeChangeEnabled() {
+  public Boolean getGroupTypeChangeEnabled() {
     return groupTypeChangeEnabled;
   }
 
-  public void setGroupTypeChangeEnabled(boolean groupTypeChangeEnabled) {
+  public void setGroupTypeChangeEnabled(Boolean groupTypeChangeEnabled) {
     this.groupTypeChangeEnabled = groupTypeChangeEnabled;
   }
 
-  public List<FilterGroupModel> getFilterGroupModels() {
-    return filterGroupModels;
+  public List<FilterGroupModel> getGroups() {
+    return groups;
   }
 
-  public List<FilterFieldModel> getFilterFieldModels() {
-    return filterFieldModels;
+  public List<FilterFieldModel> getFilters() {
+    return filters;
   }
 
 }

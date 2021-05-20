@@ -1,6 +1,12 @@
 package org.smartbit4all.ui.vaadin.components.filter2;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.smartbit4all.api.filter.bean.FilterGroupType;
+import org.smartbit4all.core.object.ChangeState;
+import org.smartbit4all.core.object.CollectionObjectChange;
+import org.smartbit4all.core.object.ObjectChangeSimple;
+import org.smartbit4all.core.object.ObjectEditing;
 import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.core.object.PropertyChange;
 import org.smartbit4all.core.object.ReferencedObjectChange;
@@ -10,6 +16,7 @@ import org.smartbit4all.ui.vaadin.util.Css.IconSize;
 import org.smartbit4all.ui.vaadin.util.Css.TextColor;
 import org.smartbit4all.ui.vaadin.util.Icons;
 import org.smartbit4all.ui.vaadin.util.Labels;
+import org.smartbit4all.ui.vaadin.util.Layouts;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -21,6 +28,7 @@ import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
+import com.vaadin.flow.shared.Registration;
 
 public class FilterGroupView extends FlexLayout implements DropTarget<FlexLayout> {
 
@@ -29,6 +37,8 @@ public class FilterGroupView extends FlexLayout implements DropTarget<FlexLayout
   private static final String ACTIVE_GROUP = "active-group";
 
   private ObservableObject filterGroup;
+  private ObjectEditing viewModel;
+  private String path;
 
   private FlexLayout iconLayout;
   private FlexLayout filtersLayout;
@@ -38,10 +48,15 @@ public class FilterGroupView extends FlexLayout implements DropTarget<FlexLayout
   private Button btnGroupType;
   private FlexLayout ctrlButtonsLayout;
   private Div flexibleSeparator;
-  // private FilterGroupType groupType;
 
-  public FilterGroupView(ObservableObject filterGroup) {
+  private final Map<String, FilterFieldView> filterFields = new HashMap<>();
+  private final Map<String, FilterGroupView> filterGroups = new HashMap<>();
+  private Registration groupClickListener;
+
+  public FilterGroupView(ObjectEditing viewModel, ObservableObject filterGroup, String path) {
+    this.viewModel = viewModel;
     this.filterGroup = filterGroup;
+    this.path = path;
     createUI();
   }
 
@@ -59,16 +74,16 @@ public class FilterGroupView extends FlexLayout implements DropTarget<FlexLayout
     flexibleSeparator.addClassName("filter-buttons-separator");
 
     btnGroupType = new Button();
-    btnGroupType.addClickListener(groupTypeChangeListener());
+    btnGroupType.addClickListener(groupTypeClickListener());
     Css.stopClickEventPropagation(btnGroupType);
 
     btnAddChildGroup = new Button("+");
-    btnAddChildGroup.addClickListener(addChildGroupListener());
+    btnAddChildGroup.addClickListener(addChildGroupClickListener());
     btnAddChildGroup.addClassName("filter-addchildgroup");
     Css.stopClickEventPropagation(btnAddChildGroup);
 
     btnRemoveGroup = new Button("x");
-    btnRemoveGroup.addClickListener(removeGroupListener());
+    btnRemoveGroup.addClickListener(removeGroupClickListener());
     btnRemoveGroup.addClassName("filter-removegroup");
     Css.stopClickEventPropagation(btnRemoveGroup);
 
@@ -76,90 +91,75 @@ public class FilterGroupView extends FlexLayout implements DropTarget<FlexLayout
     buttonsLayout.addClassName("filter-buttons");
     ctrlButtonsLayout = new FlexLayout();
 
+    filterGroup.onPropertyChange(path, "childGroupAllowed", this::onChildGroupAllowedChange);
+    filterGroup.onPropertyChange(path, "groupType", this::onGroupType);
+    filterGroup.onPropertyChange(path, "groupTypeChangeEnabled", this::onGroupTypeChangeEnabled);
+    filterGroup.onPropertyChange(path, "closeable", this::onCloseable);
+    filterGroup.onPropertyChange(path, "visible", this::onVisible);
+    filterGroup.onPropertyChange(path, "active", this::onActive);
+    filterGroup.onReferencedObjectChange(path, "label", this::labelChange);
 
-    filterGroup.onPropertyChange(null, "childGroupAllowed", this::onChildGroupAllowedChange);
-    filterGroup.onPropertyChange(null, "groupType", this::onGroupType);
-    filterGroup.onPropertyChange(null, "groupTypeChangeEnabled", this::onGroupTypeChangeEnabled);
-    filterGroup.onPropertyChange(null, "closeable", this::onCloseable);
-    filterGroup.onPropertyChange(null, "visible", this::onVisible);
-    filterGroup.onPropertyChange(null, "active", this::onActive);
-    filterGroup.onReferencedObjectChange(null, "label", this::labelChange);
-
+    filterGroup.onCollectionObjectChange(path, "filters", this::filtersChange);
+    filterGroup.onCollectionObjectChange(path, "groups", this::groupsChange);
   }
 
-  private ComponentEventListener<ClickEvent<Button>> removeGroupListener() {
-    // TODO Auto-generated method stub
-    return null;
+  private ComponentEventListener<ClickEvent<Button>> removeGroupClickListener() {
+    return e -> viewModel.executeCommand(path, "CLOSE_FILTERGROUP");
   }
 
-  private ComponentEventListener<ClickEvent<Button>> addChildGroupListener() {
-    // TODO Auto-generated method stub
-    return null;
+  private ComponentEventListener<ClickEvent<Button>> addChildGroupClickListener() {
+    return e -> viewModel.executeCommand(path, "ADD_CHILDGROUP");
   }
 
-  private ComponentEventListener<ClickEvent<Button>> groupTypeChangeListener() {
-    // TODO Auto-generated method stub
-    return null;
+  private ComponentEventListener<ClickEvent<Button>> groupTypeClickListener() {
+    return e -> viewModel.executeCommand(path, "CHANGE_GROUPTYPE");
   }
 
-  private ComponentEventListener<ClickEvent<FlexLayout>> groupChangeListener() {
-    // TODO Auto-generated method stub
-    return null;
+  private ComponentEventListener<ClickEvent<FlexLayout>> groupClickListener() {
+    return e -> viewModel.executeCommand(path, "GROUP_CLICKED");
   }
 
   private ComponentEventListener<DropEvent<FlexLayout>> createDropListener() {
-    return e -> {
-      // TODO
-      // e.getDragData().ifPresent(data -> {
-      // if (data instanceof FilterFieldUI) {
-      // controller.changeGroup(((FilterFieldUI) data).getGroup().groupId, groupId,
-      // ((FilterFieldUI) data).getFilterId());
-      // } else if (data instanceof FilterSelectorUI) {
-      // controller.activeFilterGroupChanged(groupId);
-      // controller.addFilterField(((FilterSelectorUI) data).getSelectorId());
+    return e -> e.getDragData().ifPresent(data -> {
+      if (data instanceof FilterFieldView) {
+        viewModel.executeCommand(path, "FILTER_DROPPED", ((FilterFieldView) data).getPath());
+      }
+      // TODO add selector drag handling
+      // else if (data instanceof FilterSelectorView) {
+      // // is it really necessary here? controller.activeFilterGroupChanged(groupId);
+      // viewModel.executeCommand(path, "SELECTOR_DROPPED", ((FilterSelectorView) data).getPath());
       // }
-      // });
-    };
+    });
   }
-
 
   private void onChildGroupAllowedChange(PropertyChange change) {
     Boolean childGroupAllowed = (Boolean) change.getNewValue();
     if (Boolean.TRUE.equals(childGroupAllowed)) {
       addClassName("child-group");
       addToLayout(ctrlButtonsLayout, btnAddChildGroup);
-      addClickListener(groupChangeListener());
+      if (groupClickListener == null) {
+        groupClickListener = addClickListener(groupClickListener());
+      }
       Css.stopClickEventPropagation(this);
     } else {
+      if (groupClickListener != null) {
+        groupClickListener.remove();
+        groupClickListener = null;
+      }
       removeClassName("child-group");
       removeFromLayout(ctrlButtonsLayout, btnAddChildGroup);
     }
   }
 
   private void addToLayout(FlexLayout layout, Component... comps) {
-    boolean anyChange = false;
-    for (int i = 0; i < comps.length; i++) {
-      Component comp = comps[i];
-      if (!comp.getParent().isPresent() || comp.getParent().get() != layout) {
-        layout.add(comp);
-        anyChange = true;
-      }
-    }
-    if (anyChange) {
+    if (Layouts.addToLayout(layout, comps)) {
       sanitizeLayouts();
     }
   }
 
+
   private void removeFromLayout(FlexLayout layout, Component... comps) {
-    boolean anyChange = false;
-    for (int i = 0; i < comps.length; i++) {
-      Component comp = comps[i];
-      if (comp.getParent().isPresent() && comp.getParent().get() == layout) {
-        layout.remove(comp);
-        anyChange = true;
-      }
-    }
-    if (anyChange) {
+    if (Layouts.removeFromLayout(layout, comps)) {
       sanitizeLayouts();
     }
   }
@@ -195,7 +195,9 @@ public class FilterGroupView extends FlexLayout implements DropTarget<FlexLayout
   private void onGroupTypeChangeEnabled(PropertyChange change) {
     Boolean groupTypeChangeEnabled = (Boolean) change.getNewValue();
     if (Boolean.TRUE.equals(groupTypeChangeEnabled)) {
-      addToLayout(buttonsLayout, btnGroupType);
+      if (Layouts.addToLayout(buttonsLayout, 0, btnGroupType)) {
+        sanitizeLayouts();
+      }
     } else {
       removeFromLayout(buttonsLayout, btnGroupType);
     }
@@ -256,5 +258,45 @@ public class FilterGroupView extends FlexLayout implements DropTarget<FlexLayout
 
   }
 
+  private void filtersChange(CollectionObjectChange changes) {
+    for (ObjectChangeSimple change : changes.getChanges()) {
+      String fieldPath = change.getPath();
+      if (change.getOperation() == ChangeState.NEW) {
+        if (filterFields.get(fieldPath) == null) {
+          FilterFieldView childFilterField = new FilterFieldView(viewModel, filterGroup, fieldPath);
+          filtersLayout.add(childFilterField);
+          filterFields.put(fieldPath, childFilterField);
+        }
+      } else if (change.getOperation() == ChangeState.MODIFIED) {
+        // NOP, child should receive change property events
+      } else if (change.getOperation() == ChangeState.DELETED) {
+        FilterFieldView childFilterField = filterFields.get(fieldPath);
+        if (childFilterField != null) {
+          filtersLayout.remove(childFilterField);
+          filterFields.remove(fieldPath);
+        }
+      }
+    }
+  }
+
+  private void groupsChange(CollectionObjectChange changes) {
+    for (ObjectChangeSimple change : changes.getChanges()) {
+      String groupPath = change.getPath();
+      if (change.getOperation() == ChangeState.NEW) {
+        FilterGroupView childFilterGroup = new FilterGroupView(viewModel, filterGroup, groupPath);
+        this.add(childFilterGroup);
+        filterGroups.put(groupPath, childFilterGroup);
+      } else if (change.getOperation() == ChangeState.MODIFIED) {
+        // NOP, child should receive change property events
+      } else if (change.getOperation() == ChangeState.DELETED) {
+        FilterGroupView childFilterGroup = filterGroups.get(groupPath);
+        if (childFilterGroup != null) {
+          this.remove(childFilterGroup);
+          filterGroups.remove(groupPath);
+        }
+      }
+    }
+
+  }
 
 }

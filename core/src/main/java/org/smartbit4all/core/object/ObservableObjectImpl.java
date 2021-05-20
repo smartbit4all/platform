@@ -2,6 +2,8 @@ package org.smartbit4all.core.object;
 
 import java.util.List;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartbit4all.core.event.EventPublisherImpl;
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observable;
@@ -16,6 +18,8 @@ import io.reactivex.rxjava3.subjects.PublishSubject;
  *
  */
 public final class ObservableObjectImpl implements ObservableObject, EventPublisherImpl {
+
+  private static final Logger log = LoggerFactory.getLogger(ObservableObjectImpl.class);
 
   ApiObjectRef ref;
 
@@ -128,8 +132,7 @@ public final class ObservableObjectImpl implements ObservableObject, EventPublis
       try {
         onPropertyChange.accept(currentChange);
       } catch (Throwable e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        log.error("Unexpected error at onPropertyChange", e);
       }
     }
   }
@@ -150,16 +153,17 @@ public final class ObservableObjectImpl implements ObservableObject, EventPublis
         .subscribe(onReferencedObjectChange);
     if (ref != null) {
       Object value = ref.getValueRefByPath(path).getValue(reference);
-      if (!(value instanceof ApiObjectRef)) {
-        throw new IllegalArgumentException("Reference not found at " + path + "." + reference);
-      }
-      ReferencedObjectChange currentChange = new ReferencedObjectChange(path, reference,
-          new ObjectChangeSimple(path, ChangeState.NEW, ((ApiObjectRef) value).getObject()));
-      try {
-        onReferencedObjectChange.accept(currentChange);
-      } catch (Throwable e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+      if (value != null) {
+        if (!(value instanceof ApiObjectRef)) {
+          throw new IllegalArgumentException("Reference not found at " + path + "." + reference);
+        }
+        ReferencedObjectChange currentChange = new ReferencedObjectChange(path, reference,
+            new ObjectChangeSimple(path, ChangeState.NEW, ((ApiObjectRef) value).getObject()));
+        try {
+          onReferencedObjectChange.accept(currentChange);
+        } catch (Throwable e) {
+          log.error("Unexpected error at onReferencedObjectChange", e);
+        }
       }
     }
   }
@@ -180,19 +184,20 @@ public final class ObservableObjectImpl implements ObservableObject, EventPublis
         .subscribe(onCollectionObjectChange);
     if (ref != null) {
       Object value = ref.getValueRefByPath(path).getValue(collection);
-      if (!(value instanceof ApiObjectCollection)) {
-        throw new IllegalArgumentException("Collection not found at " + path + "." + collection);
-      }
-      CollectionObjectChange currentChange = new CollectionObjectChange(path, collection);
-      for (ApiObjectRef object : (ApiObjectCollection) value) {
-        currentChange.getChanges()
-            .add(new ObjectChangeSimple(object.getPath(), ChangeState.NEW, object.getObject()));
-      }
-      try {
-        onCollectionObjectChange.accept(currentChange);
-      } catch (Throwable e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+      if (value != null) {
+        if (!(value instanceof ApiObjectCollection)) {
+          throw new IllegalArgumentException("Collection not found at " + path + "." + collection);
+        }
+        CollectionObjectChange currentChange = new CollectionObjectChange(path, collection);
+        for (ApiObjectRef object : (ApiObjectCollection) value) {
+          currentChange.getChanges()
+              .add(new ObjectChangeSimple(object.getPath(), ChangeState.NEW, object.getObject()));
+        }
+        try {
+          onCollectionObjectChange.accept(currentChange);
+        } catch (Throwable e) {
+          log.error("Unexpected error at onCollectionObjectChange", e);
+        }
       }
     }
   }

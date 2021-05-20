@@ -1,15 +1,21 @@
 package org.smartbit4all.ui.vaadin.components.filter2;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.smartbit4all.api.filter.bean.FilterOperation;
 import org.smartbit4all.core.object.ChangeState;
 import org.smartbit4all.core.object.CollectionObjectChange;
 import org.smartbit4all.core.object.ObjectChangeSimple;
+import org.smartbit4all.core.object.ObjectEditing;
 import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.core.object.PropertyChange;
 import org.smartbit4all.core.object.ReferencedObjectChange;
+import org.smartbit4all.core.utility.PathUtility;
 import org.smartbit4all.ui.common.filter.FilterLabelPosition;
 import org.smartbit4all.ui.common.filter2.model.FilterFieldLabel;
 import org.smartbit4all.ui.vaadin.components.binder.VaadinBinders;
+import org.smartbit4all.ui.vaadin.util.Css;
+import org.smartbit4all.ui.vaadin.util.Layouts;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -20,23 +26,27 @@ import com.vaadin.flow.component.orderedlayout.FlexLayout;
 
 public class FilterFieldView extends FlexLayout implements DragSource<FilterFieldView> {
 
+  private ObjectEditing viewModel;
   private ObservableObject filterField;
+  private String path;
 
   private FlexLayout header;
   private Div row;
   private Button btnClose;
-  private Label lblOperation;
   private Label lblFilterName;
   private FlexLayout filterLayout;
-  private FlexLayout operationWrapper;
   private Dialog operationSelector;
   private FilterOperationView operationView;
   private String currentFilterView;
 
   private FlexLayout optionsLayout;
 
-  public FilterFieldView(ObservableObject filterField) {
+  private Map<String, Button> operations = new HashMap<>();
+
+  public FilterFieldView(ObjectEditing viewModel, ObservableObject filterField, String path) {
     this.filterField = filterField;
+    this.viewModel = viewModel;
+    this.path = path;
     createUI();
   }
 
@@ -45,26 +55,25 @@ public class FilterFieldView extends FlexLayout implements DragSource<FilterFiel
     lblFilterName = new Label();
     lblFilterName.addClassName("filter-name");
 
-    operationWrapper = new FlexLayout();
-    lblOperation = new Label();
+    FlexLayout operationWrapper = new FlexLayout();
+    Label lblOperation = new Label();
     lblOperation.addClassName("operation-name");
     operationWrapper.add(lblOperation);
     operationWrapper.addClickListener(this::openOperationSelector);
+    Css.stopClickEventPropagation(operationWrapper);
     operationSelector = new Dialog();
 
     optionsLayout = new FlexLayout();
     optionsLayout.setFlexDirection(FlexDirection.COLUMN);
     operationSelector.add(optionsLayout);
 
-
     row = new Div();
     row.addClassName("filter-row");
 
     btnClose = new Button(" ");
     btnClose.addClassName("close-button");
+    btnClose.addClickListener(e -> viewModel.executeCommand(path, "CLOSE_FILTERFIELD"));
     btnClose.setEnabled(false);
-    // TODO close button command
-    // btnClose.addClickListener(e -> controller.removeFilterField(group.getGroupId(), filterId));
 
     header = new FlexLayout();
     header.addClassName("filter-header");
@@ -76,12 +85,14 @@ public class FilterFieldView extends FlexLayout implements DragSource<FilterFiel
     add(filterLayout);
 
 
-    filterField.onPropertyChange(null, "draggable", this::draggableChange);
-    filterField.onPropertyChange(null, "closeable", this::closeableChange);
-    filterField.onReferencedObjectChange(null, "label", this::labelChange);
-    filterField.onCollectionObjectChange(null, "operations", this::onOperationsChange);
-    filterField.onPropertyChange("selectedOperation", "filterView", this::operationViewChange);
-    VaadinBinders.bind(lblOperation, filterField, "selectedOperation/labelCode")
+    filterField.onPropertyChange(path, "draggable", this::draggableChange);
+    filterField.onPropertyChange(path, "closeable", this::closeableChange);
+    filterField.onReferencedObjectChange(path, "label", this::labelChange);
+    filterField.onCollectionObjectChange(path, "operations", this::onOperationsChange);
+    filterField.onPropertyChange(PathUtility.concatPath(path, "selectedOperation"), "filterView",
+        this::operationViewChange);
+    VaadinBinders.bind(lblOperation, filterField,
+        PathUtility.concatPath(path, "selectedOperation/labelCode"))
         .setConverterFunction(s -> getTranslation((String) s));
   }
 
@@ -97,15 +108,27 @@ public class FilterFieldView extends FlexLayout implements DragSource<FilterFiel
       operationSelector.close();
     }
     for (ObjectChangeSimple change : changes.getChanges()) {
+      String operationPath = change.getPath();
       if (change.getOperation() == ChangeState.NEW) {
-        FilterOperation operation = (FilterOperation) change.getObject();
-        String labelCode = operation.getLabelCode();
-        Button button = new Button(getTranslation(labelCode));
-        optionsLayout.add(button);
-        button.addClickListener(
-            e -> filterField.setValue("selectedOperation", operation));
+        if (operations.get(operationPath) == null) {
+          FilterOperation operation = (FilterOperation) change.getObject();
+          String labelCode = operation.getLabelCode();
+          Button button = new Button(getTranslation(labelCode));
+          optionsLayout.add(button);
+          button.addClickListener(
+              e -> {
+                viewModel.executeCommand(path, "CHANGE_OPERATION", operationPath);
+                operationSelector.close();
+              });
+          operations.put(operationPath, button);
+        }
+      } else if (change.getOperation() == ChangeState.MODIFIED) {
+        // NOP
+      } else if (change.getOperation() == ChangeState.DELETED) {
+        Button button = operations.get(operationPath);
+        Layouts.removeFromLayout(optionsLayout, button);
+        operations.remove(operationPath);
       }
-      // TODO handle modify / delete
     }
   }
 
@@ -135,13 +158,13 @@ public class FilterFieldView extends FlexLayout implements DragSource<FilterFiel
     FilterLabelPosition position = label.getPosition();
     String text = getLabelOfFilter(label.getCode(), label.getDuplicateNum());
     if (position.equals(FilterLabelPosition.PLACEHOLDER)) {
-      header.remove(lblFilterName);
+      Layouts.removeFromLayout(header, lblFilterName);
       operationView.setPlaceholder(text);
     } else if (position.equals(FilterLabelPosition.ON_LEFT)) {
       lblFilterName.setText(text);
       filterLayout.setFlexDirection(FlexDirection.ROW);
-      header.remove(btnClose);
-      filterLayout.add(btnClose);
+      Layouts.removeFromLayout(header, btnClose);
+      Layouts.addToLayout(filterLayout, btnClose);
     } else {
       lblFilterName.setText(text);
     }
@@ -152,9 +175,9 @@ public class FilterFieldView extends FlexLayout implements DragSource<FilterFiel
     if (!filterView.equals(currentFilterView)) {
       currentFilterView = filterView;
       if ("filterop.txt.eq".equals(filterView)) {
-        operationView = new FilterOperationTxtEqualsView(filterField);
-        // } else if ("filterop.txt.like".equals(filterView)) {
-        // operationView = new FilterOperationTxtLikeView(viewModel);
+        operationView = new FilterOperationTxtEqualsView(filterField, path);
+      } else if ("filterop.txt.like".equals(filterView)) {
+        operationView = new FilterOperationTxtEqualsView(filterField, path);
         // } else if ("filterop.txt.like.min".equals(filterView)) {
         // operationView = new FilterOperationTxtLikeMinView(viewModel);
         // } else if ("filterop.multi.eq".equals(filterView)) {
@@ -194,6 +217,10 @@ public class FilterFieldView extends FlexLayout implements DragSource<FilterFiel
   private String createLabelWithDuplicateIndicator(String label, int duplicateNum) {
     label = label + " (" + ++duplicateNum + ")";
     return label;
+  }
+
+  public String getPath() {
+    return path;
   }
 
 }

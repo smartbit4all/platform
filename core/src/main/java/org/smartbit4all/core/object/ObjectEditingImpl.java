@@ -1,9 +1,14 @@
 package org.smartbit4all.core.object;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartbit4all.core.constraint.ObjectConstraintPublisher;
 
 public class ObjectEditingImpl implements ObjectEditing {
 
+  private static final Logger log = LoggerFactory.getLogger(ObjectEditingImpl.class);
+
+  // TODO delete, move to implementations
   protected ApiObjectRef ref;
 
   protected ObjectConstraintPublisher constraints;
@@ -15,7 +20,7 @@ public class ObjectEditingImpl implements ObjectEditing {
 
   @Override
   public void executeCommand(String path, String command, Object... params) {
-    // intentionally left blank
+    log.warn("Unhandled command: {}/{}", path, command);
   }
 
 }

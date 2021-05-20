@@ -226,7 +226,7 @@ public class ApiObjectRef {
         case REFERENCE:
           // If the reference is not the same then we assume it as a brand new object. We build it
           // again.
-          if (entry.getReference() == null && value != null) {
+          if (value != null) {
             // We setup a new reference from scratch.
             ApiObjectRef newRef = new ApiObjectRef(entry.getPath(), value, descriptors);
             entry.setReference(newRef);
@@ -266,7 +266,11 @@ public class ApiObjectRef {
         break;
       case REFERENCE:
         // Call the setValueByPath on reference with new path
-        propertyEntry.getReference().setValueByPath(PathUtility.nextFullPath(path), value);
+        if (PathUtility.getPathSize(path) == 1) {
+          setValueInner(value, propertyEntry);
+        } else {
+          propertyEntry.getReference().setValueByPath(PathUtility.nextFullPath(path), value);
+        }
         break;
       case COLLECTION:
         ApiObjectCollection collection = propertyEntry.getCollection();
@@ -288,10 +292,10 @@ public class ApiObjectRef {
     }
   }
 
-  public void addValueByPath(String path, Object value) {
+  public ApiObjectRef addValueByPath(String path, Object value) {
     // TODO
     path = path.toUpperCase();
-
+    ApiObjectRef addedRef = null;
     String propertyName = PathUtility.getRootPath(path);
     PropertyEntry propertyEntry = properties.get(propertyName);
 
@@ -302,23 +306,25 @@ public class ApiObjectRef {
         break;
       case REFERENCE:
         // Call the addValueByPath on reference with new path
-        propertyEntry.getReference().addValueByPath(PathUtility.nextFullPath(path), value);
+        addedRef =
+            propertyEntry.getReference().addValueByPath(PathUtility.nextFullPath(path), value);
         break;
       case COLLECTION:
         ApiObjectCollection collection = propertyEntry.getCollection();
         if (pathSize == 1) {
           // Add the value to the collection
-          collection.addObject(value);
+          addedRef = collection.addObject(value);
         } else {
           // call the setValueByPath on the collection element
           String nextPath = PathUtility.nextFullPath(path);
           ApiObjectRef nextRef = collection.getByIdx(PathUtility.getRootPath(nextPath));
-          nextRef.addValueByPath(PathUtility.nextFullPath(nextPath), value);
+          addedRef = nextRef.addValueByPath(PathUtility.nextFullPath(nextPath), value);
         }
         break;
       default:
         break;
     }
+    return addedRef;
   }
 
   public ApiObjectRef getValueRefByPath(String path) {
@@ -347,8 +353,11 @@ public class ApiObjectRef {
           return collection.getByIdx(PathUtility.getLastPath(path));
         } else {
           String nextPath = PathUtility.nextFullPath(path);
-          return collection.getByIdx(PathUtility.getRootPath(nextPath))
-              .getValueRefByPath(PathUtility.nextFullPath(nextPath));
+          ApiObjectRef nextRef = collection.getByIdx(PathUtility.getRootPath(nextPath));
+          if (nextRef == null) {
+            return null;
+          }
+          return nextRef.getValueRefByPath(PathUtility.nextFullPath(nextPath));
         }
       default:
         break;
