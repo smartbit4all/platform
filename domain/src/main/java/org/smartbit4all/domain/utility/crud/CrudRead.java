@@ -55,7 +55,9 @@ public class CrudRead<E extends EntityDefinition> implements Query<E> {
 
   @Override
   public CrudRead<E> where(Expression where) {
-    query.where(where);
+    if(where != null) {
+      query.where(where);
+    }
     return this;
   }
 
