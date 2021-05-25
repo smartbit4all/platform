@@ -19,12 +19,12 @@ public final class LocaleString {
 
   /**
    * The user settings for the application. It must be bound to the user typically it's a spring
-   * sessionscoped bean that is related to the user session.
+   * session scoped bean that is related to the user session.
    */
   private LocaleSettingApi api;
 
   /**
-   * Constructs a locale string with a defaultr value.
+   * Constructs a locale string with a default value.
    * 
    * @param defaultValue
    */
@@ -65,6 +65,11 @@ public final class LocaleString {
    */
   final void setKey(String key) {
     this.key = key;
+  }
+
+  @Override
+  public String toString() {
+    return get();
   }
 
 }

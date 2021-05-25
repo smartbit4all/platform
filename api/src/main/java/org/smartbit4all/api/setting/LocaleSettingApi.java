@@ -1,9 +1,16 @@
 package org.smartbit4all.api.setting;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartbit4all.core.utility.ListBasedMap;
+import org.smartbit4all.core.utility.StringConstant;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * This is the main holder for the locale settings. All the keys are available at the fully
@@ -12,7 +19,9 @@ import org.smartbit4all.core.utility.ListBasedMap;
  * 
  * @author Peter Boros
  */
-public final class LocaleSettingApi {
+public final class LocaleSettingApi implements InitializingBean {
+
+  private static final Logger log = LoggerFactory.getLogger(LocaleSettingApi.class);
 
   /**
    * The translations for the default string for the locale. The defaults are loaded into a
@@ -33,6 +42,21 @@ public final class LocaleSettingApi {
    */
   private final Map<String, String> sourceLiterals = new HashMap<>();
 
+  @Autowired(required = false)
+  private List<LocaleOption> localeOptions;
+
+  /**
+   * The default locale for the locale specific Strings.
+   */
+  private Locale defaultLocale;
+
+  /**
+   * Adds a key to the registry of the Api. This function is dedicated for inner usage, don't call
+   * this!
+   * 
+   * @param key
+   * @param defaultValue
+   */
   public void add(String key, String defaultValue) {
     sourceLiterals.put(key, defaultValue);
   }
@@ -49,8 +73,16 @@ public final class LocaleSettingApi {
     translations.put(defaultValue, targetValue);
   }
 
+  /**
+   * Clears all translations including the key and literal translations also.
+   */
+  public void clearTranslations() {
+    localeSpecificKeyBasedTranslations.clear();
+    localeSpecificTranslations.clear();
+  }
+
   public final String get(String key) {
-    return get(null, key);
+    return get(defaultLocale, key);
   }
 
   public final String get(Locale locale, String key) {
@@ -78,6 +110,57 @@ public final class LocaleSettingApi {
       return sourceLiteral;
     }
     return key;
+  }
+
+  /**
+   * This function analyze the given class to discover the {@link LocaleString} fields. We add this
+   * API for them to enable locale specific behavior for them.
+   * 
+   * @param clazz
+   */
+  public void analyzeLocaleStrings(LocaleOption option) {
+    // Let's check the static LocaleString
+    Field[] fields = option.getClass().getFields();
+    for (int i = 0; i < fields.length; i++) {
+      Field field = fields[i];
+      if (field.getType().isAssignableFrom(LocaleString.class)) {
+        try {
+          LocaleString localeString = (LocaleString) field.get(option);
+          if (localeString != null) {
+            localeString.setApi(this);
+            String key = option.getClass().getName() + StringConstant.DOT + field.getName();
+            localeString.setKey(key);
+            add(key,
+                localeString.getDefaultValue());
+          }
+        } catch (IllegalArgumentException | IllegalAccessException e) {
+          log.debug("Unable to access the value of the " + field, e);
+        }
+      }
+    }
+  }
+
+  /**
+   * In the after property set function we discover the {@link #localeOptions} list to set up the
+   * enclosed {@link LocaleString}s.
+   * 
+   * @throws Exception
+   */
+  @Override
+  public void afterPropertiesSet() throws Exception {
+    if (localeOptions != null && !localeOptions.isEmpty()) {
+      for (LocaleOption localeOption : localeOptions) {
+        analyzeLocaleStrings(localeOption);
+      }
+    }
+  }
+
+  public final Locale getDefaultLocale() {
+    return defaultLocale;
+  }
+
+  public final void setDefaultLocale(Locale defaultLocale) {
+    this.defaultLocale = defaultLocale;
   }
 
 }
