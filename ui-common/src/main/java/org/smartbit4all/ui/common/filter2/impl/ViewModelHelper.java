@@ -6,7 +6,7 @@ import java.util.Set;
 import org.smartbit4all.api.filter.bean.FilterOperandValue;
 import org.smartbit4all.api.filter.bean.FilterOperation;
 import org.smartbit4all.core.object.ApiBeanDescriptor;
-import org.smartbit4all.ui.common.filter2.api.DynamicFilterViewModel;
+import org.smartbit4all.ui.common.filter2.model.DynamicFilterModel;
 import org.smartbit4all.ui.common.filter2.model.FilterFieldLabel;
 import org.smartbit4all.ui.common.filter2.model.FilterFieldModel;
 import org.smartbit4all.ui.common.filter2.model.FilterFieldSelectorModel;
@@ -20,7 +20,7 @@ public class ViewModelHelper {
 
   static {
     Set<Class<?>> beans = new HashSet<>();
-    beans.add(DynamicFilterViewModel.class);
+    beans.add(DynamicFilterModel.class);
     beans.add(FilterGroupSelectorModel.class);
     beans.add(FilterFieldSelectorModel.class);
     beans.add(FilterGroupModel.class);

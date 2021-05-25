@@ -19,8 +19,8 @@ public class ObjectEditingImpl implements ObjectEditing {
   }
 
   @Override
-  public void executeCommand(String path, String command, Object... params) {
-    log.warn("Unhandled command: {}/{}", path, command);
+  public void executeCommand(String commandPath, String command, Object... params) {
+    log.warn("Unhandled command: {}/{}", commandPath, command);
   }
 
 }

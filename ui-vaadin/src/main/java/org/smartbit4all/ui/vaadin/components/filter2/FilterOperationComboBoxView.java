@@ -14,10 +14,34 @@
  ******************************************************************************/
 package org.smartbit4all.ui.vaadin.components.filter2;
 
-import com.vaadin.flow.component.orderedlayout.FlexLayout;
+import java.util.List;
+import org.smartbit4all.api.value.bean.Value;
+import org.smartbit4all.core.object.ObservableObject;
+import com.vaadin.flow.component.combobox.ComboBox;
 
-abstract class FilterOperationView extends FlexLayout {
+public class FilterOperationComboBoxView extends FilterOperationView {
 
-  public abstract void setPlaceholder(String placeHolderText);
+  private ComboBox<Value> comboBox;
+  private List<Value> possibleValues;
+
+  public FilterOperationComboBoxView(ObservableObject filterField, String path,
+      List<Value> possibleValues) {
+    this.possibleValues = possibleValues;
+
+    comboBox = new ComboBox<>();
+    comboBox.addClassName("filter-combobox");
+    comboBox.setItems(possibleValues);
+    comboBox.setItemLabelGenerator(Value::getDisplayValue);
+
+    add(comboBox);
+
+  }
+
+
+  @Override
+  public void setPlaceholder(String placeHolderText) {
+    comboBox.setPlaceholder(placeHolderText);
+  }
+
 
 }

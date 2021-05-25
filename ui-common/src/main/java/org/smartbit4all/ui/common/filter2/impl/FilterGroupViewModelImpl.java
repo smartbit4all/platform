@@ -24,8 +24,12 @@ public class FilterGroupViewModelImpl extends ObjectEditingImpl implements Filte
 
   @Override
   public void setModel(FilterGroupModel filterGroupModel) {
-    ref = new ApiObjectRef(null, filterGroupModel, ViewModelHelper.getFilterDescriptors());
-    filterGroupObservable.setRef(ref);
+    setRef(new ApiObjectRef(null, filterGroupModel, ViewModelHelper.getFilterDescriptors()));
+  }
+
+  void setRef(ApiObjectRef ref) {
+    this.ref = ref;
+    filterGroupObservable.setRef(this.ref);
   }
 
   @Override
@@ -35,6 +39,12 @@ public class FilterGroupViewModelImpl extends ObjectEditingImpl implements Filte
 
   @Override
   public void executeCommand(String commandPath, String command, Object... params) {
+    executeCommandWithoutNotify(commandPath, command, params);
+    filterGroupObservable.notifyListeners();
+
+  }
+
+  public void executeCommandWithoutNotify(String commandPath, String command, Object... params) {
     switch (command) {
       case "FILTER_DROPPED":
 
@@ -68,8 +78,6 @@ public class FilterGroupViewModelImpl extends ObjectEditingImpl implements Filte
         super.executeCommand(commandPath, command, params);
         break;
     }
-    filterGroupObservable.notifyListeners();
-
   }
 
   private void changeFilterOperation(String filterFieldPath, String operationPath) {
@@ -142,4 +150,9 @@ public class FilterGroupViewModelImpl extends ObjectEditingImpl implements Filte
       currentRef.getWrapper(FilterGroupModel.class).setActive(active);
     }
   }
+
+  String getCurrentActive() {
+    return currentActive;
+  }
+
 }

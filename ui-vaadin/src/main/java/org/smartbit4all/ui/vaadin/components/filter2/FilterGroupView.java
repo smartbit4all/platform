@@ -123,12 +123,10 @@ public class FilterGroupView extends FlexLayout implements DropTarget<FlexLayout
     return e -> e.getDragData().ifPresent(data -> {
       if (data instanceof FilterFieldView) {
         viewModel.executeCommand(path, "FILTER_DROPPED", ((FilterFieldView) data).getPath());
+      } else if (data instanceof FilterFieldSelectorView) {
+        viewModel.executeCommand(path, "SELECTOR_DROPPED",
+            ((FilterFieldSelectorView) data).getPath());
       }
-      // TODO add selector drag handling
-      // else if (data instanceof FilterSelectorView) {
-      // // is it really necessary here? controller.activeFilterGroupChanged(groupId);
-      // viewModel.executeCommand(path, "SELECTOR_DROPPED", ((FilterSelectorView) data).getPath());
-      // }
     });
   }
 

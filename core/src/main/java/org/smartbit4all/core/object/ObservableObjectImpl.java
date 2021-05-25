@@ -123,16 +123,19 @@ public final class ObservableObjectImpl implements ObservableObject, EventPublis
         .filter(change -> ObservableObjectHelper.pathEquals(change, path, property))
         .subscribe(onPropertyChange);
     if (ref != null) {
-      Object value = ref.getValueRefByPath(path).getValue(property);
-      if (value instanceof ApiObjectRef || value instanceof ApiObjectCollection) {
-        throw new IllegalArgumentException(
-            "Expected value, found reference/collection at " + path + "." + property);
-      }
-      PropertyChange currentChange = new PropertyChange(path, property, null, value);
-      try {
-        onPropertyChange.accept(currentChange);
-      } catch (Throwable e) {
-        log.error("Unexpected error at onPropertyChange", e);
+      ApiObjectRef pathRef = ref.getValueRefByPath(path);
+      if (pathRef != null) {
+        Object value = pathRef.getValue(property);
+        if (value instanceof ApiObjectRef || value instanceof ApiObjectCollection) {
+          throw new IllegalArgumentException(
+              "Expected value, found reference/collection at " + path + "." + property);
+        }
+        PropertyChange currentChange = new PropertyChange(path, property, null, value);
+        try {
+          onPropertyChange.accept(currentChange);
+        } catch (Throwable e) {
+          log.error("Unexpected error at onPropertyChange", e);
+        }
       }
     }
   }
@@ -152,17 +155,20 @@ public final class ObservableObjectImpl implements ObservableObject, EventPublis
         .filter(change -> ObservableObjectHelper.pathEquals(change, path, reference))
         .subscribe(onReferencedObjectChange);
     if (ref != null) {
-      Object value = ref.getValueRefByPath(path).getValue(reference);
-      if (value != null) {
-        if (!(value instanceof ApiObjectRef)) {
-          throw new IllegalArgumentException("Reference not found at " + path + "." + reference);
-        }
-        ReferencedObjectChange currentChange = new ReferencedObjectChange(path, reference,
-            new ObjectChangeSimple(path, ChangeState.NEW, ((ApiObjectRef) value).getObject()));
-        try {
-          onReferencedObjectChange.accept(currentChange);
-        } catch (Throwable e) {
-          log.error("Unexpected error at onReferencedObjectChange", e);
+      ApiObjectRef pathRef = ref.getValueRefByPath(path);
+      if (pathRef != null) {
+        Object value = pathRef.getValue(reference);
+        if (value != null) {
+          if (!(value instanceof ApiObjectRef)) {
+            throw new IllegalArgumentException("Reference not found at " + path + "." + reference);
+          }
+          ReferencedObjectChange currentChange = new ReferencedObjectChange(path, reference,
+              new ObjectChangeSimple(path, ChangeState.NEW, ((ApiObjectRef) value).getObject()));
+          try {
+            onReferencedObjectChange.accept(currentChange);
+          } catch (Throwable e) {
+            log.error("Unexpected error at onReferencedObjectChange", e);
+          }
         }
       }
     }
@@ -183,20 +189,24 @@ public final class ObservableObjectImpl implements ObservableObject, EventPublis
         .filter(change -> ObservableObjectHelper.pathEquals(change, path, collection))
         .subscribe(onCollectionObjectChange);
     if (ref != null) {
-      Object value = ref.getValueRefByPath(path).getValue(collection);
-      if (value != null) {
-        if (!(value instanceof ApiObjectCollection)) {
-          throw new IllegalArgumentException("Collection not found at " + path + "." + collection);
-        }
-        CollectionObjectChange currentChange = new CollectionObjectChange(path, collection);
-        for (ApiObjectRef object : (ApiObjectCollection) value) {
-          currentChange.getChanges()
-              .add(new ObjectChangeSimple(object.getPath(), ChangeState.NEW, object.getObject()));
-        }
-        try {
-          onCollectionObjectChange.accept(currentChange);
-        } catch (Throwable e) {
-          log.error("Unexpected error at onCollectionObjectChange", e);
+      ApiObjectRef pathRef = ref.getValueRefByPath(path);
+      if (pathRef != null) {
+        Object value = pathRef.getValue(collection);
+        if (value != null) {
+          if (!(value instanceof ApiObjectCollection)) {
+            throw new IllegalArgumentException(
+                "Collection not found at " + path + "." + collection);
+          }
+          CollectionObjectChange currentChange = new CollectionObjectChange(path, collection);
+          for (ApiObjectRef object : (ApiObjectCollection) value) {
+            currentChange.getChanges()
+                .add(new ObjectChangeSimple(object.getPath(), ChangeState.NEW, object.getObject()));
+          }
+          try {
+            onCollectionObjectChange.accept(currentChange);
+          } catch (Throwable e) {
+            log.error("Unexpected error at onCollectionObjectChange", e);
+          }
         }
       }
     }
