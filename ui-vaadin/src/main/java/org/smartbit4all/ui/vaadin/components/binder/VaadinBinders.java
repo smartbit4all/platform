@@ -6,7 +6,7 @@ import org.smartbit4all.core.object.ObservableObject;
 import com.vaadin.flow.component.HasText;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.data.binder.HasItems;
 
 public class VaadinBinders {
 
@@ -33,8 +33,8 @@ public class VaadinBinders {
     return new VaadinHasTextBinder(label, observableObject, path);
   }
 
-  public static <T> VaadinGridBinder<T> bind(Grid<T> grid, ObservableObject editing, String path,
-      String collectionName) {
-    return new VaadinGridBinder<>(grid, editing, path, collectionName);
+  public static <T> VaadinHasItemsBinder<T> bind(HasItems<T> grid, ObservableObject editing,
+      String path, String collectionName) {
+    return new VaadinHasItemsBinder<>(grid, editing, path, collectionName);
   }
 }

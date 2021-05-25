@@ -267,13 +267,13 @@ public class MultiSelectPopUp<T> extends CustomField<Set<T>> implements HasDataP
     } else if (grid.getDataProvider().size(new Query<>()) == selectionSize) {
       String allSelectedTxt = getTranslation("multiselect.allselected");
       String placeHolder = getPlaceHolder();
-      if(placeHolder != null && !placeHolder.isEmpty()) {
+      if (placeHolder != null && !placeHolder.isEmpty()) {
         allSelectedTxt = allSelectedTxt + " - " + getPlaceHolder();
-      } 
+      }
       return allSelectedTxt;
     } else {
       String placeHolder = getPlaceHolder();
-      if(placeHolder == null || placeHolder.isEmpty()) {
+      if (placeHolder == null || placeHolder.isEmpty()) {
         return String.valueOf(selectionSize) + " - " + getSelectedItemsDisplayText(", ");
       } else {
         return String.valueOf(selectionSize) + " - " + getPlaceHolder();
@@ -299,7 +299,7 @@ public class MultiSelectPopUp<T> extends CustomField<Set<T>> implements HasDataP
   private String getSelectedItemsDisplayText() {
     return getSelectedItemsDisplayText("\n");
   }
-  
+
   private String getSelectedItemsDisplayText(String separator) {
     List<?> displayItems = getSelectedItemsDisplay();
 
@@ -313,7 +313,7 @@ public class MultiSelectPopUp<T> extends CustomField<Set<T>> implements HasDataP
         return String.valueOf(itemDisplay);
       }
     }).collect(Collectors.toList());
-    
+
     return String.join(separator, displayItemsAsString);
   }
 
@@ -394,6 +394,10 @@ public class MultiSelectPopUp<T> extends CustomField<Set<T>> implements HasDataP
   @Override
   public void setDataProvider(DataProvider<T, ?> dataProvider) {
     grid.setDataProvider(dataProvider);
+  }
+
+  public DataProvider<T, ?> getDataProvider() {
+    return grid.getDataProvider();
   }
 
   @Override
