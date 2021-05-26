@@ -274,7 +274,9 @@ public class ApiObjectRef {
         break;
       case COLLECTION:
         ApiObjectCollection collection = propertyEntry.getCollection();
-        if (PathUtility.getPathSize(path) == 2) {
+        if (PathUtility.getPathSize(path) == 1) {
+          setValueInner(value, propertyEntry);
+        } else if (PathUtility.getPathSize(path) == 2) {
           // Set the collection element to the value
           String newPath = PathUtility.nextFullPath(path);
           String collectionId = PathUtility.getRootPath(newPath);

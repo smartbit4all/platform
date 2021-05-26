@@ -4,6 +4,7 @@ import java.util.Locale;
 import java.util.Objects;
 import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.core.object.PropertyChange;
+import org.smartbit4all.core.object.ReferencedObjectChange;
 import org.smartbit4all.core.utility.PathUtility;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasValidation;
@@ -19,31 +20,53 @@ public class VaadinHasValueBinder<WIDGET, DATA> {
 
   protected ObservableObject observableObject;
 
-  protected String path;
+  protected String propertyPath;
 
   protected boolean propertyChangeProgress = false;
 
   private HasValue<?, WIDGET> field;
 
   private Converter<WIDGET, DATA> converter;
-  private ValueContext converterContext;
+  private ValueContext valueContext;
 
   private Validator<? super DATA> validator;
 
+  /**
+   * Use other constructor instead.
+   * 
+   * @param field
+   * @param observableObject
+   * @param path
+   */
+  @Deprecated
   public VaadinHasValueBinder(HasValue<?, WIDGET> field, ObservableObject observableObject,
       String path) {
+    this(field, observableObject, PathUtility.getParentPath(path), PathUtility.getLastPath(path));
+  }
+
+  public VaadinHasValueBinder(HasValue<?, WIDGET> field, ObservableObject observableObject,
+      String path, String property) {
     super();
     this.field = field;
     this.observableObject = observableObject;
-    this.path = path;
+    this.propertyPath = PathUtility.concatPath(path, property);
 
-    subscribeToUIEvent();
-    registerValueChangeListener();
+    observableObject.onPropertyChange(path, property, this::onPropertyChanged);
+    observableObject.onReferencedObjectChange(path, property, this::onReferenceObjectChanged);
+
+    registerViewListener();
   }
 
   // TODO make it like Binder.withConverter()
   public void setConverter(Converter<WIDGET, DATA> converter) {
     this.converter = converter;
+    initValueContext();
+  }
+
+  private void initValueContext() {
+    if (valueContext != null) {
+      return;
+    }
     Locale locale = null;
     if (UI.getCurrent() != null) {
       locale = UI.getCurrent().getLocale();
@@ -51,9 +74,8 @@ public class VaadinHasValueBinder<WIDGET, DATA> {
     if (locale == null) {
       locale = Locale.getDefault();
     }
-    Component component;
-    component = field instanceof Component ? (Component) field : null;
-    this.converterContext = new ValueContext(component, field, locale);
+    Component component = field instanceof Component ? (Component) field : null;
+    this.valueContext = new ValueContext(component, field, locale);
   }
 
   public void asRequired(String errorMessage) {
@@ -61,20 +83,21 @@ public class VaadinHasValueBinder<WIDGET, DATA> {
     validator = Validator.from(
         value -> {
           DATA data =
-              getDataFromWidget(field.getEmptyValue()).getOrThrow(IllegalStateException::new);
+              getDataFromView(field.getEmptyValue()).getOrThrow(IllegalStateException::new);
           return !Objects.equals(value, data);
         },
         errorMessage);
+    initValueContext();
   }
 
   public boolean validate() {
     if (validator != null) {
-      Result<DATA> dataResult = getDataFromWidget(field.getValue());
+      Result<DATA> dataResult = getDataFromView(field.getValue());
       if (dataResult.isError()) {
         setFieldInvalid(dataResult.getMessage().orElse("Invalid value"));;
       }
       ValidationResult validationResult =
-          validator.apply(dataResult.getOrThrow(IllegalStateException::new), converterContext);
+          validator.apply(dataResult.getOrThrow(IllegalStateException::new), valueContext);
       if (validationResult.isError()) {
         setFieldInvalid(validationResult.getErrorMessage());
         return false;
@@ -86,22 +109,22 @@ public class VaadinHasValueBinder<WIDGET, DATA> {
     }
   }
 
-  protected void subscribeToUIEvent() {
-    observableObject.onPropertyChange(PathUtility.getParentPath(path),
-        PathUtility.getLastPath(path), this::onPropertyChanged);
-  }
-
   private void onPropertyChanged(PropertyChange value) {
     propertyChangeProgress = true;
-    onUIStateChanged(value);
+    onModelChanged((DATA) value.getNewValue());
     propertyChangeProgress = false;
   }
 
-  protected void onUIStateChanged(PropertyChange value) {
-    DATA newData = (DATA) value.getNewValue();
+  private void onReferenceObjectChanged(ReferencedObjectChange value) {
+    propertyChangeProgress = true;
+    onModelChanged((DATA) value.getChange().getObject());
+    propertyChangeProgress = false;
+  }
+
+  protected void onModelChanged(DATA newData) {
     WIDGET newValue;
     if (converter != null) {
-      newValue = converter.convertToPresentation(newData, converterContext);
+      newValue = converter.convertToPresentation(newData, valueContext);
     } else {
       newValue = (WIDGET) newData;
     }
@@ -115,15 +138,15 @@ public class VaadinHasValueBinder<WIDGET, DATA> {
     }
   }
 
-  protected void setUIState(DATA value) {
+  protected void setModelState(DATA value) {
     if (!propertyChangeProgress) {
-      observableObject.setValue(path, value);
+      observableObject.setValue(propertyPath, value);
     }
   }
 
-  protected void registerValueChangeListener() {
+  protected void registerViewListener() {
     field.addValueChangeListener(event -> {
-      Result<DATA> result = getDataFromWidget(event.getValue());
+      Result<DATA> result = getDataFromView(event.getValue());
       final DATA data;
       if (result.isError()) {
         setFieldInvalid(result.getMessage().orElse("Invalid value"));
@@ -134,7 +157,7 @@ public class VaadinHasValueBinder<WIDGET, DATA> {
         }
         data = result.getOrThrow(IllegalStateException::new);
       }
-      setUIState(data);
+      setModelState(data);
     });
   }
 
@@ -151,9 +174,9 @@ public class VaadinHasValueBinder<WIDGET, DATA> {
     }
   }
 
-  protected Result<DATA> getDataFromWidget(WIDGET value) {
+  protected Result<DATA> getDataFromView(WIDGET value) {
     if (converter != null) {
-      return converter.convertToModel(value, converterContext);
+      return converter.convertToModel(value, valueContext);
     } else {
       return Result.ok((DATA) value);
     }
