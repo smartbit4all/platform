@@ -39,8 +39,7 @@ public class FilterGroupSelectorView extends Details {
     setOpened(true);
 
     VaadinBinders.bind(summaryText, groupSelector,
-        PathUtility.concatPath(path, "labelCode"))
-        .setConverterFunction(s -> getTranslation((String) s));
+        PathUtility.concatPath(path, "labelCode"), s -> getTranslation((String) s));
 
     groupSelector.onCollectionObjectChange(path, "filters", this::onFiltersChange);
   }

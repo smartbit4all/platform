@@ -35,8 +35,7 @@ public class FilterFieldSelectorView extends FlexLayout implements DragSource<Fi
     addClassName("filtermeta-layout");
 
     VaadinBinders.bind(label, filterSelector,
-        PathUtility.concatPath(path, "labelCode"))
-        .setConverterFunction(s -> getTranslation((String) s));
+        PathUtility.concatPath(path, "labelCode"), s -> getTranslation((String) s));
 
     filterSelector.onPropertyChange(path, "enabled",
         c -> button.setEnabled((Boolean) c.getNewValue()));

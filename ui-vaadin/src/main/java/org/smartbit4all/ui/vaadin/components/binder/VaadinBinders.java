@@ -1,6 +1,7 @@
 package org.smartbit4all.ui.vaadin.components.binder;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 import org.smartbit4all.core.object.ObjectEditing;
 import org.smartbit4all.core.object.ObservableObject;
 import com.vaadin.flow.component.Component;
@@ -58,7 +59,12 @@ public class VaadinBinders {
 
   public static VaadinHasTextBinder bind(HasText label, ObservableObject observableObject,
       String path) {
-    return new VaadinHasTextBinder(label, observableObject, path);
+    return new VaadinHasTextBinder(label, observableObject, path, null);
+  }
+
+  public static VaadinHasTextBinder bind(HasText label, ObservableObject observableObject,
+      String path, Function<Object, String> converter) {
+    return new VaadinHasTextBinder(label, observableObject, path, converter);
   }
 
   public static <T> VaadinHasItemsBinder<T> bind(HasItems<T> grid, ObservableObject editing,

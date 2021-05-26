@@ -51,7 +51,10 @@ public class VaadinHasValueBinder<WIDGET, DATA> {
     this.field = field;
     this.observableObject = observableObject;
     this.propertyPath = PathUtility.concatPath(path, property);
-    setConverter(converter);
+    this.converter = converter;
+    if (this.converter != null) {
+      initValueContext();
+    }
 
     if (isRef) {
       observableObject.onReferencedObjectChange(path, property, this::onReferenceObjectChanged);
@@ -60,14 +63,6 @@ public class VaadinHasValueBinder<WIDGET, DATA> {
     }
 
     registerViewListener();
-  }
-
-  // TODO make it like Binder.withConverter()
-  public void setConverter(Converter<WIDGET, DATA> converter) {
-    this.converter = converter;
-    if (this.converter != null) {
-      initValueContext();
-    }
   }
 
   private void initValueContext() {

@@ -14,19 +14,17 @@ public class VaadinHasTextBinder {
 
   protected String path;
 
-  private Function<Object, String> converterFunction;
+  private Function<Object, String> converter;
 
-  public VaadinHasTextBinder(HasText label, ObservableObject observableObject, String path) {
+  public VaadinHasTextBinder(HasText label, ObservableObject observableObject, String path,
+      Function<Object, String> converter) {
     super();
     this.label = label;
     this.observableObject = observableObject;
     this.path = path;
+    this.converter = converter;
 
     subscribeToUIEvent();
-  }
-
-  public void setConverterFunction(Function<Object, String> converterFunction) {
-    this.converterFunction = converterFunction;
   }
 
   protected void subscribeToUIEvent() {
@@ -38,8 +36,8 @@ public class VaadinHasTextBinder {
     String currentValue = label.getText();
     Object newValue = value.getNewValue();
 
-    if (converterFunction != null) {
-      newValue = converterFunction.apply(newValue);
+    if (converter != null) {
+      newValue = converter.apply(newValue);
     }
     newValue = newValue == null ? "" : newValue;
     currentValue = currentValue == null ? "" : currentValue;
