@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 import org.smartbit4all.api.filter.bean.FilterOperandValue;
 import org.smartbit4all.api.filter.bean.FilterOperation;
+import org.smartbit4all.api.value.bean.Value;
 import org.smartbit4all.core.object.ApiBeanDescriptor;
 import org.smartbit4all.ui.common.filter2.model.DynamicFilterModel;
 import org.smartbit4all.ui.common.filter2.model.FilterFieldLabel;
@@ -29,6 +30,7 @@ public class ViewModelHelper {
     beans.add(FilterFieldLabel.class);
     beans.add(FilterOperation.class);
     beans.add(FilterOperandValue.class);
+    beans.add(Value.class);
     filterDescriptors = ApiBeanDescriptor.of(beans);
 
   }

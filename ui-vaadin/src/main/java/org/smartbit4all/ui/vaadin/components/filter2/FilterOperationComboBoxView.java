@@ -14,26 +14,25 @@
  ******************************************************************************/
 package org.smartbit4all.ui.vaadin.components.filter2;
 
-import java.util.List;
 import org.smartbit4all.api.value.bean.Value;
 import org.smartbit4all.core.object.ObservableObject;
+import org.smartbit4all.core.utility.PathUtility;
+import org.smartbit4all.ui.vaadin.components.binder.VaadinBinders;
 import com.vaadin.flow.component.combobox.ComboBox;
 
 public class FilterOperationComboBoxView extends FilterOperationView {
 
   private ComboBox<Value> comboBox;
-  private List<Value> possibleValues;
 
-  public FilterOperationComboBoxView(ObservableObject filterField, String path,
-      List<Value> possibleValues) {
-    this.possibleValues = possibleValues;
-
+  public FilterOperationComboBoxView(ObservableObject filterField, String path) {
     comboBox = new ComboBox<>();
     comboBox.addClassName("filter-combobox");
-    comboBox.setItems(possibleValues);
     comboBox.setItemLabelGenerator(Value::getDisplayValue);
 
     add(comboBox);
+
+    VaadinBinders.bind(comboBox, filterField, path, "possibleValues");
+    VaadinBinders.bind(comboBox, filterField, PathUtility.concatPath(path, "selectedValue"));
 
   }
 

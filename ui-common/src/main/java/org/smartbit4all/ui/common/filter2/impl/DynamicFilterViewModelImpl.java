@@ -1,5 +1,7 @@
 package org.smartbit4all.ui.common.filter2.impl;
 
+import java.net.URI;
+import java.util.Collections;
 import java.util.List;
 import org.smartbit4all.api.filter.FilterApi;
 import org.smartbit4all.api.filter.bean.FilterConfig;
@@ -8,6 +10,7 @@ import org.smartbit4all.api.filter.bean.FilterFieldMeta;
 import org.smartbit4all.api.filter.bean.FilterGroupMeta;
 import org.smartbit4all.api.filter.bean.FilterOperation;
 import org.smartbit4all.api.value.ValueApi;
+import org.smartbit4all.api.value.bean.Value;
 import org.smartbit4all.core.object.ApiObjectRef;
 import org.smartbit4all.core.object.ObjectEditingImpl;
 import org.smartbit4all.core.object.ObservableObject;
@@ -136,7 +139,7 @@ public class DynamicFilterViewModelImpl extends ObjectEditingImpl
             throw new IllegalArgumentException("CREATE_FILTER pathSize should be 4!");
           }
           FilterGroupModel group = createOrFindFilterGroupByPath(commandPath);
-          FilterFieldModel filterField = createFilterField(commandPath);
+          FilterFieldModel filterField = createFilterFieldFromSelectorPath(commandPath);
           group.getFilters().add(filterField);
           break;
 
@@ -148,7 +151,7 @@ public class DynamicFilterViewModelImpl extends ObjectEditingImpl
     dynamicFilterModelObservable.notifyListeners();
   }
 
-  private FilterFieldModel createFilterField(String selectorPath) {
+  private FilterFieldModel createFilterFieldFromSelectorPath(String selectorPath) {
     ApiObjectRef filterSelectorRef = ref.getValueRefByPath(selectorPath);
     FilterFieldSelectorModel filterSelector =
         (FilterFieldSelectorModel) filterSelectorRef.getObject();
@@ -173,6 +176,7 @@ public class DynamicFilterViewModelImpl extends ObjectEditingImpl
     if (operations != null && !operations.isEmpty()) {
       filterField.setSelectedOperation(operations.get(0));
     }
+    fillPossibleValues(filterField);
     return filterField;
   }
 
@@ -215,5 +219,21 @@ public class DynamicFilterViewModelImpl extends ObjectEditingImpl
     FilterGroupSelectorModel selectorGroup =
         selectorGroupRef.getWrapper(FilterGroupSelectorModel.class);
     return selectorGroup;
+  }
+
+  private void fillPossibleValues(FilterFieldModel filter) {
+    List<Value> possibleValues = null;
+    if (filter.getSelectedOperation() != null) {
+      URI uri = filter.getSelectedOperation().getPossibleValuesUri();
+      if (uri != null) {
+        try {
+          possibleValues = valueApi.getPossibleValues(uri);
+        } catch (Exception e) {
+          // TODO handle this better
+          throw new RuntimeException(e);
+        }
+      }
+    }
+    filter.setPossibleValues(possibleValues == null ? Collections.emptyList() : possibleValues);
   }
 }
