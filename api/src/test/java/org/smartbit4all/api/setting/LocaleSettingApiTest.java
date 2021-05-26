@@ -1,11 +1,10 @@
 package org.smartbit4all.api.setting;
 
-import java.awt.Button;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Locale;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class LocaleSettingApiTest {
 
@@ -28,7 +27,6 @@ class LocaleSettingApiTest {
     LocaleSettingApi ls = new LocaleSettingApi();
     ls.add("org.smartbit4all.pcg.Apple.apple", "apple");
     ls.add("org.smartbit4all.pcg.Apple2.apple", "apple");
-    new Button("Save");
 
     // We must find the default value and the added keys as they were inserted.
     assertEquals("apple", ls.get("org.smartbit4all.pcg.Apple.apple"));
