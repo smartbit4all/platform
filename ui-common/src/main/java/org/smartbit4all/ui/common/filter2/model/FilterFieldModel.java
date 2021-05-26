@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.smartbit4all.api.filter.bean.FilterOperandValue;
 import org.smartbit4all.api.filter.bean.FilterOperation;
 import org.smartbit4all.api.value.bean.Value;
 
@@ -18,9 +17,12 @@ public class FilterFieldModel {
   private List<Value> possibleValues = new ArrayList<>();
   private Set<Value> selectedValues = new HashSet<>();
   private Value selectedValue;
-  private FilterOperandValue value1;
-  private FilterOperandValue value2;
-  private FilterOperandValue value3;
+  private String type1;
+  private String value1;
+  private String type2;
+  private String value2;
+  private String type3;
+  private String value3;
 
   public FilterFieldLabel getLabel() {
     return label;
@@ -70,30 +72,6 @@ public class FilterFieldModel {
     this.possibleValues = possibleValues;
   }
 
-  public FilterOperandValue getValue1() {
-    return value1;
-  }
-
-  public void setValue1(FilterOperandValue value1) {
-    this.value1 = value1;
-  }
-
-  public FilterOperandValue getValue2() {
-    return value2;
-  }
-
-  public void setValue2(FilterOperandValue value2) {
-    this.value2 = value2;
-  }
-
-  public FilterOperandValue getValue3() {
-    return value3;
-  }
-
-  public void setValue3(FilterOperandValue value3) {
-    this.value3 = value3;
-  }
-
   public Set<Value> getSelectedValues() {
     return selectedValues;
   }
@@ -108,6 +86,54 @@ public class FilterFieldModel {
 
   public void setSelectedValue(Value selectedValue) {
     this.selectedValue = selectedValue;
+  }
+
+  public String getType1() {
+    return type1;
+  }
+
+  public void setType1(String type1) {
+    this.type1 = type1;
+  }
+
+  public String getValue1() {
+    return value1;
+  }
+
+  public void setValue1(String value1) {
+    this.value1 = value1;
+  }
+
+  public String getType2() {
+    return type2;
+  }
+
+  public void setType2(String type2) {
+    this.type2 = type2;
+  }
+
+  public String getValue2() {
+    return value2;
+  }
+
+  public void setValue2(String value2) {
+    this.value2 = value2;
+  }
+
+  public String getType3() {
+    return type3;
+  }
+
+  public void setType3(String type3) {
+    this.type3 = type3;
+  }
+
+  public String getValue3() {
+    return value3;
+  }
+
+  public void setValue3(String value3) {
+    this.value3 = value3;
   }
 
 }

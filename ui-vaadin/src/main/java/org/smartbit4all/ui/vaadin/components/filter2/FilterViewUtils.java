@@ -39,32 +39,30 @@ class FilterViewUtils {
   }
 
   public static void bindDate(DatePicker date, ObservableObject filterField, String path,
-      String property) {
-    String typePath = PathUtility.concatPath(path, property + "/type");
-    String valuePath = PathUtility.concatPath(path, property + "/value");
-    VaadinBinders.bind(date, filterField, valuePath, String.class)
-        .setConverter(new LocalDate2StringConverter());
+      int number) {
+    String typePath = PathUtility.concatPath(path, "type" + number);
+    String valuePath = PathUtility.concatPath(path, "value" + number);
+    VaadinBinders.bind(date, filterField, valuePath, String.class, new LocalDate2StringConverter());
     date.addValueChangeListener(
         e -> filterField.setValue(typePath, LocalDate.class.getName()));
   }
 
   public static void bindDateTime(DateTimePicker dateTime, ObservableObject filterField,
-      String path, String property) {
-    String typePath = PathUtility.concatPath(path, property + "/type");
-    String valuePath = PathUtility.concatPath(path, property + "/value");
-    VaadinBinders.bind(dateTime, filterField, valuePath, String.class)
-        .setConverter(new LocalDateTime2StringConverter());
+      String path, int number) {
+    String typePath = PathUtility.concatPath(path, "type" + number);
+    String valuePath = PathUtility.concatPath(path, "value" + number);
+    VaadinBinders.bind(dateTime, filterField, valuePath, String.class,
+        new LocalDateTime2StringConverter());
     dateTime.addValueChangeListener(
         e -> filterField.setValue(typePath, LocalDateTime.class.getName()));
   }
 
   public static void bindTimeFilterOptionCombo(ComboBox<TimeFilterOption> combo,
-      ObservableObject filterField, String path,
-      String property) {
-    String typePath = PathUtility.concatPath(path, property + "/type");
-    String valuePath = PathUtility.concatPath(path, property + "/value");
-    VaadinBinders.bind(combo, filterField, valuePath, String.class)
-        .setConverter(new TimeFilterOption2StringConverter());
+      ObservableObject filterField, String path, int number) {
+    String typePath = PathUtility.concatPath(path, "type" + number);
+    String valuePath = PathUtility.concatPath(path, "value" + number);
+    VaadinBinders.bind(combo, filterField, valuePath, String.class,
+        new TimeFilterOption2StringConverter());
     combo.addValueChangeListener(
         e -> filterField.setValue(typePath, String.class.getName()));
 

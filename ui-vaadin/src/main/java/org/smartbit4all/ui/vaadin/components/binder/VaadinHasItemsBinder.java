@@ -6,6 +6,9 @@ import org.smartbit4all.ui.vaadin.components.selector.MultiSelectPopUp;
 import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.Grid.SelectionMode;
+import com.vaadin.flow.component.grid.GridSelectionModel;
+import com.vaadin.flow.component.grid.GridSingleSelectionModel;
 import com.vaadin.flow.component.ironlist.IronList;
 import com.vaadin.flow.component.listbox.ListBox;
 import com.vaadin.flow.component.listbox.MultiSelectListBox;
@@ -35,28 +38,33 @@ public class VaadinHasItemsBinder<T> extends VaadinCollectionBinder<T> {
       return;
     }
     if (list instanceof Grid) {
+      GridSelectionModel<T> selectionModel = ((Grid<T>) list).getSelectionModel();
       ((Grid<T>) list).getDataProvider().refreshAll();
-      // ((Grid<T>) list).getDataProvider().refreshAll();
+      if (selectionModel != null) {
+        if (selectionModel instanceof GridSingleSelectionModel) {
+          ((Grid<T>) list).setSelectionMode(SelectionMode.SINGLE);
+        } else {
+          ((Grid<T>) list).setSelectionMode(SelectionMode.MULTI);
+        }
+      }
     } else if (list instanceof ComboBox) {
-      ((ComboBox<T>) list).getDataProvider().refreshItem(item);
+      ((ComboBox<T>) list).getDataProvider().refreshAll();
     } else if (list instanceof CheckboxGroup) {
-      ((CheckboxGroup<T>) list).getDataProvider().refreshItem(item);
+      ((CheckboxGroup<T>) list).getDataProvider().refreshAll();
     } else if (list instanceof IronList) {
-      ((IronList<T>) list).getDataProvider().refreshItem(item);
+      ((IronList<T>) list).getDataProvider().refreshAll();
     } else if (list instanceof ListBox) {
-      ((ListBox<T>) list).getDataProvider().refreshItem(item);
+      ((ListBox<T>) list).getDataProvider().refreshAll();
     } else if (list instanceof MultiSelectListBox) {
-      ((MultiSelectListBox<T>) list).getDataProvider().refreshItem(item);
+      ((MultiSelectListBox<T>) list).getDataProvider().refreshAll();
     } else if (list instanceof MultiSelectPopUp) {
-      ((MultiSelectPopUp<T>) list).getDataProvider().refreshItem(item);
+      ((MultiSelectPopUp<T>) list).getDataProvider().refreshAll();
     } else if (list instanceof RadioButtonGroup) {
-      ((RadioButtonGroup<T>) list).getDataProvider().refreshItem(item);
+      ((RadioButtonGroup<T>) list).getDataProvider().refreshAll();
     } else if (list instanceof Select) {
-      // ((Select<T>) list).getDataProvider().refreshItem(item);
       ((Select<T>) list).getDataProvider().refreshAll();
-      // list.setItems(items);
     } else if (list instanceof TreeGrid) {
-      ((TreeGrid<T>) list).getDataProvider().refreshItem(item);
+      ((TreeGrid<T>) list).getDataProvider().refreshAll();
     } else {
       throw new IllegalArgumentException(
           "Unhandled HasItems list class: " + list.getClass().getName());

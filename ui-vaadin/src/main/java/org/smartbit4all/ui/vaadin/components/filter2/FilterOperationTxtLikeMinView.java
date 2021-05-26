@@ -16,8 +16,8 @@ public class FilterOperationTxtLikeMinView extends FilterOperationView {
     textField = new TextField();
     textField.setClearButtonVisible(true);
     textField.addClassName("filter-txt-like-min-txt");
-    VaadinBinders.bind(textField, filterField, PathUtility.concatPath(path, "value1/value"))
-        .setConverter(new UpperCaseConverter());
+    VaadinBinders.bind(textField, filterField, PathUtility.concatPath(path, "value1"),
+        new UpperCaseConverter());
     // TODO min 3 char lenght
 
     add(textField);

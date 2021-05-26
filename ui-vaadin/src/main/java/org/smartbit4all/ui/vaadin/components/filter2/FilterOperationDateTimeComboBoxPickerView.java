@@ -14,7 +14,7 @@ public class FilterOperationDateTimeComboBoxPickerView extends FilterOperationDa
         FilterViewUtils.createTimeFilterOptionCombo(this);
     addComponentAsFirst(cbTimeFilterOption);
 
-    FilterViewUtils.bindTimeFilterOptionCombo(cbTimeFilterOption, filterField, path, "value3");
+    FilterViewUtils.bindTimeFilterOptionCombo(cbTimeFilterOption, filterField, path, 3);
   }
 
 }

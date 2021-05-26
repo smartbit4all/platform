@@ -29,7 +29,7 @@ public class FilterOperationDateTimeEqualsView extends FilterOperationView {
     ComponentLocalizations.localize(dateTime);
     add(dateTime);
 
-    FilterViewUtils.bindDateTime(dateTime, filterField, path, "value1");
+    FilterViewUtils.bindDateTime(dateTime, filterField, path, 1);
   }
 
   @Override

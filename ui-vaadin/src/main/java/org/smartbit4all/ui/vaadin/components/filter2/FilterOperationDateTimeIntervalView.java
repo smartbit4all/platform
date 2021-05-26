@@ -38,8 +38,8 @@ public class FilterOperationDateTimeIntervalView extends FilterOperationView {
 
     add(beginDate, endDate);
 
-    FilterViewUtils.bindDateTime(beginDate, filterField, path, "value1");
-    FilterViewUtils.bindDateTime(endDate, filterField, path, "value2");
+    FilterViewUtils.bindDateTime(beginDate, filterField, path, 1);
+    FilterViewUtils.bindDateTime(endDate, filterField, path, 2);
   }
 
   @Override

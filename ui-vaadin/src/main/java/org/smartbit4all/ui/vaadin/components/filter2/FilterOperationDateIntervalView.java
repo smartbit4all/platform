@@ -29,8 +29,8 @@ public class FilterOperationDateIntervalView extends FilterOperationView {
 
     add(beginDate, endDate);
 
-    FilterViewUtils.bindDate(beginDate, filterField, path, "value1");
-    FilterViewUtils.bindDate(endDate, filterField, path, "value2");
+    FilterViewUtils.bindDate(beginDate, filterField, path, 1);
+    FilterViewUtils.bindDate(endDate, filterField, path, 2);
   }
 
   @Override

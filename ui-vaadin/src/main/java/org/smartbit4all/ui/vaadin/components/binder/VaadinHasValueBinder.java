@@ -40,19 +40,24 @@ public class VaadinHasValueBinder<WIDGET, DATA> {
    */
   @Deprecated
   public VaadinHasValueBinder(HasValue<?, WIDGET> field, ObservableObject observableObject,
-      String path) {
-    this(field, observableObject, PathUtility.getParentPath(path), PathUtility.getLastPath(path));
+      String path, Converter<WIDGET, DATA> converter, boolean isRef) {
+    this(field, observableObject, PathUtility.getParentPath(path), PathUtility.getLastPath(path),
+        converter, isRef);
   }
 
   public VaadinHasValueBinder(HasValue<?, WIDGET> field, ObservableObject observableObject,
-      String path, String property) {
+      String path, String property, Converter<WIDGET, DATA> converter, boolean isRef) {
     super();
     this.field = field;
     this.observableObject = observableObject;
     this.propertyPath = PathUtility.concatPath(path, property);
+    setConverter(converter);
 
-    observableObject.onPropertyChange(path, property, this::onPropertyChanged);
-    observableObject.onReferencedObjectChange(path, property, this::onReferenceObjectChanged);
+    if (isRef) {
+      observableObject.onReferencedObjectChange(path, property, this::onReferenceObjectChanged);
+    } else {
+      observableObject.onPropertyChange(path, property, this::onPropertyChanged);
+    }
 
     registerViewListener();
   }
@@ -60,7 +65,9 @@ public class VaadinHasValueBinder<WIDGET, DATA> {
   // TODO make it like Binder.withConverter()
   public void setConverter(Converter<WIDGET, DATA> converter) {
     this.converter = converter;
-    initValueContext();
+    if (this.converter != null) {
+      initValueContext();
+    }
   }
 
   private void initValueContext() {
@@ -110,15 +117,19 @@ public class VaadinHasValueBinder<WIDGET, DATA> {
   }
 
   private void onPropertyChanged(PropertyChange value) {
-    propertyChangeProgress = true;
-    onModelChanged((DATA) value.getNewValue());
-    propertyChangeProgress = false;
+    if (!propertyChangeProgress) {
+      propertyChangeProgress = true;
+      onModelChanged((DATA) value.getNewValue());
+      propertyChangeProgress = false;
+    }
   }
 
   private void onReferenceObjectChanged(ReferencedObjectChange value) {
-    propertyChangeProgress = true;
-    onModelChanged((DATA) value.getChange().getObject());
-    propertyChangeProgress = false;
+    if (!propertyChangeProgress) {
+      propertyChangeProgress = true;
+      onModelChanged((DATA) value.getChange().getObject());
+      propertyChangeProgress = false;
+    }
   }
 
   protected void onModelChanged(DATA newData) {

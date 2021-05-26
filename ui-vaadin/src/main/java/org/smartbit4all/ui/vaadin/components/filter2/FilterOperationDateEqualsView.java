@@ -29,7 +29,7 @@ public class FilterOperationDateEqualsView extends FilterOperationView {
     ComponentLocalizations.localize(date);
     add(date);
 
-    FilterViewUtils.bindDate(date, filterField, path, "value1");
+    FilterViewUtils.bindDate(date, filterField, path, 1);
   }
 
   @Override

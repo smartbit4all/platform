@@ -27,7 +27,7 @@ public class FilterOperationTxtLikeView extends FilterOperationView {
     addClassName("filter-onefield");
     textField = new TextField();
     add(textField);
-    VaadinBinders.bind(textField, filterField, PathUtility.concatPath(path, "value1/value"));
+    VaadinBinders.bind(textField, filterField, PathUtility.concatPath(path, "value1"));
   }
 
   @Override
