@@ -26,6 +26,11 @@ public class VaadinBinders {
     return new VaadinHasValueBinder<>(field, observableObject, path);
   }
 
+  public static <WIDGET, DATA> VaadinHasValueBinder<WIDGET, DATA> bind(HasValue<?, WIDGET> field,
+      ObservableObject observableObject, String path, Class<DATA> clazz) {
+    return new VaadinHasValueBinder<>(field, observableObject, path);
+  }
+
   public static VaadinHasTextBinder bind(HasText label, ObservableObject observableObject,
       String path) {
     return new VaadinHasTextBinder(label, observableObject, path);

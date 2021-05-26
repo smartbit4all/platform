@@ -123,14 +123,15 @@ public class DynamicFilterViewModelImpl extends ObjectEditingImpl
   @Override
   public void executeCommand(String commandPath, String command, Object... params) {
     if (commandPath.toUpperCase().startsWith("ROOT")) {
-      String rootlessPath = commandPath.substring("root".length());
-      if (rootlessPath.startsWith("/")) {
-        rootlessPath = rootlessPath.substring(1);
+      String rootlessPath = removeRootPrefix(commandPath);
+      Object[] params2;
+      if (params != null && params.length > 0) {
+        params2 = new Object[params.length];
+        removeRootFromParams(params2, params);
+      } else {
+        params2 = new Object[0];
       }
-      if ("".equals(rootlessPath)) {
-        rootlessPath = null;
-      }
-      rootFilterGroupViewModel.executeCommandWithoutNotify(rootlessPath, command, params);
+      rootFilterGroupViewModel.executeCommandWithoutNotify(rootlessPath, command, params2);
     } else {
       switch (command) {
         case "CREATE_FILTER":
@@ -149,6 +150,29 @@ public class DynamicFilterViewModelImpl extends ObjectEditingImpl
       super.executeCommand(commandPath, command, params);
     }
     dynamicFilterModelObservable.notifyListeners();
+  }
+
+  private void removeRootFromParams(Object[] params2, Object... params) {
+    for (int i = 0; i < params.length; i++) {
+      Object param = params[i];
+      if (param instanceof String) {
+        params2[i] = removeRootPrefix((String) param);
+      }
+    }
+  }
+
+  private String removeRootPrefix(String path) {
+    String result = null;
+    if (!Strings.isNullOrEmpty(path) && path.toUpperCase().startsWith("ROOT")) {
+      result = path.substring("root".length());
+      if (result.startsWith("/")) {
+        result = result.substring(1);
+      }
+      if ("".equals(result)) {
+        result = null;
+      }
+    }
+    return result;
   }
 
   private FilterFieldModel createFilterFieldFromSelectorPath(String selectorPath) {
