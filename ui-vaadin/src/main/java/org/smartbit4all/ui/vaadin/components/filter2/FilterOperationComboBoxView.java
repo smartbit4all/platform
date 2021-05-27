@@ -18,24 +18,46 @@ import org.smartbit4all.api.value.bean.Value;
 import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.core.utility.PathUtility;
 import org.smartbit4all.ui.vaadin.components.binder.VaadinBinders;
+import org.smartbit4all.ui.vaadin.components.binder.VaadinHasItemsBinder;
+import org.smartbit4all.ui.vaadin.components.binder.VaadinHasValueBinder;
+import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.combobox.ComboBox;
 
 public class FilterOperationComboBoxView extends FilterOperationView {
 
   private ComboBox<Value> comboBox;
+  private VaadinHasItemsBinder<Value> comboBinder;
+  private VaadinHasValueBinder<Value, Value> selectionBinder;
 
   public FilterOperationComboBoxView(ObservableObject filterField, String path) {
+    super(filterField, path);
     comboBox = new ComboBox<>();
     comboBox.addClassName("filter-combobox");
     comboBox.setItemLabelGenerator(Value::getDisplayValue);
-
     add(comboBox);
-
-    VaadinBinders.bind(comboBox, filterField, path, "possibleValues");
-    VaadinBinders.bind(comboBox, filterField, PathUtility.concatPath(path, "selectedValue"));
-
   }
 
+  @Override
+  protected void onAttach(AttachEvent attachEvent) {
+    super.onAttach(attachEvent);
+    comboBinder = VaadinBinders.bind(comboBox, filterField, path, "possibleValues");
+    selectionBinder =
+        VaadinBinders.bind(comboBox, filterField, PathUtility.concatPath(path, "selectedValue"));
+  }
+
+  @Override
+  protected void onDetach(DetachEvent detachEvent) {
+    super.onDetach(detachEvent);
+    if (comboBinder != null) {
+      comboBinder.unbind();
+      comboBinder = null;
+    }
+    if (selectionBinder != null) {
+      selectionBinder.unbind();
+      selectionBinder = null;
+    }
+  }
 
   @Override
   public void setPlaceholder(String placeHolderText) {

@@ -14,7 +14,8 @@ public class LocalDate2StringConverter implements Converter<LocalDate, String> {
     if (date == null) {
       return null;
     }
-    return Result.ok(date.toString());
+
+    return Result.ok(DateConverter.PREFIX_DATE + date.toString());
   }
 
   @Override
@@ -22,7 +23,7 @@ public class LocalDate2StringConverter implements Converter<LocalDate, String> {
     if (Strings.isNullOrEmpty(value)) {
       return null;
     }
-    return DateConverter.getDate(value);
+    return DateConverter.getDateWithType(value);
   }
 
 }

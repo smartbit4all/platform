@@ -14,7 +14,7 @@ public class LocalDateTime2StringConverter implements Converter<LocalDateTime, S
     if (datetime == null) {
       return null;
     }
-    return Result.ok(datetime.toString());
+    return Result.ok(DateConverter.PREFIX_DATETIME + datetime.toString());
   }
 
   @Override
@@ -22,7 +22,7 @@ public class LocalDateTime2StringConverter implements Converter<LocalDateTime, S
     if (Strings.isNullOrEmpty(value)) {
       return null;
     }
-    return DateConverter.getDateTime(value);
+    return DateConverter.getDateTimeWithType(value);
   }
 
 }

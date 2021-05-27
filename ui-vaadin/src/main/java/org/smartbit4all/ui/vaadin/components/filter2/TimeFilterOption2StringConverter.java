@@ -8,12 +8,14 @@ import com.vaadin.flow.data.converter.Converter;
 
 public class TimeFilterOption2StringConverter implements Converter<TimeFilterOption, String> {
 
+  private static final String PREFIX = "java.lang.String;";
+
   @Override
   public Result<String> convertToModel(TimeFilterOption option, ValueContext context) {
     if (option == null) {
       return null;
     }
-    return Result.ok(option.toString());
+    return Result.ok(PREFIX + option.toString());
   }
 
   @Override
@@ -21,7 +23,10 @@ public class TimeFilterOption2StringConverter implements Converter<TimeFilterOpt
     if (Strings.isNullOrEmpty(value)) {
       return null;
     }
-    return TimeFilterOption.valueOf(value);
+    if (!value.startsWith(PREFIX)) {
+      return null;
+    }
+    return TimeFilterOption.valueOf(value.substring(PREFIX.length()));
   }
 
 }

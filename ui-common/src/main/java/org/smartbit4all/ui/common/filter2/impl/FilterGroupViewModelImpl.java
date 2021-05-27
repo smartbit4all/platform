@@ -87,6 +87,10 @@ public class FilterGroupViewModelImpl extends ObjectEditingImpl implements Filte
     FilterOperation operation = (FilterOperation) operationRef.getObject();
     if (!filter.getSelectedOperation().getId().equals(operation.getId())) {
       filter.setSelectedOperation(operation);
+      // TODO ???
+      // filter.setValue1(null);
+      // filter.setValue2(null);
+      // filter.setValue3(null);
     }
   }
 

@@ -16,30 +16,26 @@ package org.smartbit4all.ui.vaadin.components.filter2;
 
 import java.time.LocalDateTime;
 import org.smartbit4all.core.object.ObservableObject;
-import org.smartbit4all.ui.vaadin.localization.ComponentLocalizations;
+import org.smartbit4all.ui.vaadin.components.binder.VaadinHasValueBinder;
+import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 
 public class FilterOperationDateTimeIntervalView extends FilterOperationView {
 
   private DateTimePicker beginDate;
   private DateTimePicker endDate;
+  private VaadinHasValueBinder<LocalDateTime, String> beginDateBinder;
+  private VaadinHasValueBinder<LocalDateTime, String> endDateBinder;
 
   public FilterOperationDateTimeIntervalView(ObservableObject filterField, String path) {
+    super(filterField, path);
     addClassName("filter-date-time");
 
-    LocalDateTime now = LocalDateTime.now();
-
-    beginDate = new DateTimePicker();
-    beginDate.setMax(now);
-    endDate = new DateTimePicker();
-    endDate.setMax(now);
-    ComponentLocalizations.localize(beginDate);
-    ComponentLocalizations.localize(endDate);
+    beginDate = FilterViewUtils.createDateTimePicker();
+    endDate = FilterViewUtils.createDateTimePicker();
 
     add(beginDate, endDate);
-
-    FilterViewUtils.bindDateTime(beginDate, filterField, path, 1);
-    FilterViewUtils.bindDateTime(endDate, filterField, path, 2);
   }
 
   @Override
@@ -47,4 +43,23 @@ public class FilterOperationDateTimeIntervalView extends FilterOperationView {
     beginDate.setDatePlaceholder(placeHolderText);
   }
 
+  @Override
+  protected void onAttach(AttachEvent attachEvent) {
+    super.onAttach(attachEvent);
+    beginDateBinder = FilterViewUtils.bindDateTime(beginDate, filterField, path, 1);
+    endDateBinder = FilterViewUtils.bindDateTime(endDate, filterField, path, 2);
+  }
+
+  @Override
+  protected void onDetach(DetachEvent detachEvent) {
+    super.onDetach(detachEvent);
+    if (beginDateBinder != null) {
+      beginDateBinder.unbind();
+      beginDateBinder = null;
+    }
+    if (endDateBinder != null) {
+      endDateBinder.unbind();
+      endDateBinder = null;
+    }
+  }
 }

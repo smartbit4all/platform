@@ -29,6 +29,9 @@ import java.time.LocalTime;
  */
 public class DateConverter {
 
+  public static final String PREFIX_DATE = "java.time.LocalDate;";
+  public static final String PREFIX_DATETIME = "java.time.LocalDateTime;";
+
   public static LocalDateTime getDateTime(String dateTimeString) {
     String[] dateTimeParts = dateTimeString.split("T");
     return LocalDateTime.of(getDate(dateTimeParts[0]), getTime(dateTimeParts[1]));
@@ -45,6 +48,26 @@ public class DateConverter {
   private static LocalTime getTime(String timeString) {
     String[] timeParts = timeString.split(":");
     return LocalTime.of(Integer.parseInt(timeParts[0]), Integer.parseInt(timeParts[1]));
+  }
+
+  public static LocalDate getDateWithType(String dateString) {
+    if (dateString.startsWith(PREFIX_DATE)) {
+      return getDate(dateString.substring(PREFIX_DATE.length()));
+    } else if (dateString.startsWith(PREFIX_DATETIME)) {
+      LocalDateTime dateTime = getDateTime(dateString.substring(PREFIX_DATETIME.length()));
+      return LocalDate.from(dateTime);
+    }
+    return null;
+  }
+
+  public static LocalDateTime getDateTimeWithType(String dateString) {
+    if (dateString.startsWith(PREFIX_DATETIME)) {
+      return getDateTime(dateString.substring(PREFIX_DATETIME.length()));
+    } else if (dateString.startsWith(PREFIX_DATE)) {
+      LocalDate date = getDate(dateString.substring(PREFIX_DATE.length()));
+      return LocalDateTime.of(date, LocalTime.of(12, 0));
+    }
+    return null;
   }
 
 }

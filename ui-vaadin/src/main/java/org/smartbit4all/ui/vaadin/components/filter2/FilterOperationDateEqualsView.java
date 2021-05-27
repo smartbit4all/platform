@@ -16,20 +16,35 @@ package org.smartbit4all.ui.vaadin.components.filter2;
 
 import java.time.LocalDate;
 import org.smartbit4all.core.object.ObservableObject;
-import org.smartbit4all.ui.vaadin.localization.ComponentLocalizations;
+import org.smartbit4all.ui.vaadin.components.binder.VaadinHasValueBinder;
+import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.datepicker.DatePicker;
 
 public class FilterOperationDateEqualsView extends FilterOperationView {
 
   private DatePicker date;
+  private VaadinHasValueBinder<LocalDate, String> binder;
 
   public FilterOperationDateEqualsView(ObservableObject filterField, String path) {
-    date = new DatePicker();
-    date.setMax(LocalDate.now());
-    ComponentLocalizations.localize(date);
+    super(filterField, path);
+    date = FilterViewUtils.createDatePicker();
     add(date);
+  }
 
-    FilterViewUtils.bindDate(date, filterField, path, 1);
+  @Override
+  protected void onAttach(AttachEvent attachEvent) {
+    super.onAttach(attachEvent);
+    binder = FilterViewUtils.bindDate(date, filterField, path, 1);
+  }
+
+  @Override
+  protected void onDetach(DetachEvent detachEvent) {
+    super.onDetach(detachEvent);
+    if (binder != null) {
+      binder.unbind();
+      binder = null;
+    }
   }
 
   @Override

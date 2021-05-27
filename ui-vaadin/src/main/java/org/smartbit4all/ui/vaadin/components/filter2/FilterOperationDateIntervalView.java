@@ -14,23 +14,27 @@
  ******************************************************************************/
 package org.smartbit4all.ui.vaadin.components.filter2;
 
+import java.time.LocalDate;
 import org.smartbit4all.core.object.ObservableObject;
+import org.smartbit4all.ui.vaadin.components.binder.VaadinHasValueBinder;
+import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.datepicker.DatePicker;
 
 public class FilterOperationDateIntervalView extends FilterOperationView {
 
   private DatePicker beginDate;
   private DatePicker endDate;
+  private VaadinHasValueBinder<LocalDate, String> beginDateBinder;
+  private VaadinHasValueBinder<LocalDate, String> endDateBinder;
 
   public FilterOperationDateIntervalView(ObservableObject filterField, String path) {
-
+    super(filterField, path);
     beginDate = FilterViewUtils.createDatePicker();
     endDate = FilterViewUtils.createDatePicker();
 
     add(beginDate, endDate);
 
-    FilterViewUtils.bindDate(beginDate, filterField, path, 1);
-    FilterViewUtils.bindDate(endDate, filterField, path, 2);
   }
 
   @Override
@@ -38,4 +42,23 @@ public class FilterOperationDateIntervalView extends FilterOperationView {
     beginDate.setPlaceholder(placeHolderText);
   }
 
+  @Override
+  protected void onAttach(AttachEvent attachEvent) {
+    super.onAttach(attachEvent);
+    beginDateBinder = FilterViewUtils.bindDate(beginDate, filterField, path, 1);
+    endDateBinder = FilterViewUtils.bindDate(endDate, filterField, path, 2);
+  }
+
+  @Override
+  protected void onDetach(DetachEvent detachEvent) {
+    super.onDetach(detachEvent);
+    if (beginDateBinder != null) {
+      beginDateBinder.unbind();
+      beginDateBinder = null;
+    }
+    if (endDateBinder != null) {
+      endDateBinder.unbind();
+      endDateBinder = null;
+    }
+  }
 }
