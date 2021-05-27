@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.smartbit4all.core.event.EventPublisherImpl;
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.functions.Consumer;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 
@@ -117,9 +118,9 @@ public final class ObservableObjectImpl implements ObservableObject, EventPublis
   }
 
   @Override
-  public void onPropertyChange(String path, String property,
+  public Disposable onPropertyChange(String path, String property,
       @NonNull Consumer<? super PropertyChange> onPropertyChange) {
-    properties()
+    Disposable disposable = properties()
         .filter(change -> ObservableObjectHelper.pathEquals(change, path, property))
         .subscribe(onPropertyChange);
     if (ref != null) {
@@ -138,20 +139,21 @@ public final class ObservableObjectImpl implements ObservableObject, EventPublis
         }
       }
     }
+    return disposable;
   }
 
   @Override
-  public void onReferenceChange(String path, String reference,
+  public Disposable onReferenceChange(String path, String reference,
       @NonNull Consumer<? super ReferenceChange> onReferenceChange) {
-    references()
+    return references()
         .filter(change -> ObservableObjectHelper.pathEquals(change, path, reference))
         .subscribe(onReferenceChange);
   }
 
   @Override
-  public void onReferencedObjectChange(String path, String reference,
+  public Disposable onReferencedObjectChange(String path, String reference,
       @NonNull Consumer<? super ReferencedObjectChange> onReferencedObjectChange) {
-    referencedObjects()
+    Disposable disposable = referencedObjects()
         .filter(change -> ObservableObjectHelper.pathEquals(change, path, reference))
         .subscribe(onReferencedObjectChange);
     if (ref != null) {
@@ -172,20 +174,21 @@ public final class ObservableObjectImpl implements ObservableObject, EventPublis
         }
       }
     }
+    return disposable;
   }
 
   @Override
-  public void onCollectionChange(String path, String collection,
+  public Disposable onCollectionChange(String path, String collection,
       @NonNull Consumer<? super CollectionChange> onCollectionChange) {
-    collections()
+    return collections()
         .filter(change -> ObservableObjectHelper.pathEquals(change, path, collection))
         .subscribe(onCollectionChange);
   }
 
   @Override
-  public void onCollectionObjectChange(String path, String collection,
+  public Disposable onCollectionObjectChange(String path, String collection,
       @NonNull Consumer<? super CollectionObjectChange> onCollectionObjectChange) {
-    collectionObjects()
+    Disposable disposable = collectionObjects()
         .filter(change -> ObservableObjectHelper.pathEquals(change, path, collection))
         .subscribe(onCollectionObjectChange);
     if (ref != null) {
@@ -210,6 +213,7 @@ public final class ObservableObjectImpl implements ObservableObject, EventPublis
         }
       }
     }
+    return disposable;
   }
 
 

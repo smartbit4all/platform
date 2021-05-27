@@ -16,7 +16,7 @@ import com.vaadin.flow.data.binder.Validator;
 import com.vaadin.flow.data.binder.ValueContext;
 import com.vaadin.flow.data.converter.Converter;
 
-public class VaadinHasValueBinder<WIDGET, DATA> {
+public class VaadinHasValueBinder<WIDGET, DATA> extends VaadinAbstractBinder {
 
   protected ObservableObject observableObject;
 
@@ -57,9 +57,10 @@ public class VaadinHasValueBinder<WIDGET, DATA> {
     }
 
     if (isRef) {
-      observableObject.onReferencedObjectChange(path, property, this::onReferenceObjectChanged);
+      disposable =
+          observableObject.onReferencedObjectChange(path, property, this::onReferenceObjectChanged);
     } else {
-      observableObject.onPropertyChange(path, property, this::onPropertyChanged);
+      disposable = observableObject.onPropertyChange(path, property, this::onPropertyChanged);
     }
 
     registerViewListener();

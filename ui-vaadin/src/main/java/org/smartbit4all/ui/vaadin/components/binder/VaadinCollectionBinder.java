@@ -10,7 +10,7 @@ import org.smartbit4all.core.object.CollectionObjectChange;
 import org.smartbit4all.core.object.ObjectChangeSimple;
 import org.smartbit4all.core.object.ObservableObject;
 
-public abstract class VaadinCollectionBinder<T> {
+public abstract class VaadinCollectionBinder<T> extends VaadinAbstractBinder {
 
   protected final ObservableObject observableObject;
 
@@ -22,7 +22,7 @@ public abstract class VaadinCollectionBinder<T> {
     this.observableObject = Objects.requireNonNull(observableObject);
     this.items = new ArrayList<>();
     this.itemsByPath = new HashMap<>();
-    this.observableObject.onCollectionObjectChange(path, collectionName,
+    this.disposable = this.observableObject.onCollectionObjectChange(path, collectionName,
         this::onCollectionObjectChanged);
   }
 

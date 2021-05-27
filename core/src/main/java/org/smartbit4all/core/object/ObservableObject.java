@@ -17,6 +17,7 @@ package org.smartbit4all.core.object;
 import org.smartbit4all.core.event.EventPublisher;
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.functions.Consumer;
 
 /**
@@ -98,19 +99,19 @@ public interface ObservableObject extends EventPublisher {
   @NotifyListeners
   void removeValue(String collectionElementPath);
 
-  void onPropertyChange(String path, String property,
+  Disposable onPropertyChange(String path, String property,
       @NonNull Consumer<? super PropertyChange> onPropertyChange);
 
-  void onReferenceChange(String path, String reference,
+  Disposable onReferenceChange(String path, String reference,
       @NonNull Consumer<? super ReferenceChange> onReferenceChange);
 
-  void onReferencedObjectChange(String path, String reference,
+  Disposable onReferencedObjectChange(String path, String reference,
       @NonNull Consumer<? super ReferencedObjectChange> onReferencedObjectChange);
 
-  void onCollectionChange(String path, String collection,
+  Disposable onCollectionChange(String path, String collection,
       @NonNull Consumer<? super CollectionChange> onCollectionChange);
 
-  void onCollectionObjectChange(String path, String collection,
+  Disposable onCollectionObjectChange(String path, String collection,
       @NonNull Consumer<? super CollectionObjectChange> onCollectionObjectChange);
 
 }

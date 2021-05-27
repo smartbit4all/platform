@@ -6,7 +6,7 @@ import org.smartbit4all.core.object.PropertyChange;
 import org.smartbit4all.core.utility.PathUtility;
 import com.vaadin.flow.component.HasText;
 
-public class VaadinHasTextBinder {
+public class VaadinHasTextBinder extends VaadinAbstractBinder {
 
   protected HasText label;
 
@@ -28,7 +28,7 @@ public class VaadinHasTextBinder {
   }
 
   protected void subscribeToUIEvent() {
-    observableObject.onPropertyChange(PathUtility.getParentPath(path),
+    disposable = observableObject.onPropertyChange(PathUtility.getParentPath(path),
         PathUtility.getLastPath(path), value -> onUIStateChanged(value));
   }
 
