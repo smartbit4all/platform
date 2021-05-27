@@ -70,6 +70,7 @@ public class PropertyOwned<T> extends Property<T> {
       PropertyFunction function) {
     PropertyOwned<T> funcProp = new PropertyOwned<T>(baseProperty.getName(), baseProperty.type(),
         baseProperty.getDbExpression().get(null), baseProperty.jdbcConverter());
+    funcProp.setEntityDef(baseProperty.getEntityDef());
     funcProp.setPropertyFunction(function);
     return funcProp;
   }

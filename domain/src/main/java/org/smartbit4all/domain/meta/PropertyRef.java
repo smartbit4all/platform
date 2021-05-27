@@ -144,6 +144,7 @@ public class PropertyRef<T> extends Property<T> {
       PropertyFunction function) {
     Property<?> functionProp = new PropertyRef<>(propertyRef.getName(),
         propertyRef.getJoinReferences(), propertyRef.getReferredProperty());
+    functionProp.setEntityDef(propertyRef.getEntityDef());
     functionProp.setPropertyFunction(function);
     return functionProp;
   }
