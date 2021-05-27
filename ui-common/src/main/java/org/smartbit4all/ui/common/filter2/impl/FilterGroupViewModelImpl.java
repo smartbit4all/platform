@@ -1,5 +1,6 @@
 package org.smartbit4all.ui.common.filter2.impl;
 
+import java.util.Objects;
 import org.smartbit4all.api.filter.bean.FilterGroupType;
 import org.smartbit4all.api.filter.bean.FilterOperation;
 import org.smartbit4all.core.object.ApiObjectRef;
@@ -10,7 +11,6 @@ import org.smartbit4all.core.utility.PathUtility;
 import org.smartbit4all.ui.common.filter2.api.FilterGroupViewModel;
 import org.smartbit4all.ui.common.filter2.model.FilterFieldModel;
 import org.smartbit4all.ui.common.filter2.model.FilterGroupModel;
-import com.google.common.base.Objects;
 
 public class FilterGroupViewModelImpl extends ObjectEditingImpl implements FilterGroupViewModel {
 
@@ -47,7 +47,8 @@ public class FilterGroupViewModelImpl extends ObjectEditingImpl implements Filte
   public void executeCommandWithoutNotify(String commandPath, String command, Object... params) {
     switch (command) {
       case "FILTER_DROPPED":
-
+        checkParamNumber(command, 1, params);
+        moveFilter(commandPath, (String) params[0]);
         break;
       case "SELECTOR_DROPPED":
 
@@ -65,18 +66,45 @@ public class FilterGroupViewModelImpl extends ObjectEditingImpl implements Filte
         changeActive(commandPath);
         break;
       case "CLOSE_FILTERFIELD":
-        ref.removeValueByPath(commandPath);
+        closeFilterField(commandPath);
         break;
       case "CHANGE_OPERATION":
-        if (params == null || params.length != 1) {
-          throw new IllegalArgumentException(
-              "Missing or too many parameters at " + command + " command: ");
-        }
+        checkParamNumber(command, 1, params);
         changeFilterOperation(commandPath, (String) params[0]);
         break;
       default:
         super.executeCommand(commandPath, command, params);
         break;
+    }
+  }
+
+  private void closeFilterField(String filterPath) {
+    ref.removeValueByPath(filterPath);
+  }
+
+  private void moveFilter(String targetGroupPath, String filterPath) {
+    String originalGroupPath = PathUtility.getParentPath(PathUtility.getParentPath(filterPath));
+    if (Objects.equals(targetGroupPath, originalGroupPath)) {
+      return;
+    }
+    ApiObjectRef filterRef = ref.getValueRefByPath(filterPath);
+    FilterFieldModel filter = (FilterFieldModel) filterRef.getObject();
+    closeFilterField(filterPath);
+    ApiObjectRef groupRef = ref.getValueRefByPath(targetGroupPath);
+    FilterGroupModel group = groupRef.getWrapper(FilterGroupModel.class);
+    group.getFilters().add(filter);
+  }
+
+  private void checkParamNumber(String command, int number, Object... params) {
+    if (params == null || params.length != 1) {
+      StringBuilder sb = new StringBuilder();
+      sb.append("Missing or too many parameters (expected ");
+      sb.append(number);
+      sb.append(", received");
+      sb.append(params == null ? "null" : params.length);
+      sb.append(")! Command: ");
+      sb.append(command);
+      throw new IllegalArgumentException(sb.toString());
     }
   }
 
@@ -128,7 +156,7 @@ public class FilterGroupViewModelImpl extends ObjectEditingImpl implements Filte
       throw new IllegalArgumentException(
           "Invalid (too short) path when removing child filter group: " + filterGroupPath);
     }
-    ref.removeValueByPath(filterGroupPath);
+    closeFilterField(filterGroupPath);
     // if current active group was deleted
     if (currentActive != null && filterGroupPath.startsWith(currentActive)) {
       if (pathSize == 2) {
@@ -140,7 +168,7 @@ public class FilterGroupViewModelImpl extends ObjectEditingImpl implements Filte
   }
 
   protected void changeActive(String newActive) {
-    if (Objects.equal(currentActive, newActive)) {
+    if (Objects.equals(currentActive, newActive)) {
       return;
     }
     setActiveByPath(currentActive, Boolean.FALSE);

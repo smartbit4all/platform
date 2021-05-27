@@ -200,6 +200,9 @@ public class DynamicFilterViewModelImpl extends ObjectEditingImpl
     if (operations != null && !operations.isEmpty()) {
       filterField.setSelectedOperation(operations.get(0));
     }
+    if (filterConfigMode == FilterConfigMode.DYNAMIC) {
+      filterField.setDraggable(true);
+    }
     fillPossibleValues(filterField);
     return filterField;
   }
@@ -246,6 +249,7 @@ public class DynamicFilterViewModelImpl extends ObjectEditingImpl
   }
 
   private void fillPossibleValues(FilterFieldModel filter) {
+    // TODO should be done at selected operation change!
     List<Value> possibleValues = null;
     if (filter.getSelectedOperation() != null) {
       URI uri = filter.getSelectedOperation().getPossibleValuesUri();
