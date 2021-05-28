@@ -27,8 +27,9 @@ import org.smartbit4all.core.object.ApiObjectCollection.CollectionChanges;
 import org.smartbit4all.core.object.PropertyMeta.PropertyKind;
 import org.smartbit4all.core.utility.PathUtility;
 import org.smartbit4all.core.utility.StringConstant;
+import org.springframework.cglib.proxy.Callback;
 import org.springframework.cglib.proxy.Enhancer;
-import org.springframework.cglib.proxy.InvocationHandler;
+import org.springframework.cglib.proxy.Factory;
 import com.google.common.base.Strings;
 
 /**
@@ -122,15 +123,29 @@ public class ApiObjectRef {
       throw new IllegalArgumentException("The object must be set in an ApiObjectRef");
     }
     this.path = (path == null ? StringConstant.EMPTY : path);
-    this.object = object;
-    try {
-      this.descriptor = descriptors.get(object.getClass());
-      meta = ApiObjects.meta(object.getClass(), descriptors);
-      init(path);
-    } catch (ExecutionException e) {
-      throw new IllegalArgumentException(
-          "The object can't be processed as bean " + object.getClass(), e);
+    Class<?> objectClass = object.getClass();
+    if (object instanceof Factory) {
+      Callback callback = ((Factory) object).getCallback(0);
+      if (callback instanceof ApiObjectRefInvocationHandler) {
+        ApiObjectRef otherRef = ((ApiObjectRefInvocationHandler) callback).getRef();
+        this.object = otherRef.getObject();
+        this.meta = otherRef.getMeta();
+        this.descriptor = otherRef.getDescriptor();
+      } else {
+        throw new IllegalArgumentException(
+            "The object can't be processed as bean " + objectClass);
+      }
+    } else {
+      try {
+        this.object = object;
+        this.descriptor = descriptors.get(objectClass);
+        meta = ApiObjects.meta(objectClass, descriptors);
+      } catch (ExecutionException e) {
+        throw new IllegalArgumentException(
+            "The object can't be processed as bean " + objectClass, e);
+      }
     }
+    init(path);
   }
 
   /**
@@ -550,28 +565,8 @@ public class ApiObjectRef {
 
       Enhancer enhancer = new Enhancer();
       enhancer.setSuperclass(beanClass);
-      enhancer.setCallback(new InvocationHandler() {
-
-        @Override
-        public Object invoke(Object arg0, Method arg1, Object[] arg2) throws Throwable {
-          PropertyEntry propertyEntry = propertiesByMethod.get(arg1);
-          if (propertyEntry != null) {
-            if (arg1.equals(propertyEntry.getMeta().getGetter())) {
-              Object valueInner = getValueInner(propertyEntry);
-              if (valueInner instanceof ApiObjectRef) {
-                return ((ApiObjectRef) valueInner).getWrapper(propertyEntry.getMeta().getType());
-              } else if (valueInner instanceof ApiObjectCollection) {
-                return ((ApiObjectCollection) valueInner).getProxy();
-              }
-              return valueInner;
-            } else if (arg1.equals(propertyEntry.getMeta().getSetter())) {
-              setValueInner(arg2[0], propertyEntry);
-              return null;
-            }
-          }
-          return arg1.invoke(object, arg2);
-        }
-      });
+      enhancer.setUseFactory(true);
+      enhancer.setCallback(new ApiObjectRefInvocationHandler(this));
       wrapper = enhancer.create();
     }
 

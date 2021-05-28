@@ -59,10 +59,11 @@ class ApiObjects {
               && !m.getName().equals("getClass");
         });
         BeanMeta meta = new BeanMeta(apiClass);
+        ApiBeanDescriptor descriptor = descriptors.get(apiClass);
         for (Method method : methods) {
           // We assume only the get / set methods.
           if (method.getName().startsWith(GET) || method.getName().startsWith(SET)) {
-            processMethod(apiClass, meta, method, descriptors.get(apiClass));
+            processMethod(apiClass, meta, method, descriptor);
           }
         }
         // Clean up the invalid properties
