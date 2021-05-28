@@ -50,9 +50,6 @@ public class FilterGroupViewModelImpl extends ObjectEditingImpl implements Filte
         checkParamNumber(command, 1, params);
         moveFilter(commandPath, (String) params[0]);
         break;
-      case "SELECTOR_DROPPED":
-
-        break;
       case "CLOSE_FILTERGROUP":
         closeFilterGroup(commandPath);
         break;
@@ -93,19 +90,6 @@ public class FilterGroupViewModelImpl extends ObjectEditingImpl implements Filte
     ApiObjectRef groupRef = ref.getValueRefByPath(targetGroupPath);
     FilterGroupModel group = groupRef.getWrapper(FilterGroupModel.class);
     group.getFilters().add(filter);
-  }
-
-  private void checkParamNumber(String command, int number, Object... params) {
-    if (params == null || params.length != 1) {
-      StringBuilder sb = new StringBuilder();
-      sb.append("Missing or too many parameters (expected ");
-      sb.append(number);
-      sb.append(", received");
-      sb.append(params == null ? "null" : params.length);
-      sb.append(")! Command: ");
-      sb.append(command);
-      throw new IllegalArgumentException(sb.toString());
-    }
   }
 
   private void changeFilterOperation(String filterFieldPath, String operationPath) {
@@ -156,7 +140,7 @@ public class FilterGroupViewModelImpl extends ObjectEditingImpl implements Filte
       throw new IllegalArgumentException(
           "Invalid (too short) path when removing child filter group: " + filterGroupPath);
     }
-    closeFilterField(filterGroupPath);
+    ref.removeValueByPath(filterGroupPath);
     // if current active group was deleted
     if (currentActive != null && filterGroupPath.startsWith(currentActive)) {
       if (pathSize == 2) {
@@ -179,7 +163,9 @@ public class FilterGroupViewModelImpl extends ObjectEditingImpl implements Filte
   private void setActiveByPath(String groupPath, Boolean active) {
     ApiObjectRef currentRef = ref.getValueRefByPath(groupPath);
     if (currentRef != null) {
-      currentRef.getWrapper(FilterGroupModel.class).setActive(active);
+      if (currentRef.getObject() instanceof FilterGroupModel) {
+        currentRef.getWrapper(FilterGroupModel.class).setActive(active);
+      }
     }
   }
 

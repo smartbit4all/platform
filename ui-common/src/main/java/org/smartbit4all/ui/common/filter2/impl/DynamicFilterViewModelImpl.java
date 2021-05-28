@@ -72,7 +72,7 @@ public class DynamicFilterViewModelImpl extends ObjectEditingImpl
 
     dynamicFilterModel.setRoot(root);
     rootFilterGroupViewModel = new FilterGroupViewModelImpl();
-    rootFilterGroupViewModel.setRef(ref.getValueRefByPath("root"));
+    rootFilterGroupViewModel.setRef(ref);
 
     FilterConfig filterConfig = filterApi.getFilterConfig(filterConfigUri);
     for (FilterGroupMeta groupMeta : filterConfig.getFilterGroupMetas()) {
@@ -122,16 +122,14 @@ public class DynamicFilterViewModelImpl extends ObjectEditingImpl
 
   @Override
   public void executeCommand(String commandPath, String command, Object... params) {
-    if (commandPath.toUpperCase().startsWith("ROOT")) {
-      String rootlessPath = removeRootPrefix(commandPath);
-      Object[] params2;
-      if (params != null && params.length > 0) {
-        params2 = new Object[params.length];
-        removeRootFromParams(params2, params);
-      } else {
-        params2 = new Object[0];
-      }
-      rootFilterGroupViewModel.executeCommandWithoutNotify(rootlessPath, command, params2);
+    if (command.equals("SELECTOR_DROPPED")) {
+      checkParamNumber(command, 1, params);
+      FilterFieldModel filter = createFilterFieldFromSelectorPath((String) params[0]);
+      FilterGroupModel group =
+          ref.getValueRefByPath(commandPath).getWrapper(FilterGroupModel.class);
+      group.getFilters().add(filter);
+    } else if (commandPath.toUpperCase().startsWith("ROOT")) {
+      rootFilterGroupViewModel.executeCommandWithoutNotify(commandPath, command, params);
     } else {
       switch (command) {
         case "CREATE_FILTER":
@@ -145,34 +143,11 @@ public class DynamicFilterViewModelImpl extends ObjectEditingImpl
           break;
 
         default:
+          super.executeCommand(commandPath, command, params);
           break;
       }
-      super.executeCommand(commandPath, command, params);
     }
     dynamicFilterModelObservable.notifyListeners();
-  }
-
-  private void removeRootFromParams(Object[] params2, Object... params) {
-    for (int i = 0; i < params.length; i++) {
-      Object param = params[i];
-      if (param instanceof String) {
-        params2[i] = removeRootPrefix((String) param);
-      }
-    }
-  }
-
-  private String removeRootPrefix(String path) {
-    String result = null;
-    if (!Strings.isNullOrEmpty(path) && path.toUpperCase().startsWith("ROOT")) {
-      result = path.substring("root".length());
-      if (result.startsWith("/")) {
-        result = result.substring(1);
-      }
-      if ("".equals(result)) {
-        result = null;
-      }
-    }
-    return result;
   }
 
   private FilterFieldModel createFilterFieldFromSelectorPath(String selectorPath) {
@@ -219,9 +194,10 @@ public class DynamicFilterViewModelImpl extends ObjectEditingImpl
         selectorGroup.setCurrentGroupPath(groupPath);
       }
     } else {
-      groupPath = "root";
       if (rootFilterGroupViewModel.getCurrentActive() != null) {
-        groupPath += "/" + rootFilterGroupViewModel.getCurrentActive();
+        groupPath = rootFilterGroupViewModel.getCurrentActive();
+      } else {
+        groupPath = "root";
       }
     }
     ApiObjectRef groupRef = ref.getValueRefByPath(groupPath);

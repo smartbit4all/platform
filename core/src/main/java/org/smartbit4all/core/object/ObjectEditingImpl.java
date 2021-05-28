@@ -23,4 +23,17 @@ public class ObjectEditingImpl implements ObjectEditing {
     log.warn("Unhandled command: {}/{}", commandPath, command);
   }
 
+  protected void checkParamNumber(String command, int number, Object... params) {
+    if (params == null || params.length != 1) {
+      StringBuilder sb = new StringBuilder();
+      sb.append("Missing or too many parameters (expected ");
+      sb.append(number);
+      sb.append(", received");
+      sb.append(params == null ? "null" : params.length);
+      sb.append(")! Command: ");
+      sb.append(command);
+      throw new IllegalArgumentException(sb.toString());
+    }
+  }
+
 }
