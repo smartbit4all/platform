@@ -84,7 +84,8 @@ public class DynamicFilterViewModelImpl extends ObjectEditingImpl
       if (filterConfigMode == FilterConfigMode.STATIC) {
         FilterGroupModel group = createFilterGroupBySelectorGroup(groupSelector);
         for (FilterFieldSelectorModel filterSelector : groupSelector.getFilters()) {
-          FilterFieldModel filter = createFilterFieldFromSelector(filterSelector);
+          FilterFieldModel filter = createFilterFieldFromSelector(filterSelector, null);
+          filterSelector.setEnabled(Boolean.FALSE);
           group.getFilters().add(filter);
         }
         dynamicFilterModel.getRoot().getGroups().add(group);
@@ -128,6 +129,31 @@ public class DynamicFilterViewModelImpl extends ObjectEditingImpl
       FilterGroupModel group =
           ref.getValueRefByPath(commandPath).getWrapper(FilterGroupModel.class);
       group.getFilters().add(filter);
+    } else if (command.equals("CLOSE_FILTERGROUP")) {
+      rootFilterGroupViewModel.executeCommandWithoutNotify(commandPath, command, params);
+      if (filterConfigMode == FilterConfigMode.SIMPLE_DYNAMIC) {
+        removeFilterGroupFromSelectorGroups(commandPath);
+      }
+    } else if (command.equals("CLOSE_FILTERFIELD")) {
+      if (filterConfigMode == FilterConfigMode.SIMPLE_DYNAMIC) {
+        FilterFieldModel filter =
+            ref.getValueRefByPath(commandPath).getWrapper(FilterFieldModel.class);
+        String selectorPath = filter.getSelectorId();
+        if (!Strings.isNullOrEmpty(selectorPath)) {
+          FilterFieldSelectorModel selector =
+              ref.getValueRefByPath(selectorPath).getWrapper(FilterFieldSelectorModel.class);
+          selector.setEnabled(Boolean.TRUE);
+        }
+      }
+      rootFilterGroupViewModel.executeCommandWithoutNotify(commandPath, command, params);
+      if (filterConfigMode == FilterConfigMode.SIMPLE_DYNAMIC) {
+        String groupPath = PathUtility.getParentPath(PathUtility.getParentPath(commandPath));
+        FilterGroupModel group =
+            ref.getValueRefByPath(groupPath).getWrapper(FilterGroupModel.class);
+        if (!group.getRoot() && group.getFilters().isEmpty()) {
+          executeCommand(groupPath, "CLOSE_FILTERGROUP");
+        }
+      }
     } else if (commandPath.toUpperCase().startsWith("ROOT")) {
       rootFilterGroupViewModel.executeCommandWithoutNotify(commandPath, command, params);
     } else {
@@ -150,14 +176,25 @@ public class DynamicFilterViewModelImpl extends ObjectEditingImpl
     dynamicFilterModelObservable.notifyListeners();
   }
 
+  private void removeFilterGroupFromSelectorGroups(String commandPath) {
+    for (FilterGroupSelectorModel selectorGroup : dynamicFilterModel.getSelectors()) {
+      if (commandPath.equals(selectorGroup.getCurrentGroupPath())) {
+        selectorGroup.setCurrentGroupPath(null);
+        break;
+      }
+    }
+
+  }
+
   private FilterFieldModel createFilterFieldFromSelectorPath(String selectorPath) {
     ApiObjectRef filterSelectorRef = ref.getValueRefByPath(selectorPath);
     FilterFieldSelectorModel filterSelector =
-        (FilterFieldSelectorModel) filterSelectorRef.getObject();
-    return createFilterFieldFromSelector(filterSelector);
+        filterSelectorRef.getWrapper(FilterFieldSelectorModel.class);
+    return createFilterFieldFromSelector(filterSelector, selectorPath);
   }
 
-  private FilterFieldModel createFilterFieldFromSelector(FilterFieldSelectorModel filterSelector) {
+  private FilterFieldModel createFilterFieldFromSelector(FilterFieldSelectorModel filterSelector,
+      String selectorId) {
     FilterFieldModel filterField = new FilterFieldModel();
     FilterFieldLabel label = new FilterFieldLabel();
     label.setCode(filterSelector.getLabelCode());
@@ -177,6 +214,10 @@ public class DynamicFilterViewModelImpl extends ObjectEditingImpl
     }
     if (filterConfigMode == FilterConfigMode.DYNAMIC) {
       filterField.setDraggable(true);
+    }
+    if (filterConfigMode == FilterConfigMode.SIMPLE_DYNAMIC) {
+      filterField.setSelectorId(selectorId);
+      filterSelector.setEnabled(Boolean.FALSE);
     }
     fillPossibleValues(filterField);
     return filterField;

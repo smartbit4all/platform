@@ -2,6 +2,8 @@ package org.smartbit4all.ui.vaadin.components.filter2;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.filter.bean.FilterGroupType;
 import org.smartbit4all.core.object.ChangeState;
 import org.smartbit4all.core.object.CollectionObjectChange;
@@ -31,6 +33,8 @@ import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.shared.Registration;
 
 public class FilterGroupView extends FlexLayout implements DropTarget<FlexLayout> {
+
+  private static final Logger log = LoggerFactory.getLogger(FilterGroupView.class);
 
   private static final String VISIBLE_GROUP = "filtergroup";
   private static final String INVISIBLE_GROUP = "filtergroup-transparent";
@@ -187,7 +191,7 @@ public class FilterGroupView extends FlexLayout implements DropTarget<FlexLayout
 
   private void onGroupType(PropertyChange change) {
     FilterGroupType groupType = (FilterGroupType) change.getNewValue();
-    btnGroupType.setText(groupType.getValue());
+    btnGroupType.setText(groupType == null ? "" : groupType.getValue());
   }
 
   private void onGroupTypeChangeEnabled(PropertyChange change) {
@@ -241,10 +245,14 @@ public class FilterGroupView extends FlexLayout implements DropTarget<FlexLayout
     String label = groupLabel.getLabelCode();
     iconLayout.removeAll();
     if (icon != null && icon.length() > 0) {
-      VaadinIcon vaadinIcon = VaadinIcon.valueOf(icon.toUpperCase());
-      Icon filterIcon = Icons.createIcon(IconSize.S, TextColor.TERTIARY, vaadinIcon);
-      filterIcon.addClassName("filter-icon");
-      iconLayout.add(filterIcon);
+      try {
+        VaadinIcon vaadinIcon = VaadinIcon.valueOf(icon.toUpperCase());
+        Icon filterIcon = Icons.createIcon(IconSize.S, TextColor.TERTIARY, vaadinIcon);
+        filterIcon.addClassName("filter-icon");
+        iconLayout.add(filterIcon);
+      } catch (Exception e) {
+        log.warn("Invalid icon code: " + icon);
+      }
     }
 
     if (label != null && label.length() > 0) {

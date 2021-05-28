@@ -85,7 +85,7 @@ public class FilterGroupViewModelImpl extends ObjectEditingImpl implements Filte
       return;
     }
     ApiObjectRef filterRef = ref.getValueRefByPath(filterPath);
-    FilterFieldModel filter = (FilterFieldModel) filterRef.getObject();
+    FilterFieldModel filter = filterRef.getWrapper(FilterFieldModel.class);
     closeFilterField(filterPath);
     ApiObjectRef groupRef = ref.getValueRefByPath(targetGroupPath);
     FilterGroupModel group = groupRef.getWrapper(FilterGroupModel.class);
@@ -96,7 +96,7 @@ public class FilterGroupViewModelImpl extends ObjectEditingImpl implements Filte
     ApiObjectRef filterRef = ref.getValueRefByPath(filterFieldPath);
     FilterFieldModel filter = filterRef.getWrapper(FilterFieldModel.class);
     ApiObjectRef operationRef = ref.getValueRefByPath(operationPath);
-    FilterOperation operation = (FilterOperation) operationRef.getObject();
+    FilterOperation operation = operationRef.getWrapper(FilterOperation.class);
     if (!filter.getSelectedOperation().getId().equals(operation.getId())) {
       filter.setSelectedOperation(operation);
       // TODO ???

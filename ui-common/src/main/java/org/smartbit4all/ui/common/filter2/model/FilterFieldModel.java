@@ -9,6 +9,7 @@ import org.smartbit4all.api.value.bean.Value;
 
 public class FilterFieldModel {
 
+  private String selectorId;
   private FilterFieldLabel label;
   private Boolean closeable;
   private Boolean draggable;
@@ -107,6 +108,14 @@ public class FilterFieldModel {
 
   public void setValue3(String value3) {
     this.value3 = value3;
+  }
+
+  public String getSelectorId() {
+    return selectorId;
+  }
+
+  public void setSelectorId(String selectorId) {
+    this.selectorId = selectorId;
   }
 
 }
