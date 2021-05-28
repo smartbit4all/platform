@@ -1,9 +1,7 @@
 package org.smartbit4all.ui.common.filter2.model;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import org.smartbit4all.api.filter.bean.FilterOperation;
 import org.smartbit4all.api.value.bean.Value;
 
@@ -16,7 +14,7 @@ public class FilterFieldModel {
   private FilterOperation selectedOperation;
   private List<FilterOperation> operations = new ArrayList<>();
   private List<Value> possibleValues = new ArrayList<>();
-  private Set<Value> selectedValues = new HashSet<>();
+  private List<Value> selectedValues = new ArrayList<>();
   private Value selectedValue;
   private String value1;
   private String value2;
@@ -70,11 +68,11 @@ public class FilterFieldModel {
     this.possibleValues = possibleValues;
   }
 
-  public Set<Value> getSelectedValues() {
+  public List<Value> getSelectedValues() {
     return selectedValues;
   }
 
-  public void setSelectedValues(Set<Value> selectedValues) {
+  public void setSelectedValues(List<Value> selectedValues) {
     this.selectedValues = selectedValues;
   }
 

@@ -479,4 +479,8 @@ public class MultiSelectPopUp<T> extends CustomField<Set<T>> implements HasDataP
   public Set<T> getValue() {
     return selectedItems;
   }
+
+  public MultiSelect<Grid<T>, T> asMultiSelect() {
+    return grid.asMultiSelect();
+  }
 }
