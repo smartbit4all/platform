@@ -1,13 +1,20 @@
 package org.smartbit4all.ui.common.filter2.impl;
 
+import static org.smartbit4all.api.filter.DateConverter.PREFIX_STRING;
 import java.net.URI;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import org.smartbit4all.api.filter.DateConverter;
 import org.smartbit4all.api.filter.FilterApi;
 import org.smartbit4all.api.filter.bean.FilterConfig;
 import org.smartbit4all.api.filter.bean.FilterConfigMode;
+import org.smartbit4all.api.filter.bean.FilterField;
 import org.smartbit4all.api.filter.bean.FilterFieldMeta;
+import org.smartbit4all.api.filter.bean.FilterGroup;
 import org.smartbit4all.api.filter.bean.FilterGroupMeta;
+import org.smartbit4all.api.filter.bean.FilterOperandValue;
 import org.smartbit4all.api.filter.bean.FilterOperation;
 import org.smartbit4all.api.value.ValueApi;
 import org.smartbit4all.api.value.bean.Value;
@@ -123,39 +130,30 @@ public class DynamicFilterViewModelImpl extends ObjectEditingImpl
 
   @Override
   public void executeCommand(String commandPath, String command, Object... params) {
-    if (command.equals("SELECTOR_DROPPED")) {
-      checkParamNumber(command, 1, params);
-      FilterFieldModel filter = createFilterFieldFromSelectorPath((String) params[0]);
-      FilterGroupModel group =
-          ref.getValueRefByPath(commandPath).getWrapper(FilterGroupModel.class);
-      group.getFilters().add(filter);
-    } else if (command.equals("CLOSE_FILTERGROUP")) {
-      rootFilterGroupViewModel.executeCommandWithoutNotify(commandPath, command, params);
-      if (filterConfigMode == FilterConfigMode.SIMPLE_DYNAMIC) {
-        removeFilterGroupFromSelectorGroups(commandPath);
+    if (commandPath.toUpperCase().startsWith("ROOT")) {
+      // override filtergroup, filterfield actions
+      switch (command) {
+        case "CLOSE_FILTERGROUP":
+          rootFilterGroupViewModel.executeCommandWithoutNotify(commandPath, command, params);
+          if (filterConfigMode == FilterConfigMode.SIMPLE_DYNAMIC) {
+            removeFilterGroupFromSelectorGroups(commandPath);
+          }
+          break;
+
+        case "CLOSE_FILTERFIELD":
+          if (filterConfigMode == FilterConfigMode.SIMPLE_DYNAMIC) {
+            enableSelectorForFilter(commandPath);
+          }
+          rootFilterGroupViewModel.executeCommandWithoutNotify(commandPath, command, params);
+          if (filterConfigMode == FilterConfigMode.SIMPLE_DYNAMIC) {
+            removeGroupIfEmpty(commandPath);
+          }
+          break;
+
+        default:
+          rootFilterGroupViewModel.executeCommandWithoutNotify(commandPath, command, params);
+          break;
       }
-    } else if (command.equals("CLOSE_FILTERFIELD")) {
-      if (filterConfigMode == FilterConfigMode.SIMPLE_DYNAMIC) {
-        FilterFieldModel filter =
-            ref.getValueRefByPath(commandPath).getWrapper(FilterFieldModel.class);
-        String selectorPath = filter.getSelectorId();
-        if (!Strings.isNullOrEmpty(selectorPath)) {
-          FilterFieldSelectorModel selector =
-              ref.getValueRefByPath(selectorPath).getWrapper(FilterFieldSelectorModel.class);
-          selector.setEnabled(Boolean.TRUE);
-        }
-      }
-      rootFilterGroupViewModel.executeCommandWithoutNotify(commandPath, command, params);
-      if (filterConfigMode == FilterConfigMode.SIMPLE_DYNAMIC) {
-        String groupPath = PathUtility.getParentPath(PathUtility.getParentPath(commandPath));
-        FilterGroupModel group =
-            ref.getValueRefByPath(groupPath).getWrapper(FilterGroupModel.class);
-        if (!group.getRoot() && group.getFilters().isEmpty()) {
-          executeCommand(groupPath, "CLOSE_FILTERGROUP");
-        }
-      }
-    } else if (commandPath.toUpperCase().startsWith("ROOT")) {
-      rootFilterGroupViewModel.executeCommandWithoutNotify(commandPath, command, params);
     } else {
       switch (command) {
         case "CREATE_FILTER":
@@ -168,12 +166,39 @@ public class DynamicFilterViewModelImpl extends ObjectEditingImpl
           group.getFilters().add(filterField);
           break;
 
+        case "SELECTOR_DROPPED":
+          checkParamNumber(command, 1, params);
+          FilterFieldModel filter = createFilterFieldFromSelectorPath((String) params[0]);
+          FilterGroupModel groupDropped =
+              ref.getValueRefByPath(commandPath).getWrapper(FilterGroupModel.class);
+          groupDropped.getFilters().add(filter);
+
+          break;
         default:
           super.executeCommand(commandPath, command, params);
           break;
       }
     }
     dynamicFilterModelObservable.notifyListeners();
+  }
+
+  private void removeGroupIfEmpty(String filterPath) {
+    String groupPath = PathUtility.getParentPath(PathUtility.getParentPath(filterPath));
+    FilterGroupModel group =
+        ref.getValueRefByPath(groupPath).getWrapper(FilterGroupModel.class);
+    if (group.getRoot() != Boolean.TRUE && group.getFilters().isEmpty()) {
+      executeCommand(groupPath, "CLOSE_FILTERGROUP");
+    }
+  }
+
+  private void enableSelectorForFilter(String filterPath) {
+    FilterFieldModel filter = ref.getValueRefByPath(filterPath).getWrapper(FilterFieldModel.class);
+    String selectorPath = filter.getSelectorId();
+    if (!Strings.isNullOrEmpty(selectorPath)) {
+      FilterFieldSelectorModel selector =
+          ref.getValueRefByPath(selectorPath).getWrapper(FilterFieldSelectorModel.class);
+      selector.setEnabled(Boolean.TRUE);
+    }
   }
 
   private void removeFilterGroupFromSelectorGroups(String commandPath) {
@@ -281,4 +306,97 @@ public class DynamicFilterViewModelImpl extends ObjectEditingImpl
     }
     filter.setPossibleValues(possibleValues == null ? Collections.emptyList() : possibleValues);
   }
+
+  @Override
+  public void setSelectorGroupVisible(String labelCode, boolean visible) {
+    Objects.requireNonNull(labelCode);
+    dynamicFilterModel.getSelectors().stream()
+        .filter(g -> labelCode.equals(g.getLabelCode()))
+        .forEach(g -> g.setVisible(visible));
+    dynamicFilterModelObservable.notifyListeners();
+  }
+
+  @Override
+  public FilterGroup getRootFilterGroup() {
+    return createFilterGroupByModel(dynamicFilterModel.getRoot());
+  }
+
+  private FilterGroup createFilterGroupByModel(FilterGroupModel model) {
+    FilterGroup group = new FilterGroup();
+    group.setName(model.getLabel() == null ? null : model.getLabel().getLabelCode());
+    group.setType(model.getGroupType());
+    group.setIsNegated(model.getNegated());
+    if (model.getGroups() != null) {
+      group.setFilterGroups(model.getGroups().stream()
+          .map(this::createFilterGroupByModel)
+          .collect(Collectors.toList()));
+    }
+    if (model.getFilters() != null) {
+      group.setFilterFields(model.getFilters().stream()
+          .map(this::createFilterFieldByModel)
+          .collect(Collectors.toList()));
+    }
+    return group;
+  }
+
+  private FilterField createFilterFieldByModel(FilterFieldModel model) {
+    FilterField filter = new FilterField();
+    FilterOperation operation = model.getSelectedOperation();
+    if (operation == null) {
+      // ???
+      throw new IllegalStateException("FilterFieldModel doesn't specify operation");
+    }
+    filter.setOperationCode(operation.getOperationCode());
+    filter.setPropertyUri1(operation.getPropertyUri1());
+    filter.setPropertyUri2(operation.getPropertyUri2());
+    filter.setPropertyUri3(operation.getPropertyUri3());
+    filter.setValue1(createFilterOperandValueFromValue(model.getValue1()));
+    filter.setValue2(createFilterOperandValueFromValue(model.getValue2()));
+    filter.setValue3(createFilterOperandValueFromValue(model.getValue3()));
+    filter.setSelectedValues(extractSelectedValueURIs(model));
+    return filter;
+  }
+
+  private List<URI> extractSelectedValueURIs(FilterFieldModel model) {
+    if (model.getSelectedValues() == null) {
+      return Collections.emptyList();
+    }
+    return model.getSelectedValues().stream()
+        .map(v -> v.getObjectUri())
+        .collect(Collectors.toList());
+  }
+
+  private FilterOperandValue createFilterOperandValueFromValue(String value) {
+    if (Strings.isNullOrEmpty(value)) {
+      return null;
+    }
+    FilterOperandValue result = checkType(PREFIX_STRING, value);
+    if (result == null) {
+      checkType(DateConverter.PREFIX_DATE, value);
+    }
+    if (result == null) {
+      checkType(DateConverter.PREFIX_DATETIME, value);
+    }
+    if (result == null) {
+      result = new FilterOperandValue()
+          .type(String.class.getName())
+          .value(value);
+    }
+    return result;
+  }
+
+  private FilterOperandValue checkType(String type, String value) {
+    if (value.startsWith(type)) {
+      return new FilterOperandValue()
+          .type(removeLastChar(type))
+          .value(value.substring(type.length()));
+    }
+    return null;
+  }
+
+  private String removeLastChar(String s) {
+    return s.substring(0, s.length() - 1);
+  }
+
+
 }

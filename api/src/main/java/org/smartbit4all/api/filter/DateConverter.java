@@ -29,6 +29,7 @@ import java.time.LocalTime;
  */
 public class DateConverter {
 
+  public static final String PREFIX_STRING = "java.time.String;";
   public static final String PREFIX_DATE = "java.time.LocalDate;";
   public static final String PREFIX_DATETIME = "java.time.LocalDateTime;";
 

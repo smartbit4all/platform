@@ -14,6 +14,7 @@ public class FilterGroupModel {
   private Boolean active = Boolean.FALSE;
   private Boolean childGroupAllowed = Boolean.FALSE;
   private Boolean groupTypeChangeEnabled = Boolean.FALSE;
+  private Boolean negated = Boolean.FALSE;
   private final List<FilterGroupModel> groups = new ArrayList<>();
   private final List<FilterFieldModel> filters = new ArrayList<>();
 
@@ -87,6 +88,14 @@ public class FilterGroupModel {
 
   public List<FilterFieldModel> getFilters() {
     return filters;
+  }
+
+  public Boolean getNegated() {
+    return negated;
+  }
+
+  public void setNegated(Boolean negated) {
+    this.negated = negated;
   }
 
 }

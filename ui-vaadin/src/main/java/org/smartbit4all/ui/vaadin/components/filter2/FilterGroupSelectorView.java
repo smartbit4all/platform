@@ -42,6 +42,7 @@ public class FilterGroupSelectorView extends Details {
         PathUtility.concatPath(path, "labelCode"), s -> getTranslation((String) s));
 
     groupSelector.onCollectionObjectChange(path, "filters", this::onFiltersChange);
+    groupSelector.onPropertyChange(path, "visible", c -> setVisible((boolean) c.getNewValue()));
   }
 
   private void onFiltersChange(CollectionObjectChange changes) {

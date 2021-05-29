@@ -1,5 +1,6 @@
 package org.smartbit4all.ui.common.filter2.api;
 
+import org.smartbit4all.api.filter.bean.FilterGroup;
 import org.smartbit4all.core.object.NotifyListeners;
 import org.smartbit4all.core.object.ObjectEditing;
 import org.smartbit4all.core.object.ObservableObject;
@@ -12,5 +13,9 @@ public interface DynamicFilterViewModel extends ObjectEditing {
 
   @NotifyListeners
   void initModel(String uri);
+
+  void setSelectorGroupVisible(String labelCode, boolean visible);
+
+  FilterGroup getRootFilterGroup();
 
 }
