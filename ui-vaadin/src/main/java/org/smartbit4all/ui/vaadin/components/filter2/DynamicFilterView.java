@@ -7,7 +7,7 @@ import org.smartbit4all.core.object.CollectionObjectChange;
 import org.smartbit4all.core.object.ObjectChangeSimple;
 import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.core.object.ReferencedObjectChange;
-import org.smartbit4all.ui.common.filter2.api.DynamicFilterViewModel;
+import org.smartbit4all.ui.api.filter.DynamicFilterViewModel;
 import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 

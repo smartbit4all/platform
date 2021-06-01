@@ -8,9 +8,9 @@ import org.smartbit4all.core.object.ObjectEditingImpl;
 import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.core.object.ObservableObjectImpl;
 import org.smartbit4all.core.utility.PathUtility;
-import org.smartbit4all.ui.common.filter2.api.FilterGroupViewModel;
-import org.smartbit4all.ui.common.filter2.model.FilterFieldModel;
-import org.smartbit4all.ui.common.filter2.model.FilterGroupModel;
+import org.smartbit4all.ui.api.filter.FilterGroupViewModel;
+import org.smartbit4all.ui.api.filter.model.FilterFieldModel;
+import org.smartbit4all.ui.api.filter.model.FilterGroupModel;
 
 public class FilterGroupViewModelImpl extends ObjectEditingImpl implements FilterGroupViewModel {
 
@@ -124,6 +124,7 @@ public class FilterGroupViewModelImpl extends ObjectEditingImpl implements Filte
     if (parentRef != null) {
       FilterGroupModel parentFilterGroup = parentRef.getWrapper(FilterGroupModel.class);
       FilterGroupModel childFilterGroup = new FilterGroupModel();
+      childFilterGroup.setGroupType(FilterGroupType.AND);
       childFilterGroup.setRoot(Boolean.FALSE);
       childFilterGroup.setGroupTypeChangeEnabled(parentFilterGroup.getGroupTypeChangeEnabled());
       childFilterGroup.setChildGroupAllowed(parentFilterGroup.getChildGroupAllowed());

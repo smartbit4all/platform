@@ -19,6 +19,7 @@ import java.util.List;
 import org.smartbit4all.api.filter.bean.FilterField;
 import org.smartbit4all.api.filter.bean.FilterOperation;
 import org.smartbit4all.api.value.bean.Value;
+import org.smartbit4all.ui.api.filter.model.FilterLabelPosition;
 
 public class FilterFieldUIState extends AbstractUIState {
 
@@ -31,8 +32,8 @@ public class FilterFieldUIState extends AbstractUIState {
   private List<Value> possibleValues;
   private boolean isDraggable;
   private int duplicateNum;
-  
-  
+
+
   public FilterFieldUIState(FilterField filter,
       FilterSelectorUIState selector, FilterGroupUIState group,
       FilterLabelPosition position, boolean isCloseable, int duplicateNum) {
@@ -49,11 +50,11 @@ public class FilterFieldUIState extends AbstractUIState {
   public String getLabelCode() {
     return selector.getLabelCode();
   }
-  
+
   public Object getSelectorId() {
     return selector.getId();
   }
-  
+
   public int getDuplicateNum() {
     return duplicateNum;
   }

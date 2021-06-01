@@ -7,13 +7,13 @@ import org.smartbit4all.api.filter.bean.FilterOperandValue;
 import org.smartbit4all.api.filter.bean.FilterOperation;
 import org.smartbit4all.api.value.bean.Value;
 import org.smartbit4all.core.object.ApiBeanDescriptor;
-import org.smartbit4all.ui.common.filter2.model.DynamicFilterModel;
-import org.smartbit4all.ui.common.filter2.model.FilterFieldLabel;
-import org.smartbit4all.ui.common.filter2.model.FilterFieldModel;
-import org.smartbit4all.ui.common.filter2.model.FilterFieldSelectorModel;
-import org.smartbit4all.ui.common.filter2.model.FilterGroupLabel;
-import org.smartbit4all.ui.common.filter2.model.FilterGroupModel;
-import org.smartbit4all.ui.common.filter2.model.FilterGroupSelectorModel;
+import org.smartbit4all.ui.api.filter.model.DynamicFilterModel;
+import org.smartbit4all.ui.api.filter.model.FilterFieldLabel;
+import org.smartbit4all.ui.api.filter.model.FilterFieldModel;
+import org.smartbit4all.ui.api.filter.model.FilterFieldSelectorModel;
+import org.smartbit4all.ui.api.filter.model.FilterGroupLabel;
+import org.smartbit4all.ui.api.filter.model.FilterGroupModel;
+import org.smartbit4all.ui.api.filter.model.FilterGroupSelectorModel;
 
 public class ViewModelHelper {
 

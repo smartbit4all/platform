@@ -27,6 +27,7 @@ import org.smartbit4all.api.filter.bean.FilterGroup;
 import org.smartbit4all.api.filter.bean.FilterGroupMeta;
 import org.smartbit4all.api.filter.bean.FilterGroupType;
 import org.smartbit4all.api.filter.bean.FilterOperation;
+import org.smartbit4all.ui.api.filter.model.FilterLabelPosition;
 
 public class DynamicFilterViewUIState {
 
@@ -141,35 +142,35 @@ public class DynamicFilterViewUIState {
 
   private int getFilterDuplicateNumber(FilterSelectorUIState filterSelector, FilterField filter) {
     List<Integer> duplNumberList = duplNumbersBySelectors.get(filterSelector);
-    if(duplNumberList == null) {
+    if (duplNumberList == null) {
       duplNumberList = new ArrayList<>();
       duplNumbersBySelectors.put(filterSelector, duplNumberList);
     }
-    
-    if(duplNumberList.isEmpty()) {
+
+    if (duplNumberList.isEmpty()) {
       duplNumberList.add(0);
       return 0;
     }
-    
+
     int numCnt = 0;
     Integer numberToAdd = null;
     for (Integer dupNum : duplNumberList) {
-      if(dupNum == numCnt) {
+      if (dupNum == numCnt) {
         numCnt++;
       } else {
         numberToAdd = numCnt;
         break;
       }
     }
-    
-    if(numCnt >= duplNumberList.size()) {
+
+    if (numCnt >= duplNumberList.size()) {
       numberToAdd = numCnt;
     }
-    
-    if(numberToAdd != null) {
+
+    if (numberToAdd != null) {
       duplNumberList.add(numCnt, numberToAdd);
     }
-    
+
     return numCnt;
   }
 
@@ -245,16 +246,16 @@ public class DynamicFilterViewUIState {
 
 
   }
-  
+
   void maintainDulFilters(String filterId) {
     FilterFieldUIState uiState = filterUIStatesById.get(filterId);
-    if(uiState == null) {
+    if (uiState == null) {
       return;
     }
     int duplicateNum = uiState.getDuplicateNum();
     FilterSelectorUIState selector = filterSelectorsById.get(uiState.getSelectorId());
     List<Integer> list = duplNumbersBySelectors.get(selector);
-    if(list != null) {
+    if (list != null) {
       list.remove(duplicateNum);
     }
   }
