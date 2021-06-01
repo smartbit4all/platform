@@ -43,7 +43,7 @@ descriptorList.each {
         generatorName = "spring"
         inputSpec = "$descriptorPath".toString() + "${apiName}-api.yaml"
         outputDir = "${projectDir}/${srcGenMainJava}" 
-        modelPackage = "org.smartbit4all.api.".toString() + "${apiName}.bean"
+        modelPackage = "org.smartbit4all.ui.api.".toString() + "${apiName}.model"
         systemProperties = [
             models: "", // with this only the model files (the beans) will be generated
             //apis: ""
@@ -51,6 +51,7 @@ descriptorList.each {
         importMappings = [
           "Value": "org.smartbit4all.api.value.bean.Value",
           "FilterConfigMode": "org.smartbit4all.api.filter.bean.FilterConfigMode",
+          "FilterGroupType": "org.smartbit4all.api.filter.bean.FilterGroupType",
           "FilterOperation" : "org.smartbit4all.api.filter.bean.FilterOperation"
         ]
         configOptions = [

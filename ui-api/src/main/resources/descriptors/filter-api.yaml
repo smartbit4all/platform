@@ -1,0 +1,147 @@
+openapi: 3.0.1
+info:
+  title: Filter API
+  description: Filter API
+  termsOfService: ''
+  contact:
+    email: info@it4all.hu
+  version: 1.0.0
+tags:
+  - name: filter
+    description: filter
+paths:
+  /nope:
+    post:
+      summary: Placeholder for generation
+      responses:
+        '200':
+          description: nope
+components:
+  schemas:
+    DynamicFilterModel:
+      type: object
+      properties:
+        filterConfigMode:
+          type: FilterConfigMode
+        selectors:
+          type: array
+          items:
+            $ref: '#/components/schemas/FilterGroupSelectorModel'
+        root:
+          $ref: '#/components/schemas/FilterGroupModel'
+    FilterFieldLabel:
+      type: object
+      properties:
+        code:
+          type: string
+        position:
+          $ref: '#/components/schemas/FilterLabelPosition'
+        duplicateNum:
+          type: integer
+          format: int32
+    FilterFieldModel:
+      type: object
+      properties:
+        selectorId:
+          type: string
+        label:
+          $ref: '#/components/schemas/FilterFieldLabel'
+        closeable:
+          type: boolean
+        draggable:
+          type: boolean
+        selectedOperation:
+          type: FilterOperation
+        operations:
+          type: array
+          items:
+            type: FilterOperation
+        possibleValues:
+          type: array
+          items:
+            type: Value
+        selectedValues:
+          type: array
+          items:
+            type: Value
+        selectedValue:
+          type: Value
+        value1:
+          type: string
+        value2:
+          type: string
+        value3:
+          type: string
+    FilterFieldSelectorModel:
+      type: object
+      properties:
+        labelCode:
+          type: string
+        iconCode:
+          type: string
+        style:
+          type: string
+        operations:
+          type: array
+          items:
+            type: FilterOperation
+        enabled:
+          type: boolean
+    FilterGroupLabel:
+      type: object
+      properties:
+        labelCode:
+          type: string
+        iconCode:
+          type: string
+    FilterGroupModel:
+      type: object
+      properties:
+        groupType:
+          type: FilterGroupType
+        label:
+          $ref: '#/components/schemas/FilterGroupLabel'
+        closeable:
+          type: boolean
+        root:
+          type: boolean
+        visible:
+          type: boolean
+        active:
+          type: boolean
+        childGroupAllowed:
+          type: boolean
+        groupTypeChangeEnabled:
+          type: boolean
+        negated:
+          type: boolean
+        groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/FilterGroupModel'
+        filters:
+          type: array
+          items:
+            $ref: '#/components/schemas/FilterFieldModel'
+    FilterGroupSelectorModel:
+      type: object
+      properties:
+        labelCode:
+          type: string
+        iconCode:
+          type: string
+        groupType:
+          type: FilterGroupType
+        filters:
+          type: array
+          items:
+            $ref: '#/components/schemas/FilterFieldSelectorModel'
+        closeable:
+          type: boolean
+        visible:
+          type: boolean
+        currentGroupPath:
+          type: string
+    FilterLabelPosition:
+      type: string
+      enum: [placeholder, on_top, on_left]
