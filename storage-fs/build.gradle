@@ -1,0 +1,10 @@
+plugins {
+	id 'java-test-fixtures'
+}
+
+dependencies {
+	api project(':domain')
+	api project(':types')
+
+	testImplementation project(':gson')
+}

@@ -70,7 +70,7 @@ public class EvaluationLoop extends EvaluationStep {
     List<DataRow> rowsToEvaluate = rows;
     if (loader != null) {
       if (rowsToEvaluate == null) {
-        // We have doesn't have row list so we must load all the rows available on the storage.
+        // We doesn't have row list so we must load all the rows available on the storage.
         loader.loadAllRows(tableData);
         // evaluate the whole table data
         rowsToEvaluate = tableData.rows();

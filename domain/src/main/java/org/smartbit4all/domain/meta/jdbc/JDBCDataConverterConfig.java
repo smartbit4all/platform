@@ -30,6 +30,7 @@ import org.smartbit4all.domain.meta.jdbc.impl.JDBCLongImpl;
 import org.smartbit4all.domain.meta.jdbc.impl.JDBCSqlTimeImpl;
 import org.smartbit4all.domain.meta.jdbc.impl.JDBCSqlTimestampImpl;
 import org.smartbit4all.domain.meta.jdbc.impl.JDBCStringImpl;
+import org.smartbit4all.domain.meta.jdbc.impl.JDBCUriImpl;
 import org.smartbit4all.domain.meta.jdbc.impl.JDBCUtilDateSqlDateImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -111,5 +112,10 @@ public class JDBCDataConverterConfig extends SB4Configuration {
   public JDBCLocalDateTimeSqlDate jdbcLocalDateTimeSqlDate() {
     return createProxy(JDBCLocalDateTimeSqlDate.class, new JDBCLocalDateTimeSqlDateImpl());
   }
-
+  
+  @Bean
+  public JDBCUri jdbcUriString() {
+    return createProxy(JDBCUri.class, new JDBCUriImpl());
+  }
+  
 }

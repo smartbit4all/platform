@@ -1,0 +1,28 @@
+package org.smartbit4all.gson;
+
+import java.io.IOException;
+import java.util.Optional;
+import org.smartbit4all.types.binarydata.BinaryData;
+import org.smartbit4all.types.binarydata.BinaryDataObjectSerializer;
+
+public class GsonBinaryDataObjectSerializer implements BinaryDataObjectSerializer {
+
+  @Override
+  public <T> BinaryData toJsonBinaryData(T object, Class<T> clazz) {
+    try {
+      return GsonBinaryData.toJsonBinaryData(object, clazz);
+    } catch (Exception e) {
+      throw new RuntimeException("Cannot serialize the object of class: " + clazz.getName(), e);
+    }
+  }
+
+  @Override
+  public <T> Optional<T> fromJsonBinaryData(BinaryData binaryData, Class<T> clazz) {
+    try {
+      return GsonBinaryData.fromJsonBinaryData(binaryData, clazz);
+    } catch (IOException e) {
+      throw new RuntimeException("Cannot deserialize the object of class: " + clazz.getName(), e);
+    }
+  }
+
+}

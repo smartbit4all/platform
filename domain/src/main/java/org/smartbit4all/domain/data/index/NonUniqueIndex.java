@@ -1,22 +1,22 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
  * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 package org.smartbit4all.domain.data.index;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -38,6 +38,8 @@ public class NonUniqueIndex<T> extends TableDataIndex {
    */
   private Map<T, List<DataRow>> index = null;
 
+  private List<DataRow> nullRows = null;
+
   /**
    * The reference for the table data column.
    */
@@ -57,12 +59,23 @@ public class NonUniqueIndex<T> extends TableDataIndex {
   }
 
   private void init(TableData<?> tableData, DataColumn<T> column) {
-    index =
-        tableData.rows().stream().collect(Collectors.groupingBy(r -> tableData.get(column, r)));
+    index = new HashMap<T, List<DataRow>>();
+    nullRows = new ArrayList<DataRow>();
+
+    nullRows = tableData.rows().stream()
+        .filter(r -> tableData.get(column, r) == null)
+        .collect(Collectors.toList());
+    
+    index = tableData.rows().stream()
+        .filter(r -> !nullRows.contains(r))
+        .collect(Collectors.groupingBy(r -> tableData.get(column, r)));
   }
 
   public List<DataRow> get(T value) {
-    return index.get(value);
+    if(value == null) {
+      return new ArrayList<>(nullRows);
+    }
+    return new ArrayList<>(index.get(value));
   }
 
 }

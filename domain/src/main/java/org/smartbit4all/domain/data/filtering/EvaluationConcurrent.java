@@ -51,7 +51,10 @@ public class EvaluationConcurrent extends EvaluationStep {
     resultLists.clear();
     // We can execute the two different branch individually and union the results. It's a parallel
     // execution to utilize the available resource to achieve better performance.
-    plans.parallelStream().forEach(p -> {
+    
+    //plans.parallelStream().forEach(p -> { // TODO parallel execution
+    
+    plans.stream().forEach(p -> {
       List<DataRow> result = p.execute(rows);
       lockResult.lock();
       try {

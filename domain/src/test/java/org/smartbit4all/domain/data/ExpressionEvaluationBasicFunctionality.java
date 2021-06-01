@@ -14,7 +14,9 @@
  ******************************************************************************/
 package org.smartbit4all.domain.data;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import org.junit.jupiter.api.AfterAll;
@@ -23,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.smartbit4all.domain.data.filtering.ExpressionEvaluationPlan;
 import org.smartbit4all.domain.data.index.StorageLoaderTableData;
 import org.smartbit4all.domain.data.index.TableDataIndexSet;
+import org.smartbit4all.domain.data.storage.TestTableDataIndex;
 import org.smartbit4all.domain.meta.Expression;
 import org.smartbit4all.domain.meta.MetaConfiguration;
 import org.smartbit4all.domain.meta.PropertyRef;
@@ -31,7 +34,6 @@ import org.smartbit4all.domain.security.AddressDef;
 import org.smartbit4all.domain.security.SecurityEntityConfiguration;
 import org.smartbit4all.domain.security.UserAccountDef;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Expression Evaluaton test
@@ -194,11 +196,10 @@ public class ExpressionEvaluationBasicFunctionality {
     Expression expression =
         userAccountDef.primaryAddress().city().eq("Budapest").AND(Expression.TRUE());
     System.out.println("\nExpression: " + expression.toString());
-    ExpressionEvaluationPlan plan = ExpressionEvaluationPlan.of(tableData, null, expression);
-    ExpressionEvaluationPlan planStorage = ExpressionEvaluationPlan
-        .of(new StorageLoaderTableData(userAccountDef, tableData, userAccountDef.id()), expression);
 
+    ExpressionEvaluationPlan plan = ExpressionEvaluationPlan.of(tableData, null, expression);
     System.out.println(plan.toString());
+    
     List<DataRow> filteredRows = plan.execute(tableData.rows());
     // System.out.println(tableData.toString(filteredRows));
 
@@ -452,5 +453,32 @@ public class ExpressionEvaluationBasicFunctionality {
 
     assertEquals(new HashSet<>(Arrays.asList(row1, row2, row5, row7)), new HashSet<>(filteredRows));
   }
+  
+  @Test
+  void evaluationWithLoaderTest() {
+    // Storage loader test
+    StorageLoaderTableData<UserAccountDef> loader =
+        new StorageLoaderTableData<>(userAccountDef, tableData, userAccountDef.id());
 
+    TestTableDataIndex firstNameIndex =
+        new TestTableDataIndex(tableData, userAccountDef.id(), userAccountDef.firstname());
+
+    TestTableDataIndex titleIndex =
+        new TestTableDataIndex(tableData, userAccountDef.id(), userAccountDef.titleCode());
+
+    loader.getIndices().add(firstNameIndex);
+    loader.getIndices().add(titleIndex);
+
+    Expression jakabEq =
+        userAccountDef.firstname().eq("Jakab")
+            .AND(
+                userAccountDef.lastname().eq("Keresztes")
+                    .OR(userAccountDef.lastname().eq("Gipsz")).BRACKET())
+            .AND(userAccountDef.titleCode().eq("Dr.").OR(userAccountDef.titleCode().eq("Mr.").BRACKET()));
+
+    ExpressionEvaluationPlan planStorage = ExpressionEvaluationPlan.of(loader, jakabEq);
+    List<DataRow> execute = planStorage.execute(Collections.emptyList());
+    assertEquals(2, execute.size());
+  }
+  
 }

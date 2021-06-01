@@ -9,30 +9,53 @@ import org.smartbit4all.domain.meta.Property;
 public class StorageLoaderTableData<E extends EntityDefinition> extends StorageLoader {
 
   private final TableData<E> tableDataStorage;
+
   private UniqueIndex<?> primaryIndex;
+
   Property<?> primaryKey;
 
   public StorageLoaderTableData(E entityDef, TableData<E> td, Property<?> primaryKey) {
     super(entityDef);
+
     this.tableDataStorage = td;
-    primaryIndex = tableDataStorage.index().unique(primaryKey);
+    this.primaryIndex = tableDataStorage.index().unique(primaryKey);
     this.primaryKey = primaryKey;
   }
 
   @Override
   protected void fillRow(TableData<?> tableData, DataRow rowToFill) {
-    DataColumn<?> primaryCol = tableData.getColumn(primaryKey);
-    for (DataColumn<?> column : tableData.columns()) {
-      DataColumn<?> storageColumn = tableDataStorage.getColumn(column.getProperty());
-      Object primaryValue = tableData.get(primaryCol, rowToFill);
-      tableData.setObject(column, rowToFill,
-          tableDataStorage.get(storageColumn, primaryIndex.getObject(primaryValue)));
+    Object primaryValue = rowToFill.get(primaryKey);
+    DataRow storageRow = primaryIndex.getObject(primaryValue);
+
+    DataRow row = getRow(tableData, rowToFill);
+    for (DataColumn<?> column : tableDataStorage.columns()) {
+      Property<?> property = column.getProperty();
+      DataColumn<?> columnInTable = tableData.getColumn(property);
+      if (columnInTable != null) {
+        Object indexValue = storageRow.get(property);
+        tableData.setObject(columnInTable, row, indexValue);
+      }
     }
+  }
+
+  private DataRow getRow(TableData<?> tableData, DataRow dataRow) {
+    for (DataRow actualRow : tableData.rows()) {
+      if (dataRow == actualRow) {
+        return actualRow;
+      }
+    }
+    return tableData.addRow();
   }
 
   @Override
   public void loadAllRows(TableData<?> tableData) {
-    // TableDatas.copy(tableDataStorage, tableData);
+    for (DataRow row : tableDataStorage.rows()) {
+      DataRow newRow = tableData.addRow();
+
+      for (Property<?> property : tableDataStorage.properties()) {
+        newRow.setObject(property, row.get(property));
+      }
+    }
   }
 
 }

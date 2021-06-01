@@ -19,6 +19,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
 import org.smartbit4all.domain.data.TableData;
+import org.smartbit4all.domain.data.TableDatas;
+import org.smartbit4all.domain.data.TableDatas.BuilderWithFixProperties;
+import org.smartbit4all.domain.data.TableDatas.BuilderWithFlexibleProperties;
 import org.smartbit4all.domain.data.index.NonUniqueIndex;
 import org.smartbit4all.domain.data.index.StorageIndex;
 import org.smartbit4all.domain.data.index.StorageLoader;
@@ -28,6 +31,7 @@ import org.smartbit4all.domain.data.index.TableDataIndex.IndexType;
 import org.smartbit4all.domain.data.index.TableDataIndexSet;
 import org.smartbit4all.domain.data.index.UniqueIndex;
 import org.smartbit4all.domain.meta.BooleanOperator;
+import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Expression;
 import org.smartbit4all.domain.meta.Expression2Operand;
 import org.smartbit4all.domain.meta.Expression2Operand.Operator;
@@ -107,12 +111,16 @@ final class ExpressionEvaluation extends ExpressionVisitor {
    * 
    * @param currentPlan
    */
-  public ExpressionEvaluation(StorageLoader loader,
+  public ExpressionEvaluation(
+      StorageLoader loader,
       Expression expression) {
+    
     super();
     this.loader = loader;
     // The table data will be constructed by the meta data of the loader and the expression.
-    this.tableData = new TableData<>(loader.getEntityDef());
+    this.tableData = TableDatas.builder(
+        loader.getEntityDef(),
+        loader.getEntityDef().allProperties()).build();
 
     // We create a context for the whole expression.
     expressionPartEvaluationContextStack.push(new ExpressionPartEvaluationContext(tableData));
@@ -154,8 +162,22 @@ final class ExpressionEvaluation extends ExpressionVisitor {
   }
 
   @SuppressWarnings("unchecked")
-  private <T> void constructEvaluationStep(OperandProperty<?> propertyOperand,
-      Expression expression, List<T> values) {
+  private <T> void constructEvaluationStep(
+      OperandProperty<?> propertyOperand,
+      Expression expression,
+      List<T> values) {
+
+    boolean indexUsed = tryUseIndex(propertyOperand, expression, values);
+
+    // If we don't have any index then the fall back is a simple loop.
+    if (!indexUsed) {
+      getCurrentPlan().addLoopExpressionStep(expression, loader);
+    }
+  }
+
+  private <T> boolean tryUseIndex(OperandProperty<?> propertyOperand, Expression expression,
+      List<T> values) {
+
     TableDataIndex index = null;
     if (indexSet != null) {
       // First try to find the unique index.
@@ -178,22 +200,35 @@ final class ExpressionEvaluation extends ExpressionVisitor {
           getCurrentPlan().addLoopExpressionStep(expression, loader);
         }
       }
+      return true;
+
     } else if (loader != null) {
+
       // If we have a loader with storage indices we try to construct indexed steps. Now we use the
       // first available index.
+      boolean storageIndexUsed = false;
       for (StorageIndex idx : loader.getIndices()) {
+        
+        // TODO this raw cast should be replaced, maybe the StorageIndex should return sa
         if (idx.canUseFor(expression)) {
-          // TODO
           getCurrentPlan().addStep(
-              new EvaluationIndexedNonUniqueStorage<T>(loader, (StorageNonUniqueIndex<T, ?>) idx,
-                  values, expression.isNegate()),
+
+              new EvaluationIndexedNonUniqueStorage<T>(
+                  loader,
+                  (StorageNonUniqueIndex<T, ?>) idx,
+                  values,
+                  expression.isNegate()),
+
               loader);
+
+          storageIndexUsed = true;
         }
+        
       }
-    } else {
-      // If we don't have any index then the fall back is a simple loop.
-      getCurrentPlan().addLoopExpressionStep(expression, loader);
+      return storageIndexUsed;
+
     }
+    return false;
   }
 
   @Override

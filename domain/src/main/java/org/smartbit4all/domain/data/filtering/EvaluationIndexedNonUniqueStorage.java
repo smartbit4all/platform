@@ -70,6 +70,12 @@ public class EvaluationIndexedNonUniqueStorage<V> extends EvaluationStep {
 
     matchingRows = DataRow.sortByPosition(matchingRows);
 
+    if(rows.isEmpty()) {
+      return matchingRows;
+    }
+    
+    rows = DataRow.sortByPosition(rows);
+    
     return invert ? DataRow.minus(rows, matchingRows) : DataRow.intersect(rows, matchingRows);
   }
 

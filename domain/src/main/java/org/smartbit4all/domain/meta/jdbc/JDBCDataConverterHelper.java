@@ -17,6 +17,7 @@
 package org.smartbit4all.domain.meta.jdbc;
 
 import java.math.BigDecimal;
+import java.net.URI;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -76,7 +77,10 @@ public class JDBCDataConverterHelper implements ApplicationContextAware {
     if (fromClass.isAssignableFrom(LocalTime.class)) {
       return (JDBCDataConverter<S, ?>) ctx.getBean(JDBCLocalTimeSqlDate.class);
     }
-
+    if (fromClass.isAssignableFrom(URI.class)) {
+      return (JDBCDataConverter<S, ?>) ctx.getBean(JDBCUri.class);
+    }
+    
     // In any other cases we believe that this must be String based.
     return (JDBCDataConverter<S, ?>) ctx.getBean(JDBCString.class);
   }
