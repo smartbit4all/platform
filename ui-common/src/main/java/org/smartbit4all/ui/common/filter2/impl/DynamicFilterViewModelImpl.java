@@ -14,6 +14,7 @@ import org.smartbit4all.api.filter.bean.FilterField;
 import org.smartbit4all.api.filter.bean.FilterFieldMeta;
 import org.smartbit4all.api.filter.bean.FilterGroup;
 import org.smartbit4all.api.filter.bean.FilterGroupMeta;
+import org.smartbit4all.api.filter.bean.FilterGroupType;
 import org.smartbit4all.api.filter.bean.FilterOperandValue;
 import org.smartbit4all.api.filter.bean.FilterOperation;
 import org.smartbit4all.api.value.ValueApi;
@@ -23,15 +24,15 @@ import org.smartbit4all.core.object.ObjectEditingImpl;
 import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.core.object.ObservableObjectImpl;
 import org.smartbit4all.core.utility.PathUtility;
-import org.smartbit4all.ui.common.filter.FilterLabelPosition;
+import org.smartbit4all.ui.api.filter.model.DynamicFilterModel;
+import org.smartbit4all.ui.api.filter.model.FilterFieldLabel;
+import org.smartbit4all.ui.api.filter.model.FilterFieldModel;
+import org.smartbit4all.ui.api.filter.model.FilterFieldSelectorModel;
+import org.smartbit4all.ui.api.filter.model.FilterGroupLabel;
+import org.smartbit4all.ui.api.filter.model.FilterGroupModel;
+import org.smartbit4all.ui.api.filter.model.FilterGroupSelectorModel;
+import org.smartbit4all.ui.api.filter.model.FilterLabelPosition;
 import org.smartbit4all.ui.common.filter2.api.DynamicFilterViewModel;
-import org.smartbit4all.ui.common.filter2.model.DynamicFilterModel;
-import org.smartbit4all.ui.common.filter2.model.FilterFieldLabel;
-import org.smartbit4all.ui.common.filter2.model.FilterFieldModel;
-import org.smartbit4all.ui.common.filter2.model.FilterFieldSelectorModel;
-import org.smartbit4all.ui.common.filter2.model.FilterGroupLabel;
-import org.smartbit4all.ui.common.filter2.model.FilterGroupModel;
-import org.smartbit4all.ui.common.filter2.model.FilterGroupSelectorModel;
 import com.google.common.base.Strings;
 
 public class DynamicFilterViewModelImpl extends ObjectEditingImpl
@@ -73,6 +74,7 @@ public class DynamicFilterViewModelImpl extends ObjectEditingImpl
     boolean isGroupTypeChangeEnabled = filterConfigMode == FilterConfigMode.DYNAMIC;
     FilterGroupModel root = new FilterGroupModel();
     root.setRoot(Boolean.TRUE);
+    root.setGroupType(FilterGroupType.AND);
     root.setVisible(isRootVisible);
     root.setChildGroupAllowed(isChildGroupAllowed);
     root.setGroupTypeChangeEnabled(isGroupTypeChangeEnabled);
@@ -186,7 +188,8 @@ public class DynamicFilterViewModelImpl extends ObjectEditingImpl
     String groupPath = PathUtility.getParentPath(PathUtility.getParentPath(filterPath));
     FilterGroupModel group =
         ref.getValueRefByPath(groupPath).getWrapper(FilterGroupModel.class);
-    if (group.getRoot() != Boolean.TRUE && group.getFilters().isEmpty()) {
+    if (group.getRoot() != Boolean.TRUE
+        && (group.getFilters() == null || group.getFilters().isEmpty())) {
       executeCommand(groupPath, "CLOSE_FILTERGROUP");
     }
   }
@@ -202,10 +205,12 @@ public class DynamicFilterViewModelImpl extends ObjectEditingImpl
   }
 
   private void removeFilterGroupFromSelectorGroups(String commandPath) {
-    for (FilterGroupSelectorModel selectorGroup : dynamicFilterModel.getSelectors()) {
-      if (commandPath.equals(selectorGroup.getCurrentGroupPath())) {
-        selectorGroup.setCurrentGroupPath(null);
-        break;
+    if (dynamicFilterModel.getSelectors() != null) {
+      for (FilterGroupSelectorModel selectorGroup : dynamicFilterModel.getSelectors()) {
+        if (commandPath.equals(selectorGroup.getCurrentGroupPath())) {
+          selectorGroup.setCurrentGroupPath(null);
+          break;
+        }
       }
     }
 
@@ -310,6 +315,7 @@ public class DynamicFilterViewModelImpl extends ObjectEditingImpl
   @Override
   public void setSelectorGroupVisible(String labelCode, boolean visible) {
     Objects.requireNonNull(labelCode);
+    Objects.requireNonNull(dynamicFilterModel.getSelectors());
     dynamicFilterModel.getSelectors().stream()
         .filter(g -> labelCode.equals(g.getLabelCode()))
         .forEach(g -> g.setVisible(visible));

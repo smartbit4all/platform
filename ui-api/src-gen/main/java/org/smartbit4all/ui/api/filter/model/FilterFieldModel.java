@@ -34,15 +34,15 @@ public class FilterFieldModel   {
 
   @JsonProperty("operations")
   @Valid
-  private List<org.smartbit4all.api.filter.bean.FilterOperation> operations = null;
+  private List<org.smartbit4all.api.filter.bean.FilterOperation> operations = new ArrayList<>();
 
   @JsonProperty("possibleValues")
   @Valid
-  private List<org.smartbit4all.api.value.bean.Value> possibleValues = null;
+  private List<org.smartbit4all.api.value.bean.Value> possibleValues = new ArrayList<>();
 
   @JsonProperty("selectedValues")
   @Valid
-  private List<org.smartbit4all.api.value.bean.Value> selectedValues = null;
+  private List<org.smartbit4all.api.value.bean.Value> selectedValues = new ArrayList<>();
 
   @JsonProperty("selectedValue")
   private org.smartbit4all.api.value.bean.Value selectedValue = null;
@@ -164,9 +164,6 @@ public class FilterFieldModel   {
   }
 
   public FilterFieldModel addOperationsItem(org.smartbit4all.api.filter.bean.FilterOperation operationsItem) {
-    if (this.operations == null) {
-      this.operations = new ArrayList<>();
-    }
     this.operations.add(operationsItem);
     return this;
   }
@@ -175,7 +172,8 @@ public class FilterFieldModel   {
    * Get operations
    * @return operations
   */
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(required = true, value = "")
+  @NotNull
 
   @Valid
 
@@ -193,9 +191,6 @@ public class FilterFieldModel   {
   }
 
   public FilterFieldModel addPossibleValuesItem(org.smartbit4all.api.value.bean.Value possibleValuesItem) {
-    if (this.possibleValues == null) {
-      this.possibleValues = new ArrayList<>();
-    }
     this.possibleValues.add(possibleValuesItem);
     return this;
   }
@@ -204,7 +199,8 @@ public class FilterFieldModel   {
    * Get possibleValues
    * @return possibleValues
   */
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(required = true, value = "")
+  @NotNull
 
   @Valid
 
@@ -222,9 +218,6 @@ public class FilterFieldModel   {
   }
 
   public FilterFieldModel addSelectedValuesItem(org.smartbit4all.api.value.bean.Value selectedValuesItem) {
-    if (this.selectedValues == null) {
-      this.selectedValues = new ArrayList<>();
-    }
     this.selectedValues.add(selectedValuesItem);
     return this;
   }
@@ -233,7 +226,8 @@ public class FilterFieldModel   {
    * Get selectedValues
    * @return selectedValues
   */
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(required = true, value = "")
+  @NotNull
 
   @Valid
 

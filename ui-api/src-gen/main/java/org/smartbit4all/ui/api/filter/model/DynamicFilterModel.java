@@ -23,7 +23,7 @@ public class DynamicFilterModel   {
 
   @JsonProperty("selectors")
   @Valid
-  private List<FilterGroupSelectorModel> selectors = null;
+  private List<FilterGroupSelectorModel> selectors = new ArrayList<>();
 
   @JsonProperty("root")
   private FilterGroupModel root;
@@ -55,9 +55,6 @@ public class DynamicFilterModel   {
   }
 
   public DynamicFilterModel addSelectorsItem(FilterGroupSelectorModel selectorsItem) {
-    if (this.selectors == null) {
-      this.selectors = new ArrayList<>();
-    }
     this.selectors.add(selectorsItem);
     return this;
   }
@@ -66,7 +63,8 @@ public class DynamicFilterModel   {
    * Get selectors
    * @return selectors
   */
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(required = true, value = "")
+  @NotNull
 
   @Valid
 

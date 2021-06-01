@@ -27,7 +27,7 @@ public class FilterFieldSelectorModel   {
 
   @JsonProperty("operations")
   @Valid
-  private List<org.smartbit4all.api.filter.bean.FilterOperation> operations = null;
+  private List<org.smartbit4all.api.filter.bean.FilterOperation> operations = new ArrayList<>();
 
   @JsonProperty("enabled")
   private Boolean enabled;
@@ -98,9 +98,6 @@ public class FilterFieldSelectorModel   {
   }
 
   public FilterFieldSelectorModel addOperationsItem(org.smartbit4all.api.filter.bean.FilterOperation operationsItem) {
-    if (this.operations == null) {
-      this.operations = new ArrayList<>();
-    }
     this.operations.add(operationsItem);
     return this;
   }
@@ -109,7 +106,8 @@ public class FilterFieldSelectorModel   {
    * Get operations
    * @return operations
   */
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(required = true, value = "")
+  @NotNull
 
   @Valid
 

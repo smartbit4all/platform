@@ -4,7 +4,7 @@ import org.smartbit4all.core.object.NotifyListeners;
 import org.smartbit4all.core.object.ObjectEditing;
 import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.core.object.PublishEvents;
-import org.smartbit4all.ui.common.filter2.model.FilterFieldModel;
+import org.smartbit4all.ui.api.filter.model.FilterFieldModel;
 
 public interface FilterFieldViewModel extends ObjectEditing {
 

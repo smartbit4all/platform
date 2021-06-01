@@ -50,8 +50,8 @@ descriptorList.each {
         ]
         importMappings = [
           "Value": "org.smartbit4all.api.value.bean.Value",
-          "FilterConfigMode": "org.smartbit4all.api.filter.bean.FilterConfigMode",
-          "FilterGroupType": "org.smartbit4all.api.filter.bean.FilterGroupType",
+          "FilterConfigMode" : "org.smartbit4all.api.filter.bean.FilterConfigMode",
+          "FilterGroupType" : "org.smartbit4all.api.filter.bean.FilterGroupType",
           "FilterOperation" : "org.smartbit4all.api.filter.bean.FilterOperation"
         ]
         configOptions = [

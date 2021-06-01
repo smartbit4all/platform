@@ -20,6 +20,8 @@ components:
   schemas:
     DynamicFilterModel:
       type: object
+      required:
+        - selectors
       properties:
         filterConfigMode:
           type: FilterConfigMode
@@ -39,8 +41,13 @@ components:
         duplicateNum:
           type: integer
           format: int32
+          default: 0
     FilterFieldModel:
       type: object
+      required:
+        - operations
+        - possibleValues
+        - selectedValues
       properties:
         selectorId:
           type: string
@@ -74,6 +81,8 @@ components:
           type: string
     FilterFieldSelectorModel:
       type: object
+      required:
+        - operations
       properties:
         labelCode:
           type: string
@@ -96,6 +105,9 @@ components:
           type: string
     FilterGroupModel:
       type: object
+      required:
+        - groups
+        - filters
       properties:
         groupType:
           type: FilterGroupType
@@ -103,18 +115,25 @@ components:
           $ref: '#/components/schemas/FilterGroupLabel'
         closeable:
           type: boolean
+          default: false
         root:
           type: boolean
+          default: false
         visible:
           type: boolean
+          default: true
         active:
           type: boolean
+          default: false
         childGroupAllowed:
           type: boolean
+          default: false
         groupTypeChangeEnabled:
           type: boolean
+          default: false
         negated:
           type: boolean
+          default: false
         groups:
           type: array
           items:
@@ -125,6 +144,8 @@ components:
             $ref: '#/components/schemas/FilterFieldModel'
     FilterGroupSelectorModel:
       type: object
+      required:
+        - filters
       properties:
         labelCode:
           type: string

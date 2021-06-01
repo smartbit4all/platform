@@ -22,7 +22,7 @@ public class FilterFieldLabel   {
   private FilterLabelPosition position;
 
   @JsonProperty("duplicateNum")
-  private Integer duplicateNum;
+  private Integer duplicateNum = 0;
 
   public FilterFieldLabel code(String code) {
     this.code = code;

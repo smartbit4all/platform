@@ -28,7 +28,7 @@ public class FilterGroupSelectorModel   {
 
   @JsonProperty("filters")
   @Valid
-  private List<FilterFieldSelectorModel> filters = null;
+  private List<FilterFieldSelectorModel> filters = new ArrayList<>();
 
   @JsonProperty("closeable")
   private Boolean closeable;
@@ -106,9 +106,6 @@ public class FilterGroupSelectorModel   {
   }
 
   public FilterGroupSelectorModel addFiltersItem(FilterFieldSelectorModel filtersItem) {
-    if (this.filters == null) {
-      this.filters = new ArrayList<>();
-    }
     this.filters.add(filtersItem);
     return this;
   }
@@ -117,7 +114,8 @@ public class FilterGroupSelectorModel   {
    * Get filters
    * @return filters
   */
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(required = true, value = "")
+  @NotNull
 
   @Valid
 

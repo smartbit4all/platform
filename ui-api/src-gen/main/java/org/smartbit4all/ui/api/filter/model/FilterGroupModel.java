@@ -25,33 +25,33 @@ public class FilterGroupModel   {
   private FilterGroupLabel label;
 
   @JsonProperty("closeable")
-  private Boolean closeable;
+  private Boolean closeable = false;
 
   @JsonProperty("root")
-  private Boolean root;
+  private Boolean root = false;
 
   @JsonProperty("visible")
-  private Boolean visible;
+  private Boolean visible = true;
 
   @JsonProperty("active")
-  private Boolean active;
+  private Boolean active = false;
 
   @JsonProperty("childGroupAllowed")
-  private Boolean childGroupAllowed;
+  private Boolean childGroupAllowed = false;
 
   @JsonProperty("groupTypeChangeEnabled")
-  private Boolean groupTypeChangeEnabled;
+  private Boolean groupTypeChangeEnabled = false;
 
   @JsonProperty("negated")
-  private Boolean negated;
+  private Boolean negated = false;
 
   @JsonProperty("groups")
   @Valid
-  private List<FilterGroupModel> groups = null;
+  private List<FilterGroupModel> groups = new ArrayList<>();
 
   @JsonProperty("filters")
   @Valid
-  private List<FilterFieldModel> filters = null;
+  private List<FilterFieldModel> filters = new ArrayList<>();
 
   public FilterGroupModel groupType(org.smartbit4all.api.filter.bean.FilterGroupType groupType) {
     this.groupType = groupType;
@@ -241,9 +241,6 @@ public class FilterGroupModel   {
   }
 
   public FilterGroupModel addGroupsItem(FilterGroupModel groupsItem) {
-    if (this.groups == null) {
-      this.groups = new ArrayList<>();
-    }
     this.groups.add(groupsItem);
     return this;
   }
@@ -252,7 +249,8 @@ public class FilterGroupModel   {
    * Get groups
    * @return groups
   */
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(required = true, value = "")
+  @NotNull
 
   @Valid
 
@@ -270,9 +268,6 @@ public class FilterGroupModel   {
   }
 
   public FilterGroupModel addFiltersItem(FilterFieldModel filtersItem) {
-    if (this.filters == null) {
-      this.filters = new ArrayList<>();
-    }
     this.filters.add(filtersItem);
     return this;
   }
@@ -281,7 +276,8 @@ public class FilterGroupModel   {
    * Get filters
    * @return filters
   */
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(required = true, value = "")
+  @NotNull
 
   @Valid
 
