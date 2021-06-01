@@ -6,6 +6,7 @@ plugins {
 }
 
 dependencies {
+    api project(':core')
     api project(':api-domain')
     api project(':types')
     // its needed for the openApi spring codegen

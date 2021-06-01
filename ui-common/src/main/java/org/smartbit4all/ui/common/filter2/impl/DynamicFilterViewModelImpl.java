@@ -24,6 +24,7 @@ import org.smartbit4all.core.object.ObjectEditingImpl;
 import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.core.object.ObservableObjectImpl;
 import org.smartbit4all.core.utility.PathUtility;
+import org.smartbit4all.ui.api.filter.DynamicFilterViewModel;
 import org.smartbit4all.ui.api.filter.model.DynamicFilterModel;
 import org.smartbit4all.ui.api.filter.model.FilterFieldLabel;
 import org.smartbit4all.ui.api.filter.model.FilterFieldModel;
@@ -32,7 +33,6 @@ import org.smartbit4all.ui.api.filter.model.FilterGroupLabel;
 import org.smartbit4all.ui.api.filter.model.FilterGroupModel;
 import org.smartbit4all.ui.api.filter.model.FilterGroupSelectorModel;
 import org.smartbit4all.ui.api.filter.model.FilterLabelPosition;
-import org.smartbit4all.ui.common.filter2.api.DynamicFilterViewModel;
 import com.google.common.base.Strings;
 
 public class DynamicFilterViewModelImpl extends ObjectEditingImpl

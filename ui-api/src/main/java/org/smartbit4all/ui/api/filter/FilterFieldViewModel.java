@@ -1,4 +1,4 @@
-package org.smartbit4all.ui.common.filter2.api;
+package org.smartbit4all.ui.api.filter;
 
 import org.smartbit4all.core.object.NotifyListeners;
 import org.smartbit4all.core.object.ObjectEditing;

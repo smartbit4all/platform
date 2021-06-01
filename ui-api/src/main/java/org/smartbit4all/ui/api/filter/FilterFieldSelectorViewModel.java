@@ -1,4 +1,4 @@
-package org.smartbit4all.ui.common.filter2.api;
+package org.smartbit4all.ui.api.filter;
 
 public interface FilterFieldSelectorViewModel {
 
