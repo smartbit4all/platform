@@ -200,6 +200,9 @@ class StorageFSTest {
 
     assertEquals(1, objectStorage.listDatas(testSearchDef, closedExpression).size());
 
+    StorageReindexerFS reindexer = new StorageReindexerFS("teststoragefs", testFsRootFolder(), "fs");
+    assertEquals(4, reindexer.listAllUris().size());
+    
     ctx.close();
   }
 

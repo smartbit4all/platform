@@ -13,8 +13,10 @@ import org.smartbit4all.types.binarydata.BinaryData;
 @Table("test")
 public interface TestSearchDef extends EntityDefinition {
 
+  public static final String KEY = "KEY";
+
   @Id
-  @OwnProperty(name = "KEY", columnName = "KEY")
+  @OwnProperty(name = KEY, columnName = KEY)
   Property<URI> key();
 
   @OwnProperty(name = "STATE", columnName = "STATE")

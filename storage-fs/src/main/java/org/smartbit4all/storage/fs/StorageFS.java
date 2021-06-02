@@ -13,25 +13,25 @@ import org.smartbit4all.types.binarydata.BinaryDataObjectSerializer;
 public class StorageFS<T> implements ObjectStorage<T> {
 
   private Class<T> clazz;
-  
+
   private File rootFolder;
 
   private Function<T, URI> uriProvider;
-  
+
   private BinaryDataObjectSerializer serializer;
-  
+
   public StorageFS(
       File rootFolder,
       Function<T, URI> uriProvider,
       BinaryDataObjectSerializer serializer,
       Class<T> clazz) {
-    
+
     this.rootFolder = rootFolder;
     this.uriProvider = uriProvider;
     this.clazz = clazz;
     this.serializer = serializer;
   }
-  
+
   @Override
   public void save(T object) throws Exception {
     save(object, uriProvider.apply(object));
@@ -72,5 +72,5 @@ public class StorageFS<T> implements ObjectStorage<T> {
   public boolean delete(URI uri) throws Exception {
     return FileIO.delete(rootFolder, uri);
   }
-  
+
 }

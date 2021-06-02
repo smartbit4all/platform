@@ -89,7 +89,7 @@ class StorageSQLTest {
   }
 
   @Test
-  void storageFsTest() throws Exception {
+  void storageSqlTest() throws Exception {
     String activeList = "active";
     String closedList = "closed";
     String undefinedList = "undefined";
@@ -113,7 +113,7 @@ class StorageSQLTest {
 
     Function<TestData, URI> uriProvider = (testData) -> testData.getUri();
 
-    StorageSQL<TestData> storageFS = new StorageSQL<StorageSQLTest.TestData>(
+    StorageSQL<TestData> storageSql = new StorageSQL<StorageSQLTest.TestData>(
         testSearchDef,
         testSearchDef.key(),
         testSearchDef.content(),
@@ -151,7 +151,7 @@ class StorageSQLTest {
     // List<TestData> datas = objectStorage.search(searchDef).listDatas(expression);
 
     Storage<TestData> objectStorage = new Storage<>( // ObjectStorage
-        storageFS,
+        storageSql,
         Arrays.asList(storageIndex));
 
     objectStorage.save(tdActive1);
@@ -181,6 +181,9 @@ class StorageSQLTest {
     assertEquals(2, twoActiveDatas.size());
 
     assertEquals(1, objectStorage.listDatas(testSearchDef, closedExpression).size());
+    
+    StorageReindexerSQL reindexer = new StorageReindexerSQL(testSearchDef, TestSearchDef.KEY);
+    assertEquals(4, reindexer.listAllUris().size());
   }
 
   private StorageIndexField<TestData, Boolean> createIsActiveIndexField(
