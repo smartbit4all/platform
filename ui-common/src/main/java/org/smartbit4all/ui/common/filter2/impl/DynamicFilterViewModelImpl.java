@@ -66,6 +66,19 @@ public class DynamicFilterViewModelImpl extends ObjectEditingImpl
     this.dynamicFilterModel = ref.getWrapper(DynamicFilterModel.class);
   }
 
+  public void setModel(DynamicFilterModel newModel) {
+    Objects.requireNonNull(newModel);
+    dynamicFilterModel.setFilterConfigMode(newModel.getFilterConfigMode());
+    dynamicFilterModel.getSelectors().clear();
+    dynamicFilterModel.getSelectors().addAll(newModel.getSelectors());
+    dynamicFilterModel.setRoot(newModel.getRoot());
+    dynamicFilterModelObservable.notifyListeners();
+  }
+
+  public DynamicFilterModel getRawModel() {
+    return (DynamicFilterModel) ref.getObject();
+  }
+
   @Override
   public void initModel(String uri) {
     this.filterConfigUri = uri;

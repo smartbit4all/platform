@@ -245,7 +245,7 @@ public class MultiSelectPopUp<T> extends CustomField<Set<T>> implements HasDataP
 
   }
 
-  private void updateSelection() {
+  protected void updateSelection() {
     selectedItems = grid.getSelectedItems();
     int selectionSize = selectedItems.size();
     if (selectionSize == 0) {
@@ -423,8 +423,9 @@ public class MultiSelectPopUp<T> extends CustomField<Set<T>> implements HasDataP
     displayField.clear();
   }
 
-  public MultiSelect<Grid<T>, T> asMultiselect() {
-    return grid.asMultiSelect();
+  public MultiSelect<Grid<T>, T> asMultiSelect() {
+    MultiSelect<Grid<T>, T> builtinMultiSelect = grid.asMultiSelect();
+    return new MultiSelectPopupMultiSelect<>(this, builtinMultiSelect);
   }
 
   public boolean isTooltipComponentsEnabled() {
@@ -480,7 +481,4 @@ public class MultiSelectPopUp<T> extends CustomField<Set<T>> implements HasDataP
     return selectedItems;
   }
 
-  public MultiSelect<Grid<T>, T> asMultiSelect() {
-    return grid.asMultiSelect();
-  }
 }

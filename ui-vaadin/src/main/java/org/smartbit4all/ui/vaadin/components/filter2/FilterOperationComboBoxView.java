@@ -43,7 +43,8 @@ public class FilterOperationComboBoxView extends FilterOperationView {
     super.onAttach(attachEvent);
     comboBinder = VaadinBinders.bind(comboBox, filterField, path, "possibleValues");
     selectionBinder =
-        VaadinBinders.bind(comboBox, filterField, PathUtility.concatPath(path, "selectedValue"));
+        VaadinBinders.bind(comboBox, filterField, PathUtility.concatPath(path, "selectedValue"),
+            null, true);
   }
 
   @Override

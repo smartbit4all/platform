@@ -51,7 +51,7 @@ public class FilterOperationMultiSelectView extends FilterOperationView {
     super.onAttach(attachEvent);
     popupBinder = VaadinBinders.bind(popUp, filterField, path, "possibleValues");
     selectionBinder =
-        VaadinBinders.bindSelection(popUp.asMultiselect(), filterField, path, "selectedValues");
+        VaadinBinders.bindSelection(popUp.asMultiSelect(), filterField, path, "selectedValues");
   }
 
   @Override

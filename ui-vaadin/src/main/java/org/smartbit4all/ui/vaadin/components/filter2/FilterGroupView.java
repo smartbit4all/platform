@@ -289,9 +289,11 @@ public class FilterGroupView extends FlexLayout implements DropTarget<FlexLayout
     for (ObjectChangeSimple change : changes.getChanges()) {
       String groupPath = change.getPath();
       if (change.getOperation() == ChangeState.NEW) {
-        FilterGroupView childFilterGroup = new FilterGroupView(viewModel, filterGroup, groupPath);
-        this.add(childFilterGroup);
-        filterGroups.put(groupPath, childFilterGroup);
+        if (filterGroups.get(groupPath) == null) {
+          FilterGroupView childFilterGroup = new FilterGroupView(viewModel, filterGroup, groupPath);
+          this.add(childFilterGroup);
+          filterGroups.put(groupPath, childFilterGroup);
+        }
       } else if (change.getOperation() == ChangeState.MODIFIED) {
         // NOP, child should receive change property events
       } else if (change.getOperation() == ChangeState.DELETED) {

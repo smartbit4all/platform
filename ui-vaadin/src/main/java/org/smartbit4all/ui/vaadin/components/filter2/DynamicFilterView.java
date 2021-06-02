@@ -52,17 +52,35 @@ public class DynamicFilterView {
           filterSelectorLayout
               .add(groupSelector);
         }
+      } else if (change.getOperation() == ChangeState.DELETED) {
+        FilterGroupSelectorView groupSelector = groupSelectors.get(groupSelectorPath);
+        if (groupSelector != null) {
+          filterSelectorLayout.remove(groupSelector);
+          groupSelectors.remove(groupSelectorPath);
+        }
       }
     }
   }
 
   private void onRootChange(ReferencedObjectChange changes) {
-    if (changes.getChange().getOperation() == ChangeState.NEW) {
-      if (root != null) {
-        filterHolder.remove(root);
-      }
-      root = new FilterGroupView(viewModel, dynamicFilterModel, "root");
-      filterHolder.add(root);
+    ChangeState operation = changes.getChange().getOperation();
+    if (operation == ChangeState.NEW) {
+      removeRoot();
+      createRoot();
+    } else if (operation == ChangeState.DELETED) {
+      removeRoot();
+    }
+  }
+
+  private void createRoot() {
+    root = new FilterGroupView(viewModel, dynamicFilterModel, "root");
+    filterHolder.add(root);
+  }
+
+  private void removeRoot() {
+    if (root != null) {
+      filterHolder.remove(root);
+      root = null;
     }
   }
 
