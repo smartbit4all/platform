@@ -268,8 +268,7 @@ public class ApiObjectCollection implements List<ApiObjectRef> {
     } else {
       clear();
       for (Object myValue : c) {
-        ApiObjectRef ref = constructObjectRef(myValue);
-        addRef(ref);
+        add(constructObjectRef(myValue));
       }
     }
     // TODO correct implementation
