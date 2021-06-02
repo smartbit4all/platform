@@ -82,8 +82,11 @@ components:
     FilterFieldSelectorModel:
       type: object
       required:
+        - id
         - operations
       properties:
+        id:
+          type: string
         labelCode:
           type: string
         iconCode:
@@ -106,9 +109,12 @@ components:
     FilterGroupModel:
       type: object
       required:
+        - id
         - groups
         - filters
       properties:
+        id:
+          type: string
         groupType:
           type: FilterGroupType
         label:
@@ -161,7 +167,7 @@ components:
           type: boolean
         visible:
           type: boolean
-        currentGroupPath:
+        currentGroupId:
           type: string
     FilterLabelPosition:
       type: string

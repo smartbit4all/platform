@@ -1,6 +1,7 @@
 package org.smartbit4all.ui.common.filter2.impl;
 
 import java.util.Objects;
+import java.util.UUID;
 import org.smartbit4all.api.filter.bean.FilterGroupType;
 import org.smartbit4all.api.filter.bean.FilterOperation;
 import org.smartbit4all.core.object.ApiObjectRef;
@@ -124,6 +125,7 @@ public class FilterGroupViewModelImpl extends ObjectEditingImpl implements Filte
     if (parentRef != null) {
       FilterGroupModel parentFilterGroup = parentRef.getWrapper(FilterGroupModel.class);
       FilterGroupModel childFilterGroup = new FilterGroupModel();
+      childFilterGroup.setId(UUID.randomUUID().toString());
       childFilterGroup.setGroupType(FilterGroupType.AND);
       childFilterGroup.setRoot(Boolean.FALSE);
       childFilterGroup.setGroupTypeChangeEnabled(parentFilterGroup.getGroupTypeChangeEnabled());

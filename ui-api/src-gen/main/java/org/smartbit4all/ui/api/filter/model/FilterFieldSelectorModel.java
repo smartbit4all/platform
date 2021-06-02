@@ -16,6 +16,9 @@ import javax.validation.constraints.*;
  */
 
 public class FilterFieldSelectorModel   {
+  @JsonProperty("id")
+  private String id;
+
   @JsonProperty("labelCode")
   private String labelCode;
 
@@ -31,6 +34,27 @@ public class FilterFieldSelectorModel   {
 
   @JsonProperty("enabled")
   private Boolean enabled;
+
+  public FilterFieldSelectorModel id(String id) {
+    this.id = id;
+    return this;
+  }
+
+  /**
+   * Get id
+   * @return id
+  */
+  @ApiModelProperty(required = true, value = "")
+  @NotNull
+
+
+  public String getId() {
+    return id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
 
   public FilterFieldSelectorModel labelCode(String labelCode) {
     this.labelCode = labelCode;
@@ -149,7 +173,8 @@ public class FilterFieldSelectorModel   {
       return false;
     }
     FilterFieldSelectorModel filterFieldSelectorModel = (FilterFieldSelectorModel) o;
-    return Objects.equals(this.labelCode, filterFieldSelectorModel.labelCode) &&
+    return Objects.equals(this.id, filterFieldSelectorModel.id) &&
+        Objects.equals(this.labelCode, filterFieldSelectorModel.labelCode) &&
         Objects.equals(this.iconCode, filterFieldSelectorModel.iconCode) &&
         Objects.equals(this.style, filterFieldSelectorModel.style) &&
         Objects.equals(this.operations, filterFieldSelectorModel.operations) &&
@@ -158,7 +183,7 @@ public class FilterFieldSelectorModel   {
 
   @Override
   public int hashCode() {
-    return Objects.hash(labelCode, iconCode, style, operations, enabled);
+    return Objects.hash(id, labelCode, iconCode, style, operations, enabled);
   }
 
   @Override
@@ -166,6 +191,7 @@ public class FilterFieldSelectorModel   {
     StringBuilder sb = new StringBuilder();
     sb.append("class FilterFieldSelectorModel {\n");
     
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    labelCode: ").append(toIndentedString(labelCode)).append("\n");
     sb.append("    iconCode: ").append(toIndentedString(iconCode)).append("\n");
     sb.append("    style: ").append(toIndentedString(style)).append("\n");

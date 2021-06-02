@@ -18,6 +18,9 @@ import javax.validation.constraints.*;
  */
 
 public class FilterGroupModel   {
+  @JsonProperty("id")
+  private String id;
+
   @JsonProperty("groupType")
   private org.smartbit4all.api.filter.bean.FilterGroupType groupType = null;
 
@@ -52,6 +55,27 @@ public class FilterGroupModel   {
   @JsonProperty("filters")
   @Valid
   private List<FilterFieldModel> filters = new ArrayList<>();
+
+  public FilterGroupModel id(String id) {
+    this.id = id;
+    return this;
+  }
+
+  /**
+   * Get id
+   * @return id
+  */
+  @ApiModelProperty(required = true, value = "")
+  @NotNull
+
+
+  public String getId() {
+    return id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
 
   public FilterGroupModel groupType(org.smartbit4all.api.filter.bean.FilterGroupType groupType) {
     this.groupType = groupType;
@@ -299,7 +323,8 @@ public class FilterGroupModel   {
       return false;
     }
     FilterGroupModel filterGroupModel = (FilterGroupModel) o;
-    return Objects.equals(this.groupType, filterGroupModel.groupType) &&
+    return Objects.equals(this.id, filterGroupModel.id) &&
+        Objects.equals(this.groupType, filterGroupModel.groupType) &&
         Objects.equals(this.label, filterGroupModel.label) &&
         Objects.equals(this.closeable, filterGroupModel.closeable) &&
         Objects.equals(this.root, filterGroupModel.root) &&
@@ -314,7 +339,7 @@ public class FilterGroupModel   {
 
   @Override
   public int hashCode() {
-    return Objects.hash(groupType, label, closeable, root, visible, active, childGroupAllowed, groupTypeChangeEnabled, negated, groups, filters);
+    return Objects.hash(id, groupType, label, closeable, root, visible, active, childGroupAllowed, groupTypeChangeEnabled, negated, groups, filters);
   }
 
   @Override
@@ -322,6 +347,7 @@ public class FilterGroupModel   {
     StringBuilder sb = new StringBuilder();
     sb.append("class FilterGroupModel {\n");
     
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    groupType: ").append(toIndentedString(groupType)).append("\n");
     sb.append("    label: ").append(toIndentedString(label)).append("\n");
     sb.append("    closeable: ").append(toIndentedString(closeable)).append("\n");

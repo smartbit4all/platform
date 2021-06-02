@@ -36,8 +36,8 @@ public class FilterGroupSelectorModel   {
   @JsonProperty("visible")
   private Boolean visible;
 
-  @JsonProperty("currentGroupPath")
-  private String currentGroupPath;
+  @JsonProperty("currentGroupId")
+  private String currentGroupId;
 
   public FilterGroupSelectorModel labelCode(String labelCode) {
     this.labelCode = labelCode;
@@ -167,24 +167,24 @@ public class FilterGroupSelectorModel   {
     this.visible = visible;
   }
 
-  public FilterGroupSelectorModel currentGroupPath(String currentGroupPath) {
-    this.currentGroupPath = currentGroupPath;
+  public FilterGroupSelectorModel currentGroupId(String currentGroupId) {
+    this.currentGroupId = currentGroupId;
     return this;
   }
 
   /**
-   * Get currentGroupPath
-   * @return currentGroupPath
+   * Get currentGroupId
+   * @return currentGroupId
   */
   @ApiModelProperty(value = "")
 
 
-  public String getCurrentGroupPath() {
-    return currentGroupPath;
+  public String getCurrentGroupId() {
+    return currentGroupId;
   }
 
-  public void setCurrentGroupPath(String currentGroupPath) {
-    this.currentGroupPath = currentGroupPath;
+  public void setCurrentGroupId(String currentGroupId) {
+    this.currentGroupId = currentGroupId;
   }
 
 
@@ -203,12 +203,12 @@ public class FilterGroupSelectorModel   {
         Objects.equals(this.filters, filterGroupSelectorModel.filters) &&
         Objects.equals(this.closeable, filterGroupSelectorModel.closeable) &&
         Objects.equals(this.visible, filterGroupSelectorModel.visible) &&
-        Objects.equals(this.currentGroupPath, filterGroupSelectorModel.currentGroupPath);
+        Objects.equals(this.currentGroupId, filterGroupSelectorModel.currentGroupId);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(labelCode, iconCode, groupType, filters, closeable, visible, currentGroupPath);
+    return Objects.hash(labelCode, iconCode, groupType, filters, closeable, visible, currentGroupId);
   }
 
   @Override
@@ -222,7 +222,7 @@ public class FilterGroupSelectorModel   {
     sb.append("    filters: ").append(toIndentedString(filters)).append("\n");
     sb.append("    closeable: ").append(toIndentedString(closeable)).append("\n");
     sb.append("    visible: ").append(toIndentedString(visible)).append("\n");
-    sb.append("    currentGroupPath: ").append(toIndentedString(currentGroupPath)).append("\n");
+    sb.append("    currentGroupId: ").append(toIndentedString(currentGroupId)).append("\n");
     sb.append("}");
     return sb.toString();
   }
