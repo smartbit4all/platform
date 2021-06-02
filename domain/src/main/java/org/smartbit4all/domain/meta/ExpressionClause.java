@@ -210,10 +210,12 @@ public final class ExpressionClause extends Expression implements ExpressionCont
   public ExpressionClause add(Expression expression) {
     if (expression instanceof ExpressionClause) {
       ExpressionClause clauseToAdd = (ExpressionClause) expression;
-      if (this.operator == clauseToAdd.operator) {
-        this.expressions.addAll(clauseToAdd.expressions);
-      } else {
-        expressions.add(expression);
+      if(!clauseToAdd.expressions.isEmpty()) {
+        if (this.operator == clauseToAdd.operator) {
+          this.expressions.addAll(clauseToAdd.expressions);
+        } else {
+          expressions.add(expression.BRACKET());
+        }
       }
     } else {
       expressions.add(expression);
