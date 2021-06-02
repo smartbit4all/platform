@@ -5,13 +5,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.smartbit4all.domain.data.storage.index.ExpressionEntityDefinitionExtractor;
 import org.smartbit4all.domain.data.storage.index.StorageIndex;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Expression;
+import org.springframework.util.Assert;
 
 /**
  * Storage is an ObjectStorage which maintains the indexes on storing the objects. Objects can be
@@ -77,35 +77,36 @@ public class Storage<T> implements ObjectStorage<T> {
   }
 
   /**
-   * List the datas which fulfill the criteria of the given expression.
-   * The expression must only contains properties of the given entity definition!
+   * List the datas which fulfill the criteria of the given expression. The expression must only
+   * contains properties of the given entity definition!
    */
-  public List<T> listDatas(EntityDefinition entityDef, Expression expression) throws Exception {
-    List<URI> uris = listUris(entityDef, expression);
+  public List<T> listDatas(Expression expression) throws Exception {
+    List<URI> uris = listUris(expression);
     return load(uris);
   }
-  
+
   /**
-   * TODO This evaluation should be handled by Query API (eg. exists),
-   * so use this judiciously, only if other solutions are not fit for the task.
+   * TODO This evaluation should be handled by Query API (eg. exists), so use this judiciously, only
+   * if other solutions are not fit for the task.
    * 
-   * List the datas by the intersection of the given expression results
-   * The result list contains the values which fulfill all expression criterias.
-   * The expression must only contains properties of the given entity definition!
+   * List the datas by the intersection of the given expression results The result list contains the
+   * values which fulfill all expression criterias. The expression must only contains properties of
+   * the given entity definition!
    */
-  public List<T> listDatas(Map<EntityDefinition, Expression> expressionsByEntityDef)
+  public List<T> listDatas(List<Expression> expressions)
       throws Exception {
+
+    Assert.notEmpty(expressions, "No expression given in listData call");
 
     List<URI> resultUris = new ArrayList<>();
 
-    Iterator<Entry<EntityDefinition, Expression>> iterExpression =
-        expressionsByEntityDef.entrySet().iterator();
-
-    Entry<EntityDefinition, Expression> firstExpression = iterExpression.next();
+    Iterator<Expression> iterExpression = expressions.iterator();
+    
+    Expression firstExpression = iterExpression.next();
     resultUris.addAll(listUris(firstExpression));
 
     while (iterExpression.hasNext()) {
-      Entry<EntityDefinition, Expression> expression = iterExpression.next();
+      Expression expression = iterExpression.next();
       List<URI> uris = listUris(expression);
       resultUris = intersectUriLists(resultUris, uris);
     }
@@ -113,11 +114,16 @@ public class Storage<T> implements ObjectStorage<T> {
     return load(resultUris);
   }
 
-  public List<URI> listUris(EntityDefinition entityDef, Expression expression) throws Exception {
+  public List<URI> listUris(Expression expression) throws Exception {
     List<URI> uris = new ArrayList<>();
 
     for (StorageIndex<T> index : indexes) {
-      if (index.getEntityDef() == entityDef) {
+      Optional<EntityDefinition> expressionEntityDef =
+          ExpressionEntityDefinitionExtractor.getOnlyEntityDefinition(expression);
+
+      if (expressionEntityDef.isPresent() &&
+          index.getEntityDef().equals(expressionEntityDef.get())) {
+        
         uris.addAll(index.listUris(expression));
       }
     }
@@ -132,8 +138,4 @@ public class Storage<T> implements ObjectStorage<T> {
         .collect(Collectors.toList());
   }
 
-  private List<URI> listUris(Entry<EntityDefinition, Expression> firstExpression) throws Exception {
-    return listUris(firstExpression.getKey(), firstExpression.getValue());
-  }
-  
 }

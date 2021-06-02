@@ -163,24 +163,24 @@ class StorageSQLTest {
     Expression emptyStateExpression = testSearchDef.emptyState().eq(notInAnyState);
     Expression notActiveExpression = testSearchDef.isActive().eq(false);
 
-    List<TestData> activeDatas = objectStorage.listDatas(testSearchDef, activeExpression);
+    List<TestData> activeDatas = objectStorage.listDatas(activeExpression);
     assertEquals(1, activeDatas.size());
 
-    List<TestData> closedDatas = objectStorage.listDatas(testSearchDef, closedExpression);
+    List<TestData> closedDatas = objectStorage.listDatas(closedExpression);
     assertEquals(1, closedDatas.size());
 
-    List<TestData> undefinedDatas = objectStorage.listDatas(testSearchDef, emptyStateExpression);
+    List<TestData> undefinedDatas = objectStorage.listDatas(emptyStateExpression);
     assertEquals(1, undefinedDatas.size());
 
-    List<TestData> notActive = objectStorage.listDatas(testSearchDef, notActiveExpression);
+    List<TestData> notActive = objectStorage.listDatas(notActiveExpression);
     assertEquals(2, notActive.size());
 
     objectStorage.save(tdActive2, uriProvider.apply(tdActive2));
 
-    List<TestData> twoActiveDatas = objectStorage.listDatas(testSearchDef, activeExpression);
+    List<TestData> twoActiveDatas = objectStorage.listDatas(activeExpression);
     assertEquals(2, twoActiveDatas.size());
 
-    assertEquals(1, objectStorage.listDatas(testSearchDef, closedExpression).size());
+    assertEquals(1, objectStorage.listDatas(closedExpression).size());
     
     StorageReindexerSQL reindexer = new StorageReindexerSQL(testSearchDef, TestSearchDef.KEY);
     assertEquals(4, reindexer.listAllUris().size());
