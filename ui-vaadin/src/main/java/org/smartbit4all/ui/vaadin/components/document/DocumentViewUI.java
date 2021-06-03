@@ -31,7 +31,7 @@ import com.vaadin.flow.server.StreamResource;
  * scaler panel used for zoom in/out and if there are more than one image it also shows the
  * navigation and thumbnails panel.
  */
-@CssImport(value = "./smartbit4all/styles/components/custom/details-drawer.css")
+@CssImport(value = "./styles/components/details-drawer.css")
 public class DocumentViewUI extends FlexLayout implements DocumentView {
 
   private DocumentViewController controller;
