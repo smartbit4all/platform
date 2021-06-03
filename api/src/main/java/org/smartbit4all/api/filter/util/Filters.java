@@ -24,6 +24,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -603,6 +604,75 @@ public class Filters {
       }
     }
     return true;
+  }
+  
+  public static FilterGroup changeFilterProperties(FilterGroup filterGroup,
+      ArrayList<? extends FilterPropertyChangeHandler> propertyChangeHandlers) {
+    if (propertyChangeHandlers == null || propertyChangeHandlers.isEmpty()) {
+      throw new IllegalArgumentException("propertyChangeHandlers can not be null nor empty!");
+    }
+    FilterGroup changedGroup = new FilterGroup();
+    changedGroup.setIsNegated(filterGroup.getIsNegated());
+    changedGroup.setName(filterGroup.getName());
+    changedGroup.setType(filterGroup.getType());
+
+    List<FilterGroup> subGroups = filterGroup.getFilterGroups();
+    if (subGroups != null) {
+      subGroups.forEach(subGroup -> {
+        changedGroup.addFilterGroupsItem(changeFilterProperties(subGroup, propertyChangeHandlers));
+      });
+    }
+
+    List<FilterField> filterFields = filterGroup.getFilterFields();
+    if (filterFields != null && !filterFields.isEmpty()) {
+      for (FilterField field : filterFields) {
+        FilterField changedField = new FilterField();
+        changedField.setOperationCode(field.getOperationCode());
+        changedField.setSelectedValues(field.getSelectedValues());
+        changedField.setValue1(field.getValue1());
+        changedField.setValue2(field.getValue2());
+        changedField.setValue3(field.getValue3());
+
+        changedField
+            .setPropertyUri1(changePropertyUri(field.getPropertyUri1(), propertyChangeHandlers));
+        changedField
+            .setPropertyUri2(changePropertyUri(field.getPropertyUri2(), propertyChangeHandlers));
+        changedField
+            .setPropertyUri3(changePropertyUri(field.getPropertyUri3(), propertyChangeHandlers));
+
+        changedGroup.addFilterFieldsItem(changedField);
+      }
+    }
+
+    return changedGroup;
+  }
+
+  private static URI changePropertyUri(URI propertyUriToChange,
+      ArrayList<? extends FilterPropertyChangeHandler> propertyChangeHandlers) {
+    FilterPropertyChangeHandler handler = propertyChangeHandlers.stream()
+        .filter(h -> h.supports(propertyUriToChange)).findFirst().orElse(null);
+    if (handler == null) {
+      return propertyUriToChange;
+    }
+    return handler.changeUri(propertyUriToChange);
+  }
+
+  public static interface FilterPropertyChangeHandler {
+
+    boolean supports(URI propertyUri);
+
+    URI changeUri(URI propertyUriToChange);
+
+  }
+
+  public static abstract class FilterPropertyChangeHandlerBase
+      implements FilterPropertyChangeHandler {
+
+    @Override
+    public final boolean supports(URI propertyUri) {
+      return true;
+    }
+
   }
 
 }
