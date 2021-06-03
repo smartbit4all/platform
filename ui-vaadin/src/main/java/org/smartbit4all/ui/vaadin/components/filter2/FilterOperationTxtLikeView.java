@@ -18,8 +18,6 @@ import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.core.utility.PathUtility;
 import org.smartbit4all.ui.vaadin.components.binder.VaadinBinders;
 import org.smartbit4all.ui.vaadin.components.binder.VaadinHasValueBinder;
-import com.vaadin.flow.component.AttachEvent;
-import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.textfield.TextField;
 
 public class FilterOperationTxtLikeView extends FilterOperationView {
@@ -32,17 +30,12 @@ public class FilterOperationTxtLikeView extends FilterOperationView {
     addClassName("filter-onefield");
     textField = new TextField();
     add(textField);
-  }
 
-  @Override
-  protected void onAttach(AttachEvent attachEvent) {
-    super.onAttach(attachEvent);
     binder = VaadinBinders.bind(textField, filterField, PathUtility.concatPath(path, "value1"));
   }
 
   @Override
-  protected void onDetach(DetachEvent detachEvent) {
-    super.onDetach(detachEvent);
+  public void unbind() {
     if (binder != null) {
       binder.unbind();
       binder = null;

@@ -21,8 +21,6 @@ import org.smartbit4all.ui.vaadin.components.binder.VaadinHasItemsBinder;
 import org.smartbit4all.ui.vaadin.components.binder.VaadinMultiSelectBinder;
 import org.smartbit4all.ui.vaadin.components.selector.MultiSelectPopUp;
 import org.springframework.util.StringUtils;
-import com.vaadin.flow.component.AttachEvent;
-import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.grid.Grid;
 
 public class FilterOperationMultiSelectView extends FilterOperationView {
@@ -44,19 +42,14 @@ public class FilterOperationMultiSelectView extends FilterOperationView {
     popUp.setItemDisplayValueProvider(Value::getDisplayValue);
 
     add(popUp);
-  }
 
-  @Override
-  protected void onAttach(AttachEvent attachEvent) {
-    super.onAttach(attachEvent);
     popupBinder = VaadinBinders.bind(popUp, filterField, path, "possibleValues");
     selectionBinder =
         VaadinBinders.bindSelection(popUp.asMultiSelect(), filterField, path, "selectedValues");
   }
 
   @Override
-  protected void onDetach(DetachEvent detachEvent) {
-    super.onDetach(detachEvent);
+  public void unbind() {
     if (popupBinder != null) {
       popupBinder.unbind();
       popupBinder = null;

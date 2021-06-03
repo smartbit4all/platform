@@ -17,8 +17,6 @@ package org.smartbit4all.ui.vaadin.components.filter2;
 import java.time.LocalDateTime;
 import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.ui.vaadin.components.binder.VaadinHasValueBinder;
-import com.vaadin.flow.component.AttachEvent;
-import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 
 public class FilterOperationDateTimeEqualsView extends FilterOperationView {
@@ -30,17 +28,12 @@ public class FilterOperationDateTimeEqualsView extends FilterOperationView {
     super(filterField, path);
     dateTime = FilterViewUtils.createDateTimePicker();
     add(dateTime);
-  }
 
-  @Override
-  protected void onAttach(AttachEvent attachEvent) {
-    super.onAttach(attachEvent);
     binder = FilterViewUtils.bindDateTime(dateTime, filterField, path, 1);
   }
 
   @Override
-  protected void onDetach(DetachEvent detachEvent) {
-    super.onDetach(detachEvent);
+  public void unbind() {
     if (binder != null) {
       binder.unbind();
       binder = null;

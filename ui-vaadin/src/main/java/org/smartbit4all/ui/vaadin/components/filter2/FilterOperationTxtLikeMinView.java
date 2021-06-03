@@ -4,8 +4,6 @@ import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.core.utility.PathUtility;
 import org.smartbit4all.ui.vaadin.components.binder.VaadinBinders;
 import org.smartbit4all.ui.vaadin.components.binder.VaadinHasValueBinder;
-import com.vaadin.flow.component.AttachEvent;
-import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.textfield.TextField;
 
 public class FilterOperationTxtLikeMinView extends FilterOperationView {
@@ -22,19 +20,14 @@ public class FilterOperationTxtLikeMinView extends FilterOperationView {
     textField.setClearButtonVisible(true);
     textField.addClassName("filter-txt-like-min-txt");
     add(textField);
-  }
 
-  @Override
-  protected void onAttach(AttachEvent attachEvent) {
-    super.onAttach(attachEvent);
     binder = VaadinBinders.bind(textField, filterField, PathUtility.concatPath(path, "value1"),
         new UpperCaseConverter());
     // TODO min 3 char length
   }
 
   @Override
-  protected void onDetach(DetachEvent detachEvent) {
-    super.onDetach(detachEvent);
+  public void unbind() {
     if (binder != null) {
       binder.unbind();
       binder = null;

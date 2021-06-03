@@ -20,8 +20,6 @@ import org.smartbit4all.core.utility.PathUtility;
 import org.smartbit4all.ui.vaadin.components.binder.VaadinBinders;
 import org.smartbit4all.ui.vaadin.components.binder.VaadinHasItemsBinder;
 import org.smartbit4all.ui.vaadin.components.binder.VaadinHasValueBinder;
-import com.vaadin.flow.component.AttachEvent;
-import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.combobox.ComboBox;
 
 public class FilterOperationComboBoxView extends FilterOperationView {
@@ -36,20 +34,16 @@ public class FilterOperationComboBoxView extends FilterOperationView {
     comboBox.addClassName("filter-combobox");
     comboBox.setItemLabelGenerator(Value::getDisplayValue);
     add(comboBox);
-  }
 
-  @Override
-  protected void onAttach(AttachEvent attachEvent) {
-    super.onAttach(attachEvent);
     comboBinder = VaadinBinders.bind(comboBox, filterField, path, "possibleValues");
     selectionBinder =
         VaadinBinders.bind(comboBox, filterField, PathUtility.concatPath(path, "selectedValue"),
             null, true);
+
   }
 
   @Override
-  protected void onDetach(DetachEvent detachEvent) {
-    super.onDetach(detachEvent);
+  public void unbind() {
     if (comboBinder != null) {
       comboBinder.unbind();
       comboBinder = null;

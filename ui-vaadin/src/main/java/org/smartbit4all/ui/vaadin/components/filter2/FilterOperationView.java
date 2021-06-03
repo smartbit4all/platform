@@ -29,4 +29,6 @@ abstract class FilterOperationView extends FlexLayout {
 
   public abstract void setPlaceholder(String placeHolderText);
 
+  public abstract void unbind();
+
 }

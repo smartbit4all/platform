@@ -17,8 +17,6 @@ package org.smartbit4all.ui.vaadin.components.filter2;
 import java.time.LocalDateTime;
 import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.ui.vaadin.components.binder.VaadinHasValueBinder;
-import com.vaadin.flow.component.AttachEvent;
-import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 
 public class FilterOperationDateTimeIntervalView extends FilterOperationView {
@@ -36,6 +34,9 @@ public class FilterOperationDateTimeIntervalView extends FilterOperationView {
     endDate = FilterViewUtils.createDateTimePicker();
 
     add(beginDate, endDate);
+
+    beginDateBinder = FilterViewUtils.bindDateTime(beginDate, filterField, path, 1);
+    endDateBinder = FilterViewUtils.bindDateTime(endDate, filterField, path, 2);
   }
 
   @Override
@@ -43,16 +44,9 @@ public class FilterOperationDateTimeIntervalView extends FilterOperationView {
     beginDate.setDatePlaceholder(placeHolderText);
   }
 
-  @Override
-  protected void onAttach(AttachEvent attachEvent) {
-    super.onAttach(attachEvent);
-    beginDateBinder = FilterViewUtils.bindDateTime(beginDate, filterField, path, 1);
-    endDateBinder = FilterViewUtils.bindDateTime(endDate, filterField, path, 2);
-  }
 
   @Override
-  protected void onDetach(DetachEvent detachEvent) {
-    super.onDetach(detachEvent);
+  public void unbind() {
     if (beginDateBinder != null) {
       beginDateBinder.unbind();
       beginDateBinder = null;

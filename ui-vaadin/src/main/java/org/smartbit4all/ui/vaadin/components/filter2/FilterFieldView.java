@@ -173,7 +173,7 @@ public class FilterFieldView extends FlexLayout implements DragSource<FilterFiel
   private void operationViewChange(PropertyChange change) {
     String filterView = (String) change.getNewValue();
     if (!filterView.equals(currentFilterView)) {
-      currentFilterView = filterView;
+      FilterOperationView prevOperationView = operationView;
       if ("filterop.txt.eq".equals(filterView)) {
         operationView = new FilterOperationTxtEqualsView(filterField, path);
       } else if ("filterop.txt.like".equals(filterView)) {
@@ -201,6 +201,10 @@ public class FilterFieldView extends FlexLayout implements DragSource<FilterFiel
             + ") in filter!");
       }
 
+      if (prevOperationView != null) {
+        prevOperationView.unbind();
+      }
+      currentFilterView = filterView;
       row.removeAll();
       row.add(operationView);
     }

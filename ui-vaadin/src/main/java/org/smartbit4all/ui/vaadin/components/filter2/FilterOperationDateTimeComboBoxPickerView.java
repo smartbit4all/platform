@@ -3,8 +3,6 @@ package org.smartbit4all.ui.vaadin.components.filter2;
 import org.smartbit4all.api.filter.TimeFilterOption;
 import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.ui.vaadin.components.binder.VaadinHasValueBinder;
-import com.vaadin.flow.component.AttachEvent;
-import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.shared.Registration;
 
@@ -19,19 +17,16 @@ public class FilterOperationDateTimeComboBoxPickerView extends FilterOperationDa
     addClassName("dynamic-filter-date");
     cbTimeFilterOption = FilterViewUtils.createTimeFilterOptionCombo(this);
     addComponentAsFirst(cbTimeFilterOption);
-  }
 
-  @Override
-  protected void onAttach(AttachEvent attachEvent) {
     comboBinder =
         FilterViewUtils.bindTimeFilterOptionCombo(cbTimeFilterOption, filterField, path, 3);
     comboReg = FilterViewUtils.handleTimeFilterOptionComboChange(cbTimeFilterOption, filterField,
         path, true);
-    super.onAttach(attachEvent);
   }
 
   @Override
-  protected void onDetach(DetachEvent detachEvent) {
+  public void unbind() {
+    super.unbind();
     if (comboBinder != null) {
       comboBinder.unbind();
       comboBinder = null;
@@ -40,6 +35,5 @@ public class FilterOperationDateTimeComboBoxPickerView extends FilterOperationDa
       comboReg.remove();
       comboReg = null;
     }
-    super.onDetach(detachEvent);
   }
 }
