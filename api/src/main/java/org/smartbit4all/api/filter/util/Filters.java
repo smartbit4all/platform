@@ -26,6 +26,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -146,6 +147,11 @@ public class Filters {
    *         null.
    */
   public Expression expression(FilterGroup filterGroup) {
+    return expression(filterGroup, null);
+  }
+    
+  public Expression expression(FilterGroup filterGroup,
+      Collection<? extends FilterExpressionHandler> filterExceptionChangeHandlers) {
     if (filterGroup == null || ((filterGroup.getFilterFields() == null
         || filterGroup.getFilterFields().isEmpty())
         && (filterGroup.getFilterGroups() == null || filterGroup.getFilterGroups().isEmpty()))) {
@@ -157,16 +163,18 @@ public class Filters {
     ExpressionClause starterClause =
         filterGroup.getType() == FilterGroupType.AND ? Expression.createAndClause()
             : Expression.createOrClause();
-    recurseGroups(filterGroup, starterClause);
+    recurseGroups(filterGroup, starterClause, filterExceptionChangeHandlers);
 
     return starterClause.expressions().isEmpty() ? null : starterClause;
   }
 
   /**
    * @param filterGroup
+   * @param filterExceptionChangeHandlers 
    * @param groupStarterClause
    */
-  private final void recurseGroups(FilterGroup filterGroup, ExpressionClause groupClause) {
+  private final void recurseGroups(FilterGroup filterGroup, ExpressionClause groupClause,
+      Collection<? extends FilterExpressionHandler> filterExceptionChangeHandlers) {
     // First add the sub groups as brackets.
     List<FilterGroup> groups = filterGroup.getFilterGroups() == null ? Collections.emptyList()
         : filterGroup.getFilterGroups();
@@ -174,7 +182,7 @@ public class Filters {
       ExpressionClause subGroupClause =
           subGroup.getType() == FilterGroupType.AND ? Expression.createAndClause()
               : Expression.createOrClause();
-      recurseGroups(subGroup, subGroupClause);
+      recurseGroups(subGroup, subGroupClause, filterExceptionChangeHandlers);
       if (!subGroupClause.expressions().isEmpty()) {
         groupClause.add(subGroupClause.BRACKET());
       }
@@ -185,7 +193,7 @@ public class Filters {
         : filterGroup.getFilterFields();
     for (FilterField filterField : filterFields) {
 
-      Expression expressionOfField = expressionOfField(filterField);
+      Expression expressionOfField = expressionOfField(filterField, filterExceptionChangeHandlers);
 
       if (expressionOfField != null) {
         groupClause.add(expressionOfField);
@@ -194,6 +202,21 @@ public class Filters {
   }
 
   public Expression expressionOfField(FilterField filterField) {
+    return expressionOfField(filterField, null);
+  }
+  
+  public Expression expressionOfField(FilterField filterField,
+      Collection<? extends FilterExpressionHandler> filterExceptionChangeHandlers) {
+    
+    if(filterExceptionChangeHandlers != null && !filterExceptionChangeHandlers.isEmpty()) {
+      FilterExpressionHandler changeHandler = filterExceptionChangeHandlers.stream()
+      .filter(h -> h.supports(filterField))
+      .findFirst().orElse(null);
+      if(changeHandler != null) {
+        return changeHandler.createExpression(filterField);
+      }
+    }
+    
     Expression expressionOfField = null;
     String operationCode = filterField.getOperationCode();
     OperationCode opertaionCodeEnum = OperationCode.getEnumInstance(operationCode);
@@ -656,7 +679,7 @@ public class Filters {
     }
     return handler.changeUri(propertyUriToChange);
   }
-
+  
   public static interface FilterPropertyChangeHandler {
 
     boolean supports(URI propertyUri);
@@ -670,6 +693,24 @@ public class Filters {
 
     @Override
     public final boolean supports(URI propertyUri) {
+      return true;
+    }
+
+  }
+  
+  public static interface FilterExpressionHandler {
+
+    boolean supports(FilterField FilterField);
+
+    Expression createExpression(FilterField filterField);
+
+  }
+
+  public static abstract class FilterExpressionHandlerBase
+      implements FilterExpressionHandler {
+
+    @Override
+    public final boolean supports(FilterField filterField) {
       return true;
     }
 
