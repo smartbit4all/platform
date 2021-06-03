@@ -393,14 +393,16 @@ public class DynamicFilterViewModelImpl extends ObjectEditingImpl
     filter.setValue1(createFilterOperandValueFromValue(model.getValue1()));
     filter.setValue2(createFilterOperandValueFromValue(model.getValue2()));
     filter.setValue3(createFilterOperandValueFromValue(model.getValue3()));
-    filter.setSelectedValues(extractSelectedValueURIs(model));
+    if (model.getSelectedValues().isEmpty() && model.getSelectedValue() != null) {
+      List<URI> selectedUri = Collections.singletonList(model.getSelectedValue().getObjectUri());
+      filter.setSelectedValues(selectedUri);
+    } else {
+      filter.setSelectedValues(extractSelectedValueURIs(model));
+    }
     return filter;
   }
 
   private List<URI> extractSelectedValueURIs(FilterFieldModel model) {
-    if (model.getSelectedValues() == null) {
-      return Collections.emptyList();
-    }
     return model.getSelectedValues().stream()
         .map(v -> v.getObjectUri())
         .collect(Collectors.toList());
