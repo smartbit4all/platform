@@ -149,7 +149,7 @@ public class Filters {
   public Expression expression(FilterGroup filterGroup) {
     return expression(filterGroup, null);
   }
-    
+
   public Expression expression(FilterGroup filterGroup,
       Collection<? extends FilterExpressionHandler> filterExceptionChangeHandlers) {
     if (filterGroup == null || ((filterGroup.getFilterFields() == null
@@ -161,8 +161,8 @@ public class Filters {
     // one by one. The root group is not compiled for bracket. If it has more sub groups then they
     // will be brackets at all.
     ExpressionClause starterClause =
-        filterGroup.getType() == FilterGroupType.AND ? Expression.createAndClause()
-            : Expression.createOrClause();
+        filterGroup.getType() == FilterGroupType.OR ? Expression.createOrClause()
+            : Expression.createAndClause();
     recurseGroups(filterGroup, starterClause, filterExceptionChangeHandlers);
 
     return starterClause.expressions().isEmpty() ? null : starterClause;
@@ -170,7 +170,7 @@ public class Filters {
 
   /**
    * @param filterGroup
-   * @param filterExceptionChangeHandlers 
+   * @param filterExceptionChangeHandlers
    * @param groupStarterClause
    */
   private final void recurseGroups(FilterGroup filterGroup, ExpressionClause groupClause,
@@ -180,8 +180,8 @@ public class Filters {
         : filterGroup.getFilterGroups();
     for (FilterGroup subGroup : groups) {
       ExpressionClause subGroupClause =
-          subGroup.getType() == FilterGroupType.AND ? Expression.createAndClause()
-              : Expression.createOrClause();
+          subGroup.getType() == FilterGroupType.OR ? Expression.createOrClause()
+              : Expression.createAndClause();
       recurseGroups(subGroup, subGroupClause, filterExceptionChangeHandlers);
       if (!subGroupClause.expressions().isEmpty()) {
         groupClause.add(subGroupClause.BRACKET());
@@ -204,19 +204,19 @@ public class Filters {
   public Expression expressionOfField(FilterField filterField) {
     return expressionOfField(filterField, null);
   }
-  
+
   public Expression expressionOfField(FilterField filterField,
       Collection<? extends FilterExpressionHandler> filterExceptionChangeHandlers) {
-    
-    if(filterExceptionChangeHandlers != null && !filterExceptionChangeHandlers.isEmpty()) {
+
+    if (filterExceptionChangeHandlers != null && !filterExceptionChangeHandlers.isEmpty()) {
       FilterExpressionHandler changeHandler = filterExceptionChangeHandlers.stream()
-      .filter(h -> h.supports(filterField))
-      .findFirst().orElse(null);
-      if(changeHandler != null) {
+          .filter(h -> h.supports(filterField))
+          .findFirst().orElse(null);
+      if (changeHandler != null) {
         return changeHandler.createExpression(filterField);
       }
     }
-    
+
     Expression expressionOfField = null;
     String operationCode = filterField.getOperationCode();
     OperationCode opertaionCodeEnum = OperationCode.getEnumInstance(operationCode);
@@ -275,7 +275,7 @@ public class Filters {
       Expression expressionOfDetail = originalFactory.apply(filterField);
       if (expressionOfDetail != null) {
         EntityDefinition masterEntityDef = getEntityDef(filterField.getPropertyUri2());
-        // TODO Use a master reference path uri and use EntityManager.getJoinPath(URI). 
+        // TODO Use a master reference path uri and use EntityManager.getJoinPath(URI).
         Property<?> fkProp = getProperty(filterField.getPropertyUri3());
         if (fkProp instanceof PropertyRef<?>) {
           expressionOfField =
@@ -628,7 +628,7 @@ public class Filters {
     }
     return true;
   }
-  
+
   public static FilterGroup changeFilterProperties(FilterGroup filterGroup,
       ArrayList<? extends FilterPropertyChangeHandler> propertyChangeHandlers) {
     if (propertyChangeHandlers == null || propertyChangeHandlers.isEmpty()) {
@@ -679,7 +679,7 @@ public class Filters {
     }
     return handler.changeUri(propertyUriToChange);
   }
-  
+
   public static interface FilterPropertyChangeHandler {
 
     boolean supports(URI propertyUri);
@@ -697,7 +697,7 @@ public class Filters {
     }
 
   }
-  
+
   public static interface FilterExpressionHandler {
 
     boolean supports(FilterField FilterField);
