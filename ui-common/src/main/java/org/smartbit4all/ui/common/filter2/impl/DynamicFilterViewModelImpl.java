@@ -136,7 +136,8 @@ public class DynamicFilterViewModelImpl extends ObjectEditingImpl
     FilterGroupSelectorModel groupSelector = new FilterGroupSelectorModel();
     groupSelector.setLabelCode(groupMeta.getLabelCode());
     groupSelector.setIconCode(groupMeta.getIconCode());
-    groupSelector.setGroupType(groupMeta.getType());
+    groupSelector
+        .setGroupType(groupMeta.getType() == null ? FilterGroupType.AND : groupMeta.getType());
     groupSelector.setVisible(Boolean.TRUE);
     return groupSelector;
   }
