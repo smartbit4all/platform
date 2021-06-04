@@ -675,36 +675,46 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
   public List<SQLBindValueLiteral> append(ExpressionIn<?> expression) {
     List<SQLBindValueLiteral> result = new ArrayList<>();
     separate();
-
-    // If we have a property then the values must match it's type. Else if have a value here then
-    // the rest of the values must match with it.
-    JDBCDataConverter<?, ?> converter;
-    if (expression.getOperand() instanceof OperandProperty<?>) {
-      converter = ((OperandProperty<?>) expression.getOperand()).property().jdbcConverter();
-    } else {
-      converter = ((OperandLiteral<?>) expression.getOperand()).typeHandler();
-    }
-
-    append(result, expression.getOperand());
-
-    separate();
-    if (expression.isNegate()) {
-      b.append(SQLConstant.NOT);
-      separate();
-    }
-    b.append(SQLConstant.IN);
-    separate();
-
-    b.append(StringConstant.LEFT_PARENTHESIS);
-    for (Object value : expression.values()) {
-      if (!result.isEmpty()) {
-        b.append(StringConstant.COMMA);
+    
+    if(!expression.values().isEmpty()) {
+    
+      // If we have a property then the values must match it's type. Else if have a value here then
+      // the rest of the values must match with it.
+      JDBCDataConverter<?, ?> converter;
+      if (expression.getOperand() instanceof OperandProperty<?>) {
+        converter = ((OperandProperty<?>) expression.getOperand()).property().jdbcConverter();
+      } else {
+        converter = ((OperandLiteral<?>) expression.getOperand()).typeHandler();
       }
-      // Here we creates the literal operands. We need them to bind the values.
-      result.add(appendLiteral(new OperandLiteral(value, converter)));
+  
+      append(result, expression.getOperand());
+  
+      separate();
+      if (expression.isNegate()) {
+        b.append(SQLConstant.NOT);
+        separate();
+      }
+      b.append(SQLConstant.IN);
+      separate();
+  
+      b.append(StringConstant.LEFT_PARENTHESIS);
+      for (Object value : expression.values()) {
+        if (!result.isEmpty()) {
+          b.append(StringConstant.COMMA);
+        }
+        // Here we creates the literal operands. We need them to bind the values.
+        result.add(appendLiteral(new OperandLiteral(value, converter)));
+      }
+      b.append(StringConstant.RIGHT_PARENTHESIS);
+    } else {
+      if (expression.isNegate()) {
+        b.append(SQLConstant.NOT);
+        separate();
+      }
+      b.append(StringConstant.LEFT_PARENTHESIS);
+      b.append("0 = 1");
+      b.append(StringConstant.RIGHT_PARENTHESIS);
     }
-    b.append(StringConstant.RIGHT_PARENTHESIS);
-
     return result;
   }
 
@@ -757,9 +767,9 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
     separate();
 
     if (expression.evaluate()) {
-      b.append(SQLConstant.TRUE);
+      b.append("1 = 1");
     } else {
-      b.append(SQLConstant.FALSE);
+      b.append("0 = 1");
     }
   }
 
