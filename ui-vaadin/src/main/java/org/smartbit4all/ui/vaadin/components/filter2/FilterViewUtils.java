@@ -123,15 +123,23 @@ class FilterViewUtils {
           break;
       }
       if (isDateTime) {
-        String start = startDate == null ? "" : LocalDateTime.of(startDate, startTime).toString();
-        String end = endDate == null ? "" : LocalDateTime.of(endDate, endTime).toString();
-        filterField.setValue(valuePath + "1", DateConverter.PREFIX_DATETIME + start);
-        filterField.setValue(valuePath + "2", DateConverter.PREFIX_DATETIME + end);
+        if (startDate != null) {
+          String start = LocalDateTime.of(startDate, startTime).toString();
+          filterField.setValue(valuePath + "1", DateConverter.PREFIX_DATETIME + start);
+        }
+        if (endDate != null) {
+          String end = LocalDateTime.of(endDate, endTime).toString();
+          filterField.setValue(valuePath + "2", DateConverter.PREFIX_DATETIME + end);
+        }
       } else {
-        String start = startDate == null ? "" : startDate.toString();
-        String end = endDate == null ? "" : endDate.toString();
-        filterField.setValue(valuePath + "1", DateConverter.PREFIX_DATE + start);
-        filterField.setValue(valuePath + "2", DateConverter.PREFIX_DATE + end);
+        if (startDate != null) {
+          String start = startDate.toString();
+          filterField.setValue(valuePath + "1", DateConverter.PREFIX_DATE + start);
+        }
+        if (endDate != null) {
+          String end = endDate.toString();
+          filterField.setValue(valuePath + "2", DateConverter.PREFIX_DATE + end);
+        }
       }
     });
     return listener;

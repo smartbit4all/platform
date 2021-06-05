@@ -12,7 +12,7 @@ public class LocalDateTime2StringConverter implements Converter<LocalDateTime, S
   @Override
   public Result<String> convertToModel(LocalDateTime datetime, ValueContext context) {
     if (datetime == null) {
-      return null;
+      return Result.ok(null);
     }
     return Result.ok(DateConverter.PREFIX_DATETIME + datetime.toString());
   }

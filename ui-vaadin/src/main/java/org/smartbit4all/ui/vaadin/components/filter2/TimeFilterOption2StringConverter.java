@@ -12,7 +12,7 @@ public class TimeFilterOption2StringConverter implements Converter<TimeFilterOpt
   @Override
   public Result<String> convertToModel(TimeFilterOption option, ValueContext context) {
     if (option == null) {
-      return null;
+      return Result.ok(null);
     }
     return Result.ok(DateConverter.PREFIX_STRING + option.toString());
   }
