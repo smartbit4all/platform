@@ -35,8 +35,9 @@ public class DynamicFilterView {
     filterSelectorLayout = new VerticalLayout();
     filterSelectorLayout.addClassName("filterselector-layout");
     // TODO check at add/remove selector!
-    filterSelectorHolder.add(filterSelectorLayout);
-
+    if (filterSelectorHolder != null) {
+      filterSelectorHolder.add(filterSelectorLayout);
+    }
     dynamicFilterModel.onCollectionObjectChange(null, "selectors", this::onGroupSelectorChange);
     dynamicFilterModel.onReferencedObjectChange(null, "root", this::onRootChange);
   }

@@ -92,10 +92,10 @@ public class FilterFieldView extends FlexLayout implements DragSource<FilterFiel
     filterField.onPropertyChange(path, "draggable", this::draggableChange);
     filterField.onPropertyChange(path, "closeable", this::closeableChange);
     filterField.onPropertyChange(path, "enabled", this::enabledChange);
-    filterField.onReferencedObjectChange(path, "label", this::labelChange);
     filterField.onCollectionObjectChange(path, "operations", this::onOperationsChange);
     filterField.onPropertyChange(PathUtility.concatPath(path, "selectedOperation"), "filterView",
         this::operationViewChange);
+    filterField.onReferencedObjectChange(path, "label", this::labelChange);
     VaadinBinders.bind(lblOperation, filterField,
         PathUtility.concatPath(path, "selectedOperation/labelCode"),
         s -> getTranslation((String) s));

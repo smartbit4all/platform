@@ -18,10 +18,10 @@ public class FilterOperationDateTimeComboBoxPickerView extends FilterOperationDa
     comboTimeFilter = FilterViewUtils.createTimeFilterOptionCombo(this);
     addComponentAsFirst(comboTimeFilter);
 
-    comboBinder =
-        FilterViewUtils.bindTimeFilterOptionCombo(comboTimeFilter, filterField, path, 3);
     comboReg = FilterViewUtils.handleTimeFilterOptionComboChange(comboTimeFilter, filterField,
         path, true);
+    comboBinder =
+        FilterViewUtils.bindTimeFilterOptionCombo(comboTimeFilter, filterField, path, 3);
   }
 
   @Override

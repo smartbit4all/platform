@@ -79,6 +79,10 @@ public class DynamicFilterViewModelImpl extends ObjectEditingImpl
     return (DynamicFilterModel) ref.getObject();
   }
 
+  public DynamicFilterModel getWrappedModel() {
+    return dynamicFilterModel;
+  }
+
   @Override
   public void initModel(String uri) {
     this.filterConfigUri = uri;
@@ -367,16 +371,12 @@ public class DynamicFilterViewModelImpl extends ObjectEditingImpl
     group.setName(model.getLabel() == null ? null : model.getLabel().getLabelCode());
     group.setType(model.getGroupType());
     group.setIsNegated(model.getNegated());
-    if (model.getGroups() != null) {
-      group.setFilterGroups(model.getGroups().stream()
-          .map(this::createFilterGroupByModel)
-          .collect(Collectors.toList()));
-    }
-    if (model.getFilters() != null) {
-      group.setFilterFields(model.getFilters().stream()
-          .map(this::createFilterFieldByModel)
-          .collect(Collectors.toList()));
-    }
+    group.setFilterGroups(model.getGroups().stream()
+        .map(this::createFilterGroupByModel)
+        .collect(Collectors.toList()));
+    group.setFilterFields(model.getFilters().stream()
+        .map(this::createFilterFieldByModel)
+        .collect(Collectors.toList()));
     return group;
   }
 
@@ -415,10 +415,10 @@ public class DynamicFilterViewModelImpl extends ObjectEditingImpl
     }
     FilterOperandValue result = checkType(PREFIX_STRING, value);
     if (result == null) {
-      checkType(DateConverter.PREFIX_DATE, value);
+      result = checkType(DateConverter.PREFIX_DATE, value);
     }
     if (result == null) {
-      checkType(DateConverter.PREFIX_DATETIME, value);
+      result = checkType(DateConverter.PREFIX_DATETIME, value);
     }
     if (result == null) {
       result = new FilterOperandValue()

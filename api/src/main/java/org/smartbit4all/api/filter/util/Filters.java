@@ -417,6 +417,7 @@ public class Filters {
         startDate = today.minusYears(5);
         endDate = today;
         endTime = now;
+        break;
       case OTHER:
       default:
         return createDateIntervalClause(filterField);
