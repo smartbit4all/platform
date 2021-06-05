@@ -8,19 +8,19 @@ import com.vaadin.flow.shared.Registration;
 
 public class FilterOperationDateTimeComboBoxPickerView extends FilterOperationDateTimeIntervalView {
 
-  private ComboBox<TimeFilterOption> cbTimeFilterOption;
+  private ComboBox<TimeFilterOption> comboTimeFilter;
   private VaadinHasValueBinder<TimeFilterOption, String> comboBinder;
   private Registration comboReg;
 
   public FilterOperationDateTimeComboBoxPickerView(ObservableObject filterField, String path) {
     super(filterField, path);
     addClassName("dynamic-filter-date");
-    cbTimeFilterOption = FilterViewUtils.createTimeFilterOptionCombo(this);
-    addComponentAsFirst(cbTimeFilterOption);
+    comboTimeFilter = FilterViewUtils.createTimeFilterOptionCombo(this);
+    addComponentAsFirst(comboTimeFilter);
 
     comboBinder =
-        FilterViewUtils.bindTimeFilterOptionCombo(cbTimeFilterOption, filterField, path, 3);
-    comboReg = FilterViewUtils.handleTimeFilterOptionComboChange(cbTimeFilterOption, filterField,
+        FilterViewUtils.bindTimeFilterOptionCombo(comboTimeFilter, filterField, path, 3);
+    comboReg = FilterViewUtils.handleTimeFilterOptionComboChange(comboTimeFilter, filterField,
         path, true);
   }
 
@@ -36,4 +36,11 @@ public class FilterOperationDateTimeComboBoxPickerView extends FilterOperationDa
       comboReg = null;
     }
   }
+
+  @Override
+  public void setFilterEnabled(boolean enabled) {
+    super.setFilterEnabled(enabled);
+    comboTimeFilter.setEnabled(enabled);
+  }
+
 }

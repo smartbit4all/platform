@@ -79,6 +79,9 @@ components:
           type: string
         value3:
           type: string
+        enabled:
+          type: boolean
+          default: true
     FilterFieldSelectorModel:
       type: object
       required:
@@ -148,6 +151,9 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/FilterFieldModel'
+        enabled:
+          type: boolean
+          default: true
     FilterGroupSelectorModel:
       type: object
       required:

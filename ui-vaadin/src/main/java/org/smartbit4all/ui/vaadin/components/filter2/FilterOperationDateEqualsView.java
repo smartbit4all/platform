@@ -45,4 +45,9 @@ public class FilterOperationDateEqualsView extends FilterOperationView {
     date.setPlaceholder(placeHolderText);
   }
 
+  @Override
+  public void setFilterEnabled(boolean enabled) {
+    date.setEnabled(enabled);
+  }
+
 }

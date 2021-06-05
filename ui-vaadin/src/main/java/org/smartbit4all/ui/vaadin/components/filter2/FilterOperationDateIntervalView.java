@@ -53,4 +53,11 @@ public class FilterOperationDateIntervalView extends FilterOperationView {
       endDateBinder = null;
     }
   }
+
+  @Override
+  public void setFilterEnabled(boolean enabled) {
+    beginDate.setEnabled(enabled);
+    endDate.setEnabled(enabled);
+  }
+
 }

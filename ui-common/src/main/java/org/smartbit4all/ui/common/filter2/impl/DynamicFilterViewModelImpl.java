@@ -441,5 +441,18 @@ public class DynamicFilterViewModelImpl extends ObjectEditingImpl
     return s.substring(0, s.length() - 1);
   }
 
+  public void setEnabled(boolean enabled) {
+    dynamicFilterModel.getSelectors().stream()
+        .flatMap(g -> g.getFilters().stream())
+        .forEach(s -> s.setEnabled(enabled));
+    setFilterGroupEnabled(dynamicFilterModel.getRoot(), enabled);
+    dynamicFilterModelObservable.notifyListeners();
 
+  }
+
+  private void setFilterGroupEnabled(FilterGroupModel filterGroup, boolean enabled) {
+    filterGroup.setEnabled(enabled);
+    filterGroup.getFilters().stream().forEach(f -> f.setEnabled(enabled));
+    filterGroup.getGroups().stream().forEach(g -> setFilterGroupEnabled(g, enabled));
+  }
 }

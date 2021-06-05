@@ -59,5 +59,9 @@ public class FilterOperationComboBoxView extends FilterOperationView {
     comboBox.setPlaceholder(placeHolderText);
   }
 
+  @Override
+  public void setFilterEnabled(boolean enabled) {
+    comboBox.setEnabled(enabled);
+  }
 
 }

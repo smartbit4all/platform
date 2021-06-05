@@ -47,4 +47,9 @@ public class FilterOperationTxtEqualsView extends FilterOperationView {
     textField.setPlaceholder(placeHolderText);
   }
 
+  @Override
+  public void setFilterEnabled(boolean enabled) {
+    textField.setEnabled(enabled);
+  }
+
 }

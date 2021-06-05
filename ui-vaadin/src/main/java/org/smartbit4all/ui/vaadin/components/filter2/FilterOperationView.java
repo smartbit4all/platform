@@ -31,4 +31,5 @@ abstract class FilterOperationView extends FlexLayout {
 
   public abstract void unbind();
 
+  public abstract void setFilterEnabled(boolean enabled);
 }

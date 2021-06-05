@@ -481,4 +481,10 @@ public class MultiSelectPopUp<T> extends CustomField<Set<T>> implements HasDataP
     return selectedItems;
   }
 
+  @Override
+  public void setEnabled(boolean enabled) {
+    super.setEnabled(enabled);
+    displayField.setEnabled(enabled);
+    btnClear.setEnabled(enabled);
+  }
 }

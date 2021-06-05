@@ -56,6 +56,9 @@ public class FilterGroupModel   {
   @Valid
   private List<FilterFieldModel> filters = new ArrayList<>();
 
+  @JsonProperty("enabled")
+  private Boolean enabled = true;
+
   public FilterGroupModel id(String id) {
     this.id = id;
     return this;
@@ -313,6 +316,26 @@ public class FilterGroupModel   {
     this.filters = filters;
   }
 
+  public FilterGroupModel enabled(Boolean enabled) {
+    this.enabled = enabled;
+    return this;
+  }
+
+  /**
+   * Get enabled
+   * @return enabled
+  */
+  @ApiModelProperty(value = "")
+
+
+  public Boolean getEnabled() {
+    return enabled;
+  }
+
+  public void setEnabled(Boolean enabled) {
+    this.enabled = enabled;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -334,12 +357,13 @@ public class FilterGroupModel   {
         Objects.equals(this.groupTypeChangeEnabled, filterGroupModel.groupTypeChangeEnabled) &&
         Objects.equals(this.negated, filterGroupModel.negated) &&
         Objects.equals(this.groups, filterGroupModel.groups) &&
-        Objects.equals(this.filters, filterGroupModel.filters);
+        Objects.equals(this.filters, filterGroupModel.filters) &&
+        Objects.equals(this.enabled, filterGroupModel.enabled);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, groupType, label, closeable, root, visible, active, childGroupAllowed, groupTypeChangeEnabled, negated, groups, filters);
+    return Objects.hash(id, groupType, label, closeable, root, visible, active, childGroupAllowed, groupTypeChangeEnabled, negated, groups, filters, enabled);
   }
 
   @Override
@@ -359,6 +383,7 @@ public class FilterGroupModel   {
     sb.append("    negated: ").append(toIndentedString(negated)).append("\n");
     sb.append("    groups: ").append(toIndentedString(groups)).append("\n");
     sb.append("    filters: ").append(toIndentedString(filters)).append("\n");
+    sb.append("    enabled: ").append(toIndentedString(enabled)).append("\n");
     sb.append("}");
     return sb.toString();
   }

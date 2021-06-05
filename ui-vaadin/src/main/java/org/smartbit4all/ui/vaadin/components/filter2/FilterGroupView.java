@@ -57,10 +57,22 @@ public class FilterGroupView extends FlexLayout implements DropTarget<FlexLayout
   private final Map<String, FilterGroupView> filterGroups = new HashMap<>();
   private Registration groupClickListener;
 
+  private Boolean enabled;
+
+  private Boolean closeable;
+
+  private Boolean groupTypeChangeEnabled;
+
+  private Boolean childGroupAllowed;
+
   public FilterGroupView(ObjectEditing viewModel, ObservableObject filterGroup, String path) {
     this.viewModel = viewModel;
     this.filterGroup = filterGroup;
     this.path = path;
+    this.enabled = true;
+    this.closeable = true;
+    this.groupTypeChangeEnabled = true;
+    this.childGroupAllowed = true;
     createUI();
   }
 
@@ -98,6 +110,7 @@ public class FilterGroupView extends FlexLayout implements DropTarget<FlexLayout
     filterGroup.onPropertyChange(path, "childGroupAllowed", this::onChildGroupAllowedChange);
     filterGroup.onPropertyChange(path, "groupType", this::onGroupType);
     filterGroup.onPropertyChange(path, "groupTypeChangeEnabled", this::onGroupTypeChangeEnabled);
+    filterGroup.onPropertyChange(path, "enabled", this::onEnabled);
     filterGroup.onPropertyChange(path, "closeable", this::onCloseable);
     filterGroup.onPropertyChange(path, "visible", this::onVisible);
     filterGroup.onPropertyChange(path, "active", this::onActive);
@@ -135,22 +148,8 @@ public class FilterGroupView extends FlexLayout implements DropTarget<FlexLayout
   }
 
   private void onChildGroupAllowedChange(PropertyChange change) {
-    Boolean childGroupAllowed = (Boolean) change.getNewValue();
-    if (Boolean.TRUE.equals(childGroupAllowed)) {
-      addClassName("child-group");
-      addToLayout(ctrlButtonsLayout, btnAddChildGroup);
-      if (groupClickListener == null) {
-        groupClickListener = addClickListener(groupClickListener());
-      }
-      Css.stopClickEventPropagation(this);
-    } else {
-      if (groupClickListener != null) {
-        groupClickListener.remove();
-        groupClickListener = null;
-      }
-      removeClassName("child-group");
-      removeFromLayout(ctrlButtonsLayout, btnAddChildGroup);
-    }
+    childGroupAllowed = (Boolean) change.getNewValue();
+    refreshButtons();
   }
 
   private void addToLayout(FlexLayout layout, Component... comps) {
@@ -192,25 +191,57 @@ public class FilterGroupView extends FlexLayout implements DropTarget<FlexLayout
   private void onGroupType(PropertyChange change) {
     FilterGroupType groupType = (FilterGroupType) change.getNewValue();
     btnGroupType.setText(groupType == null ? "" : groupType.getValue());
+    refreshButtons();
   }
 
   private void onGroupTypeChangeEnabled(PropertyChange change) {
-    Boolean groupTypeChangeEnabled = (Boolean) change.getNewValue();
+    groupTypeChangeEnabled = (Boolean) change.getNewValue();
+    refreshButtons();
+  }
+
+  private void onCloseable(PropertyChange change) {
+    closeable = (Boolean) change.getNewValue();
+    refreshButtons();
+  }
+
+  private void onEnabled(PropertyChange change) {
+    enabled = (Boolean) change.getNewValue();
+    refreshButtons();
+  }
+
+  private void refreshButtons() {
+    // close button
+    if (Boolean.TRUE.equals(closeable)) {
+      btnRemoveGroup.setEnabled(enabled);
+      addToLayout(ctrlButtonsLayout, btnRemoveGroup);
+    } else {
+      removeFromLayout(ctrlButtonsLayout, btnRemoveGroup);
+    }
+    // group type change button
     if (Boolean.TRUE.equals(groupTypeChangeEnabled)) {
+      btnGroupType.setEnabled(enabled);
       if (Layouts.addToLayout(buttonsLayout, 0, btnGroupType)) {
         sanitizeLayouts();
       }
     } else {
       removeFromLayout(buttonsLayout, btnGroupType);
     }
-  }
-
-  private void onCloseable(PropertyChange change) {
-    Boolean closeable = (Boolean) change.getNewValue();
-    if (Boolean.TRUE.equals(closeable)) {
-      addToLayout(ctrlButtonsLayout, btnRemoveGroup);
+    // add child group button
+    if (Boolean.TRUE.equals(childGroupAllowed)) {
+      btnAddChildGroup.setEnabled(enabled);
+      addClassName("child-group");
+      addToLayout(ctrlButtonsLayout, btnAddChildGroup);
+      if (groupClickListener == null) {
+        groupClickListener = addClickListener(groupClickListener());
+      }
+      Css.stopClickEventPropagation(this);
     } else {
-      removeFromLayout(ctrlButtonsLayout, btnRemoveGroup);
+      if (groupClickListener != null) {
+        groupClickListener.remove();
+        groupClickListener = null;
+      }
+      removeClassName("child-group");
+      removeFromLayout(ctrlButtonsLayout, btnAddChildGroup);
     }
   }
 

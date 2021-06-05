@@ -56,6 +56,9 @@ public class FilterFieldModel   {
   @JsonProperty("value3")
   private String value3;
 
+  @JsonProperty("enabled")
+  private Boolean enabled = true;
+
   public FilterFieldModel selectorId(String selectorId) {
     this.selectorId = selectorId;
     return this;
@@ -320,6 +323,26 @@ public class FilterFieldModel   {
     this.value3 = value3;
   }
 
+  public FilterFieldModel enabled(Boolean enabled) {
+    this.enabled = enabled;
+    return this;
+  }
+
+  /**
+   * Get enabled
+   * @return enabled
+  */
+  @ApiModelProperty(value = "")
+
+
+  public Boolean getEnabled() {
+    return enabled;
+  }
+
+  public void setEnabled(Boolean enabled) {
+    this.enabled = enabled;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -341,12 +364,13 @@ public class FilterFieldModel   {
         Objects.equals(this.selectedValue, filterFieldModel.selectedValue) &&
         Objects.equals(this.value1, filterFieldModel.value1) &&
         Objects.equals(this.value2, filterFieldModel.value2) &&
-        Objects.equals(this.value3, filterFieldModel.value3);
+        Objects.equals(this.value3, filterFieldModel.value3) &&
+        Objects.equals(this.enabled, filterFieldModel.enabled);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(selectorId, label, closeable, draggable, selectedOperation, operations, possibleValues, selectedValues, selectedValue, value1, value2, value3);
+    return Objects.hash(selectorId, label, closeable, draggable, selectedOperation, operations, possibleValues, selectedValues, selectedValue, value1, value2, value3, enabled);
   }
 
   @Override
@@ -366,6 +390,7 @@ public class FilterFieldModel   {
     sb.append("    value1: ").append(toIndentedString(value1)).append("\n");
     sb.append("    value2: ").append(toIndentedString(value2)).append("\n");
     sb.append("    value3: ").append(toIndentedString(value3)).append("\n");
+    sb.append("    enabled: ").append(toIndentedString(enabled)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -233,7 +233,7 @@ public class Filters {
   private Expression createTxtLikeClause(FilterField filterField) {
     Expression expressionOfField = null;
     FilterOperandValue filterOperandValue = filterField.getValue1();
-    String value = filterOperandValue.getValue();
+    String value = filterOperandValue == null ? null : filterOperandValue.getValue();
     if (value != null && !value.isEmpty()) {
       value = "%" + value + "%";
       Class<?> type = getValueType(filterOperandValue);
@@ -246,7 +246,7 @@ public class Filters {
   private Expression createTxtLikeMinClause(FilterField filterField) {
     Expression expressionOfField = null;
     FilterOperandValue filterOperandValue = filterField.getValue1();
-    String value = filterOperandValue.getValue();
+    String value = filterOperandValue == null ? null : filterOperandValue.getValue();
     if (value != null && !value.isEmpty() && value.length() >= 3) {
       value = "%" + value + "%";
       Class<?> type = getValueType(filterOperandValue);
@@ -259,7 +259,7 @@ public class Filters {
   private Expression createTxtEqClause(FilterField filterField) {
     Expression expressionOfField = null;
     FilterOperandValue filterOperandValue = filterField.getValue1();
-    String value = filterOperandValue.getValue();
+    String value = filterOperandValue == null ? null : filterOperandValue.getValue();
     if (value != null && !value.isEmpty()) {
       Class<?> type = getValueType(filterOperandValue);
       Property<?> property = getProperty(filterField.getPropertyUri1());

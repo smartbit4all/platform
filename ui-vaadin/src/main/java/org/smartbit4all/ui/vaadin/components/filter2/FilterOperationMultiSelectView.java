@@ -66,4 +66,9 @@ public class FilterOperationMultiSelectView extends FilterOperationView {
     popUp.setPlaceholder(placeHolderText);
   }
 
+  @Override
+  public void setFilterEnabled(boolean enabled) {
+    popUp.setEnabled(enabled);
+  }
+
 }

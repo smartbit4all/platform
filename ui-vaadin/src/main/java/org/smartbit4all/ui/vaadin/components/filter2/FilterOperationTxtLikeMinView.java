@@ -39,6 +39,9 @@ public class FilterOperationTxtLikeMinView extends FilterOperationView {
     textField.setPlaceholder(placeHolderText);
   }
 
-
+  @Override
+  public void setFilterEnabled(boolean enabled) {
+    textField.setEnabled(enabled);
+  }
 
 }

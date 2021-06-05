@@ -43,10 +43,14 @@ public class FilterFieldView extends FlexLayout implements DragSource<FilterFiel
 
   private Map<String, Button> operations = new HashMap<>();
 
+  private boolean filterEnabled;
+  private boolean closeable;
+
   public FilterFieldView(ObjectEditing viewModel, ObservableObject filterField, String path) {
     this.filterField = filterField;
     this.viewModel = viewModel;
     this.path = path;
+    this.filterEnabled = true;
     createUI();
   }
 
@@ -87,6 +91,7 @@ public class FilterFieldView extends FlexLayout implements DragSource<FilterFiel
 
     filterField.onPropertyChange(path, "draggable", this::draggableChange);
     filterField.onPropertyChange(path, "closeable", this::closeableChange);
+    filterField.onPropertyChange(path, "enabled", this::enabledChange);
     filterField.onReferencedObjectChange(path, "label", this::labelChange);
     filterField.onCollectionObjectChange(path, "operations", this::onOperationsChange);
     filterField.onPropertyChange(PathUtility.concatPath(path, "selectedOperation"), "filterView",
@@ -142,15 +147,28 @@ public class FilterFieldView extends FlexLayout implements DragSource<FilterFiel
   }
 
   private void closeableChange(PropertyChange change) {
-    boolean isCloseable = Boolean.TRUE.equals(change.getNewValue());
-    if (isCloseable && !btnClose.isEnabled()) {
+    closeable = Boolean.TRUE.equals(change.getNewValue());
+    refreshCloseButton();
+  }
+
+  private void refreshCloseButton() {
+    boolean effectiveEnabled = closeable && filterEnabled;
+    if (effectiveEnabled && !btnClose.isEnabled()) {
       btnClose.setText("x");
       btnClose.setEnabled(true);
     }
-    if (!isCloseable && btnClose.isEnabled()) {
+    if (!effectiveEnabled && btnClose.isEnabled()) {
       btnClose.setText("");
       btnClose.setEnabled(false);
     }
+  }
+
+  private void enabledChange(PropertyChange change) {
+    filterEnabled = Boolean.TRUE.equals(change.getNewValue());
+    if (operationView != null) {
+      operationView.setEnabled(filterEnabled);
+    }
+    refreshCloseButton();
   }
 
   private void labelChange(ReferencedObjectChange change) {
@@ -206,6 +224,8 @@ public class FilterFieldView extends FlexLayout implements DragSource<FilterFiel
       }
       currentFilterView = filterView;
       row.removeAll();
+      operationView.setEnabled(filterEnabled);
+      Css.stopClickEventPropagation(operationView);
       row.add(operationView);
     }
   }
