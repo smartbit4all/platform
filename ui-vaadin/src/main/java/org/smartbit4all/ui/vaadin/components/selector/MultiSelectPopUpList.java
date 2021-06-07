@@ -20,6 +20,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import org.smartbit4all.core.object.ApiObjectCollection;
+import org.smartbit4all.core.object.ApiObjectRef;
 import org.smartbit4all.ui.vaadin.util.Buttons;
 import org.smartbit4all.ui.vaadin.util.Css;
 import org.smartbit4all.ui.vaadin.util.Css.AlignSelf;
@@ -192,10 +194,12 @@ public class MultiSelectPopUpList<T> extends CustomField<List<T>> implements Has
     grid.addItemClickListener(e -> {
       T item = e.getItem();
       MultiSelect<Grid<T>, T> multiSelect = e.getSource().asMultiSelect();
-      if (multiSelect.isSelected(item)) {
-        multiSelect.deselect(item);
-      } else {
-        multiSelect.select(item);
+      if (item != null) {
+        if (multiSelect.isSelected(item)) {
+          multiSelect.deselect(item);
+        } else {
+          multiSelect.select(item);
+        }
       }
     });
 
@@ -414,10 +418,16 @@ public class MultiSelectPopUpList<T> extends CustomField<List<T>> implements Has
     return new ArrayList<>(grid.getSelectedItems());
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   protected void setPresentationValue(List<T> newPresentationValue) {
     if (newPresentationValue == null) {
       clear();
+    }
+    if (newPresentationValue instanceof ApiObjectCollection) {
+      newPresentationValue = (List<T>) ((ApiObjectCollection) newPresentationValue).stream()
+          .map(ApiObjectRef::getObject)
+          .collect(Collectors.toList());
     }
     grid.asMultiSelect().setValue(new HashSet<>(newPresentationValue));
     updateSelection();
