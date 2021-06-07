@@ -157,6 +157,7 @@ public class MultiSelectPopUp<T> extends CustomField<Set<T>> implements HasDataP
 
     dialogLayout.add(dialogHeader, grid, dialogButtonLayout);
     dialog.add(dialogLayout);
+    dialog.setResizable(true);
     dialog.setWidth("25rem");
   }
 
@@ -358,7 +359,7 @@ public class MultiSelectPopUp<T> extends CustomField<Set<T>> implements HasDataP
         div.add(String.valueOf(display));
         return div;
       }
-    })).setKey(COL_DISPLAY);
+    })).setAutoWidth(true).setKey(COL_DISPLAY);
     if (filter != null) {
       column.setHeader(filterField);
     }
