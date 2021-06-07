@@ -14,11 +14,11 @@
  ******************************************************************************/
 package org.smartbit4all.ui.vaadin.components.selector;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 import org.smartbit4all.ui.vaadin.util.Buttons;
 import org.smartbit4all.ui.vaadin.util.Css;
@@ -62,7 +62,16 @@ import com.vaadin.flow.function.ValueProvider;
 import com.vaadin.flow.shared.Registration;
 import dev.mett.vaadin.tooltip.Tooltips;
 
-public class MultiSelectPopUp<T> extends CustomField<Set<T>> implements HasDataProvider<T> {
+/**
+ * TODO This is a major hack, since ApiObjectRef doesn't support Set yet (there's no ApiObjectSet,
+ * only ApiObjectCollection, which is a List). When ApiObjectSet will be supported, we will delete
+ * this class and use MultiSelectPopup instead.
+ * 
+ * @author Attila Mate
+ * @since 2021.06.07.
+ * @param <T>
+ */
+public class MultiSelectPopUpList<T> extends CustomField<List<T>> implements HasDataProvider<T> {
 
   private static final long serialVersionUID = 958524394032196451L;
 
@@ -86,10 +95,10 @@ public class MultiSelectPopUp<T> extends CustomField<Set<T>> implements HasDataP
   private boolean tooltipComponentsEnabled = false;
   private boolean tooltipEnabled = true;
 
-  private Set<T> selectedItems = Collections.emptySet();
+  private List<T> selectedItems = Collections.emptyList();
 
-  public MultiSelectPopUp() {
-    super(Collections.emptySet());
+  public MultiSelectPopUpList() {
+    super(Collections.emptyList());
     initOuterComponents();
     initDialogComponents();
     setupComponents();
@@ -246,7 +255,7 @@ public class MultiSelectPopUp<T> extends CustomField<Set<T>> implements HasDataP
   }
 
   protected void updateSelection() {
-    selectedItems = grid.getSelectedItems();
+    selectedItems = new ArrayList<>(grid.getSelectedItems());
     int selectionSize = selectedItems.size();
     if (selectionSize == 0) {
       displayField.clear();
@@ -401,23 +410,23 @@ public class MultiSelectPopUp<T> extends CustomField<Set<T>> implements HasDataP
   }
 
   @Override
-  protected Set<T> generateModelValue() {
-    return new HashSet<>(grid.getSelectedItems());
+  protected List<T> generateModelValue() {
+    return new ArrayList<>(grid.getSelectedItems());
   }
 
   @Override
-  protected void setPresentationValue(Set<T> newPresentationValue) {
+  protected void setPresentationValue(List<T> newPresentationValue) {
     if (newPresentationValue == null) {
       clear();
     }
-    grid.asMultiSelect().setValue(newPresentationValue);
+    grid.asMultiSelect().setValue(new HashSet<>(newPresentationValue));
     updateSelection();
   }
 
   @Override
   public void clear() {
     super.clear();
-    selectedItems = Collections.emptySet();
+    selectedItems = Collections.emptyList();
     buttonBox.setVisible(false);
     grid.asMultiSelect().deselectAll();
     displayField.clear();
@@ -472,7 +481,7 @@ public class MultiSelectPopUp<T> extends CustomField<Set<T>> implements HasDataP
   }
 
   @Override
-  public Set<T> getValue() {
+  public List<T> getValue() {
     return selectedItems;
   }
 

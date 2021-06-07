@@ -3,6 +3,7 @@ package org.smartbit4all.ui.vaadin.components.binder;
 import java.util.Objects;
 import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.ui.vaadin.components.selector.MultiSelectPopUp;
+import org.smartbit4all.ui.vaadin.components.selector.MultiSelectPopUpList;
 import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.grid.Grid;
@@ -59,6 +60,8 @@ public class VaadinHasItemsBinder<T> extends VaadinCollectionBinder<T> {
       ((MultiSelectListBox<T>) list).getDataProvider().refreshAll();
     } else if (list instanceof MultiSelectPopUp) {
       ((MultiSelectPopUp<T>) list).getDataProvider().refreshAll();
+    } else if (list instanceof MultiSelectPopUpList) {
+      ((MultiSelectPopUpList<T>) list).getDataProvider().refreshAll();
     } else if (list instanceof RadioButtonGroup) {
       ((RadioButtonGroup<T>) list).getDataProvider().refreshAll();
     } else if (list instanceof Select) {

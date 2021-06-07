@@ -14,25 +14,25 @@
  ******************************************************************************/
 package org.smartbit4all.ui.vaadin.components.filter2;
 
+import java.util.List;
 import org.smartbit4all.api.value.bean.Value;
 import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.ui.vaadin.components.binder.VaadinBinders;
 import org.smartbit4all.ui.vaadin.components.binder.VaadinHasItemsBinder;
-import org.smartbit4all.ui.vaadin.components.binder.VaadinMultiSelectBinder;
-import org.smartbit4all.ui.vaadin.components.selector.MultiSelectPopUp;
+import org.smartbit4all.ui.vaadin.components.binder.VaadinHasValueBinder;
+import org.smartbit4all.ui.vaadin.components.selector.MultiSelectPopUpList;
 import org.springframework.util.StringUtils;
-import com.vaadin.flow.component.grid.Grid;
 
 public class FilterOperationMultiSelectView extends FilterOperationView {
 
-  private MultiSelectPopUp<Value> popUp;
+  private MultiSelectPopUpList<Value> popUp;
   private VaadinHasItemsBinder<Value> popupBinder;
-  private VaadinMultiSelectBinder<Grid<Value>, Value> selectionBinder;
+  VaadinHasValueBinder<List<Value>, List<Value>> selectionBinder;
 
   public FilterOperationMultiSelectView(ObservableObject filterField, String path) {
     super(filterField, path);
     addClassName("filter-multi");
-    popUp = new MultiSelectPopUp<>();
+    popUp = new MultiSelectPopUpList<>();
     popUp.setRequired(false);
     popUp.setFilter((value, filterValue) -> {
       String displayedValue = value.getDisplayValue();
@@ -44,8 +44,7 @@ public class FilterOperationMultiSelectView extends FilterOperationView {
     add(popUp);
 
     popupBinder = VaadinBinders.bind(popUp, filterField, path, "possibleValues");
-    selectionBinder =
-        VaadinBinders.bindSelection(popUp.asMultiSelect(), filterField, path, "selectedValues");
+    selectionBinder = VaadinBinders.bind(popUp, filterField, path + "/selectedValues");
   }
 
   @Override

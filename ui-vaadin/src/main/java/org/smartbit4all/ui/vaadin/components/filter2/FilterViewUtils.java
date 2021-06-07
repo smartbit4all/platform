@@ -88,6 +88,9 @@ class FilterViewUtils {
       LocalDate startDate;
       LocalDate endDate;
       TimeFilterOption timeFilterOption = combo.getValue();
+      if (timeFilterOption == null) {
+        return;
+      }
       switch (timeFilterOption) {
         case LAST_MONTH:
           startDate = today.with(DAY_OF_MONTH, 1).minus(1, MONTHS);
