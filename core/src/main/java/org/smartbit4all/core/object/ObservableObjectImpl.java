@@ -127,10 +127,6 @@ public final class ObservableObjectImpl implements ObservableObject, EventPublis
       ApiObjectRef pathRef = ref.getValueRefByPath(path);
       if (pathRef != null) {
         Object value = pathRef.getValue(property);
-        if (value instanceof ApiObjectRef || value instanceof ApiObjectCollection) {
-          throw new IllegalArgumentException(
-              "Expected value, found reference/collection at " + path + "." + property);
-        }
         PropertyChange currentChange = new PropertyChange(path, property, null, value);
         try {
           onPropertyChange.accept(currentChange);
