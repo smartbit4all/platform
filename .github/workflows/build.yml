@@ -10,9 +10,17 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout platform
+        uses: actions/checkout@v2
         with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+          path: platform
+          fetch-depth: 0
+      - name: Checkout platform
+        uses: actions/checkout@v2
+        with:
+          repository: smartbit4all/platform-gradle
+          path: platform-gradle
+          fetch-depth: 0
       - name: Set up JDK 11
         uses: actions/setup-java@v1
         with:
@@ -33,4 +41,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./gradlew build sonarqube --info
+        run: ./platform/gradlew build sonarqube --info
