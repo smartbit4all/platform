@@ -455,4 +455,11 @@ public class DynamicFilterViewModelImpl extends ObjectEditingImpl
     filterGroup.getFilters().stream().forEach(f -> f.setEnabled(enabled));
     filterGroup.getGroups().stream().forEach(g -> setFilterGroupEnabled(g, enabled));
   }
+
+  @Override
+  public void clearFilters() {
+    dynamicFilterModel.getRoot().getGroups().clear();
+    dynamicFilterModel.getRoot().getFilters().clear();
+    dynamicFilterModelObservable.notifyListeners();
+  }
 }

@@ -17,5 +17,7 @@ public interface DynamicFilterViewModel extends ObjectEditing {
   void setSelectorGroupVisible(String labelCode, boolean visible);
 
   FilterGroup getRootFilterGroup();
+  
+  void clearFilters();
 
 }
