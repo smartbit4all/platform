@@ -1,23 +1,12 @@
 plugins {
+    id 'org.smartbit4all.platform.gradle.vaadin-module'
     id 'io.spring.dependency-management'
 }
 
-repositories {
-	maven {
-        url "http://maven.vaadin.com/vaadin-addons"
-    }
+smartbit4all {
+  vaadinVersion = "14.4.1"
 }
 
-configurations {
-	developmentOnly
-	runtimeClasspath {
-		extendsFrom developmentOnly
-	}
-}
-
-ext {
-	set('vaadinVersion', "14.4.1")
-}
 
 dependencies {
 	api 'com.vaadin:flow-server'
@@ -31,10 +20,4 @@ dependencies {
 	testImplementation 'com.vaadin:vaadin-testbench'
 	
 	api 'org.springframework.boot:spring-boot-autoconfigure:2.3.5.RELEASE'
-}
-
-dependencyManagement {
-	imports {
-		mavenBom "com.vaadin:vaadin-bom:${vaadinVersion}"
-	}
 }

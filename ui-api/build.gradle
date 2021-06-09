@@ -1,76 +1,22 @@
-import groovy.io.FileType
-import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
-
 plugins {
-    id "org.openapi.generator" version "4.3.1"
+    id "org.smartbit4all.platform.gradle.openapi"
 }
 
 dependencies {
     api project(':core')
     api project(':api-domain')
     api project(':types')
-    // its needed for the openApi spring codegen
-    implementation 'org.openapitools:jackson-databind-nullable:0.2.1'
-    implementation 'io.swagger:swagger-annotations:1.5.22'
-    implementation 'javax.validation:validation-api:2.0.1.Final'
 }
 
-ext {
-    srcGenMainJava = "src-gen/main/java"
-}
-
-sourceSets {
-   generated{
-        java.srcDir srcGenMainJava
-    }
-}
-
-//here we are going to store swagger files
-def descriptorList = []
-
-//iteration by descriptor file root folder and save into descriptorList variable
-def descriptorPath = "$projectDir/src/main/resources/descriptors/".toString() 
-def dir = new File("$descriptorPath")
-dir.eachFileRecurse(FileType.FILES) { file ->
-    if (file.getName().endsWith(".yaml"))
-        descriptorList << file
-}
-
-// Iterate on all descriptor files and generate a task for each one with the nomenclature openApiGenerate + api name
-descriptorList.each {
-    def apiName = it.getName().replace("-api.yaml", "");
-
-    tasks.create("openApiGenerate" + apiName.capitalize(), GenerateTask.class, {
-        generatorName = "spring"
-        inputSpec = "$descriptorPath".toString() + "${apiName}-api.yaml"
-        outputDir = "${projectDir}/${srcGenMainJava}" 
-        modelPackage = "org.smartbit4all.ui.api.".toString() + "${apiName}.model"
-        systemProperties = [
-            models: "", // with this only the model files (the beans) will be generated
-            //apis: ""
-        ]
-        importMappings = [
-          "Value": "org.smartbit4all.api.value.bean.Value",
-          "FilterConfigMode" : "org.smartbit4all.api.filter.bean.FilterConfigMode",
-          "FilterGroupType" : "org.smartbit4all.api.filter.bean.FilterGroupType",
-          "FilterOperation" : "org.smartbit4all.api.filter.bean.FilterOperation"
-        ]
-        configOptions = [
-            dateLibrary: "java8",
-            unhandledException: 'true',
-            hideGenerationTimestamp: 'true',
-            useTags: 'true',
-            sourceFolder: '', // without this the generatum is placed under 'src/main/java'
-            interfaceOnly: 'true'
-        ]
-    })
-}
-
-compileJava {
-//  dependsOn(openApiGenerate)
-    source    += sourceSets.generated.java
-}
-
-task deleteGenFolder(type: Delete) {
-    delete "${srcGenMainJava}"
+smartbit4all {
+  openApi {
+      modelPackagePrefix = "org.smartbit4all.ui.api"
+      modelPackagePostfix = "model"
+      importMappings = [
+        "Value": "org.smartbit4all.api.value.bean.Value",
+        "FilterConfigMode" : "org.smartbit4all.api.filter.bean.FilterConfigMode",
+        "FilterGroupType" : "org.smartbit4all.api.filter.bean.FilterGroupType",
+        "FilterOperation" : "org.smartbit4all.api.filter.bean.FilterOperation"
+      ]
+  }
 }
