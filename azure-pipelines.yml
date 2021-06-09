@@ -19,8 +19,11 @@ pool:
 
 steps:
 - checkout: self
+- checkout: git://develop/platform-gradle@develop
 - task: Gradle@2
   inputs:
+    workingDirectory: 'platform'
+    gradleWrapperFile: 'platform/gradlew'
     gradleOptions: '-Xmx3072m'
     javaHomeOption: 'JDKVersion'
     jdkVersionOption: '1.8'
