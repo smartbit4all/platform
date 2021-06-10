@@ -1,4 +1,4 @@
-package org.smartbit4all.ui.vaadin.util;
+package org.smartbit4all.ui.vaadin.object;
 
 import com.vaadin.flow.component.UI;
 import io.reactivex.rxjava3.functions.Consumer;
@@ -9,11 +9,11 @@ import io.reactivex.rxjava3.functions.Consumer;
  * @author Zoltan Suller
  *
  */
-public class VaaadinPublisherWrapper implements Consumer<Runnable> {
+public class VaadinPublisherWrapper implements Consumer<Runnable> {
 
   private UI ui;
 
-  VaaadinPublisherWrapper(UI ui) {
+  VaadinPublisherWrapper(UI ui) {
     super();
     this.ui = ui;
   }
@@ -28,7 +28,7 @@ public class VaaadinPublisherWrapper implements Consumer<Runnable> {
     }
   }
 
-  public static VaaadinPublisherWrapper create() {
-    return new VaaadinPublisherWrapper(UI.getCurrent());
+  public static VaadinPublisherWrapper create() {
+    return new VaadinPublisherWrapper(UI.getCurrent());
   }
 }
