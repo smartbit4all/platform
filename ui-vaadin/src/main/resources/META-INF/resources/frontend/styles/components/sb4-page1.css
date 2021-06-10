@@ -7,7 +7,7 @@
 .sb4-page1-header {
 	display: flex;
 	background-color: var(--lumo-primary-color);
-    background-image: url(images/docu/hero_bg.png);
+    background-image: url(images/hero_bg.png);
     background-repeat: repeat;
     background-position-y: center;
     height: 280px;
