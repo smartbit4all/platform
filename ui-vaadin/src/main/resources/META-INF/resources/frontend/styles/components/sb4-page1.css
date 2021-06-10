@@ -159,7 +159,7 @@
     
 }
 
-.sb4-page1-card-plus {
+.sb4-page1-card-top {
     background: var(--lumo-base-color);
     color: var(--lumo-primary-text-color);
     width: 60px;
@@ -208,7 +208,7 @@
     margin-right: 20px;
 }
 
-.sb4-page1-card-enter {
+.sb4-page1-card-bottom {
     color: var(--lumo-primary-text-color);
     font-family: Segoe UI;
     font-style: normal;

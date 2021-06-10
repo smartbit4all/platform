@@ -10,38 +10,56 @@ import com.vaadin.flow.component.orderedlayout.FlexLayout;
 
 public class DashboardCard extends FlexLayout {
 
+  private VaadinIcon topIcon;
+  private VaadinIcon bottomIcon;
+
   public DashboardCard(String titleText, String viewName) {
+    this(titleText, viewName, VaadinIcon.PLUS, VaadinIcon.ARROW_RIGHT);
+  }
+
+  public DashboardCard(String titleText, String viewName, VaadinIcon topIcon,
+      VaadinIcon bottomIcon) {
     super();
+    this.topIcon = topIcon;
+    this.bottomIcon = bottomIcon;
 
     addClassName("sb4-page1-card");
-    createPlusButton(viewName);
+    createTopButton(viewName);
     createTitle(titleText);
-    createEnterButton(viewName);
+    createBottomButton(viewName);
   }
 
   public DashboardCard(String titleText,
       ComponentEventListener<ClickEvent<Button>> clickListener) {
-    super();
 
-    addClassName("sb4-page1-card");
-    createPlusButton(clickListener);
-    createTitle(titleText);
-    createEnterButton(clickListener);
   }
 
-  protected void createEnterButton(String viewName) {
+  public DashboardCard(String titleText,
+      ComponentEventListener<ClickEvent<Button>> clickListener, VaadinIcon topIcon,
+      VaadinIcon bottomIcon) {
+    super();
+    this.topIcon = topIcon;
+    this.bottomIcon = bottomIcon;
+
+    addClassName("sb4-page1-card");
+    createTopButton(clickListener);
+    createTitle(titleText);
+    createBottomButton(clickListener);
+  }
+
+  protected void createBottomButton(String viewName) {
     ComponentEventListener<ClickEvent<Button>> clickListener =
         event -> getUI().ifPresent(ui -> Navigation
             .to(viewName)
             .navigate(ui));
-    createEnterButton(clickListener);
+    createBottomButton(clickListener);
   }
 
-  protected void createEnterButton(ComponentEventListener<ClickEvent<Button>> clickListener) {
-    Button enterButton = new Button("Tovább", VaadinIcon.ARROW_RIGHT.create(),
+  protected void createBottomButton(ComponentEventListener<ClickEvent<Button>> clickListener) {
+    Button bottomButton = new Button("Tovább", bottomIcon.create(),
         clickListener);
-    enterButton.addClassName("sb4-page1-card-enter");
-    add(enterButton);
+    bottomButton.addClassName("sb4-page1-card-bottom");
+    add(bottomButton);
   }
 
   protected void createTitle(String titleText) {
@@ -50,19 +68,19 @@ public class DashboardCard extends FlexLayout {
     add(title);
   }
 
-  protected void createPlusButton(String viewName) {
+  protected void createTopButton(String viewName) {
     ComponentEventListener<ClickEvent<Button>> listener =
         event -> getUI().ifPresent(ui -> Navigation
             .to(viewName)
             .navigate(ui));
-    createPlusButton(listener);
+    createTopButton(listener);
   }
 
-  protected void createPlusButton(ComponentEventListener<ClickEvent<Button>> listener) {
-    Button plusButton = new Button();
-    plusButton.setIcon(VaadinIcon.PLUS.create());
-    plusButton.addClassName("sb4-page1-card-plus");
-    plusButton.addClickListener(listener);
-    add(plusButton);
+  protected void createTopButton(ComponentEventListener<ClickEvent<Button>> listener) {
+    Button topButton = new Button();
+    topButton.setIcon(topIcon.create());
+    topButton.addClassName("sb4-page1-card-top");
+    topButton.addClickListener(listener);
+    add(topButton);
   }
 }
