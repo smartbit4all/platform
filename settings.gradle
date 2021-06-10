@@ -15,5 +15,3 @@ include 'sec'
 include 'sec-ms365'
 include 'storage-fs'
 include 'gson'
-
-includeBuild '../platform-gradle'
