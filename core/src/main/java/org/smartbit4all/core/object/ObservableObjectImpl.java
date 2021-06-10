@@ -23,6 +23,8 @@ public final class ObservableObjectImpl implements ObservableObject, EventPublis
   private static final Logger log = LoggerFactory.getLogger(ObservableObjectImpl.class);
 
   ApiObjectRef ref;
+  
+  private Consumer<Runnable> publisherWrapper;
 
   private PublishSubject<PropertyChange> propertyChangePublisher = PublishSubject.create();
   private PublishSubject<ReferenceChange> referenceChangePublisher = PublishSubject.create();
@@ -33,6 +35,18 @@ public final class ObservableObjectImpl implements ObservableObject, EventPublis
       PublishSubject.create();
 
   private void notify(ObjectChange objectChange) {
+    if (publisherWrapper != null) {
+      try {
+        publisherWrapper.accept(() -> notifyAllListneners(objectChange));
+      } catch (Throwable e) {
+        log.error("Unexpected error at event notification", e);
+      }
+    } else {
+      notifyAllListneners(objectChange);
+    }
+  }
+  
+  protected void notifyAllListneners(ObjectChange objectChange) {
     notifyListeners(objectChange.getProperties(), propertyChangePublisher);
     notifyListeners(objectChange.getReferences(), referenceChangePublisher);
     notifyListeners(objectChange.getReferencedObjects(), referencedObjectChangePublisher);
@@ -211,6 +225,9 @@ public final class ObservableObjectImpl implements ObservableObject, EventPublis
     }
     return disposable;
   }
-
-
+  
+  @Override
+  public void setPublisherWrapper(Consumer<Runnable> publisherWrapper) {
+    this.publisherWrapper = publisherWrapper;
+  }
 }

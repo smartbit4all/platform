@@ -114,4 +114,11 @@ public interface ObservableObject extends EventPublisher {
   Disposable onCollectionObjectChange(String path, String collection,
       @NonNull Consumer<? super CollectionObjectChange> onCollectionObjectChange);
 
+  /**
+   * Sets a consumer that can do more before and after the event listeners are called (e.g. It can open a UI thread if it is not on one)
+   * 
+   * @param publisherWrapper
+   */
+  void setPublisherWrapper(Consumer<Runnable> publisherWrapper);
+
 }
