@@ -15,3 +15,8 @@ include 'sec'
 include 'sec-ms365'
 include 'storage-fs'
 include 'gson'
+
+def localSettings = file("local.settings.gradle")
+if (localSettings.exists()) {
+  apply from:localSettings
+}

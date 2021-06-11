@@ -52,3 +52,5 @@ hs_err_pid*
 # Log file
 *.log
 
+local.settings.gradle
+
