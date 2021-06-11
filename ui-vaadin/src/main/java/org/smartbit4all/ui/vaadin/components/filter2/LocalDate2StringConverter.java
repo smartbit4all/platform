@@ -12,7 +12,7 @@ public class LocalDate2StringConverter implements Converter<LocalDate, String> {
   @Override
   public Result<String> convertToModel(LocalDate date, ValueContext context) {
     if (date == null) {
-      return null;
+      return Result.ok(null);
     }
 
     return Result.ok(DateConverter.PREFIX_DATE + date.toString());

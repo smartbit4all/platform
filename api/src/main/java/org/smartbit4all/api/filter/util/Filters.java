@@ -24,6 +24,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -93,14 +94,6 @@ public class Filters {
     LAST_WEEK, THIS_MONTH, LAST_MONTH, YESTERDAY, TODAY, OTHER, LAST_FIVE_YEARS
   }
 
-  public static final String LAST_WEEK = "statistics.filter.time.last_week";
-  public static final String THIS_MONTH = "statistics.filter.time.this_month";
-  public static final String LAST_MONTH = "statistics.filter.time.last_month";
-  public static final String YESTERDAY = "statistics.filter.time.yesterday";
-  public static final String TODAY = "statistics.filter.time.today";
-  public static final String OTHER = "OTHER";
-
-
   private static final Map<OperationCode, Function<FilterField, Expression>> expressionFactoryByOperatationCodes =
       new HashMap<>();
 
@@ -111,7 +104,7 @@ public class Filters {
     expressionFactoryByOperatationCodes.put(DATE_TIME_INTERVAL_CB,
         this::createDateIntervalCbClause);
     expressionFactoryByOperatationCodes.put(DATE_EQ, this::createDateEqClause);
-    expressionFactoryByOperatationCodes.put(DATE_TIME_EQ, this::createDateEqClause);
+    expressionFactoryByOperatationCodes.put(DATE_TIME_EQ, this::createDateTimeEqClause);
     expressionFactoryByOperatationCodes.put(TXT_EQ, this::createTxtEqClause);
     expressionFactoryByOperatationCodes.put(TXT_LIKE, this::createTxtLikeClause);
     expressionFactoryByOperatationCodes.put(TXT_LIKE_MIN, this::createTxtLikeMinClause);
@@ -448,7 +441,35 @@ public class Filters {
         return createEqExpression(property, valueOperand, this::convertToLocalDate);
       }
       if (LocalDateTime.class.equals(propertyType)) {
-        return createEqExpression(property, valueOperand, this::convertToLocalDateTime);
+        // the filter is a date to march, but the queried property is localDateTime.
+        // in this case we need to create a dateTime interval expression for the given day
+        LocalDate filterDate = convertToLocalDate(valueOperand);
+        @SuppressWarnings("unchecked")
+        Property<LocalDateTime> dateTimeProperty = (Property<LocalDateTime>) property;
+        return dateTimeProperty.between(filterDate.atStartOfDay(), filterDate.plusDays(1l).atStartOfDay());
+      }
+    }
+    return null;
+  }
+  
+  private Expression createDateTimeEqClause(FilterField filterField) {
+    Property<?> property =
+        filterField.getPropertyUri1() == null ? null
+            : entityManager.property(filterField.getPropertyUri1());
+
+    if (property != null) {
+      FilterOperandValue valueOperand = filterField.getValue1();
+      Class<?> propertyType = property.type();
+      if (LocalDate.class.equals(propertyType)) {
+        return createEqExpression(property, valueOperand, this::convertToLocalDate);
+      }
+      if (LocalDateTime.class.equals(propertyType)) {
+        LocalDateTime filterDateTime = convertToLocalDateTime(valueOperand);
+        @SuppressWarnings("unchecked")
+        Property<LocalDateTime> dateTimeProperty = (Property<LocalDateTime>) property;
+        LocalDateTime startMin = filterDateTime.truncatedTo(ChronoUnit.MINUTES);
+        LocalDateTime endMin = filterDateTime.plusMinutes(1l).truncatedTo(ChronoUnit.MINUTES);
+        return dateTimeProperty.between(startMin, endMin);
       }
     }
     return null;
@@ -476,7 +497,7 @@ public class Filters {
       Class<?> propertyType = property1.type();
       if (LocalDate.class.equals(propertyType)) {
         // If we have LocaDate in the filter field as values then OK. Else we have to transfer it
-        // to LocaDate because the property itself is LocalDate type.
+        // to LocaDate.
         return createDateIntervalExpression(property1, value1Operand, value2Operand,
             this::convertToLocalDate);
       }
@@ -487,7 +508,7 @@ public class Filters {
     }
     return null;
   }
-
+  
   private <T> Expression createDateIntervalExpression(Property<?> property,
       FilterOperandValue value1Operand, FilterOperandValue value2Operand,
       Function<FilterOperandValue, T> operandConverter) {
