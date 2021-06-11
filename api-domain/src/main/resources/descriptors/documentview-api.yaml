@@ -1,0 +1,59 @@
+openapi: 3.0.1
+info:
+  title: DocumentView API
+  description: DocumentView API
+  termsOfService: ''
+  contact:
+    email: info@it4all.hu
+  version: 1.0.0
+tags:
+  - name: documentview
+    description: documentview
+paths:
+  /nope:
+    post:
+      summary: Placeholder for generation
+      responses:
+        '200':
+          description: nope
+components:
+  schemas:
+    DisplayMode:
+      type: string
+      enum: [IMAGE, TEXT]
+    ImageWithAlt:
+      type: object
+      properties:
+        image:
+          type: BinaryData
+        alt:
+          type: string
+        fileName:
+          type: string
+    DocumentViewProcess:
+      type: object
+      properties:
+        displayMode:
+          $ref: '#/components/schemas/DisplayMode'
+        pageIndex:
+          type: string
+        pageCount:
+          type: integer
+        zoomValue:
+          type: integer
+        text:
+          type: string
+        message:
+          type: string
+        leftButtonEnabled:
+          type: boolean
+        rightButtonEnabled:
+          type: boolean
+        loadingSpinnerDisplayed:
+          type: boolean
+        mainImage:
+          $ref: '#/components/schemas/ImageWithAlt'
+        thumbnails:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImageWithAlt'

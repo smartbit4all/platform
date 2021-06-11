@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.smartbit4all.api.documentview.bean.DisplayMode;
 import org.smartbit4all.types.binarydata.BinaryData;
 
 public class MimeTypeHandlerImage implements MimeTypeHandler {

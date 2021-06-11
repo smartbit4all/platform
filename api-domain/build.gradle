@@ -9,7 +9,10 @@ dependencies {
 
 smartbit4all {
   openApi {
-      modelPackagePrefix = "org.smartbit4all.api"
-      modelPackagePostfix = "bean"
+  	modelPackagePrefix = "org.smartbit4all.api"
+  	modelPackagePostfix = "bean"
+  	importMappings = [
+  		"BinaryData": "org.smartbit4all.types.binarydata.BinaryData"
+  	]
   }
 }
