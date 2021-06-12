@@ -13,6 +13,7 @@ import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.core.object.PropertyChange;
 import org.smartbit4all.core.object.ReferencedObjectChange;
 import org.smartbit4all.ui.api.filter.model.FilterGroupLabel;
+import org.smartbit4all.ui.vaadin.localization.TranslationUtil;
 import org.smartbit4all.ui.vaadin.util.Css;
 import org.smartbit4all.ui.vaadin.util.Css.IconSize;
 import org.smartbit4all.ui.vaadin.util.Css.TextColor;
@@ -190,7 +191,11 @@ public class FilterGroupView extends FlexLayout implements DropTarget<FlexLayout
 
   private void onGroupType(PropertyChange change) {
     FilterGroupType groupType = (FilterGroupType) change.getNewValue();
-    btnGroupType.setText(groupType == null ? "" : groupType.getValue());
+    String btnGroupTypeLabel = "";
+    if(groupType != null) {
+      btnGroupTypeLabel = TranslationUtil.INSTANCE().getPossibleTranslation(groupType.getValue());
+    }
+    btnGroupType.setText(btnGroupTypeLabel);
     refreshButtons();
   }
 

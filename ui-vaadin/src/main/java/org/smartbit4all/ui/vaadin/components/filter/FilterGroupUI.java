@@ -17,6 +17,7 @@ package org.smartbit4all.ui.vaadin.components.filter;
 import org.smartbit4all.api.filter.bean.FilterGroupType;
 import org.smartbit4all.ui.common.filter.DynamicFilterController;
 import org.smartbit4all.ui.common.filter.FilterGroupUIState;
+import org.smartbit4all.ui.vaadin.localization.TranslationUtil;
 import org.smartbit4all.ui.vaadin.util.Css;
 import org.smartbit4all.ui.vaadin.util.Css.IconSize;
 import org.smartbit4all.ui.vaadin.util.Css.TextColor;
@@ -71,7 +72,8 @@ public class FilterGroupUI extends FlexLayout implements DropTarget<FlexLayout> 
     add(filtersLayout);
 
     groupType = FilterGroupType.AND;
-    btnGroupType = new Button(groupType.getValue());
+    String btnGroupTypeLabel = getGroupButtonText(groupType);
+    btnGroupType = new Button(btnGroupTypeLabel);
     btnGroupType.addClickListener(groupTypeChangeListener());
     Css.stopClickEventPropagation(btnGroupType);
 
@@ -178,6 +180,12 @@ public class FilterGroupUI extends FlexLayout implements DropTarget<FlexLayout> 
     };
   }
 
+  private String getGroupButtonText(FilterGroupType groupType) {
+    String btnGroupTypeLabel =
+        TranslationUtil.INSTANCE().getPossibleTranslation(groupType.getValue());
+    return btnGroupTypeLabel;
+  }
+
   public FilterGroupUI getParentGroupUI() {
     return parentGroupUI;
   }
@@ -215,7 +223,7 @@ public class FilterGroupUI extends FlexLayout implements DropTarget<FlexLayout> 
 
   public void setFilterGroupType(FilterGroupType groupType) {
     this.groupType = groupType;
-    btnGroupType.setText(groupType.getValue());
+    btnGroupType.setText(getGroupButtonText(groupType));
   }
 
 
