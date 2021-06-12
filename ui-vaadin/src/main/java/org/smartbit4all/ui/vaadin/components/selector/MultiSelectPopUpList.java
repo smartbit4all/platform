@@ -125,6 +125,7 @@ public class MultiSelectPopUpList<T> extends CustomField<List<T>> implements Has
     FlexLayout layout = new FlexLayout();
     layout.setWidthFull();
     layout.setFlexDirection(FlexDirection.COLUMN);
+    layout.getStyle().set("position", "relative");
 
     // setting the display text ending gradient so it looks better when it is too
     // long.
