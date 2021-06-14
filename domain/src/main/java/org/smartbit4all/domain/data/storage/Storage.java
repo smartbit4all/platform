@@ -28,15 +28,22 @@ public class Storage<T> implements ObjectStorage<T> {
   private List<StorageIndex<T>> indexes;
 
   /**
+   * The class managed by the given storage instance.
+   */
+  private final Class<T> clazz;
+
+  /**
+   * @param clazz The class that is managed by the storage instance.
    * @param objectStorage Stores the serialized objects
    * @param indexes Indexes for the given type
    */
-  public Storage(
+  public Storage(Class<T> clazz,
       ObjectStorage<T> objectStorage,
       List<StorageIndex<T>> indexes) {
 
     this.storage = objectStorage;
     this.indexes = indexes;
+    this.clazz = clazz;
   }
 
   @Override
@@ -64,7 +71,7 @@ public class Storage<T> implements ObjectStorage<T> {
 
   @Override
   public List<T> load(List<URI> uris) throws Exception {
-    if (uris.size() < 1) {
+    if (uris == null || uris.isEmpty()) {
       return Collections.emptyList();
     }
 
@@ -101,7 +108,7 @@ public class Storage<T> implements ObjectStorage<T> {
     List<URI> resultUris = new ArrayList<>();
 
     Iterator<Expression> iterExpression = expressions.iterator();
-    
+
     Expression firstExpression = iterExpression.next();
     resultUris.addAll(listUris(firstExpression));
 
@@ -123,7 +130,7 @@ public class Storage<T> implements ObjectStorage<T> {
 
       if (expressionEntityDef.isPresent() &&
           index.getEntityDef().equals(expressionEntityDef.get())) {
-        
+
         uris.addAll(index.listUris(expression));
       }
     }
@@ -136,6 +143,10 @@ public class Storage<T> implements ObjectStorage<T> {
         .distinct()
         .filter(resultUris::contains)
         .collect(Collectors.toList());
+  }
+
+  public final Class<T> getClazz() {
+    return clazz;
   }
 
 }

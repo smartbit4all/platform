@@ -1,0 +1,68 @@
+openapi: 3.0.1
+info:
+  title: setting api
+  description: setting api
+  termsOfService: ''
+  contact:
+    email: info@it4all.hu
+  version: 1.0.0
+tags:
+- name: Setting
+paths:
+  /currentSettings:
+    get:
+      tags:
+      - Setting
+      summary: Returns the current settings
+      operationId: 'currentSettings'
+      responses:
+        '200':
+          description: 'The current settings of the given runtime'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LocaleSettingsRoot'
+           
+components:
+  schemas:
+    LocaleSettingsRoot:
+      type: object
+      description: 'The locale settings is the root object for the settings. It consists of local specific settings.'
+      required: [uri, settings]
+      properties:
+        uri:
+          type: string
+          format: uri
+          description: 'The uri of the locale setting'
+        settings:
+          type: array
+          items:
+            $ref: '#/components/schemas/LocaleSettingForLanguage'
+          description: 'Locale specific settings.'
+    LocaleSettingForLanguage:
+      type: object
+      required: [code, valuesByKey]
+      properties:
+        code:
+          type: string
+          description: 'The locale code like en or hu. The key of the settings list.'
+        valuesByKey:
+          type: array
+          items:
+            $ref: '#/components/schemas/LocaleValue'
+          description: 'The locale specific values.'
+        valuesByLiteral:
+          type: array
+          items:
+            $ref: '#/components/schemas/LocaleValue'
+          description: 'The locale specific values.'
+    LocaleValue:
+      type: object
+      required: [code, value]
+      properties:
+        code:
+          type: string
+          description: 'The code of the locale value. It can be a qualified name and a literal also.'
+        value:
+          type: string
+          description: 'The locale specific value belongs to the code.'

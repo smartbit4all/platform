@@ -1,7 +1,5 @@
 package org.smartbit4all.sql.storage;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
@@ -21,6 +19,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.jdbc.Sql;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @SpringBootTest(classes = {
     StorageSQLTestConfig.class,
@@ -122,7 +122,7 @@ class StorageSQLTest {
         TestData.class);
 
     StorageIndexSQL indexApi = new StorageIndexSQL();
-    
+
     StorageIndexField<TestData, String> stateIndex =
         createStateIndexField(testSearchDef, activeList, closedList, indexApi);
 
@@ -150,7 +150,7 @@ class StorageSQLTest {
 
     // List<TestData> datas = objectStorage.search(searchDef).listDatas(expression);
 
-    Storage<TestData> objectStorage = new Storage<>( // ObjectStorage
+    Storage<TestData> objectStorage = new Storage<>(TestData.class,
         storageSql,
         Arrays.asList(storageIndex));
 
@@ -181,7 +181,7 @@ class StorageSQLTest {
     assertEquals(2, twoActiveDatas.size());
 
     assertEquals(1, objectStorage.listDatas(closedExpression).size());
-    
+
     StorageReindexerSQL reindexer = new StorageReindexerSQL(testSearchDef, TestSearchDef.KEY);
     assertEquals(4, reindexer.listAllUris().size());
   }

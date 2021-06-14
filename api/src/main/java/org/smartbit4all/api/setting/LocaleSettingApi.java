@@ -7,8 +7,11 @@ import java.util.Locale;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.setting.bean.LocaleSettingsRoot;
 import org.smartbit4all.core.utility.ListBasedMap;
 import org.smartbit4all.core.utility.StringConstant;
+import org.smartbit4all.domain.data.storage.Storage;
+import org.smartbit4all.domain.data.storage.StorageApi;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -44,6 +47,9 @@ public final class LocaleSettingApi implements InitializingBean {
 
   @Autowired(required = false)
   private List<LocaleOption> localeOptions;
+
+  @Autowired
+  private StorageApi storageApi;
 
   /**
    * The default locale for the locale specific Strings.
@@ -151,6 +157,15 @@ public final class LocaleSettingApi implements InitializingBean {
     if (localeOptions != null && !localeOptions.isEmpty()) {
       for (LocaleOption localeOption : localeOptions) {
         analyzeLocaleStrings(localeOption);
+        Storage<LocaleSettingsRoot> storageLocale = storageApi.get(LocaleSettingsRoot.class);
+        if (storageLocale != null) {
+          LocaleResource resourceAnnotation =
+              localeOption.getClass().getAnnotation(LocaleResource.class);
+          // Load the built-in setting from the class path.
+          for (int i = 0; i < resourceAnnotation.value().length; i++) {
+            // storageLocale.load(UriUtils.formatUriHost(source) resourceAnnotation.value()[i]);
+          }
+        }
       }
     }
   }

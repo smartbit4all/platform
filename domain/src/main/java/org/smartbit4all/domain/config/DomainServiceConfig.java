@@ -26,6 +26,8 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.smartbit4all.core.SB4Configuration;
 import org.smartbit4all.domain.application.TimeManagementService;
 import org.smartbit4all.domain.application.TimeManagementServiceImpl;
+import org.smartbit4all.domain.data.storage.StorageApi;
+import org.smartbit4all.domain.data.storage.StorageApiImpl;
 import org.smartbit4all.domain.service.query.QueryApi;
 import org.smartbit4all.domain.service.query.QueryApiImpl;
 import org.smartbit4all.domain.service.transfer.TransferService;
@@ -146,6 +148,11 @@ public class DomainServiceConfig extends SB4Configuration {
   @Bean
   public QueryApi getQueryApi() {
     return new QueryApiImpl();
+  }
+
+  @Bean
+  public StorageApi getStorageApi() {
+    return new StorageApiImpl();
   }
 
 }

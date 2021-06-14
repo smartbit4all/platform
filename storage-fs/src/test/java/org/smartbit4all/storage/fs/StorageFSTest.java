@@ -1,7 +1,5 @@
 package org.smartbit4all.storage.fs;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.smartbit4all.storage.fs.TestFileUtil.testFsRootFolder;
 import java.io.IOException;
 import java.net.URI;
@@ -30,6 +28,8 @@ import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.gson.GsonBinaryDataObjectSerializer;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class StorageFSTest {
 
@@ -134,8 +134,9 @@ class StorageFSTest {
         new ArrayList<>(),
         storageFS,
         testSearchDef.key());
-    
-    StorageIndexSimpleFS indexApi = new StorageIndexSimpleFS(testFsRootFolder(), storageIndexLoader);
+
+    StorageIndexSimpleFS indexApi =
+        new StorageIndexSimpleFS(testFsRootFolder(), storageIndexLoader);
 
     StorageIndexField<TestData, String> stateIndex =
         createStateIndexField(testSearchDef, activeList, closedList, indexApi);
@@ -156,7 +157,7 @@ class StorageFSTest {
     storageIndexLoader.addIndex(stateIndex);
     storageIndexLoader.addIndex(emptyStateIndex);
     storageIndexLoader.addIndex(isActiveIndex);
-    
+
     // Storage.of(TestData.class).save(tdActive1);
     // List<TestData> datas = Storage.of(TestData.class).search(searchDef).listDatas(expression);
 
@@ -168,7 +169,7 @@ class StorageFSTest {
 
     // List<TestData> datas = objectStorage.search(searchDef).listDatas(expression);
 
-    Storage<TestData> objectStorage = new Storage<>(
+    Storage<TestData> objectStorage = new Storage<>(TestData.class,
         storageFS,
         Arrays.asList(storageIndex));
 
@@ -200,9 +201,10 @@ class StorageFSTest {
 
     assertEquals(1, objectStorage.listDatas(closedExpression).size());
 
-    StorageReindexerFS reindexer = new StorageReindexerFS("teststoragefs", testFsRootFolder(), "fs");
+    StorageReindexerFS reindexer =
+        new StorageReindexerFS("teststoragefs", testFsRootFolder(), "fs");
     assertEquals(4, reindexer.listAllUris().size());
-    
+
     ctx.close();
   }
 
