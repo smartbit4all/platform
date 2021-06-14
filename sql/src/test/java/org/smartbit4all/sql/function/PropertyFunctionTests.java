@@ -122,4 +122,99 @@ public class PropertyFunctionTests {
     assertEquals(firstValue.toUpperCase(), firstValue);
   }
   
+  @Test
+  public void selectWithFunction() throws Exception {
+    Optional<String> firstRowValue =
+        Crud.read(personDef)
+          .select(personDef.name().function("UPPER"))
+          .order(personDef.id().asc())
+          .firstRowValue(personDef.name());
+
+    String almos = firstRowValue.get();
+    assertEquals("ÁLMOS", almos);
+  }
+  
+  @Test
+  public void whereEQWithFunction() throws Exception {
+    Optional<String> firstRowValue =
+        Crud.read(personDef)
+          .select(personDef.name().function("UPPER"))
+          .where(personDef.name().eq("Álmos"))
+          .firstRowValue(personDef.name());
+
+    String almos = firstRowValue.get();
+    assertEquals("ÁLMOS", almos);
+  }
+  
+  @Test
+  public void whereEQWithFunctionInWhere() throws Exception {
+    Optional<String> firstRowValue =
+        Crud.read(personDef)
+          .select(personDef.name().function("UPPER"))
+          .where(personDef.name().function("UPPER").eq("Álmos"))
+          .firstRowValue(personDef.name());
+
+    String almos = firstRowValue.get();
+    assertEquals("ÁLMOS", almos);
+  }
+  
+  @Test
+  public void whereEQWithFunctionInWhere2() throws Exception {
+    Optional<String> firstRowValue =
+        Crud.read(personDef)
+          .select(personDef.name().function("UPPER"))
+          .where(personDef.name().function("UPPER").eq("ÁLMOS"))
+          .firstRowValue(personDef.name());
+
+    String almos = firstRowValue.get();
+    assertEquals("ÁLMOS", almos);
+  }
+  
+  @Test
+  public void whereLIKEWithFunction() throws Exception {
+    Optional<String> firstRowValue =
+        Crud.read(personDef)
+          .select(personDef.name().function("UPPER"))
+          .where(personDef.name().like("%lmo%"))
+          .firstRowValue(personDef.name());
+
+    String almos = firstRowValue.get();
+    assertEquals("ÁLMOS", almos);
+  }
+  
+  @Test
+  public void selectFK_WithFunction() throws Exception {
+    Optional<String> firstRowValue =
+        Crud.read(addressDef)
+          .select(addressDef.person().name().function("UPPER"))
+          .firstRowValue(addressDef.person().name().function("UPPER"));
+
+    String firstValue = firstRowValue.get();
+    assertEquals(firstValue.toUpperCase(), firstValue);
+  }
+  
+  @Test
+  public void whereFK_EQWithFunction() throws Exception {
+    Optional<String> firstRowValue =
+        Crud.read(addressDef)
+        .select(addressDef.city().function("UPPER"), addressDef.person().name().function("UPPER"))
+        .where(addressDef.person().name().function("UPPER").eq("ond"))
+        .firstRowValue(addressDef.person().name());
+
+    String firstValue = firstRowValue.get();
+    assertEquals(firstValue.toUpperCase(), firstValue);
+  }
+  
+  @Test
+  public void whereFK_LIKEWithFunction() throws Exception {
+    Optional<String> firstRowValue =
+        Crud.read(addressDef)
+        .select(addressDef.city().function("UPPER"), addressDef.person().name().function("UPPER"))
+        .where(addressDef.person().name().function("UPPER").like("on%"))
+        .firstRowValue(addressDef.person().name());
+
+    String firstValue = firstRowValue.get();
+    assertEquals(firstValue.toUpperCase(), firstValue);
+  }
+  
 }

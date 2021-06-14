@@ -1,15 +1,14 @@
 package org.smartbit4all.domain.meta;
 
-public enum PropertyFunction {
-  UPPER("upper", "UPPER"),
-  LOWER("lower", "LOWER")
-  ;
+public class PropertyFunction {
+  public static final PropertyFunction UPPER = new PropertyFunction("UPPER", "UPPER");
+  public static final PropertyFunction LOWER = new PropertyFunction("LOWER", "LOWER");
   
   private String name;
   
   private String sqlStatement;
   
-  private PropertyFunction(String name, String sqlStatement) {
+  public PropertyFunction(String name, String sqlStatement) {
     this.name = name;
     this.sqlStatement = sqlStatement;
   }

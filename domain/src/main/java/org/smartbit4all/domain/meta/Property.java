@@ -442,6 +442,14 @@ public abstract class Property<T> {
     // handled in PropertyInvocationHandler
     throw new RuntimeException("This method should be intercepted by a proxy!");
   }
+  
+  /**
+   * Applies the given function on property 
+   */
+  public Property<T> function(String functionName) {
+    // handled in PropertyInvocationHandler
+    throw new RuntimeException("This method should be intercepted by a proxy!");
+  }
 
   /**
    * Constructs a sort order based on the property.

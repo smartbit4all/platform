@@ -486,6 +486,13 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
           throws Throwable {
         String methodName = method.getName();
         switch (methodName) {
+          case "function":
+            if(args.length != 1) {
+              throw new RuntimeException("function method can be invoked with exactly one parameters!");
+            }
+            String functionName = args[0].toString();
+            return propertyFunctionMapper.getFunctionProperty(property.getName(),
+                new PropertyFunction(functionName, functionName));
           case "upper":
             return propertyFunctionMapper.getFunctionProperty(property.getName(),
                 PropertyFunction.UPPER);
