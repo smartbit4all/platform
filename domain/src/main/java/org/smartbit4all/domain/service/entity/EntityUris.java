@@ -19,6 +19,7 @@ package org.smartbit4all.domain.service.entity;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -152,6 +153,9 @@ public abstract class EntityUris {
   }
   
   private static Map<String, String> queryToMap(String queryString) {
+    if(queryString == null || queryString.isEmpty()) {
+      return Collections.emptyMap();
+    }
     String[] entries = queryString.split("&");
     if(entries == null) {
       throw new RuntimeException("Unable to process query string: " + queryString);

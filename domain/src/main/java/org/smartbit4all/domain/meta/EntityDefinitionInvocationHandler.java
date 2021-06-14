@@ -625,8 +625,6 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
     
     
     public Property<?> getFunctionProperty(Property<?> baseProp, PropertyFunction function) {
-      String propName = baseProp.getName();
-      String functionPropName = propName + "." + function.getName();
       Property<?> funcProp = functionPropertiesByBasePropery.get(baseProp);
       if(funcProp == null) {
         if(baseProp instanceof PropertyOwned) {
