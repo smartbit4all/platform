@@ -76,21 +76,26 @@ public class EntityManagerImpl implements EntityManager {
     checkEntityPath(entityPath);
     String propertyPath = EntityUris.getProperty(uri);
     checkPropertyName(propertyPath);
+    String functionName = EntityUris.getFunctionName(uri);
     
+    Property<?> property = null;
     if(propertyPath.contains(".")) {
       String[] path = propertyPath.split("\\.");
       String propertyName = path[path.length-1];
       path = Arrays.copyOfRange(path, 0, path.length-1);
       EntityDefinition entityDef = entityDefsByName.get(entityPath);
-      Property<?> refProperty = entityDef.findOrCreateReferredProperty(path, propertyName);
-      return refProperty;
+      property = entityDef.findOrCreateReferredProperty(path, propertyName);
     } else {
       EntityDefinition entityDef = entityDefsByName.get(entityPath);
       if(entityDef == null) {
         throw new IllegalStateException("There is no entity registered for name: " + entityPath);
       }
-      return entityDef.getProperty(propertyPath);
+      property = entityDef.getProperty(propertyPath);
     }
+    if(functionName != null && !functionName.isEmpty()) {
+      return property.function(functionName);
+    }
+    return property;
   }
   
   @Override

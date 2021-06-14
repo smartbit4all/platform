@@ -25,7 +25,8 @@ import java.util.stream.Collectors;
 
 public abstract class EntityUris {
 
-  private static final String ENTITYOBJECT_ID = "id";
+  private static final String QUERY_ENTITYOBJECT_ID = "id";
+  private static final String QUERY_PROPERTY_FUNCTION = "function";
   public static final String SCHEME_ENTITY = "entity";
   
   private EntityUris() {
@@ -51,12 +52,21 @@ public abstract class EntityUris {
     return createUri(SCHEME_ENTITY, domain, mainEntityName + "/" + detailEntityName, null);
   }
   
+  public static URI createFunctionPropertyUri(URI propertyUri, String functionName) {
+    String domain = getDomain(propertyUri);
+    String entityPath = getEntityPath(propertyUri);
+    String propertyName = getProperty(propertyUri);
+    Map<String, String> query = new HashMap<>();
+    query.put(QUERY_PROPERTY_FUNCTION, functionName);
+    return createUri(SCHEME_ENTITY, domain, entityPath, query, propertyName);
+  }
+  
   // TODO method for id set
   public static URI createEntityObjectUri(URI entityUri, String id) {
     String domain = getDomain(entityUri);
     String entityPath = getEntityPath(entityUri);
     Map<String, String> query = new HashMap<>();
-    query.put(ENTITYOBJECT_ID, id);
+    query.put(QUERY_ENTITYOBJECT_ID, id);
     return createUri(SCHEME_ENTITY, domain, entityPath, query, null);
   }
   
@@ -68,7 +78,7 @@ public abstract class EntityUris {
   }
   
   public static String getEntityObjectId(URI entityObjectUri) {
-    return getQueryParam(entityObjectUri, ENTITYOBJECT_ID);
+    return getQueryParam(entityObjectUri, QUERY_ENTITYOBJECT_ID);
   }
   
   public static String getQueryParam(URI uri, String key) {
@@ -99,6 +109,11 @@ public abstract class EntityUris {
     } else {
       return path;
     }
+  }
+  
+  public static String getFunctionName(URI uri) {
+    checkScheme(uri);
+    return getQueryParam(uri, QUERY_PROPERTY_FUNCTION);
   }
   
   public static String getProperty(URI uri) {

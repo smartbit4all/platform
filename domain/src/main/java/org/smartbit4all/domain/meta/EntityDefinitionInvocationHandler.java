@@ -117,7 +117,7 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
     referencesByName = new HashMap<>();
     referencedEntitiesByReferenceName = new HashMap<>();
     allProperties = new PropertySet();
-    propertyFunctionMapper = new PropertyFunctionMapper(propertiesByName, referredPropertiesByPath);
+    propertyFunctionMapper = new PropertyFunctionMapper();
   }
 
   static <T extends EntityDefinition> EntityDefinitionInvocationHandler<T> create(Class<T> def) {
@@ -491,13 +491,13 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
               throw new RuntimeException("function method can be invoked with exactly one parameters!");
             }
             String functionName = args[0].toString();
-            return propertyFunctionMapper.getFunctionProperty(property.getName(),
+            return propertyFunctionMapper.getFunctionProperty(property,
                 new PropertyFunction(functionName, functionName));
           case "upper":
-            return propertyFunctionMapper.getFunctionProperty(property.getName(),
+            return propertyFunctionMapper.getFunctionProperty(property,
                 PropertyFunction.UPPER);
           case "lower":
-            return propertyFunctionMapper.getFunctionProperty(property.getName(),
+            return propertyFunctionMapper.getFunctionProperty(property,
                 PropertyFunction.LOWER);
           default:
             return method.invoke(property, args);
@@ -621,34 +621,22 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
   
   static class PropertyFunctionMapper {
     
-    private Map<String, Property<?>> propertiesByName;
-    private Map<String, Property<?>> referredPropertiesByPath;
+    private Map<Property<?>, Property<?>> functionPropertiesByBasePropery = new HashMap<>();
     
-    private Map<String, Property<?>> functionPropertiesByName = new HashMap<>();
     
-    public PropertyFunctionMapper(Map<String, Property<?>> propertiesByName, Map<String, Property<?>> referredPropertiesByPath) {
-      this.propertiesByName = propertiesByName;
-      this.referredPropertiesByPath = referredPropertiesByPath;
-    }
-    
-    public Property<?> getFunctionProperty(String propName, PropertyFunction function) {
+    public Property<?> getFunctionProperty(Property<?> baseProp, PropertyFunction function) {
+      String propName = baseProp.getName();
       String functionPropName = propName + "." + function.getName();
-      Property<?> funcProp = functionPropertiesByName.get(functionPropName);
+      Property<?> funcProp = functionPropertiesByBasePropery.get(baseProp);
       if(funcProp == null) {
-        Property<?> baseProp = null;
-        if(propName.contains(".")) {
-          baseProp = referredPropertiesByPath.get(propName);
-        } else {
-          baseProp = propertiesByName.get(propName);
-        }
         if(baseProp instanceof PropertyOwned) {
           funcProp = PropertyOwned.createFunctionProperty(((PropertyOwned<?>)baseProp), function);
-          functionPropertiesByName.put(functionPropName, funcProp);
+          functionPropertiesByBasePropery.put(baseProp, funcProp);
         } else if(baseProp instanceof PropertyRef) {
           funcProp = PropertyRef.createFunctionProperty(((PropertyRef<?>)baseProp), function);
-          functionPropertiesByName.put(functionPropName, funcProp);
+          functionPropertiesByBasePropery.put(baseProp, funcProp);
         } else {
-          functionPropertiesByName.put(functionPropName, baseProp);
+          functionPropertiesByBasePropery.put(baseProp, baseProp);
         }
         
       }

@@ -510,7 +510,12 @@ public abstract class Property<T> {
     }
     String domain = getEntityDef().getDomain();
     String entityName = getEntityDef().entityDefName();
-    return EntityUris.createPropertyUri(domain, entityName, name);
+    URI propertyUri = EntityUris.createPropertyUri(domain, entityName, name);
+    if(propertyFunction != null) {
+      String functionName = propertyFunction.getName();
+      return EntityUris.createFunctionPropertyUri(propertyUri, functionName);
+    }
+    return propertyUri;
   }
 
 }
