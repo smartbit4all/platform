@@ -722,7 +722,7 @@ public class Filters {
 
   public static interface FilterExpressionHandler {
 
-    boolean supports(FilterField FilterField);
+    boolean supports(FilterField filterField);
 
     Expression createExpression(FilterField filterField);
 
