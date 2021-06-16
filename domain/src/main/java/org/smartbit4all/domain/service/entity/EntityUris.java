@@ -19,7 +19,6 @@ package org.smartbit4all.domain.service.entity;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -82,11 +81,26 @@ public abstract class EntityUris {
     return getQueryParam(entityObjectUri, QUERY_ENTITYOBJECT_ID);
   }
   
+  public static URI addQueryParam(URI entityUri, String key, String value) {
+    String domain = getDomain(entityUri);
+    String entityPath = getEntityPath(entityUri);
+    Map<String, String> query = queryToMap(entityUri.getQuery());
+    query.put(key, value);
+    return createUri(SCHEME_ENTITY, domain, entityPath, query, null);
+  }
+  
   public static String getQueryParam(URI uri, String key) {
     checkScheme(uri);
     String queryString = uri.getQuery();
     Map<String, String> query = queryToMap(queryString);
     return query.get(key);
+  }
+  
+  public static URI getEntityUriWithoutQuery(URI entityUri) {
+    checkScheme(entityUri);
+    String domain = getDomain(entityUri);
+    String entityPath = getEntityPath(entityUri);
+    return createUri(SCHEME_ENTITY, domain, entityPath, null, null);
   }
   
   public static String getDomain(URI uri) {
@@ -154,11 +168,14 @@ public abstract class EntityUris {
   
   private static Map<String, String> queryToMap(String queryString) {
     if(queryString == null || queryString.isEmpty()) {
-      return Collections.emptyMap();
+      return new HashMap<>();
     }
     String[] entries = queryString.split("&");
     if(entries == null) {
       throw new RuntimeException("Unable to process query string: " + queryString);
+    }
+    if(entries.length == 0) {
+      return new HashMap<>();
     }
     return Arrays.stream(entries)
         .collect(Collectors.toMap(e -> splitQueryEntry(e, true),

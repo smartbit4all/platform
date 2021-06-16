@@ -292,6 +292,7 @@ public class EntityNavigation extends NavigationImpl {
 
   public NavigationEntryMeta getEntryMeta(URI entityUri) {
     initIfNeeded();
+    entityUri = EntityUris.getEntityUriWithoutQuery(entityUri);
     return entryMetasByEntityDefUri.get(entityUri);
   }
   
