@@ -1,0 +1,8 @@
+plugins {
+    id 'org.smartbit4all.platform.gradle.vaadin-module'
+}
+
+dependencies {
+	api project(':ui-vaadin')
+	api project(':sec')
+}

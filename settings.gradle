@@ -13,6 +13,7 @@ include 'api-domain'
 include 'types'
 include 'sec'
 include 'sec-ms365'
+include 'vaadin-sec'
 include 'storage-fs'
 include 'gson'
 
