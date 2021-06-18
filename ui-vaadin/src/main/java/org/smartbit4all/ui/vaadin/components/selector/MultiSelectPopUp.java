@@ -236,6 +236,9 @@ public class MultiSelectPopUp<T> extends CustomField<Set<T>> implements HasDataP
         if (!selectedItems.isEmpty()) {
           grid.asMultiSelect().select(selectedItems);
         }
+        if(filter != null) {
+          filterField.focus();
+        }
       } else {
         filterField.clear();
       }

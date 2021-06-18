@@ -249,6 +249,9 @@ public class MultiSelectPopUpList<T> extends CustomField<List<T>> implements Has
         if (!selectedItems.isEmpty()) {
           grid.asMultiSelect().select(selectedItems);
         }
+        if(filter != null) {
+          filterField.focus();
+        }
       } else {
         filterField.clear();
       }
