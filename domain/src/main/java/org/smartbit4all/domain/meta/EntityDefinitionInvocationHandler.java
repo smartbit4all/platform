@@ -621,20 +621,27 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
   
   static class PropertyFunctionMapper {
     
-    private Map<Property<?>, Property<?>> functionPropertiesByBasePropery = new HashMap<>();
+    private Map<Property<?>, List<Property<?>>> functionPropertiesByBasePropery = new HashMap<>();
     
     
     public Property<?> getFunctionProperty(Property<?> baseProp, PropertyFunction function) {
-      Property<?> funcProp = functionPropertiesByBasePropery.get(baseProp);
+      List<Property<?>> funcProps = functionPropertiesByBasePropery.get(baseProp);
+      if(funcProps == null) {
+        funcProps = new ArrayList<>();
+        functionPropertiesByBasePropery.put(baseProp, funcProps);
+      }
+      Property<?> funcProp = funcProps.stream()
+          .filter(fp -> function.getName().equals(fp.getPropertyFunction().getName()))
+          .findFirst().orElse(null); 
       if(funcProp == null) {
         if(baseProp instanceof PropertyOwned) {
           funcProp = PropertyOwned.createFunctionProperty(((PropertyOwned<?>)baseProp), function);
-          functionPropertiesByBasePropery.put(baseProp, funcProp);
+          funcProps.add(funcProp);
         } else if(baseProp instanceof PropertyRef) {
           funcProp = PropertyRef.createFunctionProperty(((PropertyRef<?>)baseProp), function);
-          functionPropertiesByBasePropery.put(baseProp, funcProp);
+          funcProps.add(funcProp);
         } else {
-          functionPropertiesByBasePropery.put(baseProp, baseProp);
+          funcProps.add(baseProp);
         }
         
       }
