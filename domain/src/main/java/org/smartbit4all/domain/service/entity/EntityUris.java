@@ -100,7 +100,8 @@ public abstract class EntityUris {
     checkScheme(entityUri);
     String domain = getDomain(entityUri);
     String entityPath = getEntityPath(entityUri);
-    return createUri(SCHEME_ENTITY, domain, entityPath, null, null);
+    String property = getProperty(entityUri);
+    return createUri(SCHEME_ENTITY, domain, entityPath, null, property);
   }
   
   public static String getDomain(URI uri) {
