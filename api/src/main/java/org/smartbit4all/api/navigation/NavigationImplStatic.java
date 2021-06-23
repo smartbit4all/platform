@@ -150,6 +150,28 @@ public class NavigationImplStatic extends NavigationImpl {
     }
   }
 
+  public void addLeafDynamic(URI parentUri, String assocName, URI objectUri, NavigationEntryMeta objectMeta, String title, String icon,
+      NavigationView... views) {
+    NavigationEntry parentEntry = entries.get(parentUri);
+    NavigationEntryMeta parentEntryMeta = entryMetas.get(parentUri);
+    if (parentEntry != null) {
+      NavigationEntryMeta navigationEntryMeta =
+          objectMeta;
+      URI assocUri = assocUri(parentUri, assocName);
+      NavigationAssociationMeta associationMeta =
+          assocMetas.computeIfAbsent(assocUri, u -> Navigation.assocMeta(assocUri, assocName,
+              parentEntryMeta, navigationEntryMeta, null));
+      parentEntryMeta.addAssociationsItem(associationMeta);
+      NavigationEntry entry = Navigation.entry(navigationEntryMeta, objectUri, title, icon, views);
+      entries.put(objectUri, entry);
+      Map<URI, List<NavigationReferenceEntry>> entryReferenceMap =
+          entryReferenceMaps.computeIfAbsent(parentUri, u -> new HashMap<>());
+      List<NavigationReferenceEntry> references =
+          entryReferenceMap.computeIfAbsent(assocUri, u -> new ArrayList<>());
+      references.add(Navigation.referenceEntry(parentUri, entry, null));
+    }
+  }
+
   @Override
   public Map<URI, List<NavigationReferenceEntry>> navigate(URI objectUri,
       List<URI> associationMetaUris) {
