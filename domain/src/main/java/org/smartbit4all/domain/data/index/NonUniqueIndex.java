@@ -16,6 +16,7 @@ package org.smartbit4all.domain.data.index;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,7 +76,13 @@ public class NonUniqueIndex<T> extends TableDataIndex {
     if(value == null) {
       return new ArrayList<>(nullRows);
     }
-    return new ArrayList<>(index.get(value));
+    
+    List<DataRow> indexValues = index.get(value);
+    if(indexValues == null || indexValues.size() < 1) {
+      return Collections.emptyList();
+    }
+    
+    return new ArrayList<>(indexValues);
   }
 
 }
