@@ -83,9 +83,7 @@ public class NavigationImplStatic extends NavigationImpl {
 
   private final URI rootUri(String entryName) {
     try {
-      return new URI(name, null,
-          StringConstant.SLASH + entryName,
-          null);
+      return new URI(name, null, StringConstant.SLASH + entryName, null);
     } catch (URISyntaxException e) {
       log.error("Invalid uri during bilding the " + name + " static navigation (" + entryName + ")",
           e);
@@ -128,35 +126,36 @@ public class NavigationImplStatic extends NavigationImpl {
     return null;
   }
 
-  public void addLeaf(URI parentUri, String assocName, URI objectUri, String title, String icon,
-      NavigationView... views) {
-    NavigationEntry parentEntry = entries.get(parentUri);
-    NavigationEntryMeta parentEntryMeta = entryMetas.get(parentUri);
-    if (parentEntry != null) {
-      NavigationEntryMeta navigationEntryMeta =
-          entryMetas.computeIfAbsent(objectUri, u -> Navigation.entryMeta(u, name));
-      URI assocUri = assocUri(parentUri, assocName);
-      NavigationAssociationMeta associationMeta =
-          assocMetas.computeIfAbsent(assocUri, u -> Navigation.assocMeta(assocUri, assocName,
-              parentEntryMeta, navigationEntryMeta, null));
-      parentEntryMeta.addAssociationsItem(associationMeta);
-      NavigationEntry entry = Navigation.entry(navigationEntryMeta, objectUri, title, icon, views);
-      entries.put(objectUri, entry);
-      Map<URI, List<NavigationReferenceEntry>> entryReferenceMap =
-          entryReferenceMaps.computeIfAbsent(parentUri, u -> new HashMap<>());
-      List<NavigationReferenceEntry> references =
-          entryReferenceMap.computeIfAbsent(assocUri, u -> new ArrayList<>());
-      references.add(Navigation.referenceEntry(parentUri, entry, null));
-    }
-  }
+//  public void addLeaf(URI parentUri, String assocName, URI objectUri, String title, String icon,
+//      NavigationView... views) {
+//    NavigationEntry parentEntry = entries.get(parentUri);
+//    NavigationEntryMeta parentEntryMeta = entryMetas.get(parentUri);
+//    if (parentEntry != null) {
+//      NavigationEntryMeta navigationEntryMeta =
+//          entryMetas.computeIfAbsent(objectUri, u -> Navigation.entryMeta(u, name));
+//      URI assocUri = assocUri(parentUri, assocName);
+//      NavigationAssociationMeta associationMeta =
+//          assocMetas.computeIfAbsent(assocUri, u -> Navigation.assocMeta(assocUri, assocName,
+//              parentEntryMeta, navigationEntryMeta, null));
+//      parentEntryMeta.addAssociationsItem(associationMeta);
+//      NavigationEntry entry = Navigation.entry(navigationEntryMeta, objectUri, title, icon, views);
+//      entries.put(objectUri, entry);
+//      Map<URI, List<NavigationReferenceEntry>> entryReferenceMap =
+//          entryReferenceMaps.computeIfAbsent(parentUri, u -> new HashMap<>());
+//      List<NavigationReferenceEntry> references =
+//          entryReferenceMap.computeIfAbsent(assocUri, u -> new ArrayList<>());
+//      references.add(Navigation.referenceEntry(parentUri, entry, null));
+//    }
+//  }
 
-  public void addLeafDynamic(URI parentUri, String assocName, URI objectUri, NavigationEntryMeta objectMeta, String title, String icon,
-      NavigationView... views) {
+  public void addLeaf(URI parentUri, String assocName, URI objectUri,
+      NavigationEntryMeta objectMeta, String title, String icon, NavigationView... views) {
     NavigationEntry parentEntry = entries.get(parentUri);
     NavigationEntryMeta parentEntryMeta = entryMetas.get(parentUri);
     if (parentEntry != null) {
-      NavigationEntryMeta navigationEntryMeta =
-          objectMeta;
+      NavigationEntryMeta navigationEntryMeta = objectMeta == null
+          ? entryMetas.computeIfAbsent(objectUri, u -> Navigation.entryMeta(u, name))
+          : objectMeta;
       URI assocUri = assocUri(parentUri, assocName);
       NavigationAssociationMeta associationMeta =
           assocMetas.computeIfAbsent(assocUri, u -> Navigation.assocMeta(assocUri, assocName,
