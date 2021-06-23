@@ -14,6 +14,7 @@
  ******************************************************************************/
 package org.smartbit4all.domain.data.filtering;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -60,6 +61,12 @@ public class EvaluationIndexedNonUniqueStorage<V> extends EvaluationStep {
 
   @Override
   List<DataRow> execute(TableData<?> tableData, List<DataRow> rows) {
+    // If the base rows already exists and empty,
+    // no need to calculate the next step, the result is going to be empty
+    if(rows != null && rows.isEmpty()) {
+      return Collections.emptyList();
+    }
+    
     Set<Object> resultValues = new HashSet<>();
     for (V v : valuesToSearch) {
       resultValues.addAll(idx.get(v));
@@ -70,10 +77,12 @@ public class EvaluationIndexedNonUniqueStorage<V> extends EvaluationStep {
 
     matchingRows = DataRow.sortByPosition(matchingRows);
 
-    if(rows.isEmpty()) {
+    // If the base rows are NULL or empty,
+    // no need to match against the current result.
+    if(rows == null || rows.isEmpty()) {
       return matchingRows;
     }
-    
+
     rows = DataRow.sortByPosition(rows);
     
     return invert ? DataRow.minus(rows, matchingRows) : DataRow.intersect(rows, matchingRows);

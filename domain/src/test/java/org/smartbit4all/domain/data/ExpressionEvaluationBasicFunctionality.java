@@ -479,6 +479,14 @@ public class ExpressionEvaluationBasicFunctionality {
     ExpressionEvaluationPlan planStorage = ExpressionEvaluationPlan.of(loader, jakabEq);
     List<DataRow> execute = planStorage.execute(Collections.emptyList());
     assertEquals(2, execute.size());
+    
+    Expression oneEmptyOtherMatch =
+        userAccountDef.firstname().eq("Cica")
+            .AND(userAccountDef.titleCode().eq("Dr."));
+    
+    ExpressionEvaluationPlan planStorageOneEmptyOtherMatch = ExpressionEvaluationPlan.of(loader, oneEmptyOtherMatch);
+    List<DataRow> executeOneEmptyOtherMatch = planStorageOneEmptyOtherMatch.execute(Collections.emptyList());
+    assertEquals(0, executeOneEmptyOtherMatch.size());
   }
   
 }

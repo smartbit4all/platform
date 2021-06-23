@@ -181,7 +181,11 @@ class StorageFSTest {
     Expression closedExpression = testSearchDef.state().eq(closedList);
     Expression emptyStateExpression = testSearchDef.emptyState().eq(notInAnyState);
     Expression notActiveExpression = testSearchDef.isActive().eq(false);
-
+    Expression oneMatchOtherEmptyExpression = testSearchDef.state().eq("cica").AND(testSearchDef.state().eq(activeList));
+    
+    List<TestData> oneMatchOtherEmpty = objectStorage.listDatas(oneMatchOtherEmptyExpression);
+    assertEquals(0, oneMatchOtherEmpty.size());
+    
     List<TestData> activeDatas = objectStorage.listDatas(activeExpression);
     assertEquals(1, activeDatas.size());
 

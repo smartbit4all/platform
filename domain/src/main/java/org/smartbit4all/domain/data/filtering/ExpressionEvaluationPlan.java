@@ -182,10 +182,22 @@ public class ExpressionEvaluationPlan {
     }
     List<DataRow> result = null;
     for (EvaluationStep step : steps) {
-      List<DataRow> matchingRows = step.execute(tableData, result == null ? initialRows : result);
+      List<DataRow> matchingRows = step.execute(tableData, getNextStepBaseRows(initialRows, result));
       if (matchingRows != null) {
         result = matchingRows;
       }
+    }
+    return result;
+  }
+
+  /**
+   * If the result is NULL, it is the first step.
+   * - If there is any initial rows, use them as base.
+   * - Else NULL is passed, to create a new base from the first step execution.
+   */
+  private List<DataRow> getNextStepBaseRows(List<DataRow> initialRows, List<DataRow> result) {
+    if(result == null && initialRows != null && !initialRows.isEmpty()) {
+      return initialRows;
     }
     return result;
   }
