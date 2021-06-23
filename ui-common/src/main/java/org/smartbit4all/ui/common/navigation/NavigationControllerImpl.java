@@ -59,12 +59,12 @@ public class NavigationControllerImpl implements NavigationController {
    */
   private NavigationViewOption options = new NavigationViewOption();
 
-  
+
   @Autowired
   protected Actions actions;
 
   private NavigationTreeNode selectedNode;
-  
+
   private List<NavigationActionListener> actionListeners = new ArrayList<>();
 
   public NavigationControllerImpl(NavigationApi api) {
@@ -141,14 +141,14 @@ public class NavigationControllerImpl implements NavigationController {
     }
     List<NavigationAssociation> associations =
         node.getAssociations() == null ? Collections.emptyList() : node.getAssociations();
-    
+
     // create map with nulls to define the order
     LinkedHashMap<String, List<NavigationTreeNode>> treeNodesByOrderedAssocIds =
         new LinkedHashMap<>();
     associations.forEach(a -> {
       treeNodesByOrderedAssocIds.put(a.getId(), null);
     });
-    
+
     Map<String, List<NavigationNode>> nodesByAssocIds =
         navigationState.getChildrenNodes(parent.getIdentifier(), true);
     nodesByAssocIds.forEach((assocId, nodes) -> {
@@ -158,38 +158,40 @@ public class NavigationControllerImpl implements NavigationController {
           .collect(Collectors.toList());
       treeNodesByOrderedAssocIds.put(assocId, treeNodes);
     });
-    
-    
+
+
     // TODO Correct name for the association
     associations.stream()
         .filter(a -> !a.getHidden())
         .forEach(navigationAssociation -> {
           String[] styles = null;
-          if(navigationAssociation.getReferences() == null || navigationAssociation.getReferences().isEmpty()) {
-            styles = new String[]{"empty"};
+          if (navigationAssociation.getReferences() == null
+              || navigationAssociation.getReferences().isEmpty()) {
+            styles = new String[] {"empty"};
           }
           NavigationTreeNode treeNode = new NavigationTreeNode(Kind.ASSOCIATION,
               navigationAssociation.getId(),
               getAssociationNodeCaption(navigationAssociation.getMetaUri()),
               null, null, styles, null);
-          treeNodesByOrderedAssocIds.put(navigationAssociation.getId(), Collections.singletonList(treeNode));
+          treeNodesByOrderedAssocIds.put(navigationAssociation.getId(),
+              Collections.singletonList(treeNode));
         });
-    
-    
+
+
     List<NavigationTreeNode> resultTreeNodes = new ArrayList<>();
     treeNodesByOrderedAssocIds.forEach((assoc, nodes) -> {
-      if(nodes != null) {
+      if (nodes != null) {
         resultTreeNodes.addAll(nodes);
       }
     });
     return resultTreeNodes.stream();
-    
+
   }
-  
+
   private String getAssociationNodeCaption(URI assocMetaUri) {
     String caption = assocMetaUri.toString().replace(":/", ".")
-                                            .replace("/", ".")
-                                            .replace("#", ".");
+        .replace("/", ".")
+        .replace("#", ".");
     return caption;
   }
 
@@ -216,13 +218,22 @@ public class NavigationControllerImpl implements NavigationController {
     }
     return null;
   }
-  
+
   @Override
   public void nodeSelected(NavigationTreeNode node) {
     view.navigateTo(getViewCommand(node));
-    
+
     showNodeActions(node);
-    selectedNode = node; 
+    selectedNode = node;
+  }
+
+  @Override
+  public void refreshNode(NavigationTreeNode node) {
+    if (node.isKind(Kind.ASSOCIATION)) {
+      navigationState.forceRefreshAssociation(node.getIdentifier());
+    } else if (node.isKind(Kind.ENTRY)) {
+      navigationState.forceRefreshEntry(node.getIdentifier());
+    }
   }
 
   private void showNodeActions(NavigationTreeNode node) {
@@ -241,7 +252,7 @@ public class NavigationControllerImpl implements NavigationController {
         Action action = actions.get(uri);
         if (action != null) {
           actionList.add(action);
-          
+
           if (action instanceof NavigationAction) {
             ((NavigationAction) action).setNavigationController(this);
           }
@@ -250,7 +261,7 @@ public class NavigationControllerImpl implements NavigationController {
     }
     return actionList;
   }
-  
+
   @Override
   public void registerNavigationActionListener(NavigationActionListener listener) {
     actionListeners.add(listener);

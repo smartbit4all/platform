@@ -1,18 +1,16 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
  * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 package org.smartbit4all.ui.vaadin.components.navigation.tree;
 
@@ -53,7 +51,7 @@ public class NavigationTreeView implements NavigationView {
    * The controller for accessing the presentation logic.
    */
   NavigationController controller;
-  
+
   public NavigationTreeView(NavigationController controller,
       TreeGrid<NavigationTreeNode> treeComponent) {
     super();
@@ -62,43 +60,35 @@ public class NavigationTreeView implements NavigationView {
     controller.setUI(this);
     // Adapt the given tree and add the necessary parameters.
 
-    
-//    tree.addComponentHierarchyColumn(i -> {
-//      HorizontalLayout layout = new HorizontalLayout();
-//      Label label = new Label(i.getCaption());
-//      Icon icon = new Icon(i.getIcon());
-//      if (i.getIcon() != null) {
-//        layout.add(VaadinIcon.valueOf(i.getIcon()).create(), label);
-//      } else {
-//        layout.add(label);
-//      }
-//     return layout; 
-//    });
+
     tree.addComponentHierarchyColumn(this::getRowComponent).setAutoWidth(true);
-//    tree.addSelectionListener(selection -> {
-//      selection.getFirstSelectedItem().ifPresent(s -> {
-//        UIViewShowCommand showCommand = controller.getViewCommand(s);
-//        showSelected(showCommand);
-//      });
-//    });
-    
+
     tree.addSelectionListener(selection -> {
       selection.getFirstSelectedItem().ifPresent(s -> {
         controller.nodeSelected(s);
-                // if (s.getEntry().getViews() != null && !s.getEntry().getViews().isEmpty()) {
-        // // TODO Here we need a more sophisticated solution to offer the potential views.
-        // org.smartbit4all.api.navigation.bean.NavigationView navigationView =
-        // s.getEntry().getViews().get(0);
-        // controller.setupViewParameters(s);
-        // tree.getUI().ifPresent(ui -> ui.navigate(navigationView.getName()));
-        // }
       });
     });
+
+    tree.addItemClickListener(selection -> {
+      controller.nodeSelected(selection.getItem());
+    });
+
+
 
     setDataProviderForTree();
 
   }
-  
+
+  /**
+   * Not a final solution. Call this to refresh the selected nodes.
+   */
+  public void refreshSelectedNodes() {
+    for (NavigationTreeNode node : tree.getSelectedItems()) {
+      controller.refreshNode(node);
+      tree.getDataProvider().refreshItem(node, true);
+    }
+  }
+
   @Override
   public void navigateTo(UIViewShowCommand command) {
     if (command != null) {
@@ -106,7 +96,7 @@ public class NavigationTreeView implements NavigationView {
           new UIViewParameterVaadinTransition(command.getParameters())) {
 
         tree.getUI().ifPresent(ui -> ui.navigate(command.getViewName(), param.construct()));
-        
+
       } catch (Exception e) {
         log.error("Unable to pass parameters", e);
       }
@@ -119,7 +109,7 @@ public class NavigationTreeView implements NavigationView {
     String title = getNodeTitle(node);
     Label label = new Label(title);
     adjustStylesToNode(node, title, label);
-    if(iconKey != null) {
+    if (iconKey != null) {
       Icon icon = new Icon(iconKey);
       return new HorizontalLayout(icon, label);
     } else {
@@ -129,7 +119,7 @@ public class NavigationTreeView implements NavigationView {
 
   protected void adjustStylesToNode(NavigationTreeNode node, String title, Label label) {
     String[] styles = node.getStyles();
-    if(styles != null && Arrays.asList(styles).contains("empty")) {
+    if (styles != null && Arrays.asList(styles).contains("empty")) {
       label.getStyle().set("font-style", "italic");
       label.setText(title + " (0)");
     }
@@ -137,7 +127,7 @@ public class NavigationTreeView implements NavigationView {
 
   protected String getNodeTitle(NavigationTreeNode node) {
     String caption = node.getCaption();
-    if(caption == null) {
+    if (caption == null) {
       return "n/a";
     }
     String title = TranslationUtil.INSTANCE().getPossibleTranslation(caption);
@@ -167,7 +157,7 @@ public class NavigationTreeView implements NavigationView {
     tree.setDataProvider(dataProvider);
 
   }
-  
+
 
   @Override
   public void render(NavigationNode node, List<ApiItemChangeEvent<NavigationReference>> changes) {}

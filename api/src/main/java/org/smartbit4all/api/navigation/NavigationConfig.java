@@ -11,11 +11,30 @@ import java.util.Objects;
 import org.smartbit4all.api.navigation.bean.NavigationAssociationMeta;
 import org.smartbit4all.core.utility.StringConstant;
 
+/**
+ * The navigation configuration is a meta class collecting the navigation entries and associations
+ * among them. We can use the {@link ConfigBuilder} to setup. This configuration refers to the meta
+ * uris defined by the {@link NavigationApi} implementations.
+ * 
+ * @author Peter Boros
+ */
 public class NavigationConfig {
 
+  /**
+   * List of available associations for entry uris.
+   */
   private Map<URI, List<URI>> assocMetaUrisByEntryMetaUri;
+
+  /**
+   * Additional {@link AssocNodeConfig} defined identified by the association uri.
+   */
   private Map<URI, AssocNodeConfig> assocConfigsByUri;
 
+  /**
+   * Constructor based on the builder object.
+   * 
+   * @param builder
+   */
   private NavigationConfig(ConfigBuilder builder) {
     assocMetaUrisByEntryMetaUri = new LinkedHashMap<>();
     assocConfigsByUri = new HashMap<>();
@@ -68,7 +87,7 @@ public class NavigationConfig {
   public String toString() {
     StringBuilder sb = new StringBuilder();
     assocMetaUrisByEntryMetaUri.entrySet().stream()
-//        .sorted((e1, e2) -> e1.getKey().compareTo(e2.getKey()))
+        // .sorted((e1, e2) -> e1.getKey().compareTo(e2.getKey()))
         .forEach(e -> {
           if (sb.length() > 0) {
             sb.append(StringConstant.NEW_LINE);
@@ -83,6 +102,12 @@ public class NavigationConfig {
     return sb.toString();
   }
 
+  /**
+   * The builder api to define a {@link NavigationConfig}. It's easier to construct a configuration
+   * with this.
+   * 
+   * @author Peter Boros
+   */
   public static class ConfigBuilder {
 
     Map<URI, Map<URI, AssocNodeConfig>> assocConfigsByAssocUrisByEntryUri;
@@ -198,6 +223,11 @@ public class NavigationConfig {
     }
   }
 
+  /**
+   * The parameters of the association in the current navigation.
+   * 
+   * @author Peter Boros
+   */
   static class AssocNodeConfig {
 
     private boolean isVisible;

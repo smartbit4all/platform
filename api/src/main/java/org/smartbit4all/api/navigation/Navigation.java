@@ -105,9 +105,9 @@ public class Navigation {
           result += assocRefs.size();
         }
       } else {
-//        if (assocRefs != null && !assocRefs.isEmpty()) {
-          result++;
-//        }
+        // if (assocRefs != null && !assocRefs.isEmpty()) {
+        result++;
+        // }
       }
     }
     return result;
@@ -132,6 +132,35 @@ public class Navigation {
     }
 
     return nodesByAssocs;
+  }
+
+  /**
+   * Set null the {@link NavigationAssociation#lastNavigation(Integer)} to force the refresh when
+   * the children requested again.
+   * 
+   * @param associationId The unique UUID of the association.
+   */
+  public void forceRefreshAssociation(String associationId) {
+    NavigationAssociation navigationAssociation = associations.get(associationId);
+    if (navigationAssociation != null) {
+      navigationAssociation.setLastNavigation(null);
+    }
+  }
+
+  /**
+   * Set null all the {@link NavigationAssociation#lastNavigation(Integer)} to force the refresh
+   * when the children requested again.
+   * 
+   * @param nodeId The unique UUID of the association.
+   */
+  public void forceRefreshEntry(String nodeId) {
+    NavigationNode node = nodes.get(nodeId);
+    if (node.getAssociations() != null) {
+
+      for (NavigationAssociation assoc : node.getAssociations()) {
+        assoc.setLastNavigation(null);
+      }
+    }
   }
 
   public List<NavigationNode> getReferencedNodes(String associationId) {
@@ -171,9 +200,21 @@ public class Navigation {
    * @return The list of newly created api items.
    */
   public List<ApiItemChangeEvent<NavigationReference>> expandAll(NavigationNode node) {
+    return expandAll(node, false);
+  }
+
+  /**
+   * The expand all navigate the associations that hasn't been navigated yet.
+   * 
+   * @param node The starting node.
+   * @param force If true then we skip the last navigation time and navigate.
+   * @return The list of newly created api items.
+   */
+  public List<ApiItemChangeEvent<NavigationReference>> expandAll(NavigationNode node,
+      boolean force) {
     Map<URI, NavigationAssociation> naviAssocByMetaUri = node.getAssociations()
         .stream()
-        .filter(a -> a.getLastNavigation() == null)
+        .filter(a -> a.getLastNavigation() == null || force)
         .collect(Collectors.toMap(NavigationAssociation::getMetaUri,
             a -> a));
 
@@ -305,7 +346,7 @@ public class Navigation {
      * associations.
      */
     List<URI> assocMetaUris = config.getAssocMetaUris(entry.getMetaUri());
-    if(assocMetaUris == null || assocMetaUris.isEmpty()) {
+    if (assocMetaUris == null || assocMetaUris.isEmpty()) {
       node.setAssociations(Collections.emptyList());
     } else {
       List<NavigationAssociation> navigationAssociations = assocMetaUris.stream()
@@ -313,8 +354,8 @@ public class Navigation {
           .collect(Collectors.toList());
       node.setAssociations(navigationAssociations);
     }
-    
-    
+
+
     return node;
   }
 
