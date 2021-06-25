@@ -58,7 +58,8 @@ public class StatefulApiInterceptor implements MethodInterceptor {
         cache.get(invocation.getMethod().getDeclaringClass(), () -> getPublishers(invocation));
     NotifyListeners notifiyListeners = invocation.getMethod().getAnnotation(NotifyListeners.class);
     Collection<Method> publishersToCall;
-    if (notifiyListeners.value() == null || notifiyListeners.value().length == 0) {
+    
+    if (notifiyListeners == null || notifiyListeners.value() == null || notifiyListeners.value().length == 0) {
       publishersToCall = publishers.values();
     } else {
       publishersToCall = new ArrayList<>(publishers.size());
@@ -66,6 +67,7 @@ public class StatefulApiInterceptor implements MethodInterceptor {
         publishersToCall.add(publishers.get(notifiyListeners.value()[i]));
       }
     }
+    
     for (Method publisherImpl : publishersToCall) {
       EventPublisher publisher = (EventPublisher) publisherImpl.invoke(invocation.getThis());
       if (publisher instanceof EventPublisherImpl) {
