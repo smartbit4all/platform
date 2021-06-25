@@ -31,7 +31,7 @@ public class DashboardCard extends FlexLayout {
 
   public DashboardCard(String titleText,
       ComponentEventListener<ClickEvent<Button>> clickListener) {
-
+    this(titleText, clickListener, VaadinIcon.PLUS, VaadinIcon.ARROW_RIGHT);
   }
 
   public DashboardCard(String titleText,
