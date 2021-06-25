@@ -145,39 +145,62 @@ public class ReflectionUtility {
    * @param annotationType The annotation class.
    * @return Return null if the annotation was not found.
    */
-  private static <A extends Annotation> A getNearestAnnotation(Method method,
+  public static <A extends Annotation> A getNearestAnnotation(
+      Method method,
       Class<A> annotationType) {
+
     final Class<?> declaringClass = method.getDeclaringClass();
     final String methodName = method.getName();
     final Class<?>[] params = method.getParameterTypes();
 
+    final A ownAnnotation = method.getAnnotation(annotationType);
+    if (ownAnnotation != null) {
+      return ownAnnotation;
+    }
+
     final Class<?> superclass = declaringClass.getSuperclass();
     if (superclass != null) {
-      final A annotation =
-          traverseNearestAnnotation(annotationType, superclass, methodName, params);
-      if (annotation != null)
+      A annotation = getAnnotation(annotationType, methodName, params, superclass);
+
+      if (annotation != null) {
         return annotation;
+      }
     }
 
     for (final Class<?> implInterface : declaringClass.getInterfaces()) {
-      final A annotation =
-          traverseNearestAnnotation(annotationType, implInterface, methodName, params);
-      if (annotation != null)
+      A annotation = getAnnotation(annotationType, methodName, params, implInterface);
+
+      if (annotation != null) {
         return annotation;
+      }
     }
 
     return null;
   }
 
-  private static <A extends Annotation> A traverseNearestAnnotation(Class<A> annotationClass,
+  private static <A extends Annotation> A getAnnotation(Class<A> annotationType,
+      final String methodName, final Class<?>[] params, final Class<?> superclass) {
+
+    final Method superMethod = traverseNearestAnnotation(
+        annotationType,
+        superclass,
+        methodName,
+        params);
+
+    if(superMethod == null) {
+      return null;
+    }
+    
+    return getNearestAnnotation(superMethod, annotationType);
+  }
+
+  private static <A extends Annotation> Method traverseNearestAnnotation(Class<A> annotationClass,
       Class<?> searchClass, String methodName,
       Class<?>[] params) {
+
     try {
       final Method method = searchClass.getMethod(methodName, params);
-      final A annotation = method.getAnnotation(annotationClass);
-      if (annotation != null)
-        return annotation;
-      return getNearestAnnotation(method, annotationClass);
+      return method;
     } catch (final NoSuchMethodException e) {
       return null;
     }

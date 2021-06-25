@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
@@ -56,10 +57,16 @@ public class StatefulApiInterceptor implements MethodInterceptor {
     Object result = invocation.proceed();
     Map<String, Method> publishers =
         cache.get(invocation.getMethod().getDeclaringClass(), () -> getPublishers(invocation));
-    NotifyListeners notifiyListeners = invocation.getMethod().getAnnotation(NotifyListeners.class);
+
+    NotifyListeners notifiyListeners = ReflectionUtility.getNearestAnnotation(
+        invocation.getMethod(),
+        NotifyListeners.class);
+
+    Objects.requireNonNull(notifiyListeners,
+        "NotifyListeners annotation not found on method: " + invocation.getMethod().getName());
+
     Collection<Method> publishersToCall;
-    
-    if (notifiyListeners == null || notifiyListeners.value() == null || notifiyListeners.value().length == 0) {
+    if (notifiyListeners.value() == null || notifiyListeners.value().length == 0) {
       publishersToCall = publishers.values();
     } else {
       publishersToCall = new ArrayList<>(publishers.size());
@@ -67,7 +74,7 @@ public class StatefulApiInterceptor implements MethodInterceptor {
         publishersToCall.add(publishers.get(notifiyListeners.value()[i]));
       }
     }
-    
+
     for (Method publisherImpl : publishersToCall) {
       EventPublisher publisher = (EventPublisher) publisherImpl.invoke(invocation.getThis());
       if (publisher instanceof EventPublisherImpl) {
