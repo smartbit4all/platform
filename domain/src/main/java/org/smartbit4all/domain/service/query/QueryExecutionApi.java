@@ -21,6 +21,6 @@ public interface QueryExecutionApi {
    * @param queryRequest The query object.
    * @return The output of the query.
    */
-  <E extends EntityDefinition> QueryOutput<E> execute(Query<E> queryRequest);
+  <E extends EntityDefinition> QueryOutput<E> execute(Query<E> queryRequest) throws Exception;
 
 }

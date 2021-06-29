@@ -20,8 +20,9 @@ public class SQLQueryExecutionApi implements QueryExecutionApi {
 
   @SuppressWarnings("unchecked")
   @Override
-  public <E extends EntityDefinition> QueryOutput<E> execute(Query<E> queryRequest) {
+  public <E extends EntityDefinition> QueryOutput<E> execute(Query<E> queryRequest) throws Exception {
     SQLQueryExecution queryExecution = new SQLQueryExecution(jdbcTemplate, queryRequest);
+    queryExecution.execute();
     return (QueryOutput<E>) queryExecution.query.output();
   }
 
