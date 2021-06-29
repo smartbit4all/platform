@@ -9,7 +9,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.org.bean.User;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.core.env.PropertySource;
 import org.springframework.util.Assert;
 
 /**
@@ -21,6 +24,8 @@ import org.springframework.util.Assert;
  */
 public class OrgApiInMemory extends OrgApiImpl {
 
+  private static final String ORGAPI_USERS = "orgapi.users";
+
   protected Map<URI, User> users;
 
   protected Map<URI, Group> groups;
@@ -31,11 +36,69 @@ public class OrgApiInMemory extends OrgApiImpl {
     super(env);
     users = new HashMap<>();
     groups = new HashMap<>();
+
+    loadUsersAndGroups(env);
+  }
+
+  // TODO Use ConfigurationProperties: https://www.baeldung.com/configuration-properties-in-spring-boot
+  protected void loadUsersAndGroups(Environment env) {
+    if (!(env instanceof ConfigurableEnvironment)) {
+      return;
+    }
+    
+    for (PropertySource<?> propertySource : ((ConfigurableEnvironment) env).getPropertySources()) {
+      if (propertySource instanceof EnumerablePropertySource) {
+        for (String key : ((EnumerablePropertySource) propertySource).getPropertyNames()) {
+          if (key.startsWith(ORGAPI_USERS)) {
+            // e.g. "orgapi.users.username.name"
+
+            // "username.name"
+            String userNameProperty = key.substring(ORGAPI_USERS.length() + 1);
+            int indexOf = userNameProperty.indexOf(".");
+            
+            // "username"
+            String userName = userNameProperty.substring(0, indexOf);
+            
+            // "name"
+            String property = userNameProperty.substring(indexOf + 1);
+            String propertyValue = (String) propertySource.getProperty(key);
+            User user = users.get(getUserUri(userName));
+
+            if (user == null) {
+              user = addTestUser(null, userName, null);
+            }
+
+            if ("email".equals(property)) {
+              user.setEmail(propertyValue);
+            } else if ("password".equals(property)) {
+              user.setPassword(propertyValue);
+            } else if ("name".equals(property)) {
+              user.setName(propertyValue);
+            } else if ("groups".equals(property)) {
+              String[] groupNames = propertyValue.split(",");
+              for (String groupName : groupNames) {
+                URI groupUri = getGroupUri(groupName);
+                Group group = groups.get(groupUri);
+                if (group == null) {
+                  addTestGroup(groupName, user);
+                } else {
+                  group.addChildrenItem(user.getUri());
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   }
 
   @Override
-    protected Group localGroupOf(String groupName) {
-    return new Group().name(groupName).uri(URI.create("local:/group#" + groupName));
+  protected Group localGroupOf(String groupName) {
+    return new Group().name(groupName).uri(getGroupUri(groupName));
+  }
+
+  protected URI getGroupUri(String groupName) {
+    return URI.create("local:/group#" + groupName);
   }
 
   public User addTestUser(String name, String userName, String email) {
@@ -47,9 +110,14 @@ public class OrgApiInMemory extends OrgApiImpl {
   }
 
   private User createUser(String name, String userName, String email) {
-    URI userUri = URI.create("local:/user#" + userName);
+    URI userUri = getUserUri(userName);
 
     return new User().uri(userUri).name(name).username(userName).email(email);
+  }
+
+  protected URI getUserUri(String userName) {
+    URI userUri = URI.create("local:/user#" + userName);
+    return userUri;
   }
 
   @Override
@@ -99,9 +167,9 @@ public class OrgApiInMemory extends OrgApiImpl {
 
   @Override
   public List<Group> getGroupsOfUser(URI userUri) {
-    List<Group> result = groups.values().stream().filter(group -> group.getChildren().contains(userUri))
-        .collect(Collectors.toList());
-    
+    List<Group> result = groups.values().stream()
+        .filter(group -> group.getChildren().contains(userUri)).collect(Collectors.toList());
+
     result.addAll(getAdditionalLocalGroups(result));
     return result;
   }
