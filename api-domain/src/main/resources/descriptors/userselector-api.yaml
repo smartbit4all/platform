@@ -1,0 +1,36 @@
+openapi: 3.0.1
+info:
+  title: User selector api
+  description: User selector ui api.
+  termsOfService: ''
+  contact:
+    email: info@it4all.hu
+  version: 1.0.0
+tags:
+  - name: UserSelector
+paths: {}
+components:
+  schemas:
+    UserSelectors:
+      type: object
+      properties:
+        selectors:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserSelector'
+        selected:
+          $ref: '#/components/schemas/UserSelector'
+    UserSelector:
+      type: object
+      properties:
+        kind:
+          type: string
+          enum:
+          - USER
+          - GROUP
+        uri:
+          type: string
+          format: uri
+        displayName:
+          type: string
+        
