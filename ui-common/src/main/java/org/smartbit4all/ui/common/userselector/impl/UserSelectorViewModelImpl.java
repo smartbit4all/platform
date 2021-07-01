@@ -26,6 +26,11 @@ public class UserSelectorViewModelImpl extends ObjectEditingImpl implements User
     this.orgApi = orgApi;
     this.userSelectorsDescriptor = userSelectorsDescriptor;
     
+    initObservableObject();
+  }
+  
+  @Override
+  public void initObservableObject() {
     userSelectors = new ObservableObjectImpl();
   }
 

@@ -11,6 +11,8 @@ public interface UserSelectorViewModel extends ObjectEditing {
   @PublishEvents("OBJECT")
   ObservableObject userSelectors();
   
+  void initObservableObject();
+  
   @NotifyListeners
   void initUserSelectors(URI selectedUserUri);
 }
