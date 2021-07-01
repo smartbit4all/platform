@@ -9,8 +9,10 @@ import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.core.object.ReferencedObjectChange;
 import org.smartbit4all.ui.api.filter.DynamicFilterViewModel;
 import com.vaadin.flow.component.HasComponents;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
+@CssImport("./styles/components/dynamic-filter-view.css")
 public class DynamicFilterView {
 
   private DynamicFilterViewModel viewModel;
