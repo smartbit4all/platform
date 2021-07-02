@@ -141,7 +141,8 @@
 
 .sb4-page1-cards {
     margin-top: auto;
-    margin-bottom: -88px;
+    /*margin-bottom: -88px; this is not responsive for different screen sizes*/
+    margin-top: 3%;
     
 }
 
