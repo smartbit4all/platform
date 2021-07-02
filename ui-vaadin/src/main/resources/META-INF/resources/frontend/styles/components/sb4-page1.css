@@ -10,7 +10,7 @@
     background-image: url(images/hero_bg.png);
     background-repeat: repeat;
     background-position-y: center;
-    height: 280px;
+    height: 15%;
     flex-direction: column;
     align-items: center;
     /* flex-shrink: 0; */
@@ -18,7 +18,7 @@
 
 .sb4-page1-header-title {
     flex-direction: column;
-    margin-top: 80px;
+    margin-top: 2%;
     align-items: center;
     justify-content: center;
 }
@@ -137,12 +137,13 @@
 .sb4-page1-body-cards{
     margin-top: calc(var(--lumo-space-xl)*4);
     flex-direction: column;
+    height: 85%;
 }
 
 .sb4-page1-cards {
     margin-top: auto;
     /*margin-bottom: -88px; this is not responsive for different screen sizes*/
-    margin-top: 3%;
+    margin-top: 2%;
     
 }
 
