@@ -78,7 +78,7 @@
 }
 
 .sb4-page1-header-progress-active {
-    font-family: Roboto;
+    /*font-family: Roboto; why is this necessary?*/
     font-style: normal;
     font-weight: bold;
     font-size: 22px;
@@ -101,7 +101,7 @@
 
 .sb4-page1-header-progress-inactive {
 
-    font-family: Roboto;
+    /*font-family: Roboto; why is this necessary?*/
     font-style: normal;
     font-weight: bold;
     font-size: 22px;
