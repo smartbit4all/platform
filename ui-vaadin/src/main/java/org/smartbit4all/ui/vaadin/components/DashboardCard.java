@@ -28,6 +28,10 @@ public class DashboardCard extends FlexLayout {
     createTitle(titleText);
     createBottomButton(viewName);
   }
+  
+  public DashboardCard(String titleText, String viewName, VaadinIcon topIcon) {
+    this(titleText, viewName, topIcon, VaadinIcon.ARROW_RIGHT);
+  }
 
   public DashboardCard(String titleText,
       ComponentEventListener<ClickEvent<Button>> clickListener) {
