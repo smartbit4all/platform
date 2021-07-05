@@ -1,0 +1,181 @@
+openapi: 3.0.1
+info:
+  title: Form API
+  description: API for the predictive filling of forms, where a tree structure contains which pieces of data follow other pieces.
+  contact:
+    email: info@it4all.hu
+  version: 1.0.0
+tags:
+  - name: Form API
+paths:
+  /nope:
+    summary: placeholder
+    description: placeholder
+components:
+  schemas:
+    PredictiveFormInstance:
+      description: The whole layout, that describes already collected pieces of data as the content, and the possible choices as well.
+      type: object
+      properties:
+        uri:
+          type: string
+          format: uri
+        activeContent:
+          type: string
+          format: uuid
+          description: The uuid of the active content. It's the context of the modification.
+        availableChoices:
+          type: array
+          items:
+            $ref: "#/components/schemas/PropertyWidgetDescriptor"
+        content:
+          $ref: "#/components/schemas/FormDataContent"
+        graph:
+          $ref: "#/components/schemas/PredictiveInputGraphDescriptor"
+    FixedLayoutFormInstance:
+      description: This form instance contains a well-defined layout for all properties of the entities. Every property is visible and accessible for the user. The exact layout is missing!!!
+      type: object
+      properties:
+        uri:
+          type: string
+          format: uri
+        content:
+          $ref: "#/components/schemas/FormDataContent"
+    FormDataContent:
+      description: Data object, that describes the already gathered pieces of data in a key-value mapping.
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The UUID of the content.
+        active:
+          type: boolean
+          description: Active flag of the content.
+        entityUri:
+          type: string
+          description: The uri reference for the entity definition belong to the given record.
+          format: uri
+        values:
+          type: array
+          items:
+            $ref: "#/components/schemas/InputValue"
+        details:
+          type: array
+          items:
+            $ref:  "#/components/schemas/FormDataDetailContent"
+    FormDataDetailContent:
+      description: The detail list of data contents identified by a name.
+      type: object
+      properties:
+        entityUri:
+          type: string
+          description: The uri reference for the entity definition belong to the given record. This entity uri defines the entityUris of the contents as well. This must be validated while editing.
+          format: uri
+        contents:
+          type: array
+          items:
+            $ref: "#/components/schemas/FormDataContent"
+    InputValue:
+      description: The value instance in the content belong to a property of an entity.
+      type: object
+      properties:
+        propertyUri:
+          type: string
+          format: uri
+        propertyValue:
+          type: string
+        widget:
+          type: string
+          format: uri
+    EntityDescriptor:
+      description: The form ui meta descriptor of an entity.
+      type: object
+      properties:
+        uri:
+          type: string
+          format: uri
+        widgets:
+          type: array
+          description: The list of the available property widgets for the entity.
+          items:
+            $ref: "#/components/schemas/PropertyWidgetDescriptor"
+        details:
+          type: array
+          description: The list of the available detail widgets for the entity. Can refere the same entity more than once like postal and temporary address of a customer.
+          items:
+            $ref: "#/components/schemas/DetailWidgetDescriptor"
+    PropertyWidgetDescriptor:
+      description: Represents a descriptor, which contains the type of the widget and the URIs to the properties edited by the this widget.
+      type: object
+      properties:
+        uri:
+          type: string
+          format: uri
+        label:
+          type: string
+        icon:
+          type: string
+        uris:
+          type: array
+          description: The list of property uris for the widget we have. Could be one or more depending on the widget type.
+          items:
+            type: string
+            format: uri
+        widgetType:
+          type: string
+          description: The management code for the input widget relies on this enum.
+          enum:
+            [
+              text,
+              text_interval,
+              combobox,
+              date,
+              date_interval,
+              number,
+              number_interval,
+            ]
+    DetailWidgetDescriptor:
+      description: The meta data of the detail inside an entity. It defines the operation mode of the multiple instance management ui. (like a grid or something...)
+      type: object
+      properties:
+        uri:
+          type: string
+          format: uri
+        name:
+          type: string
+        label:
+          type: string
+        icon:
+          type: string
+        entityUri:
+          type: string
+          format: uri        
+    PredictiveInputGraphDescriptor:
+      description: A special layout defines a graph for the input values of PredictiveFormInstance. The available choices are calculated by this graph while editing the PredictiveFormInstance.
+      type: object
+      properties:
+        uri:
+          type: string
+          format: uri
+        rootNodes:
+          type: array
+          items:
+            $ref:  "#/components/schemas/PredictiveInputGraphNode"
+    PredictiveInputGraphNode:
+      description: A single node in the input graph, contains an URI that points to a descriptor
+      type: object
+      properties:
+        kind:
+          type: string
+          enum:
+            - widget
+            - detail
+        descriptorUri:
+          type: string
+          description: The uri of the widget descriptor or the detail descriptor.
+          format: uri
+        children:
+          type: array
+          items:
+            $ref:  "#/components/schemas/PredictiveInputGraphNode"

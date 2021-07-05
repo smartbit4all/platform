@@ -11,9 +11,9 @@ import javax.validation.Valid;
 import javax.validation.constraints.*;
 
 /**
- * The value instance in the content.
+ * The value instance in the content belong to a property of an entity.
  */
-@ApiModel(description = "The value instance in the content.")
+@ApiModel(description = "The value instance in the content belong to a property of an entity.")
 
 public class InputValue   {
   @JsonProperty("propertyUri")

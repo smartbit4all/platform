@@ -14,11 +14,14 @@ import javax.validation.Valid;
 import javax.validation.constraints.*;
 
 /**
- * Represents a descriptor, which contains the type of the widget and the URIs to the properties
+ * Represents a descriptor, which contains the type of the widget and the URIs to the properties edited by the this widget.
  */
-@ApiModel(description = "Represents a descriptor, which contains the type of the widget and the URIs to the properties")
+@ApiModel(description = "Represents a descriptor, which contains the type of the widget and the URIs to the properties edited by the this widget.")
 
-public class FormInputWidgetDescriptor   {
+public class PropertyWidgetDescriptor   {
+  @JsonProperty("uri")
+  private URI uri;
+
   @JsonProperty("label")
   private String label;
 
@@ -77,7 +80,28 @@ public class FormInputWidgetDescriptor   {
   @JsonProperty("widgetType")
   private WidgetTypeEnum widgetType;
 
-  public FormInputWidgetDescriptor label(String label) {
+  public PropertyWidgetDescriptor uri(URI uri) {
+    this.uri = uri;
+    return this;
+  }
+
+  /**
+   * Get uri
+   * @return uri
+  */
+  @ApiModelProperty(value = "")
+
+  @Valid
+
+  public URI getUri() {
+    return uri;
+  }
+
+  public void setUri(URI uri) {
+    this.uri = uri;
+  }
+
+  public PropertyWidgetDescriptor label(String label) {
     this.label = label;
     return this;
   }
@@ -97,7 +121,7 @@ public class FormInputWidgetDescriptor   {
     this.label = label;
   }
 
-  public FormInputWidgetDescriptor icon(String icon) {
+  public PropertyWidgetDescriptor icon(String icon) {
     this.icon = icon;
     return this;
   }
@@ -117,12 +141,12 @@ public class FormInputWidgetDescriptor   {
     this.icon = icon;
   }
 
-  public FormInputWidgetDescriptor uris(List<URI> uris) {
+  public PropertyWidgetDescriptor uris(List<URI> uris) {
     this.uris = uris;
     return this;
   }
 
-  public FormInputWidgetDescriptor addUrisItem(URI urisItem) {
+  public PropertyWidgetDescriptor addUrisItem(URI urisItem) {
     if (this.uris == null) {
       this.uris = new ArrayList<>();
     }
@@ -146,7 +170,7 @@ public class FormInputWidgetDescriptor   {
     this.uris = uris;
   }
 
-  public FormInputWidgetDescriptor widgetType(WidgetTypeEnum widgetType) {
+  public PropertyWidgetDescriptor widgetType(WidgetTypeEnum widgetType) {
     this.widgetType = widgetType;
     return this;
   }
@@ -175,23 +199,25 @@ public class FormInputWidgetDescriptor   {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    FormInputWidgetDescriptor formInputWidgetDescriptor = (FormInputWidgetDescriptor) o;
-    return Objects.equals(this.label, formInputWidgetDescriptor.label) &&
-        Objects.equals(this.icon, formInputWidgetDescriptor.icon) &&
-        Objects.equals(this.uris, formInputWidgetDescriptor.uris) &&
-        Objects.equals(this.widgetType, formInputWidgetDescriptor.widgetType);
+    PropertyWidgetDescriptor propertyWidgetDescriptor = (PropertyWidgetDescriptor) o;
+    return Objects.equals(this.uri, propertyWidgetDescriptor.uri) &&
+        Objects.equals(this.label, propertyWidgetDescriptor.label) &&
+        Objects.equals(this.icon, propertyWidgetDescriptor.icon) &&
+        Objects.equals(this.uris, propertyWidgetDescriptor.uris) &&
+        Objects.equals(this.widgetType, propertyWidgetDescriptor.widgetType);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(label, icon, uris, widgetType);
+    return Objects.hash(uri, label, icon, uris, widgetType);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class FormInputWidgetDescriptor {\n");
+    sb.append("class PropertyWidgetDescriptor {\n");
     
+    sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    label: ").append(toIndentedString(label)).append("\n");
     sb.append("    icon: ").append(toIndentedString(icon)).append("\n");
     sb.append("    uris: ").append(toIndentedString(uris)).append("\n");
