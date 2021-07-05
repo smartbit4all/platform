@@ -86,6 +86,7 @@ components:
         propertyValue:
           type: string
         widget:
+          description: The reference to the widget, that describes this inputValue.
           type: string
           format: uri
     EntityDescriptor:

@@ -22,6 +22,9 @@ public class InputValue   {
   @JsonProperty("propertyValue")
   private String propertyValue;
 
+  @JsonProperty("widget")
+  private URI widget;
+
   public InputValue propertyUri(URI propertyUri) {
     this.propertyUri = propertyUri;
     return this;
@@ -63,6 +66,27 @@ public class InputValue   {
     this.propertyValue = propertyValue;
   }
 
+  public InputValue widget(URI widget) {
+    this.widget = widget;
+    return this;
+  }
+
+  /**
+   * The reference to the widget, that describes this inputValue.
+   * @return widget
+  */
+  @ApiModelProperty(value = "The reference to the widget, that describes this inputValue.")
+
+  @Valid
+
+  public URI getWidget() {
+    return widget;
+  }
+
+  public void setWidget(URI widget) {
+    this.widget = widget;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -74,12 +98,13 @@ public class InputValue   {
     }
     InputValue inputValue = (InputValue) o;
     return Objects.equals(this.propertyUri, inputValue.propertyUri) &&
-        Objects.equals(this.propertyValue, inputValue.propertyValue);
+        Objects.equals(this.propertyValue, inputValue.propertyValue) &&
+        Objects.equals(this.widget, inputValue.widget);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(propertyUri, propertyValue);
+    return Objects.hash(propertyUri, propertyValue, widget);
   }
 
   @Override
@@ -89,6 +114,7 @@ public class InputValue   {
     
     sb.append("    propertyUri: ").append(toIndentedString(propertyUri)).append("\n");
     sb.append("    propertyValue: ").append(toIndentedString(propertyValue)).append("\n");
+    sb.append("    widget: ").append(toIndentedString(widget)).append("\n");
     sb.append("}");
     return sb.toString();
   }
