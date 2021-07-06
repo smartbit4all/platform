@@ -4,10 +4,9 @@ import org.smartbit4all.core.object.ApiObjectRef;
 import org.smartbit4all.core.object.ObjectEditingImpl;
 import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.core.object.ObservableObjectImpl;
+import org.smartbit4all.domain.meta.InputValue;
 import org.smartbit4all.ui.api.form.PredictiveFormViewModel;
-import org.smartbit4all.ui.api.form.model.InputValue;
 import org.smartbit4all.ui.api.form.model.PredictiveFormInstance;
-import org.smartbit4all.ui.api.form.model.PropertyWidgetDescriptor;
 
 /**
  * The implementation of the ViewModel for the whole view. This connects the view and the model in
@@ -47,8 +46,8 @@ public class PredictiveFormViewModelImpl extends ObjectEditingImpl
     switch (command) {
       case "CREATE_FRAGMENT":
         // TODO add to FormDataContent.getValues()
-        InputValue inputValue = createInputValueFromDescriptorPath(commandPath);
-        predictiveFormModel.getContent().addValuesItem(inputValue);
+//        InputValue inputValue = createInputValueFromDescriptorPath(commandPath);
+//        predictiveFormModel.getContent().addValuesItem(inputValue);
         break;
       case "SET_VALUE":
         // TODO
@@ -67,12 +66,13 @@ public class PredictiveFormViewModelImpl extends ObjectEditingImpl
 
   private InputValue createInputValueFromDescriptorPath(String descriptorPath) {
     ApiObjectRef availableInputRef = ref.getValueRefByPath(descriptorPath);
-    PropertyWidgetDescriptor descriptor =
-        availableInputRef.getWrapper(PropertyWidgetDescriptor.class);
+//    PropertyWidgetDescriptor descriptor =
+//        availableInputRef.getWrapper(PropertyWidgetDescriptor.class);
     // return createAvailableInputFromDescriptor(descriptor);
-    InputValue inputValue = new InputValue();
-    inputValue.setPropertyUri(descriptor.getUris().get(0));
-    return inputValue;
+//    InputValue inputValue = new InputValue();
+//    inputValue.setPropertyUri(descriptor.getUris().get(0));
+//    return inputValue;
+    return null;
   }
 
   // private datacucc createAvailableInputFromDescriptor(

@@ -10,7 +10,7 @@ import javax.validation.constraints.*;
 import com.fasterxml.jackson.annotation.JsonCreator;
 
 /**
- * * 'container' This is just a folder for a set of widgets. * 'reference' Can be used to manage the reference for another entity.  * 'detail' A list of other entities contained by the current entity. * 'association' The association is reference for an independent entity instance. TODO  * 'text' A text widget (a string value text field). * 'combobox' A selectable value stored in one or more fields * 'date' The single property widget with date type.  * 'date_interval' An editor with a pair of date properties. * 'number' The single property widget with number type. * 'number_interval' An editor with a pair of number properties. 
+ * * `container` This is just a folder for a set of widgets. * `reference` Can be used to manage the reference for another entity.  * `detail` A list of other entities contained by the current entity. * `association` The association is reference for an independent entity instance. TODO  * `text` A text widget (a string value text field). * `combobox` A selectable value stored in one or more fields * `date` The single property widget with date type.  * `date_interval` An editor with a pair of date properties. * `number` The single property widget with number type. * `number_interval` An editor with a pair of number properties. 
  */
 public enum WidgetType {
   

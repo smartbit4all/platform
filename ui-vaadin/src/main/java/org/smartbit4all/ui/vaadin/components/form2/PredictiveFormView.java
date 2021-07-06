@@ -1,6 +1,7 @@
-package org.smartbit4all.ui.vaadin.components.form;
+package org.smartbit4all.ui.vaadin.components.form2;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.smartbit4all.core.object.ChangeState;
 import org.smartbit4all.core.object.CollectionObjectChange;
@@ -8,7 +9,8 @@ import org.smartbit4all.core.object.ObjectChangeSimple;
 import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.core.object.ReferencedObjectChange;
 import org.smartbit4all.ui.api.form.PredictiveFormViewModel;
-import org.smartbit4all.ui.api.form.model.FormDataContent;
+import org.smartbit4all.ui.vaadin.components.form.FormDataContentView;
+import org.smartbit4all.ui.vaadin.components.form.PredictiveFormAvailableInputView;
 import com.vaadin.flow.component.HasComponents;
 
 /**
@@ -37,11 +39,14 @@ public class PredictiveFormView {
   private ObservableObject model;
 
   /**
-   * The view of the root content.
+   * The map contains the mapping of the widget views to their corresponding paths.
    */
-  private FormDataContentView root;
-  
   private Map<String, PredictiveFormAvailableInputView> availableInputsByPath;
+  
+  /**
+   * The list of widget views that are already selected, and go on the top of the view.
+   */
+  private List<WidgetView> visibleChoices; 
 
   public PredictiveFormView(PredictiveFormViewModel viewModel, HasComponents contentHolder,
       HasComponents availableChoicesHolder) {
@@ -88,31 +93,21 @@ public class PredictiveFormView {
    * @param changes the list of changes that happened on the content.
    */
   private void onContentChange(ReferencedObjectChange changes) {
-    ChangeState operation = changes.getChange().getOperation();
-    if (operation == ChangeState.NEW) {
-      removeRootContent();
-      createRootContent();
-    } else if (operation == ChangeState.DELETED) {
-      removeRootContent();
-    }
+    // TODO
   }
 
   /**
    * Method that creates the root {@link FormDataContentView} and adds it to the content holder.
    */
   private void createRootContent() {
-    root = new FormDataContentView(viewModel, model, "root");
-    contentHolder.add(root);
+    // TODO
   }
 
   /**
    * Method that removes the root {@link FormDataContentView} from the content holder.
    */
   private void removeRootContent() {
-    if (root != null) {
-      contentHolder.remove(root);
-      root = null;
-    }
+    // TODO
   }
 
 }

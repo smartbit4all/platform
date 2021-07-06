@@ -1,9 +1,5 @@
 package org.smartbit4all.ui.api.form;
 
-import org.smartbit4all.ui.api.form.model.FormDataContent;
-import org.smartbit4all.ui.api.form.model.InputValue;
-import org.smartbit4all.ui.api.form.model.PropertyWidgetDescriptor;
-
 /**
  * API to control the predictive form, mainly used by the ViewModel of the predictive form MVVM
  * implementation.
@@ -20,8 +16,8 @@ public interface FormApi {
    * @param content the content, that the given value should be put up on
    * @param propertyWidgetDescriptor the descriptor of the available choice
    */
-  public void selectAvailableInput(FormDataContent content,
-      PropertyWidgetDescriptor propertyWidgetDescriptor);
+//  public void selectAvailableInput(FormDataContent content,
+//      PropertyWidgetDescriptor propertyWidgetDescriptor);
 
   /**
    * Sets the value of the selected inputValue.
@@ -29,7 +25,7 @@ public interface FormApi {
    * @param inputValue the inputValue, whose value is to be set
    * @param value the desired value
    */
-  public void setValueOfInput(InputValue inputValue, String value);
+//  public void setValueOfInput(InputValue inputValue, String value);
 
   /**
    * Deselects an already selected InputValue
@@ -38,6 +34,6 @@ public interface FormApi {
    * @param inputValue the InputValue to be removed from the content, and put back to the available
    *        choices
    */
-  public void deselectContentInput(FormDataContent content, InputValue inputValue);
+//  public void deselectContentInput(FormDataContent content, InputValue inputValue);
 
 }
