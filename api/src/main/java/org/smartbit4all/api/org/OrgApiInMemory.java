@@ -54,7 +54,7 @@ public class OrgApiInMemory extends OrgApiImpl {
 
             // "username.name"
             String userNameProperty = key.substring(ORGAPI_USERS.length() + 1);
-            int indexOf = userNameProperty.indexOf(".");
+            int indexOf = userNameProperty.lastIndexOf(".");
             
             // "username"
             String userName = userNameProperty.substring(0, indexOf);
