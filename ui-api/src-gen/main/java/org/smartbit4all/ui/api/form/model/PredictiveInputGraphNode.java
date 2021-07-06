@@ -14,9 +14,9 @@ import javax.validation.Valid;
 import javax.validation.constraints.*;
 
 /**
- * A single node in the input graph, contains an URI that points to a descriptor
+ * A single node in the input graph, contains an URI that points to a descriptor. The descriptor can be a simple property but detail and reference as well.
  */
-@ApiModel(description = "A single node in the input graph, contains an URI that points to a descriptor")
+@ApiModel(description = "A single node in the input graph, contains an URI that points to a descriptor. The descriptor can be a simple property but detail and reference as well.")
 
 public class PredictiveInputGraphNode   {
   /**

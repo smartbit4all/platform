@@ -8,32 +8,28 @@ import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
-import org.smartbit4all.ui.api.form.model.FormDataContent;
 import org.smartbit4all.ui.api.form.model.PredictiveInputGraphDescriptor;
-import org.smartbit4all.ui.api.form.model.PropertyWidgetDescriptor;
+import org.smartbit4all.ui.api.form.model.WidgetDescriptor;
+import org.smartbit4all.ui.api.form.model.WidgetInstance;
 import org.openapitools.jackson.nullable.JsonNullable;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
 
 /**
- * The whole layout, that describes already collected pieces of data as the content, and the possible choices as well.
+ * An instanciated layout for an EntityFormDescription that uses a predictive data graph as a layout definition. This instance is the current state of the layouting.
  */
-@ApiModel(description = "The whole layout, that describes already collected pieces of data as the content, and the possible choices as well.")
+@ApiModel(description = "An instanciated layout for an EntityFormDescription that uses a predictive data graph as a layout definition. This instance is the current state of the layouting.")
 
 public class PredictiveFormInstance   {
   @JsonProperty("uri")
   private URI uri;
 
-  @JsonProperty("activeContent")
-  private UUID activeContent;
-
-  @JsonProperty("availableChoices")
+  @JsonProperty("availableWidgets")
   @Valid
-  private List<PropertyWidgetDescriptor> availableChoices = null;
+  private List<WidgetDescriptor> availableWidgets = null;
 
-  @JsonProperty("content")
-  private FormDataContent content;
+  @JsonProperty("visibleWidgets")
+  private WidgetInstance visibleWidgets;
 
   @JsonProperty("graph")
   private PredictiveInputGraphDescriptor graph;
@@ -59,75 +55,54 @@ public class PredictiveFormInstance   {
     this.uri = uri;
   }
 
-  public PredictiveFormInstance activeContent(UUID activeContent) {
-    this.activeContent = activeContent;
+  public PredictiveFormInstance availableWidgets(List<WidgetDescriptor> availableWidgets) {
+    this.availableWidgets = availableWidgets;
     return this;
   }
 
-  /**
-   * The uuid of the active content. It's the context of the modification.
-   * @return activeContent
-  */
-  @ApiModelProperty(value = "The uuid of the active content. It's the context of the modification.")
-
-  @Valid
-
-  public UUID getActiveContent() {
-    return activeContent;
-  }
-
-  public void setActiveContent(UUID activeContent) {
-    this.activeContent = activeContent;
-  }
-
-  public PredictiveFormInstance availableChoices(List<PropertyWidgetDescriptor> availableChoices) {
-    this.availableChoices = availableChoices;
-    return this;
-  }
-
-  public PredictiveFormInstance addAvailableChoicesItem(PropertyWidgetDescriptor availableChoicesItem) {
-    if (this.availableChoices == null) {
-      this.availableChoices = new ArrayList<>();
+  public PredictiveFormInstance addAvailableWidgetsItem(WidgetDescriptor availableWidgetsItem) {
+    if (this.availableWidgets == null) {
+      this.availableWidgets = new ArrayList<>();
     }
-    this.availableChoices.add(availableChoicesItem);
+    this.availableWidgets.add(availableWidgetsItem);
     return this;
   }
 
   /**
-   * Get availableChoices
-   * @return availableChoices
+   * Get availableWidgets
+   * @return availableWidgets
   */
   @ApiModelProperty(value = "")
 
   @Valid
 
-  public List<PropertyWidgetDescriptor> getAvailableChoices() {
-    return availableChoices;
+  public List<WidgetDescriptor> getAvailableWidgets() {
+    return availableWidgets;
   }
 
-  public void setAvailableChoices(List<PropertyWidgetDescriptor> availableChoices) {
-    this.availableChoices = availableChoices;
+  public void setAvailableWidgets(List<WidgetDescriptor> availableWidgets) {
+    this.availableWidgets = availableWidgets;
   }
 
-  public PredictiveFormInstance content(FormDataContent content) {
-    this.content = content;
+  public PredictiveFormInstance visibleWidgets(WidgetInstance visibleWidgets) {
+    this.visibleWidgets = visibleWidgets;
     return this;
   }
 
   /**
-   * Get content
-   * @return content
+   * Get visibleWidgets
+   * @return visibleWidgets
   */
   @ApiModelProperty(value = "")
 
   @Valid
 
-  public FormDataContent getContent() {
-    return content;
+  public WidgetInstance getVisibleWidgets() {
+    return visibleWidgets;
   }
 
-  public void setContent(FormDataContent content) {
-    this.content = content;
+  public void setVisibleWidgets(WidgetInstance visibleWidgets) {
+    this.visibleWidgets = visibleWidgets;
   }
 
   public PredictiveFormInstance graph(PredictiveInputGraphDescriptor graph) {
@@ -162,15 +137,14 @@ public class PredictiveFormInstance   {
     }
     PredictiveFormInstance predictiveFormInstance = (PredictiveFormInstance) o;
     return Objects.equals(this.uri, predictiveFormInstance.uri) &&
-        Objects.equals(this.activeContent, predictiveFormInstance.activeContent) &&
-        Objects.equals(this.availableChoices, predictiveFormInstance.availableChoices) &&
-        Objects.equals(this.content, predictiveFormInstance.content) &&
+        Objects.equals(this.availableWidgets, predictiveFormInstance.availableWidgets) &&
+        Objects.equals(this.visibleWidgets, predictiveFormInstance.visibleWidgets) &&
         Objects.equals(this.graph, predictiveFormInstance.graph);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, activeContent, availableChoices, content, graph);
+    return Objects.hash(uri, availableWidgets, visibleWidgets, graph);
   }
 
   @Override
@@ -179,9 +153,8 @@ public class PredictiveFormInstance   {
     sb.append("class PredictiveFormInstance {\n");
     
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
-    sb.append("    activeContent: ").append(toIndentedString(activeContent)).append("\n");
-    sb.append("    availableChoices: ").append(toIndentedString(availableChoices)).append("\n");
-    sb.append("    content: ").append(toIndentedString(content)).append("\n");
+    sb.append("    availableWidgets: ").append(toIndentedString(availableWidgets)).append("\n");
+    sb.append("    visibleWidgets: ").append(toIndentedString(visibleWidgets)).append("\n");
     sb.append("    graph: ").append(toIndentedString(graph)).append("\n");
     sb.append("}");
     return sb.toString();

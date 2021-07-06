@@ -11,33 +11,33 @@ import javax.validation.Valid;
 import javax.validation.constraints.*;
 
 /**
- * This form instance contains a well-defined layout for all properties of the entities. Every property is visible and accessible for the user. The exact layout is missing!!!
+ * An instanciated widget on a form refering its descriptor and containing the widget instance data.
  */
-@ApiModel(description = "This form instance contains a well-defined layout for all properties of the entities. Every property is visible and accessible for the user. The exact layout is missing!!!")
+@ApiModel(description = "An instanciated widget on a form refering its descriptor and containing the widget instance data.")
 
-public class FixedLayoutFormInstance   {
-  @JsonProperty("uri")
-  private URI uri;
+public class WidgetInstance   {
+  @JsonProperty("descriptorUri")
+  private URI descriptorUri;
 
-  public FixedLayoutFormInstance uri(URI uri) {
-    this.uri = uri;
+  public WidgetInstance descriptorUri(URI descriptorUri) {
+    this.descriptorUri = descriptorUri;
     return this;
   }
 
   /**
-   * Get uri
-   * @return uri
+   * The reference to the widget descriptor.
+   * @return descriptorUri
   */
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "The reference to the widget descriptor.")
 
   @Valid
 
-  public URI getUri() {
-    return uri;
+  public URI getDescriptorUri() {
+    return descriptorUri;
   }
 
-  public void setUri(URI uri) {
-    this.uri = uri;
+  public void setDescriptorUri(URI descriptorUri) {
+    this.descriptorUri = descriptorUri;
   }
 
 
@@ -49,21 +49,21 @@ public class FixedLayoutFormInstance   {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    FixedLayoutFormInstance fixedLayoutFormInstance = (FixedLayoutFormInstance) o;
-    return Objects.equals(this.uri, fixedLayoutFormInstance.uri);
+    WidgetInstance widgetInstance = (WidgetInstance) o;
+    return Objects.equals(this.descriptorUri, widgetInstance.descriptorUri);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri);
+    return Objects.hash(descriptorUri);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class FixedLayoutFormInstance {\n");
+    sb.append("class WidgetInstance {\n");
     
-    sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
+    sb.append("    descriptorUri: ").append(toIndentedString(descriptorUri)).append("\n");
     sb.append("}");
     return sb.toString();
   }
