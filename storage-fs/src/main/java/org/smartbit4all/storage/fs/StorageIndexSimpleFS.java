@@ -19,23 +19,27 @@ import java.util.Optional;
 import java.util.Set;
 import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.data.filtering.ExpressionEvaluationPlan;
-import org.smartbit4all.domain.data.index.StorageLoader;
+import org.smartbit4all.domain.data.storage.ObjectStorage;
 import org.smartbit4all.domain.data.storage.index.StorageIndex;
-import org.smartbit4all.domain.data.storage.index.StorageIndexer;
 import org.smartbit4all.domain.data.storage.index.StorageIndexField;
+import org.smartbit4all.domain.data.storage.index.StorageIndexLoader;
 import org.smartbit4all.domain.data.storage.index.StorageIndexUtil;
+import org.smartbit4all.domain.data.storage.index.StorageIndexer;
 import org.smartbit4all.domain.meta.Expression;
 import org.smartbit4all.domain.meta.Property;
 
-public class StorageIndexSimpleFS implements StorageIndexer {
+public class StorageIndexSimpleFS<T> implements StorageIndexer<T> {
 
   private File rootFolder;
 
-  private StorageLoader storageLoader;
+  private ObjectStorage<T> storage;
   
-  public StorageIndexSimpleFS(File rootFolder, StorageLoader storageLoader) {
+  public StorageIndexSimpleFS(
+      File rootFolder,
+      ObjectStorage<T> storage) {
+    
     this.rootFolder = rootFolder;
-    this.storageLoader = storageLoader;
+    this.storage = storage;
   }
 
   @Override
@@ -44,7 +48,7 @@ public class StorageIndexSimpleFS implements StorageIndexer {
   }
 
   @Override
-  public <T> void updateIndex(T object, StorageIndex<T> index) throws Exception {
+  public void updateIndex(T object, StorageIndex<T> index) throws Exception {
     URI uri = index.getObjectUriProvider().apply(object);
 
     List<StorageIndexField<T, ?>> indexFields = index.getFields();
@@ -54,8 +58,18 @@ public class StorageIndexSimpleFS implements StorageIndexer {
   }
 
   @Override
-  public List<URI> listUris(StorageIndex<?> index, Expression expression) throws Exception {
-    ExpressionEvaluationPlan plan = ExpressionEvaluationPlan.of(storageLoader, expression);
+  public List<URI> listUris(StorageIndex<T> index, Expression expression) throws Exception {
+    StorageIndexLoader<T> storageIndexLoader = new StorageIndexLoader<>(
+        index.getEntityDef(),
+        new ArrayList<>(),
+        storage,
+        index.getKey());
+    
+    for (StorageIndexField<T, ?> storageIndexField : index.getFields()) {
+      storageIndexLoader.addIndex((StorageIndexField<T, ?>) storageIndexField);
+    }
+    
+    ExpressionEvaluationPlan plan = ExpressionEvaluationPlan.of(storageIndexLoader, expression);
     List<DataRow> rows = plan.execute(Collections.emptyList());
 
     List<URI> uris = new ArrayList<>();
@@ -91,7 +105,7 @@ public class StorageIndexSimpleFS implements StorageIndexer {
     return result;
   }
 
-  private <T> void createNewLinks(
+  private void createNewLinks(
       T object,
       URI uri,
       List<StorageIndexField<T, ?>> indexFields) throws URISyntaxException, IOException {
@@ -104,7 +118,7 @@ public class StorageIndexSimpleFS implements StorageIndexer {
     }
   }
 
-  private <T> void clearExistingLinks(
+  private void clearExistingLinks(
       List<StorageIndexField<T, ?>> indexFields,
       URI uri) throws IOException {
 

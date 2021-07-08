@@ -11,14 +11,14 @@ import org.smartbit4all.domain.meta.Property;
  * 
  * @author Zoltan Szegedi
  */
-public interface StorageIndexer {
+public interface StorageIndexer<T> {
 
-  public List<URI> listUris(StorageIndex<?> index, Expression expression) throws Exception;
+  public List<URI> listUris(StorageIndex<T> index, Expression expression) throws Exception;
 
   public <V> List<URI> listUris(Property<URI> key, Property<V> indexField, V value)
       throws Exception;
 
-  public <T> void updateIndex(T object, StorageIndex<T> index) throws Exception;
+  public void updateIndex(T object, StorageIndex<T> index) throws Exception;
 
   public <F> boolean canUseFor(Property<F> valueField, Expression expression);
 

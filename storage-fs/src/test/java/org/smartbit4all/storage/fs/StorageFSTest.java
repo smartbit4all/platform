@@ -1,9 +1,10 @@
 package org.smartbit4all.storage.fs;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.smartbit4all.storage.fs.TestFileUtil.testFsRootFolder;
 import java.io.IOException;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -18,7 +19,6 @@ import org.smartbit4all.domain.data.storage.ObjectStorage;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.index.StorageIndex;
 import org.smartbit4all.domain.data.storage.index.StorageIndexField;
-import org.smartbit4all.domain.data.storage.index.StorageIndexLoader;
 import org.smartbit4all.domain.data.storage.index.StorageIndexer;
 import org.smartbit4all.domain.meta.EntityConfiguration;
 import org.smartbit4all.domain.meta.EntityDefinition;
@@ -28,8 +28,6 @@ import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.gson.GsonBinaryDataObjectSerializer;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class StorageFSTest {
 
@@ -129,14 +127,9 @@ class StorageFSTest {
         new GsonBinaryDataObjectSerializer(),
         TestData.class);
 
-    StorageIndexLoader<TestData> storageIndexLoader = new StorageIndexLoader<>(
-        testSearchDef,
-        new ArrayList<>(),
-        storageFS,
-        testSearchDef.key());
-
-    StorageIndexSimpleFS indexApi =
-        new StorageIndexSimpleFS(testFsRootFolder(), storageIndexLoader);
+    StorageIndexSimpleFS<TestData> indexApi = new StorageIndexSimpleFS<>(
+        testFsRootFolder(),
+        storageFS);
 
     StorageIndexField<TestData, String> stateIndex =
         createStateIndexField(testSearchDef, activeList, closedList, indexApi);
@@ -153,10 +146,6 @@ class StorageFSTest {
         indexApi,
         Arrays.asList(isActiveIndex, stateIndex, emptyStateIndex),
         uriProvider);
-
-    storageIndexLoader.addIndex(stateIndex);
-    storageIndexLoader.addIndex(emptyStateIndex);
-    storageIndexLoader.addIndex(isActiveIndex);
 
     // Storage.of(TestData.class).save(tdActive1);
     // List<TestData> datas = Storage.of(TestData.class).search(searchDef).listDatas(expression);
@@ -181,11 +170,11 @@ class StorageFSTest {
     Expression closedExpression = testSearchDef.state().eq(closedList);
     Expression emptyStateExpression = testSearchDef.emptyState().eq(notInAnyState);
     Expression notActiveExpression = testSearchDef.isActive().eq(false);
-    Expression oneMatchOtherEmptyExpression = testSearchDef.state().eq("cica").AND(testSearchDef.state().eq(activeList));
-    
-    List<TestData> oneMatchOtherEmpty = objectStorage.listDatas(oneMatchOtherEmptyExpression);
-    assertEquals(0, oneMatchOtherEmpty.size());
-    
+    Expression oneMatchOtherEmptyExpression =
+        testSearchDef.state().eq("cica").AND(testSearchDef.state().eq(activeList));
+    Expression oneMatchOtherEmptyReversedExpression =
+        testSearchDef.state().eq(activeList).AND(testSearchDef.state().eq("cica"));
+
     List<TestData> activeDatas = objectStorage.listDatas(activeExpression);
     assertEquals(1, activeDatas.size());
 
@@ -205,6 +194,17 @@ class StorageFSTest {
 
     assertEquals(1, objectStorage.listDatas(closedExpression).size());
 
+    List<TestData> oneMatchOtherEmpty = objectStorage.listDatas(oneMatchOtherEmptyExpression);
+    assertEquals(0, oneMatchOtherEmpty.size());
+
+    List<TestData> oneMatchOtherEmptyReversed =
+        objectStorage.listDatas(oneMatchOtherEmptyReversedExpression);
+    assertEquals(0, oneMatchOtherEmptyReversed.size());
+
+    List<TestData> twoMatchAndOneMatch = objectStorage
+        .listDatas(testSearchDef.isActive().eq(false).AND(testSearchDef.state().eq(closedList)));
+    assertEquals(1, twoMatchAndOneMatch.size());
+
     StorageReindexerFS reindexer =
         new StorageReindexerFS("teststoragefs", testFsRootFolder(), "fs");
     assertEquals(4, reindexer.listAllUris().size());
@@ -215,7 +215,7 @@ class StorageFSTest {
   private StorageIndexField<TestData, Boolean> createIsActiveIndexField(
       TestSearchDef testSearchDef,
       String activeList,
-      StorageIndexer indexApi) {
+      StorageIndexer<TestData> indexApi) {
 
     Function<TestData, Optional<Boolean>> isActiveCalculator = (testData) -> {
 
@@ -240,7 +240,7 @@ class StorageFSTest {
   private StorageIndexField<TestData, String> createEmptyStateIndexField(
       TestSearchDef testSearchDef,
       String activeList, String closedList, String notInAnyState,
-      StorageIndexer indexApi) {
+      StorageIndexer<TestData> indexApi) {
 
     Function<TestData, Optional<String>> emptyStateCalculator = (testData) -> {
 
@@ -265,7 +265,7 @@ class StorageFSTest {
   private StorageIndexField<TestData, String> createStateIndexField(
       TestSearchDef testSearchDef,
       String activeList, String closedList,
-      StorageIndexer indexApi) {
+      StorageIndexer<TestData> indexApi) {
 
     Function<TestData, Optional<String>> stateCalculator = (testData) -> {
 
