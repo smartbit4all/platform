@@ -280,6 +280,7 @@ public class BinaryData {
     try {
       bdos = new BinaryDataOutputStream(MEMORY_LIMIT);
       ByteStreams.copy(is, bdos);
+      bdos.close();
       return bdos.data();
     } catch (Exception e) {
       log.error("message", e);
