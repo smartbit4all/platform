@@ -31,12 +31,12 @@ public class StorageIndex<T> {
 
   private Function<T, URI> objectUriProvider;
  
-  private StorageIndexer storageIndexer;
+  private StorageIndexer<T> storageIndexer;
   
   public StorageIndex(
       EntityDefinition entityDef,
       Property<URI> key,
-      StorageIndexer storageIndexer,
+      StorageIndexer<T> storageIndexer,
       List<StorageIndexField<T, ?>> fields,
       Function<T, URI> objectUriProvider) {
     
@@ -47,7 +47,7 @@ public class StorageIndex<T> {
   public StorageIndex(
       EntityDefinition entityDef,
       String keyName,
-      StorageIndexer storageIndexer,
+      StorageIndexer<T> storageIndexer,
       List<StorageIndexField<T, ?>> fields,
       Function<T, URI> objectUriProvider) {
     
@@ -57,7 +57,7 @@ public class StorageIndex<T> {
   
   private StorageIndex(
       EntityDefinition entityDef,
-      StorageIndexer storageIndexer,
+      StorageIndexer<T> storageIndexer,
       List<StorageIndexField<T, ?>> fields,
       Function<T, URI> objectUriProvider) {
     
@@ -103,6 +103,10 @@ public class StorageIndex<T> {
     return entityDef;
   }
 
+  public String getName() {
+    return entityDef.entityDefName();
+  }
+  
   public List<Property<?>> getProperties() {
     List<Property<?>> properties = new ArrayList<>();
     

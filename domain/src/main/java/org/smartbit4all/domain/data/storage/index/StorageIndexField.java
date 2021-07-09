@@ -32,7 +32,7 @@ public class StorageIndexField<T, F> extends StorageNonUniqueIndex<F, URI> {
   
   private String valueFieldName;
   
-  private StorageIndexer indexApi;
+  private StorageIndexer<T> indexApi;
   
   private Function<T, Optional<F>> calculator;
 
@@ -41,7 +41,7 @@ public class StorageIndexField<T, F> extends StorageNonUniqueIndex<F, URI> {
       Property<URI> key,
       Property<F> value,
       Function<T, Optional<F>> calculator,
-      StorageIndexer indexApi) {
+      StorageIndexer<T> indexApi) {
 
     this(entityDef, calculator, indexApi);
     
@@ -54,7 +54,7 @@ public class StorageIndexField<T, F> extends StorageNonUniqueIndex<F, URI> {
       String keyFieldName,
       String valueFieldName,
       Function<T, Optional<F>> calculator,
-      StorageIndexer indexApi) {
+      StorageIndexer<T> indexApi) {
 
     this(entityDef, calculator, indexApi);
     
@@ -65,7 +65,7 @@ public class StorageIndexField<T, F> extends StorageNonUniqueIndex<F, URI> {
   public StorageIndexField(
       EntityDefinition entityDef,
       Function<T, Optional<F>> calculator,
-      StorageIndexer indexApi) {
+      StorageIndexer<T> indexApi) {
 
     this.entityDef = entityDef;
     this.calculator = calculator;
@@ -107,6 +107,10 @@ public class StorageIndexField<T, F> extends StorageNonUniqueIndex<F, URI> {
     return calculator;
   }
 
+  public String getName() {
+    return getValueField().getName();
+  }
+  
   public String getIndexName() {
     return entityDef.entityDefName();
   }
