@@ -40,7 +40,6 @@ import org.smartbit4all.domain.annotation.property.SqlProperty;
 import org.smartbit4all.domain.annotation.property.Table;
 import org.smartbit4all.domain.annotation.property.ValueComparator;
 import org.smartbit4all.domain.meta.jdbc.JDBCDataConverterHelper;
-import org.smartbit4all.domain.meta.logic.Count;
 import org.smartbit4all.domain.service.entity.EntityUris;
 import org.smartbit4all.domain.service.query.QueryApi;
 import org.smartbit4all.domain.utility.SupportedDatabase;
@@ -167,9 +166,12 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
   public void setupProperties() {
     dataConverterHelper = ctx.getBean(JDBCDataConverterHelper.class);
 
-    countProperty = new PropertyComputed<>(Count.PROPERTTYNAME, Long.class,
-        dataConverterHelper.from(Long.class), Count.class);
-    propertiesByName.put(Count.PROPERTTYNAME, countProperty);
+//    countProperty = new PropertyComputed<>(Count.PROPERTTYNAME, Long.class,
+//        dataConverterHelper.from(Long.class), Count.class);
+    
+    countProperty = PropertySqlComputed.create(EntityDefinition.PROPERTY_COUNT_NAME, Long.class,
+        dataConverterHelper, "COUNT(1)");
+    propertiesByName.put(countProperty.getName(), countProperty);
 
     for (Method method : entityDefClazz.getMethods()) {
       checkMultiplePropertyAnnotations(method);
@@ -485,23 +487,29 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
           MethodProxy proxy)
           throws Throwable {
         String methodName = method.getName();
-        switch (methodName) {
-          case "function":
-            if(args.length != 1) {
-              throw new RuntimeException("function method can be invoked with exactly one parameters!");
-            }
-            String functionName = args[0].toString();
+        
+        if("function".equals(methodName)) {
+          if (args.length < 1) {
+            throw new RuntimeException("function method can be invoked without parameter!");
+          }
+          String functionName = args[0].toString();
+          if (args.length == 1) {
             return propertyFunctionMapper.getFunctionProperty(property,
                 new PropertyFunction(functionName, functionName));
-          case "upper":
-            return propertyFunctionMapper.getFunctionProperty(property,
-                PropertyFunction.UPPER);
-          case "lower":
-            return propertyFunctionMapper.getFunctionProperty(property,
-                PropertyFunction.LOWER);
-          default:
-            return method.invoke(property, args);
+          } else {
+            // TODO
+            // return propertyFunctionMapper.getFunctionProperty(property,
+            // new PropertyFunction(functionName, functionName));
+            return null;
+          }
         }
+        
+        PropertyFunction basicFunction = PropertyFunction.basicFunctionsByName.get(methodName);
+        if(basicFunction != null) {
+          return propertyFunctionMapper.getFunctionProperty(property, basicFunction);
+        }
+        
+        return method.invoke(property, args);
       }
     });
     if(property instanceof PropertyOwned) {

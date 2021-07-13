@@ -20,12 +20,7 @@ import java.net.URI;
 import java.sql.PreparedStatement;
 import java.util.Collection;
 import java.util.Comparator;
-import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.meta.Expression2Operand.Operator;
-import org.smartbit4all.domain.meta.logic.Avg;
-import org.smartbit4all.domain.meta.logic.Max;
-import org.smartbit4all.domain.meta.logic.Min;
-import org.smartbit4all.domain.meta.logic.Sum;
 import org.smartbit4all.domain.service.entity.EntityUris;
 
 /**
@@ -373,13 +368,9 @@ public abstract class Property<T> {
    * 
    * @return The property is created on demand and will be singleton for every property.
    */
-  public final Property<T> min() {
-    if (min == null) {
-      min = new PropertyComputed<>(Min.PROPERTTYNAME + StringConstant.UNDERLINE + name, type,
-          jdbcConverter, Min.class);
-      min.addRequired(this);
-    }
-    return min;
+  public Property<T> min() {
+    // handled in PropertyInvocationHandler
+    throw new RuntimeException("This method should be intercepted by a proxy!");
   }
 
   /**
@@ -388,13 +379,9 @@ public abstract class Property<T> {
    * 
    * @return The property is created on demand and will be singleton for every property.
    */
-  public final Property<T> max() {
-    if (max == null) {
-      max = new PropertyComputed<>(Max.PROPERTTYNAME + StringConstant.UNDERLINE + name, type,
-          jdbcConverter, Max.class);
-      max.addRequired(this);
-    }
-    return max;
+  public Property<T> max() {
+    // handled in PropertyInvocationHandler
+    throw new RuntimeException("This method should be intercepted by a proxy!");
   }
 
   /**
@@ -403,13 +390,9 @@ public abstract class Property<T> {
    * 
    * @return The property is created on demand and will be singleton for every property.
    */
-  public final Property<T> avg() {
-    if (avg == null) {
-      avg = new PropertyComputed<>(Avg.PROPERTTYNAME + StringConstant.UNDERLINE + name, type,
-          jdbcConverter, Avg.class);
-      avg.addRequired(this);
-    }
-    return avg;
+  public Property<T> avg() {
+    // handled in PropertyInvocationHandler
+    throw new RuntimeException("This method should be intercepted by a proxy!");
   }
 
   /**
@@ -418,13 +401,9 @@ public abstract class Property<T> {
    * 
    * @return The property is created on demand and will be singleton for every property.
    */
-  public final Property<T> sum() {
-    if (sum == null) {
-      sum = new PropertyComputed<>(Sum.PROPERTTYNAME + StringConstant.UNDERLINE + name, type,
-          jdbcConverter, Sum.class);
-      sum.addRequired(this);
-    }
-    return sum;
+  public Property<T> sum() {
+    // handled in PropertyInvocationHandler
+    throw new RuntimeException("This method should be intercepted by a proxy!");
   }
   
   /**

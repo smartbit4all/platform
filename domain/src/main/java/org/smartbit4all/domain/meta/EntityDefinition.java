@@ -35,6 +35,8 @@ import org.smartbit4all.core.utility.StringConstant;
  *
  */
 public interface EntityDefinition extends SB4Service {
+  
+  public static final String PROPERTY_COUNT_NAME = "countRows";
 
   public static class TableDefinition {
     /**

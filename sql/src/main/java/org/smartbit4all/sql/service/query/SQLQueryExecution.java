@@ -21,7 +21,6 @@ import org.smartbit4all.domain.meta.Operand;
 import org.smartbit4all.domain.meta.OperandProperty;
 import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.domain.meta.PropertyComputed;
-import org.smartbit4all.domain.meta.PropertyComputed.BasicComputation;
 import org.smartbit4all.domain.meta.PropertyFunction;
 import org.smartbit4all.domain.meta.PropertyOwned;
 import org.smartbit4all.domain.meta.PropertyRef;
@@ -38,7 +37,6 @@ import org.smartbit4all.sql.SQLComputedColumn;
 import org.smartbit4all.sql.SQLGroupByColumn;
 import org.smartbit4all.sql.SQLGroupByComputedColumn;
 import org.smartbit4all.sql.SQLOrderByColumn;
-import org.smartbit4all.sql.SQLSelectAggregateColumn;
 import org.smartbit4all.sql.SQLSelectColumn;
 import org.smartbit4all.sql.SQLSelectFromNode;
 import org.smartbit4all.sql.SQLSelectFromTableNode;
@@ -333,22 +331,23 @@ final class SQLQueryExecution {
       column = new SQLSelectColumn(table, builder.getColumn(propertyOwned.getDbExpression()),
           nextColumnAlias());
     } else if (property instanceof PropertyComputed<?>) {
-      // There are some privileged computation that are supported by the SQL layer. Any other
       // computed properties will be skipped.
-      PropertyComputed<?> propertyComputed = (PropertyComputed<?>) property;
-      if (propertyComputed.getBasicType() != BasicComputation.NONE) {
-        // We need to setup our required properties. The result is a list that contains the columns
-        // for every required property at the same index.
-        List<SQLSelectColumn> requiredColumns =
-            new ArrayList<>(propertyComputed.getRequiredProperties().size());
-        for (Property<?> requiredProperty : propertyComputed.getRequiredProperties()) {
-          requiredColumns.add(setupProperty(table, requiredProperty, builder));
-        }
-        // We add the count with the name of the property as alias.
-        column = new SQLSelectAggregateColumn(table,
-            builder.getFunctionColumn(propertyComputed, requiredColumns),
-            propertyComputed.getName());
-      }
+      
+      //TODO delete comment
+//      PropertyComputed<?> propertyComputed = (PropertyComputed<?>) property;
+//      if (propertyComputed.getBasicType() != BasicComputation.NONE) {
+//        // We need to setup our required properties. The result is a list that contains the columns
+//        // for every required property at the same index.
+//        List<SQLSelectColumn> requiredColumns =
+//            new ArrayList<>(propertyComputed.getRequiredProperties().size());
+//        for (Property<?> requiredProperty : propertyComputed.getRequiredProperties()) {
+//          requiredColumns.add(setupProperty(table, requiredProperty, builder));
+//        }
+//        // We add the count with the name of the property as alias.
+//        column = new SQLSelectAggregateColumn(table,
+//            builder.getFunctionColumn(propertyComputed, requiredColumns),
+//            propertyComputed.getName());
+//      }
       // Here comes the rowFetchFunction.add(Computation...)
     } else if (property instanceof PropertySqlComputed<?>) {
       PropertySqlComputed<?> propertySqlComputed = (PropertySqlComputed<?>) property;
@@ -369,6 +368,8 @@ final class SQLQueryExecution {
 
       column = new SQLComputedColumn(table, sqlComputedColumn, propertySqlComputed.getName());
     }
+    
+    //TODO handle required columns for function
     PropertyFunction propertyFunction = property.getPropertyFunction();
     if (propertyFunction != null) {
       column.setFunctionName(propertyFunction.getStatement());

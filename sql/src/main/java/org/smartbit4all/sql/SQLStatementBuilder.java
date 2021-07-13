@@ -978,26 +978,10 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
   @Override
   public String getFunctionColumn(PropertyComputed<?> property,
       List<SQLSelectColumn> requiredColumns) {
-    switch (property.getBasicType()) {
-      case COUNT:
-        return SQLConstant.COUNT;
-      case MIN:
-        return SQLConstant.MIN + StringConstant.LEFT_PARENTHESIS + requiredColumns.get(0).columnName
-            + StringConstant.RIGHT_PARENTHESIS;
-      case MAX:
-        return SQLConstant.MAX + StringConstant.LEFT_PARENTHESIS + requiredColumns.get(0).columnName
-            + StringConstant.RIGHT_PARENTHESIS;
-      case AVG:
-        return SQLConstant.AVG + StringConstant.LEFT_PARENTHESIS + requiredColumns.get(0).columnName
-            + StringConstant.RIGHT_PARENTHESIS;
-      case SUM:
-        return SQLConstant.SUM + StringConstant.LEFT_PARENTHESIS + requiredColumns.get(0).columnName
-            + StringConstant.RIGHT_PARENTHESIS;
-
-      default:
-        return null;
-
-    }
+    
+    // TODO
+    
+    return null;
   }
 
   @Override

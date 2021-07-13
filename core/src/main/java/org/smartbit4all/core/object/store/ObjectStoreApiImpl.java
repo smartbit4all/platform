@@ -1,10 +1,10 @@
 package org.smartbit4all.core.object.store;
 
 import java.net.URI;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,15 +12,22 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
+/**
+ * Stores Objects by URIs in cache for a given time. </br>
+ * With {@link #addObjectFactory(ObjectStoreUriMatcher, ObjectStoreObjectFactory)} it is possible to
+ * register factories to create missing objects by the given URIs. </br>
+ * This implementation is based on the {@link LoadingCache}.
+ */
 public class ObjectStoreApiImpl implements ObjectStoreApi {
 
   private static final Logger log = LoggerFactory.getLogger(ObjectStoreApiImpl.class);
-  
+
   private LoadingCache<URI, Object> cache;
-  
-  private Map<ObjectStoreUriMatcher, ObjectStoreObjectFactory<?>> objectFactoriesByMatchers = new HashMap<>();
-  
-  
+
+  private Map<ObjectStoreUriMatcher, ObjectStoreObjectFactory<?>> objectFactoriesByMatchers =
+      new HashMap<>();
+
+
   public ObjectStoreApiImpl(long ttlInMillis) {
     CacheLoader<URI, Object> cacheLoader = new CacheLoader<URI, Object>() {
 
@@ -42,14 +49,14 @@ public class ObjectStoreApiImpl implements ObjectStoreApi {
         }
         return null;
       }
-      
+
     };
-    
+
     cache = CacheBuilder.newBuilder()
-        .expireAfterAccess(ttlInMillis, TimeUnit.MILLISECONDS)
+        .expireAfterAccess(Duration.ofMillis(ttlInMillis))
         .build(cacheLoader);
   }
-  
+
   @Override
   public void store(URI objectUri, Object object) {
     cache.put(objectUri, object);
@@ -65,16 +72,17 @@ public class ObjectStoreApiImpl implements ObjectStoreApi {
     return clazz.cast(get(objectUri));
   }
 
-  public <T> void addObjectFactory(ObjectStoreUriMatcher uriMatcher, ObjectStoreObjectFactory<T> objectFactory) {
+  public <T> void addObjectFactory(ObjectStoreUriMatcher uriMatcher,
+      ObjectStoreObjectFactory<T> objectFactory) {
     objectFactoriesByMatchers.put(uriMatcher, objectFactory);
   }
 
   public static interface ObjectStoreObjectFactory<T> {
     T createObject(URI objectUri) throws Exception;
   }
-  
+
   public static interface ObjectStoreUriMatcher {
     public boolean isMatchingUri(URI uri);
   }
-  
+
 }
