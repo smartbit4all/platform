@@ -13,23 +13,24 @@ import javax.validation.Valid;
 import javax.validation.constraints.*;
 
 /**
- * UserSelectors
+ * UserMultiSelector
  */
 
-public class UserSelectors   {
+public class UserMultiSelector   {
   @JsonProperty("selectors")
   @Valid
   private List<UserSelector> selectors = null;
 
   @JsonProperty("selected")
-  private UserSelector selected;
+  @Valid
+  private List<UserSelector> selected = null;
 
-  public UserSelectors selectors(List<UserSelector> selectors) {
+  public UserMultiSelector selectors(List<UserSelector> selectors) {
     this.selectors = selectors;
     return this;
   }
 
-  public UserSelectors addSelectorsItem(UserSelector selectorsItem) {
+  public UserMultiSelector addSelectorsItem(UserSelector selectorsItem) {
     if (this.selectors == null) {
       this.selectors = new ArrayList<>();
     }
@@ -53,8 +54,16 @@ public class UserSelectors   {
     this.selectors = selectors;
   }
 
-  public UserSelectors selected(UserSelector selected) {
+  public UserMultiSelector selected(List<UserSelector> selected) {
     this.selected = selected;
+    return this;
+  }
+
+  public UserMultiSelector addSelectedItem(UserSelector selectedItem) {
+    if (this.selected == null) {
+      this.selected = new ArrayList<>();
+    }
+    this.selected.add(selectedItem);
     return this;
   }
 
@@ -66,11 +75,11 @@ public class UserSelectors   {
 
   @Valid
 
-  public UserSelector getSelected() {
+  public List<UserSelector> getSelected() {
     return selected;
   }
 
-  public void setSelected(UserSelector selected) {
+  public void setSelected(List<UserSelector> selected) {
     this.selected = selected;
   }
 
@@ -83,9 +92,9 @@ public class UserSelectors   {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    UserSelectors userSelectors = (UserSelectors) o;
-    return Objects.equals(this.selectors, userSelectors.selectors) &&
-        Objects.equals(this.selected, userSelectors.selected);
+    UserMultiSelector userMultiSelector = (UserMultiSelector) o;
+    return Objects.equals(this.selectors, userMultiSelector.selectors) &&
+        Objects.equals(this.selected, userMultiSelector.selected);
   }
 
   @Override
@@ -96,7 +105,7 @@ public class UserSelectors   {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class UserSelectors {\n");
+    sb.append("class UserMultiSelector {\n");
     
     sb.append("    selectors: ").append(toIndentedString(selectors)).append("\n");
     sb.append("    selected: ").append(toIndentedString(selected)).append("\n");

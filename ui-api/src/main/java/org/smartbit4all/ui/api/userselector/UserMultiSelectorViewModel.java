@@ -1,18 +1,19 @@
 package org.smartbit4all.ui.api.userselector;
 
 import java.net.URI;
+import java.util.List;
 import org.smartbit4all.core.object.NotifyListeners;
 import org.smartbit4all.core.object.ObjectEditing;
 import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.core.object.PublishEvents;
 
-public interface UserSelectorViewModel extends ObjectEditing {
+public interface UserMultiSelectorViewModel extends ObjectEditing {
   
   @PublishEvents("OBJECT")
-  ObservableObject userSelectors();
-  
-  void initObservableObject();
+  ObservableObject userMultiSelector();
   
   @NotifyListeners
-  void initUserSelectors(URI selectedUserUri);
+  void initUserMultiSelectors(List<URI> selected);
+  
+  void initObservableObject();
 }

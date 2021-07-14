@@ -5,19 +5,29 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.org.bean.User;
+import org.smartbit4all.api.userselector.bean.UserMultiSelector;
 import org.smartbit4all.api.userselector.bean.UserSelector;
-import org.smartbit4all.api.userselector.bean.UserSelectors;
+import org.smartbit4all.api.userselector.bean.UserSingleSelector;
 
 public class UserSelectorUtil {
   
-  public static UserSelectors createUserSelectors(List<User> users, List<Group> groups, URI selectedUserUri) {
-    List<UserSelector> userSelectorList = collectSelectors(users, groups);
-    UserSelector selected = userSelectorList.stream()
+  public static UserSingleSelector createUserSingleSelector(List<User> users, List<Group> groups, URI selectedUserUri) {
+    List<UserSelector> allUserSelector = collectSelectors(users, groups);
+    UserSelector selected = allUserSelector.stream()
         .filter(us -> us.getUri().equals(selectedUserUri))
         .findFirst()
         .orElse(null);
     
-    return new UserSelectors().selectors(userSelectorList).selected(selected);
+    return new UserSingleSelector().selectors(allUserSelector).selected(selected);
+  }
+  
+  public static UserMultiSelector createUserMultiSelector(List<User> users, List<Group> groups, List<URI> selectedUserURIs) {
+    List<UserSelector> allUserSelector = collectSelectors(users, groups);
+    List<UserSelector> selected = allUserSelector.stream()
+        .filter(us -> selectedUserURIs.contains(us.getUri()))
+        .collect(Collectors.toList());
+    
+    return new UserMultiSelector().selectors(allUserSelector).selected(selected);
   }
 
   private static List<UserSelector> collectSelectors(List<User> users, List<Group> groups) {

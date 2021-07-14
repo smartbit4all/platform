@@ -11,7 +11,7 @@ tags:
 paths: {}
 components:
   schemas:
-    UserSelectors:
+    UserSingleSelector:
       type: object
       properties:
         selectors:
@@ -20,6 +20,17 @@ components:
             $ref: '#/components/schemas/UserSelector'
         selected:
           $ref: '#/components/schemas/UserSelector'
+    UserMultiSelector:
+      type: object
+      properties:
+        selectors:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserSelector'
+        selected:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserSelector'
     UserSelector:
       type: object
       properties:

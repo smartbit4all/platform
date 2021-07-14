@@ -11,12 +11,13 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 
 public class UserSelectorGrid extends Grid<UserSelector> {
   
-  public UserSelectorGrid(String header) {
+  public UserSelectorGrid(String header, SelectionMode selectionMode) {
     super(UserSelector.class, false);
     addThemeName("grid-selection-theme");
     addThemeName("no-row-borders");
     addThemeName("no-border");
     addClassName("org-selector-grid");
+    setSelectionMode(selectionMode);
 
     addComponentColumn(this::createColumn).setHeader(header);
   }
