@@ -90,4 +90,16 @@ public class ParameteredPropertyFunctionTests extends FunctionTestBase {
     assertEquals("Álmos - 1", almos);
   }
   
+  @Test
+  public void testWithRefferedProperiesWithWhere() throws Exception {
+    Optional<String> firstRowValue =
+        Crud.read(addressDef)
+          .select(addressDef.person().name().function("concat", "{0}, TO_CHAR('' - ''), {1}", addressDef.person().id().function("to_char")))
+          .where(addressDef.person().name().function("concat", "{0}, TO_CHAR('' - ''), {1}", addressDef.person().id().function("to_char")).eq("Álmos - 1"))
+          .firstRowValue(addressDef.person().name());
+
+    String almos = firstRowValue.get();
+    assertEquals("Álmos - 1", almos);
+  }
+  
 }

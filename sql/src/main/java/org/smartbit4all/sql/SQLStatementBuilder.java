@@ -261,8 +261,7 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
           ((PropertyRef<?>) property).getReferredOwnedProperty();
       columnName = getColumn(owned.getDbExpression());
     }
-    // add the qualifier when it exists and no function is used ('T1.FUNCTION(params)' would break)
-    if (propertyOperand.getQualifier() != null && property.getPropertyFunction() == null) {
+    if (propertyOperand.getQualifier() != null) {
       columnName = propertyOperand.getQualifier() + StringConstant.DOT + columnName;
     }
     return columnName;
@@ -669,7 +668,7 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
     separate();
 
     PropertyFunction propertyFunction = expression.getOp().property().getPropertyFunction();
-    if (propertyFunction != null) {
+    if (propertyFunction != null && propertyFunction.getRequiredProperties().isEmpty()) {
       /*
        * We need to add the questionmark literal with the append(bindList, operand) method so the
        * bind numbers will be correct. The getFunctionAdjustedColumnName method can create the whole
