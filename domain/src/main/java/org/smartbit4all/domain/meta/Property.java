@@ -429,6 +429,24 @@ public abstract class Property<T> {
     // handled in PropertyInvocationHandler
     throw new RuntimeException("This method should be intercepted by a proxy!");
   }
+  
+  /**
+   * Applies the given function on property, with the given parameters. </br>
+   * The parameters should be passed as a string where the properties can be used in '{idx}' form.
+   * The {0} is the property the function was called on.</br>
+   * </br>
+   * For example:</br>
+   * <code>
+   * myEntity.myProperty.function("concatenateValues", "{0}, {1}, {2}", otherProperty1, 
+   * otherProperty2)
+   * </code>
+   * </br>
+   */
+  public Property<T> function(String functionName, String params, Property<?>... properties) {
+    // handled in PropertyInvocationHandler
+    throw new RuntimeException("This method should be intercepted by a proxy!");
+  }
+  
 
   /**
    * Constructs a sort order based on the property.

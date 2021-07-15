@@ -24,6 +24,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.domain.annotation.property.ComputedProperty;
@@ -494,13 +495,16 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
           }
           String functionName = args[0].toString();
           if (args.length == 1) {
-            return propertyFunctionMapper.getFunctionProperty(property,
-                new PropertyFunction(functionName, functionName));
+            return propertyFunctionMapper.getFunctionProperty(property,functionName);
           } else {
-            // TODO
-            // return propertyFunctionMapper.getFunctionProperty(property,
-            // new PropertyFunction(functionName, functionName));
-            return null;
+            String parameterString = args[1].toString();
+            List<Property<?>> requiredProperties = new ArrayList<>();
+            Property<?>[] requiredPropsArray= (Property<?>[]) args[2];
+            for(int i = 0; i < requiredPropsArray.length; i++) {
+              requiredProperties.add(requiredPropsArray[i]);
+            }
+            return propertyFunctionMapper.getFunctionProperty(property, functionName,
+                parameterString, requiredProperties);
           }
         }
         
@@ -631,27 +635,64 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
     
     private Map<Property<?>, List<Property<?>>> functionPropertiesByBasePropery = new HashMap<>();
     
+    public Property<?> getFunctionProperty(Property<?> baseProp, String functionName) {
+      return getFunctionProperty(baseProp, functionName, () -> new PropertyFunction(functionName));
+    }
     
-    public Property<?> getFunctionProperty(Property<?> baseProp, PropertyFunction function) {
+    public Property<?> getFunctionProperty(Property<?> baseProp, PropertyFunction basicFunction) {
+      return getFunctionProperty(baseProp, basicFunction.getName(), () -> basicFunction);
+    }
+
+    public Property<?> getFunctionProperty(Property<?> baseProp, String functionNameBase, 
+        String parameterString, List<Property<?>> requiredProperties) {
+      String functionName =
+          createFunctionName(functionNameBase, parameterString, requiredProperties);
+      return getFunctionProperty(baseProp, functionName,
+          () -> new PropertyFunction(functionNameBase, parameterString, requiredProperties));
+    }
+
+    /**
+     * @return functionName_transformedParameterString_propertyName1_propertyName2 and the
+     * parameter string is transformed like: 0-1-paramstring-2
+     */
+    private String createFunctionName(String functionNameBase, String parameterString,
+        List<Property<?>> requiredProperties) {
+      StringBuilder sb = new StringBuilder();
+      
+      sb.append(functionNameBase);
+      sb.append("_");
+      sb.append(parameterString.replaceAll("\\{|\\}", "").replace(",", "-").replace(" ", ""));
+      requiredProperties.forEach(p -> {
+        sb.append("_");
+        sb.append(p.getName());
+      });
+      
+      return sb.toString();
+    }
+
+    public Property<?> getFunctionProperty(Property<?> baseProp, String functionName,
+        Supplier<PropertyFunction> functionGetter) {
       List<Property<?>> funcProps = functionPropertiesByBasePropery.get(baseProp);
-      if(funcProps == null) {
+      if (funcProps == null) {
         funcProps = new ArrayList<>();
         functionPropertiesByBasePropery.put(baseProp, funcProps);
       }
       Property<?> funcProp = funcProps.stream()
-          .filter(fp -> function.getName().equals(fp.getPropertyFunction().getName()))
-          .findFirst().orElse(null); 
-      if(funcProp == null) {
-        if(baseProp instanceof PropertyOwned) {
-          funcProp = PropertyOwned.createFunctionProperty(((PropertyOwned<?>)baseProp), function);
+          .filter(fp -> functionName.equals(fp.getPropertyFunction().getName()))
+          .findFirst().orElse(null);
+      if (funcProp == null) {
+        if (baseProp instanceof PropertyOwned) {
+          funcProp = PropertyOwned.createFunctionProperty(((PropertyOwned<?>) baseProp),
+              functionGetter.get());
           funcProps.add(funcProp);
-        } else if(baseProp instanceof PropertyRef) {
-          funcProp = PropertyRef.createFunctionProperty(((PropertyRef<?>)baseProp), function);
+        } else if (baseProp instanceof PropertyRef) {
+          funcProp =
+              PropertyRef.createFunctionProperty(((PropertyRef<?>) baseProp), functionGetter.get());
           funcProps.add(funcProp);
         } else {
           funcProps.add(baseProp);
         }
-        
+
       }
       return funcProp;
     }

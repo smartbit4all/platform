@@ -19,6 +19,7 @@ package org.smartbit4all.sql;
 import java.lang.ref.WeakReference;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import org.smartbit4all.core.utility.StringConstant;
 
 /**
  * A select column is an item in the select list. It belongs to a given from node.
@@ -43,8 +44,6 @@ public class SQLSelectColumn implements SQLStatementNode {
    */
   String alias;
   
-  private String functionName;
-
 
   /**
    * Constructs a new select column.
@@ -82,13 +81,9 @@ public class SQLSelectColumn implements SQLStatementNode {
   public SQLSelectFromNode from() {
     return from.get();
   }
-
-  public String getFunctionName() {
-    return functionName;
-  }
-
-  public void setFunctionName(String functionName) {
-    this.functionName = functionName;
+  
+  public String getNameWithFrom() {
+    return from().alias() + StringConstant.DOT + columnName;
   }
 
 }

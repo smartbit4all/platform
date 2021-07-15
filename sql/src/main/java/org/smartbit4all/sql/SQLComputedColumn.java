@@ -16,21 +16,39 @@
  ******************************************************************************/
 package org.smartbit4all.sql;
 
+import java.util.ArrayList;
 import org.smartbit4all.core.utility.StringConstant;
 
 public class SQLComputedColumn extends SQLSelectColumn {
 
-  public SQLComputedColumn(SQLSelectFromNode from, String columnName, String alias) {
+  private ArrayList<SQLSelectColumn> requiredColumns;
+  
+  public SQLComputedColumn(SQLSelectFromNode from, String columnName, String alias, ArrayList<SQLSelectColumn> requiredColumns) {
     super(from, columnName, alias);
+    this.requiredColumns = requiredColumns;
   }
 
   @Override
   public void render(SQLStatementBuilderIF b) {
-    b.append(StringConstant.LEFT_PARENTHESIS);
-    b.append(columnName);
-    b.append(StringConstant.RIGHT_PARENTHESIS);
+    if(columnName.startsWith(StringConstant.LEFT_PARENTHESIS)) {
+      b.append(columnName);
+    } else {
+      b.append(StringConstant.LEFT_PARENTHESIS);
+      b.append(columnName);
+      b.append(StringConstant.RIGHT_PARENTHESIS);
+    }
     b.append(StringConstant.SPACE);
     b.append(alias);
   }
   
+  public ArrayList<SQLSelectColumn> getRequiredColumns() {
+    return requiredColumns;
+  }
+  
+  @Override
+  public String getNameWithFrom() {
+    /* in case of a computed column it is wrong to add the from to any column name, so we return the
+     * bare columnName*/
+    return columnName;
+  }
 }

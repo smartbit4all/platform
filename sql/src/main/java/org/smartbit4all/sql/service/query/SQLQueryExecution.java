@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import org.smartbit4all.domain.meta.EntityDefinition.TableDefinition;
 import org.smartbit4all.domain.meta.Expression2Operand;
 import org.smartbit4all.domain.meta.ExpressionBetween;
@@ -133,8 +134,8 @@ final class SQLQueryExecution {
       // It's a column in the select add this column.
       if (column != null) {
         select.addColumn(column);
+        columnMap.put(column.getAlias().toUpperCase(), property);
       }
-      columnMap.put(column.getAlias().toUpperCase(), property);
     }
     // Adding the expression to the select. It means that we visit the expression and add the
     // properties.
@@ -243,6 +244,20 @@ final class SQLQueryExecution {
       OperandProperty<?> operandProperty = (OperandProperty<?>) operand;
       SQLSelectColumn column = setupProperty(rootTable, operandProperty.property(), builder);
       operandProperty.setQualifier(column.from().alias());
+      
+      // set the qualifiers of the required operand properties too
+      if(column instanceof SQLComputedColumn) {
+        ArrayList<SQLSelectColumn> requiredColumns =
+            ((SQLComputedColumn) column).getRequiredColumns();
+        List<OperandProperty<?>> requiredOperandProperties =
+            operandProperty.getRequiredOperandProperties();
+        if(requiredOperandProperties != null && requiredColumns != null) {
+          // no checks on the size of the lists: these MUST match at this point!
+          for(int i = 0 ; i < requiredOperandProperties.size(); i++) {
+            requiredOperandProperties.get(i).setQualifier(requiredColumns.get(i).from().alias());
+          }
+        }
+      }
     }
   }
 
@@ -333,21 +348,6 @@ final class SQLQueryExecution {
     } else if (property instanceof PropertyComputed<?>) {
       // computed properties will be skipped.
       
-      //TODO delete comment
-//      PropertyComputed<?> propertyComputed = (PropertyComputed<?>) property;
-//      if (propertyComputed.getBasicType() != BasicComputation.NONE) {
-//        // We need to setup our required properties. The result is a list that contains the columns
-//        // for every required property at the same index.
-//        List<SQLSelectColumn> requiredColumns =
-//            new ArrayList<>(propertyComputed.getRequiredProperties().size());
-//        for (Property<?> requiredProperty : propertyComputed.getRequiredProperties()) {
-//          requiredColumns.add(setupProperty(table, requiredProperty, builder));
-//        }
-//        // We add the count with the name of the property as alias.
-//        column = new SQLSelectAggregateColumn(table,
-//            builder.getFunctionColumn(propertyComputed, requiredColumns),
-//            propertyComputed.getName());
-//      }
       // Here comes the rowFetchFunction.add(Computation...)
     } else if (property instanceof PropertySqlComputed<?>) {
       PropertySqlComputed<?> propertySqlComputed = (PropertySqlComputed<?>) property;
@@ -366,13 +366,39 @@ final class SQLQueryExecution {
 
       String sqlComputedColumn = builder.getSqlComputedColumn(propertySqlComputed, requiredColumns);
 
-      column = new SQLComputedColumn(table, sqlComputedColumn, propertySqlComputed.getName());
+      column = new SQLComputedColumn(table, sqlComputedColumn, propertySqlComputed.getName(),
+          requiredColumns);
     }
     
-    //TODO handle required columns for function
     PropertyFunction propertyFunction = property.getPropertyFunction();
     if (propertyFunction != null) {
-      column.setFunctionName(propertyFunction.getStatement());
+      /*
+       * In case the property has applied functions on it, we need to create an SQLComputedColumn
+       * A property like this can has other dependent properties and these are also need to be set
+       * up with the right sql aliases, so we call the setupProperty method recursively.
+       * These computed SQLSelectColumns then will be added as required columns to the result. 
+       */
+      
+      List<Property<?>> requiredProperties = propertyFunction.getRequiredProperties();
+      ArrayList<SQLSelectColumn> requiredColumns = new ArrayList<>();
+      if(requiredProperties != null && !requiredProperties.isEmpty()) {
+        for (Property<?> requiredProperty : requiredProperties) {
+          if (requiredProperty instanceof PropertyComputed) {
+            // TODO only after rowFetchFunction evaluation?
+          } else {
+            SQLSelectColumn requiredColumn = setupProperty(table, requiredProperty, builder);
+            requiredColumns.add(requiredColumn);
+          }
+        }
+      }
+
+      List<String> requiredParamSqlStrings = requiredColumns.stream()
+          .map(rc -> rc.getNameWithFrom())
+          .collect(Collectors.toList());
+      String functionSqlString = builder.getFunctionSqlString(propertyFunction,
+          column.getNameWithFrom(), requiredParamSqlStrings);
+      column = new SQLComputedColumn(column.from(), functionSqlString, nextColumnAlias(), 
+          requiredColumns);
     }
     return column;
   }

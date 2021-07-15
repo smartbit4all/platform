@@ -4,28 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.domain.utility.crud.Crud;
-import org.smartbit4all.sql.testmodel.AddressDef;
-import org.smartbit4all.sql.testmodel.PersonDef;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import org.springframework.test.context.jdbc.Sql;
 
-@SpringBootTest(classes = {
-    PropertyFunctionTestConfig.class,
-})
-@Sql({"/script/exists_schema.sql", "/script/exists_data_01.sql"})
-@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
-public class PropertyFunctionTests {
 
-  @Autowired
-  private AddressDef addressDef;
-  
-  @Autowired
-  private PersonDef personDef;
+public class PropertyFunctionTests extends FunctionTestBase {
   
   @Test
   public void selectWithUpper() throws Exception {
@@ -57,7 +38,7 @@ public class PropertyFunctionTests {
         Crud.read(personDef)
           .select(personDef.name().upper())
           .where(personDef.name().upper().eq("Álmos"))
-          .firstRowValue(personDef.name());
+          .firstRowValue(personDef.name().upper());
 
     String almos = firstRowValue.get();
     assertEquals("ÁLMOS", almos);
@@ -69,7 +50,7 @@ public class PropertyFunctionTests {
         Crud.read(personDef)
           .select(personDef.name().upper())
           .where(personDef.name().upper().eq("ÁLMOS"))
-          .firstRowValue(personDef.name());
+          .firstRowValue(personDef.name().upper());
 
     String almos = firstRowValue.get();
     assertEquals("ÁLMOS", almos);
@@ -104,7 +85,7 @@ public class PropertyFunctionTests {
         Crud.read(addressDef)
         .select(addressDef.city().upper(), addressDef.person().name().upper())
         .where(addressDef.person().name().upper().eq("ond"))
-        .firstRowValue(addressDef.person().name());
+        .firstRowValue(addressDef.person().name().upper());
 
     String firstValue = firstRowValue.get();
     assertEquals(firstValue.toUpperCase(), firstValue);
@@ -116,7 +97,7 @@ public class PropertyFunctionTests {
         Crud.read(addressDef)
         .select(addressDef.city().upper(), addressDef.person().name().upper())
         .where(addressDef.person().name().upper().like("on%"))
-        .firstRowValue(addressDef.person().name());
+        .firstRowValue(addressDef.person().name().upper());
 
     String firstValue = firstRowValue.get();
     assertEquals(firstValue.toUpperCase(), firstValue);
@@ -152,7 +133,7 @@ public class PropertyFunctionTests {
         Crud.read(personDef)
           .select(personDef.name().function("UPPER"))
           .where(personDef.name().function("UPPER").eq("Álmos"))
-          .firstRowValue(personDef.name());
+          .firstRowValue(personDef.name().function("UPPER"));
 
     String almos = firstRowValue.get();
     assertEquals("ÁLMOS", almos);
@@ -164,7 +145,7 @@ public class PropertyFunctionTests {
         Crud.read(personDef)
           .select(personDef.name().function("UPPER"))
           .where(personDef.name().function("UPPER").eq("ÁLMOS"))
-          .firstRowValue(personDef.name());
+          .firstRowValue(personDef.name().function("UPPER"));
 
     String almos = firstRowValue.get();
     assertEquals("ÁLMOS", almos);
@@ -199,7 +180,7 @@ public class PropertyFunctionTests {
         Crud.read(addressDef)
         .select(addressDef.city().function("UPPER"), addressDef.person().name().function("UPPER"))
         .where(addressDef.person().name().function("UPPER").eq("ond"))
-        .firstRowValue(addressDef.person().name());
+        .firstRowValue(addressDef.person().name().function("UPPER"));
 
     String firstValue = firstRowValue.get();
     assertEquals(firstValue.toUpperCase(), firstValue);
@@ -211,7 +192,7 @@ public class PropertyFunctionTests {
         Crud.read(addressDef)
         .select(addressDef.city().function("UPPER"), addressDef.person().name().function("UPPER"))
         .where(addressDef.person().name().function("UPPER").like("on%"))
-        .firstRowValue(addressDef.person().name());
+        .firstRowValue(addressDef.person().name().function("UPPER"));
 
     String firstValue = firstRowValue.get();
     assertEquals(firstValue.toUpperCase(), firstValue);

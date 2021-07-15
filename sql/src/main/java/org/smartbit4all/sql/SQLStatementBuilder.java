@@ -22,6 +22,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -29,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
+import java.util.stream.Collectors;
 import org.smartbit4all.core.utility.EnumSpecificValue;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.meta.BooleanOperator;
@@ -44,7 +46,6 @@ import org.smartbit4all.domain.meta.Operand;
 import org.smartbit4all.domain.meta.OperandLiteral;
 import org.smartbit4all.domain.meta.OperandProperty;
 import org.smartbit4all.domain.meta.Property;
-import org.smartbit4all.domain.meta.PropertyComputed;
 import org.smartbit4all.domain.meta.PropertyFunction;
 import org.smartbit4all.domain.meta.PropertyOwned;
 import org.smartbit4all.domain.meta.PropertyRef;
@@ -228,27 +229,71 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
   @Override
   public final void appendProperty(OperandProperty<?> propertyOperand) {
     // The fallback is that we use the name of the property itself.
-    String columnName = propertyOperand.property().getName();
-    if (propertyOperand.property() instanceof PropertyOwned<?>) {
-      PropertyOwned<?> owned = (PropertyOwned<?>) propertyOperand.property();
-      columnName = getColumn(owned.getDbExpression());
-    } else if (propertyOperand.property() instanceof PropertyRef<?>) {
-      // TODO null check: getPropertyOwned will return NULL for computed referred properties
-      PropertyOwned<?> owned =
-          ((PropertyRef<?>) propertyOperand.property()).getReferredOwnedProperty();
-      columnName = getColumn(owned.getDbExpression());
-    }
-    if (propertyOperand.getQualifier() != null) {
-      columnName = propertyOperand.getQualifier() + StringConstant.DOT + columnName;
-    }
+    String columnName = getColumnNameOfProperty(propertyOperand);
     
     PropertyFunction propertyFunction = propertyOperand.property().getPropertyFunction();
     if(propertyFunction != null) {
-      columnName = propertyFunction.getStatement() 
-          + StringConstant.LEFT_PARENTHESIS + columnName + StringConstant.RIGHT_PARENTHESIS;
+      columnName = getFunctionAdjustedColumnName(propertyOperand, columnName, propertyFunction);
     }
     
     append(columnName);
+  }
+
+  private String getFunctionAdjustedColumnName(OperandProperty<?> propertyOperand,
+      String columnName, PropertyFunction propertyFunction) {
+    List<OperandProperty<?>> requiredOperandProperties =
+        propertyOperand.getRequiredOperandProperties();
+    List<String> requiredPropertyColumns = requiredOperandProperties.stream()
+        .map(op -> getColumnNameOfProperty(op)).collect(Collectors.toList());
+    columnName = getFunctionSqlString(propertyFunction, columnName, requiredPropertyColumns);
+    return columnName;
+  }
+
+  private String getColumnNameOfProperty(OperandProperty<?> propertyOperand) {
+    Property<?> property = propertyOperand.property();
+    String columnName = property.getName();
+    if (property instanceof PropertyOwned<?>) {
+      PropertyOwned<?> owned = (PropertyOwned<?>) property;
+      columnName = getColumn(owned.getDbExpression());
+    } else if (property instanceof PropertyRef<?>) {
+      // TODO null check: getPropertyOwned will return NULL for computed referred properties
+      PropertyOwned<?> owned =
+          ((PropertyRef<?>) property).getReferredOwnedProperty();
+      columnName = getColumn(owned.getDbExpression());
+    }
+    // add the qualifier when it exists and no function is used ('T1.FUNCTION(params)' would break)
+    if (propertyOperand.getQualifier() != null && property.getPropertyFunction() == null) {
+      columnName = propertyOperand.getQualifier() + StringConstant.DOT + columnName;
+    }
+    return columnName;
+  }
+  
+  @Override
+  public String getFunctionSqlString(PropertyFunction propertyFunction, String baseParam, 
+      List<String> requiredParamSqlStrings) {
+    StringBuilder sb = new StringBuilder();
+
+    String functionParam = null;
+    String parameterString = propertyFunction.getParameterString();
+    if (parameterString == null || parameterString.isEmpty()) {
+      functionParam = baseParam;
+    } else {
+      int requiredPropNum = requiredParamSqlStrings == null ? 0 : requiredParamSqlStrings.size();
+      Object[] columns = new String[requiredPropNum + 1];
+      columns[0] = baseParam;
+      for(int i = 0 ; i < requiredPropNum;) {
+        String requiredColumn = requiredParamSqlStrings.get(i);
+        columns[++i] = requiredColumn; 
+      }
+      
+      functionParam = MessageFormat.format(parameterString, columns);
+    }
+    
+    sb.append(propertyFunction.getStatement().toUpperCase());
+    sb.append(StringConstant.LEFT_PARENTHESIS);
+    sb.append(functionParam);
+    sb.append(StringConstant.RIGHT_PARENTHESIS);
+    return sb.toString();
   }
 
   /**
@@ -622,12 +667,25 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
     append(expression.operator().text());
 
     separate();
-    
+
     PropertyFunction propertyFunction = expression.getOp().property().getPropertyFunction();
-    if(propertyFunction != null) {
-      append(propertyFunction.getStatement() + StringConstant.LEFT_PARENTHESIS);
+    if (propertyFunction != null) {
+      /*
+       * We need to add the questionmark literal with the append(bindList, operand) method so the
+       * bind numbers will be correct. The getFunctionAdjustedColumnName method can create the whole
+       * sql string of the function. To reuse these methods we simply create the sql string, then
+       * cut it to two parts on the place of the literal, then append to the statement in the right
+       * order, using the literal appending method in between.
+       */
+      String mark = "?";
+      String fullLiteral =
+          getFunctionAdjustedColumnName(expression.getOp(), mark, propertyFunction);
+      int markIdx = fullLiteral.indexOf(mark);
+      String firstPart = fullLiteral.substring(0, markIdx);
+      String lastPart = fullLiteral.substring(markIdx + 1);
+      append(firstPart);
       append(result, expression.getLiteral());
-      append(StringConstant.RIGHT_PARENTHESIS);
+      append(lastPart);
     } else {
       append(result, expression.getLiteral());
     }
@@ -776,19 +834,9 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
   @Override
   public void append(SQLSelectColumn column) {
     SQLSelectFromNode fromNode = column.from.get();
-    String functionName = column.getFunctionName();
-    if(functionName != null && !functionName.isEmpty() ) {
-      b.append(functionName);
-      b.append(StringConstant.LEFT_PARENTHESIS);
-      b.append(fromNode.alias());
-      b.append(StringConstant.DOT);
-      b.append(column.columnName);
-      b.append(StringConstant.RIGHT_PARENTHESIS);
-    } else {
-      b.append(fromNode.alias());
-      b.append(StringConstant.DOT);
-      b.append(column.columnName);
-    }
+    b.append(fromNode.alias());
+    b.append(StringConstant.DOT);
+    b.append(column.columnName);
     separate();
     b.append(column.alias);
   }
@@ -976,15 +1024,6 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
   }
 
   @Override
-  public String getFunctionColumn(PropertyComputed<?> property,
-      List<SQLSelectColumn> requiredColumns) {
-    
-    // TODO
-    
-    return null;
-  }
-
-  @Override
   public String getSqlComputedColumn(PropertySqlComputed<?> property,
       ArrayList<SQLSelectColumn> requiredColumns) {
     String sqlExpression = property.getSqlExpression(target);
@@ -993,7 +1032,9 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
     int idx = 0;
     while (m.find()) {
       String propertyName = m.group(1);
-      result = result.replaceFirst(":" + propertyName, requiredColumns.get(idx++).columnName);
+      SQLSelectColumn sqlSelectColumn = requiredColumns.get(idx++);
+      String sqlColumn = sqlSelectColumn.getNameWithFrom();
+      result = result.replaceFirst(":" + propertyName, sqlColumn);
     }
     return result;
   }

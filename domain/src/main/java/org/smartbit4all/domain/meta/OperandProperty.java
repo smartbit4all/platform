@@ -14,6 +14,8 @@
  ******************************************************************************/
 package org.smartbit4all.domain.meta;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.smartbit4all.core.utility.StringConstant;
 
 /**
@@ -41,6 +43,12 @@ public class OperandProperty<T> extends Operand<T> {
    * SQL) for the given expression. If it's null then we ignore it.
    */
   private String qualifier;
+  
+  /**
+   * One {@link OperandProperty} can depend on other properties. The {@link OperandProperty} form of
+   * these properties are held in this list.
+   */
+  private List<OperandProperty<?>> requiredOperandProperties = new ArrayList<>();
 
   /**
    * Creates a new operand with the given property.
@@ -50,6 +58,18 @@ public class OperandProperty<T> extends Operand<T> {
   public OperandProperty(Property<T> property) {
     super();
     this.property = property;
+    initRequiredProperties();
+  }
+
+  private void initRequiredProperties() {
+    // handle required properties from property functions
+    PropertyFunction propertyFunction = property.getPropertyFunction();
+    if(propertyFunction != null) {
+      List<Property<?>> requiredProperties = propertyFunction.getRequiredProperties();
+      if(requiredProperties != null) {
+        requiredProperties.forEach(p -> requiredOperandProperties.add(new OperandProperty<>(p)));
+      }
+    }
   }
 
   @Override
@@ -117,6 +137,10 @@ public class OperandProperty<T> extends Operand<T> {
    */
   void setProperty(Property<T> property) {
     this.property = property;
+  }
+
+  public List<OperandProperty<?>> getRequiredOperandProperties() {
+    return requiredOperandProperties;
   }
 
 }

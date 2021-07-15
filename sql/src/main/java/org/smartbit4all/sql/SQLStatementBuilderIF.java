@@ -37,7 +37,7 @@ import org.smartbit4all.domain.meta.Operand;
 import org.smartbit4all.domain.meta.OperandLiteral;
 import org.smartbit4all.domain.meta.OperandProperty;
 import org.smartbit4all.domain.meta.Property;
-import org.smartbit4all.domain.meta.PropertyComputed;
+import org.smartbit4all.domain.meta.PropertyFunction;
 import org.smartbit4all.domain.meta.PropertySqlComputed;
 import org.smartbit4all.domain.utility.SupportedDatabase;
 
@@ -319,16 +319,6 @@ public interface SQLStatementBuilderIF extends SB4Service {
    */
   <T> T getResultValue(ResultSet resultSet, int colIdx, Property<T> property) throws Exception;
 
-  /**
-   * Returns the aggregate function as a column.
-   *
-   * @param property The property to add.
-   * @param requiredColumns The list of the already prepared columns in the same order then the
-   *        {@link PropertyComputed#getRequiredProperties()} list.
-   * @return
-   */
-  String getFunctionColumn(PropertyComputed<?> property, List<SQLSelectColumn> requiredColumns);
-
   String getSqlComputedColumn(PropertySqlComputed<?> property,
       ArrayList<SQLSelectColumn> requiredColumns);
 
@@ -359,5 +349,16 @@ public interface SQLStatementBuilderIF extends SB4Service {
    * If we don't have any where then this function can add alternative stuffs.
    */
   void insteadOfWhere();
+
+  /**
+   * Returns the function as a column.
+   * 
+   * @param baseParam
+   * @param propertyFunction
+   * @param requiredOperandProperties
+   * @return
+   */
+  String getFunctionSqlString(PropertyFunction propertyFunction, String baseParam, 
+      List<String> requiredParamSqlStrings);
 
 }
