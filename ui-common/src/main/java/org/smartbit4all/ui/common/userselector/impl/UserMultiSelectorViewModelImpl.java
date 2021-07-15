@@ -17,13 +17,13 @@ public class UserMultiSelectorViewModelImpl extends ObjectEditingImpl
     implements UserMultiSelectorViewModel {
 
   protected ObservableObjectImpl userMultiSelector;
-  
+
   private Map<Class<?>, ApiBeanDescriptor> userSelectorDescriptor;
 
   private OrgApi orgApi;
-  
+
   private UserMultiSelector userMultiSelectorWrapper;
-  
+
   public UserMultiSelectorViewModelImpl(OrgApi orgApi,
       Map<Class<?>, ApiBeanDescriptor> userSelectorDescriptor) {
     this.orgApi = orgApi;
@@ -31,22 +31,31 @@ public class UserMultiSelectorViewModelImpl extends ObjectEditingImpl
 
     initObservableObject();
   }
-  
+
   @Override
   public void initObservableObject() {
     userMultiSelector = new ObservableObjectImpl();
   }
-  
+
   @Override
   public void initUserMultiSelectors(List<URI> selected) {
     UserMultiSelector multiSelector = UserSelectorUtil.createUserMultiSelector(orgApi.getAllUsers(),
         orgApi.getAllGroups(), selected);
 
-    ref = new ApiObjectRef(null, multiSelector, userSelectorDescriptor);
-    userMultiSelector.setRef(ref);
-    userMultiSelectorWrapper = ref.getWrapper(UserMultiSelector.class);
+    if (userMultiSelectorWrapper == null) {
+      
+      ref = new ApiObjectRef(null, multiSelector, userSelectorDescriptor);
+      userMultiSelector.setRef(ref);
+      userMultiSelectorWrapper = ref.getWrapper(UserMultiSelector.class);
+      
+    } else {
+      
+      userMultiSelectorWrapper.setSelectors(multiSelector.getSelectors());
+      userMultiSelectorWrapper.setSelected(multiSelector.getSelected());
+      
+    }
   }
-  
+
   @Override
   public ObservableObject userMultiSelector() {
     return userMultiSelector;

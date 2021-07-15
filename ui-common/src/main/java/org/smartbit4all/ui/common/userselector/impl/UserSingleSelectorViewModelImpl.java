@@ -41,9 +41,18 @@ public class UserSingleSelectorViewModelImpl extends ObjectEditingImpl
     UserSingleSelector singleSelector = UserSelectorUtil.createUserSingleSelector(orgApi.getAllUsers(),
         orgApi.getAllGroups(), selectedUserUri);
 
-    ref = new ApiObjectRef(null, singleSelector, userSelectorDescriptor);
-    userSingleSelector.setRef(ref);
-    userSingleSelectorWrapper = ref.getWrapper(UserSingleSelector.class);
+    if (userSingleSelectorWrapper == null) {
+      
+      ref = new ApiObjectRef(null, singleSelector, userSelectorDescriptor);
+      userSingleSelector.setRef(ref);
+      userSingleSelectorWrapper = ref.getWrapper(UserSingleSelector.class);
+      
+    } else {
+      
+      userSingleSelectorWrapper.setSelected(singleSelector.getSelected());
+      userSingleSelectorWrapper.setSelectors(singleSelector.getSelectors());
+      
+    }
   }
   
   @Override
