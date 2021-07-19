@@ -1,5 +1,6 @@
 plugins {
-    id "org.smartbit4all.platform.gradle.openapi"
+	id 'org.smartbit4all.platform.gradle.java'
+    id 'org.smartbit4all.platform.gradle.openapi'
 }
 
 dependencies {
@@ -7,6 +8,7 @@ dependencies {
     api project(':api-domain')
     api project(':types')
 }
+
 
 smartbit4all {
   openApi {
@@ -16,7 +18,8 @@ smartbit4all {
         "Value": "org.smartbit4all.api.value.bean.Value",
         "FilterConfigMode" : "org.smartbit4all.api.filter.bean.FilterConfigMode",
         "FilterGroupType" : "org.smartbit4all.api.filter.bean.FilterGroupType",
-        "FilterOperation" : "org.smartbit4all.api.filter.bean.FilterOperation"
+        "FilterOperation" : "org.smartbit4all.api.filter.bean.FilterOperation",
+        "LocalDateTime": "java.time.LocalDateTime"
       ]
   }
 }

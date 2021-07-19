@@ -9,7 +9,6 @@ import java.math.BigDecimal;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import org.smartbit4all.ui.api.form.model.JavaTimeLocalDateTime;
 import org.openapitools.jackson.nullable.JsonNullable;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
@@ -37,7 +36,7 @@ public class WidgetInstance   {
 
   @JsonProperty("dateValues")
   @Valid
-  private List<JavaTimeLocalDateTime> dateValues = null;
+  private List<java.time.LocalDateTime> dateValues = null;
 
   public WidgetInstance descriptorUri(URI descriptorUri) {
     this.descriptorUri = descriptorUri;
@@ -145,12 +144,12 @@ public class WidgetInstance   {
     this.doubleValues = doubleValues;
   }
 
-  public WidgetInstance dateValues(List<JavaTimeLocalDateTime> dateValues) {
+  public WidgetInstance dateValues(List<java.time.LocalDateTime> dateValues) {
     this.dateValues = dateValues;
     return this;
   }
 
-  public WidgetInstance addDateValuesItem(JavaTimeLocalDateTime dateValuesItem) {
+  public WidgetInstance addDateValuesItem(java.time.LocalDateTime dateValuesItem) {
     if (this.dateValues == null) {
       this.dateValues = new ArrayList<>();
     }
@@ -166,11 +165,11 @@ public class WidgetInstance   {
 
   @Valid
 
-  public List<JavaTimeLocalDateTime> getDateValues() {
+  public List<java.time.LocalDateTime> getDateValues() {
     return dateValues;
   }
 
-  public void setDateValues(List<JavaTimeLocalDateTime> dateValues) {
+  public void setDateValues(List<java.time.LocalDateTime> dateValues) {
     this.dateValues = dateValues;
   }
 
