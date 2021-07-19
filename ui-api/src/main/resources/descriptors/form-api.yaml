@@ -52,6 +52,11 @@ components:
           type: array
           items:
             type: number
+        dateValues:
+          description: Array of the date values that the widget contains.
+          type: array
+          items:
+            type: java.time.LocalDateTime
     PredictiveFormInstance:
       description: An instantiated layout of an EntityFormDescription that uses a predictive data graph as a layout definition. This instance is the current state of the layouting.
       type: object

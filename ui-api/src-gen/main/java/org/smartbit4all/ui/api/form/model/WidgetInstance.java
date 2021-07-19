@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import org.smartbit4all.ui.api.form.model.JavaTimeLocalDateTime;
 import org.openapitools.jackson.nullable.JsonNullable;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
@@ -33,6 +34,10 @@ public class WidgetInstance   {
   @JsonProperty("doubleValues")
   @Valid
   private List<BigDecimal> doubleValues = null;
+
+  @JsonProperty("dateValues")
+  @Valid
+  private List<JavaTimeLocalDateTime> dateValues = null;
 
   public WidgetInstance descriptorUri(URI descriptorUri) {
     this.descriptorUri = descriptorUri;
@@ -140,6 +145,35 @@ public class WidgetInstance   {
     this.doubleValues = doubleValues;
   }
 
+  public WidgetInstance dateValues(List<JavaTimeLocalDateTime> dateValues) {
+    this.dateValues = dateValues;
+    return this;
+  }
+
+  public WidgetInstance addDateValuesItem(JavaTimeLocalDateTime dateValuesItem) {
+    if (this.dateValues == null) {
+      this.dateValues = new ArrayList<>();
+    }
+    this.dateValues.add(dateValuesItem);
+    return this;
+  }
+
+  /**
+   * Array of the date values that the widget contains.
+   * @return dateValues
+  */
+  @ApiModelProperty(value = "Array of the date values that the widget contains.")
+
+  @Valid
+
+  public List<JavaTimeLocalDateTime> getDateValues() {
+    return dateValues;
+  }
+
+  public void setDateValues(List<JavaTimeLocalDateTime> dateValues) {
+    this.dateValues = dateValues;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -153,12 +187,13 @@ public class WidgetInstance   {
     return Objects.equals(this.descriptorUri, widgetInstance.descriptorUri) &&
         Objects.equals(this.stringValues, widgetInstance.stringValues) &&
         Objects.equals(this.intValues, widgetInstance.intValues) &&
-        Objects.equals(this.doubleValues, widgetInstance.doubleValues);
+        Objects.equals(this.doubleValues, widgetInstance.doubleValues) &&
+        Objects.equals(this.dateValues, widgetInstance.dateValues);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(descriptorUri, stringValues, intValues, doubleValues);
+    return Objects.hash(descriptorUri, stringValues, intValues, doubleValues, dateValues);
   }
 
   @Override
@@ -170,6 +205,7 @@ public class WidgetInstance   {
     sb.append("    stringValues: ").append(toIndentedString(stringValues)).append("\n");
     sb.append("    intValues: ").append(toIndentedString(intValues)).append("\n");
     sb.append("    doubleValues: ").append(toIndentedString(doubleValues)).append("\n");
+    sb.append("    dateValues: ").append(toIndentedString(dateValues)).append("\n");
     sb.append("}");
     return sb.toString();
   }
