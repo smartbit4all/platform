@@ -44,10 +44,10 @@ public class WidgetDescriptor   {
   }
 
   /**
-   * Get uri
+   * The URI of this exact WidgetDescriptor.
    * @return uri
   */
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "The URI of this exact WidgetDescriptor.")
 
   @Valid
 
@@ -65,10 +65,10 @@ public class WidgetDescriptor   {
   }
 
   /**
-   * The label of the widget on the default language (english) that can be translated by the platform.
+   * The label of the widget in the default language (english) that can be translated by the platform.
    * @return label
   */
-  @ApiModelProperty(value = "The label of the widget on the default language (english) that can be translated by the platform.")
+  @ApiModelProperty(value = "The label of the widget in the default language (english) that can be translated by the platform.")
 
 
   public String getLabel() {
@@ -113,10 +113,10 @@ public class WidgetDescriptor   {
   }
 
   /**
-   * The list of property uris for the widget we have. Could be one or more depending on the widget type.
+   * The list of property uris for the widget. Could be one or more depending on the widget type.
    * @return propertyUris
   */
-  @ApiModelProperty(value = "The list of property uris for the widget we have. Could be one or more depending on the widget type.")
+  @ApiModelProperty(value = "The list of property uris for the widget. Could be one or more depending on the widget type.")
 
   @Valid
 
@@ -134,10 +134,10 @@ public class WidgetDescriptor   {
   }
 
   /**
-   * The uri of the EntityFoirmDescriptor related to the given widget. In case of reference or detail it can must be set to identify the form to show when constructing a new instance.
+   * The uri of the EntityFoirmDescriptor related to the given widget. In case of reference or detail it must be set to identify the form to show when constructing a new instance.
    * @return formDescriptorUri
   */
-  @ApiModelProperty(value = "The uri of the EntityFoirmDescriptor related to the given widget. In case of reference or detail it can must be set to identify the form to show when constructing a new instance.")
+  @ApiModelProperty(value = "The uri of the EntityFoirmDescriptor related to the given widget. In case of reference or detail it must be set to identify the form to show when constructing a new instance.")
 
   @Valid
 

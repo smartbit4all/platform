@@ -14,9 +14,9 @@ import javax.validation.Valid;
 import javax.validation.constraints.*;
 
 /**
- * A special layout defines a graph for the input values of PredictiveFormInstance. The available choices are calculated by this graph while editing the PredictiveFormInstance.
+ * Descriptor of a graph that defines input values of the PredictiveFormInstance. The available choices are calculated by this graph while editing the PredictiveFormInstance.
  */
-@ApiModel(description = "A special layout defines a graph for the input values of PredictiveFormInstance. The available choices are calculated by this graph while editing the PredictiveFormInstance.")
+@ApiModel(description = "Descriptor of a graph that defines input values of the PredictiveFormInstance. The available choices are calculated by this graph while editing the PredictiveFormInstance.")
 
 public class PredictiveInputGraphDescriptor   {
   @JsonProperty("uri")

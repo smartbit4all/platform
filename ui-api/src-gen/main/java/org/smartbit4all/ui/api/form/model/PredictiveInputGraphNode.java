@@ -14,18 +14,18 @@ import javax.validation.Valid;
 import javax.validation.constraints.*;
 
 /**
- * A single node in the input graph, contains an URI that points to a descriptor. The descriptor can be a simple property but detail and reference as well.
+ * A single node in the input graph, contains a URI that points to a descriptor. The descriptor can be a simple property but a detail or a reference as well.
  */
-@ApiModel(description = "A single node in the input graph, contains an URI that points to a descriptor. The descriptor can be a simple property but detail and reference as well.")
+@ApiModel(description = "A single node in the input graph, contains a URI that points to a descriptor. The descriptor can be a simple property but a detail or a reference as well.")
 
 public class PredictiveInputGraphNode   {
   /**
-   * Gets or Sets kind
+   * Describes whether this node references a simple property widget or a form, that possibly contains multiple widgets of even forms.
    */
   public enum KindEnum {
     WIDGET("widget"),
     
-    DETAIL("detail");
+    FORM("form");
 
     private String value;
 
@@ -57,6 +57,9 @@ public class PredictiveInputGraphNode   {
   @JsonProperty("kind")
   private KindEnum kind;
 
+  @JsonProperty("multiplicity")
+  private Integer multiplicity;
+
   @JsonProperty("descriptorUri")
   private URI descriptorUri;
 
@@ -70,10 +73,10 @@ public class PredictiveInputGraphNode   {
   }
 
   /**
-   * Get kind
+   * Describes whether this node references a simple property widget or a form, that possibly contains multiple widgets of even forms.
    * @return kind
   */
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Describes whether this node references a simple property widget or a form, that possibly contains multiple widgets of even forms.")
 
 
   public KindEnum getKind() {
@@ -84,16 +87,36 @@ public class PredictiveInputGraphNode   {
     this.kind = kind;
   }
 
+  public PredictiveInputGraphNode multiplicity(Integer multiplicity) {
+    this.multiplicity = multiplicity;
+    return this;
+  }
+
+  /**
+   * Indicates how many of the referenced widget or form can be added at this node of the graph. -1 means the absence of an upper limit.
+   * @return multiplicity
+  */
+  @ApiModelProperty(value = "Indicates how many of the referenced widget or form can be added at this node of the graph. -1 means the absence of an upper limit.")
+
+
+  public Integer getMultiplicity() {
+    return multiplicity;
+  }
+
+  public void setMultiplicity(Integer multiplicity) {
+    this.multiplicity = multiplicity;
+  }
+
   public PredictiveInputGraphNode descriptorUri(URI descriptorUri) {
     this.descriptorUri = descriptorUri;
     return this;
   }
 
   /**
-   * The uri of the widget descriptor or the detail descriptor.
+   * The uri of the widget descriptor or the form descriptor.
    * @return descriptorUri
   */
-  @ApiModelProperty(value = "The uri of the widget descriptor or the detail descriptor.")
+  @ApiModelProperty(value = "The uri of the widget descriptor or the form descriptor.")
 
   @Valid
 
@@ -145,13 +168,14 @@ public class PredictiveInputGraphNode   {
     }
     PredictiveInputGraphNode predictiveInputGraphNode = (PredictiveInputGraphNode) o;
     return Objects.equals(this.kind, predictiveInputGraphNode.kind) &&
+        Objects.equals(this.multiplicity, predictiveInputGraphNode.multiplicity) &&
         Objects.equals(this.descriptorUri, predictiveInputGraphNode.descriptorUri) &&
         Objects.equals(this.children, predictiveInputGraphNode.children);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(kind, descriptorUri, children);
+    return Objects.hash(kind, multiplicity, descriptorUri, children);
   }
 
   @Override
@@ -160,6 +184,7 @@ public class PredictiveInputGraphNode   {
     sb.append("class PredictiveInputGraphNode {\n");
     
     sb.append("    kind: ").append(toIndentedString(kind)).append("\n");
+    sb.append("    multiplicity: ").append(toIndentedString(multiplicity)).append("\n");
     sb.append("    descriptorUri: ").append(toIndentedString(descriptorUri)).append("\n");
     sb.append("    children: ").append(toIndentedString(children)).append("\n");
     sb.append("}");

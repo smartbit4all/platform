@@ -16,9 +16,9 @@ import javax.validation.Valid;
 import javax.validation.constraints.*;
 
 /**
- * An instanciated layout for an EntityFormDescription that uses a predictive data graph as a layout definition. This instance is the current state of the layouting.
+ * An instantiated layout of an EntityFormDescription that uses a predictive data graph as a layout definition. This instance is the current state of the layouting.
  */
-@ApiModel(description = "An instanciated layout for an EntityFormDescription that uses a predictive data graph as a layout definition. This instance is the current state of the layouting.")
+@ApiModel(description = "An instantiated layout of an EntityFormDescription that uses a predictive data graph as a layout definition. This instance is the current state of the layouting.")
 
 public class PredictiveFormInstance   {
   @JsonProperty("uri")
@@ -29,7 +29,8 @@ public class PredictiveFormInstance   {
   private List<WidgetDescriptor> availableWidgets = null;
 
   @JsonProperty("visibleWidgets")
-  private WidgetInstance visibleWidgets;
+  @Valid
+  private List<WidgetInstance> visibleWidgets = null;
 
   @JsonProperty("graph")
   private PredictiveInputGraphDescriptor graph;
@@ -40,10 +41,10 @@ public class PredictiveFormInstance   {
   }
 
   /**
-   * Get uri
+   * The URI of this exact instance.
    * @return uri
   */
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "The URI of this exact instance.")
 
   @Valid
 
@@ -69,10 +70,10 @@ public class PredictiveFormInstance   {
   }
 
   /**
-   * Get availableWidgets
+   * The array that contains the widgets that are currently available for selection.
    * @return availableWidgets
   */
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "The array that contains the widgets that are currently available for selection.")
 
   @Valid
 
@@ -84,24 +85,32 @@ public class PredictiveFormInstance   {
     this.availableWidgets = availableWidgets;
   }
 
-  public PredictiveFormInstance visibleWidgets(WidgetInstance visibleWidgets) {
+  public PredictiveFormInstance visibleWidgets(List<WidgetInstance> visibleWidgets) {
     this.visibleWidgets = visibleWidgets;
     return this;
   }
 
+  public PredictiveFormInstance addVisibleWidgetsItem(WidgetInstance visibleWidgetsItem) {
+    if (this.visibleWidgets == null) {
+      this.visibleWidgets = new ArrayList<>();
+    }
+    this.visibleWidgets.add(visibleWidgetsItem);
+    return this;
+  }
+
   /**
-   * Get visibleWidgets
+   * The array that contains the widgets that are currently visible, as already filled data.
    * @return visibleWidgets
   */
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "The array that contains the widgets that are currently visible, as already filled data.")
 
   @Valid
 
-  public WidgetInstance getVisibleWidgets() {
+  public List<WidgetInstance> getVisibleWidgets() {
     return visibleWidgets;
   }
 
-  public void setVisibleWidgets(WidgetInstance visibleWidgets) {
+  public void setVisibleWidgets(List<WidgetInstance> visibleWidgets) {
     this.visibleWidgets = visibleWidgets;
   }
 

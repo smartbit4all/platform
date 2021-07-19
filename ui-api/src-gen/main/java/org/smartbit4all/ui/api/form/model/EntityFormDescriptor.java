@@ -12,9 +12,9 @@ import javax.validation.Valid;
 import javax.validation.constraints.*;
 
 /**
- * The form ui meta descriptor of an entity. This form descriptor contains a given layout reference to use while showing the data fields of the given entity.
+ * The form UI meta descriptor of an entity. This form descriptor contains a given layout reference to use while showing the data fields of the given entity.
  */
-@ApiModel(description = "The form ui meta descriptor of an entity. This form descriptor contains a given layout reference to use while showing the data fields of the given entity.")
+@ApiModel(description = "The form UI meta descriptor of an entity. This form descriptor contains a given layout reference to use while showing the data fields of the given entity.")
 
 public class EntityFormDescriptor   {
   @JsonProperty("uri")
@@ -29,10 +29,10 @@ public class EntityFormDescriptor   {
   }
 
   /**
-   * Get uri
+   * The URI of this exact descriptor.
    * @return uri
   */
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "The URI of this exact descriptor.")
 
   @Valid
 

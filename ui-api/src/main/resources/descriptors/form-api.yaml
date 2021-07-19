@@ -14,40 +14,64 @@ paths:
 components:
   schemas:
     EntityFormInstace:
-      description: This is an instance of defined by an EntityFormDescriptor. This descriptor defines all the available widget and also the entity stored in the TableData behind the screen.
+      description: This is an instance of a form defined by an EntityFormDescriptor. This descriptor defines all the available widget and also the entity stored in the TableData behind the screen.
       type: object
       properties:
         uri:
           type: string
           format: uri
+        descriptorUri:
+          type: string
+          format: uri
         predictiveForm:
-          description: If the given form has predictive layout then we have an instance from this. It can be displayed as a view on the data.
+          description: If the given form has a predictive layout, then we have an instance of this. It can be displayed as a view on the data.
           $ref: "#/components/schemas/PredictiveFormInstance"
         fixedLayoutForm:
-          description: If the given form has fixed layout version then we have an instance from this. It can be displayed as a view on the data.
-          $ref: "#/components/schemas/PredictiveFormInstance"
+          description: If the given form has fixed layout version, then we have an instance of this. It can be displayed as a view on the data.
+          $ref: "#/components/schemas/FixedLayoutFormInstance"
     WidgetInstance:
-      description: An instanciated widget on a form refering its descriptor and containing the widget instance data.
+      description: An instantiated widget on a form refering its descriptor and containing the widget instance data.
       type: object
       properties:
         descriptorUri:
           description: The reference to the widget descriptor.
           type: string
           format: uri
+        stringValues:
+          description: Array of the string values that the widget contains.
+          type: array
+          items:
+            type: string
+        intValues:
+          description: Array of the integer values that the widget contains.
+          type: array
+          items:
+            type: integer
+        doubleValues:
+          description: Array of the double values that the widget contains.
+          type: array
+          items:
+            type: number
     PredictiveFormInstance:
-      description: An instanciated layout for an EntityFormDescription that uses a predictive data graph as a layout definition. This instance is the current state of the layouting.
+      description: An instantiated layout of an EntityFormDescription that uses a predictive data graph as a layout definition. This instance is the current state of the layouting.
       type: object
       properties:
         uri:
+          description: The URI of this exact instance.
           type: string
           format: uri
         availableWidgets:
+          description: The array that contains the widgets that are currently available for selection.
           type: array
           items:
             $ref: "#/components/schemas/WidgetDescriptor"
         visibleWidgets:
-          $ref: "#/components/schemas/WidgetInstance"
+          description: The array that contains the widgets that are currently visible, as already filled data. 
+          type: array
+          items:
+            $ref: "#/components/schemas/WidgetInstance"
         graph:
+          descriptor: The graph that describes the layout of the form instance.
           $ref: "#/components/schemas/PredictiveInputGraphDescriptor"
     FixedLayoutFormInstance:
       description: This form instance contains a well-defined layout for all properties of the entities. Every property is visible and accessible for the user. The exact layout is missing!!!
@@ -57,35 +81,38 @@ components:
           type: string
           format: uri
     EntityFormDescriptor:
-      description: The form ui meta descriptor of an entity. This form descriptor contains a given layout reference to use while showing the data fields of the given entity.
+      description: The form UI meta descriptor of an entity. This form descriptor contains a given layout reference to use while showing the data fields of the given entity.
       type: object
       properties:
         uri:
+          description: The URI of this exact descriptor.
           type: string
           format: uri
         predictiveLayout:
+          description: The graph descriptor that describes the predictive layout.
           $ref: "#/components/schemas/PredictiveInputGraphDescriptor"
     WidgetDescriptor:
       description: Represents a widget for the EntityFormDescriptor. It might have many types and all of them must be impemented by the form display engine.
       type: object
       properties:
         uri:
+          description: The URI of this exact WidgetDescriptor.
           type: string
           format: uri
         label:
-          description: The label of the widget on the default language (english) that can be translated by the platform.
+          description: The label of the widget in the default language (english) that can be translated by the platform.
           type: string
         icon:
           description: The icon code for the icon to show. The display must be implemented in the form display engine.
           type: string
         propertyUris:
           type: array
-          description: The list of property uris for the widget we have. Could be one or more depending on the widget type.
+          description: The list of property uris for the widget. Could be one or more depending on the widget type.
           items:
             type: string
             format: uri
         formDescriptorUri:
-          description: The uri of the EntityFoirmDescriptor related to the given widget. In case of reference or detail it can must be set to identify the form to show when constructing a new instance.
+          description: The uri of the EntityFoirmDescriptor related to the given widget. In case of reference or detail it must be set to identify the form to show when constructing a new instance.
           type: string
           format: uri
         widgetType:
@@ -105,19 +132,22 @@ components:
         - date_interval
         - number
         - number_interval
+        - survey_combo
       description: >
-         * `container` This is just a folder for a set of widgets.
+        * `container` This is just a folder for a set of widgets.
          * `reference` Can be used to manage the reference for another entity. 
          * `detail` A list of other entities contained by the current entity.
-         * `association` The association is reference for an independent entity instance. TODO 
+         * `association` The association is a reference for an independent entity instance. TODO 
          * `text` A text widget (a string value text field).
+         * `text_interval` A widget that contains a pair of text properties.
          * `combobox` A selectable value stored in one or more fields
          * `date` The single property widget with date type. 
          * `date_interval` An editor with a pair of date properties.
          * `number` The single property widget with number type.
          * `number_interval` An editor with a pair of number properties.
+         * `survey_combo` A widget that contains a score, and optionally a comment and/or a photo.
     PredictiveInputGraphDescriptor:
-      description: A special layout defines a graph for the input values of PredictiveFormInstance. The available choices are calculated by this graph while editing the PredictiveFormInstance.
+      description: Descriptor of a graph that defines input values of the PredictiveFormInstance. The available choices are calculated by this graph while editing the PredictiveFormInstance.
       type: object
       properties:
         uri:
@@ -126,21 +156,25 @@ components:
         rootNodes:
           type: array
           items:
-            $ref:  "#/components/schemas/PredictiveInputGraphNode"
+            $ref: "#/components/schemas/PredictiveInputGraphNode"
     PredictiveInputGraphNode:
-      description: A single node in the input graph, contains an URI that points to a descriptor. The descriptor can be a simple property but detail and reference as well.
+      description: A single node in the input graph, contains a URI that points to a descriptor. The descriptor can be a simple property but a detail or a reference as well.
       type: object
       properties:
         kind:
+          description: Describes whether this node references a simple property widget or a form, that possibly contains multiple widgets of even forms.
           type: string
           enum:
             - widget
-            - detail
+            - form
+        multiplicity:
+          type: integer
+          description: Indicates how many of the referenced widget or form can be added at this node of the graph. -1 means the absence of an upper limit.
         descriptorUri:
           type: string
-          description: The uri of the widget descriptor or the detail descriptor.
+          description: The uri of the widget descriptor or the form descriptor.
           format: uri
         children:
           type: array
           items:
-            $ref:  "#/components/schemas/PredictiveInputGraphNode"
+            $ref: "#/components/schemas/PredictiveInputGraphNode"
