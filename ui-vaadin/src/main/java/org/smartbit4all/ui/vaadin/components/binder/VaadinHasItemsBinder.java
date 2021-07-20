@@ -41,7 +41,7 @@ public class VaadinHasItemsBinder<T> extends VaadinCollectionBinder<T> {
     if (list instanceof Grid) {
       GridSelectionModel<T> selectionModel = ((Grid<T>) list).getSelectionModel();
       ((Grid<T>) list).getDataProvider().refreshAll();
-      if (selectionModel != null) {
+      if (selectionModel != null && (selectionModel.getSelectedItems() == null || selectionModel.getSelectedItems().isEmpty())) {
         if (selectionModel instanceof GridSingleSelectionModel) {
           ((Grid<T>) list).setSelectionMode(SelectionMode.SINGLE);
         } else {
