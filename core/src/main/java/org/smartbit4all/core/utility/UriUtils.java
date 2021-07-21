@@ -18,7 +18,11 @@ package org.smartbit4all.core.utility;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,6 +62,38 @@ public abstract class UriUtils {
           + "\tThe source has been updated: " + formattedSource);
     }
     return formattedSource;
+  }
+  
+  public static String mapToQuery(Map<String, String> query) {
+    String queryString = query.entrySet()
+        .stream()
+        .map(entry -> entry.getKey() + "=" + entry.getValue())
+        .collect(Collectors.joining("&"));
+    return queryString;
+  }
+  
+  public static Map<String, String> queryToMap(String queryString) {
+    if(queryString == null || queryString.isEmpty()) {
+      return new HashMap<>();
+    }
+    String[] entries = queryString.split("&");
+    if(entries == null) {
+      throw new RuntimeException("Unable to process query string: " + queryString);
+    }
+    if(entries.length == 0) {
+      return new HashMap<>();
+    }
+    return Arrays.stream(entries)
+        .collect(Collectors.toMap(e -> splitQueryEntry(e, true),
+                                  e -> splitQueryEntry(e, false)));
+  }
+  
+  public static String splitQueryEntry(String entry, boolean first) {
+    String[] split = entry.split("=");
+    if(split == null || split.length != 2) {
+      throw new RuntimeException("Unable to process query entry: " + entry);
+    }
+    return split[first ? 0 : 1];
   }
   
 }

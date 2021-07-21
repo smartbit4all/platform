@@ -189,7 +189,12 @@ public class NavigationControllerImpl implements NavigationController {
   }
 
   private String getAssociationNodeCaption(URI assocMetaUri) {
-    String caption = assocMetaUri.toString().replace(":/", ".")
+    String assocUriString = assocMetaUri.toString();
+    if(assocUriString.contains("?")) {
+      assocUriString = assocUriString.substring(0, assocUriString.indexOf("?"));
+    }
+    String caption = assocUriString
+        .replace(":/", ".")
         .replace("/", ".")
         .replace("#", ".");
     return caption;

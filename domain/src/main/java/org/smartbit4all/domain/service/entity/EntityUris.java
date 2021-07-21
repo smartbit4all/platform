@@ -18,10 +18,9 @@ package org.smartbit4all.domain.service.entity;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
+import org.smartbit4all.core.utility.UriUtils;
 
 public abstract class EntityUris {
 
@@ -84,7 +83,7 @@ public abstract class EntityUris {
   public static URI addQueryParam(URI entityUri, String key, String value) {
     String domain = getDomain(entityUri);
     String entityPath = getEntityPath(entityUri);
-    Map<String, String> query = queryToMap(entityUri.getQuery());
+    Map<String, String> query = UriUtils.queryToMap(entityUri.getQuery());
     query.put(key, value);
     return createUri(SCHEME_ENTITY, domain, entityPath, query, null);
   }
@@ -92,7 +91,7 @@ public abstract class EntityUris {
   public static String getQueryParam(URI uri, String key) {
     checkScheme(uri);
     String queryString = uri.getQuery();
-    Map<String, String> query = queryToMap(queryString);
+    Map<String, String> query = UriUtils.queryToMap(queryString);
     return query.get(key);
   }
   
@@ -151,44 +150,12 @@ public abstract class EntityUris {
   private static URI createUri(String scheme, String host, String path, Map<String, String> query,
       String fragment) {
     path = path == null ? null : path.startsWith("/") ? path : "/" + path;
-    String queryString = query == null ? null : mapToQuery(query); 
+    String queryString = query == null ? null : UriUtils.mapToQuery(query); 
     try {
       return new URI(scheme, host, path, queryString, fragment);
     } catch (URISyntaxException e) {
       throw new RuntimeException(e);
     }
-  }
-  
-  private static String mapToQuery(Map<String, String> query) {
-    String queryString = query.entrySet()
-        .stream()
-        .map(entry -> entry.getKey() + "=" + entry.getValue())
-        .collect(Collectors.joining("&"));
-    return queryString;
-  }
-  
-  private static Map<String, String> queryToMap(String queryString) {
-    if(queryString == null || queryString.isEmpty()) {
-      return new HashMap<>();
-    }
-    String[] entries = queryString.split("&");
-    if(entries == null) {
-      throw new RuntimeException("Unable to process query string: " + queryString);
-    }
-    if(entries.length == 0) {
-      return new HashMap<>();
-    }
-    return Arrays.stream(entries)
-        .collect(Collectors.toMap(e -> splitQueryEntry(e, true),
-                                  e -> splitQueryEntry(e, false)));
-  }
-  
-  private static String splitQueryEntry(String entry, boolean first) {
-    String[] split = entry.split("=");
-    if(split == null || split.length != 2) {
-      throw new RuntimeException("Unable to process query entry: " + entry);
-    }
-    return split[first ? 0 : 1];
   }
   
 }

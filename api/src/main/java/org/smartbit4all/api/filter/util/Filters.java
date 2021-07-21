@@ -528,7 +528,7 @@ public class Filters {
     return null;
   }
 
-  private LocalDate convertToLocalDate(FilterOperandValue valueOperand) {
+  public LocalDate convertToLocalDate(FilterOperandValue valueOperand) {
     LocalDate value = null;
     if (valueOperand == null) {
       return value;
@@ -547,7 +547,7 @@ public class Filters {
     return value;
   }
 
-  private LocalDateTime convertToLocalDateTime(FilterOperandValue valueOperand) {
+  public LocalDateTime convertToLocalDateTime(FilterOperandValue valueOperand) {
     if (valueOperand == null || valueOperand.getValue() == null) {
       return null;
     }
