@@ -26,6 +26,7 @@ public class UserSelectorViewModelConfiguration {
     ruleDomainBeans.add(UserSingleSelector.class);
     ruleDomainBeans.add(UserMultiSelector.class);
     ruleDomainBeans.add(UserSelector.class);
+    ruleDomainBeans.add(UserSelectorCommands.class);
 
     userSelectorDescriptor = ApiBeanDescriptor.of(ruleDomainBeans);
   }

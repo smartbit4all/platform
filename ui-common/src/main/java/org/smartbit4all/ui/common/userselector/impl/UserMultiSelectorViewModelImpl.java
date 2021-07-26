@@ -1,8 +1,12 @@
 package org.smartbit4all.ui.common.userselector.impl;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.smartbit4all.api.org.OrgApi;
 import org.smartbit4all.api.userselector.bean.UserMultiSelector;
 import org.smartbit4all.api.userselector.util.UserSelectorUtil;
@@ -12,6 +16,7 @@ import org.smartbit4all.core.object.ObjectEditingImpl;
 import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.core.object.ObservableObjectImpl;
 import org.smartbit4all.ui.api.userselector.UserMultiSelectorViewModel;
+import io.reactivex.rxjava3.functions.Consumer;
 
 public class UserMultiSelectorViewModelImpl extends ObjectEditingImpl
     implements UserMultiSelectorViewModel {
@@ -23,18 +28,65 @@ public class UserMultiSelectorViewModelImpl extends ObjectEditingImpl
   private OrgApi orgApi;
 
   private UserMultiSelector userMultiSelectorWrapper;
+  
+  private List<URI> selectedUris;
+  
+  private ObservableObjectImpl commandObservable;
+  private UserSelectorCommands commands;
+  private UserSelectorCommands commandsWrapper;
+  public Map<String, Consumer<String[]>> commandMethodsByCode = new HashMap<>();
 
   public UserMultiSelectorViewModelImpl(OrgApi orgApi,
       Map<Class<?>, ApiBeanDescriptor> userSelectorDescriptor) {
     this.orgApi = orgApi;
     this.userSelectorDescriptor = userSelectorDescriptor;
-
+    selectedUris = Arrays.asList();
     initObservableObject();
+  }
+  
+  @Override
+  public void init() {
+    initUserMultiSelectors(selectedUris);
+    initCommands();
+    notifyAllListeners();
   }
 
   @Override
   public void initObservableObject() {
     userMultiSelector = new ObservableObjectImpl();
+    commandObservable = new ObservableObjectImpl();
+  }
+  
+  private void notifyAllListeners() {
+    userMultiSelector.notifyListeners();
+    commandObservable.notifyListeners();
+  }
+  
+  private void initCommands() {
+    commands = new UserSelectorCommands();
+    ApiObjectRef ref = new ApiObjectRef(null, commands, userSelectorDescriptor);
+    commandObservable.setRef(ref);
+    commandsWrapper = ref.getWrapper(UserSelectorCommands.class);
+    addCommand(UserMultiSelectorViewModel.CLOSE_CMD, this::closeSelector);
+    addCommand(UserMultiSelectorViewModel.SAVE_CMD, this::saveSelector);
+  }
+  
+  private void addCommand(String code, Consumer<String[]> commandMethod) {
+    commandsWrapper.getCommands().add(code);
+    commandMethodsByCode.put(code, commandMethod);
+  }
+  
+  private void closeSelector(String... params) {
+    userMultiSelectorWrapper.setIsSaving(false);
+    //init();
+  }
+  
+  private void saveSelector(String... params) {
+    userMultiSelectorWrapper.setIsSaving(true);
+    List<String> urisAsText = Arrays.asList(params);
+    selectedUris = urisAsText.stream().map(text -> URI.create(text)).collect(Collectors.toList());
+    initUserMultiSelectors(selectedUris);
+    //init();
   }
 
   @Override
@@ -51,7 +103,12 @@ public class UserMultiSelectorViewModelImpl extends ObjectEditingImpl
     } else {
       
       userMultiSelectorWrapper.setSelectors(multiSelector.getSelectors());
-      userMultiSelectorWrapper.setSelected(multiSelector.getSelected());
+      if (multiSelector.getSelected().size() > 0) {
+        userMultiSelectorWrapper.setSelected(multiSelector.getSelected());
+      } else {
+        userMultiSelectorWrapper.setSelected(new ArrayList<>());
+      }
+      notifyAllListeners();
       
     }
   }
@@ -59,5 +116,14 @@ public class UserMultiSelectorViewModelImpl extends ObjectEditingImpl
   @Override
   public ObservableObject userMultiSelector() {
     return userMultiSelector;
+  }
+  
+  @Override
+  public void executeCommand(String code, String... param) throws Throwable {
+    Consumer<String[]> commandMethod = commandMethodsByCode.get(code);
+    if (commandMethod == null) {
+      throw new IllegalArgumentException("Unknown command code: " + code);
+    }
+    commandMethod.accept(param);
   }
 }

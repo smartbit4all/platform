@@ -25,6 +25,9 @@ public class UserMultiSelector   {
   @Valid
   private List<UserSelector> selected = null;
 
+  @JsonProperty("isSaving")
+  private Boolean isSaving;
+
   public UserMultiSelector selectors(List<UserSelector> selectors) {
     this.selectors = selectors;
     return this;
@@ -83,6 +86,26 @@ public class UserMultiSelector   {
     this.selected = selected;
   }
 
+  public UserMultiSelector isSaving(Boolean isSaving) {
+    this.isSaving = isSaving;
+    return this;
+  }
+
+  /**
+   * Get isSaving
+   * @return isSaving
+  */
+  @ApiModelProperty(value = "")
+
+
+  public Boolean getIsSaving() {
+    return isSaving;
+  }
+
+  public void setIsSaving(Boolean isSaving) {
+    this.isSaving = isSaving;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -94,12 +117,13 @@ public class UserMultiSelector   {
     }
     UserMultiSelector userMultiSelector = (UserMultiSelector) o;
     return Objects.equals(this.selectors, userMultiSelector.selectors) &&
-        Objects.equals(this.selected, userMultiSelector.selected);
+        Objects.equals(this.selected, userMultiSelector.selected) &&
+        Objects.equals(this.isSaving, userMultiSelector.isSaving);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(selectors, selected);
+    return Objects.hash(selectors, selected, isSaving);
   }
 
   @Override
@@ -109,6 +133,7 @@ public class UserMultiSelector   {
     
     sb.append("    selectors: ").append(toIndentedString(selectors)).append("\n");
     sb.append("    selected: ").append(toIndentedString(selected)).append("\n");
+    sb.append("    isSaving: ").append(toIndentedString(isSaving)).append("\n");
     sb.append("}");
     return sb.toString();
   }
