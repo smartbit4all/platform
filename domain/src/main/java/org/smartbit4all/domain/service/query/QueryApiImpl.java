@@ -162,4 +162,10 @@ public class QueryApiImpl implements QueryApi {
     return result;
   }
 
+  @Override
+  public Retrieval prepare(RetrievalRequest request) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
 }

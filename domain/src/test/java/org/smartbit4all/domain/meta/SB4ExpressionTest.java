@@ -68,10 +68,31 @@ class SB4ExpressionTest {
     // List<Integer> favorites = Arrays.asList(12, 34, 55);
     // userAccountDef.PRIMARYADDRESS().ID().IN( favorites );
 
-    String actual = ExpressionToString.toString(expression);
-    assertEquals("fullname LIKE \"%oro%\" AND id <= 100 OR primaryZipcode = \"2030\"",
-        actual);
-    System.out.println(actual);
+    {
+      String actual = ExpressionToString.toString(expression);
+      assertEquals("fullname LIKE \"%oro%\" AND id <= 100 OR primaryZipcode = \"2030\"",
+          actual);
+      System.out.println(actual);
+    }
+
+    {
+      Expression and = Expression.AND(expression, express);
+      String actual = ExpressionToString.toString(and);
+      assertEquals(
+          "( fullname LIKE \"%oro%\" AND id <= 100 OR primaryZipcode = \"2030\") AND ( fullname LIKE \"%oro%\" AND id <= 100 OR primaryZipcode = \"2030\")",
+          actual);
+      System.out.println(actual);
+    }
+
+    {
+      Expression and = Expression.AND(userAccountDef.id().lt(100l),
+          userAccountDef.primaryAddress().zipcode().eq("2030"));
+      String actual = ExpressionToString.toString(and);
+      assertEquals(
+          "id <= 100 AND primaryZipcode = \"2030\"",
+          actual);
+      System.out.println(actual);
+    }
   }
 
   @Test

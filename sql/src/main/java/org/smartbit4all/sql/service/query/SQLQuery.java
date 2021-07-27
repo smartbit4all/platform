@@ -14,7 +14,10 @@
  ******************************************************************************/
 package org.smartbit4all.sql.service.query;
 
+import java.util.List;
 import org.smartbit4all.domain.meta.EntityDefinition;
+import org.smartbit4all.domain.meta.Reference;
+import org.smartbit4all.domain.service.query.Query;
 import org.smartbit4all.domain.service.query.QueryImpl;
 import org.smartbit4all.domain.service.query.QueryResult;
 import org.smartbit4all.sql.SQLSelectStatement;
@@ -61,6 +64,21 @@ public class SQLQuery<E extends EntityDefinition> extends QueryImpl<E> {
   public void execute() throws Exception {
     SQLQueryExecution execution = new SQLQueryExecution(jdbcTemplate, this);
     execution.execute();
+  }
+
+  @Override
+  public Query<E> copy() {
+    SQLQuery<E> result = new SQLQuery<>(jdbcTemplate);
+    result.fetchRowNumber = fetchRowNumber;
+    result.input = input().copy();
+    return result;
+  }
+
+  @Override
+  public <T extends EntityDefinition> Query<T> copyTranslated(T entityDef,
+      List<Reference<?, ?>> joinPath) {
+    // TODO It will be unnecessary, this class will be removed later on.
+    return null;
   }
 
 }

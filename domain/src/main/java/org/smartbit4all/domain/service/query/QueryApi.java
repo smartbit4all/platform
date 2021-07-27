@@ -17,7 +17,8 @@ package org.smartbit4all.domain.service.query;
 /**
  * This API is responsible for executing query against the current application setup. In a simple
  * application there can a be an SQL level implementation. But in a complex application there can be
- * special contributions for executing a query object.
+ * special contributions for executing a query object. A single {@link Query} is executed by the
+ * {@link QueryExecutionApi} and this Api orchestrates these query executions.
  * 
  * @author Peter Boros
  */
@@ -31,6 +32,15 @@ public interface QueryApi {
    * @return
    */
   QueryExecutionPlan prepare(Query<?>... queries);
+
+  /**
+   * The RetrievalRequest is analyzed and the final {@link Retrieval} is constructed. In this we
+   * have the meta information and the current state of the execution.
+   * 
+   * @param request The request.
+   * @return The prepared Retrieval object ready to execute.
+   */
+  Retrieval prepare(RetrievalRequest request);
 
   /**
    * Executes the plan in the current application context.

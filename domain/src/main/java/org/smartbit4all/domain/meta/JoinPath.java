@@ -101,7 +101,7 @@ public class JoinPath {
     Reference<?, ?> lastRef = last();
     if (references.size() == 1) {
       for (Join<?> join : lastRef.joins()) {
-        andClause.add(join.in(records));
+        andClause.add(join.inDetail(records));
       }
     } else {
       List<Reference<?, ?>> joinPath = references.subList(0, references.size() - 1);

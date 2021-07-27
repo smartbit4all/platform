@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Expression;
 import org.smartbit4all.domain.meta.LockRequest;
@@ -178,6 +179,40 @@ public class QueryInput<E extends EntityDefinition> {
 
   public final void setDistinct(boolean distinct) {
     this.distinct = distinct;
+  }
+
+  public QueryInput<E> copy() {
+    QueryInput<E> result = new QueryInput<>();
+    result.name = name;
+    result.properties.addAll(properties);
+    result.where = where != null ? where.copy() : null;
+    result.sortOrders
+        .addAll(sortOrders.stream().map(SortOrderProperty::copy).collect(Collectors.toList()));
+    result.groupByProperties.addAll(groupByProperties);
+    result.lockRequest = lockRequest.copy();
+    result.distinct = distinct;
+    result.entityDef = entityDef;
+    return result;
+  }
+
+  public QueryInput<E> copyTrandlated() {
+    QueryInput<E> result = new QueryInput<>();
+    result.name = name;
+    result.properties.addAll(properties);
+    result.where = where != null ? where.copy() : null;
+    result.sortOrders
+        .addAll(sortOrders.stream().map(SortOrderProperty::copy).collect(Collectors.toList()));
+    result.groupByProperties.addAll(groupByProperties);
+    result.lockRequest = lockRequest.copy();
+    result.distinct = distinct;
+    result.entityDef = entityDef;
+    return result;
+  }
+
+  public <T extends EntityDefinition> Query<T> copyTranslated(T entityDef,
+      List<Reference<?, ?>> joinPath) {
+    // TODO Implement translation of this.
+    return null;
   }
 
 }

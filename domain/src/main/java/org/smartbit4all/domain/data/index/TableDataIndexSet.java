@@ -180,7 +180,6 @@ public class TableDataIndexSet {
    * @param column The column.
    * @return The index if exists and null if we don't have any.
    */
-  @SuppressWarnings("unchecked")
   public TableDataIndex find(IndexType type, Property<?>... properties) {
     String indexName =
         TableDataIndex.constructIndexName(type, Arrays.asList(properties));

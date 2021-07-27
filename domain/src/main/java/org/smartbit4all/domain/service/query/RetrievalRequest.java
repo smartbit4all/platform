@@ -1,34 +1,43 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
  * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package org.smartbit4all.domain.data.retrieve;
+package org.smartbit4all.domain.service.query;
 
-import org.smartbit4all.domain.data.DataColumnOwned;
-import org.smartbit4all.domain.data.TableData;
+import java.util.HashMap;
+import java.util.Map;
 import org.smartbit4all.domain.meta.EntityDefinition;
-import org.smartbit4all.domain.meta.Expression;
 import org.smartbit4all.domain.meta.Reference;
-import org.smartbit4all.domain.service.query.Query;
-import org.smartbit4all.domain.service.retrieve.RetrieveExecutionNode;
 
 /**
+ * The retrieval is an Api object responsible for describing a set of related queries. The
+ * {@link QueryApi} can process simple queries but also {@link RetrievalRequest}s. A Retrieval
+ * Request is a set of queries with meta information to connect them. The {@link RetrievalRequest}
+ * is analyzed by the {@link QueryApi} and an execution plan is produced. This
+ * {@link QueryExecutionPlan} can be executed.
+ * 
+ * To provide meta information we can use the {@link EntityDefinition}s but even without any
+ * {@link Reference} we can connect the queries by providing the meta for the joins. The queries and
+ * the navigations will be used by the {@link QueryApi} to produce {@link QueryExecutionPlan}s.
+ * After executing this plan the result will be analyzed to produce the next round of queries.
+ * Because there is a given optimal order in the directed graph to produce all the query results we
+ * need.
+ * 
  * The execution of the retrieve operation is based on the hierarchy of this execution. There can be
  * different kind of retrieval mechanisms. The main idea behind is that the retrieval itself is a
  * recursive algorithm and the structure of the retrieval node graph must match. The recursion
  * always start from a root node. The graph is directed and every {@link Reference} is one edge.
+ * This node-edge structure is instantiated for every Retrieve execution.
  * 
  * There are forwarding edges from the root node that form an acyclic graph. These edges can
  * potentially joins the directed nodes to the current retrieval step. But if touch an already
@@ -96,45 +105,15 @@ import org.smartbit4all.domain.service.retrieve.RetrieveExecutionNode;
  * the next round and so on. The recursion will end when we find no new records or we can setup a
  * limit to avoid infinite loop.
  * 
- * TODO It can be a technical limit or we can define in case of a reference that this is lazy. Which
- * means that the retrieval will stop there.
- * 
  * @author Peter Boros
- *
  */
-public class RetrieveExecutionNodeTableData extends RetrieveExecutionNode {
+public class RetrievalRequest {
 
   /**
-   * The data table belong to the given node.
+   * The nodes of the retrieval request where every node contains a simple {@link Query}. They must
+   * be named uniquely in this context. We can add new queries named manually but without naming the
+   * Retrieval will name the query.
    */
-  TableData<?> tableData;
-
-  /**
-   * Constructs the plan based on the data table.
-   * 
-   * @param tableData The data table to start from.
-   */
-  RetrieveExecutionNodeTableData(TableData<?> tableData, boolean root) {
-    super(root);
-    this.tableData = tableData;
-  }
-
-  @Override
-  public Query constructQuery(Expression filter) {
-    // The start with filter defines the first query based on the root TableData we have in this
-    // node.
-    Query query = entity().services().crud().query();
-
-    // The naive algorithm query always the owned columns of the TableData. We believe that the
-    // referred columns will be queried by nodes next to us.
-    query.select(tableData.properties(c -> c instanceof DataColumnOwned<?>)).where(filter)
-        .into(tableData);
-    return query;
-  }
-
-  @Override
-  public EntityDefinition entity() {
-    return tableData.entity();
-  }
+  private Map<String, RetrievalRequestNode> nodes = new HashMap<>();
 
 }

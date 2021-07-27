@@ -20,8 +20,6 @@ import java.util.List;
 import java.util.Stack;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.data.TableDatas;
-import org.smartbit4all.domain.data.TableDatas.BuilderWithFixProperties;
-import org.smartbit4all.domain.data.TableDatas.BuilderWithFlexibleProperties;
 import org.smartbit4all.domain.data.index.NonUniqueIndex;
 import org.smartbit4all.domain.data.index.StorageIndex;
 import org.smartbit4all.domain.data.index.StorageLoader;
@@ -31,7 +29,6 @@ import org.smartbit4all.domain.data.index.TableDataIndex.IndexType;
 import org.smartbit4all.domain.data.index.TableDataIndexSet;
 import org.smartbit4all.domain.data.index.UniqueIndex;
 import org.smartbit4all.domain.meta.BooleanOperator;
-import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Expression;
 import org.smartbit4all.domain.meta.Expression2Operand;
 import org.smartbit4all.domain.meta.Expression2Operand.Operator;
@@ -114,7 +111,7 @@ final class ExpressionEvaluation extends ExpressionVisitor {
   public ExpressionEvaluation(
       StorageLoader loader,
       Expression expression) {
-    
+
     super();
     this.loader = loader;
     // The table data will be constructed by the meta data of the loader and the expression.
@@ -161,7 +158,6 @@ final class ExpressionEvaluation extends ExpressionVisitor {
     }
   }
 
-  @SuppressWarnings("unchecked")
   private <T> void constructEvaluationStep(
       OperandProperty<?> propertyOperand,
       Expression expression,
@@ -175,6 +171,7 @@ final class ExpressionEvaluation extends ExpressionVisitor {
     }
   }
 
+  @SuppressWarnings("unchecked")
   private <T> boolean tryUseIndex(OperandProperty<?> propertyOperand, Expression expression,
       List<T> values) {
 
@@ -208,7 +205,7 @@ final class ExpressionEvaluation extends ExpressionVisitor {
       // first available index.
       boolean storageIndexUsed = false;
       for (StorageIndex idx : loader.getIndices()) {
-        
+
         // TODO this raw cast should be replaced, maybe the StorageIndex should return sa
         if (idx.canUseFor(expression)) {
           getCurrentPlan().addStep(
@@ -223,7 +220,7 @@ final class ExpressionEvaluation extends ExpressionVisitor {
 
           storageIndexUsed = true;
         }
-        
+
       }
       return storageIndexUsed;
 

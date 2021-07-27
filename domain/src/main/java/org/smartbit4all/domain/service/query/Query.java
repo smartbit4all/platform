@@ -321,4 +321,24 @@ public interface Query<E extends EntityDefinition>
    */
   <B> List<B> list(Class<B> beanClass) throws Exception;
 
+  /**
+   * Constructs a copy from this object. It's a deep copy with every parameter of this Query object.
+   * 
+   * @return
+   */
+  Query<E> copy();
+
+  /**
+   * Constructs a copy of the query that is translated to start from the entityDefinition
+   * 
+   * @param entityDef The {@link EntityDefinition} instance that is the accessor of the new entity
+   *        definition. Like contractDef.partner(), where the type of the referenced entity must be
+   *        the same that the class parameter.
+   * @param joinPath The joinPath to access the entityDefinition of the original Query.
+   * @return The translated copy of this Query where the {@link Property}s are replaced with the
+   *         proper {@link PropertyRef}s starting from the new entity definition.
+   */
+  <T extends EntityDefinition> Query<T> copyTranslated(T entityDef,
+      List<Reference<?, ?>> joinPath);
+
 }

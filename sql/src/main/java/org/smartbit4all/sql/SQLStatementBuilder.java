@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
@@ -43,6 +44,7 @@ import org.smartbit4all.domain.meta.ExpressionInDataSet;
 import org.smartbit4all.domain.meta.ExpressionIsNull;
 import org.smartbit4all.domain.meta.JDBCDataConverter;
 import org.smartbit4all.domain.meta.Operand;
+import org.smartbit4all.domain.meta.OperandComposite;
 import org.smartbit4all.domain.meta.OperandLiteral;
 import org.smartbit4all.domain.meta.OperandProperty;
 import org.smartbit4all.domain.meta.Property;
@@ -50,9 +52,11 @@ import org.smartbit4all.domain.meta.PropertyFunction;
 import org.smartbit4all.domain.meta.PropertyOwned;
 import org.smartbit4all.domain.meta.PropertyRef;
 import org.smartbit4all.domain.meta.PropertySqlComputed;
+import org.smartbit4all.domain.utility.CompositeValue;
 import org.smartbit4all.domain.utility.SupportedDatabase;
 import org.smartbit4all.types.binarydata.BinaryData;
 import org.smartbit4all.types.binarydata.BinaryDataOutputStream;
+import org.springframework.util.Assert;
 import com.google.common.io.ByteStreams;
 
 /**
@@ -287,7 +291,7 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
       
       functionParam = MessageFormat.format(parameterString, columns);
     }
-    
+
     sb.append(propertyFunction.getStatement().toUpperCase());
     sb.append(StringConstant.LEFT_PARENTHESIS);
     sb.append(functionParam);
@@ -732,37 +736,73 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
   public List<SQLBindValueLiteral> append(ExpressionIn<?> expression) {
     List<SQLBindValueLiteral> result = new ArrayList<>();
     separate();
-    
-    if(!expression.values().isEmpty()) {
-    
-      // If we have a property then the values must match it's type. Else if have a value here then
-      // the rest of the values must match with it.
-      JDBCDataConverter<?, ?> converter;
-      if (expression.getOperand() instanceof OperandProperty<?>) {
-        converter = ((OperandProperty<?>) expression.getOperand()).property().jdbcConverter();
-      } else {
-        converter = ((OperandLiteral<?>) expression.getOperand()).typeHandler();
-      }
-  
-      append(result, expression.getOperand());
-  
-      separate();
-      if (expression.isNegate()) {
-        b.append(SQLConstant.NOT);
-        separate();
-      }
-      b.append(SQLConstant.IN);
-      separate();
-  
-      b.append(StringConstant.LEFT_PARENTHESIS);
-      for (Object value : expression.values()) {
-        if (!result.isEmpty()) {
-          b.append(StringConstant.COMMA);
+
+    if (!expression.values().isEmpty()) {
+      if (expression.getOperand() instanceof OperandComposite) {
+        // If we have a composite value then it's better to separate the code because the difference
+        // is significant.
+        OperandComposite compositeOp = (OperandComposite) expression.getOperand();
+        List<JDBCDataConverter<?, ?>> converterList =
+            new ArrayList<>(compositeOp.getOperands().size());
+        // Append the operands as a special parenthesis to define the set.
+        b.append(StringConstant.LEFT_PARENTHESIS);
+        for (Operand<?> op : compositeOp.getOperands()) {
+          converterList.add(op.getConverter());
+          append(result, expression.getOperand());
+          if (converterList.size() < compositeOp.getOperands().size()) {
+            b.append(StringConstant.COMMA);
+          }
         }
-        // Here we creates the literal operands. We need them to bind the values.
-        result.add(appendLiteral(new OperandLiteral(value, converter)));
+        b.append(StringConstant.RIGHT_PARENTHESIS);
+
+        appendInExpression(expression);
+
+        b.append(StringConstant.LEFT_PARENTHESIS);
+        for (Object value : expression.values()) {
+          if (!result.isEmpty()) {
+            b.append(StringConstant.COMMA);
+          }
+          // Here we must have a CompositeValue with values in the same order then it was in the
+          // OperandComposite.
+          Assert.isInstanceOf(CompositeValue.class, value,
+              "The values of the in must be composite values like " + compositeOp);
+          b.append(StringConstant.LEFT_PARENTHESIS);
+
+          CompositeValue compValue = (CompositeValue) value;
+          ListIterator<JDBCDataConverter<?, ?>> iterConverter = converterList.listIterator();
+          for (Comparable innerValue : compValue.getValues()) {
+            JDBCDataConverter<?, ?> converter = iterConverter.next();
+            result.add(appendLiteral(new OperandLiteral(innerValue, converter)));
+            if (iterConverter.hasNext()) {
+              b.append(StringConstant.COMMA);
+            }
+          }
+
+          b.append(StringConstant.RIGHT_PARENTHESIS);
+        }
+        b.append(StringConstant.RIGHT_PARENTHESIS);
+      } else {
+        // In this case we have a list of properties
+
+        // If we have a property then the values must match it's type. Else if have a value here
+        // then
+        // the rest of the values must match with it.
+        JDBCDataConverter<?, ?> converter = expression.getOperand().getConverter();
+
+        append(result, expression.getOperand());
+
+        appendInExpression(expression);
+
+        b.append(StringConstant.LEFT_PARENTHESIS);
+        for (Object value : expression.values()) {
+          if (!result.isEmpty()) {
+            b.append(StringConstant.COMMA);
+          }
+          // Here we creates the literal operands. We need them to bind the values.
+          result.add(appendLiteral(new OperandLiteral(value, converter)));
+        }
+        b.append(StringConstant.RIGHT_PARENTHESIS);
       }
-      b.append(StringConstant.RIGHT_PARENTHESIS);
     } else {
       if (expression.isNegate()) {
         b.append(SQLConstant.NOT);
@@ -773,6 +813,16 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
       b.append(StringConstant.RIGHT_PARENTHESIS);
     }
     return result;
+  }
+
+  private void appendInExpression(ExpressionIn<?> expression) {
+    separate();
+    if (expression.isNegate()) {
+      b.append(SQLConstant.NOT);
+      separate();
+    }
+    b.append(SQLConstant.IN);
+    separate();
   }
 
   @Override

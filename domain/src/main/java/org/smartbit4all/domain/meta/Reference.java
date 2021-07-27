@@ -1,18 +1,16 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
  * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 package org.smartbit4all.domain.meta;
 
@@ -26,6 +24,7 @@ import java.util.stream.Collectors;
 import org.smartbit4all.core.utility.ListBasedMap;
 import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.service.entity.EntityUris;
+import org.springframework.util.Assert;
 
 /**
  * The instances of this class defines the reference meta data between two Entity. At meta level the
@@ -74,7 +73,7 @@ public class Reference<S extends EntityDefinition, T extends EntityDefinition> {
    * false but at setup time we can make it mandatory.
    */
   private Boolean mandatory;
-  
+
   private URI uri;
 
   /**
@@ -118,9 +117,14 @@ public class Reference<S extends EntityDefinition, T extends EntityDefinition> {
       return propRef(joinPath).eq(row.get(targetProperty));
     }
 
-    public ExpressionIn<V> in(Collection<? extends DataRow> rows) {
+    public ExpressionIn<V> inDetail(Collection<? extends DataRow> rows) {
       Set<V> values = rows.stream().map(row -> row.get(targetProperty)).collect(Collectors.toSet());
       return sourceProperty.in(values);
+    }
+
+    public ExpressionIn<V> inMaster(Collection<? extends DataRow> rows) {
+      Set<V> values = rows.stream().map(row -> row.get(sourceProperty)).collect(Collectors.toSet());
+      return targetProperty.in(values);
     }
 
     public ExpressionIn<V> in(List<Reference<?, ?>> joinPath, Collection<? extends DataRow> rows) {
@@ -211,6 +215,32 @@ public class Reference<S extends EntityDefinition, T extends EntityDefinition> {
   }
 
   /**
+   * Constructs the condition for querying the referred rows by the source rows.
+   * 
+   * @param detailRows The source rows.
+   * @return The Expression that is typically an IN with the values from the source properties.
+   */
+  public Expression joinMaster(Collection<? extends DataRow> detailRows) {
+    Assert.isTrue(joins().size() == 1,
+        "The " + toString() + " reference must have only one join condition");
+    Join<?> join = joins().get(0);
+    return join.inMaster(detailRows);
+  }
+
+  /**
+   * Constructs the condition for querying the source rows by the target rows.
+   * 
+   * @param targetRows The target rows.
+   * @return The Expression that is typically an IN with the values from the target properties.
+   */
+  public Expression joinDetail(Collection<? extends DataRow> targetRows) {
+    Assert.isTrue(joins().size() == 1,
+        "The " + toString() + " reference must have only one join condition");
+    Join<?> join = joins().get(0);
+    return join.inDetail(targetRows);
+  }
+
+  /**
    * The name of the reference that must be unique inside the source entity.
    * 
    * @return
@@ -268,5 +298,5 @@ public class Reference<S extends EntityDefinition, T extends EntityDefinition> {
   public URI getUri() {
     return uri;
   }
-  
+
 }

@@ -77,6 +77,11 @@ public class OperandProperty<T> extends Operand<T> {
     return boundValue == null ? null : boundValue.getValue();
   }
 
+  @Override
+  public JDBCDataConverter<?, ?> getConverter() {
+    return property().jdbcConverter();
+  }
+
   /**
    * Sets the bound value for the given operand. It's a kind of lambda to effectively access the
    * bound value from the actual context.

@@ -190,6 +190,36 @@ public abstract class Expression {
   }
 
   /**
+   * Constructs the AND of the Expressions.
+   * 
+   * @param expressions The Expressions for an AND clause.
+   * @return If we have an empty parameter list then it returns a null. In other cases we will
+   *         receive an {@link ExpressionClause} with AND and the parameters will be the contained
+   *         expressions of this clause. Depending on the parameter we will find the original
+   *         parameter directly or we will have a bracket to fold the original expression to avoid
+   *         ambiguous expression.
+   */
+  public static final Expression AND(Expression... expressions) {
+    if (expressions == null || expressions.length == 0) {
+      return null;
+    }
+    if (expressions.length == 1) {
+      return expressions[0];
+    }
+    ExpressionClause result = createAndClause();
+    for (int i = 0; i < expressions.length; i++) {
+      Expression current = expressions[i];
+      if (current instanceof ExpressionClause
+          && ((ExpressionClause) current).getOperator() != BooleanOperator.AND) {
+        result.add(current.BRACKET());
+      } else {
+        result.add(current);
+      }
+    }
+    return result;
+  }
+
+  /**
    * This function translates the expression and return the translated version as a result. If we
    * setup an expression based on an {@link EntityDefinition} but later on we would like to use this
    * expression as sub expression in another {@link EntityDefinition} that refers the original one.
@@ -210,7 +240,6 @@ public abstract class Expression {
     Expression result = copy();
     // The Property references of the clone will be modified to use references.
     result.accept(new ExpressionVisitor() {
-      @SuppressWarnings("unchecked")
       @Override
       public <T> void visit2Operand(Expression2Operand<T> expression) {
         translateOperand(entityDef, joinPath, expression.getOp());

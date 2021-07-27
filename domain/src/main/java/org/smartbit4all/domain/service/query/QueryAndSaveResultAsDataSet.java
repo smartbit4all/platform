@@ -56,7 +56,6 @@ public final class QueryAndSaveResultAsDataSet extends SB4FunctionImpl<Query<?>,
       // We save the data set from the first column of the query result and replace the expression
       // with an exists.
       Iterator<DataColumn<?>> iterColumn = data.columns().iterator();
-      @SuppressWarnings("unchecked")
       DataSetEntry entry = null;
       if (iterColumn.hasNext()) {
         DataColumn<?> column = iterColumn.next();
