@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Objects;
+import java.util.function.Predicate;
 
 class ApiObjectListProxy<T> implements List<T> {
 
@@ -102,7 +104,7 @@ class ApiObjectListProxy<T> implements List<T> {
       return false;
     }
     for (Object t : c) {
-      collection.addObject(t);
+      collection.removeObject(t);
     }
     return true;
   }
@@ -216,6 +218,13 @@ class ApiObjectListProxy<T> implements List<T> {
 
       }
     };
+  }
+
+  @Override
+  public boolean removeIf(Predicate<? super T> filter) {
+    Objects.requireNonNull(filter);
+    boolean removed = collection.removeIf(filter);
+    return removed;
   }
 
   @Override

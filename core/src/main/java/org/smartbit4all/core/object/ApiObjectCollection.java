@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import org.smartbit4all.core.utility.PathUtility;
 import org.smartbit4all.core.utility.StringConstant;
@@ -210,6 +211,23 @@ public class ApiObjectCollection implements List<ApiObjectRef> {
       originalCollection.remove(o);
     }
     return false;
+  }
+
+  /**
+   * Removes all of the elements of this collection that satisfy the given predicate.
+   * 
+   * @param o
+   * @return
+   */
+  @Override
+  public boolean removeIf(Predicate filter) {
+
+    List toRemove = (List) originalCollection.stream().filter(filter).collect(Collectors.toList());
+
+    for (Object object : toRemove) {
+      removeObject(object);
+    }
+    return true;
   }
 
   public boolean removeByIdx(String idxPath) {
