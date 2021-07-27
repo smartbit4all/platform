@@ -7,9 +7,6 @@ import org.smartbit4all.ui.vaadin.components.selector.MultiSelectPopUpList;
 import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.grid.Grid.SelectionMode;
-import com.vaadin.flow.component.grid.GridSelectionModel;
-import com.vaadin.flow.component.grid.GridSingleSelectionModel;
 import com.vaadin.flow.component.ironlist.IronList;
 import com.vaadin.flow.component.listbox.ListBox;
 import com.vaadin.flow.component.listbox.MultiSelectListBox;
@@ -39,15 +36,7 @@ public class VaadinHasItemsBinder<T> extends VaadinCollectionBinder<T> {
       return;
     }
     if (list instanceof Grid) {
-      GridSelectionModel<T> selectionModel = ((Grid<T>) list).getSelectionModel();
       ((Grid<T>) list).getDataProvider().refreshAll();
-      if (selectionModel != null && (selectionModel.getSelectedItems() == null || selectionModel.getSelectedItems().isEmpty())) {
-        if (selectionModel instanceof GridSingleSelectionModel) {
-          ((Grid<T>) list).setSelectionMode(SelectionMode.SINGLE);
-        } else {
-          ((Grid<T>) list).setSelectionMode(SelectionMode.MULTI);
-        }
-      }
     } else if (list instanceof ComboBox) {
       ((ComboBox<T>) list).getDataProvider().refreshAll();
     } else if (list instanceof CheckboxGroup) {
