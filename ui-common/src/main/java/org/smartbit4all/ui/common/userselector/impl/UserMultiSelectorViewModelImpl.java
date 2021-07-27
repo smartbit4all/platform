@@ -54,6 +54,8 @@ public class UserMultiSelectorViewModelImpl extends ObjectEditingImpl
   public void initObservableObject() {
     userMultiSelector = new ObservableObjectImpl();
     commandObservable = new ObservableObjectImpl();
+    ref = null;
+    userMultiSelectorWrapper = null;
   }
 
   private void notifyAllListeners() {

@@ -14,7 +14,7 @@ import org.smartbit4all.ui.api.userselector.UserSingleSelectorViewModel;
 
 public class UserSingleSelectorViewModelImpl extends ObjectEditingImpl
     implements UserSingleSelectorViewModel {
-  
+
   protected ObservableObjectImpl userSingleSelector;
 
   private Map<Class<?>, ApiBeanDescriptor> userSelectorDescriptor;
@@ -34,27 +34,30 @@ public class UserSingleSelectorViewModelImpl extends ObjectEditingImpl
   @Override
   public void initObservableObject() {
     userSingleSelector = new ObservableObjectImpl();
+    ref = null;
+    userSingleSelectorWrapper = null;
   }
 
   @Override
   public void initUserSingleSelectors(URI selectedUserUri) {
-    UserSingleSelector singleSelector = UserSelectorUtil.createUserSingleSelector(orgApi.getAllUsers(),
-        orgApi.getAllGroups(), selectedUserUri);
+    UserSingleSelector singleSelector =
+        UserSelectorUtil.createUserSingleSelector(orgApi.getAllUsers(),
+            orgApi.getAllGroups(), selectedUserUri);
 
     if (userSingleSelectorWrapper == null) {
-      
+
       ref = new ApiObjectRef(null, singleSelector, userSelectorDescriptor);
       userSingleSelector.setRef(ref);
       userSingleSelectorWrapper = ref.getWrapper(UserSingleSelector.class);
-      
+
     } else {
-      
+
       userSingleSelectorWrapper.setSelected(singleSelector.getSelected());
       userSingleSelectorWrapper.setSelectors(singleSelector.getSelectors());
-      
+
     }
   }
-  
+
   @Override
   public ObservableObject userSingleSelector() {
     return userSingleSelector;
