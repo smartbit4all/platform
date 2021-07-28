@@ -19,6 +19,7 @@ public class UserSelectorViewModelConfiguration {
     userSelectorDescriptor = UserSelectorViewModelUtil.createUserSelectorBean();
   }
 
+  @Bean
   @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
   public UserSingleSelectorViewModel userSingleSelectorViewModel(OrgApi orgApi) {
     return new UserSingleSelectorViewModelImpl(orgApi, userSelectorDescriptor);
