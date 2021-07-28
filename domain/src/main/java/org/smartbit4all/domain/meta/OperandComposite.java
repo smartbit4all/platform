@@ -38,6 +38,13 @@ public class OperandComposite extends Operand<CompositeValue> {
     this.operands.addAll(operands);
   }
 
+  public OperandComposite(Operand<?>... operandArray) {
+    super();
+    for (Operand<?> operand : operandArray) {
+      this.operands.add(operand);
+    }
+  }
+
   @SuppressWarnings({"rawtypes"})
   @Override
   public CompositeValue value() {

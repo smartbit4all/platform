@@ -17,6 +17,7 @@ package org.smartbit4all.domain.utility;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import org.smartbit4all.core.utility.StringConstant;
 
 /**
  * At java level we need the representation for a composite values where the this can be used as
@@ -110,6 +111,21 @@ public final class CompositeValue implements Comparable<CompositeValue> {
   @SuppressWarnings("rawtypes")
   public final List<Comparable> getValues() {
     return Collections.unmodifiableList(values);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append(StringConstant.LEFT_CURLY);
+    boolean first = true;
+    for (Comparable<?> comparable : values) {
+      if (!first) {
+        sb.append(StringConstant.COMMA_SPACE);
+      }
+      sb.append(comparable.toString());
+      first = false;
+    }
+    return sb.toString();
   }
 
 }

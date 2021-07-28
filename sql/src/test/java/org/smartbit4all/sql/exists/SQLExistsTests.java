@@ -1,8 +1,5 @@
 package org.smartbit4all.sql.exists;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -10,10 +7,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.domain.data.TableData;
+import org.smartbit4all.domain.meta.ExpressionIn;
+import org.smartbit4all.domain.meta.OperandComposite;
+import org.smartbit4all.domain.meta.OperandProperty;
 import org.smartbit4all.domain.service.query.Query;
 import org.smartbit4all.domain.service.query.QueryApi;
 import org.smartbit4all.domain.service.query.QueryExecutionPlan;
 import org.smartbit4all.domain.service.query.QueryResult;
+import org.smartbit4all.domain.utility.CompositeValue;
 import org.smartbit4all.domain.utility.crud.Crud;
 import org.smartbit4all.sql.testmodel.AddressDef;
 import org.smartbit4all.sql.testmodel.PersonDef;
@@ -24,6 +25,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.jdbc.Sql;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 @SpringBootTest(classes = {
     ExistTestConfig.class,
@@ -238,6 +242,34 @@ public class SQLExistsTests {
 
     assertTrue(tickets.size() >= 2);
 
+  }
+
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  @Test
+  public void expreessionInMultipleProperties() throws Exception {
+
+    Set<CompositeValue> inValues = new HashSet<>();
+    inValues.add(new CompositeValue("Ügy 100", Long.valueOf(1)));
+    inValues.add(new CompositeValue("Ügy 401", Long.valueOf(1)));
+    inValues.add(new CompositeValue("Ügy 401", Long.valueOf(2)));
+
+    TableData<TicketDef> tickets = Crud.read(ticketDef).all()
+        .where(new ExpressionIn<>(new OperandComposite(new OperandProperty(ticketDef.title()),
+            new OperandProperty(ticketDef.primaryPersonId())), inValues))
+        .listData();
+
+    Long countValue = (Long) Crud.read(ticketDef).count().singleValue().get();
+
+    System.out.println(countValue);
+
+    assertTrue(tickets.size() == 2);
+
+    TableData<TicketDef> inverseTickets = Crud.read(ticketDef).all()
+        .where(new ExpressionIn<>(new OperandComposite(new OperandProperty(ticketDef.title()),
+            new OperandProperty(ticketDef.primaryPersonId())), inValues).NOT())
+        .listData();
+
+    assertTrue(inverseTickets.size() == (countValue - tickets.size()));
   }
 
 }

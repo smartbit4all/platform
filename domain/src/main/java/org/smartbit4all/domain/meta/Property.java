@@ -1,18 +1,16 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
  * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 package org.smartbit4all.domain.meta;
 
@@ -75,31 +73,11 @@ public abstract class Property<T> {
   private EntityDefinition entityDef;
 
   /**
-   * The aggregate property contains the min value of this property. Created on demand.
-   */
-  private PropertyComputed<T> min;
-
-  /**
-   * The aggregate property contains the max value of this property. Created on demand.
-   */
-  private PropertyComputed<T> max;
-
-  /**
-   * The aggregate property contains the avg value of this property. Created on demand.
-   */
-  private PropertyComputed<T> avg;
-
-  /**
-   * The aggregate property contains the sum value of this property. Created on demand.
-   */
-  private PropertyComputed<T> sum;
-
-  /**
    * The comparator that can be used to compare the values of the property. Can be set explicitly,
    * but if the type implements Comparable then the compareTo method is used implicitly.
    */
   private Comparator<? super T> comparator;
-  
+
   /**
    * The property function that extends the property's behavior
    */
@@ -405,31 +383,31 @@ public abstract class Property<T> {
     // handled in PropertyInvocationHandler
     throw new RuntimeException("This method should be intercepted by a proxy!");
   }
-  
+
   /**
-   * Applies 'upper' function on property 
+   * Applies 'upper' function on property
    */
   public Property<T> upper() {
     // handled in PropertyInvocationHandler
     throw new RuntimeException("This method should be intercepted by a proxy!");
   }
-  
+
   /**
-   * Applies 'lower' function on property 
+   * Applies 'lower' function on property
    */
   public Property<T> lower() {
     // handled in PropertyInvocationHandler
     throw new RuntimeException("This method should be intercepted by a proxy!");
   }
-  
+
   /**
-   * Applies the given function on property 
+   * Applies the given function on property
    */
   public Property<T> function(String functionName) {
     // handled in PropertyInvocationHandler
     throw new RuntimeException("This method should be intercepted by a proxy!");
   }
-  
+
   /**
    * Applies the given function on property, with the given parameters. </br>
    * The parameters should be passed as a string where the properties can be used in '{idx}' form.
@@ -439,14 +417,13 @@ public abstract class Property<T> {
    * <code>
    * myEntity.myProperty.function("concatenateValues", "{0}, {1}, {2}", otherProperty1, 
    * otherProperty2)
-   * </code>
-   * </br>
+   * </code> </br>
    */
   public Property<T> function(String functionName, String params, Property<?>... properties) {
     // handled in PropertyInvocationHandler
     throw new RuntimeException("This method should be intercepted by a proxy!");
   }
-  
+
 
   /**
    * Constructs a sort order based on the property.
@@ -471,11 +448,11 @@ public abstract class Property<T> {
       if (Comparable.class.isAssignableFrom(type)) {
         Class<Comparable<? super T>> clazz = (Class<Comparable<? super T>>) type;
         comparator = (local, other) -> {
-          if(local == null && other == null) {
+          if (local == null && other == null) {
             return 0;
-          } else if(local != null && other == null) {
+          } else if (local != null && other == null) {
             return -1;
-          } else if(local == null && other != null ) {
+          } else if (local == null && other != null) {
             return 1;
           } else {
             return clazz.cast(local).compareTo(other);
@@ -495,20 +472,20 @@ public abstract class Property<T> {
   void setComparator(Comparator<? super T> comparator) {
     this.comparator = comparator;
   }
-  
+
   /**
    * @return The URI that refers to this property
    */
   public final URI getUri() {
-    if(getEntityDef() == null) {
+    if (getEntityDef() == null) {
       throw new IllegalStateException(
           "There is no EntityDefinition set to this property! "
-          + "This way the URI can not be constructed for this property!");
+              + "This way the URI can not be constructed for this property!");
     }
     String domain = getEntityDef().getDomain();
     String entityName = getEntityDef().entityDefName();
     URI propertyUri = EntityUris.createPropertyUri(domain, entityName, name);
-    if(propertyFunction != null) {
+    if (propertyFunction != null) {
       String functionName = propertyFunction.getName();
       return EntityUris.createFunctionPropertyUri(propertyUri, functionName);
     }

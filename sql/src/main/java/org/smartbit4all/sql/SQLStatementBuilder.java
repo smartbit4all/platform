@@ -234,12 +234,12 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
   public final void appendProperty(OperandProperty<?> propertyOperand) {
     // The fallback is that we use the name of the property itself.
     String columnName = getColumnNameOfProperty(propertyOperand);
-    
+
     PropertyFunction propertyFunction = propertyOperand.property().getPropertyFunction();
-    if(propertyFunction != null) {
+    if (propertyFunction != null) {
       columnName = getFunctionAdjustedColumnName(propertyOperand, columnName, propertyFunction);
     }
-    
+
     append(columnName);
   }
 
@@ -270,9 +270,9 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
     }
     return columnName;
   }
-  
+
   @Override
-  public String getFunctionSqlString(PropertyFunction propertyFunction, String baseParam, 
+  public String getFunctionSqlString(PropertyFunction propertyFunction, String baseParam,
       List<String> requiredParamSqlStrings) {
     StringBuilder sb = new StringBuilder();
 
@@ -284,11 +284,11 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
       int requiredPropNum = requiredParamSqlStrings == null ? 0 : requiredParamSqlStrings.size();
       Object[] columns = new String[requiredPropNum + 1];
       columns[0] = baseParam;
-      for(int i = 0 ; i < requiredPropNum;) {
+      for (int i = 0; i < requiredPropNum;) {
         String requiredColumn = requiredParamSqlStrings.get(i);
-        columns[++i] = requiredColumn; 
+        columns[++i] = requiredColumn;
       }
-      
+
       functionParam = MessageFormat.format(parameterString, columns);
     }
 
@@ -748,7 +748,7 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
         b.append(StringConstant.LEFT_PARENTHESIS);
         for (Operand<?> op : compositeOp.getOperands()) {
           converterList.add(op.getConverter());
-          append(result, expression.getOperand());
+          append(result, op);
           if (converterList.size() < compositeOp.getOperands().size()) {
             b.append(StringConstant.COMMA);
           }
@@ -1176,7 +1176,8 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
       switch (target) {
         case ORACLE:
           if (!hasOrderBy) {
-            b.append(SQLConstant.WHERE).append(StringConstant.SPACE)
+            b.append(SQLConstant.SEGMENTSEPARATOR).append(SQLConstant.WHERE)
+                .append(StringConstant.SPACE)
                 .append(SQLConstant.ROWNUM_ORA).append(StringConstant.SPACE)
                 .append(StringConstant.LESSOREQUAL).append(StringConstant.SPACE).append(queryLimit)
                 .append(StringConstant.SPACE);

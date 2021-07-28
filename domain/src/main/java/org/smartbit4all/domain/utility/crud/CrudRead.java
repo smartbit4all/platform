@@ -17,6 +17,7 @@ package org.smartbit4all.domain.utility.crud;
 import java.util.List;
 import java.util.Optional;
 import org.smartbit4all.core.SB4CompositeFunction;
+import org.smartbit4all.domain.data.DataColumn;
 import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.meta.EntityDefinition;
@@ -127,6 +128,20 @@ public class CrudRead<E extends EntityDefinition> {
   }
 
   /**
+   * In this case we want to run the query and retrieve the first value from the first row.
+   * Typically the result of the count, sum avg etc. functions can be executed in this way.
+   * 
+   * @param <T>
+   * @return
+   * @throws Exception
+   */
+  public Optional<?> singleValue() throws Exception {
+    TableData<E> result = listData();
+    DataColumn<?> column = result.columns().iterator().next();
+    return getValueFromResult(column, result);
+  }
+
+  /**
    * @param msg exception message when there are more than one result rows
    * @return
    * @throws Exception
@@ -184,6 +199,16 @@ public class CrudRead<E extends EntityDefinition> {
     List<DataRow> resultRows = result.rows();
     if (!resultRows.isEmpty()) {
       T value = resultRows.get(0).get(property);
+      return Optional.ofNullable(value);
+    } else {
+      return Optional.empty();
+    }
+  }
+
+  private Optional<?> getValueFromResult(DataColumn<?> column, TableData<E> result) {
+    List<DataRow> resultRows = result.rows();
+    if (!resultRows.isEmpty()) {
+      Object value = result.get(column, resultRows.get(0));
       return Optional.ofNullable(value);
     } else {
       return Optional.empty();
