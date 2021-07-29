@@ -1,5 +1,6 @@
 package org.smartbit4all.api.org;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -44,7 +45,16 @@ public abstract class OrgApiImpl implements OrgApi {
     }
   }
 
-  protected abstract Group localGroupOf(String group);
+  protected Group localGroupOf(String groupName) {
+    Group group = new Group();
+    group.setName(groupName);
+    group.setUri(URI.create("local:/group#" + getGroupId(groupName)));
+    return group;
+  }
+  
+  private String getGroupId(String groupName) {
+    return groupName.replaceAll("\\s","");
+  }
   
   protected Set<Group> getAdditionalLocalGroups(List<Group> groups) {
     Set<Group> additionalGroups = new HashSet<>();

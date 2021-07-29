@@ -1,0 +1,28 @@
+openapi: 3.0.1
+info:
+  title: Security api
+  description: Security api...
+  termsOfService: ''
+  contact:
+    email: info@it4all.hu
+  version: 1.0.0
+tags:
+  - name: Security
+    description: Security
+paths: {}
+components:
+  schemas:
+    AthenticationResult:
+      type: object
+      required: 
+      - "fullname"
+      - "username"
+      - "token"
+      properties:
+        fullname:
+          type: string
+        username:
+          type: string
+        token:
+          type: string
+    
