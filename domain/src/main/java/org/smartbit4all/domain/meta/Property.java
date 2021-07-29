@@ -403,23 +403,16 @@ public abstract class Property<T> {
   /**
    * Applies the given function on property
    */
-  public Property<T> function(String functionName) {
-    // handled in PropertyInvocationHandler
-    throw new RuntimeException("This method should be intercepted by a proxy!");
+  public final Property<T> function(String functionName) {
+    return function(PropertyFunction.withSelfPropertyArgument(functionName));
   }
-
+  
   /**
-   * Applies the given function on property, with the given parameters. </br>
-   * The parameters should be passed as a string where the properties can be used in '{idx}' form.
-   * The {0} is the property the function was called on.</br>
-   * </br>
-   * For example:</br>
-   * <code>
-   * myEntity.myProperty.function("concatenateValues", "{0}, {1}, {2}", otherProperty1, 
-   * otherProperty2)
-   * </code> </br>
+   * Applies the given function on property. </br>
+   * Use the {@link PropertyFunction#build(String)} static method to create a 
+   * {@link PropertyFunction} instance.
    */
-  public Property<T> function(String functionName, String params, Property<?>... properties) {
+  public Property<T> function(PropertyFunction propertyFunction) {
     // handled in PropertyInvocationHandler
     throw new RuntimeException("This method should be intercepted by a proxy!");
   }

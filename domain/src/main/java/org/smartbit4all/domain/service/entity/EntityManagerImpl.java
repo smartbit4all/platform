@@ -93,6 +93,7 @@ public class EntityManagerImpl implements EntityManager {
       property = entityDef.getProperty(propertyPath);
     }
     if(functionName != null && !functionName.isEmpty()) {
+      // TODO handle property uris with functions that has other parameters 
       return property.function(functionName);
     }
     return property;
