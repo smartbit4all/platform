@@ -1,6 +1,7 @@
 package org.smartbit4all.ui.vaadin.components.binder;
 
 import java.util.Objects;
+import java.util.Set;
 import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.ui.vaadin.components.selector.MultiSelectPopUp;
 import org.smartbit4all.ui.vaadin.components.selector.MultiSelectPopUpList;
@@ -27,12 +28,9 @@ public class VaadinHasItemsBinder<T> extends VaadinCollectionBinder<T> {
   }
 
   @Override
-  protected void handleItemRefreshed(T item) {
+  protected void handleItemRefreshed() {
     if (list == null) {
       // called from super constructor
-      return;
-    }
-    if (item == null) {
       return;
     }
     if (list instanceof Grid) {
@@ -40,7 +38,10 @@ public class VaadinHasItemsBinder<T> extends VaadinCollectionBinder<T> {
     } else if (list instanceof ComboBox) {
       ((ComboBox<T>) list).getDataProvider().refreshAll();
     } else if (list instanceof CheckboxGroup) {
-      ((CheckboxGroup<T>) list).getDataProvider().refreshAll();
+      CheckboxGroup<T> checkboxGroup = (CheckboxGroup<T>) list;
+      Set<T> value = checkboxGroup.getValue();
+      checkboxGroup.getDataProvider().refreshAll();
+      checkboxGroup.setValue(value);
     } else if (list instanceof IronList) {
       ((IronList<T>) list).getDataProvider().refreshAll();
     } else if (list instanceof ListBox) {

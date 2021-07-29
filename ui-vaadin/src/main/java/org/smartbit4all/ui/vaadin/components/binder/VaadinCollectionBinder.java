@@ -45,8 +45,8 @@ public abstract class VaadinCollectionBinder<T> extends VaadinAbstractBinder {
       } else if (change.getOperation().equals(ChangeState.DELETED)) {
         item = deleteItem(itemPath);
       }
-      handleItemRefreshed(item);
     }
+    handleItemRefreshed();
     // TODO make item refreshes in one call, if possible.
   }
 
@@ -70,7 +70,7 @@ public abstract class VaadinCollectionBinder<T> extends VaadinAbstractBinder {
     return item;
   }
 
-  protected void handleItemRefreshed(T item) {
+  protected void handleItemRefreshed() {
     // intentionally left blank
   }
 
