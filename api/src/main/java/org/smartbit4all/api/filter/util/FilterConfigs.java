@@ -242,8 +242,7 @@ public abstract class FilterConfigs {
       return operationBuilder;
     }
 
-    public ConfigFieldBuilder addOperationDateEquals(Property<?> property,
-        String possibleValueCode) {
+    public ConfigFieldBuilder addOperationDateEquals(Property<?> property) {
       String operationCodeValue = OperationCode.DATE_EQ.getValue();
       URI possibleValuesUri = null;
       ConfigOperationBuilder dateEqualsOperationBuilder =
@@ -252,8 +251,7 @@ public abstract class FilterConfigs {
       return this;
     }
 
-    public ConfigFieldBuilder addOperationDateInterval(Property<?> property,
-        String possibleValueCode) {
+    public ConfigFieldBuilder addOperationDateInterval(Property<?> property) {
       String operationCodeValue = OperationCode.DATE_INTERVAL.getValue();
       URI possibleValuesUri = null;
       ConfigOperationBuilder dateIntervalOperationBuilder =
@@ -262,8 +260,7 @@ public abstract class FilterConfigs {
       return this;
     }
 
-    public ConfigFieldBuilder addOperationTextEquals(Property<?> property,
-        String possibleValueCode) {
+    public ConfigFieldBuilder addOperationTextEquals(Property<?> property) {
       String operationCodeValue = OperationCode.TXT_EQ.getValue();
       URI possibleValuesUri = null;
       ConfigOperationBuilder textEqualsOperationBuilder =
@@ -272,7 +269,7 @@ public abstract class FilterConfigs {
       return this;
     }
 
-    public ConfigFieldBuilder addOperationTextLike(Property<?> property, String possibleValueCode) {
+    public ConfigFieldBuilder addOperationTextLike(Property<?> property) {
       String operationCodeValue = OperationCode.TXT_LIKE.getValue();
       URI possibleValuesUri = null;
       ConfigOperationBuilder textLikeOperationBuilder =
@@ -281,8 +278,7 @@ public abstract class FilterConfigs {
       return this;
     }
 
-    public ConfigFieldBuilder addOperationTextLikeMin(Property<?> property,
-        String possibleValueCode) {
+    public ConfigFieldBuilder addOperationTextLikeMin(Property<?> property) {
       String operationCodeValue = OperationCode.TXT_LIKE_MIN.getValue();
       URI possibleValuesUri = null;
       ConfigOperationBuilder textLikeMinOperationBuilder =
@@ -292,14 +288,32 @@ public abstract class FilterConfigs {
     }
 
     public ConfigFieldBuilder addOperationDetailTextLikeMin(Property<?> propertyOfFilter,
-        EntityDefinition masterEntity, Property<?> fkEntity) {
+        EntityDefinition masterEntity, Property<?> fkProperty) {
       String operationCodeValue = OperationCode.DET_TXT_LIKE_MIN.getValue();
       ConfigOperationBuilder detailTextLikeMinOperationBuilder = createDetailOperationBuilder(
-          operationCodeValue, propertyOfFilter, masterEntity, fkEntity, null);
+          operationCodeValue, propertyOfFilter, masterEntity, fkProperty, null);
       configOperationBuilders.add(detailTextLikeMinOperationBuilder);
       return this;
     }
-
+   
+    public ConfigFieldBuilder addOperationDetailTextLike(Property<?> propertyOfFilter,
+        EntityDefinition masterEntity, Property<?> fkProperty) {
+      String operationCodeValue = OperationCode.DET_TXT_LIKE.getValue();
+      ConfigOperationBuilder detailTextLikeOperationBuilder = createDetailOperationBuilder(
+          operationCodeValue, propertyOfFilter, masterEntity, fkProperty, null);
+      configOperationBuilders.add(detailTextLikeOperationBuilder);
+      return this;
+    }
+   
+    public ConfigFieldBuilder addOperationDetailTextEquals(Property<?> propertyOfFilter,
+        EntityDefinition masterEntity, Property<?> fkProperty) {
+      String operationCodeValue = OperationCode.DET_TXT_EQ.getValue();
+      ConfigOperationBuilder detailTextEqualsOperationBuilder = createDetailOperationBuilder(
+          operationCodeValue, propertyOfFilter, masterEntity, fkProperty, null);
+      configOperationBuilders.add(detailTextEqualsOperationBuilder);
+      return this;
+    }
+    
     private String getDetailOperationCode(String opCode) {
       String operationCode = opCode.substring(opCode.indexOf(".") + 1);
       return operationCode;
