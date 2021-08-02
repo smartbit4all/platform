@@ -57,6 +57,11 @@ components:
           type: array
           items:
             type: LocalDateTime
+        widgets:
+          description: Array of the contained widget instances.
+          type: array
+          items:
+            $ref: "#/components/schemas/WidgetInstance"
     PredictiveFormInstance:
       description: An instantiated layout of an EntityFormDescription that uses a predictive data graph as a layout definition. This instance is the current state of the layouting.
       type: object
@@ -76,8 +81,11 @@ components:
           items:
             $ref: "#/components/schemas/WidgetInstance"
         graph:
-          descriptor: The graph that describes the layout of the form instance.
+          description: The graph that describes the layout of the form instance.
           $ref: "#/components/schemas/PredictiveInputGraphDescriptor"
+        activeNode:
+          description: The currently active node in the descriptor graph.
+          $ref: "#/components/schemas/PredictiveInputGraphNode"
     FixedLayoutFormInstance:
       description: This form instance contains a well-defined layout for all properties of the entities. Every property is visible and accessible for the user. The exact layout is missing!!!
       type: object
@@ -96,6 +104,10 @@ components:
         predictiveLayout:
           description: The graph descriptor that describes the predictive layout.
           $ref: "#/components/schemas/PredictiveInputGraphDescriptor"
+        widgets:
+          type: array
+          items:
+            $ref: "#/components/schemas/WidgetDescriptor"
     WidgetDescriptor:
       description: Represents a widget for the EntityFormDescriptor. It might have many types and all of them must be impemented by the form display engine.
       type: object

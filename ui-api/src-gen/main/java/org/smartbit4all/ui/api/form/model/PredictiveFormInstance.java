@@ -9,6 +9,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import org.smartbit4all.ui.api.form.model.PredictiveInputGraphDescriptor;
+import org.smartbit4all.ui.api.form.model.PredictiveInputGraphNode;
 import org.smartbit4all.ui.api.form.model.WidgetDescriptor;
 import org.smartbit4all.ui.api.form.model.WidgetInstance;
 import org.openapitools.jackson.nullable.JsonNullable;
@@ -34,6 +35,9 @@ public class PredictiveFormInstance   {
 
   @JsonProperty("graph")
   private PredictiveInputGraphDescriptor graph;
+
+  @JsonProperty("activeNode")
+  private PredictiveInputGraphNode activeNode;
 
   public PredictiveFormInstance uri(URI uri) {
     this.uri = uri;
@@ -135,6 +139,27 @@ public class PredictiveFormInstance   {
     this.graph = graph;
   }
 
+  public PredictiveFormInstance activeNode(PredictiveInputGraphNode activeNode) {
+    this.activeNode = activeNode;
+    return this;
+  }
+
+  /**
+   * Get activeNode
+   * @return activeNode
+  */
+  @ApiModelProperty(value = "")
+
+  @Valid
+
+  public PredictiveInputGraphNode getActiveNode() {
+    return activeNode;
+  }
+
+  public void setActiveNode(PredictiveInputGraphNode activeNode) {
+    this.activeNode = activeNode;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -148,12 +173,13 @@ public class PredictiveFormInstance   {
     return Objects.equals(this.uri, predictiveFormInstance.uri) &&
         Objects.equals(this.availableWidgets, predictiveFormInstance.availableWidgets) &&
         Objects.equals(this.visibleWidgets, predictiveFormInstance.visibleWidgets) &&
-        Objects.equals(this.graph, predictiveFormInstance.graph);
+        Objects.equals(this.graph, predictiveFormInstance.graph) &&
+        Objects.equals(this.activeNode, predictiveFormInstance.activeNode);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, availableWidgets, visibleWidgets, graph);
+    return Objects.hash(uri, availableWidgets, visibleWidgets, graph, activeNode);
   }
 
   @Override
@@ -165,6 +191,7 @@ public class PredictiveFormInstance   {
     sb.append("    availableWidgets: ").append(toIndentedString(availableWidgets)).append("\n");
     sb.append("    visibleWidgets: ").append(toIndentedString(visibleWidgets)).append("\n");
     sb.append("    graph: ").append(toIndentedString(graph)).append("\n");
+    sb.append("    activeNode: ").append(toIndentedString(activeNode)).append("\n");
     sb.append("}");
     return sb.toString();
   }

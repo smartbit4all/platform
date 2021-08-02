@@ -38,6 +38,10 @@ public class WidgetInstance   {
   @Valid
   private List<java.time.LocalDateTime> dateValues = null;
 
+  @JsonProperty("widgets")
+  @Valid
+  private List<WidgetInstance> widgets = null;
+
   public WidgetInstance descriptorUri(URI descriptorUri) {
     this.descriptorUri = descriptorUri;
     return this;
@@ -173,6 +177,35 @@ public class WidgetInstance   {
     this.dateValues = dateValues;
   }
 
+  public WidgetInstance widgets(List<WidgetInstance> widgets) {
+    this.widgets = widgets;
+    return this;
+  }
+
+  public WidgetInstance addWidgetsItem(WidgetInstance widgetsItem) {
+    if (this.widgets == null) {
+      this.widgets = new ArrayList<>();
+    }
+    this.widgets.add(widgetsItem);
+    return this;
+  }
+
+  /**
+   * Array of the contained widget instances.
+   * @return widgets
+  */
+  @ApiModelProperty(value = "Array of the contained widget instances.")
+
+  @Valid
+
+  public List<WidgetInstance> getWidgets() {
+    return widgets;
+  }
+
+  public void setWidgets(List<WidgetInstance> widgets) {
+    this.widgets = widgets;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -187,12 +220,13 @@ public class WidgetInstance   {
         Objects.equals(this.stringValues, widgetInstance.stringValues) &&
         Objects.equals(this.intValues, widgetInstance.intValues) &&
         Objects.equals(this.doubleValues, widgetInstance.doubleValues) &&
-        Objects.equals(this.dateValues, widgetInstance.dateValues);
+        Objects.equals(this.dateValues, widgetInstance.dateValues) &&
+        Objects.equals(this.widgets, widgetInstance.widgets);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(descriptorUri, stringValues, intValues, doubleValues, dateValues);
+    return Objects.hash(descriptorUri, stringValues, intValues, doubleValues, dateValues, widgets);
   }
 
   @Override
@@ -205,6 +239,7 @@ public class WidgetInstance   {
     sb.append("    intValues: ").append(toIndentedString(intValues)).append("\n");
     sb.append("    doubleValues: ").append(toIndentedString(doubleValues)).append("\n");
     sb.append("    dateValues: ").append(toIndentedString(dateValues)).append("\n");
+    sb.append("    widgets: ").append(toIndentedString(widgets)).append("\n");
     sb.append("}");
     return sb.toString();
   }
