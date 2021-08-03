@@ -190,3 +190,25 @@ components:
             type: string
             format: uri
           description: 'The uris of the child groups'
+    GroupsOfUser:
+      type: object
+      required: [userUri, groups]
+      properties:
+        userUri:
+          type: string
+          format: uri
+        groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/Group'
+    UsersOfGroup:
+      type: object
+      required: [groupUri, users]
+      properties:
+        groupUri:
+          type: string
+          format: uri
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'

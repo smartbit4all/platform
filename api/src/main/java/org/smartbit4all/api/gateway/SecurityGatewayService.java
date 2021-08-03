@@ -19,27 +19,35 @@ public interface SecurityGatewayService {
 
   /**
    * Returns every security group.
+   * 
    * @return
+   * @throws Exception
    */
   List<Group> getGroups();
 
   /**
    * Returns every security user.
+   * 
    * @return
+   * @throws Exception
    */
   List<User> getUsers();
-  
+
   /**
    * Returns every user who is a member of the specified group.
+   * 
    * @param groupUri
    * @return
+   * @throws Exception
    */
   List<User> getUsersOfGroup(URI groupUri);
 
   /**
    * Return which groups the user is member of.
+   * 
    * @param userUri
    * @return
+   * @throws Exception
    */
   List<Group> getGroupsOfUser(URI userUri);
 
@@ -48,6 +56,13 @@ public interface SecurityGatewayService {
    * 
    * @param userUri
    * @return
+   * @throws Exception
    */
   User getUser(URI userUri);
+
+
+  User createUser(User user);
+
+  Group createGroup(String groupName, String name, String description, URI kind, URI parent,
+      List<URI> children);
 }
