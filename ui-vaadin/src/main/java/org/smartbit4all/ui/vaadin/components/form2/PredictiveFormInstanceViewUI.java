@@ -192,11 +192,11 @@ public class PredictiveFormInstanceViewUI extends FlexLayout implements Predicti
   }
 
   @Override
-  public void openValueDialog(WidgetType widgetType, WidgetInstance instance) {
+  public void openValueDialog(WidgetType widgetType, WidgetInstance instance, WidgetDescriptor descriptor) {
     Dialog dialog;
     switch (widgetType) {
       case TEXT:
-        dialog = new TextDialog(instance, this);
+        dialog = new TextDialog(instance, this, descriptor);
         break;
 
       default:

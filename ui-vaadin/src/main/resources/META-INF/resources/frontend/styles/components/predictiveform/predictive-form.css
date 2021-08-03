@@ -49,6 +49,7 @@
 
 .visible-widget-view-value-label {
 	margin-left: 10px;
+	margin-right: 10px;
 	color: var(--lumo-primary-text-color);
 }
 
@@ -61,3 +62,10 @@
 	box-shadow: 0 2px 22px rgb(81 92 255 / 71%);
 }
 
+.text-dialog-layout {
+	flex-direction: column;
+}
+
+.text-dialog-button-layout {
+	justify-content: space-between;
+}

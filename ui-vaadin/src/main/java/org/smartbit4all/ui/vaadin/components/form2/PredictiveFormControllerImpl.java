@@ -2,6 +2,7 @@ package org.smartbit4all.ui.vaadin.components.form2;
 
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.smartbit4all.ui.api.form.PredictiveFormApi;
 import org.smartbit4all.ui.api.form.model.EntityFormInstance;
 import org.smartbit4all.ui.api.form.model.PredictiveFormInstance;
@@ -30,6 +31,7 @@ public class PredictiveFormControllerImpl implements PredictiveFormController {
   private PredictiveFormInstanceView ui;
   private PredictiveFormInstance predictiveFormInstance;
   private EntityFormInstance entityFormInstance;
+  private FormUtil util;
 
   public PredictiveFormControllerImpl(PredictiveFormApi predictiveFormApi) {
     api = predictiveFormApi;
@@ -58,7 +60,7 @@ public class PredictiveFormControllerImpl implements PredictiveFormController {
 
   private void setAvailableWidgets(PredictiveInputGraphNode node) {
     predictiveFormInstance.getAvailableWidgets().clear();
-    List<PredictiveInputGraphNode> children = node.getChildren();
+    List<PredictiveInputGraphNode> children = util.getChildNodes(node);
     for (PredictiveInputGraphNode n : children) {
       WidgetDescriptor widgetDescriptor = getWidgetDescriptor(n.getDescriptorUri());
       predictiveFormInstance.getAvailableWidgets().add(widgetDescriptor);
@@ -74,6 +76,8 @@ public class PredictiveFormControllerImpl implements PredictiveFormController {
   public void loadTemplate(URI uri) {
     entityFormInstance = api.loadInstance(uri);
     predictiveFormInstance = entityFormInstance.getPredictiveForm();
+    util = new FormUtil(entityFormInstance);
+
     ui.renderWidgets();
   }
 
@@ -89,8 +93,7 @@ public class PredictiveFormControllerImpl implements PredictiveFormController {
 
   @Override
   public WidgetDescriptor getWidgetDescriptor(URI descriptorUri) {
-    return FormUtil.getDescriptor(descriptorUri);
-//    return null;
+    return util.getDescriptor(descriptorUri);
   }
 
   @Override
@@ -109,33 +112,38 @@ public class PredictiveFormControllerImpl implements PredictiveFormController {
 
   @Override
   public List<PredictiveInputGraphNode> getAvailableNodes() {
-    return predictiveFormInstance.getActiveNode().getChildren();
+    List<PredictiveInputGraphNode> nodes = util
+        .getChildNodes(predictiveFormInstance.getActiveNode()).stream()
+        .filter(n -> util.getInstance(n.getDescriptorUri()) == null).collect(Collectors.toList());
+
+    return nodes;
   }
 
 
-  // TODO maybe this should be called addWidget or something more specific, cause a select method will
-  // be needed for the mouse click selection too
+  // TODO maybe this should be called addWidget or something more specific, cause a select method
+  // will be needed for the mouse click selection too
   @Override
   public void selectWidget(PredictiveInputGraphNode node) {
-    WidgetDescriptor widgetDescriptor = FormUtil.getDescriptor(node);
+    WidgetDescriptor widgetDescriptor = util.getDescriptor(node);
     if (widgetDescriptor.getWidgetType() == WidgetType.CONTAINER) {
       predictiveFormInstance.setActiveNode(node);
     }
     if (widgetDescriptor != null) {
       WidgetInstance widgetInstance = createWidgetInstanceFromDescriptor(widgetDescriptor);
-      ui.openValueDialog(widgetDescriptor.getWidgetType(), widgetInstance);
-      predictiveFormInstance.getAvailableWidgets().removeIf(w -> w.getUri().equals(node.getDescriptorUri()));
-      // WidgetInstance parentWidgetInstance = formInstance.getVisibleWidgets().stream()
-      // .filter(w -> w.getDescriptorUri().equals(node.getParent().getDescriptorUri())).findFirst()
-      // .orElse(null); // formutils.getwidgetinstancebyuri
+      ui.openValueDialog(widgetDescriptor.getWidgetType(), widgetInstance, widgetDescriptor);
+      predictiveFormInstance.getAvailableWidgets()
+          .removeIf(w -> w.getUri().equals(node.getDescriptorUri()));
       WidgetInstance parentWidgetInstance =
-          FormUtil.getInstance(node.getParent().getDescriptorUri());
+          util.getInstance(util.getNode(node.getParent()).getDescriptorUri());
       if (parentWidgetInstance != null) {
         parentWidgetInstance.addWidgetsItem(widgetInstance);
+        util.addInstanceByUri(widgetInstance.getDescriptorUri(), widgetInstance);
       } else {
         predictiveFormInstance.addVisibleWidgetsItem(widgetInstance);
+        util.addInstanceByUri(widgetInstance.getDescriptorUri(), widgetInstance);
       }
-      predictiveFormInstance.getAvailableWidgets().removeIf(w -> w.getUri().equals(node.getDescriptorUri()));
+      predictiveFormInstance.getAvailableWidgets()
+          .removeIf(w -> w.getUri().equals(node.getDescriptorUri()));
     }
     ui.renderWidgets();
   }

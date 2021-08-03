@@ -6,8 +6,11 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 import org.smartbit4all.ui.api.form.model.FixedLayoutFormInstance;
 import org.smartbit4all.ui.api.form.model.PredictiveFormInstance;
+import org.smartbit4all.ui.api.form.model.WidgetDescriptor;
 import org.openapitools.jackson.nullable.JsonNullable;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
@@ -29,6 +32,10 @@ public class EntityFormInstance   {
 
   @JsonProperty("fixedLayoutForm")
   private FixedLayoutFormInstance fixedLayoutForm;
+
+  @JsonProperty("widgets")
+  @Valid
+  private List<WidgetDescriptor> widgets = null;
 
   public EntityFormInstance uri(URI uri) {
     this.uri = uri;
@@ -114,6 +121,35 @@ public class EntityFormInstance   {
     this.fixedLayoutForm = fixedLayoutForm;
   }
 
+  public EntityFormInstance widgets(List<WidgetDescriptor> widgets) {
+    this.widgets = widgets;
+    return this;
+  }
+
+  public EntityFormInstance addWidgetsItem(WidgetDescriptor widgetsItem) {
+    if (this.widgets == null) {
+      this.widgets = new ArrayList<>();
+    }
+    this.widgets.add(widgetsItem);
+    return this;
+  }
+
+  /**
+   * Get widgets
+   * @return widgets
+  */
+  @ApiModelProperty(value = "")
+
+  @Valid
+
+  public List<WidgetDescriptor> getWidgets() {
+    return widgets;
+  }
+
+  public void setWidgets(List<WidgetDescriptor> widgets) {
+    this.widgets = widgets;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -127,12 +163,13 @@ public class EntityFormInstance   {
     return Objects.equals(this.uri, entityFormInstance.uri) &&
         Objects.equals(this.descriptorUri, entityFormInstance.descriptorUri) &&
         Objects.equals(this.predictiveForm, entityFormInstance.predictiveForm) &&
-        Objects.equals(this.fixedLayoutForm, entityFormInstance.fixedLayoutForm);
+        Objects.equals(this.fixedLayoutForm, entityFormInstance.fixedLayoutForm) &&
+        Objects.equals(this.widgets, entityFormInstance.widgets);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, descriptorUri, predictiveForm, fixedLayoutForm);
+    return Objects.hash(uri, descriptorUri, predictiveForm, fixedLayoutForm, widgets);
   }
 
   @Override
@@ -144,6 +181,7 @@ public class EntityFormInstance   {
     sb.append("    descriptorUri: ").append(toIndentedString(descriptorUri)).append("\n");
     sb.append("    predictiveForm: ").append(toIndentedString(predictiveForm)).append("\n");
     sb.append("    fixedLayoutForm: ").append(toIndentedString(fixedLayoutForm)).append("\n");
+    sb.append("    widgets: ").append(toIndentedString(widgets)).append("\n");
     sb.append("}");
     return sb.toString();
   }

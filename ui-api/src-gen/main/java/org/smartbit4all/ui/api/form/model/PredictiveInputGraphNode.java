@@ -19,6 +19,9 @@ import javax.validation.constraints.*;
 @ApiModel(description = "A single node in the input graph, contains a URI that points to a descriptor. The descriptor can be a simple property but a detail or a reference as well.")
 
 public class PredictiveInputGraphNode   {
+  @JsonProperty("uri")
+  private URI uri;
+
   /**
    * Describes whether this node references a simple property widget or a form, that possibly contains multiple widgets of even forms.
    */
@@ -64,11 +67,32 @@ public class PredictiveInputGraphNode   {
   private URI descriptorUri;
 
   @JsonProperty("parent")
-  private PredictiveInputGraphNode parent;
+  private URI parent;
 
   @JsonProperty("children")
   @Valid
-  private List<PredictiveInputGraphNode> children = null;
+  private List<URI> children = null;
+
+  public PredictiveInputGraphNode uri(URI uri) {
+    this.uri = uri;
+    return this;
+  }
+
+  /**
+   * Get uri
+   * @return uri
+  */
+  @ApiModelProperty(value = "")
+
+  @Valid
+
+  public URI getUri() {
+    return uri;
+  }
+
+  public void setUri(URI uri) {
+    this.uri = uri;
+  }
 
   public PredictiveInputGraphNode kind(KindEnum kind) {
     this.kind = kind;
@@ -131,7 +155,7 @@ public class PredictiveInputGraphNode   {
     this.descriptorUri = descriptorUri;
   }
 
-  public PredictiveInputGraphNode parent(PredictiveInputGraphNode parent) {
+  public PredictiveInputGraphNode parent(URI parent) {
     this.parent = parent;
     return this;
   }
@@ -144,20 +168,20 @@ public class PredictiveInputGraphNode   {
 
   @Valid
 
-  public PredictiveInputGraphNode getParent() {
+  public URI getParent() {
     return parent;
   }
 
-  public void setParent(PredictiveInputGraphNode parent) {
+  public void setParent(URI parent) {
     this.parent = parent;
   }
 
-  public PredictiveInputGraphNode children(List<PredictiveInputGraphNode> children) {
+  public PredictiveInputGraphNode children(List<URI> children) {
     this.children = children;
     return this;
   }
 
-  public PredictiveInputGraphNode addChildrenItem(PredictiveInputGraphNode childrenItem) {
+  public PredictiveInputGraphNode addChildrenItem(URI childrenItem) {
     if (this.children == null) {
       this.children = new ArrayList<>();
     }
@@ -173,11 +197,11 @@ public class PredictiveInputGraphNode   {
 
   @Valid
 
-  public List<PredictiveInputGraphNode> getChildren() {
+  public List<URI> getChildren() {
     return children;
   }
 
-  public void setChildren(List<PredictiveInputGraphNode> children) {
+  public void setChildren(List<URI> children) {
     this.children = children;
   }
 
@@ -191,7 +215,8 @@ public class PredictiveInputGraphNode   {
       return false;
     }
     PredictiveInputGraphNode predictiveInputGraphNode = (PredictiveInputGraphNode) o;
-    return Objects.equals(this.kind, predictiveInputGraphNode.kind) &&
+    return Objects.equals(this.uri, predictiveInputGraphNode.uri) &&
+        Objects.equals(this.kind, predictiveInputGraphNode.kind) &&
         Objects.equals(this.multiplicity, predictiveInputGraphNode.multiplicity) &&
         Objects.equals(this.descriptorUri, predictiveInputGraphNode.descriptorUri) &&
         Objects.equals(this.parent, predictiveInputGraphNode.parent) &&
@@ -200,7 +225,7 @@ public class PredictiveInputGraphNode   {
 
   @Override
   public int hashCode() {
-    return Objects.hash(kind, multiplicity, descriptorUri, parent, children);
+    return Objects.hash(uri, kind, multiplicity, descriptorUri, parent, children);
   }
 
   @Override
@@ -208,6 +233,7 @@ public class PredictiveInputGraphNode   {
     StringBuilder sb = new StringBuilder();
     sb.append("class PredictiveInputGraphNode {\n");
     
+    sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    kind: ").append(toIndentedString(kind)).append("\n");
     sb.append("    multiplicity: ").append(toIndentedString(multiplicity)).append("\n");
     sb.append("    descriptorUri: ").append(toIndentedString(descriptorUri)).append("\n");

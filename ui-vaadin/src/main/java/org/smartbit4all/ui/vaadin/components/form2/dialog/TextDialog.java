@@ -2,11 +2,13 @@ package org.smartbit4all.ui.vaadin.components.form2.dialog;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.ui.api.form.model.WidgetDescriptor;
 import org.smartbit4all.ui.api.form.model.WidgetInstance;
 import org.smartbit4all.ui.vaadin.components.form2.PredictiveFormInstanceViewUI;
 import org.smartbit4all.ui.vaadin.util.Notifications;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
@@ -16,10 +18,13 @@ public class TextDialog extends Dialog {
   
   private static final Logger log = LoggerFactory.getLogger(TextDialog.class);
   
-  public TextDialog(WidgetInstance instance, PredictiveFormInstanceViewUI ui) {
+  public TextDialog(WidgetInstance instance, PredictiveFormInstanceViewUI ui, WidgetDescriptor descriptor) {
     FlexLayout dialogLayout = new FlexLayout();
+    dialogLayout.setClassName("text-dialog-layout");
     add(dialogLayout);
-
+    
+    Label titleLabel = new Label(descriptor.getLabel());
+    
     TextField tfValue = new TextField();
     
     Binder<WidgetInstance> binder = new Binder<>(WidgetInstance.class);
@@ -54,7 +59,8 @@ public class TextDialog extends Dialog {
       close();
     });
     FlexLayout buttonLayout = new FlexLayout(btnSave, btnCancel);
+    buttonLayout.setClassName("text-dialog-button-layout");
     
-    dialogLayout.add(tfValue, buttonLayout);
+    dialogLayout.add(titleLabel, tfValue, buttonLayout);
   }
 }

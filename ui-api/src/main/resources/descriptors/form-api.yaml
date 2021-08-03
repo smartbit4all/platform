@@ -29,6 +29,11 @@ components:
         fixedLayoutForm:
           description: If the given form has fixed layout version, then we have an instance of this. It can be displayed as a view on the data.
           $ref: "#/components/schemas/FixedLayoutFormInstance"
+        widgets:
+          type: array
+          items:
+            $ref: "#/components/schemas/WidgetDescriptor"
+
     WidgetInstance:
       description: An instantiated widget on a form refering its descriptor and containing the widget instance data.
       type: object
@@ -176,10 +181,18 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/PredictiveInputGraphNode"
+        nodes:
+          description: all the nodes held by the graph descriptor. We need these if we want to maintain a mapping of the URIs and the nodes, which we do.
+          type: array
+          items:
+            $ref: "#/components/schemas/PredictiveInputGraphNode"
     PredictiveInputGraphNode:
       description: A single node in the input graph, contains a URI that points to a descriptor. The descriptor can be a simple property but a detail or a reference as well.
       type: object
       properties:
+        uri:
+          type: string
+          format: uri
         kind:
           description: Describes whether this node references a simple property widget or a form, that possibly contains multiple widgets of even forms.
           type: string
@@ -194,8 +207,10 @@ components:
           description: The uri of the widget descriptor or the form descriptor.
           format: uri
         parent:
-            $ref: "#/components/schemas/PredictiveInputGraphNode"
+          type: string
+          format: uri
         children:
           type: array
           items:
-            $ref: "#/components/schemas/PredictiveInputGraphNode"
+            type: string
+            format: uri

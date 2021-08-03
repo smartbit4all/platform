@@ -17,47 +17,54 @@ import org.smartbit4all.ui.api.form.model.WidgetType;
 
 public class MockWidgets {
   
-  public Map<URI, WidgetDescriptor> descriptorsByUris = createDescriptorsByUris();
+  public List<WidgetDescriptor> descriptorList;
   public PredictiveInputGraphDescriptor inputGraphDescriptor = createInputGraphDescriptor();
+  public Map<PredictiveInputGraphNode, WidgetDescriptor> descriptorsByNodes;
+  public Map<URI, PredictiveInputGraphNode> nodesByUris;
   
   public MockWidgets() {
-    descriptorsByUris = createDescriptorsByUris();
+    descriptorList = createWidgetDescriptors();
+    int i = 0;
+    for (WidgetDescriptor descriptor : descriptorList) {
+      descriptor.setUri(createDescriptorUri(i++));
+    }
   }  
   
+  // TODO in the mock version an instance is created, and an entityFormDescriptor is added.
+  // This should be reversed, the instance should be created from the descriptor.
   public EntityFormInstance createMockEntityFormInstance() {
     EntityFormInstance instance = new EntityFormInstance();
     instance.setPredictiveForm(createMockPredictiveFormInstance());
     EntityFormDescriptor descriptor = createEntityFormDescriptor();
     instance.setDescriptorUri(URI.create("demoform/entitydescriptor/1"));
     instance.setUri(URI.create("health-fs/instances/entities/1"));
+    instance.setWidgets(descriptor.getWidgets());
     return instance;
   }
 
   private EntityFormDescriptor createEntityFormDescriptor() {
     EntityFormDescriptor descriptor = new EntityFormDescriptor();
     descriptor.setPredictiveLayout(inputGraphDescriptor);
-    descriptor.setWidgets(descriptorsByUris.values().stream().collect(Collectors.toList()));
+    descriptor.setWidgets(descriptorList);
     descriptor.setUri(URI.create("demoform/entitydescriptor/1"));
     return descriptor;
   }
 
-  private Map<URI, WidgetDescriptor> createDescriptorsByUris() {
-    WidgetDescriptor root = new WidgetDescriptor().label("").icon("user").widgetType(WidgetType.CONTAINER).uri(URI.create("demofrom/descriptors/1"));
-    WidgetDescriptor personalData = new WidgetDescriptor().label("Személyes adatok").icon("user").widgetType(WidgetType.CONTAINER).uri(URI.create("demofrom/descriptors/2"));
-    WidgetDescriptor healthData = new WidgetDescriptor().label("Egészségügyi adatok").icon("clipboard-cross").widgetType(WidgetType.CONTAINER).uri(URI.create("demofrom/descriptors/3"));
-    WidgetDescriptor temp = new WidgetDescriptor().label("Testhőmérséklet").icon("spline_area_chart").widgetType(WidgetType.TEXT).uri(URI.create("demofrom/descriptors/4"));
-    WidgetDescriptor lastName = new WidgetDescriptor().label("Vezetéknév").icon("arrow_right").widgetType(WidgetType.TEXT).uri(URI.create("demofrom/descriptors/5"));
-    WidgetDescriptor firstName = new WidgetDescriptor().label("Keresztnév").icon("arrow_left").widgetType(WidgetType.TEXT).uri(URI.create("demofrom/descriptors/6"));
-    
-    
-    Map<URI, WidgetDescriptor> map = new HashMap<>();
-    map.put(URI.create("demofrom/descriptors/1"), root);
-    map.put(URI.create("demofrom/descriptors/2"), personalData);
-    map.put(URI.create("demofrom/descriptors/3"), healthData);
-    map.put(URI.create("demofrom/descriptors/4"), temp);
-    map.put(URI.create("demofrom/descriptors/5"), lastName);
-    map.put(URI.create("demofrom/descriptors/6"), firstName);
-    return map;
+  private List<WidgetDescriptor> createWidgetDescriptors() {
+    List<WidgetDescriptor> descriptorList = new ArrayList<>();
+    WidgetDescriptor root = new WidgetDescriptor().label("").icon("user").widgetType(WidgetType.CONTAINER);
+    WidgetDescriptor personalData = new WidgetDescriptor().label("Személyes adatok").icon("user").widgetType(WidgetType.CONTAINER);
+    WidgetDescriptor healthData = new WidgetDescriptor().label("Egészségügyi adatok").icon("clipboard-cross").widgetType(WidgetType.CONTAINER);
+    WidgetDescriptor temp = new WidgetDescriptor().label("Testhőmérséklet").icon("spline-area-chart").widgetType(WidgetType.TEXT);
+    WidgetDescriptor lastName = new WidgetDescriptor().label("Vezetéknév").icon("arrow-right").widgetType(WidgetType.TEXT);
+    WidgetDescriptor firstName = new WidgetDescriptor().label("Keresztnév").icon("arrow-left").widgetType(WidgetType.TEXT);
+    descriptorList.add(root);
+    descriptorList.add(personalData);
+    descriptorList.add(healthData);
+    descriptorList.add(temp);
+    descriptorList.add(lastName);
+    descriptorList.add(firstName);
+    return descriptorList;
   }
   
   
@@ -73,9 +80,12 @@ public class MockWidgets {
 
   private List<WidgetDescriptor> getAvailableWidgets(PredictiveInputGraphNode node) {
     List<WidgetDescriptor> availableWidgets = new ArrayList<>();
-    for (PredictiveInputGraphNode n : node.getChildren()) {
-      WidgetDescriptor widgetDescriptor = descriptorsByUris.get(n.getDescriptorUri());
-      availableWidgets.add(widgetDescriptor);
+    for (URI u : node.getChildren()) {
+      PredictiveInputGraphNode n = nodesByUris.get(u);
+      WidgetDescriptor widgetDescriptor = descriptorList.stream().filter(d -> d.getUri().equals(n.getDescriptorUri())).findFirst().orElse(null);
+      if (widgetDescriptor != null) {
+        availableWidgets.add(widgetDescriptor);
+      }
     }
     return availableWidgets;
   }
@@ -83,92 +93,95 @@ public class MockWidgets {
   private PredictiveInputGraphDescriptor createInputGraphDescriptor() {
     PredictiveInputGraphDescriptor graph = new PredictiveInputGraphDescriptor();
     graph.setRootNodes(createRootNodes());
-    
+    graph.setNodes(nodesByUris.values().stream().collect(Collectors.toList()));
     return graph;
   }
   
   // root
-  private static List<PredictiveInputGraphNode> createRootNodes() {
+  private List<PredictiveInputGraphNode> createRootNodes() {
     List<PredictiveInputGraphNode> rootNodes = new ArrayList<>();
     
     PredictiveInputGraphNode root = new PredictiveInputGraphNode();
     root.setKind(KindEnum.WIDGET);
     root.setMultiplicity(1);
-    root.setDescriptorUri(createRootDescriptorUri());
-    root.addChildrenItem(createFirstChild());
-    root.addChildrenItem(createSecondChild());
+    root.setDescriptorUri(createDescriptorUri(0));
+    URI uri = createNodeUri(0);
+    nodesByUris = new HashMap<>();
+    nodesByUris.put(uri, root);
+    root.setUri(uri);
+    root.addChildrenItem(createFirstChild().parent(uri).getUri());
+    root.addChildrenItem(createSecondChild().parent(uri).getUri());
     rootNodes.add(root);
     
     return rootNodes;
   }
-  
-  private static URI createRootDescriptorUri() {
-    return URI.create("demofrom/descriptors/1");
-  }
 
   // Személyes adatok
-  private static PredictiveInputGraphNode createFirstChild() {
+  private PredictiveInputGraphNode createFirstChild() {
     PredictiveInputGraphNode node = new PredictiveInputGraphNode();
     node.setKind(KindEnum.WIDGET);
-    node.setDescriptorUri(createFirstChildDescriptorUri());
+    node.setDescriptorUri(createDescriptorUri(1));
     node.setMultiplicity(1);
-    node.addChildrenItem(createFirstNameNode());
-    node.addChildrenItem(createLastNameNode());
+    URI uri = createNodeUri(1);
+    nodesByUris.put(uri, node);
+    node.setUri(uri);
+    node.addChildrenItem(createFirstNameNode().parent(uri).getUri());
+    node.addChildrenItem(createLastNameNode().parent(uri).getUri());
     return node;
   }
 
-  private static PredictiveInputGraphNode createLastNameNode() {
+  private PredictiveInputGraphNode createLastNameNode() {
     PredictiveInputGraphNode node = new PredictiveInputGraphNode();
     node.setKind(KindEnum.WIDGET);
-    node.setDescriptorUri(createLastNameUri());
-    node.setMultiplicity(1);
-    return node;
-  }
-
-  private static URI createLastNameUri() {
-    return URI.create("demofrom/descriptors/5");
-  }
-
-  private static PredictiveInputGraphNode createFirstNameNode() {
-    PredictiveInputGraphNode node = new PredictiveInputGraphNode();
-    node.setKind(KindEnum.WIDGET);
-    node.setDescriptorUri(createFirstNameUri());
+    node.setDescriptorUri(createDescriptorUri(4));
+    URI uri = createNodeUri(4);
+    node.setUri(uri);
+    nodesByUris.put(uri, node);
     node.setMultiplicity(1);
     return node;
   }
 
-  private static URI createFirstNameUri() {
-    return URI.create("demofrom/descriptors/6");
-  }
-
-  private static URI createFirstChildDescriptorUri() {
-    return URI.create("demofrom/descriptors/2");
+  private PredictiveInputGraphNode createFirstNameNode() {
+    PredictiveInputGraphNode node = new PredictiveInputGraphNode();
+    node.setKind(KindEnum.WIDGET);
+    node.setDescriptorUri(createDescriptorUri(5));
+    URI uri = createNodeUri(5);
+    node.setUri(uri);
+    nodesByUris.put(uri, node);
+    node.setMultiplicity(1);
+    return node;
   }
 
   // EÜ adatok
-  private static PredictiveInputGraphNode createSecondChild() {
+  private PredictiveInputGraphNode createSecondChild() {
     PredictiveInputGraphNode node = new PredictiveInputGraphNode();
     node.setKind(KindEnum.WIDGET);
-    node.setDescriptorUri(createSecondChildDescriptorUri());
+    node.setDescriptorUri(createDescriptorUri(2));
     node.setMultiplicity(1);
-    node.addChildrenItem(createTemperatureNode());
+    URI uri = createNodeUri(2);
+    nodesByUris.put(uri, node);
+    node.setUri(uri);
+    node.addChildrenItem(createTemperatureNode().parent(uri).getUri());
     return node;
   }
 
-  private static PredictiveInputGraphNode createTemperatureNode() {
+  private PredictiveInputGraphNode createTemperatureNode() {
     PredictiveInputGraphNode node = new PredictiveInputGraphNode();
     node.setKind(KindEnum.WIDGET);
-    node.setDescriptorUri(createTempUri());
+    node.setDescriptorUri(createDescriptorUri(3));
+    URI uri = createNodeUri(3);
+    node.setUri(uri);
+    nodesByUris.put(uri, node);
     node.setMultiplicity(1);
     return node;
   }
-
-  private static URI createTempUri() {
-    return URI.create("demofrom/descriptors/4");
+  
+  private URI createDescriptorUri(int position) {
+    return URI.create("widgets/" + position);
   }
-
-  private static URI createSecondChildDescriptorUri() {
-    return URI.create("demofrom/descriptors/3");
+  
+  private URI createNodeUri(int position) {
+    return URI.create("nodes/" + position);
   }
   
 
