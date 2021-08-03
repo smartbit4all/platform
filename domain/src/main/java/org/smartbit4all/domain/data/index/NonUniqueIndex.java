@@ -14,7 +14,6 @@
  ******************************************************************************/
 package org.smartbit4all.domain.data.index;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -41,21 +40,14 @@ public class NonUniqueIndex<T> extends TableDataIndex {
 
   private List<DataRow> nullRows = null;
 
-  /**
-   * The reference for the table data column.
-   */
-  private WeakReference<DataColumn<T>> columnRef;
-
   NonUniqueIndex(TableData<?> tableData, Property<T> property) {
     super(tableData, IndexType.NONUNIQUE, false);
     DataColumn<T> column = tableData.getColumn(property);
-    columnRef = new WeakReference<DataColumn<T>>(column);
     init(tableData, column);
   }
 
   NonUniqueIndex(TableData<?> tableData, DataColumn<T> column) {
     super(tableData, IndexType.NONUNIQUE, false);
-    columnRef = new WeakReference<DataColumn<T>>(column);
     init(tableData, column);
   }
 
@@ -66,22 +58,22 @@ public class NonUniqueIndex<T> extends TableDataIndex {
     nullRows = tableData.rows().stream()
         .filter(r -> tableData.get(column, r) == null)
         .collect(Collectors.toList());
-    
+
     index = tableData.rows().stream()
         .filter(r -> !nullRows.contains(r))
         .collect(Collectors.groupingBy(r -> tableData.get(column, r)));
   }
 
   public List<DataRow> get(T value) {
-    if(value == null) {
+    if (value == null) {
       return new ArrayList<>(nullRows);
     }
-    
+
     List<DataRow> indexValues = index.get(value);
-    if(indexValues == null || indexValues.size() < 1) {
+    if (indexValues == null || indexValues.size() < 1) {
       return Collections.emptyList();
     }
-    
+
     return new ArrayList<>(indexValues);
   }
 

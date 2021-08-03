@@ -21,7 +21,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.smartbit4all.core.utility.ListBasedMap;
 import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.service.entity.EntityUris;
 import org.springframework.util.Assert;
@@ -143,12 +142,8 @@ public class Reference<S extends EntityDefinition, T extends EntityDefinition> {
   }
 
   /**
-   * The join between the properties of the source and the target. The key is the property of the
-   * source and the value is from the target. This is typically one to one mapping so we use this
-   * special map to avoid unnecessary map administration.
+   * The join between the properties of the source and the target.
    */
-  ListBasedMap<Property<?>, Property<?>> joins_old = new ListBasedMap<>();
-
   List<Join<?>> joins = new ArrayList<>();
 
   /**

@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.data.filtering.ExpressionEvaluationPlan;
@@ -25,7 +24,7 @@ public abstract class StorageLoader {
   private final EntityDefinition entityDef;
 
   private final Map<Object, DataRow> rowsByPrimaryKey = new HashMap<>();
-  
+
   /**
    * The {@link StorageIndex} list available for the given loader.
    */

@@ -20,7 +20,6 @@ import org.smartbit4all.domain.meta.AssociationRole;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.domain.meta.Reference;
-import org.smartbit4all.domain.service.retrieve.RetrieveExecutionNode;
 
 /**
  * The edge is the relation among the nodes. The edge will appear in related nodes where we can set
@@ -46,9 +45,9 @@ public final class RetrievalRequestEdge<E extends EntityDefinition> {
    * <li>{@link AssociationKind#REFERENCE} - The detail points to the master with a foreign key. In
    * this case if the association have any property then this properties must be stored also in the
    * detail.</li>
-   * <li>{@link AssociationKind#ASSOCIATIONENTITY} - The association is an individually stored association with
-   * references to the related entities. The properties of the association are stored in this
-   * entity.</li>
+   * <li>{@link AssociationKind#ASSOCIATIONENTITY} - The association is an individually stored
+   * association with references to the related entities. The properties of the association are
+   * stored in this entity.</li>
    * </ul>
    * 
    * The {@link Reference} that defines the edge. The references show the join conditions so we can
