@@ -1,7 +1,7 @@
 package org.smartbit4all.ui.api.form;
 
 import java.net.URI;
-import org.smartbit4all.ui.api.form.model.PredictiveFormInstance;
+import org.smartbit4all.ui.api.form.model.EntityFormInstance;
 
 /**
  * API for the predictive forms, mainly for loading and saving the forms.
@@ -12,18 +12,19 @@ import org.smartbit4all.ui.api.form.model.PredictiveFormInstance;
 public interface PredictiveFormApi {
   
   /**
-   * Loads a {@link PredictiveFormInstance} based on the given URI.
+   * Loads a {@link EntityFormInstance} object.
+   * @param uri 
    * 
-   * @param uri the URI of the desired {@link PredictiveFormInstance}
-   * @return the loaded {@link PredictiveFormInstance} object
+   * @return the loaded {@link EntityFormInstance} object
    */
-  public PredictiveFormInstance loadInstance(URI uri);
+  public EntityFormInstance loadInstance(URI uri);
   
   /**
-   * Saves the {@link PredictiveFormInstance}, saving the state of the navigation graph, and the form data
+   * Saves the {@link EntityFormInstance}, saving the state of the navigation graph, and the form data
    * 
-   * @param instance the {@link PredictiveFormInstance} to be saved
+   * @param instance the {@link EntityFormInstance} to be saved
    */
-  public void saveForm(PredictiveFormInstance instance);
+  public void saveForm(EntityFormInstance instance);
+
 
 }

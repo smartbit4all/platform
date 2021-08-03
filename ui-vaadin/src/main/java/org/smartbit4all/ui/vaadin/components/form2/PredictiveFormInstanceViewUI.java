@@ -2,8 +2,7 @@ package org.smartbit4all.ui.vaadin.components.form2;
 
 import java.net.URI;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.smartbit4all.ui.api.form.model.EntityFormInstance;
 import org.smartbit4all.ui.api.form.model.PredictiveInputGraphNode;
 import org.smartbit4all.ui.api.form.model.WidgetDescriptor;
 import org.smartbit4all.ui.api.form.model.WidgetInstance;
@@ -11,6 +10,7 @@ import org.smartbit4all.ui.api.form.model.WidgetType;
 import org.smartbit4all.ui.common.form2.impl.PredictiveFormController;
 import org.smartbit4all.ui.common.form2.impl.PredictiveFormInstanceView;
 import org.smartbit4all.ui.vaadin.components.form2.dialog.TextDialog;
+import org.smartbit4all.ui.vaadin.components.navigation.Navigation;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -23,39 +23,17 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 @CssImport("./styles/components/predictiveform/predictive-form.css")
 public class PredictiveFormInstanceViewUI extends FlexLayout implements PredictiveFormInstanceView {
 
-  private static final Logger log = LoggerFactory.getLogger(PredictiveFormInstanceViewUI.class);
-
-  /**
-   * The controller of the form.
-   */
+//  private static final Logger log = LoggerFactory.getLogger(PredictiveFormInstanceViewUI.class);
   private PredictiveFormController controller;
-
-  /**
-   * The holder of the selectable widgets, on the lower part of the screen.
-   */
   private FlexLayout availableWidgetsHolder;
-
-  /**
-   * The holder of the already selected widgets, on the upper part of the screen.
-   */
   private FlexLayout visibleWidgetsHolder;
-
-  /**
-   * The lower layout, that holds the available widgets holder and the button group that controls
-   * the navigation in the tree.
-   */
   private FlexLayout lowerLayout;
-
-  /**
-   * The layout that's content is being edited right now.
-   */
-  private FlexLayout currentLayout;
 
   public PredictiveFormInstanceViewUI(PredictiveFormController controller) {
     this.controller = controller;
-    init();
     controller.setUI(this);
-    renderWidgets();
+    init();
+//    renderWidgets();
   }
 
   private void init() {
@@ -85,12 +63,10 @@ public class PredictiveFormInstanceViewUI extends FlexLayout implements Predicti
 
   private void renderAvailableWidgets() {
     availableWidgetsHolder.removeAll();
-    List<WidgetDescriptor> availableWidgets = controller.getAvailableWidgets();
-//    List<PredictiveInputGraphNode> availableNodes = controller.getAvailableNodes();
-    if (availableWidgets != null) {
-      for (WidgetDescriptor descriptor : availableWidgets) {
-        Button availableWidgetView = createAvailableWidgetView(descriptor.getLabel(),
-            descriptor.getIcon(), descriptor.getUri());
+    List<PredictiveInputGraphNode> availableNodes = controller.getAvailableNodes();
+    if (availableNodes != null) {
+      for (PredictiveInputGraphNode node : availableNodes) {
+        Button availableWidgetView = createAvailableWidgetView(node);
         availableWidgetsHolder.add(availableWidgetView);
       }
     }
@@ -110,7 +86,7 @@ public class PredictiveFormInstanceViewUI extends FlexLayout implements Predicti
   // TODO this doesn't work for every widget type
   private FlexLayout renderVisibleWidgetView(WidgetInstance instance) {
     WidgetDescriptor descriptor = controller.getWidgetDescriptor(instance.getDescriptorUri());
-    
+
     if (descriptor.getWidgetType() == WidgetType.CONTAINER) {
       FlexLayout containerLayout = new FlexLayout();
       containerLayout.setClassName("visible-widget-container-view");
@@ -125,21 +101,21 @@ public class PredictiveFormInstanceViewUI extends FlexLayout implements Predicti
       return createVisibleWidgetView(descriptor, instance);
     }
   }
-  
+
   private FlexLayout createVisibleWidgetView(WidgetDescriptor descriptor, WidgetInstance instance) {
     FlexLayout layout = new FlexLayout();
     layout.setClassName("visible-widget-view");
-    
+
     Icon icon = new Icon(descriptor.getIcon());
     icon.setClassName("visible-widget-view-icon");
-    
+
     Label label = new Label(descriptor.getLabel());
     label.setClassName("visible-widget-view-label");
-    
+
     String value = getValueFromWidgetInstance(instance, descriptor.getWidgetType());
     Label valueLabel = new Label(value);
     valueLabel.setClassName("visible-widget-view-value-label");
-    
+
     layout.add(icon, label, valueLabel);
     return layout;
   }
@@ -160,7 +136,7 @@ public class PredictiveFormInstanceViewUI extends FlexLayout implements Predicti
     buttonGroupLayout.add(backButton);
 
     Icon homeIcon = new Icon(VaadinIcon.HOME);
-    Button homeButton = new Button(homeIcon, e -> controller.jumpToStart());
+    Button homeButton = new Button(homeIcon, e -> controller.goToRoot());
     homeButton.setClassName("selection-button-group");
     buttonGroupLayout.add(homeButton);
 
@@ -169,13 +145,14 @@ public class PredictiveFormInstanceViewUI extends FlexLayout implements Predicti
     buttonGroupLayout.add(finalize);
     return buttonGroupLayout;
   }
-
-  private Button createAvailableWidgetView(String label, String iconPath, URI descriptorUri) {
-    Button button = new Button(label);
+  
+  private Button createAvailableWidgetView(PredictiveInputGraphNode node) {
+    WidgetDescriptor descriptor = controller.getWidgetDescriptor(node.getDescriptorUri());
+    Button button = new Button(descriptor.getLabel());
     button.setClassName("selection-button");
-    Icon icon = new Icon(iconPath);
+    Icon icon = new Icon(descriptor.getIcon());
     button.setIcon(icon);
-    button.addClickListener(e -> controller.selectWidget(descriptorUri));
+    button.addClickListener(e -> controller.selectWidget(node));
     return button;
   }
 
@@ -228,6 +205,7 @@ public class PredictiveFormInstanceViewUI extends FlexLayout implements Predicti
     dialog.open();
   }
 
+  // TODO these could go into the specific dialog classes
   private String getValueFromWidgetInstance(WidgetInstance instance, WidgetType widgetType) {
     switch (widgetType) {
       case TEXT:
@@ -237,5 +215,18 @@ public class PredictiveFormInstanceViewUI extends FlexLayout implements Predicti
       default:
         return null;
     }
+  }
+
+  @Override
+  public void navigateTo(EntityFormInstance instance) {
+    getUI().ifPresent(ui -> Navigation
+        .to("predictiveform")
+        .param("instance", instance)
+        .navigate(ui));
+    
+  }
+  
+  public void setInstanceUri(URI uri) {
+    controller.loadTemplate(uri);
   }
 }

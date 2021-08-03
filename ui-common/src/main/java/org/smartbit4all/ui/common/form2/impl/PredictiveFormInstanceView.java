@@ -1,5 +1,6 @@
 package org.smartbit4all.ui.common.form2.impl;
 
+import org.smartbit4all.ui.api.form.model.EntityFormInstance;
 import org.smartbit4all.ui.api.form.model.WidgetInstance;
 import org.smartbit4all.ui.api.form.model.WidgetType;
 
@@ -11,6 +12,8 @@ public interface PredictiveFormInstanceView {
   public void renderWidgets();
   
   public void openValueDialog(WidgetType widgetType, WidgetInstance instance);
+  
+  public void navigateTo(EntityFormInstance instance);
   
 //  public void renderAvailableWidget(String label, String icon, URI descriptorUri);
   

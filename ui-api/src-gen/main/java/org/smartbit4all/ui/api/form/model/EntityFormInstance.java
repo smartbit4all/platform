@@ -17,7 +17,7 @@ import javax.validation.constraints.*;
  */
 @ApiModel(description = "This is an instance of a form defined by an EntityFormDescriptor. This descriptor defines all the available widget and also the entity stored in the TableData behind the screen.")
 
-public class EntityFormInstace   {
+public class EntityFormInstance   {
   @JsonProperty("uri")
   private URI uri;
 
@@ -30,7 +30,7 @@ public class EntityFormInstace   {
   @JsonProperty("fixedLayoutForm")
   private FixedLayoutFormInstance fixedLayoutForm;
 
-  public EntityFormInstace uri(URI uri) {
+  public EntityFormInstance uri(URI uri) {
     this.uri = uri;
     return this;
   }
@@ -51,7 +51,7 @@ public class EntityFormInstace   {
     this.uri = uri;
   }
 
-  public EntityFormInstace descriptorUri(URI descriptorUri) {
+  public EntityFormInstance descriptorUri(URI descriptorUri) {
     this.descriptorUri = descriptorUri;
     return this;
   }
@@ -72,7 +72,7 @@ public class EntityFormInstace   {
     this.descriptorUri = descriptorUri;
   }
 
-  public EntityFormInstace predictiveForm(PredictiveFormInstance predictiveForm) {
+  public EntityFormInstance predictiveForm(PredictiveFormInstance predictiveForm) {
     this.predictiveForm = predictiveForm;
     return this;
   }
@@ -93,7 +93,7 @@ public class EntityFormInstace   {
     this.predictiveForm = predictiveForm;
   }
 
-  public EntityFormInstace fixedLayoutForm(FixedLayoutFormInstance fixedLayoutForm) {
+  public EntityFormInstance fixedLayoutForm(FixedLayoutFormInstance fixedLayoutForm) {
     this.fixedLayoutForm = fixedLayoutForm;
     return this;
   }
@@ -123,11 +123,11 @@ public class EntityFormInstace   {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    EntityFormInstace entityFormInstace = (EntityFormInstace) o;
-    return Objects.equals(this.uri, entityFormInstace.uri) &&
-        Objects.equals(this.descriptorUri, entityFormInstace.descriptorUri) &&
-        Objects.equals(this.predictiveForm, entityFormInstace.predictiveForm) &&
-        Objects.equals(this.fixedLayoutForm, entityFormInstace.fixedLayoutForm);
+    EntityFormInstance entityFormInstance = (EntityFormInstance) o;
+    return Objects.equals(this.uri, entityFormInstance.uri) &&
+        Objects.equals(this.descriptorUri, entityFormInstance.descriptorUri) &&
+        Objects.equals(this.predictiveForm, entityFormInstance.predictiveForm) &&
+        Objects.equals(this.fixedLayoutForm, entityFormInstance.fixedLayoutForm);
   }
 
   @Override
@@ -138,7 +138,7 @@ public class EntityFormInstace   {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class EntityFormInstace {\n");
+    sb.append("class EntityFormInstance {\n");
     
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    descriptorUri: ").append(toIndentedString(descriptorUri)).append("\n");

@@ -2,6 +2,7 @@ package org.smartbit4all.ui.common.form2.impl;
 
 import java.net.URI;
 import java.util.List;
+import org.smartbit4all.ui.api.form.model.PredictiveInputGraphNode;
 import org.smartbit4all.ui.api.form.model.WidgetDescriptor;
 import org.smartbit4all.ui.api.form.model.WidgetInstance;
 
@@ -19,19 +20,9 @@ public interface PredictiveFormController {
 
   public void save();
 
-  public void selectWidget(URI descriptorUri);
-
   public void loadAvailableWidgets();
 
-  public void loadTemplate();
-
-  /**
-   * Returns the currently available widgets, that are to be presented on the lower part of the
-   * screen.
-   * 
-   * @return the list of {@link WidgetDescriptor} objects, that represent the available choices
-   */
-  public List<WidgetDescriptor> getAvailableWidgets();
+  public void loadTemplate(URI uri);
 
   /**
    * Returns the currently visible widgets, that are to be presented on the upper part of the
@@ -46,8 +37,10 @@ public interface PredictiveFormController {
 
   public void saveWidgetInstance(WidgetInstance instance);
 
-  void jumpToStart();
+  public void goToRoot();
 
-//  public List<PredictiveInputGraphNode> getAvailableNodes();
+  public List<PredictiveInputGraphNode> getAvailableNodes();
+
+  public void selectWidget(PredictiveInputGraphNode node);
 
 }

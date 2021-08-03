@@ -31,7 +31,7 @@ public class PredictiveFormInstance   {
 
   @JsonProperty("visibleWidgets")
   @Valid
-  private List<WidgetInstance> visibleWidgets = null;
+  private List<WidgetInstance> visibleWidgets = new ArrayList<>();
 
   @JsonProperty("graph")
   private PredictiveInputGraphDescriptor graph;
@@ -95,9 +95,6 @@ public class PredictiveFormInstance   {
   }
 
   public PredictiveFormInstance addVisibleWidgetsItem(WidgetInstance visibleWidgetsItem) {
-    if (this.visibleWidgets == null) {
-      this.visibleWidgets = new ArrayList<>();
-    }
     this.visibleWidgets.add(visibleWidgetsItem);
     return this;
   }
@@ -106,7 +103,8 @@ public class PredictiveFormInstance   {
    * The array that contains the widgets that are currently visible, as already filled data.
    * @return visibleWidgets
   */
-  @ApiModelProperty(value = "The array that contains the widgets that are currently visible, as already filled data.")
+  @ApiModelProperty(required = true, value = "The array that contains the widgets that are currently visible, as already filled data.")
+  @NotNull
 
   @Valid
 

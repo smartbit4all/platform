@@ -63,6 +63,9 @@ public class PredictiveInputGraphNode   {
   @JsonProperty("descriptorUri")
   private URI descriptorUri;
 
+  @JsonProperty("parent")
+  private PredictiveInputGraphNode parent;
+
   @JsonProperty("children")
   @Valid
   private List<PredictiveInputGraphNode> children = null;
@@ -128,6 +131,27 @@ public class PredictiveInputGraphNode   {
     this.descriptorUri = descriptorUri;
   }
 
+  public PredictiveInputGraphNode parent(PredictiveInputGraphNode parent) {
+    this.parent = parent;
+    return this;
+  }
+
+  /**
+   * Get parent
+   * @return parent
+  */
+  @ApiModelProperty(value = "")
+
+  @Valid
+
+  public PredictiveInputGraphNode getParent() {
+    return parent;
+  }
+
+  public void setParent(PredictiveInputGraphNode parent) {
+    this.parent = parent;
+  }
+
   public PredictiveInputGraphNode children(List<PredictiveInputGraphNode> children) {
     this.children = children;
     return this;
@@ -170,12 +194,13 @@ public class PredictiveInputGraphNode   {
     return Objects.equals(this.kind, predictiveInputGraphNode.kind) &&
         Objects.equals(this.multiplicity, predictiveInputGraphNode.multiplicity) &&
         Objects.equals(this.descriptorUri, predictiveInputGraphNode.descriptorUri) &&
+        Objects.equals(this.parent, predictiveInputGraphNode.parent) &&
         Objects.equals(this.children, predictiveInputGraphNode.children);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(kind, multiplicity, descriptorUri, children);
+    return Objects.hash(kind, multiplicity, descriptorUri, parent, children);
   }
 
   @Override
@@ -186,6 +211,7 @@ public class PredictiveInputGraphNode   {
     sb.append("    kind: ").append(toIndentedString(kind)).append("\n");
     sb.append("    multiplicity: ").append(toIndentedString(multiplicity)).append("\n");
     sb.append("    descriptorUri: ").append(toIndentedString(descriptorUri)).append("\n");
+    sb.append("    parent: ").append(toIndentedString(parent)).append("\n");
     sb.append("    children: ").append(toIndentedString(children)).append("\n");
     sb.append("}");
     return sb.toString();

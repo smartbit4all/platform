@@ -5,6 +5,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import org.smartbit4all.ui.api.form.model.EntityFormDescriptor;
+import org.smartbit4all.ui.api.form.model.EntityFormInstance;
+import org.smartbit4all.ui.api.form.model.PredictiveFormInstance;
 import org.smartbit4all.ui.api.form.model.PredictiveInputGraphDescriptor;
 import org.smartbit4all.ui.api.form.model.PredictiveInputGraphNode;
 import org.smartbit4all.ui.api.form.model.PredictiveInputGraphNode.KindEnum;
@@ -13,11 +17,31 @@ import org.smartbit4all.ui.api.form.model.WidgetType;
 
 public class MockWidgets {
   
-  public static  Map<URI, WidgetDescriptor> descriptorsByUris = createDescriptorsByUris();
+  public Map<URI, WidgetDescriptor> descriptorsByUris = createDescriptorsByUris();
+  public PredictiveInputGraphDescriptor inputGraphDescriptor = createInputGraphDescriptor();
   
-  public static PredictiveInputGraphDescriptor inputGraphDescriptor = createInputGraphDescriptor();
+  public MockWidgets() {
+    descriptorsByUris = createDescriptorsByUris();
+  }  
   
-  private static Map<URI, WidgetDescriptor> createDescriptorsByUris() {
+  public EntityFormInstance createMockEntityFormInstance() {
+    EntityFormInstance instance = new EntityFormInstance();
+    instance.setPredictiveForm(createMockPredictiveFormInstance());
+    EntityFormDescriptor descriptor = createEntityFormDescriptor();
+    instance.setDescriptorUri(URI.create("demoform/entitydescriptor/1"));
+    instance.setUri(URI.create("health-fs/instances/entities/1"));
+    return instance;
+  }
+
+  private EntityFormDescriptor createEntityFormDescriptor() {
+    EntityFormDescriptor descriptor = new EntityFormDescriptor();
+    descriptor.setPredictiveLayout(inputGraphDescriptor);
+    descriptor.setWidgets(descriptorsByUris.values().stream().collect(Collectors.toList()));
+    descriptor.setUri(URI.create("demoform/entitydescriptor/1"));
+    return descriptor;
+  }
+
+  private Map<URI, WidgetDescriptor> createDescriptorsByUris() {
     WidgetDescriptor root = new WidgetDescriptor().label("").icon("user").widgetType(WidgetType.CONTAINER).uri(URI.create("demofrom/descriptors/1"));
     WidgetDescriptor personalData = new WidgetDescriptor().label("Személyes adatok").icon("user").widgetType(WidgetType.CONTAINER).uri(URI.create("demofrom/descriptors/2"));
     WidgetDescriptor healthData = new WidgetDescriptor().label("Egészségügyi adatok").icon("clipboard-cross").widgetType(WidgetType.CONTAINER).uri(URI.create("demofrom/descriptors/3"));
@@ -35,8 +59,28 @@ public class MockWidgets {
     map.put(URI.create("demofrom/descriptors/6"), firstName);
     return map;
   }
+  
+  
+  private PredictiveFormInstance createMockPredictiveFormInstance() {
+    PredictiveFormInstance instance = new PredictiveFormInstance();
+    instance.setUri(URI.create("instances/mock"));
+    instance.setGraph(inputGraphDescriptor);
+    instance.setActiveNode(instance.getGraph().getRootNodes().get(0));
+    instance.setAvailableWidgets(getAvailableWidgets(instance.getActiveNode()));
+    
+    return instance;
+  }
 
-  private static PredictiveInputGraphDescriptor createInputGraphDescriptor() {
+  private List<WidgetDescriptor> getAvailableWidgets(PredictiveInputGraphNode node) {
+    List<WidgetDescriptor> availableWidgets = new ArrayList<>();
+    for (PredictiveInputGraphNode n : node.getChildren()) {
+      WidgetDescriptor widgetDescriptor = descriptorsByUris.get(n.getDescriptorUri());
+      availableWidgets.add(widgetDescriptor);
+    }
+    return availableWidgets;
+  }
+
+  private PredictiveInputGraphDescriptor createInputGraphDescriptor() {
     PredictiveInputGraphDescriptor graph = new PredictiveInputGraphDescriptor();
     graph.setRootNodes(createRootNodes());
     

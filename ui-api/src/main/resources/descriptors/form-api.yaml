@@ -13,7 +13,7 @@ paths:
     description: placeholder
 components:
   schemas:
-    EntityFormInstace:
+    EntityFormInstance:
       description: This is an instance of a form defined by an EntityFormDescriptor. This descriptor defines all the available widget and also the entity stored in the TableData behind the screen.
       type: object
       properties:
@@ -65,6 +65,8 @@ components:
     PredictiveFormInstance:
       description: An instantiated layout of an EntityFormDescription that uses a predictive data graph as a layout definition. This instance is the current state of the layouting.
       type: object
+      required:
+        - "visibleWidgets"
       properties:
         uri:
           description: The URI of this exact instance.
@@ -191,6 +193,8 @@ components:
           type: string
           description: The uri of the widget descriptor or the form descriptor.
           format: uri
+        parent:
+            $ref: "#/components/schemas/PredictiveInputGraphNode"
         children:
           type: array
           items:

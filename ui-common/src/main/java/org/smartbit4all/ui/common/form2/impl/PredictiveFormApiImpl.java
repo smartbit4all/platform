@@ -1,12 +1,11 @@
 package org.smartbit4all.ui.common.form2.impl;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Optional;
+import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.ui.api.form.PredictiveFormApi;
-import org.smartbit4all.ui.api.form.model.PredictiveFormInstance;
-import org.smartbit4all.ui.api.form.model.PredictiveInputGraphNode;
-import org.smartbit4all.ui.api.form.model.WidgetDescriptor;
+import org.smartbit4all.ui.api.form.model.EntityFormInstance;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -14,47 +13,24 @@ import org.springframework.stereotype.Service;
 @Scope("prototype")
 public class PredictiveFormApiImpl implements PredictiveFormApi {
 
+  @Autowired
+  private Storage<EntityFormInstance> storage;
+  
   @Override
-  public PredictiveFormInstance loadInstance(URI uri) {
-    if (uri.equals(URI.create("instances/mock"))) {
-      return createMockInstance();
-    } else {
-      return null;
+  public EntityFormInstance loadInstance(URI uri) {
+    EntityFormInstance instance = null;
+    try {
+      Optional<EntityFormInstance> load = storage.load(uri);
+      instance = load.orElseGet(null);
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
     }
-  }
-
-  private PredictiveFormInstance createMockInstance() {
-    PredictiveFormInstance instance = new PredictiveFormInstance();
-    instance.setUri(URI.create("instances/mock"));
-    instance.setGraph(MockWidgets.inputGraphDescriptor);
-    // TODO maybe this should have a father node, which contains the root node options?
-    instance.setActiveNode(instance.getGraph().getRootNodes().get(0));
-    instance.setAvailableWidgets(getAvailableWidgets(instance.getActiveNode()));
-    
     return instance;
   }
 
-  /**
-   * Gets the available widgets based on the position in the graph.
-   * 
-   * @param node the currently active node.
-   * @return the list of available {@link WidgetDescriptor} items.
-   */
-  private List<WidgetDescriptor> getAvailableWidgets(PredictiveInputGraphNode node) {
-    List<WidgetDescriptor> availableWidgets = new ArrayList<>();
-    for (PredictiveInputGraphNode n : node.getChildren()) {
-      WidgetDescriptor widgetDescriptor = MockWidgets.descriptorsByUris.get(n.getDescriptorUri());
-      availableWidgets.add(widgetDescriptor);
-    }
-    return availableWidgets;
-  }
-
   @Override
-  public void saveForm(PredictiveFormInstance instance) {
+  public void saveForm(EntityFormInstance instance) {
     // TODO Auto-generated method stub
-
   }
-
-
-
 }
