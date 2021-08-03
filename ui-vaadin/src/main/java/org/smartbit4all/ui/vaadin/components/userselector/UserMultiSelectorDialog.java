@@ -44,6 +44,7 @@ public class UserMultiSelectorDialog extends UserSelectorDialog {
           .map(URI::toString).collect(Collectors.toList());
       userSelectorVM.executeCommand(UserMultiSelectorViewModel.SAVE_CMD,
           urisAsText.toArray(new String[0]));
+      this.close();
     } catch (Throwable e) {
       e.printStackTrace();
     }
