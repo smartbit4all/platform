@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.service.entity.EntityUris;
+import org.smartbit4all.domain.utility.CompositeValue;
 import org.springframework.util.Assert;
 
 /**
@@ -121,7 +122,7 @@ public class Reference<S extends EntityDefinition, T extends EntityDefinition> {
       return sourceProperty.in(values);
     }
 
-    public ExpressionIn<V> inMaster(Collection<? extends DataRow> rows) {
+    ExpressionIn<V> inMaster(Collection<? extends DataRow> rows) {
       Set<V> values = rows.stream().map(row -> row.get(sourceProperty)).collect(Collectors.toSet());
       return targetProperty.in(values);
     }
@@ -216,10 +217,23 @@ public class Reference<S extends EntityDefinition, T extends EntityDefinition> {
    * @return The Expression that is typically an IN with the values from the source properties.
    */
   public Expression joinMaster(Collection<? extends DataRow> detailRows) {
-    Assert.isTrue(joins().size() == 1,
-        "The " + toString() + " reference must have only one join condition");
-    Join<?> join = joins().get(0);
-    return join.inMaster(detailRows);
+    if (joins().size() == 1) {
+      // In this case we have one join that produce a simple in condition.
+      return joins().get(0).inMaster(detailRows);
+    } else {
+      // We have more than one properties to join so we will have an In expression with
+      // CompositeValue
+      OperandComposite opComposite = new OperandComposite(
+          joins().stream().map(j -> new OperandProperty<>(j.targetProperty))
+              .collect(Collectors.toList()));
+      Set<CompositeValue> values = detailRows.stream().map(row -> {
+        return new CompositeValue(
+            joins().stream().map(j -> row.get(j.sourceProperty)).collect(Collectors.toList()));
+      }).collect(Collectors.toSet());
+
+      ExpressionIn<CompositeValue> result = new ExpressionIn<>(opComposite, values);
+      return result;
+    }
   }
 
   /**
