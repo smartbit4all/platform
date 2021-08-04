@@ -21,11 +21,11 @@ import org.smartbit4all.domain.service.CrudService;
 import org.smartbit4all.domain.service.modify.Create;
 import org.smartbit4all.domain.service.modify.Delete;
 import org.smartbit4all.domain.service.modify.Update;
-import org.smartbit4all.domain.service.query.Query;
+import org.smartbit4all.domain.utility.crud.Crud;
+import org.smartbit4all.domain.utility.crud.CrudRead;
 import org.smartbit4all.sql.service.modify.SQLCreate;
 import org.smartbit4all.sql.service.modify.SQLDelete;
 import org.smartbit4all.sql.service.modify.SQLUpdate;
-import org.smartbit4all.sql.service.query.SQLQuery;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
@@ -47,9 +47,10 @@ public class SQLCrudService<E extends EntityDefinition> implements CrudService<E
   }
 
   @Override
-  public Query<E> query() {
-    SQLQuery<E> query = new SQLQuery<>(jdbcTemplate);
-    return query.from(entityDef);
+  public CrudRead<E> read() {
+//    SQLQuery query = new SQLQuery(jdbcTemplate);
+//    return query.from(entityDef);
+    return Crud.read(entityDef);
   }
 
   @Override

@@ -14,10 +14,10 @@
  ******************************************************************************/
 package org.smartbit4all.domain.meta;
 
-import org.smartbit4all.domain.service.query.Query;
+import org.smartbit4all.domain.service.query.QueryInput;
 
 /**
- * The lock request defines the required lock for the {@link Query} and other functions.
+ * The lock request defines the required lock for the {@link QueryInput} and other functions.
  * 
  * @author Peter Boros
  */

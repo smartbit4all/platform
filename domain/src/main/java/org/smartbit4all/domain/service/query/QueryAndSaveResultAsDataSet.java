@@ -14,7 +14,7 @@ import org.smartbit4all.domain.meta.OperandProperty;
 import org.smartbit4all.domain.service.dataset.DataSetApi;
 import org.smartbit4all.domain.service.dataset.DataSetEntry;
 
-public final class QueryAndSaveResultAsDataSet extends SB4FunctionImpl<Query<?>, DataSetEntry> {
+public final class QueryAndSaveResultAsDataSet extends SB4FunctionImpl<QueryInput, DataSetEntry> {
 
   /**
    * {@link DataSetApi} to save the result of the query.
@@ -45,7 +45,8 @@ public final class QueryAndSaveResultAsDataSet extends SB4FunctionImpl<Query<?>,
   public void execute() throws Exception {
     if (dataSetApi != null) {
       // First we execute the query.
-      TableData<?> data = input().listData();
+      QueryOutput queryOutput = Queries.execute(input());
+      TableData<?> data = queryOutput.getTableData();
       // If the result is empty then we can add a false boolean expression instead of the original
       // exists.
       if (data == null || data.isEmpty()) {

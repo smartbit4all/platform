@@ -16,50 +16,88 @@ package org.smartbit4all.domain.utility.crud;
 
 import java.util.List;
 import java.util.Optional;
-import org.smartbit4all.core.SB4CompositeFunction;
+import java.util.UUID;
+import org.smartbit4all.domain.config.DomainAPI;
 import org.smartbit4all.domain.data.DataColumn;
 import org.smartbit4all.domain.data.DataRow;
+import org.smartbit4all.domain.data.DataRowValBeanInvocationHandler;
 import org.smartbit4all.domain.data.TableData;
+import org.smartbit4all.domain.data.TableDatas;
 import org.smartbit4all.domain.meta.EntityDefinition;
-import org.smartbit4all.domain.meta.EntitySetup;
 import org.smartbit4all.domain.meta.Expression;
+import org.smartbit4all.domain.meta.ExpressionContainer;
+import org.smartbit4all.domain.meta.LockRequest;
 import org.smartbit4all.domain.meta.Property;
+import org.smartbit4all.domain.meta.PropertyRef;
 import org.smartbit4all.domain.meta.PropertySet;
+import org.smartbit4all.domain.meta.Reference;
 import org.smartbit4all.domain.meta.SortOrderProperty;
-import org.smartbit4all.domain.service.query.Query;
-import org.smartbit4all.domain.service.query.QueryApi;
+import org.smartbit4all.domain.service.query.Queries;
 import org.smartbit4all.domain.service.query.QueryInput;
 import org.smartbit4all.domain.service.query.QueryOutput;
+import org.smartbit4all.domain.service.transfer.BeanEntityBinding;
+import org.smartbit4all.domain.service.transfer.TransferService;
 
 public class CrudRead<E extends EntityDefinition> {
 
-  private Query<E> query;
+//  private QueryRequest query;
+  private QueryInput queryInput;
+  private QueryOutput queryOutput;
 
   private E entityDef;
+  
+  enum QueryOutputMode {
+    INTO, APPEND
+  }
+  private QueryOutputMode queryOutputMode = QueryOutputMode.INTO;
 
-  @SuppressWarnings("unchecked")
   CrudRead(E entityDef) {
-    this(entityDef, (Query<E>) entityDef.services().crud().query());
+    this(entityDef, new QueryInput());
   }
 
-  CrudRead(E entityDef, Query<E> query) {
+  CrudRead(E entityDef, QueryInput query) {
     this.entityDef = entityDef;
-    this.query = query;
+    query.from(entityDef);
+    query.setName(UUID.randomUUID().toString());
+    this.queryInput = query;
+    this.queryOutput = new QueryOutput();
+    queryOutput.setTableData(TableDatas.of(entityDef));
   }
 
+  /**
+   * The name of the query if we would like to refer it from another expression.
+   * 
+   * @param name The name of query.
+   * @return Fluid API
+   */
   public CrudRead<E> nameAs(String name) {
-    query.nameAs(name);
+    queryInput.setName(name);
+    queryOutput.setName(name);
     return this;
   }
 
+  /**
+   * The name of the query. If we don't name it directly then it will have a generated name.
+   * 
+   * @return
+   */
   public String name() {
-    return query.name();
+    return queryInput.getName();
   }
 
-
+  /**
+   * Sets the where for the query.
+   * 
+   * @param where
+   * @return Fluid API
+   */
   public CrudRead<E> where(Expression where) {
     if (where != null) {
-      query.where(where);
+      if (!(where instanceof ExpressionContainer)) {
+        queryInput.where(where.BRACKET());
+      } else {
+        queryInput.where(where);
+      }
     }
     return this;
   }
@@ -72,22 +110,24 @@ public class CrudRead<E extends EntityDefinition> {
               + " want to use the listData() or list(BeanClass) function instead!");
     }
 
-    QueryApi queryApi = null;
-    if (entityDef instanceof EntitySetup) {
-      queryApi = ((EntitySetup) entityDef).getQueryApi();
-    }
-
-    if (queryApi == null) {
-      getQuery().execute();
-    } else {
-      queryApi.execute(queryApi.prepare(getQuery()));
+    QueryOutput output = Queries.execute(queryInput);
+    
+    TableData<?> baseTableData = queryOutput.getTableData();
+    TableData<?> resultTableData = output.getTableData();
+    switch (queryOutputMode) {
+      case INTO:
+        baseTableData.clearRows();
+      case APPEND:
+        TableDatas.append(baseTableData, resultTableData);
+      default:
+        break;
     }
 
   }
 
-  public Query<E> getQuery() {
-    query.from(entityDef);
-    return query;
+  public QueryInput getQuery() {
+    queryInput.from(entityDef);
+    return queryInput;
   }
 
   /**
@@ -102,7 +142,7 @@ public class CrudRead<E extends EntityDefinition> {
   }
 
   public Optional<DataRow> firstRow() throws Exception {
-    query.limit(1);
+    queryInput.limit(1);
 
     TableData<E> result = listData();
     List<DataRow> resultRows = result.rows();
@@ -115,13 +155,13 @@ public class CrudRead<E extends EntityDefinition> {
   }
 
   public List<DataRow> firstRows(int rowNum) throws Exception {
-    query.limit(rowNum);
+    queryInput.limit(rowNum);
     TableData<E> result = listData();
     return result.rows();
   }
 
   public <T> Optional<T> firstRowValue(Property<T> property) throws Exception {
-    query.limit(1);
+    queryInput.limit(1);
     TableData<E> result = listData();
     checkResultProperty(property, result);
     return getValueFromResult(property, result);
@@ -214,224 +254,363 @@ public class CrudRead<E extends EntityDefinition> {
       return Optional.empty();
     }
   }
-
+  /**
+   * We can add all columns to the query.
+   * 
+   * @return Fluid API
+   */
   public CrudRead<E> selectAllProperties() {
-    query.select(entityDef.allProperties());
-    return this;
+    return all();
   }
 
-
+  /**
+   * We can set the properties to list as the result of the query. By default the result contains
+   * only the identifiers.
+   * 
+   * @return Fluid API
+   */
   public CrudRead<E> select(List<Property<?>> properties) {
-    query.select(properties);
+    queryInput.select(properties);
     return this;
   }
 
-
+  /**
+   * Add the properties to the query.
+   * 
+   * @param propertySet
+   * @return
+   */
   public CrudRead<E> select(PropertySet propertySet) {
-    query.select(propertySet);
+    queryInput.select(propertySet);
     return this;
   }
 
-
-  public SB4CompositeFunction<QueryInput<E>, QueryOutput<E>> pre() {
-    return query.pre();
-  }
-
-
-  public SB4CompositeFunction<QueryInput<E>, QueryOutput<E>> getPreSection() {
-    return query.getPreSection();
-  }
-
-
+  /**
+   * Add the properties to the query.
+   * 
+   * @param propertySet varargs to add properties in a convenient way.
+   * @return
+   */
   public CrudRead<E> select(Property<?>... propertySet) {
-    query.select(propertySet);
+    queryInput.select(propertySet);
     return this;
   }
 
-
-  public SB4CompositeFunction<QueryInput<E>, QueryOutput<E>> post() {
-    return query.post();
-  }
-
-
-  public SB4CompositeFunction<QueryInput<E>, QueryOutput<E>> getPostSection() {
-    return query.getPostSection();
-  }
-
-
-  public void setInput(QueryInput<E> input) {
-    query.setInput(input);
-  }
+//  public void setInput(QueryInput input) {
+//    query.setInput(input);
+//  }
+//
+//
+//  public void setOutput(QueryOutput output) {
+//    query.setOutput(output);
+//  }
 
 
-  public void setOutput(QueryOutput<E> output) {
-    query.setOutput(output);
-  }
-
-
+  /**
+   * We can add all columns to the query.
+   * @deprecated use {@link #selectAllProperties()} instead!
+   * @return Fluid API
+   */
+  @Deprecated
   public CrudRead<E> all() {
-    query.all();
+    queryInput.all();
     return this;
   }
 
-
+  /**
+   * Defines a sort order for the query.
+   * 
+   * @param sortOrder
+   * @return Fluid API
+   */
   public CrudRead<E> order(SortOrderProperty order) {
-    query.order(order);
+    queryInput.orderBys().add(order);
     return this;
   }
 
-
+  /**
+   * Defines a sort order for the query with ascending parameter.
+   * 
+   * @param sortOrder
+   * @return Fluid API
+   */
   public CrudRead<E> order(Property<?> property) {
-    query.order(property);
+    queryInput.orderBys().add(property.asc());
     return this;
   }
 
-
+  /**
+   * @param groupBy The list of properties to use for grouping by.
+   * @return Fluid API
+   */
   public CrudRead<E> groupBy(List<Property<?>> groupBy) {
-    query.groupBy(groupBy);
+    queryInput.groupBy(groupBy);
     return this;
   }
 
-
+  /**
+   * @param groupBy The list of properties to use for grouping by.
+   * @return Fluid API
+   */
   public CrudRead<E> groupBy(Property<?>... groupBys) {
-    query.groupBy(groupBys);
+    queryInput.groupBy(groupBys);
     return this;
   }
 
-
+  /**
+   * Set the limit of the results at the level of SQL. Preserve the JVM from the flood of byte in
+   * case an SQL select with unsatisfying conditions.
+   * 
+   * @param queryLimit
+   * @return
+   */
   public CrudRead<E> limit(int queryLimit) {
-    query.limit(queryLimit);
+    queryInput.limit(queryLimit);
     return this;
   }
 
-
+  /**
+   * Set the distinct for the query. In this case every result will be different in the result set.
+   * In case of SQL queries it will add the distinct clause for the select.
+   * 
+   * @return
+   */
   public CrudRead<E> distinct() {
-    query.distinct();
+    queryInput.setDistinct(true);
     return this;
   }
 
-
+  /**
+   * We can remove the distinct flag from the query.
+   * 
+   * @return
+   */
   public CrudRead<E> distinctNot() {
-    query.distinctNot();
+    queryInput.setDistinct(false);
     return this;
   }
 
-
+  /**
+   * Requires the count of the result records.
+   * 
+   * @return Fluid API
+   */
   public CrudRead<E> count() {
-    query.count();
+    queryInput.count();
     return this;
   }
 
-
+  /**
+   * Requires the minimum value of the given property.
+   * 
+   * @param property
+   * @return Fluid API
+   */
   public CrudRead<E> min(Property<?> property) {
-    query.min(property);
+    queryInput.min(property);
     return this;
   }
 
-
+  /**
+   * Requires the maximum value of the given property.
+   * 
+   * @param property
+   * @return Fluid API
+   */
   public CrudRead<E> max(Property<?> property) {
-    query.max(property);
+    queryInput.max(property);
     return this;
   }
 
-
+  /**
+   * Requires the average value of the given property.
+   * 
+   * @param property
+   * @return Fluid API
+   */
   public CrudRead<E> avg(Property<?> property) {
-    query.avg(property);
+    queryInput.avg(property);
     return this;
   }
 
-
+  /**
+   * Requires the summary of the given property.
+   * 
+   * @param property
+   * @return Fluid API
+   */
   public CrudRead<E> sum(Property<?> property) {
-    query.sum(property);
+    queryInput.sum(property);
     return this;
   }
 
-
+  /**
+   * Query result will appear in result parameter. All existing rows will be deleted.
+   * 
+   * @param property
+   * @return Fluid API
+   */
   public CrudRead<E> into(TableData<E> result) {
-    query.into(result);
+    this.queryOutput.setTableData(result);
+    this.queryOutputMode = QueryOutputMode.INTO;
     return this;
   }
 
-
+  /**
+   * Query result will be appended to the result parameter. Existing rows will NOT be deleted.
+   * 
+   * @param property
+   * @return Fluid API
+   */
   public CrudRead<E> append(TableData<E> result) {
-    query.append(result);
+    this.queryOutput.setTableData(result);
+    this.queryOutputMode = QueryOutputMode.APPEND;
     return this;
   }
 
 
-  public CrudRead<E> merge(TableData<E> result) {
-    query.merge(result);
-    return this;
-  }
-
-
+  /**
+   * The from sets the {@link EntityDefinition} that is the root for the query. All the related
+   * entities must be attached with {@link Reference} as we add {@link PropertyRef} properties to
+   * the query.
+   * 
+   * @param entityDef
+   * @return
+   */
   public CrudRead<E> from(E entityDef) {
-    query.from(entityDef);
+    queryInput.from(entityDef);
+    return this;
+  }
+
+  /**
+   * Set the input of the Query.
+   * 
+   * @param input
+   * @return Fluid API
+   */
+  public CrudRead<E> inputAs(QueryInput input) {
+    this.queryInput = input;
     return this;
   }
 
 
-  public CrudRead<E> inputAs(QueryInput<E> input) {
-    query.inputAs(input);
+  public QueryInput input() {
+    return queryInput;
+  }
+
+  /**
+   * Sets the output of the Query.
+   * 
+   * @param output
+   * @return Fluid API
+   */
+  public CrudRead<E> outputAs(QueryOutput output) {
+    this.queryOutput = output;
     return this;
   }
 
-
-  public QueryInput<E> input() {
-    return query.input();
+  /**
+   * Returns the output of the Query.
+   * 
+   * @param output
+   * @return Fluid API
+   */
+  public QueryOutput output() {
+    return queryOutput;
   }
 
-
-  public CrudRead<E> outputAs(QueryOutput<E> output) {
-    query.outputAs(output);
-    return this;
-  }
-
-
-  public QueryOutput<E> output() {
-    return query.output();
-  }
-
-
+  /**
+   * Initiate the lock on the query. It results a "FOR UPDATE" or similar statement at database
+   * level. It waits until gets the lock or interrupted by someone.
+   * 
+   * @return
+   */
   public CrudRead<E> lock() {
-    query.lock();
+    initLock(-1);
     return this;
   }
 
-
+  /**
+   * Initiate the lock on the query. It results a "FOR UPDATE" or similar statement at database
+   * level. If it cann't get the lock immediately then the query throws an exception.
+   * 
+   * @return
+   */
   public CrudRead<E> tryLock() {
-    query.tryLock();
+    initLock(0);
     return this;
   }
 
-
+  /**
+   * Initiate the lock on the query. It results a "FOR UPDATE" or similar statement at database
+   * level. If it cann't get the lock during the given timeout period then the query throws an
+   * exception.
+   * 
+   * @param timeOut The timeout for the lock trial in millisecond.
+   * @return
+   */
   public CrudRead<E> tryLock(long timeOut) {
-    query.tryLock(timeOut);
+    initLock(timeOut);
+    return this;
+  }
+  
+  private final CrudRead<E> initLock(long timeout) {
+    if (queryInput != null) {
+      queryInput.setLockRequest(new LockRequest(timeout));
+    }
     return this;
   }
 
-
+  /**
+   * Add the properties to the query by a bean.
+   * 
+   * @param the bean that has fields translatable to entity properties
+   * @return
+   * @throws Exception
+   */
   public <B> CrudRead<E> select(Class<B> beanClass) throws Exception {
-    query.select(beanClass);
+    BeanEntityBinding binding =
+        DomainAPI.get().transferService().binding(beanClass, queryInput.entityDef());
+    queryInput.select(binding.bindingsByProperties().keySet());
     return this;
   }
 
 
   public TableData<E> result() {
-    return query.result();
+    return (TableData<E>) queryOutput.getTableData();
   }
 
 
+  /**
+   * Executes the query and returns the {@link TableData} as a result.
+   * 
+   * @return Return the result as the typed table data of the given entity.
+   * @throws Exception
+   */
   public TableData<E> listData() throws Exception {
-    if (query.result() == null) {
+    if (queryOutput.getTableData() == null) {
       TableData<E> result = new TableData<>(entityDef);
-      query.into(result);
+      queryOutput.setTableData(result);
     }
     execute();
-    return query.result();
+    return (TableData<E>) queryOutput.getTableData();
   }
 
-
+  /**
+   * Executes the query and returns the list of bean as a result. The result will be available later
+   * on in the {@link #output()} object as {@link TableData} but it's more convenient to call this
+   * if we would like to execute and retrieve the result at the same time. Better for fluid API
+   * because the whole query can be included in line. The conversion to the bean is executed after
+   * the query creates the inner {@link TableData} representation. So we can use the
+   * {@link TableData} later on to retrieve other data formats from the same query result.
+   * 
+   * @param beanClass The bean class that must have registered transfer binding in the
+   *        {@link TransferService}. It can be an interface also but in this case the instances will
+   *        be proxies with {@link DataRowValBeanInvocationHandler}. Inside the invocation handler
+   *        it's a Map so be careful with the performance!
+   * @return The list with the bean instances for every result row.
+   * @throws Exception
+   */
   public <B> List<B> list(Class<B> beanClass) throws Exception {
     TableData<E> tableData = listData();
     return tableData.asList(beanClass);

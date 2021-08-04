@@ -14,14 +14,7 @@
  ******************************************************************************/
 package org.smartbit4all.remote.service.query;
 
-import java.util.List;
 import org.smartbit4all.domain.meta.EntityDefinition;
-import org.smartbit4all.domain.meta.Reference;
-import org.smartbit4all.domain.service.query.Query;
-import org.smartbit4all.domain.service.query.QueryImpl;
-import org.smartbit4all.domain.service.query.QueryOutput;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
 
 /**
  * Implementation of the Query function. Sends the query input parameters for processing to a remote
@@ -30,39 +23,39 @@ import org.springframework.web.client.RestTemplate;
  * @author Zoltan Suller
  *
  */
-public class RemoteQuery<E extends EntityDefinition> extends QueryImpl<E> {
+public class RemoteQuery<E extends EntityDefinition> { //extends QueryImpl<E> {
 
-  public static final String QUERY_SERVICE_NAME = "/query";
-
-  protected String restUrl;
-
-  protected RestTemplate restTemplate;
-
-  public RemoteQuery(RestTemplate restTemplate, String restUrl) {
-    this.restTemplate = restTemplate;
-    this.restUrl = restUrl;
-  }
-
-  @Override
-  public void execute() throws Exception {
-
-    ResponseEntity<QueryOutput> userResponse =
-        restTemplate.postForEntity(restUrl + QUERY_SERVICE_NAME, input, QueryOutput.class);
-    into(userResponse.getBody().result());
-
-  }
-
-  @Override
-  public Query<E> copy() {
-    // TODO It will be unnecessary
-    return null;
-  }
-
-  @Override
-  public <T extends EntityDefinition> Query<T> copyTranslated(T entityDef,
-      List<Reference<?, ?>> joinPath) {
-    // TODO It will be unnecessary
-    return null;
-  }
+//  public static final String QUERY_SERVICE_NAME = "/query";
+//
+//  protected String restUrl;
+//
+//  protected RestTemplate restTemplate;
+//
+//  public RemoteQuery(RestTemplate restTemplate, String restUrl) {
+//    this.restTemplate = restTemplate;
+//    this.restUrl = restUrl;
+//  }
+//
+//  @Override
+//  public void execute() throws Exception {
+//
+//    ResponseEntity<QueryOutput> userResponse =
+//        restTemplate.postForEntity(restUrl + QUERY_SERVICE_NAME, input, QueryOutput.class);
+//    into(userResponse.getBody().result());
+//
+//  }
+//
+//  @Override
+//  public QueryRequest<E> copy() {
+//    // TODO It will be unnecessary
+//    return null;
+//  }
+//
+//  @Override
+//  public <T extends EntityDefinition> QueryRequest<T> copyTranslated(T entityDef,
+//      List<Reference<?, ?>> joinPath) {
+//    // TODO It will be unnecessary
+//    return null;
+//  }
 
 }

@@ -71,7 +71,7 @@ public class EntityServiceImpl<E extends EntityDefinition>
     // We try to lock the records by querying with lock. We must collect the values of the unique
     // columns.
     TableData<E> result = new TableData<>(entityDef);
-    crud().query().all().where(uniqueProperty.eq(uniqueValue)).lock().into(result).execute();
+    crud().read().selectAllProperties().where(uniqueProperty.eq(uniqueValue)).lock().into(result).execute();
     if (result.isEmpty()) {
       // The record is missing from the database so we try to insert it
       IdentifierService identifierService = ctx.getBean(IdentifierService.class);

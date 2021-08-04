@@ -18,7 +18,6 @@ package org.smartbit4all.sql;
 
 import org.smartbit4all.core.utility.ListBasedMap;
 import org.smartbit4all.domain.meta.Expression;
-import org.smartbit4all.domain.service.query.Query;
 
 /**
  * If we think about the select as a graph of from tables then the join is the edge of this graph.
@@ -30,7 +29,7 @@ public class SQLSelectJoin {
 
   /**
    * This referenceName, the name of the reference must be unique among the joins of a table. It's
-   * mandatory to be able to used by the {@link Query}.
+   * mandatory to be able to used by the {@link QueryRequest}.
    */
   private String referenceName;
 
@@ -84,7 +83,7 @@ public class SQLSelectJoin {
 
   /**
    * This identifier typically the name of the reference must be unique among the joins of a table.
-   * It's mandatory to be able to used by the {@link Query}.
+   * It's mandatory to be able to used by the {@link QueryRequest}.
    * 
    * @return
    */
@@ -94,7 +93,7 @@ public class SQLSelectJoin {
 
   /**
    * This identifier typically the name of the reference must be unique among the joins of a table.
-   * It's mandatory to be able to used by the {@link Query}.
+   * It's mandatory to be able to used by the {@link QueryRequest}.
    * 
    * @param referenceName
    */

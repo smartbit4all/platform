@@ -21,13 +21,18 @@ import java.util.List;
 import java.util.Map;
 import org.smartbit4all.domain.config.DomainConfig;
 import org.smartbit4all.sql.service.SQLCrudServiceConfiguration;
+import org.smartbit4all.sql.service.query.SQLQueryExecutionApi;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 @Configuration
-@Import({DomainConfig.class, SQLCrudServiceConfiguration.class, SQLServiceConfig.class})
+@Import({
+  DomainConfig.class,
+  SQLCrudServiceConfiguration.class,
+  SQLServiceConfig.class,
+  SQLQueryExecutionApi.class})
 public class SQLConfig implements InitializingBean {
 
   /**

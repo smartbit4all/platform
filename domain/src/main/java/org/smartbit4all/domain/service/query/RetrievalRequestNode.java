@@ -21,7 +21,7 @@ import org.smartbit4all.domain.meta.Expression;
 
 /**
  * The retrieval request node is a the basic building block of the {@link RetrievalRequest}. Every
- * node represents a {@link Query} that can be executed individually and related with other nodes.
+ * node represents a {@link QueryInput} that can be executed individually and related with other nodes.
  * Node can produce records during the execution and these records are used as input set for other
  * queries.
  * 
@@ -33,7 +33,7 @@ public final class RetrievalRequestNode<E extends EntityDefinition> {
   /**
    * The query definition of the given node.
    */
-  private Query<E> query;
+  private QueryInput query;
 
   /**
    * If we setup a start condition for the given node then it will be used as starting node for the
@@ -47,26 +47,25 @@ public final class RetrievalRequestNode<E extends EntityDefinition> {
    * root nodes doesn't have any incoming edges. If there is a cycle then the root cann't be
    * identified automatically so we need to setup manually.
    */
-  private Map<String, RetrievalRequestEdge> edges = new HashMap<>();
+  private Map<String, RetrievalRequestEdge<?>> edges = new HashMap<>();
 
-  public RetrievalRequestNode(Query<E> query, Expression startCondition) {
+  public RetrievalRequestNode(QueryInput query, Expression startCondition) {
     super();
     this.query = query;
     this.startCondition = startCondition;
   }
 
-  @SuppressWarnings("unchecked")
-  public RetrievalRequestNode(E entityDef, Query<?> query, Expression startCondition) {
+  public RetrievalRequestNode(E entityDef, QueryInput query, Expression startCondition) {
     super();
-    this.query = (Query<E>) query;
+    this.query = (QueryInput) query;
     this.startCondition = startCondition;
   }
 
-  final Query<E> getQuery() {
+  final QueryInput getQuery() {
     return query;
   }
 
-  final void setQuery(Query<E> query) {
+  final void setQuery(QueryInput query) {
     this.query = query;
   }
 
@@ -78,7 +77,7 @@ public final class RetrievalRequestNode<E extends EntityDefinition> {
     this.startCondition = startCondition;
   }
 
-  public final Map<String, RetrievalRequestEdge> getEdges() {
+  public final Map<String, RetrievalRequestEdge<?>> getEdges() {
     return edges;
   }
 

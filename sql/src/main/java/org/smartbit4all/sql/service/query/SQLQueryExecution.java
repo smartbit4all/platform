@@ -29,9 +29,9 @@ import org.smartbit4all.domain.meta.PropertySqlComputed;
 import org.smartbit4all.domain.meta.Reference;
 import org.smartbit4all.domain.meta.Reference.Join;
 import org.smartbit4all.domain.meta.SortOrderProperty;
-import org.smartbit4all.domain.service.query.Query;
 import org.smartbit4all.domain.service.query.QueryInput;
 import org.smartbit4all.domain.service.query.QueryOutput;
+import org.smartbit4all.domain.service.query.QueryOutputResultAssembler;
 import org.smartbit4all.domain.service.query.QueryResult;
 import org.smartbit4all.domain.utility.SupportedDatabase;
 import org.smartbit4all.sql.SQLComputedColumn;
@@ -56,7 +56,7 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 
 /**
  * Responsible for managing all the information during SQL execution of a query. This will be
- * initiated for every execution and refers to the original {@link Query} object.
+ * initiated for every execution and refers to the original {@link QueryRequest} object.
  * 
  * @author Peter Boros
  */
@@ -98,12 +98,16 @@ final class SQLQueryExecution {
    */
   JdbcTemplate jdbcTemplate;
 
-  final Query<?> query;
+  final QueryInput queryInput;
 
-  public SQLQueryExecution(JdbcTemplate jdbcTemplate, Query<?> query) {
+  final QueryOutput queryOutput;
+
+  public SQLQueryExecution(JdbcTemplate jdbcTemplate, QueryInput query) {
     super();
     this.jdbcTemplate = jdbcTemplate;
-    this.query = query;
+    this.queryInput = query;
+    queryOutput = new QueryOutput();
+    queryOutput.setName(query.getName());
     select = new SQLSelectStatement();
     aliasIndex = 1;
     columnIndex = 1;
@@ -118,18 +122,17 @@ final class SQLQueryExecution {
    */
   @SuppressWarnings("rawtypes")
   public void execute() throws Exception {
-    QueryInput<?> input = query.input();
     // That time the entity is based on a table.
-    TableDefinition table = input.entityDef().tableDefinition();
+    TableDefinition table = queryInput.entityDef().tableDefinition();
     SQLTableNode tableNode = new SQLTableNode(table.getSchema(), table.getName());
     SQLSelectFromTableNode rootTable = new SQLSelectFromTableNode(tableNode, nextTableAlias());
     // This map must be a list based map to preserve the order.
     Map<String, Property<?>> columnMap = new HashMap<>();
     // SQLStatementBuilderIF builder = entityDef.context().get(SQLStatementBuilderIF.class);
     SQLStatementBuilderIF builder = new SQLStatementBuilder(SupportedDatabase.ORACLE);
-    select.setQueryLimit(input.limit());
-    select.setDistinctQuery(input.isDistinct());
-    for (Property<?> property : input.properties()) {
+    select.setQueryLimit(queryInput.limit());
+    select.setDistinctQuery(queryInput.isDistinct());
+    for (Property<?> property : queryInput.properties()) {
       SQLSelectColumn column = setupProperty(rootTable, property, builder);
       // It's a column in the select add this column.
       if (column != null) {
@@ -139,8 +142,8 @@ final class SQLQueryExecution {
     }
     // Adding the expression to the select. It means that we visit the expression and add the
     // properties.
-    if (input.where() != null) {
-      input.where().accept(new ExpressionVisitor() {
+    if (queryInput.where() != null) {
+      queryInput.where().accept(new ExpressionVisitor() {
 
         @Override
         public <T> void visit2Operand(Expression2Operand<T> expression) {
@@ -170,10 +173,10 @@ final class SQLQueryExecution {
         }
 
       });
-      select.setWhere(new SQLWhere(input.where()));
+      select.setWhere(new SQLWhere(queryInput.where()));
     }
 
-    for (SortOrderProperty sortOrder : input.orderBys()) {
+    for (SortOrderProperty sortOrder : queryInput.orderBys()) {
       // Add them to the select like any other property.
       SQLSelectColumn column = setupProperty(rootTable, sortOrder.property, builder);
       select.addOrderBy(new SQLOrderByColumn(column.from(), column.getColumnName(), sortOrder.asc,
@@ -181,7 +184,7 @@ final class SQLQueryExecution {
     }
 
     // Adding the group by to the SQLSelectStatemenet
-    for (Property<?> property : input.groupByProperties()) {
+    for (Property<?> property : queryInput.groupByProperties()) {
       // Add them to the select like any other property.
       SQLSelectColumn column = setupProperty(rootTable, property, builder);
       if (column instanceof SQLComputedColumn) {
@@ -193,8 +196,8 @@ final class SQLQueryExecution {
     }
     select.setFrom(rootTable);
     // Add the lock if we have lock instruction in the input.
-    if (input.lockRequest() != null) {
-      select.setLock(new SQLSelectLock(input.lockRequest().timeOut()));
+    if (queryInput.lockRequest() != null) {
+      select.setLock(new SQLSelectLock(queryInput.lockRequest().timeOut()));
     }
     // Run the select against the JDBC connection and fetch it into the result.
     // The statement builder to use when rendering the SQL. It can be specified for the given
@@ -268,21 +271,21 @@ final class SQLQueryExecution {
     ResultSetMetaData metaData = resultSet.getMetaData();
     int indexTrans[] = new int[metaData.getColumnCount()];
     Property<?> propertyTrans[] = new Property<?>[metaData.getColumnCount()];
-    QueryOutput<?> output = query.output();
-    output.start();
+    QueryOutputResultAssembler resultAssembler = new QueryOutputResultAssembler(this.queryOutput);
+    resultAssembler.start();
     for (int i = 0; i < metaData.getColumnCount(); i++) {
       String columnName = builder.getColumnAssignedColumnName(metaData, i + 1).toUpperCase();
       Property<?> property = columnMap.get(columnName);
-      indexTrans[i] = output.accept(property);
+      indexTrans[i] = resultAssembler.accept(property);
       propertyTrans[i] = property;
     }
     // Iterate the JDBC result set.
     while (resultSet.next()) {
-      output.startRow();
+      resultAssembler.startRow();
       for (int colIdx = 0; colIdx < indexTrans.length; colIdx++) {
-        if (indexTrans[colIdx] != QueryOutput.COLUMNNOTACCEPTED) {
+        if (indexTrans[colIdx] != QueryOutputResultAssembler.COLUMNNOTACCEPTED) {
           try {
-            output.setValue(indexTrans[colIdx],
+            resultAssembler.setValue(indexTrans[colIdx],
                 builder.getResultValue(resultSet, colIdx + 1, propertyTrans[colIdx]));
           } catch (Exception e) {
             throw new DataRetrievalFailureException("Error occured while fetching data", e);
@@ -290,9 +293,9 @@ final class SQLQueryExecution {
         }
       }
       // TODO Execute rowComputation.
-      output.finishRow();
+      resultAssembler.finishRow();
     }
-    output.finish();
+    resultAssembler.finish();
   }
 
   /**

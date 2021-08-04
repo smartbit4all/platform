@@ -68,12 +68,12 @@ public final class Retrieval {
   RetrievalRound next() {
     List<RetrievalNode<?>> startingNodes = nodes.values().stream()
         .filter(RetrievalNode::readyForNextRound).collect(Collectors.toList());
-    Map<RetrievalNode<?>, Query<?>> nextRoundQueries = new HashMap<>();
+    Map<RetrievalNode<?>, QueryInput> nextRoundQueries = new HashMap<>();
     for (RetrievalNode<?> node : startingNodes) {
       for (@SuppressWarnings("rawtypes")
       RetrievalEdge edge : node.getNavigableEdges()) {
-        Query<?> query = nextRoundQueries.computeIfAbsent(edge.getNode(),
-            n -> n.getRequestNode().getQuery().copy());
+        QueryInput query = nextRoundQueries.computeIfAbsent(edge.getNode(),
+            n -> Queries.copy(n.getRequestNode().getQuery()));
         List<DataRow> newRows = node.getNewRows();
         if (!newRows.isEmpty()) {
           // We can add the IN ( NEWROWS ) condition to the query.
@@ -120,7 +120,7 @@ public final class Retrieval {
             // The translated query to run against the association entity to retrieve the related
             // records in one query.
             // TODO The prepare will modify the original retrieve to have the proper queries
-            Query<?> translatedQuery = query.copyTranslated(associationEntity, null);
+            QueryInput translatedQuery = Queries.copyTranslated(query, associationEntity, null);
           }
           newRows.clear();
           // query.where(Expression.AND(query.input().where(), edge.getRequestEdge().));

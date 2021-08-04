@@ -3,6 +3,7 @@ package org.smartbit4all.sql.function;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
+import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.domain.meta.PropertyFunction;
 import org.smartbit4all.domain.utility.crud.Crud;
 
@@ -124,30 +125,22 @@ public class ParameteredPropertyFunctionTests extends FunctionTestBase {
   
   @Test
   public void testWithRefferedProperiesWithWhere() throws Exception {
+    Property<String> functionProperty = addressDef.person().name().function(
+    PropertyFunction.build("concat")
+    .selfPropertyParam()
+    .addInnerFunction("TO_CHAR")
+      .stringParam(" - ")
+    .closeInnerFunction()
+    .propertyParam(
+        addressDef.person().id().function(
+            PropertyFunction.withSelfPropertyArgument("to_char")))
+    .build());
+    
     Optional<String> firstRowValue =
         Crud.read(addressDef)
-          .select(addressDef.person().name().function(
-          PropertyFunction.build("concat")
-          .selfPropertyParam()
-          .addInnerFunction("TO_CHAR")
-            .stringParam(" - ")
-          .closeInnerFunction()
-          .propertyParam(
-              addressDef.person().id().function(
-                  PropertyFunction.withSelfPropertyArgument("to_char")))
-          .build()))
-          .where(addressDef.person().name().function(
-              PropertyFunction.build("concat")
-              .selfPropertyParam()
-              .addInnerFunction("TO_CHAR")
-                .stringParam(" - ")
-              .closeInnerFunction()
-              .propertyParam(
-                  addressDef.person().id().function(
-                      PropertyFunction.withSelfPropertyArgument("to_char")))
-              .build()
-              ).eq("Álmos - 1"))
-          .firstRowValue(addressDef.person().name());
+          .select(functionProperty)
+          .where(functionProperty.eq("Álmos - 1"))
+          .firstRowValue(functionProperty);
 
     String almos = firstRowValue.get();
     assertEquals("Álmos - 1", almos);

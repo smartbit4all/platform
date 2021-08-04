@@ -21,9 +21,8 @@ import org.smartbit4all.domain.service.CrudService;
 import org.smartbit4all.domain.service.modify.Create;
 import org.smartbit4all.domain.service.modify.Delete;
 import org.smartbit4all.domain.service.modify.Update;
-import org.smartbit4all.domain.service.query.Query;
+import org.smartbit4all.domain.utility.crud.CrudRead;
 import org.smartbit4all.remote.service.create.RemoteCreate;
-import org.smartbit4all.remote.service.query.RemoteQuery;
 import org.smartbit4all.remote.service.update.RemoteUpdate;
 import org.springframework.web.client.RestTemplate;
 
@@ -51,8 +50,9 @@ public class RemoteCrudService<E extends EntityDefinition> implements CrudServic
   }
 
   @Override
-  public Query<E> query() {
-    return new RemoteQuery<E>(restTemplate, restUrl).from(entityDef);
+  public CrudRead<E> read() {
+//    return new RemoteQuery<E>(restTemplate, restUrl).from(entityDef);
+    return null;
   }
 
   @Override

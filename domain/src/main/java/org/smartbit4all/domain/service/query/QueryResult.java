@@ -12,13 +12,13 @@ import java.util.List;
  */
 public final class QueryResult {
 
-  private List<Query<?>> resultQueries = new ArrayList<>();
+  private List<QueryOutput> resultQueries = new ArrayList<>();
 
-  public List<Query<?>> getResultsInner() {
+  public List<QueryOutput> getResultsInner() {
     return resultQueries;
   }
 
-  public List<Query<?>> getResults() {
+  public List<QueryOutput> getResults() {
     return Collections.unmodifiableList(resultQueries);
   }
 

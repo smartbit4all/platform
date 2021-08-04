@@ -21,7 +21,7 @@ import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.service.modify.Create;
 import org.smartbit4all.domain.service.modify.Delete;
 import org.smartbit4all.domain.service.modify.Update;
-import org.smartbit4all.domain.service.query.Query;
+import org.smartbit4all.domain.utility.crud.CrudRead;
 
 /**
  * Return all the CRUD functions for an EntityDefinition.
@@ -49,7 +49,7 @@ public interface CrudService<E extends EntityDefinition> extends SB4Service {
    * 
    * @return
    */
-  Query<E> query();
+  CrudRead<E> read();
 
   /**
    * An implementation of the Create function.

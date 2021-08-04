@@ -1,10 +1,12 @@
 package org.smartbit4all.domain.service.query;
 
+import java.net.URI;
 import java.security.InvalidParameterException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import org.smartbit4all.core.SB4CompositeFunction;
 import org.smartbit4all.core.SB4CompositeFunctionImpl;
 import org.smartbit4all.core.SB4Function;
@@ -23,43 +25,47 @@ import org.smartbit4all.domain.service.dataset.SaveInValues;
 import org.smartbit4all.domain.utility.crud.Crud;
 import org.smartbit4all.domain.utility.crud.CrudRead;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Service;
 
 /**
- * The {@link QueryApi} abstract implementation. It analyzes the incoming query requests to produce
- * a {@link QueryExecutionPlan}. This plan can be executed later on by the
+ * The {@link QueryApi} implementation. It analyzes the incoming query requests to produce a
+ * {@link QueryExecutionPlan}. This plan can be executed later on by the
  * {@link #execute(QueryExecutionPlan)} function.
  * 
- * <p>
- * TODO Near future plan: remove the SQLQuery and make the Query itself abstract. So if we have a
- * query then the query is abstract and we can decide how to execute it in the API. The SQL query is
- * a kind of contribution in the {@link QueryApi}.
- * </p>
- * 
- * @author Peter Boros
  */
+@Service
 public class QueryApiImpl implements QueryApi {
 
-  @Autowired(required = false)
+  private Map<String, QueryExecutionApi> executionApisByName;
+  private QueryExecutorConfig config;
   protected DataSetApi dataSetApi;
 
+  public QueryApiImpl(ApplicationContext appContext,
+      @Autowired(required = false) QueryExecutorConfig config,
+      @Autowired(required = false) DataSetApi dataSetApi) {
+    this.executionApisByName = appContext.getBeansOfType(QueryExecutionApi.class);
+    this.config = config;
+    this.dataSetApi = dataSetApi;
+  }
+
   @Override
-  public QueryExecutionPlan prepare(Query<?>... queries) {
+  public QueryExecutionPlan prepare(QueryInput... queries) {
     if (queries == null || queries.length == 0) {
       return QueryExecutionPlan.EMPTY;
     }
     // Temporary solution to use a default path for the local in memory queries
     QueryExecutionPlan result = new QueryExecutionPlan("local");
     for (int i = 0; i < queries.length; i++) {
-      Query<?> query = queries[i];
+      QueryInput query = queries[i];
       if (query != null) {
         // The result is always a composite function with the give query.
-        SB4CompositeFunctionImpl<QueryInput<?>, QueryOutput<?>> queryNode =
+        SB4CompositeFunctionImpl<QueryInput, QueryOutput> queryNode =
             new SB4CompositeFunctionImpl<>();
-        queryNode.call(query);
+        queryNode.call(Queries.asFunction(query, this::executeWithoutPrepare));
 
         // Prepare for analyzing the query input.
-        QueryInput<?> input = query.input();
-        Expression where = input.where();
+        Expression where = query.where();
         // 1. Contribution: over sized in
         // 2. Contribute exists.
         // TODO avoid initialization if not necessary.
@@ -149,8 +155,8 @@ public class QueryApiImpl implements QueryApi {
       try {
         node.execute();
         for (SB4Function<?, ?> func : node.functions()) {
-          if (func instanceof Query<?>) {
-            result.getResultsInner().add((Query<?>) func);
+          if (func instanceof Queries.QueryFunction) {
+            result.getResultsInner().add(((Queries.QueryFunction) func).output());
           }
         }
       } catch (Exception e) {
@@ -168,4 +174,120 @@ public class QueryApiImpl implements QueryApi {
     return null;
   }
 
+  @Override
+  public QueryOutput execute(QueryInput queryInput) throws Exception {
+    QueryExecutionPlan executionPlan = prepare(queryInput);
+    QueryResult queryResult = execute(executionPlan);
+    List<QueryOutput> results = queryResult.getResults();
+    if(results == null || results.isEmpty()) {
+      // FIXME is null an acceptable return value here?  
+      return null;
+    }
+    
+    return results.stream()
+        .filter(r -> queryInput.getName().equals(r.getName()))
+        .findAny()
+        .orElse(null);
+  }
+  
+  private QueryOutput executeWithoutPrepare(QueryInput queryInput) throws Exception {
+    return getExecutionApiForEntityDef(queryInput.entityDef).execute(queryInput);
+  }
+
+  private QueryExecutionApi getExecutionApiForEntityDef(EntityDefinition entityDef) {
+    if (config == null) {
+      if (executionApisByName.size() != 1) {
+        throw new IllegalStateException(
+            "There must be a QueryExecutorConfig configuraton set up when the number of "
+                + "QueryExecutionApi instances registered is not exactly one!");
+      }
+      return executionApisByName.values().iterator().next();
+    }
+
+    QueryExecutionApi execApi = fromConfigExecApisByDomain(entityDef)
+        .orElseGet(() -> fromConfigExecApiNamesByDomain(entityDef)
+            .orElseGet(() -> fromConfigExecApisByEntityUri(entityDef)
+                .orElseGet(() -> fromConfigExecApiNamesByEntityUri(entityDef)
+                    .orElse(null))));
+
+    return execApi;
+  }
+
+  private Optional<QueryExecutionApi> fromConfigExecApiNamesByDomain(EntityDefinition entityDef) {
+    return config.execApiNamesByDomain.entrySet().stream()
+        .filter(es -> es.getKey().equals(entityDef.getDomain()))
+        .findAny()
+        .map(es -> executionApisByName.get(es.getValue()));
+  }
+
+  private Optional<QueryExecutionApi> fromConfigExecApiNamesByEntityUri(
+      EntityDefinition entityDef) {
+    return config.execApiNamesByEntityUri.entrySet().stream()
+        .filter(es -> es.getKey().equals(entityDef.getUri()))
+        .findAny()
+        .map(es -> executionApisByName.get(es.getValue()));
+  }
+
+  private Optional<QueryExecutionApi> fromConfigExecApisByEntityUri(EntityDefinition entityDef) {
+    return config.execApisByEntityUri.entrySet().stream()
+        .filter(es -> es.getKey().equals(entityDef.getUri()))
+        .findAny()
+        .map(es -> es.getValue());
+  }
+
+  private Optional<QueryExecutionApi> fromConfigExecApisByDomain(EntityDefinition entityDef) {
+    return config.execApisByDomain.entrySet().stream()
+        .filter(es -> es.getKey().equals(entityDef.getDomain()))
+        .findAny()
+        .map(es -> es.getValue());
+  }
+
+  public static class QueryExecutorConfig {
+    /*
+     * TODO later on (when the usage of this config is clear by the actual usage) a builder can be
+     * implemented here
+     *
+     * For now these 4 maps are just first attempts to create a config for the
+     * EntityDef-QueryExecutionApi meta informations
+     */
+    Map<URI, QueryExecutionApi> execApisByEntityUri;
+    Map<String, QueryExecutionApi> execApisByDomain;
+    Map<URI, String> execApiNamesByEntityUri;
+    Map<String, String> execApiNamesByDomain;
+
+    private QueryExecutorConfig() {
+      execApisByEntityUri = new HashMap<>();
+      execApisByDomain = new HashMap<>();
+      execApiNamesByEntityUri = new HashMap<>();
+      execApiNamesByDomain = new HashMap<>();
+    }
+
+    public static QueryExecutorConfig create() {
+      return new QueryExecutorConfig();
+    }
+
+    public QueryExecutorConfig addExecutionApiForEntityUri(URI entityUri,
+        QueryExecutionApi executionApi) {
+      execApisByEntityUri.put(entityUri, executionApi);
+      return this;
+    }
+
+    public QueryExecutorConfig addExecutionApiForDomain(String domainName,
+        QueryExecutionApi executionApi) {
+      execApisByDomain.put(domainName, executionApi);
+      return this;
+    }
+
+    public QueryExecutorConfig addExecutionApiForEntityUri(URI entityUri, String executionApiName) {
+      execApiNamesByEntityUri.put(entityUri, executionApiName);
+      return this;
+    }
+
+    public QueryExecutorConfig addExecutionApiForEntityUri(String domainName,
+        String executionApiName) {
+      execApiNamesByDomain.put(domainName, executionApiName);
+      return this;
+    }
+
+  }
 }

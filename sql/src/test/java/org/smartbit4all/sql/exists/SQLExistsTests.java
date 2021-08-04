@@ -1,5 +1,8 @@
 package org.smartbit4all.sql.exists;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -10,9 +13,10 @@ import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.meta.ExpressionIn;
 import org.smartbit4all.domain.meta.OperandComposite;
 import org.smartbit4all.domain.meta.OperandProperty;
-import org.smartbit4all.domain.service.query.Query;
 import org.smartbit4all.domain.service.query.QueryApi;
 import org.smartbit4all.domain.service.query.QueryExecutionPlan;
+import org.smartbit4all.domain.service.query.QueryInput;
+import org.smartbit4all.domain.service.query.QueryOutput;
 import org.smartbit4all.domain.service.query.QueryResult;
 import org.smartbit4all.domain.utility.CompositeValue;
 import org.smartbit4all.domain.utility.crud.Crud;
@@ -25,9 +29,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.jdbc.Sql;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 @SpringBootTest(classes = {
     ExistTestConfig.class,
@@ -150,9 +151,10 @@ public class SQLExistsTests {
       inValues.add(i);
     }
 
-    Query<?> query = personDef.services().crud().query()
+    QueryInput query = personDef.services().crud().read()
         .select(personDef.id(), personDef.name())
-        .where(personDef.id().in(inValues).AND(personDef.name().in(Arrays.asList("Tas", "Huba"))));
+        .where(personDef.id().in(inValues).AND(personDef.name().in(Arrays.asList("Tas", "Huba"))))
+        .getQuery();
 
     QueryExecutionPlan executionPlan = queryApi.prepare(query);
 
@@ -160,8 +162,8 @@ public class SQLExistsTests {
 
     QueryResult queryResult = queryApi.execute(executionPlan);
 
-    for (Query<?> qry : queryResult.getResults()) {
-      TableData<?> resultData = qry.output().result();
+    for (QueryOutput qry : queryResult.getResults()) {
+      TableData<?> resultData = qry.getTableData();
       System.out.println(resultData);
       List<Long> resultIds =
           resultData.rows().stream().map(r -> r.get(personDef.id())).collect(Collectors.toList());
@@ -198,9 +200,10 @@ public class SQLExistsTests {
       inValues.add("Value" + i);
     }
 
-    Query<?> query = personDef.services().crud().query()
+    QueryInput query = personDef.services().crud().read()
         .select(personDef.id(), personDef.name())
-        .where(personDef.name().in(inValues).AND(personDef.id().in(Arrays.asList(5l, 6l))));
+        .where(personDef.name().in(inValues).AND(personDef.id().in(Arrays.asList(5l, 6l))))
+        .getQuery();
 
     QueryExecutionPlan executionPlan = queryApi.prepare(query);
 
@@ -208,8 +211,8 @@ public class SQLExistsTests {
 
     QueryResult queryResult = queryApi.execute(executionPlan);
 
-    for (Query<?> qry : queryResult.getResults()) {
-      TableData<?> resultData = qry.output().result();
+    for (QueryOutput qry : queryResult.getResults()) {
+      TableData<?> resultData = qry.getTableData();
       System.out.println(resultData);
       List<Long> resultIds =
           resultData.rows().stream().map(r -> r.get(personDef.id())).collect(Collectors.toList());
@@ -253,7 +256,7 @@ public class SQLExistsTests {
     inValues.add(new CompositeValue("Ügy 401", Long.valueOf(1)));
     inValues.add(new CompositeValue("Ügy 401", Long.valueOf(2)));
 
-    TableData<TicketDef> tickets = Crud.read(ticketDef).all()
+    TableData<TicketDef> tickets = Crud.read(ticketDef).selectAllProperties()
         .where(new ExpressionIn<>(new OperandComposite(new OperandProperty(ticketDef.title()),
             new OperandProperty(ticketDef.primaryPersonId())), inValues))
         .listData();

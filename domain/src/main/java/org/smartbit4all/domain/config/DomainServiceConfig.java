@@ -28,7 +28,7 @@ import org.smartbit4all.domain.application.TimeManagementService;
 import org.smartbit4all.domain.application.TimeManagementServiceImpl;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageApiImpl;
-import org.smartbit4all.domain.service.query.QueryApi;
+import org.smartbit4all.domain.service.query.Queries;
 import org.smartbit4all.domain.service.query.QueryApiImpl;
 import org.smartbit4all.domain.service.transfer.TransferService;
 import org.smartbit4all.domain.service.transfer.TransferServiceImpl;
@@ -36,6 +36,7 @@ import org.smartbit4all.domain.service.transfer.convert.Converter;
 import org.smartbit4all.domain.service.transfer.convert.ConverterImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 
 /**
@@ -44,6 +45,10 @@ import org.springframework.context.annotation.Primary;
  * @author Peter Boros
  */
 @Configuration
+@Import({
+  QueryApiImpl.class,
+  Queries.class
+})
 public class DomainServiceConfig extends SB4Configuration {
 
   @Bean
@@ -143,11 +148,6 @@ public class DomainServiceConfig extends SB4Configuration {
         OffsetDateTime::toLocalDateTime, OffsetDateTime.class,
         (LocalDateTime d) -> ZonedDateTime.of(d, ZoneId.systemDefault())
             .toOffsetDateTime());
-  }
-
-  @Bean
-  public QueryApi getQueryApi() {
-    return new QueryApiImpl();
   }
 
   @Bean
