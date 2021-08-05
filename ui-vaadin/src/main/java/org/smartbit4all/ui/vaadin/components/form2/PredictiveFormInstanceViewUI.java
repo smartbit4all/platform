@@ -9,6 +9,8 @@ import org.smartbit4all.ui.api.form.model.WidgetInstance;
 import org.smartbit4all.ui.api.form.model.WidgetType;
 import org.smartbit4all.ui.common.form2.impl.PredictiveFormController;
 import org.smartbit4all.ui.common.form2.impl.PredictiveFormInstanceView;
+import org.smartbit4all.ui.vaadin.components.form2.dialog.IntegerDialog;
+import org.smartbit4all.ui.vaadin.components.form2.dialog.SurveyComboDialog;
 import org.smartbit4all.ui.vaadin.components.form2.dialog.TextDialog;
 import org.smartbit4all.ui.vaadin.components.navigation.Navigation;
 import com.vaadin.flow.component.button.Button;
@@ -198,7 +200,13 @@ public class PredictiveFormInstanceViewUI extends FlexLayout implements Predicti
       case TEXT:
         dialog = new TextDialog(instance, this, descriptor);
         break;
-
+      case SURVEY_COMBO:
+        dialog = new SurveyComboDialog(instance, this, descriptor);
+        break;
+      case NUMBER:
+        dialog = new IntegerDialog(instance, this, descriptor);
+        break;
+        
       default:
         return;
     }
@@ -211,6 +219,10 @@ public class PredictiveFormInstanceViewUI extends FlexLayout implements Predicti
       case TEXT:
         if (instance.getStringValues() != null && instance.getStringValues().size() > 0) {
           return instance.getStringValues().get(0);
+        }
+      case NUMBER:
+        if (instance.getIntValues().size() > 0) {
+          return instance.getIntValues().get(0).toString();
         }
       default:
         return null;

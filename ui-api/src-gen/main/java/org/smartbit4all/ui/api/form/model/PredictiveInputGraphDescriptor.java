@@ -26,10 +26,6 @@ public class PredictiveInputGraphDescriptor   {
   @Valid
   private List<PredictiveInputGraphNode> rootNodes = null;
 
-  @JsonProperty("nodes")
-  @Valid
-  private List<PredictiveInputGraphNode> nodes = null;
-
   public PredictiveInputGraphDescriptor uri(URI uri) {
     this.uri = uri;
     return this;
@@ -80,35 +76,6 @@ public class PredictiveInputGraphDescriptor   {
     this.rootNodes = rootNodes;
   }
 
-  public PredictiveInputGraphDescriptor nodes(List<PredictiveInputGraphNode> nodes) {
-    this.nodes = nodes;
-    return this;
-  }
-
-  public PredictiveInputGraphDescriptor addNodesItem(PredictiveInputGraphNode nodesItem) {
-    if (this.nodes == null) {
-      this.nodes = new ArrayList<>();
-    }
-    this.nodes.add(nodesItem);
-    return this;
-  }
-
-  /**
-   * all the nodes held by the graph descriptor. We need these if we want to maintain a mapping of the URIs and the nodes, which we do.
-   * @return nodes
-  */
-  @ApiModelProperty(value = "all the nodes held by the graph descriptor. We need these if we want to maintain a mapping of the URIs and the nodes, which we do.")
-
-  @Valid
-
-  public List<PredictiveInputGraphNode> getNodes() {
-    return nodes;
-  }
-
-  public void setNodes(List<PredictiveInputGraphNode> nodes) {
-    this.nodes = nodes;
-  }
-
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -120,13 +87,12 @@ public class PredictiveInputGraphDescriptor   {
     }
     PredictiveInputGraphDescriptor predictiveInputGraphDescriptor = (PredictiveInputGraphDescriptor) o;
     return Objects.equals(this.uri, predictiveInputGraphDescriptor.uri) &&
-        Objects.equals(this.rootNodes, predictiveInputGraphDescriptor.rootNodes) &&
-        Objects.equals(this.nodes, predictiveInputGraphDescriptor.nodes);
+        Objects.equals(this.rootNodes, predictiveInputGraphDescriptor.rootNodes);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, rootNodes, nodes);
+    return Objects.hash(uri, rootNodes);
   }
 
   @Override
@@ -136,7 +102,6 @@ public class PredictiveInputGraphDescriptor   {
     
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    rootNodes: ").append(toIndentedString(rootNodes)).append("\n");
-    sb.append("    nodes: ").append(toIndentedString(nodes)).append("\n");
     sb.append("}");
     return sb.toString();
   }

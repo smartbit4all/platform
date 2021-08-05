@@ -71,7 +71,7 @@ public class PredictiveInputGraphNode   {
 
   @JsonProperty("children")
   @Valid
-  private List<URI> children = null;
+  private List<PredictiveInputGraphNode> children = null;
 
   public PredictiveInputGraphNode uri(URI uri) {
     this.uri = uri;
@@ -176,12 +176,12 @@ public class PredictiveInputGraphNode   {
     this.parent = parent;
   }
 
-  public PredictiveInputGraphNode children(List<URI> children) {
+  public PredictiveInputGraphNode children(List<PredictiveInputGraphNode> children) {
     this.children = children;
     return this;
   }
 
-  public PredictiveInputGraphNode addChildrenItem(URI childrenItem) {
+  public PredictiveInputGraphNode addChildrenItem(PredictiveInputGraphNode childrenItem) {
     if (this.children == null) {
       this.children = new ArrayList<>();
     }
@@ -197,11 +197,11 @@ public class PredictiveInputGraphNode   {
 
   @Valid
 
-  public List<URI> getChildren() {
+  public List<PredictiveInputGraphNode> getChildren() {
     return children;
   }
 
-  public void setChildren(List<URI> children) {
+  public void setChildren(List<PredictiveInputGraphNode> children) {
     this.children = children;
   }
 

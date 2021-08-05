@@ -24,19 +24,23 @@ public class WidgetInstance   {
 
   @JsonProperty("stringValues")
   @Valid
-  private List<String> stringValues = null;
+  private List<String> stringValues = new ArrayList<>();
 
   @JsonProperty("intValues")
   @Valid
-  private List<Integer> intValues = null;
+  private List<Integer> intValues = new ArrayList<>();
 
   @JsonProperty("doubleValues")
   @Valid
-  private List<BigDecimal> doubleValues = null;
+  private List<BigDecimal> doubleValues = new ArrayList<>();
 
   @JsonProperty("dateValues")
   @Valid
-  private List<java.time.LocalDateTime> dateValues = null;
+  private List<java.time.LocalDateTime> dateValues = new ArrayList<>();
+
+  @JsonProperty("binaryDataValues")
+  @Valid
+  private List<org.smartbit4all.types.binarydata.BinaryData> binaryDataValues = new ArrayList<>();
 
   @JsonProperty("widgets")
   @Valid
@@ -69,9 +73,6 @@ public class WidgetInstance   {
   }
 
   public WidgetInstance addStringValuesItem(String stringValuesItem) {
-    if (this.stringValues == null) {
-      this.stringValues = new ArrayList<>();
-    }
     this.stringValues.add(stringValuesItem);
     return this;
   }
@@ -80,7 +81,8 @@ public class WidgetInstance   {
    * Array of the string values that the widget contains.
    * @return stringValues
   */
-  @ApiModelProperty(value = "Array of the string values that the widget contains.")
+  @ApiModelProperty(required = true, value = "Array of the string values that the widget contains.")
+  @NotNull
 
 
   public List<String> getStringValues() {
@@ -97,9 +99,6 @@ public class WidgetInstance   {
   }
 
   public WidgetInstance addIntValuesItem(Integer intValuesItem) {
-    if (this.intValues == null) {
-      this.intValues = new ArrayList<>();
-    }
     this.intValues.add(intValuesItem);
     return this;
   }
@@ -108,7 +107,8 @@ public class WidgetInstance   {
    * Array of the integer values that the widget contains.
    * @return intValues
   */
-  @ApiModelProperty(value = "Array of the integer values that the widget contains.")
+  @ApiModelProperty(required = true, value = "Array of the integer values that the widget contains.")
+  @NotNull
 
 
   public List<Integer> getIntValues() {
@@ -125,9 +125,6 @@ public class WidgetInstance   {
   }
 
   public WidgetInstance addDoubleValuesItem(BigDecimal doubleValuesItem) {
-    if (this.doubleValues == null) {
-      this.doubleValues = new ArrayList<>();
-    }
     this.doubleValues.add(doubleValuesItem);
     return this;
   }
@@ -136,7 +133,8 @@ public class WidgetInstance   {
    * Array of the double values that the widget contains.
    * @return doubleValues
   */
-  @ApiModelProperty(value = "Array of the double values that the widget contains.")
+  @ApiModelProperty(required = true, value = "Array of the double values that the widget contains.")
+  @NotNull
 
   @Valid
 
@@ -154,9 +152,6 @@ public class WidgetInstance   {
   }
 
   public WidgetInstance addDateValuesItem(java.time.LocalDateTime dateValuesItem) {
-    if (this.dateValues == null) {
-      this.dateValues = new ArrayList<>();
-    }
     this.dateValues.add(dateValuesItem);
     return this;
   }
@@ -165,7 +160,8 @@ public class WidgetInstance   {
    * Array of the date values that the widget contains.
    * @return dateValues
   */
-  @ApiModelProperty(value = "Array of the date values that the widget contains.")
+  @ApiModelProperty(required = true, value = "Array of the date values that the widget contains.")
+  @NotNull
 
   @Valid
 
@@ -175,6 +171,33 @@ public class WidgetInstance   {
 
   public void setDateValues(List<java.time.LocalDateTime> dateValues) {
     this.dateValues = dateValues;
+  }
+
+  public WidgetInstance binaryDataValues(List<org.smartbit4all.types.binarydata.BinaryData> binaryDataValues) {
+    this.binaryDataValues = binaryDataValues;
+    return this;
+  }
+
+  public WidgetInstance addBinaryDataValuesItem(org.smartbit4all.types.binarydata.BinaryData binaryDataValuesItem) {
+    this.binaryDataValues.add(binaryDataValuesItem);
+    return this;
+  }
+
+  /**
+   * Array of the binary data values that the widget contains.
+   * @return binaryDataValues
+  */
+  @ApiModelProperty(required = true, value = "Array of the binary data values that the widget contains.")
+  @NotNull
+
+  @Valid
+
+  public List<org.smartbit4all.types.binarydata.BinaryData> getBinaryDataValues() {
+    return binaryDataValues;
+  }
+
+  public void setBinaryDataValues(List<org.smartbit4all.types.binarydata.BinaryData> binaryDataValues) {
+    this.binaryDataValues = binaryDataValues;
   }
 
   public WidgetInstance widgets(List<WidgetInstance> widgets) {
@@ -221,12 +244,13 @@ public class WidgetInstance   {
         Objects.equals(this.intValues, widgetInstance.intValues) &&
         Objects.equals(this.doubleValues, widgetInstance.doubleValues) &&
         Objects.equals(this.dateValues, widgetInstance.dateValues) &&
+        Objects.equals(this.binaryDataValues, widgetInstance.binaryDataValues) &&
         Objects.equals(this.widgets, widgetInstance.widgets);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(descriptorUri, stringValues, intValues, doubleValues, dateValues, widgets);
+    return Objects.hash(descriptorUri, stringValues, intValues, doubleValues, dateValues, binaryDataValues, widgets);
   }
 
   @Override
@@ -239,6 +263,7 @@ public class WidgetInstance   {
     sb.append("    intValues: ").append(toIndentedString(intValues)).append("\n");
     sb.append("    doubleValues: ").append(toIndentedString(doubleValues)).append("\n");
     sb.append("    dateValues: ").append(toIndentedString(dateValues)).append("\n");
+    sb.append("    binaryDataValues: ").append(toIndentedString(binaryDataValues)).append("\n");
     sb.append("    widgets: ").append(toIndentedString(widgets)).append("\n");
     sb.append("}");
     return sb.toString();

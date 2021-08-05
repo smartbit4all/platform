@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.smartbit4all.ui.api.form.model.EntityFormDescriptor;
 import org.smartbit4all.ui.api.form.model.EntityFormInstance;
 import org.smartbit4all.ui.api.form.model.PredictiveFormInstance;
@@ -55,7 +54,7 @@ public class MockWidgets {
     WidgetDescriptor root = new WidgetDescriptor().label("").icon("user").widgetType(WidgetType.CONTAINER);
     WidgetDescriptor personalData = new WidgetDescriptor().label("Személyes adatok").icon("user").widgetType(WidgetType.CONTAINER);
     WidgetDescriptor healthData = new WidgetDescriptor().label("Egészségügyi adatok").icon("clipboard-cross").widgetType(WidgetType.CONTAINER);
-    WidgetDescriptor temp = new WidgetDescriptor().label("Testhőmérséklet").icon("spline-area-chart").widgetType(WidgetType.TEXT);
+    WidgetDescriptor temp = new WidgetDescriptor().label("Testhőmérséklet").icon("spline-area-chart").widgetType(WidgetType.NUMBER);
     WidgetDescriptor lastName = new WidgetDescriptor().label("Vezetéknév").icon("arrow-right").widgetType(WidgetType.TEXT);
     WidgetDescriptor firstName = new WidgetDescriptor().label("Keresztnév").icon("arrow-left").widgetType(WidgetType.TEXT);
     descriptorList.add(root);
@@ -80,8 +79,8 @@ public class MockWidgets {
 
   private List<WidgetDescriptor> getAvailableWidgets(PredictiveInputGraphNode node) {
     List<WidgetDescriptor> availableWidgets = new ArrayList<>();
-    for (URI u : node.getChildren()) {
-      PredictiveInputGraphNode n = nodesByUris.get(u);
+    for (PredictiveInputGraphNode n : node.getChildren()) {
+//      PredictiveInputGraphNode n = nodesByUris.get(u);
       WidgetDescriptor widgetDescriptor = descriptorList.stream().filter(d -> d.getUri().equals(n.getDescriptorUri())).findFirst().orElse(null);
       if (widgetDescriptor != null) {
         availableWidgets.add(widgetDescriptor);
@@ -93,7 +92,7 @@ public class MockWidgets {
   private PredictiveInputGraphDescriptor createInputGraphDescriptor() {
     PredictiveInputGraphDescriptor graph = new PredictiveInputGraphDescriptor();
     graph.setRootNodes(createRootNodes());
-    graph.setNodes(nodesByUris.values().stream().collect(Collectors.toList()));
+//    graph.setNodes(nodesByUris.values().stream().collect(Collectors.toList()));
     return graph;
   }
   
@@ -109,8 +108,8 @@ public class MockWidgets {
     nodesByUris = new HashMap<>();
     nodesByUris.put(uri, root);
     root.setUri(uri);
-    root.addChildrenItem(createFirstChild().parent(uri).getUri());
-    root.addChildrenItem(createSecondChild().parent(uri).getUri());
+    root.addChildrenItem(createFirstChild().parent(uri));
+    root.addChildrenItem(createSecondChild().parent(uri));
     rootNodes.add(root);
     
     return rootNodes;
@@ -125,8 +124,8 @@ public class MockWidgets {
     URI uri = createNodeUri(1);
     nodesByUris.put(uri, node);
     node.setUri(uri);
-    node.addChildrenItem(createFirstNameNode().parent(uri).getUri());
-    node.addChildrenItem(createLastNameNode().parent(uri).getUri());
+    node.addChildrenItem(createFirstNameNode().parent(uri));
+    node.addChildrenItem(createLastNameNode().parent(uri));
     return node;
   }
 
@@ -161,7 +160,7 @@ public class MockWidgets {
     URI uri = createNodeUri(2);
     nodesByUris.put(uri, node);
     node.setUri(uri);
-    node.addChildrenItem(createTemperatureNode().parent(uri).getUri());
+    node.addChildrenItem(createTemperatureNode().parent(uri));
     return node;
   }
 

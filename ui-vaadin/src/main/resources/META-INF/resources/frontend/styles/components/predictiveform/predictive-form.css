@@ -69,3 +69,11 @@
 .text-dialog-button-layout {
 	justify-content: space-between;
 }
+
+.integer-dialog-layout {
+	flex-direction: column;
+}
+
+.integer-dialog-button-layuot {
+	justify-content: space-between;
+}
