@@ -187,10 +187,10 @@ public class ReflectionUtility {
         methodName,
         params);
 
-    if(superMethod == null) {
+    if (superMethod == null) {
       return null;
     }
-    
+
     return getNearestAnnotation(superMethod, annotationType);
   }
 
@@ -204,6 +204,14 @@ public class ReflectionUtility {
     } catch (final NoSuchMethodException e) {
       return null;
     }
+  }
+
+  /**
+   * @param field
+   * @return The name of the declaring class dot and the name of the field.
+   */
+  public static final String getQualifiedName(Field field) {
+    return field.getDeclaringClass().getName() + StringConstant.DOT + field.getName();
   }
 
 }

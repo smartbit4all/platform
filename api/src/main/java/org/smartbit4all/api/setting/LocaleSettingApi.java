@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.setting.bean.LocaleSettingsRoot;
 import org.smartbit4all.core.utility.ListBasedMap;
-import org.smartbit4all.core.utility.StringConstant;
+import org.smartbit4all.core.utility.ReflectionUtility;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.springframework.beans.factory.InitializingBean;
@@ -134,7 +134,7 @@ public final class LocaleSettingApi implements InitializingBean {
           LocaleString localeString = (LocaleString) field.get(option);
           if (localeString != null) {
             localeString.setApi(this);
-            String key = option.getClass().getName() + StringConstant.DOT + field.getName();
+            String key = ReflectionUtility.getQualifiedName(field);
             localeString.setKey(key);
             add(key,
                 localeString.getDefaultValue());
@@ -154,7 +154,7 @@ public final class LocaleSettingApi implements InitializingBean {
    */
   @Override
   public void afterPropertiesSet() throws Exception {
-    if (localeOptions != null && !localeOptions.isEmpty()) {
+    if (localeOptions != null) {
       for (LocaleOption localeOption : localeOptions) {
         analyzeLocaleStrings(localeOption);
         Storage<LocaleSettingsRoot> storageLocale = storageApi.get(LocaleSettingsRoot.class);
