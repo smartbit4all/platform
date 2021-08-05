@@ -17,7 +17,6 @@ package org.smartbit4all.domain.service.query;
 import org.smartbit4all.domain.meta.AssociationDefinition;
 import org.smartbit4all.domain.meta.AssociationKind;
 import org.smartbit4all.domain.meta.AssociationRole;
-import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.domain.meta.Reference;
 
@@ -28,13 +27,13 @@ import org.smartbit4all.domain.meta.Reference;
  * @author Peter Boros
  *
  */
-public final class RetrievalRequestEdge<E extends EntityDefinition> {
+public final class RetrievalRequestEdge {
 
   /**
    * The referred node that is pointed by the edge. The starting node contains this edge in a list
    * {@link RetrieveExecutionNode#edges}.
    */
-  final RetrievalRequestNode<E> node;
+  final RetrievalRequestNode node;
 
   /**
    * The {@link AssociationRole} and its {@link AssociationRole#getAssociation()} association
@@ -64,13 +63,13 @@ public final class RetrievalRequestEdge<E extends EntityDefinition> {
    * @param node
    * @param reference
    */
-  public RetrievalRequestEdge(RetrievalRequestNode<E> node, AssociationRole navigationRole) {
+  public RetrievalRequestEdge(RetrievalRequestNode node, AssociationRole navigationRole) {
     super();
     this.node = node;
     this.navigationRole = navigationRole;
   }
 
-  final RetrievalRequestNode<E> getNode() {
+  final RetrievalRequestNode getNode() {
     return node;
   }
 

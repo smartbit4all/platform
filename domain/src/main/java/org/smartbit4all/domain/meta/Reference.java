@@ -24,7 +24,6 @@ import java.util.stream.Collectors;
 import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.service.entity.EntityUris;
 import org.smartbit4all.domain.utility.CompositeValue;
-import org.springframework.util.Assert;
 
 /**
  * The instances of this class defines the reference meta data between two Entity. At meta level the
@@ -243,10 +242,23 @@ public class Reference<S extends EntityDefinition, T extends EntityDefinition> {
    * @return The Expression that is typically an IN with the values from the target properties.
    */
   public Expression joinDetail(Collection<? extends DataRow> targetRows) {
-    Assert.isTrue(joins().size() == 1,
-        "The " + toString() + " reference must have only one join condition");
-    Join<?> join = joins().get(0);
-    return join.inDetail(targetRows);
+    if (joins().size() == 1) {
+      // In this case we have one join that produce a simple in condition.
+      return joins().get(0).inDetail(targetRows);
+    } else {
+      // We have more than one properties to join so we will have an In expression with
+      // CompositeValue
+      OperandComposite opComposite = new OperandComposite(
+          joins().stream().map(j -> new OperandProperty<>(j.sourceProperty))
+              .collect(Collectors.toList()));
+      Set<CompositeValue> values = targetRows.stream().map(row -> {
+        return new CompositeValue(
+            joins().stream().map(j -> row.get(j.targetProperty)).collect(Collectors.toList()));
+      }).collect(Collectors.toSet());
+
+      ExpressionIn<CompositeValue> result = new ExpressionIn<>(opComposite, values);
+      return result;
+    }
   }
 
   /**
