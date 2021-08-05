@@ -3,6 +3,8 @@ package org.smartbit4all.ui.vaadin.components.form2;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartbit4all.ui.api.form.PredictiveFormApi;
 import org.smartbit4all.ui.api.form.model.EntityFormInstance;
 import org.smartbit4all.ui.api.form.model.PredictiveFormInstance;
@@ -25,7 +27,7 @@ import org.springframework.stereotype.Service;
 @Scope("prototype")
 public class PredictiveFormControllerImpl implements PredictiveFormController {
 
-  // private static final Logger log = LoggerFactory.getLogger(PredictiveFormControllerImpl.class);
+  private static final Logger log = LoggerFactory.getLogger(PredictiveFormControllerImpl.class);
 
   private PredictiveFormApi api;
   private PredictiveFormInstanceView ui;
@@ -44,7 +46,13 @@ public class PredictiveFormControllerImpl implements PredictiveFormController {
 
   @Override
   public void stepBack() {
-    // TODO body
+    URI parentUri = predictiveFormInstance.getActiveNode().getParent();
+    if (parentUri != null) {
+      PredictiveInputGraphNode parentNode = util.getNode(parentUri);
+      predictiveFormInstance.setActiveNode(parentNode);
+      setAvailableWidgets(parentNode);
+      ui.renderWidgets();
+    }
   }
 
   @Override
@@ -80,12 +88,7 @@ public class PredictiveFormControllerImpl implements PredictiveFormController {
 
     ui.renderWidgets();
   }
-
-  // @Override
-  public List<WidgetDescriptor> getAvailableWidgets() {
-    return predictiveFormInstance.getAvailableWidgets();
-  }
-
+  
   @Override
   public List<WidgetInstance> getVisibleWidgets() {
     return predictiveFormInstance.getVisibleWidgets();
@@ -99,7 +102,6 @@ public class PredictiveFormControllerImpl implements PredictiveFormController {
   @Override
   public void saveWidgetInstance(WidgetInstance instance) {
     // TODO Auto-generated method stub
-
   }
 
   @Override
@@ -123,7 +125,7 @@ public class PredictiveFormControllerImpl implements PredictiveFormController {
   // TODO maybe this should be called addWidget or something more specific, cause a select method
   // will be needed for the mouse click selection too
   @Override
-  public void selectWidget(PredictiveInputGraphNode node) {
+  public void addWidget(PredictiveInputGraphNode node) {
     WidgetDescriptor widgetDescriptor = util.getDescriptor(node);
     if (widgetDescriptor.getWidgetType() == WidgetType.CONTAINER) {
       predictiveFormInstance.setActiveNode(node);
@@ -146,5 +148,19 @@ public class PredictiveFormControllerImpl implements PredictiveFormController {
           .removeIf(w -> w.getUri().equals(node.getDescriptorUri()));
     }
     ui.renderWidgets();
+  }
+
+  @Override
+  public void selectWidget(WidgetInstance instance) {
+    WidgetDescriptor descriptor = util.getDescriptor(instance.getDescriptorUri());
+    PredictiveInputGraphNode node = util.getNode(descriptor);
+    predictiveFormInstance.activeNode(node);
+    setAvailableWidgets(node);
+    ui.renderWidgets();
+  }
+
+  @Override
+  public boolean isWidgetSelected(WidgetInstance instance) {
+    return predictiveFormInstance.getActiveNode().getDescriptorUri().equals(instance.getDescriptorUri());
   }
 }

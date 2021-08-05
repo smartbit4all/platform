@@ -41,6 +41,7 @@
     border-radius: 8px;
     margin: 5px;
     align-items: center;
+    border: medium solid transparent;
 }
 
 .visible-widget-view-label {
@@ -76,4 +77,8 @@
 
 .integer-dialog-button-layuot {
 	justify-content: space-between;
+}
+
+.selected-widget-view {
+	border-color: var(--lumo-primary-text-color);
 }

@@ -41,6 +41,10 @@ public interface PredictiveFormController {
 
   public List<PredictiveInputGraphNode> getAvailableNodes();
 
-  public void selectWidget(PredictiveInputGraphNode node);
+  public void addWidget(PredictiveInputGraphNode node);
+  
+  public void selectWidget(WidgetInstance instance);
+
+  public boolean isWidgetSelected(WidgetInstance instance);
 
 }

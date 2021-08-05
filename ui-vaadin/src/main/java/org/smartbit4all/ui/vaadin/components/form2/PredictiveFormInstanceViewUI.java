@@ -25,7 +25,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 @CssImport("./styles/components/predictiveform/predictive-form.css")
 public class PredictiveFormInstanceViewUI extends FlexLayout implements PredictiveFormInstanceView {
 
-//  private static final Logger log = LoggerFactory.getLogger(PredictiveFormInstanceViewUI.class);
+  // private static final Logger log = LoggerFactory.getLogger(PredictiveFormInstanceViewUI.class);
   private PredictiveFormController controller;
   private FlexLayout availableWidgetsHolder;
   private FlexLayout visibleWidgetsHolder;
@@ -35,7 +35,7 @@ public class PredictiveFormInstanceViewUI extends FlexLayout implements Predicti
     this.controller = controller;
     controller.setUI(this);
     init();
-//    renderWidgets();
+    // renderWidgets();
   }
 
   private void init() {
@@ -88,23 +88,34 @@ public class PredictiveFormInstanceViewUI extends FlexLayout implements Predicti
   // TODO this doesn't work for every widget type
   private FlexLayout renderVisibleWidgetView(WidgetInstance instance) {
     WidgetDescriptor descriptor = controller.getWidgetDescriptor(instance.getDescriptorUri());
+    boolean isWidgetSelected = controller.isWidgetSelected(instance);
 
     if (descriptor.getWidgetType() == WidgetType.CONTAINER) {
-      FlexLayout containerLayout = new FlexLayout();
-      containerLayout.setClassName("visible-widget-container-view");
-      containerLayout.add(createVisibleWidgetView(descriptor, instance));
-      if (instance.getWidgets() != null) {
-        for (WidgetInstance wi : instance.getWidgets()) {
-          containerLayout.add(renderVisibleWidgetView(wi));
-        }
-      }
-      return containerLayout;
+      return createVisibleWidgetContainerView(instance, descriptor, isWidgetSelected);
     } else {
-      return createVisibleWidgetView(descriptor, instance);
+      return createVisibleWidgetView(descriptor, instance, isWidgetSelected);
     }
   }
 
-  private FlexLayout createVisibleWidgetView(WidgetDescriptor descriptor, WidgetInstance instance) {
+  private FlexLayout createVisibleWidgetContainerView(WidgetInstance instance,
+      WidgetDescriptor descriptor, boolean isWidgetSelected) {
+    FlexLayout containerLayout = new FlexLayout();
+    containerLayout.setClassName("visible-widget-container-view");
+    containerLayout.add(createVisibleWidgetView(descriptor, instance, isWidgetSelected));
+    if (instance.getWidgets() != null) {
+      for (WidgetInstance wi : instance.getWidgets()) {
+        containerLayout.add(renderVisibleWidgetView(wi));
+      }
+    }
+
+    containerLayout.addClickListener(e -> {
+       controller.selectWidget(instance);
+    });
+    
+    return containerLayout;
+  }
+
+  private FlexLayout createVisibleWidgetView(WidgetDescriptor descriptor, WidgetInstance instance, boolean isWidgetSelected) {
     FlexLayout layout = new FlexLayout();
     layout.setClassName("visible-widget-view");
 
@@ -117,6 +128,10 @@ public class PredictiveFormInstanceViewUI extends FlexLayout implements Predicti
     String value = getValueFromWidgetInstance(instance, descriptor.getWidgetType());
     Label valueLabel = new Label(value);
     valueLabel.setClassName("visible-widget-view-value-label");
+    
+    if (isWidgetSelected) {
+      layout.addClassName("selected-widget-view");
+    }
 
     layout.add(icon, label, valueLabel);
     return layout;
@@ -147,14 +162,14 @@ public class PredictiveFormInstanceViewUI extends FlexLayout implements Predicti
     buttonGroupLayout.add(finalize);
     return buttonGroupLayout;
   }
-  
+
   private Button createAvailableWidgetView(PredictiveInputGraphNode node) {
     WidgetDescriptor descriptor = controller.getWidgetDescriptor(node.getDescriptorUri());
     Button button = new Button(descriptor.getLabel());
     button.setClassName("selection-button");
     Icon icon = new Icon(descriptor.getIcon());
     button.setIcon(icon);
-    button.addClickListener(e -> controller.selectWidget(node));
+    button.addClickListener(e -> controller.addWidget(node));
     return button;
   }
 
@@ -194,7 +209,8 @@ public class PredictiveFormInstanceViewUI extends FlexLayout implements Predicti
   }
 
   @Override
-  public void openValueDialog(WidgetType widgetType, WidgetInstance instance, WidgetDescriptor descriptor) {
+  public void openValueDialog(WidgetType widgetType, WidgetInstance instance,
+      WidgetDescriptor descriptor) {
     Dialog dialog;
     switch (widgetType) {
       case TEXT:
@@ -206,7 +222,7 @@ public class PredictiveFormInstanceViewUI extends FlexLayout implements Predicti
       case NUMBER:
         dialog = new IntegerDialog(instance, this, descriptor);
         break;
-        
+
       default:
         return;
     }
@@ -235,9 +251,9 @@ public class PredictiveFormInstanceViewUI extends FlexLayout implements Predicti
         .to("predictiveform")
         .param("instance", instance)
         .navigate(ui));
-    
+
   }
-  
+
   public void setInstanceUri(URI uri) {
     controller.loadTemplate(uri);
   }

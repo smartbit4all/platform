@@ -15,6 +15,7 @@ public class FormUtil {
   private Map<URI, WidgetDescriptor> widgetDescriptorsByUris;
   private Map<URI, WidgetInstance> widgetInstancesByUris;
   private Map<URI, PredictiveInputGraphNode> nodesByUris;
+  private Map<WidgetDescriptor, PredictiveInputGraphNode> nodesByDescriptors;
   private EntityFormInstance entityFormInstance;
 
   public FormUtil(EntityFormInstance entityFormInstance) {
@@ -31,6 +32,15 @@ public class FormUtil {
   private void createNodesByUris() {
     nodesByUris = new HashMap<>();
     gatherNodesFromGraph(entityFormInstance.getPredictiveForm().getGraph().getRootNodes());
+    nodesByDescriptors = createNodesByDescriptors();
+  }
+
+  private Map<WidgetDescriptor, PredictiveInputGraphNode> createNodesByDescriptors() {
+    Map<WidgetDescriptor, PredictiveInputGraphNode> map = new HashMap<>();
+    for (PredictiveInputGraphNode node : nodesByUris.values()) {
+      map.put(widgetDescriptorsByUris.get(node.getDescriptorUri()), node);
+    }
+    return map;
   }
 
   private void gatherNodesFromGraph(List<PredictiveInputGraphNode> rootNodes) {
@@ -81,6 +91,10 @@ public class FormUtil {
 
   public PredictiveInputGraphNode getNode(URI uri) {
     return nodesByUris.get(uri);
+  }
+  
+  public PredictiveInputGraphNode getNode(WidgetDescriptor descriptor) {
+    return nodesByDescriptors.get(descriptor);
   }
 
 }
