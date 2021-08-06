@@ -13,6 +13,7 @@ import org.smartbit4all.ui.vaadin.components.form2.dialog.DoubleDialog;
 import org.smartbit4all.ui.vaadin.components.form2.dialog.IntegerDialog;
 import org.smartbit4all.ui.vaadin.components.form2.dialog.SurveyComboDialog;
 import org.smartbit4all.ui.vaadin.components.form2.dialog.TextDialog;
+import org.smartbit4all.ui.vaadin.components.form2.dialog.TextIntervalDialog;
 import org.smartbit4all.ui.vaadin.components.navigation.Navigation;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
@@ -221,16 +222,19 @@ public class PredictiveFormInstanceViewUI extends FlexLayout implements Predicti
     Dialog dialog;
     switch (widgetType) {
       case TEXT:
-        dialog = new TextDialog(instance, this, descriptor);
+        dialog = new TextDialog(instance, this, descriptor, controller);
+        break;
+      case TEXT_INTERVAL:
+        dialog = new TextIntervalDialog(instance, this, descriptor, controller);
         break;
       case SURVEY_COMBO:
-        dialog = new SurveyComboDialog(instance, this, descriptor);
+        dialog = new SurveyComboDialog(instance, this, descriptor, controller);
         break;
       case NUMBER:
-        dialog = new DoubleDialog(instance, this, descriptor);
+        dialog = new DoubleDialog(instance, this, descriptor, controller);
         break;
       case INTEGER:
-        dialog = new IntegerDialog(instance, this, descriptor);
+        dialog = new IntegerDialog(instance, this, descriptor, controller);
         break;
         
       default:
@@ -241,18 +245,28 @@ public class PredictiveFormInstanceViewUI extends FlexLayout implements Predicti
 
   // TODO these could go into the specific dialog classes
   private String getValueFromWidgetInstance(WidgetInstance instance, WidgetType widgetType) {
+    List<String> stringValues = instance.getStringValues();
+    List<Double> doubleValues = instance.getDoubleValues();
+    List<Integer> intValues = instance.getIntValues();
+
     switch (widgetType) {
       case TEXT:
-        if (instance.getStringValues() != null && instance.getStringValues().size() > 0) {
-          return instance.getStringValues().get(0);
+        if (stringValues != null && stringValues.size() > 0) {
+          return stringValues.get(0);
+        }
+      case TEXT_INTERVAL:
+        if (stringValues.size() > 1) {
+          return stringValues.get(0) + " : " + stringValues.get(1);
+        } else if (stringValues.size() > 0){
+          return stringValues.get(0);
         }
       case NUMBER:
-        if (instance.getDoubleValues().size() > 0) {
-          return instance.getDoubleValues().get(0).toString();
+        if (doubleValues.size() > 0) {
+          return doubleValues.get(0).toString();
         }
       case INTEGER:
-        if (instance.getIntValues().size() > 0) {
-          return instance.getIntValues().get(0).toString();
+        if (intValues.size() > 0) {
+          return intValues.get(0).toString();
         }
       default:
         return null;

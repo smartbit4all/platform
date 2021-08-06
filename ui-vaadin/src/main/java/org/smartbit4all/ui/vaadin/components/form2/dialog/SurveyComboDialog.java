@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.ui.api.form.model.WidgetDescriptor;
 import org.smartbit4all.ui.api.form.model.WidgetInstance;
+import org.smartbit4all.ui.common.form2.impl.PredictiveFormController;
 import org.smartbit4all.ui.vaadin.components.form2.PredictiveFormInstanceViewUI;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -19,7 +20,7 @@ public class SurveyComboDialog extends Dialog{
 
   private static final Logger log = LoggerFactory.getLogger(SurveyComboDialog.class);
 
-  public SurveyComboDialog(WidgetInstance instance, PredictiveFormInstanceViewUI ui, WidgetDescriptor descriptor) {
+  public SurveyComboDialog(WidgetInstance instance, PredictiveFormInstanceViewUI ui, WidgetDescriptor descriptor, PredictiveFormController controller) {
     FlexLayout dialogLayout = new FlexLayout();
     dialogLayout.setClassName("survey-combo-dialog-layout");
     add(dialogLayout);

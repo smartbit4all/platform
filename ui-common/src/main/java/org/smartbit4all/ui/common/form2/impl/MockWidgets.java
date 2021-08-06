@@ -54,8 +54,8 @@ public class MockWidgets {
     WidgetDescriptor root = new WidgetDescriptor().label("").icon("user").widgetType(WidgetType.CONTAINER);
     WidgetDescriptor personalData = new WidgetDescriptor().label("Személyes adatok").icon("user").widgetType(WidgetType.CONTAINER);
     WidgetDescriptor healthData = new WidgetDescriptor().label("Egészségügyi adatok").icon("clipboard-cross").widgetType(WidgetType.CONTAINER);
-    WidgetDescriptor temp = new WidgetDescriptor().label("Testhőmérséklet").icon("spline-area-chart").widgetType(WidgetType.NUMBER);
-    WidgetDescriptor lastName = new WidgetDescriptor().label("Vezetéknév").icon("arrow-right").widgetType(WidgetType.TEXT);
+    WidgetDescriptor temp = new WidgetDescriptor().label("Testhőmérséklet").icon("spline-area-chart").widgetType(WidgetType.INTEGER);
+    WidgetDescriptor lastName = new WidgetDescriptor().label("Vezetéknév").icon("arrow-right").widgetType(WidgetType.TEXT_INTERVAL);
     WidgetDescriptor firstName = new WidgetDescriptor().label("Keresztnév").icon("arrow-left").widgetType(WidgetType.TEXT);
     descriptorList.add(root);
     descriptorList.add(personalData);

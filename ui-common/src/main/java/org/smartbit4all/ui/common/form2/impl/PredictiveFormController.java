@@ -47,4 +47,6 @@ public interface PredictiveFormController {
 
   public boolean isWidgetSelected(WidgetInstance instance);
 
+  public void deleteWidgetInstance(WidgetInstance instance);
+
 }

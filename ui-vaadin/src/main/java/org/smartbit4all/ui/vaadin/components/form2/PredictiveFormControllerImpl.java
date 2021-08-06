@@ -163,4 +163,15 @@ public class PredictiveFormControllerImpl implements PredictiveFormController {
   public boolean isWidgetSelected(WidgetInstance instance) {
     return predictiveFormInstance.getActiveNode().getDescriptorUri().equals(instance.getDescriptorUri());
   }
+
+  @Override
+  public void deleteWidgetInstance(WidgetInstance instance) {
+//    predictiveFormInstance.getVisibleWidgets().remove(instance);
+    PredictiveInputGraphNode node = util.getNode(util.getDescriptor( instance.getDescriptorUri()));
+    PredictiveInputGraphNode parentNode = util.getNode(node.getParent());
+    WidgetInstance parentInstance = util.getInstance(parentNode.getDescriptorUri());
+    parentInstance.getWidgets().remove(instance);
+    util.removeWidgetInstance(instance);
+    ui.renderWidgets();
+  }
 }
