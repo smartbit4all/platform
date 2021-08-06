@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.data.TableData;
-import org.smartbit4all.domain.meta.EntityDefinition;
 
 /**
  * The Retrieval node is the execution instance of the {@link RetrievalRequestNode}. It contains all
@@ -29,13 +28,13 @@ import org.smartbit4all.domain.meta.EntityDefinition;
  * @author Peter Boros
  *
  */
-public class RetrievalNode<E extends EntityDefinition> {
+public class RetrievalNode {
 
   /**
    * The result of the given node filled by executing the {@link Retrieval}. Can be expanded round
    * by round because the given query can result more and more rows by every query.
    */
-  private TableData<E> result;
+  private TableData<?> result;
 
   /**
    * These are the newly queried rows for the node.
@@ -45,32 +44,32 @@ public class RetrievalNode<E extends EntityDefinition> {
   /**
    * The original request node that contains the meta data for the given node.
    */
-  private RetrievalRequestNode<E> requestNode;
+  private RetrievalRequestNode requestNode;
 
   /**
    * These edges are outgoing references so if this node is starting node in a
    * {@link RetrievalRound} then the referred node are going to be included in the next query round.
    */
-  final List<RetrievalEdge<?>> navigableEdges = new ArrayList<>();
+  final List<RetrievalEdge> navigableEdges = new ArrayList<>();
 
   /**
    * The queryCount store the number of query executions on the given node.
    */
   private int queryCount = 0;
 
-  final TableData<E> getResult() {
+  final TableData<?> getResult() {
     return result;
   }
 
-  final void setResult(TableData<E> result) {
+  final void setResult(TableData<?> result) {
     this.result = result;
   }
 
-  final RetrievalRequestNode<E> getRequestNode() {
+  final RetrievalRequestNode getRequestNode() {
     return requestNode;
   }
 
-  final void setRequestNode(RetrievalRequestNode<E> requestNode) {
+  final void setRequestNode(RetrievalRequestNode requestNode) {
     this.requestNode = requestNode;
   }
 
@@ -92,7 +91,7 @@ public class RetrievalNode<E extends EntityDefinition> {
     return (queryCount == 0 && requestNode.getStartCondition() != null) || !newRows.isEmpty();
   }
 
-  final List<RetrievalEdge<?>> getNavigableEdges() {
+  final List<RetrievalEdge> getNavigableEdges() {
     return navigableEdges;
   }
 

@@ -57,7 +57,7 @@ public final class Retrieval {
   /**
    * The nodes of the retrieval.
    */
-  Map<String, RetrievalNode<?>> nodes = new HashMap<>();
+  Map<String, RetrievalNode> nodes = new HashMap<>();
 
   /**
    * Based on the current state of the retrieval this function calculates the parallel executable
@@ -66,10 +66,10 @@ public final class Retrieval {
    * @return
    */
   RetrievalRound next() {
-    List<RetrievalNode<?>> startingNodes = nodes.values().stream()
+    List<RetrievalNode> startingNodes = nodes.values().stream()
         .filter(RetrievalNode::readyForNextRound).collect(Collectors.toList());
-    Map<RetrievalNode<?>, QueryInput> nextRoundQueries = new HashMap<>();
-    for (RetrievalNode<?> node : startingNodes) {
+    Map<RetrievalNode, QueryInput> nextRoundQueries = new HashMap<>();
+    for (RetrievalNode node : startingNodes) {
       for (@SuppressWarnings("rawtypes")
       RetrievalEdge edge : node.getNavigableEdges()) {
         QueryInput query = nextRoundQueries.computeIfAbsent(edge.getNode(),

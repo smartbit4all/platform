@@ -14,8 +14,6 @@
  ******************************************************************************/
 package org.smartbit4all.domain.service.query;
 
-import org.smartbit4all.domain.meta.EntityDefinition;
-
 /**
  * The retrieval edge is responsible for the relation between two {@link RetrievalNode}. It's used
  * as a register to manage and store the references among between the rows of the two related node.
@@ -28,23 +26,23 @@ import org.smartbit4all.domain.meta.EntityDefinition;
  * @author Peter Boros
  *
  */
-public class RetrievalEdge<E extends EntityDefinition> {
+public class RetrievalEdge {
 
-  private final RetrievalRequestEdge<E> requestEdge;
+  private final RetrievalRequestEdge requestEdge;
 
-  private final RetrievalNode<E> node;
+  private final RetrievalNode node;
 
-  public RetrievalEdge(RetrievalRequestEdge<E> requestEdge, RetrievalNode<E> node) {
+  public RetrievalEdge(RetrievalRequestEdge requestEdge, RetrievalNode node) {
     super();
     this.requestEdge = requestEdge;
     this.node = node;
   }
 
-  final RetrievalRequestEdge<E> getRequestEdge() {
+  final RetrievalRequestEdge getRequestEdge() {
     return requestEdge;
   }
 
-  final RetrievalNode<E> getNode() {
+  final RetrievalNode getNode() {
     return node;
   }
 

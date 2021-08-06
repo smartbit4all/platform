@@ -17,6 +17,7 @@ package org.smartbit4all.domain.service.query;
 import java.util.HashMap;
 import java.util.Map;
 import org.smartbit4all.domain.meta.EntityDefinition;
+import org.smartbit4all.domain.meta.Expression;
 import org.smartbit4all.domain.meta.Reference;
 
 /**
@@ -110,10 +111,19 @@ import org.smartbit4all.domain.meta.Reference;
 public class RetrievalRequest {
 
   /**
-   * The nodes of the retrieval request where every node contains a simple {@link QueryRequest}. They must
-   * be named uniquely in this context. We can add new queries named manually but without naming the
-   * Retrieval will name the query.
+   * The nodes of the retrieval request where every node contains a simple {@link QueryRequest}.
+   * They must be named uniquely in this context. We can add new queries named manually but without
+   * naming the Retrieval will name the query.
    */
   private Map<String, RetrievalRequestNode> nodes = new HashMap<>();
 
+  public RetrievalRequestNode node(QueryInput queryInput, Expression startCondition) {
+    RetrievalRequestNode result = new RetrievalRequestNode(this, queryInput, startCondition);
+    nodes.put(queryInput.getName(), result);
+    return result;
+  }
+
+  public RetrievalRequestNode node(QueryInput queryInput) {
+    return node(queryInput, null);
+  }
 }
