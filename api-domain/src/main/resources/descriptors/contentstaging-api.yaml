@@ -1,0 +1,31 @@
+openapi: 3.0.1
+info:
+  title: content staging api
+  description: content staging api
+  termsOfService: ''
+  contact:
+    email: info@it4all.hu
+  version: 1.0.0
+tags:
+- name: ContentStaging
+paths: {}
+components:
+  schemas:
+    ContentStagingDocument:
+      type: object
+      properties:
+        uri:
+          type: string
+          format: uri
+        key:
+          type: string
+          format: uuid
+        contentUri:
+          type: string
+          format: uri
+          
+    Direction:
+      type: string
+      enum:
+        - download
+        - upload
