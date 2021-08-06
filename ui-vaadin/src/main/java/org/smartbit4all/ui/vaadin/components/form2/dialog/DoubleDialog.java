@@ -1,7 +1,5 @@
 package org.smartbit4all.ui.vaadin.components.form2.dialog;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.smartbit4all.ui.api.form.model.WidgetDescriptor;
 import org.smartbit4all.ui.api.form.model.WidgetInstance;
 import org.smartbit4all.ui.common.form2.impl.PredictiveFormController;
@@ -14,8 +12,6 @@ import com.vaadin.flow.data.binder.Binder;
 
 public class DoubleDialog extends Dialog {
 
-private static final Logger log = LoggerFactory.getLogger(DoubleDialog.class);
-  
   public DoubleDialog(WidgetInstance instance, PredictiveFormInstanceViewUI ui, WidgetDescriptor descriptor, PredictiveFormController controller) {
     FlexLayout dialogLayout = new FlexLayout();
     dialogLayout.setClassName("double-dialog-layout");

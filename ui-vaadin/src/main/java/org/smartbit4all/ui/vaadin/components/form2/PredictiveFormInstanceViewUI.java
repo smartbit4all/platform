@@ -1,6 +1,7 @@
 package org.smartbit4all.ui.vaadin.components.form2;
 
 import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.smartbit4all.ui.api.form.model.EntityFormInstance;
 import org.smartbit4all.ui.api.form.model.PredictiveInputGraphNode;
@@ -9,6 +10,9 @@ import org.smartbit4all.ui.api.form.model.WidgetInstance;
 import org.smartbit4all.ui.api.form.model.WidgetType;
 import org.smartbit4all.ui.common.form2.impl.PredictiveFormController;
 import org.smartbit4all.ui.common.form2.impl.PredictiveFormInstanceView;
+import org.smartbit4all.ui.vaadin.components.form2.dialog.ComboBoxDialog;
+import org.smartbit4all.ui.vaadin.components.form2.dialog.DateDialog;
+import org.smartbit4all.ui.vaadin.components.form2.dialog.DateIntervalDialog;
 import org.smartbit4all.ui.vaadin.components.form2.dialog.DoubleDialog;
 import org.smartbit4all.ui.vaadin.components.form2.dialog.IntegerDialog;
 import org.smartbit4all.ui.vaadin.components.form2.dialog.SurveyComboDialog;
@@ -236,6 +240,15 @@ public class PredictiveFormInstanceViewUI extends FlexLayout implements Predicti
       case INTEGER:
         dialog = new IntegerDialog(instance, this, descriptor, controller);
         break;
+      case COMBOBOX:
+        dialog = new ComboBoxDialog(instance, this, descriptor, controller);
+        break;
+      case DATE:
+        dialog = new DateDialog(instance, this, descriptor, controller);
+        break;
+      case DATE_INTERVAL:
+        dialog = new DateIntervalDialog(instance, this, descriptor, controller);
+        break;
         
       default:
         return;
@@ -248,6 +261,7 @@ public class PredictiveFormInstanceViewUI extends FlexLayout implements Predicti
     List<String> stringValues = instance.getStringValues();
     List<Double> doubleValues = instance.getDoubleValues();
     List<Integer> intValues = instance.getIntValues();
+    List<LocalDateTime> dateValues = instance.getDateValues();
 
     switch (widgetType) {
       case TEXT:
@@ -267,6 +281,20 @@ public class PredictiveFormInstanceViewUI extends FlexLayout implements Predicti
       case INTEGER:
         if (intValues.size() > 0) {
           return intValues.get(0).toString();
+        }
+      case COMBOBOX:
+        if (stringValues != null && stringValues.size() > 0) {
+          return stringValues.get(0);
+        }
+      case DATE:
+        if (dateValues != null && dateValues.size() > 0) {
+          return dateValues.get(0).toString();
+        }
+      case DATE_INTERVAL:
+        if (dateValues.size() > 1) {
+          return dateValues.get(0) + " : " + dateValues.get(1);
+        } else if (dateValues.size() > 0){
+          return dateValues.get(0).toString();
         }
       default:
         return null;

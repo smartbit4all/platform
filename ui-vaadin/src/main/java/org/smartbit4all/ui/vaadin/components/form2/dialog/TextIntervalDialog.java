@@ -1,7 +1,5 @@
 package org.smartbit4all.ui.vaadin.components.form2.dialog;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.smartbit4all.ui.api.form.model.WidgetDescriptor;
 import org.smartbit4all.ui.api.form.model.WidgetInstance;
 import org.smartbit4all.ui.common.form2.impl.PredictiveFormController;
@@ -13,8 +11,6 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 
 public class TextIntervalDialog extends Dialog {
-  
-  private static final Logger log = LoggerFactory.getLogger(TextIntervalDialog.class);
   
   public TextIntervalDialog(WidgetInstance instance, PredictiveFormInstanceViewUI ui, WidgetDescriptor descriptor, PredictiveFormController controller) {
     FlexLayout dialogLayout = new FlexLayout();

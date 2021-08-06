@@ -2,8 +2,6 @@ package org.smartbit4all.ui.vaadin.components.form2.dialog;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.smartbit4all.ui.api.form.model.WidgetDescriptor;
 import org.smartbit4all.ui.api.form.model.WidgetInstance;
 import org.smartbit4all.ui.common.form2.impl.PredictiveFormController;
@@ -17,8 +15,6 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 
 public class SurveyComboDialog extends Dialog{
-
-  private static final Logger log = LoggerFactory.getLogger(SurveyComboDialog.class);
 
   public SurveyComboDialog(WidgetInstance instance, PredictiveFormInstanceViewUI ui, WidgetDescriptor descriptor, PredictiveFormController controller) {
     FlexLayout dialogLayout = new FlexLayout();
