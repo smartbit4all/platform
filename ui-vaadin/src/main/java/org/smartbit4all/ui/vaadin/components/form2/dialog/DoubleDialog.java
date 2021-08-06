@@ -10,33 +10,36 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
-import com.vaadin.flow.component.textfield.IntegerField;
+import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationException;
 
-public class IntegerDialog extends Dialog {
+public class DoubleDialog extends Dialog {
 
-  private static final Logger log = LoggerFactory.getLogger(IntegerDialog.class);
+private static final Logger log = LoggerFactory.getLogger(DoubleDialog.class);
   
-  public IntegerDialog(WidgetInstance instance, PredictiveFormInstanceViewUI ui, WidgetDescriptor descriptor) {
+  public DoubleDialog(WidgetInstance instance, PredictiveFormInstanceViewUI ui, WidgetDescriptor descriptor) {
     FlexLayout dialogLayout = new FlexLayout();
-    dialogLayout.setClassName("integer-dialog-layout");
+    dialogLayout.setClassName("double-dialog-layout");
     add(dialogLayout);
     
     Label titleLabel = new Label(descriptor.getLabel());
-    IntegerField ifValue = new IntegerField();
+    NumberField nfValue = new NumberField();
+    nfValue.setHasControls(true);
+    nfValue.setStep(0.1);
+    
     
     Binder<WidgetInstance> binder = new Binder<>(WidgetInstance.class);
     binder.setBean(instance);
-    binder.forField(ifValue).bind(w -> {
-      if (instance.getIntValues().size() > 0) {
-        return instance.getIntValues().get(0);
+    binder.forField(nfValue).bind(w -> {
+      if (instance.getDoubleValues().size() > 0) {
+        return instance.getDoubleValues().get(0);
       } else {
         return null;
       }
     }, (w, v) -> {
-      w.getIntValues().clear();
-      w.addIntValuesItem(v);
+      w.getDoubleValues().clear();
+      w.addDoubleValuesItem(v);
     });
     
     Button btnCancel = new Button("Mégsem", e -> {
@@ -57,8 +60,9 @@ public class IntegerDialog extends Dialog {
     });
     
     FlexLayout buttonLayout = new FlexLayout(btnSave, btnCancel);
-    buttonLayout.setClassName("integer-dialog-button-layout");
+    buttonLayout.setClassName("double-dialog-button-layout");
     
-    dialogLayout.add(titleLabel, ifValue, buttonLayout);
+    dialogLayout.add(titleLabel, nfValue, buttonLayout);
   }
+  
 }

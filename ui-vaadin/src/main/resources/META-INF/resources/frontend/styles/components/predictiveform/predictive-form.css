@@ -79,6 +79,14 @@
 	justify-content: space-between;
 }
 
+.double-dialog-layout {
+	flex-direction: column;
+}
+
+.double-dialog-button-layuot {
+	justify-content: space-between;
+}
+
 .selected-widget-view {
 	border-color: var(--lumo-primary-text-color);
 }

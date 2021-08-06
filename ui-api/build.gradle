@@ -20,7 +20,8 @@ smartbit4all {
         "FilterGroupType" : "org.smartbit4all.api.filter.bean.FilterGroupType",
         "FilterOperation" : "org.smartbit4all.api.filter.bean.FilterOperation",
         "LocalDateTime": "java.time.LocalDateTime",
-        "BinaryData": "org.smartbit4all.types.binarydata.BinaryData"
+        "BinaryData": "org.smartbit4all.types.binarydata.BinaryData",
+        "Double": "java.lang.Double"
       ]
   }
 }

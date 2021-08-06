@@ -61,7 +61,7 @@ components:
           description: Array of the double values that the widget contains.
           type: array
           items:
-            type: number
+            type: Double
         dateValues:
           description: Array of the date values that the widget contains.
           type: array
@@ -166,6 +166,8 @@ components:
         - date_interval
         - number
         - number_interval
+        - integer
+        - integer_interval
         - survey_combo
       description: >
         * `container` This is just a folder for a set of widgets.
@@ -179,6 +181,8 @@ components:
          * `date_interval` An editor with a pair of date properties.
          * `number` The single property widget with number type.
          * `number_interval` An editor with a pair of number properties.
+         * `integer` The single property widget with integer type..
+         * `integer_interval` An editor with a pair of integer properties.
          * `survey_combo` A widget that contains a score, and optionally a comment and/or a photo.
     PredictiveInputGraphDescriptor:
       description: Descriptor of a graph that defines input values of the PredictiveFormInstance. The available choices are calculated by this graph while editing the PredictiveFormInstance.

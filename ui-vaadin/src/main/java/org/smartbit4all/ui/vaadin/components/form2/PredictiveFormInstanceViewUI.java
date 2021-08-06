@@ -9,6 +9,7 @@ import org.smartbit4all.ui.api.form.model.WidgetInstance;
 import org.smartbit4all.ui.api.form.model.WidgetType;
 import org.smartbit4all.ui.common.form2.impl.PredictiveFormController;
 import org.smartbit4all.ui.common.form2.impl.PredictiveFormInstanceView;
+import org.smartbit4all.ui.vaadin.components.form2.dialog.DoubleDialog;
 import org.smartbit4all.ui.vaadin.components.form2.dialog.IntegerDialog;
 import org.smartbit4all.ui.vaadin.components.form2.dialog.SurveyComboDialog;
 import org.smartbit4all.ui.vaadin.components.form2.dialog.TextDialog;
@@ -132,8 +133,14 @@ public class PredictiveFormInstanceViewUI extends FlexLayout implements Predicti
     if (isWidgetSelected) {
       layout.addClassName("selected-widget-view");
     }
+    
+    Button editButton = new Button();
+    editButton.setIcon(new Icon(VaadinIcon.ELLIPSIS_DOTS_H));
+    editButton.addClickListener(e -> {
+      openValueDialog(descriptor.getWidgetType(), instance, descriptor);
+    });
 
-    layout.add(icon, label, valueLabel);
+    layout.add(icon, label, valueLabel, editButton);
     return layout;
   }
 
@@ -220,9 +227,12 @@ public class PredictiveFormInstanceViewUI extends FlexLayout implements Predicti
         dialog = new SurveyComboDialog(instance, this, descriptor);
         break;
       case NUMBER:
+        dialog = new DoubleDialog(instance, this, descriptor);
+        break;
+      case INTEGER:
         dialog = new IntegerDialog(instance, this, descriptor);
         break;
-
+        
       default:
         return;
     }
@@ -237,6 +247,10 @@ public class PredictiveFormInstanceViewUI extends FlexLayout implements Predicti
           return instance.getStringValues().get(0);
         }
       case NUMBER:
+        if (instance.getDoubleValues().size() > 0) {
+          return instance.getDoubleValues().get(0).toString();
+        }
+      case INTEGER:
         if (instance.getIntValues().size() > 0) {
           return instance.getIntValues().get(0).toString();
         }

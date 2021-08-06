@@ -10,7 +10,7 @@ import javax.validation.constraints.*;
 import com.fasterxml.jackson.annotation.JsonCreator;
 
 /**
- * * `container` This is just a folder for a set of widgets.  * `reference` Can be used to manage the reference for another entity.   * `detail` A list of other entities contained by the current entity.  * `association` The association is a reference for an independent entity instance. TODO   * `text` A text widget (a string value text field).  * `text_interval` A widget that contains a pair of text properties.  * `combobox` A selectable value stored in one or more fields  * `date` The single property widget with date type.   * `date_interval` An editor with a pair of date properties.  * `number` The single property widget with number type.  * `number_interval` An editor with a pair of number properties.  * `survey_combo` A widget that contains a score, and optionally a comment and/or a photo. 
+ * * `container` This is just a folder for a set of widgets.  * `reference` Can be used to manage the reference for another entity.   * `detail` A list of other entities contained by the current entity.  * `association` The association is a reference for an independent entity instance. TODO   * `text` A text widget (a string value text field).  * `text_interval` A widget that contains a pair of text properties.  * `combobox` A selectable value stored in one or more fields  * `date` The single property widget with date type.   * `date_interval` An editor with a pair of date properties.  * `number` The single property widget with number type.  * `number_interval` An editor with a pair of number properties.  * `integer` The single property widget with integer type..  * `integer_interval` An editor with a pair of integer properties.  * `survey_combo` A widget that contains a score, and optionally a comment and/or a photo. 
  */
 public enum WidgetType {
   
@@ -35,6 +35,10 @@ public enum WidgetType {
   NUMBER("number"),
   
   NUMBER_INTERVAL("number_interval"),
+  
+  INTEGER("integer"),
+  
+  INTEGER_INTERVAL("integer_interval"),
   
   SURVEY_COMBO("survey_combo");
 

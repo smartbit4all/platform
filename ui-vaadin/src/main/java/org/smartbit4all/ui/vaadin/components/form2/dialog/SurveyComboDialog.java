@@ -35,6 +35,7 @@ public class SurveyComboDialog extends Dialog{
     
     // TODO binder
     Binder<WidgetInstance> binder = new Binder<>(WidgetInstance.class);
+    binder.setBean(instance);
     binder.forField(cbScore).bind(w -> {
       return w.getIntValues().get(0);
     }, (w, v) -> {

@@ -28,6 +28,7 @@ public class TextDialog extends Dialog {
     TextField tfValue = new TextField();
     
     Binder<WidgetInstance> binder = new Binder<>(WidgetInstance.class);
+    binder.setBean(instance);
     binder.forField(tfValue).bind(w -> {
       if (instance.getStringValues().size() > 0) {
         return instance.getStringValues().get(0);

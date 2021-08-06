@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.math.BigDecimal;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +31,7 @@ public class WidgetInstance   {
 
   @JsonProperty("doubleValues")
   @Valid
-  private List<BigDecimal> doubleValues = new ArrayList<>();
+  private List<java.lang.Double> doubleValues = new ArrayList<>();
 
   @JsonProperty("dateValues")
   @Valid
@@ -119,12 +118,12 @@ public class WidgetInstance   {
     this.intValues = intValues;
   }
 
-  public WidgetInstance doubleValues(List<BigDecimal> doubleValues) {
+  public WidgetInstance doubleValues(List<java.lang.Double> doubleValues) {
     this.doubleValues = doubleValues;
     return this;
   }
 
-  public WidgetInstance addDoubleValuesItem(BigDecimal doubleValuesItem) {
+  public WidgetInstance addDoubleValuesItem(java.lang.Double doubleValuesItem) {
     this.doubleValues.add(doubleValuesItem);
     return this;
   }
@@ -138,11 +137,11 @@ public class WidgetInstance   {
 
   @Valid
 
-  public List<BigDecimal> getDoubleValues() {
+  public List<java.lang.Double> getDoubleValues() {
     return doubleValues;
   }
 
-  public void setDoubleValues(List<BigDecimal> doubleValues) {
+  public void setDoubleValues(List<java.lang.Double> doubleValues) {
     this.doubleValues = doubleValues;
   }
 
