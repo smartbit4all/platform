@@ -1,8 +1,12 @@
 package org.smartbit4all.ui.vaadin.components.form2.dialog;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.ui.api.form.model.WidgetDescriptor;
 import org.smartbit4all.ui.api.form.model.WidgetInstance;
+import org.smartbit4all.ui.api.form.model.WidgetType;
 import org.smartbit4all.ui.common.form2.impl.PredictiveFormController;
 import org.smartbit4all.ui.vaadin.components.form2.PredictiveFormInstanceViewUI;
 import org.smartbit4all.ui.vaadin.util.Notifications;
@@ -45,6 +49,85 @@ public class WidgetDialogUtil {
     
     FlexLayout buttonLayout = new FlexLayout(btnSave, btnCancel, btnDelete);
     return buttonLayout;
+  }
+  
+  public static void openValueDialog(WidgetType widgetType, WidgetInstance instance,
+      WidgetDescriptor descriptor, PredictiveFormInstanceViewUI ui, PredictiveFormController controller) {
+    Dialog dialog;
+    switch (widgetType) {
+      case TEXT:
+        dialog = new TextDialog(instance, ui, descriptor, controller);
+        break;
+      case TEXT_INTERVAL:
+        dialog = new TextIntervalDialog(instance, ui, descriptor, controller);
+        break;
+      case SURVEY_COMBO:
+        dialog = new SurveyComboDialog(instance, ui, descriptor, controller);
+        break;
+      case NUMBER:
+        dialog = new DoubleDialog(instance, ui, descriptor, controller);
+        break;
+      case INTEGER:
+        dialog = new IntegerDialog(instance, ui, descriptor, controller);
+        break;
+      case COMBOBOX:
+        dialog = new ComboBoxDialog(instance, ui, descriptor, controller);
+        break;
+      case DATE:
+        dialog = new DateDialog(instance, ui, descriptor, controller);
+        break;
+      case DATE_INTERVAL:
+        dialog = new DateIntervalDialog(instance, ui, descriptor, controller);
+        break;
+        
+      default:
+        return;
+    }
+    dialog.open();
+  }
+  
+  public static String getValueFromWidgetInstance(WidgetInstance instance, WidgetType widgetType) {
+    List<String> stringValues = instance.getStringValues();
+    List<Double> doubleValues = instance.getDoubleValues();
+    List<Integer> intValues = instance.getIntValues();
+    List<LocalDateTime> dateValues = instance.getDateValues();
+
+    switch (widgetType) {
+      case TEXT:
+        if (stringValues != null && stringValues.size() > 0) {
+          return stringValues.get(0);
+        }
+      case TEXT_INTERVAL:
+        if (stringValues.size() > 1) {
+          return stringValues.get(0) + " : " + stringValues.get(1);
+        } else if (stringValues.size() > 0){
+          return stringValues.get(0);
+        }
+      case NUMBER:
+        if (doubleValues.size() > 0) {
+          return doubleValues.get(0).toString();
+        }
+      case INTEGER:
+        if (intValues.size() > 0) {
+          return intValues.get(0).toString();
+        }
+      case COMBOBOX:
+        if (stringValues != null && stringValues.size() > 0) {
+          return stringValues.get(0);
+        }
+      case DATE:
+        if (dateValues != null && dateValues.size() > 0) {
+          return dateValues.get(0).toString();
+        }
+      case DATE_INTERVAL:
+        if (dateValues.size() > 1) {
+          return dateValues.get(0) + " : " + dateValues.get(1);
+        } else if (dateValues.size() > 0){
+          return dateValues.get(0).toString();
+        }
+      default:
+        return null;
+    }
   }
   
 }

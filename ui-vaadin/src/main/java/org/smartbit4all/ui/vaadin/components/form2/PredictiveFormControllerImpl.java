@@ -18,11 +18,6 @@ import org.smartbit4all.ui.common.form2.impl.PredictiveFormInstanceView;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-/**
- * The controller of the PredictiveForm.
- * 
- * @author Zsombor Nyilas
- */
 @Service
 @Scope("prototype")
 public class PredictiveFormControllerImpl implements PredictiveFormController {

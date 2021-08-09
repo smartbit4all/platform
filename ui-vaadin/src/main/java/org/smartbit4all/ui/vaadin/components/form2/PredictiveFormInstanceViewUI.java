@@ -1,7 +1,6 @@
 package org.smartbit4all.ui.vaadin.components.form2;
 
 import java.net.URI;
-import java.time.LocalDateTime;
 import java.util.List;
 import org.smartbit4all.ui.api.form.model.EntityFormInstance;
 import org.smartbit4all.ui.api.form.model.PredictiveInputGraphNode;
@@ -10,14 +9,7 @@ import org.smartbit4all.ui.api.form.model.WidgetInstance;
 import org.smartbit4all.ui.api.form.model.WidgetType;
 import org.smartbit4all.ui.common.form2.impl.PredictiveFormController;
 import org.smartbit4all.ui.common.form2.impl.PredictiveFormInstanceView;
-import org.smartbit4all.ui.vaadin.components.form2.dialog.ComboBoxDialog;
-import org.smartbit4all.ui.vaadin.components.form2.dialog.DateDialog;
-import org.smartbit4all.ui.vaadin.components.form2.dialog.DateIntervalDialog;
-import org.smartbit4all.ui.vaadin.components.form2.dialog.DoubleDialog;
-import org.smartbit4all.ui.vaadin.components.form2.dialog.IntegerDialog;
-import org.smartbit4all.ui.vaadin.components.form2.dialog.SurveyComboDialog;
-import org.smartbit4all.ui.vaadin.components.form2.dialog.TextDialog;
-import org.smartbit4all.ui.vaadin.components.form2.dialog.TextIntervalDialog;
+import org.smartbit4all.ui.vaadin.components.form2.dialog.WidgetDialogUtil;
 import org.smartbit4all.ui.vaadin.components.navigation.Navigation;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
@@ -31,7 +23,6 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 @CssImport("./styles/components/predictiveform/predictive-form.css")
 public class PredictiveFormInstanceViewUI extends FlexLayout implements PredictiveFormInstanceView {
 
-  // private static final Logger log = LoggerFactory.getLogger(PredictiveFormInstanceViewUI.class);
   private PredictiveFormController controller;
   private FlexLayout availableWidgetsHolder;
   private FlexLayout visibleWidgetsHolder;
@@ -41,7 +32,6 @@ public class PredictiveFormInstanceViewUI extends FlexLayout implements Predicti
     this.controller = controller;
     controller.setUI(this);
     init();
-    // renderWidgets();
   }
 
   private void init() {
@@ -223,82 +213,11 @@ public class PredictiveFormInstanceViewUI extends FlexLayout implements Predicti
   @Override
   public void openValueDialog(WidgetType widgetType, WidgetInstance instance,
       WidgetDescriptor descriptor) {
-    Dialog dialog;
-    switch (widgetType) {
-      case TEXT:
-        dialog = new TextDialog(instance, this, descriptor, controller);
-        break;
-      case TEXT_INTERVAL:
-        dialog = new TextIntervalDialog(instance, this, descriptor, controller);
-        break;
-      case SURVEY_COMBO:
-        dialog = new SurveyComboDialog(instance, this, descriptor, controller);
-        break;
-      case NUMBER:
-        dialog = new DoubleDialog(instance, this, descriptor, controller);
-        break;
-      case INTEGER:
-        dialog = new IntegerDialog(instance, this, descriptor, controller);
-        break;
-      case COMBOBOX:
-        dialog = new ComboBoxDialog(instance, this, descriptor, controller);
-        break;
-      case DATE:
-        dialog = new DateDialog(instance, this, descriptor, controller);
-        break;
-      case DATE_INTERVAL:
-        dialog = new DateIntervalDialog(instance, this, descriptor, controller);
-        break;
-        
-      default:
-        return;
-    }
-    dialog.open();
+    WidgetDialogUtil.openValueDialog(widgetType, instance, descriptor, this, controller);
   }
 
-  // TODO these could go into the specific dialog classes
   private String getValueFromWidgetInstance(WidgetInstance instance, WidgetType widgetType) {
-    List<String> stringValues = instance.getStringValues();
-    List<Double> doubleValues = instance.getDoubleValues();
-    List<Integer> intValues = instance.getIntValues();
-    List<LocalDateTime> dateValues = instance.getDateValues();
-
-    switch (widgetType) {
-      case TEXT:
-        if (stringValues != null && stringValues.size() > 0) {
-          return stringValues.get(0);
-        }
-      case TEXT_INTERVAL:
-        if (stringValues.size() > 1) {
-          return stringValues.get(0) + " : " + stringValues.get(1);
-        } else if (stringValues.size() > 0){
-          return stringValues.get(0);
-        }
-      case NUMBER:
-        if (doubleValues.size() > 0) {
-          return doubleValues.get(0).toString();
-        }
-      case INTEGER:
-        if (intValues.size() > 0) {
-          return intValues.get(0).toString();
-        }
-      case COMBOBOX:
-        if (stringValues != null && stringValues.size() > 0) {
-          return stringValues.get(0);
-        }
-      case DATE:
-        if (dateValues != null && dateValues.size() > 0) {
-          return dateValues.get(0).toString();
-        }
-      case DATE_INTERVAL:
-        if (dateValues.size() > 1) {
-          return dateValues.get(0) + " : " + dateValues.get(1);
-        } else if (dateValues.size() > 0){
-          return dateValues.get(0).toString();
-        }
-      default:
-        return null;
-    }
+    return WidgetDialogUtil.getValueFromWidgetInstance(instance, widgetType);
   }
 
   @Override
@@ -307,7 +226,6 @@ public class PredictiveFormInstanceViewUI extends FlexLayout implements Predicti
         .to("predictiveform")
         .param("instance", instance)
         .navigate(ui));
-
   }
 
   public void setInstanceUri(URI uri) {
