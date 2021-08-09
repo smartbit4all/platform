@@ -96,5 +96,9 @@ public class FormUtil {
   public PredictiveInputGraphNode getNode(WidgetDescriptor descriptor) {
     return nodesByDescriptors.get(descriptor);
   }
+  
+  public void removeWidgetInstance(WidgetInstance instance) {
+    widgetInstancesByUris.remove(instance.getDescriptorUri());
+  }
 
 }

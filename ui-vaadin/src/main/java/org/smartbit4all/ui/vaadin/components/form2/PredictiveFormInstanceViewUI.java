@@ -9,10 +9,7 @@ import org.smartbit4all.ui.api.form.model.WidgetInstance;
 import org.smartbit4all.ui.api.form.model.WidgetType;
 import org.smartbit4all.ui.common.form2.impl.PredictiveFormController;
 import org.smartbit4all.ui.common.form2.impl.PredictiveFormInstanceView;
-import org.smartbit4all.ui.vaadin.components.form2.dialog.DoubleDialog;
-import org.smartbit4all.ui.vaadin.components.form2.dialog.IntegerDialog;
-import org.smartbit4all.ui.vaadin.components.form2.dialog.SurveyComboDialog;
-import org.smartbit4all.ui.vaadin.components.form2.dialog.TextDialog;
+import org.smartbit4all.ui.vaadin.components.form2.dialog.WidgetDialogUtil;
 import org.smartbit4all.ui.vaadin.components.navigation.Navigation;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
@@ -26,7 +23,6 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 @CssImport("./styles/components/predictiveform/predictive-form.css")
 public class PredictiveFormInstanceViewUI extends FlexLayout implements PredictiveFormInstanceView {
 
-  // private static final Logger log = LoggerFactory.getLogger(PredictiveFormInstanceViewUI.class);
   private PredictiveFormController controller;
   private FlexLayout availableWidgetsHolder;
   private FlexLayout visibleWidgetsHolder;
@@ -36,7 +32,6 @@ public class PredictiveFormInstanceViewUI extends FlexLayout implements Predicti
     this.controller = controller;
     controller.setUI(this);
     init();
-    // renderWidgets();
   }
 
   private void init() {
@@ -218,45 +213,11 @@ public class PredictiveFormInstanceViewUI extends FlexLayout implements Predicti
   @Override
   public void openValueDialog(WidgetType widgetType, WidgetInstance instance,
       WidgetDescriptor descriptor) {
-    Dialog dialog;
-    switch (widgetType) {
-      case TEXT:
-        dialog = new TextDialog(instance, this, descriptor);
-        break;
-      case SURVEY_COMBO:
-        dialog = new SurveyComboDialog(instance, this, descriptor);
-        break;
-      case NUMBER:
-        dialog = new DoubleDialog(instance, this, descriptor);
-        break;
-      case INTEGER:
-        dialog = new IntegerDialog(instance, this, descriptor);
-        break;
-        
-      default:
-        return;
-    }
-    dialog.open();
+    WidgetDialogUtil.openValueDialog(widgetType, instance, descriptor, this, controller);
   }
 
-  // TODO these could go into the specific dialog classes
   private String getValueFromWidgetInstance(WidgetInstance instance, WidgetType widgetType) {
-    switch (widgetType) {
-      case TEXT:
-        if (instance.getStringValues() != null && instance.getStringValues().size() > 0) {
-          return instance.getStringValues().get(0);
-        }
-      case NUMBER:
-        if (instance.getDoubleValues().size() > 0) {
-          return instance.getDoubleValues().get(0).toString();
-        }
-      case INTEGER:
-        if (instance.getIntValues().size() > 0) {
-          return instance.getIntValues().get(0).toString();
-        }
-      default:
-        return null;
-    }
+    return WidgetDialogUtil.getValueFromWidgetInstance(instance, widgetType);
   }
 
   @Override
@@ -265,7 +226,6 @@ public class PredictiveFormInstanceViewUI extends FlexLayout implements Predicti
         .to("predictiveform")
         .param("instance", instance)
         .navigate(ui));
-
   }
 
   public void setInstanceUri(URI uri) {

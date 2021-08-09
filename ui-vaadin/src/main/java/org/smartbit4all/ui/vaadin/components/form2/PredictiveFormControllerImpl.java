@@ -18,11 +18,6 @@ import org.smartbit4all.ui.common.form2.impl.PredictiveFormInstanceView;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-/**
- * The controller of the PredictiveForm.
- * 
- * @author Zsombor Nyilas
- */
 @Service
 @Scope("prototype")
 public class PredictiveFormControllerImpl implements PredictiveFormController {
@@ -100,11 +95,6 @@ public class PredictiveFormControllerImpl implements PredictiveFormController {
   }
 
   @Override
-  public void saveWidgetInstance(WidgetInstance instance) {
-    // TODO Auto-generated method stub
-  }
-
-  @Override
   public void goToRoot() {
     PredictiveInputGraphNode activeNode = predictiveFormInstance.getGraph().getRootNodes().get(0);
     predictiveFormInstance.setActiveNode(activeNode);
@@ -121,9 +111,6 @@ public class PredictiveFormControllerImpl implements PredictiveFormController {
     return nodes;
   }
 
-
-  // TODO maybe this should be called addWidget or something more specific, cause a select method
-  // will be needed for the mouse click selection too
   @Override
   public void addWidget(PredictiveInputGraphNode node) {
     WidgetDescriptor widgetDescriptor = util.getDescriptor(node);
@@ -162,5 +149,15 @@ public class PredictiveFormControllerImpl implements PredictiveFormController {
   @Override
   public boolean isWidgetSelected(WidgetInstance instance) {
     return predictiveFormInstance.getActiveNode().getDescriptorUri().equals(instance.getDescriptorUri());
+  }
+
+  @Override
+  public void deleteWidgetInstance(WidgetInstance instance) {
+    PredictiveInputGraphNode node = util.getNode(util.getDescriptor(instance.getDescriptorUri()));
+    PredictiveInputGraphNode parentNode = util.getNode(node.getParent());
+    WidgetInstance parentInstance = util.getInstance(parentNode.getDescriptorUri());
+    parentInstance.getWidgets().remove(instance);
+    util.removeWidgetInstance(instance);
+    ui.renderWidgets();
   }
 }

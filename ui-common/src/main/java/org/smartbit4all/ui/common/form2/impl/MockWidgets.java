@@ -57,12 +57,22 @@ public class MockWidgets {
     WidgetDescriptor temp = new WidgetDescriptor().label("Testhőmérséklet").icon("spline-area-chart").widgetType(WidgetType.NUMBER);
     WidgetDescriptor lastName = new WidgetDescriptor().label("Vezetéknév").icon("arrow-right").widgetType(WidgetType.TEXT);
     WidgetDescriptor firstName = new WidgetDescriptor().label("Keresztnév").icon("arrow-left").widgetType(WidgetType.TEXT);
+    WidgetDescriptor gender = new WidgetDescriptor().label("Nem").icon("user-card").widgetType(WidgetType.COMBOBOX);
+    WidgetDescriptor location = new WidgetDescriptor().label("Lakóhely").icon("home").widgetType(WidgetType.CONTAINER);
+    WidgetDescriptor postCode = new WidgetDescriptor().label("Irányítószám - település").icon("location-arrow").widgetType(WidgetType.TEXT_INTERVAL);
+    WidgetDescriptor address = new WidgetDescriptor().label("Cím").icon("home").widgetType(WidgetType.TEXT);
+    WidgetDescriptor dateOfBirth = new WidgetDescriptor().label("Születési dátum").icon("calendar").widgetType(WidgetType.DATE);
     descriptorList.add(root);
     descriptorList.add(personalData);
     descriptorList.add(healthData);
     descriptorList.add(temp);
     descriptorList.add(lastName);
     descriptorList.add(firstName);
+    descriptorList.add(gender);
+    descriptorList.add(location);
+    descriptorList.add(postCode);
+    descriptorList.add(address);
+    descriptorList.add(dateOfBirth);
     return descriptorList;
   }
   
@@ -80,7 +90,6 @@ public class MockWidgets {
   private List<WidgetDescriptor> getAvailableWidgets(PredictiveInputGraphNode node) {
     List<WidgetDescriptor> availableWidgets = new ArrayList<>();
     for (PredictiveInputGraphNode n : node.getChildren()) {
-//      PredictiveInputGraphNode n = nodesByUris.get(u);
       WidgetDescriptor widgetDescriptor = descriptorList.stream().filter(d -> d.getUri().equals(n.getDescriptorUri())).findFirst().orElse(null);
       if (widgetDescriptor != null) {
         availableWidgets.add(widgetDescriptor);
@@ -92,7 +101,6 @@ public class MockWidgets {
   private PredictiveInputGraphDescriptor createInputGraphDescriptor() {
     PredictiveInputGraphDescriptor graph = new PredictiveInputGraphDescriptor();
     graph.setRootNodes(createRootNodes());
-//    graph.setNodes(nodesByUris.values().stream().collect(Collectors.toList()));
     return graph;
   }
   
@@ -126,6 +134,61 @@ public class MockWidgets {
     node.setUri(uri);
     node.addChildrenItem(createFirstNameNode().parent(uri));
     node.addChildrenItem(createLastNameNode().parent(uri));
+    node.addChildrenItem(createGenderNode().parent(uri));
+    node.addChildrenItem(createLocationNode().parent(uri));
+    node.addChildrenItem(createDateOfBirthNode().parent(uri));
+    return node;
+  }
+
+  private PredictiveInputGraphNode createDateOfBirthNode() {
+    PredictiveInputGraphNode node = new PredictiveInputGraphNode();
+    node.setKind(KindEnum.WIDGET);
+    node.setDescriptorUri(createDescriptorUri(10));
+    URI uri = createNodeUri(10);
+    node.setUri(uri);
+    nodesByUris.put(uri, node);
+    return node;
+  }
+
+  private PredictiveInputGraphNode createLocationNode() {
+    PredictiveInputGraphNode node = new PredictiveInputGraphNode();
+    node.setDescriptorUri(createDescriptorUri(7));
+    node.setKind(KindEnum.WIDGET);
+    URI uri = createNodeUri(7);
+    node.setUri(uri);
+    nodesByUris.put(uri, node);
+    node.addChildrenItem(createPostCodeNode().parent(uri));
+    node.addChildrenItem(createAddressNode().parent(uri));
+    return node;
+  }
+
+  private PredictiveInputGraphNode createAddressNode() {
+    PredictiveInputGraphNode node = new PredictiveInputGraphNode();
+    node.setKind(KindEnum.WIDGET);
+    node.setDescriptorUri(createDescriptorUri(9));
+    URI uri = createNodeUri(9);
+    node.setUri(uri);
+    nodesByUris.put(uri, node);
+    return node;
+  }
+
+  private PredictiveInputGraphNode createPostCodeNode() {
+    PredictiveInputGraphNode node = new PredictiveInputGraphNode();
+    node.setKind(KindEnum.WIDGET);
+    node.setDescriptorUri(createDescriptorUri(8));
+    URI uri = createNodeUri(8);
+    node.setUri(uri);
+    nodesByUris.put(uri, node);
+    return node;
+  }
+
+  private PredictiveInputGraphNode createGenderNode() {
+    PredictiveInputGraphNode node = new PredictiveInputGraphNode();
+    node.setKind(KindEnum.WIDGET);
+    node.setDescriptorUri(createDescriptorUri(6));
+    URI uri = createNodeUri(6);
+    node.setUri(uri);
+    nodesByUris.put(uri, node);
     return node;
   }
 

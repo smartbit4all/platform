@@ -4,39 +4,40 @@ import org.smartbit4all.ui.api.form.model.WidgetDescriptor;
 import org.smartbit4all.ui.api.form.model.WidgetInstance;
 import org.smartbit4all.ui.common.form2.impl.PredictiveFormController;
 import org.smartbit4all.ui.vaadin.components.form2.PredictiveFormInstanceViewUI;
+import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
-import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 
-public class TextDialog extends Dialog {
+public class DateDialog extends Dialog {
   
-  public TextDialog(WidgetInstance instance, PredictiveFormInstanceViewUI ui, WidgetDescriptor descriptor, PredictiveFormController controller) {
+  public DateDialog(WidgetInstance instance, PredictiveFormInstanceViewUI ui, WidgetDescriptor descriptor, PredictiveFormController controller) {
     FlexLayout dialogLayout = new FlexLayout();
-    dialogLayout.setClassName("text-dialog-layout");
+    dialogLayout.setClassName("date-dialog-layout");
     add(dialogLayout);
     
     Label titleLabel = new Label(descriptor.getLabel());
     
-    TextField tfValue = new TextField();
+    DateTimePicker dtValue = new DateTimePicker();
     
     Binder<WidgetInstance> binder = new Binder<>(WidgetInstance.class);
     binder.setBean(instance);
-    binder.forField(tfValue).bind(w -> {
-      if (instance.getStringValues().size() > 0) {
-        return instance.getStringValues().get(0);
+    binder.forField(dtValue).bind(w -> {
+      if (instance.getDateValues().size() > 0) {
+        return instance.getDateValues().get(0);
       } else {
         return null;
       }
     }, (w, v) -> {
-      w.getStringValues().clear();
-      w.addStringValuesItem(v);
+      w.getDateValues().clear();
+      w.addDateValuesItem(v);
     });
     
     FlexLayout buttonLayout = WidgetDialogUtil.getButtonLayout(instance, ui, binder, this, controller);
-    buttonLayout.setClassName("text-dialog-button-layout");
+    buttonLayout.setClassName("date-dialog-button-layout");
     
-    dialogLayout.add(titleLabel, tfValue, buttonLayout);
+    dialogLayout.add(titleLabel, dtValue, buttonLayout);
   }
+
 }

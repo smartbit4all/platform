@@ -71,6 +71,14 @@
 	justify-content: space-between;
 }
 
+.text-interval-dialog-layout {
+	flex-direction: column;
+}
+
+.text-interval-dialog-button-layout {
+	justify-content: space-between;
+}
+
 .integer-dialog-layout {
 	flex-direction: column;
 }
@@ -90,3 +98,28 @@
 .selected-widget-view {
 	border-color: var(--lumo-primary-text-color);
 }
+
+.date-dialog-layout {
+	flex-direction: column;
+}
+
+.date-dialog-button-layuot {
+	justify-content: space-between;
+}
+
+.date-interval-dialog-layout {
+	flex-direction: column;
+}
+
+.date-interval-dialog-button-layuot {
+	justify-content: space-between;
+}
+
+.combobox-dialog-layout {
+	flex-direction: column;
+}
+
+.combobox-dialog-button-layout{
+	justify-content: space-between;
+}
+
