@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
 import java.util.UUID;
+import org.smartbit4all.api.contentstaging.bean.Direction;
 import org.openapitools.jackson.nullable.JsonNullable;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
@@ -16,8 +17,8 @@ import javax.validation.constraints.*;
  */
 
 public class ContentStagingDocument   {
-  @JsonProperty("uri")
-  private URI uri;
+  @JsonProperty("direction")
+  private Direction direction;
 
   @JsonProperty("key")
   private UUID key;
@@ -25,25 +26,25 @@ public class ContentStagingDocument   {
   @JsonProperty("contentUri")
   private URI contentUri;
 
-  public ContentStagingDocument uri(URI uri) {
-    this.uri = uri;
+  public ContentStagingDocument direction(Direction direction) {
+    this.direction = direction;
     return this;
   }
 
   /**
-   * Get uri
-   * @return uri
+   * Get direction
+   * @return direction
   */
   @ApiModelProperty(value = "")
 
   @Valid
 
-  public URI getUri() {
-    return uri;
+  public Direction getDirection() {
+    return direction;
   }
 
-  public void setUri(URI uri) {
-    this.uri = uri;
+  public void setDirection(Direction direction) {
+    this.direction = direction;
   }
 
   public ContentStagingDocument key(UUID key) {
@@ -98,14 +99,14 @@ public class ContentStagingDocument   {
       return false;
     }
     ContentStagingDocument contentStagingDocument = (ContentStagingDocument) o;
-    return Objects.equals(this.uri, contentStagingDocument.uri) &&
+    return Objects.equals(this.direction, contentStagingDocument.direction) &&
         Objects.equals(this.key, contentStagingDocument.key) &&
         Objects.equals(this.contentUri, contentStagingDocument.contentUri);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, key, contentUri);
+    return Objects.hash(direction, key, contentUri);
   }
 
   @Override
@@ -113,7 +114,7 @@ public class ContentStagingDocument   {
     StringBuilder sb = new StringBuilder();
     sb.append("class ContentStagingDocument {\n");
     
-    sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
+    sb.append("    direction: ").append(toIndentedString(direction)).append("\n");
     sb.append("    key: ").append(toIndentedString(key)).append("\n");
     sb.append("    contentUri: ").append(toIndentedString(contentUri)).append("\n");
     sb.append("}");

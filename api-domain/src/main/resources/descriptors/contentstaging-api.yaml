@@ -14,9 +14,8 @@ components:
     ContentStagingDocument:
       type: object
       properties:
-        uri:
-          type: string
-          format: uri
+        direction:
+          $ref: '#/components/schemas/Direction'
         key:
           type: string
           format: uuid
