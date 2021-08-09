@@ -62,6 +62,7 @@ public class WidgetDialogUtil {
         dialog = new TextIntervalDialog(instance, ui, descriptor, controller);
         break;
       case SURVEY_COMBO:
+        // TODO this dialog is not fully implemented yet
         dialog = new SurveyComboDialog(instance, ui, descriptor, controller);
         break;
       case NUMBER:
@@ -78,6 +79,9 @@ public class WidgetDialogUtil {
         break;
       case DATE_INTERVAL:
         dialog = new DateIntervalDialog(instance, ui, descriptor, controller);
+        break;
+      case CONTAINER:
+        dialog = new ContainerDialog(instance, ui, descriptor, controller);
         break;
         
       default:

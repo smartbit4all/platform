@@ -119,7 +119,15 @@
 	flex-direction: column;
 }
 
-.combobox-dialog-button-layout{
+.combobox-dialog-button-layout {
 	justify-content: space-between;
+}
+
+.container-dialog-button-layout {
+	justify-content: space-between;
+}
+
+.container-dialog-layout {
+	flex-direction: column;
 }
 
