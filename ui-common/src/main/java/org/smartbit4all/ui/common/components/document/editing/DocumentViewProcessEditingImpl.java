@@ -93,7 +93,8 @@ public class DocumentViewProcessEditingImpl extends ObjectEditingImpl
       List<ImageWithAlt> byteImageWithAlts = new LinkedList<>();
       for (int i = 0; i < images.size(); ++i) {
         String alt = (i + 1) + ".png";
-        ImageWithAlt byteImageWithAlt = createImageWithAlt(images.get(i), alt, alt);
+        ImageWithAlt byteImageWithAlt =
+            new ImageWithAlt().image(images.get(i)).alt(alt).fileName(alt);
         byteImageWithAlts.add(byteImageWithAlt);
       }
       processWrapper.setThumbnails(byteImageWithAlts);
@@ -109,7 +110,8 @@ public class DocumentViewProcessEditingImpl extends ObjectEditingImpl
   public void setPage(int index) {
     actualPageIndex = index;
     String alt = (index + 1) + ".png";
-    processWrapper.setMainImage(createImageWithAlt(images.get(actualPageIndex), alt, alt));
+    processWrapper
+        .setMainImage(new ImageWithAlt().image(images.get(actualPageIndex)).alt(alt).fileName(alt));
     processWrapper.setPageIndex(String.valueOf(actualPageIndex + 1));
     if (actualPageIndex == 0) {
       processWrapper.setLeftButtonEnabled(false);
@@ -184,13 +186,5 @@ public class DocumentViewProcessEditingImpl extends ObjectEditingImpl
   @Override
   public void setActualPageWidth(int pageWidth) {
     actualPageWidth = pageWidth;
-  }
-
-  private ImageWithAlt createImageWithAlt(BinaryData image, String alt, String fileName) {
-    ImageWithAlt imageWithAlt = new ImageWithAlt();
-    imageWithAlt.setImage(image);
-    imageWithAlt.setAlt(alt);
-    imageWithAlt.setFileName(fileName);
-    return imageWithAlt;
   }
 }
