@@ -246,8 +246,9 @@ public class ApiObjectRef {
             ApiObjectRef newRef = new ApiObjectRef(entry.getPath(), value, descriptors);
             entry.setReference(newRef);
           } else {
-            // TODO Manage the deletion of a reference.
-            entry.setReference(null);
+            if (entry.getReference() != null) {
+              entry.getReference().setCurrentState(ChangeState.DELETED);
+            }
           }
           // We set the value as a property at the end.
           entry.getMeta().setValue(object, value);
@@ -255,7 +256,11 @@ public class ApiObjectRef {
 
         case COLLECTION:
           ApiObjectCollection collection = entry.getCollection();
-          collection.set((Collection<Object>) value);
+          if (value == null) {
+            collection.clear();
+          } else {
+            collection.set((Collection<Object>) value);
+          }
           break;
 
         default:
@@ -500,6 +505,9 @@ public class ApiObjectRef {
       // the properties.
       result = new ObjectChange(path, ChangeState.NEW);
       currentState = ChangeState.NOP;
+    } else if (currentState == ChangeState.DELETED) {
+      result = new ObjectChange(path, ChangeState.DELETED);
+      currentState = ChangeState.NOP;
     }
     for (PropertyEntry entry : properties.values()) {
       switch (entry.getMeta().getKind()) {
@@ -534,12 +542,18 @@ public class ApiObjectRef {
               result.getReferences().add(
                   new ReferenceChange(path, entry.getMeta().getName(), refChange));
 
+              ObjectChangeSimple objectChange =
+                  new ObjectChangeSimple(ref.getPath(), refChange.getOperation(),
+                      refChange.getOperation() == ChangeState.DELETED ? null : ref.getObject());
               result.getReferencedObjects()
-                  .add(new ReferencedObjectChange(path, entry.getMeta().getName(),
-                      new ObjectChangeSimple(ref.getPath(), refChange.getOperation(),
-                          ref.getObject())));
+                  .add(new ReferencedObjectChange(path, entry.getMeta().getName(), objectChange));
+
+              if (refChange.getOperation() == ChangeState.DELETED) {
+                entry.setReference(null);
+              }
             }
           }
+          // }
           break;
 
         default:
