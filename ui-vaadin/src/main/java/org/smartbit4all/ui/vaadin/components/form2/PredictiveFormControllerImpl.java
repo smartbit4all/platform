@@ -167,8 +167,8 @@ public class PredictiveFormControllerImpl implements PredictiveFormController {
   // TODO this could be improved, some of this functionality should be in FormUtil
   public void deleteWidgetInstance(WidgetInstance instance) {
     PredictiveInputGraphNode node = util.getNode(util.getDescriptor(instance.getDescriptorUri()));
+    PredictiveInputGraphNode parentNode = util.getNode(node.getParent());
     WidgetInstance parentInstance = util.getParentInstance(instance);
-    
     
     if (parentInstance != null) {
       parentInstance.getWidgets().remove(instance);
@@ -176,13 +176,14 @@ public class PredictiveFormControllerImpl implements PredictiveFormController {
       predictiveFormInstance.getVisibleWidgets().remove(instance);
     }
     
+    deleteContainedWidgets(instance);
     if (node.getChildren() != null && !node.getChildren().isEmpty()) {
-      for (PredictiveInputGraphNode n : node.getChildren()) {
-        WidgetInstance instanceToDelete = util.getInstance(n.getDescriptorUri());
-        deleteWidgetInstance(instanceToDelete);
+      if (parentNode != null) {
+        predictiveFormInstance.setActiveNode(parentNode);
+      } else {
+        predictiveFormInstance.setActiveNode(predictiveFormInstance.getGraph().getRootNodes().get(0));
       }
     }
-    util.removeWidgetInstanceFromMappings(instance);
     ui.renderWidgets();
     
   }
@@ -193,6 +194,6 @@ public class PredictiveFormControllerImpl implements PredictiveFormController {
         deleteContainedWidgets(wi);
       }
     }
-    util.getParentInstance(instance).getWidgets().remove(instance);
+    util.removeWidgetInstanceFromMappings(instance);
   }
 }
