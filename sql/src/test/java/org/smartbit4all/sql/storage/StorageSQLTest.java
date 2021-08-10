@@ -1,5 +1,7 @@
 package org.smartbit4all.sql.storage;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
@@ -19,8 +21,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.jdbc.Sql;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @SpringBootTest(classes = {
     StorageSQLTestConfig.class,
@@ -61,7 +61,7 @@ class StorageSQLTest {
   void saveLoadDeleteTest() throws Exception {
     URI uri = URI.create("teststoragefs:/testfolder/testfile.fs");
 
-    StorageSQL<String> storageFS = new StorageSQL<>(
+    StorageSQL<String> storageSQL = new StorageSQL<>(
         testSearchDef,
         testSearchDef.key(),
         testSearchDef.content(),
@@ -69,12 +69,16 @@ class StorageSQLTest {
         new GsonBinaryDataObjectSerializer(),
         String.class);
 
-    saveAndCheckLoad(uri, storageFS, "test string1");
-    saveAndCheckLoad(uri, storageFS, "test string2");
-
-    storageFS.delete(uri);
-
-    Optional<String> loaded = storageFS.load(uri);
+    saveAndCheckLoad(uri, storageSQL, "test string1");
+    assertEquals(1, storageSQL.loadAll().size());
+    
+    saveAndCheckLoad(uri, storageSQL, "test string2");
+    assertEquals(1, storageSQL.loadAll().size());
+    
+    storageSQL.delete(uri);
+    assertEquals(0, storageSQL.loadAll().size());
+    
+    Optional<String> loaded = storageSQL.load(uri);
     assertFalse(loaded.isPresent());
   }
 
@@ -121,7 +125,7 @@ class StorageSQLTest {
         new GsonBinaryDataObjectSerializer(),
         TestData.class);
 
-    StorageIndexSQL indexApi = new StorageIndexSQL();
+    StorageIndexSQL<TestData> indexApi = new StorageIndexSQL<>();
 
     StorageIndexField<TestData, String> stateIndex =
         createStateIndexField(testSearchDef, activeList, closedList, indexApi);
@@ -155,8 +159,13 @@ class StorageSQLTest {
         Arrays.asList(storageIndex));
 
     objectStorage.save(tdActive1);
+    assertEquals(1, objectStorage.loadAll().size());
+    
     objectStorage.save(tdClose);
+    assertEquals(2, objectStorage.loadAll().size());
+    
     objectStorage.save(tdUndefined);
+    assertEquals(3, objectStorage.loadAll().size());
 
     Expression activeExpression = testSearchDef.state().eq(activeList);
     Expression closedExpression = testSearchDef.state().eq(closedList);
@@ -189,7 +198,7 @@ class StorageSQLTest {
   private StorageIndexField<TestData, Boolean> createIsActiveIndexField(
       TestSearchDef testSearchDef,
       String activeList,
-      StorageIndexer indexApi) {
+      StorageIndexer<TestData> indexApi) {
 
     Function<TestData, Optional<Boolean>> isActiveCalculator = (testData) -> {
 
@@ -214,7 +223,7 @@ class StorageSQLTest {
   private StorageIndexField<TestData, String> createEmptyStateIndexField(
       TestSearchDef testSearchDef,
       String activeList, String closedList, String notInAnyState,
-      StorageIndexer indexApi) {
+      StorageIndexer<TestData> indexApi) {
 
     Function<TestData, Optional<String>> emptyStateCalculator = (testData) -> {
 
@@ -239,7 +248,7 @@ class StorageSQLTest {
   private StorageIndexField<TestData, String> createStateIndexField(
       TestSearchDef testSearchDef,
       String activeList, String closedList,
-      StorageIndexer indexApi) {
+      StorageIndexer<TestData> indexApi) {
 
     Function<TestData, Optional<String>> stateCalculator = (testData) -> {
 

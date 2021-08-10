@@ -38,6 +38,13 @@ public class StorageClassPath<T> implements ObjectStorage<T> {
     return null;
   }
 
+
+  @Override
+  public List<T> loadAll() throws Exception {
+    throw new UnsupportedOperationException(
+        "Unable to load all objects from the class path.");
+  }
+  
   @Override
   public List<T> load(List<URI> uris) throws Exception {
     if (uris == null || uris.isEmpty()) {

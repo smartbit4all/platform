@@ -90,6 +90,27 @@ public class StorageSQL<T> implements ObjectStorage<T> {
   }
 
   @Override
+  public List<T> loadAll() throws Exception {
+    TableData<EntityDefinition> allDatasTable = Crud.read(entityDef)
+        .select(getContentField())
+        .listData();
+    
+    if(allDatasTable.isEmpty()) {
+      return Collections.emptyList();
+    }
+    
+    List<T> datas = new ArrayList<>();
+    for (DataRow row : allDatasTable.rows()) {
+      Optional<T> data = loadBinaryDataFromRow(row);
+      if(data.isPresent()) {
+        datas.add(data.get());
+      }
+    }
+    
+    return datas;
+  }
+  
+  @Override
   public Optional<T> load(URI uri) throws Exception {
     Optional<DataRow> row = Crud.read(entityDef)
         .select(getContentField())
@@ -97,8 +118,7 @@ public class StorageSQL<T> implements ObjectStorage<T> {
         .firstRow();
 
     if (row.isPresent()) {
-      BinaryData content = row.get().get(getContentField());
-      return serializer.fromJsonBinaryData(content, clazz);
+      return loadBinaryDataFromRow(row.get());
     }
 
     return Optional.empty();
@@ -144,6 +164,11 @@ public class StorageSQL<T> implements ObjectStorage<T> {
     return false;
   }
 
+  private Optional<T> loadBinaryDataFromRow(DataRow row) {
+    BinaryData content = row.get(getContentField());
+    return serializer.fromJsonBinaryData(content, clazz);
+  }
+  
   @SuppressWarnings("unchecked")
   private Property<URI> getKey() {
     if (key != null) {

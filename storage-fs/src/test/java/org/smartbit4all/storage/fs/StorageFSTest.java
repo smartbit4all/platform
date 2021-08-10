@@ -31,6 +31,8 @@ import org.springframework.context.annotation.Bean;
 
 class StorageFSTest {
 
+  public static final String OBJECT_FILE_EXTENSION = "fs";
+
   public static class TestData {
 
     private URI uri;
@@ -104,19 +106,20 @@ class StorageFSTest {
     String notInAnyState = "notinanystate";
 
     TestData tdActive1 = new TestData();
-    tdActive1.setUri(URI.create("teststoragefs:/td1/" + activeList + ".fs"));
+    tdActive1.setUri(URI.create("teststoragefs:/td1/" + activeList + "." + OBJECT_FILE_EXTENSION));
     tdActive1.setData(activeList);
 
     TestData tdActive2 = new TestData();
-    tdActive2.setUri(URI.create("teststoragefs:/td1/" + activeList + "2.fs"));
+    tdActive2.setUri(URI.create("teststoragefs:/td1/" + activeList + "2." + OBJECT_FILE_EXTENSION));
     tdActive2.setData(activeList);
 
     TestData tdClose = new TestData();
-    tdClose.setUri(URI.create("teststoragefs:/td2/" + closedList + ".fs"));
+    tdClose.setUri(URI.create("teststoragefs:/td2/" + closedList + "." + OBJECT_FILE_EXTENSION));
     tdClose.setData(closedList);
 
     TestData tdUndefined = new TestData();
-    tdUndefined.setUri(URI.create("teststoragefs:/td2/" + undefinedList + ".fs"));
+    tdUndefined
+        .setUri(URI.create("teststoragefs:/td2/" + undefinedList + "." + OBJECT_FILE_EXTENSION));
     tdUndefined.setData(undefinedList);
 
     Function<TestData, URI> uriProvider = (testData) -> testData.getUri();
@@ -125,7 +128,8 @@ class StorageFSTest {
         testFsRootFolder(),
         uriProvider,
         new GsonBinaryDataObjectSerializer(),
-        TestData.class);
+        TestData.class,
+        OBJECT_FILE_EXTENSION);
 
     StorageIndexSimpleFS<TestData> indexApi = new StorageIndexSimpleFS<>(
         testFsRootFolder(),
@@ -163,8 +167,13 @@ class StorageFSTest {
         Arrays.asList(storageIndex));
 
     objectStorage.save(tdActive1);
+    assertEquals(1, objectStorage.loadAll().size());
+
     objectStorage.save(tdClose);
+    assertEquals(2, objectStorage.loadAll().size());
+
     objectStorage.save(tdUndefined);
+    assertEquals(3, objectStorage.loadAll().size());
 
     Expression activeExpression = testSearchDef.state().eq(activeList);
     Expression closedExpression = testSearchDef.state().eq(closedList);

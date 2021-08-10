@@ -83,6 +83,23 @@ public class Storage<T> implements ObjectStorage<T> {
     return storage.delete(uri);
   }
 
+
+  @Override
+  public List<T> loadAll() throws Exception {
+    return storage.loadAll();
+  }
+  
+  /**
+   * List all data objects.
+   * Warning: can be high amount of data in the result, use carefully! 
+   *   
+   * @return All objects stored with the type T
+   * @throws Exception 
+   */
+  public List<T> listAllDatas() throws Exception {
+    return loadAll();
+  }
+  
   /**
    * List the datas which fulfill the criteria of the given expression. The expression must only
    * contains properties of the given entity definition!

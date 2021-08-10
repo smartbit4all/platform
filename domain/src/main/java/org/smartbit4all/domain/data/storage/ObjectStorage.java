@@ -32,7 +32,15 @@ public interface ObjectStorage<T> {
    * Load the objects with the given URI.
    */
   public List<T> load(List<URI> uris) throws Exception;
-
+  
+  /**
+   * List all data objects.
+   * Warning: can be high amount of data in the result, use carefully! 
+   *   
+   * @return All objects stored with the type T
+   */
+  public List<T> loadAll() throws Exception;
+  
   /**
    * Delete the data with the given URI.
    */
