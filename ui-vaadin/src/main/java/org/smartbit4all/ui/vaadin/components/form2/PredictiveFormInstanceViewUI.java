@@ -219,10 +219,6 @@ public class PredictiveFormInstanceViewUI extends FlexLayout implements Predicti
       WidgetDescriptor descriptor) {
     WidgetDialogUtil.openValueDialog(widgetType, instance, descriptor, this, controller);
   }
-
-  private String getValueFromWidgetInstance(WidgetInstance instance, WidgetType widgetType) {
-    return WidgetDialogUtil.getValueFromWidgetInstance(instance, widgetType);
-  }
   
   private FlexLayout getValueLayoutFromWidgetInstance(WidgetInstance instance, WidgetType widgetType) {
     return WidgetDialogUtil.getValueLayoutFromWidgetInstance(instance, widgetType);
