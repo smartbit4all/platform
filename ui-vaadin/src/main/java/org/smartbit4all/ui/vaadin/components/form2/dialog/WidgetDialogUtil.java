@@ -12,6 +12,7 @@ import org.smartbit4all.ui.vaadin.components.form2.PredictiveFormInstanceViewUI;
 import org.smartbit4all.ui.vaadin.util.Notifications;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
@@ -89,8 +90,11 @@ public class WidgetDialogUtil {
     }
     dialog.open();
   }
-  
-  public static String getValueFromWidgetInstance(WidgetInstance instance, WidgetType widgetType) {
+
+  public static FlexLayout getValueLayoutFromWidgetInstance(WidgetInstance instance,
+      WidgetType widgetType) {
+    FlexLayout layout = new FlexLayout();
+    
     List<String> stringValues = instance.getStringValues();
     List<Double> doubleValues = instance.getDoubleValues();
     List<Integer> intValues = instance.getIntValues();
@@ -99,39 +103,47 @@ public class WidgetDialogUtil {
     switch (widgetType) {
       case TEXT:
         if (stringValues != null && stringValues.size() > 0) {
-          return stringValues.get(0);
+          layout.add(new Label(stringValues.get(0)));
         }
+        break;
       case TEXT_INTERVAL:
         if (stringValues.size() > 1) {
-          return stringValues.get(0) + " : " + stringValues.get(1);
+          layout.add(new Label(stringValues.get(0) + " : " + stringValues.get(1)));
         } else if (stringValues.size() > 0){
-          return stringValues.get(0);
+          layout.add(new Label(stringValues.get(0)));
         }
+        break;
       case NUMBER:
         if (doubleValues.size() > 0) {
-          return doubleValues.get(0).toString();
+          layout.add(new Label(doubleValues.get(0).toString()));
         }
+        break;
       case INTEGER:
         if (intValues.size() > 0) {
-          return intValues.get(0).toString();
+          layout.add(new Label(intValues.get(0).toString()));
         }
+        break;
       case COMBOBOX:
         if (stringValues != null && stringValues.size() > 0) {
-          return stringValues.get(0);
+          layout.add(new Label(stringValues.get(0)));
         }
+        break;
       case DATE:
         if (dateValues != null && dateValues.size() > 0) {
-          return dateValues.get(0).toString();
+          layout.add(new Label(dateValues.get(0).toString()));
         }
+        break;
       case DATE_INTERVAL:
         if (dateValues.size() > 1) {
-          return dateValues.get(0) + " : " + dateValues.get(1);
+          layout.add(new Label(dateValues.get(0) + " : " + dateValues.get(1)));
         } else if (dateValues.size() > 0){
-          return dateValues.get(0).toString();
+          layout.add(new Label(dateValues.get(0).toString()));
         }
+        break;
       default:
-        return null;
+        break;
     }
+    return layout;
   }
   
 }

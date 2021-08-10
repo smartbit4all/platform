@@ -60,6 +60,15 @@
 	color: var(--lumo-primary-text-color);
 }
 
+.visible-widget-view-value-layout {
+	margin-left: 10px;
+	margin-right: 10px;
+}
+
+.visible-widget-view-value-layout > label {
+	color: var(--lumo-primary-text-color);
+}
+
 .visible-widget-view-icon {
 	margin-left: 10px;
 	color: var(--lumo-primary-text-color);
