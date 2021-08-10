@@ -12,10 +12,12 @@ import org.smartbit4all.ui.api.form.model.WidgetInstance;
 
 public class FormUtil {
 
+  // TODO This class should have better and more relevant mappings, which would make the code cleaner
   private Map<URI, WidgetDescriptor> widgetDescriptorsByUris;
   private Map<URI, WidgetInstance> widgetInstancesByUris;
   private Map<URI, PredictiveInputGraphNode> nodesByUris;
   private Map<WidgetDescriptor, PredictiveInputGraphNode> nodesByDescriptors;
+  
   private EntityFormInstance entityFormInstance;
 
   public FormUtil(EntityFormInstance entityFormInstance) {
@@ -45,7 +47,7 @@ public class FormUtil {
 
   private void gatherNodesFromGraph(List<PredictiveInputGraphNode> rootNodes) {
     for (PredictiveInputGraphNode node : rootNodes) {
-      // TODO at this point dinamically assigned uris would be possible, 
+      // TODO at this point dynamically assigned uris would be possible, 
       // but right now we're working with the statically assigned uris
       nodesByUris.put(node.getUri(), node);
       if (node.getChildren() != null && !node.getChildren().isEmpty()) {
@@ -97,8 +99,15 @@ public class FormUtil {
     return nodesByDescriptors.get(descriptor);
   }
   
-  public void removeWidgetInstance(WidgetInstance instance) {
+  public void removeWidgetInstanceFromMappings(WidgetInstance instance) {
     widgetInstancesByUris.remove(instance.getDescriptorUri());
+  }
+  
+  public WidgetInstance getParentInstance(WidgetInstance instance) {
+    PredictiveInputGraphNode node = getNode(getDescriptor(instance.getDescriptorUri()));
+    PredictiveInputGraphNode parentNode = getNode(node.getParent());
+    WidgetInstance parentInstance = getInstance(parentNode.getDescriptorUri());
+    return parentInstance;
   }
 
 }

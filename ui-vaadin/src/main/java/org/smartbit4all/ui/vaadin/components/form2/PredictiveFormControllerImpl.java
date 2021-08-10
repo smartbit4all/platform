@@ -83,7 +83,7 @@ public class PredictiveFormControllerImpl implements PredictiveFormController {
 
     ui.renderWidgets();
   }
-  
+
   @Override
   public List<WidgetInstance> getVisibleWidgets() {
     return predictiveFormInstance.getVisibleWidgets();
@@ -112,18 +112,28 @@ public class PredictiveFormControllerImpl implements PredictiveFormController {
   }
 
   @Override
+  // TODO this could be improved by adding better, more relevant mappings to the FormUtil
+  // so the elements can be accessible easier
   public void addWidget(PredictiveInputGraphNode node) {
     WidgetDescriptor widgetDescriptor = util.getDescriptor(node);
-    if (widgetDescriptor.getWidgetType() == WidgetType.CONTAINER) {
+    WidgetType widgetType = widgetDescriptor.getWidgetType();
+    // only setting active node if it's a container, otherwise setting nodes would be counterproductive.
+    if (widgetType == WidgetType.CONTAINER) {
       predictiveFormInstance.setActiveNode(node);
     }
+    
     if (widgetDescriptor != null) {
       WidgetInstance widgetInstance = createWidgetInstanceFromDescriptor(widgetDescriptor);
-      ui.openValueDialog(widgetDescriptor.getWidgetType(), widgetInstance, widgetDescriptor);
+      // we don't want to open the dialog for containers immediately, as they don't hold any value!
+      if (WidgetType.CONTAINER != widgetType) {
+        ui.openValueDialog(widgetDescriptor.getWidgetType(), widgetInstance, widgetDescriptor);
+      }
       predictiveFormInstance.getAvailableWidgets()
           .removeIf(w -> w.getUri().equals(node.getDescriptorUri()));
+      
       WidgetInstance parentWidgetInstance =
           util.getInstance(util.getNode(node.getParent()).getDescriptorUri());
+      
       if (parentWidgetInstance != null) {
         parentWidgetInstance.addWidgetsItem(widgetInstance);
         util.addInstanceByUri(widgetInstance.getDescriptorUri(), widgetInstance);
@@ -131,6 +141,7 @@ public class PredictiveFormControllerImpl implements PredictiveFormController {
         predictiveFormInstance.addVisibleWidgetsItem(widgetInstance);
         util.addInstanceByUri(widgetInstance.getDescriptorUri(), widgetInstance);
       }
+      
       predictiveFormInstance.getAvailableWidgets()
           .removeIf(w -> w.getUri().equals(node.getDescriptorUri()));
     }
@@ -148,16 +159,40 @@ public class PredictiveFormControllerImpl implements PredictiveFormController {
 
   @Override
   public boolean isWidgetSelected(WidgetInstance instance) {
-    return predictiveFormInstance.getActiveNode().getDescriptorUri().equals(instance.getDescriptorUri());
+    return predictiveFormInstance.getActiveNode().getDescriptorUri()
+        .equals(instance.getDescriptorUri());
   }
 
   @Override
+  // TODO this could be improved, some of this functionality should be in FormUtil
   public void deleteWidgetInstance(WidgetInstance instance) {
     PredictiveInputGraphNode node = util.getNode(util.getDescriptor(instance.getDescriptorUri()));
-    PredictiveInputGraphNode parentNode = util.getNode(node.getParent());
-    WidgetInstance parentInstance = util.getInstance(parentNode.getDescriptorUri());
-    parentInstance.getWidgets().remove(instance);
-    util.removeWidgetInstance(instance);
+    WidgetInstance parentInstance = util.getParentInstance(instance);
+    
+    
+    if (parentInstance != null) {
+      parentInstance.getWidgets().remove(instance);
+    } else {
+      predictiveFormInstance.getVisibleWidgets().remove(instance);
+    }
+    
+    if (node.getChildren() != null && !node.getChildren().isEmpty()) {
+      for (PredictiveInputGraphNode n : node.getChildren()) {
+        WidgetInstance instanceToDelete = util.getInstance(n.getDescriptorUri());
+        deleteWidgetInstance(instanceToDelete);
+      }
+    }
+    util.removeWidgetInstanceFromMappings(instance);
     ui.renderWidgets();
+    
+  }
+  
+  private void deleteContainedWidgets(WidgetInstance instance) {
+    if (instance.getWidgets() != null && !instance.getWidgets().isEmpty()) {
+      for (WidgetInstance wi : instance.getWidgets()) {
+        deleteContainedWidgets(wi);
+      }
+    }
+    util.getParentInstance(instance).getWidgets().remove(instance);
   }
 }
