@@ -9,15 +9,16 @@
 	overflow: auto;
 	border: 1px solid;
 	width: 100%;
-	height: 70%;
+	height: 65%;
 }
 
 .lower-layout {
+	flex-direction: column;
 	flex-shrink: 0;
 	overflow: auto;
 	border: 1px solid;
 	width: 100%;
-	height: 30%;
+	height: 35%;
 }
 
 .available-widgets-holder {
@@ -42,6 +43,11 @@
     margin: 5px;
     align-items: center;
     border: medium solid transparent;
+}
+
+.visible-widget-container-view {
+	background-color: var(--lumo-contrast-10pct);
+	flex-wrap: wrap;
 }
 
 .visible-widget-view-label {
