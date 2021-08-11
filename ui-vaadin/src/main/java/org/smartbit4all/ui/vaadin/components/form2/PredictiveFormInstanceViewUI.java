@@ -85,7 +85,7 @@ public class PredictiveFormInstanceViewUI extends FlexLayout implements Predicti
   private FlexLayout renderVisibleWidgetView(WidgetInstance instance) {
     WidgetDescriptor descriptor = controller.getWidgetDescriptor(instance.getDescriptorUri());
     boolean isWidgetSelected = controller.isWidgetSelected(instance);
-
+    
     if (descriptor.getWidgetType() == WidgetType.CONTAINER) {
       return createVisibleWidgetContainerView(instance, descriptor, isWidgetSelected);
     } else {
@@ -97,6 +97,11 @@ public class PredictiveFormInstanceViewUI extends FlexLayout implements Predicti
       WidgetDescriptor descriptor, boolean isWidgetSelected) {
     FlexLayout containerLayout = new FlexLayout();
     containerLayout.setClassName("visible-widget-container-view");
+    
+    if (isWidgetSelected) {
+      containerLayout.addClassName("selected-widget-container-view");
+    }
+    
     containerLayout.add(createVisibleWidgetView(descriptor, instance, isWidgetSelected));
     if (instance.getWidgets() != null) {
       for (WidgetInstance wi : instance.getWidgets()) {
@@ -120,10 +125,6 @@ public class PredictiveFormInstanceViewUI extends FlexLayout implements Predicti
 
     Label label = new Label(descriptor.getLabel());
     label.setClassName("visible-widget-view-label");
-
-//    String value = getValueFromWidgetInstance(instance, descriptor.getWidgetType());
-//    Label valueLabel = new Label(value);
-//    valueLabel.setClassName("visible-widget-view-value-label");
     
     FlexLayout valueLayout = getValueLayoutFromWidgetInstance(instance, descriptor.getWidgetType());
     valueLayout.setClassName("visible-widget-view-value-layout");
@@ -139,7 +140,7 @@ public class PredictiveFormInstanceViewUI extends FlexLayout implements Predicti
       openValueDialog(descriptor.getWidgetType(), instance, descriptor);
     });
 
-    layout.add(icon, label, /*valueLabel*/valueLayout, editButton);
+    layout.add(icon, label, valueLayout, editButton);
     return layout;
   }
 
