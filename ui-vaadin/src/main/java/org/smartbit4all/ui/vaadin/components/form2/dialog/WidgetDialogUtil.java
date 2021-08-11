@@ -130,14 +130,14 @@ public class WidgetDialogUtil {
         break;
       case DATE:
         if (dateValues != null && dateValues.size() > 0) {
-          layout.add(new Label(dateValues.get(0).toString()));
+          layout.add(new Label(dateValues.get(0).toLocalDate().toString()));
         }
         break;
       case DATE_INTERVAL:
         if (dateValues.size() > 1) {
-          layout.add(new Label(dateValues.get(0) + " : " + dateValues.get(1)));
+          layout.add(new Label(dateValues.get(0).toLocalDate() + " : " + dateValues.get(1).toLocalDate()));
         } else if (dateValues.size() > 0){
-          layout.add(new Label(dateValues.get(0).toString()));
+          layout.add(new Label(dateValues.get(0).toLocalDate().toString()));
         }
         break;
       default:

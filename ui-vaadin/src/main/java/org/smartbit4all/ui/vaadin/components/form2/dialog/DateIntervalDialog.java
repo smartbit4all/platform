@@ -4,7 +4,7 @@ import org.smartbit4all.ui.api.form.model.WidgetDescriptor;
 import org.smartbit4all.ui.api.form.model.WidgetInstance;
 import org.smartbit4all.ui.common.form2.impl.PredictiveFormController;
 import org.smartbit4all.ui.vaadin.components.form2.PredictiveFormInstanceViewUI;
-import com.vaadin.flow.component.datetimepicker.DateTimePicker;
+import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
@@ -19,40 +19,40 @@ public class DateIntervalDialog extends Dialog{
     
     Label titleLabel = new Label(descriptor.getLabel());
     
-    DateTimePicker dtValue1 = new DateTimePicker();
-    DateTimePicker dtValue2 = new DateTimePicker();
+    DatePicker dtValue1 = new DatePicker();
+    DatePicker dtValue2 = new DatePicker();
     FlexLayout valueLayout = new FlexLayout(dtValue1, dtValue2);
     
     Binder<WidgetInstance> binder = new Binder<>(WidgetInstance.class);
     binder.setBean(instance);
     binder.forField(dtValue1).bind(w -> {
       if (instance.getDateValues().size() > 0) {
-        return instance.getDateValues().get(0);
+        return instance.getDateValues().get(0).toLocalDate();
       } else {
         return null;
       }
     }, (w, v) -> {
       if (w.getDateValues().size() > 0) {
-        w.getDateValues().set(0, v);
+        w.getDateValues().set(0, v.atStartOfDay());
       } else {
-        w.addDateValuesItem(v);
+        w.addDateValuesItem(v.atStartOfDay());
       }
     });
     binder.forField(dtValue2).bind(w -> {
       if (instance.getDateValues().size() > 1) {
-        return instance.getDateValues().get(1);
+        return instance.getDateValues().get(1).toLocalDate();
       } else {
         return null;
       }
     }, (w, v) -> {
       if (w.getDateValues().size() > 1) {
-        w.getDateValues().set(1, v);
+        w.getDateValues().set(1, v.atStartOfDay());
       } else {
         if (w.getDateValues().size() > 0) {
-          w.getDateValues().add(v);
+          w.getDateValues().add(v.atStartOfDay());
         } else {
           w.getDateValues().add(null);
-          w.getDateValues().add(v);
+          w.getDateValues().add(v.atStartOfDay());
         }
       }
     });
