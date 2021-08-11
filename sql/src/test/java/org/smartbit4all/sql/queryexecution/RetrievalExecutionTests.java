@@ -1,12 +1,13 @@
 package org.smartbit4all.sql.queryexecution;
 
 import org.junit.jupiter.api.Test;
-import org.smartbit4all.domain.meta.AssociationDefinition;
 import org.smartbit4all.domain.service.query.QueryApi;
 import org.smartbit4all.domain.service.query.Retrieval;
 import org.smartbit4all.domain.service.query.RetrievalRequest;
+import org.smartbit4all.domain.service.query.RetrievalRequestNode;
 import org.smartbit4all.domain.utility.crud.Crud;
 import org.smartbit4all.sql.testmodel.AddressDef;
+import org.smartbit4all.sql.testmodel.PersonDef;
 import org.smartbit4all.sql.testmodel.TicketDef;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -25,6 +26,9 @@ public class RetrievalExecutionTests {
   private AddressDef addressDef;
 
   @Autowired
+  private PersonDef personDef;
+
+  @Autowired
   private TicketDef ticketDef;
 
   @Autowired
@@ -33,11 +37,17 @@ public class RetrievalExecutionTests {
   @Test
   public void twoQueriesFromDifferentDb() throws Exception {
     RetrievalRequest retrievalRequest = new RetrievalRequest();
-    AssociationDefinition assoc = new AssociationDefinition();
-    retrievalRequest.node(Crud.read(addressDef).selectAllProperties().input(),
-        addressDef.zip().eq("6000"));
-    Retrieval retrieval = queryApi.prepare(retrievalRequest);
+    RetrievalRequestNode addressNode =
+        retrievalRequest.node(Crud.read(addressDef).selectAllProperties().input(),
+            addressDef.zip().eq("6000"));
+    RetrievalRequestNode personNode =
+        retrievalRequest.node(Crud.read(personDef).selectAllProperties().input());
 
+    addressNode.edge(addressDef.getReference("person").association().getReferred(),
+        personNode);
+
+    Retrieval retrieval = queryApi.prepare(retrievalRequest);
+    queryApi.execute(retrieval);
   }
 
 }

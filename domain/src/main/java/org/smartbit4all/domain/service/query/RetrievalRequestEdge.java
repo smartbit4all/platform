@@ -73,7 +73,7 @@ public final class RetrievalRequestEdge {
     return node;
   }
 
-  public final AssociationRole getNavigationRole() {
+  public final AssociationRole getRole() {
     return navigationRole;
   }
 

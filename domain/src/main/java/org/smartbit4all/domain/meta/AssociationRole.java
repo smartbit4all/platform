@@ -24,6 +24,11 @@ package org.smartbit4all.domain.meta;
 public final class AssociationRole {
 
   /**
+   * The unique name of the role inside the association.
+   */
+  private String name;
+
+  /**
    * The owner association.
    */
   private AssociationDefinition association;
@@ -39,26 +44,30 @@ public final class AssociationRole {
   private Multiplicity multiplicity;
 
   /**
-   * True if the role is easily accessible through the association.
-   */
-  private boolean navigable;
-
-  /**
    * If the {@link AssociationDefinition} is has an {@link AssociationKind#REFERENCE} kind then
-   * implementer {@link Reference} can be accessed from the role. This {@link Reference} belongs to
-   * the {@link #entity}.
+   * implementer {@link Reference} can be accessed from the role. We can have reference directly
+   * from one entity to another. In this case the association is based on the reference itself.
+   * Otherwise if we have an association entity then this is the reference from the association
+   * entity to the entity of the role.
    */
   private Reference<?, ?> reference;
 
-  AssociationRole(AssociationDefinition association, EntityDefinition entity,
+  /**
+   * True if the entity identified by the role is referred by the {@link #reference}. If this is the
+   * referrer the it's false.
+   */
+  private boolean referred = true;
+
+  AssociationRole(String name, AssociationDefinition association, EntityDefinition entity,
       Reference<?, ?> reference,
-      Multiplicity multiplicity, boolean navigable) {
+      Multiplicity multiplicity, boolean referred) {
     super();
+    this.name = name;
     this.association = association;
     this.entity = entity;
     this.reference = reference;
     this.multiplicity = multiplicity;
-    this.navigable = navigable;
+    this.referred = referred;
   }
 
   public final AssociationDefinition getAssociation() {
@@ -85,16 +94,16 @@ public final class AssociationRole {
     this.multiplicity = multiplicity;
   }
 
-  public final boolean isNavigable() {
-    return navigable;
-  }
-
-  final void setNavigable(boolean navigable) {
-    this.navigable = navigable;
-  }
-
   public final Reference<?, ?> getReference() {
     return reference;
+  }
+
+  public final String getName() {
+    return name;
+  }
+
+  public final boolean isReferred() {
+    return referred;
   }
 
 }

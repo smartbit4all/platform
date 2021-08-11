@@ -75,7 +75,8 @@ public class Queries implements InitializingBean {
         .addAll(inputToCopy.sortOrders.stream().map(SortOrderProperty::copy)
             .collect(Collectors.toList()));
     result.groupByProperties.addAll(inputToCopy.groupByProperties);
-    result.setLockRequest(inputToCopy.getLockRequest().copy());
+    result.setLockRequest(
+        inputToCopy.getLockRequest() == null ? null : inputToCopy.getLockRequest().copy());
     result.distinct = inputToCopy.distinct;
     result.entityDef = inputToCopy.entityDef;
     return result;

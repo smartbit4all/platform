@@ -14,13 +14,22 @@
  ******************************************************************************/
 package org.smartbit4all.domain.service.query;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * During the execution of the retrieval we must execute query rounds. This round consists of all
- * the parallel executable queries at the given state of the retrieval.
+ * the parallel executable queries at the given state of the retrieval. The results of the queries
+ * are merged into the existing results.
  * 
  * @author Peter Boros
  *
  */
 class RetrievalRound {
+
+  /**
+   * The queries to execute in the given round.
+   */
+  final Map<RetrievalNode, QueryInput> queries = new HashMap<>();
 
 }

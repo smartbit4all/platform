@@ -17,8 +17,8 @@ package org.smartbit4all.domain.service.query;
 /**
  * This API is responsible for executing query against the current application setup. In a simple
  * application there can a be an SQL level implementation. But in a complex application there can be
- * special contributions for executing a query object. A single {@link QueryRequest} is executed by the
- * {@link QueryExecutionApi} and this Api orchestrates these query executions.
+ * special contributions for executing a query object. A single {@link QueryRequest} is executed by
+ * the {@link QueryExecutionApi} and this Api orchestrates these query executions.
  * 
  * @author Peter Boros
  */
@@ -51,10 +51,20 @@ public interface QueryApi {
 
   /**
    * Executes a single query by the given input
+   * 
    * @param queryInput
    * @return the query output with a new TableData and a name matching the input
-   * @throws Exception 
+   * @throws Exception
    */
   QueryOutput execute(QueryInput queryInput) throws Exception;
+
+  /**
+   * Executes a single query by the given input
+   * 
+   * @param queryInput
+   * @return the query output with a new TableData and a name matching the input
+   * @throws Exception
+   */
+  Retrieval execute(Retrieval retrieval) throws Exception;
 
 }

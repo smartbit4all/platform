@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -45,46 +46,50 @@ public final class TableDatas {
   private TableDatas() {
     super();
   }
-  
+
   /**
    * Appends the otherTableDatas to the baseTableData. When a column is missing from the base, it
    * will be added.
    * 
    * @param baseTableData the target table data which will be extended
    * @param otherTableDatas the TableDatas which will be added to the base
+   * @return The newly created rows of the baseTableData.
    */
-  public static void append(TableData<?> baseTableData, TableData<?>... otherTableDatas) {
+  public static List<DataRow> append(TableData<?> baseTableData, TableData<?>... otherTableDatas) {
     Objects.requireNonNull(otherTableDatas, "otherTableDatas can not be null!");
-    for(TableData<?> otherTableData : otherTableDatas) {
+    List<DataRow> results = new ArrayList<>();
+    for (TableData<?> otherTableData : otherTableDatas) {
       Objects.requireNonNull(otherTableData, "otherTableData can not be null!");
       Map<DataColumn<?>, DataColumn<?>> colMap = new HashMap<>();
-      for(DataColumn<?> col: otherTableData.columns()) {
+      for (DataColumn<?> col : otherTableData.columns()) {
         Property<?> property = col.getProperty();
         DataColumn<?> baseCol = baseTableData.getColumn(property);
-        if(baseCol == null) {
+        if (baseCol == null) {
           baseCol = baseTableData.addColumnOwn(property);
         }
         colMap.put(col, baseCol);
       }
-      if(colMap.isEmpty()) {
+      if (colMap.isEmpty()) {
         continue;
       }
-      for(DataRow row : otherTableData.rows()) {
+      for (DataRow row : otherTableData.rows()) {
         DataRow newRow = baseTableData.addRow();
-        for(Entry<DataColumn<?>, DataColumn<?>> entry : colMap.entrySet()) {
+        results.add(newRow);
+        for (Entry<DataColumn<?>, DataColumn<?>> entry : colMap.entrySet()) {
           newRow.setObject(entry.getValue(), entry.getKey().getValue(row));
         }
       }
     }
+    return results;
   }
-  
+
   public static TableData<?> merge(PropertySet keyProperties,
       TableData<?> baseTableData, TableData<?>... otherTableDatas) {
     // TODO implement merge
     throw new UnsupportedOperationException("Not implemented");
   }
-  
-  public static  TableData<?> merge(TableData<?> baseTableData, TableData<?>... otherTableDatas) {
+
+  public static TableData<?> merge(TableData<?> baseTableData, TableData<?>... otherTableDatas) {
     // TODO implement merge
     throw new UnsupportedOperationException("Not implemented");
   }

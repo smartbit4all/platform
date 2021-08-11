@@ -85,4 +85,11 @@ public final class RetrievalRequestNode {
     return new RetrievalRequestEdge(node, associationRole);
   }
 
+  public final RetrievalRequestEdge edge(AssociationRole associationRole,
+      RetrievalRequestNode node) {
+    RetrievalRequestEdge requestEdge = new RetrievalRequestEdge(node, associationRole);
+    edges.put(requestEdge.getRole().getName(), requestEdge);
+    return requestEdge;
+  }
+
 }

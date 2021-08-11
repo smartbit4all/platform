@@ -14,7 +14,6 @@
  ******************************************************************************/
 package org.smartbit4all.domain.data;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -34,6 +33,7 @@ import org.smartbit4all.domain.security.AddressDef;
 import org.smartbit4all.domain.security.SecurityEntityConfiguration;
 import org.smartbit4all.domain.security.UserAccountDef;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Expression Evaluaton test
@@ -199,7 +199,7 @@ public class ExpressionEvaluationBasicFunctionality {
 
     ExpressionEvaluationPlan plan = ExpressionEvaluationPlan.of(tableData, null, expression);
     System.out.println(plan.toString());
-    
+
     List<DataRow> filteredRows = plan.execute(tableData.rows());
     // System.out.println(tableData.toString(filteredRows));
 
@@ -453,7 +453,7 @@ public class ExpressionEvaluationBasicFunctionality {
 
     assertEquals(new HashSet<>(Arrays.asList(row1, row2, row5, row7)), new HashSet<>(filteredRows));
   }
-  
+
   @Test
   void evaluationWithLoaderTest() {
     // Storage loader test
@@ -474,19 +474,97 @@ public class ExpressionEvaluationBasicFunctionality {
             .AND(
                 userAccountDef.lastname().eq("Keresztes")
                     .OR(userAccountDef.lastname().eq("Gipsz")).BRACKET())
-            .AND(userAccountDef.titleCode().eq("Dr.").OR(userAccountDef.titleCode().eq("Mr.").BRACKET()));
+            .AND(userAccountDef.titleCode().eq("Dr.")
+                .OR(userAccountDef.titleCode().eq("Mr.").BRACKET()));
 
     ExpressionEvaluationPlan planStorage = ExpressionEvaluationPlan.of(loader, jakabEq);
     List<DataRow> execute = planStorage.execute(Collections.emptyList());
     assertEquals(2, execute.size());
-    
+
     Expression oneEmptyOtherMatch =
         userAccountDef.firstname().eq("Cica")
             .AND(userAccountDef.titleCode().eq("Dr."));
-    
-    ExpressionEvaluationPlan planStorageOneEmptyOtherMatch = ExpressionEvaluationPlan.of(loader, oneEmptyOtherMatch);
-    List<DataRow> executeOneEmptyOtherMatch = planStorageOneEmptyOtherMatch.execute(Collections.emptyList());
+
+    ExpressionEvaluationPlan planStorageOneEmptyOtherMatch =
+        ExpressionEvaluationPlan.of(loader, oneEmptyOtherMatch);
+    List<DataRow> executeOneEmptyOtherMatch =
+        planStorageOneEmptyOtherMatch.execute(Collections.emptyList());
     assertEquals(0, executeOneEmptyOtherMatch.size());
   }
-  
+
+  @Test
+  void expressionManipulationTest() {
+    Expression expFluid =
+        userAccountDef.firstname().eq("Jakab")
+            .AND(
+                userAccountDef.lastname().eq("Keresztes")
+                    .OR(userAccountDef.lastname().eq("Gipsz")).BRACKET())
+            .AND(userAccountDef.titleCode().eq("Dr.")
+                .OR(userAccountDef.titleCode().eq("Mr.")).BRACKET());
+
+    Expression expConstructed = Expression.AND(userAccountDef.firstname().eq("Jakab"),
+        userAccountDef.lastname().eq("Keresztes")
+            .OR(userAccountDef.lastname().eq("Gipsz")).BRACKET(),
+        userAccountDef.titleCode().eq("Dr.").OR(userAccountDef.titleCode().eq("Mr.")).BRACKET());
+
+    assertEquals(expFluid.toString(), expConstructed.toString());
+  }
+
+  @Test
+  void expressionManipulationWithNullsTest() {
+    Expression expFluid =
+        userAccountDef.firstname().eq("Jakab")
+            .AND(
+                userAccountDef.lastname().eq("Keresztes")
+                    .OR(userAccountDef.lastname().eq("Gipsz")).BRACKET())
+            .AND(userAccountDef.titleCode().eq("Dr.")
+                .OR(userAccountDef.titleCode().eq("Mr.")).BRACKET());
+
+    Expression expConstructed = Expression.AND(null, userAccountDef.firstname().eq("Jakab"),
+        userAccountDef.lastname().eq("Keresztes")
+            .OR(userAccountDef.lastname().eq("Gipsz")).BRACKET(),
+        userAccountDef.titleCode().eq("Dr.").OR(userAccountDef.titleCode().eq("Mr.")).BRACKET(),
+        null);
+
+    assertEquals(expFluid.toString(), expConstructed.toString());
+  }
+
+  /**
+   * In the {@link Expression#AND(Expression...)} we need to add bracket around the OR expressions
+   * automatically.
+   */
+  @Test
+  void expressionManipulationWithAitomaticBracketTest() {
+    Expression expFluid =
+        userAccountDef.firstname().eq("Jakab")
+            .AND(
+                userAccountDef.lastname().eq("Keresztes")
+                    .OR(userAccountDef.lastname().eq("Gipsz")).BRACKET())
+            .AND(userAccountDef.titleCode().eq("Dr.")
+                .OR(userAccountDef.titleCode().eq("Mr.")).BRACKET());
+
+    Expression expConstructed = Expression.AND(null, userAccountDef.firstname().eq("Jakab"),
+        userAccountDef.lastname().eq("Keresztes")
+            .OR(userAccountDef.lastname().eq("Gipsz")),
+        userAccountDef.titleCode().eq("Dr.").OR(userAccountDef.titleCode().eq("Mr.")),
+        null);
+
+    assertEquals(expFluid.toString(), expConstructed.toString());
+  }
+
+  @Test
+  void expressionManipulationWithOneANDTest() {
+    Expression expFluid =
+        userAccountDef.firstname().eq("Jakab")
+            .AND(
+                userAccountDef.lastname().eq("Keresztes")
+                    .OR(userAccountDef.lastname().eq("Gipsz")).BRACKET())
+            .AND(userAccountDef.titleCode().eq("Dr.")
+                .OR(userAccountDef.titleCode().eq("Mr.")).BRACKET());
+
+    Expression expConstructed = Expression.AND(null, expFluid, null);
+
+    assertEquals(expFluid.toString(), expConstructed.toString());
+  }
+
 }
