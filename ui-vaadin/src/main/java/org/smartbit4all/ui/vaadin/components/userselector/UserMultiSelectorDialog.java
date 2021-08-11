@@ -17,7 +17,7 @@ public class UserMultiSelectorDialog extends UserSelectorDialog {
     this.userSelectorVM = userSelectorVM;
     createAndBindUI(SelectionMode.MULTI);
     addDialogCloseActionListener(closeEvent -> closeDialog());
-    save.addClickListener(saveEvent -> saveDialog());
+//    save.addClickListener(saveEvent -> saveDialog());
     userSelectorVM.init();
   }
 
@@ -38,15 +38,17 @@ public class UserMultiSelectorDialog extends UserSelectorDialog {
     }
   }
 
-  private void saveDialog() {
-    try {
-      List<String> urisAsText = grid.getSelectedItems().stream().map(UserSelector::getUri)
-          .map(URI::toString).collect(Collectors.toList());
-      userSelectorVM.executeCommand(UserMultiSelectorViewModel.SAVE_CMD,
-          urisAsText.toArray(new String[0]));
-      this.close();
-    } catch (Throwable e) {
-      e.printStackTrace();
-    }
-  }
+//  private void saveDialog() {
+//    try {
+//      List<String> urisAsText = grid.getSelectedItems().stream()
+//          .map(UserSelector::getUri)
+//          .map(URI::toString)
+//          .collect(Collectors.toList());
+//      userSelectorVM.executeCommand(UserMultiSelectorViewModel.SAVE_CMD,
+//          urisAsText.toArray(new String[0]));
+//      this.close();
+//    } catch (Throwable e) {
+//      e.printStackTrace();
+//    }
+//  }
 }

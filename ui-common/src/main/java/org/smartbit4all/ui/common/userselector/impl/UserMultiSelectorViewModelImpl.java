@@ -68,8 +68,8 @@ public class UserMultiSelectorViewModelImpl extends ObjectEditingImpl
     ApiObjectRef ref = new ApiObjectRef(null, commands, userSelectorDescriptor);
     commandObservable.setRef(ref);
     commandsWrapper = ref.getWrapper(UserSelectorCommands.class);
-    addCommand(UserMultiSelectorViewModel.CLOSE_CMD, this::closeSelector);
-    addCommand(UserMultiSelectorViewModel.SAVE_CMD, this::saveSelector);
+    addCommand(UserMultiSelectorViewModel.CLOSE_CMD, this::closeAndSaveSelector);
+//    addCommand(UserMultiSelectorViewModel.SAVE_CMD, this::saveSelector);
   }
 
   private void addCommand(String code, Consumer<String[]> commandMethod) {
@@ -77,14 +77,15 @@ public class UserMultiSelectorViewModelImpl extends ObjectEditingImpl
     commandMethodsByCode.put(code, commandMethod);
   }
 
-  private void closeSelector(String... params) {
-    userMultiSelectorWrapper.setIsSaving(false);
-  }
-
-  private void saveSelector(String... params) {
+  private void closeAndSaveSelector(String... params) {
     userMultiSelectorWrapper.setIsSaving(true);
     notifyAllListeners();
   }
+
+//  private void saveSelector(String... params) {
+//    userMultiSelectorWrapper.setIsSaving(true);
+//    notifyAllListeners();
+//  }
 
   @Override
   public void initUserMultiSelectors(List<URI> selected) {
