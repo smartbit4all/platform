@@ -1,5 +1,6 @@
 package org.smartbit4all.api.mimetype;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.smartbit4all.types.binarydata.BinaryData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,29 @@ public class ConverterApi {
 
   public ConverterApi() {}
 
+  public Converter get(String from, String to) {
+    if (from.equals(to)) {
+      return null;
+    }
+    
+    for(Converter converter : converters) {
+      if(converter.getFrom().equals(from) && converter.getTo().equals(to)) {
+        return converter;
+      }
+    }
+    return null;
+  }
+
+  public List<Converter> getAllFrom(String from) {
+    List<Converter> foundConverters = new ArrayList<>();
+    for(Converter converter : converters) {
+      if(converter.getFrom().equals(from)) {
+        foundConverters.add(converter);
+      }
+    }
+    return foundConverters;
+  }
+  
   public BinaryData convert(BinaryData content, String from, String to) {
     if (from.equals(to)) {
       return content;

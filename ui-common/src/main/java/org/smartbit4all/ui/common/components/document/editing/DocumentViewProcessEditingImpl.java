@@ -68,7 +68,7 @@ public class DocumentViewProcessEditingImpl extends ObjectEditingImpl
   public synchronized void setDocument(BinaryData document, URI uri, String mimeType) {
     MimeTypeHandler handler = mimeTypeApi.getHandler(mimeType);
     if (handler == null) {
-      showMessage("main.noinsight");
+      showMessage("Nem tartozik előnézet a kiválasztott dokumentum formátumhoz!");
     } else {
       processWrapper.setDisplayMode(handler.getDisplayMode());
       if (handler.getDisplayMode() == DisplayMode.TEXT) {
