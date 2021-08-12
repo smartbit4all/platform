@@ -1,0 +1,51 @@
+openapi: 3.0.1
+info:
+  title: Composite Object API
+  description: Composite Object API
+  termsOfService: ''
+  contact:
+    email: info@it4all.hu
+  version: 1.0.0
+tags:
+- name: CompositeObjectApi
+paths: {}
+components:
+  schemas:
+    CompositeObject:
+      type: object
+      required:
+      - uri
+      properties:
+        uri:
+          type: string
+          format: uri
+        objects:
+          type: array
+          items:
+            $ref: '#/components/schemas/ComposeableObject'
+    ComposeableObjectDef:
+      type: object
+      required:
+      - uri
+      properties:
+        uri:
+          type: string
+          format: uri
+        apiUri:
+          type: string
+          format: uri
+        name:
+          type: string
+          description: NavigationEntry name.
+        viewName:
+          type: string
+        icon:
+          type: string
+    ComposeableObject:
+      type: object
+      properties:
+        definition:
+          $ref: '#/components/schemas/ComposeableObjectDef'
+        objectUri:
+          type: string
+          format: uri
