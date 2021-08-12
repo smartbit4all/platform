@@ -34,7 +34,7 @@ public class Group   {
 
   @JsonProperty("children")
   @Valid
-  private List<URI> children = null;
+  private List<URI> children = new ArrayList<>();
 
   public Group uri(URI uri) {
     this.uri = uri;
@@ -130,7 +130,8 @@ public class Group   {
    * The uri of the parent group
    * @return parent
   */
-  @ApiModelProperty(value = "The uri of the parent group")
+  @ApiModelProperty(required = true, value = "The uri of the parent group")
+  @NotNull
 
   @Valid
 
@@ -148,9 +149,6 @@ public class Group   {
   }
 
   public Group addChildrenItem(URI childrenItem) {
-    if (this.children == null) {
-      this.children = new ArrayList<>();
-    }
     this.children.add(childrenItem);
     return this;
   }
@@ -159,7 +157,8 @@ public class Group   {
    * The uris of the child groups
    * @return children
   */
-  @ApiModelProperty(value = "The uris of the child groups")
+  @ApiModelProperty(required = true, value = "The uris of the child groups")
+  @NotNull
 
   @Valid
 

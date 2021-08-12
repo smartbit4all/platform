@@ -10,7 +10,6 @@ public interface SecurityGatewayService {
 
   /**
    * Authenticate with username and password.
-   * 
    * @param username
    * @param password
    * @return
@@ -19,7 +18,6 @@ public interface SecurityGatewayService {
 
   /**
    * Returns every security group.
-   * 
    * @return
    * @throws Exception
    */
@@ -27,7 +25,6 @@ public interface SecurityGatewayService {
 
   /**
    * Returns every security user.
-   * 
    * @return
    * @throws Exception
    */
@@ -35,7 +32,6 @@ public interface SecurityGatewayService {
 
   /**
    * Returns every user who is a member of the specified group.
-   * 
    * @param groupUri
    * @return
    * @throws Exception
@@ -44,7 +40,6 @@ public interface SecurityGatewayService {
 
   /**
    * Return which groups the user is member of.
-   * 
    * @param userUri
    * @return
    * @throws Exception
@@ -53,7 +48,6 @@ public interface SecurityGatewayService {
 
   /**
    * Get all information of a user.
-   * 
    * @param userUri
    * @return
    * @throws Exception
@@ -61,8 +55,94 @@ public interface SecurityGatewayService {
   User getUser(URI userUri);
 
 
+  /**
+   * Adds User to storage
+   * @param user
+   * @return
+   */
   User createUser(User user);
 
+  /**
+   * Creates Group and adds it to storage.
+   * @param groupName
+   * @param name
+   * @param description
+   * @param kind
+   * @param parent
+   * @param children
+   * @return
+   */
   Group createGroup(String groupName, String name, String description, URI kind, URI parent,
       List<URI> children);
+  
+  /**
+   * Creates Group and adds it to storage.
+   * @param group
+   * @return
+   */
+  Group createGroup(Group group);
+  
+  /**
+   * Binds user and group together by adding to usersOfGroup, and groupsOfUser storage.
+   * @param user
+   * @param group
+   */
+  void addUserToGroup(User user, Group group);
+  
+  
+  /**
+   * Delete user.
+   * 
+   * @param userUri
+   */
+  void removeUser(URI userUri);
+  
+  
+  /**
+   * Delete group.
+   * 
+   * @param groupUri
+   */
+  void removeGroup(URI groupUri);
+  
+  
+  /**
+   * Update user.
+   * 
+   * @param userUri
+   * @param user
+   * @return
+   */
+  User updateUser(URI userUri, User user);
+  //User updateUser(URI userUri, Map<Strin, String> propertyMap);
+  
+  /**
+   * Remove user from group.
+   * 
+   * @param user
+   * @param group
+   */
+  void removeUserFromGroup(User user, Group group);
+  
+  /**
+   * Remove user from group.
+   * 
+   * @param userUri
+   * @param groupUri
+   */
+  void removeUserFromGroup(URI userUri, URI groupUri);
+  
+  /**
+   * Add group as a child group.
+   * @param parentGroup
+   * @param childGroup
+   */
+  void addChildGroup(Group parentGroup, Group childGroup);
+
+  /**
+   * Get all information of a group.
+   * @param groupUri
+   * @return
+   */
+  Group getGroup(URI groupUri);
 }

@@ -18,12 +18,37 @@ import javax.validation.constraints.*;
  */
 
 public class GroupsOfUser   {
+  @JsonProperty("uri")
+  private URI uri;
+
   @JsonProperty("userUri")
   private URI userUri;
 
   @JsonProperty("groups")
   @Valid
   private List<Group> groups = new ArrayList<>();
+
+  public GroupsOfUser uri(URI uri) {
+    this.uri = uri;
+    return this;
+  }
+
+  /**
+   * Get uri
+   * @return uri
+  */
+  @ApiModelProperty(required = true, value = "")
+  @NotNull
+
+  @Valid
+
+  public URI getUri() {
+    return uri;
+  }
+
+  public void setUri(URI uri) {
+    this.uri = uri;
+  }
 
   public GroupsOfUser userUri(URI userUri) {
     this.userUri = userUri;
@@ -84,13 +109,14 @@ public class GroupsOfUser   {
       return false;
     }
     GroupsOfUser groupsOfUser = (GroupsOfUser) o;
-    return Objects.equals(this.userUri, groupsOfUser.userUri) &&
+    return Objects.equals(this.uri, groupsOfUser.uri) &&
+        Objects.equals(this.userUri, groupsOfUser.userUri) &&
         Objects.equals(this.groups, groupsOfUser.groups);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(userUri, groups);
+    return Objects.hash(uri, userUri, groups);
   }
 
   @Override
@@ -98,6 +124,7 @@ public class GroupsOfUser   {
     StringBuilder sb = new StringBuilder();
     sb.append("class GroupsOfUser {\n");
     
+    sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    userUri: ").append(toIndentedString(userUri)).append("\n");
     sb.append("    groups: ").append(toIndentedString(groups)).append("\n");
     sb.append("}");
