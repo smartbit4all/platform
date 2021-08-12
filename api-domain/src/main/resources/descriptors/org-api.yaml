@@ -164,7 +164,7 @@ components:
           description: 'The encripted password of the user'
     Group:
       type: object
-      required: [uri, name, kind]
+      required: [uri, name, kind, parent, children]
       properties:
         uri:
           type: string
@@ -192,8 +192,11 @@ components:
           description: 'The uris of the child groups'
     GroupsOfUser:
       type: object
-      required: [userUri, groups]
+      required: [uri, userUri, groups]
       properties:
+        uri:
+          type: string
+          format: uri
         userUri:
           type: string
           format: uri
@@ -203,8 +206,11 @@ components:
             $ref: '#/components/schemas/Group'
     UsersOfGroup:
       type: object
-      required: [groupUri, users]
+      required: [uri, groupUri, users]
       properties:
+        uri:
+          type: string
+          format: uri
         groupUri:
           type: string
           format: uri

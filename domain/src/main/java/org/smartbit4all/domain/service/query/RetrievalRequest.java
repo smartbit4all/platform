@@ -115,7 +115,7 @@ public class RetrievalRequest {
    * They must be named uniquely in this context. We can add new queries named manually but without
    * naming the Retrieval will name the query.
    */
-  private Map<String, RetrievalRequestNode> nodes = new HashMap<>();
+  Map<String, RetrievalRequestNode> nodes = new HashMap<>();
 
   public RetrievalRequestNode node(QueryInput queryInput, Expression startCondition) {
     RetrievalRequestNode result = new RetrievalRequestNode(this, queryInput, startCondition);

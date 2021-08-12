@@ -52,6 +52,11 @@ public class RetrievalNode {
    */
   final List<RetrievalEdge> navigableEdges = new ArrayList<>();
 
+  public RetrievalNode(RetrievalRequestNode requestNode) {
+    super();
+    this.requestNode = requestNode;
+  }
+
   /**
    * The queryCount store the number of query executions on the given node.
    */
@@ -77,8 +82,8 @@ public class RetrievalNode {
     return queryCount;
   }
 
-  final void setQueryCount(int queryCount) {
-    this.queryCount = queryCount;
+  final void incrementQueryCount() {
+    this.queryCount++;
   }
 
   /**

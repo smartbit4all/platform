@@ -10,6 +10,7 @@ import java.util.Optional;
 import org.smartbit4all.core.SB4CompositeFunction;
 import org.smartbit4all.core.SB4CompositeFunctionImpl;
 import org.smartbit4all.core.SB4Function;
+import org.smartbit4all.domain.data.TableDatas;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Expression;
 import org.smartbit4all.domain.meta.ExpressionExists;
@@ -170,8 +171,8 @@ public class QueryApiImpl implements QueryApi {
 
   @Override
   public Retrieval prepare(RetrievalRequest request) {
-    // TODO Auto-generated method stub
-    return null;
+    Retrieval retrieval = new Retrieval(request);
+    return retrieval;
   }
 
   @Override
@@ -179,17 +180,17 @@ public class QueryApiImpl implements QueryApi {
     QueryExecutionPlan executionPlan = prepare(queryInput);
     QueryResult queryResult = execute(executionPlan);
     List<QueryOutput> results = queryResult.getResults();
-    if(results == null || results.isEmpty()) {
-      // FIXME is null an acceptable return value here?  
+    if (results == null || results.isEmpty()) {
+      // FIXME is null an acceptable return value here?
       return null;
     }
-    
+
     return results.stream()
         .filter(r -> queryInput.getName().equals(r.getName()))
         .findAny()
         .orElse(null);
   }
-  
+
   private QueryOutput executeWithoutPrepare(QueryInput queryInput) throws Exception {
     return getExecutionApiForEntityDef(queryInput.entityDef).execute(queryInput);
   }
@@ -289,5 +290,30 @@ public class QueryApiImpl implements QueryApi {
       return this;
     }
 
+  }
+
+  @Override
+  public Retrieval execute(Retrieval retrieval) throws Exception {
+    RetrievalRound round = retrieval.next();
+    while (!round.queries.isEmpty()) {
+      round.queries.entrySet().parallelStream().forEach(e -> {
+        try {
+          QueryOutput queryOutput = execute(e.getValue());
+          if (e.getKey().getResult() == null) {
+            e.getKey().setResult(queryOutput.getTableData());
+            e.getKey().getNewRows().addAll(e.getKey().getResult().rows());
+          } else {
+            e.getKey().getNewRows()
+                .addAll(TableDatas.append(e.getKey().getResult(), queryOutput.getTableData()));
+          }
+          e.getKey().incrementQueryCount();
+        } catch (Exception e1) {
+          // TODO Auto-generated catch block
+          e1.printStackTrace();
+        }
+      });
+      round = retrieval.next();
+    }
+    return retrieval;
   }
 }

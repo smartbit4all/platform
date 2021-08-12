@@ -190,10 +190,11 @@ public class ApiObjectCollection implements List<ApiObjectRef> {
     if (!(o instanceof ApiObjectRef)) {
       return false;
     }
+    int index = items.indexOf(o);
     items.remove(o);
     ApiObjectRef apiObjectRef = (ApiObjectRef) o;
     removedObjects.add(apiObjectRef);
-    originalCollection.remove(apiObjectRef.getObject());
+    originalCollection.remove(index);
     return true;
   }
 
@@ -233,7 +234,7 @@ public class ApiObjectCollection implements List<ApiObjectRef> {
   public boolean removeByIdx(String idxPath) {
     for (ApiObjectRef item : items) {
       if (idxPath.equals(PathUtility.getLastPath(item.getPath()))) {
-        return removeObject(item.getObject());
+        return remove(item);
       }
     }
     return false;

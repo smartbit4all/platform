@@ -16,6 +16,7 @@ package org.smartbit4all.domain.meta;
 
 import java.util.Map;
 import org.smartbit4all.core.utility.ListBasedMap;
+import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.service.query.RetrievalRequest;
 
 /**
@@ -46,11 +47,63 @@ import org.smartbit4all.domain.service.query.RetrievalRequest;
  */
 public class AssociationDefinition {
 
+  /**
+   * The association can be referenced based where in the referrer object we store a pointer
+   * (reference) to the referred object. In this case the multiplicity is by definition one for the
+   * referred.
+   * 
+   * In case of {@link AssociationKind#ASSOCIATIONENTITY} we have an object to store the
+   * relationship between two or more objects. In this case we can ask for the association entity
+   * itself using its {@link Reference} towards the related entities. But we can skip this
+   * association entity and ask only the associated objects directly.
+   */
   private AssociationKind kind;
 
+  /**
+   * The roles of the association representing the edges of the association. There can two or more
+   * related entities identified by a symbolic name.
+   */
   private Map<String, AssociationRole> roles = new ListBasedMap<>();
 
+  /**
+   * If the association is implemented by an association entity then this is the definition.
+   */
   private EntityDefinition associationEntity;
+
+  /**
+   * If we have an {@link AssociationKind#REFERENCE} association then we can access the referrer
+   * directly from the association.
+   */
+  private AssociationRole referrer;
+
+  /**
+   * If we have an {@link AssociationKind#REFERENCE} association then we can access the referred
+   * directly from the association.
+   */
+  private AssociationRole referred;
+
+  /**
+   * Setup a new association based on the meta from a {@link Reference}. By definition every
+   * {@link Reference} is an association that can be navigated
+   * 
+   * @param reference
+   */
+  public AssociationDefinition(Reference<?, ?> reference) {
+    super();
+    this.kind = AssociationKind.REFERENCE;
+    referred =
+        new AssociationRole(reference.getName(), this, reference.getTarget(), reference,
+            reference.isMandatory() ? Multiplicity.ONE : Multiplicity.ZERO_OR_ONE, true);
+    // TODO Name the source direction of the reference! Use this for the role.
+    referrer =
+        new AssociationRole(
+            reference.getName() + StringConstant.DOT
+                + reference.getSource().getClass().getSimpleName(),
+            this, reference.getSource(), reference,
+            reference.isMandatory() ? Multiplicity.ONE : Multiplicity.ZERO_OR_ONE, false);
+    roles.put(referred.getName(), referred);
+    roles.put(referrer.getName(), referrer);
+  }
 
   /**
    * @return The kind of the given association.
@@ -79,6 +132,14 @@ public class AssociationDefinition {
    */
   public EntityDefinition getAssociationEntity() {
     return associationEntity;
+  }
+
+  public final AssociationRole getReferrer() {
+    return referrer;
+  }
+
+  public final AssociationRole getReferred() {
+    return referred;
   }
 
 }

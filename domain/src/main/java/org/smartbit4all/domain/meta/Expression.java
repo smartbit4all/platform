@@ -203,17 +203,37 @@ public abstract class Expression {
     if (expressions == null || expressions.length == 0) {
       return null;
     }
-    if (expressions.length == 1) {
-      return expressions[0];
+    Expression oneExpression = null;
+    int counter = 0;
+    for (int i = 0; i < expressions.length; i++) {
+      if (oneExpression == null) {
+        counter++;
+        if (expressions[i] != null) {
+          oneExpression = expressions[i];
+        }
+      } else {
+        if (expressions[i] != null) {
+          oneExpression = null;
+          break;
+        }
+      }
+    }
+    if (counter == 0) {
+      return null;
+    }
+    if (oneExpression != null) {
+      return oneExpression;
     }
     ExpressionClause result = createAndClause();
     for (int i = 0; i < expressions.length; i++) {
       Expression current = expressions[i];
-      if (current instanceof ExpressionClause
-          && ((ExpressionClause) current).getOperator() != BooleanOperator.AND) {
-        result.add(current.BRACKET());
-      } else {
-        result.add(current);
+      if (current != null) {
+        if (current instanceof ExpressionClause
+            && ((ExpressionClause) current).getOperator() != BooleanOperator.AND) {
+          result.add(current.BRACKET());
+        } else {
+          result.add(current);
+        }
       }
     }
     return result;

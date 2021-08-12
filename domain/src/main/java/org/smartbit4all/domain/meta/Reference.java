@@ -122,7 +122,8 @@ public class Reference<S extends EntityDefinition, T extends EntityDefinition> {
     }
 
     ExpressionIn<V> inMaster(Collection<? extends DataRow> rows) {
-      Set<V> values = rows.stream().map(row -> row.get(sourceProperty)).collect(Collectors.toSet());
+      Set<V> values = rows.stream().map(row -> row.get(sourceProperty)).filter(v -> v != null)
+          .collect(Collectors.toSet());
       return targetProperty.in(values);
     }
 
@@ -145,6 +146,11 @@ public class Reference<S extends EntityDefinition, T extends EntityDefinition> {
    * The join between the properties of the source and the target.
    */
   List<Join<?>> joins = new ArrayList<>();
+
+  /**
+   * The association defined by the reference itself.
+   */
+  private AssociationDefinition association = null;
 
   /**
    * Constructing a new reference between two entity.
@@ -318,6 +324,13 @@ public class Reference<S extends EntityDefinition, T extends EntityDefinition> {
 
   public URI getUri() {
     return uri;
+  }
+
+  public AssociationDefinition association() {
+    if (association == null) {
+      association = new AssociationDefinition(this);
+    }
+    return association;
   }
 
 }

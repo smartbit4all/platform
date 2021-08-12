@@ -26,8 +26,8 @@ import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
  * Here we set up two H2 databases. Both databases use the exists_schema.sql and exists_data_01.sql
  * scripts, but we drop the ADDRESSES table from db #1 and the TICKET table from db #2. </br>
  * After, we configure two QueryExecutionApi-s to use each database. </br>
- * Finally, we create a {@link QueryExecutorConfig} where we set up the AddressDef EntityDefinition 
- * to use the QueryExecutionApi #2 and the TicketDef to use the #1 so they connect to the fitting 
+ * Finally, we create a {@link QueryExecutorConfig} where we set up the AddressDef EntityDefinition
+ * to use the QueryExecutionApi #2 and the TicketDef to use the #1 so they connect to the fitting
  * databases (the ones that still contains the corresponding tables).
  *
  */
@@ -56,7 +56,7 @@ public class QueryExecutionTestConfig {
     dataSource.setPassword("");
     return dataSource;
   }
-  
+
   @Bean()
   public DataSource dataSource2() {
     DriverManagerDataSource dataSource = new DriverManagerDataSource();
@@ -73,17 +73,17 @@ public class QueryExecutionTestConfig {
   public JdbcTemplate dataConnection1(@Qualifier("dataSource1") DataSource dataSource) {
     return new JdbcTemplate(dataSource);
   }
-  
+
   @Bean
   public JdbcTemplate dataConnection2(@Qualifier("dataSource2") DataSource dataSource) {
     return new JdbcTemplate(dataSource);
   }
-  
+
   @Bean
   @Primary
   public DataSourceInitializer dataSourceInitializer1(
       @Qualifier("dataSource1") DataSource datasource) {
-    
+
     DataSourceInitializer dataSourceInitializer = new DataSourceInitializer();
     dataSourceInitializer.setDataSource(datasource);
 
@@ -93,20 +93,20 @@ public class QueryExecutionTestConfig {
         new ClassPathResource("script/exists_data_01.sql"),
         new ClassPathResource("script/exists_drop_address.sql"));
     dataSourceInitializer.setDatabasePopulator(resourceDatabasePopulator);
-    
+
     return dataSourceInitializer;
   }
 
   private static boolean hasBean2ndDbInitialized = false;
-  
+
   @Bean
   public DataSourceInitializer dataSourceInitializer2(
       @Qualifier("dataSource2") DataSource datasource) {
-    
+
     DataSourceInitializer dataSourceInitializer = new DataSourceInitializer();
     dataSourceInitializer.setDataSource(datasource);
-    
-    if(hasBean2ndDbInitialized) {
+
+    if (hasBean2ndDbInitialized) {
       return dataSourceInitializer;
     }
     hasBean2ndDbInitialized = true;
@@ -117,27 +117,31 @@ public class QueryExecutionTestConfig {
         new ClassPathResource("script/exists_data_01.sql"),
         new ClassPathResource("script/exists_drop_ticket.sql"));
     dataSourceInitializer.setDatabasePopulator(resourceDatabasePopulator);
-    
+
     return dataSourceInitializer;
   }
-  
+
   @Bean
   public SQLQueryExecutionApi queryExecutionApi1(
       @Qualifier("dataConnection1") JdbcTemplate jdbcTemplate) {
     return new SQLQueryExecutionApi(jdbcTemplate);
   }
-  
+
   @Bean
   public SQLQueryExecutionApi queryExecutionApi2(
       @Qualifier("dataConnection2") JdbcTemplate jdbcTemplate) {
     return new SQLQueryExecutionApi(jdbcTemplate);
   }
-  
+
   @Bean
   public QueryExecutorConfig executorConfig() {
     return QueryExecutorConfig.create()
-        .addExecutionApiForEntityUri(URI.create("entity://org.smartbit4all.sql.testmodel/ticketDef"), "queryExecutionApi1")
-        .addExecutionApiForEntityUri(URI.create("entity://org.smartbit4all.sql.testmodel/addressDef"), "queryExecutionApi2");
+        .addExecutionApiForEntityUri(
+            URI.create("entity://org.smartbit4all.sql.testmodel/ticketDef"), "queryExecutionApi1")
+        .addExecutionApiForEntityUri(
+            URI.create("entity://org.smartbit4all.sql.testmodel/personDef"), "queryExecutionApi1")
+        .addExecutionApiForEntityUri(
+            URI.create("entity://org.smartbit4all.sql.testmodel/addressDef"), "queryExecutionApi2");
   }
-  
+
 }
