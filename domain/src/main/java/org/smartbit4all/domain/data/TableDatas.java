@@ -56,7 +56,9 @@ public final class TableDatas {
    * @return The newly created rows of the baseTableData.
    */
   public static List<DataRow> append(TableData<?> baseTableData, TableData<?>... otherTableDatas) {
-    Objects.requireNonNull(otherTableDatas, "otherTableDatas can not be null!");
+    if(otherTableDatas == null) {
+      return Collections.emptyList();
+    }
     List<DataRow> results = new ArrayList<>();
     for (TableData<?> otherTableData : otherTableDatas) {
       Objects.requireNonNull(otherTableData, "otherTableData can not be null!");

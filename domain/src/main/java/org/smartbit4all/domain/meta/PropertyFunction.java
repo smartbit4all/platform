@@ -86,7 +86,7 @@ public final class PropertyFunction {
   public static final class Builder {
     
     // Starts with letter, max 30 characters, including numbers, $, # and underscore
-    private static final String REGEX_FUNCTIONNAME = "^[a-zA-Z][a-zA-Z0-9$#_]{0,29}$";
+    private static final String REGEX_FUNCTIONNAME = "^[a-zA-Z][a-zA-Z0-9$#_.]{0,29}$";
     
     // This regular expression validates whether there is any inline or block comment, basic sql statment, text block, statement break
     private static final String REGEX_PARAM = "[\\t\\r\\n]|(--[^\\r\\n]*)|(\\/\\*[\\w\\W]*?(?=\\*)\\*\\/)|('(''|[^'])*')|\\b(ALTER|CREATE|DELETE|DROP|EXEC(UTE){0,1}|INSERT( +INTO){0,1}|MERGE|SELECT|UPDATE|UNION( +ALL){0,1})\\b|(;)";
