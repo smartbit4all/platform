@@ -262,6 +262,10 @@ public class BinaryData {
     this.hash = hash;
   }
 
+  public byte[] getData() {
+    return data;
+  }
+
   public File getDataFile() {
     return dataFile;
   }
