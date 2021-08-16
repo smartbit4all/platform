@@ -6,4 +6,10 @@ dependencies {
 	api project(':api-domain')
 	api project(':domain')
 	implementation 'javax.validation:validation-api:2.0.1.Final'
+	
+	testImplementation('org.springframework.boot:spring-boot-starter-test:2.3.8.RELEASE') {
+		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+		exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+        exclude group: 'ch.qos.logback', module: 'logback-classic'
+	}
 }

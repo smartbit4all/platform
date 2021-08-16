@@ -1,0 +1,67 @@
+openapi: 3.0.1
+info:
+  title: invocation api
+  description: The invocation api is a generic possibility to call other apis.
+  termsOfService: ''
+  contact:
+    email: info@it4all.hu
+  version: 1.0.0
+tags:
+- name: Invocation
+paths:
+
+                
+  /nope:
+    post:
+      tags:
+      - Invocation
+      summary: Placeholder for generation
+      responses:
+        '200':
+          description: nope
+                
+components:
+  schemas:
+    InvocationRequest:
+      type: object
+      required: [uuid, parameters, apiClass, methodName, executionApi]
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          description: 'The unique identifier of the request.'
+        executionApi:
+          type: string
+          description: 'The name of the execution api. By default it is local.'
+          default: local 
+        apiClass: 
+          type: string
+          description: 'The fully qualified name of the api. In case of java it is the name of the class.'
+        innerApi:
+          type: string
+          description: 'If we have a contributed api collecting other apis then it is the identifier of the contributed api.'
+        methodName:
+          type: string
+          description: 'The name of the method to call'
+        parameters:
+          type: array
+          items:
+            $ref: '#/components/schemas/InvocationParameter'
+    InvocationParameter:
+      type: object
+      required: [type]
+      properties:
+        kind:
+          description: The type of the invocation parameter.
+          $ref: '#/components/schemas/InvocationParameterKind'
+        typeClass:
+          type: string
+          description: The fully qualified type class name of the parameter.
+        value:
+          type: string
+          description: 'The value of the property'
+    InvocationParameterKind:
+      type: string
+      enum: [
+          PRIMITIVE, OBJECTURI, OBJECTUUID
+        ]
