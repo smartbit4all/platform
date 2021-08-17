@@ -1,4 +1,5 @@
 dependencies {
+	api project(':core')
 	api project(':types')
 	implementation 'com.google.code.gson:gson:2.8.6'
 }

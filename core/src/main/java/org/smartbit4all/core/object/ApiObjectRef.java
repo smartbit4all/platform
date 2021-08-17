@@ -605,4 +605,20 @@ public class ApiObjectRef {
     return propertyList;
   }
 
+  @SuppressWarnings("unchecked")
+  public static <T> T unwrapObject(T object) {
+    Class<?> objectClass = object.getClass();
+    if (object instanceof Factory) {
+      Callback callback = ((Factory) object).getCallback(0);
+      if (callback instanceof ApiObjectRefInvocationHandler) {
+        ApiObjectRef ref = ((ApiObjectRefInvocationHandler) callback).getRef();
+        object = (T) ref.getObject();
+      } else {
+        throw new IllegalArgumentException(
+            "The object can't be processed as bean " + objectClass);
+      }
+    }
+    return object;
+  }
+
 }
