@@ -17,6 +17,7 @@ public class UserMultiSelectorDialog extends UserSelectorDialog {
     this.userSelectorVM = userSelectorVM;
     createAndBindUI(SelectionMode.MULTI);
     addDialogCloseActionListener(closeEvent -> closeDialog());
+    close.addClickListener(click -> closeDialog());
 //    save.addClickListener(saveEvent -> saveDialog());
     userSelectorVM.init();
   }

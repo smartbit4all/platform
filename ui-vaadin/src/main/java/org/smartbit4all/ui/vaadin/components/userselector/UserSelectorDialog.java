@@ -10,7 +10,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 public abstract class UserSelectorDialog extends Dialog {
   
   private VerticalLayout layout;
-  private Button close;
+  protected Button close;
 //  protected Button save;
   
   private String header;
