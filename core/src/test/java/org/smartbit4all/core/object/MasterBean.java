@@ -29,6 +29,11 @@ public class MasterBean {
     return counter;
   }
 
+  public MasterBean counter(long counter) {
+    this.counter = counter;
+    return this;
+  }
+
   public void setCounter(long counter) {
     this.counter = counter;
   }

@@ -180,22 +180,16 @@ public class ApiObjectsTest {
 
     MasterBean beanWrapper1 = bean1Ref.getWrapper(MasterBean.class);
 
-    beanWrapper1.setCounter(1);
-    beanWrapper1.setName("name by wrapper");
+    beanWrapper1.counter(1).setName("name by wrapper");
 
     beanWrapper1.setReferred(new ReferredBean());
 
     beanWrapper1.getReferred().setName("referred name by wrapper");
 
+    beanWrapper1.getReferred()
+        .addDetailsItem(new ReferredDetailBean())
+        .addDetailsItem(new ReferredDetailBean());
     List<ReferredDetailBean> details = beanWrapper1.getReferred().getDetails();
-    {
-      ReferredDetailBean referredDetailBean = new ReferredDetailBean();
-      details.add(referredDetailBean);
-    }
-    {
-      ReferredDetailBean referredDetailBean = new ReferredDetailBean();
-      details.add(referredDetailBean);
-    }
     {
       ReferredDetailBean referredDetailBean = new ReferredDetailBean();
       details.add(referredDetailBean);
@@ -254,12 +248,12 @@ public class ApiObjectsTest {
       {
         ReferredDetailBean detBean = new ReferredDetailBean();
         detBean.setName("refDetailName1");
-        refBean.getDetails().add(detBean);
+        refBean.addDetailsItem(detBean);
       }
       {
         ReferredDetailBean detBean = new ReferredDetailBean();
         detBean.setName("refDetailName2");
-        refBean.getDetails().add(detBean);
+        refBean.addDetailsItem(detBean);
       }
       bean1.setReferred(refBean);
     }
@@ -287,12 +281,12 @@ public class ApiObjectsTest {
       {
         ReferredDetailBean detBean = new ReferredDetailBean();
         detBean.setName("refDetailName1");
-        refBean.getDetails().add(detBean);
+        refBean.addDetailsItem(detBean);
       }
       {
         ReferredDetailBean detBean = new ReferredDetailBean();
         detBean.setName("refDetailName2");
-        refBean.getDetails().add(detBean);
+        refBean.addDetailsItem(detBean);
       }
       objRef.setValue("Referred", refBean);
     }

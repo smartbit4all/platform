@@ -7,7 +7,7 @@ public class ReferredBean {
 
   private String name;
 
-  private List<ReferredDetailBean> details = new ArrayList<>();
+  private List<ReferredDetailBean> details = null; // new ArrayList<>();
 
   public String getName() {
     return name;
@@ -25,6 +25,12 @@ public class ReferredBean {
     this.details = details;
   }
 
-
+  public ReferredBean addDetailsItem(ReferredDetailBean detailsItem) {
+    if (this.details == null) {
+      this.details = new ArrayList<>();
+    }
+    this.details.add(detailsItem);
+    return this;
+  }
 
 }

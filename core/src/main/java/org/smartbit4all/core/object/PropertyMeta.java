@@ -28,14 +28,25 @@ public class PropertyMeta {
   private String warning;
 
   /**
-   * The setter method for the given property.
+   * The getter method for the property (e.g <code>String getName()</code>).
+   */
+  private Method getter;
+
+  /**
+   * The setter method for the property (e.g. <code>void setName(String name)</code>).
    */
   private Method setter;
 
   /**
-   * The getter method for thge property.
+   * The fluid setter method for the property (eg. <code>Person name(String name)</code>).
    */
-  private Method getter;
+  private Method fluidSetter;
+
+  /**
+   * The fluid item adder method for the property (eg.
+   * <code>Person addAddressesItem(Address address)</code>).
+   */
+  private Method itemAdder;
 
   /**
    * The type of the property. We need this to transfer the value and identifies the
@@ -84,6 +95,14 @@ public class PropertyMeta {
     this.warning = warning;
   }
 
+  public final Method getGetter() {
+    return getter;
+  }
+
+  final void setGetter(Method getter) {
+    this.getter = getter;
+  }
+
   public final Method getSetter() {
     return setter;
   }
@@ -92,12 +111,20 @@ public class PropertyMeta {
     this.setter = setter;
   }
 
-  public final Method getGetter() {
-    return getter;
+  public Method getFluidSetter() {
+    return fluidSetter;
   }
 
-  final void setGetter(Method getter) {
-    this.getter = getter;
+  public void setFluidSetter(Method fluidSetter) {
+    this.fluidSetter = fluidSetter;
+  }
+
+  public Method getItemAdder() {
+    return itemAdder;
+  }
+
+  public void setItemAdder(Method itemAdder) {
+    this.itemAdder = itemAdder;
   }
 
   public final String getName() {

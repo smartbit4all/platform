@@ -156,10 +156,10 @@ public class ApiObjectRef {
       PropertyEntry entry =
           new PropertyEntry(path, propertyMeta);
       properties.put(propertyMeta.getName().toUpperCase(), entry);
-      propertiesByMethod.put(propertyMeta.getGetter(), entry);
-      if (propertyMeta.getSetter() != null) {
-        propertiesByMethod.put(propertyMeta.getSetter(), entry);
-      }
+      addMethodToEntry(propertyMeta.getGetter(), entry);
+      addMethodToEntry(propertyMeta.getSetter(), entry);
+      addMethodToEntry(propertyMeta.getFluidSetter(), entry);
+      addMethodToEntry(propertyMeta.getItemAdder(), entry);
       switch (propertyMeta.getKind()) {
         case VALUE:
           // If we have a non null value in the given property then we add a property changes from
@@ -196,6 +196,11 @@ public class ApiObjectRef {
     }
   }
 
+  private void addMethodToEntry(Method method, PropertyEntry entry) {
+    if (method != null) {
+      propertiesByMethod.put(method, entry);
+    }
+  }
 
   public String getPath() {
     return path;

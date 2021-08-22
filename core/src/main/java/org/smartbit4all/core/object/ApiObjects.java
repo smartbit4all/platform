@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 import org.smartbit4all.core.object.PropertyMeta.PropertyKind;
 import org.smartbit4all.core.utility.ReflectionUtility;
 import com.google.common.cache.Cache;
@@ -52,55 +51,67 @@ class ApiObjects {
 
       @Override
       public BeanMeta call() throws Exception {
-        Set<Method> methods = ReflectionUtility.allMethods(apiClass, m -> {
-          // We assume the methods with one parameter and void return value or the return value
-          // without any parameter.
-          return Modifier.isPublic(m.getModifiers()) && m.getParameterCount() < 2
-              && !m.getName().equals("getClass");
-        });
         BeanMeta meta = new BeanMeta(apiClass);
         ApiBeanDescriptor descriptor = descriptors.get(apiClass);
-        for (Method method : methods) {
-          // We assume only the get / set methods.
-          if (method.getName().startsWith(GET) || method.getName().startsWith(SET)) {
-            processMethod(apiClass, meta, method, descriptor);
-          }
-        }
-        // Clean up the invalid properties
-        List<String> invalidPropertyNames =
-            meta.getProperties().values().stream().filter(p -> p.getGetter() == null)
-                .map(PropertyMeta::getName).collect(Collectors.toList());
-        invalidPropertyNames.forEach(meta.getProperties()::remove);
+        Set<Method> allMethods = ReflectionUtility.allMethods(apiClass, null);
+        // process all getters == find all properties
+        allMethods.stream()
+            .filter(method -> Modifier.isPublic(method.getModifiers())
+                && method.getName().startsWith(GET)
+                && method.getParameterCount() == 0
+                && method.getReturnType() != null
+                && !Void.TYPE.equals(method.getReturnType())
+                && !method.getName().equals("getClass"))
+            .forEach(getter -> processGetterMethod(apiClass, meta, getter, descriptor));
+
+        // process all explicit setter
+        allMethods.stream()
+            .filter(method -> Modifier.isPublic(method.getModifiers())
+                && method.getName().startsWith(SET)
+                && method.getParameterCount() == 1
+                && Void.TYPE.equals(method.getReturnType()))
+            .forEach(setter -> processSetterMethod(setter, meta));
+
+        // process all fluid setters
+        allMethods.stream()
+            .filter(method -> Modifier.isPublic(method.getModifiers())
+                && method.getParameterCount() == 1
+                && apiClass.equals(method.getReturnType()))
+            .forEach(setter -> processFluidSetterMethod(setter, meta));
+
+        // process all list adders
+        allMethods.stream()
+            .filter(method -> Modifier.isPublic(method.getModifiers())
+                && method.getName().startsWith("add")
+                && method.getName().endsWith("Item")
+                && method.getParameterCount() == 1
+                && apiClass.equals(method.getReturnType()))
+            .forEach(setter -> processItemAdderMethod(setter, meta));
+
         return meta;
       }
 
     });
   }
 
-  private static final void processMethod(Class<?> apiClass, BeanMeta meta, Method method,
+  private static final void processGetterMethod(Class<?> apiClass, BeanMeta meta, Method method,
       ApiBeanDescriptor descriptor) {
-    String propertyName;
-    propertyName = method.getName().substring(3);
+    // create property
+    String propertyName = method.getName().substring(3);
     String propertyKey = propertyName.toUpperCase();
-    Class<?> propertyType;
-    boolean isGetter;
-    if (method.getParameterCount() == 0) {
-      propertyType = method.getReturnType();
-      isGetter = true;
-    } else {
-      propertyType = method.getParameterTypes()[0];
-      isGetter = false;
-    }
+    Class<?> propertyType = method.getReturnType();
     PropertyMeta propertyMeta = meta.getProperties().get(propertyKey);
     if (propertyMeta == null) {
       propertyMeta = new PropertyMeta(propertyName, propertyType, meta);
       meta.getProperties().put(propertyKey, propertyMeta);
-    }
-    if (isGetter) {
-      propertyMeta.setGetter(method);
     } else {
-      propertyMeta.setSetter(method);
+      // possible for example with getName() and getNAME()
+      throw new RuntimeException(
+          "Duplicate property name " + apiClass.getName() + "." + propertyName + "!");
     }
+    propertyMeta.setGetter(method);
+
+    // set property kind
     // We can detect the references and the related collections by the allClasses set. If we have a
     // property with the type of a bean class.
     if (descriptor.getAllApiBeanClass().contains(propertyType)) {
@@ -122,6 +133,34 @@ class ApiObjects {
           propertyMeta.setKind(PropertyKind.COLLECTION);
         }
       }
+    }
+  }
+
+  private static final void processSetterMethod(Method method, BeanMeta meta) {
+    String propertyKey = method.getName().substring(3).toUpperCase();
+    PropertyMeta propertyMeta = meta.getProperties().get(propertyKey);
+    if (propertyMeta != null) {
+      // method without getter won't be processed
+      propertyMeta.setSetter(method);
+    }
+  }
+
+  private static final void processFluidSetterMethod(Method method, BeanMeta meta) {
+    String propertyKey = method.getName().toUpperCase();
+    PropertyMeta propertyMeta = meta.getProperties().get(propertyKey);
+    if (propertyMeta != null) {
+      // method without getter won't be processed
+      propertyMeta.setFluidSetter(method);
+    }
+  }
+
+  private static final void processItemAdderMethod(Method method, BeanMeta meta) {
+    String name = method.getName();
+    String propertyKey = name.substring(3, name.length() - 4).toUpperCase();
+    PropertyMeta propertyMeta = meta.getProperties().get(propertyKey);
+    if (propertyMeta != null) {
+      // method without getter won't be processed
+      propertyMeta.setItemAdder(method);
     }
   }
 
