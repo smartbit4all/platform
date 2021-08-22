@@ -120,12 +120,12 @@ class HierarchicalConstraintHelperTest {
       {
         ReferredDetailBean detBean = new ReferredDetailBean();
         detBean.setName("refDetailName1");
-        refBean.getDetails().add(detBean);
+        refBean.addDetailsItem(detBean);
       }
       {
         ReferredDetailBean detBean = new ReferredDetailBean();
         detBean.setName("refDetailName2");
-        refBean.getDetails().add(detBean);
+        refBean.addDetailsItem(detBean);
       }
       bean1.setReferred(refBean);
     }
