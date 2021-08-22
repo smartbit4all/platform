@@ -53,14 +53,22 @@ public class ApiObjectsTest {
     String br = System.lineSeparator();
     StringBuilder expectedDescBuilder = new StringBuilder();
     expectedDescBuilder.append("org.smartbit4all.core.object.MasterBean").append(br)
-        .append("\tCounter(long) get: getCounter set: setCounter").append(br)
-        .append("\tDetails(java.util.List) get: getDetails set: setDetails").append(br)
-        .append("\tName(java.lang.String) get: getName set: setName").append(br)
-        .append("\tReadOnlyLong(java.lang.Long) get: getReadOnlyLong set: -").append(br)
+        .append("\tCounter(long) get: getCounter set: setCounter, counter addItem: -").append(br)
         .append(
-            "\tReferred(org.smartbit4all.core.object.ReferredBean) get: getReferred set: setReferred")
+            "\tDetails(java.util.List) get: getDetails set: setDetails, - addItem: addDetailsItem")
         .append(br)
-        .append("\tStringList(java.util.List) get: getStringList set: setStringList");
+        .append("\tEnabled(java.lang.Boolean) get: getEnabled set: setEnabled, - addItem: -")
+        .append(br)
+        .append("\tName(java.lang.String) get: getName set: setName, - addItem: -").append(br)
+        .append("\tReadOnlyLong(java.lang.Long) get: getReadOnlyLong set: -, - addItem: -")
+        .append(br)
+        .append(
+            "\tReferred(org.smartbit4all.core.object.ReferredBean) get: getReferred set: setReferred, - addItem: -")
+        .append(br)
+        .append("\tStringList(java.util.List) get: getStringList set: setStringList, - addItem: -")
+        .append(br)
+        .append("\tValid(boolean) get: isValid set: setValid, - addItem: -");
+
     Assertions.assertEquals(expectedDescBuilder.toString(), description);
     // fail("Not yet implemented");
   }
@@ -123,6 +131,7 @@ public class ApiObjectsTest {
         "Counter: (null->1)" + br +
         "Name: (null->name)" + br +
         "StringList: (null->[first, second])" + br +
+        "Valid: (null->false)" + br +
         "Referred: {" + br +
         "NEW" + br +
         "Name: (null->refname)" + br +
@@ -200,6 +209,9 @@ public class ApiObjectsTest {
       refDetailBean.setName("referredDetailBean - name " + number++);
     }
 
+    beanWrapper1.setValid(true);
+    beanWrapper1.setEnabled(Boolean.FALSE);
+
     Optional<ObjectChange> objectChange1 = bean1Ref.renderAndCleanChanges();
 
     // ObjectChangePublisherImpl publisher = new ObjectChangePublisherImpl();
@@ -214,7 +226,9 @@ public class ApiObjectsTest {
 
     String expected = "NEW" + br +
         "Counter: (null->1)" + br +
+        "Enabled: (null->false)" + br +
         "Name: (null->name by wrapper)" + br +
+        "Valid: (null->true)" + br +
         "Referred: {" + br +
         "NEW" + br +
         "Name: (null->referred name by wrapper)" + br +

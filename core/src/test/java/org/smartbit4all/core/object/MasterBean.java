@@ -17,6 +17,26 @@ public class MasterBean {
 
   private ReferredBean referred;
 
+  private boolean valid;
+
+  private Boolean enabled;
+
+  public Boolean getEnabled() {
+    return enabled;
+  }
+
+  public void setEnabled(Boolean enabled) {
+    this.enabled = enabled;
+  }
+
+  public boolean isValid() {
+    return valid;
+  }
+
+  public void setValid(boolean valid) {
+    this.valid = valid;
+  }
+
   public String getName() {
     return name;
   }
@@ -64,6 +84,14 @@ public class MasterBean {
 
   public void setReferred(ReferredBean referred) {
     this.referred = referred;
+  }
+
+  public MasterBean addDetailsItem(MasterDetailBean detailsItem) {
+    if (this.details == null) {
+      this.details = new ArrayList<>();
+    }
+    this.details.add(detailsItem);
+    return this;
   }
 
 }

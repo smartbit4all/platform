@@ -22,8 +22,12 @@ import com.google.common.cache.CacheBuilder;
  */
 class ApiObjects {
 
-  static final String SET = "set";
   static final String GET = "get";
+  static final String IS = "is";
+  static final String SET = "set";
+  static final String ADDITEM_PREFIX = "add";
+  static final String ADDITEM_POSTFIX = "Item";
+
   /**
    * The cache of the api object for better editing.
    */
@@ -54,10 +58,11 @@ class ApiObjects {
         BeanMeta meta = new BeanMeta(apiClass);
         ApiBeanDescriptor descriptor = descriptors.get(apiClass);
         Set<Method> allMethods = ReflectionUtility.allMethods(apiClass, null);
-        // process all getters == find all properties
+        // process all getters => find all properties
+        // e.g. for PropertyType property -> PropertyType getProperty();
         allMethods.stream()
             .filter(method -> Modifier.isPublic(method.getModifiers())
-                && method.getName().startsWith(GET)
+                && isGetterMethodName(method.getName())
                 && method.getParameterCount() == 0
                 && method.getReturnType() != null
                 && !Void.TYPE.equals(method.getReturnType())
@@ -65,30 +70,49 @@ class ApiObjects {
             .forEach(getter -> processGetterMethod(apiClass, meta, getter, descriptor));
 
         // process all explicit setter
+        // e.g. Type property; -> void setProperty(Type property);
         allMethods.stream()
             .filter(method -> Modifier.isPublic(method.getModifiers())
                 && method.getName().startsWith(SET)
+                && method.getName().length() > 3
+                && Character.isUpperCase(method.getName().charAt(3))
                 && method.getParameterCount() == 1
                 && Void.TYPE.equals(method.getReturnType()))
             .forEach(setter -> processSetterMethod(setter, meta));
 
         // process all fluid setters
+        // e.g. Type property in Bean class -> Bean property(Type value);
         allMethods.stream()
             .filter(method -> Modifier.isPublic(method.getModifiers())
                 && method.getParameterCount() == 1
                 && apiClass.equals(method.getReturnType()))
             .forEach(setter -> processFluidSetterMethod(setter, meta));
 
-        // process all list adders
+        // process all list adders: Bean addPropertiesItem(Collect)
+        // e.g. List<Type> values in Bean class -> Bean addValuesItem(Type valuesItem);
         allMethods.stream()
             .filter(method -> Modifier.isPublic(method.getModifiers())
-                && method.getName().startsWith("add")
-                && method.getName().endsWith("Item")
+                && method.getName().startsWith(ADDITEM_PREFIX)
+                && method.getName().length() > 7
+                && Character.isUpperCase(method.getName().charAt(3))
+                && method.getName().endsWith(ADDITEM_POSTFIX)
                 && method.getParameterCount() == 1
                 && apiClass.equals(method.getReturnType()))
             .forEach(setter -> processItemAdderMethod(setter, meta));
 
         return meta;
+      }
+
+      private boolean isGetterMethodName(String name) {
+        boolean isGetter = name.startsWith(GET)
+            && name.length() > 3
+            && Character.isUpperCase(name.charAt(3));
+        if (!isGetter) {
+          isGetter = name.startsWith(IS)
+              && name.length() > 2
+              && Character.isUpperCase(name.charAt(2));
+        }
+        return isGetter;
       }
 
     });
@@ -97,7 +121,17 @@ class ApiObjects {
   private static final void processGetterMethod(Class<?> apiClass, BeanMeta meta, Method method,
       ApiBeanDescriptor descriptor) {
     // create property
-    String propertyName = method.getName().substring(3);
+    String propertyName;
+    if (method.getName().startsWith(GET)) {
+      // e.g. getValid for valid property
+      propertyName = method.getName().substring(3);
+    } else if (method.getName().startsWith(IS)) {
+      // e.g. isValid for valid property
+      propertyName = method.getName().substring(2);
+    } else {
+      throw new RuntimeException(
+          "Unknown getter method " + apiClass.getName() + "." + method.getName());
+    }
     String propertyKey = propertyName.toUpperCase();
     Class<?> propertyType = method.getReturnType();
     PropertyMeta propertyMeta = meta.getProperties().get(propertyKey);

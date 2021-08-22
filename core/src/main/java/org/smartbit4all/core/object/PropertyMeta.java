@@ -152,6 +152,13 @@ public class PropertyMeta {
     sb.append(ApiObjects.SET);
     sb.append(StringConstant.COLON_SPACE);
     sb.append(setter == null ? StringConstant.MINUS_SIGN : setter.getName());
+    sb.append(StringConstant.COMMA_SPACE);
+    sb.append(fluidSetter == null ? StringConstant.MINUS_SIGN : fluidSetter.getName());
+    sb.append(StringConstant.SPACE);
+    sb.append(ApiObjects.ADDITEM_PREFIX);
+    sb.append(ApiObjects.ADDITEM_POSTFIX);
+    sb.append(StringConstant.COLON_SPACE);
+    sb.append(itemAdder == null ? StringConstant.MINUS_SIGN : itemAdder.getName());
   }
 
   Object getValue(Object object) {
