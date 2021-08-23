@@ -120,7 +120,6 @@ final class SQLQueryExecution {
    * 
    * @throws Exception
    */
-  @SuppressWarnings("rawtypes")
   public void execute() throws Exception {
     // That time the entity is based on a table.
     TableDefinition table = queryInput.entityDef().tableDefinition();

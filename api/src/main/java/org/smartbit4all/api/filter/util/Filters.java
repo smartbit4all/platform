@@ -12,10 +12,12 @@ import static org.smartbit4all.api.filter.util.Filters.OperationCode.DATE_TIME_I
 import static org.smartbit4all.api.filter.util.Filters.OperationCode.DATE_TIME_INTERVAL_CB;
 import static org.smartbit4all.api.filter.util.Filters.OperationCode.DET_COMBO_SEL;
 import static org.smartbit4all.api.filter.util.Filters.OperationCode.DET_MULTI_SEL;
+import static org.smartbit4all.api.filter.util.Filters.OperationCode.DET_NUMBER_EQ;
 import static org.smartbit4all.api.filter.util.Filters.OperationCode.DET_TXT_EQ;
 import static org.smartbit4all.api.filter.util.Filters.OperationCode.DET_TXT_LIKE;
 import static org.smartbit4all.api.filter.util.Filters.OperationCode.DET_TXT_LIKE_MIN;
 import static org.smartbit4all.api.filter.util.Filters.OperationCode.MULTI_SEL;
+import static org.smartbit4all.api.filter.util.Filters.OperationCode.NUMBER_EQ;
 import static org.smartbit4all.api.filter.util.Filters.OperationCode.TXT_EQ;
 import static org.smartbit4all.api.filter.util.Filters.OperationCode.TXT_LIKE;
 import static org.smartbit4all.api.filter.util.Filters.OperationCode.TXT_LIKE_MIN;
@@ -62,15 +64,25 @@ import org.springframework.stereotype.Service;
 @Service
 public class Filters {
 
+  //@// @formatter:off
   public static enum OperationCode {
-    DATE_INTERVAL("date.interval"), DATE_INTERVAL_CB("date.interval.cb"), DATE_EQ(
-        "date.eq"), DATE_TIME_INTERVAL("date.time.interval"), DATE_TIME_INTERVAL_CB(
-            "date.time.interval.cb"), DATE_TIME_EQ("date.time.eq"), TXT_EQ("txt.eq"), TXT_LIKE(
-                "txt.like"), TXT_LIKE_MIN("txt.like.min"), MULTI_SEL(
-                    "multi.eq"), COMBO_SEL("combo.eq"), DET_TXT_EQ("detail.txt.eq"), DET_TXT_LIKE(
-                        "detail.txt.like"), DET_TXT_LIKE_MIN("detail.txt.like.min"), DET_MULTI_SEL(
-                            "detail.multi.eq"), DET_COMBO_SEL("detail.combo.eq");
+    DATE_INTERVAL("date.interval"),
+    DATE_INTERVAL_CB("date.interval.cb"),
+    DATE_EQ("date.eq"),
+    DATE_TIME_INTERVAL("date.time.interval"),
+    DATE_TIME_INTERVAL_CB("date.time.interval.cb"),
+    DATE_TIME_EQ("date.time.eq"),
+    NUMBER_EQ("number.eq"),
+    TXT_EQ("txt.eq"), TXT_LIKE("txt.like"),
+    TXT_LIKE_MIN("txt.like.min"),
+    MULTI_SEL("multi.eq"), COMBO_SEL("combo.eq"),
+    DET_NUMBER_EQ("detail.number.eq"),
+    DET_TXT_EQ("detail.txt.eq"), DET_TXT_LIKE("detail.txt.like"),
+    DET_TXT_LIKE_MIN("detail.txt.like.min"),
+    DET_MULTI_SEL("detail.multi.eq"), DET_COMBO_SEL("detail.combo.eq");
 
+ // @formatter:on
+    
     private String value;
 
     private OperationCode(String value) {
@@ -105,12 +117,15 @@ public class Filters {
         this::createDateIntervalCbClause);
     expressionFactoryByOperatationCodes.put(DATE_EQ, this::createDateEqClause);
     expressionFactoryByOperatationCodes.put(DATE_TIME_EQ, this::createDateTimeEqClause);
+    expressionFactoryByOperatationCodes.put(NUMBER_EQ, this::createTxtEqClause);
     expressionFactoryByOperatationCodes.put(TXT_EQ, this::createTxtEqClause);
     expressionFactoryByOperatationCodes.put(TXT_LIKE, this::createTxtLikeClause);
     expressionFactoryByOperatationCodes.put(TXT_LIKE_MIN, this::createTxtLikeMinClause);
     expressionFactoryByOperatationCodes.put(MULTI_SEL, this::createMultiSelClause);
     expressionFactoryByOperatationCodes.put(COMBO_SEL, this::createComboSelClause);
 
+    expressionFactoryByOperatationCodes.put(DET_NUMBER_EQ,
+        createDetExpression(this::createTxtEqClause));
     expressionFactoryByOperatationCodes.put(DET_TXT_EQ,
         createDetExpression(this::createTxtEqClause));
     expressionFactoryByOperatationCodes.put(DET_TXT_LIKE,
@@ -254,13 +269,13 @@ public class Filters {
     FilterOperandValue filterOperandValue = filterField.getValue1();
     String value = filterOperandValue == null ? null : filterOperandValue.getValue();
     if (value != null && !value.isEmpty()) {
-      Class<?> type = getValueType(filterOperandValue);
+      Class<?> operandValueType = getValueType(filterOperandValue);
       Property<?> property = getProperty(filterField.getPropertyUri1());
-      expressionOfField = getTypedExpression(type, property, value, Property::eq);
+      expressionOfField = getTypedExpression(operandValueType, property, value, Property::eq);
     }
     return expressionOfField;
   }
-
+  
   private Function<FilterField, Expression> createDetExpression(
       Function<FilterField, Expression> originalFactory) {
     return filterField -> {
@@ -290,11 +305,26 @@ public class Filters {
   }
 
   @SuppressWarnings("unchecked")
-  private <T> Expression getTypedExpression(Class<T> type, Property<?> property, String value,
-      BiFunction<Property<T>, T, Expression> exp) {
-    Property<T> propertyAsString = (Property<T>) property;
-    T typedValue = convertValueToType(value, type);
-    return exp.apply(propertyAsString, typedValue);
+  private <OT, PT> Expression getTypedExpression(Class<OT> operandType, Property<?> property,
+      String operandValue, BiFunction<Property<PT>, PT, Expression> exp) {
+    /*
+     * Here we have the value as a String and its type class from the operand object. To create the
+     * expression we need it in the target property's type.
+     * We convert it in 2 steps: sting -> operand's type -> property's type.
+     * This way it is possible to use custom type conversion logic by setting a specific type name 
+     * to the operand object. 
+     */
+    Property<PT> typedProperty = (Property<PT>) property;
+    OT operandTypedValue = convertValueToType(operandValue, operandType);
+    PT propertyTypedValue = null;
+    try {
+      propertyTypedValue = convertValueToType(operandTypedValue, operandType, typedProperty.type());
+    } catch (Exception e) {
+      // FIXME shouldn't it be a checked exception?
+      throw new IllegalArgumentException(
+          "The operand value can not be converted to the target property's type", e);
+    }
+    return exp.apply(typedProperty, propertyTypedValue);
   }
 
   private Expression createMultiSelClause(FilterField filterField) {
@@ -323,16 +353,23 @@ public class Filters {
   }
 
   @SuppressWarnings("unchecked")
-  private <T> T convertValueToType(String value, Class<T> type) {
-    Converter<String, T> valueConverter = transferService.converterByType(String.class, type);
+  private <FT, TT> TT convertValueToType(FT value, Class<FT> fromType, Class<TT> toType) {
+    if(fromType.equals(toType)) {
+      return (TT) value;
+    }
+    Converter<FT, TT> valueConverter = transferService.converterByType(fromType, toType);
     if (valueConverter != null) {
       return valueConverter.convertTo(value);
-    } else if (String.class == type) {
-      return (T) value;
+    } else if (String.class == toType) {
+      return (TT) value.toString();
     } else {
       throw new RuntimeException(
           "Unable to typecast the selected values to create expression for the configured property!");
     }
+  }
+  
+  private <T> T convertValueToType(String value, Class<T> type) {
+    return convertValueToType(value, String.class, type);
   }
 
   private Expression createComboSelClause(FilterField filterField) {

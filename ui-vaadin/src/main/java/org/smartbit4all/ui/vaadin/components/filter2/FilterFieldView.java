@@ -198,6 +198,8 @@ public class FilterFieldView extends FlexLayout implements DragSource<FilterFiel
         operationView = new FilterOperationTxtLikeView(filterField, path);
       } else if ("filterop.txt.like.min".equals(filterView)) {
         operationView = new FilterOperationTxtLikeMinView(filterField, path);
+      } else if ("filterop.number.eq".equals(filterView)) {
+        operationView = new FilterOperationNumberEqualsView(filterField, path);
       } else if ("filterop.multi.eq".equals(filterView)) {
         operationView = new FilterOperationMultiSelectView(filterField, path);
       } else if ("filterop.combo.eq".equals(filterView)) {

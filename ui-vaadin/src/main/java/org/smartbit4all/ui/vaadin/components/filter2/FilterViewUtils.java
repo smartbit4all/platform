@@ -18,6 +18,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
+import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.shared.Registration;
 
 class FilterViewUtils {
@@ -72,6 +73,16 @@ class FilterViewUtils {
     VaadinHasValueBinder<TimeFilterOption, String> binder =
         VaadinBinders.bind(combo, filterField, valuePath, String.class,
             new TimeFilterOption2StringConverter());
+    return binder;
+  }
+  
+  public static VaadinHasValueBinder<Integer, String> bindInteger(
+      IntegerField integerField,
+      ObservableObject filterField, String path, int number) {
+    String valuePath = PathUtility.concatPath(path, "value" + number);
+    VaadinHasValueBinder<Integer, String> binder =
+        VaadinBinders.bind(integerField, filterField, valuePath, String.class,
+            new Integer2StringConverter());
     return binder;
   }
 

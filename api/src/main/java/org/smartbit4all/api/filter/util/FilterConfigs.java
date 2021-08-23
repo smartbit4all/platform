@@ -277,6 +277,14 @@ public abstract class FilterConfigs {
       configOperationBuilders.add(textLikeOperationBuilder);
       return this;
     }
+    
+    public ConfigFieldBuilder addOperationNumberEquals(Property<?> property) {
+      String operationCodeValue = OperationCode.NUMBER_EQ.getValue();
+      ConfigOperationBuilder numberEqOperationBuilder =
+          createOperationBuilder(operationCodeValue, property, null);
+      configOperationBuilders.add(numberEqOperationBuilder);
+      return this;
+    }
 
     public ConfigFieldBuilder addOperationTextLikeMin(Property<?> property) {
       String operationCodeValue = OperationCode.TXT_LIKE_MIN.getValue();
@@ -287,6 +295,15 @@ public abstract class FilterConfigs {
       return this;
     }
 
+    public ConfigFieldBuilder addOperationDetailNumberEquals(Property<?> propertyOfFilter,
+        EntityDefinition masterEntity, Property<?> fkProperty) {
+      String operationCodeValue = OperationCode.DET_NUMBER_EQ.getValue();
+      ConfigOperationBuilder detNumberEqOperationBuilder = createDetailOperationBuilder(
+          operationCodeValue, propertyOfFilter, masterEntity, fkProperty, null);
+      configOperationBuilders.add(detNumberEqOperationBuilder);
+      return this;
+    }
+    
     public ConfigFieldBuilder addOperationDetailTextLikeMin(Property<?> propertyOfFilter,
         EntityDefinition masterEntity, Property<?> fkProperty) {
       String operationCodeValue = OperationCode.DET_TXT_LIKE_MIN.getValue();
