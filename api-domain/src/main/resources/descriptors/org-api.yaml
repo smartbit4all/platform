@@ -142,7 +142,7 @@ components:
   schemas:
     User:
       type: object
-      required: [uri]
+      required: [uri, attributes]
       properties:
         uri:
           type: string
@@ -162,6 +162,10 @@ components:
           type: string
           format: password
           description: 'The encripted password of the user'
+        attributes:
+          type: object
+          additionalProperties:
+            type: string
     Group:
       type: object
       required: [uri, name, kind, parent, children]

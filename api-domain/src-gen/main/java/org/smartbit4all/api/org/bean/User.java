@@ -6,6 +6,9 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.openapitools.jackson.nullable.JsonNullable;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
@@ -29,6 +32,10 @@ public class User   {
 
   @JsonProperty("password")
   private String password;
+
+  @JsonProperty("attributes")
+  @Valid
+  private Map<String, String> attributes = new HashMap<>();
 
   public User uri(URI uri) {
     this.uri = uri;
@@ -132,6 +139,32 @@ public class User   {
     this.password = password;
   }
 
+  public User attributes(Map<String, String> attributes) {
+    this.attributes = attributes;
+    return this;
+  }
+
+  public User putAttributesItem(String key, String attributesItem) {
+    this.attributes.put(key, attributesItem);
+    return this;
+  }
+
+  /**
+   * Get attributes
+   * @return attributes
+  */
+  @ApiModelProperty(required = true, value = "")
+  @NotNull
+
+
+  public Map<String, String> getAttributes() {
+    return attributes;
+  }
+
+  public void setAttributes(Map<String, String> attributes) {
+    this.attributes = attributes;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -146,12 +179,13 @@ public class User   {
         Objects.equals(this.username, user.username) &&
         Objects.equals(this.name, user.name) &&
         Objects.equals(this.email, user.email) &&
-        Objects.equals(this.password, user.password);
+        Objects.equals(this.password, user.password) &&
+        Objects.equals(this.attributes, user.attributes);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, username, name, email, password);
+    return Objects.hash(uri, username, name, email, password, attributes);
   }
 
   @Override
@@ -164,6 +198,7 @@ public class User   {
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    email: ").append(toIndentedString(email)).append("\n");
     sb.append("    password: ").append(toIndentedString(password)).append("\n");
+    sb.append("    attributes: ").append(toIndentedString(attributes)).append("\n");
     sb.append("}");
     return sb.toString();
   }
