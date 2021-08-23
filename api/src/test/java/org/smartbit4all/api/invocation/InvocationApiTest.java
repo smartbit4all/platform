@@ -16,12 +16,34 @@ class InvocationApiTest {
   private InvocationApi invocationApi;
 
   @Test
-  void test() throws ClassNotFoundException {
+  void testPrimary() throws ClassNotFoundException {
     String value = "Peter";
     InvocationRequest request = Invocations.invoke(TestApi.class).method("doMethod")
         .parameter(InvocationParameterKind.PRIMITIVE, value, String.class.getName()).build();
     invocationApi.invoke(request);
     Assertions.assertEquals(value, TestApiImpl.lastDo);
+  }
+
+  @Test
+  void testContribution() throws ClassNotFoundException {
+    {
+      String value = "Peter";
+      InvocationRequest request =
+          Invocations.invoke(TestPrimaryApi.class).innerApi("contributionApi1")
+              .method("doSomething")
+              .parameter(InvocationParameterKind.PRIMITIVE, value, String.class.getName()).build();
+      invocationApi.invoke(request);
+      Assertions.assertEquals(value, TestContributionApiImpl.lastDoSomething);
+    }
+    {
+      String value = "Joke";
+      InvocationRequest request =
+          Invocations.invoke(TestPrimaryApi.class).innerApi("contributionApi2")
+              .method("doSomething")
+              .parameter(InvocationParameterKind.PRIMITIVE, value, String.class.getName()).build();
+      invocationApi.invoke(request);
+      Assertions.assertEquals(value, TestContributionApiImpl.lastDoSomething);
+    }
   }
 
   @Test

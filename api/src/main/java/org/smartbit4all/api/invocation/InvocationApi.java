@@ -5,6 +5,9 @@ import org.smartbit4all.api.invocation.bean.InvocationRequest;
 /**
  * The {@link InvocationApi} is a generic api to call other api function.
  * 
+ * TODO Separate The InvocationApi classes and the Api contribution mechanism classes. -->
+ * contribution package
+ * 
  * @author Peter Boros
  */
 public interface InvocationApi {

@@ -1,6 +1,6 @@
-package org.smartbit4all.api.invocation;
+package org.smartbit4all.api.contribution;
 
-import java.util.Optional;
+import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 
 /**
@@ -11,7 +11,7 @@ import org.smartbit4all.api.invocation.bean.InvocationRequest;
  * 
  * @author Peter Boros
  */
-public interface PrimaryApi<A> {
+public interface PrimaryApi<A extends ContributionApi> {
 
   /**
    * Find the registered api by name.
@@ -19,6 +19,6 @@ public interface PrimaryApi<A> {
    * @param apiName
    * @return The api if it's available.
    */
-  Optional<A> findApiByName(String apiName);
+  A findApiByName(String apiName);
 
 }

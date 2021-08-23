@@ -1,6 +1,7 @@
 package org.smartbit4all.api.invocation;
 
 import java.lang.reflect.Method;
+import org.smartbit4all.api.contribution.PrimaryApi;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 
@@ -63,7 +64,7 @@ public class Invocations {
     }
     Object api = apiInstance;
     if (request.getInnerApi() != null) {
-      if (!(clazz.isAssignableFrom(PrimaryApi.class))) {
+      if (!(PrimaryApi.class.isAssignableFrom(clazz))) {
         throw new IllegalArgumentException(
             "The " + request.getApiClass() + " is not primary class, the " + request.getInnerApi()
                 + " inner api can not be accessed for the " + request + " request.");

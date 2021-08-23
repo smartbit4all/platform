@@ -15,4 +15,19 @@ public class InvocationTestConfig {
     return new TestApiImpl();
   }
 
+  @Bean
+  public TestPrimaryApi primaryApi() {
+    return new TestPrimaryApiImpl();
+  }
+
+  @Bean
+  public TestContributionApi contributionApi1() {
+    return new TestContributionApiImpl("contributionApi1");
+  }
+
+  @Bean
+  public TestContributionApi contributionApi2() {
+    return new TestContributionApiImpl("contributionApi2");
+  }
+
 }

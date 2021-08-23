@@ -8,6 +8,8 @@ import org.smartbit4all.api.invocation.bean.InvocationRequest;
 /**
  * The builder api for an {@link InvocationRequest}.
  * 
+ * TODO Security info for every call
+ * 
  * @author Peter Boros
  */
 public class Invocation {
