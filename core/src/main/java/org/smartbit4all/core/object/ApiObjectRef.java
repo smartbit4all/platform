@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
@@ -71,12 +72,12 @@ public class ApiObjectRef {
   /**
    * The reference of the original object.
    */
-  private final Object object;
+  private Object object;
 
   /**
    * The meta structure of the given bean.
    */
-  private final BeanMeta meta;
+  private BeanMeta meta;
 
   /**
    * The properties of the given api object instance. The property name as a key is upper case so we
@@ -97,7 +98,7 @@ public class ApiObjectRef {
   /**
    * The classes of the domain beans. We need them to be able to identify the Api objects.
    */
-  private final ApiBeanDescriptor descriptor;
+  private ApiBeanDescriptor descriptor;
 
   /**
    * The descriptors for the domain includes the given bean.
@@ -108,6 +109,14 @@ public class ApiObjectRef {
    * The api object current state. The default is the new.
    */
   private ChangeState currentState = ChangeState.NEW;
+
+  /**
+   * The wrapper is the single instance of {@link Enhancer} proxy that was created for this
+   * reference.
+   */
+  private Object wrapper = null;
+
+  private Class<? extends Object> objectClass;
 
   /**
    * Constructs a new api object reference.
@@ -123,75 +132,103 @@ public class ApiObjectRef {
       throw new IllegalArgumentException("The object must be set in an ApiObjectRef");
     }
     this.path = (path == null ? StringConstant.EMPTY : path);
+    initMeta(object, descriptors);
+    initPropertyEntries(path);
+    setObjectInternal(object, ChangeState.NEW);
+  }
+
+  private void initMeta(Object object, Map<Class<?>, ApiBeanDescriptor> descriptors) {
     Class<?> objectClass = object.getClass();
     if (object instanceof Factory) {
       Callback callback = ((Factory) object).getCallback(0);
       if (callback instanceof ApiObjectRefInvocationHandler) {
         ApiObjectRef otherRef = ((ApiObjectRefInvocationHandler) callback).getRef();
-        this.object = otherRef.getObject();
         this.meta = otherRef.getMeta();
         this.descriptor = otherRef.getDescriptor();
+        this.objectClass = otherRef.getObjectClass();
       } else {
         throw new IllegalArgumentException(
             "The object can't be processed as bean " + objectClass);
       }
     } else {
       try {
-        this.object = object;
+        this.meta = ApiObjects.meta(objectClass, descriptors);
         this.descriptor = descriptors.get(objectClass);
-        meta = ApiObjects.meta(objectClass, descriptors);
+        this.objectClass = objectClass;
       } catch (ExecutionException e) {
         throw new IllegalArgumentException(
             "The object can't be processed as bean " + objectClass, e);
       }
     }
-    init(path);
   }
 
   /**
-   * Discover the current values of the object to identify the initial set of events.
+   * Initiates property entries and handler methods.
    */
-  private final void init(String path) {
-    for (PropertyMeta propertyMeta : meta.getProperties().values()) {
-      PropertyEntry entry =
-          new PropertyEntry(path, propertyMeta);
-      properties.put(propertyMeta.getName().toUpperCase(), entry);
-      addMethodToEntry(propertyMeta.getGetter(), entry);
-      addMethodToEntry(propertyMeta.getSetter(), entry);
-      addMethodToEntry(propertyMeta.getFluidSetter(), entry);
-      addMethodToEntry(propertyMeta.getItemAdder(), entry);
-      switch (propertyMeta.getKind()) {
-        case VALUE:
-          // If we have a non null value in the given property then we add a property changes from
-          // null to new value.
-          Object value = propertyMeta.getValue(object);
-          if (value != null) {
-            entry.setChangedValue(null, value);
-          }
-          break;
+  private final void initPropertyEntries(String path) {
+    for (PropertyMeta meta : meta.getProperties().values()) {
+      PropertyEntry entry = new PropertyEntry(path, meta);
+      properties.put(meta.getName().toUpperCase(), entry);
+      addMethodToEntry(meta.getGetter(), entry);
+      addMethodToEntry(meta.getSetter(), entry);
+      addMethodToEntry(meta.getFluidSetter(), entry);
+      addMethodToEntry(meta.getItemAdder(), entry);
+      if (meta.getKind() == PropertyKind.COLLECTION) {
+        ApiObjectCollection collection = new ApiObjectCollection(this, meta);
+        entry.setCollection(collection);
+      }
+    }
+  }
 
-        case REFERENCE:
-          // If we have a reference to other api object and it's not null then we construct the
-          // ApiObjectRef also for this instance.
-          Object reference = propertyMeta.getValue(object);
-          if (reference != null) {
-            // Construct the ApiObject reference and save it.
-            ApiObjectRef ref = new ApiObjectRef(entry.getPath(), reference, descriptors);
-            entry.setReference(ref);
-          }
+  /**
+   * Replaces original object with a new one. After this call renderAndCleanChanges will contain all
+   * differences between the old and the new object (if there were any changes before this call,
+   * those will also be there).
+   * 
+   * @param object
+   */
+  public void setObject(Object object) {
+    setObjectInternal(object, ChangeState.MODIFIED);
+  }
 
-          break;
+  private void setObjectInternal(Object object, ChangeState state) {
+    Object unwrappedObject = checkObjectCompatibility(object);
+    processNewValues(unwrappedObject, false);
+    this.object = unwrappedObject;
+    setCurrentState(state);
+  }
 
-        case COLLECTION:
-          // If we have an api object reference collection then we initiate the collection and
-          // construct all the existing object as reference.
-          // TODO Later on we can manage other containers but list.
-          ApiObjectCollection collection = new ApiObjectCollection(this, propertyMeta);
-          entry.setCollection(collection);
+  /**
+   * Merges parameter object's values into current object. All changes will be recorded.
+   * 
+   * @param object
+   */
+  public void mergeObject(Object object) {
+    Object unwrappedObject = checkObjectCompatibility(object);
+    processNewValues(unwrappedObject, true);
+    setCurrentState(ChangeState.MODIFIED);
+  }
 
-          break;
-        default:
-          break;
+  private Object checkObjectCompatibility(Object object) {
+    if (object == null) {
+      throw new IllegalArgumentException("The object must be set in an ApiObjectRef");
+    }
+    Object unwrappedObject = unwrapObject(object);
+    Class<?> unwrappedObjectClass = unwrappedObject.getClass();
+    // TODO equals vs inheritance?
+    if (!objectClass.equals(unwrappedObjectClass)) {
+      throw new IllegalArgumentException(
+          "The object must be of class " + this.object.getClass().getName());
+    }
+    return unwrappedObject;
+  }
+
+  private void processNewValues(Object unwrappedObject, boolean setObjectValue) {
+    for (PropertyEntry entry : properties.values()) {
+      Object oldValue = object == null ? null : entry.getMeta().getValue(object);
+      Object newValue = entry.getMeta().getValue(unwrappedObject);
+      if (!Objects.equals(oldValue, newValue)) { // TODO maybe oldValue != newValue?
+        setValueInner(newValue, entry, setObjectValue);
       }
     }
   }
@@ -208,6 +245,10 @@ public class ApiObjectRef {
 
   public final Object getObject() {
     return object;
+  }
+
+  public Class<? extends Object> getObjectClass() {
+    return objectClass;
   }
 
   /**
@@ -229,47 +270,41 @@ public class ApiObjectRef {
       throw new IllegalArgumentException(
           propertyName + " property not found in " + meta.getClazz().getName());
     }
-    setValueInner(value, entry);
+    setValueInner(value, entry, true);
   }
 
-  final void setValueInner(Object value, PropertyEntry entry) {
+  final void setValueInner(Object value, PropertyEntry entry, boolean setObjectValue) {
     String propertyName = entry.getMeta().getName();
     try {
       switch (entry.getMeta().getKind()) {
         case VALUE:
-          entry.setChangedValue(entry.getMeta().getValue(object), value);
-          // At last we set the value
-          entry.getMeta().setValue(object, value);
-
+          entry.setChangedValue(object == null ? null : entry.getMeta().getValue(object), value);
           break;
 
         case REFERENCE:
-          // If the reference is not the same then we assume it as a brand new object. We build it
-          // again.
           if (value != null) {
-            // We setup a new reference from scratch.
-            ApiObjectRef newRef = new ApiObjectRef(entry.getPath(), value, descriptors);
-            entry.setReference(newRef);
+            if (entry.getReference() == null) {
+              ApiObjectRef newRef = new ApiObjectRef(entry.getPath(), value, descriptors);
+              entry.setReference(newRef);
+            } else {
+              entry.getReference().setObject(value);
+            }
           } else {
             if (entry.getReference() != null) {
               entry.getReference().setCurrentState(ChangeState.DELETED);
             }
           }
-          // We set the value as a property at the end.
-          entry.getMeta().setValue(object, value);
           break;
 
         case COLLECTION:
-          ApiObjectCollection collection = entry.getCollection();
-          if (value == null) {
-            collection.clear();
-          } else {
-            collection.set((Collection<Object>) value);
-          }
+          entry.getCollection().setOriginalCollection((Collection<Object>) value);
           break;
 
         default:
           break;
+      }
+      if (setObjectValue) {
+        entry.getMeta().setValue(object, value);
       }
     } catch (Exception e) {
       throw new IllegalArgumentException(
@@ -287,12 +322,12 @@ public class ApiObjectRef {
 
     switch (propertyEntry.getMeta().getKind()) {
       case VALUE:
-        setValueInner(value, propertyEntry);
+        setValueInner(value, propertyEntry, true);
         break;
       case REFERENCE:
         // Call the setValueByPath on reference with new path
         if (PathUtility.getPathSize(path) == 1) {
-          setValueInner(value, propertyEntry);
+          setValueInner(value, propertyEntry, true);
         } else {
           propertyEntry.getReference().setValueByPath(PathUtility.nextFullPath(path), value);
         }
@@ -300,7 +335,7 @@ public class ApiObjectRef {
       case COLLECTION:
         ApiObjectCollection collection = propertyEntry.getCollection();
         if (PathUtility.getPathSize(path) == 1) {
-          setValueInner(value, propertyEntry);
+          setValueInner(value, propertyEntry, true);
         } else if (PathUtility.getPathSize(path) == 2) {
           // Set the collection element to the value
           String newPath = PathUtility.nextFullPath(path);
@@ -505,14 +540,9 @@ public class ApiObjectRef {
    */
   public final Optional<ObjectChange> renderAndCleanChanges() {
     ObjectChange result = null;
-    if (currentState == ChangeState.NEW) {
-      // In this case we have a change on the object. The modified comes from the modification of
-      // the properties.
-      result = new ObjectChange(path, ChangeState.NEW);
-      currentState = ChangeState.NOP;
-    } else if (currentState == ChangeState.DELETED) {
-      result = new ObjectChange(path, ChangeState.DELETED);
-      currentState = ChangeState.NOP;
+    if (getCurrentState() != null && getCurrentState() != ChangeState.NOP) {
+      result = new ObjectChange(path, getCurrentState());
+      setCurrentState(ChangeState.NOP);
     }
     for (PropertyEntry entry : properties.values()) {
       switch (entry.getMeta().getKind()) {
@@ -567,12 +597,6 @@ public class ApiObjectRef {
     }
     return Optional.ofNullable(result);
   }
-
-  /**
-   * The wrapper is the single instance of {@link Enhancer} proxy that was created for this
-   * reference.
-   */
-  private Object wrapper = null;
 
   public Object getWrapper() {
     return getWrapper(getMeta().getClazz());

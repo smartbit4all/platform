@@ -27,17 +27,17 @@ public class ApiObjectRefInvocationHandler implements InvocationHandler {
         }
         return valueInner;
       } else if (method.equals(meta.getSetter())) {
-        ref.setValueInner(args[0], propertyEntry);
+        ref.setValueInner(args[0], propertyEntry, true);
         return null;
       } else if (method.equals(meta.getFluidSetter())) {
-        ref.setValueInner(args[0], propertyEntry);
+        ref.setValueInner(args[0], propertyEntry, true);
         return object;
       } else if (method.equals(meta.getItemAdder())) {
         Object originalObject = ApiObjectRef.unwrapObject(object);
         List<?> list = (List<?>) meta.getValue(originalObject);
         if (list == null) {
           list = new ArrayList<>();
-          ref.setValueInner(list, propertyEntry);
+          ref.setValueInner(list, propertyEntry, true);
         }
         Object apiObjectCollection = ref.getValueInner(propertyEntry);
         if (apiObjectCollection instanceof ApiObjectCollection) {

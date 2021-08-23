@@ -12,4 +12,8 @@ public class ReferredDetailBean {
     this.name = name;
   }
 
+  public ReferredDetailBean name(String name) {
+    this.name = name;
+    return this;
+  }
 }

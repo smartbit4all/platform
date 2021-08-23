@@ -61,46 +61,28 @@ public class ApiObjectCollection implements List<ApiObjectRef> {
    * The reference of the original collection in the bean. It can be replace at once and can be
    * edited item by item.
    */
-  private List originalCollection;
+  private List<Object> originalCollection;
 
   private AtomicLong sequence = new AtomicLong();
 
   /**
-   * Constructs a collection reference that manages the changes of a collection
+   * Constructs a collection reference that manages the changes of a collection. Doesn't sets /
+   * initializes original collection, it should be done separately with
+   * {@link #setOriginalCollection(Collection)}.
    * 
    * @param objectRef
    * @param collectionProperty
    */
-  public ApiObjectCollection(ApiObjectRef objectRef, PropertyMeta collectionProperty) {
+  ApiObjectCollection(ApiObjectRef objectRef, PropertyMeta collectionProperty) {
     super();
     this.objectRef = objectRef;
     this.property = collectionProperty;
     this.path = (isRefPathEmpty(objectRef) ? "" : (objectRef.getPath() + StringConstant.SLASH))
         + collectionProperty.getName();
-    build();
   }
 
   private boolean isRefPathEmpty(ApiObjectRef objectRef) {
     return objectRef.getPath() == null || objectRef.getPath().isEmpty();
-  }
-
-  /**
-   * Process the collection to initiate the data structure of the collection. The build is an
-   * initial modification of the collection.
-   */
-  private final void build() {
-    Object collectionValue = property.getValue(objectRef.getObject());
-    if (collectionValue != null) {
-      originalCollection = (List<?>) collectionValue;
-      for (Object refObject : originalCollection) {
-        // TODO What would be the expectation in case of null in the list?
-        if (refObject != null) {
-          ApiObjectRef ref = constructObjectRef(refObject);
-          addRef(ref);
-        }
-      }
-    }
-
   }
 
   /**
@@ -112,15 +94,6 @@ public class ApiObjectCollection implements List<ApiObjectRef> {
   private final ApiObjectRef constructObjectRef(Object refObject) {
     return new ApiObjectRef(path + StringConstant.SLASH + sequence.getAndIncrement(), refObject,
         objectRef.getDescriptors());
-  }
-
-  /**
-   * Add the given {@link ApiObjectRef}
-   */
-  private final void addRef(ApiObjectRef objectRef) {
-    if (objectRef != null) {
-      items.add(objectRef);
-    }
   }
 
   @Override
@@ -160,12 +133,11 @@ public class ApiObjectCollection implements List<ApiObjectRef> {
   @SuppressWarnings("unchecked")
   @Override
   public boolean add(ApiObjectRef e) {
-    // Here we add this reference so the reference will be new here.
     if (e == null) {
-      return false;
+      throw new NullPointerException();
     }
     e.setCurrentState(ChangeState.NEW);
-    addRef(e);
+    items.add(e);
     originalCollection.add(e.getObject());
     return true;
   }
@@ -266,38 +238,33 @@ public class ApiObjectCollection implements List<ApiObjectRef> {
     if (c == null) {
       return false;
     }
-    // TODO correct implementation
-    // items.addAll(index, c);
-    // for (ApiObjectRef apiObjectRef : c) {
-    // if (apiObjectRef != null) {
-    // itemsByObject.put(apiObjectRef.getObject(), apiObjectRef);
-    // }
-    // }
     return true;
   }
 
-  public boolean set(Collection<Object> c) {
-    if (c == null) {
-      return false;
+  /**
+   * Sets original collection to a new value. Currently it clears existing collection and creates
+   * new entries, even if the old and new collection contains the same elements. Merge functionality
+   * might be introduced later.
+   * 
+   * Important: doesn't change underlying objects collection, it should be done separately, for
+   * example see {@link ApiObjectRef#setValueInner(Object, PropertyEntry)}.
+   * 
+   * @param newValue
+   */
+  public void setOriginalCollection(Collection<Object> newValue) {
+    if (originalCollection != null) {
+      removedObjects.addAll(items);
+      items.clear();
     }
-    if (originalCollection == null) {
-      Object collectionValue = property.getValue(objectRef.getObject());
-      property.setValue(objectRef.getObject(), c);
-      build();
-    } else {
-      clear();
-      for (Object myValue : c) {
-        add(constructObjectRef(myValue));
+    originalCollection = (List<Object>) newValue;
+    if (originalCollection != null) {
+      for (Object refObject : originalCollection) {
+        // TODO What would be the expectation in case of null in the list?
+        if (refObject != null) {
+          items.add(constructObjectRef(refObject));
+        }
       }
     }
-    // TODO correct implementation
-    // items.addAll(index, c);
-    // for (ApiObjectRef apiObjectRef : c) {
-    // if (apiObjectRef != null) {
-    // itemsByObject.put(apiObjectRef.getObject(), apiObjectRef);
-    // }
-    // }
-    return true;
   }
 
   @Override

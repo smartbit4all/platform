@@ -17,6 +17,8 @@ public class ApiObjectsTest {
 
   private static Map<Class<?>, ApiBeanDescriptor> descriptors;
 
+  String br = StringConstant.NEW_LINE;
+
   @BeforeAll
   static void setUpBeforeClass() throws Exception {
     descriptors = constructDomain();
@@ -123,7 +125,6 @@ public class ApiObjectsTest {
 
     Assertions.assertTrue(objectChange1.isPresent());
 
-    String br = StringConstant.NEW_LINE;
     String changesText1 = objectChange1.get().toString();
     System.out.println("Changes if whole bean set:" + br + changesText1);
 
@@ -184,10 +185,10 @@ public class ApiObjectsTest {
     // appear in the events.
     MasterBean bean1 = new MasterBean();
 
-    ApiObjectRef bean1Ref =
+    ApiObjectRef ref =
         new ApiObjectRef(null, bean1, descriptors);
 
-    MasterBean beanWrapper1 = bean1Ref.getWrapper(MasterBean.class);
+    MasterBean beanWrapper1 = ref.getWrapper(MasterBean.class);
 
     beanWrapper1.counter(1).setName("name by wrapper");
 
@@ -212,19 +213,13 @@ public class ApiObjectsTest {
     beanWrapper1.setValid(true);
     beanWrapper1.setEnabled(Boolean.FALSE);
 
-    Optional<ObjectChange> objectChange1 = bean1Ref.renderAndCleanChanges();
-
-    // ObjectChangePublisherImpl publisher = new ObjectChangePublisherImpl();
-    //
-    // publisher.notify(objectChange1.get());
-
+    Optional<ObjectChange> objectChange1 = ref.renderAndCleanChanges();
     Assertions.assertTrue(objectChange1.isPresent());
-
-    String br = StringConstant.NEW_LINE;
     String changesText1 = objectChange1.get().toString();
-    System.out.println("testModificationWithWrapper - Changes1:" + br + changesText1);
+    System.out.println("testModificationWithWrapper - Changes1 >>>>>>>" + br + changesText1
+        + br + "testModificationWithWrapper - Changes1 <<<<<<<");
 
-    String expected = "NEW" + br +
+    String expected1 = "NEW" + br +
         "Counter: (null->1)" + br +
         "Enabled: (null->false)" + br +
         "Name: (null->name by wrapper)" + br +
@@ -247,7 +242,100 @@ public class ApiObjectsTest {
         "}" + br +
         "}";
 
-    Assertions.assertEquals(expected, changesText1);
+    Assertions.assertEquals(expected1, changesText1);
+
+    // setObject
+    MasterBean bean2 = new MasterBean();
+    bean2.setName("bean2 name");
+    bean2.setCounter(2);
+    bean2.setValid(true);
+    bean2.setEnabled(Boolean.FALSE);
+    ref.setObject(bean2);
+
+    Assertions.assertEquals(bean2, ref.getObject());
+
+    ReferredBean bean2referredBean = new ReferredBean();
+    beanWrapper1.setReferred(bean2referredBean);
+    beanWrapper1.getReferred().setName("bean2 referred by wrapper");
+    beanWrapper1.getReferred()
+        .addDetailsItem(new ReferredDetailBean().name("new item 1"))
+        .addDetailsItem(new ReferredDetailBean().name("new item 2"));
+
+    Assertions.assertEquals(bean2referredBean, bean2.getReferred());
+
+    Optional<ObjectChange> objectChange2 = ref.renderAndCleanChanges();
+    Assertions.assertTrue(objectChange2.isPresent());
+    String changesText2 = objectChange2.get().toString();
+    System.out.println("testModificationWithWrapper - Changes2 >>>>>>>" + br + changesText2
+        + br + "testModificationWithWrapper - Changes2 <<<<<<<");
+
+    // TODO assert changes
+    String expected2 = "MODIFIED" + br
+        + "Counter: (1->2)" + br
+        + "Name: (name by wrapper->bean2 name)" + br
+        + "Referred: {" + br
+        + "MODIFIED" + br
+        + "Name: (referred name by wrapper->bean2 referred by wrapper)" + br
+        + "Details.collection:" + br
+        + "Details.item - {" + br
+        + "DELETED" + br
+        + "}" + br
+        + "Details.item - {" + br
+        + "DELETED" + br
+        + "}" + br
+        + "Details.item - {" + br
+        + "DELETED" + br
+        + "}" + br
+        + "Details.item - {" + br
+        + "NEW" + br
+        + "Name: (null->new item 1)" + br
+        + "}" + br
+        + "Details.item - {" + br
+        + "NEW" + br
+        + "Name: (null->new item 2)" + br
+        + "}" + br
+        + "}";
+    Assertions.assertEquals(expected2, changesText2);
+
+    // mergeObject - use original bean1 as values. bean2 stays as ref.object
+    ref.mergeObject(bean1);
+
+    Assertions.assertEquals(bean2, ref.getObject());
+    Assertions.assertEquals(bean1.getReferred(), bean2.getReferred());
+
+    Optional<ObjectChange> objectChange3 = ref.renderAndCleanChanges();
+    Assertions.assertTrue(objectChange3.isPresent());
+    String changesText3 = objectChange3.get().toString();
+    System.out.println("testModificationWithWrapper - Changes3 >>>>>>>" + br + changesText3
+        + br + "testModificationWithWrapper - Changes3 <<<<<<<");
+
+    String expected3 = "MODIFIED" + br
+        + "Counter: (2->1)" + br
+        + "Name: (bean2 name->name by wrapper)" + br
+        + "Referred: {" + br
+        + "MODIFIED" + br
+        + "Name: (bean2 referred by wrapper->referred name by wrapper)" + br
+        + "Details.collection:" + br
+        + "Details.item - {" + br
+        + "DELETED" + br
+        + "}" + br
+        + "Details.item - {" + br
+        + "DELETED" + br
+        + "}" + br
+        + "Details.item - {" + br
+        + "NEW" + br
+        + "Name: (null->referredDetailBean - name 1)" + br
+        + "}" + br
+        + "Details.item - {" + br
+        + "NEW" + br
+        + "Name: (null->referredDetailBean - name 2)" + br
+        + "}" + br
+        + "Details.item - {" + br
+        + "NEW" + br
+        + "Name: (null->referredDetailBean - name 3)" + br
+        + "}" + br
+        + "}";
+    Assertions.assertEquals(expected3, changesText3);
 
   }
 
