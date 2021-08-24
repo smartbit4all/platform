@@ -57,19 +57,50 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/InvocationParameterData'
+    InvocationRequestTemplate:
+      type: object
+      required: [parameters, apiClass, methodName]
+      properties:
+        executionApi:
+          type: string
+          description: 'The name of the execution api. If it is empty then we use the local by default'
+        apiClass: 
+          type: string
+          description: 'The fully qualified name of the api. In case of java it is the name of the class.'
+        innerApi:
+          type: string
+          description: 'If we have a contributed api collecting other apis then it is the identifier of the contributed api.'
+        methodName:
+          type: string
+          description: 'The name of the method to call'
+        parameters:
+          type: array
+          items:
+            $ref: '#/components/schemas/InvocationParameterTemplate'
     InvocationParameterData:
       type: object
-      required: [type]
+      required: [kind, typeClass]
       properties:
         kind:
           description: The type of the invocation parameter.
           $ref: '#/components/schemas/InvocationParameterKind'
+          default: PRIMITIVE
         typeClass:
           type: string
           description: The fully qualified type class name of the parameter.
         value:
           type: string
           description: 'The value of the property'
+    InvocationParameterTemplate:
+      type: object
+      required: [name, typeClass]
+      properties:
+        name:
+          type: string
+          description: The symbolic name of the parameter. Must be set and unique inside an invocation request template.
+        typeClass:
+          type: string
+          description: The fully qualified type class name of the parameter.
     InvocationParameterKind:
       type: string
       enum: [

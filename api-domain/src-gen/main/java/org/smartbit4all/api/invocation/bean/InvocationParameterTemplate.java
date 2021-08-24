@@ -22,61 +22,55 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import org.smartbit4all.api.invocation.bean.InvocationParameterKind;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 
 /**
- * InvocationParameterData
+ * InvocationParameterTemplate
  */
 @JsonPropertyOrder({
-  InvocationParameterData.KIND,
-  InvocationParameterData.TYPE_CLASS,
-  InvocationParameterData.VALUE
+  InvocationParameterTemplate.NAME,
+  InvocationParameterTemplate.TYPE_CLASS
 })
-@JsonTypeName("InvocationParameterData")
+@JsonTypeName("InvocationParameterTemplate")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
-public class InvocationParameterData {
-  public static final String KIND = "kind";
-  private InvocationParameterKind kind;
+public class InvocationParameterTemplate {
+  public static final String NAME = "name";
+  private String name;
 
   public static final String TYPE_CLASS = "typeClass";
   private String typeClass;
 
-  public static final String VALUE = "value";
-  private String value;
 
-
-  public InvocationParameterData kind(InvocationParameterKind kind) {
+  public InvocationParameterTemplate name(String name) {
     
-    this.kind = kind;
+    this.name = name;
     return this;
   }
 
    /**
-   * Get kind
-   * @return kind
+   * The symbolic name of the parameter. Must be set and unique inside an invocation request template.
+   * @return name
   **/
   @NotNull
-  @Valid
-  @ApiModelProperty(required = true, value = "")
-  @JsonProperty(KIND)
+  @ApiModelProperty(required = true, value = "The symbolic name of the parameter. Must be set and unique inside an invocation request template.")
+  @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public InvocationParameterKind getKind() {
-    return kind;
+  public String getName() {
+    return name;
   }
 
 
-  @JsonProperty(KIND)
+  @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setKind(InvocationParameterKind kind) {
-    this.kind = kind;
+  public void setName(String name) {
+    this.name = name;
   }
 
 
-  public InvocationParameterData typeClass(String typeClass) {
+  public InvocationParameterTemplate typeClass(String typeClass) {
     
     this.typeClass = typeClass;
     return this;
@@ -103,33 +97,6 @@ public class InvocationParameterData {
   }
 
 
-  public InvocationParameterData value(String value) {
-    
-    this.value = value;
-    return this;
-  }
-
-   /**
-   * The value of the property
-   * @return value
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "The value of the property")
-  @JsonProperty(VALUE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public String getValue() {
-    return value;
-  }
-
-
-  @JsonProperty(VALUE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setValue(String value) {
-    this.value = value;
-  }
-
-
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -138,24 +105,22 @@ public class InvocationParameterData {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    InvocationParameterData invocationParameterData = (InvocationParameterData) o;
-    return Objects.equals(this.kind, invocationParameterData.kind) &&
-        Objects.equals(this.typeClass, invocationParameterData.typeClass) &&
-        Objects.equals(this.value, invocationParameterData.value);
+    InvocationParameterTemplate invocationParameterTemplate = (InvocationParameterTemplate) o;
+    return Objects.equals(this.name, invocationParameterTemplate.name) &&
+        Objects.equals(this.typeClass, invocationParameterTemplate.typeClass);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(kind, typeClass, value);
+    return Objects.hash(name, typeClass);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class InvocationParameterData {\n");
-    sb.append("    kind: ").append(toIndentedString(kind)).append("\n");
+    sb.append("class InvocationParameterTemplate {\n");
+    sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    typeClass: ").append(toIndentedString(typeClass)).append("\n");
-    sb.append("    value: ").append(toIndentedString(value)).append("\n");
     sb.append("}");
     return sb.toString();
   }
