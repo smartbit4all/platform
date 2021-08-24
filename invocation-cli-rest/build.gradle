@@ -1,0 +1,30 @@
+plugins {
+	id 'org.smartbit4all.platform.gradle.openapi'
+}
+
+dependencies {
+	api project(':api-domain')
+	
+	api 'org.springframework:spring-context:5.2.3.RELEASE'
+	api 'org.springframework:spring-web:5.2.3.RELEASE'
+	api 'org.slf4j:slf4j-api:1.7.30'
+	api 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.3'
+	implementation 'org.openapitools:jackson-databind-nullable:0.2.1'
+}
+
+smartbit4all {
+    openApi {
+        apiDescriptorMapping = [
+        	"${rootDir}/api-domain/src/main/resources/descriptors/invocation-api.yaml" : "invocation"
+        ]
+        apiPackagePrefix = "org.smartbit4all.api"
+        apiPackagePostfix = "restclient"
+        invokerPackagePrefix = "org.smartbit4all.api"
+        invokerPackagePostfix = "restclient.util"
+		genApiRestClient = true
+		importMappings = [
+			"InvocationRequestData" : "org.smartbit4all.api.invocation.bean.InvocationRequestData",
+			"InvocationParameterData" : "org.smartbit4all.api.invocation.bean.InvocationParameterData"
+		]
+    }
+}

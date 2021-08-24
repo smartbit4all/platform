@@ -16,6 +16,8 @@ include 'sec-ms365'
 include 'vaadin-sec'
 include 'storage-fs'
 include 'gson'
+include 'invocation-cli-rest'
+include 'invocation-srv-rest'
 
 def localSettings = file("local.settings.gradle")
 if (localSettings.exists()) {
