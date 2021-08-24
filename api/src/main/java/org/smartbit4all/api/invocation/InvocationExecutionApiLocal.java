@@ -43,6 +43,16 @@ public class InvocationExecutionApiLocal
     Object apiInstance = appContext.getBean(clazz);
 
     Object api = Invocations.getApiToCall(clazz, apiInstance, request);
+    if (api == null) {
+      return;
+    }
+
+    // If we have a Proxy with ApiInvocationHandler then we need the original api reference to call
+    // it directly.
+    if (api instanceof ApiInvocationProxy) {
+      api = ((ApiInvocationProxy) api).getOriginalApi();
+    }
+
     Method method = Invocations.getMethodToCall(api, request);
 
     // Transfer the parameters for the call. Convert the primitives and the objects by the

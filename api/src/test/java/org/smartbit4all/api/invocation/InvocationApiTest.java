@@ -15,6 +15,9 @@ class InvocationApiTest {
   @Autowired
   private InvocationApi invocationApi;
 
+  @Autowired
+  TestPrimaryApi primaryApi;
+
   @Test
   void testPrimary() throws ClassNotFoundException {
     String value = "Peter";
@@ -42,6 +45,12 @@ class InvocationApiTest {
               .method("doSomething")
               .parameter(InvocationParameterKind.PRIMITIVE, value, String.class.getName()).build();
       invocationApi.invoke(request);
+      Assertions.assertEquals(value, TestContributionApiImpl.lastDoSomething);
+    }
+    {
+      String value = "Peter";
+      TestContributionApi testContributionApi = primaryApi.findApiByName("contributionApi1");
+      testContributionApi.doSomething(value);
       Assertions.assertEquals(value, TestContributionApiImpl.lastDoSomething);
     }
   }

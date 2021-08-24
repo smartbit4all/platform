@@ -17,7 +17,7 @@ public class InvocationTestConfig {
 
   @Bean
   public TestPrimaryApi primaryApi() {
-    return new TestPrimaryApiImpl();
+    return new TestPrimaryApiImpl(TestPrimaryApi.class, TestContributionApi.class);
   }
 
   @Bean

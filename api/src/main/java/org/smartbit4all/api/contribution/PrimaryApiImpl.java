@@ -3,6 +3,8 @@ package org.smartbit4all.api.contribution;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.smartbit4all.api.invocation.ApiInvocationHandler;
+import org.smartbit4all.api.invocation.InvocationApi;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -22,10 +24,23 @@ public class PrimaryApiImpl<A extends ContributionApi> implements PrimaryApi<A>,
   @Autowired(required = false)
   List<A> apis;
 
+  @Autowired
+  InvocationApi invocationApi;
+
   /**
    * The active registry of the api instances managed by the primary api.
    */
   Map<String, A> apiByName = new HashMap<>();
+
+  private final Class<?> primaryApiClass;
+
+  private final Class<A> innerApiClass;
+
+  public PrimaryApiImpl(Class<?> primaryApiClass, Class<A> innerApiClass) {
+    super();
+    this.primaryApiClass = primaryApiClass;
+    this.innerApiClass = innerApiClass;
+  }
 
   @Override
   public A findApiByName(String apiName) {
@@ -36,7 +51,9 @@ public class PrimaryApiImpl<A extends ContributionApi> implements PrimaryApi<A>,
   public void afterPropertiesSet() throws Exception {
     if (apis != null) {
       for (A api : apis) {
-        apiByName.put(api.getApiName(), api);
+        apiByName.put(api.getApiName(),
+            ApiInvocationHandler.createProxyInner(primaryApiClass, this, innerApiClass, api,
+                invocationApi));
       }
     }
   }
