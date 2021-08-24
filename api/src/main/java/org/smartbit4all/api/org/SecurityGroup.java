@@ -3,6 +3,8 @@ package org.smartbit4all.api.org;
 import java.util.List;
 import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.org.bean.User;
+import org.smartbit4all.api.session.UserSessionApi;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * The security group is an object representing a security group the user can be assigned to. The
@@ -29,6 +31,9 @@ public final class SecurityGroup {
    * The api to access the current user and it's settings. If we doesn't have this api then the
    * check is always true. Without security everything is allowed.
    */
+  @Autowired
+  private UserSessionApi userSessionApi;
+  
   private OrgApi api;
 
   public SecurityGroup(String description) {
@@ -55,17 +60,16 @@ public final class SecurityGroup {
    * @return true if there is no api for accessing the user rights or if the group is not assigned
    *         to the user. Else we get false.
    */
-  public boolean check() {
+  public boolean check( ) {
     if (api == null || name == null) {
       return true;
     }
-    User currentUser = api.currentUser();
-    if (currentUser == null) {
+    if (userSessionApi.currentUser() == null) {
       // If we are not logged in then we doesn't have any assigned group.
       return false;
     }
     // Naive implementation. Get all the groups we have for the user and try to find the group.
-    List<Group> groupsOfUser = api.getGroupsOfUser(currentUser.getUri());
+    List<Group> groupsOfUser = api.getGroupsOfUser(userSessionApi.currentUser().getUri());
     if (groupsOfUser == null) {
       return false;
     }
@@ -73,7 +77,7 @@ public final class SecurityGroup {
     return groupsOfUser.parallelStream().anyMatch(g -> name.equals(g.getName()));
   }
 
-  final void setApi(OrgApi api) {
+  final void setOrgApi(OrgApi api) {
     this.api = api;
   }
 

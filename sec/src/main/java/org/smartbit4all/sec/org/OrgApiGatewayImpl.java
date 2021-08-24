@@ -72,12 +72,4 @@ public class OrgApiGatewayImpl extends OrgApiImpl {
     return null;
   }
 
-  @Override
-  public User currentUser() {
-    if (SecurityContextHolder.getContext().getAuthentication() == null) {
-      return null;
-    }
-    return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-  }
-
 }

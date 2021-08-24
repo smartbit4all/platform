@@ -76,7 +76,7 @@ public abstract class OrgApiImpl implements OrgApi, InitializingBean {
         try {
           SecurityGroup securityGroup = (SecurityGroup) field.get(option);
           if (securityGroup != null) {
-            securityGroup.setApi(this);
+            securityGroup.setOrgApi(this);
             String key = ReflectionUtility.getQualifiedName(field);
             securityGroup.setName(key);
           }

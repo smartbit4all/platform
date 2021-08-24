@@ -5,12 +5,15 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.api.org.bean.User;
+import org.smartbit4all.api.session.UserSessionApiLocal;
 
 class OrgApiTest {
 
   private static MyModuleSecurityOption security = new MyModuleSecurityOption();
 
   private static OrgApiInMemory orgApi = new OrgApiInMemory(null);
+  
+  private static UserSessionApiLocal userSessionApi = new UserSessionApiLocal();
 
   @BeforeAll
   static void setUpBeforeClass() throws Exception {
@@ -22,16 +25,17 @@ class OrgApiTest {
 
   @Test
   void testOrgApi() {
+    // Prepare a real user to check the security.
+    User testUser = orgApi.addTestUser("Joe Public", "joe", "joe.public@smartbit4all.org");
+    
     // Without logging in we don't have any right!
     Assertions.assertFalse(security.admin.check());
 
-    // Prepare a real user to check the security.
-    User testUser = orgApi.addTestUser("Joe Public", "joe", "joe.public@smartbit4all.org");
 
     orgApi.addTestGroup("org.smartbit4all.api.org.MyModuleSecurityOption.viewer", testUser);
 
     // Set the current user - we logged in with this user.
-    orgApi.setCurrentUser(testUser);
+    userSessionApi.setCurrentUser(testUser);
 
     // We already have this group --> we have the right to view
     Assertions.assertTrue(security.viewer.check());

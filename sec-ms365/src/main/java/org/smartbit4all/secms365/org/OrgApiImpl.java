@@ -51,12 +51,6 @@ public class OrgApiImpl implements OrgApi {
   }
 
   @Override
-  public User currentUser() {
-    DefaultOidcUser principal = (DefaultOidcUser) securityService.getCurrentAuthentication().getPrincipal();
-    return createUser(principal);
-  }
-
-  @Override
   public User getUser(URI userUri) {
     com.microsoft.graph.models.extensions.User user = graphService.getGraphClient()
         .users(userUri.getFragment())

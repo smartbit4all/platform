@@ -30,8 +30,6 @@ public class OrgApiInMemory extends OrgApiImpl {
 
   protected Map<URI, Group> groups;
 
-  protected User currentUser;
-
   public OrgApiInMemory(Environment env) {
     super(env);
     users = new HashMap<>();
@@ -193,15 +191,6 @@ public class OrgApiInMemory extends OrgApiImpl {
   @Override
   public InputStream getGroupImage(URI groupUri) {
     return null;
-  }
-
-  public void setCurrentUser(User user) {
-    this.currentUser = user;
-  }
-
-  @Override
-  public User currentUser() {
-    return currentUser;
   }
 
 }
