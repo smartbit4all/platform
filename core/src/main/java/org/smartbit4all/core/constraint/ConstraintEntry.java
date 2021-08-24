@@ -3,9 +3,8 @@ package org.smartbit4all.core.constraint;
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
-import javax.validation.constraints.NotNull;
+import java.util.Objects;
 import org.smartbit4all.core.utility.StringConstant;
-import com.google.common.base.Objects;
 
 /**
  * The constraint entry is the item in the constraint hierarchy that defines a constraint and add
@@ -93,7 +92,7 @@ final class ConstraintEntry<C> {
    * 
    * @param constraint
    */
-  public ConstraintEntry(@NotNull C constraint) {
+  public ConstraintEntry(C constraint) {
     super();
     this.path = StringConstant.EMPTY;
     this.scope = ConstraintEntryScope.SUBTREE;
@@ -121,7 +120,7 @@ final class ConstraintEntry<C> {
   }
 
   public final void setValue(C value) {
-    boolean equal = Objects.equal(this.value, value);
+    boolean equal = Objects.equals(this.value, value);
     if (!valueChanged && !equal) {
       oldValue = this.value;
       valueChanged = true;

@@ -2,7 +2,6 @@ package org.smartbit4all.core.constraint;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.validation.constraints.NotNull;
 import org.smartbit4all.core.object.ApiObjectRef;
 import org.smartbit4all.core.object.ChangeState;
 import org.smartbit4all.core.object.PropertyEntry;
@@ -140,9 +139,9 @@ public final class HierarchicalConstraintHelper<C> {
    * @return
    */
   private final List<ConstraintChange<C>> renderAndCleanChangesRec(
-      List<ConstraintChange<C>> changeList, @NotNull ApiObjectRef actualApiObjectRef,
+      List<ConstraintChange<C>> changeList, ApiObjectRef actualApiObjectRef,
       boolean newObject,
-      ConstraintEntry<C> actualEntry, @NotNull ConstraintEntry<C> nearestExistingEntry,
+      ConstraintEntry<C> actualEntry, ConstraintEntry<C> nearestExistingEntry,
       C actualValue) {
     String path = actualApiObjectRef.getPath();
     ConstraintChange<C> apiObjectChange =
@@ -217,7 +216,7 @@ public final class HierarchicalConstraintHelper<C> {
    * @return If there is an effective change in the tree then it will be the result.
    */
   private final ConstraintChange<C> evaluateEntryInner(ConstraintEntry<C> actualEntry,
-      @NotNull ConstraintEntry<C> nearestExistingEntry, @NotNull String path, C actualValue) {
+      ConstraintEntry<C> nearestExistingEntry, String path, C actualValue) {
     ConstraintChange<C> result = null;
     ConstraintEntry<C> effectiveEntry = actualEntry == null ? nearestExistingEntry : actualEntry;
     if (effectiveEntry.isScopeChanged()) {
