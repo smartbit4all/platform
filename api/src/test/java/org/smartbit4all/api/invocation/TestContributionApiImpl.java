@@ -15,4 +15,9 @@ public class TestContributionApiImpl extends ContributionApiImpl implements Test
     lastDoSomething = doParam;
   }
 
+  @Override
+  public String echoMethod(String p1) {
+    return p1;
+  }
+
 }

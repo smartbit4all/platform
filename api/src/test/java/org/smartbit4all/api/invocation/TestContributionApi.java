@@ -6,4 +6,6 @@ public interface TestContributionApi extends ContributionApi {
 
   void doSomething(String doParam);
 
+  String echoMethod(String p1);
+
 }

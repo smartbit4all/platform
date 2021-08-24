@@ -1,7 +1,5 @@
 package org.smartbit4all.api.invocation;
 
-import org.smartbit4all.api.invocation.bean.InvocationRequest;
-
 /**
  * The execution api for the invocations. The {@link InvocationExecutionApiLocal} is a basic
  * implementation to call the apis in the local JVM.
@@ -18,6 +16,6 @@ public interface InvocationExecutionApi {
    * @param request
    * @throws ClassNotFoundException
    */
-  void invoke(InvocationRequest request) throws ClassNotFoundException;
+  InvocationParameter invoke(InvocationRequest request) throws ClassNotFoundException;
 
 }

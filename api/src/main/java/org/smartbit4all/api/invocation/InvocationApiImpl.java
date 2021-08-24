@@ -3,7 +3,6 @@ package org.smartbit4all.api.invocation;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -25,10 +24,10 @@ public final class InvocationApiImpl implements InvocationApi, InitializingBean 
   Map<String, InvocationExecutionApi> apiByName = new HashMap<>();
 
   @Override
-  public void invoke(InvocationRequest request) throws ClassNotFoundException {
+  public InvocationParameter invoke(InvocationRequest request) throws ClassNotFoundException {
     InvocationExecutionApi api = api(request.getExecutionApi());
     if (api != null) {
-      api.invoke(request);
+      return api.invoke(request);
     } else {
       throw new IllegalArgumentException(
           request.getExecutionApi() + " execution api is not available for the " + request);

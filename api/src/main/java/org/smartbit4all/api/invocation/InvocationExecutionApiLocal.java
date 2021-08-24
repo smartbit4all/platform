@@ -5,8 +5,6 @@ import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import org.smartbit4all.api.invocation.bean.InvocationParameter;
-import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.service.transfer.TransferService;
@@ -37,14 +35,13 @@ public class InvocationExecutionApiLocal
   }
 
   @Override
-  public void invoke(InvocationRequest request) throws ClassNotFoundException {
+  public InvocationParameter invoke(InvocationRequest request) throws ClassNotFoundException {
     // Get the primary api in a Spring specific way. The rest of the call is not Spring aware.
-    Class<?> clazz = Class.forName(request.getApiClass());
-    Object apiInstance = appContext.getBean(clazz);
+    Object apiInstance = appContext.getBean(request.getApiClass());
 
-    Object api = Invocations.getApiToCall(clazz, apiInstance, request);
+    Object api = Invocations.getApiToCall(request.getApiClass(), apiInstance, request);
     if (api == null) {
-      return;
+      return null;
     }
 
     // If we have a Proxy with ApiInvocationHandler then we need the original api reference to call
@@ -73,7 +70,7 @@ public class InvocationExecutionApiLocal
           // In this case we have a direct URI to an object.
           Storage<?> storage = storageApi.get(method.getParameterTypes()[i]);
           try {
-            parameterObjects.add(storage.load(URI.create(parameter.getValue())));
+            parameterObjects.add(storage.load(URI.create(parameter.getStringValue())));
           } catch (Exception e) {
             throw new IllegalArgumentException(
                 "Invalid URI parameter " + parameter.getValue() + " in the request: " + request, e);
@@ -85,7 +82,10 @@ public class InvocationExecutionApiLocal
       i++;
     }
     try {
-      method.invoke(api, parameterObjects.toArray());
+      Object result = method.invoke(api, parameterObjects.toArray());
+      InvocationParameter invocationResult = new InvocationParameter();
+      invocationResult.setValue(result);
+      return invocationResult;
     } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
       throw new RuntimeException("Unable to call the method for the " + request, e);
     }

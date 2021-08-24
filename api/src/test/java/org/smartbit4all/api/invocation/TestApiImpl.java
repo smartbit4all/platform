@@ -10,4 +10,9 @@ public class TestApiImpl implements TestApi {
     lastDo = p1;
   }
 
+  @Override
+  public String echoMethod(String p1) {
+    return p1;
+  }
+
 }

@@ -1,7 +1,5 @@
 package org.smartbit4all.api.invocation;
 
-import org.smartbit4all.api.invocation.bean.InvocationRequest;
-
 /**
  * The {@link InvocationApi} is a generic api to call other api function.
  * 
@@ -18,6 +16,6 @@ public interface InvocationApi {
    * @param request
    * @throws ClassNotFoundException
    */
-  void invoke(InvocationRequest request) throws ClassNotFoundException;
+  InvocationParameter invoke(InvocationRequest request) throws ClassNotFoundException;
 
 }

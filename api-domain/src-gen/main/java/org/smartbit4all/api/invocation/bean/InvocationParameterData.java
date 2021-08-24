@@ -11,10 +11,10 @@ import javax.validation.Valid;
 import javax.validation.constraints.*;
 
 /**
- * InvocationParameter
+ * InvocationParameterData
  */
 
-public class InvocationParameter   {
+public class InvocationParameterData   {
   @JsonProperty("kind")
   private InvocationParameterKind kind;
 
@@ -24,7 +24,7 @@ public class InvocationParameter   {
   @JsonProperty("value")
   private String value;
 
-  public InvocationParameter kind(InvocationParameterKind kind) {
+  public InvocationParameterData kind(InvocationParameterKind kind) {
     this.kind = kind;
     return this;
   }
@@ -45,7 +45,7 @@ public class InvocationParameter   {
     this.kind = kind;
   }
 
-  public InvocationParameter typeClass(String typeClass) {
+  public InvocationParameterData typeClass(String typeClass) {
     this.typeClass = typeClass;
     return this;
   }
@@ -65,7 +65,7 @@ public class InvocationParameter   {
     this.typeClass = typeClass;
   }
 
-  public InvocationParameter value(String value) {
+  public InvocationParameterData value(String value) {
     this.value = value;
     return this;
   }
@@ -94,10 +94,10 @@ public class InvocationParameter   {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    InvocationParameter invocationParameter = (InvocationParameter) o;
-    return Objects.equals(this.kind, invocationParameter.kind) &&
-        Objects.equals(this.typeClass, invocationParameter.typeClass) &&
-        Objects.equals(this.value, invocationParameter.value);
+    InvocationParameterData invocationParameterData = (InvocationParameterData) o;
+    return Objects.equals(this.kind, invocationParameterData.kind) &&
+        Objects.equals(this.typeClass, invocationParameterData.typeClass) &&
+        Objects.equals(this.value, invocationParameterData.value);
   }
 
   @Override
@@ -108,7 +108,7 @@ public class InvocationParameter   {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class InvocationParameter {\n");
+    sb.append("class InvocationParameterData {\n");
     
     sb.append("    kind: ").append(toIndentedString(kind)).append("\n");
     sb.append("    typeClass: ").append(toIndentedString(typeClass)).append("\n");

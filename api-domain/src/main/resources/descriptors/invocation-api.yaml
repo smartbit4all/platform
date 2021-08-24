@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
   title: invocation api
-  description: The invocation api is a generic possibility to call other apis.
+  description: The invocation api is a generic possibility to call remote apis.
   termsOfService: ''
   contact:
     email: info@it4all.hu
@@ -9,20 +9,30 @@ info:
 tags:
 - name: Invocation
 paths:
-
-                
-  /nope:
+  /invokeApi:
     post:
       tags:
       - Invocation
-      summary: Placeholder for generation
+      summary: ''
+      operationId: 'invokeApi'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvocationRequestData'
       responses:
         '200':
-          description: nope
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvocationParameterData'
+
                 
 components:
   schemas:
-    InvocationRequest:
+    InvocationRequestData:
       type: object
       required: [uuid, parameters, apiClass, methodName, executionApi]
       properties:
@@ -46,8 +56,8 @@ components:
         parameters:
           type: array
           items:
-            $ref: '#/components/schemas/InvocationParameter'
-    InvocationParameter:
+            $ref: '#/components/schemas/InvocationParameterData'
+    InvocationParameterData:
       type: object
       required: [type]
       properties:

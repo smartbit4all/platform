@@ -2,8 +2,6 @@ package org.smartbit4all.api.invocation;
 
 import java.lang.reflect.Method;
 import org.smartbit4all.api.contribution.PrimaryApi;
-import org.smartbit4all.api.invocation.bean.InvocationParameter;
-import org.smartbit4all.api.invocation.bean.InvocationRequest;
 
 /**
  * The developer api for the invocation.
@@ -79,8 +77,8 @@ public class Invocations {
     return api;
   }
 
-  public static final Invocation invoke(Class<?> apiClass) {
-    return new Invocation(apiClass);
+  public static final InvocationRequest invoke(Class<?> apiClass) {
+    return new InvocationRequest(apiClass);
   }
 
 }

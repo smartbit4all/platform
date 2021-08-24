@@ -8,16 +8,16 @@ import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import org.smartbit4all.api.invocation.bean.InvocationParameter;
+import org.smartbit4all.api.invocation.bean.InvocationParameterData;
 import org.openapitools.jackson.nullable.JsonNullable;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
 
 /**
- * InvocationRequest
+ * InvocationRequestData
  */
 
-public class InvocationRequest   {
+public class InvocationRequestData   {
   @JsonProperty("uuid")
   private UUID uuid;
 
@@ -35,9 +35,9 @@ public class InvocationRequest   {
 
   @JsonProperty("parameters")
   @Valid
-  private List<InvocationParameter> parameters = new ArrayList<>();
+  private List<InvocationParameterData> parameters = new ArrayList<>();
 
-  public InvocationRequest uuid(UUID uuid) {
+  public InvocationRequestData uuid(UUID uuid) {
     this.uuid = uuid;
     return this;
   }
@@ -59,7 +59,7 @@ public class InvocationRequest   {
     this.uuid = uuid;
   }
 
-  public InvocationRequest executionApi(String executionApi) {
+  public InvocationRequestData executionApi(String executionApi) {
     this.executionApi = executionApi;
     return this;
   }
@@ -80,7 +80,7 @@ public class InvocationRequest   {
     this.executionApi = executionApi;
   }
 
-  public InvocationRequest apiClass(String apiClass) {
+  public InvocationRequestData apiClass(String apiClass) {
     this.apiClass = apiClass;
     return this;
   }
@@ -101,7 +101,7 @@ public class InvocationRequest   {
     this.apiClass = apiClass;
   }
 
-  public InvocationRequest innerApi(String innerApi) {
+  public InvocationRequestData innerApi(String innerApi) {
     this.innerApi = innerApi;
     return this;
   }
@@ -121,7 +121,7 @@ public class InvocationRequest   {
     this.innerApi = innerApi;
   }
 
-  public InvocationRequest methodName(String methodName) {
+  public InvocationRequestData methodName(String methodName) {
     this.methodName = methodName;
     return this;
   }
@@ -142,12 +142,12 @@ public class InvocationRequest   {
     this.methodName = methodName;
   }
 
-  public InvocationRequest parameters(List<InvocationParameter> parameters) {
+  public InvocationRequestData parameters(List<InvocationParameterData> parameters) {
     this.parameters = parameters;
     return this;
   }
 
-  public InvocationRequest addParametersItem(InvocationParameter parametersItem) {
+  public InvocationRequestData addParametersItem(InvocationParameterData parametersItem) {
     this.parameters.add(parametersItem);
     return this;
   }
@@ -161,11 +161,11 @@ public class InvocationRequest   {
 
   @Valid
 
-  public List<InvocationParameter> getParameters() {
+  public List<InvocationParameterData> getParameters() {
     return parameters;
   }
 
-  public void setParameters(List<InvocationParameter> parameters) {
+  public void setParameters(List<InvocationParameterData> parameters) {
     this.parameters = parameters;
   }
 
@@ -178,13 +178,13 @@ public class InvocationRequest   {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    InvocationRequest invocationRequest = (InvocationRequest) o;
-    return Objects.equals(this.uuid, invocationRequest.uuid) &&
-        Objects.equals(this.executionApi, invocationRequest.executionApi) &&
-        Objects.equals(this.apiClass, invocationRequest.apiClass) &&
-        Objects.equals(this.innerApi, invocationRequest.innerApi) &&
-        Objects.equals(this.methodName, invocationRequest.methodName) &&
-        Objects.equals(this.parameters, invocationRequest.parameters);
+    InvocationRequestData invocationRequestData = (InvocationRequestData) o;
+    return Objects.equals(this.uuid, invocationRequestData.uuid) &&
+        Objects.equals(this.executionApi, invocationRequestData.executionApi) &&
+        Objects.equals(this.apiClass, invocationRequestData.apiClass) &&
+        Objects.equals(this.innerApi, invocationRequestData.innerApi) &&
+        Objects.equals(this.methodName, invocationRequestData.methodName) &&
+        Objects.equals(this.parameters, invocationRequestData.parameters);
   }
 
   @Override
@@ -195,7 +195,7 @@ public class InvocationRequest   {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class InvocationRequest {\n");
+    sb.append("class InvocationRequestData {\n");
     
     sb.append("    uuid: ").append(toIndentedString(uuid)).append("\n");
     sb.append("    executionApi: ").append(toIndentedString(executionApi)).append("\n");

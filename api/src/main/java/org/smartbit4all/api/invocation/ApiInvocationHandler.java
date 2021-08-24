@@ -6,7 +6,6 @@ import java.lang.reflect.Parameter;
 import java.lang.reflect.Proxy;
 import org.smartbit4all.api.contribution.ContributionApi;
 import org.smartbit4all.api.invocation.bean.InvocationParameterKind;
-import org.smartbit4all.api.invocation.bean.InvocationRequest;
 
 /**
  * This {@link InvocationHandler} implementation is responsible for constructing the
@@ -72,7 +71,7 @@ public class ApiInvocationHandler<A, I extends ContributionApi> implements Invoc
     if (method.getDeclaringClass().equals(ApiInvocationProxy.class)) {
       return method.invoke(invocationProxy, args);
     }
-    Invocation invocation = Invocations.invoke(primaryApiClass).method(method.getName());
+    InvocationRequest invocation = Invocations.invoke(primaryApiClass).method(method.getName());
     if (isInner()) {
       invocation.innerApi(innerApi.getApiName());
     }
@@ -84,8 +83,8 @@ public class ApiInvocationHandler<A, I extends ContributionApi> implements Invoc
       invocation.parameter(InvocationParameterKind.PRIMITIVE, parameterValue.toString(),
           parameter.getType().getName());
     }
-    invocationApi.invoke(invocation.build());
-    return null;
+    InvocationParameter result = invocationApi.invoke(invocation);
+    return result != null ? result.getValue() : null;
   }
 
   final Object getApi() {
