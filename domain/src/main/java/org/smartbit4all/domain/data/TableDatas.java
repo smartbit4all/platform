@@ -56,29 +56,30 @@ public final class TableDatas {
    * @return The newly created rows of the baseTableData.
    */
   public static List<DataRow> append(TableData<?> baseTableData, TableData<?>... otherTableDatas) {
-    if(otherTableDatas == null) {
-      return Collections.emptyList();
-    }
     List<DataRow> results = new ArrayList<>();
+    if(otherTableDatas == null) {
+      return results;
+    }
     for (TableData<?> otherTableData : otherTableDatas) {
-      Objects.requireNonNull(otherTableData, "otherTableData can not be null!");
-      Map<DataColumn<?>, DataColumn<?>> colMap = new HashMap<>();
-      for (DataColumn<?> col : otherTableData.columns()) {
-        Property<?> property = col.getProperty();
-        DataColumn<?> baseCol = baseTableData.getColumn(property);
-        if (baseCol == null) {
-          baseCol = baseTableData.addColumnOwn(property);
+      if(otherTableData != null) {
+        Map<DataColumn<?>, DataColumn<?>> colMap = new HashMap<>();
+        for (DataColumn<?> col : otherTableData.columns()) {
+          Property<?> property = col.getProperty();
+          DataColumn<?> baseCol = baseTableData.getColumn(property);
+          if (baseCol == null) {
+            baseCol = baseTableData.addColumnOwn(property);
+          }
+          colMap.put(col, baseCol);
         }
-        colMap.put(col, baseCol);
-      }
-      if (colMap.isEmpty()) {
-        continue;
-      }
-      for (DataRow row : otherTableData.rows()) {
-        DataRow newRow = baseTableData.addRow();
-        results.add(newRow);
-        for (Entry<DataColumn<?>, DataColumn<?>> entry : colMap.entrySet()) {
-          newRow.setObject(entry.getValue(), entry.getKey().getValue(row));
+        if (colMap.isEmpty()) {
+          continue;
+        }
+        for (DataRow row : otherTableData.rows()) {
+          DataRow newRow = baseTableData.addRow();
+          results.add(newRow);
+          for (Entry<DataColumn<?>, DataColumn<?>> entry : colMap.entrySet()) {
+            newRow.setObject(entry.getValue(), entry.getKey().getValue(row));
+          }
         }
       }
     }

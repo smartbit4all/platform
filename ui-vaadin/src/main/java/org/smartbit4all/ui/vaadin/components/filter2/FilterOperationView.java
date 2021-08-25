@@ -17,7 +17,7 @@ package org.smartbit4all.ui.vaadin.components.filter2;
 import org.smartbit4all.core.object.ObservableObject;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 
-abstract class FilterOperationView extends FlexLayout {
+public abstract class FilterOperationView extends FlexLayout {
 
   protected ObservableObject filterField;
   protected String path;
