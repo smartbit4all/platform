@@ -1,5 +1,6 @@
 package org.smartbit4all.ui.vaadin.components.binder;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Objects;
@@ -95,7 +96,7 @@ public class VaadinMultiSelectBinder<C extends Component, T> extends VaadinColle
 
   protected void setModelState(Set<T> value) {
     if (!propertyChangeProgress) {
-      observableObject.setValue(propertyPath, value);
+      observableObject.setValue(propertyPath, new ArrayList<>(value));
     }
   }
 
