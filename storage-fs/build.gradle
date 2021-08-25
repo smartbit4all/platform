@@ -6,4 +6,8 @@ dependencies {
 	api project(':domain')
 
 	testImplementation project(':gson')
+	
+    testImplementation testFixtures(project(':core'))
+	testFixturesApi project(':core')
+    testFixturesApi testFixtures(project(':core'))
 }
