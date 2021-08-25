@@ -22,14 +22,25 @@ class InvocationApiTest {
     {
       String value = "Peter";
       InvocationRequest request = Invocations.invoke(TestApi.class).method("doMethod")
-          .parameter(InvocationParameterKind.PRIMITIVE, value, String.class.getName());
+          .addParameter("p1", InvocationParameterKind.PRIMITIVE, value, String.class.getName());
       invocationApi.invoke(request);
       Assertions.assertEquals(value, TestApiImpl.lastDo);
     }
     {
       String value = "Peter";
       InvocationRequest request = Invocations.invoke(TestApi.class).method("echoMethod")
-          .parameter(InvocationParameterKind.PRIMITIVE, value, String.class.getName());
+          .addParameter("p1", InvocationParameterKind.PRIMITIVE, value, String.class.getName());
+      InvocationParameter result = invocationApi.invoke(request);
+      Assertions.assertEquals(value, result.getValue());
+    }
+  }
+
+  @Test
+  void testInvocationByTemplate() throws ClassNotFoundException {
+    {
+      String value = "Peter";
+      InvocationRequest request =
+          InvocationRequest.of(TestApi.echoMethodTemplate).setParameter("p1", value);
       InvocationParameter result = invocationApi.invoke(request);
       Assertions.assertEquals(value, result.getValue());
     }
@@ -42,7 +53,7 @@ class InvocationApiTest {
       InvocationRequest request =
           Invocations.invoke(TestPrimaryApi.class).innerApi("contributionApi1")
               .method("doSomething")
-              .parameter(InvocationParameterKind.PRIMITIVE, value, String.class.getName());
+              .addParameter("p1", InvocationParameterKind.PRIMITIVE, value, String.class.getName());
       invocationApi.invoke(request);
       Assertions.assertEquals(value, TestContributionApiImpl.lastDoSomething);
     }
@@ -51,7 +62,7 @@ class InvocationApiTest {
       InvocationRequest request =
           Invocations.invoke(TestPrimaryApi.class).innerApi("contributionApi1")
               .method("echoMethod")
-              .parameter(InvocationParameterKind.PRIMITIVE, value, String.class.getName());
+              .addParameter("p1", InvocationParameterKind.PRIMITIVE, value, String.class.getName());
       InvocationParameter result = invocationApi.invoke(request);
       Assertions.assertEquals(value, result.getValue());
     }
@@ -60,7 +71,7 @@ class InvocationApiTest {
       InvocationRequest request =
           Invocations.invoke(TestPrimaryApi.class).innerApi("contributionApi2")
               .method("doSomething")
-              .parameter(InvocationParameterKind.PRIMITIVE, value, String.class.getName());
+              .addParameter("p1", InvocationParameterKind.PRIMITIVE, value, String.class.getName());
       invocationApi.invoke(request);
       Assertions.assertEquals(value, TestContributionApiImpl.lastDoSomething);
     }

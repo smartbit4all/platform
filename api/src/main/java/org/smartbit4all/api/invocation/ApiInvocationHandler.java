@@ -80,7 +80,8 @@ public class ApiInvocationHandler<A, I extends ContributionApi> implements Invoc
       Parameter parameter = parameters[i];
       Object parameterValue = args[i];
       // TODO For the conversion to string must be implemented with TransferService!
-      invocation.parameter(InvocationParameterKind.PRIMITIVE, parameterValue.toString(),
+      invocation.addParameter(parameter.getName(), InvocationParameterKind.PRIMITIVE,
+          parameterValue.toString(),
           parameter.getType().getName());
     }
     InvocationParameter result = invocationApi.invoke(invocation);
