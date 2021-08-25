@@ -3,8 +3,8 @@ package org.smartbit4all.gson;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Optional;
-import org.smartbit4all.types.binarydata.BinaryData;
-import org.smartbit4all.types.binarydata.BinaryDataOutputStream;
+import org.smartbit4all.api.binarydata.BinaryData;
+import org.smartbit4all.api.binarydata.BinaryDataOutputStream;
 import com.google.gson.Gson;
 
 /**

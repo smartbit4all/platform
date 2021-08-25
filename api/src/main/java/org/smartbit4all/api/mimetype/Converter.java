@@ -1,6 +1,6 @@
 package org.smartbit4all.api.mimetype;
 
-import org.smartbit4all.types.binarydata.BinaryData;
+import org.smartbit4all.api.binarydata.BinaryData;
 
 /**
  * The API used for converting documents in certain mimeTypes (docx, pdf).

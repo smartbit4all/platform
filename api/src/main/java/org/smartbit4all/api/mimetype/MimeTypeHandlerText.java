@@ -7,8 +7,8 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.documentview.bean.DisplayMode;
-import org.smartbit4all.types.binarydata.BinaryData;
 import com.google.common.net.MediaType;
 
 public class MimeTypeHandlerText implements MimeTypeHandler {

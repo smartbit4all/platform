@@ -32,6 +32,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
+import org.smartbit4all.api.binarydata.BinaryData;
+import org.smartbit4all.api.binarydata.BinaryDataOutputStream;
 import org.smartbit4all.core.utility.EnumSpecificValue;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.meta.BooleanOperator;
@@ -54,8 +56,6 @@ import org.smartbit4all.domain.meta.PropertyRef;
 import org.smartbit4all.domain.meta.PropertySqlComputed;
 import org.smartbit4all.domain.utility.CompositeValue;
 import org.smartbit4all.domain.utility.SupportedDatabase;
-import org.smartbit4all.types.binarydata.BinaryData;
-import org.smartbit4all.types.binarydata.BinaryDataOutputStream;
 import org.springframework.util.Assert;
 import com.google.common.io.ByteStreams;
 

@@ -17,8 +17,8 @@
 package org.smartbit4all.domain.meta.jdbc;
 
 import java.sql.Types;
+import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.domain.meta.JDBCDataConverter;
-import org.smartbit4all.types.binarydata.BinaryData;
 
 /**
  * The interface of the byte[] value based types. The byte array is converted to {@link BinaryData}

@@ -1,13 +1,13 @@
 package org.smartbit4all.sql.storage;
 
 import java.net.URI;
+import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.domain.annotation.property.Entity;
 import org.smartbit4all.domain.annotation.property.Id;
 import org.smartbit4all.domain.annotation.property.OwnProperty;
 import org.smartbit4all.domain.annotation.property.Table;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Property;
-import org.smartbit4all.types.binarydata.BinaryData;
 
 @Entity("test")
 @Table("test")

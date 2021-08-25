@@ -2,9 +2,9 @@ package org.smartbit4all.gson;
 
 import java.io.IOException;
 import java.util.Optional;
+import org.smartbit4all.api.binarydata.BinaryData;
+import org.smartbit4all.api.binarydata.BinaryDataObjectSerializer;
 import org.smartbit4all.core.object.ApiObjectRef;
-import org.smartbit4all.types.binarydata.BinaryData;
-import org.smartbit4all.types.binarydata.BinaryDataObjectSerializer;
 
 public class GsonBinaryDataObjectSerializer implements BinaryDataObjectSerializer {
 

@@ -38,7 +38,7 @@ import javax.validation.Valid;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class ImageWithAlt {
   public static final String IMAGE = "image";
-  private org.smartbit4all.types.binarydata.BinaryData image = null;
+  private org.smartbit4all.api.binarydata.BinaryData image = null;
 
   public static final String ALT = "alt";
   private String alt;
@@ -47,7 +47,7 @@ public class ImageWithAlt {
   private String fileName;
 
 
-  public ImageWithAlt image(org.smartbit4all.types.binarydata.BinaryData image) {
+  public ImageWithAlt image(org.smartbit4all.api.binarydata.BinaryData image) {
     
     this.image = image;
     return this;
@@ -63,14 +63,14 @@ public class ImageWithAlt {
   @JsonProperty(IMAGE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public org.smartbit4all.types.binarydata.BinaryData getImage() {
+  public org.smartbit4all.api.binarydata.BinaryData getImage() {
     return image;
   }
 
 
   @JsonProperty(IMAGE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setImage(org.smartbit4all.types.binarydata.BinaryData image) {
+  public void setImage(org.smartbit4all.api.binarydata.BinaryData image) {
     this.image = image;
   }
 

@@ -7,8 +7,8 @@ import java.util.concurrent.FutureTask;
 import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.org.bean.Group;
-import org.smartbit4all.types.binarydata.BinaryData;
 
 public class GroupEntry {
 

@@ -4,7 +4,6 @@ plugins {
 
 dependencies {
 	api project(':domain')
-	api project(':types')
 
 	testImplementation project(':gson')
 }

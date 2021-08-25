@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.documentview.bean.DisplayMode;
 import org.smartbit4all.api.documentview.bean.DocumentViewProcess;
 import org.smartbit4all.api.documentview.bean.ImageWithAlt;
@@ -15,7 +16,6 @@ import org.smartbit4all.core.object.ApiObjectRef;
 import org.smartbit4all.core.object.ObjectEditingImpl;
 import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.core.object.ObservableObjectImpl;
-import org.smartbit4all.types.binarydata.BinaryData;
 
 /**
  * Handles the panel used for viewing documents in images.

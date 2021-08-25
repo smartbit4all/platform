@@ -2,7 +2,7 @@ package org.smartbit4all.api.mimetype;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.smartbit4all.types.binarydata.BinaryData;
+import org.smartbit4all.api.binarydata.BinaryData;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**

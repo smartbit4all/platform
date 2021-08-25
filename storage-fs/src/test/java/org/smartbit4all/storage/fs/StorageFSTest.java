@@ -2,7 +2,7 @@ package org.smartbit4all.storage.fs;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.smartbit4all.storage.fs.TestFileUtil.testFsRootFolder;
+import static org.smartbit4all.core.io.TestFileUtil.testFsRootFolder;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.smartbit4all.core.io.TestFileUtil;
 import org.smartbit4all.domain.annotation.property.Entity;
 import org.smartbit4all.domain.annotation.property.Id;
 import org.smartbit4all.domain.annotation.property.OwnProperty;

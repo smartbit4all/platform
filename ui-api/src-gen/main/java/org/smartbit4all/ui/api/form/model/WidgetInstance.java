@@ -61,7 +61,7 @@ public class WidgetInstance {
   private List<java.time.LocalDateTime> dateValues = new ArrayList<>();
 
   public static final String BINARY_DATA_VALUES = "binaryDataValues";
-  private List<org.smartbit4all.types.binarydata.BinaryData> binaryDataValues = new ArrayList<>();
+  private List<org.smartbit4all.api.binarydata.BinaryData> binaryDataValues = new ArrayList<>();
 
   public static final String WIDGETS = "widgets";
   private List<WidgetInstance> widgets = null;
@@ -225,13 +225,13 @@ public class WidgetInstance {
   }
 
 
-  public WidgetInstance binaryDataValues(List<org.smartbit4all.types.binarydata.BinaryData> binaryDataValues) {
+  public WidgetInstance binaryDataValues(List<org.smartbit4all.api.binarydata.BinaryData> binaryDataValues) {
     
     this.binaryDataValues = binaryDataValues;
     return this;
   }
 
-  public WidgetInstance addBinaryDataValuesItem(org.smartbit4all.types.binarydata.BinaryData binaryDataValuesItem) {
+  public WidgetInstance addBinaryDataValuesItem(org.smartbit4all.api.binarydata.BinaryData binaryDataValuesItem) {
     this.binaryDataValues.add(binaryDataValuesItem);
     return this;
   }
@@ -246,14 +246,14 @@ public class WidgetInstance {
   @JsonProperty(BINARY_DATA_VALUES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<org.smartbit4all.types.binarydata.BinaryData> getBinaryDataValues() {
+  public List<org.smartbit4all.api.binarydata.BinaryData> getBinaryDataValues() {
     return binaryDataValues;
   }
 
 
   @JsonProperty(BINARY_DATA_VALUES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setBinaryDataValues(List<org.smartbit4all.types.binarydata.BinaryData> binaryDataValues) {
+  public void setBinaryDataValues(List<org.smartbit4all.api.binarydata.BinaryData> binaryDataValues) {
     this.binaryDataValues = binaryDataValues;
   }
 

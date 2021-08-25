@@ -5,8 +5,6 @@ plugins {
 
 dependencies {
     api project(':core')
-    api project(':api-domain')
-    api project(':types')
 }
 
 
@@ -20,7 +18,7 @@ smartbit4all {
         "FilterGroupType" : "org.smartbit4all.api.filter.bean.FilterGroupType",
         "FilterOperation" : "org.smartbit4all.api.filter.bean.FilterOperation",
         "LocalDateTime": "java.time.LocalDateTime",
-        "BinaryData": "org.smartbit4all.types.binarydata.BinaryData",
+        "BinaryData": "org.smartbit4all.api.binarydata.BinaryData",
         "Double": "java.lang.Double"
       ]
   }

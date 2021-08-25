@@ -20,8 +20,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.domain.meta.jdbc.JDBCByteArray2BinaryData;
-import org.smartbit4all.types.binarydata.BinaryData;
 import com.google.common.io.ByteStreams;
 
 /**
