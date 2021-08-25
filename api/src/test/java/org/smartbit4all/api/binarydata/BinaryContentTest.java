@@ -110,7 +110,8 @@ public class BinaryContentTest {
   @Test
   void contentOfTest() {
     BinaryContent binaryContent = new BinaryContent().dataUri(testFileDataURI);
-    binaryContent = binaryContentApi.contentOf(binaryContent, testFile.inputStream());
+    binaryContentApi.saveIntoContent(binaryContent, testFile.inputStream(),
+        binaryContent.getDataUri());
 
     // Try to load not existing BinaryData
     Optional<BinaryData> binaryData = binaryDataApi.load(binaryContent.getDataUri());

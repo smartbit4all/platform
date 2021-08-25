@@ -3,6 +3,7 @@ package org.smartbit4all.api.binarydata;
 import java.net.URI;
 import java.util.Objects;
 import javax.validation.Valid;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -14,6 +15,7 @@ import io.swagger.annotations.ApiModelProperty;
     BinaryContent.DATAURI,
     BinaryContent.FILENAME,
     BinaryContent.MIMETYPE,
+    BinaryContent.EXTENSION,
     BinaryContent.SIZE
 })
 @JsonTypeName("BinaryContent")
@@ -38,6 +40,10 @@ public class BinaryContent {
   @JsonProperty(MIMETYPE)
   private String mimeType;
 
+  public static final String EXTENSION = "extension";
+  @JsonProperty(EXTENSION)
+  private String extension;
+
   public static final String SIZE = "size";
   @JsonProperty(SIZE)
   private Long size;
@@ -46,18 +52,18 @@ public class BinaryContent {
   /**
    * True if the BinaryData is loaded into memory.
    */
-  @JsonProperty(LOADED)
+  @JsonIgnore
   private transient boolean loaded = false;
 
   public static final String DATA = "data";
-  @JsonProperty(DATA)
+  @JsonIgnore
   private transient BinaryData data;
 
   public static final String SAVEDATA = "saveData";
   /**
    * True if we have to save the BinaryData when we save the BinaryContent
    */
-  @JsonProperty(SAVEDATA)
+  @JsonIgnore
   private transient boolean saveData = false;
 
 
@@ -145,9 +151,9 @@ public class BinaryContent {
   }
 
   /**
-   * Get uri
+   * Get mimeType
    * 
-   * @return uri
+   * @return mimeType
    **/
   @javax.annotation.Nullable
   @Valid
@@ -165,15 +171,41 @@ public class BinaryContent {
     this.mimeType = mimeType;
   }
 
+  public BinaryContent extension(String extension) {
+    this.extension = extension;
+    return this;
+  }
+
+  /**
+   * Get extension
+   * 
+   * @return extension
+   **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(EXTENSION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public String getExtension() {
+    return extension;
+  }
+
+
+  @JsonProperty(EXTENSION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setExtension(String extension) {
+    this.extension = extension;
+  }
+
   public BinaryContent size(Long size) {
     this.size = size;
     return this;
   }
 
   /**
-   * Get uri
+   * Get size
    * 
-   * @return uri
+   * @return size
    **/
   @javax.annotation.Nullable
   @Valid

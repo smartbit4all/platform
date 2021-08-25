@@ -1,6 +1,7 @@
 package org.smartbit4all.api.binarydata;
 
 import java.io.InputStream;
+import java.net.URI;
 
 public interface BinaryContentApi {
 
@@ -12,7 +13,7 @@ public interface BinaryContentApi {
   void load(BinaryContent... binaryContents);
 
   /**
-   * Return an InputStream for the BinaryContent. Load into memory first if it's not loaded yet.
+   * Returns an InputStream for the BinaryContent. Load into memory first if it's not loaded yet.
    * 
    * @param binaryContent
    * @return
@@ -20,13 +21,39 @@ public interface BinaryContentApi {
   InputStream getInputStream(BinaryContent binaryContent);
 
   /**
+   * Returns a BinaryData for the BinaryContent. Load into memory first if it's not loaded yet.
+   * 
+   * @param binaryContent
+   * @return
+   */
+  BinaryData getBinaryData(BinaryContent binaryContent);
+
+  /**
    * The InputStream will be converted into a BinaryData and stored in the BinaryContent. The
    * BinaryContent will be saved the same time as the BinaryContent.
    * 
-   * @param binaryContent
-   * @param inputstream
+   */
+  void saveIntoContent(BinaryContent binaryContent, InputStream inputstream, URI dataUri);
+
+  /**
+   * The BinaryData will be stored in the BinaryContent. The BinaryContent will be saved the same
+   * time as the BinaryContent.
+   * 
+   */
+  void saveIntoContent(BinaryContent binaryContent, BinaryData binaryData, URI dataUri);
+
+  /**
+   * Save the InputStream as a BinaryData.
+   * 
    * @return
    */
-  BinaryContent contentOf(BinaryContent binaryContent, InputStream inputstream);
+  void uploadContent(BinaryContent binaryContent, InputStream inputstream, URI dataUri);
+
+  /**
+   * Save the BinaryData.
+   * 
+   * @return
+   */
+  void uploadContent(BinaryContent binaryContent, BinaryData data, URI dataUri);
 
 }
