@@ -14,17 +14,41 @@ components:
     ContentStagingDocument:
       type: object
       properties:
-        direction:
-          $ref: '#/components/schemas/Direction'
+        key:
+          type: string
+          format: uuid
+        uri:
+          type: string
+          format: uri
+        contentUri:
+          type: string
+          format: uri
+        type:
+          $ref: '#/components/schemas/Type'
+          
+    ContentStagingEventData:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/Type'
+        state:
+          $ref: '#/components/schemas/State'
         key:
           type: string
           format: uuid
         contentUri:
           type: string
           format: uri
-          
-    Direction:
+
+    Type:
       type: string
       enum:
         - download
         - upload
+        
+    State:
+      type: string
+      enum:
+        - active
+        - uploaded
+        - downloaded

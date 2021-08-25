@@ -24,121 +24,38 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
 import java.util.UUID;
+import org.smartbit4all.api.contentstaging.bean.State;
 import org.smartbit4all.api.contentstaging.bean.Type;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 
 /**
- * ContentStagingDocument
+ * ContentStagingEventData
  */
 @JsonPropertyOrder({
-  ContentStagingDocument.KEY,
-  ContentStagingDocument.URI,
-  ContentStagingDocument.CONTENT_URI,
-  ContentStagingDocument.TYPE
+  ContentStagingEventData.TYPE,
+  ContentStagingEventData.STATE,
+  ContentStagingEventData.KEY,
+  ContentStagingEventData.CONTENT_URI
 })
-@JsonTypeName("ContentStagingDocument")
+@JsonTypeName("ContentStagingEventData")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
-public class ContentStagingDocument {
+public class ContentStagingEventData {
+  public static final String TYPE = "type";
+  private Type type;
+
+  public static final String STATE = "state";
+  private State state;
+
   public static final String KEY = "key";
   private UUID key;
-
-  public static final String URI = "uri";
-  private URI uri;
 
   public static final String CONTENT_URI = "contentUri";
   private URI contentUri;
 
-  public static final String TYPE = "type";
-  private Type type;
 
-
-  public ContentStagingDocument key(UUID key) {
-    
-    this.key = key;
-    return this;
-  }
-
-   /**
-   * Get key
-   * @return key
-  **/
-  @javax.annotation.Nullable
-  @Valid
-  @ApiModelProperty(value = "")
-  @JsonProperty(KEY)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public UUID getKey() {
-    return key;
-  }
-
-
-  @JsonProperty(KEY)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setKey(UUID key) {
-    this.key = key;
-  }
-
-
-  public ContentStagingDocument uri(URI uri) {
-    
-    this.uri = uri;
-    return this;
-  }
-
-   /**
-   * Get uri
-   * @return uri
-  **/
-  @javax.annotation.Nullable
-  @Valid
-  @ApiModelProperty(value = "")
-  @JsonProperty(URI)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public URI getUri() {
-    return uri;
-  }
-
-
-  @JsonProperty(URI)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setUri(URI uri) {
-    this.uri = uri;
-  }
-
-
-  public ContentStagingDocument contentUri(URI contentUri) {
-    
-    this.contentUri = contentUri;
-    return this;
-  }
-
-   /**
-   * Get contentUri
-   * @return contentUri
-  **/
-  @javax.annotation.Nullable
-  @Valid
-  @ApiModelProperty(value = "")
-  @JsonProperty(CONTENT_URI)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public URI getContentUri() {
-    return contentUri;
-  }
-
-
-  @JsonProperty(CONTENT_URI)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setContentUri(URI contentUri) {
-    this.contentUri = contentUri;
-  }
-
-
-  public ContentStagingDocument type(Type type) {
+  public ContentStagingEventData type(Type type) {
     
     this.type = type;
     return this;
@@ -166,6 +83,90 @@ public class ContentStagingDocument {
   }
 
 
+  public ContentStagingEventData state(State state) {
+    
+    this.state = state;
+    return this;
+  }
+
+   /**
+   * Get state
+   * @return state
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(STATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public State getState() {
+    return state;
+  }
+
+
+  @JsonProperty(STATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setState(State state) {
+    this.state = state;
+  }
+
+
+  public ContentStagingEventData key(UUID key) {
+    
+    this.key = key;
+    return this;
+  }
+
+   /**
+   * Get key
+   * @return key
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(KEY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public UUID getKey() {
+    return key;
+  }
+
+
+  @JsonProperty(KEY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setKey(UUID key) {
+    this.key = key;
+  }
+
+
+  public ContentStagingEventData contentUri(URI contentUri) {
+    
+    this.contentUri = contentUri;
+    return this;
+  }
+
+   /**
+   * Get contentUri
+   * @return contentUri
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(CONTENT_URI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public URI getContentUri() {
+    return contentUri;
+  }
+
+
+  @JsonProperty(CONTENT_URI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setContentUri(URI contentUri) {
+    this.contentUri = contentUri;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -174,26 +175,26 @@ public class ContentStagingDocument {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    ContentStagingDocument contentStagingDocument = (ContentStagingDocument) o;
-    return Objects.equals(this.key, contentStagingDocument.key) &&
-        Objects.equals(this.uri, contentStagingDocument.uri) &&
-        Objects.equals(this.contentUri, contentStagingDocument.contentUri) &&
-        Objects.equals(this.type, contentStagingDocument.type);
+    ContentStagingEventData contentStagingEventData = (ContentStagingEventData) o;
+    return Objects.equals(this.type, contentStagingEventData.type) &&
+        Objects.equals(this.state, contentStagingEventData.state) &&
+        Objects.equals(this.key, contentStagingEventData.key) &&
+        Objects.equals(this.contentUri, contentStagingEventData.contentUri);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(key, uri, contentUri, type);
+    return Objects.hash(type, state, key, contentUri);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class ContentStagingDocument {\n");
-    sb.append("    key: ").append(toIndentedString(key)).append("\n");
-    sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
-    sb.append("    contentUri: ").append(toIndentedString(contentUri)).append("\n");
+    sb.append("class ContentStagingEventData {\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
+    sb.append("    state: ").append(toIndentedString(state)).append("\n");
+    sb.append("    key: ").append(toIndentedString(key)).append("\n");
+    sb.append("    contentUri: ").append(toIndentedString(contentUri)).append("\n");
     sb.append("}");
     return sb.toString();
   }
