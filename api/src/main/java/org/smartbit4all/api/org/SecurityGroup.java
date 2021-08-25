@@ -31,19 +31,14 @@ public final class SecurityGroup {
    * The api to access the current user and it's settings. If we doesn't have this api then the
    * check is always true. Without security everything is allowed.
    */
-  @Autowired
   private UserSessionApi userSessionApi;
   
   private OrgApi api;
-
-  public SecurityGroup(String description) {
+  
+  public SecurityGroup(String description, UserSessionApi userSessionApi, SecurityGroup... subGroups) {
     super();
     this.description = description;
-  }
-
-  public SecurityGroup(String description, SecurityGroup... subGroups) {
-    super();
-    this.description = description;
+    this.userSessionApi = userSessionApi;
   }
 
   public final String getName() {

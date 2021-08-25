@@ -4,21 +4,27 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.smartbit4all.api.invocation.InvocationTestConfig;
 import org.smartbit4all.api.org.bean.User;
+import org.smartbit4all.api.session.UserSessionApi;
 import org.smartbit4all.api.session.UserSessionApiLocal;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Bean;
 
+@SpringBootTest(classes = {
+    OrgApiTestConfig.class
+})
 class OrgApiTest {
-
-  private static MyModuleSecurityOption security = new MyModuleSecurityOption();
-
-  private static OrgApiInMemory orgApi = new OrgApiInMemory(null);
   
-  private static UserSessionApiLocal userSessionApi = new UserSessionApiLocal();
+  @Autowired
+  private MyModuleSecurityOption security;
 
-  @BeforeAll
-  static void setUpBeforeClass() throws Exception {
-    orgApi.analyzeSecurityOptions(security);
-  }
+  @Autowired
+  private OrgApiInMemory orgApi;
+  
+  @Autowired
+  private UserSessionApiLocal userSessionApi;
 
   @AfterAll
   static void tearDownAfterClass() throws Exception {}
@@ -51,5 +57,5 @@ class OrgApiTest {
         security.viewer.getName());
 
   }
-
+  
 }

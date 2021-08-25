@@ -1,5 +1,7 @@
 package org.smartbit4all.api.org;
 
+import org.smartbit4all.api.session.UserSessionApi;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 /**
@@ -11,10 +13,16 @@ import org.springframework.stereotype.Service;
 @Service
 public class MyModuleSecurityOption implements SecurityOption {
 
-  public SecurityGroup editor = new SecurityGroup("The my module editor group");
+  public SecurityGroup editor;
 
-  public SecurityGroup viewer = new SecurityGroup("The my module viewer group");
+  public SecurityGroup viewer;
 
-  public SecurityGroup admin = new SecurityGroup("The my module admin group", editor, viewer);
-
+  public SecurityGroup admin;
+  
+  public MyModuleSecurityOption(UserSessionApi userSessionApi) {
+    editor = new SecurityGroup("The my module editor group", userSessionApi);
+    viewer = new SecurityGroup("The my module editor group", userSessionApi);
+    admin = new SecurityGroup("The my module editor group", userSessionApi, viewer, editor);
+  }
+  
 }
