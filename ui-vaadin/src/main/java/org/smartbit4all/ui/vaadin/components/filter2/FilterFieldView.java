@@ -192,34 +192,8 @@ public class FilterFieldView extends FlexLayout implements DragSource<FilterFiel
     String filterView = (String) change.getNewValue();
     if (!filterView.equals(currentFilterView)) {
       FilterOperationView prevOperationView = operationView;
-      if ("filterop.txt.eq".equals(filterView)) {
-        operationView = new FilterOperationTxtEqualsView(filterField, path);
-      } else if ("filterop.txt.like".equals(filterView)) {
-        operationView = new FilterOperationTxtLikeView(filterField, path);
-      } else if ("filterop.txt.like.min".equals(filterView)) {
-        operationView = new FilterOperationTxtLikeMinView(filterField, path);
-      } else if ("filterop.number.eq".equals(filterView)) {
-        operationView = new FilterOperationNumberEqualsView(filterField, path);
-      } else if ("filterop.multi.eq".equals(filterView)) {
-        operationView = new FilterOperationMultiSelectView(filterField, path);
-      } else if ("filterop.combo.eq".equals(filterView)) {
-        operationView = new FilterOperationComboBoxView(filterField, path);
-      } else if ("filterop.date.time.interval".equals(filterView)) {
-        operationView = new FilterOperationDateTimeIntervalView(filterField, path);
-      } else if ("filterop.date.time.interval.cb".equals(filterView)) {
-        operationView = new FilterOperationDateTimeComboBoxPickerView(filterField, path);
-      } else if ("filterop.date.time.eq".equals(filterView)) {
-        operationView = new FilterOperationDateTimeEqualsView(filterField, path);
-      } else if ("filterop.date.interval".equals(filterView)) {
-        operationView = new FilterOperationDateIntervalView(filterField, path);
-      } else if ("filterop.date.interval.cb".equals(filterView)) {
-        operationView = new FilterOperationDateComboBoxPickerView(filterField, path);
-      } else if ("filterop.date.eq".equals(filterView)) {
-        operationView = new FilterOperationDateEqualsView(filterField, path);
-      } else {
-        throw new IllegalArgumentException("Invalid filterView parameter (" + filterView
-            + ") in filter!");
-      }
+      
+      operationView = FilterOperationFactory.create(filterView, filterField, path);
 
       if (prevOperationView != null) {
         prevOperationView.unbind();

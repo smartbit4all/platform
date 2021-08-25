@@ -11,4 +11,8 @@ dependencies {
 		exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
         exclude group: 'ch.qos.logback', module: 'logback-classic'
 	}
+	
+    testImplementation testFixtures(project(':core'))
+	testFixturesImplementation project(':core')
+    testFixturesImplementation testFixtures(project(':core'))
 }
