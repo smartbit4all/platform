@@ -9,54 +9,15 @@ info:
 tags:
 - name: Invocation
 paths:
-  /invokeApi:
+  /nope:
     post:
-      tags:
-      - Invocation
-      summary: ''
-      operationId: 'invokeApi'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/InvocationRequestData'
+      summary: Placeholder for generation
       responses:
         '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/InvocationParameterData'
-
+          description: nope
                 
 components:
   schemas:
-    InvocationRequestData:
-      type: object
-      required: [uuid, parameters, apiClass, methodName, executionApi]
-      properties:
-        uuid:
-          type: string
-          format: uuid
-          description: 'The unique identifier of the request.'
-        executionApi:
-          type: string
-          description: 'The name of the execution api. By default it is local.'
-          default: local 
-        apiClass: 
-          type: string
-          description: 'The fully qualified name of the api. In case of java it is the name of the class.'
-        innerApi:
-          type: string
-          description: 'If we have a contributed api collecting other apis then it is the identifier of the contributed api.'
-        methodName:
-          type: string
-          description: 'The name of the method to call'
-        parameters:
-          type: array
-          items:
-            $ref: '#/components/schemas/InvocationParameterData'
     InvocationRequestTemplate:
       type: object
       required: [parameters, apiClass, methodName]
@@ -77,20 +38,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/InvocationParameterTemplate'
-    InvocationParameterData:
-      type: object
-      required: [kind, typeClass]
-      properties:
-        kind:
-          description: The type of the invocation parameter.
-          $ref: '#/components/schemas/InvocationParameterKind'
-          default: PRIMITIVE
-        typeClass:
-          type: string
-          description: The fully qualified type class name of the parameter.
-        value:
-          type: string
-          description: 'The value of the property'
     InvocationParameterTemplate:
       type: object
       required: [name, typeClass]
@@ -101,8 +48,3 @@ components:
         typeClass:
           type: string
           description: The fully qualified type class name of the parameter.
-    InvocationParameterKind:
-      type: string
-      enum: [
-          PRIMITIVE, OBJECTURI, OBJECTUUID
-        ]

@@ -15,6 +15,7 @@ include 'sec-ms365'
 include 'vaadin-sec'
 include 'storage-fs'
 include 'gson'
+include 'invocation-domain-rest'
 include 'invocation-cli-rest'
 include 'invocation-srv-rest'
 

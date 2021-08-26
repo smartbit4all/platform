@@ -1,0 +1,17 @@
+plugins {
+	id "org.smartbit4all.platform.gradle.openapi"
+
+}
+
+dependencies {
+}
+
+smartbit4all {
+  openApi {
+  	modelPackagePrefix = "org.smartbit4all.api"
+  	modelPackagePostfix = "model"
+  	importMappings = [
+  		"BinaryData": "org.smartbit4all.api.binarydata.BinaryData"
+  	]
+  }
+}

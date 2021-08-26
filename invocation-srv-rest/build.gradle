@@ -3,7 +3,9 @@ plugins {
 }
 
 dependencies {
-	api project(':api-domain')
+	api project(':api')
+	api project(':invocation-domain-rest')
+	
 	
 	api 'org.springframework:spring-context:5.2.3.RELEASE'
 	api 'org.springframework:spring-web:5.2.3.RELEASE'
@@ -16,7 +18,7 @@ dependencies {
 smartbit4all {
     openApi {
         apiDescriptorMapping = [
-        	"${rootDir}/api-domain/src/main/resources/descriptors/invocation-api.yaml" : "invocation"
+        	"${rootDir}/invocation-domain-rest/src/main/resources/descriptors/invocation-api.yaml" : "invocation"
         ]
         apiPackagePrefix = "org.smartbit4all.api"
         apiPackagePostfix = "restserver"
@@ -24,8 +26,8 @@ smartbit4all {
         invokerPackagePostfix = "restserver.util"
 		genApiRestServer = true
 		importMappings = [
-			"InvocationRequestData" : "org.smartbit4all.api.invocation.bean.InvocationRequestData",
-			"InvocationParameterData" : "org.smartbit4all.api.invocation.bean.InvocationParameterData"
+			"InvocationRequestData" : "org.smartbit4all.api.invocation.model.InvocationRequestData",
+			"InvocationParameterData" : "org.smartbit4all.api.invocation.model.InvocationParameterData"
 		]
     }
 }

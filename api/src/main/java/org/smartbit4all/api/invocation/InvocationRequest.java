@@ -7,10 +7,9 @@ import java.util.Map;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.smartbit4all.api.config.ApiConfig;
+import org.smartbit4all.api.config.PlatformApiConfig;
 import org.smartbit4all.api.contribution.ContributionApi;
 import org.smartbit4all.api.contribution.PrimaryApi;
-import org.smartbit4all.api.invocation.bean.InvocationParameterKind;
 import org.smartbit4all.api.invocation.bean.InvocationParameterTemplate;
 import org.smartbit4all.api.invocation.bean.InvocationRequestTemplate;
 
@@ -58,7 +57,7 @@ public class InvocationRequest {
 
   /**
    * The execution api to use. By default we use the {@link Invocations#LOCAL}. It's always exists
-   * because it's configured by the {@link ApiConfig}.
+   * because it's configured by the {@link PlatformApiConfig}.
    */
   private String executionApi = Invocations.LOCAL;
 
@@ -72,6 +71,19 @@ public class InvocationRequest {
     this.apiClass = apiClass;
     if (apiClass != null) {
       apiClassName = apiClass.getName();
+    }
+    uuid = UUID.randomUUID();
+  }
+
+  public InvocationRequest(String apiClassName) {
+    super();
+    this.apiClassName = apiClassName;
+    if (apiClassName != null) {
+      try {
+        apiClass = Class.forName(apiClassName);
+      } catch (ClassNotFoundException e) {
+        log.debug("Unable to find the Api class", e);
+      }
     }
     uuid = UUID.randomUUID();
   }
@@ -100,10 +112,29 @@ public class InvocationRequest {
    * @param typeClass The type of the value.
    * @return
    */
-  public InvocationRequest addParameter(String name, InvocationParameterKind kind, Object value,
+  public InvocationRequest addParameter(String name, InvocationParameter.Kind kind, Object value,
       String typeClass) {
     InvocationParameter parameter = new InvocationParameter();
     parameter.setKind(kind);
+    parameter.setTypeClass(
+        typeClass != null ? typeClass : (value != null ? value.getClass().getName() : typeClass));
+    parameter.setValue(value);
+    parameters.put(name, parameter);
+    return this;
+  }
+
+  /**
+   * Adds a new by value parameter to the invocation.
+   * 
+   * @param name The name of the parameter.
+   * @param value The value object
+   * @param typeClass The type of the value.
+   * @return
+   */
+  public InvocationRequest addParameter(String name, Object value,
+      String typeClass) {
+    InvocationParameter parameter = new InvocationParameter();
+    parameter.setKind(InvocationParameter.Kind.BYVALUE);
     parameter.setTypeClass(
         typeClass != null ? typeClass : (value != null ? value.getClass().getName() : typeClass));
     parameter.setValue(value);
@@ -164,18 +195,12 @@ public class InvocationRequest {
    * @return
    */
   public static final InvocationRequest of(InvocationRequestTemplate template) {
-    Class<?> apiClass = null;
-    try {
-      apiClass = Class.forName(template.getApiClass());
-    } catch (ClassNotFoundException e) {
-      log.debug("Unable to find the Api class", e);
-    }
-    InvocationRequest result = new InvocationRequest(apiClass);
+    InvocationRequest result = new InvocationRequest(template.getApiClass());
     result.apiClassName = template.getApiClass();
     result.innerApi(template.getInnerApi()).method(template.getMethodName())
         .exec(template.getExecutionApi());
     for (InvocationParameterTemplate parameter : template.getParameters()) {
-      result.addParameter(parameter.getName(), InvocationParameterKind.PRIMITIVE, null,
+      result.addParameter(parameter.getName(), InvocationParameter.Kind.BYVALUE, null,
           parameter.getTypeClass());
     }
     return result;

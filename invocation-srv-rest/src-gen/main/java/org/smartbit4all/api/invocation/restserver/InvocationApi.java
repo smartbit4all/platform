@@ -28,19 +28,19 @@ public interface InvocationApi {
     /**
      * POST /invokeApi
      *
-     * @param orgSmartbit4allApiInvocationBeanInvocationRequestData  (required)
+     * @param orgSmartbit4allApiInvocationModelInvocationRequestData  (required)
      * @return  (status code 200)
      */
-    @ApiOperation(value = "", nickname = "invokeApi", notes = "", response = org.smartbit4all.api.invocation.bean.InvocationParameterData.class, tags={ "Invocation", })
+    @ApiOperation(value = "", nickname = "invokeApi", notes = "", response = org.smartbit4all.api.invocation.model.InvocationParameterData.class, tags={ "Invocation", })
     @ApiResponses(value = { 
-        @ApiResponse(code = 200, message = "", response = org.smartbit4all.api.invocation.bean.InvocationParameterData.class) })
+        @ApiResponse(code = 200, message = "", response = org.smartbit4all.api.invocation.model.InvocationParameterData.class) })
     @PostMapping(
         value = "/invokeApi",
         produces = { "application/json" },
         consumes = { "application/json" }
     )
-    default ResponseEntity<org.smartbit4all.api.invocation.bean.InvocationParameterData> invokeApi(@ApiParam(value = "" ,required=true )  @Valid @RequestBody org.smartbit4all.api.invocation.bean.InvocationRequestData orgSmartbit4allApiInvocationBeanInvocationRequestData) throws Exception {
-        return getDelegate().invokeApi(orgSmartbit4allApiInvocationBeanInvocationRequestData);
+    default ResponseEntity<org.smartbit4all.api.invocation.model.InvocationParameterData> invokeApi(@ApiParam(value = "" ,required=true )  @Valid @RequestBody org.smartbit4all.api.invocation.model.InvocationRequestData orgSmartbit4allApiInvocationModelInvocationRequestData) throws Exception {
+        return getDelegate().invokeApi(orgSmartbit4allApiInvocationModelInvocationRequestData);
     }
 
 }

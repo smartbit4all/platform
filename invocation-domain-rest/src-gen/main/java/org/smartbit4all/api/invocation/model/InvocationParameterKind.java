@@ -11,7 +11,7 @@
  */
 
 
-package org.smartbit4all.api.invocation.bean;
+package org.smartbit4all.api.invocation.model;
 
 import java.util.Objects;
 import java.util.Arrays;
@@ -27,11 +27,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
  */
 public enum InvocationParameterKind {
   
-  PRIMITIVE("PRIMITIVE"),
+  BYVALUE("BYVALUE"),
   
-  OBJECTURI("OBJECTURI"),
-  
-  OBJECTUUID("OBJECTUUID");
+  BYREFERENCE("BYREFERENCE");
 
   private String value;
 

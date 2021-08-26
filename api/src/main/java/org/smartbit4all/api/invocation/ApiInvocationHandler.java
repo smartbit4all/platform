@@ -5,7 +5,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Proxy;
 import org.smartbit4all.api.contribution.ContributionApi;
-import org.smartbit4all.api.invocation.bean.InvocationParameterKind;
 
 /**
  * This {@link InvocationHandler} implementation is responsible for constructing the
@@ -27,6 +26,8 @@ public class ApiInvocationHandler<A, I extends ContributionApi> implements Invoc
 
   private final InvocationApi invocationApi;
 
+  private String executionApi;
+
   private ApiInvocationProxy invocationProxy = new ApiInvocationProxy() {
 
     @Override
@@ -41,7 +42,8 @@ public class ApiInvocationHandler<A, I extends ContributionApi> implements Invoc
   };
 
   public ApiInvocationHandler(Class<? extends A> primaryApiClass, A primaryApi,
-      Class<? extends I> innerApiClass, I innerApi, InvocationApi invocationApi) {
+      Class<? extends I> innerApiClass, I innerApi, InvocationApi invocationApi,
+      String executionApi) {
     super();
     this.primaryApiClass = primaryApiClass;
     this.primaryApi = primaryApi;
@@ -53,12 +55,26 @@ public class ApiInvocationHandler<A, I extends ContributionApi> implements Invoc
   @SuppressWarnings("unchecked")
   public static final <A, I extends ContributionApi> I createProxyInner(
       Class<? extends A> primaryApiClass, A primaryApi,
-      Class<? extends I> innerApiClass, I innerApi, InvocationApi invocationApi) {
+      Class<? extends I> innerApiClass, I innerApi, InvocationApi invocationApi,
+      String executionApi) {
     ApiInvocationHandler<A, I> invocationHandler =
         new ApiInvocationHandler<>(primaryApiClass, primaryApi, innerApiClass, innerApi,
-            invocationApi);
+            invocationApi, executionApi);
     I apiProxy = (I) Proxy.newProxyInstance(innerApiClass.getClassLoader(),
         new Class[] {innerApiClass, ApiInvocationProxy.class}, invocationHandler);
+    return apiProxy;
+  }
+
+  @SuppressWarnings("unchecked")
+  public static final <A> A createProxy(
+      Class<? extends A> primaryApiClass, A primaryApi,
+      InvocationApi invocationApi,
+      String executionApi) {
+    ApiInvocationHandler<A, ?> invocationHandler =
+        new ApiInvocationHandler<>(primaryApiClass, primaryApi, null, null,
+            invocationApi, executionApi);
+    A apiProxy = (A) Proxy.newProxyInstance(primaryApiClass.getClassLoader(),
+        new Class[] {primaryApiClass, ApiInvocationProxy.class}, invocationHandler);
     return apiProxy;
   }
 
@@ -80,8 +96,8 @@ public class ApiInvocationHandler<A, I extends ContributionApi> implements Invoc
       Parameter parameter = parameters[i];
       Object parameterValue = args[i];
       // TODO For the conversion to string must be implemented with TransferService!
-      invocation.addParameter(parameter.getName(), InvocationParameterKind.PRIMITIVE,
-          parameterValue.toString(),
+      invocation.addParameter(parameter.getName(), InvocationParameter.Kind.BYVALUE,
+          parameterValue,
           parameter.getType().getName());
     }
     InvocationParameter result = invocationApi.invoke(invocation);

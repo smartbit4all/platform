@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import org.smartbit4all.api.invocation.ApiInvocationHandler;
 import org.smartbit4all.api.invocation.InvocationApi;
+import org.smartbit4all.api.invocation.Invocations;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -53,7 +54,7 @@ public class PrimaryApiImpl<A extends ContributionApi> implements PrimaryApi<A>,
       for (A api : apis) {
         apiByName.put(api.getApiName(),
             ApiInvocationHandler.createProxyInner(primaryApiClass, this, innerApiClass, api,
-                invocationApi));
+                invocationApi, Invocations.LOCAL));
       }
     }
   }

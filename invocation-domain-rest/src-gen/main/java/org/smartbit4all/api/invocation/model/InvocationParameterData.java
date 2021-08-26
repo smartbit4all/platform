@@ -11,7 +11,7 @@
  */
 
 
-package org.smartbit4all.api.invocation.bean;
+package org.smartbit4all.api.invocation.model;
 
 import java.util.Objects;
 import java.util.Arrays;
@@ -22,7 +22,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import org.smartbit4all.api.invocation.bean.InvocationParameterKind;
+import org.smartbit4all.api.invocation.model.InvocationParameterKind;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import javax.validation.constraints.*;
 import javax.validation.Valid;

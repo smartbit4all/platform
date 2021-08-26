@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Import;
  */
 @Configuration
 @Import({DomainConfig.class})
-public class ApiConfig {
+public class PlatformApiConfig {
 
   @Bean
   public InvocationApi invocationApi() {

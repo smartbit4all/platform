@@ -2,7 +2,6 @@ package org.smartbit4all.api.invocation;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.smartbit4all.api.invocation.bean.InvocationParameterKind;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -22,14 +21,14 @@ class InvocationApiTest {
     {
       String value = "Peter";
       InvocationRequest request = Invocations.invoke(TestApi.class).method("doMethod")
-          .addParameter("p1", InvocationParameterKind.PRIMITIVE, value, String.class.getName());
+          .addParameter("p1", value, String.class.getName());
       invocationApi.invoke(request);
       Assertions.assertEquals(value, TestApiImpl.lastDo);
     }
     {
       String value = "Peter";
       InvocationRequest request = Invocations.invoke(TestApi.class).method("echoMethod")
-          .addParameter("p1", InvocationParameterKind.PRIMITIVE, value, String.class.getName());
+          .addParameter("p1", value, String.class.getName());
       InvocationParameter result = invocationApi.invoke(request);
       Assertions.assertEquals(value, result.getValue());
     }
@@ -53,7 +52,7 @@ class InvocationApiTest {
       InvocationRequest request =
           Invocations.invoke(TestPrimaryApi.class).innerApi("contributionApi1")
               .method("doSomething")
-              .addParameter("p1", InvocationParameterKind.PRIMITIVE, value, String.class.getName());
+              .addParameter("p1", value, String.class.getName());
       invocationApi.invoke(request);
       Assertions.assertEquals(value, TestContributionApiImpl.lastDoSomething);
     }
@@ -62,7 +61,7 @@ class InvocationApiTest {
       InvocationRequest request =
           Invocations.invoke(TestPrimaryApi.class).innerApi("contributionApi1")
               .method("echoMethod")
-              .addParameter("p1", InvocationParameterKind.PRIMITIVE, value, String.class.getName());
+              .addParameter("p1", value, String.class.getName());
       InvocationParameter result = invocationApi.invoke(request);
       Assertions.assertEquals(value, result.getValue());
     }
@@ -71,7 +70,7 @@ class InvocationApiTest {
       InvocationRequest request =
           Invocations.invoke(TestPrimaryApi.class).innerApi("contributionApi2")
               .method("doSomething")
-              .addParameter("p1", InvocationParameterKind.PRIMITIVE, value, String.class.getName());
+              .addParameter("p1", value, String.class.getName());
       invocationApi.invoke(request);
       Assertions.assertEquals(value, TestContributionApiImpl.lastDoSomething);
     }

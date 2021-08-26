@@ -50,28 +50,28 @@ public class InvocationApi {
      * 
      * 
      * <p><b>200</b>
-     * @param orgSmartbit4allApiInvocationBeanInvocationRequestData  (required)
-     * @return org.smartbit4all.api.invocation.bean.InvocationParameterData
+     * @param orgSmartbit4allApiInvocationModelInvocationRequestData  (required)
+     * @return org.smartbit4all.api.invocation.model.InvocationParameterData
      * @throws RestClientException if an error occurs while attempting to invoke the API
      */
-    public org.smartbit4all.api.invocation.bean.InvocationParameterData invokeApi(org.smartbit4all.api.invocation.bean.InvocationRequestData orgSmartbit4allApiInvocationBeanInvocationRequestData) throws RestClientException {
-        return invokeApiWithHttpInfo(orgSmartbit4allApiInvocationBeanInvocationRequestData).getBody();
+    public org.smartbit4all.api.invocation.model.InvocationParameterData invokeApi(org.smartbit4all.api.invocation.model.InvocationRequestData orgSmartbit4allApiInvocationModelInvocationRequestData) throws RestClientException {
+        return invokeApiWithHttpInfo(orgSmartbit4allApiInvocationModelInvocationRequestData).getBody();
     }
 
     /**
      * 
      * 
      * <p><b>200</b>
-     * @param orgSmartbit4allApiInvocationBeanInvocationRequestData  (required)
-     * @return ResponseEntity&lt;org.smartbit4all.api.invocation.bean.InvocationParameterData&gt;
+     * @param orgSmartbit4allApiInvocationModelInvocationRequestData  (required)
+     * @return ResponseEntity&lt;org.smartbit4all.api.invocation.model.InvocationParameterData&gt;
      * @throws RestClientException if an error occurs while attempting to invoke the API
      */
-    public ResponseEntity<org.smartbit4all.api.invocation.bean.InvocationParameterData> invokeApiWithHttpInfo(org.smartbit4all.api.invocation.bean.InvocationRequestData orgSmartbit4allApiInvocationBeanInvocationRequestData) throws RestClientException {
-        Object postBody = orgSmartbit4allApiInvocationBeanInvocationRequestData;
+    public ResponseEntity<org.smartbit4all.api.invocation.model.InvocationParameterData> invokeApiWithHttpInfo(org.smartbit4all.api.invocation.model.InvocationRequestData orgSmartbit4allApiInvocationModelInvocationRequestData) throws RestClientException {
+        Object postBody = orgSmartbit4allApiInvocationModelInvocationRequestData;
         
-        // verify the required parameter 'orgSmartbit4allApiInvocationBeanInvocationRequestData' is set
-        if (orgSmartbit4allApiInvocationBeanInvocationRequestData == null) {
-            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Missing the required parameter 'orgSmartbit4allApiInvocationBeanInvocationRequestData' when calling invokeApi");
+        // verify the required parameter 'orgSmartbit4allApiInvocationModelInvocationRequestData' is set
+        if (orgSmartbit4allApiInvocationModelInvocationRequestData == null) {
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Missing the required parameter 'orgSmartbit4allApiInvocationModelInvocationRequestData' when calling invokeApi");
         }
         
         String path = apiClient.expandPath("/invokeApi", Collections.<String, Object>emptyMap());
@@ -92,7 +92,7 @@ public class InvocationApi {
 
         String[] authNames = new String[] {  };
 
-        ParameterizedTypeReference<org.smartbit4all.api.invocation.bean.InvocationParameterData> returnType = new ParameterizedTypeReference<org.smartbit4all.api.invocation.bean.InvocationParameterData>() {};
+        ParameterizedTypeReference<org.smartbit4all.api.invocation.model.InvocationParameterData> returnType = new ParameterizedTypeReference<org.smartbit4all.api.invocation.model.InvocationParameterData>() {};
         return apiClient.invokeAPI(path, HttpMethod.POST, queryParams, postBody, headerParams, cookieParams, formParams, localVarAccept, localVarContentType, authNames, returnType);
     }
 }

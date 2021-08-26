@@ -25,11 +25,11 @@ public interface InvocationApiDelegate {
     /**
      * POST /invokeApi
      *
-     * @param orgSmartbit4allApiInvocationBeanInvocationRequestData  (required)
+     * @param orgSmartbit4allApiInvocationModelInvocationRequestData  (required)
      * @return  (status code 200)
      * @see InvocationApi#invokeApi
      */
-    default ResponseEntity<org.smartbit4all.api.invocation.bean.InvocationParameterData> invokeApi(org.smartbit4all.api.invocation.bean.InvocationRequestData orgSmartbit4allApiInvocationBeanInvocationRequestData) throws Exception {
+    default ResponseEntity<org.smartbit4all.api.invocation.model.InvocationParameterData> invokeApi(org.smartbit4all.api.invocation.model.InvocationRequestData orgSmartbit4allApiInvocationModelInvocationRequestData) throws Exception {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {

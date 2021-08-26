@@ -1,0 +1,78 @@
+openapi: 3.0.1
+info:
+  title: invocation api
+  description: The invocation api is a generic possibility to call remote apis.
+  termsOfService: ''
+  contact:
+    email: info@it4all.hu
+  version: 1.0.0
+tags:
+- name: Invocation
+paths:
+  /invokeApi:
+    post:
+      tags:
+      - Invocation
+      summary: ''
+      operationId: 'invokeApi'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvocationRequestData'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvocationParameterData'
+
+                
+components:
+  schemas:
+    InvocationRequestData:
+      type: object
+      required: [uuid, parameters, apiClass, methodName, executionApi]
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          description: 'The unique identifier of the request.'
+        executionApi:
+          type: string
+          description: 'The name of the execution api. By default it is local.'
+          default: local 
+        apiClass: 
+          type: string
+          description: 'The fully qualified name of the api. In case of java it is the name of the class.'
+        innerApi:
+          type: string
+          description: 'If we have a contributed api collecting other apis then it is the identifier of the contributed api.'
+        methodName:
+          type: string
+          description: 'The name of the method to call'
+        parameters:
+          type: array
+          items:
+            $ref: '#/components/schemas/InvocationParameterData'
+    InvocationParameterData:
+      type: object
+      required: [kind, typeClass]
+      properties:
+        kind:
+          description: The type of the invocation parameter.
+          $ref: '#/components/schemas/InvocationParameterKind'
+          default: BYVALUE
+        typeClass:
+          type: string
+          description: The fully qualified type class name of the parameter.
+        value:
+          type: string
+          description: 'The value of the property'
+    InvocationParameterKind:
+      type: string
+      enum: [
+          BYVALUE, BYREFERENCE
+        ]

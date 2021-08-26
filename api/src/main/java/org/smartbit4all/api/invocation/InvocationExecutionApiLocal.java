@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
-import org.smartbit4all.domain.service.transfer.TransferService;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -18,20 +17,16 @@ import org.springframework.context.ApplicationContextAware;
  * 
  * @author Peter Boros
  */
-public class InvocationExecutionApiLocal
-    implements InvocationExecutionApi, ApplicationContextAware {
+public class InvocationExecutionApiLocal extends InvocationExecutionApiImpl
+    implements ApplicationContextAware {
 
   private ApplicationContext appContext;
 
   @Autowired
   private StorageApi storageApi;
 
-  @Autowired
-  private TransferService transferService;
-
-  @Override
-  public String getName() {
-    return Invocations.LOCAL;
+  public InvocationExecutionApiLocal() {
+    super(Invocations.LOCAL);
   }
 
   @Override
@@ -57,16 +52,11 @@ public class InvocationExecutionApiLocal
     int i = 0;
     for (InvocationParameter parameter : request.getParameters()) {
       switch (parameter.getKind()) {
-        case PRIMITIVE:
-          // It means that we use the TransferService to get the value from String
-          if (method.getParameterTypes()[i].equals(String.class)) {
-            parameterObjects.add(parameter.getValue());
-          } else {
-            parameterObjects
-                .add(transferService.convert(parameter.getValue(), method.getParameterTypes()[i]));
-          }
+        case BYVALUE:
+          // In case of primitive
+          parameterObjects.add(parameter.getValue());
           break;
-        case OBJECTURI:
+        case BYREFERENCE:
           // In this case we have a direct URI to an object.
           Storage<?> storage = storageApi.get(method.getParameterTypes()[i]);
           try {

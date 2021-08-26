@@ -1,10 +1,8 @@
 package org.smartbit4all.api.invocation;
 
-import org.smartbit4all.api.invocation.bean.InvocationParameterKind;
+public final class InvocationParameter {
 
-public class InvocationParameter {
-
-  private InvocationParameterKind kind;
+  private Kind kind;
 
   private String typeClass;
 
@@ -12,35 +10,39 @@ public class InvocationParameter {
 
   private transient Object value;
 
-  final InvocationParameterKind getKind() {
+  public static enum Kind {
+    BYVALUE, BYREFERENCE
+  }
+
+  public final Kind getKind() {
     return kind;
   }
 
-  final void setKind(InvocationParameterKind kind) {
+  public final void setKind(Kind kind) {
     this.kind = kind;
   }
 
-  final String getTypeClass() {
+  public final String getTypeClass() {
     return typeClass;
   }
 
-  final void setTypeClass(String typeClass) {
+  public final void setTypeClass(String typeClass) {
     this.typeClass = typeClass;
   }
 
-  final String getStringValue() {
+  public final String getStringValue() {
     return stringValue;
   }
 
-  final void setStringValue(String stringValue) {
+  public final void setStringValue(String stringValue) {
     this.stringValue = stringValue;
   }
 
-  final Object getValue() {
+  public final Object getValue() {
     return value;
   }
 
-  final void setValue(Object value) {
+  public final void setValue(Object value) {
     this.value = value;
   }
 
