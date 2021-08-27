@@ -85,12 +85,54 @@ public class PredictiveFormInstanceViewUI extends FlexLayout implements Predicti
   private FlexLayout renderVisibleWidgetView(WidgetInstance instance) {
     WidgetDescriptor descriptor = controller.getWidgetDescriptor(instance.getDescriptorUri());
     boolean isWidgetSelected = controller.isWidgetSelected(instance);
+    WidgetType widgetType = descriptor.getWidgetType();
     
-    if (descriptor.getWidgetType() == WidgetType.CONTAINER) {
+    if (widgetType == WidgetType.CONTAINER) {
       return createVisibleWidgetContainerView(instance, descriptor, isWidgetSelected);
+    } else if (widgetType == WidgetType.TABLE) {
+      return createVisibleWidgetTableView(instance, descriptor, isWidgetSelected);
     } else {
       return createVisibleWidgetView(descriptor, instance, isWidgetSelected);
     }
+  }
+
+  private FlexLayout createVisibleWidgetTableView(WidgetInstance instance, WidgetDescriptor descriptor, boolean isWidgetSelected) {
+    FlexLayout tableLayout = new FlexLayout();
+    tableLayout.addClassName("visible-widget-table-view");
+
+    
+    if (isWidgetSelected) {
+      tableLayout.addClassName("selected-widget-container-view");
+    }
+
+    FlexLayout drawerLayout = new FlexLayout();
+    drawerLayout.addClassName("visible-widget-drawer-layout");
+    
+    FlexLayout visibleWidgetView = createVisibleWidgetView(descriptor, instance, isWidgetSelected);
+    Button expandButton = new Button(VaadinIcon.ANGLE_RIGHT.create());
+    
+    
+    expandButton.addClickListener(e -> {
+      if (tableLayout.getChildren().anyMatch(c -> c.equals(drawerLayout))) {
+        expandButton.setIcon(VaadinIcon.ANGLE_RIGHT.create());
+        tableLayout.remove(drawerLayout);
+      } else {
+        expandButton.setIcon(VaadinIcon.ANGLE_DOWN.create());
+        tableLayout.add(drawerLayout);
+      }
+    });
+    
+    visibleWidgetView.add(expandButton);
+    tableLayout.add(visibleWidgetView);
+   
+    if (instance.getWidgets() != null) {
+      for (WidgetInstance wi: instance.getWidgets()) {
+        drawerLayout.add(renderVisibleWidgetView(wi));
+      }
+    }
+    
+    tableLayout.add(drawerLayout);
+    return tableLayout;
   }
 
   private FlexLayout createVisibleWidgetContainerView(WidgetInstance instance,
@@ -128,7 +170,6 @@ public class PredictiveFormInstanceViewUI extends FlexLayout implements Predicti
     
     FlexLayout valueLayout = getValueLayoutFromWidgetInstance(instance, descriptor.getWidgetType());
     valueLayout.setClassName("visible-widget-view-value-layout");
-    
     
     if (isWidgetSelected) {
       layout.addClassName("selected-widget-view");

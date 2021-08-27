@@ -84,6 +84,9 @@ public class WidgetDialogUtil {
       case CONTAINER:
         dialog = new ContainerDialog(instance, ui, descriptor, controller);
         break;
+      case TABLE:
+        dialog = new TableDialog(instance, ui, descriptor, controller);
+        break;
         
       default:
         return;

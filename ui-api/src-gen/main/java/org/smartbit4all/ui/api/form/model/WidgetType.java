@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
- * * &#x60;container&#x60; This is just a folder for a set of widgets.  * &#x60;reference&#x60; Can be used to manage the reference for another entity.   * &#x60;detail&#x60; A list of other entities contained by the current entity.  * &#x60;association&#x60; The association is a reference for an independent entity instance. TODO   * &#x60;text&#x60; A text widget (a string value text field).  * &#x60;text_interval&#x60; A widget that contains a pair of text properties.  * &#x60;combobox&#x60; A selectable value stored in one or more fields  * &#x60;date&#x60; The single property widget with date type.   * &#x60;date_interval&#x60; An editor with a pair of date properties.  * &#x60;number&#x60; The single property widget with number type.  * &#x60;number_interval&#x60; An editor with a pair of number properties.  * &#x60;integer&#x60; The single property widget with integer type..  * &#x60;integer_interval&#x60; An editor with a pair of integer properties.  * &#x60;survey_combo&#x60; A widget that contains a score, and optionally a comment and/or a photo. 
+ * * &#x60;container&#x60; This is just a folder for a set of widgets.  * &#x60;reference&#x60; Can be used to manage the reference for another entity.   * &#x60;detail&#x60; A list of other entities contained by the current entity.  * &#x60;association&#x60; The association is a reference for an independent entity instance. TODO   * &#x60;text&#x60; A text widget (a string value text field).  * &#x60;text_interval&#x60; A widget that contains a pair of text properties.  * &#x60;combobox&#x60; A selectable value stored in one or more fields  * &#x60;date&#x60; The single property widget with date type.   * &#x60;date_interval&#x60; An editor with a pair of date properties.  * &#x60;number&#x60; The single property widget with number type.  * &#x60;number_interval&#x60; An editor with a pair of number properties.  * &#x60;integer&#x60; The single property widget with integer type..  * &#x60;integer_interval&#x60; An editor with a pair of integer properties.  * &#x60;survey_combo&#x60; A widget that contains a score, and optionally a comment and/or a photo.  * &#x60;table&#x60; A widget that contains a table in the form of widgets. 
  */
 public enum WidgetType {
   
@@ -54,7 +54,9 @@ public enum WidgetType {
   
   INTEGER_INTERVAL("integer_interval"),
   
-  SURVEY_COMBO("survey_combo");
+  SURVEY_COMBO("survey_combo"),
+  
+  TABLE("table");
 
   private String value;
 

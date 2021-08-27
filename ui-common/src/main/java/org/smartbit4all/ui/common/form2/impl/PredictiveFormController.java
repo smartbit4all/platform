@@ -28,6 +28,9 @@ public interface PredictiveFormController {
    */
   public void save();
 
+  /**
+   * Loads the available widgets, so they can be seen on the lower part of the screen.
+   */
   public void loadAvailableWidgets();
 
   /**
@@ -98,5 +101,9 @@ public interface PredictiveFormController {
    * @param instance the instance to be removed.
    */
   public void deleteWidgetInstance(WidgetInstance instance);
+
+  public PredictiveInputGraphNode getActiveNode();
+
+  public void addChildWidgets(WidgetDescriptor descriptor);
 
 }

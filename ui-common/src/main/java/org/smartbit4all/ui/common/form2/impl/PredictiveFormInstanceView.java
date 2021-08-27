@@ -16,8 +16,4 @@ public interface PredictiveFormInstanceView {
   
   public void navigateTo(EntityFormInstance instance);
   
-//  public void renderAvailableWidget(String label, String icon, URI descriptorUri);
-  
-//  public void renderVisibleWidget(String label, String icon, URI)
-
 }

@@ -111,25 +111,20 @@ public class PredictiveFormControllerImpl implements PredictiveFormController {
     return nodes;
   }
 
-  @Override
   // TODO this could be improved by adding better, more relevant mappings to the FormUtil
   // so the elements can be accessible easier
+  // TODO cancel button on the dialog is not yet implemented
+  @Override
   public void addWidget(PredictiveInputGraphNode node) {
     WidgetDescriptor widgetDescriptor = util.getDescriptor(node);
     WidgetType widgetType = widgetDescriptor.getWidgetType();
     // only setting active node if it's a container, otherwise setting nodes would be counterproductive.
-    if (widgetType == WidgetType.CONTAINER) {
+    if (widgetType == WidgetType.CONTAINER || widgetType == WidgetType.TABLE) {
       predictiveFormInstance.setActiveNode(node);
     }
     
     if (widgetDescriptor != null) {
       WidgetInstance widgetInstance = createWidgetInstanceFromDescriptor(widgetDescriptor);
-      // we don't want to open the dialog for containers immediately, as they don't hold any value!
-      if (WidgetType.CONTAINER != widgetType) {
-        ui.openValueDialog(widgetDescriptor.getWidgetType(), widgetInstance, widgetDescriptor);
-      }
-      predictiveFormInstance.getAvailableWidgets()
-          .removeIf(w -> w.getUri().equals(node.getDescriptorUri()));
       
       WidgetInstance parentWidgetInstance =
           util.getInstance(util.getNode(node.getParent()).getDescriptorUri());
@@ -142,10 +137,39 @@ public class PredictiveFormControllerImpl implements PredictiveFormController {
         util.addInstanceByUri(widgetInstance.getDescriptorUri(), widgetInstance);
       }
       
+      // we don't want to open the dialog for containers immediately, as they don't hold any value!
+      if (WidgetType.CONTAINER != widgetType && WidgetType.TABLE != widgetType) {
+        ui.openValueDialog(widgetDescriptor.getWidgetType(), widgetInstance, widgetDescriptor);
+      }
+      
+      if (WidgetType.TABLE == widgetType) {
+        for (PredictiveInputGraphNode n : node.getChildren()) {
+          addWidget(n);
+        }
+      }
+      
       predictiveFormInstance.getAvailableWidgets()
           .removeIf(w -> w.getUri().equals(node.getDescriptorUri()));
     }
     ui.renderWidgets();
+  }
+  
+  @Override
+  public void addChildWidgets(WidgetDescriptor descriptor) {
+    PredictiveInputGraphNode node = util.getNode(descriptor);
+    List<PredictiveInputGraphNode> childNodes = node.getChildren();
+    WidgetInstance parentInstance = util.getInstance(node.getDescriptorUri());
+    if (childNodes != null && parentInstance != null) {
+      for (PredictiveInputGraphNode n : childNodes) {
+        WidgetDescriptor childDescriptor = util.getDescriptor(n);
+        if (childDescriptor != null) {
+          WidgetInstance instance = createWidgetInstanceFromDescriptor(childDescriptor);
+          parentInstance.addWidgetsItem(instance);
+          util.addInstanceByUri(instance.getDescriptorUri(), instance);
+          predictiveFormInstance.getAvailableWidgets().removeIf(w -> w.getUri().equals(n.getDescriptorUri()));
+        }
+      }
+    }
   }
 
   @Override
@@ -186,6 +210,11 @@ public class PredictiveFormControllerImpl implements PredictiveFormController {
     }
     ui.renderWidgets();
     
+  }
+  
+  @Override
+  public PredictiveInputGraphNode getActiveNode() {
+    return predictiveFormInstance.getActiveNode();
   }
   
   private void deleteContainedWidgets(WidgetInstance instance) {
