@@ -16,6 +16,12 @@ public class CompositeObjectsTest {
         ComposeableObjectNavigationTest.TODO_COMPDEF_URI);
     
     assertEquals(COMPOSITE_OBJECT_TODO_COMPDEF_ASSOC_URI, assocUri);
+    
+    URI assocUriWithExtension = CompositeObjects.createChildAssocUri(
+        URI.create(ComposeableObjectNavigationTest.COMPOSITE_OBJECT_COMPDEF_URI.toString() + ".extension"),
+        ComposeableObjectNavigationTest.TODO_COMPDEF_URI);
+    
+    assertEquals(COMPOSITE_OBJECT_TODO_COMPDEF_ASSOC_URI, assocUriWithExtension);
   }
   
 }

@@ -2,6 +2,7 @@ package org.smartbit4all.api.compobject;
 
 import java.net.URI;
 import java.util.List;
+import java.util.UUID;
 import org.smartbit4all.api.compobject.bean.ComposeableObject;
 import org.smartbit4all.api.compobject.bean.ComposeableObjectDef;
 import org.smartbit4all.api.compobject.bean.CompositeObject;
@@ -12,10 +13,26 @@ import org.smartbit4all.api.navigation.NavigationConfig.ConfigBuilder;
 import org.smartbit4all.api.navigation.bean.NavigationAssociationMeta;
 import org.smartbit4all.domain.data.storage.Storage;
 import com.google.common.base.Strings;
+import com.google.common.io.Files;
 
 public class CompositeObjects {
 
   private static final String COMP_OBJECT_ASSOC_PATH_PREFIX = "assoc";
+
+  private static final String COMPOBJ_URI_EXTENSION = "compobj";
+
+  private static final String COMPOBJ_DEF_URI_EXTENSION = "compobj";
+
+  public static URI createNewUri() {
+    return URI.create(
+        ComposeableObjectNavigation.SCHEME + ":/" + UUID.randomUUID() + "."
+            + COMPOBJ_URI_EXTENSION);
+  }
+
+  public static URI createNewCompDefUri(String defName) {
+    return URI.create(
+        ComposeableObjectNavigation.SCHEME + ":/" + defName + "." + COMPOBJ_DEF_URI_EXTENSION);
+  }
 
   public static CompositeObject addObject(
       CompositeObject compositeObject,
@@ -29,16 +46,16 @@ public class CompositeObjects {
 
     return compositeObject;
   }
-  
+
   public static URI getChildDefUri(URI assocDefUri, CompositeObjectDef compositeDef) {
     for (CompositeObjectAssociation assoc : compositeDef.getAssociations()) {
-      if(assoc.getAssocDefUri().equals(assocDefUri)) {
+      if (assoc.getAssocDefUri().equals(assocDefUri)) {
         return assoc.getChildDefUri();
       }
     }
     return null;
   }
-  
+
   public static CompositeObjectAssociation getAssociactionWithDef(
       List<CompositeObjectAssociation> associations,
       URI definitionUri) {
@@ -88,7 +105,7 @@ public class CompositeObjects {
 
     compositeObject.addAssociationsItem(newCompObjAssoc);
 
-    return createAssocDef(newCompObjAssoc, childApiUri, icon, viewName,assocVisible);
+    return createAssocDef(newCompObjAssoc, childApiUri, icon, viewName, assocVisible);
   }
 
   public static ComposeableObjectDef createAssocDef(
@@ -107,8 +124,18 @@ public class CompositeObjects {
   }
 
   public static URI createChildAssocUri(URI parentUri, URI childDefUri) {
+    String uri = parentUri.toString();
+    
+    String fileExtension = Files.getFileExtension(uri);
+    if(!Strings.isNullOrEmpty(fileExtension)) {
+      String uriBeforeLastSlash = uri.substring(0, uri.lastIndexOf("/"));
+      String nameWithoutExtension = Files.getNameWithoutExtension(uri);
+      
+      uri = uriBeforeLastSlash + "/" + nameWithoutExtension;
+    }
+    
     return URI
-        .create(parentUri.toString() + "/" + COMP_OBJECT_ASSOC_PATH_PREFIX + childDefUri.getPath());
+        .create(uri + "/" + COMP_OBJECT_ASSOC_PATH_PREFIX + childDefUri.getPath());
   }
 
   public static ConfigBuilder createNavigationConfig(
