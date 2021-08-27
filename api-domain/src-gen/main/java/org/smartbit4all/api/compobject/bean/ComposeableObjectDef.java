@@ -35,7 +35,8 @@ import javax.validation.Valid;
   ComposeableObjectDef.API_URI,
   ComposeableObjectDef.NAME,
   ComposeableObjectDef.VIEW_NAME,
-  ComposeableObjectDef.ICON
+  ComposeableObjectDef.ICON,
+  ComposeableObjectDef.ASSOC_VISIBLE
 })
 @JsonTypeName("ComposeableObjectDef")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -54,6 +55,9 @@ public class ComposeableObjectDef {
 
   public static final String ICON = "icon";
   private String icon;
+
+  public static final String ASSOC_VISIBLE = "assocVisible";
+  private Boolean assocVisible;
 
 
   public ComposeableObjectDef uri(URI uri) {
@@ -119,11 +123,11 @@ public class ComposeableObjectDef {
   }
 
    /**
-   * NavigationEntry name.
+   * Get name
    * @return name
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "NavigationEntry name.")
+  @ApiModelProperty(value = "")
   @JsonProperty(NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -193,6 +197,33 @@ public class ComposeableObjectDef {
   }
 
 
+  public ComposeableObjectDef assocVisible(Boolean assocVisible) {
+    
+    this.assocVisible = assocVisible;
+    return this;
+  }
+
+   /**
+   * Get assocVisible
+   * @return assocVisible
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(ASSOC_VISIBLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getAssocVisible() {
+    return assocVisible;
+  }
+
+
+  @JsonProperty(ASSOC_VISIBLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setAssocVisible(Boolean assocVisible) {
+    this.assocVisible = assocVisible;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -206,12 +237,13 @@ public class ComposeableObjectDef {
         Objects.equals(this.apiUri, composeableObjectDef.apiUri) &&
         Objects.equals(this.name, composeableObjectDef.name) &&
         Objects.equals(this.viewName, composeableObjectDef.viewName) &&
-        Objects.equals(this.icon, composeableObjectDef.icon);
+        Objects.equals(this.icon, composeableObjectDef.icon) &&
+        Objects.equals(this.assocVisible, composeableObjectDef.assocVisible);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, apiUri, name, viewName, icon);
+    return Objects.hash(uri, apiUri, name, viewName, icon, assocVisible);
   }
 
   @Override
@@ -223,6 +255,7 @@ public class ComposeableObjectDef {
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    viewName: ").append(toIndentedString(viewName)).append("\n");
     sb.append("    icon: ").append(toIndentedString(icon)).append("\n");
+    sb.append("    assocVisible: ").append(toIndentedString(assocVisible)).append("\n");
     sb.append("}");
     return sb.toString();
   }

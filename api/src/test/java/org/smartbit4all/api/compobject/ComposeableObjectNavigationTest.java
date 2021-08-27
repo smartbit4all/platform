@@ -3,16 +3,15 @@ package org.smartbit4all.api.compobject;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.api.ApiItemChangeEvent;
 import org.smartbit4all.api.ApiItemOperation;
-import org.smartbit4all.api.compobject.bean.ComposeableObject;
 import org.smartbit4all.api.compobject.bean.ComposeableObjectDef;
 import org.smartbit4all.api.compobject.bean.CompositeObject;
+import org.smartbit4all.api.compobject.bean.CompositeObjectDef;
 import org.smartbit4all.api.navigation.Navigation;
 import org.smartbit4all.api.navigation.NavigationConfig;
 import org.smartbit4all.api.navigation.NavigationPrimary;
@@ -24,23 +23,38 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
 public class ComposeableObjectNavigationTest {
 
-  private static final URI COMPOSITE_OBJECT_COMPDEF_URI = URI.create(ComposeableObjectNavigation.SCHEME + ":/compositeobject/definition");
+  public static final URI TODO_COMPDEF_URI =
+      URI.create(ComposeableObjectNavigation.SCHEME + ":/testobject/definition");
+
+  public static final URI COMPOSITE_OBJECT_COMPDEF_URI =
+      URI.create(ComposeableObjectNavigation.SCHEME + ":/compositeobject/definition");
+
+  public static final URI COMPOSITE_OBJECT_TODO_COMPDEF_ASSOC_URI =
+      URI.create(ComposeableObjectNavigation.SCHEME + ":/compositeobject/definition/assoc/todo");
 
   @Test
   void simpleCompositeObjectNavigationTest() throws Exception {
     Storage<ComposeableObjectDef> composeableObjStorage = createInMemoryStorage(
         testobj -> testobj.getUri(),
         ComposeableObjectDef.class);
-    
+
     Storage<CompositeObject> objCompStorage = createInMemoryStorage(
         compobj -> compobj.getUri(),
         CompositeObject.class);
+
+    Storage<CompositeObjectDef> compositeDefStorage = createInMemoryStorage(
+        compobj -> compobj.getUri(),
+        CompositeObjectDef.class);
 
     Storage<TestTreeObject> testObjectStorage = createInMemoryStorage(
         testobj -> testobj.getUri(),
         TestTreeObject.class);
 
-    CompositeObjectApi compositeObjectApi = new CompositeObjectApi(objCompStorage);
+    CompositeObjectApi compositeObjectApi = new CompositeObjectApi(
+        objCompStorage,
+        compositeDefStorage,
+        composeableObjStorage);
+
     TestTreeObjectApi testTreeObjectApi = new TestTreeObjectApi(testObjectStorage);
 
     ComposeableObjectPrimaryApi composeablePrimary = new ComposeableObjectPrimaryApi();
@@ -59,17 +73,46 @@ public class ComposeableObjectNavigationTest {
 
     ctx.refresh();
 
-    ComposeableObjectDef compositeObjectCompDef = createCompositeObjectCompObjectDef(compositeObjectApi, composeableObjStorage);
-    ComposeableObjectDef testObjectCompDef = createTestCompObjectDef(testTreeObjectApi, composeableObjStorage);
+    ComposeableObjectDef compositeObjectCompDef = createDef(
+        composeableObjStorage,
+        COMPOSITE_OBJECT_COMPDEF_URI,
+        CompositeObjectApi.API_URI);
+
+    ComposeableObjectDef testObjectCompDef = createDef(
+        composeableObjStorage,
+        TODO_COMPDEF_URI,
+        TestTreeObjectApi.API_URI);
+
+    URI compObjDef = URI.create("testnavschema:/compositeObjectDef.compobj");
+    CompositeObjectDef compositeDef = new CompositeObjectDef()
+        .uri(compObjDef)
+        .defUri(compositeObjectCompDef.getUri());
+    compositeDefStorage.save(compositeDef);
     
     URI compObj1 = URI.create("testnavschema:/compositeObject1.compobj");
     CompositeObject rootCompositeObject = new CompositeObject()
         .uri(compObj1)
-        .objects(new ArrayList<>());
+        .compositeDefUri(compositeDef.getUri());
+    
+    ComposeableObjectDef compositeToTodoDef = CompositeObjects.addAssociation(
+        compositeDef,
+        TODO_COMPDEF_URI,
+        compositeObjectCompDef.getApiUri(),
+        true,
+        null,
+        "tesztviewname",
+        false);
+    composeableObjStorage.save(compositeToTodoDef);
+
     objCompStorage.save(rootCompositeObject);
 
     NavigationConfig navigationConfig = NavigationConfig.builder()
-        .addAssociationMeta(ComposeableObjectNavigation.createAssocMeta(compositeObjectCompDef))
+        .addAssociationMeta(
+            ComposeableObjectNavigation.createAssocMeta(
+                compositeToTodoDef.getUri(),
+                COMPOSITE_OBJECT_COMPDEF_URI,
+                TODO_COMPDEF_URI))
+
         .addAssociationMeta(ComposeableObjectNavigation.createAssocMeta(testObjectCompDef))
         .build();
 
@@ -88,61 +131,49 @@ public class ComposeableObjectNavigationTest {
     testTreeObject.setUri(URI.create("testobject:/first.tto"));
     testObjectStorage.save(testTreeObject);
 
-    ComposeableObject testCompObject = new ComposeableObject()
-        .definition(testObjectCompDef)
-        .objectUri(testTreeObject.getUri());
-
-    rootCompositeObject.addObjectsItem(testCompObject);
+    CompositeObjects.addObject(
+        rootCompositeObject,
+        testTreeObject.getUri(),
+        testObjectCompDef.getUri());
+    
     objCompStorage.save(rootCompositeObject);
 
     assertEquals(1, navigation.expandAll(rootNode, true).size());
 
     addTreeObject(testObjectStorage, "second.tto", testTreeObject);
 
-    List<ApiItemChangeEvent<NavigationReference>> expandEvents = navigation.expandAll(rootNode, true);
+    List<ApiItemChangeEvent<NavigationReference>> expandEvents =
+        navigation.expandAll(rootNode, true);
     checkNewSize(expandEvents, 1);
-    
+
     NavigationNode firstExpandedNode = expandEvents.get(0).item().getEndNode();
     checkNewSize(navigation.expandAll(firstExpandedNode, true), 1);
 
     addTreeObject(testObjectStorage, "third.tto", testTreeObject);
     checkNewSize(navigation.expandAll(firstExpandedNode, true), 2);
-    
+
     ctx.close();
   }
 
-  private ComposeableObjectDef createCompositeObjectCompObjectDef(
-      CompositeObjectApi compositeObjectApi,
-      Storage<ComposeableObjectDef> compDefObjStorage) throws Exception {
-    
+  private ComposeableObjectDef createDef(
+      Storage<ComposeableObjectDef> compDefObjStorage,
+      URI uri,
+      URI apiUri) throws Exception {
+
     ComposeableObjectDef compositeObjectCompDef = new ComposeableObjectDef()
-        .apiUri(CompositeObjectApi.API_URI)
-        .uri(COMPOSITE_OBJECT_COMPDEF_URI);
+        .uri(uri)
+        .apiUri(apiUri);
 
     compDefObjStorage.save(compositeObjectCompDef);
 
     return compositeObjectCompDef;
   }
 
-  private ComposeableObjectDef createTestCompObjectDef(
-      TestTreeObjectApi testTreeObjectApi,
-      Storage<ComposeableObjectDef> compDefObjStorage) throws Exception {
-    
-    URI testObjectCompDefUri = URI.create(ComposeableObjectNavigation.SCHEME + ":/testobject/definition");
-    ComposeableObjectDef testObjectCompDef = new ComposeableObjectDef()
-        .apiUri(TestTreeObjectApi.API_URI)
-        .uri(testObjectCompDefUri);
-
-    compDefObjStorage.save(testObjectCompDef);
-
-    return testObjectCompDef;
-  }
-
   private void addTreeObject(
       Storage<TestTreeObject> testObjectStorage,
       String uriPath,
       TestTreeObject parent) throws Exception {
-    
+
     TestTreeObject testTreeObject2 = new TestTreeObject();
     testTreeObject2.setUri(URI.create("testobject:/" + uriPath));
     testObjectStorage.save(testTreeObject2);
@@ -151,10 +182,13 @@ public class ComposeableObjectNavigationTest {
     testObjectStorage.save(parent);
   }
 
-  private void checkNewSize(List<ApiItemChangeEvent<NavigationReference>> expandEvents, int expected) {
+  private void checkNewSize(
+      List<ApiItemChangeEvent<NavigationReference>> expandEvents,
+      int expected) {
+
     int counter = 0;
-    for(ApiItemChangeEvent<NavigationReference> expandEvent : expandEvents) {
-      if(expandEvent.operation() == ApiItemOperation.NEW) {
+    for (ApiItemChangeEvent<NavigationReference> expandEvent : expandEvents) {
+      if (expandEvent.operation() == ApiItemOperation.NEW) {
         counter++;
       }
     }

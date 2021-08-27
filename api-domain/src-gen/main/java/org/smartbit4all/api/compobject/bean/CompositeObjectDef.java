@@ -23,40 +23,75 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import org.smartbit4all.api.compobject.bean.CompositeObjectAssociation;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 
 /**
- * ComposeableObject
+ * CompositeObjectDef
  */
 @JsonPropertyOrder({
-  ComposeableObject.DEF_URI,
-  ComposeableObject.OBJECT_URI
+  CompositeObjectDef.URI,
+  CompositeObjectDef.DEF_URI,
+  CompositeObjectDef.ASSOCIATIONS
 })
-@JsonTypeName("ComposeableObject")
+@JsonTypeName("CompositeObjectDef")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
-public class ComposeableObject {
+public class CompositeObjectDef {
+  public static final String URI = "uri";
+  private URI uri;
+
   public static final String DEF_URI = "defUri";
   private URI defUri;
 
-  public static final String OBJECT_URI = "objectUri";
-  private URI objectUri;
+  public static final String ASSOCIATIONS = "associations";
+  private List<CompositeObjectAssociation> associations = null;
 
 
-  public ComposeableObject defUri(URI defUri) {
+  public CompositeObjectDef uri(URI uri) {
+    
+    this.uri = uri;
+    return this;
+  }
+
+   /**
+   * Get uri
+   * @return uri
+  **/
+  @NotNull
+  @Valid
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(URI)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public URI getUri() {
+    return uri;
+  }
+
+
+  @JsonProperty(URI)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setUri(URI uri) {
+    this.uri = uri;
+  }
+
+
+  public CompositeObjectDef defUri(URI defUri) {
     
     this.defUri = defUri;
     return this;
   }
 
    /**
-   * ComposeableObjectDef URI.
+   * Get defUri
    * @return defUri
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "ComposeableObjectDef URI.")
+  @ApiModelProperty(value = "")
   @JsonProperty(DEF_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -72,31 +107,39 @@ public class ComposeableObject {
   }
 
 
-  public ComposeableObject objectUri(URI objectUri) {
+  public CompositeObjectDef associations(List<CompositeObjectAssociation> associations) {
     
-    this.objectUri = objectUri;
+    this.associations = associations;
+    return this;
+  }
+
+  public CompositeObjectDef addAssociationsItem(CompositeObjectAssociation associationsItem) {
+    if (this.associations == null) {
+      this.associations = new ArrayList<>();
+    }
+    this.associations.add(associationsItem);
     return this;
   }
 
    /**
-   * Get objectUri
-   * @return objectUri
+   * Get associations
+   * @return associations
   **/
   @javax.annotation.Nullable
   @Valid
   @ApiModelProperty(value = "")
-  @JsonProperty(OBJECT_URI)
+  @JsonProperty(ASSOCIATIONS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public URI getObjectUri() {
-    return objectUri;
+  public List<CompositeObjectAssociation> getAssociations() {
+    return associations;
   }
 
 
-  @JsonProperty(OBJECT_URI)
+  @JsonProperty(ASSOCIATIONS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setObjectUri(URI objectUri) {
-    this.objectUri = objectUri;
+  public void setAssociations(List<CompositeObjectAssociation> associations) {
+    this.associations = associations;
   }
 
 
@@ -108,22 +151,24 @@ public class ComposeableObject {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    ComposeableObject composeableObject = (ComposeableObject) o;
-    return Objects.equals(this.defUri, composeableObject.defUri) &&
-        Objects.equals(this.objectUri, composeableObject.objectUri);
+    CompositeObjectDef compositeObjectDef = (CompositeObjectDef) o;
+    return Objects.equals(this.uri, compositeObjectDef.uri) &&
+        Objects.equals(this.defUri, compositeObjectDef.defUri) &&
+        Objects.equals(this.associations, compositeObjectDef.associations);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(defUri, objectUri);
+    return Objects.hash(uri, defUri, associations);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class ComposeableObject {\n");
+    sb.append("class CompositeObjectDef {\n");
+    sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    defUri: ").append(toIndentedString(defUri)).append("\n");
-    sb.append("    objectUri: ").append(toIndentedString(objectUri)).append("\n");
+    sb.append("    associations: ").append(toIndentedString(associations)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -11,6 +11,21 @@ tags:
 paths: {}
 components:
   schemas:
+    CompositeObjectDef:
+      type: object
+      required:
+      - uri
+      properties:
+        uri:
+          type: string
+          format: uri
+        defUri:
+          type: string
+          format: uri
+        associations:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompositeObjectAssociation'
     CompositeObject:
       type: object
       required:
@@ -19,10 +34,27 @@ components:
         uri:
           type: string
           format: uri
+        compositeDefUri:
+          type: string
+          format: uri
+        caption:
+          type: string
         objects:
           type: array
           items:
             $ref: '#/components/schemas/ComposeableObject'
+    CompositeObjectAssociation:
+      type: object
+      properties:
+        assocDefUri:
+          type: string
+          format: uri
+        childDefUri:
+          type: string
+          format: uri
+        childRecursive:
+          type: boolean
+          default: true
     ComposeableObjectDef:
       type: object
       required:
@@ -36,16 +68,19 @@ components:
           format: uri
         name:
           type: string
-          description: NavigationEntry name.
         viewName:
           type: string
         icon:
           type: string
+        assocVisible:
+          type: boolean
     ComposeableObject:
       type: object
       properties:
-        definition:
-          $ref: '#/components/schemas/ComposeableObjectDef'
+        defUri:
+          type: string
+          format: uri
+          description: ComposeableObjectDef URI.
         objectUri:
           type: string
           format: uri

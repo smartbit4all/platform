@@ -185,6 +185,12 @@ components:
         hidden:
           type: boolean
           description: 'The association can be hidden. If a node has only one association then it can be an option.'
+        caption:
+          type: string
+          description: 'The caption text, if the association is visible in any UI component'
+        icon:
+          type: string
+          description: 'The icon, if the association is visible in any UI component'
         references:
           description: 'The navigation association instances.'
           type: array

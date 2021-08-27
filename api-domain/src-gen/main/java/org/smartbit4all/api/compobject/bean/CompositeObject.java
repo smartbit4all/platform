@@ -35,6 +35,8 @@ import javax.validation.Valid;
  */
 @JsonPropertyOrder({
   CompositeObject.URI,
+  CompositeObject.COMPOSITE_DEF_URI,
+  CompositeObject.CAPTION,
   CompositeObject.OBJECTS
 })
 @JsonTypeName("CompositeObject")
@@ -42,6 +44,12 @@ import javax.validation.Valid;
 public class CompositeObject {
   public static final String URI = "uri";
   private URI uri;
+
+  public static final String COMPOSITE_DEF_URI = "compositeDefUri";
+  private URI compositeDefUri;
+
+  public static final String CAPTION = "caption";
+  private String caption;
 
   public static final String OBJECTS = "objects";
   private List<ComposeableObject> objects = null;
@@ -72,6 +80,61 @@ public class CompositeObject {
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setUri(URI uri) {
     this.uri = uri;
+  }
+
+
+  public CompositeObject compositeDefUri(URI compositeDefUri) {
+    
+    this.compositeDefUri = compositeDefUri;
+    return this;
+  }
+
+   /**
+   * Get compositeDefUri
+   * @return compositeDefUri
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(COMPOSITE_DEF_URI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public URI getCompositeDefUri() {
+    return compositeDefUri;
+  }
+
+
+  @JsonProperty(COMPOSITE_DEF_URI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setCompositeDefUri(URI compositeDefUri) {
+    this.compositeDefUri = compositeDefUri;
+  }
+
+
+  public CompositeObject caption(String caption) {
+    
+    this.caption = caption;
+    return this;
+  }
+
+   /**
+   * Get caption
+   * @return caption
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(CAPTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getCaption() {
+    return caption;
+  }
+
+
+  @JsonProperty(CAPTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setCaption(String caption) {
+    this.caption = caption;
   }
 
 
@@ -121,12 +184,14 @@ public class CompositeObject {
     }
     CompositeObject compositeObject = (CompositeObject) o;
     return Objects.equals(this.uri, compositeObject.uri) &&
+        Objects.equals(this.compositeDefUri, compositeObject.compositeDefUri) &&
+        Objects.equals(this.caption, compositeObject.caption) &&
         Objects.equals(this.objects, compositeObject.objects);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, objects);
+    return Objects.hash(uri, compositeDefUri, caption, objects);
   }
 
   @Override
@@ -134,6 +199,8 @@ public class CompositeObject {
     StringBuilder sb = new StringBuilder();
     sb.append("class CompositeObject {\n");
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
+    sb.append("    compositeDefUri: ").append(toIndentedString(compositeDefUri)).append("\n");
+    sb.append("    caption: ").append(toIndentedString(caption)).append("\n");
     sb.append("    objects: ").append(toIndentedString(objects)).append("\n");
     sb.append("}");
     return sb.toString();
