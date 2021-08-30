@@ -1,0 +1,111 @@
+package org.smartbit4all.domain.data.storage;
+
+import java.net.URI;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import org.smartbit4all.api.storage.bean.ObjectReference;
+
+/**
+ * In generally if we have an object stored by a {@link Storage} then we might need to store some
+ * related objects for this. The related object set is more or less a list of URI or other
+ * identifier easy to serialize in every storage mechanism. The Storage can publish events when the
+ * given object is changed. This can be filtered by this register. The relation can be temporary so
+ * we can define a time limit when the {@link Storage} will remove the relation. The relation can be
+ * renewed by adding it again and again.
+ * 
+ * @author Peter Boros
+ */
+public final class ObjectReferenceRequest {
+
+  /**
+   * The URI of the root object that we store the references for. Can be null if we call the save
+   * without knowing the URI.
+   */
+  private URI objectUri;
+
+  /**
+   * The references to create while storing the root object.
+   */
+  private List<ObjectReference> referencesToCreate = null;
+
+  /**
+   * The references to remove while storing the root object.
+   */
+  private List<ObjectReference> referencesToRemove = null;
+
+  public ObjectReferenceRequest(URI objectUri) {
+    super();
+    this.objectUri = objectUri;
+  }
+
+  public final URI getObjectUri() {
+    return objectUri;
+  }
+
+  public final void setObjectUri(URI objectUri) {
+    this.objectUri = objectUri;
+  }
+
+  public final ObjectReferenceRequest objectUri(URI objectUri) {
+    this.objectUri = objectUri;
+    return this;
+  }
+
+  public final ObjectReferenceRequest create(ObjectReference ref) {
+    if (referencesToCreate == null) {
+      referencesToCreate = new ArrayList<>();
+    }
+    referencesToCreate.add(ref);
+    return this;
+  }
+
+  public final ObjectReferenceRequest create(String ref) {
+    return create(new ObjectReference().reference(ref));
+  }
+
+  public final ObjectReferenceRequest create(String ref, LocalDateTime expirationTime) {
+    // TODO Expiration time
+    return create(new ObjectReference().reference(ref));
+  }
+
+  public final ObjectReferenceRequest delete(ObjectReference ref) {
+    if (referencesToRemove == null) {
+      referencesToRemove = new ArrayList<>();
+    }
+    referencesToRemove.add(ref);
+    return this;
+  }
+
+  public final ObjectReferenceRequest delete(String ref) {
+    return delete(new ObjectReference().reference(ref));
+  }
+
+  public final List<ObjectReference> getReferencesToCreate() {
+    return referencesToCreate == null ? Collections.emptyList() : referencesToCreate;
+  }
+
+  public final void setReferencesToCreate(List<ObjectReference> referencesToCreate) {
+    this.referencesToCreate = referencesToCreate;
+  }
+
+  public final List<ObjectReference> getReferencesToRemove() {
+    return referencesToRemove == null ? Collections.emptyList() : referencesToRemove;
+  }
+
+  public final void setReferencesToRemove(List<ObjectReference> referencesToRemove) {
+    this.referencesToRemove = referencesToRemove;
+  }
+
+  public void updateReferences(Set<ObjectReference> refSet) {
+    if (referencesToCreate != null) {
+      referencesToCreate.forEach(r -> refSet.add(r));
+    }
+    if (referencesToRemove != null) {
+      referencesToRemove.forEach(r -> refSet.remove(r));
+    }
+  }
+
+}

@@ -4,21 +4,24 @@ import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.binarydata.BinaryDataObjectSerializer;
+import org.smartbit4all.api.storage.bean.ObjectReference;
+import org.smartbit4all.api.storage.bean.ObjectReferenceList;
 import org.smartbit4all.core.io.utility.FileIO;
-import org.smartbit4all.domain.data.storage.ObjectStorage;
+import org.smartbit4all.domain.data.storage.ObjectReferenceRequest;
+import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 
-public class StorageFS<T> implements ObjectStorage<T> {
+public class StorageFS<T> extends ObjectStorageImpl<T> {
 
   private Class<T> clazz;
 
   private File rootFolder;
-
-  private Function<T, URI> uriProvider;
 
   private BinaryDataObjectSerializer serializer;
 
@@ -30,21 +33,24 @@ public class StorageFS<T> implements ObjectStorage<T> {
    */
   private String storedObjectFileExtension;
 
+  private String referencesExtension = ".references";
+
   /**
    * @param rootFolder The root folder, in which the storage place the files.
-   * @param uriProvider With this function, the storage get the URI from the domain object.
+   * @param uriAccessor With this function, the storage get the URI from the domain object.
    * @param serializer Serializer implementation used for serializing and deserializing the stored
    *        domain objects.
    * @param clazz The stored domain object class.
    */
   public StorageFS(
       File rootFolder,
-      Function<T, URI> uriProvider,
+      Function<T, URI> uriAccessor,
       BinaryDataObjectSerializer serializer,
       Class<T> clazz) {
 
+    super(uriAccessor);
+
     this.rootFolder = rootFolder;
-    this.uriProvider = uriProvider;
     this.clazz = clazz;
     this.serializer = serializer;
   }
@@ -65,14 +71,18 @@ public class StorageFS<T> implements ObjectStorage<T> {
   }
 
   @Override
-  public void save(T object) throws Exception {
-    save(object, uriProvider.apply(object));
+  public URI save(T object) throws Exception {
+    return save(object, uriAccessor.apply(object));
   }
 
   @Override
-  public void save(T object, URI uri) throws Exception {
-    BinaryData data = serializer.toJsonBinaryData(object, clazz);
-    FileIO.write(rootFolder, uri, data);
+  public URI save(T object, URI uri) throws Exception {
+    URI result = constructUri(object, uri);
+    if (uri != null) {
+      BinaryData data = serializer.toJsonBinaryData(object, clazz);
+      FileIO.write(rootFolder, result, data);
+    }
+    return result;
   }
 
   @Override
@@ -134,6 +144,43 @@ public class StorageFS<T> implements ObjectStorage<T> {
 
   public void setStoredObjectFileExtension(String storedObjectFileExtension) {
     this.storedObjectFileExtension = storedObjectFileExtension;
+  }
+
+  @Override
+  public void saveReferences(ObjectReferenceRequest referenceRequest) {
+    if (referenceRequest == null) {
+      return;
+    }
+    Set<ObjectReference> references = loadReferences(referenceRequest.getObjectUri());
+    if (references.isEmpty()) {
+      references = new HashSet<>();
+    }
+    referenceRequest.updateReferences(references);
+    if (references.isEmpty()) {
+      // Delete the reference file
+      FileIO.delete(rootFolder, referenceRequest.getObjectUri(), referencesExtension);
+      return;
+    }
+
+    ObjectReferenceList referenceList =
+        new ObjectReferenceList().uri(referenceRequest.getObjectUri())
+            .references(new ArrayList<>(references));
+    FileIO.write(rootFolder, referenceRequest.getObjectUri(), referencesExtension,
+        serializer.toJsonBinaryData(referenceList, ObjectReferenceList.class));
+  }
+
+  @Override
+  public Set<ObjectReference> loadReferences(URI uri) {
+    BinaryData binaryData = FileIO.read(rootFolder, uri, referencesExtension);
+
+    if (binaryData == null) {
+      return Collections.emptySet();
+    }
+
+    Optional<ObjectReferenceList> optional =
+        serializer.fromJsonBinaryData(binaryData, ObjectReferenceList.class);
+    return optional.map(r -> r.getReferences()).map(l -> ((Set<ObjectReference>) new HashSet<>(l)))
+        .orElse(Collections.emptySet());
   }
 
 }

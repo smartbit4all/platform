@@ -1,8 +1,12 @@
 package org.smartbit4all.api.invocation;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.smartbit4all.api.invocation.bean.InvocationRequestTemplate;
+import org.smartbit4all.domain.data.storage.Storage;
+import org.smartbit4all.domain.data.storage.StorageApi;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -14,6 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author Peter Boros
  */
 public final class InvocationApiImpl implements InvocationApi, InitializingBean {
+
+  @Autowired(required = false)
+  StorageApi storageApi;
 
   /**
    * The list of {@link InvocationExecutionApi} from the Spring context.
@@ -46,6 +53,29 @@ public final class InvocationApiImpl implements InvocationApi, InitializingBean 
         apiByName.put(executionApi.getName(), executionApi);
       }
     }
+  }
+
+  @Override
+  public URI save(InvocationRequestTemplate requestTemplate) {
+    Storage<InvocationRequestTemplate> storage =
+        storageApi == null ? null : storageApi.get(InvocationRequestTemplate.class);
+    if (storage == null) {
+      throw new UnsupportedOperationException(
+          "Unable to save the invocation request templet without Storage<InvocationRequestTemple> setup.");
+    }
+    URI result = null;
+    try {
+      result = storage.save(requestTemplate);
+    } catch (Exception e) {
+      new RuntimeException("Unable to save ", null);
+    }
+    return result;
+  }
+
+  @Override
+  public InvocationRequestTemplate load(URI templateUri) {
+    // TODO Auto-generated method stub
+    return null;
   }
 
 }

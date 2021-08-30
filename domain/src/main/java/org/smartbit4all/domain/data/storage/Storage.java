@@ -6,12 +6,16 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
+import org.smartbit4all.api.storage.bean.ObjectReference;
 import org.smartbit4all.domain.data.storage.index.ExpressionEntityDefinitionExtractor;
 import org.smartbit4all.domain.data.storage.index.StorageIndex;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Expression;
 import org.springframework.util.Assert;
+import io.reactivex.rxjava3.subjects.PublishSubject;
 
 /**
  * Storage is an ObjectStorage which maintains the indexes on storing the objects. Objects can be
@@ -32,6 +36,8 @@ public class Storage<T> implements ObjectStorage<T> {
    */
   private final Class<T> clazz;
 
+  private PublishSubject<ObjectChange<T>> objectChangePublisher = PublishSubject.create();
+
   /**
    * @param clazz The class that is managed by the storage instance.
    * @param objectStorage Stores the serialized objects
@@ -47,15 +53,17 @@ public class Storage<T> implements ObjectStorage<T> {
   }
 
   @Override
-  public void save(T object) throws Exception {
-    storage.save(object);
+  public URI save(T object) throws Exception {
+    URI result = storage.save(object);
     updateIndexes(object);
+    return result;
   }
 
   @Override
-  public void save(T object, URI uri) throws Exception {
-    storage.save(object, uri);
+  public URI save(T object, URI uri) throws Exception {
+    URI result = storage.save(object, uri);
     updateIndexes(object);
+    return result;
   }
 
   private void updateIndexes(T object) throws Exception {
@@ -88,18 +96,17 @@ public class Storage<T> implements ObjectStorage<T> {
   public List<T> loadAll() throws Exception {
     return storage.loadAll();
   }
-  
+
   /**
-   * List all data objects.
-   * Warning: can be high amount of data in the result, use carefully! 
-   *   
+   * List all data objects. Warning: can be high amount of data in the result, use carefully!
+   * 
    * @return All objects stored with the type T
-   * @throws Exception 
+   * @throws Exception
    */
   public List<T> listAllDatas() throws Exception {
     return loadAll();
   }
-  
+
   /**
    * List the datas which fulfill the criteria of the given expression. The expression must only
    * contains properties of the given entity definition!
@@ -164,6 +171,31 @@ public class Storage<T> implements ObjectStorage<T> {
 
   public final Class<T> getClazz() {
     return clazz;
+  }
+
+  @Override
+  public void saveReferences(ObjectReferenceRequest referenceRequest) {
+    storage.saveReferences(referenceRequest);
+  }
+
+  @Override
+  public Set<ObjectReference> loadReferences(URI uri) {
+    return storage.loadReferences(uri);
+  }
+
+  /**
+   * Adds a new change listener. Typical use case is that ...Api subscribes and decide what to do
+   * when the object has been changed.
+   * 
+   * @param onChange
+   */
+  public void onChange(BiConsumer<T, Set<ObjectReference>> onChange) {
+    objectChangePublisher.subscribe(c -> onChange.accept(c.object, loadReferences(c.uri)));
+  }
+
+  @Override
+  public ObjectUriProvider<T> getUriProvider() {
+    return storage.getUriProvider();
   }
 
 }

@@ -1,7 +1,5 @@
 package org.smartbit4all.api.compobject;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.net.URI;
 import java.util.Collections;
 import java.util.List;
@@ -20,6 +18,8 @@ import org.smartbit4all.api.navigation.bean.NavigationReference;
 import org.smartbit4all.domain.data.storage.ObjectStorageInMemory;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class ComposeableObjectNavigationTest {
 
@@ -88,12 +88,12 @@ public class ComposeableObjectNavigationTest {
         .uri(compObjDef)
         .defUri(compositeObjectCompDef.getUri());
     compositeDefStorage.save(compositeDef);
-    
+
     URI compObj1 = URI.create("testnavschema:/compositeObject1.compobj");
     CompositeObject rootCompositeObject = new CompositeObject()
         .uri(compObj1)
         .compositeDefUri(compositeDef.getUri());
-    
+
     ComposeableObjectDef compositeToTodoDef = CompositeObjects.addAssociation(
         compositeDef,
         TODO_COMPDEF_URI,
@@ -135,7 +135,7 @@ public class ComposeableObjectNavigationTest {
         rootCompositeObject,
         testTreeObject.getUri(),
         testObjectCompDef.getUri());
-    
+
     objCompStorage.save(rootCompositeObject);
 
     assertEquals(1, navigation.expandAll(rootNode, true).size());
@@ -195,8 +195,9 @@ public class ComposeableObjectNavigationTest {
     assertEquals(expected, counter);
   }
 
-  private <T> Storage<T> createInMemoryStorage(Function<T, URI> uriProvider, Class<T> clazz) {
-    ObjectStorageInMemory<T> objectStorageInMemory = new ObjectStorageInMemory<T>(uriProvider);
+  private <T> Storage<T> createInMemoryStorage(Function<T, URI> uriAccessor, Class<T> clazz) {
+    ObjectStorageInMemory<T> objectStorageInMemory =
+        new ObjectStorageInMemory<T>(uriAccessor, null);
     return new Storage<>(clazz, objectStorageInMemory, Collections.emptyList());
   }
 

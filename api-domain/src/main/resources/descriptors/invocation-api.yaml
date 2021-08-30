@@ -28,6 +28,9 @@ components:
         apiClass: 
           type: string
           description: 'The fully qualified name of the api. In case of java it is the name of the class.'
+        apiInstanceId:
+          type: string
+          description: The unique identifier for the api instance. If it is set then the execution will be routed to the given instance.
         innerApi:
           type: string
           description: 'If we have a contributed api collecting other apis then it is the identifier of the contributed api.'
@@ -45,6 +48,9 @@ components:
         name:
           type: string
           description: The symbolic name of the parameter. Must be set and unique inside an invocation request template.
+        defaultValueString:
+          type: string
+          description: The default value for the given parameter.
         typeClass:
           type: string
           description: The fully qualified type class name of the parameter.
