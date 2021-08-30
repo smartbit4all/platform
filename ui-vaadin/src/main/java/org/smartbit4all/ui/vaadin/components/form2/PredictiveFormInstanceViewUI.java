@@ -109,7 +109,7 @@ public class PredictiveFormInstanceViewUI extends FlexLayout implements Predicti
     drawerLayout.addClassName("visible-widget-drawer-layout");
     
     FlexLayout visibleWidgetView = createVisibleWidgetView(descriptor, instance, isWidgetSelected);
-    Button expandButton = new Button(VaadinIcon.ANGLE_RIGHT.create());
+    Button expandButton = new Button(VaadinIcon.ANGLE_DOWN.create());
     
     
     expandButton.addClickListener(e -> {

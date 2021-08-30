@@ -25,7 +25,7 @@ public class TextIntervalDialog extends Dialog {
     
     Binder<WidgetInstance> binder = new Binder<>(WidgetInstance.class);
     binder.setBean(instance);
-    binder.forField(tfValue1).bind(w -> {
+    binder.forField(tfValue1).asRequired("A mező kitöltése kötelező").bind(w -> {
       if (instance.getStringValues().size() > 0) {
         return instance.getStringValues().get(0);
       } else {
@@ -38,7 +38,7 @@ public class TextIntervalDialog extends Dialog {
         w.addStringValuesItem(v);
       }
     });
-    binder.forField(tfValue2).bind(w -> {
+    binder.forField(tfValue2).asRequired("A mező kitöltése kötelező").bind(w -> {
       if (instance.getStringValues().size() > 1) {
         return instance.getStringValues().get(1);
       } else {

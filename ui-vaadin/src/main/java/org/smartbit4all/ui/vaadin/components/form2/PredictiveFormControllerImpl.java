@@ -155,24 +155,6 @@ public class PredictiveFormControllerImpl implements PredictiveFormController {
   }
   
   @Override
-  public void addChildWidgets(WidgetDescriptor descriptor) {
-    PredictiveInputGraphNode node = util.getNode(descriptor);
-    List<PredictiveInputGraphNode> childNodes = node.getChildren();
-    WidgetInstance parentInstance = util.getInstance(node.getDescriptorUri());
-    if (childNodes != null && parentInstance != null) {
-      for (PredictiveInputGraphNode n : childNodes) {
-        WidgetDescriptor childDescriptor = util.getDescriptor(n);
-        if (childDescriptor != null) {
-          WidgetInstance instance = createWidgetInstanceFromDescriptor(childDescriptor);
-          parentInstance.addWidgetsItem(instance);
-          util.addInstanceByUri(instance.getDescriptorUri(), instance);
-          predictiveFormInstance.getAvailableWidgets().removeIf(w -> w.getUri().equals(n.getDescriptorUri()));
-        }
-      }
-    }
-  }
-
-  @Override
   public void selectWidget(WidgetInstance instance) {
     WidgetDescriptor descriptor = util.getDescriptor(instance.getDescriptorUri());
     PredictiveInputGraphNode node = util.getNode(descriptor);
@@ -210,11 +192,6 @@ public class PredictiveFormControllerImpl implements PredictiveFormController {
     }
     ui.renderWidgets();
     
-  }
-  
-  @Override
-  public PredictiveInputGraphNode getActiveNode() {
-    return predictiveFormInstance.getActiveNode();
   }
   
   private void deleteContainedWidgets(WidgetInstance instance) {

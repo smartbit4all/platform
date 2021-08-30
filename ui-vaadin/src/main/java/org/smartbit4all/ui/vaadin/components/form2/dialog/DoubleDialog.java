@@ -16,16 +16,17 @@ public class DoubleDialog extends Dialog {
     FlexLayout dialogLayout = new FlexLayout();
     dialogLayout.setClassName("double-dialog-layout");
     add(dialogLayout);
-    
+    setMinWidth("20%");
+        
     Label titleLabel = new Label(descriptor.getLabel());
     NumberField nfValue = new NumberField();
     nfValue.setHasControls(true);
     nfValue.setStep(0.5);
-    
+    nfValue.setWidthFull();
     
     Binder<WidgetInstance> binder = new Binder<>(WidgetInstance.class);
     binder.setBean(instance);
-    binder.forField(nfValue).bind(w -> {
+    binder.forField(nfValue).asRequired("A mező kitöltése kötelező").bind(w -> {
       if (instance.getDoubleValues().size() > 0) {
         return instance.getDoubleValues().get(0);
       } else {
@@ -40,6 +41,7 @@ public class DoubleDialog extends Dialog {
     buttonLayout.setClassName("double-dialog-button-layout");
     
     dialogLayout.add(titleLabel, nfValue, buttonLayout);
+    nfValue.focus();
   }
   
 }

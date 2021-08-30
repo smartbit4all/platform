@@ -33,7 +33,7 @@ public class SurveyComboDialog extends Dialog{
     // TODO binder
     Binder<WidgetInstance> binder = new Binder<>(WidgetInstance.class);
     binder.setBean(instance);
-    binder.forField(cbScore).bind(w -> {
+    binder.forField(cbScore).asRequired("A mező kitöltése kötelező").bind(w -> {
       return w.getIntValues().get(0);
     }, (w, v) -> {
       if (w.getIntValues() != null) {
@@ -43,7 +43,7 @@ public class SurveyComboDialog extends Dialog{
       }
     });
     
-    binder.forField(tfComment).bind(w -> {
+    binder.forField(tfComment).asRequired("A mező kitöltése kötelező").bind(w -> {
       if (instance.getStringValues() != null && instance.getStringValues().size() > 0) {
         return instance.getStringValues().get(0);
       } else {

@@ -106,15 +106,16 @@
 	flex-direction: column;
 }
 
-.integer-dialog-button-layuot {
+.integer-dialog-button-layout {
 	justify-content: space-between;
 }
 
 .double-dialog-layout {
 	flex-direction: column;
+	min-width: 20%;
 }
 
-.double-dialog-button-layuot {
+.double-dialog-button-layout {
 	justify-content: space-between;
 }
 
@@ -130,7 +131,7 @@
 	flex-direction: column;
 }
 
-.date-dialog-button-layuot {
+.date-dialog-button-layout {
 	justify-content: space-between;
 }
 
@@ -138,7 +139,7 @@
 	flex-direction: column;
 }
 
-.date-interval-dialog-button-layuot {
+.date-interval-dialog-button-layout {
 	justify-content: space-between;
 }
 
@@ -155,6 +156,18 @@
 }
 
 .container-dialog-layout {
+	flex-direction: column;
+}
+
+.table-dialog-layout {
+	flex-direction: column;
+}
+
+.table-dialog-button-layout {
+	justify-content: space-between;
+}
+
+.table-dialog-inputs-layout {
 	flex-direction: column;
 }
 

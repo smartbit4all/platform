@@ -102,8 +102,4 @@ public interface PredictiveFormController {
    */
   public void deleteWidgetInstance(WidgetInstance instance);
 
-  public PredictiveInputGraphNode getActiveNode();
-
-  public void addChildWidgets(WidgetDescriptor descriptor);
-
 }

@@ -9,7 +9,6 @@ import org.smartbit4all.ui.api.form.model.WidgetInstance;
 import org.smartbit4all.ui.api.form.model.WidgetType;
 import org.smartbit4all.ui.common.form2.impl.PredictiveFormController;
 import org.smartbit4all.ui.vaadin.components.form2.PredictiveFormInstanceViewUI;
-import org.smartbit4all.ui.vaadin.util.Notifications;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Label;
@@ -33,13 +32,13 @@ public class WidgetDialogUtil {
     Button btnSave = new Button("Mentés", e -> {
       try {
         binder.writeBean(instance);
+        ui.renderWidgets();
+        dialog.close();
       } catch (ValidationException e1) {
         String msg = "Bean validation failed!";
         log.error(msg);
-        Notifications.showErrorNotification(msg);
+//        Notifications.showErrorNotification(msg);
       }
-      ui.renderWidgets();
-      dialog.close();
     });
     
     Button btnDelete = new Button(new Icon(VaadinIcon.TRASH));
@@ -48,7 +47,7 @@ public class WidgetDialogUtil {
       dialog.close();
     });
     
-    FlexLayout buttonLayout = new FlexLayout(btnSave, btnCancel, btnDelete);
+    FlexLayout buttonLayout = new FlexLayout(btnSave, new FlexLayout(btnCancel, btnDelete));
     return buttonLayout;
   }
   

@@ -22,7 +22,7 @@ public class IntegerDialog extends Dialog {
     
     Binder<WidgetInstance> binder = new Binder<>(WidgetInstance.class);
     binder.setBean(instance);
-    binder.forField(ifValue).bind(w -> {
+    binder.forField(ifValue).asRequired("A mező kitöltése kötelező").bind(w -> {
       if (instance.getIntValues().size() > 0) {
         return instance.getIntValues().get(0);
       } else {
