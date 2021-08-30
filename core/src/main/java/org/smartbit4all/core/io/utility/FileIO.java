@@ -91,17 +91,20 @@ public class FileIO {
 
       @Override
       public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-        if (attrs.isRegularFile()) {
+        if (attrs.isRegularFile() && file.getFileName() != null) {
 
+          String fileName = file.getFileName().toString();
           if (fileExtension != null) {
             String actualFileExtension =
-                com.google.common.io.Files.getFileExtension(file.getFileName().toString());
+                com.google.common.io.Files.getFileExtension(fileName);
 
             if (fileExtension.equals(actualFileExtension)) {
               allFilePaths.add(file);
             }
           } else {
-            allFilePaths.add(file);
+            if (!fileName.equals(".gitignore")) {
+              allFilePaths.add(file);
+            }
           }
         }
         return FileVisitResult.CONTINUE;
