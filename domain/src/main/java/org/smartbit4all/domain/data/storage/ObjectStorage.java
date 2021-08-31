@@ -63,4 +63,6 @@ public interface ObjectStorage<T> {
 
   public ObjectUriProvider<T> getUriProvider();
 
+  public URI getObjectUri(T Object);
+
 }

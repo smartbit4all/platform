@@ -44,4 +44,9 @@ public abstract class ObjectStorageImpl<T> implements ObjectStorage<T> {
     this.uriProvider = uriProvider;
   }
 
+  @Override
+  public URI getObjectUri(T Object) {
+    return uriAccessor == null ? null : uriAccessor.apply(Object);
+  }
+
 }

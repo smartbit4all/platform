@@ -56,6 +56,10 @@ public class Storage<T> implements ObjectStorage<T> {
   public URI save(T object) throws Exception {
     URI result = storage.save(object);
     updateIndexes(object);
+    ObjectChange<T> objectChange = new ObjectChange<>();
+    objectChange.object = object;
+    objectChange.uri = result;
+    objectChangePublisher.onNext(objectChange);
     return result;
   }
 
@@ -196,6 +200,11 @@ public class Storage<T> implements ObjectStorage<T> {
   @Override
   public ObjectUriProvider<T> getUriProvider() {
     return storage.getUriProvider();
+  }
+
+  @Override
+  public URI getObjectUri(T Object) {
+    return storage.getObjectUri(Object);
   }
 
 }

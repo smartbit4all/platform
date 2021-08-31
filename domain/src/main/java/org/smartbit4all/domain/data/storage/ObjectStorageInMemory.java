@@ -46,8 +46,7 @@ public class ObjectStorageInMemory<T> extends ObjectStorageImpl<T> {
 
   @Override
   public URI save(T object) throws Exception {
-    URI result = constructUri(object, uriAccessor.apply(object));
-    return save(object, result);
+    return save(object, getObjectUri(object));
   }
 
   @Override
