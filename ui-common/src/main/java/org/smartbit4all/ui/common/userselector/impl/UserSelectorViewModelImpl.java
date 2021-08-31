@@ -36,7 +36,7 @@ public class UserSelectorViewModelImpl extends ObjectEditingImpl implements User
   private Map<Class<?>, ApiBeanDescriptor> userSelectorDescriptor;
 
   private Map<String, Consumer<String[]>> commandMethodsByCode;
-  
+
   private List<URI> selectedUris;
 
   public UserSelectorViewModelImpl(OrgApi orgApi,
@@ -70,21 +70,25 @@ public class UserSelectorViewModelImpl extends ObjectEditingImpl implements User
 
   @Override
   public void setSingleSelectorRef(URI selectedUserUri) {
-    UserSingleSelector userSingleSelector = UserSelectorUtil
-        .createUserSingleSelector(orgApi.getAllUsers(), orgApi.getAllGroups(), selectedUserUri);
+    UserSingleSelector userSingleSelector = UserSelectorUtil.createUserSingleSelector(
+        orgApi.getAllUsers(),
+        orgApi.getAllGroups(),
+        selectedUserUri);
 
     singleSelectorRef.setObject(userSingleSelector);
-    
+
     singleSelector.notifyListeners();
   }
 
   @Override
   public void setMultiSelectorRef(List<URI> selectedUserUris) {
-    UserMultiSelector userMultiSelector = UserSelectorUtil
-        .createUserMultiSelector(orgApi.getAllUsers(), orgApi.getAllGroups(), selectedUserUris);
+    UserMultiSelector userMultiSelector = UserSelectorUtil.createUserMultiSelector(
+        orgApi.getAllUsers(),
+        orgApi.getAllGroups(),
+        selectedUserUris);
 
     multiSelectorRef.setObject(userMultiSelector);
-    
+
     multiSelector.notifyListeners();
   }
 
@@ -96,7 +100,7 @@ public class UserSelectorViewModelImpl extends ObjectEditingImpl implements User
     }
     commandMethod.accept(param);
   }
-  
+
   @Override
   public void removeCommand(String commandCode) {
     commandsWrapper.getCommands().remove(commandCode);
@@ -121,16 +125,16 @@ public class UserSelectorViewModelImpl extends ObjectEditingImpl implements User
     commandsRef = new ApiObjectRef(null, new UserSelectorCommands(), userSelectorDescriptor);
     commands.setRef(commandsRef);
     commandsWrapper = commandsRef.getWrapper(UserSelectorCommands.class);
-    
+
     addCommand(UserSelectorViewModel.CLOSE_CMD, this::closeAndSaveSelector);
     addCommand(UserSelectorViewModel.SAVE_CMD, this::saveSelector);
   }
-  
+
   private void addCommand(String code, Consumer<String[]> commandMethod) {
     commandsWrapper.getCommands().add(code);
     commandMethodsByCode.put(code, commandMethod);
   }
-  
+
   private void closeAndSaveSelector(String... params) {
     multiSelectorWrapper.setIsSaving(true);
     notifyAllListeners();
@@ -139,7 +143,7 @@ public class UserSelectorViewModelImpl extends ObjectEditingImpl implements User
   private void saveSelector(String... params) {
     multiSelectorWrapper.setIsSaving(false);
   }
-  
+
   private void notifyAllListeners() {
     singleSelector.notifyListeners();
     multiSelector.notifyListeners();

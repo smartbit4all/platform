@@ -30,7 +30,7 @@ public class UserSelectorUtil {
     return new UserMultiSelector().selectors(allUserSelector).selected(selected);
   }
 
-  private static List<UserSelector> collectSelectors(List<User> users, List<Group> groups) {
+  public static List<UserSelector> collectSelectors(List<User> users, List<Group> groups) {
     List<UserSelector> userSelectorList = users.stream()
         .map(u -> createUserSelector(u))
         .collect(Collectors.toList());
