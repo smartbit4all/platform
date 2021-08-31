@@ -9,6 +9,7 @@ import org.smartbit4all.ui.api.form.model.WidgetInstance;
 import org.smartbit4all.ui.api.form.model.WidgetType;
 import org.smartbit4all.ui.common.form2.impl.PredictiveFormController;
 import org.smartbit4all.ui.common.form2.impl.PredictiveFormInstanceView;
+import org.smartbit4all.ui.vaadin.components.form2.dialog.DoubleDialog;
 import org.smartbit4all.ui.vaadin.components.form2.dialog.WidgetDialogUtil;
 import org.smartbit4all.ui.vaadin.components.navigation.Navigation;
 import com.vaadin.flow.component.button.Button;
@@ -95,6 +96,42 @@ public class PredictiveFormInstanceViewUI extends FlexLayout implements Predicti
       return createVisibleWidgetView(descriptor, instance, isWidgetSelected);
     }
   }
+  
+  private FlexLayout createVisibleWidgetInteractiveView(WidgetInstance instance, WidgetDescriptor descriptor) {
+    FlexLayout layout = new FlexLayout();
+    
+    layout.setClassName("visible-widget-view");
+
+    Icon icon = new Icon(descriptor.getIcon());
+    icon.setClassName("visible-widget-view-icon");
+
+    Label label = new Label(descriptor.getLabel());
+    label.setClassName("visible-widget-view-label");
+    
+//    FlexLayout valueLayout = getValueLayoutFromWidgetInstance(instance, descriptor.getWidgetType());
+//    valueLayout.setClassName("visible-widget-view-value-layout");
+    
+    FlexLayout valueLayout = new FlexLayout();
+    WidgetType widgetType = descriptor.getWidgetType();
+    
+    if (widgetType == WidgetType.NUMBER) {
+      valueLayout = DoubleDialog.getValueLayout(instance, descriptor);
+    }
+    
+//    if (isWidgetSelected) {
+//      layout.addClassName("selected-widget-view");
+//    }
+    
+    Button editButton = new Button();
+    editButton.setIcon(new Icon(VaadinIcon.ELLIPSIS_DOTS_H));
+    editButton.addClickListener(e -> {
+      openValueDialog(descriptor.getWidgetType(), instance, descriptor);
+    });
+
+    layout.add(icon, label, valueLayout, editButton);
+    
+    return layout;
+  }
 
   private FlexLayout createVisibleWidgetTableView(WidgetInstance instance, WidgetDescriptor descriptor, boolean isWidgetSelected) {
     FlexLayout tableLayout = new FlexLayout();
@@ -127,7 +164,9 @@ public class PredictiveFormInstanceViewUI extends FlexLayout implements Predicti
    
     if (instance.getWidgets() != null) {
       for (WidgetInstance wi: instance.getWidgets()) {
-        drawerLayout.add(renderVisibleWidgetView(wi));
+//        drawerLayout.add(renderVisibleWidgetView(wi));
+        WidgetDescriptor childDescriptor = controller.getWidgetDescriptor(wi.getDescriptorUri());
+        drawerLayout.add(createVisibleWidgetInteractiveView(wi, childDescriptor));
       }
     }
     
