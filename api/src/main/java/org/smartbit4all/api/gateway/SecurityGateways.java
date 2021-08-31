@@ -15,7 +15,7 @@ public class SecurityGateways {
   }
 
   public static URI usersOfGroupUri(String apiName, String groupName) {
-    return URI.create(apiName + ":/userofgroup/" + groupName);
+    return URI.create(apiName + ":/usersofgroup/" + groupName);
   }
 
   public static URI groupsOfUserUri(String apiName, String userName) {
@@ -31,11 +31,11 @@ public class SecurityGateways {
   }
 
   public static URI localUsersOfGroupUri(String groupName) {
-    return userUri(LOCAL_API_NAME, groupName);
+    return usersOfGroupUri(LOCAL_API_NAME, groupName);
   }
 
   public static URI localGroupsOfUserUri(String userName) {
-    return groupUri(LOCAL_API_NAME, userName);
+    return groupsOfUserUri(LOCAL_API_NAME, userName);
   }
 
 }
