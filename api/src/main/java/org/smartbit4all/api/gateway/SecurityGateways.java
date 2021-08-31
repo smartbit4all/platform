@@ -7,19 +7,19 @@ public class SecurityGateways {
   public static final String LOCAL_API_NAME = "local";
 
   public static URI userUri(String apiName, String userName) {
-    return URI.create(apiName + ":/user/" + userName);
+    return URI.create(apiName + ":/" + userName);
   }
 
   public static URI groupUri(String apiName, String groupName) {
-    return URI.create(apiName + ":/group/" + groupName);
+    return URI.create(apiName + ":/" + groupName);
   }
 
   public static URI usersOfGroupUri(String apiName, String groupName) {
-    return URI.create(apiName + ":/usersofgroup/" + groupName);
+    return URI.create(apiName + ":/" + groupName);
   }
 
   public static URI groupsOfUserUri(String apiName, String userName) {
-    return URI.create(apiName + ":/groupsofuser/" + userName);
+    return URI.create(apiName + ":/" + userName);
   }
 
   public static URI localUserUri(String userName) {
