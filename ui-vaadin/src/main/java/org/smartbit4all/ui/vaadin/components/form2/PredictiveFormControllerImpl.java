@@ -126,8 +126,11 @@ public class PredictiveFormControllerImpl implements PredictiveFormController {
     if (widgetDescriptor != null) {
       WidgetInstance widgetInstance = createWidgetInstanceFromDescriptor(widgetDescriptor);
       
+      PredictiveInputGraphNode parentNode = util.getNode(node.getParent());
       WidgetInstance parentWidgetInstance =
-          util.getInstance(util.getNode(node.getParent()).getDescriptorUri());
+          util.getInstance(parentNode.getDescriptorUri());
+      WidgetDescriptor parentDescriptor = util.getDescriptor(parentNode);
+      WidgetType parentWidgetType = parentDescriptor.getWidgetType();
       
       if (parentWidgetInstance != null) {
         parentWidgetInstance.addWidgetsItem(widgetInstance);
@@ -138,7 +141,7 @@ public class PredictiveFormControllerImpl implements PredictiveFormController {
       }
       
       // we don't want to open the dialog for containers immediately, as they don't hold any value!
-      if (WidgetType.CONTAINER != widgetType && WidgetType.TABLE != widgetType) {
+      if (WidgetType.CONTAINER != widgetType && WidgetType.TABLE != widgetType && WidgetType.TABLE != parentWidgetType) {
         ui.openValueDialog(widgetDescriptor.getWidgetType(), widgetInstance, widgetDescriptor);
       }
       

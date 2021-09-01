@@ -179,3 +179,13 @@
 	flex-direction: column;
 }
 
+.visible-widget-interactive-edit-button {
+	position: fixed;
+	right: 1%;
+}
+
+.visible-widget-view > .double-dialog-layout {
+	position: fixed;
+	right: 5%;
+}
+

@@ -108,9 +108,6 @@ public class PredictiveFormInstanceViewUI extends FlexLayout implements Predicti
     Label label = new Label(descriptor.getLabel());
     label.setClassName("visible-widget-view-label");
     
-//    FlexLayout valueLayout = getValueLayoutFromWidgetInstance(instance, descriptor.getWidgetType());
-//    valueLayout.setClassName("visible-widget-view-value-layout");
-    
     FlexLayout valueLayout = new FlexLayout();
     WidgetType widgetType = descriptor.getWidgetType();
     
@@ -118,12 +115,9 @@ public class PredictiveFormInstanceViewUI extends FlexLayout implements Predicti
       valueLayout = DoubleDialog.getValueLayout(instance, descriptor);
     }
     
-//    if (isWidgetSelected) {
-//      layout.addClassName("selected-widget-view");
-//    }
-    
     Button editButton = new Button();
     editButton.setIcon(new Icon(VaadinIcon.ELLIPSIS_DOTS_H));
+    editButton.addClassName("visible-widget-interactive-edit-button");
     editButton.addClickListener(e -> {
       openValueDialog(descriptor.getWidgetType(), instance, descriptor);
     });
@@ -164,7 +158,6 @@ public class PredictiveFormInstanceViewUI extends FlexLayout implements Predicti
    
     if (instance.getWidgets() != null) {
       for (WidgetInstance wi: instance.getWidgets()) {
-//        drawerLayout.add(renderVisibleWidgetView(wi));
         WidgetDescriptor childDescriptor = controller.getWidgetDescriptor(wi.getDescriptorUri());
         drawerLayout.add(createVisibleWidgetInteractiveView(wi, childDescriptor));
       }

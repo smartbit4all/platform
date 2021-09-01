@@ -37,7 +37,6 @@ public class WidgetDialogUtil {
       } catch (ValidationException e1) {
         String msg = "Bean validation failed!";
         log.error(msg);
-//        Notifications.showErrorNotification(msg);
       }
     });
     
