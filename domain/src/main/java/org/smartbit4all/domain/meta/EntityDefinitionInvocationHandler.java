@@ -166,9 +166,9 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
   public void setupProperties() {
     dataConverterHelper = ctx.getBean(JDBCDataConverterHelper.class);
 
-//    countProperty = new PropertyComputed<>(Count.PROPERTTYNAME, Long.class,
-//        dataConverterHelper.from(Long.class), Count.class);
-    
+    // countProperty = new PropertyComputed<>(Count.PROPERTTYNAME, Long.class,
+    // dataConverterHelper.from(Long.class), Count.class);
+
     countProperty = PropertySqlComputed.create(EntityDefinition.PROPERTY_COUNT_NAME, Long.class,
         dataConverterHelper, "COUNT(1)");
     propertiesByName.put(countProperty.getName(), countProperty);
@@ -453,7 +453,7 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
     String refPath = PropertyRef.constructName(joinPath, referredPropertyName);
     Property<?> property = referredPropertiesByPath.get(refPath);
     if (property == null) {
-      property = createRefPropertyByPath(referredPropertyName, referredPropertyName, joinPath);
+      property = createRefPropertyByPath(null, referredPropertyName, joinPath);
     }
     return property;
   }
@@ -468,7 +468,7 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
       Property<?> referredProperty,
       String refPath) {
     PropertyRef<?> property = new PropertyRef<>(propertyName, joinPath, referredProperty);
-    
+
     PropertyRef<?> propertyProxy = createPropertyProxy(property, PropertyRef.class);
     referredPropertiesByPath.put(refPath, propertyProxy);
     propertyProxy.setEntityDef(this);
@@ -481,14 +481,14 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
     e.setClassLoader(propClazz.getClassLoader());
     e.setSuperclass(propClazz);
     e.setCallback(new MethodInterceptor() {
-      
+
       @Override
       public Object intercept(Object obj, Method method, Object[] args,
           MethodProxy proxy)
           throws Throwable {
         String methodName = method.getName();
-        
-        if("function".equals(methodName)) {
+
+        if ("function".equals(methodName)) {
           if (args.length != 1 || !(args[0] instanceof PropertyFunction)) {
             throw new RuntimeException(
                 "function method can only be invoked with one PropertyFunction typed parameter!");
@@ -496,31 +496,31 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
           PropertyFunction functionParam = (PropertyFunction) args[0];
           return propertyFunctionMapper.getFunctionProperty(property, functionParam);
         }
-        
+
         PropertyFunction basicFunction = PropertyFunction.basicFunctionsByName.get(methodName);
-        if(basicFunction != null) {
+        if (basicFunction != null) {
           return propertyFunctionMapper.getFunctionProperty(property, basicFunction);
         }
-        
+
         return method.invoke(property, args);
       }
     });
-    if(property instanceof PropertyOwned) {
-      //String name, Class<T> type, String defaultDbExpression, JDBCDataConverter<T, ?> typeHandler
+    if (property instanceof PropertyOwned) {
+      // String name, Class<T> type, String defaultDbExpression, JDBCDataConverter<T, ?> typeHandler
       PropertyOwned<?> p = (PropertyOwned<?>) property;
       return (P) e.create(
-          new Class<?>[] {String.class, Class.class, String.class, JDBCDataConverter.class}, 
-          new Object[] { p.getName(), p.type(), p.getDbExpression().get(null), p.jdbcConverter() });
-    } else if(property instanceof PropertyRef) {
-      //String name, List<Reference<?, ?>> joinPath, Property<T> referredProperty
+          new Class<?>[] {String.class, Class.class, String.class, JDBCDataConverter.class},
+          new Object[] {p.getName(), p.type(), p.getDbExpression().get(null), p.jdbcConverter()});
+    } else if (property instanceof PropertyRef) {
+      // String name, List<Reference<?, ?>> joinPath, Property<T> referredProperty
       PropertyRef<?> p = (PropertyRef<?>) property;
       return (P) e.create(
-          new Class<?>[] {String.class, List.class, Property.class}, 
-          new Object[] { p.getName(), p.getJoinReferences(), p.getReferredProperty()});
+          new Class<?>[] {String.class, List.class, Property.class},
+          new Object[] {p.getName(), p.getJoinReferences(), p.getReferredProperty()});
     }
     throw new RuntimeException("Can not create proxy for property subtype: " + propClazz.getName());
   }
-  
+
   @Override
   public void finishSetup() {
     allProperties.addAll(propertiesByName.values());
@@ -619,11 +619,11 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
   public JoinPath join() {
     return JoinPath.EMPTY;
   }
-  
+
   static class PropertyFunctionMapper {
-    
+
     private Map<Property<?>, List<Property<?>>> functionPropertiesByBasePropery = new HashMap<>();
-    
+
     public Property<?> getFunctionProperty(Property<?> baseProp, PropertyFunction propFunction) {
       String functionName = propFunction.getName();
       List<Property<?>> funcProps = functionPropertiesByBasePropery.get(baseProp);
@@ -650,7 +650,7 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
       }
       return funcProp;
     }
-    
+
   }
 
 }
