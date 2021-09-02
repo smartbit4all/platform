@@ -1,0 +1,18 @@
+plugins {
+}
+
+dependencies {
+	api 'org.smartbit4all.platform:api'
+	api 'org.springframework.boot:spring-boot-starter-web:2.2.6.RELEASE'
+
+	testImplementation 'org.junit.jupiter:junit-jupiter'
+	
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
+}
+
+test {
+	useJUnitPlatform()
+}
