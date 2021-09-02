@@ -59,6 +59,7 @@ public class BinaryContentApiImpl implements BinaryContentApi {
 
     binaryContent.setSaveData(true);
     binaryContent.setDataUri(dataUri);
+    binaryContent.setSize(binaryData.length());
 
     setBinaryData(binaryContent, binaryData);
   }
@@ -71,11 +72,12 @@ public class BinaryContentApiImpl implements BinaryContentApi {
   }
 
   @Override
-  public void uploadContent(BinaryContent binaryContent, BinaryData data, URI dataUri) {
+  public void uploadContent(BinaryContent binaryContent, BinaryData binaryData, URI dataUri) {
     binaryContent.setDataUri(dataUri);
+    binaryContent.setSize(binaryData.length());
 
-    setBinaryData(binaryContent, data);
+    setBinaryData(binaryContent, binaryData);
 
-    binaryDataApi.save(data, dataUri);
+    binaryDataApi.save(binaryData, dataUri);
   }
 }

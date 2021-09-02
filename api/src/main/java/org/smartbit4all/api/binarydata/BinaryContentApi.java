@@ -32,12 +32,16 @@ public interface BinaryContentApi {
    * The InputStream will be converted into a BinaryData and stored in the BinaryContent. The
    * BinaryContent will be saved the same time as the BinaryContent.
    * 
+   * NE HASZNÁLD, mert még nincs kész a BinaryContent-ből BinaryData mentése
+   * 
    */
   void saveIntoContent(BinaryContent binaryContent, InputStream inputstream, URI dataUri);
 
   /**
    * The BinaryData will be stored in the BinaryContent. The BinaryContent will be saved the same
    * time as the BinaryContent.
+   * 
+   * NE HASZNÁLD, mert még nincs kész a BinaryContent-ből BinaryData mentése
    * 
    */
   void saveIntoContent(BinaryContent binaryContent, BinaryData binaryData, URI dataUri);
