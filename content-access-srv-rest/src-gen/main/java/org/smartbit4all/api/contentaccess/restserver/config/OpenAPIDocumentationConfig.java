@@ -1,4 +1,4 @@
-package org.smartbit4all.api.contentaccess.contentaccess.rest.config;
+package org.smartbit4all.api.contentaccess.restserver.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -38,7 +38,7 @@ public class OpenAPIDocumentationConfig {
     public Docket customImplementation(ServletContext servletContext, @Value("${openapi.contentAccess.base-path:/}") String basePath) {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
-                    .apis(RequestHandlerSelectors.basePackage("org.smartbit4all.api.contentaccess.contentaccess.rest"))
+                    .apis(RequestHandlerSelectors.basePackage("org.smartbit4all.api.contentaccess.restserver"))
                     .build()
                 .pathProvider(new BasePathAwareRelativePathProvider(servletContext, basePath))
                 .directModelSubstitute(java.time.LocalDate.class, java.sql.Date.class)

@@ -3,6 +3,8 @@ plugins {
 }
 
 dependencies {
+	api project(':api')
+
 	api 'org.springframework:spring-context:5.2.3.RELEASE'
 	api 'org.springframework:spring-web:5.2.3.RELEASE'
 
@@ -13,9 +15,9 @@ dependencies {
 
 smartbit4all {
   openApi {
-    apiDescriptorPath = "$rootDir/content-access-rest/src/main/resources/descriptors/"
-    apiPackagePrefix = "org.smartbit4all.api.contentaccess"
-    apiPackagePostfix = "rest"
+    apiDescriptorPath = "$rootDir/content-access-srv-rest/src/main/resources/descriptors/"
+    apiPackagePrefix = "org.smartbit4all.api"
+    apiPackagePostfix = "restserver"
     genApiRestServer = true
   }
 }

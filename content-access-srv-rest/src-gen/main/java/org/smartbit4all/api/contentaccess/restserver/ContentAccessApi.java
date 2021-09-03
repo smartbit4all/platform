@@ -3,7 +3,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-package org.smartbit4all.api.contentaccess.contentaccess.rest;
+package org.smartbit4all.api.contentaccess.restserver;
 
 import java.util.UUID;
 import io.swagger.annotations.*;
