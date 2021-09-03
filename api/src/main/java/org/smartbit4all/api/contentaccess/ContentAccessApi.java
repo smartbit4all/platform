@@ -28,7 +28,7 @@ public interface ContentAccessApi {
 	 * @return The found BinaryContent.
 	 * @throws Exception
 	 */
-	BinaryContent download(UUID uuid) throws Exception;
+	BinaryData download(UUID uuid) throws Exception;
 	
 	/**
 	 * Saves binaryData into the BinaryContent with this UUID.

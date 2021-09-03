@@ -1,13 +1,15 @@
 package org.smartbit4all.api.contentaccess;
 
 import java.net.URI;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.smartbit4all.api.binarydata.BinaryContent;
 import org.smartbit4all.api.binarydata.BinaryContentApi;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.objectshare.ObjectShareApi;
-import org.smartbit4all.domain.data.storage.Storage;
+import org.smartbit4all.domain.data.storage.ObjectStorage;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class ContentAccessApiImpl implements ContentAccessApi{
@@ -16,7 +18,7 @@ public class ContentAccessApiImpl implements ContentAccessApi{
 	private ObjectShareApi objectShareApi;
 	
 	@Autowired
-	private Storage<BinaryContent> storage;
+	private ObjectStorage<BinaryContent> storage;
 	
 	@Autowired
 	private BinaryContentApi binaryContentApi; 
@@ -34,16 +36,30 @@ public class ContentAccessApiImpl implements ContentAccessApi{
 	}
 
 	@Override
-	public BinaryContent download(UUID uuid) throws Exception {
+	public BinaryData download(UUID uuid) throws Exception {
 		URI contentUri = objectShareApi.resolveUUID(uuid);
-		return storage.load(contentUri).get();
+		Optional<BinaryContent> content = storage.load(contentUri);
+		
+		if (content.isPresent()) {
+			return binaryContentApi.getBinaryData(content.get());
+		}
+		else {
+			throw new NoSuchElementException("The content was not found with the given uuid");
+		}
 	}
 
 	@Override
 	public void upload(UUID uuid, BinaryData binaryData) throws Exception {
 		URI contentUri = objectShareApi.resolveUUID(uuid);
-		BinaryContent binaryContent = storage.load(contentUri).get();
-		binaryContentApi.saveIntoContent(binaryContent, binaryData, null);
-		storage.save(binaryContent, contentUri);
+		Optional<BinaryContent> content = storage.load(contentUri);
+		
+		if (content.isPresent()) {
+			BinaryContent binaryContent = content.get();
+			binaryContentApi.saveIntoContent(binaryContent, binaryData, null);
+			storage.save(binaryContent, contentUri);
+		}
+		else {
+			throw new NoSuchElementException("The content was not found with the given uuid");
+		}
 	}
 }
