@@ -13,19 +13,25 @@ import com.vaadin.flow.data.binder.Binder;
 public class DoubleDialog extends Dialog {
 
   public DoubleDialog(WidgetInstance instance, PredictiveFormInstanceViewUI ui, WidgetDescriptor descriptor, PredictiveFormController controller) {
+    FlexLayout dialogLayout = initDialogLayout(instance, ui, descriptor, controller);
+    add(dialogLayout);
+  }
+
+  private FlexLayout initDialogLayout(WidgetInstance instance, PredictiveFormInstanceViewUI ui,
+      WidgetDescriptor descriptor, PredictiveFormController controller) {
     FlexLayout dialogLayout = new FlexLayout();
     dialogLayout.setClassName("double-dialog-layout");
-    add(dialogLayout);
-    
+    setMinWidth("20%");
+        
     Label titleLabel = new Label(descriptor.getLabel());
     NumberField nfValue = new NumberField();
     nfValue.setHasControls(true);
-    nfValue.setStep(0.1);
-    
+    nfValue.setStep(0.5);
+    nfValue.setWidthFull();
     
     Binder<WidgetInstance> binder = new Binder<>(WidgetInstance.class);
     binder.setBean(instance);
-    binder.forField(nfValue).bind(w -> {
+    binder.forField(nfValue).asRequired("A mező kitöltése kötelező").bind(w -> {
       if (instance.getDoubleValues().size() > 0) {
         return instance.getDoubleValues().get(0);
       } else {
@@ -40,6 +46,33 @@ public class DoubleDialog extends Dialog {
     buttonLayout.setClassName("double-dialog-button-layout");
     
     dialogLayout.add(titleLabel, nfValue, buttonLayout);
+    return dialogLayout;
+  }
+  
+  public static FlexLayout getValueLayout(WidgetInstance instance, WidgetDescriptor descriptor) {
+    FlexLayout dialogLayout = new FlexLayout();
+    dialogLayout.setClassName("double-dialog-layout");
+        
+    NumberField nfValue = new NumberField();
+    nfValue.setHasControls(true);
+    nfValue.setStep(0.5);
+    nfValue.setWidthFull();
+    
+    Binder<WidgetInstance> binder = new Binder<>(WidgetInstance.class);
+    binder.setBean(instance);
+    binder.forField(nfValue).asRequired("A mező kitöltése kötelező").bind(w -> {
+      if (instance.getDoubleValues().size() > 0) {
+        return instance.getDoubleValues().get(0);
+      } else {
+        return null;
+      }
+    }, (w, v) -> {
+      w.getDoubleValues().clear();
+      w.addDoubleValuesItem(v);
+    });
+    
+    dialogLayout.add(nfValue);
+    return dialogLayout;
   }
   
 }

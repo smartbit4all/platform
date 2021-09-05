@@ -25,7 +25,7 @@ public class DateIntervalDialog extends Dialog{
     
     Binder<WidgetInstance> binder = new Binder<>(WidgetInstance.class);
     binder.setBean(instance);
-    binder.forField(dtValue1).bind(w -> {
+    binder.forField(dtValue1).asRequired("A mező kitöltése kötelező").bind(w -> {
       if (instance.getDateValues().size() > 0) {
         return instance.getDateValues().get(0).toLocalDate();
       } else {
@@ -38,7 +38,7 @@ public class DateIntervalDialog extends Dialog{
         w.addDateValuesItem(v.atStartOfDay());
       }
     });
-    binder.forField(dtValue2).bind(w -> {
+    binder.forField(dtValue2).asRequired("A mező kitöltése kötelező").bind(w -> {
       if (instance.getDateValues().size() > 1) {
         return instance.getDateValues().get(1).toLocalDate();
       } else {

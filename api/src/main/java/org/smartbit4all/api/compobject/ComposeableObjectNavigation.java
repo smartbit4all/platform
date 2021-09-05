@@ -18,6 +18,7 @@ import org.smartbit4all.api.navigation.bean.NavigationEntryMeta;
 import org.smartbit4all.api.navigation.bean.NavigationReferenceEntry;
 import org.smartbit4all.api.navigation.bean.NavigationView;
 import org.smartbit4all.domain.data.storage.Storage;
+import com.google.common.base.Strings;
 
 public class ComposeableObjectNavigation extends NavigationImpl {
 
@@ -25,13 +26,13 @@ public class ComposeableObjectNavigation extends NavigationImpl {
 
   public static final String SCHEME = "compobj";
 
-  private ComposeableObjectApi composeableObjectApi;
+  private ComposerApi composeableObjectApi;
 
   private Storage<ComposeableObjectDef> compObjStorage;
 
   public ComposeableObjectNavigation(
       String name,
-      ComposeableObjectApi composeableObjectApi,
+      ComposerApi composeableObjectApi,
       Storage<ComposeableObjectDef> compObjStorage) {
 
     super(name);
@@ -62,13 +63,13 @@ public class ComposeableObjectNavigation extends NavigationImpl {
 
   @Override
   public NavigationEntry getEntry(URI entryMetaUri, URI objectUri) {
-    NavigationEntry navigationEntry = Navigation.entry(
-        createEntryMeta(getComposeableObjectDef(entryMetaUri)),
-        objectUri,
-        "Test name",
-        "Test icon");
-
-    return navigationEntry;
+    try {
+      ComposeableObjectDef compDef = getComposeableObjectDef(entryMetaUri);
+      return createNavigationEntry(objectUri, compDef);
+    } catch (Exception e) {
+      throw new IllegalArgumentException(
+          "Cannot get entry. EntryMeta URI: " + entryMetaUri + " Object URI: " + objectUri, e);
+    }
   }
 
   private ComposeableObjectDef getComposeableObjectDef(URI entryMetaUri) {
@@ -92,15 +93,14 @@ public class ComposeableObjectNavigation extends NavigationImpl {
       URI objectUri,
       ComposeableObjectDef compObjDef) throws Exception {
 
+    List<ComposeableObject> children = composeableObjectApi.getChildren(
+        objectUri,
+        compObjDef);
+
     List<NavigationReferenceEntry> result = new ArrayList<>();
 
-    ComposeableObject currentComposeableObject = new ComposeableObject()
-        .definition(compObjDef)
-        .objectUri(objectUri);
-
-    List<ComposeableObject> children = composeableObjectApi.getChildren(currentComposeableObject);
     for (ComposeableObject childItem : children) {
-      result.add(createReferenceEntry(objectUri, childItem));
+      result.add(createReferenceEntry(objectUri, compObjDef, childItem));
     }
 
     return result;
@@ -108,37 +108,90 @@ public class ComposeableObjectNavigation extends NavigationImpl {
 
   private NavigationReferenceEntry createReferenceEntry(
       URI objectUri,
-      ComposeableObject childItem) {
+      ComposeableObjectDef parentDef,
+      ComposeableObject childItem) throws Exception {
 
-    ComposeableObjectDef definition = childItem.getDefinition();
+    ComposeableObjectDef definition = getComposeableObjectDef(childItem.getDefUri());
+
+    return Navigation.referenceEntry(
+        objectUri,
+        createNavigationEntry(childItem.getObjectUri(), definition),
+        createAssocEntry(objectUri, parentDef, definition));
+  }
+
+  private NavigationEntry createAssocEntry(URI objectUri, ComposeableObjectDef parentDef,
+      ComposeableObjectDef childDef) throws Exception {
+    if (!Strings.isNullOrEmpty(parentDef.getViewName())) {
+      NavigationEntry assocEntry = Navigation.entry(
+
+          createEntryMeta(parentDef),
+          objectUri,
+          parentDef.getName(),
+          parentDef.getIcon(),
+
+          new NavigationView()
+              .name(composeableObjectApi.getViewName(objectUri, parentDef))
+              .putParametersItem(Navigation.ASSOC_URI_VIEW_PARAM_KEY, parentDef.getUri()));
+
+      return assocEntry;
+    }
+    return null;
+  }
+
+  private NavigationEntry createNavigationEntry(URI objectUri, ComposeableObjectDef definition)
+      throws Exception {
+
+    String title = composeableObjectApi.getTitle(objectUri, definition);
+    String icon = composeableObjectApi.getIcon(objectUri, definition);
+    String viewName = composeableObjectApi.getViewName(objectUri, definition);
+    
     NavigationEntry newEntry = Navigation.entry(
         createEntryMeta(definition),
-        childItem.getObjectUri(),
-        definition.getName(),
-        definition.getIcon());
+        objectUri,
+        title,
+        icon);
 
-    NavigationView view = new NavigationView()
-        .name(definition.getViewName());
-    
-    newEntry.addViewsItem(view);
+    if (!Strings.isNullOrEmpty(viewName)) {
+      NavigationView view = new NavigationView()
+          .name(viewName);
 
-    return Navigation.referenceEntry(objectUri, newEntry, null);
+      newEntry.addViewsItem(view);
+    }
+
+    return newEntry;
   }
 
   public static NavigationAssociationMeta createAssocMeta(ComposeableObjectDef compObjDef) {
-    URI compObjDefUri = compObjDef.getUri();
+    return createAssocMeta(compObjDef.getUri(), compObjDef.getUri(), compObjDef.getUri());
+  }
+
+  public static NavigationAssociationMeta createAssocMeta(
+      URI assocUri,
+      URI startEntryUri,
+      URI endEntryUri) {
+
+    return createAssocMeta(assocUri, startEntryUri, endEntryUri, null);
+  }
+
+  public static NavigationAssociationMeta createAssocMeta(
+      URI assocUri,
+      URI startEntryUri,
+      URI endEntryUri,
+      URI assocEntryUri) {
 
     return Navigation.assocMeta(
-        compObjDefUri,
-        compObjDefUri.getScheme(),
-        createEntryMeta(compObjDef),
-        createEntryMeta(compObjDef),
-        null);
+        assocUri,
+        assocUri.getScheme(),
+        createEntryMeta(startEntryUri),
+        createEntryMeta(endEntryUri),
+        assocEntryUri != null ? createEntryMeta(assocEntryUri) : null);
   }
 
   public static NavigationEntryMeta createEntryMeta(ComposeableObjectDef compObjDef) {
-    URI compObjDefUri = compObjDef.getUri();
+    return createEntryMeta(compObjDef.getUri());
+  }
 
+  public static NavigationEntryMeta createEntryMeta(URI compObjDefUri) {
     return Navigation.entryMeta(
         compObjDefUri,
         compObjDefUri.getScheme());

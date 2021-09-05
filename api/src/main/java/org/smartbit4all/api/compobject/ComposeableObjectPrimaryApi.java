@@ -8,20 +8,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.compobject.bean.ComposeableObject;
 import org.smartbit4all.api.compobject.bean.ComposeableObjectDef;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
+import com.google.common.base.Strings;
 
 /**
- * The Primary ComposeableObjectApi can wire multiple APIs and delegate the calls to the specific API,
- * based on the given ComposeableObjectDef apiUri.
+ * The Primary ComposeableObjectApi can wire multiple APIs and delegate the calls to the specific
+ * API, based on the given ComposeableObjectDef apiUri.
  * 
  * @author Zoltan Szegedi
  *
  */
-public class ComposeableObjectPrimaryApi implements ComposeableObjectApi {
+public class ComposeableObjectPrimaryApi implements ComposerApi, InitializingBean {
 
   public static final Logger log = LoggerFactory.getLogger(ComposeableObjectPrimaryApi.class);
 
-  public static final URI API_URI = URI.create("composeableprimary:/composeableobject/apiUri");
+  @Autowired(required = false)
+  private List<ComposeableObjectApi> apis;
 
   private Map<URI, ComposeableObjectApi> apisByUri;
 
@@ -30,27 +34,54 @@ public class ComposeableObjectPrimaryApi implements ComposeableObjectApi {
   }
 
   @Override
-  public List<ComposeableObject> getChildren(ComposeableObject composeableObject) throws Exception {
-    ComposeableObjectDef definition = composeableObject.getDefinition();
-    ComposeableObjectApi api = apisByUri.get(definition.getApiUri());
-
-    Assert.notNull(api, "No API found for ComposeableObjectDef with URI: " + definition.getUri()
-        + " API URI: " + definition.getApiUri());
-
-    return api.getChildren(composeableObject);
+  public void afterPropertiesSet() throws Exception {
+    if (apis != null) {
+      for (ComposeableObjectApi api : apis) {
+        add(api);
+      }
+    }
   }
 
   @Override
-  public URI getApiUri() {
-    return API_URI;
-  }
-  
-  public void add(ComposeableObjectApi api) {
-    this.apisByUri.put(api.getApiUri(), api);
+  public List<ComposeableObject> getChildren(URI parentObjectUri, ComposeableObjectDef definition) throws Exception {
+    ComposeableObjectApi api = getApi(definition.getApiUri());
+    return api.getChildren(parentObjectUri, definition.getUri());
   }
 
-  public ComposeableObjectApi getApi(URI apiUri) {
-    return this.apisByUri.get(apiUri);
+  @Override
+  public String getTitle(URI objectUri, ComposeableObjectDef definition) throws Exception {
+    ComposeableObjectApi api = getApi(definition.getApiUri());
+    String title = api.getTitle(objectUri);
+    return Strings.isNullOrEmpty(title) ? definition.getName() : title;
+  }
+
+
+  @Override
+  public String getIcon(URI objectUri, ComposeableObjectDef definition) throws Exception {
+    ComposeableObjectApi api = getApi(definition.getApiUri());
+    String icon = api.getIcon(objectUri);
+    return Strings.isNullOrEmpty(icon) ? definition.getIcon() : icon;
+  }
+
+  @Override
+  public String getViewName(URI objectUri, ComposeableObjectDef definition) throws Exception {
+    ComposeableObjectApi api = getApi(definition.getApiUri());
+    String viewName = api.getViewName(objectUri);
+    return Strings.isNullOrEmpty(viewName) ? definition.getViewName() : viewName;
+  }
+  
+  private ComposeableObjectApi getApi(URI apiUri) {
+    ComposeableObjectApi api = apisByUri.get(apiUri);
+
+    Assert.notNull(
+        api,
+        "No API found with URI: " + apiUri);
+
+    return api;
+  }
+
+  public void add(ComposeableObjectApi api) {
+    this.apisByUri.put(api.getApiUri(), api);
   }
 
 }

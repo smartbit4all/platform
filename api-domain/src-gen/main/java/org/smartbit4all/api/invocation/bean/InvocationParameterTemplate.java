@@ -31,6 +31,7 @@ import javax.validation.Valid;
  */
 @JsonPropertyOrder({
   InvocationParameterTemplate.NAME,
+  InvocationParameterTemplate.DEFAULT_VALUE_STRING,
   InvocationParameterTemplate.TYPE_CLASS
 })
 @JsonTypeName("InvocationParameterTemplate")
@@ -38,6 +39,9 @@ import javax.validation.Valid;
 public class InvocationParameterTemplate {
   public static final String NAME = "name";
   private String name;
+
+  public static final String DEFAULT_VALUE_STRING = "defaultValueString";
+  private String defaultValueString;
 
   public static final String TYPE_CLASS = "typeClass";
   private String typeClass;
@@ -67,6 +71,33 @@ public class InvocationParameterTemplate {
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setName(String name) {
     this.name = name;
+  }
+
+
+  public InvocationParameterTemplate defaultValueString(String defaultValueString) {
+    
+    this.defaultValueString = defaultValueString;
+    return this;
+  }
+
+   /**
+   * The default value for the given parameter.
+   * @return defaultValueString
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The default value for the given parameter.")
+  @JsonProperty(DEFAULT_VALUE_STRING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getDefaultValueString() {
+    return defaultValueString;
+  }
+
+
+  @JsonProperty(DEFAULT_VALUE_STRING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setDefaultValueString(String defaultValueString) {
+    this.defaultValueString = defaultValueString;
   }
 
 
@@ -107,12 +138,13 @@ public class InvocationParameterTemplate {
     }
     InvocationParameterTemplate invocationParameterTemplate = (InvocationParameterTemplate) o;
     return Objects.equals(this.name, invocationParameterTemplate.name) &&
+        Objects.equals(this.defaultValueString, invocationParameterTemplate.defaultValueString) &&
         Objects.equals(this.typeClass, invocationParameterTemplate.typeClass);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, typeClass);
+    return Objects.hash(name, defaultValueString, typeClass);
   }
 
   @Override
@@ -120,6 +152,7 @@ public class InvocationParameterTemplate {
     StringBuilder sb = new StringBuilder();
     sb.append("class InvocationParameterTemplate {\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    defaultValueString: ").append(toIndentedString(defaultValueString)).append("\n");
     sb.append("    typeClass: ").append(toIndentedString(typeClass)).append("\n");
     sb.append("}");
     return sb.toString();

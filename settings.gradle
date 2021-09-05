@@ -18,6 +18,7 @@ include 'gson'
 include 'invocation-domain-rest'
 include 'invocation-cli-rest'
 include 'invocation-srv-rest'
+include 'content-access-srv-rest'
 
 def localSettings = file("local.settings.gradle")
 if (localSettings.exists()) {

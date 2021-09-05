@@ -139,18 +139,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/NavigationAssociationMeta'
-    Navigation:
-      type: object
-      description: The instance of a navigation that refers to navigation config and root nodes.
-      properties:
-        roots:
-          type: array
-          items:
-            $ref: '#/components/schemas/NavigationNode'
-        configUri:
-          type: string
-          format: uri
-          description: The uri of the configuration that drives the given navigation instance.
     NavigationNode:
       type: object
       description: 'UI: The stateful object on the client side. Contains the reference to the NavigationEntry and also the references to the parent and to the children'
@@ -185,6 +173,12 @@ components:
         hidden:
           type: boolean
           description: 'The association can be hidden. If a node has only one association then it can be an option.'
+        caption:
+          type: string
+          description: 'The caption text, if the association is visible in any UI component'
+        icon:
+          type: string
+          description: 'The icon, if the association is visible in any UI component'
         references:
           description: 'The navigation association instances.'
           type: array

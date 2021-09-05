@@ -23,7 +23,7 @@ public class TextDialog extends Dialog {
     
     Binder<WidgetInstance> binder = new Binder<>(WidgetInstance.class);
     binder.setBean(instance);
-    binder.forField(tfValue).bind(w -> {
+    binder.forField(tfValue).asRequired("A mező kitöltése kötelező").bind(w -> {
       if (instance.getStringValues().size() > 0) {
         return instance.getStringValues().get(0);
       } else {

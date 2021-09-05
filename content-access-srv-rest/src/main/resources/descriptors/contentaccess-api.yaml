@@ -1,0 +1,55 @@
+openapi: 3.0.1
+info:
+  title: content access api
+  description: content access api
+  termsOfService: ''
+  contact:
+    email: info@it4all.hu
+  version: 1.0.0
+tags:
+- name: ContentAccess
+paths:
+  /upload:
+    post:
+      tags:
+      - ContentAccess
+      summary: ''
+      operationId: 'upload'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                uuid:
+                  type: string
+                  format: uuid
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: 'The file was successfully uploaded.'
+  /download/{uuid}:
+    get:
+      tags:
+      - ContentAccess
+      summary: ''
+      operationId: 'download'
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+      responses:
+        '200':
+          description: 'File with the given uuid.'
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        

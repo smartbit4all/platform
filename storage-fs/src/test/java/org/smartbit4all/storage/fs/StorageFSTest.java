@@ -1,21 +1,23 @@
 package org.smartbit4all.storage.fs;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.smartbit4all.core.io.TestFileUtil.testFsRootFolder;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.smartbit4all.api.storage.bean.ObjectReference;
 import org.smartbit4all.core.io.TestFileUtil;
 import org.smartbit4all.domain.annotation.property.Entity;
 import org.smartbit4all.domain.annotation.property.Id;
 import org.smartbit4all.domain.annotation.property.OwnProperty;
 import org.smartbit4all.domain.annotation.property.Table;
+import org.smartbit4all.domain.data.storage.ObjectReferenceRequest;
 import org.smartbit4all.domain.data.storage.ObjectStorage;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.index.StorageIndex;
@@ -29,6 +31,8 @@ import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.gson.GsonBinaryDataObjectSerializer;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class StorageFSTest {
 
@@ -218,6 +222,55 @@ class StorageFSTest {
     StorageReindexerFS reindexer =
         new StorageReindexerFS("teststoragefs", testFsRootFolder(), "fs");
     assertEquals(4, reindexer.listAllUris().size());
+
+    ctx.close();
+  }
+
+  @Test
+  void storageFsTestWithConstructedUris() throws Exception {
+    AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+    ctx.register(MetaConfiguration.class);
+    ctx.register(TestEntityDefConfig.class);
+    ctx.refresh();
+
+    Function<TestData, URI> uriProvider = (testData) -> testData.getUri();
+
+    StorageFS<TestData> storageFS = new StorageFS<>(
+        testFsRootFolder(),
+        uriProvider,
+        new GsonBinaryDataObjectSerializer(),
+        TestData.class,
+        OBJECT_FILE_EXTENSION);
+
+    storageFS
+        .setUriProvider(new ObjectUriProviderFSDefault<>("teststoragefs:/", OBJECT_FILE_EXTENSION));
+
+    TestSearchDef testSearchDef = ctx.getBean(TestSearchDef.class);
+
+    String activeList = "active";
+    String closedList = "closed";
+    String undefinedList = "undefined";
+    String notInAnyState = "notinanystate";
+
+    TestData tdActive1 = new TestData();
+    tdActive1.setUri(storageFS.getUriProvider().constructUri(tdActive1));
+    tdActive1.setData(activeList);
+
+    URI uri = storageFS.save(tdActive1);
+
+    Optional<TestData> loaded1 = storageFS.load(uri);
+
+    Assertions.assertTrue(loaded1.isPresent());
+
+    assertEquals(tdActive1.data, loaded1.get().data);
+    assertEquals(tdActive1.uri, loaded1.get().uri);
+
+    String myref = "myref";
+    storageFS.saveReferences(new ObjectReferenceRequest(uri).create(myref));
+
+    Set<ObjectReference> references = storageFS.loadReferences(uri);
+
+    Assertions.assertTrue(references.stream().anyMatch(r -> r.getReference().equals(myref)));
 
     ctx.close();
   }

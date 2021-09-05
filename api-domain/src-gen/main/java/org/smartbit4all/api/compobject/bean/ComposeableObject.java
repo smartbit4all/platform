@@ -23,7 +23,6 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
-import org.smartbit4all.api.compobject.bean.ComposeableObjectDef;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
@@ -32,44 +31,44 @@ import javax.validation.Valid;
  * ComposeableObject
  */
 @JsonPropertyOrder({
-  ComposeableObject.DEFINITION,
+  ComposeableObject.DEF_URI,
   ComposeableObject.OBJECT_URI
 })
 @JsonTypeName("ComposeableObject")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class ComposeableObject {
-  public static final String DEFINITION = "definition";
-  private ComposeableObjectDef definition;
+  public static final String DEF_URI = "defUri";
+  private URI defUri;
 
   public static final String OBJECT_URI = "objectUri";
   private URI objectUri;
 
 
-  public ComposeableObject definition(ComposeableObjectDef definition) {
+  public ComposeableObject defUri(URI defUri) {
     
-    this.definition = definition;
+    this.defUri = defUri;
     return this;
   }
 
    /**
-   * Get definition
-   * @return definition
+   * ComposeableObjectDef URI.
+   * @return defUri
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
-  @JsonProperty(DEFINITION)
+  @ApiModelProperty(value = "ComposeableObjectDef URI.")
+  @JsonProperty(DEF_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public ComposeableObjectDef getDefinition() {
-    return definition;
+  public URI getDefUri() {
+    return defUri;
   }
 
 
-  @JsonProperty(DEFINITION)
+  @JsonProperty(DEF_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setDefinition(ComposeableObjectDef definition) {
-    this.definition = definition;
+  public void setDefUri(URI defUri) {
+    this.defUri = defUri;
   }
 
 
@@ -110,20 +109,20 @@ public class ComposeableObject {
       return false;
     }
     ComposeableObject composeableObject = (ComposeableObject) o;
-    return Objects.equals(this.definition, composeableObject.definition) &&
+    return Objects.equals(this.defUri, composeableObject.defUri) &&
         Objects.equals(this.objectUri, composeableObject.objectUri);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(definition, objectUri);
+    return Objects.hash(defUri, objectUri);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class ComposeableObject {\n");
-    sb.append("    definition: ").append(toIndentedString(definition)).append("\n");
+    sb.append("    defUri: ").append(toIndentedString(defUri)).append("\n");
     sb.append("    objectUri: ").append(toIndentedString(objectUri)).append("\n");
     sb.append("}");
     return sb.toString();

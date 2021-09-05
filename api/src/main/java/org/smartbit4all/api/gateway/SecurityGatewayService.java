@@ -145,4 +145,11 @@ public interface SecurityGatewayService {
    * @return
    */
   Group getGroup(URI groupUri);
+  
+  /**
+   * Return list of groups contained by group.
+   * @param groupUri
+   * @return
+   */
+  List<Group> getSubGroups(URI groupUri);
 }

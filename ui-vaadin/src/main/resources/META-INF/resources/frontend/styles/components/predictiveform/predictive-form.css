@@ -51,6 +51,13 @@
 	border: medium solid transparent;
 }
 
+.visible-widget-table-view {
+	background-color: var(--lumo-contrast-10pct);
+	flex-wrap: wrap;
+	border: medium solid transparent;
+	flex-direction: column;
+}
+
 .visible-widget-view-label {
 	margin-left: 10px;
 }
@@ -99,15 +106,16 @@
 	flex-direction: column;
 }
 
-.integer-dialog-button-layuot {
+.integer-dialog-button-layout {
 	justify-content: space-between;
 }
 
 .double-dialog-layout {
 	flex-direction: column;
+	min-width: 20%;
 }
 
-.double-dialog-button-layuot {
+.double-dialog-button-layout {
 	justify-content: space-between;
 }
 
@@ -123,7 +131,7 @@
 	flex-direction: column;
 }
 
-.date-dialog-button-layuot {
+.date-dialog-button-layout {
 	justify-content: space-between;
 }
 
@@ -131,7 +139,7 @@
 	flex-direction: column;
 }
 
-.date-interval-dialog-button-layuot {
+.date-interval-dialog-button-layout {
 	justify-content: space-between;
 }
 
@@ -149,5 +157,35 @@
 
 .container-dialog-layout {
 	flex-direction: column;
+}
+
+.table-dialog-layout {
+	flex-direction: column;
+}
+
+.table-dialog-button-layout {
+	justify-content: space-between;
+}
+
+.table-dialog-inputs-layout {
+	flex-direction: column;
+}
+
+.widget-hidden {
+	visibility: hidden;
+}
+
+.visible-widget-drawer-layout {
+	flex-direction: column;
+}
+
+.visible-widget-interactive-edit-button {
+	position: fixed;
+	right: 1%;
+}
+
+.visible-widget-view > .double-dialog-layout {
+	position: fixed;
+	right: 5%;
 }
 

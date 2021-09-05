@@ -47,6 +47,8 @@ import org.smartbit4all.core.utility.StringConstant;
  */
 public class Navigation {
 
+  public static final String ASSOC_URI_VIEW_PARAM_KEY = "assocUri";
+  
   /**
    * The configuration of the given navigation.
    */
@@ -227,9 +229,13 @@ public class Navigation {
     List<ApiItemChangeEvent<NavigationReference>> result = new ArrayList<>();
     for (Entry<URI, List<NavigationReferenceEntry>> entry : navigation
         .entrySet()) {
+
       NavigationAssociation association = naviAssocByMetaUri.get(entry.getKey());
       List<NavigationReferenceEntry> referenceEntries =
-          entry.getValue() != null ? entry.getValue() : Collections.emptyList();
+          entry.getValue() != null
+              ? entry.getValue()
+              : Collections.emptyList();
+
       // Merge into
       result.addAll(merge(node, association, referenceEntries));
     }
@@ -370,14 +376,20 @@ public class Navigation {
     return result;
   }
 
-  public static NavigationAssociation association(URI assocMetaUri, NavigationNode node,
+  public static NavigationAssociation association(
+      URI assocMetaUri,
+      NavigationNode node,
       NavigationConfig config) {
-    NavigationAssociation result = new NavigationAssociation();
-    result.setHidden(!config.isAssocVisible(assocMetaUri));
-    result.setId(UUID.randomUUID().toString());
-    result.setLastNavigation(null);
-    result.setMetaUri(assocMetaUri);
-    result.setNode(node);
+
+    NavigationAssociation result = new NavigationAssociation()
+        .hidden(!config.isAssocVisible(assocMetaUri))
+        .id(UUID.randomUUID().toString())
+        .lastNavigation(null)
+        .metaUri(assocMetaUri)
+        .node(node)
+        .caption(config.getAssocLabel(assocMetaUri))
+        .icon(config.getAssocIconKey(assocMetaUri));
+
     return result;
   }
 
@@ -408,15 +420,21 @@ public class Navigation {
     return result;
   }
 
-  public static NavigationAssociationMeta assocMeta(URI uri, String name,
+  public static NavigationAssociationMeta assocMeta(
+      URI uri,
+      String name,
       NavigationEntryMeta startEntry,
-      NavigationEntryMeta endEntry, NavigationEntryMeta associationEntry) {
+      NavigationEntryMeta endEntry,
+      NavigationEntryMeta associationEntry) {
+
     NavigationAssociationMeta result = new NavigationAssociationMeta();
+
     result.setUri(uri);
     result.setName(name);
     result.setStartEntry(startEntry);
     result.setEndEntry(endEntry);
     result.setAssociationEntry(associationEntry);
+
     return result;
   }
 
@@ -455,6 +473,10 @@ public class Navigation {
         appendToString(sb, ref.getEndNode(), indent + StringConstant.SPACE + StringConstant.SPACE);
       }
     }
+  }
+
+  public NavigationAssociation getAssociation(String identifier) {
+    return associations.get(identifier);
   }
 
 }

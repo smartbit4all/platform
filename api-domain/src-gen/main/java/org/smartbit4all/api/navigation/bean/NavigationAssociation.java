@@ -25,6 +25,7 @@ import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import org.smartbit4all.api.navigation.bean.NavigationEntry;
 import org.smartbit4all.api.navigation.bean.NavigationNode;
 import org.smartbit4all.api.navigation.bean.NavigationReference;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -41,7 +42,10 @@ import javax.validation.Valid;
   NavigationAssociation.META_URI,
   NavigationAssociation.LAST_NAVIGATION,
   NavigationAssociation.HIDDEN,
-  NavigationAssociation.REFERENCES
+  NavigationAssociation.CAPTION,
+  NavigationAssociation.ICON,
+  NavigationAssociation.REFERENCES,
+  NavigationAssociation.ASSOC_ENTRY
 })
 @JsonTypeName("NavigationAssociation")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -61,8 +65,17 @@ public class NavigationAssociation {
   public static final String HIDDEN = "hidden";
   private Boolean hidden;
 
+  public static final String CAPTION = "caption";
+  private String caption;
+
+  public static final String ICON = "icon";
+  private String icon;
+
   public static final String REFERENCES = "references";
   private List<NavigationReference> references = null;
+
+  public static final String ASSOC_ENTRY = "assocEntry";
+  private NavigationEntry assocEntry;
 
 
   public NavigationAssociation id(String id) {
@@ -202,6 +215,60 @@ public class NavigationAssociation {
   }
 
 
+  public NavigationAssociation caption(String caption) {
+    
+    this.caption = caption;
+    return this;
+  }
+
+   /**
+   * The caption text, if the association is visible in any UI component
+   * @return caption
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The caption text, if the association is visible in any UI component")
+  @JsonProperty(CAPTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getCaption() {
+    return caption;
+  }
+
+
+  @JsonProperty(CAPTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setCaption(String caption) {
+    this.caption = caption;
+  }
+
+
+  public NavigationAssociation icon(String icon) {
+    
+    this.icon = icon;
+    return this;
+  }
+
+   /**
+   * The icon, if the association is visible in any UI component
+   * @return icon
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The icon, if the association is visible in any UI component")
+  @JsonProperty(ICON)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getIcon() {
+    return icon;
+  }
+
+
+  @JsonProperty(ICON)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setIcon(String icon) {
+    this.icon = icon;
+  }
+
+
   public NavigationAssociation references(List<NavigationReference> references) {
     
     this.references = references;
@@ -238,6 +305,34 @@ public class NavigationAssociation {
   }
 
 
+  public NavigationAssociation assocEntry(NavigationEntry assocEntry) {
+    
+    this.assocEntry = assocEntry;
+    return this;
+  }
+
+   /**
+   * Get assocEntry
+   * @return assocEntry
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(ASSOC_ENTRY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public NavigationEntry getAssocEntry() {
+    return assocEntry;
+  }
+
+
+  @JsonProperty(ASSOC_ENTRY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setAssocEntry(NavigationEntry assocEntry) {
+    this.assocEntry = assocEntry;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -252,12 +347,15 @@ public class NavigationAssociation {
         Objects.equals(this.metaUri, navigationAssociation.metaUri) &&
         Objects.equals(this.lastNavigation, navigationAssociation.lastNavigation) &&
         Objects.equals(this.hidden, navigationAssociation.hidden) &&
-        Objects.equals(this.references, navigationAssociation.references);
+        Objects.equals(this.caption, navigationAssociation.caption) &&
+        Objects.equals(this.icon, navigationAssociation.icon) &&
+        Objects.equals(this.references, navigationAssociation.references) &&
+        Objects.equals(this.assocEntry, navigationAssociation.assocEntry);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, node, metaUri, lastNavigation, hidden, references);
+    return Objects.hash(id, node, metaUri, lastNavigation, hidden, caption, icon, references, assocEntry);
   }
 
   @Override
@@ -269,7 +367,10 @@ public class NavigationAssociation {
     sb.append("    metaUri: ").append(toIndentedString(metaUri)).append("\n");
     sb.append("    lastNavigation: ").append(toIndentedString(lastNavigation)).append("\n");
     sb.append("    hidden: ").append(toIndentedString(hidden)).append("\n");
+    sb.append("    caption: ").append(toIndentedString(caption)).append("\n");
+    sb.append("    icon: ").append(toIndentedString(icon)).append("\n");
     sb.append("    references: ").append(toIndentedString(references)).append("\n");
+    sb.append("    assocEntry: ").append(toIndentedString(assocEntry)).append("\n");
     sb.append("}");
     return sb.toString();
   }

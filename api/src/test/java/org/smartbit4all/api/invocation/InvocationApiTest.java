@@ -1,7 +1,15 @@
 package org.smartbit4all.api.invocation;
 
+import static org.assertj.core.api.Assertions.fail;
+import java.net.URI;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.smartbit4all.api.invocation.bean.InvocationRequestTemplate;
+import org.smartbit4all.api.invocation.bean.TestDataBean;
+import org.smartbit4all.api.storage.bean.ObjectReference;
+import org.smartbit4all.domain.data.storage.ObjectReferenceRequest;
+import org.smartbit4all.domain.data.storage.Storage;
+import org.smartbit4all.domain.data.storage.StorageApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -15,6 +23,9 @@ class InvocationApiTest {
 
   @Autowired
   TestPrimaryApi primaryApi;
+
+  @Autowired
+  StorageApi storageApi;
 
   @Test
   void testPrimary() throws ClassNotFoundException {
@@ -43,6 +54,50 @@ class InvocationApiTest {
       InvocationParameter result = invocationApi.invoke(request);
       Assertions.assertEquals(value, result.getValue());
     }
+  }
+
+  public static String callResult;
+
+  @Test
+  void testEventPublishByObjectReference() throws Exception {
+
+    callResult = null;
+
+    // Save the invocationTemplate first:
+    URI callbackUri = invocationApi.save(TestApi.echoMethodTemplate);
+    String value = "echo";
+
+    Storage<TestDataBean> storageTDB = storageApi.get(TestDataBean.class);
+
+    TestDataBean tdb1 = new TestDataBean();
+    tdb1.setData("tdb1");
+
+    URI tdb1Uri = storageTDB.save(tdb1);
+    storageTDB.saveReferences(new ObjectReferenceRequest(tdb1Uri).create(callbackUri.toString()));
+
+    storageTDB.onChange((o, r) -> {
+      r.forEach(or -> {
+        ObjectReference reference = or;
+        InvocationRequestTemplate requestTemplate =
+            invocationApi.load(URI.create(reference.getReference()));
+        InvocationRequest request = InvocationRequest.of(requestTemplate).setParameter("p1", value);
+        InvocationParameter result;
+        try {
+          result = invocationApi.invoke(request);
+          callResult = result.getValue().toString();
+        } catch (ClassNotFoundException e) {
+          fail("Unable to call the " + request, e);
+        }
+      });
+    });
+
+    // Modify the give data
+    tdb1.setUri(tdb1Uri);
+    tdb1.setData(value + value);
+    storageTDB.save(tdb1);
+
+    // Triggering by the modification the result will lead to invocation.
+    Assertions.assertEquals(value, callResult);
   }
 
   @Test

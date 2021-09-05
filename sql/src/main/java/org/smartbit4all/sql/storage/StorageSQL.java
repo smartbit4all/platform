@@ -5,18 +5,21 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.binarydata.BinaryDataObjectSerializer;
+import org.smartbit4all.api.storage.bean.ObjectReference;
 import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.data.TableDatas;
-import org.smartbit4all.domain.data.storage.ObjectStorage;
+import org.smartbit4all.domain.data.storage.ObjectReferenceRequest;
+import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.domain.utility.crud.Crud;
 
-public class StorageSQL<T> implements ObjectStorage<T> {
+public class StorageSQL<T> extends ObjectStorageImpl<T> {
 
   private EntityDefinition entityDef;
 
@@ -29,8 +32,6 @@ public class StorageSQL<T> implements ObjectStorage<T> {
   private String contentFieldName;
 
   private Class<T> clazz;
-
-  private Function<T, URI> uriProvider;
 
   private BinaryDataObjectSerializer serializer;
 
@@ -63,16 +64,17 @@ public class StorageSQL<T> implements ObjectStorage<T> {
     this.contentFieldName = contentName;
   }
 
-  private StorageSQL(EntityDefinition entityDef, Function<T, URI> uriProvider,
+  private StorageSQL(EntityDefinition entityDef, Function<T, URI> uriAccessor,
       BinaryDataObjectSerializer serializer, Class<T> clazz) {
+    super(uriAccessor);
     this.entityDef = entityDef;
-    this.uriProvider = uriProvider;
     this.clazz = clazz;
     this.serializer = serializer;
   }
 
   @Override
-  public void save(T object, URI uri) throws Exception {
+  public URI save(T object, URI uri) throws Exception {
+    URI result = constructUri(object, uri);
     BinaryData binaryData = serializer.toJsonBinaryData(object, clazz);
 
     TableData<EntityDefinition> tdUpdate = TableDatas.builder(entityDef)
@@ -82,11 +84,12 @@ public class StorageSQL<T> implements ObjectStorage<T> {
         .build();
 
     StorageSQLUtil.createOrUpdate(tdUpdate, getKey(), uri);
+    return result;
   }
 
   @Override
-  public void save(T object) throws Exception {
-    save(object, uriProvider.apply(object));
+  public URI save(T object) throws Exception {
+    return save(object, uriAccessor.apply(object));
   }
 
   @Override
@@ -94,22 +97,22 @@ public class StorageSQL<T> implements ObjectStorage<T> {
     TableData<EntityDefinition> allDatasTable = Crud.read(entityDef)
         .select(getContentField())
         .listData();
-    
-    if(allDatasTable.isEmpty()) {
+
+    if (allDatasTable.isEmpty()) {
       return Collections.emptyList();
     }
-    
+
     List<T> datas = new ArrayList<>();
     for (DataRow row : allDatasTable.rows()) {
       Optional<T> data = loadBinaryDataFromRow(row);
-      if(data.isPresent()) {
+      if (data.isPresent()) {
         datas.add(data.get());
       }
     }
-    
+
     return datas;
   }
-  
+
   @Override
   public Optional<T> load(URI uri) throws Exception {
     Optional<DataRow> row = Crud.read(entityDef)
@@ -168,7 +171,7 @@ public class StorageSQL<T> implements ObjectStorage<T> {
     BinaryData content = row.get(getContentField());
     return serializer.fromJsonBinaryData(content, clazz);
   }
-  
+
   @SuppressWarnings("unchecked")
   private Property<URI> getKey() {
     if (key != null) {
@@ -185,6 +188,18 @@ public class StorageSQL<T> implements ObjectStorage<T> {
     } else {
       return (Property<BinaryData>) entityDef.getProperty(contentFieldName);
     }
+  }
+
+  @Override
+  public void saveReferences(ObjectReferenceRequest referenceRequest) {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public Set<ObjectReference> loadReferences(URI uri) {
+    // TODO Auto-generated method stub
+    return null;
   }
 
 }

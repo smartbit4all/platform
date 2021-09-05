@@ -8,7 +8,6 @@ import org.smartbit4all.api.org.OrgApiImpl;
 import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.org.bean.User;
 import org.springframework.core.env.Environment;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 public class OrgApiGatewayImpl extends OrgApiImpl {
 

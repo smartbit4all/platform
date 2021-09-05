@@ -28,6 +28,9 @@ public interface PredictiveFormController {
    */
   public void save();
 
+  /**
+   * Loads the available widgets, so they can be seen on the lower part of the screen.
+   */
   public void loadAvailableWidgets();
 
   /**

@@ -23,7 +23,7 @@ public class DateDialog extends Dialog {
     
     Binder<WidgetInstance> binder = new Binder<>(WidgetInstance.class);
     binder.setBean(instance);
-    binder.forField(dtValue).bind(w -> {
+    binder.forField(dtValue).asRequired("A mező kitöltése kötelező").bind(w -> {
       if (instance.getDateValues().size() > 0) {
         return instance.getDateValues().get(0).toLocalDate();
       } else {

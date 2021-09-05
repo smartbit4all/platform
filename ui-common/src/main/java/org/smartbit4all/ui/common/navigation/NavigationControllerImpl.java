@@ -35,6 +35,7 @@ import org.smartbit4all.ui.common.action.NavigationActionListener;
 import org.smartbit4all.ui.common.navigation.NavigationTreeNode.Kind;
 import org.smartbit4all.ui.common.view.UIViewShowCommand;
 import org.springframework.beans.factory.annotation.Autowired;
+import com.google.common.base.Strings;
 
 public class NavigationControllerImpl implements NavigationController {
 
@@ -126,19 +127,29 @@ public class NavigationControllerImpl implements NavigationController {
           n -> new NavigationTreeNode(Kind.ENTRY, n.getId(), n.getEntry().getName(), null,
               n.getEntry().getIcon(), null, n.getEntry().getActions()));
     }
+
     // Kind kind, String identifier, String caption, String shortDescription,
     // String icon, String[] styles
     if (parent.isKind(Kind.ASSOCIATION)) {
       // In case of association we call the children of the association directly.
       // TODO Later on manage the reference kind also!
-      return navigationState.getReferencedNodes(parent.getIdentifier()).stream()
-          .map(n -> new NavigationTreeNode(Kind.ENTRY, n.getId(), n.getEntry().getName(), null,
-              n.getEntry().getIcon(), null, n.getEntry().getActions()));
+      return navigationState.getReferencedNodes(parent.getIdentifier())
+          .stream()
+          .map(refNode -> new NavigationTreeNode(
+              Kind.ENTRY,
+              refNode.getId(),
+              refNode.getEntry().getName(),
+              null,
+              refNode.getEntry().getIcon(),
+              null,
+              refNode.getEntry().getActions()));
     }
+
     NavigationNode node = navigationState.getNode(parent.getIdentifier());
     if (node != null) {
       navigationState.expandAll(node);
     }
+
     List<NavigationAssociation> associations =
         node.getAssociations() == null ? Collections.emptyList() : node.getAssociations();
 
@@ -169,10 +180,16 @@ public class NavigationControllerImpl implements NavigationController {
               || navigationAssociation.getReferences().isEmpty()) {
             styles = new String[] {"empty"};
           }
-          NavigationTreeNode treeNode = new NavigationTreeNode(Kind.ASSOCIATION,
+
+          NavigationTreeNode treeNode = new NavigationTreeNode(
+              Kind.ASSOCIATION,
               navigationAssociation.getId(),
-              getAssociationNodeCaption(navigationAssociation.getMetaUri()),
-              null, null, styles, null);
+              getAssociationNodeCaption(navigationAssociation),
+              null,
+              navigationAssociation.getIcon(),
+              styles,
+              null);
+
           treeNodesByOrderedAssocIds.put(navigationAssociation.getId(),
               Collections.singletonList(treeNode));
         });
@@ -188,9 +205,18 @@ public class NavigationControllerImpl implements NavigationController {
 
   }
 
+  private String getAssociationNodeCaption(NavigationAssociation association) {
+    String associationCaption = association.getCaption();
+    if (Strings.isNullOrEmpty(associationCaption)) {
+      return getAssociationNodeCaption(association.getMetaUri());
+    } else {
+      return association.getCaption();
+    }
+  }
+
   private String getAssociationNodeCaption(URI assocMetaUri) {
     String assocUriString = assocMetaUri.toString();
-    if(assocUriString.contains("?")) {
+    if (assocUriString.contains("?")) {
       assocUriString = assocUriString.substring(0, assocUriString.indexOf("?"));
     }
     String caption = assocUriString
@@ -203,25 +229,49 @@ public class NavigationControllerImpl implements NavigationController {
   @Override
   public UIViewShowCommand getViewCommand(NavigationTreeNode node) {
     if (node.isKind(Kind.ENTRY)) {
+
       NavigationNode navigationNode = navigationState.getNode(node.getIdentifier());
-      if (navigationNode != null && navigationNode.getEntry().getViews() != null
-          && !navigationNode.getEntry().getViews().isEmpty()) {
-
-        NavigationEntry navigationEntry = navigationNode.getEntry();
-        org.smartbit4all.api.navigation.bean.NavigationView defaulView =
-            navigationEntry.getViews().get(0);
-
-        UIViewShowCommand viewCommand = new UIViewShowCommand(defaulView.getName());
-        viewCommand.addParameter("entry", navigationEntry.getObjectUri());
-        viewCommand.addParameter("icon", navigationEntry.getIcon());
-        Map<String, Object> viewParams = defaulView.getParameters();
-        if (viewParams != null) {
-          viewCommand.getParameters().putAll(viewParams);
-        }
-        return viewCommand;
+      if (hasNavigationView(navigationNode)) {
+        return createNavigationViewShowCommand(navigationNode);
       }
+
+    } else if (node.isKind(Kind.ASSOCIATION)) {
+
+      NavigationAssociation assoc = navigationState.getAssociation(node.getIdentifier());
+      NavigationNode naviNode = assoc.getNode();
+      if (naviNode != null) {
+        if (hasNavigationView(naviNode)) {
+          UIViewShowCommand command = createNavigationViewShowCommand(naviNode);
+          command.addParameter(Navigation.ASSOC_URI_VIEW_PARAM_KEY, assoc.getMetaUri());
+          
+          return command;
+        }
+      }
+      
     }
+
     return null;
+  }
+
+  private boolean hasNavigationView(NavigationNode navigationNode) {
+    return navigationNode != null && navigationNode.getEntry().getViews() != null
+        && !navigationNode.getEntry().getViews().isEmpty();
+  }
+
+  private UIViewShowCommand createNavigationViewShowCommand(NavigationNode navigationNode) {
+    NavigationEntry navigationEntry = navigationNode.getEntry();
+    org.smartbit4all.api.navigation.bean.NavigationView defaulView =
+        navigationEntry.getViews().get(0);
+
+    UIViewShowCommand viewCommand = new UIViewShowCommand(defaulView.getName());
+    viewCommand.addParameter("entry", navigationEntry.getObjectUri());
+    viewCommand.addParameter("icon", navigationEntry.getIcon());
+    Map<String, Object> viewParams = defaulView.getParameters();
+    if (viewParams != null) {
+      viewCommand.getParameters().putAll(viewParams);
+    }
+
+    return viewCommand;
   }
 
   @Override

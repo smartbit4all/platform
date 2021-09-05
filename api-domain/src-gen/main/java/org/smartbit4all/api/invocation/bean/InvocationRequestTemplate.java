@@ -35,6 +35,7 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   InvocationRequestTemplate.EXECUTION_API,
   InvocationRequestTemplate.API_CLASS,
+  InvocationRequestTemplate.API_INSTANCE_ID,
   InvocationRequestTemplate.INNER_API,
   InvocationRequestTemplate.METHOD_NAME,
   InvocationRequestTemplate.PARAMETERS
@@ -47,6 +48,9 @@ public class InvocationRequestTemplate {
 
   public static final String API_CLASS = "apiClass";
   private String apiClass;
+
+  public static final String API_INSTANCE_ID = "apiInstanceId";
+  private String apiInstanceId;
 
   public static final String INNER_API = "innerApi";
   private String innerApi;
@@ -109,6 +113,33 @@ public class InvocationRequestTemplate {
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setApiClass(String apiClass) {
     this.apiClass = apiClass;
+  }
+
+
+  public InvocationRequestTemplate apiInstanceId(String apiInstanceId) {
+    
+    this.apiInstanceId = apiInstanceId;
+    return this;
+  }
+
+   /**
+   * The unique identifier for the api instance. If it is set then the execution will be routed to the given instance.
+   * @return apiInstanceId
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The unique identifier for the api instance. If it is set then the execution will be routed to the given instance.")
+  @JsonProperty(API_INSTANCE_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getApiInstanceId() {
+    return apiInstanceId;
+  }
+
+
+  @JsonProperty(API_INSTANCE_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setApiInstanceId(String apiInstanceId) {
+    this.apiInstanceId = apiInstanceId;
   }
 
 
@@ -210,6 +241,7 @@ public class InvocationRequestTemplate {
     InvocationRequestTemplate invocationRequestTemplate = (InvocationRequestTemplate) o;
     return Objects.equals(this.executionApi, invocationRequestTemplate.executionApi) &&
         Objects.equals(this.apiClass, invocationRequestTemplate.apiClass) &&
+        Objects.equals(this.apiInstanceId, invocationRequestTemplate.apiInstanceId) &&
         Objects.equals(this.innerApi, invocationRequestTemplate.innerApi) &&
         Objects.equals(this.methodName, invocationRequestTemplate.methodName) &&
         Objects.equals(this.parameters, invocationRequestTemplate.parameters);
@@ -217,7 +249,7 @@ public class InvocationRequestTemplate {
 
   @Override
   public int hashCode() {
-    return Objects.hash(executionApi, apiClass, innerApi, methodName, parameters);
+    return Objects.hash(executionApi, apiClass, apiInstanceId, innerApi, methodName, parameters);
   }
 
   @Override
@@ -226,6 +258,7 @@ public class InvocationRequestTemplate {
     sb.append("class InvocationRequestTemplate {\n");
     sb.append("    executionApi: ").append(toIndentedString(executionApi)).append("\n");
     sb.append("    apiClass: ").append(toIndentedString(apiClass)).append("\n");
+    sb.append("    apiInstanceId: ").append(toIndentedString(apiInstanceId)).append("\n");
     sb.append("    innerApi: ").append(toIndentedString(innerApi)).append("\n");
     sb.append("    methodName: ").append(toIndentedString(methodName)).append("\n");
     sb.append("    parameters: ").append(toIndentedString(parameters)).append("\n");

@@ -13,41 +13,64 @@ public class TestTreeObjectApi implements ComposeableObjectApi {
   public static final URI API_URI = URI.create("testtreeobject:/composeableobject/apiUri");
 
   private Storage<TestTreeObject> storage;
-  
+
   public TestTreeObjectApi(Storage<TestTreeObject> storage) {
     this.storage = storage;
   }
+
+  @Override
+  public String getTitle(URI objectUri) throws Exception {
+    return getUri(objectUri);
+  }
+
+  @Override
+  public String getIcon(URI objectUri) throws Exception {
+    return getUri(objectUri);
+  }
+  
+  private String getUri(URI objectUri) throws Exception {
+    Optional<TestTreeObject> testTreeObject = storage.load(objectUri);
+    if (testTreeObject.isPresent()) {
+      return testTreeObject.get().getUri().toString();
+    }
+    return null;
+  }
   
   @Override
-  public List<ComposeableObject> getChildren(ComposeableObject composeableObject) throws Exception {
-    URI testTreeObjectUri = composeableObject.getObjectUri();
+  public List<ComposeableObject> getChildren(URI parentObjectUri, URI definitionUri)
+      throws Exception {
     
-    Optional<TestTreeObject> loaded = storage.load(testTreeObjectUri);
-    if(loaded.isPresent()) {
-      TestTreeObject testTreeObject = loaded.get();
-      
-      List<URI> children = testTreeObject.getChildren();
-      if(children.size() > 0) {     
-        List<ComposeableObject> result = new ArrayList<>();
-        
-        for(URI childUri : children) {
-          ComposeableObject newComposeableObject = new ComposeableObject();
-          
-          newComposeableObject.setObjectUri(childUri);
-          
-          // TODO not necessarily the same definition should be passed
-          newComposeableObject.setDefinition(composeableObject.getDefinition());
-          
-          result.add(newComposeableObject);
-        }
-        
-        return result;
-      }
+    Optional<TestTreeObject> testTreeObject = storage.load(parentObjectUri);
+    if (testTreeObject.isPresent()) {
+      return createChildredComposeables(testTreeObject.get(), definitionUri);
     }
-    
+
     return Collections.emptyList();
   }
 
+  private List<ComposeableObject> createChildredComposeables(
+      TestTreeObject testTreeObject,
+      URI defUri) {
+    
+    List<URI> children = testTreeObject.getChildren();
+    List<ComposeableObject> result = new ArrayList<>();
+
+    for (URI childUri : children) {
+      ComposeableObject newComposeableObject = new ComposeableObject()
+          .defUri(defUri)
+          .objectUri(childUri);
+
+      result.add(newComposeableObject);
+    }
+
+    return result;
+  }
+
+  @Override
+  public String getViewName(URI objectUri) throws Exception {
+    return null;
+  }
+  
   @Override
   public URI getApiUri() {
     return API_URI;

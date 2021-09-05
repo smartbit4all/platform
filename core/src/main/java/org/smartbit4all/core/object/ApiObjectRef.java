@@ -225,10 +225,32 @@ public class ApiObjectRef {
 
   private void processNewValues(Object unwrappedObject, boolean setObjectValue) {
     for (PropertyEntry entry : properties.values()) {
-      Object oldValue = object == null ? null : entry.getMeta().getValue(object);
-      Object newValue = entry.getMeta().getValue(unwrappedObject);
-      if (!Objects.equals(oldValue, newValue)) { // TODO maybe oldValue != newValue?
-        setValueInner(newValue, entry, setObjectValue);
+      switch (entry.getMeta().getKind()) {
+        case VALUE:
+          Object oldValue;
+          if (object == null) {
+            oldValue = null;
+          } else {
+            if (entry.getValueChange() != null) {
+              oldValue = entry.getValueChange().getOldValue();
+            } else {
+              oldValue = entry.getMeta().getValue(object);
+            }
+          }
+          Object newValue = entry.getMeta().getValue(unwrappedObject);
+          if (!Objects.equals(oldValue, newValue)) { // TODO maybe oldValue != newValue?
+            setValueInner(newValue, entry, setObjectValue);
+          }
+          break;
+        case REFERENCE:
+        case COLLECTION:
+          // setValueInner all the time, ApiObjectRef / ApiObjectCollection should handle value
+          // comparisons recursively
+          Object newObject = entry.getMeta().getValue(unwrappedObject);
+          setValueInner(newObject, entry, setObjectValue);
+          break;
+        default:
+          break;
       }
     }
   }

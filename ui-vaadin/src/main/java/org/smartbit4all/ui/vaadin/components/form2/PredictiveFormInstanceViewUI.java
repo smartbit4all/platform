@@ -9,6 +9,7 @@ import org.smartbit4all.ui.api.form.model.WidgetInstance;
 import org.smartbit4all.ui.api.form.model.WidgetType;
 import org.smartbit4all.ui.common.form2.impl.PredictiveFormController;
 import org.smartbit4all.ui.common.form2.impl.PredictiveFormInstanceView;
+import org.smartbit4all.ui.vaadin.components.form2.dialog.DoubleDialog;
 import org.smartbit4all.ui.vaadin.components.form2.dialog.WidgetDialogUtil;
 import org.smartbit4all.ui.vaadin.components.navigation.Navigation;
 import com.vaadin.flow.component.button.Button;
@@ -85,12 +86,85 @@ public class PredictiveFormInstanceViewUI extends FlexLayout implements Predicti
   private FlexLayout renderVisibleWidgetView(WidgetInstance instance) {
     WidgetDescriptor descriptor = controller.getWidgetDescriptor(instance.getDescriptorUri());
     boolean isWidgetSelected = controller.isWidgetSelected(instance);
+    WidgetType widgetType = descriptor.getWidgetType();
     
-    if (descriptor.getWidgetType() == WidgetType.CONTAINER) {
+    if (widgetType == WidgetType.CONTAINER) {
       return createVisibleWidgetContainerView(instance, descriptor, isWidgetSelected);
+    } else if (widgetType == WidgetType.TABLE) {
+      return createVisibleWidgetTableView(instance, descriptor, isWidgetSelected);
     } else {
       return createVisibleWidgetView(descriptor, instance, isWidgetSelected);
     }
+  }
+  
+  private FlexLayout createVisibleWidgetInteractiveView(WidgetInstance instance, WidgetDescriptor descriptor) {
+    FlexLayout layout = new FlexLayout();
+    
+    layout.setClassName("visible-widget-view");
+
+    Icon icon = new Icon(descriptor.getIcon());
+    icon.setClassName("visible-widget-view-icon");
+
+    Label label = new Label(descriptor.getLabel());
+    label.setClassName("visible-widget-view-label");
+    
+    FlexLayout valueLayout = new FlexLayout();
+    WidgetType widgetType = descriptor.getWidgetType();
+    
+    if (widgetType == WidgetType.NUMBER) {
+      valueLayout = DoubleDialog.getValueLayout(instance, descriptor);
+    }
+    
+    Button editButton = new Button();
+    editButton.setIcon(new Icon(VaadinIcon.ELLIPSIS_DOTS_H));
+    editButton.addClassName("visible-widget-interactive-edit-button");
+    editButton.addClickListener(e -> {
+      openValueDialog(descriptor.getWidgetType(), instance, descriptor);
+    });
+
+    layout.add(icon, label, valueLayout, editButton);
+    
+    return layout;
+  }
+
+  private FlexLayout createVisibleWidgetTableView(WidgetInstance instance, WidgetDescriptor descriptor, boolean isWidgetSelected) {
+    FlexLayout tableLayout = new FlexLayout();
+    tableLayout.addClassName("visible-widget-table-view");
+
+    
+    if (isWidgetSelected) {
+      tableLayout.addClassName("selected-widget-container-view");
+    }
+
+    FlexLayout drawerLayout = new FlexLayout();
+    drawerLayout.addClassName("visible-widget-drawer-layout");
+    
+    FlexLayout visibleWidgetView = createVisibleWidgetView(descriptor, instance, isWidgetSelected);
+    Button expandButton = new Button(VaadinIcon.ANGLE_DOWN.create());
+    
+    
+    expandButton.addClickListener(e -> {
+      if (tableLayout.getChildren().anyMatch(c -> c.equals(drawerLayout))) {
+        expandButton.setIcon(VaadinIcon.ANGLE_RIGHT.create());
+        tableLayout.remove(drawerLayout);
+      } else {
+        expandButton.setIcon(VaadinIcon.ANGLE_DOWN.create());
+        tableLayout.add(drawerLayout);
+      }
+    });
+    
+    visibleWidgetView.add(expandButton);
+    tableLayout.add(visibleWidgetView);
+   
+    if (instance.getWidgets() != null) {
+      for (WidgetInstance wi: instance.getWidgets()) {
+        WidgetDescriptor childDescriptor = controller.getWidgetDescriptor(wi.getDescriptorUri());
+        drawerLayout.add(createVisibleWidgetInteractiveView(wi, childDescriptor));
+      }
+    }
+    
+    tableLayout.add(drawerLayout);
+    return tableLayout;
   }
 
   private FlexLayout createVisibleWidgetContainerView(WidgetInstance instance,
@@ -128,7 +202,6 @@ public class PredictiveFormInstanceViewUI extends FlexLayout implements Predicti
     
     FlexLayout valueLayout = getValueLayoutFromWidgetInstance(instance, descriptor.getWidgetType());
     valueLayout.setClassName("visible-widget-view-value-layout");
-    
     
     if (isWidgetSelected) {
       layout.addClassName("selected-widget-view");

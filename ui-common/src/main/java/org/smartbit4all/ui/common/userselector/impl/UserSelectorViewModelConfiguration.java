@@ -4,6 +4,7 @@ import java.util.Map;
 import org.smartbit4all.api.org.OrgApi;
 import org.smartbit4all.core.object.ApiBeanDescriptor;
 import org.smartbit4all.ui.api.userselector.UserMultiSelectorViewModel;
+import org.smartbit4all.ui.api.userselector.UserSelectorViewModel;
 import org.smartbit4all.ui.api.userselector.UserSingleSelectorViewModel;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
@@ -29,5 +30,11 @@ public class UserSelectorViewModelConfiguration {
   @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
   public UserMultiSelectorViewModel userMultiSelectorViewModel(OrgApi orgApi) {
     return new UserMultiSelectorViewModelImpl(orgApi, userSelectorDescriptor);
+  }
+
+  @Bean
+  @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+  public UserSelectorViewModel userSelectorViewModel(OrgApi orgApi) {
+    return new UserSelectorViewModelImpl(orgApi, userSelectorDescriptor);
   }
 }

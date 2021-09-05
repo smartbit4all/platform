@@ -15,6 +15,11 @@ import java.util.Collections;
 import java.util.List;
 import org.smartbit4all.api.binarydata.BinaryData;
 
+/**
+ * The basic file IO for the file system related operations based on objects.
+ * 
+ * @author Peter Boros
+ */
 public class FileIO {
 
   public static BinaryData read(File rootFolder, URI uri) {
@@ -22,6 +27,22 @@ public class FileIO {
       return null;
     }
     File file = new File(rootFolder, uri.getPath());
+    return getFileBinaryData(file);
+  }
+
+  /**
+   * Reads an object uri based given extension file if exists.
+   * 
+   * @param rootFolder
+   * @param uri
+   * @param extension The specific extension as post fix for the file.
+   * @return
+   */
+  public static BinaryData read(File rootFolder, URI uri, String extension) {
+    if (uri == null || uri.getPath() == null) {
+      return null;
+    }
+    File file = new File(rootFolder, uri.getPath() + extension);
     return getFileBinaryData(file);
   }
 
@@ -34,6 +55,19 @@ public class FileIO {
 
   public static void write(File rootFolder, URI uri, BinaryData content) {
     File newFile = getFileByUri(rootFolder, uri);
+    write(newFile, content);
+  }
+
+  /**
+   * Write the file with specific extension based on the uri.
+   * 
+   * @param rootFolder
+   * @param uri
+   * @param extension
+   * @param content
+   */
+  public static void write(File rootFolder, URI uri, String extension, BinaryData content) {
+    File newFile = getFileByUri(rootFolder, uri, extension);
     write(newFile, content);
   }
 
@@ -54,8 +88,17 @@ public class FileIO {
     return file.delete();
   }
 
+  public static boolean delete(File rootFolder, URI uri, String extension) {
+    File file = getFileByUri(rootFolder, uri, extension);
+    return file.delete();
+  }
+
   public static File getFileByUri(File rootFolder, URI uri) {
     return new File(rootFolder, uri.getPath());
+  }
+
+  public static File getFileByUri(File rootFolder, URI uri, String extension) {
+    return new File(rootFolder, uri.getPath() + extension);
   }
 
   public static List<BinaryData> readAllFiles(File rootFolder, String fileExtension)
@@ -91,17 +134,20 @@ public class FileIO {
 
       @Override
       public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-        if (attrs.isRegularFile()) {
+        if (attrs.isRegularFile() && file.getFileName() != null) {
 
+          String fileName = file.getFileName().toString();
           if (fileExtension != null) {
             String actualFileExtension =
-                com.google.common.io.Files.getFileExtension(file.getFileName().toString());
+                com.google.common.io.Files.getFileExtension(fileName);
 
             if (fileExtension.equals(actualFileExtension)) {
               allFilePaths.add(file);
             }
           } else {
-            allFilePaths.add(file);
+            if (!fileName.equals(".gitignore")) {
+              allFilePaths.add(file);
+            }
           }
         }
         return FileVisitResult.CONTINUE;

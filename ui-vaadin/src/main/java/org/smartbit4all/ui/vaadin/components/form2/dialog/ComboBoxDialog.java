@@ -25,7 +25,7 @@ public class ComboBoxDialog extends Dialog {
     
     Binder<WidgetInstance> binder = new Binder<>(WidgetInstance.class);
     binder.setBean(instance);
-    binder.forField(cbValue).bind(w -> {
+    binder.forField(cbValue).asRequired("A mező kitöltése kötelező").bind(w -> {
       if (instance.getStringValues().size() > 0) {
         return instance.getStringValues().get(0);
       } else {

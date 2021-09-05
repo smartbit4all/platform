@@ -8,10 +8,12 @@ public class FSStorageUtil {
 
   public static String link = ".doc.lnk";
 
+  public static String references = ".refs";
+
   public static <T> String indexValuePath(StorageIndexField<T, ?> index, Object value) {
     return indexPath(index.getIndexName(), index.getValueField().getName(), value);
   }
-  
+
   public static String indexPath(String indexName, String indexKey) {
     return indexName + "/" + indexKey;
   }
@@ -19,18 +21,18 @@ public class FSStorageUtil {
   public static String indexPath(String indexName, String indexKey, Object value) {
     return indexName + "/" + indexKey + "/" + value.toString();
   }
-  
+
   public static File indexFolder(File rootFolder, String path) {
     return new File(rootFolder, path);
   }
-  
+
   public static String getLinkFileName(URI objectUri) {
     String name = getFileName(objectUri);
     return name + link;
   }
-  
+
   public static String getFileName(URI objectUri) {
     return objectUri.getPath().substring(objectUri.getPath().lastIndexOf('/') + 1);
   }
-  
+
 }
