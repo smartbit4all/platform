@@ -21,8 +21,8 @@ import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 
 public class FilterOperationDateTimeIntervalView extends FilterOperationView {
 
-  private DateTimePicker beginDate;
-  private DateTimePicker endDate;
+  protected DateTimePicker beginDate; //TODO should be private -changed for hotfix
+  protected DateTimePicker endDate; //TODO should be private -changed for hotfix
   private VaadinHasValueBinder<LocalDateTime, String> beginDateBinder;
   private VaadinHasValueBinder<LocalDateTime, String> endDateBinder;
 

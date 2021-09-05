@@ -11,6 +11,8 @@ public class FilterOperationDateTimeComboBoxPickerView extends FilterOperationDa
   private ComboBox<TimeFilterOption> comboTimeFilter;
   private VaadinHasValueBinder<TimeFilterOption, String> comboBinder;
   private Registration comboReg;
+  private Registration beginDateReg;
+  private Registration endDateReg;
 
   public FilterOperationDateTimeComboBoxPickerView(ObservableObject filterField, String path) {
     super(filterField, path);
@@ -18,6 +20,8 @@ public class FilterOperationDateTimeComboBoxPickerView extends FilterOperationDa
     comboTimeFilter = FilterViewUtils.createTimeFilterOptionCombo(this);
     addComponentAsFirst(comboTimeFilter);
 
+    beginDateReg = FilterViewUtils.handleTimeFilterValueChange(beginDate, comboTimeFilter);
+    endDateReg = FilterViewUtils.handleTimeFilterValueChange(endDate, comboTimeFilter);
     comboReg = FilterViewUtils.handleTimeFilterOptionComboChange(comboTimeFilter, filterField,
         path, true);
     comboBinder =
@@ -34,6 +38,14 @@ public class FilterOperationDateTimeComboBoxPickerView extends FilterOperationDa
     if (comboReg != null) {
       comboReg.remove();
       comboReg = null;
+    }
+    if (beginDateReg != null) {
+      beginDateReg.remove();
+      beginDateReg = null;
+    }
+    if (endDateReg != null) {
+      endDateReg.remove();
+      endDateReg = null;
     }
   }
 

@@ -34,7 +34,7 @@ class FilterViewUtils {
 
   public static DateTimePicker createDateTimePicker() {
     DateTimePicker dateTime = new DateTimePicker();
-    dateTime.setMax(LocalDateTime.now());
+    dateTime.setMax(LocalDate.now().plusDays(1l).atStartOfDay().minusMinutes(1l));
     ComponentLocalizations.localize(dateTime);
     return dateTime;
   }
@@ -85,6 +85,29 @@ class FilterViewUtils {
             new Integer2StringConverter());
     return binder;
   }
+  
+  //TODO this is a hotfix -> should use viewModel!!!
+  public static Registration handleTimeFilterValueChange(DateTimePicker picker,
+      ComboBox<TimeFilterOption> combo) {
+   
+   Registration listener = picker.addValueChangeListener(e -> {
+     if(e.isFromClient()) {
+       combo.setValue(TimeFilterOption.OTHER);
+     }
+   });
+   return listener;
+ }
+  
+  public static Registration handleDateFilterValueChange(DatePicker picker,
+      ComboBox<TimeFilterOption> combo) {
+   
+   Registration listener = picker.addValueChangeListener(e -> {
+     if(e.isFromClient()) {
+       combo.setValue(TimeFilterOption.OTHER);
+     }
+   });
+   return listener;
+ }
 
   // TODO move to viewModel, maybe FilterFieldViewModel or FilterGroupViewModel?
   public static Registration handleTimeFilterOptionComboChange(ComboBox<TimeFilterOption> combo,
