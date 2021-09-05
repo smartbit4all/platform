@@ -39,6 +39,10 @@ public interface AddressDef extends EntityDefinition {
   public static final String CITY_COL = "CITY";
   public static final String ADDRESS = "address";
   public static final String ADDRESS_COL = "ADDRESS";
+  public static final String DONT_REF_THIS_BY_URI = "dontRefThisByUri";
+  public static final String DONT_REF_THIS_BY_URI_COL = "DONT_REF_THIS_BY_URI";
+  public static final String DONT_REF_THIS_BY_REF = "dontRefThisByRef";
+  public static final String DONT_REF_THIS_BY_REF_COL = "DONT_REF_THIS_BY_REF";
 
   @Id
   @OwnProperty(name = ID, columnName = ID_COL)
@@ -52,5 +56,11 @@ public interface AddressDef extends EntityDefinition {
 
   @OwnProperty(name = ADDRESS, columnName = ADDRESS_COL)
   Property<String> address();
+  
+  @OwnProperty(name = DONT_REF_THIS_BY_URI, columnName = DONT_REF_THIS_BY_URI_COL)
+  Property<String> dontRefThisByUri();
+  
+  @OwnProperty(name = DONT_REF_THIS_BY_REF, columnName = DONT_REF_THIS_BY_REF_COL)
+  Property<String> dontRefThisByRef();
 
 }

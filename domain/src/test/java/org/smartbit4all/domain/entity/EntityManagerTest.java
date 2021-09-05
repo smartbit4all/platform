@@ -40,6 +40,8 @@ public class EntityManagerTest {
   private static final String EXPECTED_PROPERTY_ON_ASSOC_URI = "entity://org.smartbit4all.domain.security/userAccountDef#primaryAddressRef.zipcode";
   private static final String EXPECTED_PROPERTY_ON_ASSOC_URI2 = "entity://org.smartbit4all.domain.security/userAccountDef#primaryZipcode";
   
+  private static final String EXPECTED_PROPERTY_CREATED_BY_URI = "entity://org.smartbit4all.domain.security/userAccountDef#primaryAddressRef.dontRefThisByUri";
+  
   protected static AnnotationConfigApplicationContext ctx;
 
   @BeforeAll
@@ -111,6 +113,28 @@ public class EntityManagerTest {
     
     actualProperty = entityManager.property(propertyUri);
     assertEquals(expectedProperty.hashCode(), actualProperty.hashCode());
+  }
+  
+  @Test
+  void testPropertyRefrenceCreationByUri() {
+    
+    EntityManager entityManager = ctx.getBean(EntityManager.class);
+    
+    URI propertyUri = EntityUris.createPropertyUri(EntityManagerTestConfig.ENTITY_SOURCE_SEC, "userAccountDef", "primaryAddressRef", "dontRefThisByUri");
+    assertEquals(EXPECTED_PROPERTY_CREATED_BY_URI, propertyUri.toString());
+    String name = entityManager.property(propertyUri).getName();
+    
+    assertEquals("primaryAddressRef.dontRefThisByUri", name);
+    
+  }
+  
+  @Test
+  void testPropertyRefrenceCreationByRef() {
+    UserAccountDef userAccountDef = ctx.getBean(UserAccountDef.class);
+    
+    String name = userAccountDef.primaryAddress().dontRefThisByRef().getName();
+
+    assertEquals("primaryAddressRef.dontRefThisByRef", name);
   }
   
 }

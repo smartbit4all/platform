@@ -453,7 +453,7 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
     String refPath = PropertyRef.constructName(joinPath, referredPropertyName);
     Property<?> property = referredPropertiesByPath.get(refPath);
     if (property == null) {
-      property = createRefPropertyByPath(referredPropertyName, referredPropertyName, joinPath);
+      property = createRefPropertyByPath(null, referredPropertyName, joinPath);
     }
     return property;
   }
