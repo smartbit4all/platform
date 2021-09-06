@@ -6,10 +6,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
-import org.smartbit4all.api.storage.bean.ObjectReference;
+import org.smartbit4all.api.storage.bean.ObjectReferenceList;
 import org.smartbit4all.domain.data.storage.index.ExpressionEntityDefinitionExtractor;
 import org.smartbit4all.domain.data.storage.index.StorageIndex;
 import org.smartbit4all.domain.meta.EntityDefinition;
@@ -183,21 +181,6 @@ public class Storage<T> implements ObjectStorage<T> {
   }
 
   @Override
-  public Set<ObjectReference> loadReferences(URI uri) {
-    return storage.loadReferences(uri);
-  }
-
-  /**
-   * Adds a new change listener. Typical use case is that ...Api subscribes and decide what to do
-   * when the object has been changed.
-   * 
-   * @param onChange
-   */
-  public void onChange(BiConsumer<T, Set<ObjectReference>> onChange) {
-    objectChangePublisher.subscribe(c -> onChange.accept(c.object, loadReferences(c.uri)));
-  }
-
-  @Override
   public ObjectUriProvider<T> getUriProvider() {
     return storage.getUriProvider();
   }
@@ -205,6 +188,15 @@ public class Storage<T> implements ObjectStorage<T> {
   @Override
   public URI getObjectUri(T Object) {
     return storage.getObjectUri(Object);
+  }
+
+  @Override
+  public ObjectReferenceList loadReferences(URI uri, String typeClass) {
+    return storage.loadReferences(uri, typeClass);
+  }
+
+  final PublishSubject<ObjectChange<T>> getObjectChangePublisher() {
+    return objectChangePublisher;
   }
 
 }

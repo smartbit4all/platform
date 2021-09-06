@@ -28,6 +28,11 @@ components:
           type: string
           format: uri
           description: The uri of the object
+        referenceTypeClass:
+          type: string
+          description: |
+            The type of the reference. It can be the qualified name of the java bean class or anything else that can exactly identify
+            the type of the reference object.  
         references:
           type: array
           items:
@@ -44,9 +49,9 @@ components:
 
       required: [name, typeClass]
       properties:
-        reference:
+        referenceId:
           type: string
-          description: The reference string for the reference.
+          description: The identifier of the referenced object. Usually this is an URI that identifies the object in the domain.
         expirationTime:
           type: string
           format: datetime

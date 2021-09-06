@@ -2,15 +2,13 @@ package org.smartbit4all.domain.data.storage;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
-import org.smartbit4all.api.storage.bean.ObjectReference;
+import org.smartbit4all.api.storage.bean.ObjectReferenceList;
 
 /**
  * Simple Map based implementation of object storage. It can be used for testing with storage.
@@ -29,7 +27,7 @@ public class ObjectStorageInMemory<T> extends ObjectStorageImpl<T> {
   /**
    * The references in the storage by their URI as key.
    */
-  private Map<URI, Set<ObjectReference>> references;
+  private Map<URI, Map<String, ObjectReferenceList>> references;
 
   public ObjectStorageInMemory(Function<T, URI> uriAccessor, ObjectUriProvider<T> uriProvider) {
     super(uriAccessor, uriProvider);
@@ -81,17 +79,20 @@ public class ObjectStorageInMemory<T> extends ObjectStorageImpl<T> {
     if (referenceRequest == null) {
       return;
     }
-    Set<ObjectReference> refSet =
-        references.computeIfAbsent(referenceRequest.getObjectUri(), u -> new HashSet<>());
-    referenceRequest.updateReferences(refSet);
-    if (refSet.isEmpty()) {
-      references.remove(referenceRequest.getObjectUri());
-    }
+    ObjectReferenceList refList =
+        references.computeIfAbsent(referenceRequest.getObjectUri(), u -> new HashMap<>())
+            .computeIfAbsent(referenceRequest.getTypeClassName(),
+                s -> new ObjectReferenceList().referenceTypeClass(s));
+    referenceRequest.updateReferences(refList);
   }
 
   @Override
-  public Set<ObjectReference> loadReferences(URI uri) {
-    return references.getOrDefault(uri, Collections.emptySet());
+  public ObjectReferenceList loadReferences(URI uri, String typeClassName) {
+    Map<String, ObjectReferenceList> map = references.get(uri);
+    if (map != null) {
+      return map.get(typeClassName);
+    }
+    return null;
   }
 
 }

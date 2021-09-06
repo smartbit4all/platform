@@ -36,6 +36,7 @@ import javax.validation.Valid;
 @ApiModel(description = "The list of references as a container object for the Api.  ")
 @JsonPropertyOrder({
   ObjectReferenceList.URI,
+  ObjectReferenceList.REFERENCE_TYPE_CLASS,
   ObjectReferenceList.REFERENCES
 })
 @JsonTypeName("ObjectReferenceList")
@@ -43,6 +44,9 @@ import javax.validation.Valid;
 public class ObjectReferenceList {
   public static final String URI = "uri";
   private URI uri;
+
+  public static final String REFERENCE_TYPE_CLASS = "referenceTypeClass";
+  private String referenceTypeClass;
 
   public static final String REFERENCES = "references";
   private List<ObjectReference> references = new ArrayList<>();
@@ -73,6 +77,33 @@ public class ObjectReferenceList {
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setUri(URI uri) {
     this.uri = uri;
+  }
+
+
+  public ObjectReferenceList referenceTypeClass(String referenceTypeClass) {
+    
+    this.referenceTypeClass = referenceTypeClass;
+    return this;
+  }
+
+   /**
+   * The type of the reference. It can be the qualified name of the java bean class or anything else that can exactly identify the type of the reference object.   
+   * @return referenceTypeClass
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The type of the reference. It can be the qualified name of the java bean class or anything else that can exactly identify the type of the reference object.   ")
+  @JsonProperty(REFERENCE_TYPE_CLASS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getReferenceTypeClass() {
+    return referenceTypeClass;
+  }
+
+
+  @JsonProperty(REFERENCE_TYPE_CLASS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setReferenceTypeClass(String referenceTypeClass) {
+    this.referenceTypeClass = referenceTypeClass;
   }
 
 
@@ -119,12 +150,13 @@ public class ObjectReferenceList {
     }
     ObjectReferenceList objectReferenceList = (ObjectReferenceList) o;
     return Objects.equals(this.uri, objectReferenceList.uri) &&
+        Objects.equals(this.referenceTypeClass, objectReferenceList.referenceTypeClass) &&
         Objects.equals(this.references, objectReferenceList.references);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, references);
+    return Objects.hash(uri, referenceTypeClass, references);
   }
 
   @Override
@@ -132,6 +164,7 @@ public class ObjectReferenceList {
     StringBuilder sb = new StringBuilder();
     sb.append("class ObjectReferenceList {\n");
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
+    sb.append("    referenceTypeClass: ").append(toIndentedString(referenceTypeClass)).append("\n");
     sb.append("    references: ").append(toIndentedString(references)).append("\n");
     sb.append("}");
     return sb.toString();

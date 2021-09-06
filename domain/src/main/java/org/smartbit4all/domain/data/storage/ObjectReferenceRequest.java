@@ -5,8 +5,12 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
+import java.util.stream.Collectors;
+import javax.validation.constraints.NotNull;
 import org.smartbit4all.api.storage.bean.ObjectReference;
+import org.smartbit4all.api.storage.bean.ObjectReferenceList;
+import org.smartbit4all.core.utility.StringConstant;
 
 /**
  * In generally if we have an object stored by a {@link Storage} then we might need to store some
@@ -27,18 +31,24 @@ public final class ObjectReferenceRequest {
   private URI objectUri;
 
   /**
+   * The type class for the references.
+   */
+  private Class<?> typeClass;
+
+  /**
    * The references to create while storing the root object.
    */
-  private List<ObjectReference> referencesToCreate = null;
+  private List<ObjectReference> referencesToAdd = null;
 
   /**
    * The references to remove while storing the root object.
    */
   private List<ObjectReference> referencesToRemove = null;
 
-  public ObjectReferenceRequest(URI objectUri) {
+  public ObjectReferenceRequest(@NotNull URI objectUri, @NotNull Class<?> typeClass) {
     super();
     this.objectUri = objectUri;
+    this.typeClass = typeClass;
   }
 
   public final URI getObjectUri() {
@@ -55,20 +65,21 @@ public final class ObjectReferenceRequest {
   }
 
   public final ObjectReferenceRequest create(ObjectReference ref) {
-    if (referencesToCreate == null) {
-      referencesToCreate = new ArrayList<>();
+    if (referencesToAdd == null) {
+      referencesToAdd = new ArrayList<>();
     }
-    referencesToCreate.add(ref);
+    referencesToAdd.add(ref);
     return this;
   }
 
-  public final ObjectReferenceRequest create(String ref) {
-    return create(new ObjectReference().reference(ref));
+  public final ObjectReferenceRequest add(String refId) {
+    return create(new ObjectReference().referenceId(refId));
   }
 
-  public final ObjectReferenceRequest create(String ref, LocalDateTime expirationTime) {
-    // TODO Expiration time
-    return create(new ObjectReference().reference(ref));
+  public final ObjectReferenceRequest add(String refId,
+      LocalDateTime expirationTime) {
+    // TODO Expiration time --> LocalDateTime
+    return create(new ObjectReference().referenceId(refId));
   }
 
   public final ObjectReferenceRequest delete(ObjectReference ref) {
@@ -79,16 +90,16 @@ public final class ObjectReferenceRequest {
     return this;
   }
 
-  public final ObjectReferenceRequest delete(String ref) {
-    return delete(new ObjectReference().reference(ref));
+  public final ObjectReferenceRequest delete(String refId, String typeClassName) {
+    return delete(new ObjectReference().referenceId(refId));
   }
 
   public final List<ObjectReference> getReferencesToCreate() {
-    return referencesToCreate == null ? Collections.emptyList() : referencesToCreate;
+    return referencesToAdd == null ? Collections.emptyList() : referencesToAdd;
   }
 
   public final void setReferencesToCreate(List<ObjectReference> referencesToCreate) {
-    this.referencesToCreate = referencesToCreate;
+    this.referencesToAdd = referencesToCreate;
   }
 
   public final List<ObjectReference> getReferencesToRemove() {
@@ -99,13 +110,31 @@ public final class ObjectReferenceRequest {
     this.referencesToRemove = referencesToRemove;
   }
 
-  public void updateReferences(Set<ObjectReference> refSet) {
-    if (referencesToCreate != null) {
-      referencesToCreate.forEach(r -> refSet.add(r));
+  public boolean updateReferences(ObjectReferenceList refList) {
+    Map<String, ObjectReference> referencesMap =
+        refList.getReferences().stream().collect(Collectors.toMap(r -> r.getReferenceId(), r -> r));
+    if (referencesToAdd != null) {
+      referencesToAdd.forEach(r -> {
+        referencesMap.put(r.getReferenceId(), r);
+      });
     }
     if (referencesToRemove != null) {
-      referencesToRemove.forEach(r -> refSet.remove(r));
+      referencesToRemove.forEach(r -> referencesMap.remove(r.getReferenceId()));
     }
+    refList.setReferences(referencesMap.values().stream().collect(Collectors.toList()));
+    return !referencesMap.isEmpty();
+  }
+
+  public final Class<?> getTypeClass() {
+    return typeClass;
+  }
+
+  public final void setTypeClass(Class<?> typeClass) {
+    this.typeClass = typeClass;
+  }
+
+  public final String getTypeClassName() {
+    return typeClass == null ? StringConstant.EMPTY : typeClass.getName();
   }
 
 }

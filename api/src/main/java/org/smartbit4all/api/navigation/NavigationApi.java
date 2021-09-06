@@ -17,7 +17,6 @@ package org.smartbit4all.api.navigation;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
-import org.smartbit4all.api.invocation.bean.InvocationRequestTemplate;
 import org.smartbit4all.api.navigation.bean.NavigationConfig;
 import org.smartbit4all.api.navigation.bean.NavigationEntry;
 import org.smartbit4all.api.navigation.bean.NavigationReferenceEntry;
@@ -73,14 +72,14 @@ public interface NavigationApi {
    * @param associationMetaUris The list of associations to identify the direction we want to
    *        navigate. If we skip this parameter (null) then we will have all the associations
    *        defined in the {@link NavigationEntry} meta.
-   * @param onChange The callback function to call when the object identified by the URI has been
-   *        changed.
+   * @param callBack This callback api could be an instance that should be notified when some data
+   *        of the newly created entries changed.
    * @return The map of the references by the URI of association meta we passed in the associations
    *         parameter.
    * @throws Exception
    */
   Map<URI, List<NavigationReferenceEntry>> navigate(URI objectUri, List<URI> associationMetaUris,
-      InvocationRequestTemplate onChange);
+      NavigationCallBackApi callBack);
 
   /**
    * Retrieve the entries from the navigations.

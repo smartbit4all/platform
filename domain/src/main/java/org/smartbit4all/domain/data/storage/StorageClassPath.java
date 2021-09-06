@@ -4,12 +4,11 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.smartbit4all.api.storage.bean.ObjectReference;
+import org.smartbit4all.api.storage.bean.ObjectReferenceList;
 
 /**
  * Specific storage for accessing beans stored in the class path. These can be the settings bound
@@ -82,7 +81,7 @@ public class StorageClassPath<T> extends ObjectStorageImpl<T> {
   }
 
   @Override
-  public Set<ObjectReference> loadReferences(URI uri) {
+  public ObjectReferenceList loadReferences(URI uri, String typeClassName) {
     throw new UnsupportedOperationException(
         "Unable to load references the URI = " + uri
             + " bean from the class path.");
