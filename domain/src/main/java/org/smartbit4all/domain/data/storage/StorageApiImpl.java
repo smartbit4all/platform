@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
-import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -47,7 +46,7 @@ public final class StorageApiImpl implements StorageApi, InitializingBean {
   }
 
   @Override
-  public <T, R> Set<R> loadReferences(URI uri, Class<T> clazz, @NotNull Class<R> typeClass) {
+  public <T, R> Set<R> loadReferences(URI uri, Class<T> clazz, Class<R> typeClass) {
     try {
       return new HashSet<>(
           get(typeClass)

@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import javax.validation.constraints.NotNull;
 import org.smartbit4all.api.storage.bean.ObjectReference;
 import org.smartbit4all.api.storage.bean.ObjectReferenceList;
 import org.smartbit4all.core.utility.StringConstant;
@@ -45,7 +44,7 @@ public final class ObjectReferenceRequest {
    */
   private List<ObjectReference> referencesToRemove = null;
 
-  public ObjectReferenceRequest(@NotNull URI objectUri, @NotNull Class<?> typeClass) {
+  public ObjectReferenceRequest(URI objectUri, Class<?> typeClass) {
     super();
     this.objectUri = objectUri;
     this.typeClass = typeClass;

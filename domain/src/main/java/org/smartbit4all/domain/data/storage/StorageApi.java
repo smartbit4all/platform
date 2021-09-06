@@ -3,7 +3,6 @@ package org.smartbit4all.domain.data.storage;
 import java.net.URI;
 import java.util.Set;
 import java.util.function.BiConsumer;
-import javax.validation.constraints.NotNull;
 
 /**
  * The storage api is the access for the {@link Storage} instances defined in the configurations of
@@ -33,7 +32,7 @@ public interface StorageApi {
    *        JVM!
    * @return The set of referenced objects.
    */
-  <T, R> Set<R> loadReferences(URI uri, @NotNull Class<T> clazz, @NotNull Class<R> typeClass);
+  <T, R> Set<R> loadReferences(URI uri, Class<T> clazz, Class<R> typeClass);
 
   /**
    * Adds a new change listener. Typical use case is that ...Api subscribes and decide what to do
