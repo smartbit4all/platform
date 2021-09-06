@@ -1,7 +1,9 @@
-package org.smartbit4all.api.contentaccess; 
+package org.smartbit4all.api.contentaccess;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,6 +12,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.api.binarydata.BinaryContent;
@@ -17,50 +20,74 @@ import org.smartbit4all.api.binarydata.BinaryData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest(classes = {ContentAccessTestConfig.class})
+@SpringBootTest(classes = { ContentAccessTestConfig.class })
 public class ContentAccessTest {
 
 	@Autowired
 	ContentAccessApi contentAccessApi;
-	
-	@BeforeEach
-	void clearContentAccessRootFolder() {
-		/*
-		 * File root = ContentAccessTestConfig.getBinaryDataApiRootFolder(); for (String
-		 * innerFilePath : root.list()) { File innerFile = new File(innerFilePath); if
-		 * (innerFile.isDirectory()) innerFile.delete();
-		 */
-		//}
+
+	private static final String UPLOAD_FOLDER_NAME = "upload";
+
+	private static final String UPLOAD_FOLDER_PATH = ContentAccessTestConfig.getBinaryDataApiRootFolder().getPath()
+			+ "/"+ UPLOAD_FOLDER_NAME;
+
+	@BeforeAll
+	static void clearContentAccessRootFolder() {
+		File root = new File(UPLOAD_FOLDER_PATH);
+		for (File innerFile : root.listFiles()) {
+			innerFile.delete();
+		}
 	}
-	
+
 	@Test
-	void  shareTest() throws Exception {
+	void shareTest() throws Exception {
 		UUID uuidWithNotAddedUri = contentAccessApi.share();
 		assertNotNull(uuidWithNotAddedUri);
-		
+
 		BinaryContent content = new BinaryContent();
 		content.setUri(new URI("asd"));
 		UUID uuidWithAddedUri = contentAccessApi.share(content);
 		assertNotNull(uuidWithAddedUri);
 	}
-	
+
 	@Test
 	void downloadTest() throws Exception {
 		BinaryContent content = new BinaryContent();
-		content.setDataUri(new URI(ContentAccessApi.SCHEME , null, "/lorem-ipsum.pdf", null));
+		content.setDataUri(new URI(ContentAccessApi.SCHEME, null, "/lorem-ipsum.pdf", null));
 		UUID uuid = contentAccessApi.share(content);
 		BinaryData data = contentAccessApi.download(uuid);
 		assertNotNull(data);
 	}
-	
+
 	@Test
 	void uploadTest() throws Exception {
 		BinaryContent content = new BinaryContent();
-		content.setFileName("asd.pdf");
-		content.setDataUri(new URI(ContentAccessApi.SCHEME, null, "/upload/asd.pdf", null));
+		content.setDataUri(new URI(ContentAccessApi.SCHEME, null, "/"+ UPLOAD_FOLDER_NAME + "/asd.pdf", null));
 		UUID uuid = contentAccessApi.share(content);
-		
-		contentAccessApi.upload(uuid, BinaryData.of(new FileInputStream("./src/test/resources/lorem-ipsum.pdf")));
+
+		contentAccessApi.upload(uuid,
+				BinaryData.of(new FileInputStream("./src/test/resources/contentAccessData/lorem-ipsum.pdf")));
+		assertTrue(new File(UPLOAD_FOLDER_PATH + "/asd.pdf").exists());
+		assertThrows(NoSuchElementException.class, () -> contentAccessApi.download(uuid));
+	}
+
+	@Test
+	void downloadWithZeroContentFileTest() throws Exception {
+		BinaryContent content = new BinaryContent();
+		content.setDataUri(new URI(ContentAccessApi.SCHEME, null, "/zero", null));
+		UUID uuid = contentAccessApi.share(content);
+		BinaryData data = contentAccessApi.download(uuid);
+		assertNotNull(data);
+	}
+
+	@Test
+	void uploadTestWithZeroContentFile() throws Exception {
+		BinaryContent content = new BinaryContent();
+		content.setDataUri(new URI(ContentAccessApi.SCHEME, null, "/" + UPLOAD_FOLDER_NAME + "/zero", null));
+		UUID uuid = contentAccessApi.share(content);
+
+		contentAccessApi.upload(uuid, BinaryData.of(new FileInputStream("./src/test/resources/contentAccessData/zero")));
+		assertTrue(new File(UPLOAD_FOLDER_PATH + "/zero").exists());
 		assertThrows(NoSuchElementException.class, () -> contentAccessApi.download(uuid));
 	}
 }
