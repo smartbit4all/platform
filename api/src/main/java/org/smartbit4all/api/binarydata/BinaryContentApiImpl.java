@@ -38,7 +38,8 @@ public class BinaryContentApiImpl implements BinaryContentApi {
       load(binaryContent);
     }
 
-    return binaryContent.getData();
+    BinaryContent unwrappedBinaryContent = ApiObjectRef.unwrapObject(binaryContent);
+    return unwrappedBinaryContent.getData();
   }
 
   @Override

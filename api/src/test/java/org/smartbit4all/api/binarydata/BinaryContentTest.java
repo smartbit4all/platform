@@ -146,7 +146,25 @@ public class BinaryContentTest {
   }
 
   @Test
-  void apiObjectRefTest() {
+  void uploadBinaryContentTest() {
+    BinaryContent binaryContent = new BinaryContent().dataUri(testFileDataURI);
+    binaryContentApi.uploadContent(binaryContent, testFile, testFileDataURI);
+
+    // Get the BinaryData
+    BinaryData binaryData = binaryContentApi.getBinaryData(binaryContent);
+
+    assertNotNull(binaryData);
+
+    // The BinaryData was set to the BinaryConent
+    assertFalse(binaryContent.isSaveData());
+    assertTrue(binaryContent.isLoaded());
+    assertNotNull(binaryContent.getData());
+    assertNotNull(binaryContent.getSize());
+    assertEquals(binaryData, binaryContent.getData());
+  }
+
+  @Test
+  void apiObjectRefSaveTest() {
     BinaryContent binaryContent = new BinaryContent();
     TestBinaryContentObject testBinaryContentObject =
         new TestBinaryContentObject().content(binaryContent);
@@ -160,6 +178,30 @@ public class BinaryContentTest {
         testFileDataURI);
 
     assertTrue(binaryContent.isSaveData());
+    assertTrue(binaryContent.isLoaded());
+    assertNotNull(binaryContent.getData());
+    assertNotNull(binaryContent.getSize());
+
+    assertTrue(contentWrapper.isLoaded());
+    assertNotNull(contentWrapper.getSize());
+  }
+
+  @Test
+  void apiObjectRefUploadTest() {
+    BinaryContent binaryContent = new BinaryContent();
+    TestBinaryContentObject testBinaryContentObject =
+        new TestBinaryContentObject().content(binaryContent);
+    ApiObjectRef ref =
+        new ApiObjectRef(null, testBinaryContentObject, TEST_BINARY_CONTENT_DESCRIPTOR);
+    TestBinaryContentObject testBinaryContentObjectWrapper =
+        ref.getWrapper(TestBinaryContentObject.class);
+
+    BinaryContent contentWrapper = testBinaryContentObjectWrapper.getContent();
+    binaryContentApi.uploadContent(contentWrapper, testFile, testFileDataURI);
+    BinaryData binaryData = binaryContentApi.getBinaryData(contentWrapper);
+
+    assertNotNull(binaryData);
+    assertFalse(binaryContent.isSaveData());
     assertTrue(binaryContent.isLoaded());
     assertNotNull(binaryContent.getData());
     assertNotNull(binaryContent.getSize());
