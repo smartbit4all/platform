@@ -30,7 +30,7 @@ public class ContentAccessApiDelegateImpl implements ContentAccessApiDelegate {
 					.body(res);
 		}
 		catch (NoSuchElementException ex) {
-			return ResponseEntity.notFound().build();
+			return ResponseEntity.noContent().build();
 		}
 	}
 	
@@ -43,7 +43,7 @@ public class ContentAccessApiDelegateImpl implements ContentAccessApiDelegate {
 			return ResponseEntity.ok().build();
 		}
 		catch (NoSuchElementException ex) {
-			return ResponseEntity.notFound().build();
+			return ResponseEntity.noContent().build();
 		}
 	}
 	
