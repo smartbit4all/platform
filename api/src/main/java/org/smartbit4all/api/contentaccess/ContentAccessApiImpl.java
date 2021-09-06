@@ -26,6 +26,7 @@ public class ContentAccessApiImpl implements ContentAccessApi{
 	@Override
 	public UUID share() throws Exception {
 		BinaryContent binaryContent = new BinaryContent();
+		binaryContent.setDataUri(new URI(SCHEME, null, "/", null));
 		return share(binaryContent);
 	}
 
@@ -38,9 +39,9 @@ public class ContentAccessApiImpl implements ContentAccessApi{
 	@Override
 	public BinaryData download(UUID uuid) throws Exception {
 		URI contentUri = objectShareApi.resolveUUID(uuid);
-		Optional<BinaryContent> content = storage.load(contentUri);
 		
-		if (content.isPresent()) {
+		if (contentUri != null) {
+			Optional<BinaryContent> content = storage.load(contentUri);
 			return binaryContentApi.getBinaryData(content.get());
 		}
 		else {
@@ -51,11 +52,11 @@ public class ContentAccessApiImpl implements ContentAccessApi{
 	@Override
 	public void upload(UUID uuid, BinaryData binaryData) throws Exception {
 		URI contentUri = objectShareApi.resolveUUID(uuid);
-		Optional<BinaryContent> content = storage.load(contentUri);
 		
-		if (content.isPresent()) {
+		if (contentUri != null) {
+			Optional<BinaryContent> content = storage.load(contentUri);
 			BinaryContent binaryContent = content.get();
-			binaryContentApi.saveIntoContent(binaryContent, binaryData, null);
+			binaryContentApi.uploadContent(binaryContent, binaryData, binaryContent.getDataUri());
 			storage.save(binaryContent, contentUri);
 		}
 		else {

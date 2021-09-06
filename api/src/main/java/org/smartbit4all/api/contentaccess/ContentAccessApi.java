@@ -7,6 +7,8 @@ import org.smartbit4all.api.binarydata.BinaryData;
 
 public interface ContentAccessApi {
 	
+	public static final String SCHEME = "ContentAccessApi";
+	
 	/**
 	 * Creates a UUID for the given binaryContent.
 	 * @param binaryContent
