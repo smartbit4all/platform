@@ -55,11 +55,9 @@ public class BinaryContent {
   @JsonIgnore
   private transient boolean loaded = false;
 
-  public static final String DATA = "data";
   @JsonIgnore
   private transient BinaryData data;
 
-  public static final String SAVEDATA = "saveData";
   /**
    * True if we have to save the BinaryData when we save the BinaryContent
    */
