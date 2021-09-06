@@ -3,6 +3,7 @@ package org.smartbit4all.api.binarydata;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.Optional;
+import org.smartbit4all.core.object.ApiObjectRef;
 
 public class BinaryContentApiImpl implements BinaryContentApi {
 
@@ -20,15 +21,10 @@ public class BinaryContentApiImpl implements BinaryContentApi {
 
       if (!binaryData.isPresent()) {
         throw new IllegalStateException(
-            "No BinaryData found in '" + binaryContent.getDataUri() + "'");
+            "No BinaryData found in '" + binaryContent.getDataUri() + "'!");
       }
-      setBinaryData(binaryContent, binaryData.get());
+      setBinaryData(binaryContent, binaryData.get(), false);
     }
-  }
-
-  protected void setBinaryData(BinaryContent binaryContent, BinaryData binaryData) {
-    binaryContent.setData(binaryData);
-    binaryContent.setLoaded(true);
   }
 
   @Override
@@ -42,7 +38,8 @@ public class BinaryContentApiImpl implements BinaryContentApi {
       load(binaryContent);
     }
 
-    return binaryContent.getData();
+    BinaryContent unwrappedBinaryContent = ApiObjectRef.unwrapObject(binaryContent);
+    return unwrappedBinaryContent.getData();
   }
 
   @Override
@@ -57,11 +54,8 @@ public class BinaryContentApiImpl implements BinaryContentApi {
   public void saveIntoContent(BinaryContent binaryContent, BinaryData binaryData,
       URI dataUri) {
 
-    binaryContent.setSaveData(true);
     binaryContent.setDataUri(dataUri);
-    binaryContent.setSize(binaryData.length());
-
-    setBinaryData(binaryContent, binaryData);
+    setBinaryData(binaryContent, binaryData, true);
   }
 
   @Override
@@ -74,10 +68,20 @@ public class BinaryContentApiImpl implements BinaryContentApi {
   @Override
   public void uploadContent(BinaryContent binaryContent, BinaryData binaryData, URI dataUri) {
     binaryContent.setDataUri(dataUri);
-    binaryContent.setSize(binaryData.length());
 
-    setBinaryData(binaryContent, binaryData);
+    setBinaryData(binaryContent, binaryData, false);
 
     binaryDataApi.save(binaryData, dataUri);
+  }
+
+
+  protected void setBinaryData(BinaryContent binaryContent, BinaryData binaryData,
+      boolean saveData) {
+    BinaryContent unwrappedBinaryContent = ApiObjectRef.unwrapObject(binaryContent);
+    binaryContent.setSize(binaryData.length());
+
+    unwrappedBinaryContent.setData(binaryData);
+    unwrappedBinaryContent.setLoaded(true);
+    unwrappedBinaryContent.setSaveData(saveData);
   }
 }

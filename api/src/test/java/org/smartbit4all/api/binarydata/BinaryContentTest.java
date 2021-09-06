@@ -10,12 +10,17 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.api.binarydata.fs.BinaryDataApiFS;
 import org.smartbit4all.core.io.TestFileUtil;
+import org.smartbit4all.core.object.ApiBeanDescriptor;
+import org.smartbit4all.core.object.ApiObjectRef;
 
 public class BinaryContentTest {
 
@@ -29,6 +34,19 @@ public class BinaryContentTest {
   private static BinaryContentApiImpl binaryContentApi;
 
   private static URI testFileDataURI;
+
+  public static final Map<Class<?>, ApiBeanDescriptor> TEST_BINARY_CONTENT_DESCRIPTOR =
+      initTestBinaryContentDescriptor();
+
+  private static Map<Class<?>, ApiBeanDescriptor> initTestBinaryContentDescriptor() {
+    Set<Class<?>> domainBeans = new HashSet<>();
+
+    domainBeans.add(TestBinaryContentObject.class);
+    domainBeans.add(BinaryContent.class);
+
+    return ApiBeanDescriptor.of(domainBeans);
+  }
+
 
   @BeforeEach
   void initEach() throws IOException {
@@ -76,6 +94,7 @@ public class BinaryContentTest {
     }
     assertTrue(binaryContent.isLoaded());
     assertFalse(binaryContent.isSaveData());
+    assertNotNull(binaryContent.getSize());
     assertNotNull(binaryContent.getData());
   }
 
@@ -104,11 +123,12 @@ public class BinaryContentTest {
     assertTrue(binaryContent.isLoaded());
     assertFalse(binaryContent.isSaveData());
     assertNotNull(binaryContent.getData());
+    assertNotNull(binaryContent.getSize());
     assertEquals(data, binaryContent.getData());
   }
 
   @Test
-  void contentOfTest() {
+  void saveIntoBinaryContentTest() {
     BinaryContent binaryContent = new BinaryContent().dataUri(testFileDataURI);
     binaryContentApi.saveIntoContent(binaryContent, testFile.inputStream(),
         binaryContent.getDataUri());
@@ -122,5 +142,71 @@ public class BinaryContentTest {
     assertTrue(binaryContent.isSaveData());
     assertTrue(binaryContent.isLoaded());
     assertNotNull(binaryContent.getData());
+    assertNotNull(binaryContent.getSize());
+  }
+
+  @Test
+  void uploadBinaryContentTest() {
+    BinaryContent binaryContent = new BinaryContent().dataUri(testFileDataURI);
+    binaryContentApi.uploadContent(binaryContent, testFile, testFileDataURI);
+
+    // Get the BinaryData
+    BinaryData binaryData = binaryContentApi.getBinaryData(binaryContent);
+
+    assertNotNull(binaryData);
+
+    // The BinaryData was set to the BinaryConent
+    assertFalse(binaryContent.isSaveData());
+    assertTrue(binaryContent.isLoaded());
+    assertNotNull(binaryContent.getData());
+    assertNotNull(binaryContent.getSize());
+    assertEquals(binaryData, binaryContent.getData());
+  }
+
+  @Test
+  void apiObjectRefSaveTest() {
+    BinaryContent binaryContent = new BinaryContent();
+    TestBinaryContentObject testBinaryContentObject =
+        new TestBinaryContentObject().content(binaryContent);
+    ApiObjectRef ref =
+        new ApiObjectRef(null, testBinaryContentObject, TEST_BINARY_CONTENT_DESCRIPTOR);
+    TestBinaryContentObject testBinaryContentObjectWrapper =
+        ref.getWrapper(TestBinaryContentObject.class);
+
+    BinaryContent contentWrapper = testBinaryContentObjectWrapper.getContent();
+    binaryContentApi.saveIntoContent(contentWrapper, testFile,
+        testFileDataURI);
+
+    assertTrue(binaryContent.isSaveData());
+    assertTrue(binaryContent.isLoaded());
+    assertNotNull(binaryContent.getData());
+    assertNotNull(binaryContent.getSize());
+
+    assertTrue(contentWrapper.isLoaded());
+    assertNotNull(contentWrapper.getSize());
+  }
+
+  @Test
+  void apiObjectRefUploadTest() {
+    BinaryContent binaryContent = new BinaryContent();
+    TestBinaryContentObject testBinaryContentObject =
+        new TestBinaryContentObject().content(binaryContent);
+    ApiObjectRef ref =
+        new ApiObjectRef(null, testBinaryContentObject, TEST_BINARY_CONTENT_DESCRIPTOR);
+    TestBinaryContentObject testBinaryContentObjectWrapper =
+        ref.getWrapper(TestBinaryContentObject.class);
+
+    BinaryContent contentWrapper = testBinaryContentObjectWrapper.getContent();
+    binaryContentApi.uploadContent(contentWrapper, testFile, testFileDataURI);
+    BinaryData binaryData = binaryContentApi.getBinaryData(contentWrapper);
+
+    assertNotNull(binaryData);
+    assertFalse(binaryContent.isSaveData());
+    assertTrue(binaryContent.isLoaded());
+    assertNotNull(binaryContent.getData());
+    assertNotNull(binaryContent.getSize());
+
+    assertTrue(contentWrapper.isLoaded());
+    assertNotNull(contentWrapper.getSize());
   }
 }
