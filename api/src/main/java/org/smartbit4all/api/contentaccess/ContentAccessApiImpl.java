@@ -26,7 +26,7 @@ public class ContentAccessApiImpl implements ContentAccessApi{
 	@Override
 	public UUID share() throws Exception {
 		BinaryContent binaryContent = new BinaryContent();
-		binaryContent.setDataUri(new URI(SCHEME, null, "/", null));
+		binaryContent.setDataUri(new URI(SCHEME, null, "/" + UUID.randomUUID(), null));
 		return share(binaryContent);
 	}
 
