@@ -15,6 +15,8 @@
 package org.smartbit4all.domain.entity;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.fail;
 import java.net.URI;
 import org.junit.jupiter.api.AfterAll;
@@ -127,6 +129,11 @@ public class EntityManagerTest {
   @Test
   void testPropertyRefrenceCreationByUri() {
 
+    String propertyName = "primaryAddressRef.dontRefThisByUri";
+    UserAccountDef userAccountDef = ctx.getBean(UserAccountDef.class);
+    assertNull(userAccountDef.getProperty(propertyName),
+        propertyName + " should NOT be defined at this point!");
+
     EntityManager entityManager = ctx.getBean(EntityManager.class);
 
     URI propertyUri = EntityUris.createPropertyUri(EntityManagerTestConfig.ENTITY_SOURCE_SEC,
@@ -134,17 +141,24 @@ public class EntityManagerTest {
     assertEquals(EXPECTED_PROPERTY_CREATED_BY_URI, propertyUri.toString());
     String name = entityManager.property(propertyUri).getName();
 
-    assertEquals("primaryAddressRef.dontRefThisByUri", name);
+    assertEquals(propertyName, name);
+    assertNotNull(userAccountDef.getProperty(propertyName),
+        propertyName + " should be defined at this point!");
 
   }
 
   @Test
   void testPropertyRefrenceCreationByRef() {
+    String propertyName = "primaryAddressRef.dontRefThisByRef";
     UserAccountDef userAccountDef = ctx.getBean(UserAccountDef.class);
 
+    assertNull(userAccountDef.getProperty(propertyName),
+        propertyName + " should NOT be defined at this point!");
     String name = userAccountDef.primaryAddress().dontRefThisByRef().getName();
 
-    assertEquals("primaryAddressRef.dontRefThisByRef", name);
+    assertEquals(propertyName, name);
+    assertNotNull(userAccountDef.getProperty(propertyName),
+        propertyName + " should be defined at this point!");
   }
 
 }
