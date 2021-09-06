@@ -54,10 +54,10 @@ public interface AddressDef extends EntityDefinition {
 
   @OwnProperty(name = ADDRESS, columnName = ADDRESS_COL)
   Property<String> address();
-
+  
   @OwnProperty(name = DONT_REF_THIS_BY_URI, columnName = DONT_REF_THIS_BY_URI_COL)
   Property<String> dontRefThisByUri();
-
+  
   @OwnProperty(name = DONT_REF_THIS_BY_REF, columnName = DONT_REF_THIS_BY_REF_COL)
   Property<String> dontRefThisByRef();
 

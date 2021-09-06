@@ -220,7 +220,7 @@ public abstract class FilterConfigs {
     public ConfigFieldBuilder addOperationDetailMultiSelect(Property<?> propertyOfFilter,
         EntityDefinition masterEntity, Property<?> fkEntity, String possibleValueCode) {
       String operationCodeValue = DefaultFilterOperationCodes.OPERATION_DET_MULTI_SEL;
-      return addOperationDetailMulti(propertyOfFilter, masterEntity, propertyOfFilter,
+      return addOperationDetailMulti(propertyOfFilter, masterEntity, fkEntity,
           operationCodeValue, possibleValueCode);
     }
 
@@ -233,7 +233,7 @@ public abstract class FilterConfigs {
     public ConfigFieldBuilder addOperationDetailComboSelect(Property<?> propertyOfFilter,
         EntityDefinition masterEntity, Property<?> fkEntity, String possibleValueCode) {
       String operationCodeValue = DefaultFilterOperationCodes.OPERATION_DET_COMBO_SEL;
-      return addOperationDetailMulti(propertyOfFilter, masterEntity, propertyOfFilter,
+      return addOperationDetailMulti(propertyOfFilter, masterEntity, fkEntity,
           operationCodeValue, possibleValueCode);
     }
 

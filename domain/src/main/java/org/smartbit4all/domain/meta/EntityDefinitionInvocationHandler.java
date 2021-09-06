@@ -531,7 +531,11 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
 
   @Override
   public final Property<?> getProperty(String propertyName) {
-    return propertiesByName.get(propertyName);
+    Property<?> property = propertiesByName.get(propertyName);
+    if (property == null) {
+      property = referredPropertiesByPath.get(propertyName);
+    }
+    return property;
   }
 
   @Override
