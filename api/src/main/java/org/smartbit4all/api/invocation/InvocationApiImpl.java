@@ -3,6 +3,8 @@ package org.smartbit4all.api.invocation;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.smartbit4all.api.invocation.registration.ApiRegister;
+import org.smartbit4all.api.invocation.registration.ApiRegistrationListenerImpl;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -20,11 +22,14 @@ public final class InvocationApiImpl implements InvocationApi, InitializingBean 
    */
   @Autowired(required = false)
   List<InvocationExecutionApi> apis;
+  
+  @Autowired(required = false)
+  ApiRegister apiRegister;
 
   Map<String, InvocationExecutionApi> apiByName = new HashMap<>();
 
   @Override
-  public InvocationParameter invoke(InvocationRequest request) throws ClassNotFoundException {
+  public InvocationParameter invoke(InvocationRequest request) throws Exception {
     InvocationExecutionApi api = api(request.getExecutionApi());
     if (api != null) {
       return api.invoke(request);
@@ -37,6 +42,10 @@ public final class InvocationApiImpl implements InvocationApi, InitializingBean 
   public InvocationExecutionApi api(String name) {
     return apiByName.get(name);
   }
+  
+  private void addApi(String name, InvocationExecutionApi api) {
+    apiByName.put(name, api);
+  }
 
   @Override
   public void afterPropertiesSet() throws Exception {
@@ -45,6 +54,13 @@ public final class InvocationApiImpl implements InvocationApi, InitializingBean 
       for (InvocationExecutionApi executionApi : apis) {
         apiByName.put(executionApi.getName(), executionApi);
       }
+    }
+    if (apiRegister != null) {
+      apiRegister.addRegistrationListener(
+          new ApiRegistrationListenerImpl<InvocationExecutionApi>(InvocationExecutionApi.class,
+              (executionApi, apiInfo) -> {
+                addApi(executionApi.getName(), executionApi);
+              }));
     }
   }
 

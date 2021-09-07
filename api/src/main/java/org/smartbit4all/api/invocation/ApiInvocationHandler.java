@@ -50,6 +50,7 @@ public class ApiInvocationHandler<A, I extends ContributionApi> implements Invoc
     this.innerApiClass = innerApiClass;
     this.innerApi = innerApi;
     this.invocationApi = invocationApi;
+    this.executionApi = executionApi;
   }
 
   @SuppressWarnings("unchecked")
@@ -57,6 +58,10 @@ public class ApiInvocationHandler<A, I extends ContributionApi> implements Invoc
       Class<? extends A> primaryApiClass, A primaryApi,
       Class<? extends I> innerApiClass, I innerApi, InvocationApi invocationApi,
       String executionApi) {
+    if(innerApi != null && innerApi instanceof ApiInvocationProxy) {
+      // if its already an apiInvocationProxy just return it
+      return innerApi;
+    }
     ApiInvocationHandler<A, I> invocationHandler =
         new ApiInvocationHandler<>(primaryApiClass, primaryApi, innerApiClass, innerApi,
             invocationApi, executionApi);
@@ -87,18 +92,21 @@ public class ApiInvocationHandler<A, I extends ContributionApi> implements Invoc
     if (method.getDeclaringClass().equals(ApiInvocationProxy.class)) {
       return method.invoke(invocationProxy, args);
     }
-    InvocationRequest invocation = Invocations.invoke(primaryApiClass).method(method.getName());
-    if (isInner()) {
-      invocation.innerApi(innerApi.getApiName());
-    }
+    InvocationRequest invocation = Invocations.invoke(primaryApiClass)
+        .method(method.getName())
+        .exec(executionApi)
+        .innerApi(isInner() ? innerApi.getApiName() : null);
+    
     Parameter[] parameters = method.getParameters();
-    for (int i = 0; i < args.length; i++) {
-      Parameter parameter = parameters[i];
-      Object parameterValue = args[i];
-      // TODO For the conversion to string must be implemented with TransferService!
-      invocation.addParameter(parameter.getName(), InvocationParameter.Kind.BYVALUE,
-          parameterValue,
-          parameter.getType().getName());
+    if(args != null) {
+      for (int i = 0; i < args.length; i++) {
+        Parameter parameter = parameters[i];
+        Object parameterValue = args[i];
+        // TODO For the conversion to string must be implemented with TransferService!
+        invocation.addParameter(parameter.getName(), InvocationParameter.Kind.BYVALUE,
+            parameterValue,
+            parameter.getType().getName());
+      }
     }
     InvocationParameter result = invocationApi.invoke(invocation);
     return result != null ? result.getValue() : null;

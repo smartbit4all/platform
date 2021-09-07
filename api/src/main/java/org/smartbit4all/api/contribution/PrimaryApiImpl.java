@@ -6,6 +6,8 @@ import java.util.Map;
 import org.smartbit4all.api.invocation.ApiInvocationHandler;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.Invocations;
+import org.smartbit4all.api.invocation.registration.ApiRegister;
+import org.smartbit4all.api.invocation.registration.ApiRegistrationListenerImpl;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -27,6 +29,9 @@ public class PrimaryApiImpl<A extends ContributionApi> implements PrimaryApi<A>,
 
   @Autowired
   InvocationApi invocationApi;
+  
+  @Autowired(required = false)
+  ApiRegister apiRegister;
 
   /**
    * The active registry of the api instances managed by the primary api.
@@ -41,6 +46,7 @@ public class PrimaryApiImpl<A extends ContributionApi> implements PrimaryApi<A>,
     super();
     this.primaryApiClass = primaryApiClass;
     this.innerApiClass = innerApiClass;
+    
   }
 
   @Override
@@ -52,11 +58,28 @@ public class PrimaryApiImpl<A extends ContributionApi> implements PrimaryApi<A>,
   public void afterPropertiesSet() throws Exception {
     if (apis != null) {
       for (A api : apis) {
-        apiByName.put(api.getApiName(),
-            ApiInvocationHandler.createProxyInner(primaryApiClass, this, innerApiClass, api,
-                invocationApi, Invocations.LOCAL));
+        addContributionApi(api, Invocations.LOCAL);
       }
+    }
+    if(apiRegister != null) {
+      apiRegister.addRegistrationListener(
+          new ApiRegistrationListenerImpl<A>(innerApiClass, (innerApiInstance, apiInfo) -> {
+            Object execApi = apiInfo.getParameters().get("executionApi");
+            String executionApi = execApi == null ? apiInfo.getProtocol() : (String) execApi;
+            addContributionApi(innerApiInstance, executionApi);
+          }));
     }
   }
 
+  private void addContributionApi(A api, String executionApi) {
+    apiByName.put(api.getApiName(),
+        ApiInvocationHandler.createProxyInner(primaryApiClass, this, innerApiClass, api,
+            invocationApi, executionApi));
+  }
+
+  @Override
+  public Class<A> getInnerApiClass() {
+    return innerApiClass;
+  }
+  
 }
