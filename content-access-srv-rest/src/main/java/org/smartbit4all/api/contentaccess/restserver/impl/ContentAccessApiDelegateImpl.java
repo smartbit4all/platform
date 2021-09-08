@@ -1,5 +1,6 @@
 package org.smartbit4all.api.contentaccess.restserver.impl;
 
+import java.io.InputStream;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
@@ -7,6 +8,7 @@ import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.contentaccess.ContentAccessApi;
 import org.smartbit4all.api.contentaccess.restserver.ContentAccessApiDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
@@ -22,11 +24,10 @@ public class ContentAccessApiDelegateImpl implements ContentAccessApiDelegate {
 	public ResponseEntity<Resource> download(UUID uuid) throws Exception {
 		try {
 			BinaryData content = contentAccessApi.download(uuid);
-			Resource res = new InputStreamResource(content.inputStream());
+			Resource res = new FileSystemResource(content.getDataFile());
 			
-			return ResponseEntity.ok()
-					.contentLength(res.contentLength())
-					.contentType(MediaType.APPLICATION_OCTET_STREAM)
+			return ResponseEntity
+					.ok()
 					.body(res);
 		}
 		catch (NoSuchElementException ex) {
@@ -37,10 +38,13 @@ public class ContentAccessApiDelegateImpl implements ContentAccessApiDelegate {
 	@Override
 	public ResponseEntity<Void> upload(UUID uuid, MultipartFile file) throws Exception {
 		try {
-			BinaryData binaryData = BinaryData.of(file.getInputStream());
-			contentAccessApi.upload(uuid, binaryData);
-			
-			return ResponseEntity.ok().build();
+			try(InputStream is = file.getInputStream()){
+				
+				BinaryData binaryData = BinaryData.of(is);
+				contentAccessApi.upload(uuid, binaryData);
+				
+				return ResponseEntity.ok().build();
+			}
 		}
 		catch (NoSuchElementException ex) {
 			return ResponseEntity.noContent().build();
