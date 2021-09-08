@@ -114,7 +114,6 @@ public interface SecurityGatewayService {
    * @return
    */
   User updateUser(URI userUri, User user);
-  //User updateUser(URI userUri, Map<Strin, String> propertyMap);
   
   /**
    * Remove user from group.

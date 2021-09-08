@@ -25,7 +25,6 @@ import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import org.smartbit4all.api.org.bean.User;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
@@ -48,7 +47,7 @@ public class UsersOfGroup {
   private URI groupUri;
 
   public static final String USERS = "users";
-  private List<User> users = new ArrayList<>();
+  private List<URI> users = new ArrayList<>();
 
 
   public UsersOfGroup uri(URI uri) {
@@ -107,13 +106,13 @@ public class UsersOfGroup {
   }
 
 
-  public UsersOfGroup users(List<User> users) {
+  public UsersOfGroup users(List<URI> users) {
     
     this.users = users;
     return this;
   }
 
-  public UsersOfGroup addUsersItem(User usersItem) {
+  public UsersOfGroup addUsersItem(URI usersItem) {
     this.users.add(usersItem);
     return this;
   }
@@ -128,14 +127,14 @@ public class UsersOfGroup {
   @JsonProperty(USERS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<User> getUsers() {
+  public List<URI> getUsers() {
     return users;
   }
 
 
   @JsonProperty(USERS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setUsers(List<User> users) {
+  public void setUsers(List<URI> users) {
     this.users = users;
   }
 
