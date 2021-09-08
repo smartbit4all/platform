@@ -1,0 +1,64 @@
+openapi: 3.0.1
+info:
+  title: sb4starter api
+  description: sb4starter api
+  termsOfService: ''
+  contact:
+    email: info@it4all.hu
+  version: 1.0.0
+tags:
+- name: Sb4starterApi
+paths: {}
+components:
+  schemas:
+    SB4Starter:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: UUID
+        commands:
+          type: array
+          items:
+            $ref: '#/components/schemas/SB4Command'
+          
+    SB4Command:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        commandKind:
+          $ref: '#/components/schemas/CommandKind'
+        restUrl:
+          type: string
+          format: uri
+        sb4Files:
+          type: array
+          items:
+            $ref: '#/components/schemas/SB4File'
+        command:
+          type: string
+
+    CommandKind:
+      type: string
+      enum:
+        - ContentAccessDownload
+        - WordEdit
+        - ExecuteCommand
+        - ContentAccessUpload
+        
+    SB4File:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        identifier:
+          type: string
+        filename:
+          type: string
+      
