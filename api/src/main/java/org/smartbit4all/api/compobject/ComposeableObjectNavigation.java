@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.compobject.bean.ComposeableObject;
 import org.smartbit4all.api.compobject.bean.ComposeableObjectDef;
 import org.smartbit4all.api.navigation.Navigation;
+import org.smartbit4all.api.navigation.NavigationCallBackApi;
 import org.smartbit4all.api.navigation.NavigationImpl;
 import org.smartbit4all.api.navigation.bean.NavigationAssociationMeta;
 import org.smartbit4all.api.navigation.bean.NavigationEntry;
@@ -144,7 +145,7 @@ public class ComposeableObjectNavigation extends NavigationImpl {
     String title = composeableObjectApi.getTitle(objectUri, definition);
     String icon = composeableObjectApi.getIcon(objectUri, definition);
     String viewName = composeableObjectApi.getViewName(objectUri, definition);
-    
+
     NavigationEntry newEntry = Navigation.entry(
         createEntryMeta(definition),
         objectUri,
@@ -195,6 +196,12 @@ public class ComposeableObjectNavigation extends NavigationImpl {
     return Navigation.entryMeta(
         compObjDefUri,
         compObjDefUri.getScheme());
+  }
+
+  @Override
+  public Map<URI, List<NavigationReferenceEntry>> navigate(URI objectUri,
+      List<URI> associationMetaUris, NavigationCallBackApi callBack) {
+    return navigate(objectUri, associationMetaUris);
   }
 
 }

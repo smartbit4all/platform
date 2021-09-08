@@ -6,12 +6,11 @@ import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.smartbit4all.api.storage.bean.ObjectReference;
+import org.smartbit4all.api.storage.bean.ObjectReferenceList;
 import org.smartbit4all.core.io.TestFileUtil;
 import org.smartbit4all.domain.annotation.property.Entity;
 import org.smartbit4all.domain.annotation.property.Id;
@@ -39,6 +38,30 @@ class StorageFSTest {
   public static final String OBJECT_FILE_EXTENSION = "fs";
 
   public static class TestData {
+
+    private URI uri;
+
+    private String data;
+
+    public URI getUri() {
+      return uri;
+    }
+
+    public void setUri(URI uri) {
+      this.uri = uri;
+    }
+
+    public String getData() {
+      return data;
+    }
+
+    public void setData(String data) {
+      this.data = data;
+    }
+
+  }
+
+  public static class RefData {
 
     private URI uri;
 
@@ -266,11 +289,13 @@ class StorageFSTest {
     assertEquals(tdActive1.uri, loaded1.get().uri);
 
     String myref = "myref";
-    storageFS.saveReferences(new ObjectReferenceRequest(uri).create(myref));
+    storageFS
+        .saveReferences(new ObjectReferenceRequest(uri, RefData.class).add(myref));
 
-    Set<ObjectReference> references = storageFS.loadReferences(uri);
+    ObjectReferenceList references = storageFS.loadReferences(uri, RefData.class.getName());
 
-    Assertions.assertTrue(references.stream().anyMatch(r -> r.getReference().equals(myref)));
+    Assertions.assertTrue(
+        references.getReferences().stream().anyMatch(r -> r.getReferenceId().equals(myref)));
 
     ctx.close();
   }

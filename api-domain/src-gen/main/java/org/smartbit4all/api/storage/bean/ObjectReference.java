@@ -31,43 +31,43 @@ import javax.validation.Valid;
  */
 @ApiModel(description = "In generally if we have an object stored by a Storage then we might need to store some object references for this.  The related object references are more or less a list of URI or other identifier easy to serialize in every storage mechanism.  The Storage can publish events when the given object is changed. This can be filtered by this register.  The reference can be temporary so we can define a time limit when the Storage will remove the reference.  The relation can be renewed by adding it again and again. This object itself is managed by the ObjectStorage to store this in an  optimal way for the given storage mechanism. ")
 @JsonPropertyOrder({
-  ObjectReference.REFERENCE,
+  ObjectReference.REFERENCE_ID,
   ObjectReference.EXPIRATION_TIME
 })
 @JsonTypeName("ObjectReference")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class ObjectReference {
-  public static final String REFERENCE = "reference";
-  private String reference;
+  public static final String REFERENCE_ID = "referenceId";
+  private String referenceId;
 
   public static final String EXPIRATION_TIME = "expirationTime";
   private String expirationTime;
 
 
-  public ObjectReference reference(String reference) {
+  public ObjectReference referenceId(String referenceId) {
     
-    this.reference = reference;
+    this.referenceId = referenceId;
     return this;
   }
 
    /**
-   * The reference string for the reference.
-   * @return reference
+   * The identifier of the referenced object. Usually this is an URI that identifies the object in the domain.
+   * @return referenceId
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The reference string for the reference.")
-  @JsonProperty(REFERENCE)
+  @ApiModelProperty(value = "The identifier of the referenced object. Usually this is an URI that identifies the object in the domain.")
+  @JsonProperty(REFERENCE_ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public String getReference() {
-    return reference;
+  public String getReferenceId() {
+    return referenceId;
   }
 
 
-  @JsonProperty(REFERENCE)
+  @JsonProperty(REFERENCE_ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setReference(String reference) {
-    this.reference = reference;
+  public void setReferenceId(String referenceId) {
+    this.referenceId = referenceId;
   }
 
 
@@ -107,20 +107,20 @@ public class ObjectReference {
       return false;
     }
     ObjectReference objectReference = (ObjectReference) o;
-    return Objects.equals(this.reference, objectReference.reference) &&
+    return Objects.equals(this.referenceId, objectReference.referenceId) &&
         Objects.equals(this.expirationTime, objectReference.expirationTime);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(reference, expirationTime);
+    return Objects.hash(referenceId, expirationTime);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class ObjectReference {\n");
-    sb.append("    reference: ").append(toIndentedString(reference)).append("\n");
+    sb.append("    referenceId: ").append(toIndentedString(referenceId)).append("\n");
     sb.append("    expirationTime: ").append(toIndentedString(expirationTime)).append("\n");
     sb.append("}");
     return sb.toString();

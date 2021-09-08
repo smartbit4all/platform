@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.api.invocation.bean.InvocationRequestTemplate;
 import org.smartbit4all.api.invocation.bean.TestDataBean;
-import org.smartbit4all.api.storage.bean.ObjectReference;
 import org.smartbit4all.domain.data.storage.ObjectReferenceRequest;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
@@ -73,23 +72,21 @@ class InvocationApiTest {
     tdb1.setData("tdb1");
 
     URI tdb1Uri = storageTDB.save(tdb1);
-    storageTDB.saveReferences(new ObjectReferenceRequest(tdb1Uri).create(callbackUri.toString()));
+    storageTDB.saveReferences(new ObjectReferenceRequest(tdb1Uri, InvocationRequestTemplate.class)
+        .add(callbackUri.toString()));
 
-    storageTDB.onChange((o, r) -> {
-      r.forEach(or -> {
-        ObjectReference reference = or;
-        InvocationRequestTemplate requestTemplate =
-            invocationApi.load(URI.create(reference.getReference()));
-        InvocationRequest request = InvocationRequest.of(requestTemplate).setParameter("p1", value);
-        InvocationParameter result;
-        try {
-          result = invocationApi.invoke(request);
-          callResult = result.getValue().toString();
-        } catch (ClassNotFoundException e) {
-          fail("Unable to call the " + request, e);
-        }
-      });
-    });
+    storageApi.onChange(TestDataBean.class, InvocationRequestTemplate.class,
+        (b, r) -> r.forEach(requestTemplate -> {
+          InvocationRequest request =
+              InvocationRequest.of(requestTemplate).setParameter("p1", value);
+          InvocationParameter result;
+          try {
+            result = invocationApi.invoke(request);
+            callResult = result.getValue().toString();
+          } catch (ClassNotFoundException e) {
+            fail("Unable to call the " + request, e);
+          }
+        }));
 
     // Modify the give data
     tdb1.setUri(tdb1Uri);

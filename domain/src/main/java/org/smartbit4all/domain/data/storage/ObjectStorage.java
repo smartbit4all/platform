@@ -3,8 +3,7 @@ package org.smartbit4all.domain.data.storage;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import org.smartbit4all.api.storage.bean.ObjectReference;
+import org.smartbit4all.api.storage.bean.ObjectReferenceList;
 
 /**
  * ObjectStorage can store serialized objects, identified by their URIs.
@@ -37,7 +36,7 @@ public interface ObjectStorage<T> {
    * 
    * @param uri The uri of the object.
    */
-  public Set<ObjectReference> loadReferences(URI uri);
+  public ObjectReferenceList loadReferences(URI uri, String typeClassName);
 
   /**
    * Load the object with the given URI.

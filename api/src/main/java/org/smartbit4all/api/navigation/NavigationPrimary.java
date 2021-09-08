@@ -112,4 +112,10 @@ public final class NavigationPrimary extends NavigationImpl implements Initializ
     }
   }
 
+  @Override
+  public Map<URI, List<NavigationReferenceEntry>> navigate(URI objectUri,
+      List<URI> associationMetaUris, NavigationCallBackApi callBack) {
+    return navigate(objectUri, associationMetaUris);
+  }
+
 }

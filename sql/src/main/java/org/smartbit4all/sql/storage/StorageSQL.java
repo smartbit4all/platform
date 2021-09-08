@@ -5,11 +5,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.binarydata.BinaryDataObjectSerializer;
-import org.smartbit4all.api.storage.bean.ObjectReference;
+import org.smartbit4all.api.storage.bean.ObjectReferenceList;
 import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.data.TableDatas;
@@ -197,7 +196,7 @@ public class StorageSQL<T> extends ObjectStorageImpl<T> {
   }
 
   @Override
-  public Set<ObjectReference> loadReferences(URI uri) {
+  public ObjectReferenceList loadReferences(URI uri, String typeClassName) {
     // TODO Auto-generated method stub
     return null;
   }

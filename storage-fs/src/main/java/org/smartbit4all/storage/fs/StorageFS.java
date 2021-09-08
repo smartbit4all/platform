@@ -4,16 +4,14 @@ import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.binarydata.BinaryDataObjectSerializer;
-import org.smartbit4all.api.storage.bean.ObjectReference;
 import org.smartbit4all.api.storage.bean.ObjectReferenceList;
 import org.smartbit4all.core.io.utility.FileIO;
+import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.storage.ObjectReferenceRequest;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 
@@ -151,36 +149,38 @@ public class StorageFS<T> extends ObjectStorageImpl<T> {
     if (referenceRequest == null) {
       return;
     }
-    Set<ObjectReference> references = loadReferences(referenceRequest.getObjectUri());
-    if (references.isEmpty()) {
-      references = new HashSet<>();
+    ObjectReferenceList references =
+        loadReferences(referenceRequest.getObjectUri(), referenceRequest.getTypeClassName());
+    if (references == null) {
+      references = new ObjectReferenceList().uri(referenceRequest.getObjectUri())
+          .referenceTypeClass(referenceRequest.getTypeClassName());
     }
-    referenceRequest.updateReferences(references);
-    if (references.isEmpty()) {
+    String extension =
+        StringConstant.DOT + referenceRequest.getTypeClassName() + referencesExtension;
+    if (!referenceRequest.updateReferences(references)) {
       // Delete the reference file
-      FileIO.delete(rootFolder, referenceRequest.getObjectUri(), referencesExtension);
+      FileIO.delete(rootFolder, referenceRequest.getObjectUri(),
+          extension);
       return;
     }
 
-    ObjectReferenceList referenceList =
-        new ObjectReferenceList().uri(referenceRequest.getObjectUri())
-            .references(new ArrayList<>(references));
-    FileIO.write(rootFolder, referenceRequest.getObjectUri(), referencesExtension,
-        serializer.toJsonBinaryData(referenceList, ObjectReferenceList.class));
+    FileIO.write(rootFolder, referenceRequest.getObjectUri(),
+        extension,
+        serializer.toJsonBinaryData(references, ObjectReferenceList.class));
   }
 
   @Override
-  public Set<ObjectReference> loadReferences(URI uri) {
-    BinaryData binaryData = FileIO.read(rootFolder, uri, referencesExtension);
+  public ObjectReferenceList loadReferences(URI uri, String typeClassName) {
+    String extension = StringConstant.DOT + typeClassName + referencesExtension;
+    BinaryData binaryData = FileIO.read(rootFolder, uri, extension);
 
     if (binaryData == null) {
-      return Collections.emptySet();
+      return null;
     }
 
     Optional<ObjectReferenceList> optional =
         serializer.fromJsonBinaryData(binaryData, ObjectReferenceList.class);
-    return optional.map(r -> r.getReferences()).map(l -> ((Set<ObjectReference>) new HashSet<>(l)))
-        .orElse(Collections.emptySet());
+    return optional.get();
   }
 
 }
