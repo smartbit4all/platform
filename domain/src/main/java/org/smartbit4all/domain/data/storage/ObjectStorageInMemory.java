@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import org.smartbit4all.api.storage.bean.ObjectReferenceList;
+import org.smartbit4all.core.object.ApiObjectRef;
 
 /**
  * Simple Map based implementation of object storage. It can be used for testing with storage.
@@ -38,7 +39,10 @@ public class ObjectStorageInMemory<T> extends ObjectStorageImpl<T> {
   @Override
   public URI save(T object, URI uri) throws Exception {
     URI result = constructUri(object, uri);
-    objects.put(result, object);
+
+    // Only put the original Object into to Map. Unwrap if wrapped.
+    T unwrappedObject = ApiObjectRef.unwrapObject(object);
+    objects.put(result, unwrappedObject);
     return result;
   }
 

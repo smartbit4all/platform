@@ -207,7 +207,8 @@ components:
         groups:
           type: array
           items:
-            $ref: '#/components/schemas/Group'
+            type: string
+            format: uri
     UsersOfGroup:
       type: object
       required: [uri, groupUri, users]
@@ -221,4 +222,5 @@ components:
         users:
           type: array
           items:
-            $ref: '#/components/schemas/User'
+            type: string
+            format: uri
