@@ -1,5 +1,6 @@
 package org.smartbit4all.api.contentaccess.restserver;
 
+import org.smartbit4all.api.contentaccess.restserver.config.ContentAccessSrvRestTestConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
