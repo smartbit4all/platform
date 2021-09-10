@@ -7,16 +7,12 @@ package org.smartbit4all.api.contentaccess.restserver;
 
 import java.util.UUID;
 import io.swagger.annotations.*;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import springfox.documentation.annotations.ApiIgnore;
-
 import javax.validation.Valid;
-import javax.validation.constraints.*;
-import java.util.List;
-import java.util.Map;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen")
 @Validated
 @Api(value = "ContentAccess", description = "the ContentAccess API")
@@ -58,7 +54,7 @@ public interface ContentAccessApi {
         value = "/upload",
         consumes = { "multipart/form-data" }
     )
-    default ResponseEntity<Void> upload(@ApiParam(value = "") @Valid @RequestPart(value = "uuid", required = false)  UUID uuid,@ApiParam(value = "") @Valid @RequestPart(value = "file", required = false) MultipartFile file) throws Exception {
+    default ResponseEntity<Void> upload(@ApiParam(value = "") @Valid @RequestParam(value = "uuid", required = false)  UUID uuid,@ApiParam(value = "") @Valid @RequestParam(value = "file", required = false) MultipartFile file) throws Exception {
         return getDelegate().upload(uuid, file);
     }
 
