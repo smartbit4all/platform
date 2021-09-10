@@ -1,4 +1,4 @@
-package org.smartbit4all.api.invocation.restclient.util;
+package org.smartbit4all.api.invocation.restclientgen.util;
 
 import java.util.HashSet;
 

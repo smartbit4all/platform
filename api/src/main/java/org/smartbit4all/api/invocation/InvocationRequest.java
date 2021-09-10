@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,10 +69,7 @@ public class InvocationRequest {
 
   public InvocationRequest(Class<?> apiClass) {
     super();
-    this.apiClass = apiClass;
-    if (apiClass != null) {
-      apiClassName = apiClass.getName();
-    }
+    setApiClass(apiClass);
     uuid = UUID.randomUUID();
   }
 
@@ -133,19 +131,31 @@ public class InvocationRequest {
    */
   public InvocationRequest addParameter(String name, Object value,
       String typeClass) {
-    InvocationParameter parameter = new InvocationParameter();
-    parameter.setKind(InvocationParameter.Kind.BYVALUE);
-    parameter.setTypeClass(
-        typeClass != null ? typeClass : (value != null ? value.getClass().getName() : typeClass));
-    parameter.setValue(value);
-    parameters.put(name, parameter);
-    return this;
+    return addParameter(name, InvocationParameter.Kind.BYVALUE, value, typeClass);
+  }
+  
+  /**
+   * Adds a new by value parameter to the invocation.
+   * 
+   * @param name The name of the parameter.
+   * @param value The value object
+   * @param typeClass The type of the value.
+   * @return
+   */
+  public InvocationRequest addParameter(String name, Object value) {
+    Objects.requireNonNull(value,
+        "value can not be null when there is no typeClass parameter given!");
+    return addParameter(name, InvocationParameter.Kind.BYVALUE, value, null);
   }
 
   public InvocationRequest setParameter(String name, Object value) {
     InvocationParameter parameter = parameters.get(name);
     parameter.setValue(value);
     return this;
+  }
+  
+  private InvocationRequest() {
+    
   }
 
   public final Class<?> getApiClass() {
@@ -154,6 +164,9 @@ public class InvocationRequest {
 
   public final void setApiClass(Class<?> apiClass) {
     this.apiClass = apiClass;
+    if (apiClass != null) {
+      apiClassName = apiClass.getName();
+    }
   }
 
   public final String getInnerApi() {
@@ -209,5 +222,28 @@ public class InvocationRequest {
   public final String getApiClassName() {
     return apiClassName;
   }
+  
+  public InvocationRequest copy() {
+    InvocationRequest copyRequest = new InvocationRequest();
+    copyRequest.apiClass = this.apiClass;
+    copyRequest.apiClassName = apiClassName;
+    copyRequest.uuid = this.uuid;
+    copyRequest.executionApi = executionApi;
+    copyRequest.methodName = methodName;
+    parameters.entrySet().forEach((e) -> {
+      InvocationParameter param = e.getValue();
+      copyRequest.addParameter(e.getKey(), param.getKind(), param.getValue(), param.getTypeClass());
+    });
+    return copyRequest;
+  }
+
+  @Override
+  public String toString() {
+    return "InvocationRequest [uuid=" + uuid + ", apiClass=" + apiClass + ", apiClassName="
+        + apiClassName + ", innerApi=" + innerApi + ", methodName=" + methodName + ", executionApi="
+        + executionApi + ", parameters=" + parameters + "]";
+  }
+  
+  
 
 }

@@ -16,6 +16,6 @@ public interface InvocationExecutionApi {
    * @param request
    * @throws ClassNotFoundException
    */
-  InvocationParameter invoke(InvocationRequest request) throws ClassNotFoundException;
+  InvocationParameter invoke(InvocationRequest request) throws Exception;
 
 }

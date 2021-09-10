@@ -21,4 +21,6 @@ public interface PrimaryApi<A extends ContributionApi> {
    */
   A findApiByName(String apiName);
 
+  Class<A> getInnerApiClass();
+
 }

@@ -8,9 +8,17 @@ dependencies {
 	
 	api 'org.springframework:spring-context:5.2.3.RELEASE'
 	api 'org.springframework:spring-web:5.2.3.RELEASE'
-	api 'org.slf4j:slf4j-api:1.7.30'
-	api 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.3'
-	implementation 'org.openapitools:jackson-databind-nullable:0.2.1'
+	api 'org.springframework.boot:spring-boot-autoconfigure:2.3.5.RELEASE'
+	
+	api 'org.openapitools:jackson-databind-nullable:0.2.1' // should come from platform.gradle.openapi plugin
+	
+	
+	testImplementation('org.springframework.boot:spring-boot-starter-test:2.3.4.RELEASE') {
+		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+		exclude module: "logback-classic"
+	}
+	testImplementation 'org.mock-server:mockserver-spring-test-listener:5.11.2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 smartbit4all {
@@ -19,9 +27,9 @@ smartbit4all {
         	"${rootDir}/invocation-domain-rest/src/main/resources/descriptors/invocation-api.yaml" : "invocation"
         ]
         apiPackagePrefix = "org.smartbit4all.api"
-        apiPackagePostfix = "restclient"
+        apiPackagePostfix = "restclientgen"
         invokerPackagePrefix = "org.smartbit4all.api"
-        invokerPackagePostfix = "restclient.util"
+        invokerPackagePostfix = "restclientgen.util"
 		genApiRestClient = true
 		importMappings = [
 			"InvocationRequestData" : "org.smartbit4all.api.invocation.model.InvocationRequestData",

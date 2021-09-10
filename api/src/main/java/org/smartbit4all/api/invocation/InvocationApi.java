@@ -14,9 +14,9 @@ public interface InvocationApi {
    * The generic api call.
    * 
    * @param request
-   * @throws ClassNotFoundException
+   * @throws Exception 
    */
-  InvocationParameter invoke(InvocationRequest request) throws ClassNotFoundException;
+  InvocationParameter invoke(InvocationRequest request) throws Exception;
 
   /**
    * We can save an invocation template.
