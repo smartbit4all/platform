@@ -10,6 +10,9 @@ dependencies {
 	api 'org.springframework:spring-web:5.2.3.RELEASE'
 	api 'org.springframework.boot:spring-boot-autoconfigure:2.3.5.RELEASE'
 	
+	api 'org.openapitools:jackson-databind-nullable:0.2.1' // should come from platform.gradle.openapi plugin
+	
+	
 	testImplementation('org.springframework.boot:spring-boot-starter-test:2.3.4.RELEASE') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 		exclude module: "logback-classic"
