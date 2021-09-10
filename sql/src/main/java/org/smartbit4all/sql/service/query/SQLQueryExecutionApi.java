@@ -13,6 +13,8 @@ public class SQLQueryExecutionApi implements QueryExecutionApi {
    */
   JdbcTemplate jdbcTemplate;
 
+  private String schema = null;
+
   public SQLQueryExecutionApi(JdbcTemplate jdbcTemplate) {
     super();
     this.jdbcTemplate = jdbcTemplate;
@@ -20,9 +22,18 @@ public class SQLQueryExecutionApi implements QueryExecutionApi {
 
   @Override
   public <E extends EntityDefinition> QueryOutput execute(QueryInput queryInput) throws Exception {
-    SQLQueryExecution queryExecution = new SQLQueryExecution(jdbcTemplate, queryInput);
+    SQLQueryExecution queryExecution = new SQLQueryExecution(jdbcTemplate, queryInput, schema);
     queryExecution.execute();
     return queryExecution.queryOutput;
   }
 
+  @Override
+  public String getSchema() {
+    return schema;
+  }
+
+  public void setSchema(String schema) {
+    this.schema = schema;
+  }
+  
 }

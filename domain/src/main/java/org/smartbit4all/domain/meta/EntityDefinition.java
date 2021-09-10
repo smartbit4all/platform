@@ -35,16 +35,10 @@ import org.smartbit4all.core.utility.StringConstant;
  *
  */
 public interface EntityDefinition extends SB4Service {
-  
+
   public static final String PROPERTY_COUNT_NAME = "countRows";
 
   public static class TableDefinition {
-    /**
-     * The databases usually defines schemas. They can have different level of support but anyway
-     * from the perspective of an SQL select they are namespaces. So if we know this namespace then
-     * we have to use it to construct the qualified name of a table.
-     */
-    private final String schema;
 
     /**
      * The name of the table that is used in the SQL statement. Be careful with the case of this
@@ -59,13 +53,8 @@ public interface EntityDefinition extends SB4Service {
      * @param schema The database schema.
      * @param name The name of the table.
      */
-    public TableDefinition(String schema, String name) {
-      this.schema = schema;
+    public TableDefinition(String name) {
       this.name = name;
-    }
-
-    public String getSchema() {
-      return schema;
     }
 
     public String getName() {
