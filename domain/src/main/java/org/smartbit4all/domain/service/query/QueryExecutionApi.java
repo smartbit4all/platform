@@ -23,4 +23,6 @@ public interface QueryExecutionApi {
    */
   <E extends EntityDefinition> QueryOutput execute(QueryInput queryInput) throws Exception;
 
+  String getSchema();
+
 }

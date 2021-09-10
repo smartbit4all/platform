@@ -102,7 +102,9 @@ final class SQLQueryExecution {
 
   final QueryOutput queryOutput;
 
-  public SQLQueryExecution(JdbcTemplate jdbcTemplate, QueryInput query) {
+  private String schema;
+  
+  public SQLQueryExecution(JdbcTemplate jdbcTemplate, QueryInput query, String schema) {
     super();
     this.jdbcTemplate = jdbcTemplate;
     this.queryInput = query;
@@ -111,7 +113,7 @@ final class SQLQueryExecution {
     select = new SQLSelectStatement();
     aliasIndex = 1;
     columnIndex = 1;
-
+    this.schema = schema;
   }
 
   /**
@@ -123,7 +125,7 @@ final class SQLQueryExecution {
   public void execute() throws Exception {
     // That time the entity is based on a table.
     TableDefinition table = queryInput.entityDef().tableDefinition();
-    SQLTableNode tableNode = new SQLTableNode(table.getSchema(), table.getName());
+    SQLTableNode tableNode = new SQLTableNode(schema, table.getName());
     SQLSelectFromTableNode rootTable = new SQLSelectFromTableNode(tableNode, nextTableAlias());
     // This map must be a list based map to preserve the order.
     Map<String, Property<?>> columnMap = new HashMap<>();
@@ -321,7 +323,7 @@ final class SQLQueryExecution {
         if (join == null) {
           // Create the target table in the select.
           TableDefinition tableDef = reference.getTarget().tableDefinition();
-          SQLTableNode targetTable = new SQLTableNode(tableDef.getSchema(), tableDef.getName());
+          SQLTableNode targetTable = new SQLTableNode(schema, tableDef.getName());
           SQLSelectFromTableNode target = new SQLSelectFromTableNode(targetTable, nextTableAlias());
           join = new SQLSelectJoin(currentTable, target, !reference.isMandatory());
           join.setReferenceName(reference.getName());

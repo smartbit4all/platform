@@ -57,6 +57,7 @@ import org.smartbit4all.domain.meta.PropertySqlComputed;
 import org.smartbit4all.domain.utility.CompositeValue;
 import org.smartbit4all.domain.utility.SupportedDatabase;
 import org.springframework.util.Assert;
+import com.google.common.base.Strings;
 import com.google.common.io.ByteStreams;
 
 /**
@@ -914,7 +915,7 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
 
   @Override
   public void append(SQLTableNode table) {
-    if (table.schema != null) {
+    if (!Strings.isNullOrEmpty(table.schema)) {
       b.append(table.schema);
       b.append(StringConstant.DOT);
     }

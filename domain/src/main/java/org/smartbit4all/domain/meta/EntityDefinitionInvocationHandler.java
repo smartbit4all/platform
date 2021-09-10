@@ -287,20 +287,16 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
 
   private TableDefinition createTableDefinition() {
     String tableName = null;
-    String schema = null;
     if (entityDefClazz.isAnnotationPresent(Table.class)) {
       Table table = entityDefClazz.getAnnotation(Table.class);
       tableName = table.value();
-      if (!table.schema().isEmpty()) {
-        schema = table.schema();
-      }
     } else {
       tableName = entityDefinitionName.toUpperCase();
       if (tableName.endsWith("DEF")) {
         tableName = tableName.substring(0, tableName.length() - 3);
       }
     }
-    return new TableDefinition(schema, tableName);
+    return new TableDefinition(tableName);
   }
 
   @Override

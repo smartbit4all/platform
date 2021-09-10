@@ -14,6 +14,8 @@
  ******************************************************************************/
 package org.smartbit4all.domain.service.query;
 
+import org.smartbit4all.domain.meta.EntityDefinition;
+
 /**
  * This API is responsible for executing query against the current application setup. In a simple
  * application there can a be an SQL level implementation. But in a complex application there can be
@@ -66,5 +68,7 @@ public interface QueryApi {
    * @throws Exception
    */
   Retrieval execute(Retrieval retrieval) throws Exception;
+
+  String getSchema(EntityDefinition entityDef);
 
 }
