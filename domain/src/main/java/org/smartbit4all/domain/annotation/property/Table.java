@@ -30,9 +30,4 @@ public @interface Table {
    */
   String value();
 
-  /**
-   * The schema of the table.
-   */
-  String schema() default "";
-
 }

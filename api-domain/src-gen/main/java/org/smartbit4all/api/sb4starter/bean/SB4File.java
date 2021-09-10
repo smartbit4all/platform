@@ -32,7 +32,6 @@ import javax.validation.Valid;
  */
 @JsonPropertyOrder({
   SB4File.ID,
-  SB4File.IDENTIFIER,
   SB4File.FILENAME
 })
 @JsonTypeName("SB4File")
@@ -40,9 +39,6 @@ import javax.validation.Valid;
 public class SB4File {
   public static final String ID = "id";
   private UUID id;
-
-  public static final String IDENTIFIER = "identifier";
-  private String identifier;
 
   public static final String FILENAME = "filename";
   private String filename;
@@ -73,33 +69,6 @@ public class SB4File {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setId(UUID id) {
     this.id = id;
-  }
-
-
-  public SB4File identifier(String identifier) {
-    
-    this.identifier = identifier;
-    return this;
-  }
-
-   /**
-   * Get identifier
-   * @return identifier
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
-  @JsonProperty(IDENTIFIER)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public String getIdentifier() {
-    return identifier;
-  }
-
-
-  @JsonProperty(IDENTIFIER)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setIdentifier(String identifier) {
-    this.identifier = identifier;
   }
 
 
@@ -140,13 +109,12 @@ public class SB4File {
     }
     SB4File sb4File = (SB4File) o;
     return Objects.equals(this.id, sb4File.id) &&
-        Objects.equals(this.identifier, sb4File.identifier) &&
         Objects.equals(this.filename, sb4File.filename);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, identifier, filename);
+    return Objects.hash(id, filename);
   }
 
   @Override
@@ -154,7 +122,6 @@ public class SB4File {
     StringBuilder sb = new StringBuilder();
     sb.append("class SB4File {\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    identifier: ").append(toIndentedString(identifier)).append("\n");
     sb.append("    filename: ").append(toIndentedString(filename)).append("\n");
     sb.append("}");
     return sb.toString();

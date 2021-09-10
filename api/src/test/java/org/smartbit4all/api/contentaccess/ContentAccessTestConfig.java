@@ -25,49 +25,48 @@ import org.springframework.context.annotation.Primary;
 
 @Configuration
 public class ContentAccessTestConfig {
-		
+
 	@Bean
-	ContentAccessApi contentAccessApi() {
-		return new ContentAccessApiImpl();
+	ContentAccessApi contentAccessApi(ObjectShareApi objectShareApi, ObjectStorage<BinaryContent> objectStorage,
+			BinaryContentApi binaryContentApi) {
+
+		return new ContentAccessApiImpl(objectShareApi, objectStorage, binaryContentApi);
 	}
-	
+
 	@Bean
 	ObjectShareApi objectShareApi() {
 		return new ObjectShareApiInMemoryImpl();
 	}
-	
+
 	@Bean
 	BinaryContentApi binaryContentApi(BinaryDataApi binaryDataApi) {
 		return new BinaryContentApiImpl(binaryDataApi);
 	}
-	
+
 	@Bean
 	@Primary
 	BinaryDataApi binaryDataApiPrimary() {
 		return new BinaryDataApiPrimary();
 	}
-	
+
 	@Bean
 	List<BinaryDataApi> binaryDataApi() {
 		return Arrays.asList(new BinaryDataApiFS(ContentAccessApi.SCHEME, getBinaryDataApiRootFolder()));
 	}
-	
-	
+
 	@Bean
-	ObjectStorage<BinaryContent> objectStorage(){
-		return new ObjectStorageInMemory<BinaryContent>(
-				binaryContent -> binaryContent.getUri(), 
-				binaryContent -> {
-					try {
-						return new URI(UUID.randomUUID().toString());
-					} catch (URISyntaxException e) {
-						return null;
-					}
-				});
+	ObjectStorage<BinaryContent> objectStorage() {
+		return new ObjectStorageInMemory<BinaryContent>(binaryContent -> binaryContent.getUri(), binaryContent -> {
+			try {
+				return new URI(UUID.randomUUID().toString());
+			} catch (URISyntaxException e) {
+				return null;
+			}
+		});
 	}
 
 	static File getBinaryDataApiRootFolder() {
-		File file =  new File("./src/test/resources/contentAccessData");
+		File file = new File("./src/test/resources/contentAccessData");
 		if (!file.exists()) {
 			try {
 				Files.createDirectory(file.toPath());
@@ -75,7 +74,7 @@ public class ContentAccessTestConfig {
 				e.printStackTrace();
 			}
 		}
-		
+
 		return file;
 	}
 }

@@ -199,8 +199,8 @@ public class QueryApiImpl implements QueryApi {
     if (config == null) {
       if (executionApisByName.size() != 1) {
         throw new IllegalStateException(
-            "There must be a QueryExecutorConfig configuraton set up when the number of "
-                + "QueryExecutionApi instances registered is not exactly one!");
+            "No QueryExecutorConfig configured. In this case, there must be only one QueryExecutionApi registered, but there is: "
+                + executionApisByName.size());
       }
       return executionApisByName.values().iterator().next();
     }
@@ -210,6 +210,12 @@ public class QueryApiImpl implements QueryApi {
             .orElseGet(() -> fromConfigExecApisByEntityUri(entityDef)
                 .orElseGet(() -> fromConfigExecApiNamesByEntityUri(entityDef)
                     .orElse(null))));
+
+    if (execApi == null) {
+      throw new IllegalStateException(
+          "There is no QueryExecutionApi configured for EntityDefinition: "
+              + entityDef.entityDefName());
+    }
 
     return execApi;
   }
@@ -315,5 +321,11 @@ public class QueryApiImpl implements QueryApi {
       round = retrieval.next();
     }
     return retrieval;
+  }
+
+  @Override
+  public String getSchema(EntityDefinition entityDef) {
+    QueryExecutionApi executionApiForEntityDef = getExecutionApiForEntityDef(entityDef);
+    return executionApiForEntityDef.getSchema();
   }
 }

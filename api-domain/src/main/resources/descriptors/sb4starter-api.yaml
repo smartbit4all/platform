@@ -57,8 +57,6 @@ components:
         id:
           type: string
           format: uuid
-        identifier:
-          type: string
         filename:
           type: string
       

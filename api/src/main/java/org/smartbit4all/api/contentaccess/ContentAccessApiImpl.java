@@ -10,18 +10,24 @@ import org.smartbit4all.api.binarydata.BinaryContentApi;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.objectshare.ObjectShareApi;
 import org.smartbit4all.domain.data.storage.ObjectStorage;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public class ContentAccessApiImpl implements ContentAccessApi{
 	
-	@Autowired
 	private ObjectShareApi objectShareApi;
 	
-	@Autowired
 	private ObjectStorage<BinaryContent> storage;
 	
-	@Autowired
 	private BinaryContentApi binaryContentApi; 
+	
+	public ContentAccessApiImpl(
+			ObjectShareApi objectShareApi, 
+			ObjectStorage<BinaryContent> storage, 
+			BinaryContentApi binaryContentApi) {
+		
+		this.objectShareApi = objectShareApi;
+		this.storage = storage;
+		this.binaryContentApi = binaryContentApi;
+	}
 	
 	@Override
 	public UUID share() throws Exception {

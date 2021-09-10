@@ -1,12 +1,13 @@
 package org.smartbit4all.api.contentaccess.restserver;
 
+import org.smartbit4all.api.contentaccess.restserver.config.ContentAccessSrvRestTestConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 
-@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT, classes = {ContentAccessSrvRestTestConfig.class})
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = {ContentAccessSrvRestTestConfig.class})
 public class ContentAccessSrvRestTest {
 	
 	@Autowired

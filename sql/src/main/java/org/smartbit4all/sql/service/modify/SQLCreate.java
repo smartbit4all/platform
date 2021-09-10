@@ -25,6 +25,7 @@ import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.EntityDefinition.TableDefinition;
 import org.smartbit4all.domain.meta.PropertyOwned;
 import org.smartbit4all.domain.service.modify.CreateImpl;
+import org.smartbit4all.domain.service.query.Queries;
 import org.smartbit4all.domain.utility.SupportedDatabase;
 import org.smartbit4all.sql.SQLBindValue;
 import org.smartbit4all.sql.SQLInsertStatement;
@@ -109,10 +110,12 @@ public class SQLCreate<E extends EntityDefinition> extends CreateImpl<E> {
 
   @Override
   public void execute() throws Exception {
+    String schema = Queries.getQueryApi().getSchema(this.entityDef);
+    
     // SQLStatementBuilderIF builder = entityDef.context().get(SQLStatementBuilderIF.class);
     SQLStatementBuilderIF builder = new SQLStatementBuilder(SupportedDatabase.ORACLE);
     TableDefinition table = entityDef.tableDefinition();
-    SQLTableNode tableNode = new SQLTableNode(table.getSchema(), table.getName());
+    SQLTableNode tableNode = new SQLTableNode(schema, table.getName());
     insert = new SQLInsertStatement(tableNode);
     List<SQLBindValue> values = new ArrayList<>();
     for (PropertyOwned<?> property : input.properties()) {

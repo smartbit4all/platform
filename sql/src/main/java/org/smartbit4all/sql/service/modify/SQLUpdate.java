@@ -25,6 +25,7 @@ import org.smartbit4all.domain.meta.Expression;
 import org.smartbit4all.domain.meta.Expression2Operand;
 import org.smartbit4all.domain.meta.PropertyOwned;
 import org.smartbit4all.domain.service.modify.UpdateImpl;
+import org.smartbit4all.domain.service.query.Queries;
 import org.smartbit4all.domain.utility.SupportedDatabase;
 import org.smartbit4all.sql.SQLBindValue;
 import org.smartbit4all.sql.SQLStatementBuilder;
@@ -61,10 +62,12 @@ public class SQLUpdate<E extends EntityDefinition> extends UpdateImpl<E> {
 
   @Override
   public void execute() throws Exception {
+    String schema = Queries.getQueryApi().getSchema(this.entityDef);
+    
     // SQLStatementBuilderIF builder = entityDef.context().get(SQLStatementBuilderIF.class);
     SQLStatementBuilderIF builder = new SQLStatementBuilder(SupportedDatabase.ORACLE);
     TableDefinition table = entityDef.tableDefinition();
-    SQLTableNode tableNode = new SQLTableNode(table.getSchema(), table.getName());
+    SQLTableNode tableNode = new SQLTableNode(schema, table.getName());
     update = new SQLUpdateStatement(tableNode);
     // First add the values and set the where to have the criterion for the update.
     Expression updateCriterion = null;

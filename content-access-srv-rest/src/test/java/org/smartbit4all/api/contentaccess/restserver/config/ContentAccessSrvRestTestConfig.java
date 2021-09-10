@@ -1,4 +1,4 @@
-package org.smartbit4all.api.contentaccess.restserver; 
+package org.smartbit4all.api.contentaccess.restserver.config; 
 
 import java.io.File;
 import java.io.IOException;
@@ -17,26 +17,35 @@ import org.smartbit4all.api.binarydata.BinaryDataApiPrimary;
 import org.smartbit4all.api.binarydata.fs.BinaryDataApiFS;
 import org.smartbit4all.api.contentaccess.ContentAccessApi;
 import org.smartbit4all.api.contentaccess.ContentAccessApiImpl;
-import org.smartbit4all.api.contentaccess.restserver.config.ContentAccessSrvRestConfig;
+import org.smartbit4all.api.contentaccess.restserver.ContentAccessApiController;
+import org.smartbit4all.api.contentaccess.restserver.ContentAccessApiDelegate;
 import org.smartbit4all.api.objectshare.ObjectShareApi;
 import org.smartbit4all.api.objectshare.ObjectShareApiInMemoryImpl;
 import org.smartbit4all.domain.data.storage.ObjectStorage;
 import org.smartbit4all.domain.data.storage.ObjectStorageInMemory;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 
 @Configuration
-@Import(ContentAccessSrvRestConfig.class)
-//TODO replace component scan
-@ComponentScan(basePackages = "org.smartbit4all.api.contentaccess.restserver")
+@Import({ContentAccessSrvRestConfig.class})
+@EnableAutoConfiguration
 public class ContentAccessSrvRestTestConfig {	
 	
 	@Bean
-	ContentAccessApi contentAccessApi() {
-		return new ContentAccessApiImpl();
+	org.smartbit4all.api.contentaccess.restserver.ContentAccessApi accessApi(ContentAccessApiDelegate accessApiDelegate) {
+		return new ContentAccessApiController(accessApiDelegate);
+	}
+	
+	@Bean
+	ContentAccessApi contentAccessApi(
+			ObjectShareApi objectShareApi,
+			ObjectStorage<BinaryContent> objectStorage,
+			BinaryContentApi binaryContentApi) throws Exception {
+		
+		return new ContentAccessApiImpl(objectShareApi, objectStorage, binaryContentApi);
 	}
 	
 	@Bean
@@ -74,7 +83,8 @@ public class ContentAccessSrvRestTestConfig {
 				});
 	}
 
-	static File getBinaryDataApiRootFolder() {
+
+	public static File getBinaryDataApiRootFolder() {
 		File file =  new File("./src/test/resources/contentAccessData");
 		if (!file.exists()) {
 			try {
