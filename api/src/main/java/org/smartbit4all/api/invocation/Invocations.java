@@ -11,6 +11,8 @@ import org.smartbit4all.api.contribution.PrimaryApi;
 public class Invocations {
 
   public static final String LOCAL = "local";
+  public static final String REST_GEN = "rest-gen";
+  public static final String EXECUTION = "execution-invocation";
 
   private Invocations() {
     super();
@@ -75,6 +77,30 @@ public class Invocations {
       }
     }
     return api;
+  }
+  
+  public static InvocationRequest getModifiedRequestToCallInnerApi(InvocationRequest request, Object apiInstance,
+      String executionApi) {
+    
+    if (apiInstance == null) {
+      throw new IllegalArgumentException(
+          "The " + request.getApiClass() + " was not found for the " + request + " request.");
+    }
+    if (request.getInnerApi() != null) {
+      if (!(PrimaryApi.class.isAssignableFrom(apiInstance.getClass()))) {
+        throw new IllegalArgumentException(
+            "The " + request.getApiClass() + " is not primary class, the " + request.getInnerApi()
+                + " inner api can not be accessed for the " + request + " request.");
+      }
+      Class<?> innerApiClass = ((PrimaryApi<?>) apiInstance).getInnerApiClass();
+      InvocationRequest modifiedRequest = request.copy();
+      modifiedRequest.setApiClass(innerApiClass);
+      modifiedRequest.setExecutionApi(executionApi);
+      modifiedRequest.setInnerApi(null);
+      
+      return modifiedRequest;
+    }
+    return request;
   }
 
   public static final InvocationRequest invoke(Class<?> apiClass) {

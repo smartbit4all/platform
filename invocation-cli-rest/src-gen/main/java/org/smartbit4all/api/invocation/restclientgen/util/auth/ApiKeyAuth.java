@@ -1,4 +1,4 @@
-package org.smartbit4all.api.invocation.restclient.util.auth;
+package org.smartbit4all.api.invocation.restclientgen.util.auth;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.util.MultiValueMap;

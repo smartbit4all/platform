@@ -27,7 +27,7 @@ class InvocationApiTest {
   StorageApi storageApi;
 
   @Test
-  void testPrimary() throws ClassNotFoundException {
+  void testPrimary() throws Exception {
     {
       String value = "Peter";
       InvocationRequest request = Invocations.invoke(TestApi.class).method("doMethod")
@@ -45,7 +45,7 @@ class InvocationApiTest {
   }
 
   @Test
-  void testInvocationByTemplate() throws ClassNotFoundException {
+  void testInvocationByTemplate() throws Exception {
     {
       String value = "Peter";
       InvocationRequest request =
@@ -83,7 +83,7 @@ class InvocationApiTest {
           try {
             result = invocationApi.invoke(request);
             callResult = result.getValue().toString();
-          } catch (ClassNotFoundException e) {
+          } catch (Exception e) {
             fail("Unable to call the " + request, e);
           }
         }));
@@ -98,9 +98,9 @@ class InvocationApiTest {
   }
 
   @Test
-  void testContribution() throws ClassNotFoundException {
+  void testContribution() throws Exception {
     {
-      String value = "Peter";
+      String value = "Peter1";
       InvocationRequest request =
           Invocations.invoke(TestPrimaryApi.class).innerApi("contributionApi1")
               .method("doSomething")
@@ -109,7 +109,7 @@ class InvocationApiTest {
       Assertions.assertEquals(value, TestContributionApiImpl.lastDoSomething);
     }
     {
-      String value = "Peter";
+      String value = "Peter2";
       InvocationRequest request =
           Invocations.invoke(TestPrimaryApi.class).innerApi("contributionApi1")
               .method("echoMethod")
@@ -127,7 +127,7 @@ class InvocationApiTest {
       Assertions.assertEquals(value, TestContributionApiImpl.lastDoSomething);
     }
     {
-      String value = "Peter";
+      String value = "Peter3";
       TestContributionApi testContributionApi = primaryApi.findApiByName("contributionApi1");
       testContributionApi.doSomething(value);
       Assertions.assertEquals(value, TestContributionApiImpl.lastDoSomething);
@@ -136,7 +136,7 @@ class InvocationApiTest {
   }
 
   @Test
-  void testRemoteRest() throws ClassNotFoundException {
+  void testRemoteRest() throws Exception {
     // String value = "Peter";
     // InvocationRequest request =
     // Invocations.invoke(TestApi.class).exec("mod-test-rest-remote").method("doMethod")

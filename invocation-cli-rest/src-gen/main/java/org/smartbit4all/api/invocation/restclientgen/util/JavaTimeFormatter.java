@@ -10,7 +10,7 @@
  * Do not edit the class manually.
  */
 
-package org.smartbit4all.api.invocation.restclient.util;
+package org.smartbit4all.api.invocation.restclientgen.util;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
