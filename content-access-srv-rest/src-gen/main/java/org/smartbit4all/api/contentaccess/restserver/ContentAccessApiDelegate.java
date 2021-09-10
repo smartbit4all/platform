@@ -1,15 +1,11 @@
 package org.smartbit4all.api.contentaccess.restserver;
 
 import java.util.UUID;
-import io.swagger.annotations.*;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -44,7 +40,7 @@ public interface ContentAccessApiDelegate {
      * @see ContentAccessApi#upload
      */
     default ResponseEntity<Void> upload(UUID uuid,
-        MultipartFile file) throws Exception {
+    		MultipartFile file) throws Exception {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 
     }

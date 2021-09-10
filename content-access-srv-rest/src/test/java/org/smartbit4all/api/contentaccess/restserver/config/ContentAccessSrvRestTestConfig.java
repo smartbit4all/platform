@@ -30,7 +30,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 
 @Configuration
-@Import(ContentAccessSrvRestConfig.class)
+@Import({ContentAccessSrvRestConfig.class})
 @EnableAutoConfiguration
 public class ContentAccessSrvRestTestConfig {	
 	
