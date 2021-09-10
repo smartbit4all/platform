@@ -43,7 +43,7 @@ public class UploadTest extends ContentAccessSrvRestTest {
 		String url = basePath() + "upload";
 		MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
 		body.add("file", new FileSystemResource("./src/test/resources/contentAccessData/lorem-ipsum.pdf"));
-		body.add("uuid", uuid);
+		body.add("uuid", uuid.toString());
 		HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body);
 
 		ResponseEntity<Void> resp = restTemplate.postForEntity(url, requestEntity, Void.class);
@@ -63,7 +63,7 @@ public class UploadTest extends ContentAccessSrvRestTest {
 		String url = basePath() + "upload";
 		MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
 		body.add("file", new FileSystemResource("./src/test/resources/contentAccessData/zero"));
-		body.add("uuid", uuid);
+		body.add("uuid", uuid.toString());
 		HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body);
 
 		ResponseEntity<Void> resp = restTemplate.postForEntity(url, requestEntity, Void.class);
