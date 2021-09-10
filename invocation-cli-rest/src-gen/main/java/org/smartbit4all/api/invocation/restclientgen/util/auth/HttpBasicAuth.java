@@ -1,4 +1,4 @@
-package org.smartbit4all.api.invocation.restclient.util.auth;
+package org.smartbit4all.api.invocation.restclientgen.util.auth;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;

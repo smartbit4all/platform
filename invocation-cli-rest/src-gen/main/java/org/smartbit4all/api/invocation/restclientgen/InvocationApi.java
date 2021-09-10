@@ -1,7 +1,4 @@
-package org.smartbit4all.api.invocation.restclient;
-
-import org.smartbit4all.api.invocation.restclient.util.ApiClient;
-
+package org.smartbit4all.api.invocation.restclientgen;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -9,7 +6,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
-
+import org.smartbit4all.api.invocation.restclientgen.util.ApiClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;

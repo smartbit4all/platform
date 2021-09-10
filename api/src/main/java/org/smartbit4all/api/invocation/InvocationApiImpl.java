@@ -30,7 +30,7 @@ public final class InvocationApiImpl implements InvocationApi, InitializingBean 
 
   @Override
   public InvocationParameter invoke(InvocationRequest request) throws Exception {
-    InvocationExecutionApi api = api(request.getExecutionApi());
+    InvocationExecutionApi api = getApi(request.getExecutionApi());
     if (api != null) {
       return api.invoke(request);
     } else {
@@ -39,7 +39,7 @@ public final class InvocationApiImpl implements InvocationApi, InitializingBean 
     }
   }
 
-  public InvocationExecutionApi api(String name) {
+  public InvocationExecutionApi getApi(String name) {
     return apiByName.get(name);
   }
   

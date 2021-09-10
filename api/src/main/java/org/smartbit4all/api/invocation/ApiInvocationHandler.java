@@ -92,6 +92,10 @@ public class ApiInvocationHandler<A, I extends ContributionApi> implements Invoc
     if (method.getDeclaringClass().equals(ApiInvocationProxy.class)) {
       return method.invoke(invocationProxy, args);
     }
+    if (method.getDeclaringClass().equals(InvocationExecutionApi.class)
+        && InvocationExecutionApi.class.isAssignableFrom(primaryApiClass)) {
+      return method.invoke(primaryApi, args);
+    }
     InvocationRequest invocation = Invocations.invoke(primaryApiClass)
         .method(method.getName())
         .exec(executionApi)

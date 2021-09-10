@@ -1,4 +1,4 @@
-package org.smartbit4all.api.invocation.restclient.util;
+package org.smartbit4all.api.invocation.restclientgen.util;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,8 +25,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.openapitools.jackson.nullable.JsonNullableModule;
-
-
+import org.smartbit4all.api.invocation.restclientgen.util.auth.Authentication;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -51,9 +50,6 @@ import java.util.Map.Entry;
 import java.util.TimeZone;
 
 import java.time.OffsetDateTime;
-
-
-import org.smartbit4all.api.invocation.restclient.util.auth.Authentication;
 
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 @Component("org.smartbit4all.api.invocation.restclient.util.ApiClient")

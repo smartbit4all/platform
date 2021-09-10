@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import org.smartbit4all.api.invocation.InvocationParameter.Kind;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.springframework.beans.BeansException;
@@ -35,7 +36,8 @@ public class InvocationExecutionApiLocal implements InvocationExecutionApi, Appl
     Object api = getApi(request);
     if (api == null) {
       // FIXME throw exception or log.warning?
-      return null;
+      throw new Exception(
+          "There is no api found that could be called with the request: " + request);
     }
     
     if(api instanceof InvocationExecutionApi) {
@@ -106,6 +108,11 @@ public class InvocationExecutionApiLocal implements InvocationExecutionApi, Appl
       Object result = method.invoke(api, parameterObjects.toArray());
       InvocationParameter invocationResult = new InvocationParameter();
       invocationResult.setValue(result);
+      invocationResult.setKind(Kind.BYVALUE);
+      if(result != null) {
+        invocationResult.setTypeClass(result.getClass().getName());
+        invocationResult.setStringValue(result.toString());
+      }
       return invocationResult;
     } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
       throw new RuntimeException("Unable to call the method for the " + request, e);
