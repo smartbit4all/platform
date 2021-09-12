@@ -12,7 +12,6 @@ import org.smartbit4all.core.utility.ListBasedMap;
 import org.smartbit4all.core.utility.ReflectionUtility;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -22,7 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * 
  * @author Peter Boros
  */
-public final class LocaleSettingApi implements InitializingBean {
+public final class LocaleSettingApi {
 
   private static final Logger log = LoggerFactory.getLogger(LocaleSettingApi.class);
 
@@ -55,6 +54,40 @@ public final class LocaleSettingApi implements InitializingBean {
    * The default locale for the locale specific Strings.
    */
   private Locale defaultLocale;
+
+  public LocaleSettingApi(List<LocaleOption> localeOptions, StorageApi storageApi) {
+    super();
+    this.localeOptions = localeOptions;
+    this.storageApi = storageApi;
+
+    initLocalOptions();
+  }
+
+  public LocaleSettingApi() {
+    this(null, null);
+  }
+
+  /**
+   * In the after property set function we discover the {@link #localeOptions} list to set up the
+   * enclosed {@link LocaleString}s.
+   * 
+   */
+  private void initLocalOptions() {
+    if (localeOptions != null) {
+      for (LocaleOption localeOption : localeOptions) {
+        analyzeLocaleStrings(localeOption);
+        Storage<LocaleSettingsRoot> storageLocale = storageApi.get(LocaleSettingsRoot.class);
+        if (storageLocale != null) {
+          LocaleResource resourceAnnotation =
+              localeOption.getClass().getAnnotation(LocaleResource.class);
+          // Load the built-in setting from the class path.
+          for (int i = 0; i < resourceAnnotation.value().length; i++) {
+            // storageLocale.load(UriUtils.formatUriHost(source) resourceAnnotation.value()[i]);
+          }
+        }
+      }
+    }
+  }
 
   /**
    * Adds a key to the registry of the Api. This function is dedicated for inner usage, don't call
@@ -141,30 +174,6 @@ public final class LocaleSettingApi implements InitializingBean {
           }
         } catch (IllegalArgumentException | IllegalAccessException e) {
           log.debug("Unable to access the value of the " + field, e);
-        }
-      }
-    }
-  }
-
-  /**
-   * In the after property set function we discover the {@link #localeOptions} list to set up the
-   * enclosed {@link LocaleString}s.
-   * 
-   * @throws Exception
-   */
-  @Override
-  public void afterPropertiesSet() throws Exception {
-    if (localeOptions != null) {
-      for (LocaleOption localeOption : localeOptions) {
-        analyzeLocaleStrings(localeOption);
-        Storage<LocaleSettingsRoot> storageLocale = storageApi.get(LocaleSettingsRoot.class);
-        if (storageLocale != null) {
-          LocaleResource resourceAnnotation =
-              localeOption.getClass().getAnnotation(LocaleResource.class);
-          // Load the built-in setting from the class path.
-          for (int i = 0; i < resourceAnnotation.value().length; i++) {
-            // storageLocale.load(UriUtils.formatUriHost(source) resourceAnnotation.value()[i]);
-          }
         }
       }
     }

@@ -72,4 +72,13 @@ public final class LocaleString {
     return get();
   }
 
+
+  /**
+   * Get the key for the given LocaleString.
+   * 
+   */
+  public String getKey() {
+    return key;
+  }
+
 }
