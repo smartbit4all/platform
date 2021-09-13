@@ -14,17 +14,24 @@ import com.vaadin.flow.component.listbox.MultiSelectListBox;
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.treegrid.TreeGrid;
+import com.vaadin.flow.data.binder.HasDataProvider;
 import com.vaadin.flow.data.binder.HasItems;
+import com.vaadin.flow.function.ValueProvider;
 
 public class VaadinHasItemsBinder<T> extends VaadinCollectionBinder<T> {
 
   private HasItems<T> list;
 
   public VaadinHasItemsBinder(HasItems<T> list, ObservableObject observableObject, String path,
-      String collectionName) {
+      String collectionName, ValueProvider<T, Object> idGetter) {
     super(observableObject, path, collectionName);
     this.list = Objects.requireNonNull(list);
-    this.list.setItems(items);
+    if (list instanceof HasDataProvider) {
+      HasDataProvider<T> hasDataProvider = (HasDataProvider<T>) list;
+      hasDataProvider.setDataProvider(new ListDataProviderWithId<T>(items, idGetter));
+    } else {
+      this.list.setItems(items);
+    }
   }
 
   @Override

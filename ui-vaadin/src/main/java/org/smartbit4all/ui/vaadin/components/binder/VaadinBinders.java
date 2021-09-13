@@ -12,6 +12,7 @@ import com.vaadin.flow.data.binder.HasItems;
 import com.vaadin.flow.data.converter.Converter;
 import com.vaadin.flow.data.selection.MultiSelect;
 import com.vaadin.flow.data.selection.SingleSelect;
+import com.vaadin.flow.function.ValueProvider;
 
 public class VaadinBinders {
 
@@ -69,8 +70,15 @@ public class VaadinBinders {
 
   public static <T> VaadinHasItemsBinder<T> bind(HasItems<T> grid, ObservableObject editing,
       String path, String collectionName) {
-    return new VaadinHasItemsBinder<>(grid, editing, path, collectionName);
+    return new VaadinHasItemsBinder<>(grid, editing, path, collectionName, v -> v);
   }
+
+  public static <T> VaadinHasItemsBinder<T> bindItemsById(HasItems<T> grid,
+      ObservableObject editing,
+      String path, String collectionName, ValueProvider<T, Object> idGetter) {
+    return new VaadinHasItemsBinder<>(grid, editing, path, collectionName, idGetter);
+  }
+
 
   public static <C extends Component, T> VaadinHasValueBinder<T, T> bindSelection(
       SingleSelect<C, T> list,
