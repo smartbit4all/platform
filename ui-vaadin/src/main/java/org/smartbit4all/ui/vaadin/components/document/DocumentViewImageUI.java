@@ -1,6 +1,5 @@
 package org.smartbit4all.ui.vaadin.components.document;
 
-import java.util.List;
 import org.smartbit4all.api.documentview.bean.ImageWithAlt;
 import org.smartbit4all.core.object.ChangeState;
 import org.smartbit4all.core.object.CollectionObjectChange;
@@ -238,7 +237,6 @@ public class DocumentViewImageUI extends FlexLayout {
   public void onThumbnailsChanged(CollectionObjectChange collectionChange) {
     int pageIndex = 0;
     thumbnailsPanel.removeAll();
-    List<ObjectChangeSimple> changes = collectionChange.getChanges();
     for (ObjectChangeSimple change : collectionChange.getChanges()) {
       Object object = change.getObject();
       if (object != null && change.getOperation().equals(ChangeState.NEW)) {
