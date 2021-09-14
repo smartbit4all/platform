@@ -1,5 +1,11 @@
 package org.smartbit4all.api.setting;
 
+import java.lang.ref.WeakReference;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.function.Consumer;
+
 /**
  * This variable is defined to have a default value and if it's set then use the UserSettingApi to
  * access the locale dependent version of the value. It works without any UserSettingApi but in this
@@ -24,6 +30,11 @@ public final class LocaleString {
   private LocaleSettingApi api;
 
   /**
+   * The consumers of the given string value.
+   */
+  List<WeakReference<Consumer<String>>> consumers = new LinkedList<>();
+
+  /**
    * Constructs a locale string with a default value.
    * 
    * @param defaultValue
@@ -31,6 +42,10 @@ public final class LocaleString {
   public LocaleString(String defaultValue) {
     super();
     this.defaultValue = defaultValue;
+  }
+
+  private final void purge() {
+    consumers.removeIf(r -> r.get() == null);
   }
 
   /**
@@ -79,6 +94,34 @@ public final class LocaleString {
    */
   public String getKey() {
     return key;
+  }
+
+  /**
+   * This function register a consumer of this locale specific string. It can be a setTitle or
+   * setLabel function. The apply itself will set the value but later on if there is any change in
+   * the locale settings then this consumer will be refreshed.
+   * 
+   * @param consumer
+   */
+  public void apply(Consumer<String> consumer) {
+    purge();
+    consumers.add(new WeakReference<Consumer<String>>(consumer));
+    consumer.accept(get());
+  }
+
+  /**
+   * Refreshes all the consumer and purge the dead references.
+   */
+  public void refresh() {
+    for (Iterator<WeakReference<Consumer<String>>> iterator = consumers.iterator(); iterator
+        .hasNext();) {
+      Consumer<String> consumer = iterator.next().get();
+      if (consumer != null) {
+        consumer.accept(get());
+      } else {
+        iterator.remove();
+      }
+    }
   }
 
 }

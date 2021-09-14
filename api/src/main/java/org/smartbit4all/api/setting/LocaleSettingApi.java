@@ -44,6 +44,8 @@ public final class LocaleSettingApi {
    */
   private final Map<String, String> sourceLiterals = new HashMap<>();
 
+  private final Map<String, LocaleString> localeStringsByQualifiedName = new HashMap<>();
+
   @Autowired(required = false)
   private List<LocaleOption> localeOptions;
 
@@ -171,6 +173,7 @@ public final class LocaleSettingApi {
             localeString.setKey(key);
             add(key,
                 localeString.getDefaultValue());
+            localeStringsByQualifiedName.put(key, localeString);
           }
         } catch (IllegalArgumentException | IllegalAccessException e) {
           log.debug("Unable to access the value of the " + field, e);
@@ -185,6 +188,9 @@ public final class LocaleSettingApi {
 
   public final void setDefaultLocale(Locale defaultLocale) {
     this.defaultLocale = defaultLocale;
+    for (LocaleString localeString : localeStringsByQualifiedName.values()) {
+      localeString.refresh();
+    }
   }
 
 }
