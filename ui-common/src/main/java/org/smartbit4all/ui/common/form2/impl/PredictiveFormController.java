@@ -7,6 +7,17 @@ import org.smartbit4all.ui.api.form.model.PredictiveInputGraphNode;
 import org.smartbit4all.ui.api.form.model.WidgetDescriptor;
 import org.smartbit4all.ui.api.form.model.WidgetInstance;
 
+
+
+/**
+ * TODO: extract data from WidgetInstances
+ * TODO: manage multiple instances as independent forms
+ * TODO: refactor as MVVM
+ * TODO: WdigetType.TABLE should set a summary for the closed table widget
+ * 
+ * @author Zsombor Nyilas
+ *
+ */
 public interface PredictiveFormController {
 
   /**
