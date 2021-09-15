@@ -9,7 +9,7 @@ import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.documentview.bean.DisplayMode;
 import org.smartbit4all.api.documentview.bean.DocumentViewProcess;
 import org.smartbit4all.api.documentview.bean.ImageWithAlt;
-import org.smartbit4all.api.mimetype.MimeTypeApi;
+import org.smartbit4all.api.mimetype.MimeTypeHandlerApi;
 import org.smartbit4all.api.mimetype.MimeTypeHandler;
 import org.smartbit4all.core.object.ApiBeanDescriptor;
 import org.smartbit4all.core.object.ApiObjectRef;
@@ -29,17 +29,17 @@ public class DocumentViewProcessEditingImpl extends ObjectEditingImpl
 
   private DocumentViewProcess processWrapper;
 
-  private MimeTypeApi mimeTypeApi;
+  private MimeTypeHandlerApi mimeTypeHandlerApi;
 
   private int actualPageIndex = 0;
   private int actualPageWidth;
   private List<BinaryData> images = new ArrayList<>();
 
   public DocumentViewProcessEditingImpl(Map<Class<?>, ApiBeanDescriptor> documentViewDescriptor,
-      MimeTypeApi mimeTypeApi) {
+      MimeTypeHandlerApi mimeTypeHandlerApi) {
     super();
     this.documentViewDescriptor = documentViewDescriptor;
-    this.mimeTypeApi = mimeTypeApi;
+    this.mimeTypeHandlerApi = mimeTypeHandlerApi;
     this.publisher = new ObservableObjectImpl();
 
     initDocumentViewProcess();
@@ -58,7 +58,7 @@ public class DocumentViewProcessEditingImpl extends ObjectEditingImpl
   }
 
   /**
-   * With the help of {@link MimeTypeApi} decides whether the document with the certain format can
+   * With the help of {@link MimeTypeHandlerApi} decides whether the document with the certain format can
    * be displayed or not, and what type of display is required, according to that, converts the
    * content into image(s) or text, which will be displayed in the attached UI. If the document
    * consists of more than one page, it also displays every page as small images (thumbnails) next
@@ -66,7 +66,7 @@ public class DocumentViewProcessEditingImpl extends ObjectEditingImpl
    */
   @Override
   public synchronized void setDocument(BinaryData document, URI uri, String mimeType) {
-    MimeTypeHandler handler = mimeTypeApi.getHandler(mimeType);
+    MimeTypeHandler handler = mimeTypeHandlerApi.getHandler(mimeType);
     if (handler == null) {
       showMessage("Nem tartozik előnézet a kiválasztott dokumentum formátumhoz!");
     } else {

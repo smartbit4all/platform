@@ -8,6 +8,7 @@ import org.smartbit4all.api.documentview.bean.DocumentViewProcess;
 import org.smartbit4all.api.documentview.bean.ImageWithAlt;
 import org.smartbit4all.api.mimetype.MimeTypeApi;
 import org.smartbit4all.api.mimetype.MimeTypeHandler;
+import org.smartbit4all.api.mimetype.MimeTypeHandlerApi;
 import org.smartbit4all.api.mimetype.MimeTypeHandlerImage;
 import org.smartbit4all.api.mimetype.MimeTypeHandlerText;
 import org.smartbit4all.core.object.ApiBeanDescriptor;
@@ -21,8 +22,8 @@ public class DocumentViewerConfig {
   
   @Bean
   @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-  public DocumentViewProcessEditing documentViewProcessEditing(MimeTypeApi mimeTypeApi) {
-    return new DocumentViewProcessEditingImpl(createDocumentViewDescriptor(), mimeTypeApi());
+  public DocumentViewProcessEditing documentViewProcessEditing(MimeTypeHandlerApi mimeTypeHandlerApi) {
+    return new DocumentViewProcessEditingImpl(createDocumentViewDescriptor(), mimeTypeHandlerApi);
   }
 
   private Map<Class<?>, ApiBeanDescriptor> createDocumentViewDescriptor() {
@@ -34,10 +35,15 @@ public class DocumentViewerConfig {
 
     return ApiBeanDescriptor.of(processDomainBeans);
   }
-
+  
   @Bean
   MimeTypeApi mimeTypeApi() {
     return new MimeTypeApi();
+  }
+
+  @Bean
+  MimeTypeHandlerApi mimeTypeHandlerApi() {
+    return new MimeTypeHandlerApi();
   }
 
   @Bean

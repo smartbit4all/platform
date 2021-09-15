@@ -33,6 +33,12 @@ class LocaleSettingApiOptionTest {
   @AfterAll
   static void tearDownAfterClass() throws Exception {}
 
+  private String text;
+
+  void setText(String text) {
+    this.text = text;
+  }
+
   @Test
   void testLiteralTranslationOnly() {
 
@@ -43,13 +49,18 @@ class LocaleSettingApiOptionTest {
 
     localeSettings.setDefaultLocale(hu);
 
+    MyModuleLocale.apple.apply(this::setText);
+
     // We must find the hungarian translation for both entry.
     assertEquals("alma", MyModuleLocale.apple.get());
+
+    assertEquals("alma", text);
 
     localeSettings.setDefaultLocale(fr);
 
     // We must find the hungarian translation for both entry.
     assertEquals("pomme", MyModuleLocale.apple.get());
+    assertEquals("pomme", text);
 
   }
 

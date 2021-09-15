@@ -6,13 +6,12 @@ import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.documentview.bean.DisplayMode;
-import com.google.common.net.MediaType;
 
 public class MimeTypeHandlerImage implements MimeTypeHandler {
 
   private final List<String> ACCEPTED_MIMETYPES =
-      new ArrayList<>(Arrays.asList(MediaType.PNG.toString(), MediaType.JPEG.toString(),
-          MediaType.GIF.toString()));
+      new ArrayList<>(Arrays.asList(MimeTypeApi.PNG_MIMETYPE, MimeTypeApi.JPEG_MIMETYPE,
+          MimeTypeApi.GIF_MIMETYPE));
 
   private DisplayMode displayMode;
 

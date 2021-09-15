@@ -66,7 +66,7 @@ public class DocumentViewUI extends FlexLayout {
     Object object = propertyChange.getNewValue();
     if (object != null) {
       String newMessage = (String) object;
-      Label messageLabel = new Label(getTranslation(newMessage));
+      Label messageLabel = new Label(newMessage);
       messageLabel.getStyle().set("margin", "auto");
       messagePanel = new HorizontalLayout(messageLabel);
       messagePanel.setSizeFull();

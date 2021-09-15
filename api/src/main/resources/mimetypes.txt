@@ -1,0 +1,9 @@
+text/plain txt text TXT TEXT
+text/html html htm HTML HTM
+
+image/png png PNG
+image/jpeg jpeg jpg jpe JPG
+image/gif gif GIF
+
+application/pdf pdf
+application/vnd.openxmlformats-officedocument.wordprocessingml.document docx

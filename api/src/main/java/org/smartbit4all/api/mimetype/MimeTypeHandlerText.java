@@ -9,12 +9,11 @@ import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.documentview.bean.DisplayMode;
-import com.google.common.net.MediaType;
 
 public class MimeTypeHandlerText implements MimeTypeHandler {
 
   private final List<String> ACCEPTED_MIMETYPES = new ArrayList<>(
-      Arrays.asList(MediaType.PLAIN_TEXT_UTF_8.toString(), MediaType.HTML_UTF_8.toString()));
+      Arrays.asList(MimeTypeApi.TXT_MIMETYPE, MimeTypeApi.HTML_MIMETYPE));
 
   private DisplayMode displayMode;
 

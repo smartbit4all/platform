@@ -139,7 +139,6 @@ public class CompositeObjects {
   }
 
   public static ConfigBuilder createNavigationConfig(
-      URI compositeDefUri,
       Storage<CompositeObjectDef> compositeDefStorage,
       Storage<ComposeableObjectDef> compObjDefStorage) throws Exception {
 
