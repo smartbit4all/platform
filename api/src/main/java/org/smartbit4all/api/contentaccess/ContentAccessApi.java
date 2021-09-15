@@ -4,10 +4,16 @@ import java.util.UUID;
 
 import org.smartbit4all.api.binarydata.BinaryContent;
 import org.smartbit4all.api.binarydata.BinaryData;
+import org.smartbit4all.api.contentaccess.bean.ContentAccessEventData;
+
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.functions.Consumer;
 
 public interface ContentAccessApi {
 	
 	public static final String SCHEME = "ContentAccessApi";
+	
+  Disposable subscribeToContentAccessEvent(UUID uuid, Consumer<ContentAccessEventData> handler);
 	
 	/**
 	 * Creates a UUID for the given binaryContent.
