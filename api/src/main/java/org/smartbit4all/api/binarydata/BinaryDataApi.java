@@ -16,4 +16,9 @@ public interface BinaryDataApi {
   Optional<BinaryData> load(URI dataUri);
 
   String name();
+
+  /**
+   * Remove the BinaryData with the given URI.
+   */
+  void remove(URI dataUri);
 }

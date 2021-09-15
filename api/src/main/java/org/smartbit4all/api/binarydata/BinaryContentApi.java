@@ -59,5 +59,12 @@ public interface BinaryContentApi {
    * @return
    */
   void uploadContent(BinaryContent binaryContent, BinaryData data, URI dataUri);
+  
+  /**
+   * Remove the BinaryData from the BinaryContent.
+   * 
+   * @param binaryContent The BinaryContent which data will be removed
+   */
+  void removeContent(BinaryContent binaryContent);
 
 }
