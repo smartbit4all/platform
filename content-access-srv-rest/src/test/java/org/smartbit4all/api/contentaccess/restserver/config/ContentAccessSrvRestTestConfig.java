@@ -17,8 +17,6 @@ import org.smartbit4all.api.binarydata.BinaryDataApiPrimary;
 import org.smartbit4all.api.binarydata.fs.BinaryDataApiFS;
 import org.smartbit4all.api.contentaccess.ContentAccessApi;
 import org.smartbit4all.api.contentaccess.ContentAccessApiImpl;
-import org.smartbit4all.api.contentaccess.restserver.ContentAccessApiController;
-import org.smartbit4all.api.contentaccess.restserver.ContentAccessApiDelegate;
 import org.smartbit4all.api.objectshare.ObjectShareApi;
 import org.smartbit4all.api.objectshare.ObjectShareApiInMemoryImpl;
 import org.smartbit4all.domain.data.storage.ObjectStorage;
@@ -34,10 +32,6 @@ import org.springframework.context.annotation.Primary;
 @EnableAutoConfiguration
 public class ContentAccessSrvRestTestConfig {	
 	
-	@Bean
-	org.smartbit4all.api.contentaccess.restserver.ContentAccessApi accessApi(ContentAccessApiDelegate accessApiDelegate) {
-		return new ContentAccessApiController(accessApiDelegate);
-	}
 	
 	@Bean
 	ContentAccessApi contentAccessApi(

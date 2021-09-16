@@ -19,6 +19,7 @@ smartbit4all {
         "FilterOperation" : "org.smartbit4all.api.filter.bean.FilterOperation",
         "LocalDateTime": "java.time.LocalDateTime",
         "BinaryData": "org.smartbit4all.api.binarydata.BinaryData",
+        "BinaryContent": "org.smartbit4all.api.binarydata.BinaryContent",
         "Double": "java.lang.Double"
       ]
   }

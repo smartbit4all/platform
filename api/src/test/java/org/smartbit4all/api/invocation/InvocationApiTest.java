@@ -2,10 +2,12 @@ package org.smartbit4all.api.invocation;
 
 import static org.assertj.core.api.Assertions.fail;
 import java.net.URI;
+import java.util.UUID;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.api.invocation.bean.InvocationRequestTemplate;
 import org.smartbit4all.api.invocation.bean.TestDataBean;
+import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.storage.ObjectReferenceRequest;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
@@ -133,6 +135,111 @@ class InvocationApiTest {
       Assertions.assertEquals(value, TestContributionApiImpl.lastDoSomething);
       Assertions.assertEquals(value, testContributionApi.echoMethod(value));
     }
+  }
+
+  private String text;
+
+  void setText(String text) {
+    this.text = text;
+  }
+
+  @Test
+  void testInvokeApiInstanceLambda() throws Exception {
+
+    text = StringConstant.EMPTY;
+    TextConsumer textConsumer = this::setText;
+
+    UUID uuid = invocationApi.register(textConsumer);
+    String value = "apple";
+    InvocationRequest request =
+        Invocations.invoke(uuid).addParameter("text", value, String.class.getName());
+    invocationApi.invoke(request);
+    Assertions.assertEquals(value, text);
+
+  }
+
+  @Test
+  void testInvokeApiInstanceInline() throws Exception {
+
+    text = StringConstant.EMPTY;
+    TextConsumer textConsumer = s -> setText(s);
+
+    UUID uuid = invocationApi.register(textConsumer);
+    String value = "apple";
+    InvocationRequest request =
+        Invocations.invoke(uuid).addParameter("text", value, String.class.getName());
+    invocationApi.invoke(request);
+    Assertions.assertEquals(value, text);
+
+  }
+
+  @Test
+  void testInvokeApiInstanceAnonym() throws Exception {
+
+    text = StringConstant.EMPTY;
+    TextConsumer textConsumer = new TextConsumer() {
+
+      @Override
+      public void setText(String text) {
+        InvocationApiTest.this.setText(text);
+      }
+    };
+
+    UUID uuid = invocationApi.register(textConsumer);
+    String value = "apple";
+    InvocationRequest request =
+        Invocations.invoke(uuid).addParameter("text", value, String.class.getName());
+    invocationApi.invoke(request);
+    Assertions.assertEquals(value, text);
+
+  }
+
+  @Test
+  void testInvokeApiInstanceIF() throws Exception {
+
+    text = StringConstant.EMPTY;
+    ApiInstanceIF apiInstance = new ApiInstanceIF() {
+
+      @Override
+      public void setText(String text) {
+        InvocationApiTest.this.setText(text);
+      }
+
+      @Override
+      public String getText() {
+        return text;
+      }
+
+      @Override
+      public void clearText() {
+        text = StringConstant.EMPTY;
+      }
+    };
+
+    UUID uuid = invocationApi.register(apiInstance);
+    String value = "apple";
+    {
+      InvocationRequest request =
+          Invocations.invoke(uuid).method("setText").addParameter("text", value,
+              String.class.getName());
+      invocationApi.invoke(request);
+    }
+    Assertions.assertEquals(value, text);
+    {
+      String getTextResult;
+      InvocationRequest request =
+          Invocations.invoke(uuid).method("getText");
+      InvocationParameter result = invocationApi.invoke(request);
+      getTextResult = result.getStringValue();
+      Assertions.assertEquals(getTextResult, text);
+    }
+    {
+      InvocationRequest request =
+          Invocations.invoke(uuid).method("clearText");
+      invocationApi.invoke(request);
+      Assertions.assertEquals(StringConstant.EMPTY, text);
+    }
+
   }
 
   @Test

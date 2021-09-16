@@ -1,6 +1,7 @@
 package org.smartbit4all.api.invocation;
 
 import java.lang.reflect.Method;
+import java.util.UUID;
 import org.smartbit4all.api.contribution.PrimaryApi;
 
 /**
@@ -43,7 +44,30 @@ public class Invocations {
       }
     }
     try {
-      return clazz.getMethod(request.getMethodName(), parameterArray);
+      if (request.getMethodName() != null) {
+        return clazz.getMethod(request.getMethodName(), parameterArray);
+      } else {
+        // Try to identify the method by it's parameters.
+        Method[] methods = clazz.getMethods();
+        for (Method method : methods) {
+          // Check the parameter types.
+          Class<?>[] parameterTypes = method.getParameterTypes();
+          int i = 0;
+          boolean matching = true;
+          for (Class<?> methodParamType : parameterTypes) {
+            Class<?> parameterType = parameterArray[i];
+            if (!methodParamType.equals(parameterType)) {
+              matching = false;
+              break;
+            }
+          }
+          // In this way we can identify the method of the lambdas also.
+          if (matching && !Object.class.equals(method.getDeclaringClass())) {
+            return method;
+          }
+        }
+        throw new UnsupportedOperationException("The method is not accessible for the " + request);
+      }
     } catch (NoSuchMethodException | SecurityException e) {
       throw new UnsupportedOperationException("The method is not accessible for the " + request, e);
     }
@@ -78,10 +102,11 @@ public class Invocations {
     }
     return api;
   }
-  
-  public static InvocationRequest getModifiedRequestToCallInnerApi(InvocationRequest request, Object apiInstance,
+
+  public static InvocationRequest getModifiedRequestToCallInnerApi(InvocationRequest request,
+      Object apiInstance,
       String executionApi) {
-    
+
     if (apiInstance == null) {
       throw new IllegalArgumentException(
           "The " + request.getApiClass() + " was not found for the " + request + " request.");
@@ -97,7 +122,7 @@ public class Invocations {
       modifiedRequest.setApiClass(innerApiClass);
       modifiedRequest.setExecutionApi(executionApi);
       modifiedRequest.setInnerApi(null);
-      
+
       return modifiedRequest;
     }
     return request;
@@ -107,4 +132,7 @@ public class Invocations {
     return new InvocationRequest(apiClass);
   }
 
+  public static final InvocationRequest invoke(UUID apiInstanceId) {
+    return new InvocationRequest(apiInstanceId);
+  }
 }

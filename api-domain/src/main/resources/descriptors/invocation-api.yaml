@@ -30,6 +30,7 @@ components:
           description: 'The fully qualified name of the api. In case of java it is the name of the class.'
         apiInstanceId:
           type: string
+          format: uuid
           description: The unique identifier for the api instance. If it is set then the execution will be routed to the given instance.
         innerApi:
           type: string

@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import org.smartbit4all.api.binarydata.BinaryData;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -47,6 +46,12 @@ public class BinaryDataApiPrimary extends BinaryDataApiImpl implements Initializ
   public Optional<BinaryData> load(URI dataUri) {
     BinaryDataApi api = api(dataUri);
     return api.load(dataUri);
+  }
+
+  @Override
+  public void remove(URI dataUri) {
+    BinaryDataApi api = api(dataUri);
+    api.remove(dataUri);
   }
 
 }

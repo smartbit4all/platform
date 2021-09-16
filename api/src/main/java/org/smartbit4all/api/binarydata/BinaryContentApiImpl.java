@@ -84,4 +84,17 @@ public class BinaryContentApiImpl implements BinaryContentApi {
     unwrappedBinaryContent.setLoaded(true);
     unwrappedBinaryContent.setSaveData(saveData);
   }
+
+  @Override
+  public void removeContent(BinaryContent binaryContent) {
+    binaryDataApi.remove(binaryContent.getDataUri());
+    
+    BinaryContent unwrappedBinaryContent = ApiObjectRef.unwrapObject(binaryContent);
+    binaryContent.setDataUri(null);
+    binaryContent.setSize(null);
+    
+    unwrappedBinaryContent.setLoaded(false);
+    unwrappedBinaryContent.setSaveData(false);
+    unwrappedBinaryContent.setData(null);
+  }
 }

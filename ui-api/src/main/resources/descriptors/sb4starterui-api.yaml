@@ -1,0 +1,29 @@
+openapi: 3.0.1
+info:
+  title: sb4starter ui api
+  description: sb4starter ui api
+  termsOfService: ''
+  contact:
+    email: info@it4all.hu
+  version: 1.0.0
+tags:
+- name: SB4StarterUIApi
+paths: {}
+components:
+  schemas:
+    SB4StarterWordFormModel:
+      type: object
+      properties:
+        state:
+          $ref: '#/components/schemas/SB4StarterWordState'
+        startContent:
+          type: BinaryContent
+        resultContent:
+          type: BinaryContent
+    
+    SB4StarterWordState:
+      type: string
+      enum:
+      - Download
+      - Edit
+      - Uploaded

@@ -1,0 +1,29 @@
+openapi: 3.0.1
+info:
+  title: content access api
+  description: content access api
+  termsOfService: ''
+  contact:
+    email: info@it4all.hu
+  version: 1.0.0
+tags:
+- name: ContentAccessApi
+paths: {}
+components:
+  schemas:
+    ContentAccessEventData:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        binaryContent:
+          type: BinaryContent
+        direction:
+          $ref: '#/components/schemas/Direction'
+    
+    Direction:
+      type: string
+      enum:
+      - Download
+      - Upload

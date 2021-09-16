@@ -18,36 +18,52 @@ import org.springframework.context.ApplicationContextAware;
  * 
  * @author Peter Boros
  */
-public class InvocationExecutionApiLocal implements InvocationExecutionApi, ApplicationContextAware {
+public class InvocationExecutionApiLocal extends InvocationExecutionApiImpl
+    implements ApplicationContextAware {
+
+  public InvocationExecutionApiLocal() {
+    super(Invocations.LOCAL);
+  }
 
   protected ApplicationContext appContext;
 
   @Autowired
   protected StorageApi storageApi;
-  
-  @Override
-  public String getName() {
-    return Invocations.LOCAL;
-  }
 
   @Override
   public InvocationParameter invoke(InvocationRequest request) throws Exception {
 
-    Object api = getApi(request);
-    if (api == null) {
-      // FIXME throw exception or log.warning?
-      throw new Exception(
-          "There is no api found that could be called with the request: " + request);
+    Object api;
+    if (request.getApiInstanceId() != null) {
+      // We have an instance call. We need the api object instance first.
+      api = getInvocationApi().find(request.getApiInstanceId());
+      if (api == null) {
+        throw new Exception(
+            "The API instance referred by the request is not registered or available any more: "
+                + request);
+      }
+      // If we have method name then we call the method. If it's a functional interface then we call
+      // the "accept".
+
+    } else {
+
+      api = getApi(request);
+      if (api == null) {
+        // FIXME throw exception or log.warning?
+        throw new Exception(
+            "There is no api found that could be called with the request: " + request);
+      }
+
+      if (api instanceof InvocationExecutionApi) {
+        // when the api itself an InvocationExecutionApi, delegate the call.
+        return ((InvocationExecutionApi) api).invoke(request);
+      }
+
     }
-    
-    if(api instanceof InvocationExecutionApi) {
-      // when the api itself an InvocationExecutionApi, delegate the call.
-      return ((InvocationExecutionApi) api).invoke(request);
-    }
-    
-    Method method = getMethod(request, api);
+    Method method = Invocations.getMethodToCall(api, request);
+
     List<Object> parameterObjects = getParameterObjects(request, method);
-    
+
     return invokeMethod(request, api, method, parameterObjects);
 
   }
@@ -55,23 +71,18 @@ public class InvocationExecutionApiLocal implements InvocationExecutionApi, Appl
   protected Object getApi(InvocationRequest request) throws Exception {
     // Get the primary api in a Spring specific way. The rest of the call is not Spring aware.
     Object apiInstance = appContext.getBean(request.getApiClass());
-    
+
     Object api = Invocations.getApiToCall(request.getApiClass(), apiInstance, request);
     if (api == null) {
       return null;
     }
-    
+
     // If we have a Proxy with ApiInvocationHandler then we need the original api reference to call
     // it directly.
     if (api instanceof ApiInvocationProxy) {
       api = ((ApiInvocationProxy) api).getOriginalApi();
     }
     return api;
-  }
-
-  protected Method getMethod(InvocationRequest request, Object api) {
-    Method method = Invocations.getMethodToCall(api, request);
-    return method;
   }
 
   protected List<Object> getParameterObjects(InvocationRequest request, Method method) {
@@ -109,7 +120,7 @@ public class InvocationExecutionApiLocal implements InvocationExecutionApi, Appl
       InvocationParameter invocationResult = new InvocationParameter();
       invocationResult.setValue(result);
       invocationResult.setKind(Kind.BYVALUE);
-      if(result != null) {
+      if (result != null) {
         invocationResult.setTypeClass(result.getClass().getName());
         invocationResult.setStringValue(result.toString());
       }

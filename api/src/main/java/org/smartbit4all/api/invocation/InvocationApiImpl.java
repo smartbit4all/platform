@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.WeakHashMap;
 import org.smartbit4all.api.invocation.bean.InvocationRequestTemplate;
 import org.smartbit4all.api.invocation.registration.ApiRegister;
 import org.smartbit4all.api.invocation.registration.ApiRegistrationListenerImpl;
@@ -30,11 +32,16 @@ public final class InvocationApiImpl implements InvocationApi, InitializingBean 
    */
   @Autowired(required = false)
   List<InvocationExecutionApi> apis;
-  
+
   @Autowired(required = false)
   ApiRegister apiRegister;
 
   Map<String, InvocationExecutionApi> apiByName = new HashMap<>();
+
+  /**
+   * The {@link #register(Object)} function puts here the instances by a generated UUID.
+   */
+  Map<UUID, Object> instancesByUUID = new WeakHashMap<>();
 
   @Override
   public InvocationParameter invoke(InvocationRequest request) throws Exception {
@@ -50,7 +57,7 @@ public final class InvocationApiImpl implements InvocationApi, InitializingBean 
   public InvocationExecutionApi getApi(String name) {
     return apiByName.get(name);
   }
-  
+
   private void addApi(String name, InvocationExecutionApi api) {
     apiByName.put(name, api);
   }
@@ -61,6 +68,9 @@ public final class InvocationApiImpl implements InvocationApi, InitializingBean 
     if (apis != null) {
       for (InvocationExecutionApi executionApi : apis) {
         apiByName.put(executionApi.getName(), executionApi);
+        if (executionApi instanceof InvocationExecutionApiImpl) {
+          ((InvocationExecutionApiImpl) executionApi).setInvocationApi(this);
+        }
       }
     }
     if (apiRegister != null) {
@@ -104,6 +114,21 @@ public final class InvocationApiImpl implements InvocationApi, InitializingBean 
       new RuntimeException("Unable to load " + templateUri + " request template.", e);
     }
     return result.get();
+  }
+
+  @Override
+  public UUID register(Object apiInstance) {
+    if (apiInstance == null) {
+      return null;
+    }
+    UUID result = UUID.randomUUID();
+    instancesByUUID.put(result, apiInstance);
+    return result;
+  }
+
+  @Override
+  public Object find(UUID instanceId) {
+    return instancesByUUID.get(instanceId);
   }
 
 }
