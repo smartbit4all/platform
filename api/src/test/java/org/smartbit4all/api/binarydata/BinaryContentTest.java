@@ -209,4 +209,22 @@ public class BinaryContentTest {
     assertTrue(contentWrapper.isLoaded());
     assertNotNull(contentWrapper.getSize());
   }
+  
+  @Test
+  void removeDataFromBinaryContentTest() {
+    BinaryContent binaryContent = new BinaryContent().dataUri(testFileDataURI);
+    binaryContentApi.uploadContent(binaryContent, testFile, testFileDataURI);
+    
+    binaryContentApi.removeContent(binaryContent);
+
+    Optional<BinaryData> binaryData = binaryDataApi.load(binaryContent.getDataUri());
+    assertFalse(binaryData.isPresent());
+    
+    assertThrows(IllegalStateException.class, () -> binaryContentApi.load(binaryContent));
+    assertFalse(binaryContent.isSaveData());
+    assertFalse(binaryContent.isLoaded());
+    assertNull(binaryContent.getDataUri());
+    assertNull(binaryContent.getData());
+    assertNull(binaryContent.getSize());
+  }
 }

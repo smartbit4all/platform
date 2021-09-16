@@ -47,6 +47,11 @@ public class InvocationRequest {
   private String apiClassName;
 
   /**
+   * The unique identifier of the API instance.
+   */
+  private UUID apiInstanceId;
+
+  /**
    * The inner {@link ContributionApi}.
    */
   private String innerApi;
@@ -70,6 +75,12 @@ public class InvocationRequest {
   public InvocationRequest(Class<?> apiClass) {
     super();
     setApiClass(apiClass);
+    uuid = UUID.randomUUID();
+  }
+
+  public InvocationRequest(UUID apiInstanceId) {
+    super();
+    setApiInstanceId(apiInstanceId);
     uuid = UUID.randomUUID();
   }
 
@@ -133,7 +144,7 @@ public class InvocationRequest {
       String typeClass) {
     return addParameter(name, InvocationParameter.Kind.BYVALUE, value, typeClass);
   }
-  
+
   /**
    * Adds a new by value parameter to the invocation.
    * 
@@ -153,9 +164,9 @@ public class InvocationRequest {
     parameter.setValue(value);
     return this;
   }
-  
+
   private InvocationRequest() {
-    
+
   }
 
   public final Class<?> getApiClass() {
@@ -222,7 +233,7 @@ public class InvocationRequest {
   public final String getApiClassName() {
     return apiClassName;
   }
-  
+
   public InvocationRequest copy() {
     InvocationRequest copyRequest = new InvocationRequest();
     copyRequest.apiClass = this.apiClass;
@@ -243,7 +254,13 @@ public class InvocationRequest {
         + apiClassName + ", innerApi=" + innerApi + ", methodName=" + methodName + ", executionApi="
         + executionApi + ", parameters=" + parameters + "]";
   }
-  
-  
+
+  public final UUID getApiInstanceId() {
+    return apiInstanceId;
+  }
+
+  public final void setApiInstanceId(UUID apiInstanceId) {
+    this.apiInstanceId = apiInstanceId;
+  }
 
 }

@@ -31,4 +31,9 @@ public class BinaryDataApiFS extends BinaryDataApiImpl {
     return Optional.of(binaryData);
   }
 
+  @Override
+  public void remove(URI dataUri) {
+    FileIO.delete(rootFolder, dataUri);
+  }
+
 }

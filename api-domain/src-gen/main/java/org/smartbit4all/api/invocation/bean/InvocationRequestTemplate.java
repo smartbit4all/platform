@@ -24,6 +24,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import org.smartbit4all.api.invocation.bean.InvocationParameterTemplate;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import javax.validation.constraints.*;
@@ -50,7 +51,7 @@ public class InvocationRequestTemplate {
   private String apiClass;
 
   public static final String API_INSTANCE_ID = "apiInstanceId";
-  private String apiInstanceId;
+  private UUID apiInstanceId;
 
   public static final String INNER_API = "innerApi";
   private String innerApi;
@@ -116,7 +117,7 @@ public class InvocationRequestTemplate {
   }
 
 
-  public InvocationRequestTemplate apiInstanceId(String apiInstanceId) {
+  public InvocationRequestTemplate apiInstanceId(UUID apiInstanceId) {
     
     this.apiInstanceId = apiInstanceId;
     return this;
@@ -127,18 +128,19 @@ public class InvocationRequestTemplate {
    * @return apiInstanceId
   **/
   @javax.annotation.Nullable
+  @Valid
   @ApiModelProperty(value = "The unique identifier for the api instance. If it is set then the execution will be routed to the given instance.")
   @JsonProperty(API_INSTANCE_ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public String getApiInstanceId() {
+  public UUID getApiInstanceId() {
     return apiInstanceId;
   }
 
 
   @JsonProperty(API_INSTANCE_ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setApiInstanceId(String apiInstanceId) {
+  public void setApiInstanceId(UUID apiInstanceId) {
     this.apiInstanceId = apiInstanceId;
   }
 
