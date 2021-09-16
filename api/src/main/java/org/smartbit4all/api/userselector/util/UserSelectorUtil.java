@@ -11,8 +11,12 @@ import org.smartbit4all.api.userselector.bean.UserSingleSelector;
 
 public class UserSelectorUtil {
   
-  public static UserSingleSelector createUserSingleSelector(List<User> users, List<Group> groups, URI selectedUserUri) {
-    List<UserSelector> allUserSelector = collectSelectors(users, groups);
+  public static UserSingleSelector createUserSingleSelector(List<User> users, 
+//      List<Group> groups, 
+      URI selectedUserUri) {
+    List<UserSelector> allUserSelector = collectSelectors(users
+//        , groups
+        );
     UserSelector selected = allUserSelector.stream()
         .filter(us -> us.getUri().equals(selectedUserUri))
         .findFirst()
@@ -21,8 +25,12 @@ public class UserSelectorUtil {
     return new UserSingleSelector().selectors(allUserSelector).selected(selected);
   }
   
-  public static UserMultiSelector createUserMultiSelector(List<User> users, List<Group> groups, List<URI> selectedUserURIs) {
-    List<UserSelector> allUserSelector = collectSelectors(users, groups);
+  public static UserMultiSelector createUserMultiSelector(List<User> users, 
+//      List<Group> groups, 
+      List<URI> selectedUserURIs) {
+    List<UserSelector> allUserSelector = collectSelectors(users
+//        , groups
+        );
     List<UserSelector> selected = allUserSelector.stream()
         .filter(us -> selectedUserURIs.contains(us.getUri()))
         .collect(Collectors.toList());
@@ -30,14 +38,16 @@ public class UserSelectorUtil {
     return new UserMultiSelector().selectors(allUserSelector).selected(selected);
   }
 
-  public static List<UserSelector> collectSelectors(List<User> users, List<Group> groups) {
+  public static List<UserSelector> collectSelectors(List<User> users
+//      , List<Group> groups
+      ) {
     List<UserSelector> userSelectorList = users.stream()
         .map(u -> createUserSelector(u))
         .collect(Collectors.toList());
     
-    userSelectorList.addAll(groups.stream()
-            .map(g -> createUserSelector(g))
-            .collect(Collectors.toList()));
+//    userSelectorList.addAll(groups.stream()
+//            .map(g -> createUserSelector(g))
+//            .collect(Collectors.toList()));
     
     return userSelectorList;
   }

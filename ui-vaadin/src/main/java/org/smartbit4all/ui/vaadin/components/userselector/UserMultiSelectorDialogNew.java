@@ -1,6 +1,5 @@
 package org.smartbit4all.ui.vaadin.components.userselector;
 
-import java.util.ArrayList;
 import org.smartbit4all.ui.api.userselector.UserSelectorViewModel;
 import org.smartbit4all.ui.vaadin.components.binder.VaadinBinders;
 import com.vaadin.flow.component.grid.Grid.SelectionMode;

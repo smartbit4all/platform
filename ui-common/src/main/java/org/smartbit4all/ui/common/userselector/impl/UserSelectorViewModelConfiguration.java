@@ -15,9 +15,11 @@ import org.springframework.context.annotation.Scope;
 public class UserSelectorViewModelConfiguration {
 
   private Map<Class<?>, ApiBeanDescriptor> userSelectorDescriptor;
+  private Map<Class<?>, ApiBeanDescriptor> commandsDescriptor;
 
   public UserSelectorViewModelConfiguration() {
     userSelectorDescriptor = UserSelectorViewModelUtil.createUserSelectorBean();
+    commandsDescriptor = UserSelectorViewModelUtil.createCommandsBean();
   }
 
   @Bean
@@ -29,12 +31,12 @@ public class UserSelectorViewModelConfiguration {
   @Bean
   @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
   public UserMultiSelectorViewModel userMultiSelectorViewModel(OrgApi orgApi) {
-    return new UserMultiSelectorViewModelImpl(orgApi, userSelectorDescriptor);
+    return new UserMultiSelectorViewModelImpl(orgApi, userSelectorDescriptor, commandsDescriptor);
   }
 
   @Bean
   @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
   public UserSelectorViewModel userSelectorViewModel(OrgApi orgApi) {
-    return new UserSelectorViewModelImpl(orgApi, userSelectorDescriptor);
+    return new UserSelectorViewModelImpl(orgApi, userSelectorDescriptor, commandsDescriptor);
   }
 }

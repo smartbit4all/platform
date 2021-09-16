@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.BiConsumer;
-
 import org.smartbit4all.api.binarydata.BinaryContent;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.contentaccess.ContentAccessApi;
@@ -23,7 +22,6 @@ import org.smartbit4all.ui.api.sb4starter.SB4StarterWordViewModel;
 import org.smartbit4all.ui.api.sb4starterui.model.SB4StarterWordFormModel;
 import org.smartbit4all.ui.api.sb4starterui.model.SB4StarterWordState;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import io.reactivex.rxjava3.disposables.Disposable;
 
 public class SB4StarterWordViewModelImpl extends ObjectEditingImpl implements SB4StarterWordViewModel {
