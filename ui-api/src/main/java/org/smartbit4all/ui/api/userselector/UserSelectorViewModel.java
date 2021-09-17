@@ -11,6 +11,7 @@ public interface UserSelectorViewModel extends ObjectEditing {
 
   public static final String CLOSE_CMD = "CLOSE_SELECTOR_CMD";
   public static final String SAVE_CMD = "SAVE_SELECTOR_CMD";
+  public static final String SAVE_CLOSE_CMD = "SAVE_SELECTOR_ON_CLOSE_CMD";
 
   @PublishEvents("SINGLESELECTOR")
   ObservableObject singleSelector();

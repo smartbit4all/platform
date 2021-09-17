@@ -34,16 +34,19 @@ public class UserSelectorViewModelImpl extends ObjectEditingImpl implements User
   private UserSelectorCommands commandsWrapper;
 
   private Map<Class<?>, ApiBeanDescriptor> userSelectorDescriptor;
+  private Map<Class<?>, ApiBeanDescriptor> commandsDescriptor;
 
   private Map<String, Consumer<String[]>> commandMethodsByCode;
 
   private List<URI> selectedUris;
 
   public UserSelectorViewModelImpl(OrgApi orgApi,
-      Map<Class<?>, ApiBeanDescriptor> userSelectorDescriptor) {
+      Map<Class<?>, ApiBeanDescriptor> userSelectorDescriptor,
+      Map<Class<?>, ApiBeanDescriptor> commandsDescriptor) {
 
     this.orgApi = orgApi;
     this.userSelectorDescriptor = userSelectorDescriptor;
+    this.commandsDescriptor = commandsDescriptor;
 
     commandMethodsByCode = new HashMap<>();
     selectedUris = new ArrayList<>();
@@ -70,10 +73,10 @@ public class UserSelectorViewModelImpl extends ObjectEditingImpl implements User
 
   @Override
   public void setSingleSelectorRef(URI selectedUserUri) {
-    UserSingleSelector userSingleSelector = UserSelectorUtil.createUserSingleSelector(
-        orgApi.getAllUsers(),
-        orgApi.getAllGroups(),
-        selectedUserUri);
+    UserSingleSelector userSingleSelector =
+        UserSelectorUtil.createUserSingleSelector(orgApi.getAllUsers(),
+            // orgApi.getAllGroups(),
+            selectedUserUri);
 
     singleSelectorRef.setObject(userSingleSelector);
 
@@ -82,10 +85,10 @@ public class UserSelectorViewModelImpl extends ObjectEditingImpl implements User
 
   @Override
   public void setMultiSelectorRef(List<URI> selectedUserUris) {
-    UserMultiSelector userMultiSelector = UserSelectorUtil.createUserMultiSelector(
-        orgApi.getAllUsers(),
-        orgApi.getAllGroups(),
-        selectedUserUris);
+    UserMultiSelector userMultiSelector =
+        UserSelectorUtil.createUserMultiSelector(orgApi.getAllUsers(),
+            // orgApi.getAllGroups(),
+            selectedUserUris);
 
     multiSelectorRef.setObject(userMultiSelector);
 
@@ -122,7 +125,7 @@ public class UserSelectorViewModelImpl extends ObjectEditingImpl implements User
     multiSelector.setRef(multiSelectorRef);
     multiSelectorWrapper = multiSelectorRef.getWrapper(UserMultiSelector.class);
 
-    commandsRef = new ApiObjectRef(null, new UserSelectorCommands(), userSelectorDescriptor);
+    commandsRef = new ApiObjectRef(null, new UserSelectorCommands(), commandsDescriptor);
     commands.setRef(commandsRef);
     commandsWrapper = commandsRef.getWrapper(UserSelectorCommands.class);
 

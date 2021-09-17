@@ -23,6 +23,7 @@ public class UserMultiSelectorViewModelImpl extends ObjectEditingImpl
   protected ObservableObjectImpl userMultiSelector;
 
   private Map<Class<?>, ApiBeanDescriptor> userSelectorDescriptor;
+  private Map<Class<?>, ApiBeanDescriptor> commandsDescriptor;
 
   private OrgApi orgApi;
 
@@ -36,9 +37,10 @@ public class UserMultiSelectorViewModelImpl extends ObjectEditingImpl
   public Map<String, Consumer<String[]>> commandMethodsByCode = new HashMap<>();
 
   public UserMultiSelectorViewModelImpl(OrgApi orgApi,
-      Map<Class<?>, ApiBeanDescriptor> userSelectorDescriptor) {
+      Map<Class<?>, ApiBeanDescriptor> userSelectorDescriptor, Map<Class<?>, ApiBeanDescriptor> commandsDescriptor) {
     this.orgApi = orgApi;
     this.userSelectorDescriptor = userSelectorDescriptor;
+    this.commandsDescriptor = commandsDescriptor;
     selectedUris = Arrays.asList();
     initObservableObject();
   }
@@ -65,7 +67,7 @@ public class UserMultiSelectorViewModelImpl extends ObjectEditingImpl
 
   private void initCommands() {
     commands = new UserSelectorCommands();
-    ApiObjectRef ref = new ApiObjectRef(null, commands, userSelectorDescriptor);
+    ApiObjectRef ref = new ApiObjectRef(null, commands, commandsDescriptor);
     commandObservable.setRef(ref);
     commandsWrapper = ref.getWrapper(UserSelectorCommands.class);
     addCommand(UserMultiSelectorViewModel.CLOSE_CMD, this::closeAndSaveSelector);
@@ -90,7 +92,8 @@ public class UserMultiSelectorViewModelImpl extends ObjectEditingImpl
   @Override
   public void initUserMultiSelectors(List<URI> selected) {
     UserMultiSelector multiSelector = UserSelectorUtil.createUserMultiSelector(orgApi.getAllUsers(),
-        orgApi.getAllGroups(), selected);
+//        orgApi.getAllGroups(),
+        selected);
 
     if (userMultiSelectorWrapper == null) {
 

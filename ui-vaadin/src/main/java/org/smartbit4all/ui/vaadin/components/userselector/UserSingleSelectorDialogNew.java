@@ -1,7 +1,5 @@
 package org.smartbit4all.ui.vaadin.components.userselector;
 
-import java.net.URI;
-import org.smartbit4all.api.userselector.bean.UserSelector;
 import org.smartbit4all.ui.api.userselector.UserSelectorViewModel;
 import org.smartbit4all.ui.vaadin.components.binder.VaadinBinders;
 import com.vaadin.flow.component.grid.Grid.SelectionMode;
@@ -24,9 +22,7 @@ public class UserSingleSelectorDialogNew extends UserSelectorDialogNew {
   
   @Override
   protected void saveAndCloseDialog() {
-    String selectedUri = grid.getSelectedItems().stream()
-        .map(UserSelector::getUri)
-        .map(URI::toString)
+    String selectedUri = getUserUriStream()
         .findFirst()
         .orElse("");
     userSelectorVM.executeCommand(UserSelectorViewModel.SAVE_CMD, selectedUri);

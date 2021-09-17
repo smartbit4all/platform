@@ -11,13 +11,21 @@ import org.smartbit4all.core.object.ApiBeanDescriptor;
 public class UserSelectorViewModelUtil {
 
   public static Map<Class<?>, ApiBeanDescriptor> createUserSelectorBean() {
-    Set<Class<?>> ruleDomainBeans = new HashSet<>();
+    Set<Class<?>> userSelectorBeans = new HashSet<>();
 
-    ruleDomainBeans.add(UserSingleSelector.class);
-    ruleDomainBeans.add(UserMultiSelector.class);
-    ruleDomainBeans.add(UserSelector.class);
-    ruleDomainBeans.add(UserSelectorCommands.class);
-
-    return ApiBeanDescriptor.of(ruleDomainBeans);
+    userSelectorBeans.add(UserSingleSelector.class);
+    userSelectorBeans.add(UserMultiSelector.class);
+    userSelectorBeans.add(UserSelector.class);
+    
+    return ApiBeanDescriptor.of(userSelectorBeans);
+  }
+  
+  public static Map<Class<?>, ApiBeanDescriptor> createCommandsBean() {
+    Set<Class<?>> commandBeans = new HashSet<>();
+    
+    commandBeans.add(UserSelectorCommands.class);
+    commandBeans.add(String.class);
+    
+    return ApiBeanDescriptor.of(commandBeans);
   }
 }
