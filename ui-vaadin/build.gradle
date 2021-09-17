@@ -15,7 +15,6 @@ dependencies {
 	api project(':ui-common')
 	
 	api 'dev.mett.vaadin:tooltip:1.5.0-alpha'
-	api 'com.google.code.gson:gson:2.8.6'
 
 	testImplementation 'com.vaadin:vaadin-testbench'
 	
