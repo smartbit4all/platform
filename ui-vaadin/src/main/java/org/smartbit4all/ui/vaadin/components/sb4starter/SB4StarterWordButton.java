@@ -8,6 +8,7 @@ import org.smartbit4all.ui.api.sb4starter.SB4StarterWordViewModel;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Anchor;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.server.StreamResource;
 
 public class SB4StarterWordButton extends Anchor {
@@ -32,7 +33,8 @@ public class SB4StarterWordButton extends Anchor {
 				() -> sb4starter.inputStream()));
 		btnInner = new Button(btnText);
     btnInner.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-    btnInner.setWidthFull();
+    btnInner.setSizeFull();
+    btnInner.setIcon(VaadinIcon.PENCIL.create());
 		btnInner.addClickListener(e -> btnInnerClick(sb4StarterVMFactoryMethod));
 		add(btnInner);
 	}
