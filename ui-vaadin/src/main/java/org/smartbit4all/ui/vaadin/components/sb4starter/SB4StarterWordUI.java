@@ -1,9 +1,8 @@
 package org.smartbit4all.ui.vaadin.components.sb4starter;
 
 import java.security.InvalidParameterException;
-import java.util.Map;
 
-import org.smartbit4all.core.object.ApiBeanDescriptor;
+import org.smartbit4all.core.object.ApiObjectRef;
 import org.smartbit4all.ui.api.sb4starter.SB4StarterWordViewModel;
 import org.smartbit4all.ui.api.sb4starterui.model.SB4StarterWordFormModel;
 import org.smartbit4all.ui.api.sb4starterui.model.SB4StarterWordState;
@@ -34,16 +33,29 @@ public class SB4StarterWordUI extends Dialog {
 	}
 
 	private void createUI() {
+		setWidth("400px");
 		main = new VerticalLayout();
 		main.setSizeFull();
 
 		lblState = new Label();
-		VaadinBinders.bind(lblState, viewModel.sb4Starter(), SB4StarterWordFormModel.STATE);
+		VaadinBinders.bind(lblState, viewModel.sb4Starter(), SB4StarterWordFormModel.STATE,
+				state -> {
+					ApiObjectRef ref = (ApiObjectRef) state;
+					return ConvertStateToString((SB4StarterWordState) ref.getObject());
+				});
 
 		btnAccept = new Button("Szerkesztés megerősítése");
+		btnAccept.setEnabled(false);
 		btnAccept.addClickListener(e -> {
 			viewModel.accept();
 			close();
+		});
+		
+		viewModel.sb4Starter().onPropertyChange(null , SB4StarterWordFormModel.STATE, e -> {
+			ApiObjectRef ref = (ApiObjectRef) e.getNewValue();
+			if ((SB4StarterWordState) ref.getObject() == SB4StarterWordState.UPLOADED) {
+				btnAccept.setEnabled(true);
+			}
 		});
 		
 		btnClose = new Button("Elvet");
@@ -53,6 +65,7 @@ public class SB4StarterWordUI extends Dialog {
 		});
 		
 		FlexLayout buttonArea = new FlexLayout();
+		buttonArea.setWidthFull();
 		buttonArea.setJustifyContentMode(JustifyContentMode.BETWEEN);
 		buttonArea.add(btnAccept, btnClose);
 

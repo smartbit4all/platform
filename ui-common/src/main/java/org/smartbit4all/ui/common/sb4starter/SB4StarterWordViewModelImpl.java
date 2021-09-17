@@ -64,12 +64,19 @@ public class SB4StarterWordViewModelImpl extends ObjectEditingImpl implements SB
 	public BinaryData createSB4Starter() throws Exception {
 		UUID wordToEditId = contentAccessApi.share(sb4StarterWordFormModel.getStartContent());
 		Disposable downloadListener = contentAccessApi.subscribeToContentAccessEvent(wordToEditId,
-				contentAccess -> sb4StarterWordFormModel.setState(SB4StarterWordState.EDIT));
+				contentAccess -> {
+					//sb4Starter().setValue(SB4StarterWordFormModel.STATE, SB4StarterWordState.EDIT);
+					sb4StarterWordFormModel.setState(SB4StarterWordState.EDIT);
+					sb4Starter.notifyListeners();
+					});
 		eventListeners.add(downloadListener);
 
 		UUID editedWordId = contentAccessApi.share(sb4StarterWordFormModel.getResultContent());
 		Disposable uploadListener = contentAccessApi.subscribeToContentAccessEvent(editedWordId,
-				contentAccess -> sb4StarterWordFormModel.setState(SB4StarterWordState.UPLOADED));
+				contentAccess -> {
+					sb4StarterWordFormModel.setState(SB4StarterWordState.UPLOADED);
+					sb4Starter.notifyListeners();
+					});
 		eventListeners.add(uploadListener);
 
 		String wordFileName = sb4StarterWordFormModel.getStartContent().getFileName();
@@ -104,9 +111,9 @@ public class SB4StarterWordViewModelImpl extends ObjectEditingImpl implements SB
 	public void setSb4StarterFormModel(SB4StarterWordFormModel sb4StarterWordFormModel,
 			BiConsumer<BinaryContent, BinaryContent> acceptHandler) {
 		ref = new ApiObjectRef(null, sb4StarterWordFormModel, sb4StarterWordFormDescriptor);
+		sb4Starter.setRef(ref);
 		this.sb4StarterWordFormModel = ref.getWrapper(SB4StarterWordFormModel.class);
 		this.acceptHandler = acceptHandler;
-		sb4Starter.setRef(ref);
 	}
 
 	@Override
