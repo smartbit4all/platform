@@ -35,6 +35,8 @@ import javax.validation.Valid;
  */
 @JsonPropertyOrder({
   CompositeObjectDef.URI,
+  CompositeObjectDef.NAME,
+  CompositeObjectDef.DESCRIPTION,
   CompositeObjectDef.DEF_URI,
   CompositeObjectDef.ASSOCIATIONS
 })
@@ -43,6 +45,12 @@ import javax.validation.Valid;
 public class CompositeObjectDef {
   public static final String URI = "uri";
   private URI uri;
+
+  public static final String NAME = "name";
+  private String name;
+
+  public static final String DESCRIPTION = "description";
+  private String description;
 
   public static final String DEF_URI = "defUri";
   private URI defUri;
@@ -76,6 +84,60 @@ public class CompositeObjectDef {
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setUri(URI uri) {
     this.uri = uri;
+  }
+
+
+  public CompositeObjectDef name(String name) {
+    
+    this.name = name;
+    return this;
+  }
+
+   /**
+   * Get name
+   * @return name
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getName() {
+    return name;
+  }
+
+
+  @JsonProperty(NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setName(String name) {
+    this.name = name;
+  }
+
+
+  public CompositeObjectDef description(String description) {
+    
+    this.description = description;
+    return this;
+  }
+
+   /**
+   * Get description
+   * @return description
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(DESCRIPTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getDescription() {
+    return description;
+  }
+
+
+  @JsonProperty(DESCRIPTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setDescription(String description) {
+    this.description = description;
   }
 
 
@@ -153,13 +215,15 @@ public class CompositeObjectDef {
     }
     CompositeObjectDef compositeObjectDef = (CompositeObjectDef) o;
     return Objects.equals(this.uri, compositeObjectDef.uri) &&
+        Objects.equals(this.name, compositeObjectDef.name) &&
+        Objects.equals(this.description, compositeObjectDef.description) &&
         Objects.equals(this.defUri, compositeObjectDef.defUri) &&
         Objects.equals(this.associations, compositeObjectDef.associations);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, defUri, associations);
+    return Objects.hash(uri, name, description, defUri, associations);
   }
 
   @Override
@@ -167,6 +231,8 @@ public class CompositeObjectDef {
     StringBuilder sb = new StringBuilder();
     sb.append("class CompositeObjectDef {\n");
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
+    sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    description: ").append(toIndentedString(description)).append("\n");
     sb.append("    defUri: ").append(toIndentedString(defUri)).append("\n");
     sb.append("    associations: ").append(toIndentedString(associations)).append("\n");
     sb.append("}");

@@ -125,15 +125,15 @@ public class CompositeObjects {
 
   public static URI createChildAssocUri(URI parentUri, URI childDefUri) {
     String uri = parentUri.toString();
-    
+
     String fileExtension = Files.getFileExtension(uri);
-    if(!Strings.isNullOrEmpty(fileExtension)) {
+    if (!Strings.isNullOrEmpty(fileExtension)) {
       String uriBeforeLastSlash = uri.substring(0, uri.lastIndexOf("/"));
       String nameWithoutExtension = Files.getNameWithoutExtension(uri);
-      
+
       uri = uriBeforeLastSlash + "/" + nameWithoutExtension;
     }
-    
+
     return URI
         .create(uri + "/" + COMP_OBJECT_ASSOC_PATH_PREFIX + childDefUri.getPath());
   }
@@ -146,33 +146,40 @@ public class CompositeObjects {
 
     // TODO load CompositeObjects only with the given definition
     for (CompositeObjectDef compositeDef : compositeDefStorage.loadAll()) {
-      for (CompositeObjectAssociation assoc : compositeDef.getAssociations()) {
-
-        URI childDefUri = assoc.getChildDefUri();
-        URI assocUri = assoc.getAssocDefUri();
-
-        ComposeableObjectDef childDef = getDef(compObjDefStorage, childDefUri);
-        ComposeableObjectDef assocDef = getDef(compObjDefStorage, assocUri);
-
-        if (assoc.getChildRecursive()) {
-          addChildDefinition(navigationConfig, childDef);
-        }
-
-        addAssocDefinition(
-            navigationConfig,
-
-            ComposeableObjectNavigation.createAssocMeta(
-                assocUri,
-                compositeDef.getDefUri(),
-                childDefUri,
-                assocUri),
-
-            childDef,
-            assocDef);
-      }
+      addCompositeObjectDef(compObjDefStorage, navigationConfig, compositeDef);
     }
 
     return navigationConfig;
+  }
+
+  public static void addCompositeObjectDef(
+      Storage<ComposeableObjectDef> compObjDefStorage,
+      ConfigBuilder navigationConfig,
+      CompositeObjectDef compositeDef) throws Exception {
+
+    for (CompositeObjectAssociation assoc : compositeDef.getAssociations()) {
+      URI childDefUri = assoc.getChildDefUri();
+      URI assocUri = assoc.getAssocDefUri();
+
+      ComposeableObjectDef childDef = getDef(compObjDefStorage, childDefUri);
+      ComposeableObjectDef assocDef = getDef(compObjDefStorage, assocUri);
+
+      if (assoc.getChildRecursive()) {
+        addChildDefinition(navigationConfig, childDef);
+      }
+
+      addAssocDefinition(
+          navigationConfig,
+
+          ComposeableObjectNavigation.createAssocMeta(
+              assocUri,
+              compositeDef.getDefUri(),
+              childDefUri,
+              assocUri),
+
+          childDef,
+          assocDef);
+    }
   }
 
   private static void addAssocDefinition(

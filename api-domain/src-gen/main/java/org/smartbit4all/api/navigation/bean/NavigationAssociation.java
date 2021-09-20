@@ -25,7 +25,6 @@ import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import org.smartbit4all.api.navigation.bean.NavigationEntry;
 import org.smartbit4all.api.navigation.bean.NavigationNode;
 import org.smartbit4all.api.navigation.bean.NavigationReference;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -44,8 +43,7 @@ import javax.validation.Valid;
   NavigationAssociation.HIDDEN,
   NavigationAssociation.CAPTION,
   NavigationAssociation.ICON,
-  NavigationAssociation.REFERENCES,
-  NavigationAssociation.ASSOC_ENTRY
+  NavigationAssociation.REFERENCES
 })
 @JsonTypeName("NavigationAssociation")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -73,9 +71,6 @@ public class NavigationAssociation {
 
   public static final String REFERENCES = "references";
   private List<NavigationReference> references = null;
-
-  public static final String ASSOC_ENTRY = "assocEntry";
-  private NavigationEntry assocEntry;
 
 
   public NavigationAssociation id(String id) {
@@ -305,34 +300,6 @@ public class NavigationAssociation {
   }
 
 
-  public NavigationAssociation assocEntry(NavigationEntry assocEntry) {
-    
-    this.assocEntry = assocEntry;
-    return this;
-  }
-
-   /**
-   * Get assocEntry
-   * @return assocEntry
-  **/
-  @javax.annotation.Nullable
-  @Valid
-  @ApiModelProperty(value = "")
-  @JsonProperty(ASSOC_ENTRY)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public NavigationEntry getAssocEntry() {
-    return assocEntry;
-  }
-
-
-  @JsonProperty(ASSOC_ENTRY)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setAssocEntry(NavigationEntry assocEntry) {
-    this.assocEntry = assocEntry;
-  }
-
-
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -349,13 +316,12 @@ public class NavigationAssociation {
         Objects.equals(this.hidden, navigationAssociation.hidden) &&
         Objects.equals(this.caption, navigationAssociation.caption) &&
         Objects.equals(this.icon, navigationAssociation.icon) &&
-        Objects.equals(this.references, navigationAssociation.references) &&
-        Objects.equals(this.assocEntry, navigationAssociation.assocEntry);
+        Objects.equals(this.references, navigationAssociation.references);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, node, metaUri, lastNavigation, hidden, caption, icon, references, assocEntry);
+    return Objects.hash(id, node, metaUri, lastNavigation, hidden, caption, icon, references);
   }
 
   @Override
@@ -370,7 +336,6 @@ public class NavigationAssociation {
     sb.append("    caption: ").append(toIndentedString(caption)).append("\n");
     sb.append("    icon: ").append(toIndentedString(icon)).append("\n");
     sb.append("    references: ").append(toIndentedString(references)).append("\n");
-    sb.append("    assocEntry: ").append(toIndentedString(assocEntry)).append("\n");
     sb.append("}");
     return sb.toString();
   }
