@@ -15,11 +15,13 @@
 package org.smartbit4all.ui.common.navigation;
 
 import java.net.URI;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 import org.smartbit4all.api.navigation.bean.NavigationEntry;
 import org.smartbit4all.ui.common.action.NavigationActionListener;
 import org.smartbit4all.ui.common.controller.UIController;
 import org.smartbit4all.ui.common.view.UIViewShowCommand;
+import io.reactivex.rxjava3.disposables.Disposable;
 
 /**
  * The UI controller for a navigation view that contains all the business logic. Instantiated for
@@ -38,11 +40,17 @@ public interface NavigationController extends UIController {
 
   void addRoot(URI entryMetaUri, URI rootObjectURI);
 
+  Disposable subscribeForRootNodeAdded(Consumer<NavigationTreeNode> listener);
+
+  Disposable subscribeForRootNodeRemoved(Consumer<NavigationTreeNode> listener);
+
   int getChildCount(NavigationTreeNode node);
 
   Stream<NavigationTreeNode> getChildren(NavigationTreeNode parent);
 
   boolean hasChildren(NavigationTreeNode node);
+
+  Disposable subscribeForNodeRefresh(Consumer<NavigationTreeNode> listener);
 
   UIViewShowCommand getViewCommand(NavigationTreeNode node);
 

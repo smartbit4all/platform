@@ -1,6 +1,7 @@
 package org.smartbit4all.domain.data.storage;
 
 import java.net.URI;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 /**
@@ -15,6 +16,11 @@ public abstract class ObjectStorageImpl<T> implements ObjectStorage<T> {
    */
   protected final Function<T, URI> uriAccessor;
 
+  /**
+   * The accessor method for the URI.
+   */
+  protected BiConsumer<T, URI> uriMutator;
+
   protected ObjectUriProvider<T> uriProvider;
 
   public ObjectStorageImpl(Function<T, URI> uriAccessor, ObjectUriProvider<T> uriProvider) {
@@ -28,9 +34,19 @@ public abstract class ObjectStorageImpl<T> implements ObjectStorage<T> {
     this.uriAccessor = uriAccessor;
   }
 
+  @Override
+  public ObjectStorage<T> setUriMutator(BiConsumer<T, URI> mutator) {
+    uriMutator = mutator;
+    return this;
+  }
+
   protected URI constructUri(T object, URI currentUri) {
     if (currentUri == null && uriProvider != null) {
-      return uriProvider.constructUri(object);
+      URI uri = uriProvider.constructUri(object);
+      if (uriMutator != null) {
+        uriMutator.accept(object, uri);
+      }
+      return uri;
     }
     return currentUri;
   }

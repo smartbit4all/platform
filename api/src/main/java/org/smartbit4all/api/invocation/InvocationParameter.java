@@ -44,6 +44,9 @@ public final class InvocationParameter {
 
   public final void setValue(Object value) {
     this.value = value;
+    if (typeClass == null && value != null) {
+      typeClass = value.getClass().getName();
+    }
   }
 
 }

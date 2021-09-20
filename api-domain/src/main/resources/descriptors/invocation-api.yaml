@@ -22,6 +22,9 @@ components:
       type: object
       required: [parameters, apiClass, methodName]
       properties:
+        uri:
+          type: string
+          format: uri
         executionApi:
           type: string
           description: 'The name of the execution api. If it is empty then we use the local by default'

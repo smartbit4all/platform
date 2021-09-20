@@ -3,6 +3,7 @@ package org.smartbit4all.domain.data.storage;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import org.smartbit4all.api.storage.bean.ObjectReferenceList;
 
 /**
@@ -36,7 +37,7 @@ public interface ObjectStorage<T> {
    * 
    * @param uri The uri of the object.
    */
-  public ObjectReferenceList loadReferences(URI uri, String typeClassName);
+  public Optional<ObjectReferenceList> loadReferences(URI uri, String typeClassName);
 
   /**
    * Load the object with the given URI.
@@ -63,5 +64,7 @@ public interface ObjectStorage<T> {
   public ObjectUriProvider<T> getUriProvider();
 
   public URI getObjectUri(T Object);
+
+  ObjectStorage<T> setUriMutator(BiConsumer<T, URI> mutator);
 
 }

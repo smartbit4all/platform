@@ -202,10 +202,4 @@ public class NavigationImplStatic extends NavigationImpl {
     assocMetas.values().forEach(builder::addAssociationMeta);
   }
 
-  @Override
-  public Map<URI, List<NavigationReferenceEntry>> navigate(URI objectUri,
-      List<URI> associationMetaUris, NavigationCallBackApi callBack) {
-    return navigate(objectUri, associationMetaUris);
-  }
-
 }

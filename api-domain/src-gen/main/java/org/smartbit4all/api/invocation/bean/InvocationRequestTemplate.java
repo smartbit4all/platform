@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -34,6 +35,7 @@ import javax.validation.Valid;
  * InvocationRequestTemplate
  */
 @JsonPropertyOrder({
+  InvocationRequestTemplate.URI,
   InvocationRequestTemplate.EXECUTION_API,
   InvocationRequestTemplate.API_CLASS,
   InvocationRequestTemplate.API_INSTANCE_ID,
@@ -44,6 +46,9 @@ import javax.validation.Valid;
 @JsonTypeName("InvocationRequestTemplate")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class InvocationRequestTemplate {
+  public static final String URI = "uri";
+  private URI uri;
+
   public static final String EXECUTION_API = "executionApi";
   private String executionApi;
 
@@ -61,6 +66,34 @@ public class InvocationRequestTemplate {
 
   public static final String PARAMETERS = "parameters";
   private List<InvocationParameterTemplate> parameters = new ArrayList<>();
+
+
+  public InvocationRequestTemplate uri(URI uri) {
+    
+    this.uri = uri;
+    return this;
+  }
+
+   /**
+   * Get uri
+   * @return uri
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(URI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public URI getUri() {
+    return uri;
+  }
+
+
+  @JsonProperty(URI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setUri(URI uri) {
+    this.uri = uri;
+  }
 
 
   public InvocationRequestTemplate executionApi(String executionApi) {
@@ -241,7 +274,8 @@ public class InvocationRequestTemplate {
       return false;
     }
     InvocationRequestTemplate invocationRequestTemplate = (InvocationRequestTemplate) o;
-    return Objects.equals(this.executionApi, invocationRequestTemplate.executionApi) &&
+    return Objects.equals(this.uri, invocationRequestTemplate.uri) &&
+        Objects.equals(this.executionApi, invocationRequestTemplate.executionApi) &&
         Objects.equals(this.apiClass, invocationRequestTemplate.apiClass) &&
         Objects.equals(this.apiInstanceId, invocationRequestTemplate.apiInstanceId) &&
         Objects.equals(this.innerApi, invocationRequestTemplate.innerApi) &&
@@ -251,13 +285,14 @@ public class InvocationRequestTemplate {
 
   @Override
   public int hashCode() {
-    return Objects.hash(executionApi, apiClass, apiInstanceId, innerApi, methodName, parameters);
+    return Objects.hash(uri, executionApi, apiClass, apiInstanceId, innerApi, methodName, parameters);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class InvocationRequestTemplate {\n");
+    sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    executionApi: ").append(toIndentedString(executionApi)).append("\n");
     sb.append("    apiClass: ").append(toIndentedString(apiClass)).append("\n");
     sb.append("    apiInstanceId: ").append(toIndentedString(apiInstanceId)).append("\n");

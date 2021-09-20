@@ -14,6 +14,7 @@
  ******************************************************************************/
 package org.smartbit4all.api.navigation;
 
+import java.lang.ref.WeakReference;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import org.smartbit4all.api.ApiItemChangeEvent;
 import org.smartbit4all.api.ApiItemOperation;
@@ -37,6 +39,8 @@ import org.smartbit4all.api.navigation.bean.NavigationReference;
 import org.smartbit4all.api.navigation.bean.NavigationReferenceEntry;
 import org.smartbit4all.api.navigation.bean.NavigationView;
 import org.smartbit4all.core.utility.StringConstant;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.subjects.PublishSubject;
 
 /**
  * This is the instance of a navigation. It has some configuration and it contains all the nodes and
@@ -48,7 +52,7 @@ import org.smartbit4all.core.utility.StringConstant;
 public class Navigation {
 
   public static final String ASSOC_URI_VIEW_PARAM_KEY = "assocUri";
-  
+
   /**
    * The configuration of the given navigation.
    */
@@ -58,6 +62,19 @@ public class Navigation {
    * All the node we already have in this navigation. Identified by their UUID as string.
    */
   protected Map<String, NavigationNode> nodes = new HashMap<>();
+
+  /**
+   * All the node we already have in this navigation. Identified by their URI. One URI can appear in
+   * more then one position. So it's a list of references we have here.
+   */
+  protected Map<URI, List<WeakReference<NavigationNode>>> nodesByURI = new HashMap<>();
+
+  /**
+   * All the node we already have in this navigation. Identified by their URI. One URI can appear in
+   * more then one position. So it's a list of references we have here.
+   */
+  protected Map<String, List<WeakReference<NavigationNode>>> parentNodesByNode =
+      new HashMap<>();
 
   protected List<NavigationNode> roots = new ArrayList<>();
 
@@ -75,6 +92,15 @@ public class Navigation {
    * The API for the navigation.
    */
   protected NavigationApi api;
+
+  /**
+   * The node change publisher.
+   */
+  private PublishSubject<NavigationNode> nodeChangePublisher = PublishSubject.create();
+
+  private PublishSubject<NavigationNode> rootNodeAddedPublisher = PublishSubject.create();
+
+  private PublishSubject<NavigationNode> rootNodeRemovedPublisher = PublishSubject.create();
 
   /**
    * Constructs a new navigation that is the state, the session of the current navigation session.
@@ -205,6 +231,28 @@ public class Navigation {
     return expandAll(node, false);
   }
 
+  public void nodeChanged(URI nodeUri) {
+    List<WeakReference<NavigationNode>> list = nodesByURI.get(nodeUri);
+    if (list != null) {
+      list.removeIf(ref -> ref.get() == null);
+      for (WeakReference<NavigationNode> ref : list) {
+        NavigationNode navigationNode = ref.get();
+        navigationNode.getAssociations().forEach(a -> a.setLastNavigation(null));
+        expandAll(navigationNode);
+        nodeChangePublisher.onNext(navigationNode);
+        // List<WeakReference<NavigationNode>> parents =
+        // parentNodesByNode.get(navigationNode.getId());
+        // parents.removeIf(parentRef -> parentRef.get() == null);
+        // for (WeakReference<NavigationNode> parentRef : parents) {
+        // NavigationNode parentNode = parentRef.get();
+        // if (parentNode != null) {
+        // nodeChangePublisher.onNext(parentNode);
+        // }
+        // }
+      }
+    }
+  }
+
   /**
    * The expand all navigate the associations that hasn't been navigated yet.
    * 
@@ -223,6 +271,9 @@ public class Navigation {
     URI currentObjectUri = node.getEntry().getObjectUri();
     ArrayList<URI> assocMetaUris = new ArrayList<>(naviAssocByMetaUri.keySet());
 
+    // Register
+    // Map<URI, List<NavigationReferenceEntry>> navigation =
+    // api.navigate(currentObjectUri, assocMetaUris, this::nodeChanged);
     Map<URI, List<NavigationReferenceEntry>> navigation =
         api.navigate(currentObjectUri, assocMetaUris);
 
@@ -259,8 +310,11 @@ public class Navigation {
 
     NavigationEntry entry = api.getEntry(entryMetaUri, objectUri);
     NavigationNode node = node(entry, config);
-    registerNode(node);
+    registerNode(null, node);
     roots.add(node);
+
+    rootNodeAddedPublisher.onNext(node);
+
     return node;
   }
 
@@ -296,6 +350,50 @@ public class Navigation {
     association.setReferences(newReferences);
     association.setLastNavigation(Integer.valueOf((int) System.currentTimeMillis()));
     return result;
+
+    // List<ApiItemChangeEvent<NavigationReference>> result = new ArrayList<>();
+    //
+    // Map<URI, NavigationReference> oldReferences =
+    // association.getReferences() == null ? Collections.emptyMap()
+    // : association.getReferences().stream()
+    // .collect(Collectors.toMap(r -> r.getEndNode().getEntry().getObjectUri(), r -> r));
+    //
+    // // We create a new list based on the references. If a
+    // List<NavigationReference> newReferenceList = new ArrayList<>();
+    //
+    // for (NavigationReferenceEntry navigationReferenceEntry : references) {
+    // NavigationReference navigationReference =
+    // oldReferences.remove(navigationReferenceEntry.getEndEntry().getObjectUri());
+    // if (navigationReference != null) {
+    // NavigationEntry entryOld = navigationReference.getEndNode().getEntry();
+    // NavigationEntry entryNew = navigationReferenceEntry.getEndEntry();
+    // if (copyNavigationEntry(entryOld, entryNew)) {
+    // result.add(new ApiItemChangeEvent<>(ApiItemOperation.CHANGED, navigationReference));
+    // }
+    // newReferenceList.add(navigationReference);
+    // } else {
+    // NavigationReference newReferenceEntry =
+    // registerReferenceEntry(startNode, association, navigationReferenceEntry);
+    // newReferenceList
+    // .add(newReferenceEntry);
+    // result.add(new ApiItemChangeEvent<>(ApiItemOperation.NEW, newReferenceEntry));
+    // }
+    // }
+    //
+    // for (NavigationReference deletedReference : oldReferences.values()) {
+    // result.add(new ApiItemChangeEvent<>(ApiItemOperation.DELETED, deletedReference));
+    // }
+    //
+    // association.setReferences(newReferenceList);
+    // association.setLastNavigation(Integer.valueOf((int) System.currentTimeMillis()));
+    // return result;
+  }
+
+  private boolean copyNavigationEntry(NavigationEntry entryOld, NavigationEntry entryNew) {
+    boolean changed = !entryNew.getName().equals(entryOld.getName());
+    entryOld.actions(entryNew.getActions()).icon(entryNew.getIcon()).name(entryNew.getName())
+        .styles(entryNew.getStyles()).views(entryNew.getViews());
+    return changed;
   }
 
   /**
@@ -310,20 +408,32 @@ public class Navigation {
   private NavigationReference registerReferenceEntry(NavigationNode startNode,
       NavigationAssociation association,
       NavigationReferenceEntry referenceEntry) {
-    NavigationNode endNode = registerEntry(referenceEntry.getEndEntry());
+    NavigationNode endNode = registerEntry(startNode, referenceEntry.getEndEntry());
     NavigationNode assocNode = referenceEntry.getAssociationEntry() == null ? null
-        : registerEntry(referenceEntry.getAssociationEntry());
+        : registerEntry(startNode, referenceEntry.getAssociationEntry());
     return reference(startNode, endNode, assocNode);
   }
 
-  private NavigationNode registerEntry(NavigationEntry entry) {
+  private NavigationNode registerEntry(NavigationNode parentNode, NavigationEntry entry) {
     NavigationNode node = node(entry, config);
-    registerNode(node);
+    registerNode(parentNode, node);
     return node;
   }
 
-  private final void registerNode(NavigationNode node) {
+  private final void registerNode(NavigationNode parentNode, NavigationNode node) {
     nodes.put(node.getId(), node);
+    List<WeakReference<NavigationNode>> list =
+        nodesByURI.computeIfAbsent(node.getEntry().getObjectUri(), uri -> new ArrayList<>());
+    list.removeIf(ref -> ref.get() == null);
+    list.add(new WeakReference<>(node));
+
+    if (parentNode != null) {
+      List<WeakReference<NavigationNode>> parentNodes =
+          parentNodesByNode.computeIfAbsent(node.getId(), n -> new ArrayList<>());
+      parentNodes.removeIf(ref -> ref.get() == null);
+      parentNodes.add(new WeakReference<NavigationNode>(parentNode));
+    }
+
     // We can add the association to the cache because they are constants by the configuration.
     if (node.getAssociations() != null) {
       for (NavigationAssociation association : node.getAssociations()) {
@@ -478,5 +588,18 @@ public class Navigation {
   public NavigationAssociation getAssociation(String identifier) {
     return associations.get(identifier);
   }
+
+  public Disposable subscribeForNodeRefresh(Consumer<NavigationNode> listener) {
+    return nodeChangePublisher.subscribe(node -> listener.accept(node));
+  }
+
+  public Disposable subscribeForRootNodeAdded(Consumer<NavigationNode> listener) {
+    return rootNodeAddedPublisher.subscribe(node -> listener.accept(node));
+  }
+
+  public Disposable subscribeForRootNodeRemoved(Consumer<NavigationNode> listener) {
+    return rootNodeRemovedPublisher.subscribe(node -> listener.accept(node));
+  }
+
 
 }

@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.navigation.bean.NavigationAssociationMeta;
@@ -58,7 +59,7 @@ public final class NavigationPrimary extends NavigationImpl implements Initializ
 
   @Override
   public Map<URI, List<NavigationReferenceEntry>> navigate(URI objectUri,
-      List<URI> associationMetaUris) {
+      List<URI> associationMetaUris, Consumer<URI> nodeChangedListener) {
     // In this case the scheme of the uri in the NavigationAssociationMeta identifies the api to
     // delegate.
     if (associationMetaUris == null || associationMetaUris.isEmpty()) {
@@ -80,10 +81,16 @@ public final class NavigationPrimary extends NavigationImpl implements Initializ
         .entrySet()) {
       // Call the given api with the list as parameter and merge the result.
       Map<URI, List<NavigationReferenceEntry>> navigate =
-          requestEntry.getKey().navigate(objectUri, requestEntry.getValue());
+          requestEntry.getKey().navigate(objectUri, requestEntry.getValue(), nodeChangedListener);
       result.putAll(navigate);
     }
     return result;
+  }
+
+  @Override
+  public Map<URI, List<NavigationReferenceEntry>> navigate(URI objectUri,
+      List<URI> associationMetaUris) {
+    return navigate(objectUri, associationMetaUris, null);
   }
 
   private NavigationApi api(URI associationUri) {
@@ -110,12 +117,6 @@ public final class NavigationPrimary extends NavigationImpl implements Initializ
         apiByName.put(api.name(), api);
       }
     }
-  }
-
-  @Override
-  public Map<URI, List<NavigationReferenceEntry>> navigate(URI objectUri,
-      List<URI> associationMetaUris, NavigationCallBackApi callBack) {
-    return navigate(objectUri, associationMetaUris);
   }
 
 }

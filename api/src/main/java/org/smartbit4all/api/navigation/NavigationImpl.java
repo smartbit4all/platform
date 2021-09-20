@@ -17,6 +17,7 @@ package org.smartbit4all.api.navigation;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import org.smartbit4all.api.navigation.bean.NavigationReferenceEntry;
 
 /**
@@ -40,7 +41,7 @@ public abstract class NavigationImpl implements NavigationApi {
 
   @Override
   public Map<URI, List<NavigationReferenceEntry>> navigate(URI objectUri,
-      List<URI> associationMetaUris, NavigationCallBackApi callBack) {
+      List<URI> associationMetaUris, Consumer<URI> nodeChangedListener) {
     return navigate(objectUri, associationMetaUris);
   }
 

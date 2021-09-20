@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.compobject.bean.ComposeableObject;
@@ -43,9 +44,10 @@ public class ComposeableObjectPrimaryApi implements ComposerApi, InitializingBea
   }
 
   @Override
-  public List<ComposeableObject> getChildren(URI parentObjectUri, ComposeableObjectDef definition) throws Exception {
+  public List<ComposeableObject> getChildren(URI parentObjectUri, ComposeableObjectDef definition,
+      Consumer<URI> nodeChangeListener) throws Exception {
     ComposeableObjectApi api = getApi(definition.getApiUri());
-    return api.getChildren(parentObjectUri, definition.getUri());
+    return api.getChildren(parentObjectUri, definition.getUri(), nodeChangeListener);
   }
 
   @Override
@@ -69,7 +71,7 @@ public class ComposeableObjectPrimaryApi implements ComposerApi, InitializingBea
     String viewName = api.getViewName(objectUri);
     return Strings.isNullOrEmpty(viewName) ? definition.getViewName() : viewName;
   }
-  
+
   private ComposeableObjectApi getApi(URI apiUri) {
     ComposeableObjectApi api = apisByUri.get(apiUri);
 

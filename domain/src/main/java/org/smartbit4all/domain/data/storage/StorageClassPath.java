@@ -81,7 +81,7 @@ public class StorageClassPath<T> extends ObjectStorageImpl<T> {
   }
 
   @Override
-  public ObjectReferenceList loadReferences(URI uri, String typeClassName) {
+  public Optional<ObjectReferenceList> loadReferences(URI uri, String typeClassName) {
     throw new UnsupportedOperationException(
         "Unable to load references the URI = " + uri
             + " bean from the class path.");

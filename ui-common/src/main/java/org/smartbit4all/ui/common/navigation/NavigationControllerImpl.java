@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.smartbit4all.api.navigation.Navigation;
@@ -36,6 +37,7 @@ import org.smartbit4all.ui.common.navigation.NavigationTreeNode.Kind;
 import org.smartbit4all.ui.common.view.UIViewShowCommand;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.base.Strings;
+import io.reactivex.rxjava3.disposables.Disposable;
 
 public class NavigationControllerImpl implements NavigationController {
 
@@ -67,6 +69,17 @@ public class NavigationControllerImpl implements NavigationController {
   private NavigationTreeNode selectedNode;
 
   private List<NavigationActionListener> actionListeners = new ArrayList<>();
+
+  private static NavigationTreeNode treeNodeOf(NavigationNode node) {
+    return new NavigationTreeNode(
+        Kind.ENTRY,
+        node.getId(),
+        node.getEntry().getName(),
+        null,
+        node.getEntry().getIcon(),
+        null,
+        node.getEntry().getActions());
+  }
 
   public NavigationControllerImpl(NavigationApi api) {
     this.api = api;
@@ -123,26 +136,15 @@ public class NavigationControllerImpl implements NavigationController {
   @Override
   public Stream<NavigationTreeNode> getChildren(NavigationTreeNode parent) {
     if (parent == null) {
-      return rootNodes.stream().map(
-          n -> new NavigationTreeNode(Kind.ENTRY, n.getId(), n.getEntry().getName(), null,
-              n.getEntry().getIcon(), null, n.getEntry().getActions()));
+      return rootNodes.stream().map(NavigationControllerImpl::treeNodeOf);
     }
 
     // Kind kind, String identifier, String caption, String shortDescription,
     // String icon, String[] styles
     if (parent.isKind(Kind.ASSOCIATION)) {
-      // In case of association we call the children of the association directly.
-      // TODO Later on manage the reference kind also!
       return navigationState.getReferencedNodes(parent.getIdentifier())
           .stream()
-          .map(refNode -> new NavigationTreeNode(
-              Kind.ENTRY,
-              refNode.getId(),
-              refNode.getEntry().getName(),
-              null,
-              refNode.getEntry().getIcon(),
-              null,
-              refNode.getEntry().getActions()));
+          .map(NavigationControllerImpl::treeNodeOf);
     }
 
     NavigationNode node = navigationState.getNode(parent.getIdentifier());
@@ -243,11 +245,11 @@ public class NavigationControllerImpl implements NavigationController {
         if (hasNavigationView(naviNode)) {
           UIViewShowCommand command = createNavigationViewShowCommand(naviNode);
           command.addParameter(Navigation.ASSOC_URI_VIEW_PARAM_KEY, assoc.getMetaUri());
-          
+
           return command;
         }
       }
-      
+
     }
 
     return null;
@@ -348,6 +350,21 @@ public class NavigationControllerImpl implements NavigationController {
   @Override
   public void navigateTo(UIViewShowCommand command) {
     view.navigateTo(command);
+  }
+
+  @Override
+  public Disposable subscribeForNodeRefresh(Consumer<NavigationTreeNode> listener) {
+    return navigationState.subscribeForNodeRefresh(node -> listener.accept(treeNodeOf(node)));
+  }
+
+  @Override
+  public Disposable subscribeForRootNodeAdded(Consumer<NavigationTreeNode> listener) {
+    return navigationState.subscribeForRootNodeAdded(node -> listener.accept(treeNodeOf(node)));
+  }
+
+  @Override
+  public Disposable subscribeForRootNodeRemoved(Consumer<NavigationTreeNode> listener) {
+    return navigationState.subscribeForRootNodeRemoved(node -> listener.accept(treeNodeOf(node)));
   }
 
 }

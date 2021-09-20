@@ -292,10 +292,13 @@ class StorageFSTest {
     storageFS
         .saveReferences(new ObjectReferenceRequest(uri, RefData.class).add(myref));
 
-    ObjectReferenceList references = storageFS.loadReferences(uri, RefData.class.getName());
+    Optional<ObjectReferenceList> references =
+        storageFS.loadReferences(uri, RefData.class.getName());
 
     Assertions.assertTrue(
-        references.getReferences().stream().anyMatch(r -> r.getReferenceId().equals(myref)));
+        references.isPresent());
+    Assertions.assertTrue(
+        references.get().getReferences().stream().anyMatch(r -> r.getReferenceId().equals(myref)));
 
     ctx.close();
   }

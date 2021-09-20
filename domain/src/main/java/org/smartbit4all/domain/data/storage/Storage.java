@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import org.smartbit4all.api.storage.bean.ObjectReferenceList;
 import org.smartbit4all.domain.data.storage.index.ExpressionEntityDefinitionExtractor;
@@ -191,12 +192,18 @@ public class Storage<T> implements ObjectStorage<T> {
   }
 
   @Override
-  public ObjectReferenceList loadReferences(URI uri, String typeClass) {
+  public Optional<ObjectReferenceList> loadReferences(URI uri, String typeClass) {
     return storage.loadReferences(uri, typeClass);
   }
 
   final PublishSubject<ObjectChange<T>> getObjectChangePublisher() {
     return objectChangePublisher;
+  }
+
+  @Override
+  public ObjectStorage<T> setUriMutator(BiConsumer<T, URI> mutator) {
+    storage.setUriMutator(mutator);
+    return this;
   }
 
 }

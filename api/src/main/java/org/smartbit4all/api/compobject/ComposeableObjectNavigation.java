@@ -6,12 +6,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.compobject.bean.ComposeableObject;
 import org.smartbit4all.api.compobject.bean.ComposeableObjectDef;
 import org.smartbit4all.api.navigation.Navigation;
-import org.smartbit4all.api.navigation.NavigationCallBackApi;
 import org.smartbit4all.api.navigation.NavigationImpl;
 import org.smartbit4all.api.navigation.bean.NavigationAssociationMeta;
 import org.smartbit4all.api.navigation.bean.NavigationEntry;
@@ -21,8 +21,8 @@ import org.smartbit4all.api.navigation.bean.NavigationView;
 import org.smartbit4all.domain.data.storage.Storage;
 import com.google.common.base.Strings;
 
-public class ComposeableObjectNavigation extends NavigationImpl {
 
+public class ComposeableObjectNavigation extends NavigationImpl {
   public static final Logger log = LoggerFactory.getLogger(ComposeableObjectNavigation.class);
 
   public static final String SCHEME = "compobj";
@@ -44,14 +44,14 @@ public class ComposeableObjectNavigation extends NavigationImpl {
   @Override
   public Map<URI, List<NavigationReferenceEntry>> navigate(
       URI objectUri,
-      List<URI> associationMetaUris) {
+      List<URI> associationMetaUris, Consumer<URI> nodeChangedListener) {
 
     Map<URI, List<NavigationReferenceEntry>> result = new HashMap<>();
     for (URI associationMetaUri : associationMetaUris) {
       try {
         List<NavigationReferenceEntry> navReferenceEntries = createNavigationReferenceEntries(
             objectUri,
-            getComposeableObjectDef(associationMetaUri));
+            getComposeableObjectDef(associationMetaUri), nodeChangedListener);
 
         result.put(associationMetaUri, navReferenceEntries);
       } catch (Exception e) {
@@ -60,6 +60,12 @@ public class ComposeableObjectNavigation extends NavigationImpl {
     }
 
     return result;
+  }
+
+  @Override
+  public Map<URI, List<NavigationReferenceEntry>> navigate(URI objectUri,
+      List<URI> associationMetaUris) {
+    return navigate(objectUri, associationMetaUris, null);
   }
 
   @Override
@@ -92,11 +98,11 @@ public class ComposeableObjectNavigation extends NavigationImpl {
 
   private List<NavigationReferenceEntry> createNavigationReferenceEntries(
       URI objectUri,
-      ComposeableObjectDef compObjDef) throws Exception {
+      ComposeableObjectDef compObjDef, Consumer<URI> nodeChangeListener) throws Exception {
 
     List<ComposeableObject> children = composeableObjectApi.getChildren(
         objectUri,
-        compObjDef);
+        compObjDef, nodeChangeListener);
 
     List<NavigationReferenceEntry> result = new ArrayList<>();
 
@@ -196,12 +202,6 @@ public class ComposeableObjectNavigation extends NavigationImpl {
     return Navigation.entryMeta(
         compObjDefUri,
         compObjDefUri.getScheme());
-  }
-
-  @Override
-  public Map<URI, List<NavigationReferenceEntry>> navigate(URI objectUri,
-      List<URI> associationMetaUris, NavigationCallBackApi callBack) {
-    return navigate(objectUri, associationMetaUris);
   }
 
 }

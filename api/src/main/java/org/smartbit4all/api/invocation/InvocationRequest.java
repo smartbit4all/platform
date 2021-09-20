@@ -3,7 +3,7 @@ package org.smartbit4all.api.invocation;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.UUID;
 import org.slf4j.Logger;
@@ -70,7 +70,7 @@ public class InvocationRequest {
   /**
    * The parameters of the invocation.
    */
-  private Map<String, InvocationParameter> parameters = new LinkedHashMap<>();
+  private LinkedHashMap<String, InvocationParameter> parameters = new LinkedHashMap<>();
 
   public InvocationRequest(Class<?> apiClass) {
     super();
@@ -165,6 +165,22 @@ public class InvocationRequest {
     return this;
   }
 
+  public InvocationRequest setParameters(Object... values) {
+    if (values == null) {
+      return this;
+    }
+    int i = 0;
+    for (Entry<String, InvocationParameter> entry : parameters.entrySet()) {
+      if (i < values.length) {
+        entry.getValue().setValue(values[i]);
+      } else {
+        break;
+      }
+      i++;
+    }
+    return this;
+  }
+
   private InvocationRequest() {
 
   }
@@ -223,6 +239,7 @@ public class InvocationRequest {
     result.apiClassName = template.getApiClass();
     result.innerApi(template.getInnerApi()).method(template.getMethodName())
         .exec(template.getExecutionApi());
+    result.setApiInstanceId(template.getApiInstanceId());
     for (InvocationParameterTemplate parameter : template.getParameters()) {
       result.addParameter(parameter.getName(), InvocationParameter.Kind.BYVALUE, null,
           parameter.getTypeClass());

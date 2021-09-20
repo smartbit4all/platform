@@ -15,14 +15,10 @@
 package org.smartbit4all.ui.vaadin.components.navigation.tree;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.smartbit4all.api.ApiItemChangeEvent;
-import org.smartbit4all.api.navigation.bean.NavigationNode;
-import org.smartbit4all.api.navigation.bean.NavigationReference;
 import org.smartbit4all.ui.common.navigation.NavigationController;
 import org.smartbit4all.ui.common.navigation.NavigationTreeNode;
 import org.smartbit4all.ui.common.navigation.NavigationView;
@@ -30,6 +26,7 @@ import org.smartbit4all.ui.common.view.UIViewShowCommand;
 import org.smartbit4all.ui.vaadin.components.navigation.UIViewParameterVaadinTransition;
 import org.smartbit4all.ui.vaadin.localization.TranslationUtil;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -37,6 +34,7 @@ import com.vaadin.flow.component.treegrid.TreeGrid;
 import com.vaadin.flow.data.provider.hierarchy.AbstractBackEndHierarchicalDataProvider;
 import com.vaadin.flow.data.provider.hierarchy.HierarchicalDataProvider;
 import com.vaadin.flow.data.provider.hierarchy.HierarchicalQuery;
+import io.reactivex.rxjava3.disposables.Disposable;
 
 public class NavigationTreeView implements NavigationView {
 
@@ -51,6 +49,14 @@ public class NavigationTreeView implements NavigationView {
    * The controller for accessing the presentation logic.
    */
   NavigationController controller;
+
+  private Disposable subscribeForNodeRefresh;
+
+  private Disposable subscribeForRootNodeAdded;
+
+  private Disposable subscribeForRootNodeRemoved;
+
+  private UI ui;
 
   public NavigationTreeView(NavigationController controller,
       TreeGrid<NavigationTreeNode> treeComponent) {
@@ -73,10 +79,37 @@ public class NavigationTreeView implements NavigationView {
       controller.nodeSelected(selection.getItem());
     });
 
-
-
     setDataProviderForTree();
 
+    subscribeForNodeRefresh = controller.subscribeForNodeRefresh(this::refreshNode);
+    subscribeForRootNodeAdded = controller.subscribeForRootNodeAdded(this::refreshAll);
+    subscribeForRootNodeRemoved = controller.subscribeForRootNodeRemoved(this::refreshAll);
+
+    // tree.addDetachListener(d -> {
+    // if (subscribeForNodeRefresh != null) {
+    // subscribeForNodeRefresh.dispose();
+    // }
+    // if (subscribeForRootNodeAdded != null) {
+    // subscribeForRootNodeAdded.dispose();
+    // }
+    // if (subscribeForRootNodeRemoved != null) {
+    // subscribeForRootNodeRemoved.dispose();
+    // }
+    // });
+
+  }
+
+  private void refreshAll(NavigationTreeNode node) {
+    ui.access(() -> tree.getDataProvider().refreshAll());
+  }
+
+  private void refreshNode(NavigationTreeNode node) {
+    ui.access(() -> {
+      tree.getDataProvider().refreshItem(node, true);
+      // tree.collapse(node);
+      // tree.expand(node);
+    });
+    // ui.access(() -> tree.getDataProvider().refreshAll());
   }
 
   /**
@@ -85,7 +118,6 @@ public class NavigationTreeView implements NavigationView {
   public void refreshSelectedNodes() {
     for (NavigationTreeNode node : tree.getSelectedItems()) {
       controller.refreshNode(node);
-      tree.getDataProvider().refreshItem(node, true);
     }
   }
 
@@ -135,6 +167,7 @@ public class NavigationTreeView implements NavigationView {
   }
 
   private void setDataProviderForTree() {
+
     HierarchicalDataProvider<NavigationTreeNode, Void> dataProvider =
         new AbstractBackEndHierarchicalDataProvider<NavigationTreeNode, Void>() {
 
@@ -153,13 +186,22 @@ public class NavigationTreeView implements NavigationView {
               HierarchicalQuery<NavigationTreeNode, Void> query) {
             return controller.getChildren(query.getParent());
           }
+
+          // @Override
+          // public Object getId(NavigationTreeNode item) {
+          // return item.getIdentifier();
+          // }
         };
     tree.setDataProvider(dataProvider);
 
   }
 
+  public final UI getUi() {
+    return ui;
+  }
 
-  @Override
-  public void render(NavigationNode node, List<ApiItemChangeEvent<NavigationReference>> changes) {}
+  public final void setUi(UI ui) {
+    this.ui = ui;
+  }
 
 }

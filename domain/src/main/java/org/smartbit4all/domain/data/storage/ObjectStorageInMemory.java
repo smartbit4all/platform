@@ -91,12 +91,13 @@ public class ObjectStorageInMemory<T> extends ObjectStorageImpl<T> {
   }
 
   @Override
-  public ObjectReferenceList loadReferences(URI uri, String typeClassName) {
+  public Optional<ObjectReferenceList> loadReferences(URI uri, String typeClassName) {
     Map<String, ObjectReferenceList> map = references.get(uri);
+    ObjectReferenceList result = null;
     if (map != null) {
-      return map.get(typeClassName);
+      result = map.get(typeClassName);
     }
-    return null;
+    return Optional.of(result);
   }
 
 }

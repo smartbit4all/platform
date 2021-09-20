@@ -76,7 +76,7 @@ public class StorageFS<T> extends ObjectStorageImpl<T> {
   @Override
   public URI save(T object, URI uri) throws Exception {
     URI result = constructUri(object, uri);
-    if (uri != null) {
+    if (result != null) {
       BinaryData data = serializer.toJsonBinaryData(object, clazz);
       FileIO.write(rootFolder, result, data);
     }
@@ -149,12 +149,12 @@ public class StorageFS<T> extends ObjectStorageImpl<T> {
     if (referenceRequest == null) {
       return;
     }
-    ObjectReferenceList references =
+    Optional<ObjectReferenceList> currentReeferences =
         loadReferences(referenceRequest.getObjectUri(), referenceRequest.getTypeClassName());
-    if (references == null) {
-      references = new ObjectReferenceList().uri(referenceRequest.getObjectUri())
-          .referenceTypeClass(referenceRequest.getTypeClassName());
-    }
+    ObjectReferenceList references =
+        currentReeferences.orElse(new ObjectReferenceList().uri(referenceRequest.getObjectUri())
+            .referenceTypeClass(referenceRequest.getTypeClassName()));
+
     String extension =
         StringConstant.DOT + referenceRequest.getTypeClassName() + referencesExtension;
     if (!referenceRequest.updateReferences(references)) {
@@ -170,17 +170,17 @@ public class StorageFS<T> extends ObjectStorageImpl<T> {
   }
 
   @Override
-  public ObjectReferenceList loadReferences(URI uri, String typeClassName) {
+  public Optional<ObjectReferenceList> loadReferences(URI uri, String typeClassName) {
     String extension = StringConstant.DOT + typeClassName + referencesExtension;
     BinaryData binaryData = FileIO.read(rootFolder, uri, extension);
 
     if (binaryData == null) {
-      return null;
+      return Optional.empty();
     }
 
     Optional<ObjectReferenceList> optional =
         serializer.fromJsonBinaryData(binaryData, ObjectReferenceList.class);
-    return optional.get();
+    return optional.isPresent() ? Optional.of(optional.get()) : Optional.empty();
   }
 
 }

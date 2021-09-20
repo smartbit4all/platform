@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.smartbit4all.api.navigation.Navigation;
-import org.smartbit4all.api.navigation.NavigationCallBackApi;
 import org.smartbit4all.api.navigation.NavigationImpl;
 import org.smartbit4all.api.navigation.bean.NavigationAssociationMeta;
 import org.smartbit4all.api.navigation.bean.NavigationEntry;
@@ -320,9 +319,4 @@ public class EntityNavigation extends NavigationImpl {
     return detAssocMetasByEntityReferenceUri.get(referenceUri);
   }
 
-  @Override
-  public Map<URI, List<NavigationReferenceEntry>> navigate(URI objectUri,
-      List<URI> associationMetaUris, NavigationCallBackApi callBack) {
-    return navigate(objectUri, associationMetaUris);
-  }
 }

@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import org.smartbit4all.api.compobject.bean.ComposeableObject;
 import org.smartbit4all.api.compobject.bean.ComposeableObjectDef;
@@ -23,7 +24,7 @@ public class CompositeObjectApi implements ComposeableObjectApi {
   private Storage<CompositeObjectDef> compositeDefStorage;
 
   private Storage<ComposeableObjectDef> composeableDefStorage;
-  
+
   public CompositeObjectApi(
       Storage<CompositeObject> compositeStorage,
       Storage<CompositeObjectDef> compositeDefStorage,
@@ -35,8 +36,8 @@ public class CompositeObjectApi implements ComposeableObjectApi {
   }
 
   @Override
-  public List<ComposeableObject> getChildren(URI parentObjectUri, URI definitionUri)
-      throws Exception {
+  public List<ComposeableObject> getChildren(URI parentObjectUri, URI definitionUri,
+      Consumer<URI> nodeChangeListener) throws Exception {
 
     Optional<CompositeObject> loaded = compositeStorage.load(parentObjectUri);
     if (loaded.isPresent()) {
@@ -57,10 +58,10 @@ public class CompositeObjectApi implements ComposeableObjectApi {
       CompositeObject compositeObject,
       CompositeObjectAssociation assoc) {
 
-    if(compositeObject.getObjects() == null) {
+    if (compositeObject.getObjects() == null) {
       return Collections.emptyList();
     }
-    
+
     return compositeObject
         .getObjects()
         .stream()
@@ -73,13 +74,13 @@ public class CompositeObjectApi implements ComposeableObjectApi {
     Optional<CompositeObject> loaded = compositeStorage.load(objectUri);
     if (loaded.isPresent()) {
       CompositeObject compositeObject = loaded.get();
-      if(!Strings.isNullOrEmpty(compositeObject.getCaption())) {
+      if (!Strings.isNullOrEmpty(compositeObject.getCaption())) {
         return compositeObject.getCaption();
       }
-      
+
       CompositeObjectDef compositeDef = loadCompositeObjectDef(compositeObject);
       ComposeableObjectDef composeableDef = load(compositeDef);
-      
+
       return composeableDef.getName();
     }
     return null;
@@ -92,7 +93,7 @@ public class CompositeObjectApi implements ComposeableObjectApi {
     if (compositeObject.isPresent()) {
       CompositeObjectDef compositeDef = loadCompositeObjectDef(compositeObject.get());
       ComposeableObjectDef composeableDef = load(compositeDef);
-      
+
       return composeableDef.getIcon();
     }
     return null;
@@ -102,7 +103,7 @@ public class CompositeObjectApi implements ComposeableObjectApi {
   public String getViewName(URI objectUri) throws Exception {
     return null;
   }
-  
+
   @Override
   public URI getApiUri() {
     return API_URI;
@@ -110,16 +111,16 @@ public class CompositeObjectApi implements ComposeableObjectApi {
 
   private CompositeObjectDef loadCompositeObjectDef(CompositeObject compositeObject)
       throws Exception {
-    
+
     return compositeDefStorage.load(
         compositeObject.getCompositeDefUri())
         .orElseThrow(() -> new IllegalArgumentException(
             "CompositeObjectDef does not exist with URI: " + compositeObject.getUri()));
   }
-  
+
   private ComposeableObjectDef load(CompositeObjectDef def)
       throws Exception {
-    
+
     return composeableDefStorage.load(
         def.getDefUri())
         .orElseThrow(() -> new IllegalArgumentException(

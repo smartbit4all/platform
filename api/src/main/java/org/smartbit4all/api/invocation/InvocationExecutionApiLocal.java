@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import org.smartbit4all.api.invocation.InvocationParameter.Kind;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
@@ -60,11 +61,21 @@ public class InvocationExecutionApiLocal extends InvocationExecutionApiImpl
       }
 
     }
-    Method method = Invocations.getMethodToCall(api, request);
 
-    List<Object> parameterObjects = getParameterObjects(request, method);
+    if (api instanceof Consumer<?>) {
+      ((Consumer) api).accept(request.getParameters().get(0).getValue());
+      InvocationParameter invocationResult = new InvocationParameter();
+      invocationResult.setValue(null);
+      invocationResult.setKind(Kind.BYVALUE);
+      return invocationResult;
+    } else {
 
-    return invokeMethod(request, api, method, parameterObjects);
+      Method method = Invocations.getMethodToCall(api, request);
+
+      List<Object> parameterObjects = getParameterObjects(request, method);
+
+      return invokeMethod(request, api, method, parameterObjects);
+    }
 
   }
 

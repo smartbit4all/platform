@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 import org.smartbit4all.api.compobject.bean.ComposeableObject;
 import org.smartbit4all.domain.data.storage.Storage;
 
@@ -27,7 +28,7 @@ public class TestTreeObjectApi implements ComposeableObjectApi {
   public String getIcon(URI objectUri) throws Exception {
     return getUri(objectUri);
   }
-  
+
   private String getUri(URI objectUri) throws Exception {
     Optional<TestTreeObject> testTreeObject = storage.load(objectUri);
     if (testTreeObject.isPresent()) {
@@ -35,11 +36,12 @@ public class TestTreeObjectApi implements ComposeableObjectApi {
     }
     return null;
   }
-  
+
   @Override
-  public List<ComposeableObject> getChildren(URI parentObjectUri, URI definitionUri)
+  public List<ComposeableObject> getChildren(URI parentObjectUri, URI definitionUri,
+      Consumer<URI> nodeChangeListener)
       throws Exception {
-    
+
     Optional<TestTreeObject> testTreeObject = storage.load(parentObjectUri);
     if (testTreeObject.isPresent()) {
       return createChildredComposeables(testTreeObject.get(), definitionUri);
@@ -51,7 +53,7 @@ public class TestTreeObjectApi implements ComposeableObjectApi {
   private List<ComposeableObject> createChildredComposeables(
       TestTreeObject testTreeObject,
       URI defUri) {
-    
+
     List<URI> children = testTreeObject.getChildren();
     List<ComposeableObject> result = new ArrayList<>();
 
@@ -70,7 +72,7 @@ public class TestTreeObjectApi implements ComposeableObjectApi {
   public String getViewName(URI objectUri) throws Exception {
     return null;
   }
-  
+
   @Override
   public URI getApiUri() {
     return API_URI;

@@ -196,9 +196,9 @@ public class StorageSQL<T> extends ObjectStorageImpl<T> {
   }
 
   @Override
-  public ObjectReferenceList loadReferences(URI uri, String typeClassName) {
+  public Optional<ObjectReferenceList> loadReferences(URI uri, String typeClassName) {
     // TODO Auto-generated method stub
-    return null;
+    return Optional.empty();
   }
 
 }

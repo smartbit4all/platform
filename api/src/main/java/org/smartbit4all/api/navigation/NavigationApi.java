@@ -17,6 +17,7 @@ package org.smartbit4all.api.navigation;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import org.smartbit4all.api.navigation.bean.NavigationConfig;
 import org.smartbit4all.api.navigation.bean.NavigationEntry;
 import org.smartbit4all.api.navigation.bean.NavigationReferenceEntry;
@@ -79,7 +80,7 @@ public interface NavigationApi {
    * @throws Exception
    */
   Map<URI, List<NavigationReferenceEntry>> navigate(URI objectUri, List<URI> associationMetaUris,
-      NavigationCallBackApi callBack);
+      Consumer<URI> nodeChangedListener);
 
   /**
    * Retrieve the entries from the navigations.

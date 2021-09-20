@@ -2,27 +2,23 @@ package org.smartbit4all.api.org;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.smartbit4all.api.invocation.InvocationTestConfig;
 import org.smartbit4all.api.org.bean.User;
-import org.smartbit4all.api.session.UserSessionApi;
 import org.smartbit4all.api.session.UserSessionApiLocal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Bean;
 
 @SpringBootTest(classes = {
     OrgApiTestConfig.class
 })
 class OrgApiTest {
-  
+
   @Autowired
   private MyModuleSecurityOption security;
 
   @Autowired
   private OrgApiInMemory orgApi;
-  
+
   @Autowired
   private UserSessionApiLocal userSessionApi;
 
@@ -33,7 +29,7 @@ class OrgApiTest {
   void testOrgApi() {
     // Prepare a real user to check the security.
     User testUser = orgApi.addTestUser("Joe Public", "joe", "joe.public@smartbit4all.org");
-    
+
     // Without logging in we don't have any right!
     Assertions.assertFalse(security.admin.check());
 
@@ -57,5 +53,5 @@ class OrgApiTest {
         security.viewer.getName());
 
   }
-  
+
 }

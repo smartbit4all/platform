@@ -1,12 +1,14 @@
 package org.smartbit4all.api.invocation;
 
+import java.lang.ref.WeakReference;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 import org.smartbit4all.api.invocation.bean.InvocationRequestTemplate;
 import org.smartbit4all.api.invocation.registration.ApiRegister;
 import org.smartbit4all.api.invocation.registration.ApiRegistrationListenerImpl;
@@ -41,7 +43,7 @@ public final class InvocationApiImpl implements InvocationApi, InitializingBean 
   /**
    * The {@link #register(Object)} function puts here the instances by a generated UUID.
    */
-  Map<UUID, Object> instancesByUUID = new WeakHashMap<>();
+  Map<UUID, WeakReference<Object>> instancesByUUID = new ConcurrentHashMap<>();
 
   @Override
   public InvocationParameter invoke(InvocationRequest request) throws Exception {
@@ -116,19 +118,31 @@ public final class InvocationApiImpl implements InvocationApi, InitializingBean 
     return result.get();
   }
 
+  private void purge() {
+    List<UUID> toRemove = instancesByUUID.entrySet().stream().filter(e -> {
+      return e.getValue().get() == null;
+    }).map(e -> e.getKey()).collect(Collectors.toList());
+    if (toRemove != null) {
+      toRemove.forEach(uuid -> instancesByUUID.remove(uuid));
+    }
+  }
+
   @Override
   public UUID register(Object apiInstance) {
     if (apiInstance == null) {
       return null;
     }
     UUID result = UUID.randomUUID();
-    instancesByUUID.put(result, apiInstance);
+    instancesByUUID.put(result, new WeakReference<Object>(apiInstance));
+    purge();
     return result;
   }
 
   @Override
   public Object find(UUID instanceId) {
-    return instancesByUUID.get(instanceId);
+    purge();
+    WeakReference<Object> ref = instancesByUUID.get(instanceId);
+    return ref == null ? null : ref.get();
   }
 
 }

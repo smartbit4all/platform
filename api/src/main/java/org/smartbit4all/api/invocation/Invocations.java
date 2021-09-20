@@ -1,8 +1,17 @@
 package org.smartbit4all.api.invocation;
 
 import java.lang.reflect.Method;
+import java.net.URI;
 import java.util.UUID;
+import java.util.function.Consumer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.contribution.PrimaryApi;
+import org.smartbit4all.api.invocation.bean.InvocationParameterTemplate;
+import org.smartbit4all.api.invocation.bean.InvocationRequestTemplate;
+import org.smartbit4all.domain.data.storage.ObjectReferenceRequest;
+import org.smartbit4all.domain.data.storage.Storage;
+import org.smartbit4all.domain.data.storage.StorageApi;
 
 /**
  * The developer api for the invocation.
@@ -11,9 +20,12 @@ import org.smartbit4all.api.contribution.PrimaryApi;
  */
 public class Invocations {
 
+  public static final String PARAMETER1 = "parameter1";
   public static final String LOCAL = "local";
   public static final String REST_GEN = "rest-gen";
   public static final String EXECUTION = "execution-invocation";
+
+  private static final Logger log = LoggerFactory.getLogger(Invocations.class);
 
   private Invocations() {
     super();
@@ -135,4 +147,50 @@ public class Invocations {
   public static final InvocationRequest invoke(UUID apiInstanceId) {
     return new InvocationRequest(apiInstanceId);
   }
+
+  public static final void saveConsumer(URI uri, Consumer<URI> listener, String consumerName,
+      Storage<?> storage,
+      StorageApi storageApi, InvocationApi invocationApi)
+      throws Exception {
+    InvocationRequestTemplate invocationTemplate =
+        new InvocationRequestTemplate().apiInstanceId(invocationApi.register(listener))
+            .innerApi(consumerName).methodName("accept")
+            .addParametersItem(new InvocationParameterTemplate().name(PARAMETER1));
+
+    URI callbackUri = invocationApi.save(invocationTemplate);
+
+    storage.saveReferences(new ObjectReferenceRequest(uri, InvocationRequestTemplate.class)
+        .add(callbackUri.toString()));
+
+  }
+
+  public static final void callConsumers(String consumerName, URI uri, Class<?> storageClass,
+      Storage<?> storage,
+      StorageApi storageApi,
+      InvocationApi invocationApi) {
+    if (consumerName == null) {
+      return;
+    }
+    ObjectReferenceRequest referenceRequest = new ObjectReferenceRequest(uri, storageClass);
+    for (InvocationRequestTemplate requestTemplate : storageApi.loadReferences(uri, storageClass,
+        InvocationRequestTemplate.class)) {
+      if (consumerName.equals(requestTemplate.getInnerApi())) {
+        if (requestTemplate.getParameters().size() == 1) {
+          InvocationRequest request = InvocationRequest.of(requestTemplate).setParameters(uri);
+          InvocationParameter result;
+          try {
+            result = invocationApi.invoke(request);
+          } catch (Exception e) {
+            log.debug("Unable to call the registered consumers for {} todo item {}", uri, request,
+                e);
+            referenceRequest.delete(requestTemplate.getUri().toString(),
+                InvocationRequestTemplate.class.getName());
+          }
+        }
+      }
+    }
+    storage.saveReferences(referenceRequest);
+
+  }
+
 }
