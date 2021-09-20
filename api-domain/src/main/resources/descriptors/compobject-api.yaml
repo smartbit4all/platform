@@ -19,6 +19,10 @@ components:
         uri:
           type: string
           format: uri
+        name:
+          type: string
+        description:
+          type: string
         defUri:
           type: string
           format: uri
