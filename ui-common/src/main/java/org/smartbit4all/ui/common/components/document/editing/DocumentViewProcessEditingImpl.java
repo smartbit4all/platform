@@ -16,7 +16,6 @@ import org.smartbit4all.core.object.ApiObjectRef;
 import org.smartbit4all.core.object.ObjectEditingImpl;
 import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.core.object.ObservableObjectImpl;
-import org.smartbit4all.ui.api.components.document.editing.DocumentViewProcessEditing;
 
 /**
  * Handles the panel used for viewing documents in images.

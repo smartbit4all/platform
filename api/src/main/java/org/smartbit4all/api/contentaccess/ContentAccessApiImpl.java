@@ -3,6 +3,7 @@ package org.smartbit4all.api.contentaccess;
 import java.net.URI;
 import java.util.NoSuchElementException;
 import java.util.UUID;
+
 import org.smartbit4all.api.binarydata.BinaryContent;
 import org.smartbit4all.api.binarydata.BinaryContentApi;
 import org.smartbit4all.api.binarydata.BinaryData;
@@ -16,81 +17,69 @@ import io.reactivex.rxjava3.subjects.PublishSubject;
 
 public class ContentAccessApiImpl implements ContentAccessApi {
 
-  private ObjectShareApi objectShareApi;
+	private ObjectShareApi objectShareApi;
 
-  private ObjectStorage<BinaryContent> storage;
+	private ObjectStorage<BinaryContent> storage;
 
-  private BinaryContentApi binaryContentApi;
+	private BinaryContentApi binaryContentApi;
 
-  private PublishSubject<ContentAccessEventData> publisher;
+	private PublishSubject<ContentAccessEventData> publisher;
 
-  public ContentAccessApiImpl(ObjectShareApi objectShareApi, ObjectStorage<BinaryContent> storage,
-      BinaryContentApi binaryContentApi) {
+	public ContentAccessApiImpl(ObjectShareApi objectShareApi, ObjectStorage<BinaryContent> storage,
+			BinaryContentApi binaryContentApi) {
 
-    this.objectShareApi = objectShareApi;
-    this.storage = storage;
-    this.binaryContentApi = binaryContentApi;
-    publisher = PublishSubject.create();
-  }
+		this.objectShareApi = objectShareApi;
+		this.storage = storage;
+		this.binaryContentApi = binaryContentApi;
+		publisher = PublishSubject.create();
+	}
 
-  @Override
-  public Disposable subscribeToContentAccessEvent(UUID uuid,
-      Consumer<ContentAccessEventData> handler) {
-    if (uuid == null) {
-      return publisher.subscribe(handler);
-    } else {
-      return publisher.filter(kikuldesEventData -> kikuldesEventData.getUuid().equals(uuid))
-          .subscribe(handler);
-    }
-  }
+	@Override
+	public Disposable subscribeToContentAccessEvent(UUID uuid, Consumer<ContentAccessEventData> handler) {
+		if (uuid == null) {
+			return publisher.subscribe(handler);
+		} else {
+			return publisher.filter(kikuldesEventData -> kikuldesEventData.getUuid().equals(uuid)).subscribe(handler);
+		}
+	}
 
-  @Override
-  public UUID share() throws Exception {
-    BinaryContent binaryContent = new BinaryContent();
-    binaryContent.setDataUri(new URI(SCHEME, null, "/" + UUID.randomUUID(), null));
-    return share(binaryContent);
-  }
+	@Override
+	public UUID share() throws Exception {
+		BinaryContent binaryContent = new BinaryContent();
+		binaryContent.setDataUri(new URI(SCHEME, null, "/" + UUID.randomUUID(), null));
+		return share(binaryContent);
+	}
 
-  @Override
-  public UUID share(BinaryContent binaryContent) throws Exception {
-    URI savedBinaryContentUri = storage.save(binaryContent);
-    return objectShareApi.registerUri(savedBinaryContentUri);
-  }
+	@Override
+	public UUID share(BinaryContent binaryContent) throws Exception {
+		URI savedBinaryContentUri = storage.save(binaryContent);
+		return objectShareApi.registerUri(savedBinaryContentUri);
+	}
 
-  @Override
-  public BinaryData download(UUID uuid) throws Exception {
-    URI contentUri = objectShareApi.resolveUUID(uuid);
+	@Override
+	public BinaryData download(UUID uuid) throws Exception {
+		URI contentUri = objectShareApi.resolveUUID(uuid);
 
-    if (contentUri != null) {
-      BinaryContent content = storage.load(contentUri).get();
-      BinaryData data = binaryContentApi.getBinaryData(content);
+		if (contentUri != null) {
+			BinaryContent content = storage.load(contentUri).get();
+			BinaryData data = binaryContentApi.getBinaryData(content);
+			publisher.onNext(new ContentAccessEventData().binaryContent(content).direction(Direction.DOWNLOAD).uuid(uuid));
+			return data;
+		} else {
+			throw new NoSuchElementException("The content was not found with the given uuid");
+		}
+	}
 
-      publisher.onNext(new ContentAccessEventData()
-          .binaryContent(content)
-          .direction(Direction.DOWNLOAD)
-          .uuid(uuid));
+	@Override
+	public void upload(UUID uuid, BinaryData binaryData) throws Exception {
+		URI contentUri = objectShareApi.resolveUUID(uuid);
 
-      return data;
-    } else {
-      throw new NoSuchElementException("The content was not found with the given uuid");
-    }
-  }
-
-  @Override
-  public void upload(UUID uuid, BinaryData binaryData) throws Exception {
-    URI contentUri = objectShareApi.resolveUUID(uuid);
-
-    if (contentUri != null) {
-      BinaryContent content = storage.load(contentUri).get();
-      binaryContentApi.uploadContent(content, binaryData, content.getDataUri());
-
-      publisher.onNext(new ContentAccessEventData()
-          .binaryContent(content)
-          .direction(Direction.UPLOAD)
-          .uuid(uuid));
-
-    } else {
-      throw new NoSuchElementException("The content was not found with the given uuid");
-    }
-  }
+		if (contentUri != null) {
+			BinaryContent content = storage.load(contentUri).get();
+			binaryContentApi.uploadContent(content, binaryData, content.getDataUri());
+			publisher.onNext(new ContentAccessEventData().binaryContent(content).direction(Direction.UPLOAD).uuid(uuid));
+		} else {
+			throw new NoSuchElementException("The content was not found with the given uuid");
+		}
+	}
 }

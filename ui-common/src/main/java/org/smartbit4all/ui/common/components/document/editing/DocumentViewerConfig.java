@@ -12,7 +12,6 @@ import org.smartbit4all.api.mimetype.MimeTypeHandlerApi;
 import org.smartbit4all.api.mimetype.MimeTypeHandlerImage;
 import org.smartbit4all.api.mimetype.MimeTypeHandlerText;
 import org.smartbit4all.core.object.ApiBeanDescriptor;
-import org.smartbit4all.ui.api.components.document.editing.DocumentViewProcessEditing;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

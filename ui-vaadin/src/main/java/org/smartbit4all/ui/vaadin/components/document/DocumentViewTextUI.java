@@ -1,7 +1,7 @@
 package org.smartbit4all.ui.vaadin.components.document;
 
 import org.smartbit4all.core.object.PropertyChange;
-import org.smartbit4all.ui.api.components.document.editing.DocumentViewProcessEditing;
+import org.smartbit4all.ui.common.components.document.editing.DocumentViewProcessEditing;
 import org.smartbit4all.ui.vaadin.components.binder.VaadinBinders;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;

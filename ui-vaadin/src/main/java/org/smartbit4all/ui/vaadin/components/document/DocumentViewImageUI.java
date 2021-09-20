@@ -6,7 +6,7 @@ import org.smartbit4all.core.object.CollectionObjectChange;
 import org.smartbit4all.core.object.ObjectChangeSimple;
 import org.smartbit4all.core.object.PropertyChange;
 import org.smartbit4all.core.object.ReferencedObjectChange;
-import org.smartbit4all.ui.api.components.document.editing.DocumentViewProcessEditing;
+import org.smartbit4all.ui.common.components.document.editing.DocumentViewProcessEditing;
 import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;

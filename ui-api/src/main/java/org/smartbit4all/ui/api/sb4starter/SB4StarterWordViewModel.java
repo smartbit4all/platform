@@ -14,7 +14,7 @@ public interface SB4StarterWordViewModel extends ObjectEditing {
 	
 	BinaryData createSB4Starter() throws Exception;
 	
-	void initSb4StarterFormModel(SB4StarterWordFormModel sb4StarterWordFormModel, BiConsumer<BinaryContent, BinaryContent> acceptHandler);
+	void setSb4StarterFormModel(SB4StarterWordFormModel sb4StarterWordFormModel, BiConsumer<BinaryContent, BinaryContent> acceptHandler);
 	
 	void accept();
 	

@@ -1,4 +1,4 @@
-package org.smartbit4all.ui.api.components.document.editing;
+package org.smartbit4all.ui.common.components.document.editing;
 
 import java.net.URI;
 import org.smartbit4all.api.binarydata.BinaryData;
