@@ -8,15 +8,15 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class ContentAccessSrvRestConfig {
-
-  @Bean
-  ContentAccessApiDelegate contentAccessApiDelegate() {
-    return new ContentAccessApiDelegateImpl();
-  }
-
-  @Bean
-  ContentAccessApiController accessApi(ContentAccessApiDelegate accessApiDelegate) {
-    return new ContentAccessApiController(accessApiDelegate);
-  }
-
+		
+	@Bean
+	ContentAccessApiDelegate contentAccessApiDelegate() {
+		return new ContentAccessApiDelegateImpl();
+	}
+	
+	@Bean
+	ContentAccessApiController accessApi(ContentAccessApiDelegate accessApiDelegate) {
+		return new ContentAccessApiController(accessApiDelegate);
+	}
+	
 }

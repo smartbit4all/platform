@@ -24,6 +24,10 @@ components:
     SB4StarterWordState:
       type: string
       enum:
-      - Download
-      - Edit
-      - Uploaded
+      - Letöltés folyamatban
+      - Szerkesztés folyamatban
+      - Szerkesztés befejezve
+      x-enum-varnames:
+      - DOWNLOADING
+      - EDITING
+      - UPLOADED

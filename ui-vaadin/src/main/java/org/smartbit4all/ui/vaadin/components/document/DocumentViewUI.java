@@ -3,7 +3,7 @@ package org.smartbit4all.ui.vaadin.components.document;
 import org.smartbit4all.api.documentview.bean.DisplayMode;
 import org.smartbit4all.core.object.PropertyChange;
 import org.smartbit4all.core.object.ReferencedObjectChange;
-import org.smartbit4all.ui.common.components.document.editing.DocumentViewProcessEditing;
+import org.smartbit4all.ui.api.components.document.editing.DocumentViewProcessEditing;
 import org.smartbit4all.ui.vaadin.object.VaadinPublisherWrapper;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Label;

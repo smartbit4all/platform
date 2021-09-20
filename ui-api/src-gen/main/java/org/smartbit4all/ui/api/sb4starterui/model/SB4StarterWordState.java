@@ -27,11 +27,11 @@ import com.fasterxml.jackson.annotation.JsonValue;
  */
 public enum SB4StarterWordState {
   
-  DOWNLOAD("Download"),
+  DOWNLOADING("Letöltés folyamatban"),
   
-  EDIT("Edit"),
+  EDITING("Szerkesztés folyamatban"),
   
-  UPLOADED("Uploaded");
+  UPLOADED("Szerkesztés befejezve");
 
   private String value;
 

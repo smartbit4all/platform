@@ -7,8 +7,8 @@ import org.springframework.context.annotation.Import;
 @Import(ContentAccessSrvRestForDotNetTestConfig.class)
 public class ContentAccessRestServer {
 
-  public static void main(String[] args) {
-    SpringApplication.run(ContentAccessRestServer.class, args);
-  }
+	public static void main(String[] args) {
+		SpringApplication.run(ContentAccessRestServer.class, args); 
+	}
 
 }
