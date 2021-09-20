@@ -39,7 +39,7 @@ public class SB4StarterWordUI extends Dialog {
     VaadinBinders.bind(lblState, viewModel.sb4Starter(), SB4StarterWordFormModel.STATE);
 
     btnAccept = new Button("Elfogad");
-    btnAccept.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
+    btnAccept.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
     btnAccept.setEnabled(false);
     btnAccept.addClickListener(e -> {
       viewModel.accept();
@@ -47,7 +47,7 @@ public class SB4StarterWordUI extends Dialog {
     });
 
     Button btnClose = new Button("Elvet");
-    btnClose.addThemeVariants(ButtonVariant.LUMO_ERROR);
+    btnClose.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
     btnClose.addClickListener(e -> {
       viewModel.close();
       close();
