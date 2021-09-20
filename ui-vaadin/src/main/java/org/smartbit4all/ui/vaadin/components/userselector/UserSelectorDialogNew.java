@@ -34,13 +34,21 @@ public class UserSelectorDialogNew extends Dialog {
 
   protected void createAndBindUI(SelectionMode selectionMode) {
     setWidth("40%");
+    addDialogCloseActionListener(e -> {
+      userSelectorVM.executeCommand(UserSelectorViewModel.CLOSE_CMD);
+      close();
+    });
 
     layout = new FlexLayout();
     layout.setFlexDirection(FlexDirection.COLUMN);
     grid = new UserSelectorGrid(header, selectionMode);
 
     save = new Button("Mentés", e -> saveAndCloseDialog());
+    save.getStyle().set("cursor", "pointer");
+    
     close = new Button("Bezárás", e -> closeDialog());
+    close.getStyle().set("cursor", "pointer");
+    
     buttonLayout = new FlexLayout(save, close);
     buttonLayout.setFlexDirection(FlexDirection.ROW);
 

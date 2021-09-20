@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 import org.smartbit4all.api.org.OrgApi;
 import org.smartbit4all.api.userselector.bean.UserMultiSelector;
+import org.smartbit4all.api.userselector.bean.UserSelector;
 import org.smartbit4all.api.userselector.bean.UserSingleSelector;
 import org.smartbit4all.api.userselector.util.UserSelectorUtil;
 import org.smartbit4all.core.object.ApiBeanDescriptor;
@@ -24,10 +25,12 @@ public class UserSelectorViewModelImpl extends ObjectEditingImpl implements User
   private ObservableObjectImpl singleSelector;
   private ApiObjectRef singleSelectorRef;
   private UserSingleSelector singleSelectorWrapper;
+  private UserSelector singleSelected;
 
   private ObservableObjectImpl multiSelector;
   private ApiObjectRef multiSelectorRef;
   private UserMultiSelector multiSelectorWrapper;
+  private List<UserSelector> multiSelected;
 
   private ObservableObjectImpl commands;
   private ApiObjectRef commandsRef;
@@ -38,7 +41,6 @@ public class UserSelectorViewModelImpl extends ObjectEditingImpl implements User
 
   private Map<String, Consumer<String[]>> commandMethodsByCode;
 
-  private List<URI> selectedUris;
 
   public UserSelectorViewModelImpl(OrgApi orgApi,
       Map<Class<?>, ApiBeanDescriptor> userSelectorDescriptor,
@@ -49,8 +51,8 @@ public class UserSelectorViewModelImpl extends ObjectEditingImpl implements User
     this.commandsDescriptor = commandsDescriptor;
 
     commandMethodsByCode = new HashMap<>();
-    selectedUris = new ArrayList<>();
-
+    multiSelected = new ArrayList<>();
+    
     initObservables();
     initRefs();
   }
@@ -75,8 +77,9 @@ public class UserSelectorViewModelImpl extends ObjectEditingImpl implements User
   public void setSingleSelectorRef(URI selectedUserUri) {
     UserSingleSelector userSingleSelector =
         UserSelectorUtil.createUserSingleSelector(orgApi.getAllUsers(),
-            // orgApi.getAllGroups(),
             selectedUserUri);
+    
+    singleSelected = userSingleSelector.getSelected();
 
     singleSelectorRef.setObject(userSingleSelector);
 
@@ -87,10 +90,11 @@ public class UserSelectorViewModelImpl extends ObjectEditingImpl implements User
   public void setMultiSelectorRef(List<URI> selectedUserUris) {
     UserMultiSelector userMultiSelector =
         UserSelectorUtil.createUserMultiSelector(orgApi.getAllUsers(),
-            // orgApi.getAllGroups(),
             selectedUserUris);
 
     multiSelectorRef.setObject(userMultiSelector);
+    
+    multiSelected = userMultiSelector.getSelected();
 
     multiSelector.notifyListeners();
   }
@@ -129,7 +133,7 @@ public class UserSelectorViewModelImpl extends ObjectEditingImpl implements User
     commands.setRef(commandsRef);
     commandsWrapper = commandsRef.getWrapper(UserSelectorCommands.class);
 
-    addCommand(UserSelectorViewModel.CLOSE_CMD, this::closeAndSaveSelector);
+    addCommand(UserSelectorViewModel.CLOSE_CMD, this::closeSelector);
     addCommand(UserSelectorViewModel.SAVE_CMD, this::saveSelector);
   }
 
@@ -138,13 +142,16 @@ public class UserSelectorViewModelImpl extends ObjectEditingImpl implements User
     commandMethodsByCode.put(code, commandMethod);
   }
 
-  private void closeAndSaveSelector(String... params) {
-    multiSelectorWrapper.setIsSaving(true);
+  private void closeSelector(String... params) {
+    singleSelectorWrapper.setSelected(singleSelected);
+    multiSelectorWrapper.setSelected(multiSelected);
     notifyAllListeners();
   }
 
   private void saveSelector(String... params) {
-    multiSelectorWrapper.setIsSaving(false);
+    singleSelected = singleSelectorWrapper.getSelected();
+    multiSelected = multiSelectorWrapper.getSelected();
+    notifyAllListeners();
   }
 
   private void notifyAllListeners() {
