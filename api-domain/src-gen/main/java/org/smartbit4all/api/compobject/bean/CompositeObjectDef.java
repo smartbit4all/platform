@@ -37,7 +37,7 @@ import javax.validation.Valid;
   CompositeObjectDef.URI,
   CompositeObjectDef.NAME,
   CompositeObjectDef.DESCRIPTION,
-  CompositeObjectDef.DEF_URI,
+  CompositeObjectDef.COMPOSEABLE_DEF_URI,
   CompositeObjectDef.ASSOCIATIONS
 })
 @JsonTypeName("CompositeObjectDef")
@@ -52,8 +52,8 @@ public class CompositeObjectDef {
   public static final String DESCRIPTION = "description";
   private String description;
 
-  public static final String DEF_URI = "defUri";
-  private URI defUri;
+  public static final String COMPOSEABLE_DEF_URI = "composeableDefUri";
+  private URI composeableDefUri;
 
   public static final String ASSOCIATIONS = "associations";
   private List<CompositeObjectAssociation> associations = null;
@@ -141,31 +141,31 @@ public class CompositeObjectDef {
   }
 
 
-  public CompositeObjectDef defUri(URI defUri) {
+  public CompositeObjectDef composeableDefUri(URI composeableDefUri) {
     
-    this.defUri = defUri;
+    this.composeableDefUri = composeableDefUri;
     return this;
   }
 
    /**
-   * Get defUri
-   * @return defUri
+   * The CompositeObjects&#39;s ComposeableObjectDef uri field, which determines the view, icon etc.
+   * @return composeableDefUri
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
-  @JsonProperty(DEF_URI)
+  @ApiModelProperty(value = "The CompositeObjects's ComposeableObjectDef uri field, which determines the view, icon etc.")
+  @JsonProperty(COMPOSEABLE_DEF_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public URI getDefUri() {
-    return defUri;
+  public URI getComposeableDefUri() {
+    return composeableDefUri;
   }
 
 
-  @JsonProperty(DEF_URI)
+  @JsonProperty(COMPOSEABLE_DEF_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setDefUri(URI defUri) {
-    this.defUri = defUri;
+  public void setComposeableDefUri(URI composeableDefUri) {
+    this.composeableDefUri = composeableDefUri;
   }
 
 
@@ -217,13 +217,13 @@ public class CompositeObjectDef {
     return Objects.equals(this.uri, compositeObjectDef.uri) &&
         Objects.equals(this.name, compositeObjectDef.name) &&
         Objects.equals(this.description, compositeObjectDef.description) &&
-        Objects.equals(this.defUri, compositeObjectDef.defUri) &&
+        Objects.equals(this.composeableDefUri, compositeObjectDef.composeableDefUri) &&
         Objects.equals(this.associations, compositeObjectDef.associations);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, name, description, defUri, associations);
+    return Objects.hash(uri, name, description, composeableDefUri, associations);
   }
 
   @Override
@@ -233,7 +233,7 @@ public class CompositeObjectDef {
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    description: ").append(toIndentedString(description)).append("\n");
-    sb.append("    defUri: ").append(toIndentedString(defUri)).append("\n");
+    sb.append("    composeableDefUri: ").append(toIndentedString(composeableDefUri)).append("\n");
     sb.append("    associations: ").append(toIndentedString(associations)).append("\n");
     sb.append("}");
     return sb.toString();

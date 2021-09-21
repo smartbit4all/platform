@@ -122,9 +122,9 @@ public class CompositeObjectApi implements ComposeableObjectApi {
       throws Exception {
 
     return composeableDefStorage.load(
-        def.getDefUri())
+        def.getComposeableDefUri())
         .orElseThrow(() -> new IllegalArgumentException(
-            "CompositeObjectAssociation does not exist with URI: " + def.getDefUri()));
+            "CompositeObjectAssociation does not exist with URI: " + def.getComposeableDefUri()));
   }
 
 }

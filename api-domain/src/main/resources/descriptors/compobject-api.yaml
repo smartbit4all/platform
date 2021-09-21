@@ -23,9 +23,10 @@ components:
           type: string
         description:
           type: string
-        defUri:
+        composeableDefUri:
           type: string
           format: uri
+          description: The CompositeObjects's ComposeableObjectDef uri field, which determines the view, icon etc.
         associations:
           type: array
           items:
@@ -41,6 +42,7 @@ components:
         compositeDefUri:
           type: string
           format: uri
+          description: The CompositeObjectDef's uri field.
         caption:
           type: string
         objects:

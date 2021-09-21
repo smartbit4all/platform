@@ -90,12 +90,12 @@ public class CompositeObject {
   }
 
    /**
-   * Get compositeDefUri
+   * The CompositeObjectDef&#39;s uri field.
    * @return compositeDefUri
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "The CompositeObjectDef's uri field.")
   @JsonProperty(COMPOSITE_DEF_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

@@ -89,7 +89,7 @@ public class CompositeObjects {
   }
 
   public static ComposeableObjectDef addAssociation(
-      CompositeObjectDef compositeObject,
+      CompositeObjectDef compositeObjectDef,
       URI childDefUri,
       URI childApiUri,
       boolean childRecursive,
@@ -97,13 +97,13 @@ public class CompositeObjects {
       String viewName,
       boolean assocVisible) {
 
-    URI childAssocUri = createChildAssocUri(compositeObject.getDefUri(), childDefUri);
+    URI childAssocUri = createChildAssocUri(compositeObjectDef.getComposeableDefUri(), childDefUri);
     CompositeObjectAssociation newCompObjAssoc = new CompositeObjectAssociation()
         .assocDefUri(childAssocUri)
         .childDefUri(childDefUri)
         .childRecursive(childRecursive);
 
-    compositeObject.addAssociationsItem(newCompObjAssoc);
+    compositeObjectDef.addAssociationsItem(newCompObjAssoc);
 
     return createAssocDef(newCompObjAssoc, childApiUri, icon, viewName, assocVisible);
   }
@@ -173,7 +173,7 @@ public class CompositeObjects {
 
           ComposeableObjectNavigation.createAssocMeta(
               assocUri,
-              compositeDef.getDefUri(),
+              compositeDef.getComposeableDefUri(),
               childDefUri,
               assocUri),
 

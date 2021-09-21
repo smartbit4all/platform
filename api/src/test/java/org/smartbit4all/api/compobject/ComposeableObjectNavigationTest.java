@@ -1,5 +1,7 @@
 package org.smartbit4all.api.compobject;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.net.URI;
 import java.util.Collections;
 import java.util.List;
@@ -18,8 +20,6 @@ import org.smartbit4all.api.navigation.bean.NavigationReference;
 import org.smartbit4all.domain.data.storage.ObjectStorageInMemory;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class ComposeableObjectNavigationTest {
 
@@ -86,7 +86,7 @@ public class ComposeableObjectNavigationTest {
     URI compObjDef = URI.create("testnavschema:/compositeObjectDef.compobj");
     CompositeObjectDef compositeDef = new CompositeObjectDef()
         .uri(compObjDef)
-        .defUri(compositeObjectCompDef.getUri());
+        .composeableDefUri(compositeObjectCompDef.getUri());
     compositeDefStorage.save(compositeDef);
 
     URI compObj1 = URI.create("testnavschema:/compositeObject1.compobj");
