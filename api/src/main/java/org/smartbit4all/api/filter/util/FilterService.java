@@ -1,6 +1,7 @@
 package org.smartbit4all.api.filter.util;
 
 import static java.time.temporal.ChronoField.DAY_OF_MONTH;
+import static java.time.temporal.ChronoField.DAY_OF_YEAR;
 import static java.time.temporal.ChronoUnit.MONTHS;
 import static java.time.temporal.ChronoUnit.WEEKS;
 import java.net.URI;
@@ -41,11 +42,11 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class FilterService {
-  
+
   private static final Logger log = LoggerFactory.getLogger(FilterService.TimeFilterOptions.class);
 
   static enum TimeFilterOptions {
-    LAST_WEEK, THIS_MONTH, LAST_MONTH, YESTERDAY, TODAY, OTHER, LAST_FIVE_YEARS
+    LAST_WEEK, THIS_MONTH, LAST_MONTH, YESTERDAY, TODAY, THIS_YEAR, OTHER, LAST_FIVE_YEARS
   }
 
   private Map<String, Function<FilterField, Expression>> expressionFactoryByOperatationCodes;
@@ -53,7 +54,7 @@ public class FilterService {
   private EntityManager entityManager;
 
   private TransferService transferService;
-  
+
   public FilterService(EntityManager entityManager, TransferService transferService) {
     this.entityManager = entityManager;
     this.transferService = transferService;
@@ -62,18 +63,29 @@ public class FilterService {
 
   private void initDefaultOperationFactories() {
     expressionFactoryByOperatationCodes = new HashMap<>();
-    expressionFactoryByOperatationCodes.put(DefaultFilterOperationCodes.OPERATION_DATE_INTERVAL, this::createDateIntervalClause);
-    expressionFactoryByOperatationCodes.put(DefaultFilterOperationCodes.OPERATION_DATE_TIME_INTERVAL, this::createDateIntervalClause);
-    expressionFactoryByOperatationCodes.put(DefaultFilterOperationCodes.OPERATION_DATE_INTERVAL_CB, this::createDateIntervalCbClause);
-    expressionFactoryByOperatationCodes.put(DefaultFilterOperationCodes.OPERATION_DATE_TIME_INTERVAL_CB,
+    expressionFactoryByOperatationCodes.put(DefaultFilterOperationCodes.OPERATION_DATE_INTERVAL,
+        this::createDateIntervalClause);
+    expressionFactoryByOperatationCodes.put(
+        DefaultFilterOperationCodes.OPERATION_DATE_TIME_INTERVAL, this::createDateIntervalClause);
+    expressionFactoryByOperatationCodes.put(DefaultFilterOperationCodes.OPERATION_DATE_INTERVAL_CB,
         this::createDateIntervalCbClause);
-    expressionFactoryByOperatationCodes.put(DefaultFilterOperationCodes.OPERATION_DATE_EQ, this::createDateEqClause);
-    expressionFactoryByOperatationCodes.put(DefaultFilterOperationCodes.OPERATION_DATE_TIME_EQ, this::createDateTimeEqClause);
-    expressionFactoryByOperatationCodes.put(DefaultFilterOperationCodes.OPERATION_NUMBER_EQ, this::createTxtEqClause);
-    expressionFactoryByOperatationCodes.put(DefaultFilterOperationCodes.OPERATION_TXT_EQ, this::createTxtEqClause);
-    expressionFactoryByOperatationCodes.put(DefaultFilterOperationCodes.OPERATION_TXT_LIKE, this::createTxtLikeClause);
-    expressionFactoryByOperatationCodes.put(DefaultFilterOperationCodes.OPERATION_MULTI_SEL, this::createMultiSelClause);
-    expressionFactoryByOperatationCodes.put(DefaultFilterOperationCodes.OPERATION_COMBO_SEL, this::createComboSelClause);
+    expressionFactoryByOperatationCodes.put(
+        DefaultFilterOperationCodes.OPERATION_DATE_TIME_INTERVAL_CB,
+        this::createDateIntervalCbClause);
+    expressionFactoryByOperatationCodes.put(DefaultFilterOperationCodes.OPERATION_DATE_EQ,
+        this::createDateEqClause);
+    expressionFactoryByOperatationCodes.put(DefaultFilterOperationCodes.OPERATION_DATE_TIME_EQ,
+        this::createDateTimeEqClause);
+    expressionFactoryByOperatationCodes.put(DefaultFilterOperationCodes.OPERATION_NUMBER_EQ,
+        this::createTxtEqClause);
+    expressionFactoryByOperatationCodes.put(DefaultFilterOperationCodes.OPERATION_TXT_EQ,
+        this::createTxtEqClause);
+    expressionFactoryByOperatationCodes.put(DefaultFilterOperationCodes.OPERATION_TXT_LIKE,
+        this::createTxtLikeClause);
+    expressionFactoryByOperatationCodes.put(DefaultFilterOperationCodes.OPERATION_MULTI_SEL,
+        this::createMultiSelClause);
+    expressionFactoryByOperatationCodes.put(DefaultFilterOperationCodes.OPERATION_COMBO_SEL,
+        this::createComboSelClause);
 
     expressionFactoryByOperatationCodes.put(DefaultFilterOperationCodes.OPERATION_DET_NUMBER_EQ,
         createDetExpression(this::createTxtEqClause));
@@ -86,7 +98,7 @@ public class FilterService {
     expressionFactoryByOperatationCodes.put(DefaultFilterOperationCodes.OPERATION_DET_COMBO_SEL,
         createDetExpression(this::createComboSelClause));
   }
-  
+
   public void addCustomExpressionFactoryForOperationCode(String operationCode,
       Function<FilterField, Expression> factory) {
     expressionFactoryByOperatationCodes.put(operationCode, factory);
@@ -210,10 +222,11 @@ public class FilterService {
           return null;
         });
   }
-  
+
   /**
    * Creates an expression based on the specified parameters of the filterField.</br>
    * This method does not use the serviec's registered factories.
+   * 
    * @param <PT> the type of the property
    * @param filterField The filterField that holds all the data to create the expression
    * @param operandGetter A function to give which operand to use
@@ -230,11 +243,11 @@ public class FilterService {
       Function<FilterOperandValue, String> valueGetter) {
     Expression expressionOfField = null;
     FilterOperandValue filterOperandValue = operandGetter.apply(filterField);
-    if(filterOperandValue == null) {
+    if (filterOperandValue == null) {
       return null;
     }
     String value = valueGetter.apply(filterOperandValue);
-    if(value == null) {
+    if (value == null) {
       return null;
     }
     Class<?> type = getValueType(filterOperandValue);
@@ -254,7 +267,7 @@ public class FilterService {
     }
     return expressionOfField;
   }
-  
+
   public Function<FilterField, Expression> createDetExpression(
       Function<FilterField, Expression> originalFactory) {
     return filterField -> {
@@ -288,10 +301,9 @@ public class FilterService {
       String operandValue, BiFunction<Property<PT>, PT, Expression> exp) {
     /*
      * Here we have the value as a String and its type class from the operand object. To create the
-     * expression we need it in the target property's type.
-     * We convert it in 2 steps: sting -> operand's type -> property's type.
-     * This way it is possible to use custom type conversion logic by setting a specific type name 
-     * to the operand object. 
+     * expression we need it in the target property's type. We convert it in 2 steps: sting ->
+     * operand's type -> property's type. This way it is possible to use custom type conversion
+     * logic by setting a specific type name to the operand object.
      */
     Property<PT> typedProperty = (Property<PT>) property;
     OT operandTypedValue = convertValueToType(operandValue, operandType);
@@ -333,7 +345,7 @@ public class FilterService {
 
   @SuppressWarnings("unchecked")
   private <FT, TT> TT convertValueToType(FT value, Class<FT> fromType, Class<TT> toType) {
-    if(fromType.equals(toType)) {
+    if (fromType.equals(toType)) {
       return (TT) value;
     }
     Converter<FT, TT> valueConverter = transferService.converterByType(fromType, toType);
@@ -346,7 +358,7 @@ public class FilterService {
           "Unable to typecast the selected values to create expression for the configured property!");
     }
   }
-  
+
   private <T> T convertValueToType(String value, Class<T> type) {
     return convertValueToType(value, String.class, type);
   }
@@ -422,6 +434,11 @@ public class FilterService {
         startDate = today.minusDays(1);
         endDate = today.minusDays(1);
         break;
+      case THIS_YEAR:
+        startDate = today.with(DAY_OF_YEAR, 1);
+        endDate = today;
+        endTime = now;
+        break;
       case LAST_FIVE_YEARS:
         startDate = today.minusYears(5);
         endDate = today;
@@ -462,12 +479,13 @@ public class FilterService {
         LocalDate filterDate = convertToLocalDate(valueOperand);
         @SuppressWarnings("unchecked")
         Property<LocalDateTime> dateTimeProperty = (Property<LocalDateTime>) property;
-        return dateTimeProperty.between(filterDate.atStartOfDay(), filterDate.plusDays(1l).atStartOfDay());
+        return dateTimeProperty.between(filterDate.atStartOfDay(),
+            filterDate.plusDays(1l).atStartOfDay());
       }
     }
     return null;
   }
-  
+
   private Expression createDateTimeEqClause(FilterField filterField) {
     Property<?> property =
         filterField.getPropertyUri1() == null ? null
@@ -524,7 +542,7 @@ public class FilterService {
     }
     return null;
   }
-  
+
   private <T> Expression createDateIntervalExpression(Property<?> property,
       FilterOperandValue value1Operand, FilterOperandValue value2Operand,
       Function<FilterOperandValue, T> operandConverter) {
