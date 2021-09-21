@@ -1,20 +1,16 @@
 package org.smartbit4all.ui.vaadin.components.sb4starter;
 
 import java.util.function.Supplier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.ui.api.sb4starter.SB4StarterWordViewModel;
-import org.smartbit4all.ui.vaadin.util.Notifications;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.server.StreamResource;
 
 public class SB4StarterWordButton extends Anchor {
-
-  private static final Logger log = LoggerFactory.getLogger(SB4StarterWordButton.class);
 
   private Button btnInner;
 
@@ -51,9 +47,9 @@ public class SB4StarterWordButton extends Anchor {
       SB4StarterWordUI sb4StarterWordUI = new SB4StarterWordUI(viewModel);
       sb4StarterWordUI.setCloseOnOutsideClick(false);
       sb4StarterWordUI.open();
-    } catch (Exception ex) {
-      Notifications.showErrorNotification(ex.getMessage());
-      log.error("Error while editing word document", ex);
+    } catch (Exception e) {
+      new ConfirmDialog("Hiba", e.getMessage(), "Ok", conf -> {
+      }).open();
     }
 
   }
