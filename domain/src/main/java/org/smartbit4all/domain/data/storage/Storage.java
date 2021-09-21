@@ -14,7 +14,6 @@ import org.smartbit4all.domain.data.storage.index.StorageIndex;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Expression;
 import org.springframework.util.Assert;
-import io.reactivex.rxjava3.subjects.PublishSubject;
 
 /**
  * Storage is an ObjectStorage which maintains the indexes on storing the objects. Objects can be
@@ -34,8 +33,6 @@ public class Storage<T> implements ObjectStorage<T> {
    * The class managed by the given storage instance.
    */
   private final Class<T> clazz;
-
-  private PublishSubject<ObjectChange<T>> objectChangePublisher = PublishSubject.create();
 
   /**
    * @param clazz The class that is managed by the storage instance.
@@ -58,7 +55,6 @@ public class Storage<T> implements ObjectStorage<T> {
     ObjectChange<T> objectChange = new ObjectChange<>();
     objectChange.object = object;
     objectChange.uri = result;
-    objectChangePublisher.onNext(objectChange);
     return result;
   }
 
@@ -194,10 +190,6 @@ public class Storage<T> implements ObjectStorage<T> {
   @Override
   public Optional<ObjectReferenceList> loadReferences(URI uri, String typeClass) {
     return storage.loadReferences(uri, typeClass);
-  }
-
-  final PublishSubject<ObjectChange<T>> getObjectChangePublisher() {
-    return objectChangePublisher;
   }
 
   @Override

@@ -2,7 +2,6 @@ package org.smartbit4all.domain.data.storage;
 
 import java.net.URI;
 import java.util.Set;
-import java.util.function.BiConsumer;
 
 /**
  * The storage api is the access for the {@link Storage} instances defined in the configurations of
@@ -33,14 +32,5 @@ public interface StorageApi {
    * @return The set of referenced objects.
    */
   <T, R> Set<R> loadReferences(URI uri, Class<T> clazz, Class<R> typeClass);
-
-  /**
-   * Adds a new change listener. Typical use case is that ...Api subscribes and decide what to do
-   * when the object has been changed.
-   * 
-   * @param onChange
-   */
-  <T, R> void onChange(Class<T> storageClass, Class<R> referencedClass,
-      BiConsumer<T, Set<R>> onChange);
 
 }

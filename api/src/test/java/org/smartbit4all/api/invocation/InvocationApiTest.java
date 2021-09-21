@@ -1,12 +1,14 @@
 package org.smartbit4all.api.invocation;
 
-import static org.assertj.core.api.Assertions.fail;
 import java.net.URI;
+import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.api.invocation.bean.InvocationRequestTemplate;
 import org.smartbit4all.api.invocation.bean.TestDataBean;
+import org.smartbit4all.api.storage.bean.ObjectReference;
+import org.smartbit4all.api.storage.bean.ObjectReferenceList;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.storage.ObjectReferenceRequest;
 import org.smartbit4all.domain.data.storage.Storage;
@@ -77,26 +79,19 @@ class InvocationApiTest {
     storageTDB.saveReferences(new ObjectReferenceRequest(tdb1Uri, InvocationRequestTemplate.class)
         .add(callbackUri.toString()));
 
-    storageApi.onChange(TestDataBean.class, InvocationRequestTemplate.class,
-        (b, r) -> r.forEach(requestTemplate -> {
-          InvocationRequest request =
-              InvocationRequest.of(requestTemplate).setParameter("p1", value);
-          InvocationParameter result;
-          try {
-            result = invocationApi.invoke(request);
-            callResult = result.getValue().toString();
-          } catch (Exception e) {
-            fail("Unable to call the " + request, e);
-          }
-        }));
 
-    // Modify the give data
-    tdb1.setUri(tdb1Uri);
-    tdb1.setData(value + value);
-    storageTDB.save(tdb1);
+    Optional<ObjectReferenceList> references =
+        storageTDB.loadReferences(tdb1Uri, InvocationRequestTemplate.class.getName());
 
-    // Triggering by the modification the result will lead to invocation.
-    Assertions.assertEquals(value, callResult);
+    ObjectReferenceList referenceList = references.get();
+
+    Assertions.assertEquals(1, referenceList.getReferences().size());
+    ObjectReference objectReference = referenceList.getReferences().get(0);
+
+    InvocationRequestTemplate requestTemplate =
+        invocationApi.load(URI.create(objectReference.getReferenceId()));
+
+    Assertions.assertEquals(TestApi.echoMethodTemplate, requestTemplate);
   }
 
   @Test

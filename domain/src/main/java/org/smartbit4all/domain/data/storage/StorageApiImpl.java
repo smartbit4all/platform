@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import org.smartbit4all.api.storage.bean.ObjectReferenceList;
 import org.springframework.beans.factory.InitializingBean;
@@ -72,35 +71,5 @@ public final class StorageApiImpl implements StorageApi, InitializingBean {
           e);
     }
   }
-
-  @Override
-  public <T, R> void onChange(Class<T> storageClass, Class<R> referencedClass,
-      BiConsumer<T, Set<R>> onChange) {
-    Storage<T> storage = get(storageClass);
-    storage.getObjectChangePublisher()
-        .subscribe(
-            c -> onChange.accept(c.object, loadReferences(c.uri, storageClass, referencedClass)));
-  }
-
-  // @Override
-  // public <R> void onChange(Class<R> referencedClass,
-  // BiConsumer<org.smartbit4all.domain.data.storage.T, Set<R>> onChange) {
-  // // TODO Auto-generated method stub
-  // super.onChange(referencedClass, onChange);
-  // }
-  //
-  // /**
-  // * Adds a new change listener. Typical use case is that ...Api subscribes and decide what to do
-  // * when the object has been changed.
-  // *
-  // * @param onChange
-  // */
-  // public <R> void onChange(Class<R> referencedClass, BiConsumer<T, Set<R>> onChange) {
-  // objectChangePublisher.subscribe(c -> onChange.accept(c.object, loadReferences(c.uri)));
-  // }
-  //
-  // {
-  // objectChangePublisher.subscribe(c -> onChange.accept(c.object, loadReferences(c.uri)));
-  // }}
 
 }
