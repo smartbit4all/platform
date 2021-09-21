@@ -47,6 +47,30 @@ public class NavigationConfig {
     });
   }
 
+  /**
+   * Inside an entry the associations must have a unique name so the name va
+   * 
+   * @param entryUri
+   * @param assocName
+   * @return
+   */
+  public URI findAssocMetaUriByAssocName(URI entryUri, String assocName) {
+    if (assocName == null) {
+      return null;
+    }
+    List<URI> assocURIs = assocMetaUrisByEntryMetaUri.get(entryUri);
+    if (assocURIs != null) {
+      return null;
+    }
+    for (URI uri : assocURIs) {
+      AssocNodeConfig assocNodeConfig = assocConfigsByUri.get(uri);
+      if (assocName.equals(assocNodeConfig.getName())) {
+        return uri;
+      }
+    }
+    return null;
+  }
+
   public List<URI> getAssocMetaUris(URI entryMetaUri) {
     checkUriParam(entryMetaUri, "entryMetaUri");
     return assocMetaUrisByEntryMetaUri.get(entryMetaUri);
@@ -144,6 +168,7 @@ public class NavigationConfig {
       assocConfig.setVisible(isVisible);
       assocConfig.setLabel(label);
       assocConfig.setIconKey(iconKey);
+      assocConfig.setName(assocMeta.getName());
       nodeConfigByAssocUri.put(assocUri, assocConfig);
       return this;
     }
@@ -234,6 +259,7 @@ public class NavigationConfig {
     private String iconKey;
     private String label;
     private URI assocUri;
+    private String name;
 
     public AssocNodeConfig() {}
 
@@ -267,6 +293,14 @@ public class NavigationConfig {
 
     public void setAssocUri(URI assocUri) {
       this.assocUri = assocUri;
+    }
+
+    protected final String getName() {
+      return name;
+    }
+
+    protected final void setName(String name) {
+      this.name = name;
     }
 
   }

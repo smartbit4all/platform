@@ -17,8 +17,10 @@ package org.smartbit4all.api.navigation;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 import org.smartbit4all.api.navigation.bean.NavigationReferenceEntry;
+import org.smartbit4all.core.object.ApiObjectRef;
 
 /**
  * The basic implementation of the {@link NavigationApi}.
@@ -43,6 +45,11 @@ public abstract class NavigationImpl implements NavigationApi {
   public Map<URI, List<NavigationReferenceEntry>> navigate(URI objectUri,
       List<URI> associationMetaUris, Consumer<URI> nodeChangedListener) {
     return navigate(objectUri, associationMetaUris);
+  }
+
+  @Override
+  public Optional<ApiObjectRef> loadObject(URI entryMetaUri, URI objectUri) {
+    return Optional.empty();
   }
 
 }

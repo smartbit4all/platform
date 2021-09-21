@@ -21,13 +21,17 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.ApiItemChangeEvent;
 import org.smartbit4all.api.ApiItemOperation;
 import org.smartbit4all.api.navigation.bean.NavigationAssociation;
@@ -38,6 +42,7 @@ import org.smartbit4all.api.navigation.bean.NavigationNode;
 import org.smartbit4all.api.navigation.bean.NavigationReference;
 import org.smartbit4all.api.navigation.bean.NavigationReferenceEntry;
 import org.smartbit4all.api.navigation.bean.NavigationView;
+import org.smartbit4all.core.object.ApiObjectRef;
 import org.smartbit4all.core.utility.StringConstant;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.subjects.PublishSubject;
@@ -50,6 +55,8 @@ import io.reactivex.rxjava3.subjects.PublishSubject;
  *
  */
 public class Navigation {
+
+  private static final Logger log = LoggerFactory.getLogger(Navigation.class);
 
   public static final String ASSOC_URI_VIEW_PARAM_KEY = "assocUri";
 
@@ -163,6 +170,39 @@ public class Navigation {
   }
 
   /**
+   * Get the children of a node
+   * 
+   * @param parentNode The parent of the children nodes.
+   * @param assocName The name of the association.
+   * @return
+   */
+  public List<NavigationNode> getChildrenNodes(NavigationNode parentNode,
+      String assocName) {
+    if (parentNode == null || parentNode.getAssociations() == null
+        || parentNode.getAssociations().isEmpty()) {
+      return Collections.emptyList();
+    }
+    URI uriByAssocName =
+        config.findAssocMetaUriByAssocName(parentNode.getEntry().getMetaUri(), assocName);
+    if (uriByAssocName == null) {
+      return Collections.emptyList();
+    }
+    for (NavigationAssociation assoc : parentNode.getAssociations()) {
+      // If the association is hidden then we get the references directly.
+      if (uriByAssocName.equals(assoc.getMetaUri())) {
+        if (assoc.getReferences() != null) {
+          return assoc.getReferences().stream().map(r -> r.getEndNode())
+              .collect(Collectors.toList());
+        } else {
+          return Collections.emptyList();
+        }
+      }
+    }
+
+    return Collections.emptyList();
+  }
+
+  /**
    * Set null the {@link NavigationAssociation#lastNavigation(Integer)} to force the refresh when
    * the children requested again.
    * 
@@ -268,6 +308,19 @@ public class Navigation {
         .collect(Collectors.toMap(NavigationAssociation::getMetaUri,
             a -> a));
 
+    return expandAssociations(node, naviAssocByMetaUri);
+  }
+
+  /**
+   * This function expands the given associations of a node regardless the last refreshment time.
+   * 
+   * @param node The note to expand
+   * @param naviAssocByMetaUri The associations identified by the meta uri of the association to
+   *        pass it for the navigation.
+   * @return The result is the change list.
+   */
+  private List<ApiItemChangeEvent<NavigationReference>> expandAssociations(NavigationNode node,
+      Map<URI, NavigationAssociation> naviAssocByMetaUri) {
     URI currentObjectUri = node.getEntry().getObjectUri();
     ArrayList<URI> assocMetaUris = new ArrayList<>(naviAssocByMetaUri.keySet());
 
@@ -601,5 +654,162 @@ public class Navigation {
     return rootNodeRemovedPublisher.subscribe(node -> listener.accept(node));
   }
 
+  /**
+   * The navigation will fetch for the nodes in the navigation and
+   * {@link #expandAll(NavigationNode)} all the necessary nodes to reach them.
+   * 
+   * @param navigationPath The format is the following:
+   * 
+   *        <ul>
+   *        <li>/ --> This is the root itself.</li>
+   *        <li>/ASSOC1 --> The nodes available through the ASSOC1 navigation association of the
+   *        root.</li>
+   *        <li>/ASSOC1/ASSOC2/ASSOC3 --> The nodes available through the ASSOC1-ASSOC2-ASSOC3
+   *        navigation association starting from the root.</li>
+   *        </ul>
+   * 
+   * @return
+   */
+  public List<NavigationNode> resolveNodes(NavigationNode rootNode, String navigationPath) {
+    if (rootNode == null) {
+      return Collections.emptyList();
+    }
+    List<String> pathElements = getPathElements(navigationPath);
+    // Ensure to have all the nodes by expanding the path elements.
+    List<NavigationNode> actualNodes = new ArrayList<>();
+    actualNodes.add(rootNode);
+    for (String actualAssociation : pathElements) {
+      // When we arrive to the given association we have an actual list of nodes. We must expand all
+      // the nodes with the associations we need and update the actualNodes list with the newly
+      // accessed nodes.
+      List<NavigationNode> nextRoundNodes = new ArrayList<>();
+      for (NavigationNode node : actualNodes) {
+        URI metaUriByAssocName =
+            config.findAssocMetaUriByAssocName(node.getEntry().getMetaUri(), actualAssociation);
+        if (metaUriByAssocName == null || node.getAssociations() == null) {
+          // We must stop because the path doesn't exist in this navigation!
+          throw new IllegalArgumentException(
+              "The navigation path (" + navigationPath
+                  + ") is not available in the given navigation (" + config.toString()
+                  + ")");
+        }
+        Optional<NavigationAssociation> associationOpt = node.getAssociations().stream()
+            .filter(a -> a.getMetaUri().equals(metaUriByAssocName)).findFirst();
+        NavigationAssociation association = associationOpt
+            .orElseThrow(() -> new IllegalStateException("The navigation node (" + node
+                + ") is not consistent the association is missing from the instance ("
+                + metaUriByAssocName
+                + ")"));
+
+        Map<URI, NavigationAssociation> associationsByMetaUri = new HashMap<>();
+        associationsByMetaUri.put(metaUriByAssocName, association);
+        expandAssociations(node, associationsByMetaUri);
+        nextRoundNodes.addAll(getChildrenNodes(node, actualAssociation));
+      }
+      actualNodes = nextRoundNodes;
+    }
+    return actualNodes;
+  }
+
+  /**
+   * Here we assume that the navigation is already started and the given context node is available
+   * already. For the first time it can be the root object added to the navigation to start from. We
+   * can resolve the values by fully qualified names. These are the path of the given property
+   * inside the navigation tree and the Object belongs to the given node. We must separate the
+   * navigation path elements and the property access path with slash. The two segments are
+   * separated with hash sign. (It's the path and the fragment section of an URI)
+   * 
+   * @param qualifiedNames An example: /assoc1/assoc2#refProperty1/myPropery in this case we lookup
+   *        for the assoc1 and the assoc2 node inside the
+   * @return The resolved values identified by the qualified names.
+   */
+  public Map<String, Object> resolveValues(NavigationNode contextNode,
+      Collection<String> qualifiedNames) {
+    if (qualifiedNames == null || qualifiedNames.isEmpty()) {
+      return Collections.emptyMap();
+    }
+    // This will be the resolved navigation nodes by the
+    Map<String, Optional<NavigationNode>> nodesByPath = new HashMap<>();
+    Map<NavigationNode, List<String>> propertiesToResolveByNode = new HashMap<>();
+    for (String qualifiedName : qualifiedNames) {
+      String[] parts = qualifiedName.split(StringConstant.HASH);
+      // We must have a proper qualified name!
+      if (parts.length != 2 || (parts.length == 2 && (parts[0].isEmpty() || parts[1].isEmpty()))) {
+        throw new IllegalArgumentException("Invalid qualified name " + qualifiedName);
+      }
+      String navigationPath = parts[0];
+      String propertyPath = parts[1];
+      List<String> propertyPathList = null;
+      Optional<NavigationNode> navigationNodeOpt = nodesByPath.get(navigationPath);
+      // We enter only if we haven't tries before to avoid resolving again and again!
+      if (navigationNodeOpt == null) {
+        List<NavigationNode> resolveNodes = resolveNodes(contextNode, navigationPath);
+        // We must have exactly one node on the given path to be able to resolve the values.
+        if (resolveNodes.size() > 1) {
+          throw new IllegalArgumentException("The nodes on the " + navigationPath
+              + " are ambigious, more then one node found (" + resolveNodes + ")");
+        }
+        Iterator<NavigationNode> nodeIter = resolveNodes.iterator();
+        if (!nodeIter.hasNext()) {
+          // We add the empty optional to show that we have already tried.
+          nodesByPath.put(navigationPath, Optional.empty());
+        } else {
+          // We add the given node and setup the property list for the property paths to resolve.
+          NavigationNode node = nodeIter.next();
+          nodesByPath.put(navigationPath, Optional.of(node));
+          propertyPathList = new ArrayList<>();
+          propertiesToResolveByNode.put(node, propertyPathList);
+        }
+      } else if (navigationNodeOpt.isPresent()) {
+        // If we already have the proper node.
+        propertyPathList = propertiesToResolveByNode.get(navigationNodeOpt.get());
+      }
+      // If we found the propertyPahtList we add the current path else we give a debug log.
+      if (propertyPathList != null) {
+        propertyPathList.add(propertyPath);
+      } else {
+        log.debug("Unable to retrive {} property because the navigation node was not found.",
+            qualifiedName);
+      }
+    }
+    Map<String, Object> result = new HashMap<>();
+    for (Entry<NavigationNode, List<String>> entry : propertiesToResolveByNode.entrySet()) {
+      NavigationNode node = entry.getKey();
+      List<String> properties = entry.getValue();
+      ApiObjectRef objectRef =
+          api.loadObject(node.getEntry().getMetaUri(), node.getEntry().getObjectUri())
+              .orElseThrow(() -> new IllegalArgumentException(
+                  "Unable to load the " + node.getEntry() + " object."));
+      for (String propertyPath : properties) {
+        Object value = objectRef.getValue(propertyPath);
+        result.put(propertyPath, value);
+      }
+    }
+
+    return result;
+  }
+
+  /**
+   * Parse the path elements by splitting the original path
+   * 
+   * @param path
+   * @return
+   */
+  public static List<String> getPathElements(String path) {
+    if (path == null || path.isEmpty()) {
+      return Collections.emptyList();
+    }
+    String[] split = path.split(StringConstant.SLASH);
+    if (split == null || split.length == 0) {
+      return Collections.emptyList();
+    }
+    List<String> result = new ArrayList<>();
+    for (String element : split) {
+      if (element.length() > 0) {
+        result.add(element);
+      }
+    }
+    return result;
+  }
 
 }
