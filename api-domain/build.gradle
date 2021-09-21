@@ -10,6 +10,7 @@ smartbit4all {
   openApi {
   	modelPackagePrefix = "org.smartbit4all.api"
   	modelPackagePostfix = "bean"
+  	dateTimeMapping = "java.time.ZonedDateTime"
   	importMappings = [
   		"BinaryData": "org.smartbit4all.api.binarydata.BinaryData",
   		"BinaryContent": "org.smartbit4all.api.binarydata.BinaryContent"

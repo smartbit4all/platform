@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.time.OffsetDateTime;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
@@ -41,7 +42,7 @@ public class ObjectReference {
   private String referenceId;
 
   public static final String EXPIRATION_TIME = "expirationTime";
-  private String expirationTime;
+  private java.time.ZonedDateTime expirationTime;
 
 
   public ObjectReference referenceId(String referenceId) {
@@ -71,7 +72,7 @@ public class ObjectReference {
   }
 
 
-  public ObjectReference expirationTime(String expirationTime) {
+  public ObjectReference expirationTime(java.time.ZonedDateTime expirationTime) {
     
     this.expirationTime = expirationTime;
     return this;
@@ -82,18 +83,19 @@ public class ObjectReference {
    * @return expirationTime
   **/
   @javax.annotation.Nullable
+  @Valid
   @ApiModelProperty(value = "The expiration time for the reference.")
   @JsonProperty(EXPIRATION_TIME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public String getExpirationTime() {
+  public java.time.ZonedDateTime getExpirationTime() {
     return expirationTime;
   }
 
 
   @JsonProperty(EXPIRATION_TIME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setExpirationTime(String expirationTime) {
+  public void setExpirationTime(java.time.ZonedDateTime expirationTime) {
     this.expirationTime = expirationTime;
   }
 

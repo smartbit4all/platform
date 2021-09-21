@@ -54,5 +54,5 @@ components:
           description: The identifier of the referenced object. Usually this is an URI that identifies the object in the domain.
         expirationTime:
           type: string
-          format: datetime
+          format: date-time
           description: The expiration time for the reference.
