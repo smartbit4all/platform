@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.storage.bean.ObjectReferenceList;
 import org.smartbit4all.domain.data.storage.index.ExpressionEntityDefinitionExtractor;
 import org.smartbit4all.domain.data.storage.index.StorageIndex;
@@ -24,6 +26,8 @@ import org.springframework.util.Assert;
  * @param <T> Type of the objects, which can be stored with the Storage.
  */
 public class Storage<T> implements ObjectStorage<T> {
+
+  private static final Logger log = LoggerFactory.getLogger(Storage.class);
 
   private ObjectStorage<T> storage;
 
@@ -49,7 +53,7 @@ public class Storage<T> implements ObjectStorage<T> {
   }
 
   @Override
-  public URI save(T object) throws Exception {
+  public URI save(T object) {
     URI result = storage.save(object);
     updateIndexes(object);
     ObjectChange<T> objectChange = new ObjectChange<>();
@@ -59,25 +63,31 @@ public class Storage<T> implements ObjectStorage<T> {
   }
 
   @Override
-  public URI save(T object, URI uri) throws Exception {
+  public URI save(T object, URI uri) {
     URI result = storage.save(object, uri);
     updateIndexes(object);
     return result;
   }
 
-  private void updateIndexes(T object) throws Exception {
+  private void updateIndexes(T object) {
     for (StorageIndex<T> index : indexes) {
-      index.updateIndex(object);
+      try {
+        index.updateIndex(object);
+      } catch (Exception e) {
+        log.error("Unable to update storage index.", e);
+        throw new IllegalStateException(
+            "Failed to update storage index for " + object + " - " + clazz, e);
+      }
     }
   }
 
   @Override
-  public Optional<T> load(URI uri) throws Exception {
+  public Optional<T> load(URI uri) {
     return storage.load(uri);
   }
 
   @Override
-  public List<T> load(List<URI> uris) throws Exception {
+  public List<T> load(List<URI> uris) {
     if (uris == null || uris.isEmpty()) {
       return Collections.emptyList();
     }
@@ -86,13 +96,13 @@ public class Storage<T> implements ObjectStorage<T> {
   }
 
   @Override
-  public boolean delete(URI uri) throws Exception {
+  public boolean delete(URI uri) {
     return storage.delete(uri);
   }
 
 
   @Override
-  public List<T> loadAll() throws Exception {
+  public List<T> loadAll() {
     return storage.loadAll();
   }
 

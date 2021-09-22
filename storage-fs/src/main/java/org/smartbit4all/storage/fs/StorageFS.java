@@ -1,12 +1,15 @@
 package org.smartbit4all.storage.fs;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.binarydata.BinaryDataObjectSerializer;
 import org.smartbit4all.api.storage.bean.ObjectReferenceList;
@@ -16,6 +19,8 @@ import org.smartbit4all.domain.data.storage.ObjectReferenceRequest;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 
 public class StorageFS<T> extends ObjectStorageImpl<T> {
+
+  private static final Logger log = LoggerFactory.getLogger(StorageFS.class);
 
   private Class<T> clazz;
 
@@ -69,12 +74,12 @@ public class StorageFS<T> extends ObjectStorageImpl<T> {
   }
 
   @Override
-  public URI save(T object) throws Exception {
+  public URI save(T object) {
     return save(object, uriAccessor.apply(object));
   }
 
   @Override
-  public URI save(T object, URI uri) throws Exception {
+  public URI save(T object, URI uri) {
     URI result = constructUri(object, uri);
     if (result != null) {
       BinaryData data = serializer.toJsonBinaryData(object, clazz);
@@ -84,7 +89,7 @@ public class StorageFS<T> extends ObjectStorageImpl<T> {
   }
 
   @Override
-  public Optional<T> load(URI uri) throws Exception {
+  public Optional<T> load(URI uri) {
     BinaryData binaryData = FileIO.read(rootFolder, uri);
 
     if (binaryData == null) {
@@ -95,7 +100,7 @@ public class StorageFS<T> extends ObjectStorageImpl<T> {
   }
 
   @Override
-  public List<T> load(List<URI> uris) throws Exception {
+  public List<T> load(List<URI> uris) {
     List<T> result = new ArrayList<>();
 
     for (URI uri : uris) {
@@ -109,8 +114,15 @@ public class StorageFS<T> extends ObjectStorageImpl<T> {
   }
 
   @Override
-  public List<T> loadAll() throws Exception {
-    List<BinaryData> datas = FileIO.readAllFiles(rootFolder, storedObjectFileExtension);
+  public List<T> loadAll() {
+    List<BinaryData> datas;
+    try {
+      datas = FileIO.readAllFiles(rootFolder, storedObjectFileExtension);
+    } catch (IOException e) {
+      String msg = "Unable to load all object from " + clazz + " storage (" + rootFolder + ")";
+      log.error(msg, e);
+      throw new IllegalStateException(msg, e);
+    }
 
     if (datas.isEmpty()) {
       return Collections.emptyList();
@@ -128,7 +140,7 @@ public class StorageFS<T> extends ObjectStorageImpl<T> {
   }
 
   @Override
-  public boolean delete(URI uri) throws Exception {
+  public boolean delete(URI uri) {
     return FileIO.delete(rootFolder, uri);
   }
 

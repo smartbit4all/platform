@@ -1,6 +1,7 @@
 package org.smartbit4all.domain.data.storage;
 
 import java.net.URI;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -32,5 +33,17 @@ public interface StorageApi {
    * @return The set of referenced objects.
    */
   <T, R> Set<R> loadReferences(URI uri, Class<T> clazz, Class<R> typeClass);
+
+  /**
+   * This function can be used to load any object managed by the StorageApi. It identifies the given
+   * {@link Storage} by the clazz and the URI. The uri can define the exact physical location of the
+   * object and can define the {@link Storage} responsible for.
+   * 
+   * @param <T> The type
+   * @param uri The uri of the object.
+   * @param clazz The class of the object we need.
+   * @return The object.
+   */
+  <T> Optional<T> load(URI uri, Class<T> clazz);
 
 }

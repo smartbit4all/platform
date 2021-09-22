@@ -18,12 +18,12 @@ public interface ObjectStorage<T> {
   /**
    * Save the object with the given URI.
    */
-  public URI save(T object, URI uri) throws Exception;
+  public URI save(T object, URI uri);
 
   /**
    * Save the object with the given URI.
    */
-  public URI save(T object) throws Exception;
+  public URI save(T object);
 
   /**
    * Save the references for the object in the request.
@@ -42,24 +42,24 @@ public interface ObjectStorage<T> {
   /**
    * Load the object with the given URI.
    */
-  public Optional<T> load(URI uri) throws Exception;
+  public Optional<T> load(URI uri);
 
   /**
    * Load the objects with the given URI.
    */
-  public List<T> load(List<URI> uris) throws Exception;
+  public List<T> load(List<URI> uris);
 
   /**
    * List all data objects. Warning: can be high amount of data in the result, use carefully!
    * 
    * @return All objects stored with the type T
    */
-  public List<T> loadAll() throws Exception;
+  public List<T> loadAll();
 
   /**
    * Delete the data with the given URI.
    */
-  public boolean delete(URI uri) throws Exception;
+  public boolean delete(URI uri);
 
   public ObjectUriProvider<T> getUriProvider();
 

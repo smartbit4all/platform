@@ -28,31 +28,31 @@ public class StorageClassPath<T> extends ObjectStorageImpl<T> {
   private static final Logger log = LoggerFactory.getLogger(StorageClassPath.class);
 
   @Override
-  public URI save(T object, URI uri) throws Exception {
+  public URI save(T object, URI uri) {
     throw new UnsupportedOperationException(
         "Unable to modify the URI = " + uri + " bean (" + object + ") on the class path.");
   }
 
   @Override
-  public URI save(T object) throws Exception {
+  public URI save(T object) {
     throw new UnsupportedOperationException(
         "Unable to modify the bean (" + object + ") on the class path.");
   }
 
   @Override
-  public Optional<T> load(URI uri) throws Exception {
+  public Optional<T> load(URI uri) {
     return null;
   }
 
 
   @Override
-  public List<T> loadAll() throws Exception {
+  public List<T> loadAll() {
     throw new UnsupportedOperationException(
         "Unable to load all objects from the class path.");
   }
 
   @Override
-  public List<T> load(List<URI> uris) throws Exception {
+  public List<T> load(List<URI> uris) {
     if (uris == null || uris.isEmpty()) {
       return Collections.emptyList();
     }
@@ -68,7 +68,7 @@ public class StorageClassPath<T> extends ObjectStorageImpl<T> {
   }
 
   @Override
-  public boolean delete(URI uri) throws Exception {
+  public boolean delete(URI uri) {
     throw new UnsupportedOperationException(
         "Unable to delete the URI = " + uri + " bean from the class path.");
   }

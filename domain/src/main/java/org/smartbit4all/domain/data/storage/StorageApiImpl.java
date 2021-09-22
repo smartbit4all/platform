@@ -72,4 +72,16 @@ public final class StorageApiImpl implements StorageApi, InitializingBean {
     }
   }
 
+  @Override
+  public <T> Optional<T> load(URI uri, Class<T> clazz) {
+    // TODO Later on we will can have more than one Storage per class!
+    @SuppressWarnings("unchecked")
+    Storage<T> storage = (Storage<T>) storagesByClass.get(clazz);
+    if (storage == null) {
+      throw new IllegalArgumentException(
+          "Unable to load the " + uri + " object (" + clazz + "). There is no Storage defined!");
+    }
+    return storage.load(uri);
+  }
+
 }

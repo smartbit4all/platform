@@ -37,7 +37,7 @@ public class ObjectStorageInMemory<T> extends ObjectStorageImpl<T> {
   }
 
   @Override
-  public URI save(T object, URI uri) throws Exception {
+  public URI save(T object, URI uri) {
     URI result = constructUri(object, uri);
 
     // Only put the original Object into to Map. Unwrap if wrapped.
@@ -47,17 +47,17 @@ public class ObjectStorageInMemory<T> extends ObjectStorageImpl<T> {
   }
 
   @Override
-  public URI save(T object) throws Exception {
+  public URI save(T object) {
     return save(object, getObjectUri(object));
   }
 
   @Override
-  public Optional<T> load(URI uri) throws Exception {
+  public Optional<T> load(URI uri) {
     return Optional.ofNullable(objects.get(uri));
   }
 
   @Override
-  public List<T> load(List<URI> uris) throws Exception {
+  public List<T> load(List<URI> uris) {
     List<T> result = new ArrayList<>();
     for (URI uri : uris) {
       Optional<T> loaded = load(uri);
@@ -69,12 +69,12 @@ public class ObjectStorageInMemory<T> extends ObjectStorageImpl<T> {
   }
 
   @Override
-  public List<T> loadAll() throws Exception {
+  public List<T> loadAll() {
     return new ArrayList<>(objects.values());
   }
 
   @Override
-  public boolean delete(URI uri) throws Exception {
+  public boolean delete(URI uri) {
     return objects.remove(uri) != null ? true : false;
   }
 
