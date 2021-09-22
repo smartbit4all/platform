@@ -1,6 +1,7 @@
 package org.smartbit4all.ui.vaadin.components.filter2;
 
 import static java.time.temporal.ChronoField.DAY_OF_MONTH;
+import static java.time.temporal.ChronoField.DAY_OF_YEAR;
 import static java.time.temporal.ChronoUnit.MONTHS;
 import static java.time.temporal.ChronoUnit.WEEKS;
 import java.time.DayOfWeek;
@@ -75,7 +76,7 @@ class FilterViewUtils {
             new TimeFilterOption2StringConverter());
     return binder;
   }
-  
+
   public static VaadinHasValueBinder<Integer, String> bindInteger(
       IntegerField integerField,
       ObservableObject filterField, String path, int number) {
@@ -85,29 +86,29 @@ class FilterViewUtils {
             new Integer2StringConverter());
     return binder;
   }
-  
-  //TODO this is a hotfix -> should use viewModel!!!
+
+  // TODO this is a hotfix -> should use viewModel!!!
   public static Registration handleTimeFilterValueChange(DateTimePicker picker,
       ComboBox<TimeFilterOption> combo) {
-   
-   Registration listener = picker.addValueChangeListener(e -> {
-     if(e.isFromClient()) {
-       combo.setValue(TimeFilterOption.OTHER);
-     }
-   });
-   return listener;
- }
-  
+
+    Registration listener = picker.addValueChangeListener(e -> {
+      if (e.isFromClient()) {
+        combo.setValue(TimeFilterOption.OTHER);
+      }
+    });
+    return listener;
+  }
+
   public static Registration handleDateFilterValueChange(DatePicker picker,
       ComboBox<TimeFilterOption> combo) {
-   
-   Registration listener = picker.addValueChangeListener(e -> {
-     if(e.isFromClient()) {
-       combo.setValue(TimeFilterOption.OTHER);
-     }
-   });
-   return listener;
- }
+
+    Registration listener = picker.addValueChangeListener(e -> {
+      if (e.isFromClient()) {
+        combo.setValue(TimeFilterOption.OTHER);
+      }
+    });
+    return listener;
+  }
 
   // TODO move to viewModel, maybe FilterFieldViewModel or FilterGroupViewModel?
   public static Registration handleTimeFilterOptionComboChange(ComboBox<TimeFilterOption> combo,
@@ -147,6 +148,11 @@ class FilterViewUtils {
         case YESTERDAY:
           startDate = today.minusDays(1);
           endDate = today.minusDays(1);
+          break;
+        case THIS_YEAR:
+          startDate = today.with(DAY_OF_YEAR, 1);
+          endDate = today;
+          endTime = now;
           break;
         case LAST_FIVE_YEARS:
           startDate = today.minusYears(5);
