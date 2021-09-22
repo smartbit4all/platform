@@ -499,6 +499,43 @@ public class ApiObjectRef {
     return getValueInner(propertyEntry);
   }
 
+  /**
+   * Get the value of a given path. Works only with properties and references and ignore the
+   * collections. Always return the value let it be a bean or even a collection.
+   * 
+   * @param propertyPath The name of the property.
+   * @return
+   */
+  public Object getValueByPath(String propertyPath) {
+    String upperPath = propertyPath.toUpperCase();
+
+    String propertyName = PathUtility.getRootPath(upperPath);
+    PropertyEntry propertyEntry = properties.get(propertyName);
+
+    int pathSize = PathUtility.getPathSize(upperPath);
+    switch (propertyEntry.getMeta().getKind()) {
+      case VALUE:
+        return propertyEntry.getMeta().getValue(object);
+      case REFERENCE:
+        // Call the getValueByPath on reference with new path
+        return propertyEntry.getReference().getValueByPath(PathUtility.nextFullPath(upperPath));
+      case COLLECTION:
+        ApiObjectCollection collection = propertyEntry.getCollection();
+        // TODO Handle the index even if we have longer path into the given element.
+        if (pathSize == 2) {
+          // Remove the index to the collection
+          return collection.get(Integer.valueOf(PathUtility.getLastPath(upperPath)));
+        } else {
+          // call the removeValueByPath on the collection element
+          String nextPath = PathUtility.nextFullPath(upperPath);
+          ApiObjectRef nextRef = collection.getByIdx(PathUtility.getRootPath(nextPath));
+          return nextRef.getValueByPath(PathUtility.nextFullPath(nextPath));
+        }
+      default:
+        return null;
+    }
+  }
+
   final Object getValueInner(PropertyEntry propertyEntry) {
     switch (propertyEntry.getMeta().getKind()) {
       case VALUE:
