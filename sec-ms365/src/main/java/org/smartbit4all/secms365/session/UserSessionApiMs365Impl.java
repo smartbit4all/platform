@@ -7,7 +7,7 @@ import org.smartbit4all.sec.service.SecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 
-public class UserSessionApiImpl implements UserSessionApi{
+public class UserSessionApiMs365Impl implements UserSessionApi{
   
   @Autowired
   private SecurityService securityService;
@@ -26,3 +26,4 @@ public class UserSessionApiImpl implements UserSessionApi{
         .email(user.getEmail());
   }
 }
+
