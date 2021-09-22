@@ -4,7 +4,7 @@ dependencies {
 	api project(':api')
 
 
-	api 'org.springframework.security:spring-security-config:5.3.5.RELEASE'
-	api 'org.springframework.security:spring-security-web:5.3.5.RELEASE'
+	api 'org.springframework.security:spring-security-config:5.5.2'
+	api 'org.springframework.security:spring-security-web:5.5.2'
 	api 'javax.servlet:javax.servlet-api:4.0.1'
 }
