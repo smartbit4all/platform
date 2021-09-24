@@ -14,15 +14,20 @@ public abstract class VaadinCollectionBinder<T> extends VaadinAbstractBinder {
 
   protected final ObservableObject observableObject;
 
+  protected String path;
+  protected String collection;
   protected final List<T> items;
   protected final Map<String, T> itemsByPath;
 
+
   protected VaadinCollectionBinder(ObservableObject observableObject, String path,
-      String collectionName) {
+      String collection) {
     this.observableObject = Objects.requireNonNull(observableObject);
+    this.path = path;
+    this.collection = collection;
     this.items = new ArrayList<>();
     this.itemsByPath = new HashMap<>();
-    this.disposable = this.observableObject.onCollectionObjectChange(path, collectionName,
+    this.disposable = this.observableObject.onCollectionObjectChange(path, collection,
         this::onCollectionObjectChanged);
   }
 
@@ -50,19 +55,19 @@ public abstract class VaadinCollectionBinder<T> extends VaadinAbstractBinder {
     // TODO make item refreshes in one call, if possible.
   }
 
-  private void addItem(String itemPath, T item) {
+  protected void addItem(String itemPath, T item) {
     items.add(item);
     itemsByPath.put(itemPath, item);
   }
 
-  private void modifyItem(String itemPath, T newValue, T oldValue) {
+  protected void modifyItem(String itemPath, T newValue, T oldValue) {
     if (oldValue != newValue) {
       items.replaceAll(i -> i == oldValue ? newValue : i);
       itemsByPath.put(itemPath, newValue);
     }
   }
 
-  private T deleteItem(String itemPath) {
+  protected T deleteItem(String itemPath) {
     T item = itemsByPath.remove(itemPath);
     if (item != null) {
       items.remove(item);
