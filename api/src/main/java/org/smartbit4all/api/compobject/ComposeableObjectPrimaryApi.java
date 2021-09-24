@@ -1,14 +1,18 @@
 package org.smartbit4all.api.compobject;
 
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.compobject.bean.ComposeableObject;
 import org.smartbit4all.api.compobject.bean.ComposeableObjectDef;
+import org.smartbit4all.core.object.ApiBeanDescriptor;
+import org.smartbit4all.core.object.ApiObjectRef;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
@@ -30,8 +34,15 @@ public class ComposeableObjectPrimaryApi implements ComposerApi, InitializingBea
 
   private Map<URI, ComposeableObjectApi> apisByUri;
 
+  private Map<Class<?>, ApiBeanDescriptor> descriptor;
+
   public ComposeableObjectPrimaryApi() {
     this.apisByUri = new ConcurrentHashMap<>();
+    this.descriptor = new HashMap<>();
+  }
+
+  public void addDescriptor(Map<Class<?>, ApiBeanDescriptor> descriptor) {
+    this.descriptor.putAll(descriptor);
   }
 
   @Override
@@ -70,6 +81,21 @@ public class ComposeableObjectPrimaryApi implements ComposerApi, InitializingBea
     ComposeableObjectApi api = getApi(definition.getApiUri());
     String viewName = api.getViewName(objectUri);
     return Strings.isNullOrEmpty(viewName) ? definition.getViewName() : viewName;
+  }
+
+
+  @Override
+  public Optional<ApiObjectRef> loadObject(URI objectUri, ComposeableObjectDef definition)
+      throws Exception {
+
+    ComposeableObjectApi api = getApi(definition.getApiUri());
+    Optional<Object> loadedObject = api.loadObject(objectUri);
+
+    if (loadedObject.isPresent() && descriptor.containsKey(loadedObject.get().getClass())) {
+      return Optional.of(new ApiObjectRef(null, loadedObject.get(), descriptor));
+    }
+
+    return Optional.empty();
   }
 
   private ComposeableObjectApi getApi(URI apiUri) {

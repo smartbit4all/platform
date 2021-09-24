@@ -524,7 +524,7 @@ public class ApiObjectRef {
         // TODO Handle the index even if we have longer path into the given element.
         if (pathSize == 2) {
           // Remove the index to the collection
-          return collection.get(Integer.valueOf(PathUtility.getLastPath(upperPath)));
+          return collection.get(Integer.valueOf(PathUtility.getLastPath(upperPath))).getObject();
         } else {
           // call the removeValueByPath on the collection element
           String nextPath = PathUtility.nextFullPath(upperPath);

@@ -25,7 +25,6 @@ import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import org.smartbit4all.api.navigation.bean.NavigationNode;
 import org.smartbit4all.api.navigation.bean.NavigationReference;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import javax.validation.constraints.*;
@@ -37,7 +36,7 @@ import javax.validation.Valid;
 @ApiModel(description = "UI: The navigable associations belong to the given node.")
 @JsonPropertyOrder({
   NavigationAssociation.ID,
-  NavigationAssociation.NODE,
+  NavigationAssociation.NODE_ID,
   NavigationAssociation.META_URI,
   NavigationAssociation.LAST_NAVIGATION,
   NavigationAssociation.HIDDEN,
@@ -51,8 +50,8 @@ public class NavigationAssociation {
   public static final String ID = "id";
   private String id;
 
-  public static final String NODE = "node";
-  private NavigationNode node;
+  public static final String NODE_ID = "nodeId";
+  private String nodeId;
 
   public static final String META_URI = "metaUri";
   private URI metaUri;
@@ -100,31 +99,30 @@ public class NavigationAssociation {
   }
 
 
-  public NavigationAssociation node(NavigationNode node) {
+  public NavigationAssociation nodeId(String nodeId) {
     
-    this.node = node;
+    this.nodeId = nodeId;
     return this;
   }
 
    /**
-   * Get node
-   * @return node
+   * The unique identifier of the parent node of the given association.
+   * @return nodeId
   **/
-  @NotNull
-  @Valid
-  @ApiModelProperty(required = true, value = "")
-  @JsonProperty(NODE)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The unique identifier of the parent node of the given association.")
+  @JsonProperty(NODE_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public NavigationNode getNode() {
-    return node;
+  public String getNodeId() {
+    return nodeId;
   }
 
 
-  @JsonProperty(NODE)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setNode(NavigationNode node) {
-    this.node = node;
+  @JsonProperty(NODE_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setNodeId(String nodeId) {
+    this.nodeId = nodeId;
   }
 
 
@@ -310,7 +308,7 @@ public class NavigationAssociation {
     }
     NavigationAssociation navigationAssociation = (NavigationAssociation) o;
     return Objects.equals(this.id, navigationAssociation.id) &&
-        Objects.equals(this.node, navigationAssociation.node) &&
+        Objects.equals(this.nodeId, navigationAssociation.nodeId) &&
         Objects.equals(this.metaUri, navigationAssociation.metaUri) &&
         Objects.equals(this.lastNavigation, navigationAssociation.lastNavigation) &&
         Objects.equals(this.hidden, navigationAssociation.hidden) &&
@@ -321,7 +319,7 @@ public class NavigationAssociation {
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, node, metaUri, lastNavigation, hidden, caption, icon, references);
+    return Objects.hash(id, nodeId, metaUri, lastNavigation, hidden, caption, icon, references);
   }
 
   @Override
@@ -329,7 +327,7 @@ public class NavigationAssociation {
     StringBuilder sb = new StringBuilder();
     sb.append("class NavigationAssociation {\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    node: ").append(toIndentedString(node)).append("\n");
+    sb.append("    nodeId: ").append(toIndentedString(nodeId)).append("\n");
     sb.append("    metaUri: ").append(toIndentedString(metaUri)).append("\n");
     sb.append("    lastNavigation: ").append(toIndentedString(lastNavigation)).append("\n");
     sb.append("    hidden: ").append(toIndentedString(hidden)).append("\n");

@@ -18,6 +18,7 @@ import org.smartbit4all.api.navigation.bean.NavigationEntry;
 import org.smartbit4all.api.navigation.bean.NavigationEntryMeta;
 import org.smartbit4all.api.navigation.bean.NavigationReferenceEntry;
 import org.smartbit4all.api.navigation.bean.NavigationView;
+import org.smartbit4all.core.object.ApiObjectRef;
 import org.smartbit4all.domain.data.storage.Storage;
 import com.google.common.base.Strings;
 
@@ -44,7 +45,8 @@ public class ComposeableObjectNavigation extends NavigationImpl {
   @Override
   public Map<URI, List<NavigationReferenceEntry>> navigate(
       URI objectUri,
-      List<URI> associationMetaUris, Consumer<URI> nodeChangedListener) {
+      List<URI> associationMetaUris,
+      Consumer<URI> nodeChangedListener) {
 
     Map<URI, List<NavigationReferenceEntry>> result = new HashMap<>();
     for (URI associationMetaUri : associationMetaUris) {
@@ -63,8 +65,10 @@ public class ComposeableObjectNavigation extends NavigationImpl {
   }
 
   @Override
-  public Map<URI, List<NavigationReferenceEntry>> navigate(URI objectUri,
+  public Map<URI, List<NavigationReferenceEntry>> navigate(
+      URI objectUri,
       List<URI> associationMetaUris) {
+
     return navigate(objectUri, associationMetaUris, null);
   }
 
@@ -76,6 +80,17 @@ public class ComposeableObjectNavigation extends NavigationImpl {
     } catch (Exception e) {
       throw new IllegalArgumentException(
           "Cannot get entry. EntryMeta URI: " + entryMetaUri + " Object URI: " + objectUri, e);
+    }
+  }
+
+  @Override
+  public Optional<ApiObjectRef> loadObject(URI entryMetaUri, URI objectUri) {
+    ComposeableObjectDef compDef = getComposeableObjectDef(entryMetaUri);
+
+    try {
+      return composeableObjectApi.loadObject(objectUri, compDef);
+    } catch (Exception e) {
+      throw new IllegalArgumentException("Cannot load object with URI: " + objectUri, e);
     }
   }
 

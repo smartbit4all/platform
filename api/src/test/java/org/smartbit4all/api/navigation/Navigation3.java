@@ -17,37 +17,22 @@ import org.smartbit4all.api.navigation.bean.NavigationView;
 import org.smartbit4all.core.object.ApiBeanDescriptor;
 import org.smartbit4all.core.object.ApiObjectRef;
 
-public class Navigation1 extends NavigationImpl {
-
-  public static final String NAV_NAME = "nav1";
-
-  public static final NavigationEntryMeta ENTRY_BEAN1_META =
-      Navigation.entryMeta(URI.create(NAV_NAME + ":/bean1"), "bean1");
-
-  public static final NavigationEntryMeta ENTRY_BEAN2_META =
-      Navigation.entryMeta(URI.create(NAV_NAME + ":/bean2"), "bean2");
+public class Navigation3 extends NavigationImpl {
+  public static final String NAV_NAME = "nav3";
 
   public static final NavigationEntryMeta ENTRY_BEAN3_META =
       Navigation.entryMeta(URI.create(NAV_NAME + ":/bean3"), "bean3");
 
-  public static final NavigationEntryMeta ENTRY_BEAN4_META =
-      Navigation.entryMeta(URI.create(NAV_NAME + ":/bean4"), "bean4");
-
-  public static final NavigationAssociationMeta ASSOC_BEAN2S_OF_BEAN1_META =
-      Navigation.assocMeta(URI.create(NAV_NAME + ":/bean2s"), "bean2s",
-          ENTRY_BEAN1_META,
-          ENTRY_BEAN2_META, null);
-
   public static final NavigationAssociationMeta ASSOC_BEAN3S_OF_BEAN2_META =
       Navigation.assocMeta(URI.create(NAV_NAME + ":/bean3s"), "bean3s",
-          ENTRY_BEAN2_META,
+          Navigation2.ENTRY_BEAN2_META,
           ENTRY_BEAN3_META, null);
 
   private NavigationView navView;
   private Map<Class<?>, ApiBeanDescriptor> descriptor;
   private Map<Class<?>, Map<URI, TestBean>> testBeans = new HashMap<>();
 
-  public Navigation1(String name) {
+  public Navigation3(String name) {
     super(name);
     navView = new NavigationView().name(name);
     descriptor = createDescriptor();
@@ -58,19 +43,7 @@ public class Navigation1 extends NavigationImpl {
       List<URI> associationMetaUris) {
     Map<URI, List<NavigationReferenceEntry>> result = new HashMap<>();
     for (URI associationUri : associationMetaUris) {
-      if (ASSOC_BEAN2S_OF_BEAN1_META.getUri().equals(associationUri)) {
-        TestBean1 testBean1 = getBean(TestBean1.class, objectUri);
-        if (testBean1 != null) {
-          List<NavigationReferenceEntry> references = new ArrayList<>();
-          for (TestBean2 bean2 : testBean1.getBean2s()) {
-            NavigationEntry newEntry =
-                Navigation.entry(ENTRY_BEAN2_META, bean2.getUri(), bean2.getName(), null);
-            newEntry.addViewsItem(navView);
-            references.add(Navigation.referenceEntry(objectUri, newEntry, null));
-          }
-          result.put(associationUri, references);
-        }
-      } else if (ASSOC_BEAN3S_OF_BEAN2_META.getUri().equals(associationUri)) {
+      if (ASSOC_BEAN3S_OF_BEAN2_META.getUri().equals(associationUri)) {
         TestBean2 testBean2 = getBean(TestBean2.class, objectUri);
         if (testBean2 != null) {
           List<NavigationReferenceEntry> references = new ArrayList<>();
@@ -89,17 +62,11 @@ public class Navigation1 extends NavigationImpl {
 
   @Override
   public NavigationEntry getEntry(URI entryMetaUri, URI objectUri) {
-    if (ENTRY_BEAN1_META.getUri().equals(entryMetaUri)) {
-      return getEntry(TestBean1.class, ENTRY_BEAN1_META, objectUri);
-
-    } else if (ENTRY_BEAN2_META.getUri().equals(entryMetaUri)) {
-      return getEntry(TestBean2.class, ENTRY_BEAN2_META, objectUri);
+    if (Navigation2.ENTRY_BEAN2_META.getUri().equals(entryMetaUri)) {
+      return getEntry(TestBean2.class, Navigation2.ENTRY_BEAN2_META, objectUri);
 
     } else if (ENTRY_BEAN3_META.getUri().equals(entryMetaUri)) {
       return getEntry(TestBean3.class, ENTRY_BEAN3_META, objectUri);
-
-    } else if (ENTRY_BEAN4_META.getUri().equals(entryMetaUri)) {
-      return getEntry(TestBean4.class, ENTRY_BEAN4_META, objectUri);
     }
     return null;
   }
@@ -118,17 +85,11 @@ public class Navigation1 extends NavigationImpl {
 
   @Override
   public Optional<ApiObjectRef> loadObject(URI entryMetaUri, URI objectUri) {
-    if (ENTRY_BEAN1_META.getUri().equals(entryMetaUri)) {
-      return getOptionalRef(TestBean1.class, objectUri);
-
-    } else if (ENTRY_BEAN2_META.getUri().equals(entryMetaUri)) {
+    if (Navigation2.ENTRY_BEAN2_META.getUri().equals(entryMetaUri)) {
       return getOptionalRef(TestBean2.class, objectUri);
 
     } else if (ENTRY_BEAN3_META.getUri().equals(entryMetaUri)) {
       return getOptionalRef(TestBean3.class, objectUri);
-
-    } else if (ENTRY_BEAN4_META.getUri().equals(entryMetaUri)) {
-      return getOptionalRef(TestBean4.class, objectUri);
     }
     return Optional.empty();
   }
@@ -143,33 +104,23 @@ public class Navigation1 extends NavigationImpl {
     return Optional.of(ref);
   }
 
-  public void setBeans(List<TestBean1> bean1sToSet) {
-    Map<URI, TestBean> bean1s = new HashMap<>();
+  public void setBeans(List<TestBean2> bean2sToSet) {
     Map<URI, TestBean> bean2s = new HashMap<>();
     Map<URI, TestBean> bean3s = new HashMap<>();
-    Map<URI, TestBean> bean4s = new HashMap<>();
 
-    for (TestBean1 bean1 : bean1sToSet) {
-      bean1s.put(bean1.getUri(), bean1);
-      for (TestBean2 bean2 : bean1.getBean2s()) {
-        bean2s.put(bean2.getUri(), bean2);
-        for (TestBean3 bean3 : bean2.getBean3s()) {
-          bean3s.put(bean3.getUri(), bean3);
-          TestBean4 bean4 = bean3.getBean4();
-          bean4s.put(bean4.getUri(), bean4);
-        }
+    for (TestBean2 bean2 : bean2sToSet) {
+      bean2s.put(bean2.getUri(), bean2);
+      for (TestBean3 bean3 : bean2.getBean3s()) {
+        bean3s.put(bean3.getUri(), bean3);
       }
     }
 
-    testBeans.put(TestBean1.class, bean1s);
     testBeans.put(TestBean2.class, bean2s);
     testBeans.put(TestBean3.class, bean3s);
-    testBeans.put(TestBean4.class, bean4s);
   }
 
   private <T> Map<Class<?>, ApiBeanDescriptor> createDescriptor() {
     Set<Class<?>> beans = new HashSet<>();
-    beans.add(TestBean1.class);
     beans.add(TestBean2.class);
     beans.add(TestBean3.class);
     beans.add(TestBean4.class);
@@ -179,5 +130,4 @@ public class Navigation1 extends NavigationImpl {
   private <T extends TestBean> T getBean(Class<T> clazz, URI objectUri) {
     return clazz.cast(testBeans.get(clazz).get(objectUri));
   }
-
 }

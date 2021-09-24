@@ -1,0 +1,43 @@
+openapi: 3.0.1
+info:
+  title: Composite Data API
+  description: Composite Data API
+  termsOfService: ''
+  contact:
+    email: info@it4all.hu
+  version: 1.0.0
+tags:
+- name: CompositeDataApi
+paths: {}
+components:
+  schemas:
+    CompositeDataCollection:
+      type: object
+      properties:
+        compositeDatas:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompositeData'
+    CompositeData:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        configUri:
+          type: string
+          format: uri
+        roots:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompositeDataItem'
+    CompositeDataItem:
+      type: object
+      properties:
+        assocUri:
+          type: string
+          format: uri
+        objectUri:
+          type: string
+          format: uri
