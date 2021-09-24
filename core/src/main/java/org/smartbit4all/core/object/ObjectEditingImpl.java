@@ -24,7 +24,7 @@ public class ObjectEditingImpl implements ObjectEditing {
   }
 
   protected void checkParamNumber(String command, int number, Object... params) {
-    if (params == null || params.length != 1) {
+    if (params == null || params.length != number) {
       StringBuilder sb = new StringBuilder();
       sb.append("Missing or too many parameters (expected ");
       sb.append(number);
