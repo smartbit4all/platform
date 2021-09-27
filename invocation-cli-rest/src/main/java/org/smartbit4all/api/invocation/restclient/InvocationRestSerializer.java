@@ -15,28 +15,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class InvocationRestSerializer implements InitializingBean {
 
   private static final Logger log = LoggerFactory.getLogger(InvocationRestSerializer.class);
-  
+
   private static InvocationRestSerializer instance;
-  
+
   private ObjectMapper objectMapper;
-  
+
   InvocationRestSerializer(ObjectMapper objectMapper) {
     this.objectMapper = objectMapper;
   }
-  
+
   public static InvocationRequestData invocationRequest2Data(InvocationRequest request) {
-    
+
     InvocationRequestData requestData = new InvocationRequestData()
         .uuid(request.getUuid())
         .executionApi(request.getExecutionApi())
         .apiClass(request.getApiClassName())
         .innerApi(request.getInnerApi())
         .methodName(request.getMethodName());
-    
+
     request.getParameters().forEach(invParam -> {
       InvocationParameterKind kind = InvocationParameterKind.valueOf(invParam.getKind().name());
       String value = invParam.getStringValue();
-      if(value == null && invParam.getValue() != null) {
+      if (value == null && invParam.getValue() != null) {
         try {
           value = instance.objectMapper.writeValueAsString(invParam.getValue());
         } catch (JsonProcessingException e) {
@@ -47,26 +47,26 @@ public class InvocationRestSerializer implements InitializingBean {
           .typeClass(invParam.getTypeClass())
           .kind(kind)
           .value(value);
-      
+
       requestData.addParametersItem(ipd);
     });
-    
+
     return requestData;
   }
-  
+
   public static InvocationParameter invocationParameterData2Parameter(
       InvocationParameterData parameterData) {
-    
+
     InvocationParameter invocationParameter = new InvocationParameter();
-    
+
     String typeClass = parameterData.getTypeClass();
     String stringValue = parameterData.getValue();
     Kind kind = Kind.valueOf(parameterData.getKind().name());
-    
+
     Object value = null;
-    if(stringValue != null && !stringValue.isEmpty()) {
+    if (stringValue != null && !stringValue.isEmpty()) {
       try {
-        if(String.class.getName().equals(typeClass)) {
+        if (String.class.getName().equals(typeClass)) {
           value = stringValue;
         } else {
           Class<?> clazz = Class.forName(typeClass);
@@ -77,18 +77,18 @@ public class InvocationRestSerializer implements InitializingBean {
             stringValue, e);
       }
     }
-    
+
     invocationParameter.setKind(kind);
     invocationParameter.setTypeClass(typeClass);
     invocationParameter.setStringValue(stringValue);
     invocationParameter.setValue(value);
-    
+
     return invocationParameter;
   }
 
   @Override
   public void afterPropertiesSet() throws Exception {
     instance = this;
-  } 
-  
+  }
+
 }
