@@ -234,7 +234,11 @@ public class NavigationControllerImpl implements NavigationController {
 
       NavigationNode navigationNode = navigationState.getNode(node.getIdentifier());
       if (hasNavigationView(navigationNode)) {
-        return createNavigationViewShowCommand(navigationNode);
+        UIViewShowCommand command = createNavigationViewShowCommand(navigationNode);
+
+        addRootNodeParameter(navigationNode, command);
+
+        return command;
       }
 
     } else if (node.isKind(Kind.ASSOCIATION)) {
@@ -255,6 +259,17 @@ public class NavigationControllerImpl implements NavigationController {
     }
 
     return null;
+  }
+
+  private void addRootNodeParameter(NavigationNode navigationNode, UIViewShowCommand command) {
+    NavigationNode rootNode = navigationState.getRootNode(navigationNode);
+    if (rootNode != null &&
+        rootNode.getEntry() != null &&
+        rootNode.getEntry().getObjectUri() != null) {
+
+      URI rootObjectEntryUri = rootNode.getEntry().getObjectUri();
+      command.addParameter(Navigation.ROOT_OBJECT_URI, rootObjectEntryUri);
+    }
   }
 
   private boolean hasNavigationView(NavigationNode navigationNode) {

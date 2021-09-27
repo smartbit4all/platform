@@ -21,12 +21,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -58,7 +60,15 @@ public class Navigation {
 
   private static final Logger log = LoggerFactory.getLogger(Navigation.class);
 
+  /**
+   * If association is selected, the association URI passed in the UI parameters with this key.
+   */
   public static final String ASSOC_URI_VIEW_PARAM_KEY = "assocUri";
+
+  /**
+   * The navigation root object URI passed in the UI parameters with this key.
+   */
+  public static final String ROOT_OBJECT_URI = "rootObjectUri";
 
   /**
    * The configuration of the given navigation.
@@ -829,6 +839,35 @@ public class Navigation {
       }
     }
     return result;
+  }
+
+  public NavigationNode getRootNode(NavigationNode node) {
+    return getRootNode(node, new HashSet<>());
+  }
+
+  private NavigationNode getRootNode(NavigationNode node, Set<String> alreadyVisitedId) {
+    String id = node.getId();
+
+    if (alreadyVisitedId.contains(id)) {
+      return null;
+    }
+
+    alreadyVisitedId.add(id);
+
+    List<WeakReference<NavigationNode>> parentNodes = parentNodesByNode.get(id);
+
+    if (parentNodes != null) {
+      for (WeakReference<NavigationNode> parentNodeRef : parentNodes) {
+        NavigationNode parentNode = parentNodeRef.get();
+        if (parentNode != null && roots.contains(parentNode)) {
+          return parentNode;
+        } else {
+          return getRootNode(parentNode, alreadyVisitedId);
+        }
+      }
+    }
+
+    return null;
   }
 
 }
