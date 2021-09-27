@@ -522,6 +522,7 @@ public class Navigation {
           .map(assocMetaUri -> association(assocMetaUri, node, config))
           .collect(Collectors.toList());
       node.setAssociations(navigationAssociations);
+      System.out.println();
     }
 
 
@@ -549,7 +550,7 @@ public class Navigation {
         .id(UUID.randomUUID().toString())
         .lastNavigation(null)
         .metaUri(assocMetaUri)
-        .node(node)
+        .nodeId(node.getId())
         .caption(config.getAssocLabel(assocMetaUri))
         .icon(config.getAssocIconKey(assocMetaUri));
 
@@ -678,27 +679,44 @@ public class Navigation {
     // Ensure to have all the nodes by expanding the path elements.
     List<NavigationNode> actualNodes = new ArrayList<>();
     actualNodes.add(rootNode);
+    StringBuilder track = new StringBuilder();
     for (String actualAssociation : pathElements) {
       // When we arrive to the given association we have an actual list of nodes. We must expand all
       // the nodes with the associations we need and update the actualNodes list with the newly
       // accessed nodes.
       List<NavigationNode> nextRoundNodes = new ArrayList<>();
+      URI metaUriByAssocName = null;
       for (NavigationNode node : actualNodes) {
-        URI metaUriByAssocName =
-            config.findAssocMetaUriByAssocName(node.getEntry().getMetaUri(), actualAssociation);
-        if (metaUriByAssocName == null || node.getAssociations() == null) {
+        if (metaUriByAssocName == null) {
+          track.append(node.getEntry().getMetaUri()).append(StringConstant.ARROW)
+              .append(actualAssociation).append(StringConstant.EQUAL);
+          metaUriByAssocName =
+              config.findAssocMetaUriByAssocName(node.getEntry().getMetaUri(), actualAssociation);
+          if (metaUriByAssocName == null) {
+            track.append(StringConstant.QUESTIONMARK);
+            throw new IllegalArgumentException(
+                "The navigation path (" + track
+                    + ") is not available in the given navigation (" + config.toString()
+                    + ")");
+          }
+          track.append(metaUriByAssocName);
+        }
+        URI actualAssocMetaUri = metaUriByAssocName;
+        if (node.getAssociations() == null) {
           // We must stop because the path doesn't exist in this navigation!
-          throw new IllegalArgumentException(
-              "The navigation path (" + navigationPath
-                  + ") is not available in the given navigation (" + config.toString()
-                  + ")");
+          throw new IllegalStateException("The navigation node (" + node
+              + ") on " + track
+              + " track is not consistent the association is missing from the instance ("
+              + actualAssocMetaUri
+              + ")");
         }
         Optional<NavigationAssociation> associationOpt = node.getAssociations().stream()
-            .filter(a -> a.getMetaUri().equals(metaUriByAssocName)).findFirst();
+            .filter(a -> a.getMetaUri().equals(actualAssocMetaUri)).findFirst();
         NavigationAssociation association = associationOpt
             .orElseThrow(() -> new IllegalStateException("The navigation node (" + node
-                + ") is not consistent the association is missing from the instance ("
-                + metaUriByAssocName
+                + ")  on " + track
+                + " track is not consistent the association is missing from the instance ("
+                + actualAssocMetaUri
                 + ")"));
 
         Map<URI, NavigationAssociation> associationsByMetaUri = new HashMap<>();
@@ -706,6 +724,7 @@ public class Navigation {
         expandAssociations(node, associationsByMetaUri);
         nextRoundNodes.addAll(getChildrenNodes(node, actualAssociation));
       }
+      track.append(StringConstant.ARROW);
       actualNodes = nextRoundNodes;
     }
     return actualNodes;
@@ -741,7 +760,7 @@ public class Navigation {
       String propertyPath = parts[1];
       List<String> propertyPathList = null;
       Optional<NavigationNode> navigationNodeOpt = nodesByPath.get(navigationPath);
-      // We enter only if we haven't tries before to avoid resolving again and again!
+      // We enter only if we haven't tried before to avoid resolving again and again!
       if (navigationNodeOpt == null) {
         List<NavigationNode> resolveNodes = resolveNodes(contextNode, navigationPath);
         // We must have exactly one node on the given path to be able to resolve the values.
@@ -764,7 +783,7 @@ public class Navigation {
         // If we already have the proper node.
         propertyPathList = propertiesToResolveByNode.get(navigationNodeOpt.get());
       }
-      // If we found the propertyPahtList we add the current path else we give a debug log.
+      // If we found the propertyPathList we add the current path else we give a debug log.
       if (propertyPathList != null) {
         propertyPathList.add(propertyPath);
       } else {
@@ -781,7 +800,7 @@ public class Navigation {
               .orElseThrow(() -> new IllegalArgumentException(
                   "Unable to load the " + node.getEntry() + " object."));
       for (String propertyPath : properties) {
-        Object value = objectRef.getValue(propertyPath);
+        Object value = objectRef.getValueByPath(propertyPath);
         result.put(propertyPath, value);
       }
     }

@@ -56,9 +56,6 @@ public class Storage<T> implements ObjectStorage<T> {
   public URI save(T object) {
     URI result = storage.save(object);
     updateIndexes(object);
-    ObjectChange<T> objectChange = new ObjectChange<>();
-    objectChange.object = object;
-    objectChange.uri = result;
     return result;
   }
 

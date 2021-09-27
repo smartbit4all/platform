@@ -145,18 +145,18 @@ public class PropertyMeta {
     sb.append(type.getName());
     sb.append(StringConstant.RIGHT_PARENTHESIS);
     sb.append(StringConstant.SPACE);
-    sb.append(ApiObjects.GET);
+    sb.append(BeanMetaUtil.GET);
     sb.append(StringConstant.COLON_SPACE);
     sb.append(getter == null ? StringConstant.MINUS_SIGN : getter.getName());
     sb.append(StringConstant.SPACE);
-    sb.append(ApiObjects.SET);
+    sb.append(BeanMetaUtil.SET);
     sb.append(StringConstant.COLON_SPACE);
     sb.append(setter == null ? StringConstant.MINUS_SIGN : setter.getName());
     sb.append(StringConstant.COMMA_SPACE);
     sb.append(fluidSetter == null ? StringConstant.MINUS_SIGN : fluidSetter.getName());
     sb.append(StringConstant.SPACE);
-    sb.append(ApiObjects.ADDITEM_PREFIX);
-    sb.append(ApiObjects.ADDITEM_POSTFIX);
+    sb.append(BeanMetaUtil.ADDITEM_PREFIX);
+    sb.append(BeanMetaUtil.ADDITEM_POSTFIX);
     sb.append(StringConstant.COLON_SPACE);
     sb.append(itemAdder == null ? StringConstant.MINUS_SIGN : itemAdder.getName());
   }

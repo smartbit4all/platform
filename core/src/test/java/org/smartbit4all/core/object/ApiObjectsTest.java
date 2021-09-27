@@ -1,5 +1,6 @@
 package org.smartbit4all.core.object;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -337,6 +338,23 @@ public class ApiObjectsTest {
         + "}";
     Assertions.assertEquals(expected3, changesText3);
 
+  }
+
+  @Test
+  void testGetValueByPathTest() {
+    MasterBean masterBean = constructBean();
+
+    ApiObjectRef masterBeanRef = new ApiObjectRef(null, masterBean, descriptors);
+
+    assertEquals("name", masterBeanRef.getValueByPath("name"));
+    assertEquals(1L, masterBeanRef.getValueByPath("counter"));
+    assertEquals(Arrays.asList("first", "second"), masterBeanRef.getValueByPath("stringlist"));
+    assertEquals("refname", masterBeanRef.getValueByPath("referred/name"));
+
+    // TODO test collection after fixed
+    // assertEquals(masterBean.getDetails(), masterBeanRef.getValueByPath("details"));
+    // assertEquals(masterBean.getReferred().getDetails(),
+    // masterBeanRef.getValueByPath("referred/details"));
   }
 
   private MasterBean constructBean() {

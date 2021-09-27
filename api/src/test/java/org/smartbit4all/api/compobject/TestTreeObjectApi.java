@@ -78,4 +78,9 @@ public class TestTreeObjectApi implements ComposeableObjectApi {
     return API_URI;
   }
 
+  @Override
+  public Optional<Object> loadObject(URI objectUri) throws Exception {
+    return Optional.ofNullable(storage.load(objectUri).orElse(null));
+  }
+
 }

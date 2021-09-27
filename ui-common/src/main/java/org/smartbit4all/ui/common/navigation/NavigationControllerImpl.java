@@ -240,7 +240,9 @@ public class NavigationControllerImpl implements NavigationController {
     } else if (node.isKind(Kind.ASSOCIATION)) {
 
       NavigationAssociation assoc = navigationState.getAssociation(node.getIdentifier());
-      NavigationNode naviNode = assoc.getNode();
+      NavigationNode naviNode = navigationState.getNode(assoc.getNodeId());
+
+      // NavigationNode naviNode = assoc.getNode();
       if (naviNode != null) {
         if (hasNavigationView(naviNode)) {
           UIViewShowCommand command = createNavigationViewShowCommand(naviNode);

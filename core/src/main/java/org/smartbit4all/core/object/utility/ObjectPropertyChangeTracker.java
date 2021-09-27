@@ -44,6 +44,7 @@ public class ObjectPropertyChangeTracker<T> {
               change -> setProperty(change.getChange().getObject()));
           
         }
+        return;
       }
     }
   }

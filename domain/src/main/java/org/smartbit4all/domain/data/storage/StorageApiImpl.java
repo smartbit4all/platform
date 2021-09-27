@@ -84,4 +84,23 @@ public final class StorageApiImpl implements StorageApi, InitializingBean {
     return storage.load(uri);
   }
 
+  @Override
+  public <T> URI save(T object) {
+    if (object == null) {
+      return null;
+    }
+    @SuppressWarnings("unchecked")
+    Storage<T> storage = (Storage<T>) storagesByClass.get(object.getClass());
+    if (storage == null) {
+      throw new IllegalArgumentException(
+          "Unable to save the " + object + ". There is no Storage defined!");
+    }
+
+    // Construct and set URI!
+    StorageObject<T> storageObject = new StorageObject<T>(object);
+    storageObject.setUri(storage.getUriProvider().constructUri(object));
+
+    return storage.save(object);
+  }
+
 }

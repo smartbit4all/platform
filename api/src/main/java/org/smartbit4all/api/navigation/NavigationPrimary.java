@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +29,7 @@ import org.smartbit4all.api.navigation.bean.NavigationAssociationMeta;
 import org.smartbit4all.api.navigation.bean.NavigationConfig;
 import org.smartbit4all.api.navigation.bean.NavigationEntry;
 import org.smartbit4all.api.navigation.bean.NavigationReferenceEntry;
+import org.smartbit4all.core.object.ApiObjectRef;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -93,8 +95,14 @@ public final class NavigationPrimary extends NavigationImpl implements Initializ
     return navigate(objectUri, associationMetaUris, null);
   }
 
-  private NavigationApi api(URI associationUri) {
-    return apiByName.get(associationUri.getScheme());
+  /**
+   * This uri is a meta uri from the navigation could be association or entry meta uri.
+   * 
+   * @param uri
+   * @return
+   */
+  private NavigationApi api(URI uri) {
+    return apiByName.get(uri.getScheme());
   }
 
   @Override
@@ -117,6 +125,18 @@ public final class NavigationPrimary extends NavigationImpl implements Initializ
         apiByName.put(api.name(), api);
       }
     }
+  }
+
+  @Override
+  public Optional<ApiObjectRef> loadObject(URI entryMetaUri, URI objectUri) {
+    NavigationApi api = api(entryMetaUri);
+    if (api != null) {
+      return api.loadObject(entryMetaUri, objectUri);
+    } else {
+      log.warn(
+          "Unable to find navigation api for the meta: " + entryMetaUri + " (" + objectUri + ")");
+    }
+    return Optional.empty();
   }
 
 }

@@ -10,7 +10,7 @@ import org.smartbit4all.core.utility.StringConstant;
  * 
  * @author Peter Boros
  */
-class BeanMeta {
+public final class BeanMeta {
 
   private final Class<?> clazz;
 

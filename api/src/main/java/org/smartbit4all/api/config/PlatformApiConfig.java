@@ -9,6 +9,8 @@ import org.smartbit4all.api.invocation.registration.ApiRegister;
 import org.smartbit4all.api.invocation.registration.ApiRegisterImpl;
 import org.smartbit4all.api.invocation.registration.LocalApiInstantiator;
 import org.smartbit4all.api.invocation.registration.ProtocolSpecificApiInstantiator;
+import org.smartbit4all.api.navigation.NavigationApi;
+import org.smartbit4all.api.navigation.NavigationPrimary;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.setting.LocaleUsage;
 import org.smartbit4all.api.setting.LocaleUsageImpl;
@@ -17,6 +19,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
 
 /**
@@ -60,4 +63,9 @@ public class PlatformApiConfig {
     return new LocaleUsageImpl();
   }
 
+  @Bean
+  @Primary
+  public NavigationApi navigationApi() {
+    return new NavigationPrimary();
+  }
 }

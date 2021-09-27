@@ -155,7 +155,7 @@ public class CompositeObjects {
   public static void addCompositeObjectDef(
       Storage<ComposeableObjectDef> compObjDefStorage,
       ConfigBuilder navigationConfig,
-      CompositeObjectDef compositeDef) throws Exception {
+      CompositeObjectDef compositeDef) {
 
     for (CompositeObjectAssociation assoc : compositeDef.getAssociations()) {
       URI childDefUri = assoc.getChildDefUri();
@@ -199,22 +199,21 @@ public class CompositeObjects {
       ConfigBuilder navigationConfig,
       ComposeableObjectDef childDef) {
 
-    navigationConfig
-        .addAssociationMeta(
+    navigationConfig.addAssociationMeta(
 
-            ComposeableObjectNavigation.createAssocMeta(
-                childDef.getUri(),
-                childDef.getUri(),
-                childDef.getUri()),
+        ComposeableObjectNavigation.createAssocMeta(
+            childDef.getUri(),
+            childDef.getUri(),
+            childDef.getUri()),
 
-            childDef.getAssocVisible(),
-            childDef.getName(),
-            childDef.getIcon());
+        childDef.getAssocVisible() == null ? false : childDef.getAssocVisible(),
+        childDef.getName(),
+        childDef.getIcon());
   }
 
   private static ComposeableObjectDef getDef(
       Storage<ComposeableObjectDef> compObjDefStorage,
-      URI defUri) throws Exception {
+      URI defUri) {
 
     ComposeableObjectDef def = compObjDefStorage
         .load(defUri)

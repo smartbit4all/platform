@@ -13,18 +13,12 @@ public class ApiBeanDescriptor {
 
   Class<?> clazz;
 
-  private Map<String, ApiBeanDescriptor> detailDescriptors = new HashMap<>();
-
   private Set<Class<?>> allApiBeanClass;
 
   public ApiBeanDescriptor(Class<?> clazz, Set<Class<?>> allApiBeanClass) {
     super();
     this.clazz = clazz;
     this.allApiBeanClass = allApiBeanClass;
-  }
-
-  public final Map<String, ApiBeanDescriptor> getDetailDescriptors() {
-    return detailDescriptors;
   }
 
   public final Set<Class<?>> getAllApiBeanClass() {

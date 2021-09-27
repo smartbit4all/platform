@@ -2,6 +2,7 @@ package org.smartbit4all.api.compobject;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import org.smartbit4all.api.compobject.bean.ComposeableObject;
 
@@ -25,5 +26,14 @@ public interface ComposeableObjectApi {
   public String getViewName(URI objectUri) throws Exception;
 
   public URI getApiUri();
+
+  /**
+   * @author Zoltan Szegedi
+   * @deprecated Should be get via storage! Also, should be typed!
+   */
+  @Deprecated
+  default public Optional<Object> loadObject(URI objectUri) throws Exception {
+    return Optional.empty();
+  }
 
 }

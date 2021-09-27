@@ -162,8 +162,9 @@ components:
         id:
           type: string
           description: 'The unique identifier of the given association - UUID'
-        node:
-          $ref: '#/components/schemas/NavigationNode'
+        nodeId:
+          type: string
+          description: 'The unique identifier of the parent node of the given association.'
         metaUri:
           type: string
           format: uri

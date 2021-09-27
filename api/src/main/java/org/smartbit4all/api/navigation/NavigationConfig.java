@@ -59,7 +59,7 @@ public class NavigationConfig {
       return null;
     }
     List<URI> assocURIs = assocMetaUrisByEntryMetaUri.get(entryUri);
-    if (assocURIs != null) {
+    if (assocURIs == null) {
       return null;
     }
     for (URI uri : assocURIs) {
