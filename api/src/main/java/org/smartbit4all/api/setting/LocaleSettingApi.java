@@ -12,6 +12,7 @@ import org.smartbit4all.core.utility.ListBasedMap;
 import org.smartbit4all.core.utility.ReflectionUtility;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -21,7 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * 
  * @author Peter Boros
  */
-public final class LocaleSettingApi {
+public final class LocaleSettingApi implements InitializingBean {
 
   private static final Logger log = LoggerFactory.getLogger(LocaleSettingApi.class);
 
@@ -57,16 +58,8 @@ public final class LocaleSettingApi {
    */
   private Locale defaultLocale;
 
-  public LocaleSettingApi(List<LocaleOption> localeOptions, StorageApi storageApi) {
-    super();
-    this.localeOptions = localeOptions;
-    this.storageApi = storageApi;
-
-    initLocalOptions();
-  }
-
   public LocaleSettingApi() {
-    this(null, null);
+    super();
   }
 
   /**
@@ -191,6 +184,11 @@ public final class LocaleSettingApi {
     for (LocaleString localeString : localeStringsByQualifiedName.values()) {
       localeString.refresh();
     }
+  }
+
+  @Override
+  public void afterPropertiesSet() throws Exception {
+    initLocalOptions();
   }
 
 }

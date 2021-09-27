@@ -4,30 +4,27 @@ import java.util.Locale;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@SpringBootTest(classes = {LocaleSettingApiOptionTestConfig.class})
 class LocaleSettingApiOptionTest {
 
   private static Locale hu;
 
   private static Locale fr;
 
-  private static LocaleSettingApi localeSettings;
+  @Autowired
+  private LocaleSettingApi localeSettings;
 
-  private static MyModuleLocale moduleLocale;
+  @Autowired
+  private LocaleUsage lu;
 
   @BeforeAll
   static void setUpBeforeClass() throws Exception {
     hu = new Locale("hu", "HU");
     fr = Locale.FRANCE;
-    // Initiate the api and the module locale.
-    localeSettings = new LocaleSettingApi();
-
-    moduleLocale = new MyModuleLocale();
-
-    // Instead of Spring we initiate the MyModuleLocale instance.
-    localeSettings.analyzeLocaleStrings(moduleLocale);
-
   }
 
   @AfterAll
@@ -49,7 +46,7 @@ class LocaleSettingApiOptionTest {
 
     localeSettings.setDefaultLocale(hu);
 
-    MyModuleLocale.apple.apply(this::setText);
+    lu.applyLabel(MyModuleLocale.apple, this::setText);
 
     // We must find the hungarian translation for both entry.
     assertEquals("alma", MyModuleLocale.apple.get());
@@ -60,6 +57,18 @@ class LocaleSettingApiOptionTest {
 
     // We must find the hungarian translation for both entry.
     assertEquals("pomme", MyModuleLocale.apple.get());
+    assertEquals("pomme", text);
+
+    lu = null;
+
+    System.gc();
+    System.gc();
+    System.gc();
+    System.gc();
+    System.gc();
+
+    localeSettings.setDefaultLocale(hu);
+    // The text remains the same because there we've lost the reference to the Consumer
     assertEquals("pomme", text);
 
   }
