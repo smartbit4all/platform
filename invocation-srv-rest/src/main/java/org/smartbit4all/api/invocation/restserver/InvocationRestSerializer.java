@@ -4,7 +4,6 @@ import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.invocation.InvocationParameter;
-import org.smartbit4all.api.invocation.InvocationParameter.Kind;
 import org.smartbit4all.api.invocation.InvocationRequest;
 import org.smartbit4all.api.invocation.model.InvocationParameterData;
 import org.smartbit4all.api.invocation.model.InvocationRequestData;
@@ -30,8 +29,8 @@ public class InvocationRestSerializer implements InitializingBean {
         .innerApi(requestData.getInnerApi())
         .method(requestData.getMethodName());
 
-    requestData.getParameters().forEach(invParam -> {
-      Kind kind = Kind.valueOf(invParam.getKind().name());
+    int paramCntr = 0;
+    for (InvocationParameterData invParam : requestData.getParameters()) {
       String valueString = invParam.getValue();
       String typeClassName = invParam.getTypeClass();
       Objects.requireNonNull(valueString, "valueString can not be null in InvocationRequestData!");
@@ -45,13 +44,9 @@ public class InvocationRestSerializer implements InitializingBean {
           log.error("Unable to deserialize object {}", typeClassName, e);
         }
       }
-      InvocationParameter ipd = new InvocationParameter();
-      ipd.setTypeClass(typeClassName);
-      ipd.setKind(kind);
-      ipd.setValue(value);
 
-      request.getParameters().add(ipd);
-    });
+      request.addParameter("param" + paramCntr++, value, typeClassName);
+    }
 
     return request;
   }

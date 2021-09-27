@@ -4,6 +4,7 @@ import org.smartbit4all.api.config.PlatformApiConfig;
 import org.smartbit4all.api.invocation.restserver.InvocationApiDelegate;
 import org.smartbit4all.api.invocation.restserver.InvocationRestSerializer;
 import org.smartbit4all.api.invocation.restserver.impl.InvocationApiDelegateImpl;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -26,6 +27,13 @@ public class InvocationSrvRestConfig {
   @Bean
   public InvocationRestSerializer invocationRestSerializer(ObjectMapper objectMapper) {
     return new InvocationRestSerializer(objectMapper);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean(ObjectMapper.class)
+  public ObjectMapper objectMapper() {
+    ObjectMapper objectMapper = new ObjectMapper();
+    return objectMapper;
   }
 
 }
