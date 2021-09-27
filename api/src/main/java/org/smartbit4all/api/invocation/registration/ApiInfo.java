@@ -6,12 +6,12 @@ import java.util.Map;
 public class ApiInfo {
 
   private String interfaceQualifiedName;
-  
+
   private String apiIdentifier;
-  
+
   private String protocol;
-  
-  private Map<String, Object> parameters = new HashMap<>();
+
+  private Map<String, String> parameters = new HashMap<>();
 
   public String getInterfaceQualifiedName() {
     return interfaceQualifiedName;
@@ -29,11 +29,11 @@ public class ApiInfo {
     this.protocol = protocol;
   }
 
-  public Map<String, Object> getParameters() {
+  public Map<String, String> getParameters() {
     return parameters;
   }
 
-  public void addParameter(String key, Object value) {
+  public void addParameter(String key, String value) {
     this.parameters.put(key, value);
   }
 
@@ -44,5 +44,5 @@ public class ApiInfo {
   public void setApiIdentifier(String apiIdentifier) {
     this.apiIdentifier = apiIdentifier;
   }
-  
+
 }

@@ -21,31 +21,32 @@ public class LocalApiRegistrationTests {
 
   @Autowired
   private ApiRegister apiRegister;
-  
+
   @Autowired
   TestPrimaryApi primaryApi;
-  
+
   @Autowired
   TestInterfaceToRegister testInterfaceToRegister;
-  
+
   @Test
   public void registerLocalContributorApi() {
-    
+
     ApiInfo apiInfo = new ApiInfo();
     String apiIdentifier = "testContributionApi-runtimeRegistered";
     apiInfo.setApiIdentifier(apiIdentifier);
     apiInfo.setInterfaceQualifiedName(TestContributionApi.class.getName());
     apiInfo.setProtocol("local");
-    apiInfo.addParameter(LocalApiInstantiator.LOCAL_API_IMPL, new TestContributionApiImpl(apiIdentifier));
-    
+    apiInfo.addParameter(LocalApiInstantiator.LOCAL_API_IMPL,
+        LocalApiInstantiator.createLocalApiParameter(new TestContributionApiImpl(apiIdentifier)));
+
     apiRegister.register(apiInfo);
-    
+
     TestContributionApi registeredContributionApi = primaryApi.findApiByName(apiIdentifier);
-    
+
     assertNotNull(registeredContributionApi);
     assertEquals(apiIdentifier, registeredContributionApi.getApiName());
   }
-  
+
   @Test
   public void apiPlaceholderTest() {
     boolean failed = false;
@@ -53,30 +54,31 @@ public class LocalApiRegistrationTests {
     try {
       testInterfaceToRegister.doSomething(testValue);
     } catch (Exception e) {
-      
+
       failed = true;
     }
     assertTrue(failed);
-    
+
     ApiInfo apiInfo = new ApiInfo();
     String apiIdentifier = "testInterfaceImpl";
     apiInfo.setApiIdentifier(apiIdentifier);
     apiInfo.setInterfaceQualifiedName(TestInterfaceToRegister.class.getName());
     apiInfo.setProtocol("local");
-    apiInfo.addParameter(LocalApiInstantiator.LOCAL_API_IMPL, new TestInterfaceToRegister() {
-      
-      @Override
-      public String doSomething(String p1) {
-        return p1;
-      }
-    });
-    
+    apiInfo.addParameter(LocalApiInstantiator.LOCAL_API_IMPL,
+        LocalApiInstantiator.createLocalApiParameter(new TestInterfaceToRegister() {
+
+          @Override
+          public String doSomething(String p1) {
+            return p1;
+          }
+        }));
+
     apiRegister.register(apiInfo);
-    
+
     String returnValue = testInterfaceToRegister.doSomething(testValue);
-    
+
     assertEquals(testValue, returnValue);
-    
+
   }
-  
+
 }
