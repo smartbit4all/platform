@@ -1,0 +1,45 @@
+openapi: 3.0.1
+info:
+  title: apiregister api
+  description: The apiregister api is a generic possibility to register remote apis.
+  termsOfService: ''
+  contact:
+    email: info@it4all.hu
+  version: 1.0.0
+tags:
+- name: Apiregister
+paths:
+  /register:
+    post:
+      tags:
+      - ApiRegister
+      summary: ''
+      operationId: 'register'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ApiInfo
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: Registration
+  /unregister:
+    post:
+      tags:
+      - ApiRegister
+      summary: ''
+      operationId: 'unregister'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: Registration
+      responses:
+        '200':
+          description: ''

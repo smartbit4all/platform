@@ -1,0 +1,39 @@
+plugins {
+	id 'org.smartbit4all.platform.gradle.openapi'
+}
+
+dependencies {
+	api project(':api')
+	api project(':apiregister-domain-rest')
+	
+	api 'org.springframework:spring-context:5.2.3.RELEASE'
+	api 'org.springframework:spring-web:5.2.3.RELEASE'
+	api 'org.springframework.boot:spring-boot-autoconfigure:2.3.5.RELEASE'
+	
+	api 'org.openapitools:jackson-databind-nullable:0.2.1' // should come from platform.gradle.openapi plugin
+	
+	
+	testImplementation('org.springframework.boot:spring-boot-starter-test:2.3.4.RELEASE') {
+		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+		exclude module: "logback-classic"
+	}
+	testImplementation 'org.mock-server:mockserver-spring-test-listener:5.11.2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+smartbit4all {
+    openApi {
+        apiDescriptorMapping = [
+        	"${rootDir}/apiregister-domain-rest/src/main/resources/descriptors/apiregister-api.yaml" : "apiregister"
+        ]
+        apiPackagePrefix = "org.smartbit4all.api"
+        apiPackagePostfix = "restclientgen"
+        invokerPackagePrefix = "org.smartbit4all.api"
+        invokerPackagePostfix = "restclientgen.util"
+		genApiRestClient = true
+		importMappings = [
+			"ApiInfo" : "org.smartbit4all.api.apiregister.bean.ApiInfo",
+			"Registration" : "org.smartbit4all.api.apiregister.bean.Registration"
+		] 
+    }
+}

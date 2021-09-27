@@ -19,6 +19,9 @@ include 'invocation-domain-rest'
 include 'invocation-cli-rest'
 include 'invocation-srv-rest'
 include 'content-access-srv-rest'
+include 'apiregister-domain-rest'
+include 'apiregister-cli-rest'
+include 'apiregister-srv-rest'
 
 def localSettings = file("local.settings.gradle")
 if (localSettings.exists()) {
