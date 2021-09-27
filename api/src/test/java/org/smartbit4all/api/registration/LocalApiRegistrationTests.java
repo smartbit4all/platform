@@ -4,10 +4,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
+import org.smartbit4all.api.apiregister.bean.ApiInfo;
 import org.smartbit4all.api.invocation.TestContributionApi;
 import org.smartbit4all.api.invocation.TestContributionApiImpl;
 import org.smartbit4all.api.invocation.TestPrimaryApi;
-import org.smartbit4all.api.invocation.registration.ApiInfo;
 import org.smartbit4all.api.invocation.registration.ApiRegister;
 import org.smartbit4all.api.invocation.registration.LocalApiInstantiator;
 import org.smartbit4all.api.registration.ApiRegistrationTestConfig.TestInterfaceToRegister;
@@ -36,7 +36,7 @@ public class LocalApiRegistrationTests {
     apiInfo.setApiIdentifier(apiIdentifier);
     apiInfo.setInterfaceQualifiedName(TestContributionApi.class.getName());
     apiInfo.setProtocol("local");
-    apiInfo.addParameter(LocalApiInstantiator.LOCAL_API_IMPL,
+    apiInfo.putParametersItem(LocalApiInstantiator.LOCAL_API_IMPL,
         LocalApiInstantiator.createLocalApiParameter(new TestContributionApiImpl(apiIdentifier)));
 
     apiRegister.register(apiInfo);
@@ -64,7 +64,7 @@ public class LocalApiRegistrationTests {
     apiInfo.setApiIdentifier(apiIdentifier);
     apiInfo.setInterfaceQualifiedName(TestInterfaceToRegister.class.getName());
     apiInfo.setProtocol("local");
-    apiInfo.addParameter(LocalApiInstantiator.LOCAL_API_IMPL,
+    apiInfo.putParametersItem(LocalApiInstantiator.LOCAL_API_IMPL,
         LocalApiInstantiator.createLocalApiParameter(new TestInterfaceToRegister() {
 
           @Override

@@ -2,6 +2,7 @@ package org.smartbit4all.api.invocation.registration;
 
 import java.util.Objects;
 import java.util.function.BiConsumer;
+import org.smartbit4all.api.apiregister.bean.ApiInfo;
 
 public class ApiRegistrationListenerImpl<T> implements ApiRegistrationListener {
   

@@ -2,6 +2,7 @@ package org.smartbit4all.api.invocation.registration;
 
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import org.smartbit4all.api.apiregister.bean.ApiInfo;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 

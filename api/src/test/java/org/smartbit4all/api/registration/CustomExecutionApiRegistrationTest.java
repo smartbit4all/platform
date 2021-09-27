@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.smartbit4all.api.apiregister.bean.ApiInfo;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.InvocationExecutionApi;
 import org.smartbit4all.api.invocation.InvocationParameter;
@@ -13,7 +14,6 @@ import org.smartbit4all.api.invocation.InvocationRequest;
 import org.smartbit4all.api.invocation.Invocations;
 import org.smartbit4all.api.invocation.TestContributionApi;
 import org.smartbit4all.api.invocation.TestPrimaryApi;
-import org.smartbit4all.api.invocation.registration.ApiInfo;
 import org.smartbit4all.api.invocation.registration.ApiRegister;
 import org.smartbit4all.api.invocation.registration.ExecutionInvocationApiInstantiator;
 import org.smartbit4all.api.invocation.registration.LocalApiInstantiator;
@@ -63,7 +63,7 @@ public class CustomExecutionApiRegistrationTest {
     apiInfo.setApiIdentifier(apiIdentifier);
     apiInfo.setInterfaceQualifiedName(TestContributionApi.class.getName());
     apiInfo.setProtocol(Invocations.EXECUTION);
-    apiInfo.addParameter(ExecutionInvocationApiInstantiator.APIINFO_PARAM_EXECUTION_API,
+    apiInfo.putParametersItem(ExecutionInvocationApiInstantiator.APIINFO_PARAM_EXECUTION_API,
         configTimeExecutionApi);
 
     apiRegister.register(apiInfo);
@@ -99,7 +99,7 @@ public class CustomExecutionApiRegistrationTest {
     apiInfo.setApiIdentifier(runtimeTimeExecutionApi);
     apiInfo.setInterfaceQualifiedName(InvocationExecutionApi.class.getName());
     apiInfo.setProtocol(Invocations.LOCAL);
-    apiInfo.addParameter(LocalApiInstantiator.LOCAL_API_IMPL,
+    apiInfo.putParametersItem(LocalApiInstantiator.LOCAL_API_IMPL,
         LocalApiInstantiator
             .createLocalApiParameter(createCustomExecutionApi(runtimeTimeExecutionApi)));
 
@@ -111,7 +111,7 @@ public class CustomExecutionApiRegistrationTest {
     apiInfo.setApiIdentifier(apiIdentifier);
     apiInfo.setInterfaceQualifiedName(TestContributionApi.class.getName());
     apiInfo.setProtocol(Invocations.EXECUTION);
-    apiInfo.addParameter(ExecutionInvocationApiInstantiator.APIINFO_PARAM_EXECUTION_API,
+    apiInfo.putParametersItem(ExecutionInvocationApiInstantiator.APIINFO_PARAM_EXECUTION_API,
         runtimeTimeExecutionApi);
 
     apiRegister.register(apiInfo);
