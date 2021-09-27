@@ -3,10 +3,10 @@ package org.smartbit4all.api.invocation.restclient.apiregister;
 import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.apiregister.bean.ApiInfo;
 import org.smartbit4all.api.invocation.ApiInvocationHandler;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.Invocations;
-import org.smartbit4all.api.invocation.registration.ApiInfo;
 import org.smartbit4all.api.invocation.registration.ProtocolSpecificApiInstantiator;
 
 public class RestGenApiInstantiator implements ProtocolSpecificApiInstantiator {

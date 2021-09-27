@@ -2,7 +2,7 @@ package org.smartbit4all.api.invocation.restclient.apiregister;
 
 import java.util.List;
 import java.util.function.Function;
-import org.smartbit4all.api.invocation.registration.ApiInfo;
+import org.smartbit4all.api.apiregister.bean.ApiInfo;
 
 public interface RestGeneratedApiRegistry {
 

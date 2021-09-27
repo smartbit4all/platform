@@ -2,7 +2,7 @@ package org.smartbit4all.api.invocation.restclient.apiregister;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import org.smartbit4all.api.invocation.registration.ApiInfo;
+import org.smartbit4all.api.apiregister.bean.ApiInfo;
 import org.smartbit4all.api.invocation.restclientgen.util.ApiClient;
 import org.springframework.web.client.RestTemplate;
 

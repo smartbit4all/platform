@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import org.smartbit4all.api.invocation.registration.ApiInfo;
+import org.smartbit4all.api.apiregister.bean.ApiInfo;
 import org.smartbit4all.api.invocation.registration.ApiRegister;
 import org.smartbit4all.api.invocation.registration.ApiRegistrationListenerImpl;
 
