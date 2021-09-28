@@ -73,9 +73,7 @@ public class ApiObjectsTest {
         .append("\tValid(boolean) get: isValid set: setValid, - addItem: -");
 
     Assertions.assertEquals(expectedDescBuilder.toString(), description);
-    // fail("Not yet implemented");
   }
-
 
   @Test
   void testSampleBeanModification() {

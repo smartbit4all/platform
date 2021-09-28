@@ -1,18 +1,17 @@
 package org.smartbit4all.api.object;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.net.URI;
 import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.api.binarydata.BinaryContent;
 import org.smartbit4all.api.binarydata.BinaryData;
-import org.smartbit4all.core.object.MasterBean;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(classes = {ObjectApiTestConfig.class})
 public class ObjectApiTest {
@@ -22,11 +21,12 @@ public class ObjectApiTest {
 
   @Test
   public void testPredefinedDefinition() {
-    ObjectDefinition<MasterBean> definition = objectApi.definition(MasterBean.class);
-    assertEquals(MasterBean.class.getName().replace('.', '-'), definition.getAlias());
+    ObjectDefinition<DomainObjectTestBean> definition =
+        objectApi.definition(DomainObjectTestBean.class);
+    assertEquals(DomainObjectTestBean.class.getName().replace('.', '-'), definition.getAlias());
     assertEquals(ObjectMapper.class.getName(), definition.getDefaultSerializer().getName());
 
-    MasterBean myBean = new MasterBean();
+    DomainObjectTestBean myBean = new DomainObjectTestBean();
 
     myBean.setCounter(1);
     myBean.setEnabled(false);
@@ -34,14 +34,14 @@ public class ObjectApiTest {
     myBean.setName("árvíztűrőtükörfúrógép");
 
     BinaryData binaryData =
-        definition.getDefaultSerializer().serialize(myBean, MasterBean.class);
+        definition.getDefaultSerializer().serialize(myBean, DomainObjectTestBean.class);
 
-    Optional<MasterBean> deserializeResult =
-        definition.getDefaultSerializer().deserialize(binaryData, MasterBean.class);
+    Optional<DomainObjectTestBean> deserializeResult =
+        definition.getDefaultSerializer().deserialize(binaryData, DomainObjectTestBean.class);
 
     Assertions.assertTrue(deserializeResult.isPresent());
 
-    MasterBean reloadedBean = deserializeResult.get();
+    DomainObjectTestBean reloadedBean = deserializeResult.get();
 
     assertEquals(myBean.getName(), reloadedBean.getName());
 

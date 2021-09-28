@@ -1,9 +1,11 @@
-package org.smartbit4all.core.object;
+package org.smartbit4all.api.object;
 
-import java.util.ArrayList;
+import java.net.URI;
 import java.util.List;
 
-public class MasterBean {
+public class DomainObjectTestBean {
+
+  private URI uri;
 
   private String name;
 
@@ -12,10 +14,6 @@ public class MasterBean {
   private List<String> stringList;
 
   private Long readOnlyLong;
-
-  private List<MasterDetailBean> details = new ArrayList<>();
-
-  private ReferredBean referred;
 
   private boolean valid;
 
@@ -49,7 +47,7 @@ public class MasterBean {
     return counter;
   }
 
-  public MasterBean counter(long counter) {
+  public DomainObjectTestBean counter(long counter) {
     this.counter = counter;
     return this;
   }
@@ -70,28 +68,12 @@ public class MasterBean {
     return readOnlyLong;
   }
 
-  public List<MasterDetailBean> getDetails() {
-    return details;
+  public URI getUri() {
+    return uri;
   }
 
-  public void setDetails(List<MasterDetailBean> details) {
-    this.details = details;
-  }
-
-  public ReferredBean getReferred() {
-    return referred;
-  }
-
-  public void setReferred(ReferredBean referred) {
-    this.referred = referred;
-  }
-
-  public MasterBean addDetailsItem(MasterDetailBean detailsItem) {
-    if (this.details == null) {
-      this.details = new ArrayList<>();
-    }
-    this.details.add(detailsItem);
-    return this;
+  public void setUri(URI uri) {
+    this.uri = uri;
   }
 
 }
