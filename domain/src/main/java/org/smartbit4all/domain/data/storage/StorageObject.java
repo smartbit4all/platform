@@ -1,7 +1,7 @@
 package org.smartbit4all.domain.data.storage;
 
 import java.net.URI;
-import org.smartbit4all.core.object.BeanMeta;
+import org.smartbit4all.core.object.ObjectDefinition;
 
 /**
  * 
@@ -10,23 +10,17 @@ import org.smartbit4all.core.object.BeanMeta;
  * @author Peter Boros
  * @param <T>
  */
-public class StorageObject<T> {
+public final class StorageObject<T> {
 
   /**
    * The URI of the object.
    */
   private URI uri;
 
-  /**
-   * This is the class of the object.
-   */
-  private Class<?> clazz;
+  private final ObjectDefinition<T> definition;
 
-  private BeanMeta meta;
-
-  public <T> StorageObject(T object) {
-    clazz = object.getClass();
-    BeanMeta meta = StorageApiUtils.meta(clazz);
+  public StorageObject(ObjectDefinition<T> objectDefinition) {
+    this.definition = objectDefinition;
   }
 
   protected final URI getUri() {
@@ -37,8 +31,8 @@ public class StorageObject<T> {
     this.uri = uri;
   }
 
-  protected final Class<T> getClazz() {
-    return (Class<T>) clazz;
+  protected final ObjectDefinition<T> definition() {
+    return definition;
   }
 
 }

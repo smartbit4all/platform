@@ -2,7 +2,6 @@ package org.smartbit4all.gson;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Optional;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.binarydata.BinaryDataOutputStream;
 import com.google.gson.Gson;
@@ -13,13 +12,13 @@ import com.google.gson.Gson;
  * @author Zoltan Szegedi
  */
 public class GsonBinaryData {
-  
+
   private static Gson gson = new Gson();
 
   /**
    * Serialize the object to JSON binary data, using Gson library.
    */
-  public static <T> BinaryData toJsonBinaryData(T object, Class<T> clazz)
+  public static BinaryData toJsonBinaryData(Object object, Class<?> clazz)
       throws Exception, IOException {
 
     BinaryDataOutputStream bdos = new BinaryDataOutputStream(0, null);
@@ -32,12 +31,11 @@ public class GsonBinaryData {
   /**
    * Deserialize the object to JSON binary data, using Gson library.
    */
-  public static <T> Optional<T> fromJsonBinaryData(BinaryData binaryData, Class<T> clazz)
+  public static Object fromJsonBinaryData(BinaryData binaryData, Class<?> clazz)
       throws IOException {
-    
+
     try (InputStreamReader reader = new InputStreamReader(binaryData.inputStream())) {
-      T content = gson.fromJson(reader, clazz);
-      return Optional.of(content);
+      return gson.fromJson(reader, clazz);
     }
   }
 

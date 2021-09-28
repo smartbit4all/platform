@@ -102,10 +102,28 @@ public class BinaryDataOutputStream extends OutputStream {
    */
   private BinaryData data = null;
 
+  /**
+   * The {@link BinaryData} store the content in memory till this limit. If we reach it then it
+   * switch to temp file and copy the currently available content into this new temp file. The 0
+   * means that from the first byte it uses the temp file as storage. The -1 means that all of the
+   * content will be stored in memory without any temp file.
+   * 
+   * @param memoryLimit
+   * @throws Exception
+   */
   public BinaryDataOutputStream(int memoryLimit) throws Exception {
     this(memoryLimit, null);
   }
 
+  /**
+   * The {@link BinaryData} store the content in memory till this limit. If we reach it then it
+   * switch to temp file and copy the currently available content into this new temp file. The 0
+   * means that from the first byte it uses the temp file as storage. The -1 means that all of the
+   * content will be stored in memory without any temp file.
+   * 
+   * @param memoryLimit
+   * @throws Exception
+   */
   public BinaryDataOutputStream(int memoryLimit, MessageDigest messageDigest) throws Exception {
     super();
     this.memoryLimit = memoryLimit;

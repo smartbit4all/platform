@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.smartbit4all.api.storage.bean.ObjectReferenceList;
+import org.smartbit4all.core.object.ObjectApi;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -31,6 +32,9 @@ public final class StorageApiImpl implements StorageApi, InitializingBean {
    * The preprocessed storages identified by the class.
    */
   private Map<Class<?>, Storage<?>> storagesByClass = new HashMap<>();
+
+  @Autowired
+  private ObjectApi objectApi;
 
   @Override
   public void afterPropertiesSet() throws Exception {
@@ -89,15 +93,16 @@ public final class StorageApiImpl implements StorageApi, InitializingBean {
     if (object == null) {
       return null;
     }
+    Class<T> clazz = (Class<T>) object.getClass();
     @SuppressWarnings("unchecked")
-    Storage<T> storage = (Storage<T>) storagesByClass.get(object.getClass());
+    Storage<T> storage = (Storage<T>) storagesByClass.get(clazz);
     if (storage == null) {
       throw new IllegalArgumentException(
           "Unable to save the " + object + ". There is no Storage defined!");
     }
 
     // Construct and set URI!
-    StorageObject<T> storageObject = new StorageObject<T>(object);
+    StorageObject<T> storageObject = new StorageObject<T>(objectApi.definition(clazz));
     storageObject.setUri(storage.getUriProvider().constructUri(object));
 
     return storage.save(object);

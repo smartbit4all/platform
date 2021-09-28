@@ -1,9 +1,12 @@
 package org.smartbit4all.core.object;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MasterBean {
+
+  private URI uri;
 
   private String name;
 
@@ -92,6 +95,14 @@ public class MasterBean {
     }
     this.details.add(detailsItem);
     return this;
+  }
+
+  public final URI getUri() {
+    return uri;
+  }
+
+  public final void setUri(URI uri) {
+    this.uri = uri;
   }
 
 }

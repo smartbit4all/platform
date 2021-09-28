@@ -18,10 +18,11 @@ public class GsonBinaryDataObjectSerializer implements BinaryDataObjectSerialize
     }
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public <T> Optional<T> fromJsonBinaryData(BinaryData binaryData, Class<T> clazz) {
     try {
-      return GsonBinaryData.fromJsonBinaryData(binaryData, clazz);
+      return Optional.of((T) GsonBinaryData.fromJsonBinaryData(binaryData, clazz));
     } catch (IOException e) {
       throw new RuntimeException("Cannot deserialize the object of class: " + clazz.getName(), e);
     }

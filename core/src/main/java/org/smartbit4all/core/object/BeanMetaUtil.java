@@ -131,7 +131,8 @@ public final class BeanMetaUtil {
     if (propertyType.isAssignableFrom(List.class)) {
       // If we don't define the detail meta then try to identify the field for the bean property.
       Class<?> genericType = lookupFieldGenericType(apiClass, propertyName, List.class);
-      if (genericType != null && descriptor.getAllApiBeanClass().contains(genericType)) {
+      if (genericType != null
+          && (descriptor != null && descriptor.getAllApiBeanClass().contains(genericType))) {
         propertyMeta.setKind(PropertyKind.COLLECTION);
       }
     }
