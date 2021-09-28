@@ -1,6 +1,8 @@
-package org.smartbit4all.core.object;
+package org.smartbit4all.api.object;
 
 import org.smartbit4all.core.config.CoreConfig;
+import org.smartbit4all.core.object.MasterBean;
+import org.smartbit4all.core.object.ObjectDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
