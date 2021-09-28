@@ -19,7 +19,7 @@ subprojects {
     apply plugin: 'maven-publish'
 
     group "org.smartbit4all.platform"
-    version "1.0.2"
+    version "1.0.3-SNAPSHOT"
 
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
