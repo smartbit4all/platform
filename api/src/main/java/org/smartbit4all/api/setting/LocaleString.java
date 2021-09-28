@@ -103,7 +103,7 @@ public final class LocaleString {
    * 
    * @param consumer
    */
-  void apply(Consumer<String> consumer) {
+  public void apply(Consumer<String> consumer) {
     purge();
     consumers.add(new WeakReference<Consumer<String>>(consumer));
     consumer.accept(get());
