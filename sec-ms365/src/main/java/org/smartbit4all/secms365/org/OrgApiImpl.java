@@ -17,6 +17,7 @@ package org.smartbit4all.secms365.org;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.smartbit4all.api.org.OrgApi;
@@ -78,16 +79,17 @@ public class OrgApiImpl implements OrgApi {
     }
     return users;
   }
-  
+
   @Override
   public List<Group> getAllGroups() {
     List<Group> groups = new ArrayList<>();
-    IGroupCollectionPage groupPage = graphService.getGraphClient().groups().buildRequest().top(25).get();
-    while(groupPage != null) {
+    IGroupCollectionPage groupPage =
+        graphService.getGraphClient().groups().buildRequest().top(25).get();
+    while (groupPage != null) {
       List<com.microsoft.graph.models.extensions.Group> currentPage = groupPage.getCurrentPage();
       groups.addAll(currentPage.stream().map(u -> createGroup(u)).collect(Collectors.toList()));
       IGroupCollectionRequestBuilder nextPage = groupPage.getNextPage();
-      if(nextPage == null) {
+      if (nextPage == null) {
         break;
       } else {
         groupPage = nextPage.buildRequest().get();
@@ -164,15 +166,15 @@ public class OrgApiImpl implements OrgApi {
   private User createUser(com.microsoft.graph.models.extensions.User user) {
     return new User()
         .uri(URI.create("user:/id#" + user.id))
-        .username(user.displayName.replaceAll("\\s",""))
+        .username(user.displayName.replaceAll("\\s", ""))
         .name(user.displayName)
         .email(user.mail);
   }
-  
+
   private User createUser(DefaultOidcUser user) {
     return new User()
         .uri(URI.create("user:/id#" + user.getAttribute("oid")))
-        .username(user.getName().replaceAll("\\s",""))
+        .username(user.getName().replaceAll("\\s", ""))
         .name(user.getName())
         .email(user.getEmail());
   }
@@ -183,5 +185,28 @@ public class OrgApiImpl implements OrgApi {
         .uri(uri)
         .name(group.displayName)
         .description(group.description);
+  }
+
+  @Override
+  public User getUserByUsername(String username) {
+    IUserCollectionPage userPage =
+        graphService.getGraphClient().users().buildRequest().top(25).get();
+    while (userPage != null) {
+      List<com.microsoft.graph.models.extensions.User> currentPage = userPage.getCurrentPage();
+      for (Iterator<com.microsoft.graph.models.extensions.User> i = currentPage.iterator(); i
+          .hasNext();) {
+        com.microsoft.graph.models.extensions.User next = i.next();
+        String displayName = next.displayName.replaceAll("\\s", "");
+        if (displayName.equals(username)) {
+          return createUser(next);
+        }
+      }
+      IUserCollectionRequestBuilder nextPage = userPage.getNextPage();
+      if (nextPage == null) {
+        break;
+      }
+      userPage = nextPage.buildRequest().get();
+    }
+    return null;
   }
 }

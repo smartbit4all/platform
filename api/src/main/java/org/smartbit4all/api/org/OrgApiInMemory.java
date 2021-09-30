@@ -38,12 +38,13 @@ public class OrgApiInMemory extends OrgApiImpl {
     loadUsersAndGroups(env);
   }
 
-  // TODO Use ConfigurationProperties: https://www.baeldung.com/configuration-properties-in-spring-boot
+  // TODO Use ConfigurationProperties:
+  // https://www.baeldung.com/configuration-properties-in-spring-boot
   protected void loadUsersAndGroups(Environment env) {
     if (!(env instanceof ConfigurableEnvironment)) {
       return;
     }
-    
+
     for (PropertySource<?> propertySource : ((ConfigurableEnvironment) env).getPropertySources()) {
       if (propertySource instanceof EnumerablePropertySource) {
         for (String key : ((EnumerablePropertySource) propertySource).getPropertyNames()) {
@@ -53,10 +54,10 @@ public class OrgApiInMemory extends OrgApiImpl {
             // "username.name"
             String userNameProperty = key.substring(ORGAPI_USERS.length() + 1);
             int indexOf = userNameProperty.lastIndexOf(".");
-            
+
             // "username"
             String userName = userNameProperty.substring(0, indexOf);
-            
+
             // "name"
             String property = userNameProperty.substring(indexOf + 1);
             String propertyValue = (String) propertySource.getProperty(key);
@@ -190,6 +191,16 @@ public class OrgApiInMemory extends OrgApiImpl {
 
   @Override
   public InputStream getGroupImage(URI groupUri) {
+    return null;
+  }
+
+  @Override
+  public User getUserByUsername(String username) {
+    for (User user : users.values()) {
+      if (user.getUsername().equals(username)) {
+        return user;
+      }
+    }
     return null;
   }
 

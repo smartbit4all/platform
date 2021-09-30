@@ -1,6 +1,5 @@
 package org.smartbit4all.sec.session;
 
-import org.smartbit4all.api.gateway.SecurityGateways;
 import org.smartbit4all.api.org.OrgApi;
 import org.smartbit4all.api.org.bean.User;
 import org.springframework.security.core.Authentication;
@@ -58,7 +57,7 @@ public class AuthenticationUserProviders {
       private User getUserByUsername(String username) {
         // FIXME: user could be cached by the username
         if (orgApi != null) {
-          return orgApi.getUser(SecurityGateways.localUserUri(username));
+          return orgApi.getUserByUsername(username);
         }
         return null;
       }

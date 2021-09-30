@@ -71,4 +71,15 @@ public class OrgApiGatewayImpl extends OrgApiImpl {
     return null;
   }
 
+  @Override
+  public User getUserByUsername(String username) {
+    List<User> users = secGatewayService.getUsers();
+    for (User user : users) {
+      if (username.equals(user.getUsername())) {
+        return user;
+      }
+    }
+    return null;
+  }
+
 }
