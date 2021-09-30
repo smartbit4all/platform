@@ -23,9 +23,9 @@ public class ConverterApi {
     if (from.equals(to)) {
       return null;
     }
-    
-    for(Converter converter : converters) {
-      if(converter.getFrom().equals(from) && converter.getTo().equals(to)) {
+
+    for (Converter converter : converters) {
+      if (converter.getFrom().equals(from) && converter.getTo().equals(to)) {
         return converter;
       }
     }
@@ -34,14 +34,14 @@ public class ConverterApi {
 
   public List<Converter> getAllFrom(String from) {
     List<Converter> foundConverters = new ArrayList<>();
-    for(Converter converter : converters) {
-      if(converter.getFrom().equals(from)) {
+    for (Converter converter : converters) {
+      if (converter.getFrom().equals(from)) {
         foundConverters.add(converter);
       }
     }
     return foundConverters;
   }
-  
+
   public BinaryData convert(BinaryData content, String from, String to) {
     if (from.equals(to)) {
       return content;
@@ -49,7 +49,7 @@ public class ConverterApi {
 
     for (Converter converter : converters) {
       if (converter.getFrom().equals(from) && converter.getTo().equals(to)) {
-        return converter.convert(content, from, to);
+        return converter.convert(content);
       }
     }
     return null;

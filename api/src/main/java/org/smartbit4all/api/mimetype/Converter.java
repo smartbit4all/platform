@@ -11,16 +11,14 @@ import org.smartbit4all.api.binarydata.BinaryData;
 public interface Converter {
 
   /**
-   * Converts a document from one given mimeType to another.
+   * Converts the given document, if its mimetype is the same as the converter's from field.
    * 
    * @param content The content of the document that will be converted
-   * @param from The mimeType of the document before conversion
-   * @param to The mimeType of the document after conversion
    * @return The content of the converted document
    */
-  BinaryData convert(BinaryData content, String from, String to);
+  BinaryData convert(BinaryData content);
 
   String getFrom();
-  
+
   String getTo();
 }
