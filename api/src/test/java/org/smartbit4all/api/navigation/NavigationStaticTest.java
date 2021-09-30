@@ -71,17 +71,17 @@ class NavigationStaticTest {
 
     List<String> qualifiedNames = Arrays.asList("/bean2s#name", "/bean2s#uri");
     Map<String, Object> resolveValues = navigation.resolveValues(rootNode, qualifiedNames);
-    assertEquals("testbean2name", resolveValues.get("name"));
-    assertEquals(bean2.getUri(), resolveValues.get("uri"));
+    assertEquals("testbean2name", resolveValues.get("/bean2s#name"));
+    assertEquals(bean2.getUri(), resolveValues.get("/bean2s#uri"));
 
     qualifiedNames = Arrays.asList("/bean2s/bean3s#name", "/bean2s/bean3s#uri");
     resolveValues = navigation.resolveValues(rootNode, qualifiedNames);
-    assertEquals("testbean3name", resolveValues.get("name"));
-    assertEquals(bean3.getUri(), resolveValues.get("uri"));
+    assertEquals("testbean3name", resolveValues.get("/bean2s/bean3s#name"));
+    assertEquals(bean3.getUri(), resolveValues.get("/bean2s/bean3s#uri"));
 
     qualifiedNames = Arrays.asList("/bean2s/bean3s#bean4/name");
     resolveValues = navigation.resolveValues(rootNode, qualifiedNames);
-    assertEquals("testbean4name", resolveValues.get("bean4/name"));
+    assertEquals("testbean4name", resolveValues.get("/bean2s/bean3s#bean4/name"));
   }
 
   @Test
@@ -105,17 +105,17 @@ class NavigationStaticTest {
 
     List<String> qualifiedNames = Arrays.asList("/bean2s#name", "/bean2s#uri");
     Map<String, Object> resolveValues = navigation.resolveValues(rootNode, qualifiedNames);
-    assertEquals("testbean2name", resolveValues.get("name"));
-    assertEquals(bean2.getUri(), resolveValues.get("uri"));
+    assertEquals("testbean2name", resolveValues.get("/bean2s#name"));
+    assertEquals(bean2.getUri(), resolveValues.get("/bean2s#uri"));
 
     qualifiedNames = Arrays.asList("/bean2s/bean3s#name", "/bean2s/bean3s#uri");
     resolveValues = navigation.resolveValues(rootNode, qualifiedNames);
-    assertEquals("testbean3name", resolveValues.get("name"));
-    assertEquals(bean3.getUri(), resolveValues.get("uri"));
+    assertEquals("testbean3name", resolveValues.get("/bean2s/bean3s#name"));
+    assertEquals(bean3.getUri(), resolveValues.get("/bean2s/bean3s#uri"));
 
     qualifiedNames = Arrays.asList("/bean2s/bean3s#bean4/name");
     resolveValues = navigation.resolveValues(rootNode, qualifiedNames);
-    assertEquals("testbean4name", resolveValues.get("bean4/name"));
+    assertEquals("testbean4name", resolveValues.get("/bean2s/bean3s#bean4/name"));
   }
 
 }

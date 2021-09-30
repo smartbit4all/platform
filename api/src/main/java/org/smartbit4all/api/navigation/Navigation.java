@@ -740,6 +740,20 @@ public class Navigation {
     return actualNodes;
   }
 
+  private static class ResolvedPropertyEntry {
+
+    public ResolvedPropertyEntry(String qualifiedName, String name) {
+      super();
+      this.qualifiedName = qualifiedName;
+      this.name = name;
+    }
+
+    String qualifiedName;
+
+    String name;
+
+  }
+
   /**
    * Here we assume that the navigation is already started and the given context node is available
    * already. For the first time it can be the root object added to the navigation to start from. We
@@ -759,7 +773,7 @@ public class Navigation {
     }
     // This will be the resolved navigation nodes by the
     Map<String, Optional<NavigationNode>> nodesByPath = new HashMap<>();
-    Map<NavigationNode, List<String>> propertiesToResolveByNode = new HashMap<>();
+    Map<NavigationNode, List<ResolvedPropertyEntry>> propertiesToResolveByNode = new HashMap<>();
     for (String qualifiedName : qualifiedNames) {
       String[] parts = qualifiedName.split(StringConstant.HASH);
       // We must have a proper qualified name!
@@ -768,7 +782,7 @@ public class Navigation {
       }
       String navigationPath = parts[0];
       String propertyPath = parts[1];
-      List<String> propertyPathList = null;
+      List<ResolvedPropertyEntry> propertyPathList = null;
       Optional<NavigationNode> navigationNodeOpt = nodesByPath.get(navigationPath);
       // We enter only if we haven't tried before to avoid resolving again and again!
       if (navigationNodeOpt == null) {
@@ -795,23 +809,24 @@ public class Navigation {
       }
       // If we found the propertyPathList we add the current path else we give a debug log.
       if (propertyPathList != null) {
-        propertyPathList.add(propertyPath);
+        propertyPathList.add(new ResolvedPropertyEntry(qualifiedName, propertyPath));
       } else {
         log.debug("Unable to retrive {} property because the navigation node was not found.",
             qualifiedName);
       }
     }
     Map<String, Object> result = new HashMap<>();
-    for (Entry<NavigationNode, List<String>> entry : propertiesToResolveByNode.entrySet()) {
+    for (Entry<NavigationNode, List<ResolvedPropertyEntry>> entry : propertiesToResolveByNode
+        .entrySet()) {
       NavigationNode node = entry.getKey();
-      List<String> properties = entry.getValue();
+      List<ResolvedPropertyEntry> properties = entry.getValue();
       ApiObjectRef objectRef =
           api.loadObject(node.getEntry().getMetaUri(), node.getEntry().getObjectUri())
               .orElseThrow(() -> new IllegalArgumentException(
                   "Unable to load the " + node.getEntry() + " object."));
-      for (String propertyPath : properties) {
-        Object value = objectRef.getValueByPath(propertyPath);
-        result.put(propertyPath, value);
+      for (ResolvedPropertyEntry resolvedPropertyEntry : properties) {
+        Object value = objectRef.getValueByPath(resolvedPropertyEntry.name);
+        result.put(resolvedPropertyEntry.qualifiedName, value);
       }
     }
 

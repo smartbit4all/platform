@@ -31,6 +31,7 @@ import javax.validation.Valid;
  * CompositeObjectAssociation
  */
 @JsonPropertyOrder({
+  CompositeObjectAssociation.NAME,
   CompositeObjectAssociation.ASSOC_DEF_URI,
   CompositeObjectAssociation.CHILD_DEF_URI,
   CompositeObjectAssociation.CHILD_RECURSIVE
@@ -38,6 +39,9 @@ import javax.validation.Valid;
 @JsonTypeName("CompositeObjectAssociation")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class CompositeObjectAssociation {
+  public static final String NAME = "name";
+  private String name;
+
   public static final String ASSOC_DEF_URI = "assocDefUri";
   private URI assocDefUri;
 
@@ -46,6 +50,33 @@ public class CompositeObjectAssociation {
 
   public static final String CHILD_RECURSIVE = "childRecursive";
   private Boolean childRecursive = true;
+
+
+  public CompositeObjectAssociation name(String name) {
+    
+    this.name = name;
+    return this;
+  }
+
+   /**
+   * Symbolic name of the association. Should be unique in the CompositeObjectDef.
+   * @return name
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "Symbolic name of the association. Should be unique in the CompositeObjectDef.")
+  @JsonProperty(NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getName() {
+    return name;
+  }
+
+
+  @JsonProperty(NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setName(String name) {
+    this.name = name;
+  }
 
 
   public CompositeObjectAssociation assocDefUri(URI assocDefUri) {
@@ -140,20 +171,22 @@ public class CompositeObjectAssociation {
       return false;
     }
     CompositeObjectAssociation compositeObjectAssociation = (CompositeObjectAssociation) o;
-    return Objects.equals(this.assocDefUri, compositeObjectAssociation.assocDefUri) &&
+    return Objects.equals(this.name, compositeObjectAssociation.name) &&
+        Objects.equals(this.assocDefUri, compositeObjectAssociation.assocDefUri) &&
         Objects.equals(this.childDefUri, compositeObjectAssociation.childDefUri) &&
         Objects.equals(this.childRecursive, compositeObjectAssociation.childRecursive);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(assocDefUri, childDefUri, childRecursive);
+    return Objects.hash(name, assocDefUri, childDefUri, childRecursive);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class CompositeObjectAssociation {\n");
+    sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    assocDefUri: ").append(toIndentedString(assocDefUri)).append("\n");
     sb.append("    childDefUri: ").append(toIndentedString(childDefUri)).append("\n");
     sb.append("    childRecursive: ").append(toIndentedString(childRecursive)).append("\n");

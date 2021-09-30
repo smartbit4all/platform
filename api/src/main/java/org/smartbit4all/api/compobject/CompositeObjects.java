@@ -30,8 +30,12 @@ public class CompositeObjects {
   }
 
   public static URI createNewCompDefUri(String defName) {
+    return createNewCompDefUri(ComposeableObjectNavigation.SCHEME, defName);
+  }
+
+  public static URI createNewCompDefUri(String scheme, String defName) {
     return URI.create(
-        ComposeableObjectNavigation.SCHEME + ":/" + defName + "." + COMPOBJ_DEF_URI_EXTENSION);
+        scheme + ":/" + defName + "." + COMPOBJ_DEF_URI_EXTENSION);
   }
 
   public static CompositeObject addObject(
@@ -73,6 +77,7 @@ public class CompositeObjects {
   }
 
   public static ComposeableObjectDef addAssociationIfNotExists(
+      String assocName,
       CompositeObjectDef compositeObjectDef,
       URI childDefUri,
       URI childApiUri,
@@ -82,13 +87,15 @@ public class CompositeObjects {
       boolean visible) {
 
     if (getAssociactionWithDef(compositeObjectDef.getAssociations(), childDefUri) == null) {
-      return addAssociation(compositeObjectDef, childDefUri, childApiUri, childRecursive, icon,
+      return addAssociation(assocName, compositeObjectDef, childDefUri, childApiUri, childRecursive,
+          icon,
           viewName, visible);
     }
     return null;
   }
 
   public static ComposeableObjectDef addAssociation(
+      String assocName,
       CompositeObjectDef compositeObjectDef,
       URI childDefUri,
       URI childApiUri,
@@ -99,6 +106,7 @@ public class CompositeObjects {
 
     URI childAssocUri = createChildAssocUri(compositeObjectDef.getComposeableDefUri(), childDefUri);
     CompositeObjectAssociation newCompObjAssoc = new CompositeObjectAssociation()
+        .name(assocName)
         .assocDefUri(childAssocUri)
         .childDefUri(childDefUri)
         .childRecursive(childRecursive);
@@ -165,13 +173,14 @@ public class CompositeObjects {
       ComposeableObjectDef assocDef = getDef(compObjDefStorage, assocUri);
 
       if (assoc.getChildRecursive()) {
-        addChildDefinition(navigationConfig, childDef);
+        addChildDefinition(assoc, navigationConfig, childDef);
       }
 
       addAssocDefinition(
           navigationConfig,
 
           ComposeableObjectNavigation.createAssocMeta(
+              assoc.getName(),
               assocUri,
               compositeDef.getComposeableDefUri(),
               childDefUri,
@@ -196,12 +205,15 @@ public class CompositeObjects {
   }
 
   private static void addChildDefinition(
+      CompositeObjectAssociation assoc,
       ConfigBuilder navigationConfig,
       ComposeableObjectDef childDef) {
 
     navigationConfig.addAssociationMeta(
 
         ComposeableObjectNavigation.createAssocMeta(
+            assoc.getName(),
+            childDef.getUri(),
             childDef.getUri(),
             childDef.getUri(),
             childDef.getUri()),

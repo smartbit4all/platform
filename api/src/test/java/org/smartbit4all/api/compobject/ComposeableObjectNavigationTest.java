@@ -107,7 +107,10 @@ public class ComposeableObjectNavigationTest {
         .uri(compObj1)
         .compositeDefUri(compositeDef.getUri());
 
+    String assocName = "todo";
+
     ComposeableObjectDef compositeToTodoDef = CompositeObjects.addAssociation(
+        assocName,
         compositeDef,
         TODO_COMPDEF_URI,
         compositeObjectCompDef.getApiUri(),
@@ -132,7 +135,7 @@ public class ComposeableObjectNavigationTest {
     CompositeDataCollection collection = new CompositeDataCollection();
     collection.addCompositeDatasItem(data);
 
-    String path = "/" + ComposeableObjectNavigation.SCHEME + "#" + "uri";
+    String path = "/" + assocName + "#" + "uri";
     Map<String, Object> collectedData = dataCollector.collect(Arrays.asList(path), collection);
     assertTrue(collectedData.isEmpty());
 
@@ -151,8 +154,7 @@ public class ComposeableObjectNavigationTest {
         testTreeObject.getUri(),
         dataCollector.collect(Arrays.asList(path), collection).values().iterator().next());
 
-    String path2 = "/" + ComposeableObjectNavigation.SCHEME + "/"
-        + ComposeableObjectNavigation.SCHEME + "#" + "uri";
+    String path2 = "/" + assocName + "/" + assocName + "#" + "uri";
     assertTrue(dataCollector.collect(Arrays.asList(path2), collection).isEmpty());
 
     URI childUri = addTreeObject(testObjectStorage, "second.tto", testTreeObject);
@@ -224,6 +226,7 @@ public class ComposeableObjectNavigationTest {
         .compositeDefUri(compositeDef.getUri());
 
     ComposeableObjectDef compositeToTodoDef = CompositeObjects.addAssociation(
+        "todo",
         compositeDef,
         TODO_COMPDEF_URI,
         compositeObjectCompDef.getApiUri(),
@@ -237,12 +240,20 @@ public class ComposeableObjectNavigationTest {
 
     NavigationConfig navigationConfig = NavigationConfig.builder()
         .addAssociationMeta(
+
             ComposeableObjectNavigation.createAssocMeta(
+                "testAssocName",
                 compositeToTodoDef.getUri(),
                 COMPOSITE_OBJECT_COMPDEF_URI,
-                TODO_COMPDEF_URI))
+                TODO_COMPDEF_URI,
+                null))
 
-        .addAssociationMeta(ComposeableObjectNavigation.createAssocMeta(testObjectCompDef))
+        .addAssociationMeta(
+
+            ComposeableObjectNavigation.createAssocMeta(
+                "testAssocName",
+                testObjectCompDef))
+
         .build();
 
     NavigationPrimary primaryNavigationApi = ctx.getBean(NavigationPrimary.class);

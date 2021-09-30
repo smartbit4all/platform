@@ -141,8 +141,11 @@ public class ComposeableObjectNavigation extends NavigationImpl {
         createAssocEntry(objectUri, parentDef, definition));
   }
 
-  private NavigationEntry createAssocEntry(URI objectUri, ComposeableObjectDef parentDef,
+  private NavigationEntry createAssocEntry(
+      URI objectUri,
+      ComposeableObjectDef parentDef,
       ComposeableObjectDef childDef) throws Exception {
+
     if (!Strings.isNullOrEmpty(parentDef.getViewName())) {
       NavigationEntry assocEntry = Navigation.entry(
 
@@ -183,19 +186,20 @@ public class ComposeableObjectNavigation extends NavigationImpl {
     return newEntry;
   }
 
-  public static NavigationAssociationMeta createAssocMeta(ComposeableObjectDef compObjDef) {
-    return createAssocMeta(compObjDef.getUri(), compObjDef.getUri(), compObjDef.getUri());
+  public static NavigationAssociationMeta createAssocMeta(
+      String assocName,
+      ComposeableObjectDef compObjDef) {
+
+    return createAssocMeta(
+        assocName,
+        compObjDef.getUri(),
+        compObjDef.getUri(),
+        compObjDef.getUri(),
+        null);
   }
 
   public static NavigationAssociationMeta createAssocMeta(
-      URI assocUri,
-      URI startEntryUri,
-      URI endEntryUri) {
-
-    return createAssocMeta(assocUri, startEntryUri, endEntryUri, null);
-  }
-
-  public static NavigationAssociationMeta createAssocMeta(
+      String assocName,
       URI assocUri,
       URI startEntryUri,
       URI endEntryUri,
@@ -203,7 +207,7 @@ public class ComposeableObjectNavigation extends NavigationImpl {
 
     return Navigation.assocMeta(
         assocUri,
-        assocUri.getScheme(),
+        assocName,
         createEntryMeta(startEntryUri),
         createEntryMeta(endEntryUri),
         assocEntryUri != null ? createEntryMeta(assocEntryUri) : null);

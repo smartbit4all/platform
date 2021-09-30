@@ -52,6 +52,9 @@ components:
     CompositeObjectAssociation:
       type: object
       properties:
+        name:
+          type: string
+          description: Symbolic name of the association. Should be unique in the CompositeObjectDef.
         assocDefUri:
           type: string
           format: uri
