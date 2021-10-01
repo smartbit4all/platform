@@ -52,7 +52,7 @@ public class CompositeObject {
   private String caption;
 
   public static final String OBJECTS = "objects";
-  private List<ComposeableObject> objects = null;
+  private List<ComposeableObject> objects = new ArrayList<>();
 
 
   public CompositeObject uri(URI uri) {
@@ -145,9 +145,6 @@ public class CompositeObject {
   }
 
   public CompositeObject addObjectsItem(ComposeableObject objectsItem) {
-    if (this.objects == null) {
-      this.objects = new ArrayList<>();
-    }
     this.objects.add(objectsItem);
     return this;
   }
@@ -156,11 +153,11 @@ public class CompositeObject {
    * Get objects
    * @return objects
   **/
-  @javax.annotation.Nullable
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(OBJECTS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public List<ComposeableObject> getObjects() {
     return objects;
@@ -168,7 +165,7 @@ public class CompositeObject {
 
 
   @JsonProperty(OBJECTS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setObjects(List<ComposeableObject> objects) {
     this.objects = objects;
   }

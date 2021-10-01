@@ -35,6 +35,7 @@ components:
       type: object
       required:
       - uri
+      - objects
       properties:
         uri:
           type: string
