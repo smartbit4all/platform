@@ -111,6 +111,19 @@ public class NavigationViewModelImpl extends ObjectEditingImpl implements Naviga
     }
   }
 
+  @Override
+  public void refreshSelectedNode() {
+    if (selectedNode != null) {
+      if (selectedNode.getKind() == TreeNodeKind.ASSOCIATION) {
+        navigationState.forceRefreshAssociation(selectedNode.getIdentifier());
+      } else if (selectedNode.getKind() == TreeNodeKind.ENTRY) {
+        navigationState.forceRefreshEntry(selectedNode.getIdentifier());
+      }
+      NavigationNode navigationNode = navigationState.getNode(selectedNode.getIdentifier());
+      refreshNavigationNode(navigationNode);
+    }
+  }
+
   private void loadChildren(TreeNode parent) {
     if (!parent.getChildrenNodesLoaded()) {
       parent.getChildrenNodes().clear();

@@ -14,4 +14,6 @@ public interface NavigationViewModel extends ObjectEditing {
   @PublishEvents("MODEL")
   ObservableObject model();
 
+  void refreshSelectedNode();
+
 }

@@ -533,7 +533,6 @@ public class Navigation {
           .map(assocMetaUri -> association(assocMetaUri, node, config))
           .collect(Collectors.toList());
       node.setAssociations(navigationAssociations);
-      System.out.println();
     }
 
 
