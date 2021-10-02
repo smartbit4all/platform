@@ -8,7 +8,10 @@ public class VaadinAbstractBinder {
 
   public void unbind() {
     if (disposable != null) {
-      disposable.dispose();
+      if (!disposable.isDisposed()) {
+        disposable.dispose();
+      }
+      disposable = null;
     }
   }
 

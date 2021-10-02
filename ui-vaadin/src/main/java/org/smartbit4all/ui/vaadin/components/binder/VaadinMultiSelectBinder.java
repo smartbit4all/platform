@@ -37,7 +37,7 @@ public class VaadinMultiSelectBinder<C extends Component, T> extends VaadinColle
     } else {
       propertyPath = path + "/" + collectionName;
     }
-
+    registerModelObserver();
     registerViewListener();
   }
 
@@ -84,10 +84,6 @@ public class VaadinMultiSelectBinder<C extends Component, T> extends VaadinColle
 
   @Override
   protected void onCollectionObjectChanged(CollectionObjectChange changes) {
-    if (list == null) {
-      // called from super constructor
-      return;
-    }
     propertyChangeProgress = true;
     super.onCollectionObjectChanged(changes);
     list.setValue(new LinkedHashSet<>(items));

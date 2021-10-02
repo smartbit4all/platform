@@ -2,6 +2,7 @@ package org.smartbit4all.ui.vaadin.components.binder;
 
 import java.util.Objects;
 import java.util.Set;
+import org.smartbit4all.core.object.CollectionObjectChange;
 import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.ui.vaadin.components.selector.MultiSelectPopUp;
 import org.smartbit4all.ui.vaadin.components.selector.MultiSelectPopUpList;
@@ -25,6 +26,7 @@ public class VaadinHasItemsBinder<T> extends VaadinCollectionBinder<T> {
   public VaadinHasItemsBinder(HasItems<T> list, ObservableObject observableObject, String path,
       String collectionName, ValueProvider<T, Object> idGetter) {
     super(observableObject, path, collectionName);
+    registerModelObserver();
     this.list = Objects.requireNonNull(list);
     if (list instanceof HasDataProvider) {
       HasDataProvider<T> hasDataProvider = (HasDataProvider<T>) list;
@@ -35,6 +37,11 @@ public class VaadinHasItemsBinder<T> extends VaadinCollectionBinder<T> {
   }
 
   @Override
+  protected void onCollectionObjectChanged(CollectionObjectChange changes) {
+    super.onCollectionObjectChanged(changes);
+    handleItemRefreshed();
+  }
+
   protected void handleItemRefreshed() {
     if (list == null) {
       // called from super constructor

@@ -19,7 +19,6 @@ public abstract class VaadinCollectionBinder<T> extends VaadinAbstractBinder {
   protected final List<T> items;
   protected final Map<String, T> itemsByPath;
 
-
   protected VaadinCollectionBinder(ObservableObject observableObject, String path,
       String collection) {
     this.observableObject = Objects.requireNonNull(observableObject);
@@ -27,6 +26,9 @@ public abstract class VaadinCollectionBinder<T> extends VaadinAbstractBinder {
     this.collection = collection;
     this.items = new ArrayList<>();
     this.itemsByPath = new HashMap<>();
+  }
+
+  protected void registerModelObserver() {
     this.disposable = this.observableObject.onCollectionObjectChange(path, collection,
         this::onCollectionObjectChanged);
   }
@@ -51,8 +53,6 @@ public abstract class VaadinCollectionBinder<T> extends VaadinAbstractBinder {
         item = deleteItem(itemPath);
       }
     }
-    handleItemRefreshed();
-    // TODO make item refreshes in one call, if possible.
   }
 
   protected void addItem(String itemPath, T item) {
@@ -73,10 +73,6 @@ public abstract class VaadinCollectionBinder<T> extends VaadinAbstractBinder {
       items.remove(item);
     }
     return item;
-  }
-
-  protected void handleItemRefreshed() {
-    // intentionally left blank
   }
 
 }
