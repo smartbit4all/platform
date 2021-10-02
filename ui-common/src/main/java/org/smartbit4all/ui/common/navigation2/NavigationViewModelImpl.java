@@ -120,7 +120,16 @@ public class NavigationViewModelImpl extends ObjectEditingImpl implements Naviga
         navigationState.forceRefreshEntry(selectedNode.getIdentifier());
       }
       NavigationNode navigationNode = navigationState.getNode(selectedNode.getIdentifier());
-      refreshNavigationNode(navigationNode);
+      if (navigationNode != null) {
+        refreshNavigationNode(navigationNode);
+      } else {
+        for (TreeNode root : model.getRootNodes()) {
+          navigationNode = navigationState.getNode(root.getIdentifier());
+          if (navigationNode != null) {
+            refreshNavigationNode(navigationNode);
+          }
+        }
+      }
     }
   }
 
