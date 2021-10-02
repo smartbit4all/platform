@@ -20,13 +20,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
-import org.smartbit4all.ui.common.view.UIViewShowCommand;
+import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
 import com.vaadin.flow.router.QueryParameters;
 import com.vaadin.flow.server.VaadinSession;
 
 /**
  * The transition of the parameters implemented with the attributes of the {@link VaadinSession}.
- * The {@link UIViewShowCommand} defines the necessary parameters for the view to open. This utility
+ * The {@link NavigationTarget} defines the necessary parameters for the view to open. This utility
  * will store the parameters till the navigation. After the navigation the given parameters will be
  * removed to avoid parameter confusion. It's closeable to encourage writing try(
  * 

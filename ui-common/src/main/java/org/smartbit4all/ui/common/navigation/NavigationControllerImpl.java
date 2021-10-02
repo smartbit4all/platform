@@ -29,12 +29,12 @@ import org.smartbit4all.api.navigation.NavigationConfig;
 import org.smartbit4all.api.navigation.bean.NavigationAssociation;
 import org.smartbit4all.api.navigation.bean.NavigationEntry;
 import org.smartbit4all.api.navigation.bean.NavigationNode;
+import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
 import org.smartbit4all.ui.common.action.Action;
 import org.smartbit4all.ui.common.action.Actions;
 import org.smartbit4all.ui.common.action.NavigationAction;
 import org.smartbit4all.ui.common.action.NavigationActionListener;
 import org.smartbit4all.ui.common.navigation.NavigationTreeNode.Kind;
-import org.smartbit4all.ui.common.view.UIViewShowCommand;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.base.Strings;
 import io.reactivex.rxjava3.disposables.Disposable;
@@ -229,12 +229,12 @@ public class NavigationControllerImpl implements NavigationController {
   }
 
   @Override
-  public UIViewShowCommand getViewCommand(NavigationTreeNode node) {
+  public NavigationTarget getViewCommand(NavigationTreeNode node) {
     if (node.isKind(Kind.ENTRY)) {
 
       NavigationNode navigationNode = navigationState.getNode(node.getIdentifier());
       if (hasNavigationView(navigationNode)) {
-        UIViewShowCommand command = createNavigationViewShowCommand(navigationNode);
+        NavigationTarget command = createNavigationViewShowCommand(navigationNode);
 
         addRootNodeParameter(navigationNode, command);
 
@@ -249,8 +249,8 @@ public class NavigationControllerImpl implements NavigationController {
       // NavigationNode naviNode = assoc.getNode();
       if (naviNode != null) {
         if (hasNavigationView(naviNode)) {
-          UIViewShowCommand command = createNavigationViewShowCommand(naviNode);
-          command.addParameter(Navigation.ASSOC_URI_VIEW_PARAM_KEY, assoc.getMetaUri());
+          NavigationTarget command = createNavigationViewShowCommand(naviNode);
+          command.putParametersItem(Navigation.ASSOC_URI_VIEW_PARAM_KEY, assoc.getMetaUri());
 
           return command;
         }
@@ -261,14 +261,14 @@ public class NavigationControllerImpl implements NavigationController {
     return null;
   }
 
-  private void addRootNodeParameter(NavigationNode navigationNode, UIViewShowCommand command) {
+  private void addRootNodeParameter(NavigationNode navigationNode, NavigationTarget command) {
     NavigationNode rootNode = navigationState.getRootNode(navigationNode);
     if (rootNode != null &&
         rootNode.getEntry() != null &&
         rootNode.getEntry().getObjectUri() != null) {
 
       URI rootObjectEntryUri = rootNode.getEntry().getObjectUri();
-      command.addParameter(Navigation.ROOT_OBJECT_URI, rootObjectEntryUri);
+      command.putParametersItem(Navigation.ROOT_OBJECT_URI, rootObjectEntryUri);
     }
   }
 
@@ -277,14 +277,15 @@ public class NavigationControllerImpl implements NavigationController {
         && !navigationNode.getEntry().getViews().isEmpty();
   }
 
-  private UIViewShowCommand createNavigationViewShowCommand(NavigationNode navigationNode) {
+  private NavigationTarget createNavigationViewShowCommand(NavigationNode navigationNode) {
     NavigationEntry navigationEntry = navigationNode.getEntry();
     org.smartbit4all.api.navigation.bean.NavigationView defaulView =
         navigationEntry.getViews().get(0);
 
-    UIViewShowCommand viewCommand = new UIViewShowCommand(defaulView.getName());
-    viewCommand.addParameter("entry", navigationEntry.getObjectUri());
-    viewCommand.addParameter("icon", navigationEntry.getIcon());
+    NavigationTarget viewCommand = new NavigationTarget()
+        .viewName(defaulView.getName())
+        .putParametersItem("entry", navigationEntry.getObjectUri())
+        .putParametersItem("icon", navigationEntry.getIcon());
     Map<String, Object> viewParams = defaulView.getParameters();
     if (viewParams != null) {
       viewCommand.getParameters().putAll(viewParams);
@@ -365,7 +366,7 @@ public class NavigationControllerImpl implements NavigationController {
   }
 
   @Override
-  public void navigateTo(UIViewShowCommand command) {
+  public void navigateTo(NavigationTarget command) {
     view.navigateTo(command);
   }
 

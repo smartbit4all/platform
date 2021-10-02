@@ -287,6 +287,10 @@ public class Navigation {
       list.removeIf(ref -> ref.get() == null);
       for (WeakReference<NavigationNode> ref : list) {
         NavigationNode navigationNode = ref.get();
+        NavigationEntry currentEntry = navigationNode.getEntry();
+        NavigationEntry newEntry =
+            api.getEntry(currentEntry.getMetaUri(), currentEntry.getObjectUri());
+        navigationNode.setEntry(newEntry);
         navigationNode.getAssociations().forEach(a -> a.setLastNavigation(null));
         expandAll(navigationNode);
         nodeChangePublisher.onNext(navigationNode);
@@ -334,11 +338,8 @@ public class Navigation {
     URI currentObjectUri = node.getEntry().getObjectUri();
     ArrayList<URI> assocMetaUris = new ArrayList<>(naviAssocByMetaUri.keySet());
 
-    // Register
-    // Map<URI, List<NavigationReferenceEntry>> navigation =
-    // api.navigate(currentObjectUri, assocMetaUris, this::nodeChanged);
     Map<URI, List<NavigationReferenceEntry>> navigation =
-        api.navigate(currentObjectUri, assocMetaUris);
+        api.navigate(currentObjectUri, assocMetaUris, this::nodeChanged);
 
     List<ApiItemChangeEvent<NavigationReference>> result = new ArrayList<>();
     for (Entry<URI, List<NavigationReferenceEntry>> entry : navigation

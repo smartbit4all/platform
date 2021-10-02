@@ -19,10 +19,10 @@ import java.util.Objects;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
 import org.smartbit4all.ui.common.navigation.NavigationController;
 import org.smartbit4all.ui.common.navigation.NavigationTreeNode;
 import org.smartbit4all.ui.common.navigation.NavigationView;
-import org.smartbit4all.ui.common.view.UIViewShowCommand;
 import org.smartbit4all.ui.vaadin.components.navigation.UIViewParameterVaadinTransition;
 import org.smartbit4all.ui.vaadin.localization.TranslationUtil;
 import com.vaadin.flow.component.Component;
@@ -122,7 +122,7 @@ public class NavigationTreeView implements NavigationView {
   }
 
   @Override
-  public void navigateTo(UIViewShowCommand command) {
+  public void navigateTo(NavigationTarget command) {
     if (command != null) {
       try (UIViewParameterVaadinTransition param =
           new UIViewParameterVaadinTransition(command.getParameters())) {

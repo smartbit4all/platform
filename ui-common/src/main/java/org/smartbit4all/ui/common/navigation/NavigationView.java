@@ -14,11 +14,11 @@
  ******************************************************************************/
 package org.smartbit4all.ui.common.navigation;
 
+import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
 import org.smartbit4all.ui.common.view.UIView;
-import org.smartbit4all.ui.common.view.UIViewShowCommand;
 
 public interface NavigationView extends UIView {
 
-  void navigateTo(UIViewShowCommand command);
+  void navigateTo(NavigationTarget command);
 
 }

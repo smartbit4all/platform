@@ -42,9 +42,12 @@ import javax.validation.Valid;
   TreeNode.ACTIONS,
   TreeNode.STYLES,
   TreeNode.CHILDREN_NODES,
+  TreeNode.HAS_CHILDREN,
   TreeNode.EXPANDED,
   TreeNode.SELECTED,
-  TreeNode.CHILDREN_NODES_LOADED
+  TreeNode.CHILDREN_NODES_LOADED,
+  TreeNode.NAVIGATION_TARGET,
+  TreeNode.LEVEL
 })
 @JsonTypeName("TreeNode")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -73,6 +76,9 @@ public class TreeNode {
   public static final String CHILDREN_NODES = "childrenNodes";
   private List<TreeNode> childrenNodes = new ArrayList<>();
 
+  public static final String HAS_CHILDREN = "hasChildren";
+  private Boolean hasChildren = false;
+
   public static final String EXPANDED = "expanded";
   private Boolean expanded = false;
 
@@ -81,6 +87,12 @@ public class TreeNode {
 
   public static final String CHILDREN_NODES_LOADED = "childrenNodesLoaded";
   private Boolean childrenNodesLoaded = false;
+
+  public static final String NAVIGATION_TARGET = "navigationTarget";
+  private org.smartbit4all.ui.api.navigation.model.NavigationTarget navigationTarget = null;
+
+  public static final String LEVEL = "level";
+  private Integer level;
 
 
   public TreeNode kind(TreeNodeKind kind) {
@@ -323,6 +335,33 @@ public class TreeNode {
   }
 
 
+  public TreeNode hasChildren(Boolean hasChildren) {
+    
+    this.hasChildren = hasChildren;
+    return this;
+  }
+
+   /**
+   * Get hasChildren
+   * @return hasChildren
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(HAS_CHILDREN)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getHasChildren() {
+    return hasChildren;
+  }
+
+
+  @JsonProperty(HAS_CHILDREN)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setHasChildren(Boolean hasChildren) {
+    this.hasChildren = hasChildren;
+  }
+
+
   public TreeNode expanded(Boolean expanded) {
     
     this.expanded = expanded;
@@ -404,6 +443,61 @@ public class TreeNode {
   }
 
 
+  public TreeNode navigationTarget(org.smartbit4all.ui.api.navigation.model.NavigationTarget navigationTarget) {
+    
+    this.navigationTarget = navigationTarget;
+    return this;
+  }
+
+   /**
+   * Get navigationTarget
+   * @return navigationTarget
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(NAVIGATION_TARGET)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public org.smartbit4all.ui.api.navigation.model.NavigationTarget getNavigationTarget() {
+    return navigationTarget;
+  }
+
+
+  @JsonProperty(NAVIGATION_TARGET)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setNavigationTarget(org.smartbit4all.ui.api.navigation.model.NavigationTarget navigationTarget) {
+    this.navigationTarget = navigationTarget;
+  }
+
+
+  public TreeNode level(Integer level) {
+    
+    this.level = level;
+    return this;
+  }
+
+   /**
+   * Get level
+   * @return level
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(LEVEL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getLevel() {
+    return level;
+  }
+
+
+  @JsonProperty(LEVEL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setLevel(Integer level) {
+    this.level = level;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -421,14 +515,17 @@ public class TreeNode {
         Objects.equals(this.actions, treeNode.actions) &&
         Objects.equals(this.styles, treeNode.styles) &&
         Objects.equals(this.childrenNodes, treeNode.childrenNodes) &&
+        Objects.equals(this.hasChildren, treeNode.hasChildren) &&
         Objects.equals(this.expanded, treeNode.expanded) &&
         Objects.equals(this.selected, treeNode.selected) &&
-        Objects.equals(this.childrenNodesLoaded, treeNode.childrenNodesLoaded);
+        Objects.equals(this.childrenNodesLoaded, treeNode.childrenNodesLoaded) &&
+        Objects.equals(this.navigationTarget, treeNode.navigationTarget) &&
+        Objects.equals(this.level, treeNode.level);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(kind, identifier, caption, shortDescription, icon, actions, styles, childrenNodes, expanded, selected, childrenNodesLoaded);
+    return Objects.hash(kind, identifier, caption, shortDescription, icon, actions, styles, childrenNodes, hasChildren, expanded, selected, childrenNodesLoaded, navigationTarget, level);
   }
 
   @Override
@@ -443,9 +540,12 @@ public class TreeNode {
     sb.append("    actions: ").append(toIndentedString(actions)).append("\n");
     sb.append("    styles: ").append(toIndentedString(styles)).append("\n");
     sb.append("    childrenNodes: ").append(toIndentedString(childrenNodes)).append("\n");
+    sb.append("    hasChildren: ").append(toIndentedString(hasChildren)).append("\n");
     sb.append("    expanded: ").append(toIndentedString(expanded)).append("\n");
     sb.append("    selected: ").append(toIndentedString(selected)).append("\n");
     sb.append("    childrenNodesLoaded: ").append(toIndentedString(childrenNodesLoaded)).append("\n");
+    sb.append("    navigationTarget: ").append(toIndentedString(navigationTarget)).append("\n");
+    sb.append("    level: ").append(toIndentedString(level)).append("\n");
     sb.append("}");
     return sb.toString();
   }

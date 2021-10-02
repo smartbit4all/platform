@@ -18,9 +18,9 @@ import java.net.URI;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 import org.smartbit4all.api.navigation.bean.NavigationEntry;
+import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
 import org.smartbit4all.ui.common.action.NavigationActionListener;
 import org.smartbit4all.ui.common.controller.UIController;
-import org.smartbit4all.ui.common.view.UIViewShowCommand;
 import io.reactivex.rxjava3.disposables.Disposable;
 
 /**
@@ -52,7 +52,7 @@ public interface NavigationController extends UIController {
 
   Disposable subscribeForNodeRefresh(Consumer<NavigationTreeNode> listener);
 
-  UIViewShowCommand getViewCommand(NavigationTreeNode node);
+  NavigationTarget getViewCommand(NavigationTreeNode node);
 
   void nodeSelected(NavigationTreeNode node);
 
@@ -66,6 +66,6 @@ public interface NavigationController extends UIController {
 
   NavigationEntry getSelectedEntry();
 
-  void navigateTo(UIViewShowCommand command);
+  void navigateTo(NavigationTarget command);
 
 }

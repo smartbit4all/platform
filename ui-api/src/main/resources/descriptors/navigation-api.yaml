@@ -1,0 +1,29 @@
+openapi: 3.0.1
+info:
+  title: Navigation API
+  description: Navigation API
+  termsOfService: ''
+  contact:
+    email: info@it4all.hu
+  version: 1.0.0
+tags:
+  - name: navigation
+    description: navigation
+paths:
+  /nope:
+    post:
+      summary: Placeholder for generation
+      responses:
+        '200':
+          description: nope
+components:
+  schemas:
+    NavigationTarget:
+      type: object
+      properties:
+        viewName:
+          type: string
+        parameters:
+          type: object
+          additionalProperties: true
+

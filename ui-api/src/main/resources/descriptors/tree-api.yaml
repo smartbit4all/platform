@@ -55,6 +55,9 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/TreeNode'
+        hasChildren:
+          type: boolean
+          default: false
         expanded:
           type: boolean
           default: false
@@ -64,6 +67,11 @@ components:
         childrenNodesLoaded:
           type: boolean
           default: false
+        navigationTarget:
+          type: 'NavigationTarget'
+        level:
+          type: integer
+          format: int32
     TreeNodeKind:
       type: string
       enum: [entry, association, reference]
