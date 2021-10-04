@@ -658,7 +658,12 @@ public class Navigation {
   }
 
   public Disposable subscribeForRootNodeAdded(Consumer<NavigationNode> listener) {
-    return rootNodeAddedPublisher.subscribe(node -> listener.accept(node));
+    Disposable subscription = rootNodeAddedPublisher.subscribe(node -> listener.accept(node));
+    Collection<NavigationNode> rootsToNotify = Collections.unmodifiableCollection(roots);
+    for (NavigationNode root : rootsToNotify) {
+      listener.accept(root);
+    }
+    return subscription;
   }
 
   public Disposable subscribeForRootNodeRemoved(Consumer<NavigationNode> listener) {
