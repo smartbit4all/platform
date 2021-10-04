@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.smartbit4all.api.navigation.Navigation;
 import org.smartbit4all.api.navigation.NavigationApi;
-import org.smartbit4all.api.navigation.NavigationConfig;
 import org.smartbit4all.api.navigation.bean.NavigationAssociation;
 import org.smartbit4all.api.navigation.bean.NavigationEntry;
 import org.smartbit4all.api.navigation.bean.NavigationNode;
@@ -40,33 +39,22 @@ public class NavigationViewModelImpl extends ObjectEditingImpl implements Naviga
 
   private Map<String, TreeNode> treeNodesById;
 
-  public NavigationViewModelImpl(NavigationApi navigationApi) {
-    this.navigationApi = navigationApi;
+  public NavigationViewModelImpl(Navigation navigation) {
+    this.navigationState = navigation;
     ref = new ApiObjectRef(null, new TreeModel(),
         NavigationViewModelHelper.getNavigationDescriptors());
     modelObservable = new ObservableObjectImpl();
     modelObservable.setRef(ref);
     model = ref.getWrapper(TreeModel.class);
     treeNodesById = new HashMap<>();
+    navigationState.subscribeForNodeRefresh(this::refreshNavigationNode);
+    navigationState.subscribeForRootNodeAdded(this::rootNodeAdded);
+    navigationState.subscribeForRootNodeRemoved(this::rootNodeRemoved);
   }
 
   @Override
   public ObservableObject model() {
     return modelObservable;
-  }
-
-  public Navigation startNavigation(NavigationConfig config) {
-    navigationState = new Navigation(config, navigationApi);
-    navigationState.subscribeForNodeRefresh(this::refreshNavigationNode);
-    return navigationState;
-  }
-
-  public void addRoot(URI entryMetaUri, URI rootObjectURI) {
-    if (navigationState != null) {
-      TreeNode node = treeNodeOf(navigationState.addRootNode(entryMetaUri, rootObjectURI), 0);
-      loadChildren(node);
-      model.getRootNodes().add(node);
-    }
   }
 
   @Override
@@ -343,6 +331,23 @@ public class NavigationViewModelImpl extends ObjectEditingImpl implements Naviga
       loadChildren(nodeToRefresh);
       notifyAllListeners();
     }
+  }
+
+  private void rootNodeAdded(NavigationNode rootNode) {
+    TreeNode treeNode = treeNodeOf(rootNode, 0);
+    loadChildren(treeNode);
+    model.getRootNodes().add(treeNode);
+    notifyAllListeners();
+  }
+
+  private void rootNodeRemoved(NavigationNode rootNode) {
+    model.getRootNodes().stream()
+        .filter(node -> rootNode.getId().equals(node.getIdentifier()))
+        .findFirst()
+        .ifPresent(root -> {
+          model.getRootNodes().remove(root);
+          notifyAllListeners();
+        });
   }
 
   private TreeNode findTreeNodeById(String id) {
