@@ -287,10 +287,7 @@ public class Navigation {
       list.removeIf(ref -> ref.get() == null);
       for (WeakReference<NavigationNode> ref : list) {
         NavigationNode navigationNode = ref.get();
-        NavigationEntry currentEntry = navigationNode.getEntry();
-        NavigationEntry newEntry =
-            api.getEntry(currentEntry.getMetaUri(), currentEntry.getObjectUri());
-        navigationNode.setEntry(newEntry);
+        refreshNavigationEntry(navigationNode);
         navigationNode.getAssociations().forEach(a -> a.setLastNavigation(null));
         expandAll(navigationNode);
         nodeChangePublisher.onNext(navigationNode);
@@ -305,6 +302,13 @@ public class Navigation {
         // }
       }
     }
+  }
+
+  public void refreshNavigationEntry(NavigationNode navigationNode) {
+    NavigationEntry currentEntry = navigationNode.getEntry();
+    NavigationEntry newEntry =
+        api.getEntry(currentEntry.getMetaUri(), currentEntry.getObjectUri());
+    navigationNode.setEntry(newEntry);
   }
 
   /**
@@ -323,6 +327,19 @@ public class Navigation {
             a -> a));
 
     return expandAssociations(node, naviAssocByMetaUri);
+  }
+
+  public List<ApiItemChangeEvent<NavigationReference>> expandAll(NavigationAssociation assoc,
+      boolean force) {
+
+    if (force || assoc.getLastNavigation() == null) {
+      Map<URI, NavigationAssociation> naviAssocByMetaUri = new HashMap<>();
+      naviAssocByMetaUri.put(assoc.getMetaUri(), assoc);
+      NavigationNode parentNode = getNode(assoc.getNodeId());
+      return expandAssociations(parentNode, naviAssocByMetaUri);
+    }
+
+    return Collections.emptyList();
   }
 
   /**
@@ -394,63 +411,63 @@ public class Navigation {
       NavigationAssociation association, List<NavigationReferenceEntry> references) {
     // TODO implement merge!
     // Naive impl: By default we clear the current references.
-    List<ApiItemChangeEvent<NavigationReference>> result = null;
-    if (association.getReferences() != null && !association.getReferences().isEmpty()) {
-      association.getReferences().forEach(r -> this.references.remove(r.getId()));
-      result = association.getReferences().stream()
-          .map(r -> new ApiItemChangeEvent<NavigationReference>(ApiItemOperation.DELETED, r))
-          .collect(Collectors.toList());
-    } else {
-      result = new ArrayList<>();
-    }
-    // We add all the references as new.
-    List<NavigationReference> newReferences =
-        references.stream().map(r -> registerReferenceEntry(startNode, association, r))
-            .collect(Collectors.toList());
-    newReferences.stream().forEach(r -> this.references.put(r.getId(), r));
-    result.addAll(newReferences.stream()
-        .map(r -> new ApiItemChangeEvent<NavigationReference>(ApiItemOperation.NEW, r))
-        .collect(Collectors.toList()));
-    association.setReferences(newReferences);
-    association.setLastNavigation(Integer.valueOf((int) System.currentTimeMillis()));
-    return result;
-
-    // List<ApiItemChangeEvent<NavigationReference>> result = new ArrayList<>();
-    //
-    // Map<URI, NavigationReference> oldReferences =
-    // association.getReferences() == null ? Collections.emptyMap()
-    // : association.getReferences().stream()
-    // .collect(Collectors.toMap(r -> r.getEndNode().getEntry().getObjectUri(), r -> r));
-    //
-    // // We create a new list based on the references. If a
-    // List<NavigationReference> newReferenceList = new ArrayList<>();
-    //
-    // for (NavigationReferenceEntry navigationReferenceEntry : references) {
-    // NavigationReference navigationReference =
-    // oldReferences.remove(navigationReferenceEntry.getEndEntry().getObjectUri());
-    // if (navigationReference != null) {
-    // NavigationEntry entryOld = navigationReference.getEndNode().getEntry();
-    // NavigationEntry entryNew = navigationReferenceEntry.getEndEntry();
-    // if (copyNavigationEntry(entryOld, entryNew)) {
-    // result.add(new ApiItemChangeEvent<>(ApiItemOperation.CHANGED, navigationReference));
-    // }
-    // newReferenceList.add(navigationReference);
+    // List<ApiItemChangeEvent<NavigationReference>> result = null;
+    // if (association.getReferences() != null && !association.getReferences().isEmpty()) {
+    // association.getReferences().forEach(r -> this.references.remove(r.getId()));
+    // result = association.getReferences().stream()
+    // .map(r -> new ApiItemChangeEvent<NavigationReference>(ApiItemOperation.DELETED, r))
+    // .collect(Collectors.toList());
     // } else {
-    // NavigationReference newReferenceEntry =
-    // registerReferenceEntry(startNode, association, navigationReferenceEntry);
-    // newReferenceList
-    // .add(newReferenceEntry);
-    // result.add(new ApiItemChangeEvent<>(ApiItemOperation.NEW, newReferenceEntry));
+    // result = new ArrayList<>();
     // }
-    // }
-    //
-    // for (NavigationReference deletedReference : oldReferences.values()) {
-    // result.add(new ApiItemChangeEvent<>(ApiItemOperation.DELETED, deletedReference));
-    // }
-    //
-    // association.setReferences(newReferenceList);
+    // // We add all the references as new.
+    // List<NavigationReference> newReferences =
+    // references.stream().map(r -> registerReferenceEntry(startNode, association, r))
+    // .collect(Collectors.toList());
+    // newReferences.stream().forEach(r -> this.references.put(r.getId(), r));
+    // result.addAll(newReferences.stream()
+    // .map(r -> new ApiItemChangeEvent<NavigationReference>(ApiItemOperation.NEW, r))
+    // .collect(Collectors.toList()));
+    // association.setReferences(newReferences);
     // association.setLastNavigation(Integer.valueOf((int) System.currentTimeMillis()));
     // return result;
+
+    List<ApiItemChangeEvent<NavigationReference>> result = new ArrayList<>();
+
+    Map<URI, NavigationReference> oldReferences =
+        association.getReferences() == null ? Collections.emptyMap()
+            : association.getReferences().stream()
+                .collect(Collectors.toMap(r -> r.getEndNode().getEntry().getObjectUri(), r -> r));
+
+    // We create a new list based on the references. If a
+    List<NavigationReference> newReferenceList = new ArrayList<>();
+
+    for (NavigationReferenceEntry navigationReferenceEntry : references) {
+      NavigationReference navigationReference =
+          oldReferences.remove(navigationReferenceEntry.getEndEntry().getObjectUri());
+      if (navigationReference != null) {
+        NavigationEntry entryOld = navigationReference.getEndNode().getEntry();
+        NavigationEntry entryNew = navigationReferenceEntry.getEndEntry();
+        if (copyNavigationEntry(entryOld, entryNew)) {
+          result.add(new ApiItemChangeEvent<>(ApiItemOperation.CHANGED, navigationReference));
+        }
+        newReferenceList.add(navigationReference);
+      } else {
+        NavigationReference newReferenceEntry =
+            registerReferenceEntry(startNode, association, navigationReferenceEntry);
+        newReferenceList
+            .add(newReferenceEntry);
+        result.add(new ApiItemChangeEvent<>(ApiItemOperation.NEW, newReferenceEntry));
+      }
+    }
+
+    for (NavigationReference deletedReference : oldReferences.values()) {
+      result.add(new ApiItemChangeEvent<>(ApiItemOperation.DELETED, deletedReference));
+    }
+
+    association.setReferences(newReferenceList);
+    association.setLastNavigation(Integer.valueOf((int) System.currentTimeMillis()));
+    return result;
   }
 
   private boolean copyNavigationEntry(NavigationEntry entryOld, NavigationEntry entryNew) {

@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.smartbit4all.api.navigation.Navigation;
-import org.smartbit4all.api.navigation.NavigationApi;
 import org.smartbit4all.api.navigation.bean.NavigationAssociation;
 import org.smartbit4all.api.navigation.bean.NavigationEntry;
 import org.smartbit4all.api.navigation.bean.NavigationNode;
@@ -26,8 +25,6 @@ import org.smartbit4all.ui.api.tree.model.TreeNodeKind;
 import com.google.common.base.Strings;
 
 public class NavigationViewModelImpl extends ObjectEditingImpl implements NavigationViewModel {
-
-  private NavigationApi navigationApi;
 
   private TreeModel model;
 
@@ -104,18 +101,22 @@ public class NavigationViewModelImpl extends ObjectEditingImpl implements Naviga
     if (selectedNode != null) {
       if (selectedNode.getKind() == TreeNodeKind.ASSOCIATION) {
         navigationState.forceRefreshAssociation(selectedNode.getIdentifier());
+        NavigationAssociation assoc = navigationState.getAssociation(selectedNode.getIdentifier());
+        if (assoc != null) {
+          navigationState.expandAll(assoc, true);
+          refreshNavigationAssociation(assoc);
+        } else {
+          throw new RuntimeException("Assoc not found: " + selectedNode);
+        }
       } else if (selectedNode.getKind() == TreeNodeKind.ENTRY) {
         navigationState.forceRefreshEntry(selectedNode.getIdentifier());
-      }
-      NavigationNode navigationNode = navigationState.getNode(selectedNode.getIdentifier());
-      if (navigationNode != null) {
-        refreshNavigationNode(navigationNode);
-      } else {
-        for (TreeNode root : model.getRootNodes()) {
-          navigationNode = navigationState.getNode(root.getIdentifier());
-          if (navigationNode != null) {
-            refreshNavigationNode(navigationNode);
-          }
+        NavigationNode navigationNode = navigationState.getNode(selectedNode.getIdentifier());
+        if (navigationNode != null) {
+          navigationState.refreshNavigationEntry(navigationNode);
+          navigationState.expandAll(navigationNode, true);
+          refreshNavigationNode(navigationNode);
+        } else {
+          throw new RuntimeException("Node not found: " + selectedNode);
         }
       }
     }
@@ -123,15 +124,24 @@ public class NavigationViewModelImpl extends ObjectEditingImpl implements Naviga
 
   private void loadChildren(TreeNode parent) {
     if (!parent.getChildrenNodesLoaded()) {
-      parent.getChildrenNodes().clear();
-      // Kind kind, String identifier, String caption, String shortDescription,
-      // String icon, String[] styles
+      Map<String, TreeNode> oldChildren = new HashMap<>();
+      for (TreeNode oldChild : parent.getChildrenNodes()) {
+        oldChildren.put(oldChild.getIdentifier(), oldChild);
+      }
+      // parent.getChildrenNodes().clear();
       if (parent.getKind() == TreeNodeKind.ASSOCIATION) {
         navigationState.getReferencedNodes(parent.getIdentifier())
             .stream()
-            .map(n -> treeNodeOf(n, parent.getLevel() + 1))
-            .forEachOrdered(n -> parent.getChildrenNodes().add(n));
+            .map(n -> createOrUpdateTreeNodeEntry(n, parent.getLevel() + 1))
+            .forEachOrdered(n -> {
+              if (oldChildren.containsKey(n.getIdentifier())) {
+                oldChildren.remove(n.getIdentifier());
+              } else {
+                parent.getChildrenNodes().add(n);
+              }
+            });
       } else {
+        // TreeNodeKind.ENTRY. Other, like reference?
 
         NavigationNode node = navigationState.getNode(parent.getIdentifier());
         if (node != null) {
@@ -152,15 +162,8 @@ public class NavigationViewModelImpl extends ObjectEditingImpl implements Naviga
             navigationState.getChildrenNodes(parent.getIdentifier(), true);
         nodesByAssocIds.forEach((assocId, nodes) -> {
           List<TreeNode> treeNodes = nodes.stream()
-              .map(navNode -> new TreeNode()
-                  .kind(TreeNodeKind.ENTRY)
-                  .identifier(navNode.getId())
-                  .caption(navNode.getEntry().getName())
-                  .icon(navNode.getEntry().getIcon())
-                  .actions(navNode.getEntry().getActions())
-                  .level(parent.getLevel() + 1))
+              .map(navNode -> createOrUpdateTreeNodeEntry(navNode, parent.getLevel() + 1))
               .collect(Collectors.toList());
-          treeNodes.forEach(treeNode -> treeNodesById.put(treeNode.getIdentifier(), treeNode));
           treeNodesByOrderedAssocIds.put(assocId, treeNodes);
         });
 
@@ -169,65 +172,86 @@ public class NavigationViewModelImpl extends ObjectEditingImpl implements Naviga
         associations.stream()
             .filter(a -> !a.getHidden())
             .forEach(navigationAssociation -> {
-              List<String> styles = new ArrayList<>();
-              if (navigationAssociation.getReferences() == null
-                  || navigationAssociation.getReferences().isEmpty()) {
-                styles.add("empty");
-              }
-
-              TreeNode treeNode = new TreeNode()
-                  .kind(TreeNodeKind.ASSOCIATION)
-                  .identifier(navigationAssociation.getId())
-                  .caption(getAssociationNodeCaption(navigationAssociation))
-                  .icon(navigationAssociation.getIcon())
-                  .styles(styles)
-                  .level(parent.getLevel() + 1);
-              treeNodesById.put(treeNode.getIdentifier(), treeNode);
-              // TreeNode treeNode = new TreeNode(
-              // Kind.ASSOCIATION,
-              // navigationAssociation.getId(),
-              // getAssociationNodeCaption(navigationAssociation),
-              // null,
-              // navigationAssociation.getIcon(),
-              // styles,
-              // null);
-
               treeNodesByOrderedAssocIds.put(navigationAssociation.getId(),
-                  Collections.singletonList(treeNode));
+                  Collections.singletonList(
+                      createOrUpdateTreeNodeAssoc(navigationAssociation, parent.getLevel() + 1)));
             });
-
 
         treeNodesByOrderedAssocIds.forEach((assoc, nodes) -> {
           if (nodes != null) {
-            parent.getChildrenNodes().addAll(nodes);
+            for (TreeNode n : nodes) {
+              if (oldChildren.containsKey(n.getIdentifier())) {
+                oldChildren.remove(n.getIdentifier());
+              } else {
+                parent.getChildrenNodes().add(n);
+              }
+            }
+            // parent.getChildrenNodes().addAll(nodes);
           }
         });
       }
 
+      for (TreeNode n : oldChildren.values()) {
+        parent.getChildrenNodes().remove(n);
+      }
       parent.setChildrenNodesLoaded(Boolean.TRUE);
     }
     parent.setHasChildren(parent.getChildrenNodes().size() > 0);
   }
 
-  private TreeNode treeNodeOf(NavigationNode node, int level) {
-    TreeNode treeNode = new TreeNode()
-        .kind(TreeNodeKind.ENTRY)
-        .identifier(node.getId())
-        .caption(node.getEntry().getName())
-        .icon(node.getEntry().getIcon())
-        .actions(node.getEntry().getActions())
-        .level(level);
-    treeNodesById.put(treeNode.getIdentifier(), treeNode);
+  private TreeNode createOrUpdateTreeNodeEntry(NavigationNode node, int level) {
+    TreeNode treeNode = treeNodesById.get(node.getId());
+    if (treeNode == null) {
+      treeNode = new TreeNode()
+          .kind(TreeNodeKind.ENTRY)
+          .identifier(node.getId())
+          .caption(node.getEntry().getName())
+          .icon(node.getEntry().getIcon())
+          .actions(node.getEntry().getActions())
+          .level(level);
+      treeNodesById.put(treeNode.getIdentifier(), treeNode);
+    } else {
+      updateTreeNodeEntry(treeNode, node);
+      treeNode.setLevel(level);
+    }
     return treeNode;
   }
 
-  private void updateTreeNode(TreeNode treeNode, NavigationNode node) {
+  private TreeNode createOrUpdateTreeNodeAssoc(NavigationAssociation navigationAssociation,
+      int level) {
+    TreeNode treeNode = treeNodesById.get(navigationAssociation.getId());
+    if (treeNode == null) {
+      treeNode = new TreeNode()
+          .kind(TreeNodeKind.ASSOCIATION)
+          .identifier(navigationAssociation.getId())
+          .caption(getAssociationNodeCaption(navigationAssociation))
+          .icon(navigationAssociation.getIcon())
+          .styles(getNavigationAssociationStyles(navigationAssociation))
+          .level(level);
+      treeNodesById.put(treeNode.getIdentifier(), treeNode);
+    } else {
+      updateTreeNodeAssoc(treeNode, navigationAssociation);
+      treeNode.setLevel(level);
+    }
+    return treeNode;
+  }
+
+  private void updateTreeNodeEntry(TreeNode treeNode, NavigationNode node) {
     treeNode
         .kind(TreeNodeKind.ENTRY)
         .identifier(node.getId())
         .caption(node.getEntry().getName())
         .icon(node.getEntry().getIcon())
         .actions(node.getEntry().getActions());
+  }
+
+  private void updateTreeNodeAssoc(TreeNode treeNode, NavigationAssociation navigationAssociation) {
+    treeNode
+        .kind(TreeNodeKind.ASSOCIATION)
+        .identifier(navigationAssociation.getId())
+        .caption(getAssociationNodeCaption(navigationAssociation))
+        .icon(navigationAssociation.getIcon())
+        .styles(getNavigationAssociationStyles(navigationAssociation));
   }
 
   private TreeNode getTreeNodeByPath(String path) {
@@ -322,19 +346,39 @@ public class NavigationViewModelImpl extends ObjectEditingImpl implements Naviga
     return target;
   }
 
+  private void refreshNavigationAssociation(NavigationAssociation navigationAssociation) {
+    TreeNode nodeToRefresh = findTreeNodeById(navigationAssociation.getId());
+    if (nodeToRefresh != null) {
+      nodeToRefresh.setChildrenNodesLoaded(false);
+      loadChildren(nodeToRefresh);
+      updateTreeNodeAssoc(nodeToRefresh, navigationAssociation);
+
+      notifyAllListeners();
+    }
+  }
+
+  private List<String> getNavigationAssociationStyles(NavigationAssociation navigationAssociation) {
+    List<String> styles = new ArrayList<>();
+    if (navigationAssociation.getReferences() == null
+        || navigationAssociation.getReferences().isEmpty()) {
+      styles.add("empty");
+    }
+    return styles;
+  }
+
   private void refreshNavigationNode(NavigationNode navigationNode) {
 
     TreeNode nodeToRefresh = findTreeNodeById(navigationNode.getId());
     if (nodeToRefresh != null) {
-      updateTreeNode(nodeToRefresh, navigationNode);
       nodeToRefresh.setChildrenNodesLoaded(false);
       loadChildren(nodeToRefresh);
+      updateTreeNodeEntry(nodeToRefresh, navigationNode);
       notifyAllListeners();
     }
   }
 
   private void rootNodeAdded(NavigationNode rootNode) {
-    TreeNode treeNode = treeNodeOf(rootNode, 0);
+    TreeNode treeNode = createOrUpdateTreeNodeEntry(rootNode, 0);
     loadChildren(treeNode);
     model.getRootNodes().add(treeNode);
     notifyAllListeners();
