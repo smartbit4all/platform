@@ -180,4 +180,14 @@ public interface SecurityGatewayService {
    * @return group with the given name
    */
   Optional<Group> getGroupByName(String name);
+
+
+  /**
+   * Remove child group from under the parent group in hierarchy. Child group does not have to be a
+   * direct sub group.
+   * 
+   * @param parentGroupUri
+   * @param childGroupUri
+   */
+  void removeSubGroup(URI parentGroupUri, URI childGroupUri);
 }
