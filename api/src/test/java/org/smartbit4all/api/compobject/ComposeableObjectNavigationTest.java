@@ -278,19 +278,19 @@ public class ComposeableObjectNavigationTest {
 
     objCompStorage.save(rootCompositeObject);
 
-    assertEquals(1, navigation.expandAll(rootNode, true).size());
+    List<ApiItemChangeEvent<NavigationReference>> expanded = navigation.expandAll(rootNode, true);
+    assertEquals(1, expanded.size());
 
     addTreeObject(testObjectStorage, "second.tto", testTreeObject);
 
-    List<ApiItemChangeEvent<NavigationReference>> expandEvents =
-        navigation.expandAll(rootNode, true);
-    checkNewSize(expandEvents, 1);
+    checkNewSize(navigation.expandAll(rootNode, true), 0);
 
-    NavigationNode firstExpandedNode = expandEvents.get(0).item().getEndNode();
+    NavigationNode firstExpandedNode = expanded.get(0).item().getEndNode();
     checkNewSize(navigation.expandAll(firstExpandedNode, true), 1);
 
+    checkNewSize(navigation.expandAll(firstExpandedNode, true), 0);
     addTreeObject(testObjectStorage, "third.tto", testTreeObject);
-    checkNewSize(navigation.expandAll(firstExpandedNode, true), 2);
+    checkNewSize(navigation.expandAll(firstExpandedNode, true), 1);
 
     ctx.close();
   }
