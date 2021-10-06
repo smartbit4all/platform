@@ -192,6 +192,9 @@ public class NavigationViewModelImpl extends ObjectEditingImpl implements Naviga
       }
 
       for (TreeNode n : oldChildren.values()) {
+        if (selectedNode == n) {
+          select(parent);
+        }
         parent.getChildrenNodes().remove(n);
       }
       parent.setChildrenNodesLoaded(Boolean.TRUE);
