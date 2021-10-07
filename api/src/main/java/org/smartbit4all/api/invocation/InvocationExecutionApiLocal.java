@@ -108,9 +108,9 @@ public class InvocationExecutionApiLocal extends InvocationExecutionApiImpl
           break;
         case BYREFERENCE:
           // In this case we have a direct URI to an object.
-          Storage<?> storage = storageApi.get(method.getParameterTypes()[i]);
+          Storage storage = storageApi.get(Invocations.INVOCATION_SCHEME);
           try {
-            parameterObjects.add(storage.load(URI.create(parameter.getStringValue())));
+            parameterObjects.add(storage.read(URI.create(parameter.getStringValue())));
           } catch (Exception e) {
             throw new IllegalArgumentException(
                 "Invalid URI parameter " + parameter.getValue() + " in the request: " + request, e);

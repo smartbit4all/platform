@@ -1,15 +1,51 @@
 package org.smartbit4all.core.io;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import java.io.File;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.net.URI;
+import java.nio.channels.FileLock;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.core.io.utility.FileIO;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class FileIOTest {
+
+  Executor exec = Executors.newFixedThreadPool(10);
+
+  @Test
+  void fileLockTest() throws IOException {
+    File folder = TestFileUtil.testFsRootFolder();
+    // Files.move(null, null, StandardCopyOption.ATOMIC_MOVE);
+    File lockFile = new File(folder, "test.lock");
+    lockFile.createNewFile();
+    StringBuilder checkpoints = new StringBuilder();
+    try (RandomAccessFile raf = new RandomAccessFile(lockFile, "rw");
+        FileLock lock = raf.getChannel().lock()) {
+
+      exec.execute(() -> {
+        try (RandomAccessFile rafInner = new RandomAccessFile(lockFile, "rw");
+            FileLock lockInner = raf.getChannel().lock()) {
+
+          checkpoints.append("/2");
+        } catch (Exception e) {
+          throw new IllegalStateException("Exception occured while locking", e);
+        }
+      });
+
+      TimeUnit.SECONDS.sleep(2);
+      checkpoints.append("/1");
+    } catch (Exception e) {
+      throw new IllegalStateException("Exception occured while locking", e);
+    }
+    assertEquals("/1/2", checkpoints);
+  }
 
   @Test
   void fileWriteAndReadTest() throws IOException {

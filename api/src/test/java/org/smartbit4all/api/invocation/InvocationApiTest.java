@@ -8,11 +8,10 @@ import org.junit.jupiter.api.Test;
 import org.smartbit4all.api.invocation.bean.InvocationRequestTemplate;
 import org.smartbit4all.api.invocation.bean.TestDataBean;
 import org.smartbit4all.api.storage.bean.ObjectReference;
-import org.smartbit4all.api.storage.bean.ObjectReferenceList;
 import org.smartbit4all.core.utility.StringConstant;
-import org.smartbit4all.domain.data.storage.ObjectReferenceRequest;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
+import org.smartbit4all.domain.data.storage.StorageObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -20,6 +19,8 @@ import org.springframework.boot.test.context.SpringBootTest;
     InvocationTestConfig.class,
 })
 class InvocationApiTest {
+
+  private static final String TEST_DATA_SCHEMA = "testDataSchema";
 
   @Autowired
   private InvocationApi invocationApi;
@@ -70,26 +71,26 @@ class InvocationApiTest {
     URI callbackUri = invocationApi.save(TestApi.echoMethodTemplate);
     String value = "echo";
 
-    Storage<TestDataBean> storageTDB = storageApi.get(TestDataBean.class);
+    Storage storage = storageApi.get(TEST_DATA_SCHEMA);
 
     TestDataBean tdb1 = new TestDataBean();
     tdb1.setData("tdb1");
 
-    URI tdb1Uri = storageTDB.save(tdb1);
-    storageTDB.saveReferences(new ObjectReferenceRequest(tdb1Uri, InvocationRequestTemplate.class)
-        .add(callbackUri.toString()));
+    StorageObject<TestDataBean> soTdb1 = storage.instanceOf(TestDataBean.class);
+    soTdb1.setObject(tdb1);
+    soTdb1.setReference("myRef", new ObjectReference().uri(callbackUri));
 
+    URI tdb1Uri = storage.save(soTdb1);
 
-    Optional<ObjectReferenceList> references =
-        storageTDB.loadReferences(tdb1Uri, InvocationRequestTemplate.class.getName());
+    Optional<StorageObject<TestDataBean>> optTdb1 =
+        storage.load(soTdb1.getUri(), TestDataBean.class);
 
-    ObjectReferenceList referenceList = references.get();
+    URI refUri = optTdb1.get().getReference("myRef").getReferenceData().getUri();
 
-    Assertions.assertEquals(1, referenceList.getReferences().size());
-    ObjectReference objectReference = referenceList.getReferences().get(0);
+    Assertions.assertEquals(callbackUri, refUri);
 
     InvocationRequestTemplate requestTemplate =
-        invocationApi.load(URI.create(objectReference.getReferenceId()));
+        storage.read(refUri, InvocationRequestTemplate.class).get();
 
     Assertions.assertEquals(TestApi.echoMethodTemplate, requestTemplate);
   }

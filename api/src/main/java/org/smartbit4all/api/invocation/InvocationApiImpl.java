@@ -13,6 +13,7 @@ import org.smartbit4all.api.invocation.registration.ApiRegister;
 import org.smartbit4all.api.invocation.registration.ApiRegistrationListenerImpl;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
+import org.smartbit4all.domain.data.storage.StorageObject;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -86,32 +87,36 @@ public final class InvocationApiImpl implements InvocationApi, InitializingBean 
 
   @Override
   public URI save(InvocationRequestTemplate requestTemplate) {
-    Storage<InvocationRequestTemplate> storage =
-        storageApi == null ? null : storageApi.get(InvocationRequestTemplate.class);
-    if (storage == null) {
-      throw new UnsupportedOperationException(
-          "Unable to save the invocation request templet without Storage<InvocationRequestTemple> setup.");
-    }
+    Storage storage = getStorage();
     URI result = null;
     try {
-      result = storage.save(requestTemplate);
+      StorageObject<InvocationRequestTemplate> storageObject =
+          storage.instanceOf(InvocationRequestTemplate.class);
+      storageObject.setObject(requestTemplate);
+      result = storage.save(storageObject);
     } catch (Exception e) {
       new RuntimeException("Unable to save " + requestTemplate, e);
     }
     return result;
   }
 
-  @Override
-  public InvocationRequestTemplate load(URI templateUri) {
-    Storage<InvocationRequestTemplate> storage =
-        storageApi == null ? null : storageApi.get(InvocationRequestTemplate.class);
+  private Storage getStorage() {
+    Storage storage =
+        storageApi == null ? null : storageApi.get(Invocations.INVOCATION_SCHEME);
     if (storage == null) {
       throw new UnsupportedOperationException(
-          "Unable to load the invocation request templet without Storage<InvocationRequestTemple> setup.");
+          "Unable to save the invocation request template without " + Invocations.INVOCATION_SCHEME
+              + " Storage scheme.");
     }
+    return storage;
+  }
+
+  @Override
+  public InvocationRequestTemplate load(URI templateUri) {
+    Storage storage = getStorage();
     Optional<InvocationRequestTemplate> result = null;
     try {
-      result = storage.load(templateUri);
+      result = storage.read(templateUri, InvocationRequestTemplate.class);
     } catch (Exception e) {
       new RuntimeException("Unable to load " + templateUri + " request template.", e);
     }

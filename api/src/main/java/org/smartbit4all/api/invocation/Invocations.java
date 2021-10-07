@@ -2,6 +2,7 @@ package org.smartbit4all.api.invocation;
 
 import java.lang.reflect.Method;
 import java.net.URI;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 import org.slf4j.Logger;
@@ -9,9 +10,10 @@ import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.contribution.PrimaryApi;
 import org.smartbit4all.api.invocation.bean.InvocationParameterTemplate;
 import org.smartbit4all.api.invocation.bean.InvocationRequestTemplate;
-import org.smartbit4all.domain.data.storage.ObjectReferenceRequest;
+import org.smartbit4all.api.storage.bean.ObjectReference;
 import org.smartbit4all.domain.data.storage.Storage;
-import org.smartbit4all.domain.data.storage.StorageApi;
+import org.smartbit4all.domain.data.storage.StorageObject;
+import org.smartbit4all.domain.data.storage.StorageObjectReferenceEntry;
 
 /**
  * The developer api for the invocation.
@@ -19,6 +21,8 @@ import org.smartbit4all.domain.data.storage.StorageApi;
  * @author Peter Boros
  */
 public class Invocations {
+
+  public static final String INVOCATION_SCHEME = "invocation";
 
   public static final String PARAMETER1 = "parameter1";
   public static final String LOCAL = "local";
@@ -148,48 +152,81 @@ public class Invocations {
     return new InvocationRequest(apiInstanceId);
   }
 
-  public static final void saveConsumer(URI uri, Consumer<URI> listener, String consumerName,
-      Storage<?> storage,
-      StorageApi storageApi, InvocationApi invocationApi)
+  public static final String SUBSCRIBED_CONSUMERS_PREFIX = "subscription.";
+
+  /**
+   * This operation will prepare the {@link StorageObject}, save the related
+   * {@link InvocationRequestTemplate} and add it to the {@link #SUBSCRIBED_CONSUMERS_PREFIX} + name
+   * collection.
+   * 
+   * @param object The storage object that is preparing for save.
+   * @param listener The Consumer to save. It will be registered into the
+   *        {@link InvocationApi#register(Object)} to be able to access as an object in case of
+   *        local call.
+   * @param consumerName The name of the consumer because when we try to retrieve them we need to
+   *        separate.
+   * @param invocationApi The invocation Api to be able to register the Consumer.
+   * @throws Exception
+   */
+  public static final void saveConsumer(StorageObject<?> object, Consumer<URI> listener,
+      String consumerName, InvocationApi invocationApi)
       throws Exception {
     InvocationRequestTemplate invocationTemplate =
         new InvocationRequestTemplate().apiInstanceId(invocationApi.register(listener))
             .innerApi(consumerName).methodName("accept")
             .addParametersItem(new InvocationParameterTemplate().name(PARAMETER1));
 
-    URI callbackUri = invocationApi.save(invocationTemplate);
+    Storage storage = object.getStorage();
+    StorageObject<InvocationRequestTemplate> soInvocationRequest =
+        storage.instanceOf(InvocationRequestTemplate.class);
+    soInvocationRequest.setObject(invocationTemplate);
+    URI callbackUri = storage.save(soInvocationRequest);
 
-    storage.saveReferences(new ObjectReferenceRequest(uri, InvocationRequestTemplate.class)
-        .add(callbackUri.toString()));
+    object.addCollectionEntry(SUBSCRIBED_CONSUMERS_PREFIX + consumerName,
+        new ObjectReference().uri(callbackUri));
 
   }
 
-  public static final void callConsumers(String consumerName, URI uri, Class<?> storageClass,
-      Storage<?> storage,
-      StorageApi storageApi,
+  /**
+   * This operation tries to call the consumers and if it's failed that remove the given consumer
+   * from the collection.
+   * 
+   * @param consumerName
+   * @param uri
+   * @param storageClass
+   * @param storage
+   * @param storageApi
+   * @param invocationApi
+   */
+  public static final void callConsumers(StorageObject<?> object, String consumerName,
       InvocationApi invocationApi) {
     if (consumerName == null) {
       return;
     }
-    ObjectReferenceRequest referenceRequest = new ObjectReferenceRequest(uri, storageClass);
-    for (InvocationRequestTemplate requestTemplate : storageApi.loadReferences(uri, storageClass,
-        InvocationRequestTemplate.class)) {
-      if (consumerName.equals(requestTemplate.getInnerApi())) {
-        if (requestTemplate.getParameters().size() == 1) {
-          InvocationRequest request = InvocationRequest.of(requestTemplate).setParameters(uri);
-          InvocationParameter result;
-          try {
-            result = invocationApi.invoke(request);
-          } catch (Exception e) {
-            log.debug("Unable to call the registered consumers for {} todo item {}", uri, request,
-                e);
-            referenceRequest.delete(requestTemplate.getUri().toString(),
-                InvocationRequestTemplate.class.getName());
+    Storage storage = object.getStorage();
+    for (StorageObjectReferenceEntry refEntry : object.getCollection(consumerName)) {
+      if (refEntry.getReferenceData() != null) {
+        Optional<InvocationRequestTemplate> invocationReqOpt = storage
+            .read(refEntry.getReferenceData().getUri(), InvocationRequestTemplate.class);
+        if (invocationReqOpt.isPresent()) {
+          // If we have the request template then parameterize and call.
+          InvocationRequestTemplate requestTemplate = invocationReqOpt.get();
+          if (requestTemplate.getParameters().size() == 1) {
+            InvocationRequest request =
+                InvocationRequest.of(requestTemplate).setParameters(object.getUri());
+            try {
+              invocationApi.invoke(request);
+            } catch (Exception e) {
+              log.debug("Unable to call the registered consumers for {} storage object {}",
+                  object.getUri(), request,
+                  e);
+              refEntry.setDelete(true);
+            }
           }
         }
       }
     }
-    storage.saveReferences(referenceRequest);
+    storage.save(object);
 
   }
 

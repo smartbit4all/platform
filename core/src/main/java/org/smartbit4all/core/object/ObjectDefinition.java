@@ -1,8 +1,10 @@
 package org.smartbit4all.core.object;
 
 import java.net.URI;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+import org.smartbit4all.api.binarydata.BinaryData;
 
 /**
  * This definition must exists for every api objects managed by the given module. It contains the
@@ -10,7 +12,7 @@ import java.util.function.Function;
  * 
  * @author Peter Boros
  */
-public class ObjectDefinition<T> {
+public final class ObjectDefinition<T> {
 
   /**
    * The java class of the object.
@@ -89,11 +91,13 @@ public class ObjectDefinition<T> {
   }
 
   public URI getUri(T obj) {
-    return uriGetter.apply(obj);
+    return obj != null ? uriGetter.apply(obj) : null;
   }
 
   public void setUri(T obj, URI uri) {
-    uriSetter.accept(obj, uri);
+    if (obj != null) {
+      uriSetter.accept(obj, uri);
+    }
   }
 
   public final String getPreferredSerializerName() {
@@ -102,6 +106,14 @@ public class ObjectDefinition<T> {
 
   public final void setPreferredSerializerName(String preferredSerializerName) {
     this.preferredSerializerName = preferredSerializerName;
+  }
+
+  public final BinaryData serialize(Object o) {
+    return defaultSerializer.serialize(o, getClazz());
+  }
+
+  public final Optional<T> deserialize(BinaryData data) {
+    return defaultSerializer.deserialize(data, clazz);
   }
 
 }

@@ -18,16 +18,91 @@ paths:
                 
 components:
   schemas:
-    ObjectReferenceList:
+    StorageObjectData:
       type: object
       description: |
-        The list of references as a container object for the Api. 
-      required: [uri, references]
+        The basic data object of the storages. This holds the version history and refers the current version. Also has named references 
+        and collections.
+      required: [uri, currentVersion, versions]
       properties:
         uri:
           type: string
           format: uri
-          description: The uri of the object
+          description: |
+            The uri of the object represented by the storage object.
+        currentVersion:
+          type: object
+          $ref: '#/components/shemas/ObjectVersion'
+        versions:
+          type: array
+          description: |
+            The versions of the object in creation order. The version serial number is increased one by one because only the
+            successful save opartions will produce new version.
+          items:
+            $ref: '#/components/shemas/ObjectVersion'
+    StorageObjectRelationData:
+      type: object
+      description: |
+        This object contains the references and the collections of the given object. This does not have identity it is bound to 
+        the StoaregObject by the ObjectStorage implementation.
+      required: [uri]
+      properties:
+        uri:
+          type: string
+          format: uri
+          description: |
+            The uri of the object represented by the storage object.
+        references:
+          type: object
+          additionalProperties:
+            $ref: '#/components/shemas/ObjectReference'
+        collections:
+          type: object
+          additionalProperties:
+            $ref: '#/components/shemas/ObjectReferenceList'
+    ObjectVersion:
+      type: object
+      description: |
+        The reference for a given version of the storage object. It contains all the properties about the version like time, user uri, 
+        api operation that created the version.
+      required: [serialNo, createdAt, createdByUri]
+      properties:
+        serialNo:
+          type: integer
+          default: 1
+          description: The serial number of the version starting from 1. Increased by every successful save.
+        serialNoData:
+          type: integer
+          description: If it is set then there is an attached version data.
+        serialNoRelation:
+          type: integer
+          description: If it is set then there is an attached version relation set.
+        transactionId:
+          type: string
+          format: uuid
+          description: |
+            The unique identifier of the transaction that constructed this version from the object. It could be
+            used to double check if a given transaction was successful.
+        createdAt:
+          type: string
+          format: date-time
+          description: The exact date time when the given sersion was created at.
+        createdByUri:
+          type: string
+          format: uri
+          description: The reference of the user or any other participant who created the given version.
+        createdBy:
+          type: string
+          description: The display name of the user or any other participant who created the given version.
+        operation:
+          type: string
+          description: The Api and the operation that was created the given version of the object.
+    ObjectReferenceList:
+      type: object
+      description: |
+        The list of references as a container object for the Api. 
+      required: [referenceTypeClass, references]
+      properties:
         referenceTypeClass:
           type: string
           description: |
@@ -46,12 +121,17 @@ components:
         The reference can be temporary so we can define a time limit when the Storage will remove the reference. 
         The relation can be renewed by adding it again and again. This object itself is managed by the ObjectStorage to store this in an 
         optimal way for the given storage mechanism.
-
-      required: [name, typeClass]
+      required: [uri]
       properties:
+        uri:
+          type: string
+          format: uri
+          description: |
+            The identifier of the referenced object. This is an URI that identifies the object in the domain.
         referenceId:
           type: string
-          description: The identifier of the referenced object. Usually this is an URI that identifies the object in the domain.
+          description: |
+            To separate the references from the same class the api can use this field to store specific data about the referred object.
         expirationTime:
           type: string
           format: date-time

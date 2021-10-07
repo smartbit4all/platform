@@ -19,27 +19,20 @@ public class CompositeObjectApi implements ComposeableObjectApi {
 
   public static final URI API_URI = URI.create("compobj:/composeableobject/apiUri");
 
-  private Storage<CompositeObject> compositeStorage;
-
-  private Storage<CompositeObjectDef> compositeDefStorage;
-
-  private Storage<ComposeableObjectDef> composeableDefStorage;
+  private Storage compositeStorage;
 
   public CompositeObjectApi(
-      Storage<CompositeObject> compositeStorage,
-      Storage<CompositeObjectDef> compositeDefStorage,
-      Storage<ComposeableObjectDef> composeableDefStorage) {
+      Storage compositeStorage) {
 
     this.compositeStorage = compositeStorage;
-    this.compositeDefStorage = compositeDefStorage;
-    this.composeableDefStorage = composeableDefStorage;
   }
 
   @Override
   public List<ComposeableObject> getChildren(URI parentObjectUri, URI definitionUri,
       Consumer<URI> nodeChangeListener) throws Exception {
 
-    Optional<CompositeObject> loaded = compositeStorage.load(parentObjectUri);
+    Optional<CompositeObject> loaded =
+        compositeStorage.read(parentObjectUri, CompositeObject.class);
     if (loaded.isPresent()) {
       CompositeObject compositeObject = loaded.get();
       CompositeObjectDef def = loadCompositeObjectDef(loaded.get());
@@ -71,7 +64,7 @@ public class CompositeObjectApi implements ComposeableObjectApi {
 
   @Override
   public String getTitle(URI objectUri) throws Exception {
-    Optional<CompositeObject> loaded = compositeStorage.load(objectUri);
+    Optional<CompositeObject> loaded = compositeStorage.read(objectUri, CompositeObject.class);
     if (loaded.isPresent()) {
       CompositeObject compositeObject = loaded.get();
       if (!Strings.isNullOrEmpty(compositeObject.getCaption())) {
@@ -89,7 +82,8 @@ public class CompositeObjectApi implements ComposeableObjectApi {
 
   @Override
   public String getIcon(URI objectUri) throws Exception {
-    Optional<CompositeObject> compositeObject = compositeStorage.load(objectUri);
+    Optional<CompositeObject> compositeObject =
+        compositeStorage.read(objectUri, CompositeObject.class);
     if (compositeObject.isPresent()) {
       CompositeObjectDef compositeDef = loadCompositeObjectDef(compositeObject.get());
       ComposeableObjectDef composeableDef = load(compositeDef);
@@ -112,8 +106,8 @@ public class CompositeObjectApi implements ComposeableObjectApi {
   private CompositeObjectDef loadCompositeObjectDef(CompositeObject compositeObject)
       throws Exception {
 
-    return compositeDefStorage.load(
-        compositeObject.getCompositeDefUri())
+    return compositeStorage.read(
+        compositeObject.getCompositeDefUri(), CompositeObjectDef.class)
         .orElseThrow(() -> new IllegalArgumentException(
             "CompositeObjectDef does not exist with URI: " + compositeObject.getUri()));
   }
@@ -121,8 +115,8 @@ public class CompositeObjectApi implements ComposeableObjectApi {
   private ComposeableObjectDef load(CompositeObjectDef def)
       throws Exception {
 
-    return composeableDefStorage.load(
-        def.getComposeableDefUri())
+    return compositeStorage.read(
+        def.getComposeableDefUri(), ComposeableObjectDef.class)
         .orElseThrow(() -> new IllegalArgumentException(
             "CompositeObjectAssociation does not exist with URI: " + def.getComposeableDefUri()));
   }

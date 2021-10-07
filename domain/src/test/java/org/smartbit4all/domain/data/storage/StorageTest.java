@@ -1,10 +1,10 @@
 package org.smartbit4all.domain.data.storage;
 
-import static org.junit.jupiter.api.Assertions.*;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class StorageTest {
 

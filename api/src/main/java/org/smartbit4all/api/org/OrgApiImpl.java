@@ -31,6 +31,8 @@ public abstract class OrgApiImpl implements OrgApi, InitializingBean {
 
   private static final String SUBGROUP_PREFIX = "subgroup.";
 
+  public static final String ORG_SCHEME = "org";
+
   @Autowired(required = false)
   private List<SecurityOption> securityOptions;
 
@@ -92,7 +94,7 @@ public abstract class OrgApiImpl implements OrgApi, InitializingBean {
     if (securityOptions != null) {
       for (SecurityOption securityOption : securityOptions) {
         analyzeSecurityOptions(securityOption);
-        Storage<Group> storage = storageApi.get(Group.class);
+        Storage storage = storageApi.get(ORG_SCHEME);
         if (storage != null) {
           // Check if the given group exists in the storage
           // storage.load(new URI(storage.))

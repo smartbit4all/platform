@@ -9,17 +9,18 @@ import org.smartbit4all.domain.data.DataColumn;
 import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.data.index.StorageLoader;
-import org.smartbit4all.domain.data.storage.ObjectStorage;
+import org.smartbit4all.domain.data.storage.Storage;
+import org.smartbit4all.domain.data.storage.StorageObject;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Property;
 
 /**
- * StorageIndexLoader can be used for Storages,
- * which use platform evaluation for loading objects with expressions. 
+ * StorageIndexLoader can be used for Storages, which use platform evaluation for loading objects
+ * with expressions.
  * 
  * Content storage is used to calculate and fill the index values at some point of the evaluation.
- * Indexes are used for getting the calculators,
- * which provides the values of the index fields by running the calculators on the object.
+ * Indexes are used for getting the calculators, which provides the values of the index fields by
+ * running the calculators on the object.
  * 
  * @author Zoltan Szegedi
  *
@@ -27,22 +28,22 @@ import org.smartbit4all.domain.meta.Property;
  */
 public class StorageIndexLoader<T> extends StorageLoader {
 
-  private ObjectStorage<T> storage;
+  private Storage storage;
 
   private Property<URI> contentKey;
-  
+
   private String contentKeyName;
-  
+
   /**
-   * Index fields by properties, filled from the given indexes.
-   * Indexes added at constructor, but can be added later.
+   * Index fields by properties, filled from the given indexes. Indexes added at constructor, but
+   * can be added later.
    */
   private Map<Property<?>, StorageIndexField<T, ?>> indexesByProperties;
 
   public StorageIndexLoader(
       EntityDefinition entityDef,
       List<StorageIndexField<T, ?>> indexes,
-      ObjectStorage<T> storage,
+      Storage storage,
       Property<URI> contentKey) {
 
     this(entityDef, indexes, storage);
@@ -52,18 +53,18 @@ public class StorageIndexLoader<T> extends StorageLoader {
   public StorageIndexLoader(
       EntityDefinition entityDef,
       List<StorageIndexField<T, ?>> indexes,
-      ObjectStorage<T> storage,
+      Storage storage,
       String contentKeyName) {
 
     this(entityDef, indexes, storage);
     this.contentKeyName = contentKeyName;
   }
-  
+
   private StorageIndexLoader(
       EntityDefinition entityDef,
       List<StorageIndexField<T, ?>> indexes,
-      ObjectStorage<T> storage) {
-    
+      Storage storage) {
+
     super(entityDef);
 
     this.storage = storage;
@@ -77,14 +78,15 @@ public class StorageIndexLoader<T> extends StorageLoader {
     getIndices().add(index);
     this.indexesByProperties.put(index.getValueField(), index);
   }
-  
+
   @Override
   protected void fillRow(TableData<?> tableData, DataRow rowToFill) {
     URI uri = rowToFill.get(getKeyField());
 
-    Optional<T> loadedData = load(uri);
+    @SuppressWarnings("unchecked")
+    StorageObject<T> loadedData = (StorageObject<T>) load(uri);
     if (loadedData.isPresent()) {
-      fillRow(tableData, rowToFill, loadedData.get());
+      fillRow(tableData, rowToFill, loadedData.getObject());
     } else {
       throw new IllegalArgumentException("Object with key: " + uri + " does not exists");
     }
@@ -110,12 +112,10 @@ public class StorageIndexLoader<T> extends StorageLoader {
     }
   }
 
-  private Optional<T> load(URI uri) {
-    try {
-      return storage.load(uri);
-    } catch (Exception e) {
-      throw new RuntimeException("Cannot load object with URI: " + uri, e);
-    }
+  private StorageObject<?> load(URI uri) {
+
+    return storage.load(uri)
+        .orElseThrow(() -> new RuntimeException("Cannot load object with URI: " + uri));
   }
 
   private DataRow getRow(TableData<?> tableData, DataRow dataRow) {
@@ -129,11 +129,11 @@ public class StorageIndexLoader<T> extends StorageLoader {
 
   @SuppressWarnings("unchecked")
   public Property<URI> getKeyField() {
-    if(contentKey != null) {
+    if (contentKey != null) {
       return contentKey;
     } else {
       return (Property<URI>) getEntityDef().getProperty(contentKeyName);
     }
   }
-  
+
 }

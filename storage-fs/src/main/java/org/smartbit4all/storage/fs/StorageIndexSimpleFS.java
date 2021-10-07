@@ -19,7 +19,7 @@ import java.util.Optional;
 import java.util.Set;
 import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.data.filtering.ExpressionEvaluationPlan;
-import org.smartbit4all.domain.data.storage.ObjectStorage;
+import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.index.StorageIndex;
 import org.smartbit4all.domain.data.storage.index.StorageIndexField;
 import org.smartbit4all.domain.data.storage.index.StorageIndexLoader;
@@ -32,12 +32,12 @@ public class StorageIndexSimpleFS<T> implements StorageIndexer<T> {
 
   private File rootFolder;
 
-  private ObjectStorage<T> storage;
-  
+  private Storage storage;
+
   public StorageIndexSimpleFS(
       File rootFolder,
-      ObjectStorage<T> storage) {
-    
+      Storage storage) {
+
     this.rootFolder = rootFolder;
     this.storage = storage;
   }
@@ -64,11 +64,11 @@ public class StorageIndexSimpleFS<T> implements StorageIndexer<T> {
         new ArrayList<>(),
         storage,
         index.getKey());
-    
+
     for (StorageIndexField<T, ?> storageIndexField : index.getFields()) {
-      storageIndexLoader.addIndex((StorageIndexField<T, ?>) storageIndexField);
+      storageIndexLoader.addIndex(storageIndexField);
     }
-    
+
     ExpressionEvaluationPlan plan = ExpressionEvaluationPlan.of(storageIndexLoader, expression);
     List<DataRow> rows = plan.execute(Collections.emptyList());
 
@@ -77,14 +77,14 @@ public class StorageIndexSimpleFS<T> implements StorageIndexer<T> {
       URI uri = row.get(index.getKey());
       uris.add(uri);
     }
-    
+
     return uris;
   }
-  
+
   @Override
   public <V> List<URI> listUris(Property<URI> key, Property<V> indexField, V value)
       throws Exception {
-    
+
     List<URI> result = new ArrayList<>();
 
     File indexFolder = FSStorageUtil.indexFolder(

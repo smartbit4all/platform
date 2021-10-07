@@ -30,12 +30,12 @@ public class ComposeableObjectNavigation extends NavigationImpl {
 
   private ComposerApi composeableObjectApi;
 
-  private Storage<ComposeableObjectDef> compObjStorage;
+  private Storage compObjStorage;
 
   public ComposeableObjectNavigation(
       String name,
       ComposerApi composeableObjectApi,
-      Storage<ComposeableObjectDef> compObjStorage) {
+      Storage compObjStorage) {
 
     super(name);
     this.composeableObjectApi = composeableObjectApi;
@@ -102,7 +102,7 @@ public class ComposeableObjectNavigation extends NavigationImpl {
 
   private Optional<ComposeableObjectDef> loadComposeableObjectDef(URI composeableObjectDefUri) {
     try {
-      return compObjStorage.load(composeableObjectDefUri);
+      return compObjStorage.read(composeableObjectDefUri, ComposeableObjectDef.class);
     } catch (Exception e) {
       throw new RuntimeException(
           "Error while loading ComposeableObjectDef from Storage with URI: "

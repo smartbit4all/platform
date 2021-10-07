@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
+import org.smartbit4all.core.utility.PathUtility;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,6 +40,11 @@ public class ObjectApiImpl implements ObjectApi, InitializingBean {
    * The active {@link ObjectDefinition}s keyed by the Class.
    */
   private Map<Class<?>, ObjectDefinition<?>> definitionsByClass = new ConcurrentHashMap<>();
+
+  /**
+   * The active {@link ObjectDefinition}s keyed by the Class.
+   */
+  private Map<String, ObjectDefinition<?>> definitionsByAlias = new ConcurrentHashMap<>();
 
   /**
    * By default we use the Jackson object mapper because it's referenced by the openApiGenerate.
@@ -74,41 +80,53 @@ public class ObjectApiImpl implements ObjectApi, InitializingBean {
 
   @Override
   public void afterPropertiesSet() throws Exception {
-    if (definitions == null) {
-      return;
-    }
     for (ObjectSerializer objectSerializer : serializers) {
       serializersByName.put(objectSerializer.getName(), objectSerializer);
     }
     defaultSerializer = serializersByName.get(defaultSerializerName);
-    for (ObjectDefinition<?> objectDefinition : definitions) {
-      if (objectDefinition.getDefaultSerializer() == null) {
-        if (objectDefinition.getPreferredSerializerName() != null) {
-          // Try to retrieve the preferred serializer.
-          ObjectSerializer objectSerializer =
-              serializersByName.get(objectDefinition.getPreferredSerializerName());
-          objectDefinition.setDefaultSerializer(objectSerializer);
-        }
-        // If it's still empty then use the global default
+    if (definitions != null) {
+      for (ObjectDefinition<?> objectDefinition : definitions) {
         if (objectDefinition.getDefaultSerializer() == null) {
-          objectDefinition.setDefaultSerializer(defaultSerializer);
+          if (objectDefinition.getPreferredSerializerName() != null) {
+            // Try to retrieve the preferred serializer.
+            ObjectSerializer objectSerializer =
+                serializersByName.get(objectDefinition.getPreferredSerializerName());
+            objectDefinition.setDefaultSerializer(objectSerializer);
+          }
+          // If it's still empty then use the global default
+          if (objectDefinition.getDefaultSerializer() == null) {
+            objectDefinition.setDefaultSerializer(defaultSerializer);
+          }
         }
+        if (objectDefinition.getUriGetter() == null || objectDefinition.getUriSetter() == null) {
+          setupUri(objectDefinition);
+        }
+        if (objectDefinition.getAlias() == null) {
+          objectDefinition.setAlias(getDefaultAlias(objectDefinition.getClazz()));
+        }
+        definitionsByClass.put(objectDefinition.getClazz(), objectDefinition);
+        definitionsByAlias.put(objectDefinition.getAlias(), objectDefinition);
       }
-      if (objectDefinition.getUriGetter() == null || objectDefinition.getUriSetter() == null) {
-        setupUri(objectDefinition);
-      }
-      if (objectDefinition.getAlias() == null) {
-        objectDefinition.setAlias(getDefaultAlias(objectDefinition.getClazz()));
-      }
-      definitionsByClass.put(objectDefinition.getClazz(), objectDefinition);
     }
   }
 
   @SuppressWarnings("unchecked")
   @Override
   public <T> ObjectDefinition<T> definition(Class<T> clazz) {
-    return (ObjectDefinition<T>) definitionsByClass.computeIfAbsent(clazz,
-        this::constructDefinition);
+    ObjectDefinition<T> objectDefinition =
+        (ObjectDefinition<T>) definitionsByClass.computeIfAbsent(clazz,
+            this::constructDefinition);
+    definitionsByAlias.put(objectDefinition.getAlias(), objectDefinition);
+    return objectDefinition;
+  }
+
+  @Override
+  public ObjectDefinition<?> definition(URI objectUri) {
+    if (objectUri == null || objectUri.getPath() == null) {
+      return null;
+    }
+    String rootPath = PathUtility.getRootPath(objectUri.getPath());
+    return definitionsByAlias.get(rootPath);
   }
 
   @SuppressWarnings("unchecked")
@@ -125,7 +143,7 @@ public class ObjectApiImpl implements ObjectApi, InitializingBean {
   }
 
   private String getDefaultAlias(Class<?> clazz) {
-    return clazz.getName().replace('.', '-');
+    return clazz.getName().replace('.', '_');
   }
 
   private <T> void setupUri(ObjectDefinition<T> result) {

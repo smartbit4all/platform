@@ -1,103 +1,56 @@
 package org.smartbit4all.domain.data.storage;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
 import org.smartbit4all.api.storage.bean.ObjectReferenceList;
 import org.smartbit4all.core.object.ApiObjectRef;
+import org.smartbit4all.core.object.ObjectApi;
 
 /**
- * Simple Map based implementation of object storage. It can be used for testing with storage.
+ * Simple Map based implementation of object storage. It can be used for testing with storage. There
+ * is no real transactions because it's not persisted.
  * 
  * @author Zoltan Szegedi
  *
- * @param <T> Type of the object
  */
-public class ObjectStorageInMemory<T> extends ObjectStorageImpl<T> {
+public class ObjectStorageInMemory extends ObjectStorageImpl {
 
   /**
    * The object in the storage by their URI as key.
    */
-  private Map<URI, T> objects;
+  private Map<URI, StorageObject<?>> objectsByURI = new ConcurrentHashMap<>();
 
   /**
    * The references in the storage by their URI as key.
    */
-  private Map<URI, Map<String, ObjectReferenceList>> references;
+  private Map<URI, Map<String, ObjectReferenceList>> referencesByURI = new ConcurrentHashMap<>();;
 
-  public ObjectStorageInMemory(Function<T, URI> uriAccessor, ObjectUriProvider<T> uriProvider) {
-    super(uriAccessor, uriProvider);
-    this.objects = new ConcurrentHashMap<>();
-    this.references = new ConcurrentHashMap<>();
+  public ObjectStorageInMemory(ObjectApi objectApi) {
+    super(objectApi);
   }
 
   @Override
-  public URI save(T object, URI uri) {
-    URI result = constructUri(object, uri);
-
+  public URI save(StorageObject<?> storageObject) {
     // Only put the original Object into to Map. Unwrap if wrapped.
-    T unwrappedObject = ApiObjectRef.unwrapObject(object);
-    objects.put(result, unwrappedObject);
-    return result;
-  }
-
-  @Override
-  public URI save(T object) {
-    return save(object, getObjectUri(object));
-  }
-
-  @Override
-  public Optional<T> load(URI uri) {
-    return Optional.ofNullable(objects.get(uri));
-  }
-
-  @Override
-  public List<T> load(List<URI> uris) {
-    List<T> result = new ArrayList<>();
-    for (URI uri : uris) {
-      Optional<T> loaded = load(uri);
-      if (loaded.isPresent()) {
-        result.add(loaded.get());
-      }
+    StorageObjectLock objectLock = acquire(storageObject.getUri());
+    try {
+      StorageObject<?> copy = storageObject.copy();
+      copy.setObjectObj(ApiObjectRef.unwrapObject(copy.getObject()));
+      objectsByURI.put(copy.getUri(), copy);
+      return copy.getUri();
+    } finally {
+      objectLock.leave();
     }
-    return result;
   }
 
   @Override
-  public List<T> loadAll() {
-    return new ArrayList<>(objects.values());
-  }
-
-  @Override
-  public boolean delete(URI uri) {
-    return objects.remove(uri) != null ? true : false;
-  }
-
-  @Override
-  public void saveReferences(ObjectReferenceRequest referenceRequest) {
-    if (referenceRequest == null) {
-      return;
-    }
-    ObjectReferenceList refList =
-        references.computeIfAbsent(referenceRequest.getObjectUri(), u -> new HashMap<>())
-            .computeIfAbsent(referenceRequest.getTypeClassName(),
-                s -> new ObjectReferenceList().referenceTypeClass(s));
-    referenceRequest.updateReferences(refList);
-  }
-
-  @Override
-  public Optional<ObjectReferenceList> loadReferences(URI uri, String typeClassName) {
-    Map<String, ObjectReferenceList> map = references.get(uri);
-    ObjectReferenceList result = null;
-    if (map != null) {
-      result = map.get(typeClassName);
-    }
-    return Optional.of(result);
+  public <T> Optional<StorageObject<T>> load(Storage storage, URI uri, Class<T> clazz,
+      StorageLoadOption... options) {
+    @SuppressWarnings("unchecked")
+    StorageObject<T> storageObject = (StorageObject<T>) objectsByURI.get(uri);
+    return Optional.ofNullable(storageObject);
   }
 
 }

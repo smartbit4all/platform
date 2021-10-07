@@ -22,7 +22,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import org.smartbit4all.api.storage.bean.ObjectReference;
@@ -35,49 +34,17 @@ import javax.validation.Valid;
  */
 @ApiModel(description = "The list of references as a container object for the Api.  ")
 @JsonPropertyOrder({
-  ObjectReferenceList.URI,
   ObjectReferenceList.REFERENCE_TYPE_CLASS,
   ObjectReferenceList.REFERENCES
 })
 @JsonTypeName("ObjectReferenceList")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class ObjectReferenceList {
-  public static final String URI = "uri";
-  private URI uri;
-
   public static final String REFERENCE_TYPE_CLASS = "referenceTypeClass";
   private String referenceTypeClass;
 
   public static final String REFERENCES = "references";
   private List<ObjectReference> references = new ArrayList<>();
-
-
-  public ObjectReferenceList uri(URI uri) {
-    
-    this.uri = uri;
-    return this;
-  }
-
-   /**
-   * The uri of the object
-   * @return uri
-  **/
-  @NotNull
-  @Valid
-  @ApiModelProperty(required = true, value = "The uri of the object")
-  @JsonProperty(URI)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-
-  public URI getUri() {
-    return uri;
-  }
-
-
-  @JsonProperty(URI)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setUri(URI uri) {
-    this.uri = uri;
-  }
 
 
   public ObjectReferenceList referenceTypeClass(String referenceTypeClass) {
@@ -90,10 +57,10 @@ public class ObjectReferenceList {
    * The type of the reference. It can be the qualified name of the java bean class or anything else that can exactly identify the type of the reference object.   
    * @return referenceTypeClass
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "The type of the reference. It can be the qualified name of the java bean class or anything else that can exactly identify the type of the reference object.   ")
+  @NotNull
+  @ApiModelProperty(required = true, value = "The type of the reference. It can be the qualified name of the java bean class or anything else that can exactly identify the type of the reference object.   ")
   @JsonProperty(REFERENCE_TYPE_CLASS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public String getReferenceTypeClass() {
     return referenceTypeClass;
@@ -101,7 +68,7 @@ public class ObjectReferenceList {
 
 
   @JsonProperty(REFERENCE_TYPE_CLASS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setReferenceTypeClass(String referenceTypeClass) {
     this.referenceTypeClass = referenceTypeClass;
   }
@@ -149,21 +116,19 @@ public class ObjectReferenceList {
       return false;
     }
     ObjectReferenceList objectReferenceList = (ObjectReferenceList) o;
-    return Objects.equals(this.uri, objectReferenceList.uri) &&
-        Objects.equals(this.referenceTypeClass, objectReferenceList.referenceTypeClass) &&
+    return Objects.equals(this.referenceTypeClass, objectReferenceList.referenceTypeClass) &&
         Objects.equals(this.references, objectReferenceList.references);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, referenceTypeClass, references);
+    return Objects.hash(referenceTypeClass, references);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class ObjectReferenceList {\n");
-    sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    referenceTypeClass: ").append(toIndentedString(referenceTypeClass)).append("\n");
     sb.append("    references: ").append(toIndentedString(references)).append("\n");
     sb.append("}");

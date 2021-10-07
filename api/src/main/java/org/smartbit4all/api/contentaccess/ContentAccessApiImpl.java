@@ -9,7 +9,8 @@ import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.contentaccess.bean.ContentAccessEventData;
 import org.smartbit4all.api.contentaccess.bean.Direction;
 import org.smartbit4all.api.objectshare.ObjectShareApi;
-import org.smartbit4all.domain.data.storage.ObjectStorage;
+import org.smartbit4all.domain.data.storage.Storage;
+import org.smartbit4all.domain.data.storage.StorageObject;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.functions.Consumer;
 import io.reactivex.rxjava3.subjects.PublishSubject;
@@ -18,13 +19,13 @@ public class ContentAccessApiImpl implements ContentAccessApi {
 
   private ObjectShareApi objectShareApi;
 
-  private ObjectStorage<BinaryContent> storage;
+  private Storage storage;
 
   private BinaryContentApi binaryContentApi;
 
   private PublishSubject<ContentAccessEventData> publisher;
 
-  public ContentAccessApiImpl(ObjectShareApi objectShareApi, ObjectStorage<BinaryContent> storage,
+  public ContentAccessApiImpl(ObjectShareApi objectShareApi, Storage storage,
       BinaryContentApi binaryContentApi) {
 
     this.objectShareApi = objectShareApi;
@@ -53,7 +54,9 @@ public class ContentAccessApiImpl implements ContentAccessApi {
 
   @Override
   public UUID share(BinaryContent binaryContent) throws Exception {
-    URI savedBinaryContentUri = storage.save(binaryContent);
+    StorageObject<BinaryContent> storageObject = storage.instanceOf(BinaryContent.class);
+    storageObject.setObject(binaryContent);
+    URI savedBinaryContentUri = storage.save(storageObject);
     return objectShareApi.registerUri(savedBinaryContentUri);
   }
 
@@ -62,7 +65,7 @@ public class ContentAccessApiImpl implements ContentAccessApi {
     URI contentUri = objectShareApi.resolveUUID(uuid);
 
     if (contentUri != null) {
-      BinaryContent content = storage.load(contentUri).get();
+      BinaryContent content = storage.read(contentUri, BinaryContent.class).get();
       BinaryData data = binaryContentApi.getBinaryData(content);
 
       publisher.onNext(new ContentAccessEventData()
@@ -81,7 +84,7 @@ public class ContentAccessApiImpl implements ContentAccessApi {
     URI contentUri = objectShareApi.resolveUUID(uuid);
 
     if (contentUri != null) {
-      BinaryContent content = storage.load(contentUri).get();
+      BinaryContent content = storage.read(contentUri, BinaryContent.class).get();
       binaryContentApi.uploadContent(content, binaryData, content.getDataUri());
 
       publisher.onNext(new ContentAccessEventData()

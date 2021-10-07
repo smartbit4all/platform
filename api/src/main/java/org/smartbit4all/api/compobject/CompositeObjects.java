@@ -147,21 +147,20 @@ public class CompositeObjects {
   }
 
   public static ConfigBuilder createNavigationConfig(
-      Storage<CompositeObjectDef> compositeDefStorage,
-      Storage<ComposeableObjectDef> compObjDefStorage) throws Exception {
+      Storage compositeStorage) throws Exception {
 
     ConfigBuilder navigationConfig = NavigationConfig.builder();
 
     // TODO load CompositeObjects only with the given definition
-    for (CompositeObjectDef compositeDef : compositeDefStorage.loadAll()) {
-      addCompositeObjectDef(compObjDefStorage, navigationConfig, compositeDef);
-    }
+    // for (CompositeObjectDef compositeDef : compositeStorage.loadAll()) {
+    // addCompositeObjectDef(compObjDefStorage, navigationConfig, compositeDef);
+    // }
 
     return navigationConfig;
   }
 
   public static void addCompositeObjectDef(
-      Storage<ComposeableObjectDef> compObjDefStorage,
+      Storage compObjDefStorage,
       ConfigBuilder navigationConfig,
       CompositeObjectDef compositeDef) {
 
@@ -224,13 +223,14 @@ public class CompositeObjects {
   }
 
   private static ComposeableObjectDef getDef(
-      Storage<ComposeableObjectDef> compObjDefStorage,
+      Storage compObjDefStorage,
       URI defUri) {
 
     ComposeableObjectDef def = compObjDefStorage
-        .load(defUri)
+        .load(defUri, ComposeableObjectDef.class)
         .orElseThrow(() -> new IllegalArgumentException(
-            "CompDef URI does not exists: " + defUri));
+            "CompDef URI does not exists: " + defUri))
+        .getObject();
 
     return def;
   }

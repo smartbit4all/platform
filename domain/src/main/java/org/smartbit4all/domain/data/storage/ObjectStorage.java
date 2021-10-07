@@ -3,8 +3,7 @@ package org.smartbit4all.domain.data.storage;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.BiConsumer;
-import org.smartbit4all.api.storage.bean.ObjectReferenceList;
+import org.smartbit4all.core.object.ObjectDefinition;
 
 /**
  * ObjectStorage can store serialized objects, identified by their URIs.
@@ -13,58 +12,93 @@ import org.smartbit4all.api.storage.bean.ObjectReferenceList;
  *
  * @param <T> Type of the object, which can be stored with the ObjectStorage.
  */
-public interface ObjectStorage<T> {
+public interface ObjectStorage {
 
   /**
-   * Save the object with the given URI.
+   * Save the object. The {@link StorageObject} always has an URI but the content is not necessarily
+   * filled. If we add a {@link StorageObject#isDelete()} == true object or with a null object then
+   * it results a version where the content is empty. We can call this deleted but it's not really
+   * the deletion.
    */
-  public URI save(T object, URI uri);
-
-  /**
-   * Save the object with the given URI.
-   */
-  public URI save(T object);
-
-  /**
-   * Save the references for the object in the request.
-   * 
-   * @param referenceRequest The request.
-   */
-  public void saveReferences(ObjectReferenceRequest referenceRequest);
-
-  /**
-   * Load the references for the object in the request.
-   * 
-   * @param uri The uri of the object.
-   */
-  public Optional<ObjectReferenceList> loadReferences(URI uri, String typeClassName);
+  URI save(StorageObject<?> object);
 
   /**
    * Load the object with the given URI.
+   * 
+   * @param uri The Unified Resource Identifier of the object we are looking for. It must be
+   *        situated in the current physical storage. This routing relies on the registry of the
+   *        {@link StorageApi} and based on the scheme of the URI.
+   * @param clazz The class of the object to load. Based on this class we can easily identify the
+   *        {@link ObjectDefinition} responsible for this type of objects.
+   * @param options When loading we can instruct the loading to retrieve the necessary data only.
+   * 
    */
-  public Optional<T> load(URI uri);
+  <T> Optional<StorageObject<T>> load(Storage storage, URI uri, Class<T> clazz,
+      StorageLoadOption... options);
+
+  /**
+   * Load the object with the given URI.
+   * 
+   * @param uri The Unified Resource Identifier of the object we are looking for. It must be
+   *        situated in the current physical storage. This routing relies on the registry of the
+   *        {@link StorageApi} and based on the scheme of the URI.
+   * @param options When loading we can instruct the loading to retrieve the necessary data only.
+   * @return We try to identify the class from the URI itself.
+   */
+  Optional<StorageObject<?>> load(Storage storage, URI uri, StorageLoadOption... options);
 
   /**
    * Load the objects with the given URI.
-   */
-  public List<T> load(List<URI> uris);
-
-  /**
-   * List all data objects. Warning: can be high amount of data in the result, use carefully!
    * 
-   * @return All objects stored with the type T
+   * @param uris The Unified Resource Identifier of the object we are looking for. It must be
+   *        situated in the current physical storage. This routing relies on the registry of the
+   *        {@link StorageApi} and based on the scheme of the URI.
+   * @param clazz The class of the object to load. Based on this class we can easily identify the
+   *        {@link ObjectDefinition} responsible for this type of objects.
+   * @param options When loading we can instruct the loading to retrieve the necessary data only.
    */
-  public List<T> loadAll();
+  <T> List<StorageObject<T>> load(Storage storage, List<URI> uris, Class<T> clazz,
+      StorageLoadOption... options);
 
   /**
-   * Delete the data with the given URI.
+   * Read the given object identified by the URI. We can not initiate a transaction with the result
+   * of the read! Use the load instead.
+   * 
+   * @param uri The Unified Resource Identifier of the object we are looking for. It must be
+   *        situated in the current physical storage. This routing relies on the registry of the
+   *        {@link StorageApi} and based on the scheme of the URI.
+   * @param clazz The class of the object to load. Based on this class we can easily identify the
+   *        {@link ObjectDefinition} responsible for this type of objects.
    */
-  public boolean delete(URI uri);
+  <T> Optional<T> read(Storage storage, URI uri, Class<T> clazz);
 
-  public ObjectUriProvider<T> getUriProvider();
+  /**
+   * Read the given object identified by the URI. We can not initiate a transaction with the result
+   * of the read! Use the load instead.
+   * 
+   * @param uri The Unified Resource Identifier of the object we are looking for. It must be
+   *        situated in the current physical storage. This routing relies on the registry of the
+   *        {@link StorageApi} and based on the scheme of the URI.
+   * @return We try to identify the class from the URI itself.
+   */
+  Optional<?> read(Storage storage, URI uri);
 
-  public URI getObjectUri(T Object);
+  /**
+   * Read the given objects identified by the URI. We can not initiate a transaction with the result
+   * of the read! Use the load instead.
+   * 
+   * @param uris The Unified Resource Identifier of the object we are looking for. It must be
+   *        situated in the current physical storage. This routing relies on the registry of the
+   *        {@link StorageApi} and based on the scheme of the URI.
+   * @param clazz The class of the object to load. Based on this class we can easily identify the
+   *        {@link ObjectDefinition} responsible for this type of objects.
+   */
+  <T> List<T> read(Storage storage, List<URI> uris, Class<T> clazz);
 
-  ObjectStorage<T> setUriMutator(BiConsumer<T, URI> mutator);
+  /**
+   * @return Return true if the given {@link ObjectStorage} is the default one by the configuration.
+   *         If there is more then one default then the application won't start!
+   */
+  boolean isDefaultStorage();
 
 }

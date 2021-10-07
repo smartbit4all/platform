@@ -13,7 +13,6 @@ import org.smartbit4all.api.compdata.bean.CompositeData;
 import org.smartbit4all.api.compdata.bean.CompositeDataCollection;
 import org.smartbit4all.api.compdata.bean.CompositeDataItem;
 import org.smartbit4all.api.compobject.CompositeObjects;
-import org.smartbit4all.api.compobject.bean.ComposeableObjectDef;
 import org.smartbit4all.api.compobject.bean.CompositeObjectDef;
 import org.smartbit4all.api.navigation.Navigation;
 import org.smartbit4all.api.navigation.NavigationApi;
@@ -21,25 +20,22 @@ import org.smartbit4all.api.navigation.NavigationConfig;
 import org.smartbit4all.api.navigation.NavigationConfig.ConfigBuilder;
 import org.smartbit4all.api.navigation.bean.NavigationNode;
 import org.smartbit4all.domain.data.storage.Storage;
+import org.smartbit4all.domain.data.storage.StorageObject;
 
 public class NavCompositeDataCollector implements CompositeDataCollector {
 
   private static final Logger log =
       LoggerFactory.getLogger(NavCompositeDataCollector.class);
 
-  private Storage<CompositeObjectDef> compositeDefStorage;
-
-  private Storage<ComposeableObjectDef> composeableDefStorage;
+  private Storage compositeStorage;
 
   private NavigationApi navigationApi;
 
   public NavCompositeDataCollector(
-      Storage<CompositeObjectDef> compositeDefStorage,
-      Storage<ComposeableObjectDef> composeableDefStorage,
+      Storage compositeStorage,
       NavigationApi navigationApi) {
 
-    this.compositeDefStorage = compositeDefStorage;
-    this.composeableDefStorage = composeableDefStorage;
+    this.compositeStorage = compositeStorage;
     this.navigationApi = navigationApi;
   }
 
@@ -52,11 +48,11 @@ public class NavCompositeDataCollector implements CompositeDataCollector {
 
     for (CompositeData compositeData : compositeDataCollection.getCompositeDatas()) {
       URI compositeDefConfigUri = compositeData.getConfigUri();
-      Optional<CompositeObjectDef> compositeDefConfigLoaded =
-          compositeDefStorage.load(compositeDefConfigUri);
+      Optional<StorageObject<CompositeObjectDef>> compositeDefConfigLoaded =
+          compositeStorage.load(compositeDefConfigUri, CompositeObjectDef.class);
 
       if (compositeDefConfigLoaded.isPresent()) {
-        CompositeObjectDef compositeObjectDef = compositeDefConfigLoaded.get();
+        CompositeObjectDef compositeObjectDef = compositeDefConfigLoaded.get().getObject();
 
         Map<String, Object> resolvedValues = getResolvedValues(
             qualifiedNames,
@@ -79,7 +75,7 @@ public class NavCompositeDataCollector implements CompositeDataCollector {
 
     ConfigBuilder navigationConfig = NavigationConfig.builder();
     CompositeObjects.addCompositeObjectDef(
-        composeableDefStorage,
+        compositeStorage,
         navigationConfig,
         compositeObjectDef);
 
