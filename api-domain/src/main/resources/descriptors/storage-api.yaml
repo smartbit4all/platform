@@ -18,6 +18,18 @@ paths:
                 
 components:
   schemas:
+    StorageSettings:
+      type: object
+      description: |
+        This is a privilegized object for saving the settings information about a Storage as a logical unit of the global storage.
+        The named references and collections attached to this settings can be access by name.
+      required: [uri]
+      properties:
+        uri:
+          type: string
+          format: uri
+        schemeName:
+          type: string
     StorageObjectData:
       type: object
       description: |
@@ -97,6 +109,20 @@ components:
         operation:
           type: string
           description: The Api and the operation that was created the given version of the object.
+    ObjectList:
+      type: object
+      description: |
+        The list of references as a container object for the Api. 
+      required: [referenceTypeClass, references]
+      properties:
+        uri:
+          type: string
+          format: uri
+        uris:
+          type: object
+          additionalProperties:
+            type: string
+            format: uri
     ObjectReferenceList:
       type: object
       description: |

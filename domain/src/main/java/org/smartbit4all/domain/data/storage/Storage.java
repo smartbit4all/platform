@@ -13,6 +13,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.storage.bean.StorageSettings;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.utility.StringConstant;
@@ -39,6 +40,8 @@ import org.springframework.util.Assert;
  */
 public class Storage {
 
+  private static final String SETTINGS = "settings";
+
   private static final Logger log = LoggerFactory.getLogger(Storage.class);
 
   /**
@@ -61,6 +64,8 @@ public class Storage {
    * application context.
    */
   private ObjectApi objectApi;
+
+  private URI settingsuri;
 
   /**
    * @param clazz The class that is managed by the storage instance.
@@ -87,7 +92,7 @@ public class Storage {
     StorageObject<T> storageObject = new StorageObject<>(objectDefinition, this);
     // At this point we already know the unique URI that can be used to refer from other objects
     // also.
-    storageObject.setUri(constructUri(scheme, objectDefinition));
+    storageObject.setUri(constructUri(objectDefinition));
     return storageObject;
   }
 
@@ -279,6 +284,28 @@ public class Storage {
     return scheme;
   }
 
+  public final StorageObject<StorageSettings> settings() {
+    URI uri = getSettingsUri();
+    // TODO Lock the settings!!!!
+    Optional<StorageObject<StorageSettings>> optional =
+        objectStorage.load(this, uri, StorageSettings.class);
+    StorageObject<StorageSettings> storageObject;
+    if (!optional.isPresent()) {
+      // It's missing now so we have to create is.
+      ObjectDefinition<StorageSettings> objectDefinition =
+          objectApi.definition(StorageSettings.class);
+      storageObject = new StorageObject<>(objectDefinition, this);
+      // At this point we already know the unique URI that can be used to refer from other objects
+      // also.
+      storageObject.setUri(uri);
+      storageObject.setObject(new StorageSettings().schemeName(scheme));
+      save(storageObject);
+    } else {
+      storageObject = optional.get();
+    }
+    return storageObject;
+  }
+
   /**
    * The basic implementation of the URI creation. It's rather a logical URI that is bound to the
    * physical location with a special mapping. The URI looks like the following:
@@ -288,7 +315,7 @@ public class Storage {
    * year/month/day/hour/min format. The final item is a UUID that should be unique individually
    * also. In a running application this URI always identifies a given object.
    */
-  private final URI constructUri(String scheme, ObjectDefinition<?> objectDefinition) {
+  private final URI constructUri(ObjectDefinition<?> objectDefinition) {
     UUID uuid = UUID.randomUUID();
     LocalDateTime now = LocalDateTime.now();
     URI uri = URI.create(scheme + StringConstant.COLON + StringConstant.SLASH
@@ -297,6 +324,17 @@ public class Storage {
         + now.getDayOfMonth() + StringConstant.SLASH + now.getHour() + StringConstant.SLASH
         + uuid);
     return uri;
+  }
+
+  private final URI getSettingsUri() {
+    if (settingsuri == null) {
+      ObjectDefinition<StorageSettings> objectDefinition =
+          objectApi.definition(StorageSettings.class);
+      settingsuri = URI.create(scheme + StringConstant.COLON + StringConstant.SLASH
+          + objectDefinition.getAlias() + StringConstant.SLASH
+          + SETTINGS);
+    }
+    return settingsuri;
   }
 
 }

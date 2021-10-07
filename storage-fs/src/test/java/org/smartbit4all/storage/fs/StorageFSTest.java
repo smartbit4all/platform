@@ -11,7 +11,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.api.invocation.bean.InvocationParameterTemplate;
 import org.smartbit4all.api.invocation.bean.InvocationRequestTemplate;
+import org.smartbit4all.api.storage.bean.ObjectList;
 import org.smartbit4all.api.storage.bean.ObjectReference;
+import org.smartbit4all.api.storage.bean.StorageSettings;
 import org.smartbit4all.core.io.TestFileUtil;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
@@ -92,6 +94,61 @@ class StorageFSTest {
 
     // assertFalse(loaded.isPresent());
   }
+
+  @Test
+  void settiongsTest() throws Exception {
+    Storage storage = storageApi.get(StorageFSTestConfig.TESTSCHEME);
+
+    StorageObject<FSTestBean> storageObject = storage.instanceOf(FSTestBean.class);
+
+    storageObject.setObject(new FSTestBean("referencesTest"));
+
+    URI uri = storage.save(storageObject);
+
+    Optional<StorageObject<FSTestBean>> optLoaded = storage.load(uri, FSTestBean.class);
+
+    StorageObject<InvocationRequestTemplate> invocationReqObj =
+        storage.instanceOf(InvocationRequestTemplate.class);
+
+    invocationReqObj.setObject(new InvocationRequestTemplate().apiClass(StorageApi.class.getName())
+        .executionApi("LOCAL").methodName("save")
+        .addParametersItem(new InvocationParameterTemplate().defaultValueString("param1")));
+
+    URI invocationUri = storage.save(invocationReqObj);
+
+    StorageObject<StorageSettings> settings = storage.settings();
+
+    String referenceName = "invocation";
+    settings.setReference(referenceName, new ObjectReference().uri(invocationUri));
+
+    StorageObject<ObjectList> soMyList = storage.instanceOf(ObjectList.class);
+
+    soMyList.setObject(new ObjectList());
+
+    storage.save(soMyList);
+
+    soMyList.getObject().putUrisItem(invocationUri.toString(), invocationUri);
+    soMyList.getObject().putUrisItem(invocationUri.toString() + "1", invocationUri);
+
+    URI myListUri = storage.save(soMyList);
+
+    settings.setReference("MyList", new ObjectReference().uri(myListUri));
+
+    storage.save(settings);
+
+    URI uriReloaded = storage.settings().getReference(referenceName).getReferenceData().getUri();
+
+    URI myListUriLoaded = storage.settings().getReference("MyList").getReferenceData().getUri();
+
+    assertEquals(myListUri, myListUriLoaded);
+
+    ObjectList referenceList =
+        storage.load(myListUriLoaded, ObjectList.class).get().getObject();
+
+    assertEquals(invocationUri, uriReloaded);
+
+  }
+
 
   @Test
   void referencesTest() throws Exception {
