@@ -50,7 +50,7 @@ public class ObjectApiTest {
   @Test
   public void testUndefinedBeanDefinition() {
     ObjectDefinition<BinaryContent> definition = objectApi.definition(BinaryContent.class);
-    assertEquals(BinaryContent.class.getName().replace('.', '-'),
+    assertEquals(BinaryContent.class.getName().replace('.', '_'),
         definition.getAlias());
     assertEquals(ObjectMapper.class.getName(), definition.getDefaultSerializer().getName());
 

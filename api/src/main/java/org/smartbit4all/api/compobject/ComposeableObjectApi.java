@@ -16,6 +16,8 @@ import org.smartbit4all.api.compobject.bean.ComposeableObject;
 @Deprecated
 public interface ComposeableObjectApi {
 
+  public static final String SCHEME = "composeableapi";
+
   public List<ComposeableObject> getChildren(URI parentObjectUri, URI definitionUri,
       Consumer<URI> nodeChangeListener) throws Exception;
 

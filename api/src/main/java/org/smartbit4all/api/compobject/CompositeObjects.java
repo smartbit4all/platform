@@ -12,6 +12,7 @@ import org.smartbit4all.api.navigation.NavigationConfig;
 import org.smartbit4all.api.navigation.NavigationConfig.ConfigBuilder;
 import org.smartbit4all.api.navigation.bean.NavigationAssociationMeta;
 import org.smartbit4all.domain.data.storage.Storage;
+import org.smartbit4all.domain.data.storage.StorageObject;
 import com.google.common.base.Strings;
 import com.google.common.io.Files;
 
@@ -77,6 +78,7 @@ public class CompositeObjects {
   }
 
   public static ComposeableObjectDef addAssociationIfNotExists(
+      Storage composeableDefStorage,
       String assocName,
       CompositeObjectDef compositeObjectDef,
       URI childDefUri,
@@ -87,16 +89,24 @@ public class CompositeObjects {
       boolean visible) {
 
     if (getAssociactionWithDef(compositeObjectDef.getAssociations(), childDefUri) == null) {
-      return addAssociation(assocName, compositeObjectDef, childDefUri, childApiUri, childRecursive,
+      return addAssociation(
+          composeableDefStorage,
+          compositeObjectDef,
+          assocName,
+          childDefUri,
+          childApiUri,
+          childRecursive,
           icon,
-          viewName, visible);
+          viewName,
+          visible);
     }
     return null;
   }
 
   public static ComposeableObjectDef addAssociation(
-      String assocName,
+      Storage composeableDefStorage,
       CompositeObjectDef compositeObjectDef,
+      String assocName,
       URI childDefUri,
       URI childApiUri,
       boolean childRecursive,
@@ -104,27 +114,37 @@ public class CompositeObjects {
       String viewName,
       boolean assocVisible) {
 
-    URI childAssocUri = createChildAssocUri(compositeObjectDef.getComposeableDefUri(), childDefUri);
+    StorageObject<ComposeableObjectDef> composeableDef = composeableDefStorage
+        .instanceOf(ComposeableObjectDef.class);
+
+    ComposeableObjectDef assocDef = createAssocDef(
+        childApiUri,
+        icon,
+        viewName,
+        assocVisible);
+
+    composeableDef.setObject(assocDef);
+
+    composeableDefStorage.save(composeableDef);
+
     CompositeObjectAssociation newCompObjAssoc = new CompositeObjectAssociation()
         .name(assocName)
-        .assocDefUri(childAssocUri)
+        .assocDefUri(assocDef.getUri())
         .childDefUri(childDefUri)
         .childRecursive(childRecursive);
 
     compositeObjectDef.addAssociationsItem(newCompObjAssoc);
 
-    return createAssocDef(newCompObjAssoc, childApiUri, icon, viewName, assocVisible);
+    return assocDef;
   }
 
   public static ComposeableObjectDef createAssocDef(
-      CompositeObjectAssociation compObjAssoc,
       URI childApiUri,
       String icon,
       String viewName,
       boolean assocVisible) {
 
     return new ComposeableObjectDef()
-        .uri(compObjAssoc.getAssocDefUri())
         .apiUri(childApiUri)
         .icon(icon)
         .viewName(viewName)

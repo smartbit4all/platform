@@ -4,9 +4,14 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.smartbit4all.api.compdata.CompositeDataCollector;
 import org.smartbit4all.api.compdata.bean.CompositeDataCollection;
 
+/**
+ * TODO delete it soon
+ * 
+ * @deprecated
+ */
+@Deprecated
 public class StaticCompositeDataCollector implements CompositeDataCollector {
 
   private Map<String, Object> fields;

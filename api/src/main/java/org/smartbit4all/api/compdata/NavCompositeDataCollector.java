@@ -22,6 +22,12 @@ import org.smartbit4all.api.navigation.bean.NavigationNode;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageObject;
 
+/**
+ * TODO delete it soon
+ * 
+ * @deprecated
+ */
+@Deprecated
 public class NavCompositeDataCollector implements CompositeDataCollector {
 
   private static final Logger log =

@@ -11,11 +11,13 @@ import org.smartbit4all.domain.data.storage.Storage;
 
 public class TestTreeObjectApi implements ComposeableObjectApi {
 
+  public static final String SCHEME = "testtreeobject";
+
   public static final URI API_URI = URI.create("testtreeobject:/composeableobject/apiUri");
 
-  private Storage<TestTreeObject> storage;
+  private Storage storage;
 
-  public TestTreeObjectApi(Storage<TestTreeObject> storage) {
+  public TestTreeObjectApi(Storage storage) {
     this.storage = storage;
   }
 
@@ -30,7 +32,7 @@ public class TestTreeObjectApi implements ComposeableObjectApi {
   }
 
   private String getUri(URI objectUri) throws Exception {
-    Optional<TestTreeObject> testTreeObject = storage.load(objectUri);
+    Optional<TestTreeObject> testTreeObject = storage.read(objectUri, TestTreeObject.class);
     if (testTreeObject.isPresent()) {
       return testTreeObject.get().getUri().toString();
     }
@@ -42,7 +44,7 @@ public class TestTreeObjectApi implements ComposeableObjectApi {
       Consumer<URI> nodeChangeListener)
       throws Exception {
 
-    Optional<TestTreeObject> testTreeObject = storage.load(parentObjectUri);
+    Optional<TestTreeObject> testTreeObject = storage.read(parentObjectUri, TestTreeObject.class);
     if (testTreeObject.isPresent()) {
       return createChildredComposeables(testTreeObject.get(), definitionUri);
     }

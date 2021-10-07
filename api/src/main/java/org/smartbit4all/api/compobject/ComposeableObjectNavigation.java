@@ -113,11 +113,13 @@ public class ComposeableObjectNavigation extends NavigationImpl {
 
   private List<NavigationReferenceEntry> createNavigationReferenceEntries(
       URI objectUri,
-      ComposeableObjectDef compObjDef, Consumer<URI> nodeChangeListener) throws Exception {
+      ComposeableObjectDef compObjDef,
+      Consumer<URI> nodeChangeListener) throws Exception {
 
     List<ComposeableObject> children = composeableObjectApi.getChildren(
         objectUri,
-        compObjDef, nodeChangeListener);
+        compObjDef,
+        nodeChangeListener);
 
     List<NavigationReferenceEntry> result = new ArrayList<>();
 

@@ -2,36 +2,26 @@ package org.smartbit4all.api.compobject;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.net.URI;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.api.ApiItemChangeEvent;
 import org.smartbit4all.api.ApiItemOperation;
-import org.smartbit4all.api.compdata.CompositeDataCollector;
-import org.smartbit4all.api.compdata.NavCompositeDataCollector;
-import org.smartbit4all.api.compdata.bean.CompositeData;
-import org.smartbit4all.api.compdata.bean.CompositeDataCollection;
-import org.smartbit4all.api.compdata.bean.CompositeDataItem;
 import org.smartbit4all.api.compobject.bean.ComposeableObjectDef;
 import org.smartbit4all.api.compobject.bean.CompositeObject;
 import org.smartbit4all.api.compobject.bean.CompositeObjectDef;
 import org.smartbit4all.api.navigation.Navigation;
+import org.smartbit4all.api.navigation.NavigationApi;
 import org.smartbit4all.api.navigation.NavigationConfig;
-import org.smartbit4all.api.navigation.NavigationPrimary;
 import org.smartbit4all.api.navigation.bean.NavigationNode;
 import org.smartbit4all.api.navigation.bean.NavigationReference;
-import org.smartbit4all.core.object.ApiBeanDescriptor;
-import org.smartbit4all.domain.data.storage.ObjectStorageInMemory;
 import org.smartbit4all.domain.data.storage.Storage;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.smartbit4all.domain.data.storage.StorageApi;
+import org.smartbit4all.domain.data.storage.StorageObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
+@SpringBootTest(classes = {ComposeableObjectNavigationTestConfig.class})
 public class ComposeableObjectNavigationTest {
 
   public static final URI TODO_COMPDEF_URI =
@@ -43,200 +33,49 @@ public class ComposeableObjectNavigationTest {
   public static final URI COMPOSITE_OBJECT_TODO_COMPDEF_ASSOC_URI =
       URI.create(ComposeableObjectNavigation.SCHEME + ":/compositeobject/definition/assoc/todo");
 
+  @Autowired
+  private StorageApi storageApi;
+
+  @Autowired
+  private NavigationApi navigationApi;
+
   @Test
-  void dataCollectorWithNavigationTest() throws Exception {
-    Storage<ComposeableObjectDef> composeableObjStorage = createInMemoryStorage(
-        testobj -> testobj.getUri(),
-        ComposeableObjectDef.class);
+  void simpleCompositeObjectNavigationTest() throws Exception {
+    ComposeableObjectDef compositeObjectCompDef = createDef(CompositeObjectApi.API_URI);
+    ComposeableObjectDef testObjectCompDef = createDef(TestTreeObjectApi.API_URI);
 
-    Storage<CompositeObject> objCompStorage = createInMemoryStorage(
-        compobj -> compobj.getUri(),
-        CompositeObject.class);
+    Storage compositeDefStorage = storageApi.get(CompositeObjectApi.API_SCHEME);
+    Storage compositeStorage = storageApi.get(CompositeObjectApi.SCHEME);
+    Storage composableStorage = storageApi.get(ComposeableObjectApi.SCHEME);
 
-    Storage<TestTreeObject> testObjectStorage = createInMemoryStorage(
-        testobj -> testobj.getUri(),
-        TestTreeObject.class);
-
-    Storage<CompositeObjectDef> compositeDefStorage = createInMemoryStorage(
-        compobj -> compobj.getUri(),
-        CompositeObjectDef.class);
-
-    CompositeObjectApi compositeObjectApi = new CompositeObjectApi(
-        objCompStorage,
-        compositeDefStorage,
-        composeableObjStorage);
-
-    TestTreeObjectApi testTreeObjectApi = new TestTreeObjectApi(testObjectStorage);
-
-    ComposeableObjectPrimaryApi composeablePrimary = new ComposeableObjectPrimaryApi();
-    composeablePrimary.add(compositeObjectApi);
-    composeablePrimary.add(testTreeObjectApi);
-
-    Set<Class<?>> beans = new HashSet<>();
-    beans.add(TestTreeObject.class);
-    composeablePrimary.addDescriptor(ApiBeanDescriptor.of(beans));
-
-    AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-    ctx.register(NavigationPrimary.class);
-    ctx.registerBean(
-        ComposeableObjectNavigation.class,
-        () -> new ComposeableObjectNavigation(
-            ComposeableObjectNavigation.SCHEME,
-            composeablePrimary,
-            composeableObjStorage));
-    ctx.refresh();
-
-    ComposeableObjectDef compositeObjectCompDef = createDef(
-        composeableObjStorage,
-        COMPOSITE_OBJECT_COMPDEF_URI,
-        CompositeObjectApi.API_URI);
-
-    ComposeableObjectDef testObjectCompDef = createDef(
-        composeableObjStorage,
-        TODO_COMPDEF_URI,
-        TestTreeObjectApi.API_URI);
-
-    URI compObjDef = URI.create("testnavschema:/compositeObjectDef.compobj");
+    StorageObject<CompositeObjectDef> newCompositeObjDef = compositeDefStorage
+        .instanceOf(CompositeObjectDef.class);
     CompositeObjectDef compositeDef = new CompositeObjectDef()
-        .uri(compObjDef)
         .composeableDefUri(compositeObjectCompDef.getUri());
-    compositeDefStorage.save(compositeDef);
+    newCompositeObjDef.setObject(compositeDef);
 
-    URI compObj1 = URI.create("testnavschema:/compositeObject1.compobj");
+    StorageObject<CompositeObject> newCompsoiteObj =
+        compositeStorage.instanceOf(CompositeObject.class);
     CompositeObject rootCompositeObject = new CompositeObject()
-        .uri(compObj1)
         .compositeDefUri(compositeDef.getUri());
+    newCompsoiteObj.setObject(rootCompositeObject);
+    compositeStorage.save(newCompsoiteObj);
 
     String assocName = "todo";
 
     ComposeableObjectDef compositeToTodoDef = CompositeObjects.addAssociation(
+        storageApi.get(ComposeableObjectApi.SCHEME),
+        compositeDef,
         assocName,
-        compositeDef,
-        TODO_COMPDEF_URI,
+        testObjectCompDef.getUri(),
         compositeObjectCompDef.getApiUri(),
         true,
         null,
         "tesztviewname",
         false);
-    composeableObjStorage.save(compositeToTodoDef);
 
-    objCompStorage.save(rootCompositeObject);
-
-    NavigationPrimary primaryNavigationApi = ctx.getBean(NavigationPrimary.class);
-
-    CompositeDataCollector dataCollector = new NavCompositeDataCollector(compositeDefStorage,
-        composeableObjStorage, primaryNavigationApi);
-
-    CompositeData data = new CompositeData().configUri(compObjDef);
-    CompositeDataItem item =
-        new CompositeDataItem().assocUri(COMPOSITE_OBJECT_COMPDEF_URI).objectUri(compObj1);
-    data.addRootsItem(item);
-
-    CompositeDataCollection collection = new CompositeDataCollection();
-    collection.addCompositeDatasItem(data);
-
-    String path = "/" + assocName + "#" + "uri";
-    Map<String, Object> collectedData = dataCollector.collect(Arrays.asList(path), collection);
-    assertTrue(collectedData.isEmpty());
-
-    TestTreeObject testTreeObject = new TestTreeObject();
-    testTreeObject.setUri(URI.create("testobject:/first.tto"));
-    testObjectStorage.save(testTreeObject);
-
-    CompositeObjects.addObject(
-        rootCompositeObject,
-        testTreeObject.getUri(),
-        testObjectCompDef.getUri());
-
-    objCompStorage.save(rootCompositeObject);
-
-    assertEquals(
-        testTreeObject.getUri(),
-        dataCollector.collect(Arrays.asList(path), collection).values().iterator().next());
-
-    String path2 = "/" + assocName + "/" + assocName + "#" + "uri";
-    assertTrue(dataCollector.collect(Arrays.asList(path2), collection).isEmpty());
-
-    URI childUri = addTreeObject(testObjectStorage, "second.tto", testTreeObject);
-    assertEquals(
-        childUri,
-        dataCollector.collect(Arrays.asList(path2), collection).values().iterator().next());
-  }
-
-  @Test
-  void simpleCompositeObjectNavigationTest() throws Exception {
-    Storage<ComposeableObjectDef> composeableObjStorage = createInMemoryStorage(
-        testobj -> testobj.getUri(),
-        ComposeableObjectDef.class);
-
-    Storage<CompositeObject> objCompStorage = createInMemoryStorage(
-        compobj -> compobj.getUri(),
-        CompositeObject.class);
-
-    Storage<CompositeObjectDef> compositeDefStorage = createInMemoryStorage(
-        compobj -> compobj.getUri(),
-        CompositeObjectDef.class);
-
-    Storage<TestTreeObject> testObjectStorage = createInMemoryStorage(
-        testobj -> testobj.getUri(),
-        TestTreeObject.class);
-
-    CompositeObjectApi compositeObjectApi = new CompositeObjectApi(
-        objCompStorage,
-        compositeDefStorage,
-        composeableObjStorage);
-
-    TestTreeObjectApi testTreeObjectApi = new TestTreeObjectApi(testObjectStorage);
-
-    ComposeableObjectPrimaryApi composeablePrimary = new ComposeableObjectPrimaryApi();
-    composeablePrimary.add(compositeObjectApi);
-    composeablePrimary.add(testTreeObjectApi);
-
-    AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-
-    ctx.register(NavigationPrimary.class);
-    ctx.registerBean(
-        ComposeableObjectNavigation.class,
-        () -> new ComposeableObjectNavigation(
-            ComposeableObjectNavigation.SCHEME,
-            composeablePrimary,
-            composeableObjStorage));
-
-    ctx.refresh();
-
-    ComposeableObjectDef compositeObjectCompDef = createDef(
-        composeableObjStorage,
-        COMPOSITE_OBJECT_COMPDEF_URI,
-        CompositeObjectApi.API_URI);
-
-    ComposeableObjectDef testObjectCompDef = createDef(
-        composeableObjStorage,
-        TODO_COMPDEF_URI,
-        TestTreeObjectApi.API_URI);
-
-    URI compObjDef = URI.create("testnavschema:/compositeObjectDef.compobj");
-    CompositeObjectDef compositeDef = new CompositeObjectDef()
-        .uri(compObjDef)
-        .composeableDefUri(compositeObjectCompDef.getUri());
-    compositeDefStorage.save(compositeDef);
-
-    URI compObj1 = URI.create("testnavschema:/compositeObject1.compobj");
-    CompositeObject rootCompositeObject = new CompositeObject()
-        .uri(compObj1)
-        .compositeDefUri(compositeDef.getUri());
-
-    ComposeableObjectDef compositeToTodoDef = CompositeObjects.addAssociation(
-        "todo",
-        compositeDef,
-        TODO_COMPDEF_URI,
-        compositeObjectCompDef.getApiUri(),
-        true,
-        null,
-        "tesztviewname",
-        false);
-    composeableObjStorage.save(compositeToTodoDef);
-
-    objCompStorage.save(rootCompositeObject);
+    compositeDefStorage.save(newCompositeObjDef);
+    compositeStorage.save(newCompsoiteObj);
 
     NavigationConfig navigationConfig = NavigationConfig.builder()
         .addAssociationMeta(
@@ -244,7 +83,7 @@ public class ComposeableObjectNavigationTest {
             ComposeableObjectNavigation.createAssocMeta(
                 "testAssocName",
                 compositeToTodoDef.getUri(),
-                COMPOSITE_OBJECT_COMPDEF_URI,
+                compositeToTodoDef.getUri(),
                 TODO_COMPDEF_URI,
                 null))
 
@@ -256,32 +95,35 @@ public class ComposeableObjectNavigationTest {
 
         .build();
 
-    NavigationPrimary primaryNavigationApi = ctx.getBean(NavigationPrimary.class);
-
-    Navigation navigation = new Navigation(navigationConfig, primaryNavigationApi);
+    Navigation navigation = new Navigation(navigationConfig, navigationApi);
     assertNotNull(navigation);
 
     NavigationNode rootNode = navigation.addRootNode(
-        COMPOSITE_OBJECT_COMPDEF_URI,
-        compObj1);
+        compositeToTodoDef.getUri(),
+        rootCompositeObject.getUri());
 
     assertEquals(0, navigation.expandAll(rootNode, true).size());
 
+    Storage testTreeStorage = storageApi.get(TestTreeObjectApi.SCHEME);
+    StorageObject<TestTreeObject> newTestTreeObject = testTreeStorage
+        .instanceOf(TestTreeObject.class);
+
     TestTreeObject testTreeObject = new TestTreeObject();
-    testTreeObject.setUri(URI.create("testobject:/first.tto"));
-    testObjectStorage.save(testTreeObject);
+    newTestTreeObject.setObject(testTreeObject);
+
+    testTreeStorage.save(newTestTreeObject);
 
     CompositeObjects.addObject(
         rootCompositeObject,
         testTreeObject.getUri(),
         testObjectCompDef.getUri());
 
-    objCompStorage.save(rootCompositeObject);
+    compositeStorage.save(newCompsoiteObj);
 
     List<ApiItemChangeEvent<NavigationReference>> expanded = navigation.expandAll(rootNode, true);
     assertEquals(1, expanded.size());
 
-    addTreeObject(testObjectStorage, "second.tto", testTreeObject);
+    addTreeObject("second.tto", testTreeObject.getUri());
 
     checkNewSize(navigation.expandAll(rootNode, true), 0);
 
@@ -289,41 +131,44 @@ public class ComposeableObjectNavigationTest {
     checkNewSize(navigation.expandAll(firstExpandedNode, true), 1);
 
     checkNewSize(navigation.expandAll(firstExpandedNode, true), 0);
-    addTreeObject(testObjectStorage, "third.tto", testTreeObject);
+    addTreeObject("third.tto", testTreeObject.getUri());
     checkNewSize(navigation.expandAll(firstExpandedNode, true), 1);
-
-    ctx.close();
   }
 
-  private ComposeableObjectDef createDef(
-      Storage<ComposeableObjectDef> compDefObjStorage,
-      URI uri,
-      URI apiUri) throws Exception {
+  private ComposeableObjectDef createDef(URI apiUri) throws Exception {
+    Storage storage = storageApi.get(ComposeableObjectApi.SCHEME);
+
+    StorageObject<ComposeableObjectDef> newCompObjectDefSo =
+        storage.instanceOf(ComposeableObjectDef.class);
 
     ComposeableObjectDef compositeObjectCompDef = new ComposeableObjectDef()
-        .uri(uri)
         .apiUri(apiUri);
 
-    compDefObjStorage.save(compositeObjectCompDef);
+    newCompObjectDefSo.setObject(compositeObjectCompDef);
+
+    storage.save(newCompObjectDefSo);
 
     return compositeObjectCompDef;
   }
 
-  private URI addTreeObject(
-      Storage<TestTreeObject> testObjectStorage,
-      String uriPath,
-      TestTreeObject parent) throws Exception {
+  private URI addTreeObject(String uriPath, URI parentUri) throws Exception {
+    Storage storage = storageApi.get(TestTreeObjectApi.SCHEME);
 
-    URI newUri = URI.create("testobject:/" + uriPath);
-
+    StorageObject<TestTreeObject> newTestTreeObject = storage.instanceOf(TestTreeObject.class);
     TestTreeObject testTreeObject2 = new TestTreeObject();
-    testTreeObject2.setUri(newUri);
-    testObjectStorage.save(testTreeObject2);
+    newTestTreeObject.setObject(testTreeObject2);
+    storage.save(newTestTreeObject);
 
+    StorageObject<TestTreeObject> parentStorageObject = storage
+        .load(parentUri, TestTreeObject.class)
+        .get();
+
+    TestTreeObject parent = parentStorageObject.getObject();
     parent.addChild(testTreeObject2);
-    testObjectStorage.save(parent);
 
-    return newUri;
+    storage.save(parentStorageObject);
+
+    return testTreeObject2.getUri();
   }
 
   private void checkNewSize(
@@ -337,12 +182,6 @@ public class ComposeableObjectNavigationTest {
       }
     }
     assertEquals(expected, counter);
-  }
-
-  private <T> Storage<T> createInMemoryStorage(Function<T, URI> uriAccessor, Class<T> clazz) {
-    ObjectStorageInMemory<T> objectStorageInMemory =
-        new ObjectStorageInMemory<T>(uriAccessor, null);
-    return new Storage<>(clazz, objectStorageInMemory, Collections.emptyList());
   }
 
 }

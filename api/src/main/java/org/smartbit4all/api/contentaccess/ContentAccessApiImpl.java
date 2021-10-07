@@ -10,6 +10,7 @@ import org.smartbit4all.api.contentaccess.bean.ContentAccessEventData;
 import org.smartbit4all.api.contentaccess.bean.Direction;
 import org.smartbit4all.api.objectshare.ObjectShareApi;
 import org.smartbit4all.domain.data.storage.Storage;
+import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageObject;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.functions.Consumer;
@@ -25,11 +26,13 @@ public class ContentAccessApiImpl implements ContentAccessApi {
 
   private PublishSubject<ContentAccessEventData> publisher;
 
-  public ContentAccessApiImpl(ObjectShareApi objectShareApi, Storage storage,
+  public ContentAccessApiImpl(
+      ObjectShareApi objectShareApi,
+      StorageApi storage,
       BinaryContentApi binaryContentApi) {
 
     this.objectShareApi = objectShareApi;
-    this.storage = storage;
+    this.storage = storage.get(ContentAccessApi.SCHEME);
     this.binaryContentApi = binaryContentApi;
     publisher = PublishSubject.create();
   }

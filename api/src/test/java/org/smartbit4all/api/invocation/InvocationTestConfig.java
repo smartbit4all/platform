@@ -1,6 +1,5 @@
 package org.smartbit4all.api.invocation;
 
-import java.util.concurrent.atomic.AtomicLong;
 import org.smartbit4all.api.config.PlatformApiConfig;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.domain.data.storage.ObjectStorageInMemory;
@@ -11,7 +10,6 @@ import org.springframework.context.annotation.Import;
 @Configuration
 @Import({PlatformApiConfig.class})
 public class InvocationTestConfig {
-
 
   @Bean
   public TestApi testAPi() {
@@ -32,8 +30,6 @@ public class InvocationTestConfig {
   public TestContributionApi contributionApi2() {
     return new TestContributionApiImpl("contributionApi2");
   }
-
-  public static final AtomicLong sequence = new AtomicLong();
 
   @Bean
   ObjectStorageInMemory createInMemoryStorage(ObjectApi objectApi) {

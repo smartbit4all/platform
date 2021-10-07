@@ -17,22 +17,28 @@ import com.google.common.collect.MoreCollectors;
 
 public class CompositeObjectApi implements ComposeableObjectApi {
 
-  public static final URI API_URI = URI.create("compobj:/composeableobject/apiUri");
+  public static final String SCHEME = "compositeobj";
+
+  public static final String API_SCHEME = "compobj";
+
+  public static final URI API_URI = URI.create(API_SCHEME + ":/composeableobject/apiUri");
 
   private Storage compositeStorage;
 
-  public CompositeObjectApi(
-      Storage compositeStorage) {
-
+  public CompositeObjectApi(Storage compositeStorage) {
     this.compositeStorage = compositeStorage;
   }
 
   @Override
-  public List<ComposeableObject> getChildren(URI parentObjectUri, URI definitionUri,
+  public List<ComposeableObject> getChildren(
+      URI parentObjectUri,
+      URI definitionUri,
       Consumer<URI> nodeChangeListener) throws Exception {
 
-    Optional<CompositeObject> loaded =
-        compositeStorage.read(parentObjectUri, CompositeObject.class);
+    Optional<CompositeObject> loaded = compositeStorage.read(
+        parentObjectUri,
+        CompositeObject.class);
+
     if (loaded.isPresent()) {
       CompositeObject compositeObject = loaded.get();
       CompositeObjectDef def = loadCompositeObjectDef(loaded.get());
