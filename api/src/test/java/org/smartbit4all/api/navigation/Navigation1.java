@@ -13,7 +13,6 @@ import org.smartbit4all.api.navigation.bean.NavigationAssociationMeta;
 import org.smartbit4all.api.navigation.bean.NavigationEntry;
 import org.smartbit4all.api.navigation.bean.NavigationEntryMeta;
 import org.smartbit4all.api.navigation.bean.NavigationReferenceEntry;
-import org.smartbit4all.api.navigation.bean.NavigationView;
 import org.smartbit4all.core.object.ApiBeanDescriptor;
 import org.smartbit4all.core.object.ApiObjectRef;
 
@@ -43,13 +42,11 @@ public class Navigation1 extends NavigationImpl {
           ENTRY_BEAN2_META,
           ENTRY_BEAN3_META, null);
 
-  private NavigationView navView;
   private Map<Class<?>, ApiBeanDescriptor> descriptor;
   private Map<Class<?>, Map<URI, TestBean>> testBeans = new HashMap<>();
 
-  public Navigation1(String name) {
-    super(name);
-    navView = new NavigationView().name(name);
+  public Navigation1() {
+    super(NAV_NAME);
     descriptor = createDescriptor();
   }
 
@@ -65,7 +62,6 @@ public class Navigation1 extends NavigationImpl {
           for (TestBean2 bean2 : testBean1.getBean2s()) {
             NavigationEntry newEntry =
                 Navigation.entry(ENTRY_BEAN2_META, bean2.getUri(), bean2.getName(), null);
-            newEntry.addViewsItem(navView);
             references.add(Navigation.referenceEntry(objectUri, newEntry, null));
           }
           result.put(associationUri, references);
@@ -77,7 +73,6 @@ public class Navigation1 extends NavigationImpl {
           for (TestBean3 bean3 : testBean2.getBean3s()) {
             NavigationEntry newEntry =
                 Navigation.entry(ENTRY_BEAN3_META, bean3.getUri(), bean3.getName(), null);
-            newEntry.addViewsItem(navView);
             references.add(Navigation.referenceEntry(objectUri, newEntry, null));
           }
           result.put(associationUri, references);
@@ -110,7 +105,6 @@ public class Navigation1 extends NavigationImpl {
     if (testBean != null) {
       NavigationEntry entry =
           Navigation.entry(entryMeta, testBean.getUri(), testBean.getName(), null);
-      entry.addViewsItem(navView);
       return entry;
     }
     return null;
@@ -151,12 +145,20 @@ public class Navigation1 extends NavigationImpl {
 
     for (TestBean1 bean1 : bean1sToSet) {
       bean1s.put(bean1.getUri(), bean1);
-      for (TestBean2 bean2 : bean1.getBean2s()) {
-        bean2s.put(bean2.getUri(), bean2);
-        for (TestBean3 bean3 : bean2.getBean3s()) {
-          bean3s.put(bean3.getUri(), bean3);
-          TestBean4 bean4 = bean3.getBean4();
-          bean4s.put(bean4.getUri(), bean4);
+      List<TestBean2> bean2sToSet = bean1.getBean2s();
+      if (bean2sToSet != null) {
+        for (TestBean2 bean2 : bean2sToSet) {
+          bean2s.put(bean2.getUri(), bean2);
+          List<TestBean3> bean3sToSet = bean2.getBean3s();
+          if (bean3sToSet != null) {
+            for (TestBean3 bean3 : bean3sToSet) {
+              bean3s.put(bean3.getUri(), bean3);
+              TestBean4 bean4 = bean3.getBean4();
+              if (bean4 != null) {
+                bean4s.put(bean4.getUri(), bean4);
+              }
+            }
+          }
         }
       }
     }

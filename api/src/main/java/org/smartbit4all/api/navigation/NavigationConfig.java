@@ -21,6 +21,14 @@ import org.smartbit4all.core.utility.StringConstant;
 public class NavigationConfig {
 
   /**
+   * If we setup a {@link NavigationConfig} in the spring context (in a Configuration) then it will
+   * be available by this name on the {@link NavigationApi}. We can start a new {@link Navigation}
+   * by name. If we setup a {@link NavigationConfig} from scratch inline then there is no need to
+   * name it! --> The name could be null.
+   */
+  private String name;
+
+  /**
    * List of available associations for entry uris.
    */
   private Map<URI, List<URI>> assocMetaUrisByEntryMetaUri;
@@ -64,7 +72,7 @@ public class NavigationConfig {
     }
     for (URI uri : assocURIs) {
       AssocNodeConfig assocNodeConfig = assocConfigsByUri.get(uri);
-      if (assocName.equals(assocNodeConfig.getName())) {
+      if (assocName.toUpperCase().equals(assocNodeConfig.getName())) {
         return uri;
       }
     }
@@ -168,7 +176,7 @@ public class NavigationConfig {
       assocConfig.setVisible(isVisible);
       assocConfig.setLabel(label);
       assocConfig.setIconKey(iconKey);
-      assocConfig.setName(assocMeta.getName());
+      assocConfig.setName(assocMeta.getName().toUpperCase());
       nodeConfigByAssocUri.put(assocUri, assocConfig);
       return this;
     }
@@ -303,6 +311,14 @@ public class NavigationConfig {
       this.name = name;
     }
 
+  }
+
+  public final String getName() {
+    return name;
+  }
+
+  public final void setName(String name) {
+    this.name = name;
   }
 
 }

@@ -114,8 +114,11 @@ public class Navigation2 extends NavigationImpl {
 
     for (TestBean1 bean1 : bean1sToSet) {
       bean1s.put(bean1.getUri(), bean1);
-      for (TestBean2 bean2 : bean1.getBean2s()) {
-        bean2s.put(bean2.getUri(), bean2);
+      List<TestBean2> bean2sToSet = bean1.getBean2s();
+      if (bean2sToSet != null) {
+        for (TestBean2 bean2 : bean1.getBean2s()) {
+          bean2s.put(bean2.getUri(), bean2);
+        }
       }
     }
 

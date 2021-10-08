@@ -33,7 +33,6 @@ import javax.validation.Valid;
 @ApiModel(description = "UI: The instance of the association. It is a directed from source to target. If we have data entry on the association itself then we can set this entry to the associationEntry.")
 @JsonPropertyOrder({
   NavigationReference.ID,
-  NavigationReference.START_NODE,
   NavigationReference.END_NODE,
   NavigationReference.ASSOCIATION_NODE
 })
@@ -42,9 +41,6 @@ import javax.validation.Valid;
 public class NavigationReference {
   public static final String ID = "id";
   private String id;
-
-  public static final String START_NODE = "startNode";
-  private NavigationNode startNode;
 
   public static final String END_NODE = "endNode";
   private NavigationNode endNode;
@@ -77,34 +73,6 @@ public class NavigationReference {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setId(String id) {
     this.id = id;
-  }
-
-
-  public NavigationReference startNode(NavigationNode startNode) {
-    
-    this.startNode = startNode;
-    return this;
-  }
-
-   /**
-   * Get startNode
-   * @return startNode
-  **/
-  @NotNull
-  @Valid
-  @ApiModelProperty(required = true, value = "")
-  @JsonProperty(START_NODE)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-
-  public NavigationNode getStartNode() {
-    return startNode;
-  }
-
-
-  @JsonProperty(START_NODE)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setStartNode(NavigationNode startNode) {
-    this.startNode = startNode;
   }
 
 
@@ -174,14 +142,13 @@ public class NavigationReference {
     }
     NavigationReference navigationReference = (NavigationReference) o;
     return Objects.equals(this.id, navigationReference.id) &&
-        Objects.equals(this.startNode, navigationReference.startNode) &&
         Objects.equals(this.endNode, navigationReference.endNode) &&
         Objects.equals(this.associationNode, navigationReference.associationNode);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, startNode, endNode, associationNode);
+    return Objects.hash(id, endNode, associationNode);
   }
 
   @Override
@@ -189,7 +156,6 @@ public class NavigationReference {
     StringBuilder sb = new StringBuilder();
     sb.append("class NavigationReference {\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    startNode: ").append(toIndentedString(startNode)).append("\n");
     sb.append("    endNode: ").append(toIndentedString(endNode)).append("\n");
     sb.append("    associationNode: ").append(toIndentedString(associationNode)).append("\n");
     sb.append("}");

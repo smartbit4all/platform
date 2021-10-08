@@ -193,8 +193,6 @@ components:
         id:
           type: string
           description: 'The unique identifier of the given association - UUID'
-        startNode:
-          $ref: '#/components/schemas/NavigationNode'
         endNode:
           $ref: '#/components/schemas/NavigationNode'
         associationNode:

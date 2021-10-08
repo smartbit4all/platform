@@ -104,4 +104,16 @@ public interface NavigationApi {
    */
   Optional<ApiObjectRef> loadObject(URI entryMetaUri, URI objectUri);
 
+  /**
+   * Constructs a navigation with the called api and navigation config, only if a config can be
+   * found by the given name in the api's navConfigsByName map, after that the root nodes will be
+   * added into the constructed navigation.
+   * 
+   * @param navigationConfigName The name of the configuration used for constructing the navigation.
+   * @param rootNodes The root nodes that will be added to the constructed navigation including the
+   *        required entry meta uri and object uri.
+   * @return
+   */
+  Navigation start(String navigationConfigName, List<NavigationRootNode> rootNodes);
+
 }

@@ -107,16 +107,25 @@ public class Navigation3 extends NavigationImpl {
   public void setBeans(List<TestBean2> bean2sToSet) {
     Map<URI, TestBean> bean2s = new HashMap<>();
     Map<URI, TestBean> bean3s = new HashMap<>();
+    Map<URI, TestBean> bean4s = new HashMap<>();
 
     for (TestBean2 bean2 : bean2sToSet) {
       bean2s.put(bean2.getUri(), bean2);
-      for (TestBean3 bean3 : bean2.getBean3s()) {
-        bean3s.put(bean3.getUri(), bean3);
+      List<TestBean3> bean3sToSet = bean2.getBean3s();
+      if (bean3sToSet != null) {
+        for (TestBean3 bean3 : bean2.getBean3s()) {
+          bean3s.put(bean3.getUri(), bean3);
+          TestBean4 bean4 = bean3.getBean4();
+          if (bean4 != null) {
+            bean4s.put(bean4.getUri(), bean4);
+          }
+        }
       }
     }
 
     testBeans.put(TestBean2.class, bean2s);
     testBeans.put(TestBean3.class, bean3s);
+    testBeans.put(TestBean4.class, bean4s);
   }
 
   private <T> Map<Class<?>, ApiBeanDescriptor> createDescriptor() {

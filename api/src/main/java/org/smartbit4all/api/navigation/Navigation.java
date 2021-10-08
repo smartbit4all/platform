@@ -561,7 +561,6 @@ public class Navigation {
       NavigationNode associationNode) {
     NavigationReference result = new NavigationReference();
     result.setId(UUID.randomUUID().toString());
-    result.setStartNode(startNode);
     result.setEndNode(endNode);
     result.setAssociationNode(associationNode);
     return result;
@@ -788,7 +787,7 @@ public class Navigation {
    *        for the assoc1 and the assoc2 node inside the
    * @return The resolved values identified by the qualified names.
    */
-  public Map<String, Object> resolveValues(NavigationNode contextNode,
+  public Map<String, ResolvedValue> resolveValues(NavigationNode contextNode,
       Collection<String> qualifiedNames) {
     if (qualifiedNames == null || qualifiedNames.isEmpty()) {
       return Collections.emptyMap();
@@ -837,7 +836,7 @@ public class Navigation {
             qualifiedName);
       }
     }
-    Map<String, Object> result = new HashMap<>();
+    Map<String, ResolvedValue> result = new HashMap<>();
     for (Entry<NavigationNode, List<ResolvedPropertyEntry>> entry : propertiesToResolveByNode
         .entrySet()) {
       NavigationNode node = entry.getKey();
@@ -848,7 +847,7 @@ public class Navigation {
                   "Unable to load the " + node.getEntry() + " object."));
       for (ResolvedPropertyEntry resolvedPropertyEntry : properties) {
         Object value = objectRef.getValueByPath(resolvedPropertyEntry.name);
-        result.put(resolvedPropertyEntry.qualifiedName, value);
+        result.put(resolvedPropertyEntry.qualifiedName, new ResolvedValue(value));
       }
     }
 
@@ -905,6 +904,10 @@ public class Navigation {
     }
 
     return null;
+  }
+
+  public List<NavigationNode> getRootNodes() {
+    return Collections.unmodifiableList(roots);
   }
 
 }

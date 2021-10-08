@@ -11,7 +11,7 @@ public class NavigationTestConfig {
 
   @Bean
   Navigation1 navigation1() {
-    return new Navigation1(Navigation1.NAV_NAME);
+    return new Navigation1();
   }
 
   @Bean
