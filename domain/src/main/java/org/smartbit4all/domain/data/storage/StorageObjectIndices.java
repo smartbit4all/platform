@@ -17,4 +17,8 @@ public class StorageObjectIndices<T> {
     return indexList;
   }
 
+  public boolean add(StorageIndex<T> index) {
+    return indexList.add(index);
+  }
+
 }

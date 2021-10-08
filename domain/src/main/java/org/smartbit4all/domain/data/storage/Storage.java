@@ -337,4 +337,11 @@ public class Storage {
     return settingsuri;
   }
 
+  public void addIndex(StorageObjectIndices<?> index, Class<?> clazz) {
+    if (indexes == null) {
+      indexes = new HashMap<>();
+    }
+    indexes.put(clazz, index);
+  }
+
 }
