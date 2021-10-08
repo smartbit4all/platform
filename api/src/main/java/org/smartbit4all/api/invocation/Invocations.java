@@ -182,9 +182,13 @@ public class Invocations {
     soInvocationRequest.setObject(invocationTemplate);
     URI callbackUri = storage.save(soInvocationRequest);
 
-    object.addCollectionEntry(SUBSCRIBED_CONSUMERS_PREFIX + consumerName,
+    object.addCollectionEntry(
+        constructConsumerName(consumerName),
         new ObjectReference().uri(callbackUri));
 
+    // TODO Should be saved here, or create two versions, where the object can be saved eg. in the
+    // APIs? This may cause multiple versions of the object just because of the invocation save.
+    storage.save(object);
   }
 
   /**
@@ -198,13 +202,19 @@ public class Invocations {
    * @param storageApi
    * @param invocationApi
    */
-  public static final void callConsumers(StorageObject<?> object, String consumerName,
+  public static final void callConsumers(
+      StorageObject<?> object,
+      String consumerName,
       InvocationApi invocationApi) {
+
     if (consumerName == null) {
       return;
     }
+
     Storage storage = object.getStorage();
-    for (StorageObjectReferenceEntry refEntry : object.getCollection(consumerName)) {
+    for (StorageObjectReferenceEntry refEntry : object
+        .getCollection(constructConsumerName(consumerName))) {
+
       if (refEntry.getReferenceData() != null) {
         Optional<InvocationRequestTemplate> invocationReqOpt = storage
             .read(refEntry.getReferenceData().getUri(), InvocationRequestTemplate.class);
@@ -226,8 +236,14 @@ public class Invocations {
         }
       }
     }
-    storage.save(object);
 
+    // TODO Should be saved here, or create two versions, where the object can be saved eg. in the
+    // APIs? This may cause multiple versions of the object just because of the invocation save.
+    storage.save(object);
+  }
+
+  private static String constructConsumerName(String consumerName) {
+    return SUBSCRIBED_CONSUMERS_PREFIX + consumerName;
   }
 
 }
