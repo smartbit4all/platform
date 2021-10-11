@@ -124,7 +124,7 @@ public class StorageFS extends ObjectStorageImpl {
         }
       } else if (object.getObject() != null
           && object.getOperation() != StorageObjectOperation.DELETE) {
-        File objectVersionFile = getObjectVersionFile(objectDataFile, newVersion);
+        File objectVersionFile = getObjectVersionFile(objectDataFile, newVersion.getSerialNo());
         // Write the version file first
         FileIO.write(objectVersionFile,
             object.definition().serialize(object.getObject()));
@@ -184,9 +184,9 @@ public class StorageFS extends ObjectStorageImpl {
    * @param newVersion
    * @return
    */
-  private File getObjectVersionFile(File objectDataFile, ObjectVersion newVersion) {
+  private File getObjectVersionFile(File objectDataFile, Integer serialNo) {
     File objectVersionFile =
-        new File(objectDataFile.getPath() + StringConstant.DOT + newVersion.getSerialNoData());
+        new File(objectDataFile.getPath() + StringConstant.DOT + serialNo);
     return objectVersionFile;
   }
 
@@ -229,8 +229,11 @@ public class StorageFS extends ObjectStorageImpl {
     boolean skipData = StorageLoadOption.checkSkipData(options);
     if (storageObjectData.getCurrentVersion().getSerialNoData() != null
         && !skipData) {
-      File objectVersionFile =
-          getObjectVersionFile(storageObjectDataFile, storageObjectData.getCurrentVersion());
+
+      File objectVersionFile = getObjectVersionFile(
+          storageObjectDataFile,
+          storageObjectData.getCurrentVersion().getSerialNoData());
+
       BinaryData versionBinaryData = new BinaryData(objectVersionFile, false);
 
       T object = definition.deserialize(versionBinaryData).orElse(null);
