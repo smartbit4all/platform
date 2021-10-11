@@ -98,7 +98,12 @@ public class Storage {
 
   public <T> URI save(StorageObject<T> object) {
     URI result = objectStorage.save(object);
-    updateIndexes(object);
+
+    // TODO HACK. Deleted case should be handled, if the indexing is not dead idea
+    if (object.getObject() != null) {
+      updateIndexes(object);
+    }
+
     return result;
   }
 
