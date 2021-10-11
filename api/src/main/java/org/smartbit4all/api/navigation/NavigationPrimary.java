@@ -26,7 +26,6 @@ import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.navigation.bean.NavigationAssociationMeta;
-import org.smartbit4all.api.navigation.bean.NavigationConfig;
 import org.smartbit4all.api.navigation.bean.NavigationEntry;
 import org.smartbit4all.api.navigation.bean.NavigationReferenceEntry;
 import org.smartbit4all.core.object.ApiObjectRef;
@@ -45,6 +44,19 @@ public final class NavigationPrimary extends NavigationImpl implements Initializ
 
 
   private static final Logger log = LoggerFactory.getLogger(NavigationPrimary.class);
+
+  /**
+   * The available navigation configs autowired by the Spring. If we include a new functional module
+   * adding new config they will be available immediately.
+   */
+  @Autowired(required = false)
+  private List<NavigationConfig> navigationConfigs;
+
+  /**
+   * Collects every named navigation config available in the current application, therefore these
+   * configs can be get by name easily.
+   */
+  private Map<String, NavigationConfig> navConfigsByName = new HashMap<>();
 
   /**
    * The registered {@link NavigationApi}s by name. The name is the scheme part of the
@@ -125,6 +137,18 @@ public final class NavigationPrimary extends NavigationImpl implements Initializ
         apiByName.put(api.name(), api);
       }
     }
+
+    if (navigationConfigs != null) {
+      for (NavigationConfig navigationConfig : navigationConfigs) {
+        if (navigationConfig.getName() != null) {
+          navConfigsByName.put(navigationConfig.getName(), navigationConfig);
+        } else {
+          log.error(
+              "The {} navigation config is unnamed, it will be skipped from named config list!",
+              navigationConfig);
+        }
+      }
+    }
   }
 
   @Override
@@ -137,6 +161,24 @@ public final class NavigationPrimary extends NavigationImpl implements Initializ
           "Unable to find navigation api for the meta: " + entryMetaUri + " (" + objectUri + ")");
     }
     return Optional.empty();
+  }
+
+  @Override
+  public Navigation start(String navigationConfigName, List<NavigationRootNode> rootNodes) {
+    NavigationConfig navigationConfig = navConfigsByName.get(navigationConfigName);
+    if (navigationConfig == null) {
+      log.debug(
+          "Unable to start {} navigation, missing configuration by name. Extend Configuration!",
+          navigationConfigName);
+      return null;
+    }
+    Navigation result = new Navigation(navigationConfig, this);
+    if (rootNodes != null) {
+      for (NavigationRootNode navigationRootNode : rootNodes) {
+        result.addRootNode(navigationRootNode.getEntryMetaUri(), navigationRootNode.getObjectUri());
+      }
+    }
+    return result;
   }
 
 }
