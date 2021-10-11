@@ -89,10 +89,17 @@ public class Storage {
    */
   public <T> StorageObject<T> instanceOf(Class<T> clazz) {
     ObjectDefinition<T> objectDefinition = objectApi.definition(clazz);
+    if (!objectDefinition.hasUri()) {
+      throw new IllegalArgumentException(
+          "Unable to use the " + clazz
+              + " as domain object because the lack of URI property!");
+    }
     StorageObject<T> storageObject = new StorageObject<>(objectDefinition, this);
     // At this point we already know the unique URI that can be used to refer from other objects
     // also.
-    storageObject.setUri(constructUri(objectDefinition));
+    UUID uuid = UUID.randomUUID();
+    storageObject.setUri(constructUri(objectDefinition, uuid));
+    storageObject.setUuid(uuid);
     return storageObject;
   }
 
@@ -320,8 +327,7 @@ public class Storage {
    * year/month/day/hour/min format. The final item is a UUID that should be unique individually
    * also. In a running application this URI always identifies a given object.
    */
-  private final URI constructUri(ObjectDefinition<?> objectDefinition) {
-    UUID uuid = UUID.randomUUID();
+  private final URI constructUri(ObjectDefinition<?> objectDefinition, UUID uuid) {
     LocalDateTime now = LocalDateTime.now();
     URI uri = URI.create(scheme + StringConstant.COLON + StringConstant.SLASH
         + objectDefinition.getAlias() + StringConstant.SLASH

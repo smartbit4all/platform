@@ -283,12 +283,13 @@ class StorageFSTest {
     uri = storage.save(optLoaded.get());
 
     // Load again to check existing reference
-    optLoaded = storage.load(uri, FSTestBean.class, StorageLoadOption.skipData());
+    optLoaded = storage.load(uri, FSTestBean.class);
 
     {
       List<StorageObjectReferenceEntry> collection =
           optLoaded.get().getCollection(collectionName);
 
+      Assertions.assertNotNull(optLoaded.get().getObject());
 
       assertEquals(count, collection.size());
 

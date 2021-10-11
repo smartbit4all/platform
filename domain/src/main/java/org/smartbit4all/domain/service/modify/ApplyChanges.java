@@ -32,6 +32,11 @@ public final class ApplyChanges {
    */
   private final List<ApplyChangeOperation> rootOperations = new ArrayList<>();
 
+  /**
+   * @return The root operations for the apply changes. All of them are
+   *         {@link SB4CompositeFunction}s so if we have only one object hierarchy the it contains
+   *         only one operation.
+   */
   public final List<ApplyChangeOperation> roots() {
     return rootOperations;
   }

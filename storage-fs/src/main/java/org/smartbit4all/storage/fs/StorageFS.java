@@ -92,13 +92,14 @@ public class StorageFS extends ObjectStorageImpl {
       // extension.
       StorageObjectData storageObjectData;
       ObjectVersion newVersion;
+      ObjectVersion currentVersion = null;
       if (objectDataFile.exists()) {
         // This is an existing data file.
         BinaryData dataFile = new BinaryData(objectDataFile, false);
         Optional<StorageObjectData> optStorageObject = storageObjectDataDef.deserialize(dataFile);
         storageObjectData = optStorageObject.get();
         // Extract the current version and create the new one based on this.
-        ObjectVersion currentVersion = storageObjectData.getCurrentVersion();
+        currentVersion = storageObjectData.getCurrentVersion();
         // Increment the serial number. The given object is locked in the meantime so there is no
         // need to worry about the parallel modification.
         newVersion = new ObjectVersion().serialNo(currentVersion.getSerialNo() + 1);
@@ -116,7 +117,13 @@ public class StorageFS extends ObjectStorageImpl {
       storageObjectData.addVersionsItem(newVersion);
 
       // TODO Add dependency to UserSession!!
-      if (object.getObject() != null && object.getOperation() != StorageObjectOperation.DELETE) {
+      if (object.getOperation() == StorageObjectOperation.MODIFY_WITHOUT_DATA) {
+        // Set the new version data to the current version data.
+        if (currentVersion != null) {
+          newVersion.setSerialNoData(currentVersion.getSerialNoData());
+        }
+      } else if (object.getObject() != null
+          && object.getOperation() != StorageObjectOperation.DELETE) {
         File objectVersionFile = getObjectVersionFile(objectDataFile, newVersion);
         // Write the version file first
         FileIO.write(objectVersionFile,
@@ -179,7 +186,7 @@ public class StorageFS extends ObjectStorageImpl {
    */
   private File getObjectVersionFile(File objectDataFile, ObjectVersion newVersion) {
     File objectVersionFile =
-        new File(objectDataFile.getPath() + StringConstant.DOT + newVersion.getSerialNo());
+        new File(objectDataFile.getPath() + StringConstant.DOT + newVersion.getSerialNoData());
     return objectVersionFile;
   }
 

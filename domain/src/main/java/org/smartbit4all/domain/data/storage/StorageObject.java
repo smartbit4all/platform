@@ -38,6 +38,11 @@ public final class StorageObject<T> {
    */
   private URI uri;
 
+  /**
+   * The uuid part of the uri as redundant field
+   */
+  private UUID uuid;
+
   private final ObjectDefinition<T> definition;
 
   /**
@@ -67,7 +72,7 @@ public final class StorageObject<T> {
   }
 
   /**
-   * State shows the current opartion about storage object.
+   * State shows the current operation about storage object.
    */
   private StorageObjectOperation operation = StorageObjectOperation.CREATE;
 
@@ -101,6 +106,14 @@ public final class StorageObject<T> {
 
   final void setUri(URI uri) {
     this.uri = uri;
+  }
+
+  public final UUID getUuid() {
+    return uuid;
+  }
+
+  final void setUuid(UUID uuid) {
+    this.uuid = uuid;
   }
 
   public final ObjectDefinition<T> definition() {

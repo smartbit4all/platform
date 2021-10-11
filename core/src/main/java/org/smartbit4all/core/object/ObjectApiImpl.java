@@ -18,6 +18,8 @@ public class ObjectApiImpl implements ObjectApi, InitializingBean {
 
   private static final String URI = "URI";
 
+  private static final String UUID = "UUID";
+
   /**
    * We need at least one serializer to be able to start the module.
    */
@@ -101,6 +103,9 @@ public class ObjectApiImpl implements ObjectApi, InitializingBean {
         if (objectDefinition.getUriGetter() == null || objectDefinition.getUriSetter() == null) {
           setupUri(objectDefinition);
         }
+        if (objectDefinition.getUuidGetter() == null || objectDefinition.getUuidSetter() == null) {
+          setupUuid(objectDefinition);
+        }
         if (objectDefinition.getAlias() == null) {
           objectDefinition.setAlias(getDefaultAlias(objectDefinition.getClazz()));
         }
@@ -136,6 +141,7 @@ public class ObjectApiImpl implements ObjectApi, InitializingBean {
     if (result == null) {
       result = new ObjectDefinition<T>(clazz);
       setupUri(result);
+      setupUuid(result);
       result.setAlias(getDefaultAlias(clazz));
       result.setDefaultSerializer(defaultSerializer);
     }
@@ -150,29 +156,58 @@ public class ObjectApiImpl implements ObjectApi, InitializingBean {
     BeanMeta beanMeta = meta(result.getClazz());
     // The definition was not found in the context. We need to analyze the bean by reflection.
     PropertyMeta uriMeta = beanMeta.getProperties().get(URI);
-    if (uriMeta == null) {
-      throw new IllegalArgumentException(
-          "Unable to use the " + result.getClazz()
-              + " as domain object because the lack of URI property!");
+    // The uri is not mandatory at this level.
+    // if (uriMeta == null) {
+    // throw new IllegalArgumentException(
+    // "Unable to use the " + result.getClazz()
+    // + " as domain object because the lack of URI property!");
+    // }
+    if (uriMeta != null) {
+      result.setUriGetter((o) -> {
+        try {
+          return (URI) uriMeta.getGetter().invoke(o);
+        } catch (Exception e) {
+          throw new IllegalArgumentException(
+              "Unable to get the URI property of the " + o + " (" + result.getClazz()
+                  + ") domain object.");
+        }
+      });
+      result.setUriSetter((o, u) -> {
+        try {
+          uriMeta.getSetter().invoke(o, u);
+        } catch (Exception e) {
+          throw new IllegalArgumentException(
+              "Unable to set the URI property of the " + o + " (" + result.getClazz()
+                  + ") domain object.");
+        }
+      });
     }
-    result.setUriGetter((o) -> {
-      try {
-        return (URI) uriMeta.getGetter().invoke(o);
-      } catch (Exception e) {
-        throw new IllegalArgumentException(
-            "Unable to get the URI property of the " + o + " (" + result.getClazz()
-                + ") domain object.");
-      }
-    });
-    result.setUriSetter((o, u) -> {
-      try {
-        uriMeta.getSetter().invoke(o, u);
-      } catch (Exception e) {
-        throw new IllegalArgumentException(
-            "Unable to set the URI property of the " + o + " (" + result.getClazz()
-                + ") domain object.");
-      }
-    });
+  }
+
+  private <T> void setupUuid(ObjectDefinition<T> result) {
+    BeanMeta beanMeta = meta(result.getClazz());
+    // The definition was not found in the context. We need to analyze the bean by reflection.
+    PropertyMeta uuidMeta = beanMeta.getProperties().get(UUID);
+    if (uuidMeta != null) {
+      result.setUriGetter((o) -> {
+        try {
+          return (URI) uuidMeta.getGetter().invoke(o);
+        } catch (Exception e) {
+          throw new IllegalArgumentException(
+              "Unable to get the URI property of the " + o + " (" + result.getClazz()
+                  + ") domain object.");
+        }
+      });
+      result.setUriSetter((o, u) -> {
+        try {
+          uuidMeta.getSetter().invoke(o, u);
+        } catch (Exception e) {
+          throw new IllegalArgumentException(
+              "Unable to set the URI property of the " + o + " (" + result.getClazz()
+                  + ") domain object.");
+        }
+      });
+    }
   }
 
 }

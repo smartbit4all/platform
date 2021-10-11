@@ -21,11 +21,20 @@ public final class ObjectDefinition<T> {
 
   /**
    * The URI property of the object. The URI is the unique identifier and storage locator of the
-   * given object. It's mandatory, without it the given object is not manageable.
+   * given object. It's mandatory if we would like to use it as storage root object.
    */
   private BiConsumer<T, URI> uriSetter;
 
   private Function<T, URI> uriGetter;
+
+  /**
+   * The UUID property of the object. The UUID is a unique identifier that technically unique but
+   * doesn't contain the location info. If an object has URI also then it can be used as root object
+   * in a Storage.
+   */
+  private BiConsumer<T, URI> uuidSetter;
+
+  private Function<T, URI> uuidGetter;
 
   /**
    * The lower case version of the class name or a configured alias.
@@ -114,6 +123,30 @@ public final class ObjectDefinition<T> {
 
   public final Optional<T> deserialize(BinaryData data) {
     return defaultSerializer.deserialize(data, clazz);
+  }
+
+  public final BiConsumer<T, URI> getUuidSetter() {
+    return uuidSetter;
+  }
+
+  public final void setUuidSetter(BiConsumer<T, URI> uuidSetter) {
+    this.uuidSetter = uuidSetter;
+  }
+
+  public final Function<T, URI> getUuidGetter() {
+    return uuidGetter;
+  }
+
+  public final void setUuidGetter(Function<T, URI> uuidGetter) {
+    this.uuidGetter = uuidGetter;
+  }
+
+  public final boolean hasUri() {
+    return uriGetter != null && uriSetter != null;
+  }
+
+  public final boolean hasUuid() {
+    return uuidGetter != null && uuidSetter != null;
   }
 
 }
