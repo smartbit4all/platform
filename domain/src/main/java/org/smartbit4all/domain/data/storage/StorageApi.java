@@ -22,18 +22,6 @@ public interface StorageApi {
    */
   Storage get(String scheme);
 
-  // /**
-  // * Generic function to load the referenced objects for a given URI.
-  // *
-  // * @param <T> The type of the referenced object we are looking for.
-  // * @param uri The uri of the object that has the references.
-  // * @param typeClass The type of the referenced objects. Must be a Java type available in the
-  // given
-  // * JVM!
-  // * @return The set of referenced objects.
-  // */
-  // <T, R> Set<R> loadReferences(URI uri, Class<T> clazz, Class<R> typeClass);
-
   /**
    * This function can be used to load any object managed by the StorageApi. It identifies the given
    * {@link Storage} by the clazz and the URI. The uri can define the exact physical location of the
