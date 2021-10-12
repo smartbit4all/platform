@@ -76,7 +76,7 @@ public interface SecurityGatewayService {
    * @param user
    * @return
    */
-  User saveUser(User user);
+  URI saveUser(User user);
 
   /**
    * Creates Group and adds it to storage.
@@ -89,7 +89,7 @@ public interface SecurityGatewayService {
    * @param children
    * @return
    */
-  Group saveGroup(String name, String description, URI kind, URI parent,
+  URI saveGroup(String name, String description, URI kind, URI parent,
       List<URI> children);
 
   /**
@@ -98,7 +98,7 @@ public interface SecurityGatewayService {
    * @param group
    * @return
    */
-  Group saveGroup(Group group);
+  URI saveGroup(Group group);
 
   /**
    * Binds user and group together by adding to usersOfGroup, and groupsOfUser storage.
@@ -106,7 +106,7 @@ public interface SecurityGatewayService {
    * @param user
    * @param group
    */
-  void addUserToGroup(User user, Group group);
+  void addUserToGroup(URI userUri, URI groupUri);
 
 
   /**
@@ -131,7 +131,7 @@ public interface SecurityGatewayService {
    * @param user
    * @return
    */
-  User updateUser(User user);
+  URI updateUser(User user);
 
   /**
    * Update group.
@@ -139,7 +139,7 @@ public interface SecurityGatewayService {
    * @param group
    * @return
    */
-  Group updateGroup(Group group);
+  URI updateGroup(Group group);
 
   /**
    * Remove user from group.

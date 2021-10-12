@@ -209,6 +209,17 @@ components:
           items:
             type: string
             format: uri
+    GroupsOfUserCollection:
+      type: object
+      required: [uri, groupsOfUserCollection]
+      properties:
+        uri:
+          type: string
+          format: uri
+        groupsOfUserCollection:
+          type: array
+          items:
+            $ref: '#/components/schemas/GroupsOfUser'  
     UsersOfGroup:
       type: object
       required: [uri, groupUri, users]
@@ -224,3 +235,14 @@ components:
           items:
             type: string
             format: uri
+    UsersOfGroupCollection:
+      type: object
+      required: [uri, usersOfGroupCollection]
+      properties:
+        uri:
+          type: string
+          format: uri
+        usersOfGroupCollection:
+          type: array
+          items:
+            $ref: '#/components/schemas/UsersOfGroup'  
