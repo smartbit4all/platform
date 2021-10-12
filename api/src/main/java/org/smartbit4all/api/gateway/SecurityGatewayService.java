@@ -9,6 +9,8 @@ import org.smartbit4all.api.security.bean.AthenticationResult;
 
 public interface SecurityGatewayService {
 
+  public static final String SCHEME = "security";
+
   /**
    * Authenticate with username and password.
    * 

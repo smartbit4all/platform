@@ -12,7 +12,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.api.invocation.bean.InvocationParameterTemplate;
 import org.smartbit4all.api.invocation.bean.InvocationRequestTemplate;
-import org.smartbit4all.api.storage.bean.ObjectList;
 import org.smartbit4all.api.storage.bean.ObjectMap;
 import org.smartbit4all.api.storage.bean.ObjectReference;
 import org.smartbit4all.api.storage.bean.StorageSettings;
@@ -143,13 +142,11 @@ class StorageFSTest {
 
     assertEquals(myListUri, myListUriLoaded);
 
-    ObjectList referenceList =
-        storage.load(myListUriLoaded, ObjectList.class).get().getObject();
+    ObjectMap referenceList =
+        storage.load(myListUriLoaded, ObjectMap.class).get().getObject();
 
     assertEquals(invocationUri, uriReloaded);
-
   }
-
 
   @Test
   void referencesTest() throws Exception {
