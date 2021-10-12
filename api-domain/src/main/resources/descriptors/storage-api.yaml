@@ -113,7 +113,22 @@ components:
       type: object
       description: |
         The list of references as a container object for the Api. 
-      required: [referenceTypeClass, references]
+      required: [uri, uris]
+      properties:
+        uri:
+          type: string
+          format: uri
+        uris:
+          type: array
+          items:
+            type: string
+            format: uri
+    ObjectMap:
+      type: object
+      description: |
+        Map of references as a container object for the Api.
+        It can be used to key the URIs with some searchable string key.
+      required: [uri, uris]
       properties:
         uri:
           type: string

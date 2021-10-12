@@ -1,5 +1,6 @@
 package org.smartbit4all.storage.fs;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.smartbit4all.api.invocation.bean.InvocationParameterTemplate;
 import org.smartbit4all.api.invocation.bean.InvocationRequestTemplate;
 import org.smartbit4all.api.storage.bean.ObjectList;
+import org.smartbit4all.api.storage.bean.ObjectMap;
 import org.smartbit4all.api.storage.bean.ObjectReference;
 import org.smartbit4all.api.storage.bean.StorageSettings;
 import org.smartbit4all.core.io.TestFileUtil;
@@ -22,7 +24,6 @@ import org.smartbit4all.domain.data.storage.StorageObject;
 import org.smartbit4all.domain.data.storage.StorageObjectReferenceEntry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(classes = {StorageFSTestConfig.class})
 class StorageFSTest {
@@ -121,9 +122,9 @@ class StorageFSTest {
     String referenceName = "invocation";
     settings.setReference(referenceName, new ObjectReference().uri(invocationUri));
 
-    StorageObject<ObjectList> soMyList = storage.instanceOf(ObjectList.class);
+    StorageObject<ObjectMap> soMyList = storage.instanceOf(ObjectMap.class);
 
-    soMyList.setObject(new ObjectList());
+    soMyList.setObject(new ObjectMap());
 
     storage.save(soMyList);
 

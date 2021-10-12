@@ -23,31 +23,32 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 
 /**
- * The list of references as a container object for the Api.  
+ * Map of references as a container object for the Api. It can be used to key the URIs with some searchable string key. 
  */
-@ApiModel(description = "The list of references as a container object for the Api.  ")
+@ApiModel(description = "Map of references as a container object for the Api. It can be used to key the URIs with some searchable string key. ")
 @JsonPropertyOrder({
-  ObjectList.URI,
-  ObjectList.URIS
+  ObjectMap.URI,
+  ObjectMap.URIS
 })
-@JsonTypeName("ObjectList")
+@JsonTypeName("ObjectMap")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
-public class ObjectList {
+public class ObjectMap {
   public static final String URI = "uri";
   private URI uri;
 
   public static final String URIS = "uris";
-  private List<URI> uris = new ArrayList<>();
+  private Map<String, URI> uris = new HashMap<>();
 
 
-  public ObjectList uri(URI uri) {
+  public ObjectMap uri(URI uri) {
     
     this.uri = uri;
     return this;
@@ -75,14 +76,14 @@ public class ObjectList {
   }
 
 
-  public ObjectList uris(List<URI> uris) {
+  public ObjectMap uris(Map<String, URI> uris) {
     
     this.uris = uris;
     return this;
   }
 
-  public ObjectList addUrisItem(URI urisItem) {
-    this.uris.add(urisItem);
+  public ObjectMap putUrisItem(String key, URI urisItem) {
+    this.uris.put(key, urisItem);
     return this;
   }
 
@@ -96,14 +97,14 @@ public class ObjectList {
   @JsonProperty(URIS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<URI> getUris() {
+  public Map<String, URI> getUris() {
     return uris;
   }
 
 
   @JsonProperty(URIS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setUris(List<URI> uris) {
+  public void setUris(Map<String, URI> uris) {
     this.uris = uris;
   }
 
@@ -116,9 +117,9 @@ public class ObjectList {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    ObjectList objectList = (ObjectList) o;
-    return Objects.equals(this.uri, objectList.uri) &&
-        Objects.equals(this.uris, objectList.uris);
+    ObjectMap objectMap = (ObjectMap) o;
+    return Objects.equals(this.uri, objectMap.uri) &&
+        Objects.equals(this.uris, objectMap.uris);
   }
 
   @Override
@@ -129,7 +130,7 @@ public class ObjectList {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class ObjectList {\n");
+    sb.append("class ObjectMap {\n");
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    uris: ").append(toIndentedString(uris)).append("\n");
     sb.append("}");
