@@ -82,7 +82,11 @@ public class ApplyChangeOperation extends SB4CompositeFunctionImpl<Void, List<Da
             Crud.update(tableData);
           }
         } else if (operation == ChangeOperation.MODIFY) {
-          Crud.update(tableData);
+          UpdateOutput updateOutput = Crud.update(tableData);
+          if (updateOutput.getUpdateCount() != tableData.size()) {
+            // Try to insert instead of update
+            Crud.create(tableData);
+          }
         } else {
           Crud.delete(tableData);
         }

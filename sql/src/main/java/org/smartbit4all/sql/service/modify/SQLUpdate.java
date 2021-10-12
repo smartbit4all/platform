@@ -1,18 +1,16 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
  * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 package org.smartbit4all.sql.service.modify;
 
@@ -25,6 +23,7 @@ import org.smartbit4all.domain.meta.Expression;
 import org.smartbit4all.domain.meta.Expression2Operand;
 import org.smartbit4all.domain.meta.PropertyOwned;
 import org.smartbit4all.domain.service.modify.UpdateImpl;
+import org.smartbit4all.domain.service.modify.UpdateOutput;
 import org.smartbit4all.domain.service.query.Queries;
 import org.smartbit4all.domain.utility.SupportedDatabase;
 import org.smartbit4all.sql.SQLBindValue;
@@ -63,7 +62,7 @@ public class SQLUpdate<E extends EntityDefinition> extends UpdateImpl<E> {
   @Override
   public void execute() throws Exception {
     String schema = Queries.getQueryApi().getSchema(this.entityDef);
-    
+
     // SQLStatementBuilderIF builder = entityDef.context().get(SQLStatementBuilderIF.class);
     SQLStatementBuilderIF builder = new SQLStatementBuilder(SupportedDatabase.ORACLE);
     TableDefinition table = entityDef.tableDefinition();
@@ -96,6 +95,7 @@ public class SQLUpdate<E extends EntityDefinition> extends UpdateImpl<E> {
 
     input.start();
 
+    int updateCount = 0;
 
     while (input.next()) {
       PreparedStatementCreator psc = new SQLPreparedStatementCreator(builder, update);
@@ -109,10 +109,11 @@ public class SQLUpdate<E extends EntityDefinition> extends UpdateImpl<E> {
         exp.getLiteral().setValueUnchecked(input.getIdentifier(i));
       }
 
-      jdbcTemplate.update(psc);
+      updateCount += jdbcTemplate.update(psc);
 
     }
 
+    setOutput(new UpdateOutput(updateCount));
 
     // TODO use jdbcTemplate methods instead of connection!
     // try (Connection connection = jdbcTemplate.getDataSource().getConnection()) {
