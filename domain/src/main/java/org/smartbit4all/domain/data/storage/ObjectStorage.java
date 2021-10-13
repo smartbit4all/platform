@@ -1,8 +1,10 @@
 package org.smartbit4all.domain.data.storage;
 
 import java.net.URI;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import org.smartbit4all.api.storage.bean.ObjectHistoryEntry;
 import org.smartbit4all.core.object.ObjectDefinition;
 
 /**
@@ -100,5 +102,17 @@ public interface ObjectStorage {
    *         If there is more then one default then the application won't start!
    */
   boolean isDefaultStorage();
+
+  /**
+   * This function collects all the versions of an object and constructs the
+   * {@link ObjectHistoryEntry} from the version. It will contains a summary of the data and the
+   * changes come with the new version.
+   * 
+   * @param storage The storage that is requesting the history.
+   * @param uri The uri of the object.
+   * @return The list of history entries. It mustn't be null, all the implementations must return
+   *         {@link Collections#emptyList()} instead of null.
+   */
+  List<ObjectHistoryEntry> loadHistory(Storage storage, URI uri);
 
 }

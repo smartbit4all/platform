@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
@@ -19,6 +20,7 @@ import org.smartbit4all.api.storage.bean.StorageObjectData;
 import org.smartbit4all.api.storage.bean.StorageObjectRelationData;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
+import org.smartbit4all.core.utility.PathUtility;
 import org.smartbit4all.domain.data.storage.StorageObject.StorageObjectOperation;
 
 /**
@@ -62,7 +64,7 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
     this.objectApi = objectApi;
   }
 
-  protected StorageObjectLock acquire(URI objectUri) {
+  protected final StorageObjectLock acquire(URI objectUri) {
     lockMutex.lock();
     StorageObjectLock storageObjectLock;
     try {
@@ -98,17 +100,7 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
 
   @Override
   public Optional<StorageObject<?>> load(Storage storage, URI uri, StorageLoadOption... options) {
-    if (uri == null || uri.getScheme() == null || uri.getScheme().isEmpty()) {
-      return Optional.empty();
-    }
-    String scheme = uri.getScheme();
-    if (scheme == null) {
-      log.debug("Unable to load {} uri, the Storage not found by the scheme", uri);
-      return Optional.empty();
-    }
-
-    // Try to identify the ObjectDefintion by the URI
-    ObjectDefinition<?> objectDefinition = objectApi.definition(uri);
+    ObjectDefinition<?> objectDefinition = getDefinitionFromUri(uri);
     Optional<StorageObject<?>> result = Optional.empty();
     if (objectDefinition != null) {
       Optional<?> load = load(storage, uri, objectDefinition.getClazz(), options);
@@ -117,6 +109,28 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
       }
     }
     return result;
+  }
+
+  /**
+   * Analyze the uri and extract the object definition alias from this. Using the {@link #objectApi}
+   * identifies the {@link ObjectDefinition} belongs to the alias.
+   * 
+   * @param uri The uri of an object.
+   * @return The {@link ObjectDefinition} or null if not found.
+   */
+  protected ObjectDefinition<?> getDefinitionFromUri(URI uri) {
+    if (uri == null || uri.getScheme() == null || uri.getScheme().isEmpty()) {
+      return null;
+    }
+    String scheme = uri.getScheme();
+    if (scheme == null) {
+      log.debug("Unable to load {} uri, the Storage not found by the scheme", uri);
+      return null;
+    }
+
+    // Try to identify the ObjectDefintion by the URI
+    ObjectDefinition<?> objectDefinition = objectApi.definition(uri);
+    return objectDefinition;
   }
 
   @Override
@@ -138,17 +152,42 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
         .collect(Collectors.toList());
   }
 
+  /**
+   * We have this constructor method to avoid having public setters in the {@link StorageObject}.
+   * This can be used by the implementations of the {@link ObjectStorage}.
+   * 
+   * @param <T>
+   * @param storage
+   * @param objectDefinition
+   * @param object
+   * @param data
+   * @return
+   */
   protected <T> StorageObject<T> instanceOf(Storage storage, ObjectDefinition<T> objectDefinition,
-      T object) {
+      T object, StorageObjectData data) {
     StorageObject<T> storageObject = new StorageObject<>(objectDefinition, storage);
     storageObject.setObjectInner(object);
+    storageObject.setVersion(data.getCurrentVersion());
     return storageObject;
   }
 
+  /**
+   * We have this constructor method to avoid having public setters in the {@link StorageObject}.
+   * This can be used by the implementations of the {@link ObjectStorage}.
+   * 
+   * @param <T>
+   * @param storage
+   * @param objectDefinition
+   * @param objectUri
+   * @param data
+   * @return
+   */
   protected <T> StorageObject<T> instanceOf(Storage storage, ObjectDefinition<T> objectDefinition,
-      URI objectUri) {
+      URI objectUri, StorageObjectData data) {
     StorageObject<T> storageObject = new StorageObject<>(objectDefinition, storage);
     storageObject.setUri(objectUri);
+    storageObject.setUuid(UUID.fromString(PathUtility.getLastPath(objectUri.getPath())));
+    storageObject.setVersion(data.getCurrentVersion());
     return storageObject;
   }
 

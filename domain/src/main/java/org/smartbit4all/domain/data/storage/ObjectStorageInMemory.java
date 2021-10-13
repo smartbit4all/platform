@@ -1,9 +1,12 @@
 package org.smartbit4all.domain.data.storage;
 
 import java.net.URI;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import org.smartbit4all.api.storage.bean.ObjectHistoryEntry;
 import org.smartbit4all.api.storage.bean.ObjectReferenceList;
 import org.smartbit4all.core.object.ApiObjectRef;
 import org.smartbit4all.core.object.ObjectApi;
@@ -51,6 +54,11 @@ public class ObjectStorageInMemory extends ObjectStorageImpl {
     @SuppressWarnings("unchecked")
     StorageObject<T> storageObject = (StorageObject<T>) objectsByURI.get(uri);
     return Optional.ofNullable(storageObject);
+  }
+
+  @Override
+  public List<ObjectHistoryEntry> loadHistory(Storage storage, URI uri) {
+    return Collections.emptyList();
   }
 
 }

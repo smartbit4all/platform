@@ -6,10 +6,16 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.binarydata.BinaryData;
+import org.smartbit4all.api.storage.bean.ObjectHistoryEntry;
 import org.smartbit4all.api.storage.bean.ObjectVersion;
 import org.smartbit4all.api.storage.bean.StorageObjectData;
 import org.smartbit4all.api.storage.bean.StorageObjectRelationData;
@@ -23,6 +29,8 @@ import org.smartbit4all.domain.data.storage.StorageLoadOption;
 import org.smartbit4all.domain.data.storage.StorageObject;
 import org.smartbit4all.domain.data.storage.StorageObject.StorageObjectOperation;
 import org.smartbit4all.domain.data.storage.StorageObjectLock;
+import org.smartbit4all.domain.data.storage.StorageObjectPhysicalLock;
+import org.smartbit4all.domain.data.storage.StorageUtil;
 
 public class StorageFS extends ObjectStorageImpl {
 
@@ -38,8 +46,14 @@ public class StorageFS extends ObjectStorageImpl {
    */
   private static final String storedObjectFileExtension = ".object";
 
+  /**
+   * The relation contents are stored in a file with this extension.
+   */
   private static final String storedObjectRelationFileExtension = ".relations";
 
+  /**
+   * The lock file postfix.
+   */
   private static final String storedObjectLockFileExtension = ".lock";
 
   private ObjectDefinition<StorageObjectData> storageObjectDataDef;
@@ -70,7 +84,8 @@ public class StorageFS extends ObjectStorageImpl {
   }
 
   @Override
-  public URI save(StorageObject<?> object) {
+  protected Supplier<StorageObjectPhysicalLock> getAcquire() {
+    // TODO Implement the locking of the files to have cluster safe physical lock fro the objects.
     // // Lock the original object file if exists.
     // File objectLockFile = getObjectLockFile(object);
     // if (objectLockFile.exists()) {
@@ -83,6 +98,16 @@ public class StorageFS extends ObjectStorageImpl {
     // } else {
     // // The given object doesn't exist so we can write the temp file and move it at the end.
     // }
+    return super.getAcquire();
+  }
+
+  @Override
+  protected Consumer<StorageObjectPhysicalLock> getReleaser() {
+    return super.getReleaser();
+  }
+
+  @Override
+  public URI save(StorageObject<?> object) {
 
     StorageObjectLock storageObjectLock = acquire(object.getUri());
     try {
@@ -97,9 +122,22 @@ public class StorageFS extends ObjectStorageImpl {
         // This is an existing data file.
         BinaryData dataFile = new BinaryData(objectDataFile, false);
         Optional<StorageObjectData> optStorageObject = storageObjectDataDef.deserialize(dataFile);
-        storageObjectData = optStorageObject.get();
         // Extract the current version and create the new one based on this.
+        storageObjectData = optStorageObject.get();
         currentVersion = storageObjectData.getCurrentVersion();
+        // We should check if the current version is the same.
+        if (object.getVersion() != null
+            && !StorageUtil.equalsVersion(object.getVersion(), currentVersion)) {
+          if (object.isStrictVersionCheck()) {
+            throw new IllegalStateException("Unable to save " + object.getUri()
+                + " object because it has been modified in the meantime from " + object.getVersion()
+                + " --> " + currentVersion + " version");
+          } else {
+            log.warn(
+                "The save of the {} object is overwriting the {} version with the modification of {} eralier version. It could lead loss of modification data!",
+                object.getUri(), currentVersion, object.getVersion());
+          }
+        }
         // Increment the serial number. The given object is locked in the meantime so there is no
         // need to worry about the parallel modification.
         newVersion = new ObjectVersion().serialNo(currentVersion.getSerialNo() + 1);
@@ -237,9 +275,9 @@ public class StorageFS extends ObjectStorageImpl {
       BinaryData versionBinaryData = new BinaryData(objectVersionFile, false);
 
       T object = definition.deserialize(versionBinaryData).orElse(null);
-      storageObject = instanceOf(storage, definition, object);
+      storageObject = instanceOf(storage, definition, object, storageObjectData);
     } else {
-      storageObject = instanceOf(storage, definition, uri);
+      storageObject = instanceOf(storage, definition, uri, storageObjectData);
     }
 
     if (storageObjectData.getCurrentVersion().getSerialNoRelation() != null) {
@@ -261,6 +299,46 @@ public class StorageFS extends ObjectStorageImpl {
     }
 
     return Optional.of(storageObject);
+  }
+
+  @Override
+  public List<ObjectHistoryEntry> loadHistory(Storage storage, URI uri) {
+    ObjectDefinition<?> definition = getDefinitionFromUri(uri);
+    if (definition == null) {
+      return Collections.emptyList();
+    }
+    File storageObjectDataFile = getDataFileByUri(uri, storedObjectFileExtension);
+    if (!storageObjectDataFile.exists()) {
+      return Collections.emptyList();
+    }
+    BinaryData storageObjectBinaryData = new BinaryData(storageObjectDataFile, false);
+    Optional<StorageObjectData> optObject =
+        storageObjectDataDef.deserialize(storageObjectBinaryData);
+    if (!optObject.isPresent()) {
+      return Collections.emptyList();
+    }
+    StorageObjectData storageObjectData = optObject.get();
+    // Now we have the object data. We iterate the versions of the object and constructs the
+    // entries.
+    List<ObjectVersion> versions = storageObjectData.getVersions();
+    if (versions == null || versions.isEmpty()) {
+      return Collections.emptyList();
+    }
+    List<ObjectHistoryEntry> result = new ArrayList<>();
+    int lastDataVersion = -1;
+    for (ObjectVersion objectVersion : versions) {
+      if (lastDataVersion != objectVersion.getSerialNoData()) {
+        lastDataVersion = objectVersion.getSerialNoData();
+        result
+            .add(new ObjectHistoryEntry().version(objectVersion)
+                .summary(objectVersion.getSerialNo() + StringConstant.COMMA_SPACE
+                    + objectVersion.getCreatedAt() + StringConstant.COMMA_SPACE
+                    + objectVersion.getCreatedBy())
+                .objectType(definition.getAlias()).versionUri(URI.create(
+                    uri.toString() + StringConstant.HASH + objectVersion.getSerialNoData())));
+      }
+    }
+    return result;
   }
 
   /**

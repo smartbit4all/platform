@@ -1,10 +1,13 @@
 package org.smartbit4all.sql.storage;
 
 import java.net.URI;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.binarydata.BinaryData;
+import org.smartbit4all.api.storage.bean.ObjectHistoryEntry;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.smartbit4all.domain.data.storage.Storage;
@@ -114,6 +117,11 @@ public class StorageSQL extends ObjectStorageImpl {
       StorageLoadOption... options) {
     // TODO Auto-generated method stub
     return null;
+  }
+
+  @Override
+  public List<ObjectHistoryEntry> loadHistory(Storage storage, URI uri) {
+    return Collections.emptyList();
   }
 
   // @Override
