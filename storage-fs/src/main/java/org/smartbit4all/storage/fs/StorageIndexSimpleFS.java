@@ -35,11 +35,9 @@ public class StorageIndexSimpleFS<T> implements StorageIndexer<T> {
   private Storage storage;
 
   public StorageIndexSimpleFS(
-      File rootFolder,
-      Storage storage) {
+      File rootFolder) {
 
     this.rootFolder = rootFolder;
-    this.storage = storage;
   }
 
   @Override
@@ -179,6 +177,10 @@ public class StorageIndexSimpleFS<T> implements StorageIndexer<T> {
       // log.error("Error while reading link file", e);
       throw e;
     }
+  }
+
+  public void setStorage(Storage storage) {
+    this.storage = storage;
   }
 
 }

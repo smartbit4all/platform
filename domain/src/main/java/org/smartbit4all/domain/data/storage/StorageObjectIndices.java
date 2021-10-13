@@ -11,14 +11,28 @@ import org.smartbit4all.domain.data.storage.index.StorageIndex;
  */
 public class StorageObjectIndices<T> {
 
-  List<StorageIndex<T>> indexList = new ArrayList<>();
+  private final String scheme;
 
-  protected final List<StorageIndex<T>> get() {
+  private final Class<T> clazz;
+
+  final List<StorageIndex<T>> indexList = new ArrayList<>();
+
+  public StorageObjectIndices(String scheme, Class<T> clazz) {
+    super();
+    this.scheme = scheme;
+    this.clazz = clazz;
+  }
+
+  public final List<StorageIndex<T>> get() {
     return indexList;
   }
 
-  public boolean add(StorageIndex<T> index) {
-    return indexList.add(index);
+  public String getScheme() {
+    return scheme;
+  }
+
+  public Class<T> getClazz() {
+    return clazz;
   }
 
 }

@@ -54,6 +54,8 @@ public class Storage {
    */
   private Map<Class<?>, StorageObjectIndices<?>> indexes = new HashMap<>();
 
+  private boolean indexInitiated = false;
+
   /**
    * The scheme managed by the given logical storage. This is used as naming of the
    */
@@ -353,6 +355,14 @@ public class Storage {
       indexes = new HashMap<>();
     }
     indexes.put(clazz, index);
+  }
+
+  boolean isIndexInitiated() {
+    return indexInitiated;
+  }
+
+  void setIndexInitiated(boolean indexInitiated) {
+    this.indexInitiated = indexInitiated;
   }
 
 }
