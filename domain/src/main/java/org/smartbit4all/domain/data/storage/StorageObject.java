@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.smartbit4all.api.storage.bean.ObjectReference;
+import org.smartbit4all.api.storage.bean.ObjectVersion;
+import org.smartbit4all.api.storage.bean.StorageObjectData;
 import org.smartbit4all.core.object.ObjectDefinition;
 
 /**
@@ -43,6 +45,9 @@ public final class StorageObject<T> {
    */
   private UUID uuid;
 
+  /**
+   * The {@link ObjectDefinition} of the
+   */
   private final ObjectDefinition<T> definition;
 
   /**
@@ -64,6 +69,18 @@ public final class StorageObject<T> {
    * construction.
    */
   private final WeakReference<Storage> storageRef;
+
+  /**
+   * The version of the object. If it's null then we don't know the version because it can be a new
+   */
+  private ObjectVersion version;
+
+  /**
+   * If it's true then the save will check if the current version matched with version is the same.
+   * If it differs then the save throws an exception. We have to reload the object and try again or
+   * we must setup a lock to avoid parallel modification.
+   */
+  private boolean strictVersionCheck = false;
 
   public enum StorageObjectOperation {
 
@@ -134,11 +151,23 @@ public final class StorageObject<T> {
     uri = definition.getUri(object);
   }
 
+  /**
+   * Set the object. The object uri will be set to the URI of this {@link StorageObject}! From that
+   * point we must use this object as a contained part of the {@link StorageObject}.
+   * 
+   * @param object
+   */
   public final void setObject(T object) {
     this.object = object;
     definition.setUri(object, uri);
   }
 
+  /**
+   * Set the object. The object uri will be set to the URI of this {@link StorageObject}! From that
+   * point we must use this object as a contained part of the {@link StorageObject}.
+   * 
+   * @param object
+   */
   @SuppressWarnings("unchecked")
   final void setObjectObj(Object object) {
     this.object = (T) object;
@@ -156,6 +185,8 @@ public final class StorageObject<T> {
     StorageObject<T> result = new StorageObject<>(definition, storageRef.get());
     result.setObject(object);
     result.setUri(uri);
+    result.setUuid(uuid);
+    result.setVersion(version);
     // Deep copy of the relations
     result.collections =
         collections != null
@@ -279,6 +310,30 @@ public final class StorageObject<T> {
    */
   public final Storage getStorage() {
     return storageRef.get();
+  }
+
+  /**
+   * The version of the {@link StorageObject} that was the
+   * {@link StorageObjectData#getCurrentVersion()} when we loaded the object. This version can be
+   * used to manage the optimistic lock for example. During the save we can check if we have the
+   * same current version. Else the object has been changed in the meantime.
+   * 
+   * @return
+   */
+  public final ObjectVersion getVersion() {
+    return version;
+  }
+
+  final void setVersion(ObjectVersion version) {
+    this.version = version;
+  }
+
+  public final boolean isStrictVersionCheck() {
+    return strictVersionCheck;
+  }
+
+  public final void setStrictVersionCheck(boolean strictVersionCheck) {
+    this.strictVersionCheck = strictVersionCheck;
   }
 
 }

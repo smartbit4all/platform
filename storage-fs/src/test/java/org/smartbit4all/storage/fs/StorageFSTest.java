@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.api.invocation.bean.InvocationParameterTemplate;
 import org.smartbit4all.api.invocation.bean.InvocationRequestTemplate;
+import org.smartbit4all.api.storage.bean.ObjectHistoryEntry;
 import org.smartbit4all.api.storage.bean.ObjectMap;
 import org.smartbit4all.api.storage.bean.ObjectReference;
 import org.smartbit4all.api.storage.bean.StorageSettings;
@@ -23,6 +24,7 @@ import org.smartbit4all.domain.data.storage.StorageObject;
 import org.smartbit4all.domain.data.storage.StorageObjectReferenceEntry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(classes = {StorageFSTestConfig.class})
 class StorageFSTest {
@@ -96,7 +98,85 @@ class StorageFSTest {
   }
 
   @Test
-  void settiongsTest() throws Exception {
+  void historyTest() throws Exception {
+    long startCreationTime = System.currentTimeMillis();
+    Storage storage = storageApi.get(StorageFSTestConfig.TESTSCHEME);
+
+    StorageObject<FSTestBean> storageObject = storage.instanceOf(FSTestBean.class);
+
+    storageObject.setObject(new FSTestBean("v0"));
+
+    URI uri = storage.save(storageObject);
+
+    int versionCount = 100;
+    // Creating more versions.
+
+    long saveTimes = 0;
+
+    for (int i = 1; i < versionCount; i++) {
+
+      Optional<StorageObject<FSTestBean>> optLoaded = storage.load(uri, FSTestBean.class);
+      StorageObject<FSTestBean> object = optLoaded.get();
+      object.getObject().setTitle("v" + i);
+      long startSave = System.currentTimeMillis();
+      storage.save(object);
+      saveTimes += System.currentTimeMillis() - startSave;
+    }
+
+    long endCreationTime = System.currentTimeMillis();
+
+    List<ObjectHistoryEntry> loadHistory = storage.loadHistory(uri);
+
+    long endTime = System.currentTimeMillis();
+
+    long totalCreationTime = endCreationTime - startCreationTime;
+
+    System.out.println("Total creation time: " + (totalCreationTime) + ", Total save time: "
+        + saveTimes + " , creationOneObject: "
+        + (totalCreationTime / versionCount) + ", save one object: " + (saveTimes / versionCount)
+        + ", history retrieval time: "
+        + (endTime - endCreationTime));
+
+    assertEquals(versionCount, loadHistory.size());
+
+    // assertFalse(loaded.isPresent());
+  }
+
+  @Test
+  void optimisticLockTest() throws Exception {
+    Storage storage = storageApi.get(StorageFSTestConfig.TESTSCHEME);
+
+    URI uri;
+    {
+      StorageObject<FSTestBean> storageObject = storage.instanceOf(FSTestBean.class);
+
+      storageObject.setObject(new FSTestBean("LockObject"));
+
+      uri = storage.save(storageObject);
+    }
+
+    // Load the same version and modify the first one.
+    StorageObject<FSTestBean> storageObject1 = storage.load(uri, FSTestBean.class).get();
+
+    StorageObject<FSTestBean> storageObject2 = storage.load(uri, FSTestBean.class).get();
+
+    storageObject1.getObject().setTitle("LockObject-modified");
+
+    storage.save(storageObject1);
+
+    // Now try to modify the object 2 and set the strict version control.
+
+    storageObject2.getObject().setTitle("LockObject-paralell-modified");
+    storageObject2.setStrictVersionCheck(true);
+
+    Assertions.assertThrows(IllegalStateException.class, () -> {
+      storage.save(storageObject2);
+    });
+
+  }
+
+  @Test
+  void settingsTest() throws Exception {
     Storage storage = storageApi.get(StorageFSTestConfig.TESTSCHEME);
 
     StorageObject<FSTestBean> storageObject = storage.instanceOf(FSTestBean.class);

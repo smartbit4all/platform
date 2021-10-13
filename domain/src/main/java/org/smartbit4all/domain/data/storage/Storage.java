@@ -13,6 +13,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.storage.bean.ObjectHistoryEntry;
 import org.smartbit4all.api.storage.bean.StorageSettings;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
@@ -226,6 +227,10 @@ public class Storage {
    */
   public <T> List<T> read(List<URI> uris, Class<T> clazz) {
     return objectStorage.read(this, uris, clazz);
+  }
+
+  public List<ObjectHistoryEntry> loadHistory(URI uri) {
+    return objectStorage.loadHistory(this, uri);
   }
 
 
