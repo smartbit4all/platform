@@ -460,6 +460,12 @@ public class DynamicFilterViewModelImpl extends ObjectEditingImpl
   public void clearFilters() {
     dynamicFilterModel.getRoot().getGroups().clear();
     dynamicFilterModel.getRoot().getFilters().clear();
+    // ---- TODO these should be handled by subscriptions to the previous two clears?!
+    dynamicFilterModel.getSelectors().forEach(gm -> gm.setCurrentGroupId(null));
+    dynamicFilterModel.getSelectors().stream()
+        .flatMap(gm -> gm.getFilters().stream())
+        .forEach(f -> f.setEnabled(true));
+    // ----
     dynamicFilterModelObservable.notifyListeners();
   }
 }
