@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.api.apiregister.bean.ApiInfo;
+import org.smartbit4all.api.invocation.Invocations;
 import org.smartbit4all.api.invocation.model.InvocationParameterData;
 import org.smartbit4all.api.invocation.model.InvocationParameterKind;
 import org.smartbit4all.api.invocation.model.InvocationRequestData;
@@ -61,7 +62,7 @@ public class InvocationApiRestServerTest {
     ApiInfo apiInfo = new ApiInfo()
         .apiIdentifier("testApi")
         .interfaceQualifiedName(TestApiInterface.class.getName())
-        .protocol("local")
+        .protocol(Invocations.LOCAL)
         .putParametersItem(LocalApiInstantiator.LOCAL_API_IMPL, testApiImplIdentifier);
 
     String apiInfoString = objectMapper.writeValueAsString(apiInfo);
