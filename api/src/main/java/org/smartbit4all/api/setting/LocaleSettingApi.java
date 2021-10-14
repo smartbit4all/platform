@@ -77,8 +77,13 @@ public final class LocaleSettingApi implements InitializingBean {
           LocaleResource resourceAnnotation =
               localeOption.getClass().getAnnotation(LocaleResource.class);
           // Load the built-in setting from the class path.
-          for (int i = 0; i < resourceAnnotation.value().length; i++) {
-            // storageLocale.load(UriUtils.formatUriHost(source) resourceAnnotation.value()[i]);
+
+          if (resourceAnnotation != null) {
+            for (int i = 0; i < resourceAnnotation.value().length; i++) {
+              // storageLocale.load(UriUtils.formatUriHost(source) resourceAnnotation.value()[i]);
+            }
+          } else {
+            log.error("ResourceAnnotation for LocaleOption is NULL: " + localeOption);
           }
         }
       }
