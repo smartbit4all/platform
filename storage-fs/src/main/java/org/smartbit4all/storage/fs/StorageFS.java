@@ -264,13 +264,14 @@ public class StorageFS extends ObjectStorageImpl {
     }
     StorageObjectData storageObjectData = optObject.get();
     StorageObject<T> storageObject;
+    ObjectVersion relatedVersion = getVersionByUri(uri, storageObjectData);
     boolean skipData = StorageLoadOption.checkSkipData(options);
-    if (storageObjectData.getCurrentVersion().getSerialNoData() != null
+    if (relatedVersion.getSerialNoData() != null
         && !skipData) {
 
       File objectVersionFile = getObjectVersionFile(
           storageObjectDataFile,
-          storageObjectData.getCurrentVersion().getSerialNoData());
+          relatedVersion.getSerialNoData());
 
       BinaryData versionBinaryData = new BinaryData(objectVersionFile, false);
 
@@ -280,7 +281,7 @@ public class StorageFS extends ObjectStorageImpl {
       storageObject = instanceOf(storage, definition, uri, storageObjectData);
     }
 
-    if (storageObjectData.getCurrentVersion().getSerialNoRelation() != null) {
+    if (relatedVersion.getSerialNoRelation() != null) {
       File relationVersionFile =
           getObjectRelationVersionFile(storageObjectDataFile,
               storageObjectData.getCurrentVersion().getSerialNoRelation());

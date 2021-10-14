@@ -1,6 +1,5 @@
 package org.smartbit4all.storage.fs;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
@@ -17,6 +16,7 @@ import org.smartbit4all.api.storage.bean.ObjectMap;
 import org.smartbit4all.api.storage.bean.ObjectReference;
 import org.smartbit4all.api.storage.bean.StorageSettings;
 import org.smartbit4all.core.io.TestFileUtil;
+import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageLoadOption;
@@ -137,8 +137,28 @@ class StorageFSTest {
         + ", history retrieval time: "
         + (endTime - endCreationTime));
 
+    Assertions.assertTrue(totalCreationTime < 600);
+
     assertEquals(versionCount, loadHistory.size());
 
+    // Load a specific version
+
+    long startLoad = System.currentTimeMillis();
+
+    for (int i = 0; i < versionCount; i++) {
+
+      Optional<StorageObject<FSTestBean>> optLoaded = storage
+          .load(URI.create(uri.toString() + StringConstant.HASH + i), FSTestBean.class);
+      StorageObject<FSTestBean> object = optLoaded.get();
+      String title = object.getObject().getTitle();
+      assertEquals("v" + i, title);
+
+    }
+
+    long endLoad = System.currentTimeMillis();
+
+    System.out.println("Total load time: " + (endLoad - startLoad) + ", load one object: "
+        + (endLoad - startLoad) / versionCount);
     // assertFalse(loaded.isPresent());
   }
 

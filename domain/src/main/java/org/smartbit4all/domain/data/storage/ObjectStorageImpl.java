@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.storage.bean.ObjectReference;
 import org.smartbit4all.api.storage.bean.ObjectReferenceList;
+import org.smartbit4all.api.storage.bean.ObjectVersion;
 import org.smartbit4all.api.storage.bean.StorageObjectData;
 import org.smartbit4all.api.storage.bean.StorageObjectRelationData;
 import org.smartbit4all.core.object.ObjectApi;
@@ -295,6 +296,33 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
     if (object != null) {
       object.setOperation(operation);
     }
+  }
+
+  /**
+   * Analyze the uri and the storageObj. If the uri refers to a given version then it returns the
+   * given version else the {@link StorageObjectData#getCurrentVersion()}.
+   * 
+   * @param uri The uri.
+   * @param storageObjData The storageObject data bean.
+   * @return The related {@link ObjectVersion} from the storage object.
+   */
+  protected final ObjectVersion getVersionByUri(URI uri, StorageObjectData storageObjData) {
+    if (uri != null) {
+      String versionSerialNoString = uri.getFragment();
+      if (versionSerialNoString != null) {
+        try {
+          int versionSerialNo = Integer.parseInt(versionSerialNoString);
+          List<ObjectVersion> versions = storageObjData.getVersions();
+          if (versions == null || versionSerialNo < 0 || versionSerialNo >= versions.size()) {
+            throw new IllegalArgumentException("Invalid version number in " + uri + " object uri.");
+          }
+          return versions.get(versionSerialNo);
+        } catch (NumberFormatException e) {
+          throw new IllegalArgumentException("Bad version format in " + uri + " object uri.", e);
+        }
+      }
+    }
+    return storageObjData.getCurrentVersion();
   }
 
 }
