@@ -28,13 +28,13 @@ public final class ObjectDefinition<T> {
   private Function<T, URI> uriGetter;
 
   /**
-   * The UUID property of the object. The UUID is a unique identifier that technically unique but
+   * The ID property of the object. The ID is a unique identifier that technically unique but
    * doesn't contain the location info. If an object has URI also then it can be used as root object
    * in a Storage.
    */
-  private BiConsumer<T, URI> uuidSetter;
+  private BiConsumer<T, String> idSetter;
 
-  private Function<T, URI> uuidGetter;
+  private Function<T, String> idGetter;
 
   /**
    * The lower case version of the class name or a configured alias.
@@ -109,6 +109,16 @@ public final class ObjectDefinition<T> {
     }
   }
 
+  public String getId(T obj) {
+    return obj != null ? idGetter.apply(obj) : null;
+  }
+
+  public void setId(T obj, String uri) {
+    if (obj != null) {
+      idSetter.accept(obj, uri);
+    }
+  }
+
   public final String getPreferredSerializerName() {
     return preferredSerializerName;
   }
@@ -125,28 +135,28 @@ public final class ObjectDefinition<T> {
     return defaultSerializer.deserialize(data, clazz);
   }
 
-  public final BiConsumer<T, URI> getUuidSetter() {
-    return uuidSetter;
+  public final BiConsumer<T, String> getIdSetter() {
+    return idSetter;
   }
 
-  public final void setUuidSetter(BiConsumer<T, URI> uuidSetter) {
-    this.uuidSetter = uuidSetter;
+  public final void setIdSetter(BiConsumer<T, String> idSetter) {
+    this.idSetter = idSetter;
   }
 
-  public final Function<T, URI> getUuidGetter() {
-    return uuidGetter;
+  public final Function<T, String> getIdGetter() {
+    return idGetter;
   }
 
-  public final void setUuidGetter(Function<T, URI> uuidGetter) {
-    this.uuidGetter = uuidGetter;
+  public final void setIdGetter(Function<T, String> idGetter) {
+    this.idGetter = idGetter;
   }
 
   public final boolean hasUri() {
     return uriGetter != null && uriSetter != null;
   }
 
-  public final boolean hasUuid() {
-    return uuidGetter != null && uuidSetter != null;
+  public final boolean hasId() {
+    return idGetter != null && idSetter != null;
   }
 
 }

@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 import org.smartbit4all.core.utility.PathUtility;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +20,7 @@ public class ObjectApiImpl implements ObjectApi, InitializingBean {
 
   private static final String URI = "URI";
 
-  private static final String UUID = "UUID";
+  private static final String ID = "ID";
 
   /**
    * We need at least one serializer to be able to start the module.
@@ -103,8 +105,8 @@ public class ObjectApiImpl implements ObjectApi, InitializingBean {
         if (objectDefinition.getUriGetter() == null || objectDefinition.getUriSetter() == null) {
           setupUri(objectDefinition);
         }
-        if (objectDefinition.getUuidGetter() == null || objectDefinition.getUuidSetter() == null) {
-          setupUuid(objectDefinition);
+        if (objectDefinition.getIdGetter() == null || objectDefinition.getIdSetter() == null) {
+          setupId(objectDefinition);
         }
         if (objectDefinition.getAlias() == null) {
           objectDefinition.setAlias(getDefaultAlias(objectDefinition.getClazz()));
@@ -139,9 +141,9 @@ public class ObjectApiImpl implements ObjectApi, InitializingBean {
     ObjectDefinition<T> result = null;
     result = (ObjectDefinition<T>) definitionsByClass.get(clazz);
     if (result == null) {
-      result = new ObjectDefinition<T>(clazz);
+      result = new ObjectDefinition<>(clazz);
       setupUri(result);
-      setupUuid(result);
+      setupId(result);
       result.setAlias(getDefaultAlias(clazz));
       result.setDefaultSerializer(defaultSerializer);
     }
@@ -152,61 +154,56 @@ public class ObjectApiImpl implements ObjectApi, InitializingBean {
     return clazz.getName().replace('.', '_');
   }
 
+  @SuppressWarnings("unchecked")
   private <T> void setupUri(ObjectDefinition<T> result) {
-    BeanMeta beanMeta = meta(result.getClazz());
-    // The definition was not found in the context. We need to analyze the bean by reflection.
-    PropertyMeta uriMeta = beanMeta.getProperties().get(URI);
-    // The uri is not mandatory at this level.
-    // if (uriMeta == null) {
-    // throw new IllegalArgumentException(
-    // "Unable to use the " + result.getClazz()
-    // + " as domain object because the lack of URI property!");
-    // }
-    if (uriMeta != null) {
-      result.setUriGetter((o) -> {
-        try {
-          return (URI) uriMeta.getGetter().invoke(o);
-        } catch (Exception e) {
-          throw new IllegalArgumentException(
-              "Unable to get the URI property of the " + o + " (" + result.getClazz()
-                  + ") domain object.");
-        }
-      });
-      result.setUriSetter((o, u) -> {
-        try {
-          uriMeta.getSetter().invoke(o, u);
-        } catch (Exception e) {
-          throw new IllegalArgumentException(
-              "Unable to set the URI property of the " + o + " (" + result.getClazz()
-                  + ") domain object.");
-        }
-      });
-    }
+    setupObjectProperty(result, URI, ObjectDefinition::setUriGetter,
+        ObjectDefinition::setUriSetter);
   }
 
-  private <T> void setupUuid(ObjectDefinition<T> result) {
+  @SuppressWarnings("unchecked")
+  private <T> void setupId(ObjectDefinition<T> result) {
+    setupObjectProperty(result, ID, ObjectDefinition::setIdGetter,
+        ObjectDefinition::setIdSetter);
+  }
+
+  @SuppressWarnings("rawtypes")
+  private <T> void setupObjectProperty(ObjectDefinition<T> result, String propertyName,
+      BiConsumer<ObjectDefinition, Function<T, ?>> getterSetter,
+      BiConsumer<ObjectDefinition, BiConsumer<T, ?>> setterSetter) {
+    setupObjectProperty(result, propertyName, getterSetter, setterSetter, false);
+  }
+
+  @SuppressWarnings("rawtypes")
+  private <T> void setupObjectProperty(ObjectDefinition<T> result, String propertyName,
+      BiConsumer<ObjectDefinition, Function<T, ?>> getterSetter,
+      BiConsumer<ObjectDefinition, BiConsumer<T, ?>> setterSetter,
+      boolean isMandatory) {
     BeanMeta beanMeta = meta(result.getClazz());
     // The definition was not found in the context. We need to analyze the bean by reflection.
-    PropertyMeta uuidMeta = beanMeta.getProperties().get(UUID);
-    if (uuidMeta != null) {
-      result.setUriGetter((o) -> {
+    PropertyMeta propertyMeta = beanMeta.getProperties().get(propertyName);
+    if (propertyMeta != null) {
+      getterSetter.accept(result, (o) -> {
         try {
-          return (URI) uuidMeta.getGetter().invoke(o);
+          return propertyMeta.getGetter().invoke(o);
         } catch (Exception e) {
           throw new IllegalArgumentException(
-              "Unable to get the URI property of the " + o + " (" + result.getClazz()
-                  + ") domain object.");
+              "Unable to get the " + propertyName + " property of the " + o + " ("
+                  + result.getClazz() + ") domain object.");
         }
       });
-      result.setUriSetter((o, u) -> {
+      setterSetter.accept(result, (o, u) -> {
         try {
-          uuidMeta.getSetter().invoke(o, u);
+          propertyMeta.getSetter().invoke(o, u);
         } catch (Exception e) {
           throw new IllegalArgumentException(
-              "Unable to set the URI property of the " + o + " (" + result.getClazz()
-                  + ") domain object.");
+              "Unable to set the " + propertyName + " property of the " + o + " ("
+                  + result.getClazz() + ") domain object.");
         }
       });
+    } else if (isMandatory) {
+      throw new IllegalArgumentException(
+          "Unable to use the " + result.getClazz()
+              + " as domain object because the lack of URI property!");
     }
   }
 

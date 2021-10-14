@@ -100,6 +100,17 @@ public class ObjectChange {
     return operation;
   }
 
+  public final boolean hasChange() {
+    // It is called recursively because a middle node can has refs or collections with no change atm
+    return !properties.isEmpty()
+        || references.stream()
+            .anyMatch(oc -> oc.getChangedReference().hasChange())
+        || collections.stream()
+            .flatMap(c -> c.getChanges().stream())
+            .anyMatch(oc -> oc.hasChange());
+
+  }
+
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();

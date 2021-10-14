@@ -1,18 +1,16 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
  * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 package org.smartbit4all.domain.data;
 
@@ -155,12 +153,12 @@ public final class TableData<E extends EntityDefinition> {
    */
   public <T> List<T> values(Property<T> property) {
     DataColumn<T> column = getColumn(property);
-    
+
     Assert.notNull(column, "No column found for the property in the table data");
-    
+
     return values(column);
   }
-  
+
   /**
    * The values from the given column in an ordered list.
    * 
@@ -375,6 +373,7 @@ public final class TableData<E extends EntityDefinition> {
     // a new owned column will be added.
     dataColumn = new DataColumnOwned<>(property);
     columnMap.put(property.getName(), dataColumn);
+    dataColumn.ensureCapacity(rowModel.rows().size());
     return dataColumn;
   }
 

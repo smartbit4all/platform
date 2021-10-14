@@ -316,18 +316,12 @@ public class ApiObjectsTest {
         + "Name: (bean2 referred by wrapper->referred name by wrapper)" + br
         + "Details.collection:" + br
         + "Details.item - {" + br
-        + "DELETED" + br
+        + "MODIFIED" + br
+        + "Name: (new item 1->referredDetailBean - name 1)" + br
         + "}" + br
         + "Details.item - {" + br
-        + "DELETED" + br
-        + "}" + br
-        + "Details.item - {" + br
-        + "NEW" + br
-        + "Name: (null->referredDetailBean - name 1)" + br
-        + "}" + br
-        + "Details.item - {" + br
-        + "NEW" + br
-        + "Name: (null->referredDetailBean - name 2)" + br
+        + "MODIFIED" + br
+        + "Name: (new item 2->referredDetailBean - name 2)" + br
         + "}" + br
         + "Details.item - {" + br
         + "NEW" + br

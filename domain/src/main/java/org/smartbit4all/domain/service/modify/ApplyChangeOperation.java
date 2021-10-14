@@ -2,11 +2,15 @@ package org.smartbit4all.domain.service.modify;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartbit4all.core.SB4CompositeFunctionImpl;
 import org.smartbit4all.core.SB4FunctionImpl;
+import org.smartbit4all.domain.data.DataColumn;
 import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.meta.Property;
+import org.smartbit4all.domain.meta.PropertySet;
 import org.smartbit4all.domain.utility.crud.Crud;
 
 /**
@@ -15,6 +19,8 @@ import org.smartbit4all.domain.utility.crud.Crud;
  * @author Peter Boros
  */
 public class ApplyChangeOperation extends SB4CompositeFunctionImpl<Void, List<DataRow>> {
+
+  private static final Logger log = LoggerFactory.getLogger(ApplyChangeOperation.class);
 
   /**
    * The {@link TableData} that contains the data for this operation. This table data will be
@@ -79,9 +85,15 @@ public class ApplyChangeOperation extends SB4CompositeFunctionImpl<Void, List<Da
           } catch (Exception e) {
             // Not too fail safe but we believe if we have have exception during the insert then we
             // try to update instead.
+            log.info("Crud.create had exception during applyChange! Fallback to Crud.update...",
+                e);
             Crud.update(tableData);
           }
         } else if (operation == ChangeOperation.MODIFY) {
+          if (!isTableDataValid(tableData)) {
+            // FIXME it wont be
+            return;
+          }
           UpdateOutput updateOutput = Crud.update(tableData);
           if (updateOutput.getUpdateCount() != tableData.size()) {
             // Try to insert instead of update
@@ -92,7 +104,21 @@ public class ApplyChangeOperation extends SB4CompositeFunctionImpl<Void, List<Da
         }
       }
 
+
     });
+  }
+
+  /**
+   * The {@link TableData} is valid only if there is at least one column that is not a primary key.
+   */
+  private boolean isTableDataValid(TableData<?> tableData) {
+    PropertySet primarykeydef = tableData.entity().PRIMARYKEYDEF();
+    for (DataColumn<?> dataColumn : tableData.columns()) {
+      if (!primarykeydef.contains(dataColumn.getProperty())) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**
