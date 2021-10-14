@@ -18,7 +18,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import org.slf4j.Logger;
@@ -135,7 +134,7 @@ public class BinaryData {
   }
 
 
-  public static class AutoCloseInputStream extends InputStream {
+  public static final class AutoCloseInputStream extends InputStream {
 
     private InputStream is = null;
 
@@ -144,12 +143,12 @@ public class BinaryData {
       this.is = is;
     }
 
-    public InputStream getInnerStream() {
+    public final InputStream getInnerStream() {
       return is;
     }
 
     @Override
-    public int read() throws IOException {
+    public final int read() throws IOException {
       if (is == null) {
         return -1;
       }
@@ -162,12 +161,38 @@ public class BinaryData {
     }
 
     @Override
-    public int available() throws IOException {
+    public final int read(byte[] b) throws IOException {
+      if (is == null) {
+        return -1;
+      }
+      int result = is.read(b);
+      if (result == -1) {
+        is.close();
+        is = null;
+      }
+      return result;
+    }
+
+    @Override
+    public final int read(byte[] b, int off, int len) throws IOException {
+      if (is == null) {
+        return -1;
+      }
+      int result = is.read(b, off, len);
+      if (result == -1) {
+        is.close();
+        is = null;
+      }
+      return result;
+    }
+
+    @Override
+    public final int available() throws IOException {
       return is != null ? is.available() : 0;
     }
 
     @Override
-    public void close() throws IOException {
+    public final void close() throws IOException {
       if (is != null) {
         is.close();
         is = null;
@@ -182,7 +207,7 @@ public class BinaryData {
     }
 
     @Override
-    public boolean markSupported() {
+    public final boolean markSupported() {
       return is != null ? is.markSupported() : false;
     }
 
@@ -208,7 +233,9 @@ public class BinaryData {
     } else {
       try {
         return new AutoCloseInputStream(new FileInputStream(dataFile));
-      } catch (FileNotFoundException e) {
+        // return new AutoCloseInputStream(Files.newInputStream(Paths.get(dataFile.toURI())));
+        // return new FileInputStream(dataFile);
+      } catch (IOException e) {
         log.error(
             "The BinaryData doesn't have the temp file with the content. Assume that the content is empty!",
             e);
