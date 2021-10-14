@@ -243,12 +243,7 @@ public class ApiObjectCollection implements List<ApiObjectRef> {
   }
 
   /**
-   * Sets original collection to a new value. Currently it clears existing collection and creates
-   * new entries, even if the old and new collection contains the same elements. Merge functionality
-   * might be introduced later.
-   * 
-   * Important: doesn't change underlying objects collection, it should be done separately, for
-   * example see {@link ApiObjectRef#setValueInner(Object, PropertyEntry)}.
+   * Sets original collection to a new value merging the contained elements based on their order.
    * 
    * @param newValue
    */
