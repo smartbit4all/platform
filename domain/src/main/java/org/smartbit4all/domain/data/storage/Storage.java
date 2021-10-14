@@ -13,6 +13,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.storage.bean.ObjectHistoryEntry;
 import org.smartbit4all.api.storage.bean.StorageSettings;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
@@ -53,6 +54,8 @@ public class Storage {
    * The index definitions of the storage
    */
   private Map<Class<?>, StorageObjectIndices<?>> indexes = new HashMap<>();
+
+  private boolean indexInitiated = false;
 
   /**
    * The scheme managed by the given logical storage. This is used as naming of the
@@ -226,6 +229,10 @@ public class Storage {
     return objectStorage.read(this, uris, clazz);
   }
 
+  public List<ObjectHistoryEntry> loadHistory(URI uri) {
+    return objectStorage.loadHistory(this, uri);
+  }
+
 
   /**
    * List the datas which fulfill the criteria of the given expression. The expression must only
@@ -353,6 +360,14 @@ public class Storage {
       indexes = new HashMap<>();
     }
     indexes.put(clazz, index);
+  }
+
+  boolean isIndexInitiated() {
+    return indexInitiated;
+  }
+
+  void setIndexInitiated(boolean indexInitiated) {
+    this.indexInitiated = indexInitiated;
   }
 
 }

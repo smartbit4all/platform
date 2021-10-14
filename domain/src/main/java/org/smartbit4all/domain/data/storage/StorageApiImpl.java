@@ -1,6 +1,7 @@
 package org.smartbit4all.domain.data.storage;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,8 +54,20 @@ public final class StorageApiImpl implements StorageApi, InitializingBean {
   @Autowired
   private ObjectApi objectApi;
 
+  @Autowired(required = false)
+  private List<StorageObjectIndices<?>> objectIndices;
+
+  private Map<String, List<StorageObjectIndices<?>>> objectIndicesByScheme = new HashMap<>();
+
   @Override
   public void afterPropertiesSet() throws Exception {
+    if (objectIndices != null) {
+      for (StorageObjectIndices<?> index : objectIndices) {
+        objectIndicesByScheme.computeIfAbsent(index.getScheme(), s -> {
+          return new ArrayList<>();
+        }).add(index);
+      }
+    }
     if (storages != null) {
       for (Storage storage : storages) {
         storagesByScheme.put(storage.getScheme(), storage);
@@ -103,6 +116,15 @@ public final class StorageApiImpl implements StorageApi, InitializingBean {
       } finally {
         rwlStorages.writeLock().unlock();
       }
+    }
+    if (storage != null && !storage.isIndexInitiated()) {
+      List<StorageObjectIndices<?>> indices = objectIndicesByScheme.get(storage.getScheme());
+      if (indices != null) {
+        for (StorageObjectIndices<?> index : indices) {
+          storage.addIndex(index, index.getClazz());
+        }
+      }
+      storage.setIndexInitiated(true);
     }
     return storage;
   }

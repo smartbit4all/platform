@@ -72,6 +72,35 @@ components:
           type: object
           additionalProperties:
             $ref: '#/components/shemas/ObjectReferenceList'
+    ObjectHistoryEntry:
+      type: object
+      description: |
+        When analysing the history the StorageApi creates a list of history entries for every version of the objects participates
+        in the related history.
+      required: [serialNo, createdAt, createdByUri]
+      properties:
+        summary:
+          type: string
+          description: |
+            The summary of the history record constructed from the natural identifiers of the object.
+        changes:
+          type: string
+          description: |
+            The changes rendered into a readable format. Every version produces some changes in the detal. This field contains these 
+            in a summerized readable format.
+        versionUri:
+          type: string
+          format: uri
+          description: |
+            The uri of the object version that can be used to read the given version.
+        objectType:
+          type: string
+          description: |
+            The object type of the history entry. A list of history entry can contain multiple types if their versions
+            are involved.
+        version:
+          type: object
+          $ref: '#/components/shemas/ObjectVersion'
     ObjectVersion:
       type: object
       description: |
