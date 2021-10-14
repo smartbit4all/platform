@@ -11,6 +11,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.domain.data.storage.index.StorageIndex;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -68,6 +69,7 @@ public final class StorageApiImpl implements StorageApi, InitializingBean {
         }).add(index);
       }
     }
+
     if (storages != null) {
       for (Storage storage : storages) {
         storagesByScheme.put(storage.getScheme(), storage);
@@ -122,6 +124,10 @@ public final class StorageApiImpl implements StorageApi, InitializingBean {
       if (indices != null) {
         for (StorageObjectIndices<?> index : indices) {
           storage.addIndex(index, index.getClazz());
+
+          for (StorageIndex<?> storageIndex : index.get()) {
+            storageIndex.setStorage(storage);
+          }
         }
       }
       storage.setIndexInitiated(true);

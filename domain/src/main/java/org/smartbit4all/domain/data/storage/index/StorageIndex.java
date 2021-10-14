@@ -6,14 +6,15 @@ import java.util.List;
 import java.util.function.Function;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.data.TableDatas;
+import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Expression;
 import org.smartbit4all.domain.meta.Property;
 
 /**
- * StorageIndex can be used for indexing objects based on entity definition, properties.
- * The main purpose of the StorageIndex for storing the StorageIndexFields, the indexer.
- * StorageIndex can update the indexes of the object, and list the object URIs for an expression.
+ * StorageIndex can be used for indexing objects based on entity definition, properties. The main
+ * purpose of the StorageIndex for storing the StorageIndexFields, the indexer. StorageIndex can
+ * update the indexes of the object, and list the object URIs for an expression.
  * 
  * @author Zoltan Szegedi
  *
@@ -22,24 +23,24 @@ import org.smartbit4all.domain.meta.Property;
 public class StorageIndex<T> {
 
   private EntityDefinition entityDef;
-  
+
   private Property<URI> key;
-  
+
   private String keyName;
-  
+
   private List<StorageIndexField<T, ?>> fields;
 
   private Function<T, URI> objectUriProvider;
- 
+
   private StorageIndexer<T> storageIndexer;
-  
+
   public StorageIndex(
       EntityDefinition entityDef,
       Property<URI> key,
       StorageIndexer<T> storageIndexer,
       List<StorageIndexField<T, ?>> fields,
       Function<T, URI> objectUriProvider) {
-    
+
     this(entityDef, storageIndexer, fields, objectUriProvider);
     this.key = key;
   }
@@ -50,17 +51,17 @@ public class StorageIndex<T> {
       StorageIndexer<T> storageIndexer,
       List<StorageIndexField<T, ?>> fields,
       Function<T, URI> objectUriProvider) {
-    
+
     this(entityDef, storageIndexer, fields, objectUriProvider);
     this.keyName = keyName;
   }
-  
+
   private StorageIndex(
       EntityDefinition entityDef,
       StorageIndexer<T> storageIndexer,
       List<StorageIndexField<T, ?>> fields,
       Function<T, URI> objectUriProvider) {
-    
+
     this.entityDef = entityDef;
     this.storageIndexer = storageIndexer;
     this.objectUriProvider = objectUriProvider;
@@ -70,8 +71,8 @@ public class StorageIndex<T> {
   }
 
   /**
-   * List the object URIs, evaluating the given expression.
-   * Expression must only use the entity definition defined in construct time.
+   * List the object URIs, evaluating the given expression. Expression must only use the entity
+   * definition defined in construct time.
    * 
    * @param expression
    * @return
@@ -90,7 +91,7 @@ public class StorageIndex<T> {
   public void updateIndex(T object) throws Exception {
     storageIndexer.updateIndex(object, this);
   }
-  
+
   public Function<T, URI> getObjectUriProvider() {
     return objectUriProvider;
   }
@@ -106,31 +107,35 @@ public class StorageIndex<T> {
   public String getName() {
     return entityDef.entityDefName();
   }
-  
+
   public List<Property<?>> getProperties() {
     List<Property<?>> properties = new ArrayList<>();
-    
+
     properties.add(getKey());
-    
+
     for (StorageIndexField<T, ?> field : getFields()) {
       properties.add(field.getValueField());
     }
-    
+
     return properties;
   }
-  
+
   public TableData<? extends EntityDefinition> createTableDataWithColumns() {
     List<Property<?>> properties = getProperties();
     return TableDatas.builder(entityDef, properties).build();
   }
-  
+
   @SuppressWarnings("unchecked")
   public Property<URI> getKey() {
-     if(key != null) {
-       return key;
-     } else {
-       return (Property<URI>) entityDef.getProperty(keyName);
-     }
+    if (key != null) {
+      return key;
+    } else {
+      return (Property<URI>) entityDef.getProperty(keyName);
+    }
   }
- 
+
+  public void setStorage(Storage storage) {
+    this.storageIndexer.setStorage(storage);
+  }
+
 }

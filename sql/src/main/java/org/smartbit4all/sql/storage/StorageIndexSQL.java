@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.data.TableData;
+import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.index.StorageIndex;
 import org.smartbit4all.domain.data.storage.index.StorageIndexField;
 import org.smartbit4all.domain.data.storage.index.StorageIndexUtil;
@@ -36,19 +37,19 @@ public class StorageIndexSQL<T> implements StorageIndexer<T> {
         .where(expression)
         .listData();
 
-    if(datas.size() < 1) {
+    if (datas.size() < 1) {
       return Collections.emptyList();
     }
-    
+
     List<URI> result = new ArrayList<>();
-    
+
     for (DataRow row : datas.rows()) {
       result.add(row.get(index.getKey()));
     }
-    
+
     return result;
   }
-  
+
   @Override
   public void updateIndex(T object, StorageIndex<T> index) throws Exception {
     URI uri = index.getObjectUriProvider().apply(object);
@@ -69,6 +70,12 @@ public class StorageIndexSQL<T> implements StorageIndexer<T> {
   @Override
   public <F> boolean canUseFor(Property<F> valueField, Expression expression) {
     return StorageIndexUtil.twoOperandPropertyIndex(valueField, expression);
+  }
+
+  @Override
+  public void setStorage(Storage storage) {
+    // TODO Auto-generated method stub
+
   }
 
 }

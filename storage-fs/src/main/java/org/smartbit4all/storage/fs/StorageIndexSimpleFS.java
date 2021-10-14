@@ -179,6 +179,8 @@ public class StorageIndexSimpleFS<T> implements StorageIndexer<T> {
     }
   }
 
+
+  @Override
   public void setStorage(Storage storage) {
     this.storage = storage;
   }

@@ -2,6 +2,7 @@ package org.smartbit4all.domain.data.storage.index;
 
 import java.net.URI;
 import java.util.List;
+import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.meta.Expression;
 import org.smartbit4all.domain.meta.Property;
 
@@ -21,5 +22,7 @@ public interface StorageIndexer<T> {
   public void updateIndex(T object, StorageIndex<T> index) throws Exception;
 
   public <F> boolean canUseFor(Property<F> valueField, Expression expression);
+
+  public void setStorage(Storage storage);
 
 }
