@@ -48,7 +48,7 @@ public class FileIO {
 
   private static BinaryData getFileBinaryData(File file) {
     if (file.exists() && file.isFile()) {
-      return new BinaryData(file, false);
+      return new BinaryData(file);
     }
     return null;
   }

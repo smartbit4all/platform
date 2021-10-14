@@ -1,11 +1,5 @@
 package org.smartbit4all.api.binarydata;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,13 +15,19 @@ import org.smartbit4all.api.binarydata.fs.BinaryDataApiFS;
 import org.smartbit4all.core.io.TestFileUtil;
 import org.smartbit4all.core.object.ApiBeanDescriptor;
 import org.smartbit4all.core.object.ApiObjectRef;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class BinaryContentTest {
 
   public static final String BINARYDATA_SCHEMA = "testFS";
 
   final static BinaryData testFile =
-      new BinaryData(new File("src/test/resources/lorem-ipsum.pdf"), false);
+      new BinaryData(new File("src/test/resources/lorem-ipsum.pdf"));
 
   private static BinaryDataApiFS binaryDataApi;
 
@@ -209,17 +209,17 @@ public class BinaryContentTest {
     assertTrue(contentWrapper.isLoaded());
     assertNotNull(contentWrapper.getSize());
   }
-  
+
   @Test
   void removeDataFromBinaryContentTest() {
     BinaryContent binaryContent = new BinaryContent().dataUri(testFileDataURI);
     binaryContentApi.uploadContent(binaryContent, testFile, testFileDataURI);
-    
+
     binaryContentApi.removeContent(binaryContent);
 
     Optional<BinaryData> binaryData = binaryDataApi.load(binaryContent.getDataUri());
     assertFalse(binaryData.isPresent());
-    
+
     assertThrows(IllegalStateException.class, () -> binaryContentApi.load(binaryContent));
     assertFalse(binaryContent.isSaveData());
     assertFalse(binaryContent.isLoaded());

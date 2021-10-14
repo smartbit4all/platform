@@ -120,7 +120,7 @@ public class StorageFS extends ObjectStorageImpl {
       ObjectVersion currentVersion = null;
       if (objectDataFile.exists()) {
         // This is an existing data file.
-        BinaryData dataFile = new BinaryData(objectDataFile, false);
+        BinaryData dataFile = new BinaryData(objectDataFile);
         Optional<StorageObjectData> optStorageObject = storageObjectDataDef.deserialize(dataFile);
         // Extract the current version and create the new one based on this.
         storageObjectData = optStorageObject.get();
@@ -178,7 +178,7 @@ public class StorageFS extends ObjectStorageImpl {
               : null;
       StorageObjectRelationData relationData = null;
       if (objectRelationFile != null && objectRelationFile.exists()) {
-        BinaryData dataFile = new BinaryData(objectRelationFile, false);
+        BinaryData dataFile = new BinaryData(objectRelationFile);
         Optional<StorageObjectRelationData> relationDataOpt =
             storageObjectRelationDataDef.deserialize(dataFile);
         relationData = relationDataOpt.orElse(null);
@@ -256,7 +256,7 @@ public class StorageFS extends ObjectStorageImpl {
     if (!storageObjectDataFile.exists()) {
       return Optional.empty();
     }
-    BinaryData storageObjectBinaryData = new BinaryData(storageObjectDataFile, false);
+    BinaryData storageObjectBinaryData = new BinaryData(storageObjectDataFile);
     Optional<StorageObjectData> optObject =
         storageObjectDataDef.deserialize(storageObjectBinaryData);
     if (!optObject.isPresent()) {
@@ -273,7 +273,7 @@ public class StorageFS extends ObjectStorageImpl {
           storageObjectDataFile,
           relatedVersion.getSerialNoData());
 
-      BinaryData versionBinaryData = new BinaryData(objectVersionFile, false);
+      BinaryData versionBinaryData = new BinaryData(objectVersionFile);
 
       T object = definition.deserialize(versionBinaryData).orElse(null);
       storageObject = instanceOf(storage, definition, object, storageObjectData);
@@ -286,7 +286,7 @@ public class StorageFS extends ObjectStorageImpl {
           getObjectRelationVersionFile(storageObjectDataFile,
               storageObjectData.getCurrentVersion().getSerialNoRelation());
       if (relationVersionFile.exists()) {
-        BinaryData versionBinaryData = new BinaryData(relationVersionFile, false);
+        BinaryData versionBinaryData = new BinaryData(relationVersionFile);
 
         StorageObjectRelationData relationData =
             storageObjectRelationDataDef.deserialize(versionBinaryData).orElse(null);
@@ -312,7 +312,7 @@ public class StorageFS extends ObjectStorageImpl {
     if (!storageObjectDataFile.exists()) {
       return Collections.emptyList();
     }
-    BinaryData storageObjectBinaryData = new BinaryData(storageObjectDataFile, false);
+    BinaryData storageObjectBinaryData = new BinaryData(storageObjectDataFile);
     Optional<StorageObjectData> optObject =
         storageObjectDataDef.deserialize(storageObjectBinaryData);
     if (!optObject.isPresent()) {

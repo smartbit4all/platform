@@ -196,7 +196,7 @@ public class BinaryDataOutputStream extends OutputStream {
     } else {
       // In this case we have a temp file with the content.
       closeFileStreams();
-      data = new BinaryData(dataFile, true);
+      data = new BinaryData(dataFile);
     }
     osActive = null;
     if (messageDigest != null) {

@@ -125,14 +125,12 @@ public class BinaryData {
    * {@link BinaryData} can work on normal files also with caution.
    * 
    * @param dataFile The file that contains the binary data.
-   * @param deleteOn Indicates whether delete or not the file at the finalize of the Object.
    */
-  public BinaryData(File dataFile, boolean deleteOn) {
+  public BinaryData(File dataFile) {
     super();
     this.dataFile = dataFile;
     this.length = dataFile.length();
   }
-
 
   public static final class AutoCloseInputStream extends InputStream {
 
