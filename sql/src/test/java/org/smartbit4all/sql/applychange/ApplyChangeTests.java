@@ -7,37 +7,18 @@ import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.core.object.ApiBeanDescriptor;
 import org.smartbit4all.core.object.ApiObjectRef;
-import org.smartbit4all.core.object.ChangeState;
-import org.smartbit4all.core.object.CollectionChange;
-import org.smartbit4all.core.object.CollectionObjectChange;
-import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectChange;
-import org.smartbit4all.core.object.ObjectChangeSimple;
-import org.smartbit4all.core.object.ObjectDefinition;
-import org.smartbit4all.core.object.PropertyChange;
-import org.smartbit4all.core.object.ReferenceChange;
-import org.smartbit4all.core.object.ReferencedObjectChange;
 import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.data.TableData;
-import org.smartbit4all.domain.data.TableDatas;
-import org.smartbit4all.domain.meta.EntityDefinition;
-import org.smartbit4all.domain.meta.Property;
-import org.smartbit4all.domain.meta.PropertyRef;
 import org.smartbit4all.domain.meta.PropertySet;
-import org.smartbit4all.domain.service.modify.ApplyChangeOperation;
-import org.smartbit4all.domain.service.modify.ApplyChangeOperation.ChangeOperation;
-import org.smartbit4all.domain.service.transfer.ObjectChangeApplyChangeOperationMapping;
-import org.smartbit4all.domain.service.transfer.ObjectChangeApplyChangeOperationMapping.CollectionMappingItem;
-import org.smartbit4all.domain.service.transfer.ObjectChangeApplyChangeOperationMapping.PropertyMappingItem;
-import org.smartbit4all.domain.service.transfer.ObjectChangeApplyChangeOperationMapping.ReferenceMappingItem;
+import org.smartbit4all.domain.service.modify.ApplyChangeObjectConfig;
+import org.smartbit4all.domain.service.modify.ApplyChangeService;
 import org.smartbit4all.domain.utility.crud.Crud;
 import org.smartbit4all.sql.testmodel_with_uri.AddressDef;
 import org.smartbit4all.sql.testmodel_with_uri.PersonDef;
@@ -73,7 +54,7 @@ public class ApplyChangeTests {
   private AddressDef addressDef;
 
   @Autowired
-  private ObjectApi objectApi;
+  private ApplyChangeService applyChangeService;
 
   @BeforeAll
   public static void initTest() {
@@ -100,11 +81,10 @@ public class ApplyChangeTests {
     assertNotNull(objectChange);
     System.out.println(objectChange);
 
-    ObjectChangeApplyChangeOperationMapping mapping = createMapping();
+    ApplyChangeObjectConfig mapping = createMapping();
 
     // =======
-    ApplyChangeOperation aco = createApplyChangeOperation(objectChange, mapping, ticket);
-    aco.execute();
+    applyChangeService.applyChange(objectChange, ticket, mapping);
     // =======
 
     PropertySet select = ticketDef.allProperties();
@@ -126,7 +106,7 @@ public class ApplyChangeTests {
 
     TableData<AddressDef> addressTd = Crud.read(addressDef)
         .selectAllProperties()
-        .where(addressDef.id().like("UUID-ADDRESS%"))
+        .where(addressDef.id().like("UUID%"))
         .listData();
     System.out.println("----\nQueried address result:\n" + addressTd);
     assertTrue(addressTd.size() >= 3);
@@ -145,9 +125,9 @@ public class ApplyChangeTests {
     assertNotNull(changesAfterModify1);
     System.out.println("\n\n----\nObjectChenges:\n" + changesAfterModify1);
 
-    ApplyChangeOperation acoAfterModify1 =
-        createApplyChangeOperation(changesAfterModify1, mapping, ticketV2);
-    acoAfterModify1.execute();
+    // =======
+    applyChangeService.applyChange(changesAfterModify1, ticketV2, mapping);
+    // =======
 
     ticketTd = Crud.read(ticketDef)
         .select(ticketDef.allProperties())
@@ -160,7 +140,7 @@ public class ApplyChangeTests {
 
     addressTd = Crud.read(addressDef)
         .selectAllProperties()
-        .where(addressDef.id().eq("UUID-ADDRESS3"))
+        .where(addressDef.city().eq("Address3"))
         .listData();
     System.out.println("----\nQueried address result:\n" + addressTd);
     DataRow addressRow = addressTd.rows().get(0);
@@ -169,203 +149,38 @@ public class ApplyChangeTests {
 
   }
 
-  private ApplyChangeOperation createApplyChangeOperation(ObjectChange objectChange,
-      ObjectChangeApplyChangeOperationMapping mapping, Object rootObject) {
-    EntityDefinition rootEntity = mapping.rootEntity;
-    ChangeOperation changeOperation = getChangeOperation(objectChange.getOperation());
-    if (changeOperation == null || !objectChange.hasChange()) {
-      return null;
-    }
-    TableData<EntityDefinition> rootTable = TableDatas.of(rootEntity);
-    PropertySet primaryKeys = rootEntity.PRIMARYKEYDEF();
-    if (primaryKeys.size() > 1) {
-      throw new IllegalStateException("Not handled entity: it has multiple primary keys!");
-    }
-    String rootId = getObjectId(rootObject);
-    Property<?> primaryKey = primaryKeys.iterator().next();
-    rootTable.addColumnOwn(primaryKey);
-    DataRow rootRow = rootTable.addRow();
-    rootRow.setObject(primaryKey, rootId);
-
-    ApplyChangeOperation aco = new ApplyChangeOperation(rootTable, changeOperation);
-
-    for (PropertyChange pChange : objectChange.getProperties()) {
-      Object newValue = pChange.getNewValue();
-      // TODO convert the value
-      PropertyMappingItem propertyMappingItem = mapping.propertyMappings.get(pChange.getName());
-      if (propertyMappingItem == null) {
-        continue;
-      }
-      boolean isPropertyReferred = propertyMappingItem.property instanceof PropertyRef;
-      if (!isPropertyReferred) {
-        rootTable.addColumnOwn(propertyMappingItem.property);
-
-        // TODO do proper conversion instead!
-        if (propertyMappingItem.property.type().equals(String.class)) {
-          newValue = newValue.toString();
-        }
-
-        rootRow.setObject(propertyMappingItem.property, newValue);
-      } else {
-        // it is a containment
-
-        // we should know the uuid
-        // maybe it should be a design rule, to keep these in references
-        // else the contained element's uuid must be in the flat object too, and it should be
-        // configurable to the mapping...
-      }
-    }
-
-    // manage references: add recursively created ApplyChangeOperation to preCalls
-    List<ReferenceChange> references = objectChange.getReferences();
-    for (int i = 0; i < references.size(); i++) {
-      ReferenceChange rChange = references.get(i);
-      ReferenceMappingItem referenceMappingItem =
-          mapping.referenceMappings.get(rChange.getName());
-      if (referenceMappingItem == null) {
-        continue;
-      }
-
-      // create ApplyChangeOperation with recursive method
-      ObjectChange changedReference = rChange.getChangedReference();
-      ObjectChangeApplyChangeOperationMapping referenceMapping = referenceMappingItem.oc2AcoMapping;
-
-      ReferencedObjectChange referencedObjectChange = objectChange.getReferencedObjects().get(i);
-      Object changedReferredObject = referencedObjectChange.getChange().getObject();
-
-      ApplyChangeOperation referenceAco =
-          createApplyChangeOperation(changedReference, referenceMapping, changedReferredObject);
-      if (referenceAco != null) {
-
-        String referredId = getObjectId(changedReferredObject);
-
-        // set the referenced uid to the tabeleData
-        Objects.requireNonNull(referredId, "Unique ID of referred object can not be null!"); // FIXME
-        rootTable.addColumnOwn(referenceMappingItem.refferringRootProperty);
-        rootRow.setObject(referenceMappingItem.refferringRootProperty, referredId);
-
-        // add preCall
-        aco.preCalls().call(referenceAco);
-      }
-    }
-
-    List<CollectionChange> collections = objectChange.getCollections();
-    for (int i = 0; i < collections.size(); i++) {
-      CollectionChange cChange = collections.get(i);
-      CollectionObjectChange collectionObjectChange = objectChange.getCollectionObjects().get(i);
-      CollectionMappingItem collectionMappingItem =
-          mapping.collectionMappings.get(cChange.getName());
-      if (collectionMappingItem == null) {
-        continue;
-      }
-
-      List<ObjectChange> changes = cChange.getChanges();
-      for (int j = 0; j < changes.size(); j++) {
-        ObjectChange collectionChangeObject = changes.get(j);
-        ObjectChangeSimple objectChangeSimple = collectionObjectChange.getChanges().get(j);
-        Object collectionObject = objectChangeSimple.getObject();
-        ApplyChangeOperation collectionAco = createApplyChangeOperation(collectionChangeObject,
-            collectionMappingItem.oc2AcoMapping,
-            collectionObject);
-
-        if (collectionAco != null) {
-
-          collectionAco.getTableData().addColumnOwn(collectionMappingItem.refferringDetailProperty);
-          collectionAco.getRow().setObject(collectionMappingItem.refferringDetailProperty, rootId);
-
-          aco.postCalls().call(collectionAco);
-        }
-      }
-
-    }
-    return aco;
+  private ApplyChangeObjectConfig createMapping() {
+// @formatter:off
+ 
+    ApplyChangeObjectConfig personConfig = createPersonMapping();
+    return ApplyChangeObjectConfig.builder(TicketFCC.class, ticketDef)
+        .addPropertyMapping("Title", ticketDef.title())
+        .addPropertyMapping("Uri", ticketDef.uri())
+        .addReferenceMapping("PrimaryPerson", ticketDef.primaryPersonId())
+          .config(personConfig)
+          .and()
+        .addReferenceMapping("SecondaryPerson", ticketDef.secondaryPersonId())
+          .config(personConfig)
+          .and()
+        .build();
   }
 
-  @SuppressWarnings("unchecked")
-  private <T> String getObjectId(T object) {
-    ObjectDefinition<T> referredObjectDef =
-        (ObjectDefinition<T>) objectApi.definition(object.getClass());
-    String referredId = referredObjectDef.getId(object);
-    return referredId;
+  private ApplyChangeObjectConfig createPersonMapping() {
+    return ApplyChangeObjectConfig.builder(Person.class, personDef)
+      .addPropertyMapping("Name", personDef.name())
+      .addCollectionMapping("Addresses", addressDef.personId())
+        .config(createAddressMapping())
+        .and()
+      .build();
   }
 
-  private ChangeOperation getChangeOperation(ChangeState operation) {
-    switch (operation) {
-      case DELETED:
-        return ChangeOperation.DELETE;
-      case MODIFIED:
-        return ChangeOperation.MODIFY;
-      case NEW:
-        return ChangeOperation.CREATE;
-      case NOP:
-      default:
-        return null;
-    }
+  private ApplyChangeObjectConfig createAddressMapping() {
+    return ApplyChangeObjectConfig.builder(Address.class, addressDef)
+        .addPropertyMapping("Zip", addressDef.zip())
+        .addPropertyMapping("City", addressDef.city())
+        .build();
   }
-
-  private ObjectChangeApplyChangeOperationMapping createMapping() {
-    ObjectChangeApplyChangeOperationMapping mapping = new ObjectChangeApplyChangeOperationMapping();
-    // config the mapping in init
-    mapping.rootEntity = ticketDef;
-
-    PropertyMappingItem titleMI = new PropertyMappingItem();
-    titleMI.name = "Title";
-    titleMI.property = ticketDef.title();
-    mapping.propertyMappings.put(titleMI.name, titleMI);
-
-    PropertyMappingItem uriMI = new PropertyMappingItem();
-    uriMI.name = "Uri";
-    uriMI.property = ticketDef.uri();
-    mapping.propertyMappings.put(uriMI.name, uriMI);
-
-    ReferenceMappingItem primaryPersonMI = new ReferenceMappingItem();
-    primaryPersonMI.name = "PrimaryPerson";
-    primaryPersonMI.refferringRootProperty = ticketDef.primaryPersonId();
-    ObjectChangeApplyChangeOperationMapping personMapping = createPersonMapping();
-    primaryPersonMI.oc2AcoMapping = personMapping;
-    mapping.referenceMappings.put(primaryPersonMI.name, primaryPersonMI);
-
-    ReferenceMappingItem secondaryPersonMI = new ReferenceMappingItem();
-    secondaryPersonMI.name = "SecondaryPerson";
-    secondaryPersonMI.refferringRootProperty = ticketDef.secondaryPersonId();
-    secondaryPersonMI.oc2AcoMapping = personMapping;
-    mapping.referenceMappings.put(secondaryPersonMI.name, secondaryPersonMI);
-    return mapping;
-  }
-
-  private ObjectChangeApplyChangeOperationMapping createPersonMapping() {
-    ObjectChangeApplyChangeOperationMapping personMapping =
-        new ObjectChangeApplyChangeOperationMapping();
-    personMapping.rootEntity = personDef;
-    PropertyMappingItem personNameMI = new PropertyMappingItem();
-    personNameMI.name = "Name";
-    personNameMI.property = personDef.name();
-    personMapping.propertyMappings.put(personNameMI.name, personNameMI);
-
-    CollectionMappingItem addressMI = new CollectionMappingItem();
-    addressMI.name = "Addresses";
-    addressMI.refferringDetailProperty = addressDef.personId();
-    addressMI.oc2AcoMapping = createAddressMapping();
-    personMapping.collectionMappings.put(addressMI.name, addressMI);
-    return personMapping;
-  }
-
-  private ObjectChangeApplyChangeOperationMapping createAddressMapping() {
-    ObjectChangeApplyChangeOperationMapping addressMapping =
-        new ObjectChangeApplyChangeOperationMapping();
-    addressMapping.rootEntity = addressDef;
-    PropertyMappingItem zipMI = new PropertyMappingItem();
-    zipMI.name = "Zip";
-    zipMI.property = addressDef.zip();
-    addressMapping.propertyMappings.put(zipMI.name, zipMI);
-
-    PropertyMappingItem cityMI = new PropertyMappingItem();
-    cityMI.name = "City";
-    cityMI.property = addressDef.city();
-    addressMapping.propertyMappings.put(cityMI.name, cityMI);
-
-    return addressMapping;
-  }
+// @formatter:on
 
   private TicketFCC createTicketWithPersonsAndAddresses() {
     TicketFCC ticket = new TicketFCC();
@@ -376,24 +191,24 @@ public class ApplyChangeTests {
 
     Person primaryPerson = new Person();
     primaryPerson.setName("Primary Person");
-    primaryPerson.setId("UUID-PRIMARY_PERSON");
+    // primaryPerson.setId("UUID-PRIMARY_PERSON");
 
     Person secondaryPerson = new Person();
     secondaryPerson.setName("Secondary Person");
-    secondaryPerson.setId("UUID-SECONDARY_PERSON");
+    // secondaryPerson.setId("UUID-SECONDARY_PERSON");
 
     Address address1 = new Address();
-    address1.setId("UUID-ADDRESS1");
+    // address1.setId("UUID-ADDRESS1");
     address1.setCity("Address1");
     address1.setZip("9910");
 
     Address address2 = new Address();
-    address2.setId("UUID-ADDRESS2");
+    // address2.setId("UUID-ADDRESS2");
     address2.setCity("Address2");
     address2.setZip("9920");
 
     Address address3 = new Address();
-    address3.setId("UUID-ADDRESS3");
+    // address3.setId("UUID-ADDRESS3");
     address3.setCity("Address3");
     address3.setZip("9930");
 

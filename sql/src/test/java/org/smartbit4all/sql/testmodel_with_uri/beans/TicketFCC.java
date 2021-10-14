@@ -67,19 +67,19 @@ public class TicketFCC {
     public static final String FIELD_iD = "id";
     public static final String FIELD_NAME = "name";
 
-    private String id;
+    // private String id;
 
     private String name;
 
     private List<Address> addresses;
 
-    public String getId() {
-      return id;
-    }
-
-    public void setId(String id) {
-      this.id = id;
-    }
+    // public String getId() {
+    // return id;
+    // }
+    //
+    // public void setId(String id) {
+    // this.id = id;
+    // }
 
     public String getName() {
       return name;
@@ -104,23 +104,23 @@ public class TicketFCC {
 
   public static class Address {
 
-    public static final String FIELD_ID = "id";
+    // public static final String FIELD_ID = "id";
     public static final String FIELD_ZIP = "zip";
     public static final String FIELD_CITY = "city";
 
-    private String id;
+    // private String id;
 
     private String zip;
 
     private String city;
 
-    public String getId() {
-      return id;
-    }
-
-    public void setId(String id) {
-      this.id = id;
-    }
+    // public String getId() {
+    // return id;
+    // }
+    //
+    // public void setId(String id) {
+    // this.id = id;
+    // }
 
     public String getZip() {
       return zip;

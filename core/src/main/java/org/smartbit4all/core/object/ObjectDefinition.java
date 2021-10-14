@@ -110,11 +110,11 @@ public final class ObjectDefinition<T> {
   }
 
   public String getId(T obj) {
-    return obj != null ? idGetter.apply(obj) : null;
+    return obj != null && idGetter != null ? idGetter.apply(obj) : null;
   }
 
   public void setId(T obj, String uri) {
-    if (obj != null) {
+    if (obj != null && idSetter != null) {
       idSetter.accept(obj, uri);
     }
   }

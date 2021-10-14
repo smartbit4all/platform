@@ -14,6 +14,7 @@
  ******************************************************************************/
 package org.smartbit4all.domain.config;
 
+import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -46,8 +47,8 @@ import org.springframework.context.annotation.Primary;
  */
 @Configuration
 @Import({
-  QueryApiImpl.class,
-  Queries.class
+    QueryApiImpl.class,
+    Queries.class
 })
 public class DomainServiceConfig extends SB4Configuration {
 
@@ -81,7 +82,7 @@ public class DomainServiceConfig extends SB4Configuration {
     // see:
     // https://stackoverflow.com/questions/7346508/datatypefactory-usage-in-creating-xmlgregoriancalendar-hits-performance-badly
     DatatypeFactory datatypeFactory = DatatypeFactory.newInstance();
-    return new ConverterImpl<LocalDateTime, XMLGregorianCalendar>(XMLGregorianCalendar.class,
+    return new ConverterImpl<>(XMLGregorianCalendar.class,
         (LocalDateTime d) -> datatypeFactory
             .newXMLGregorianCalendar(
                 GregorianCalendar.from(ZonedDateTime.of(d, ZoneId.systemDefault()))),
@@ -94,7 +95,7 @@ public class DomainServiceConfig extends SB4Configuration {
   public Converter<XMLGregorianCalendar, LocalDateTime> xMLGregorianCalendar2localDateTimeConverter()
       throws DatatypeConfigurationException {
     DatatypeFactory datatypeFactory = DatatypeFactory.newInstance();
-    return new ConverterImpl<XMLGregorianCalendar, LocalDateTime>(LocalDateTime.class,
+    return new ConverterImpl<>(LocalDateTime.class,
         (XMLGregorianCalendar c) -> c.toGregorianCalendar().toZonedDateTime()
             .withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime(),
         XMLGregorianCalendar.class,
@@ -110,7 +111,7 @@ public class DomainServiceConfig extends SB4Configuration {
     // see:
     // https://stackoverflow.com/questions/7346508/datatypefactory-usage-in-creating-xmlgregoriancalendar-hits-performance-badly
     DatatypeFactory datatypeFactory = DatatypeFactory.newInstance();
-    return new ConverterImpl<LocalDate, XMLGregorianCalendar>(XMLGregorianCalendar.class,
+    return new ConverterImpl<>(XMLGregorianCalendar.class,
         (LocalDate d) -> datatypeFactory
             .newXMLGregorianCalendar(
                 GregorianCalendar.from(d.atStartOfDay(ZoneId.systemDefault()))),
@@ -125,7 +126,7 @@ public class DomainServiceConfig extends SB4Configuration {
     // see:
     // https://stackoverflow.com/questions/7346508/datatypefactory-usage-in-creating-xmlgregoriancalendar-hits-performance-badly
     DatatypeFactory datatypeFactory = DatatypeFactory.newInstance();
-    return new ConverterImpl<XMLGregorianCalendar, LocalDate>(LocalDate.class,
+    return new ConverterImpl<>(LocalDate.class,
         (XMLGregorianCalendar c) -> c.toGregorianCalendar().toZonedDateTime().toLocalDate(),
         XMLGregorianCalendar.class,
         (LocalDate d) -> datatypeFactory
@@ -135,7 +136,7 @@ public class DomainServiceConfig extends SB4Configuration {
 
   @Bean
   public Converter<LocalDateTime, OffsetDateTime> localDateTime2OffsetDateTimeConverter() {
-    return new ConverterImpl<LocalDateTime, OffsetDateTime>(OffsetDateTime.class,
+    return new ConverterImpl<>(OffsetDateTime.class,
         (LocalDateTime d) -> ZonedDateTime.of(d, ZoneId.systemDefault())
             .toOffsetDateTime(),
         LocalDateTime.class,
@@ -144,10 +145,15 @@ public class DomainServiceConfig extends SB4Configuration {
 
   @Bean
   public Converter<OffsetDateTime, LocalDateTime> offsetDateTime2localDateTimeConverter() {
-    return new ConverterImpl<OffsetDateTime, LocalDateTime>(LocalDateTime.class,
+    return new ConverterImpl<>(LocalDateTime.class,
         OffsetDateTime::toLocalDateTime, OffsetDateTime.class,
         (LocalDateTime d) -> ZonedDateTime.of(d, ZoneId.systemDefault())
             .toOffsetDateTime());
+  }
+
+  @Bean
+  public Converter<URI, String> uri2String() {
+    return new ConverterImpl<>(String.class, URI::toString, URI.class, s -> URI.create(s));
   }
 
   @Bean

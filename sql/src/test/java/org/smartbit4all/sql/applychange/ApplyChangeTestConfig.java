@@ -1,7 +1,11 @@
 package org.smartbit4all.sql.applychange;
 
 import javax.sql.DataSource;
+import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.domain.meta.jdbc.JDBCDataConverterConfig;
+import org.smartbit4all.domain.service.modify.ApplyChangeService;
+import org.smartbit4all.domain.service.modify.ApplyChangeServiceImpl;
+import org.smartbit4all.domain.service.transfer.TransferService;
 import org.smartbit4all.sql.config.SQLConfig;
 import org.smartbit4all.sql.config.SQLDBParameter;
 import org.smartbit4all.sql.config.SQLDBParameterBase;
@@ -33,7 +37,7 @@ public class ApplyChangeTestConfig {
     return result;
   }
 
-  @Bean()
+  @Bean
   @Primary
   @ConfigurationProperties(prefix = "spring.datasource")
   public DataSource dataSource() {
@@ -45,9 +49,15 @@ public class ApplyChangeTestConfig {
     return dataSource;
   }
 
-  @Bean()
+  @Bean
   public JdbcTemplate applicationDataConnection(DataSource dataSource) {
     return new JdbcTemplate(dataSource);
+  }
+
+  @Bean
+  public ApplyChangeService applyChangeService(ObjectApi objectApi,
+      TransferService transferService) {
+    return new ApplyChangeServiceImpl(objectApi, transferService);
   }
 
 }
