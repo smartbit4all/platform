@@ -56,21 +56,21 @@ public class ApiObjectsTest {
     String br = System.lineSeparator();
     StringBuilder expectedDescBuilder = new StringBuilder();
     expectedDescBuilder.append("org.smartbit4all.core.object.MasterBean").append(br)
-        .append("\tCounter(long) get: getCounter set: setCounter, counter addItem: -").append(br)
+        .append("\tcounter(long) get: getCounter set: setCounter, counter addItem: -").append(br)
         .append(
-            "\tDetails(java.util.List) get: getDetails set: setDetails, - addItem: addDetailsItem")
+            "\tdetails(java.util.List) get: getDetails set: setDetails, - addItem: addDetailsItem")
         .append(br)
-        .append("\tEnabled(java.lang.Boolean) get: getEnabled set: setEnabled, - addItem: -")
+        .append("\tenabled(java.lang.Boolean) get: getEnabled set: setEnabled, - addItem: -")
         .append(br)
-        .append("\tName(java.lang.String) get: getName set: setName, - addItem: -").append(br)
-        .append("\tReadOnlyLong(java.lang.Long) get: getReadOnlyLong set: -, - addItem: -")
+        .append("\tname(java.lang.String) get: getName set: setName, - addItem: -").append(br)
+        .append("\treadOnlyLong(java.lang.Long) get: getReadOnlyLong set: -, - addItem: -")
         .append(br)
         .append(
-            "\tReferred(org.smartbit4all.core.object.ReferredBean) get: getReferred set: setReferred, - addItem: -")
+            "\treferred(org.smartbit4all.core.object.ReferredBean) get: getReferred set: setReferred, - addItem: -")
         .append(br)
-        .append("\tStringList(java.util.List) get: getStringList set: setStringList, - addItem: -")
+        .append("\tstringList(java.util.List) get: getStringList set: setStringList, - addItem: -")
         .append(br)
-        .append("\tValid(boolean) get: isValid set: setValid, - addItem: -");
+        .append("\tvalid(boolean) get: isValid set: setValid, - addItem: -");
 
     Assertions.assertEquals(expectedDescBuilder.toString(), description);
   }
@@ -128,31 +128,31 @@ public class ApiObjectsTest {
     System.out.println("Changes if whole bean set:" + br + changesText1);
 
     String expected = "NEW" + br +
-        "Counter: (null->1)" + br +
-        "Name: (null->name)" + br +
-        "StringList: (null->[first, second])" + br +
-        "Valid: (null->false)" + br +
-        "Referred: {" + br +
+        "counter: (null->1)" + br +
+        "name: (null->name)" + br +
+        "stringList: (null->[first, second])" + br +
+        "valid: (null->false)" + br +
+        "referred: {" + br +
         "NEW" + br +
-        "Name: (null->refname)" + br +
-        "Details.collection:" + br +
-        "Details.item - {" + br +
+        "name: (null->refname)" + br +
+        "details.collection:" + br +
+        "details.item - {" + br +
         "NEW" + br +
-        "Name: (null->refDetailName1)" + br +
+        "name: (null->refDetailName1)" + br +
         "}" + br +
-        "Details.item - {" + br +
+        "details.item - {" + br +
         "NEW" + br +
-        "Name: (null->refDetailName2)" + br +
+        "name: (null->refDetailName2)" + br +
         "}" + br +
         "}" + br +
-        "Details.collection:" + br +
-        "Details.item - {" + br +
+        "details.collection:" + br +
+        "details.item - {" + br +
         "NEW" + br +
-        "DetailName: (null->detailName1)" + br +
+        "detailName: (null->detailName1)" + br +
         "}" + br +
-        "Details.item - {" + br +
+        "details.item - {" + br +
         "NEW" + br +
-        "DetailName: (null->detailName2)" + br +
+        "detailName: (null->detailName2)" + br +
         "}";
     Assertions.assertEquals(expected, changesText1);
 
@@ -219,25 +219,25 @@ public class ApiObjectsTest {
         + br + "testModificationWithWrapper - Changes1 <<<<<<<");
 
     String expected1 = "NEW" + br +
-        "Counter: (null->1)" + br +
-        "Enabled: (null->false)" + br +
-        "Name: (null->name by wrapper)" + br +
-        "Valid: (null->true)" + br +
-        "Referred: {" + br +
+        "counter: (null->1)" + br +
+        "enabled: (null->false)" + br +
+        "name: (null->name by wrapper)" + br +
+        "valid: (null->true)" + br +
+        "referred: {" + br +
         "NEW" + br +
-        "Name: (null->referred name by wrapper)" + br +
-        "Details.collection:" + br +
-        "Details.item - {" + br +
+        "name: (null->referred name by wrapper)" + br +
+        "details.collection:" + br +
+        "details.item - {" + br +
         "NEW" + br +
-        "Name: (null->referredDetailBean - name 1)" + br +
+        "name: (null->referredDetailBean - name 1)" + br +
         "}" + br +
-        "Details.item - {" + br +
+        "details.item - {" + br +
         "NEW" + br +
-        "Name: (null->referredDetailBean - name 2)" + br +
+        "name: (null->referredDetailBean - name 2)" + br +
         "}" + br +
-        "Details.item - {" + br +
+        "details.item - {" + br +
         "NEW" + br +
-        "Name: (null->referredDetailBean - name 3)" + br +
+        "name: (null->referredDetailBean - name 3)" + br +
         "}" + br +
         "}";
 
@@ -270,28 +270,28 @@ public class ApiObjectsTest {
 
     // TODO assert changes
     String expected2 = "MODIFIED" + br
-        + "Counter: (1->2)" + br
-        + "Name: (name by wrapper->bean2 name)" + br
-        + "Referred: {" + br
+        + "counter: (1->2)" + br
+        + "name: (name by wrapper->bean2 name)" + br
+        + "referred: {" + br
         + "MODIFIED" + br
-        + "Name: (referred name by wrapper->bean2 referred by wrapper)" + br
-        + "Details.collection:" + br
-        + "Details.item - {" + br
+        + "name: (referred name by wrapper->bean2 referred by wrapper)" + br
+        + "details.collection:" + br
+        + "details.item - {" + br
         + "DELETED" + br
         + "}" + br
-        + "Details.item - {" + br
+        + "details.item - {" + br
         + "DELETED" + br
         + "}" + br
-        + "Details.item - {" + br
+        + "details.item - {" + br
         + "DELETED" + br
         + "}" + br
-        + "Details.item - {" + br
+        + "details.item - {" + br
         + "NEW" + br
-        + "Name: (null->new item 1)" + br
+        + "name: (null->new item 1)" + br
         + "}" + br
-        + "Details.item - {" + br
+        + "details.item - {" + br
         + "NEW" + br
-        + "Name: (null->new item 2)" + br
+        + "name: (null->new item 2)" + br
         + "}" + br
         + "}";
     Assertions.assertEquals(expected2, changesText2);
@@ -309,23 +309,23 @@ public class ApiObjectsTest {
         + br + "testModificationWithWrapper - Changes3 <<<<<<<");
 
     String expected3 = "MODIFIED" + br
-        + "Counter: (2->1)" + br
-        + "Name: (bean2 name->name by wrapper)" + br
-        + "Referred: {" + br
+        + "counter: (2->1)" + br
+        + "name: (bean2 name->name by wrapper)" + br
+        + "referred: {" + br
         + "MODIFIED" + br
-        + "Name: (bean2 referred by wrapper->referred name by wrapper)" + br
-        + "Details.collection:" + br
-        + "Details.item - {" + br
+        + "name: (bean2 referred by wrapper->referred name by wrapper)" + br
+        + "details.collection:" + br
+        + "details.item - {" + br
         + "MODIFIED" + br
-        + "Name: (new item 1->referredDetailBean - name 1)" + br
+        + "name: (new item 1->referredDetailBean - name 1)" + br
         + "}" + br
-        + "Details.item - {" + br
+        + "details.item - {" + br
         + "MODIFIED" + br
-        + "Name: (new item 2->referredDetailBean - name 2)" + br
+        + "name: (new item 2->referredDetailBean - name 2)" + br
         + "}" + br
-        + "Details.item - {" + br
+        + "details.item - {" + br
         + "NEW" + br
-        + "Name: (null->referredDetailBean - name 3)" + br
+        + "name: (null->referredDetailBean - name 3)" + br
         + "}" + br
         + "}";
     Assertions.assertEquals(expected3, changesText3);
