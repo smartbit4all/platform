@@ -1,0 +1,22 @@
+openapi: 3.0.1
+info:
+  title: SessionApi
+  description: SessionApi
+  termsOfService: ''
+  contact:
+    email: info@it4all.hu
+  version: 1.0.0
+tags:
+- name: SessionApi
+paths: {}
+components:
+  schemas:
+    Session:
+      type: object
+      properties:
+        uri:
+          type: string
+          format: URI
+        userUri:
+          type: string
+          format: URI

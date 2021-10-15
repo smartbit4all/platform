@@ -2,6 +2,7 @@ package org.smartbit4all.sec.session;
 
 import org.smartbit4all.api.org.OrgApi;
 import org.smartbit4all.api.org.bean.User;
+import org.smartbit4all.api.session.bean.Session;
 import org.springframework.security.core.Authentication;
 
 public class AuthenticationUserProviders {
@@ -28,6 +29,27 @@ public class AuthenticationUserProviders {
       @Override
       public User getUser(Authentication authentication) {
         return (User) authentication.getPrincipal();
+      }
+    };
+  }
+
+  public static AuthenticationUserProvider sessionBasedUserProvider(OrgApi orgApi) {
+    return new AuthenticationUserProvider() {
+
+      @Override
+      public boolean supports(Authentication authentication) {
+        Object principal = authentication.getPrincipal();
+        if (principal == null) {
+          return false;
+        }
+        Class<?> principalClass = principal.getClass();
+        return Session.class.isAssignableFrom(principalClass);
+      }
+
+      @Override
+      public User getUser(Authentication authentication) {
+        Session session = (Session) authentication.getPrincipal();
+        return orgApi.getUser(session.getUserUri());
       }
     };
   }
