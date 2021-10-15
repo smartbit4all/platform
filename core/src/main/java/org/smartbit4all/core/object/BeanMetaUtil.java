@@ -106,6 +106,7 @@ public final class BeanMetaUtil {
       throw new RuntimeException(
           "Unknown getter method " + apiClass.getName() + "." + method.getName());
     }
+    propertyName = propertyName.substring(0, 1).toLowerCase() + propertyName.substring(1);
     String propertyKey = propertyName.toUpperCase();
     Class<?> propertyType = method.getReturnType();
     PropertyMeta propertyMeta = meta.getProperties().get(propertyKey);

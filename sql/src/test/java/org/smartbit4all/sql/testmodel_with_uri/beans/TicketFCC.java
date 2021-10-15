@@ -6,11 +6,12 @@ import java.util.List;
 
 public class TicketFCC {
 
-  public static final String FIELD_iD = "id";
-  public static final String FIELD_URI = "uri";
-  public static final String FIELD_TITLE = "title";
-  public static final String FIELD_PARENT_TITLE = "parentTicketTitle";
-  public static final String FIELD_SECONDARY_PERSON_NAME = "secondaryPersonName";
+  public static final String ID = "id";
+  public static final String URI = "uri";
+  public static final String TITLE = "title";
+  public static final String PARENT_TITLE = "parentTicketTitle";
+  public static final String PRIMARY_PERSON = "primaryPerson";
+  public static final String SECONDARY_PERSON = "secondaryPerson";
 
   private String id;
 
@@ -64,8 +65,8 @@ public class TicketFCC {
 
   public static class Person {
 
-    public static final String FIELD_iD = "id";
-    public static final String FIELD_NAME = "name";
+    public static final String NAME = "name";
+    public static final String ADDRESSES = "addresses";
 
     // private String id;
 
@@ -104,9 +105,8 @@ public class TicketFCC {
 
   public static class Address {
 
-    // public static final String FIELD_ID = "id";
-    public static final String FIELD_ZIP = "zip";
-    public static final String FIELD_CITY = "city";
+    public static final String ZIP = "zip";
+    public static final String CITY = "city";
 
     // private String id;
 

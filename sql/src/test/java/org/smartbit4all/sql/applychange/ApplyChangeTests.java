@@ -154,12 +154,12 @@ public class ApplyChangeTests {
  
     ApplyChangeObjectConfig personConfig = createPersonMapping();
     return ApplyChangeObjectConfig.builder(TicketFCC.class, ticketDef)
-        .addPropertyMapping("Title", ticketDef.title())
-        .addPropertyMapping("Uri", ticketDef.uri())
-        .addReferenceMapping("PrimaryPerson", ticketDef.primaryPersonId())
+        .addPropertyMapping(TicketFCC.TITLE, ticketDef.title())
+        .addPropertyMapping(TicketFCC.URI, ticketDef.uri())
+        .addReferenceMapping(TicketFCC.PRIMARY_PERSON, ticketDef.primaryPersonId())
           .config(personConfig)
           .and()
-        .addReferenceMapping("SecondaryPerson", ticketDef.secondaryPersonId())
+        .addReferenceMapping(TicketFCC.SECONDARY_PERSON, ticketDef.secondaryPersonId())
           .config(personConfig)
           .and()
         .build();
@@ -167,8 +167,8 @@ public class ApplyChangeTests {
 
   private ApplyChangeObjectConfig createPersonMapping() {
     return ApplyChangeObjectConfig.builder(Person.class, personDef)
-      .addPropertyMapping("Name", personDef.name())
-      .addCollectionMapping("Addresses", addressDef.personId())
+      .addPropertyMapping(Person.NAME, personDef.name())
+      .addCollectionMapping(Person.ADDRESSES, addressDef.personId())
         .config(createAddressMapping())
         .and()
       .build();
@@ -176,8 +176,8 @@ public class ApplyChangeTests {
 
   private ApplyChangeObjectConfig createAddressMapping() {
     return ApplyChangeObjectConfig.builder(Address.class, addressDef)
-        .addPropertyMapping("Zip", addressDef.zip())
-        .addPropertyMapping("City", addressDef.city())
+        .addPropertyMapping(Address.ZIP, addressDef.zip())
+        .addPropertyMapping(Address.CITY, addressDef.city())
         .build();
   }
 // @formatter:on
