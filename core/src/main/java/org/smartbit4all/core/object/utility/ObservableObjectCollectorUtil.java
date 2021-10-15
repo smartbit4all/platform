@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartbit4all.core.object.ChangeState;
 import org.smartbit4all.core.object.CollectionObjectChange;
 import org.smartbit4all.core.object.ObjectChangeSimple;
@@ -12,13 +14,15 @@ import org.smartbit4all.core.object.ObservableObject;
 
 /**
  * 
- * Collector collections, which can store the changes of an ObservableObject collection events.
- * Can be used in tests or the extension collectors in UIs.
+ * Collector collections, which can store the changes of an ObservableObject collection events. Can
+ * be used in tests or the extension collectors in UIs.
  * 
  * @author Zoltan Szegedi
  *
  */
 public class ObservableObjectCollectorUtil {
+
+  private static final Logger log = LoggerFactory.getLogger(ObservableObjectCollectorUtil.class);
 
   public static <T> Collection<T> createCollectionChangeCollector(
       ObservableObject observable,
@@ -48,6 +52,8 @@ public class ObservableObjectCollectorUtil {
           onObjectChange(
               (path, newElement) -> collectorList.add(newElement),
               (path, deletedElement) -> collectorList.remove(deletedElement),
+              (path, deletedElement) -> log
+                  .warn("Cannot modify element with simple Collection collector!"),
               clazz,
               changes);
         });
@@ -61,27 +67,29 @@ public class ObservableObjectCollectorUtil {
       Class<T> clazz) {
 
     Map<String, T> collectorMap = new HashMap<>();
-    
+
     observable.onCollectionObjectChange(
         null,
         collectionName,
 
         changes -> {
-          
+
           onObjectChange(
               (path, newElement) -> collectorMap.put(path, newElement),
               (path, deletedElement) -> collectorMap.remove(path),
+              (path, modifiedElement) -> collectorMap.put(path, modifiedElement),
               clazz,
               changes);
-          
+
         });
 
     return collectorMap;
   }
-  
+
   private static <T> void onObjectChange(
       BiConsumer<String, T> onNewElement,
       BiConsumer<String, T> onDeleteElement,
+      BiConsumer<String, T> onModifyElement,
       Class<T> clazz,
       CollectionObjectChange changes) {
 
@@ -98,12 +106,16 @@ public class ObservableObjectCollectorUtil {
 
         onDeleteElement.accept(collectionChange.getPath(), bean);
 
+      } else if (operation == ChangeState.MODIFIED) {
+
+        onModifyElement.accept(collectionChange.getPath(), bean);
+
       } else {
-        
-        throw new IllegalArgumentException("What is this operation? " + operation);
-        
+
+        log.error("What is this operation? " + operation);
+
       }
     }
   }
-  
+
 }
