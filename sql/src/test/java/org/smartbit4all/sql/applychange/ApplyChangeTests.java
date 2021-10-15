@@ -17,7 +17,6 @@ import org.smartbit4all.core.object.ObjectChange;
 import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.meta.PropertySet;
-import org.smartbit4all.domain.service.modify.ApplyChangeObjectConfig;
 import org.smartbit4all.domain.service.modify.ApplyChangeService;
 import org.smartbit4all.domain.utility.crud.Crud;
 import org.smartbit4all.sql.testmodel_with_uri.AddressDef;
@@ -81,10 +80,8 @@ public class ApplyChangeTests {
     assertNotNull(objectChange);
     System.out.println(objectChange);
 
-    ApplyChangeObjectConfig mapping = createMapping();
-
     // =======
-    applyChangeService.applyChange(objectChange, ticket, mapping);
+    applyChangeService.applyChange(objectChange, ticket);
     // =======
 
     PropertySet select = ticketDef.allProperties();
@@ -126,7 +123,7 @@ public class ApplyChangeTests {
     System.out.println("\n\n----\nObjectChenges:\n" + changesAfterModify1);
 
     // =======
-    applyChangeService.applyChange(changesAfterModify1, ticketV2, mapping);
+    applyChangeService.applyChange(changesAfterModify1, ticketV2);
     // =======
 
     ticketTd = Crud.read(ticketDef)
@@ -148,39 +145,6 @@ public class ApplyChangeTests {
         addressRow.get(addressDef.zip()));
 
   }
-
-  private ApplyChangeObjectConfig createMapping() {
-// @formatter:off
- 
-    ApplyChangeObjectConfig personConfig = createPersonMapping();
-    return ApplyChangeObjectConfig.builder(TicketFCC.class, ticketDef)
-        .addPropertyMapping(TicketFCC.TITLE, ticketDef.title())
-        .addPropertyMapping(TicketFCC.URI, ticketDef.uri())
-        .addReferenceMapping(TicketFCC.PRIMARY_PERSON, ticketDef.primaryPersonId())
-          .config(personConfig)
-          .and()
-        .addReferenceMapping(TicketFCC.SECONDARY_PERSON, ticketDef.secondaryPersonId())
-          .config(personConfig)
-          .and()
-        .build();
-  }
-
-  private ApplyChangeObjectConfig createPersonMapping() {
-    return ApplyChangeObjectConfig.builder(Person.class, personDef)
-      .addPropertyMapping(Person.NAME, personDef.name())
-      .addCollectionMapping(Person.ADDRESSES, addressDef.personId())
-        .config(createAddressMapping())
-        .and()
-      .build();
-  }
-
-  private ApplyChangeObjectConfig createAddressMapping() {
-    return ApplyChangeObjectConfig.builder(Address.class, addressDef)
-        .addPropertyMapping(Address.ZIP, addressDef.zip())
-        .addPropertyMapping(Address.CITY, addressDef.city())
-        .build();
-  }
-// @formatter:on
 
   private TicketFCC createTicketWithPersonsAndAddresses() {
     TicketFCC ticket = new TicketFCC();

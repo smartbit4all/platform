@@ -1,7 +1,11 @@
 package org.smartbit4all.domain.service.modify;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import org.smartbit4all.core.object.ChangeState;
 import org.smartbit4all.core.object.CollectionChange;
 import org.smartbit4all.core.object.CollectionObjectChange;
@@ -31,14 +35,33 @@ public class ApplyChangeServiceImpl implements ApplyChangeService {
 
   private TransferService transferService;
 
-  public ApplyChangeServiceImpl(ObjectApi objectApi, TransferService transferService) {
+  private List<Supplier<ApplyChangeObjectConfig>> configFactories;
+
+  private Map<String, ApplyChangeObjectConfig> configsByName;
+
+  /**
+   * 
+   * @param objectApi used for getting bean meta information
+   * @param transferService used to convert values
+   * @param configFactories The {@link ApplyChangeObjectConfig} objects need
+   *        {@link EntityDefinition} parameters which wont be available at configuration time.
+   *        Because of it, we only hold the factories, and the objects are created only on first
+   *        access.
+   */
+  public ApplyChangeServiceImpl(ObjectApi objectApi, TransferService transferService,
+      List<Supplier<ApplyChangeObjectConfig>> configFactories) {
     this.objectApi = objectApi;
     this.transferService = transferService;
+    this.configFactories = configFactories;
   }
 
   @Override
   public void applyChange(ObjectChange objectChange, Object object,
       ApplyChangeObjectConfig configuration) throws Exception {
+    Objects.requireNonNull(objectChange, "objectChange can not be null!");
+    Objects.requireNonNull(object, "object can not be null!");
+    Objects.requireNonNull(configuration, "configuration can not be null!");
+
     ApplyChangeOperation aco =
         createApplyChangeOperation(objectChange, configuration, object, null);
     aco.execute();
@@ -50,9 +73,16 @@ public class ApplyChangeServiceImpl implements ApplyChangeService {
     applyChange(objectChange, object, config);
   }
 
-  private ApplyChangeObjectConfig getConfig(Object object) {
-    // TODO Auto-generated method stub
-    return null;
+  private ApplyChangeObjectConfig getConfig(Object object) throws Exception {
+    if (configsByName == null) {
+      initConfigs();
+    }
+    ApplyChangeObjectConfig config = configsByName.get(object.getClass().getName());
+    if (config == null) {
+      throw new IllegalStateException(
+          "There is no ApplyChangeObjectConfiguger for the class: " + object.getClass().getName());
+    }
+    return config;
   }
 
   private ApplyChangeOperation createApplyChangeOperation(ObjectChange objectChange,
@@ -212,6 +242,17 @@ public class ApplyChangeServiceImpl implements ApplyChangeService {
       default:
         return null;
     }
+  }
+
+  public void initConfigs() throws Exception {
+    if (configFactories == null) {
+      throw new IllegalStateException("There is no ApplyChangeObjectConfig factories configured for"
+          + "the service instance! Call the applyChange() method with explicit ApplyChangeObjectConfig"
+          + "or set the proper configuration factories for the service!");
+    }
+    configsByName = configFactories.stream()
+        .map(factory -> factory.get())
+        .collect(Collectors.toMap(ApplyChangeObjectConfig::getName, Function.identity()));
   }
 
 }
