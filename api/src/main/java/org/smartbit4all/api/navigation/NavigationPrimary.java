@@ -164,7 +164,7 @@ public final class NavigationPrimary extends NavigationImpl implements Initializ
   }
 
   @Override
-  public Navigation start(String navigationConfigName, List<NavigationRootNode> rootNodes) {
+  public Navigation start(String navigationConfigName) {
     NavigationConfig navigationConfig = navConfigsByName.get(navigationConfigName);
     if (navigationConfig == null) {
       log.debug(
@@ -173,11 +173,6 @@ public final class NavigationPrimary extends NavigationImpl implements Initializ
       return null;
     }
     Navigation result = new Navigation(navigationConfig, this);
-    if (rootNodes != null) {
-      for (NavigationRootNode navigationRootNode : rootNodes) {
-        result.addRootNode(navigationRootNode.getEntryMetaUri(), navigationRootNode.getObjectUri());
-      }
-    }
     return result;
   }
 

@@ -110,10 +110,8 @@ public interface NavigationApi {
    * added into the constructed navigation.
    * 
    * @param navigationConfigName The name of the configuration used for constructing the navigation.
-   * @param rootNodes The root nodes that will be added to the constructed navigation including the
-   *        required entry meta uri and object uri.
    * @return
    */
-  Navigation start(String navigationConfigName, List<NavigationRootNode> rootNodes);
+  Navigation start(String navigationConfigName);
 
 }

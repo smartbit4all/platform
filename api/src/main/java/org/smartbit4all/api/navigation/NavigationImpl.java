@@ -57,7 +57,7 @@ public abstract class NavigationImpl implements NavigationApi {
   }
 
   @Override
-  public Navigation start(String navigationConfigName, List<NavigationRootNode> rootNodes) {
+  public Navigation start(String navigationConfigName) {
     return null;
   }
 
