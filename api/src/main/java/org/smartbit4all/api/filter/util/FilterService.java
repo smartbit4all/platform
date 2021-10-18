@@ -34,13 +34,11 @@ import org.smartbit4all.domain.meta.PropertyRef;
 import org.smartbit4all.domain.service.entity.EntityManager;
 import org.smartbit4all.domain.service.transfer.TransferService;
 import org.smartbit4all.domain.service.transfer.convert.Converter;
-import org.springframework.stereotype.Service;
 
 /**
  * This service is responsible for compile the filter api objects to Expression.
  * 
  */
-@Service
 public class FilterService {
 
   private static final Logger log = LoggerFactory.getLogger(FilterService.TimeFilterOptions.class);

@@ -21,14 +21,23 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.function.Supplier;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import org.smartbit4all.core.SB4Configuration;
+import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.domain.application.TimeManagementService;
 import org.smartbit4all.domain.application.TimeManagementServiceImpl;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageApiImpl;
+import org.smartbit4all.domain.meta.EntityDefinition;
+import org.smartbit4all.domain.service.entity.EntityManager;
+import org.smartbit4all.domain.service.entity.EntityManagerImpl;
+import org.smartbit4all.domain.service.modify.ApplyChangeObjectConfig;
+import org.smartbit4all.domain.service.modify.ApplyChangeService;
+import org.smartbit4all.domain.service.modify.ApplyChangeServiceImpl;
 import org.smartbit4all.domain.service.query.Queries;
 import org.smartbit4all.domain.service.query.QueryApiImpl;
 import org.smartbit4all.domain.service.transfer.TransferService;
@@ -159,6 +168,17 @@ public class DomainServiceConfig extends SB4Configuration {
   @Bean
   public StorageApi getStorageApi() {
     return new StorageApiImpl();
+  }
+
+  @Bean
+  public ApplyChangeService applyChangeService(ObjectApi objectApi, TransferService transferService,
+      List<Supplier<ApplyChangeObjectConfig>> configFactories) {
+    return new ApplyChangeServiceImpl(objectApi, transferService, configFactories);
+  }
+
+  @Bean
+  public EntityManager entitManager(List<EntityDefinition> entityDefs) {
+    return new EntityManagerImpl(entityDefs);
   }
 
 }
