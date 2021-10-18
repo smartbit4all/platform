@@ -16,7 +16,7 @@ public class StorageLoadOption {
 
   public enum LoadInstruction {
 
-    SKIP_DATA_OBJECT, LOAD_REFERENCE, LOAD_COLLECTION
+    SKIP_DATA_OBJECT, LOAD_REFERENCE, LOAD_COLLECTION, LOCK
 
   }
 
@@ -46,6 +46,9 @@ public class StorageLoadOption {
   private static final StorageLoadOption skipData =
       new StorageLoadOption(LoadInstruction.SKIP_DATA_OBJECT, null, null, null);
 
+  private static final StorageLoadOption lock =
+      new StorageLoadOption(LoadInstruction.LOCK, null, null, null);
+
   private StorageLoadOption(LoadInstruction instruction, String name, URI uri, String identifier) {
     super();
     this.instruction = instruction;
@@ -66,6 +69,14 @@ public class StorageLoadOption {
     return skipData;
   }
 
+  /**
+   * 
+   * @return
+   */
+  public static final StorageLoadOption lock() {
+    return lock;
+  }
+
   public static final StorageLoadOption loadReference(String referenceName) {
     return new StorageLoadOption(LoadInstruction.LOAD_REFERENCE, referenceName, null, null);
   }
@@ -75,9 +86,17 @@ public class StorageLoadOption {
   }
 
   public static final boolean checkSkipData(StorageLoadOption... options) {
+    return check(LoadInstruction.SKIP_DATA_OBJECT, options);
+  }
+
+  public static final boolean checkLock(StorageLoadOption... options) {
+    return check(LoadInstruction.LOCK, options);
+  }
+
+  private static boolean check(LoadInstruction instruction, StorageLoadOption... options) {
     if (options != null) {
       for (StorageLoadOption option : options) {
-        if (option.instruction == LoadInstruction.SKIP_DATA_OBJECT) {
+        if (option.instruction == instruction) {
           return true;
         }
       }
