@@ -1,5 +1,8 @@
 package org.smartbit4all.storage.fs;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
@@ -9,6 +12,8 @@ import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.smartbit4all.api.binarydata.BinaryData;
+import org.smartbit4all.api.binarydata.BinaryDataObject;
 import org.smartbit4all.api.invocation.bean.InvocationParameterTemplate;
 import org.smartbit4all.api.invocation.bean.InvocationRequestTemplate;
 import org.smartbit4all.api.storage.bean.ObjectHistoryEntry;
@@ -24,6 +29,7 @@ import org.smartbit4all.domain.data.storage.StorageObject;
 import org.smartbit4all.domain.data.storage.StorageObjectReferenceEntry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import com.google.common.io.ByteStreams;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(classes = {StorageFSTestConfig.class})
@@ -87,12 +93,41 @@ class StorageFSTest {
   @Autowired
   StorageApi storageApi;
 
+  @Autowired
+  StorageFS storageFS;
+
   @Test
   void saveLoadDeleteTest() throws Exception {
     Storage storage = storageApi.get(StorageFSTestConfig.TESTSCHEME);
 
     saveAndCheckLoad(storage, "test string1");
     saveAndCheckLoad(storage, "test string2");
+
+    // assertFalse(loaded.isPresent());
+  }
+
+  @Test
+  void saveLoadBinaryDataTest() throws Exception {
+    Storage storage = storageApi.get(StorageFSTestConfig.TESTSCHEME);
+
+    File tempFile = new File(storageFS.getRootFolder(), "alma.txt");
+    FileWriter fw = new FileWriter(tempFile);
+    fw.write("test");
+    fw.close();
+
+    BinaryData binaryData = new BinaryData(tempFile);
+
+    StorageObject<BinaryDataObject> storageObject = storage.instanceOf(BinaryDataObject.class);
+    storageObject.setObject(binaryData.asObject());
+    URI save = storage.save(storageObject);
+
+    BinaryDataObject bdResult = storage.read(save, BinaryDataObject.class).get();
+
+    ByteArrayOutputStream bdos = new ByteArrayOutputStream();
+    ByteStreams.copy(bdResult.getBinaryData().inputStream(), bdos);
+    bdos.close();
+
+    assertEquals("test", new String(bdos.toByteArray()));
 
     // assertFalse(loaded.isPresent());
   }

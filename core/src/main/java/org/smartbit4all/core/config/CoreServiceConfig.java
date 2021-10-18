@@ -14,8 +14,12 @@
  ******************************************************************************/
 package org.smartbit4all.core.config;
 
+import java.util.Optional;
+import org.smartbit4all.api.binarydata.BinaryData;
+import org.smartbit4all.api.binarydata.BinaryDataObject;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectApiImpl;
+import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectSerializer;
 import org.smartbit4all.core.object.ObjectSerializerByObjectMapper;
 import org.springframework.context.annotation.Bean;
@@ -40,4 +44,35 @@ public class CoreServiceConfig {
     return new ObjectSerializerByObjectMapper();
   }
 
+  @Bean
+  public ObjectDefinition<BinaryDataObject> binaryDataDefinition() {
+    ObjectDefinition<BinaryDataObject> result =
+        ObjectApiImpl.constructDefinitionBase(BinaryDataObject.class);
+    result.setPreferredSerializerName(BinaryDataObject.class.getName());
+    return result;
+  }
+
+  @Bean
+  public ObjectSerializer binaryDataSerializer() {
+    return new ObjectSerializer() {
+
+      @Override
+      public BinaryData serialize(Object obj, Class<?> clazz) {
+        return ((BinaryDataObject) obj).getBinaryData();
+      }
+
+      @Override
+      public String getName() {
+        return BinaryDataObject.class.getName();
+      }
+
+      @SuppressWarnings("unchecked")
+      @Override
+      public <T> Optional<T> deserialize(BinaryData data, Class<T> clazz) {
+        return clazz.isAssignableFrom(BinaryDataObject.class)
+            ? (Optional<T>) Optional.of(new BinaryDataObject(data))
+            : Optional.empty();
+      }
+    };
+  }
 }

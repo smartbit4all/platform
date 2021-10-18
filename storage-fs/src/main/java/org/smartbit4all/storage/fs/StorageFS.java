@@ -276,6 +276,10 @@ public class StorageFS extends ObjectStorageImpl {
       BinaryData versionBinaryData = new BinaryData(objectVersionFile);
 
       T object = definition.deserialize(versionBinaryData).orElse(null);
+      if (object != null) {
+        // This can ensure that the uri will be the exact uri used for the load.
+        definition.setUri(object, uri);
+      }
       storageObject = instanceOf(storage, definition, object, storageObjectData);
     } else {
       storageObject = instanceOf(storage, definition, uri, storageObjectData);
@@ -413,6 +417,10 @@ public class StorageFS extends ObjectStorageImpl {
 
   public String getStoredObjectFileExtension() {
     return storedObjectFileExtension;
+  }
+
+  public final File getRootFolder() {
+    return rootFolder;
   }
 
   // @Override

@@ -11,10 +11,12 @@ import java.util.Set;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.smartbit4all.api.binarydata.fs.BinaryDataApiFS;
 import org.smartbit4all.core.io.TestFileUtil;
 import org.smartbit4all.core.object.ApiBeanDescriptor;
 import org.smartbit4all.core.object.ApiObjectRef;
+import org.smartbit4all.domain.data.storage.StorageApi;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -22,6 +24,9 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@SpringBootTest(classes = {
+    BinaryContentTestConfig.class
+})
 public class BinaryContentTest {
 
   public static final String BINARYDATA_SCHEMA = "testFS";
@@ -29,9 +34,14 @@ public class BinaryContentTest {
   final static BinaryData testFile =
       new BinaryData(new File("src/test/resources/lorem-ipsum.pdf"));
 
-  private static BinaryDataApiFS binaryDataApi;
+  @Autowired
+  private BinaryDataApi binaryDataApi;
 
-  private static BinaryContentApiImpl binaryContentApi;
+  @Autowired
+  private BinaryContentApi binaryContentApi;
+
+  @Autowired
+  StorageApi storageApi;
 
   private static URI testFileDataURI;
 
@@ -55,9 +65,6 @@ public class BinaryContentTest {
 
   @BeforeAll
   static void init() {
-    binaryDataApi =
-        new BinaryDataApiFS(BINARYDATA_SCHEMA, TestFileUtil.testFsRootFolder());
-    binaryContentApi = new BinaryContentApiImpl(binaryDataApi);
     testFileDataURI = URI.create(BINARYDATA_SCHEMA + ":/testfolder/testfile.bd");
   }
 
@@ -227,4 +234,5 @@ public class BinaryContentTest {
     assertNull(binaryContent.getData());
     assertNull(binaryContent.getSize());
   }
+
 }

@@ -4,10 +4,16 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.Optional;
 import org.smartbit4all.core.object.ApiObjectRef;
+import org.smartbit4all.domain.data.storage.Storage;
+import org.smartbit4all.domain.data.storage.StorageApi;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class BinaryContentApiImpl implements BinaryContentApi {
 
   protected BinaryDataApi binaryDataApi;
+
+  @Autowired
+  private StorageApi storageApi;
 
   public BinaryContentApiImpl(BinaryDataApi binaryDataApi) {
     super();
@@ -17,7 +23,16 @@ public class BinaryContentApiImpl implements BinaryContentApi {
   @Override
   public void load(BinaryContent... binaryContents) {
     for (BinaryContent binaryContent : binaryContents) {
+      URI dataUri = binaryContent.getDataUri();
       Optional<BinaryData> binaryData = binaryDataApi.load(binaryContent.getDataUri());
+
+      if (!binaryData.isPresent()) {
+        Storage storage = dataUri == null ? null : storageApi.get(dataUri.getScheme());
+        if (storage != null) {
+          BinaryDataObject binaryDataObject = storage.read(dataUri, BinaryDataObject.class).get();
+          binaryData = Optional.of(binaryDataObject.getBinaryData());
+        }
+      }
 
       if (!binaryData.isPresent()) {
         throw new IllegalStateException(
@@ -88,11 +103,11 @@ public class BinaryContentApiImpl implements BinaryContentApi {
   @Override
   public void removeContent(BinaryContent binaryContent) {
     binaryDataApi.remove(binaryContent.getDataUri());
-    
+
     BinaryContent unwrappedBinaryContent = ApiObjectRef.unwrapObject(binaryContent);
     binaryContent.setDataUri(null);
     binaryContent.setSize(null);
-    
+
     unwrappedBinaryContent.setLoaded(false);
     unwrappedBinaryContent.setSaveData(false);
     unwrappedBinaryContent.setData(null);

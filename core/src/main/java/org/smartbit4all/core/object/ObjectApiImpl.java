@@ -65,6 +65,10 @@ public class ObjectApiImpl implements ObjectApi, InitializingBean {
 
   @Override
   public final BeanMeta meta(Class<?> apiClass) {
+    return getMeta(apiClass);
+  }
+
+  private static BeanMeta getMeta(Class<?> apiClass) {
     if (apiClass == null) {
       return null;
     }
@@ -138,47 +142,49 @@ public class ObjectApiImpl implements ObjectApi, InitializingBean {
 
   @SuppressWarnings("unchecked")
   private <T> ObjectDefinition<T> constructDefinition(Class<T> clazz) {
-    ObjectDefinition<T> result = null;
-    result = (ObjectDefinition<T>) definitionsByClass.get(clazz);
-    if (result == null) {
-      result = new ObjectDefinition<>(clazz);
-      setupUri(result);
-      setupId(result);
-      result.setAlias(getDefaultAlias(clazz));
-      result.setDefaultSerializer(defaultSerializer);
-    }
+    ObjectDefinition<T> result = constructDefinitionBase(clazz);
+    result.setDefaultSerializer(defaultSerializer);
     return result;
   }
 
-  private String getDefaultAlias(Class<?> clazz) {
+  public static <T> ObjectDefinition<T> constructDefinitionBase(Class<T> clazz) {
+    ObjectDefinition<T> result = null;
+    result = new ObjectDefinition<>(clazz);
+    setupUri(result);
+    setupId(result);
+    result.setAlias(getDefaultAlias(clazz));
+    return result;
+  }
+
+  private static String getDefaultAlias(Class<?> clazz) {
     return clazz.getName().replace('.', '_');
   }
 
   @SuppressWarnings("unchecked")
-  private <T> void setupUri(ObjectDefinition<T> result) {
+  private static <T> void setupUri(ObjectDefinition<T> result) {
     setupObjectProperty(result, URI, ObjectDefinition::setUriGetter,
         ObjectDefinition::setUriSetter);
   }
 
   @SuppressWarnings("unchecked")
-  private <T> void setupId(ObjectDefinition<T> result) {
+  private static <T> void setupId(ObjectDefinition<T> result) {
     setupObjectProperty(result, ID, ObjectDefinition::setIdGetter,
         ObjectDefinition::setIdSetter);
   }
 
   @SuppressWarnings("rawtypes")
-  private <T> void setupObjectProperty(ObjectDefinition<T> result, String propertyName,
+  private static <T> void setupObjectProperty(ObjectDefinition<T> result, String propertyName,
       BiConsumer<ObjectDefinition, Function<T, ?>> getterSetter,
       BiConsumer<ObjectDefinition, BiConsumer<T, ?>> setterSetter) {
     setupObjectProperty(result, propertyName, getterSetter, setterSetter, false);
   }
 
   @SuppressWarnings("rawtypes")
-  private <T> void setupObjectProperty(ObjectDefinition<T> result, String propertyName,
+  private static <T> void setupObjectProperty(ObjectDefinition<T> result, String propertyName,
       BiConsumer<ObjectDefinition, Function<T, ?>> getterSetter,
       BiConsumer<ObjectDefinition, BiConsumer<T, ?>> setterSetter,
       boolean isMandatory) {
-    BeanMeta beanMeta = meta(result.getClazz());
+    BeanMeta beanMeta = getMeta(result.getClazz());
     // The definition was not found in the context. We need to analyze the bean by reflection.
     PropertyMeta propertyMeta = beanMeta.getProperties().get(propertyName);
     if (propertyMeta != null) {

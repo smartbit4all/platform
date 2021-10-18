@@ -44,6 +44,9 @@ public class BinaryDataApiPrimary extends BinaryDataApiImpl implements Initializ
 
   @Override
   public Optional<BinaryData> load(URI dataUri) {
+    if (dataUri == null) {
+      return Optional.empty();
+    }
     BinaryDataApi api = api(dataUri);
     return api.load(dataUri);
   }

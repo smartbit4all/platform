@@ -77,4 +77,5 @@ public class PlatformApiConfig {
       TransferService transferService) {
     return new FilterService(entityManager, transferService);
   }
+
 }
