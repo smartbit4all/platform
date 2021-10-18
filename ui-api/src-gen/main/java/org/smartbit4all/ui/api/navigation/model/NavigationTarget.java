@@ -22,9 +22,12 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.smartbit4all.ui.api.navigation.model.NavigationTargetState;
+import org.smartbit4all.ui.api.navigation.model.NavigationTargetType;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
@@ -33,17 +36,57 @@ import javax.validation.Valid;
  * NavigationTarget
  */
 @JsonPropertyOrder({
+  NavigationTarget.URI,
   NavigationTarget.VIEW_NAME,
-  NavigationTarget.PARAMETERS
+  NavigationTarget.PARAMETERS,
+  NavigationTarget.STATE,
+  NavigationTarget.TYPE
 })
 @JsonTypeName("NavigationTarget")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class NavigationTarget {
+  public static final String URI = "uri";
+  private URI uri;
+
   public static final String VIEW_NAME = "viewName";
   private String viewName;
 
   public static final String PARAMETERS = "parameters";
-  private Map<String, Object> parameters = null;
+  private Map<String, Object> parameters = new HashMap<>();
+
+  public static final String STATE = "state";
+  private NavigationTargetState state = NavigationTargetState.TO_OPEN;
+
+  public static final String TYPE = "type";
+  private NavigationTargetType type = NavigationTargetType.NORMAL;
+
+
+  public NavigationTarget uri(URI uri) {
+    
+    this.uri = uri;
+    return this;
+  }
+
+   /**
+   * Get uri
+   * @return uri
+  **/
+  @NotNull
+  @Valid
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(URI)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public URI getUri() {
+    return uri;
+  }
+
+
+  @JsonProperty(URI)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setUri(URI uri) {
+    this.uri = uri;
+  }
 
 
   public NavigationTarget viewName(String viewName) {
@@ -56,10 +99,10 @@ public class NavigationTarget {
    * Get viewName
    * @return viewName
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+  @NotNull
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(VIEW_NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public String getViewName() {
     return viewName;
@@ -67,7 +110,7 @@ public class NavigationTarget {
 
 
   @JsonProperty(VIEW_NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setViewName(String viewName) {
     this.viewName = viewName;
   }
@@ -80,9 +123,6 @@ public class NavigationTarget {
   }
 
   public NavigationTarget putParametersItem(String key, Object parametersItem) {
-    if (this.parameters == null) {
-      this.parameters = new HashMap<>();
-    }
     this.parameters.put(key, parametersItem);
     return this;
   }
@@ -91,10 +131,10 @@ public class NavigationTarget {
    * Get parameters
    * @return parameters
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+  @NotNull
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(PARAMETERS)
-  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.ALWAYS)
 
   public Map<String, Object> getParameters() {
     return parameters;
@@ -102,9 +142,65 @@ public class NavigationTarget {
 
 
   @JsonProperty(PARAMETERS)
-  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.ALWAYS)
   public void setParameters(Map<String, Object> parameters) {
     this.parameters = parameters;
+  }
+
+
+  public NavigationTarget state(NavigationTargetState state) {
+    
+    this.state = state;
+    return this;
+  }
+
+   /**
+   * Get state
+   * @return state
+  **/
+  @NotNull
+  @Valid
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(STATE)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public NavigationTargetState getState() {
+    return state;
+  }
+
+
+  @JsonProperty(STATE)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setState(NavigationTargetState state) {
+    this.state = state;
+  }
+
+
+  public NavigationTarget type(NavigationTargetType type) {
+    
+    this.type = type;
+    return this;
+  }
+
+   /**
+   * Get type
+   * @return type
+  **/
+  @NotNull
+  @Valid
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(TYPE)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public NavigationTargetType getType() {
+    return type;
+  }
+
+
+  @JsonProperty(TYPE)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setType(NavigationTargetType type) {
+    this.type = type;
   }
 
 
@@ -117,21 +213,27 @@ public class NavigationTarget {
       return false;
     }
     NavigationTarget navigationTarget = (NavigationTarget) o;
-    return Objects.equals(this.viewName, navigationTarget.viewName) &&
-        Objects.equals(this.parameters, navigationTarget.parameters);
+    return Objects.equals(this.uri, navigationTarget.uri) &&
+        Objects.equals(this.viewName, navigationTarget.viewName) &&
+        Objects.equals(this.parameters, navigationTarget.parameters) &&
+        Objects.equals(this.state, navigationTarget.state) &&
+        Objects.equals(this.type, navigationTarget.type);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(viewName, parameters);
+    return Objects.hash(uri, viewName, parameters, state, type);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class NavigationTarget {\n");
+    sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    viewName: ").append(toIndentedString(viewName)).append("\n");
     sb.append("    parameters: ").append(toIndentedString(parameters)).append("\n");
+    sb.append("    state: ").append(toIndentedString(state)).append("\n");
+    sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("}");
     return sb.toString();
   }
