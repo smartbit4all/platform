@@ -40,7 +40,8 @@ import javax.validation.Valid;
   NavigationTarget.VIEW_NAME,
   NavigationTarget.PARAMETERS,
   NavigationTarget.STATE,
-  NavigationTarget.TYPE
+  NavigationTarget.TYPE,
+  NavigationTarget.CLOSE_AFTER_NAVIGATION
 })
 @JsonTypeName("NavigationTarget")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -59,6 +60,9 @@ public class NavigationTarget {
 
   public static final String TYPE = "type";
   private NavigationTargetType type = NavigationTargetType.NORMAL;
+
+  public static final String CLOSE_AFTER_NAVIGATION = "closeAfterNavigation";
+  private Boolean closeAfterNavigation;
 
 
   public NavigationTarget uri(URI uri) {
@@ -204,6 +208,33 @@ public class NavigationTarget {
   }
 
 
+  public NavigationTarget closeAfterNavigation(Boolean closeAfterNavigation) {
+    
+    this.closeAfterNavigation = closeAfterNavigation;
+    return this;
+  }
+
+   /**
+   * Get closeAfterNavigation
+   * @return closeAfterNavigation
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(CLOSE_AFTER_NAVIGATION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getCloseAfterNavigation() {
+    return closeAfterNavigation;
+  }
+
+
+  @JsonProperty(CLOSE_AFTER_NAVIGATION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setCloseAfterNavigation(Boolean closeAfterNavigation) {
+    this.closeAfterNavigation = closeAfterNavigation;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -217,12 +248,13 @@ public class NavigationTarget {
         Objects.equals(this.viewName, navigationTarget.viewName) &&
         Objects.equals(this.parameters, navigationTarget.parameters) &&
         Objects.equals(this.state, navigationTarget.state) &&
-        Objects.equals(this.type, navigationTarget.type);
+        Objects.equals(this.type, navigationTarget.type) &&
+        Objects.equals(this.closeAfterNavigation, navigationTarget.closeAfterNavigation);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, viewName, parameters, state, type);
+    return Objects.hash(uri, viewName, parameters, state, type, closeAfterNavigation);
   }
 
   @Override
@@ -234,6 +266,7 @@ public class NavigationTarget {
     sb.append("    parameters: ").append(toIndentedString(parameters)).append("\n");
     sb.append("    state: ").append(toIndentedString(state)).append("\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
+    sb.append("    closeAfterNavigation: ").append(toIndentedString(closeAfterNavigation)).append("\n");
     sb.append("}");
     return sb.toString();
   }

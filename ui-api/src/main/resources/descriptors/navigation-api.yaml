@@ -46,6 +46,8 @@ components:
           $ref: '#/components/schemas/NavigationTargetState'
         type:
           $ref: '#/components/schemas/NavigationTargetType'
+        closeAfterNavigation:
+          type: boolean
     NavigationTargetState:
       type: string
       enum:
