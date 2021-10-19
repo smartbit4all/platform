@@ -53,6 +53,8 @@ public class UINavigationVaadinTabbed implements UINavigationApi {
 
   private Map<String, Map<URI, Tab>> tabsByViewAndUri;
 
+  private boolean hideDrawerOnSelect = false;
+
   public UINavigationVaadinTabbed(UI ui, UserSessionApi userSessionApi) {
     this.ui = ui;
     this.userSessionApi = userSessionApi;
@@ -61,7 +63,6 @@ public class UINavigationVaadinTabbed implements UINavigationApi {
     navigableViews = new HashMap<>();
     tabsByViewAndUri = new HashMap<>();
   }
-
 
   public void setMainView(AppLayout mainView) {
     if (this.mainView != null) {
@@ -167,6 +168,9 @@ public class UINavigationVaadinTabbed implements UINavigationApi {
         }
       }
       tabs.setSelectedTab(tab);
+      if (hideDrawerOnSelect && mainView.isDrawerOpened()) {
+        mainView.setDrawerOpened(false);
+      }
     } catch (Exception e) {
       log.error("Unexpected error", e);
     }
@@ -231,6 +235,14 @@ public class UINavigationVaadinTabbed implements UINavigationApi {
       return "hu.idomsoft.novaugykoltseg.ui.vaadin.NovaUgykoltsegDashboardUI";
     }
     return null;
+  }
+
+  public boolean isHideDrawerOnSelect() {
+    return hideDrawerOnSelect;
+  }
+
+  public void setHideDrawerOnSelect(boolean hideDrawerOnSelect) {
+    this.hideDrawerOnSelect = hideDrawerOnSelect;
   }
 
 }
