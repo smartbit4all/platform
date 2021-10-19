@@ -1,5 +1,7 @@
 package org.smartbit4all.domain.service.modify;
 
+import java.util.Map;
+import org.smartbit4all.core.object.ApiBeanDescriptor;
 import org.smartbit4all.core.object.ObjectChange;
 
 public interface ApplyChangeService {
@@ -16,5 +18,16 @@ public interface ApplyChangeService {
    * {@link ApplyChangeObjectConfig} for the object.
    */
   void applyChange(ObjectChange objectChange, Object object) throws Exception;
+
+  void createBean(Object newBean, Map<Class<?>, ApiBeanDescriptor> descriptor,
+      ApplyChangeObjectConfig configuration) throws Exception;
+
+  void createBean(Object newBean, Map<Class<?>, ApiBeanDescriptor> descriptor) throws Exception;
+
+  void updateBean(Object oldBean, Object newBean, Map<Class<?>, ApiBeanDescriptor> descriptor,
+      ApplyChangeObjectConfig configuration) throws Exception;
+
+  void updateBean(Object oldBean, Object newBean, Map<Class<?>, ApiBeanDescriptor> descriptor)
+      throws Exception;
 
 }

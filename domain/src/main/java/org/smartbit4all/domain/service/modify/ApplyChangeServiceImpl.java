@@ -6,6 +6,8 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import org.smartbit4all.core.object.ApiBeanDescriptor;
+import org.smartbit4all.core.object.ApiObjectRef;
 import org.smartbit4all.core.object.ChangeState;
 import org.smartbit4all.core.object.CollectionChange;
 import org.smartbit4all.core.object.CollectionObjectChange;
@@ -254,5 +256,41 @@ public class ApplyChangeServiceImpl implements ApplyChangeService {
         .map(factory -> factory.get())
         .collect(Collectors.toMap(ApplyChangeObjectConfig::getName, Function.identity()));
   }
+
+  @Override
+  public void createBean(Object newBean, Map<Class<?>, ApiBeanDescriptor> descriptor,
+      ApplyChangeObjectConfig configuration) throws Exception {
+    ApiObjectRef apiObjRef = new ApiObjectRef(null, newBean, descriptor);
+    ObjectChange change = apiObjRef.renderAndCleanChanges().orElse(null);
+    applyChange(change, newBean, configuration);
+  }
+
+  @Override
+  public void createBean(Object newBean, Map<Class<?>, ApiBeanDescriptor> descriptor)
+      throws Exception {
+    ApplyChangeObjectConfig config = getConfig(newBean);
+    createBean(newBean, descriptor, config);
+  }
+
+  @Override
+  public void updateBean(Object oldBean, Object newBean,
+      Map<Class<?>, ApiBeanDescriptor> descriptor, ApplyChangeObjectConfig configuration)
+      throws Exception {
+    ApiObjectRef apiObjRef = new ApiObjectRef(null, oldBean, descriptor);
+    apiObjRef.mergeObject(newBean);
+    ObjectChange change = apiObjRef.renderAndCleanChanges().orElse(null);
+    if (change == null) {
+      return;
+    }
+    applyChange(change, newBean);
+  }
+
+  @Override
+  public void updateBean(Object oldBean, Object newBean,
+      Map<Class<?>, ApiBeanDescriptor> descriptor) throws Exception {
+    ApplyChangeObjectConfig config = getConfig(newBean);
+    updateBean(oldBean, newBean, descriptor, config);
+  }
+
 
 }
