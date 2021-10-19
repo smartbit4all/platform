@@ -1,9 +1,15 @@
 package org.smartbit4all.sql.applychange;
 
+import java.util.Collections;
+import java.util.Map;
 import java.util.function.Supplier;
 import javax.sql.DataSource;
+import org.smartbit4all.core.object.ObjectDefinition;
+import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.domain.meta.jdbc.JDBCDataConverterConfig;
+import org.smartbit4all.domain.service.identifier.NextIdentifier;
 import org.smartbit4all.domain.service.modify.ApplyChangeObjectConfig;
+import org.smartbit4all.domain.utility.crud.Crud;
 import org.smartbit4all.sql.config.SQLConfig;
 import org.smartbit4all.sql.config.SQLDBParameter;
 import org.smartbit4all.sql.config.SQLDBParameterBase;
@@ -61,12 +67,24 @@ public class ApplyChangeTestConfig {
   }
 
   @Bean
+  public ObjectDefinition<TicketFCC> masterBeanDef() {
+    ObjectDefinition<TicketFCC> result = new ObjectDefinition<>(TicketFCC.class);
+    result.setIdGetter(TicketFCC::getCustomNamedId);
+    result.setIdSetter(TicketFCC::setCustomNamedId);
+    return result;
+  }
+
+
+  @Bean
   public Supplier<ApplyChangeObjectConfig> ticketACOConfig(TicketDef ticketDef, PersonDef personDef,
-      AddressDef addressDef) {
+      AddressDef addressDef, SQLIdentifierService idService) {
 // @formatter:off
     return () -> {
       ApplyChangeObjectConfig personConfig = createPersonMapping(personDef, addressDef);
       return ApplyChangeObjectConfig.builder(TicketFCC.class, ticketDef)
+          .entityIdProperty(ticketDef.idString())
+          .entityPrimaryKeyIdProvider(stringId -> 
+                createTickedPrimaryKeyId(ticketDef, idService, stringId))
           .addPropertyMapping(TicketFCC.TITLE, ticketDef.title())
           .addPropertyMapping(TicketFCC.URI, ticketDef.uri())
           .addReferenceMapping(TicketFCC.PRIMARY_PERSON, ticketDef.primaryPersonId())
@@ -79,7 +97,25 @@ public class ApplyChangeTestConfig {
     };
   }
 
-   private ApplyChangeObjectConfig createPersonMapping(PersonDef personDef, AddressDef addressDef) {
+  private Map<Property<?>, Object> createTickedPrimaryKeyId(TicketDef ticketDef, SQLIdentifierService idService,
+      Object stringId) {
+    Long id = null;
+    try {
+      id = Crud.read(ticketDef)
+        .select(ticketDef.id())
+        .where(ticketDef.idString().eq((String) stringId))
+        .onlyOneValue(ticketDef.id()).orElse(null);
+    } catch (Exception e) {
+      // nop
+    }
+    
+    if(id == null) {
+      id = getNextId(idService, "SQL_TEST_EXISTS_SEQ");
+    }
+    return Collections.singletonMap(ticketDef.id(), id);
+  }
+  
+  private ApplyChangeObjectConfig createPersonMapping(PersonDef personDef, AddressDef addressDef) {
      return ApplyChangeObjectConfig.builder(Person.class, personDef)
        .addPropertyMapping(Person.NAME, personDef.name())
        .addCollectionMapping(Person.ADDRESSES, addressDef.personId())
@@ -95,5 +131,16 @@ public class ApplyChangeTestConfig {
          .build();
    }
 // @formatter:on
+
+  private Long getNextId(SQLIdentifierService idService, String sequence) {
+    try {
+      NextIdentifier next = idService.next();
+      next.setInput(sequence);
+      next.execute();
+      return next.output();
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
 
 }

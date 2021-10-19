@@ -1,6 +1,5 @@
 package org.smartbit4all.domain.service.modify;
 
-import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,11 +52,6 @@ public class ApplyChangeOperation extends SB4CompositeFunctionImpl<Void, List<Da
    * The preferred operation for the change.
    */
   private ChangeOperation operation = ChangeOperation.CREATE;
-
-  /**
-   * The mappings for copying the result of this operation to other operations input.
-   */
-  private final List<ApplyChangeOperationTargetMapping> mappings = new ArrayList<>();
 
   /**
    * Constructs a new apply change operation.
@@ -149,15 +143,6 @@ public class ApplyChangeOperation extends SB4CompositeFunctionImpl<Void, List<Da
    */
   public final void setOperation(ChangeOperation operation) {
     this.operation = operation;
-  }
-
-  /**
-   * The mappings
-   * 
-   * @return
-   */
-  public final List<ApplyChangeOperationTargetMapping> getMappings() {
-    return mappings;
   }
 
   public final Property<?> getUniqueId() {

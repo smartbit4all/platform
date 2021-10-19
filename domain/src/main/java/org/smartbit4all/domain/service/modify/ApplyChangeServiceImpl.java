@@ -24,7 +24,6 @@ import org.smartbit4all.domain.data.TableDatas;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.domain.meta.PropertyRef;
-import org.smartbit4all.domain.meta.PropertySet;
 import org.smartbit4all.domain.service.modify.ApplyChangeObjectConfig.CollectionMappingItem;
 import org.smartbit4all.domain.service.modify.ApplyChangeObjectConfig.PropertyMappingItem;
 import org.smartbit4all.domain.service.modify.ApplyChangeObjectConfig.ReferenceMappingItem;
@@ -96,15 +95,20 @@ public class ApplyChangeServiceImpl implements ApplyChangeService {
       return null;
     }
     TableData<EntityDefinition> rootTable = TableDatas.of(rootEntity);
-    PropertySet primaryKeys = rootEntity.PRIMARYKEYDEF();
-    if (primaryKeys.size() > 1) {
-      throw new IllegalStateException("Not handled entity: it has multiple primary keys!");
-    }
     String rootId = getObjectId(rootObject, potetntialContainmentId);
-    Property<?> primaryKey = primaryKeys.iterator().next();
-    rootTable.addColumnOwn(primaryKey);
+    Property<String> entityIdProperty = config.getEntityIdProperty();
+    rootTable.addColumnOwn(entityIdProperty);
     DataRow rootRow = rootTable.addRow();
-    rootRow.setObject(primaryKey, rootId);
+    rootRow.setObject(entityIdProperty, rootId);
+
+    Function<Object, Map<Property<?>, Object>> idProvider = config.getEntityPrimaryKeyIdProvider();
+    if (idProvider != null) {
+      Map<Property<?>, Object> idValuesByProperty = idProvider.apply(rootId);
+      idValuesByProperty.forEach((prop, value) -> {
+        rootTable.addColumnOwn(prop);
+        rootRow.setObject(prop, value);
+      });
+    }
 
     ApplyChangeOperation aco = new ApplyChangeOperation(rootTable, changeOperation);
 
@@ -260,6 +264,7 @@ public class ApplyChangeServiceImpl implements ApplyChangeService {
   @Override
   public void createBean(Object newBean, Map<Class<?>, ApiBeanDescriptor> descriptor,
       ApplyChangeObjectConfig configuration) throws Exception {
+    newBean = ApiObjectRef.unwrapObject(newBean);
     ApiObjectRef apiObjRef = new ApiObjectRef(null, newBean, descriptor);
     ObjectChange change = apiObjRef.renderAndCleanChanges().orElse(null);
     applyChange(change, newBean, configuration);
@@ -276,6 +281,8 @@ public class ApplyChangeServiceImpl implements ApplyChangeService {
   public void updateBean(Object oldBean, Object newBean,
       Map<Class<?>, ApiBeanDescriptor> descriptor, ApplyChangeObjectConfig configuration)
       throws Exception {
+    oldBean = ApiObjectRef.unwrapObject(oldBean);
+    newBean = ApiObjectRef.unwrapObject(newBean);
     ApiObjectRef apiObjRef = new ApiObjectRef(null, oldBean, descriptor);
     apiObjRef.mergeObject(newBean);
     ObjectChange change = apiObjRef.renderAndCleanChanges().orElse(null);
