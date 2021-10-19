@@ -61,6 +61,12 @@ public class Navigation {
   private static final Logger log = LoggerFactory.getLogger(Navigation.class);
 
   /**
+   * If null is returned while resolving values, the current {@link ResolvedValue}'s message will be
+   * set to this.
+   */
+  private static final String VALUE_NOT_FOUND = "VALUE_NOT_FOUND";
+
+  /**
    * If association is selected, the association URI passed in the UI parameters with this key.
    */
   public static final String ASSOC_URI_VIEW_PARAM_KEY = "assocUri";
@@ -847,7 +853,12 @@ public class Navigation {
                   "Unable to load the " + node.getEntry() + " object."));
       for (ResolvedPropertyEntry resolvedPropertyEntry : properties) {
         Object value = objectRef.getValueByPath(resolvedPropertyEntry.name);
-        result.put(resolvedPropertyEntry.qualifiedName, new ResolvedValue(value));
+        ResolvedValue resolvedValue = new ResolvedValue();
+        if (value == null) {
+          resolvedValue.setMessage(VALUE_NOT_FOUND);
+        } else {
+          result.put(resolvedPropertyEntry.qualifiedName, new ResolvedValue(value));
+        }
       }
     }
 
