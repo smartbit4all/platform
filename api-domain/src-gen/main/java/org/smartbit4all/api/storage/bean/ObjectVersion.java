@@ -47,7 +47,7 @@ import javax.validation.Valid;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class ObjectVersion {
   public static final String SERIAL_NO = "serialNo";
-  private Integer serialNo = 1;
+  private Integer serialNo = 0;
 
   public static final String SERIAL_NO_DATA = "serialNoData";
   private Integer serialNoData;

@@ -44,14 +44,14 @@ components:
             The uri of the object represented by the storage object.
         currentVersion:
           type: object
-          $ref: '#/components/shemas/ObjectVersion'
+          $ref: '#/components/schemas/ObjectVersion'
         versions:
           type: array
           description: |
             The versions of the object in creation order. The version serial number is increased one by one because only the
             successful save opartions will produce new version.
           items:
-            $ref: '#/components/shemas/ObjectVersion'
+            $ref: '#/components/schemas/ObjectVersion'
     StorageObjectRelationData:
       type: object
       description: |
@@ -67,11 +67,20 @@ components:
         references:
           type: object
           additionalProperties:
-            $ref: '#/components/shemas/ObjectReference'
+            $ref: '#/components/schemas/ObjectReference'
         collections:
           type: object
           additionalProperties:
-            $ref: '#/components/shemas/ObjectReferenceList'
+            $ref: '#/components/schemas/ObjectReferenceList'
+    ObjectHistory:
+      type: object
+      properties:
+        title:
+          type: string
+        objectHistoryEntries:
+          type: array
+          items:
+            $ref: '#/components/schemas/ObjectHistoryEntry'
     ObjectHistoryEntry:
       type: object
       description: |
@@ -100,7 +109,7 @@ components:
             are involved.
         version:
           type: object
-          $ref: '#/components/shemas/ObjectVersion'
+          $ref: '#/components/schemas/ObjectVersion'
     ObjectVersion:
       type: object
       description: |
@@ -110,7 +119,7 @@ components:
       properties:
         serialNo:
           type: integer
-          default: 1
+          default: 0
           description: The serial number of the version starting from 1. Increased by every successful save.
         serialNoData:
           type: integer
