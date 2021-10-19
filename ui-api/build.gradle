@@ -20,7 +20,7 @@ smartbit4all {
         "BinaryData": "org.smartbit4all.api.binarydata.BinaryData",
         "BinaryContent": "org.smartbit4all.api.binarydata.BinaryContent",
         "Double": "java.lang.Double",
-        "NavigationTarget": "org.smartbit4all.ui.api.navigation.model.NavigationTarget"
+        "NavigationTargetRef": "org.smartbit4all.ui.api.navigation.model.NavigationTarget"
       ]
   }
 }

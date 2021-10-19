@@ -100,7 +100,9 @@ public class NavigationTreeView implements NavigationView {
   }
 
   private void refreshAll(NavigationTreeNode node) {
-    ui.access(() -> tree.getDataProvider().refreshAll());
+    if (ui != null) {
+      ui.access(() -> tree.getDataProvider().refreshAll());
+    }
   }
 
   private void refreshNode(NavigationTreeNode node) {

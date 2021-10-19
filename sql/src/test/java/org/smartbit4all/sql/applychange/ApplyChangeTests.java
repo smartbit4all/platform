@@ -69,7 +69,7 @@ public class ApplyChangeTests {
   }
 
   @Test
-  public void test() throws Exception {
+  public void testApplyChangeWithCreateAndModify() throws Exception {
 
     TicketFCC ticket = createTicketWithPersonsAndAddresses();
 

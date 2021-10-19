@@ -1,6 +1,7 @@
 package org.smartbit4all.api.config;
 
 import java.util.List;
+import org.smartbit4all.api.filter.util.FilterService;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.InvocationApiImpl;
 import org.smartbit4all.api.invocation.InvocationExecutionApi;
@@ -15,6 +16,8 @@ import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.setting.LocaleUsage;
 import org.smartbit4all.api.setting.LocaleUsageImpl;
 import org.smartbit4all.domain.config.DomainConfig;
+import org.smartbit4all.domain.service.entity.EntityManager;
+import org.smartbit4all.domain.service.transfer.TransferService;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -68,4 +71,11 @@ public class PlatformApiConfig {
   public NavigationApi navigationApi() {
     return new NavigationPrimary();
   }
+
+  @Bean
+  public FilterService filtersService(EntityManager entityManager,
+      TransferService transferService) {
+    return new FilterService(entityManager, transferService);
+  }
+
 }

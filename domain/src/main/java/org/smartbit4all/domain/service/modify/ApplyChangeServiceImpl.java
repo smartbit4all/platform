@@ -224,8 +224,8 @@ public class ApplyChangeServiceImpl implements ApplyChangeService {
       objectId = referredObjectDef.getId(object);
     }
     if (objectId == null) {
-      throw new IllegalStateException("There is no id getter for the object! "
-          + "Object class: " + object.getClass().getName());
+      throw new IllegalStateException("The actual ID is null or there is no id getter for the "
+          + "object! Object class: " + object.getClass().getName());
     }
     return objectId;
   }

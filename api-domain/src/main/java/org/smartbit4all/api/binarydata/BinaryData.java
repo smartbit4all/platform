@@ -317,4 +317,8 @@ public class BinaryData {
     }
   }
 
+  public BinaryDataObject asObject() {
+    return new BinaryDataObject(this);
+  }
+
 }

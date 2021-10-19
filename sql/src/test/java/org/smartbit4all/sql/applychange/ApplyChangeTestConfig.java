@@ -1,14 +1,9 @@
 package org.smartbit4all.sql.applychange;
 
-import java.util.List;
 import java.util.function.Supplier;
 import javax.sql.DataSource;
-import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.domain.meta.jdbc.JDBCDataConverterConfig;
 import org.smartbit4all.domain.service.modify.ApplyChangeObjectConfig;
-import org.smartbit4all.domain.service.modify.ApplyChangeService;
-import org.smartbit4all.domain.service.modify.ApplyChangeServiceImpl;
-import org.smartbit4all.domain.service.transfer.TransferService;
 import org.smartbit4all.sql.config.SQLConfig;
 import org.smartbit4all.sql.config.SQLDBParameter;
 import org.smartbit4all.sql.config.SQLDBParameterBase;
@@ -63,12 +58,6 @@ public class ApplyChangeTestConfig {
   @Bean
   public JdbcTemplate applicationDataConnection(DataSource dataSource) {
     return new JdbcTemplate(dataSource);
-  }
-
-  @Bean
-  public ApplyChangeService applyChangeService(ObjectApi objectApi,
-      TransferService transferService, List<Supplier<ApplyChangeObjectConfig>> configFactories) {
-    return new ApplyChangeServiceImpl(objectApi, transferService, configFactories);
   }
 
   @Bean

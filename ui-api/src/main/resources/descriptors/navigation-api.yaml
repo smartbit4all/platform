@@ -9,21 +9,106 @@ info:
 tags:
   - name: navigation
     description: navigation
-paths:
-  /nope:
-    post:
-      summary: Placeholder for generation
-      responses:
-        '200':
-          description: nope
+paths: {}
 components:
   schemas:
+    UIState:
+      type: object
+      required:
+        - uri
+        - views
+      properties:
+        uri:
+          type: string
+          format: URI
+        views:
+          type: array
+          items:
+            $ref: '#/components/schemas/NavigationTarget'
     NavigationTarget:
       type: object
+      required:
+        - uri
+        - viewName
+        - state
+        - type
+        - parameters
       properties:
+        uri:
+          type: string
+          format: URI
         viewName:
           type: string
         parameters:
           type: object
           additionalProperties: true
-
+        state:
+          $ref: '#/components/schemas/NavigationTargetState'
+        type:
+          $ref: '#/components/schemas/NavigationTargetType'
+        closeAfterNavigation:
+          type: boolean
+    NavigationTargetState:
+      type: string
+      enum:
+        - to_open
+        - opening
+        - opened
+        - to_close
+        - closing
+        - closed
+      default: to_open
+    NavigationTargetType:
+      type: string
+      enum:
+        - normal
+        - dialog
+      default: normal
+    Message:
+      type: object
+      required:
+        - uri
+        - type
+      properties:
+        uri:
+          type: string
+          format: URI
+        type:
+          $ref: '#/components/schemas/MessageType'
+        header:
+          type: string
+        text:
+          type: string
+        possibleResults:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageResult'
+        selectResult:
+          $ref: '#/components/schemas/MessageResult'
+    MessageType:
+      type: string
+      enum:
+        - info
+        - question
+        - warning
+        - error
+    MessageResult:
+      type: object
+      properties:
+        code:
+          type: string
+        label:
+          type: string
+        icon:
+          type: string
+    NavigableViewDescriptor:
+      type: object
+      properties:
+        viewName:
+          type: string
+        viewClassName:
+          type: string
+        title:
+          type: string
+        icon:
+          type: string
