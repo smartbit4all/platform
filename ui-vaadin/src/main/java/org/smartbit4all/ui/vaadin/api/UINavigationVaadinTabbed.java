@@ -1,9 +1,8 @@
 package org.smartbit4all.ui.vaadin.api;
 
 import java.net.URI;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import org.slf4j.Logger;
@@ -27,10 +26,11 @@ import com.vaadin.flow.component.orderedlayout.FlexLayout.FlexDirection;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeLeaveEvent;
+import com.vaadin.flow.router.BeforeLeaveObserver;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Location;
 import com.vaadin.flow.router.QueryParameters;
-import com.vaadin.flow.router.RouterLayout;
 import com.vaadin.flow.server.VaadinService;
 
 // TODO inherit from ui-common / UINavigationImpl?
@@ -70,7 +70,7 @@ public class UINavigationVaadinTabbed implements UINavigationApi {
     this.mainView = mainView;
     FlexLayout content = new FlexLayout();
     content.setFlexDirection(FlexDirection.COLUMN);
-    tabs = new Tabs();
+    tabs = new Tabs(true);
     tabs.setSizeFull();
     this.mainView.addToNavbar(true, tabs);
     tabContents = new Div();
@@ -154,12 +154,18 @@ public class UINavigationVaadinTabbed implements UINavigationApi {
       if (view instanceof HasUrlParameter) {
         QueryParameters queryParams = param.construct();
         Location location = new Location(viewName, queryParams);
-        List<Class<? extends RouterLayout>> layouts = new ArrayList<>();
         BeforeEnterEvent event =
-            new BeforeEnterEvent(ui.getRouter(), null, location, null, ui, layouts);
+            new BeforeEnterEvent(ui.getRouter(), null, location, null, ui, Collections.emptyList());
         ((HasUrlParameter<?>) view).setParameter(event, null);
       }
-
+      if (navigationTarget.getCloseAfterNavigation() != null) {
+        if (navigationTarget.getCloseAfterNavigation()) {
+          Tab currentSelectedTab = tabs.getSelectedTab();
+          if (currentSelectedTab != null && currentSelectedTab != tab) {
+            closeTab(currentSelectedTab);
+          }
+        }
+      }
       tabs.setSelectedTab(tab);
     } catch (Exception e) {
       log.error("Unexpected error", e);
@@ -169,11 +175,25 @@ public class UINavigationVaadinTabbed implements UINavigationApi {
 
 
   private void closeTab(Tab tab) {
-    // TODO tell view that it will be closed?
     tabs.remove(tab);
-    tabContents.remove(viewsByTab.get(tab));
-    viewsByTab.remove(tab);
     String viewName = viewNamesByTab.get(tab);
+    Component viewToClose = viewsByTab.get(tab);
+    if (viewToClose instanceof BeforeLeaveObserver) {
+      Tab tabSelectedAfterClose = tabs.getSelectedTab();
+      String viewNameSelectedAfterClose;
+      if (tabSelectedAfterClose != null) {
+        viewNameSelectedAfterClose = viewNamesByTab.get(tabSelectedAfterClose);
+      } else {
+        // TODO default location?
+        viewNameSelectedAfterClose = "";
+      }
+      Location location = new Location(viewNameSelectedAfterClose);
+      BeforeLeaveEvent event =
+          new BeforeLeaveEvent(ui.getRouter(), null, location, null, ui, Collections.emptyList());
+      ((BeforeLeaveObserver) viewToClose).beforeLeave(event);
+    }
+    tabContents.remove(viewToClose);
+    viewsByTab.remove(tab);
     Map<URI, Tab> tabsByUri = tabsByViewAndUri.get(viewName);
     if (tabsByUri != null) {
       URI uri = null;
