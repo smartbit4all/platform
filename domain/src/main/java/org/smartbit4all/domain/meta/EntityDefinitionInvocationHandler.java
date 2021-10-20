@@ -578,7 +578,7 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
 
   @Override
   public PropertySet allProperties() {
-    return allProperties;
+    return new PropertySet(allProperties);
   }
 
   @Override
