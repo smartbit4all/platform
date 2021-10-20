@@ -26,6 +26,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import org.smartbit4all.ui.api.navigation.model.NavigationTargetState;
 import org.smartbit4all.ui.api.navigation.model.NavigationTargetType;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -36,8 +37,9 @@ import javax.validation.Valid;
  * NavigationTarget
  */
 @JsonPropertyOrder({
-  NavigationTarget.URI,
+  NavigationTarget.UUID,
   NavigationTarget.VIEW_NAME,
+  NavigationTarget.VIEW_OBJECT_URI,
   NavigationTarget.PARAMETERS,
   NavigationTarget.STATE,
   NavigationTarget.TYPE,
@@ -46,11 +48,14 @@ import javax.validation.Valid;
 @JsonTypeName("NavigationTarget")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class NavigationTarget {
-  public static final String URI = "uri";
-  private URI uri;
+  public static final String UUID = "uuid";
+  private UUID uuid;
 
   public static final String VIEW_NAME = "viewName";
   private String viewName;
+
+  public static final String VIEW_OBJECT_URI = "viewObjectUri";
+  private URI viewObjectUri;
 
   public static final String PARAMETERS = "parameters";
   private Map<String, Object> parameters = new HashMap<>();
@@ -65,31 +70,31 @@ public class NavigationTarget {
   private Boolean closeAfterNavigation;
 
 
-  public NavigationTarget uri(URI uri) {
+  public NavigationTarget uuid(UUID uuid) {
     
-    this.uri = uri;
+    this.uuid = uuid;
     return this;
   }
 
    /**
-   * Get uri
-   * @return uri
+   * Get uuid
+   * @return uuid
   **/
   @NotNull
   @Valid
   @ApiModelProperty(required = true, value = "")
-  @JsonProperty(URI)
+  @JsonProperty(UUID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public URI getUri() {
-    return uri;
+  public UUID getUuid() {
+    return uuid;
   }
 
 
-  @JsonProperty(URI)
+  @JsonProperty(UUID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setUri(URI uri) {
-    this.uri = uri;
+  public void setUuid(UUID uuid) {
+    this.uuid = uuid;
   }
 
 
@@ -117,6 +122,34 @@ public class NavigationTarget {
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setViewName(String viewName) {
     this.viewName = viewName;
+  }
+
+
+  public NavigationTarget viewObjectUri(URI viewObjectUri) {
+    
+    this.viewObjectUri = viewObjectUri;
+    return this;
+  }
+
+   /**
+   * Get viewObjectUri
+   * @return viewObjectUri
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(VIEW_OBJECT_URI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public URI getViewObjectUri() {
+    return viewObjectUri;
+  }
+
+
+  @JsonProperty(VIEW_OBJECT_URI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setViewObjectUri(URI viewObjectUri) {
+    this.viewObjectUri = viewObjectUri;
   }
 
 
@@ -244,8 +277,9 @@ public class NavigationTarget {
       return false;
     }
     NavigationTarget navigationTarget = (NavigationTarget) o;
-    return Objects.equals(this.uri, navigationTarget.uri) &&
+    return Objects.equals(this.uuid, navigationTarget.uuid) &&
         Objects.equals(this.viewName, navigationTarget.viewName) &&
+        Objects.equals(this.viewObjectUri, navigationTarget.viewObjectUri) &&
         Objects.equals(this.parameters, navigationTarget.parameters) &&
         Objects.equals(this.state, navigationTarget.state) &&
         Objects.equals(this.type, navigationTarget.type) &&
@@ -254,15 +288,16 @@ public class NavigationTarget {
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, viewName, parameters, state, type, closeAfterNavigation);
+    return Objects.hash(uuid, viewName, viewObjectUri, parameters, state, type, closeAfterNavigation);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class NavigationTarget {\n");
-    sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
+    sb.append("    uuid: ").append(toIndentedString(uuid)).append("\n");
     sb.append("    viewName: ").append(toIndentedString(viewName)).append("\n");
+    sb.append("    viewObjectUri: ").append(toIndentedString(viewObjectUri)).append("\n");
     sb.append("    parameters: ").append(toIndentedString(parameters)).append("\n");
     sb.append("    state: ").append(toIndentedString(state)).append("\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
