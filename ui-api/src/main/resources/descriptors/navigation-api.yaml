@@ -28,17 +28,20 @@ components:
     NavigationTarget:
       type: object
       required:
-        - uri
+        - uuid
         - viewName
         - state
         - type
         - parameters
       properties:
-        uri:
+        uuid:
           type: string
-          format: URI
+          format: uuid
         viewName:
           type: string
+        viewObjectUri:
+          type: string
+          format: uri
         parameters:
           type: object
           additionalProperties: true

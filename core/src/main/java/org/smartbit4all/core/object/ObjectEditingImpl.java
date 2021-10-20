@@ -1,5 +1,6 @@
 package org.smartbit4all.core.object;
 
+import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.core.constraint.ObjectConstraintPublisher;
@@ -12,6 +13,13 @@ public class ObjectEditingImpl implements ObjectEditing {
   protected ApiObjectRef ref;
 
   protected ObjectConstraintPublisher constraints;
+
+  protected UUID navigationTargetUUID;
+
+  public ObjectEditingImpl() {
+    // TODO after uiNavigation is used everywhere, we should warn/error if it's null!
+    navigationTargetUUID = currentConstructionUUID.get();
+  }
 
   @Override
   public ObjectConstraintPublisher constraints() {
