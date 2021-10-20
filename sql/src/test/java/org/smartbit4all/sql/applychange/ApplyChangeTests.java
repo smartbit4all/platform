@@ -127,7 +127,7 @@ public class ApplyChangeTests {
     // =======
 
     ticketTd = Crud.read(ticketDef)
-        .select(ticketDef.allProperties())
+        .select(select)
         .where(ticketDef.idString().eq(ticket.getCustomNamedId()))
         .listData();
     row = ticketTd.rows().get(0);
