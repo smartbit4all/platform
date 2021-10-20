@@ -19,6 +19,9 @@ public interface TicketDef extends EntityDefinition {
   public static final String ID = "id";
   public static final String ID_COL = "ID";
 
+  public static final String ID_STRING = "idString";
+  public static final String ID_STRING_COL = "ID_STRING";
+
   public static final String URI = "uri";
   public static final String URI_COL = "URI";
 
@@ -36,7 +39,10 @@ public interface TicketDef extends EntityDefinition {
 
   @Id
   @OwnProperty(name = ID, columnName = ID_COL)
-  Property<String> id();
+  Property<Long> id();
+
+  @OwnProperty(name = ID_STRING, columnName = ID_STRING_COL)
+  Property<String> idString();
 
   @OwnProperty(name = URI, columnName = URI_COL)
   Property<String> uri();

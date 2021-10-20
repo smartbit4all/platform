@@ -147,6 +147,8 @@ public final class ObjectDefinition<T> {
     return idGetter;
   }
 
+  // TODO should be at least package-private! For setup time configuration a builder must be
+  // provided
   public final void setIdGetter(Function<T, String> idGetter) {
     this.idGetter = idGetter;
   }

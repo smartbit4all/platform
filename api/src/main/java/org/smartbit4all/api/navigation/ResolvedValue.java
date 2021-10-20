@@ -6,6 +6,8 @@ public class ResolvedValue {
   private String message;
   private Throwable throwable;
 
+  public ResolvedValue() {}
+
   public ResolvedValue(Object object) {
     this.object = object;
   }

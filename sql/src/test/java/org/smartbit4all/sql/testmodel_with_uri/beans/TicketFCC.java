@@ -6,14 +6,14 @@ import java.util.List;
 
 public class TicketFCC {
 
-  public static final String ID = "id";
+  public static final String ID = "cutomNamedId";
   public static final String URI = "uri";
   public static final String TITLE = "title";
   public static final String PARENT_TITLE = "parentTicketTitle";
   public static final String PRIMARY_PERSON = "primaryPerson";
   public static final String SECONDARY_PERSON = "secondaryPerson";
 
-  private String id;
+  private String cutomNamedId;
 
   private URI uri;
 
@@ -39,12 +39,12 @@ public class TicketFCC {
     this.uri = uri;
   }
 
-  public String getId() {
-    return id;
+  public String getCustomNamedId() {
+    return cutomNamedId;
   }
 
-  public void setId(String id) {
-    this.id = id;
+  public void setCustomNamedId(String id) {
+    this.cutomNamedId = id;
   }
 
   public Person getPrimaryPerson() {

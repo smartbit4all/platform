@@ -74,7 +74,7 @@ public class ApplyChangeTests {
     TicketFCC ticket = createTicketWithPersonsAndAddresses();
 
 
-    ApiObjectRef ticketObjectRef = new ApiObjectRef(ticket.getId(), ticket, descriptors);
+    ApiObjectRef ticketObjectRef = new ApiObjectRef(ticket.getCustomNamedId(), ticket, descriptors);
     ObjectChange objectChange = ticketObjectRef.renderAndCleanChanges().orElse(null);
 
     assertNotNull(objectChange);
@@ -89,7 +89,7 @@ public class ApplyChangeTests {
     select.addAll(ticketDef.secondaryPerson().allProperties());
     TableData<TicketDef> ticketTd = Crud.read(ticketDef)
         .select(select)
-        .where(ticketDef.id().eq(ticket.getId()))
+        .where(ticketDef.idString().eq(ticket.getCustomNamedId()))
         .listData();
     System.out.println("----\nQueried result:\n" + ticketTd);
 
@@ -128,7 +128,7 @@ public class ApplyChangeTests {
 
     ticketTd = Crud.read(ticketDef)
         .select(ticketDef.allProperties())
-        .where(ticketDef.id().eq(ticket.getId()))
+        .where(ticketDef.idString().eq(ticket.getCustomNamedId()))
         .listData();
     row = ticketTd.rows().get(0);
     System.out.println("----\nQueried result:\n" + ticketTd);
@@ -149,7 +149,7 @@ public class ApplyChangeTests {
   private TicketFCC createTicketWithPersonsAndAddresses() {
     TicketFCC ticket = new TicketFCC();
     String ticketId = "UUID-TICKET";
-    ticket.setId(ticketId);
+    ticket.setCustomNamedId(ticketId);
     ticket.setUri(URI.create("uri-" + ticketId));
     ticket.setTitle("Ticket-1");
 

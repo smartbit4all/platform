@@ -5,13 +5,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Property;
+import org.smartbit4all.domain.meta.PropertySet;
 
 public class ApplyChangeObjectConfig {
 
   private String name;
   private EntityDefinition rootEntity;
+  private Property<String> entityIdProperty;
+  private Function<Object, Map<Property<?>, Object>> entityPrimaryKeyIdProvider;
   private Map<String, PropertyMappingItem> propertyMappings = new HashMap<>();
   private Map<String, ReferenceMappingItem> referenceMappings = new HashMap<>();
   private Map<String, CollectionMappingItem> collectionMappings = new HashMap<>();
@@ -19,6 +23,8 @@ public class ApplyChangeObjectConfig {
   private ApplyChangeObjectConfig(Builder builder) {
     this.name = builder.name;
     this.rootEntity = builder.entityDefinition;
+    this.entityIdProperty = builder.entityIdProperty;
+    this.entityPrimaryKeyIdProvider = builder.entityPrimaryKeyIdProvider;
     builder.propertyMappingBuilders.forEach(pmb -> {
       PropertyMappingItem pmi = new PropertyMappingItem();
       pmi.property = pmb.property;
@@ -69,6 +75,14 @@ public class ApplyChangeObjectConfig {
 
   public Map<String, CollectionMappingItem> getCollectionMappings() {
     return collectionMappings;
+  }
+
+  public Property<String> getEntityIdProperty() {
+    return entityIdProperty;
+  }
+
+  public Function<Object, Map<Property<?>, Object>> getEntityPrimaryKeyIdProvider() {
+    return entityPrimaryKeyIdProvider;
   }
 
   public abstract static class MappingItem {
@@ -124,6 +138,8 @@ public class ApplyChangeObjectConfig {
   public static class Builder {
     String name;
     EntityDefinition entityDefinition;
+    Property<String> entityIdProperty;
+    Function<Object, Map<Property<?>, Object>> entityPrimaryKeyIdProvider;
     List<PropertyMappingBuilder> propertyMappingBuilders = new ArrayList<>();
     List<ReferenceOrCollectionMappingBuilder> referenceMappingBuilders = new ArrayList<>();
     List<ReferenceOrCollectionMappingBuilder> collectionMappingBuilders = new ArrayList<>();
@@ -133,6 +149,17 @@ public class ApplyChangeObjectConfig {
       Objects.requireNonNull(entityDefinition, "EntityDefinition can not be null!");
       this.name = name;
       this.entityDefinition = entityDefinition;
+    }
+
+    public Builder entityIdProperty(Property<String> entityIdProperty) {
+      this.entityIdProperty = entityIdProperty;
+      return this;
+    }
+
+    public Builder entityPrimaryKeyIdProvider(
+        Function<Object, Map<Property<?>, Object>> entityPrimaryKeyIdProvider) {
+      this.entityPrimaryKeyIdProvider = entityPrimaryKeyIdProvider;
+      return this;
     }
 
     public Builder addPropertyMapping(String propertyName, Property<?> property) {
@@ -157,7 +184,14 @@ public class ApplyChangeObjectConfig {
       return referenceOrCollectionMappingBuilder;
     }
 
-    protected void checkContent() {
+    public ApplyChangeObjectConfig build() {
+      checkContent();
+      checkEntityIdProperty();
+      checkEntityPrimaryKeyIdProvider();
+      return new ApplyChangeObjectConfig(this);
+    }
+
+    private void checkContent() {
       if (propertyMappingBuilders.isEmpty() && referenceMappingBuilders.isEmpty()
           && collectionMappingBuilders.isEmpty()) {
         throw new IllegalStateException(
@@ -174,9 +208,47 @@ public class ApplyChangeObjectConfig {
       }
     }
 
-    public ApplyChangeObjectConfig build() {
-      checkContent();
-      return new ApplyChangeObjectConfig(this);
+    @SuppressWarnings("unchecked")
+    private void checkEntityIdProperty() {
+      if (entityIdProperty == null) {
+        PropertySet primarykeydef = entityDefinition.PRIMARYKEYDEF();
+        if (primarykeydef.size() > 1) {
+          throw new IllegalStateException(
+              "The entity definition [" + entityDefinition.entityDefName() + "] has multiple "
+                  + "primary key fields! Use the builder's entityIdProperty() setter to define the "
+                  + "String property that holds the UUIDs!");
+        }
+        Property<?> primaryKey = primarykeydef.iterator().next();
+        if (!String.class.equals(primaryKey.type())) {
+          throw new IllegalStateException(
+              "The entity definition [" + entityDefinition.entityDefName() + "] has a primary key"
+                  + " that is not String typed. Use the builder's entityIdProperty() setter to "
+                  + "define the String property that holds the UUIDs!");
+
+        }
+        entityIdProperty = (Property<String>) primaryKey;
+      }
+    }
+
+    private void checkEntityPrimaryKeyIdProvider() {
+      if (entityPrimaryKeyIdProvider == null) {
+        PropertySet primarykeydef = entityDefinition.PRIMARYKEYDEF();
+        if (primarykeydef.size() > 1) {
+          throw new IllegalStateException(
+              "The entity definition [" + entityDefinition.entityDefName() + "] has multiple "
+                  + "primary key fields! Use the builder's entityPrimaryKeyIdProvider() to set a"
+                  + " provider that provides the mandatory id field values to the corresponting"
+                  + " properties!");
+        }
+        Property<?> primaryKey = primarykeydef.iterator().next();
+        if (!primaryKey.getName().equals(entityIdProperty.getName())) {
+          throw new IllegalStateException(
+              "The entity definition [" + entityDefinition.entityDefName() + "] has a primary key"
+                  + " that different from the configured entityIdProperty! Use the builder's"
+                  + " entityPrimaryKeyIdProvider() to set a provider that provides the mandatory"
+                  + " id field values to the corresponting properties!");
+        }
+      }
     }
 
   }
