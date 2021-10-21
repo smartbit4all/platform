@@ -1,14 +1,12 @@
 package org.smartbit4all.ui.vaadin.api;
 
 import java.net.URI;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.session.UserSessionApi;
-import org.smartbit4all.core.object.ObjectEditing;
 import org.smartbit4all.ui.api.navigation.model.NavigableViewDescriptor;
 import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
 import org.smartbit4all.ui.api.navigation.model.NavigationTargetType;
@@ -26,12 +24,6 @@ import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.FlexLayout.FlexDirection;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
-import com.vaadin.flow.router.BeforeEnterEvent;
-import com.vaadin.flow.router.BeforeLeaveEvent;
-import com.vaadin.flow.router.BeforeLeaveObserver;
-import com.vaadin.flow.router.HasUrlParameter;
-import com.vaadin.flow.router.Location;
-import com.vaadin.flow.router.QueryParameters;
 import com.vaadin.flow.server.VaadinService;
 
 // TODO inherit from ui-common / UINavigationImpl?
@@ -39,9 +31,7 @@ public class UINavigationVaadinTabbed extends UINavigationVaadinCommon {
 
   private static final Logger log = LoggerFactory.getLogger(UINavigationVaadinTabbed.class);
 
-  private UserSessionApi userSessionApi;
   private AppLayout mainView;
-  private UI ui;
   private Tabs tabs;
 
   private Div tabContents;
@@ -55,8 +45,7 @@ public class UINavigationVaadinTabbed extends UINavigationVaadinCommon {
   private boolean hideDrawerOnSelect = false;
 
   public UINavigationVaadinTabbed(UI ui, UserSessionApi userSessionApi) {
-    this.ui = ui;
-    this.userSessionApi = userSessionApi;
+    super(ui, userSessionApi);
     navigationTargetsByTab = new HashMap<>();
     viewsByTab = new HashMap<>();
     tabsByViewObjectId = new HashMap<>();
@@ -109,10 +98,6 @@ public class UINavigationVaadinTabbed extends UINavigationVaadinCommon {
 
   }
 
-  private Component navigateToDialog(NavigationTarget navigationTarget) {
-    throw new UnsupportedOperationException("navigateToDialog not implemented yet!");
-  }
-
   private Component navigateToTab(NavigationTarget navigationTarget) {
     String viewObjectId = getViewObjectId(navigationTarget);
     Component view;
@@ -123,6 +108,7 @@ public class UINavigationVaadinTabbed extends UINavigationVaadinCommon {
       view = viewsByTab.get(tab);
     } else {
       view = createView(navigationTarget);
+      view.setVisible(false);
       tab = createTab(navigationTarget);
       tabContents.add(view);
       navigationTargetsByTab.put(tab, navigationTarget);
@@ -151,17 +137,6 @@ public class UINavigationVaadinTabbed extends UINavigationVaadinCommon {
     }
   }
 
-  private void callHasUrlImplementation(String viewName, UIViewParameterVaadinTransition param,
-      Component view) {
-    if (view instanceof HasUrlParameter) {
-      QueryParameters queryParams = param.construct();
-      Location location = new Location(viewName, queryParams);
-      BeforeEnterEvent event =
-          new BeforeEnterEvent(ui.getRouter(), null, location, null, ui, Collections.emptyList());
-      ((HasUrlParameter<?>) view).setParameter(event, null);
-    }
-  }
-
   private Tab createTab(NavigationTarget navigationTarget) {
     String viewName = navigationTarget.getViewName();
     NavigableViewDescriptor viewDescriptor = navigableViews.get(viewName);
@@ -184,18 +159,6 @@ public class UINavigationVaadinTabbed extends UINavigationVaadinCommon {
     return tab;
   }
 
-  private Component createView(NavigationTarget navigationTarget) {
-    try {
-      ObjectEditing.currentConstructionUUID.set(navigationTarget.getUuid());
-      Component view = VaadinService.getCurrent().getInstantiator()
-          .createComponent(navigableViewClasses.get(navigationTarget.getViewName()));
-      view.setVisible(false);
-      return view;
-    } finally {
-      ObjectEditing.currentConstructionUUID.set(null);
-    }
-  }
-
   private void checkNavigationParameters(NavigationTarget navigationTarget) {
     if (mainView == null) {
       throw new IllegalArgumentException("MainView must be set before navigation!");
@@ -208,7 +171,6 @@ public class UINavigationVaadinTabbed extends UINavigationVaadinCommon {
       throw new RuntimeException(
           "viewDescriptor not found for view " + navigationTarget.getViewName() + "!");
     }
-
   }
 
   private String getViewObjectId(NavigationTarget navigationTarget) {
@@ -230,21 +192,7 @@ public class UINavigationVaadinTabbed extends UINavigationVaadinCommon {
   private void closeTab(Tab tab) {
     tabs.remove(tab);
     Component viewToClose = viewsByTab.get(tab);
-    if (viewToClose instanceof BeforeLeaveObserver) {
-      Tab tabSelectedAfterClose = tabs.getSelectedTab();
-      String viewNameSelectedAfterClose;
-      if (tabSelectedAfterClose != null) {
-        viewNameSelectedAfterClose =
-            navigationTargetsByTab.get(tabSelectedAfterClose).getViewName();
-      } else {
-        // TODO default location?
-        viewNameSelectedAfterClose = "";
-      }
-      Location location = new Location(viewNameSelectedAfterClose);
-      BeforeLeaveEvent event =
-          new BeforeLeaveEvent(ui.getRouter(), null, location, null, ui, Collections.emptyList());
-      ((BeforeLeaveObserver) viewToClose).beforeLeave(event);
-    }
+    callBeforeLeave(viewToClose);
     viewsByTab.remove(tab);
     NavigationTarget targetToClose = navigationTargetsByTab.get(tab);
     String viewObjectId = getViewObjectId(targetToClose);
@@ -253,6 +201,21 @@ public class UINavigationVaadinTabbed extends UINavigationVaadinCommon {
     }
     tabContents.remove(viewToClose);
     navigationTargetsByTab.remove(tab);
+  }
+
+  @Override
+  protected String getViewNameAfterClose() {
+    // this is called after tabs.remove(tab) --> this will be correct
+    Tab tabSelectedAfterClose = tabs.getSelectedTab();
+    String viewNameSelectedAfterClose;
+    if (tabSelectedAfterClose != null) {
+      viewNameSelectedAfterClose =
+          navigationTargetsByTab.get(tabSelectedAfterClose).getViewName();
+    } else {
+      // TODO default location?
+      viewNameSelectedAfterClose = "";
+    }
+    return viewNameSelectedAfterClose;
   }
 
   public boolean isHideDrawerOnSelect() {
@@ -265,10 +228,14 @@ public class UINavigationVaadinTabbed extends UINavigationVaadinCommon {
 
   @Override
   public void close(UUID navigationTargetUuid) {
-    // TODO test more..
-    NavigationTarget target = navigationTargetsByUUID.get(navigationTargetUuid);
-    Tab tab = tabsByViewObjectId.get(getViewObjectId(target));
-    closeTab(tab);
+    if (dialogsByUUID.containsKey(navigationTargetUuid)) {
+      closeDialog(navigationTargetUuid);
+    } else {
+      NavigationTarget target = navigationTargetsByUUID.get(navigationTargetUuid);
+      Tab tab = tabsByViewObjectId.get(getViewObjectId(target));
+      closeTab(tab);
+    }
+    super.close(navigationTargetUuid);
   }
 
 }

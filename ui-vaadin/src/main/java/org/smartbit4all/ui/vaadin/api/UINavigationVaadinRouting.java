@@ -13,13 +13,10 @@ import com.vaadin.flow.router.RouterLayout;
 // TODO inherit from ui-common / UINavigationImpl?
 public class UINavigationVaadinRouting extends UINavigationVaadinCommon {
 
-  private UserSessionApi userSessionApi;
-  private UI ui;
   private Class<? extends RouterLayout> mainLayout;
 
   public UINavigationVaadinRouting(UI ui, UserSessionApi userSessionApi) {
-    this.ui = ui;
-    this.userSessionApi = userSessionApi;
+    super(ui, userSessionApi);
   }
 
   @Override
@@ -64,6 +61,12 @@ public class UINavigationVaadinRouting extends UINavigationVaadinCommon {
       throw new IllegalArgumentException("MainLayout may only be set once!");
     }
     this.mainLayout = mainLayout;
+  }
+
+  @Override
+  protected String getViewNameAfterClose() {
+    // TODO implement
+    return "";
   }
 
 }

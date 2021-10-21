@@ -26,13 +26,14 @@ public class UINavigationApiCommon implements UINavigationApi {
     navigationTargetsByUUID.put(navigationTarget.getUuid(), navigationTarget);
   }
 
+  @Override
   public void registerView(NavigableViewDescriptor viewDescriptor) {
     navigableViews.put(viewDescriptor.getViewName(), viewDescriptor);
   }
 
   @Override
   public void close(UUID navigationTargetUuid) {
-
+    navigationTargetsByUUID.remove(navigationTargetUuid);
   }
 
 }
