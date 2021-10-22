@@ -20,6 +20,7 @@ public class ContentAccessApiImpl implements ContentAccessApi {
 
   private ObjectShareApi objectShareApi;
 
+  private StorageApi storageApi;
   private Storage storage;
 
   private BinaryContentApi binaryContentApi;
@@ -28,11 +29,11 @@ public class ContentAccessApiImpl implements ContentAccessApi {
 
   public ContentAccessApiImpl(
       ObjectShareApi objectShareApi,
-      StorageApi storage,
+      StorageApi storageApi,
       BinaryContentApi binaryContentApi) {
 
     this.objectShareApi = objectShareApi;
-    this.storage = storage.get(ContentAccessApi.SCHEME);
+    this.storageApi = storageApi;
     this.binaryContentApi = binaryContentApi;
     publisher = PublishSubject.create();
   }
@@ -57,9 +58,9 @@ public class ContentAccessApiImpl implements ContentAccessApi {
 
   @Override
   public UUID share(BinaryContent binaryContent) throws Exception {
-    StorageObject<BinaryContent> storageObject = storage.instanceOf(BinaryContent.class);
+    StorageObject<BinaryContent> storageObject = getStorage().instanceOf(BinaryContent.class);
     storageObject.setObject(binaryContent);
-    URI savedBinaryContentUri = storage.save(storageObject);
+    URI savedBinaryContentUri = getStorage().save(storageObject);
     return objectShareApi.registerUri(savedBinaryContentUri);
   }
 
@@ -68,7 +69,7 @@ public class ContentAccessApiImpl implements ContentAccessApi {
     URI contentUri = objectShareApi.resolveUUID(uuid);
 
     if (contentUri != null) {
-      BinaryContent content = storage.read(contentUri, BinaryContent.class).get();
+      BinaryContent content = getStorage().read(contentUri, BinaryContent.class).get();
       BinaryData data = binaryContentApi.getBinaryData(content);
 
       publisher.onNext(new ContentAccessEventData()
@@ -87,7 +88,7 @@ public class ContentAccessApiImpl implements ContentAccessApi {
     URI contentUri = objectShareApi.resolveUUID(uuid);
 
     if (contentUri != null) {
-      BinaryContent content = storage.read(contentUri, BinaryContent.class).get();
+      BinaryContent content = getStorage().read(contentUri, BinaryContent.class).get();
       binaryContentApi.uploadContent(content, binaryData, content.getDataUri());
 
       publisher.onNext(new ContentAccessEventData()
@@ -99,4 +100,12 @@ public class ContentAccessApiImpl implements ContentAccessApi {
       throw new NoSuchElementException("The content was not found with the given uuid");
     }
   }
+
+  private Storage getStorage() {
+    if (storage == null) {
+      storage = storageApi.get(SCHEME);
+    }
+    return storage;
+  }
+
 }
