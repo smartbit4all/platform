@@ -325,4 +325,10 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
     return storageObjData.getCurrentVersion();
   }
 
+  protected void invokeOnSucceedFunctions(StorageObject<?> object,
+      StorageSaveEvent storageSaveEvent) {
+    object.invokeOnSucceedFunctions(storageSaveEvent);
+  }
+
+
 }

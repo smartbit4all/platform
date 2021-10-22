@@ -434,6 +434,34 @@ class StorageFSTest {
     }
   }
 
+  @Test
+  void onSucceedTest() throws Exception {
+    Storage storage = storageApi.get(StorageFSTestConfig.TESTSCHEME);
+
+    URI uri;
+    {
+      StorageObject<FSTestBean> storageObject = storage.instanceOf(FSTestBean.class);
+
+      storageObject.setObject(new FSTestBean("SucceedTest"));
+
+      uri = storage.save(storageObject);
+    }
+
+    // Load the same version and modify the first one.
+    StorageObject<FSTestBean> storageObject1 = storage.load(uri, FSTestBean.class).get();
+
+    storageObject1.getObject().setTitle("SucceedTest-modified");
+
+    storageObject1.onSucceed(e -> {
+      assertEquals("SucceedTest", e.getOldVersion().getTitle());
+      assertEquals("SucceedTest-modified", e.getNewVersion().getTitle());
+    });
+
+    storage.save(storageObject1);
+
+  }
+
+
   private void saveAndCheckLoad(
       Storage storage,
       String testText) throws Exception {
