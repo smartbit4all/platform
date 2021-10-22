@@ -16,7 +16,6 @@ package org.smartbit4all.core.object;
 
 import org.smartbit4all.core.event.EventPublisher;
 import io.reactivex.rxjava3.annotations.NonNull;
-import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.functions.Consumer;
 
@@ -55,41 +54,6 @@ import io.reactivex.rxjava3.functions.Consumer;
  */
 public interface ObservableObject extends EventPublisher {
 
-  /**
-   * Publisher of {@link PropertyChange} events.
-   * 
-   * @return
-   */
-  Observable<PropertyChange> properties();
-
-  /**
-   * Publisher of {@link ReferenceChange} events.
-   * 
-   * @return
-   */
-  Observable<ReferenceChange> references();
-
-  /**
-   * Publisher of {@link ReferenceChange} events.
-   * 
-   * @return
-   */
-  Observable<ReferencedObjectChange> referencedObjects();
-
-  /**
-   * Publisher of {@link CollectionChange} events.
-   * 
-   * @return
-   */
-  Observable<CollectionChange> collections();
-
-  /**
-   * Publisher of {@link CollectionObjectChange} events.
-   * 
-   * @return
-   */
-  Observable<CollectionObjectChange> collectionObjects();
-
   @NotifyListeners
   void setValue(String propertyPath, Object value);
 
@@ -115,7 +79,8 @@ public interface ObservableObject extends EventPublisher {
       @NonNull Consumer<? super CollectionObjectChange> onCollectionObjectChange);
 
   /**
-   * Sets a consumer that can do more before and after the event listeners are called (e.g. It can open a UI thread if it is not on one)
+   * Sets a consumer that can do more before and after the event listeners are called (e.g. It can
+   * open a UI thread if it is not on one)
    * 
    * @param publisherWrapper
    */

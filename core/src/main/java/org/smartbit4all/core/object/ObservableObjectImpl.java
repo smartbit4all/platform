@@ -6,7 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.core.event.EventPublisherImpl;
 import io.reactivex.rxjava3.annotations.NonNull;
-import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.functions.Consumer;
 import io.reactivex.rxjava3.subjects.PublishSubject;
@@ -23,7 +22,7 @@ public final class ObservableObjectImpl implements ObservableObject, EventPublis
   private static final Logger log = LoggerFactory.getLogger(ObservableObjectImpl.class);
 
   ApiObjectRef ref;
-  
+
   private Consumer<Runnable> publisherWrapper;
 
   private PublishSubject<PropertyChange> propertyChangePublisher = PublishSubject.create();
@@ -45,7 +44,7 @@ public final class ObservableObjectImpl implements ObservableObject, EventPublis
       notifyAllListneners(objectChange);
     }
   }
-  
+
   protected void notifyAllListneners(ObjectChange objectChange) {
     notifyListeners(objectChange.getProperties(), propertyChangePublisher);
     notifyListeners(objectChange.getReferences(), referenceChangePublisher);
@@ -70,31 +69,6 @@ public final class ObservableObjectImpl implements ObservableObject, EventPublis
     for (T change : changes) {
       publisher.onNext(change);
     }
-  }
-
-  @Override
-  public Observable<PropertyChange> properties() {
-    return propertyChangePublisher;
-  }
-
-  @Override
-  public Observable<ReferenceChange> references() {
-    return referenceChangePublisher;
-  }
-
-  @Override
-  public Observable<ReferencedObjectChange> referencedObjects() {
-    return referencedObjectChangePublisher;
-  }
-
-  @Override
-  public Observable<CollectionChange> collections() {
-    return collectionChangePublisher;
-  }
-
-  @Override
-  public Observable<CollectionObjectChange> collectionObjects() {
-    return collectionObjectChangePublisher;
   }
 
   @Override
@@ -134,7 +108,7 @@ public final class ObservableObjectImpl implements ObservableObject, EventPublis
   @Override
   public Disposable onPropertyChange(String path, String property,
       @NonNull Consumer<? super PropertyChange> onPropertyChange) {
-    Disposable disposable = properties()
+    Disposable disposable = propertyChangePublisher
         .filter(change -> ObservableObjectHelper.pathEquals(change, path, property))
         .subscribe(onPropertyChange);
     if (ref != null) {
@@ -155,7 +129,7 @@ public final class ObservableObjectImpl implements ObservableObject, EventPublis
   @Override
   public Disposable onReferenceChange(String path, String reference,
       @NonNull Consumer<? super ReferenceChange> onReferenceChange) {
-    return references()
+    return referenceChangePublisher
         .filter(change -> ObservableObjectHelper.pathEquals(change, path, reference))
         .subscribe(onReferenceChange);
   }
@@ -163,7 +137,7 @@ public final class ObservableObjectImpl implements ObservableObject, EventPublis
   @Override
   public Disposable onReferencedObjectChange(String path, String reference,
       @NonNull Consumer<? super ReferencedObjectChange> onReferencedObjectChange) {
-    Disposable disposable = referencedObjects()
+    Disposable disposable = referencedObjectChangePublisher
         .filter(change -> ObservableObjectHelper.pathEquals(change, path, reference))
         .subscribe(onReferencedObjectChange);
     if (ref != null) {
@@ -190,7 +164,7 @@ public final class ObservableObjectImpl implements ObservableObject, EventPublis
   @Override
   public Disposable onCollectionChange(String path, String collection,
       @NonNull Consumer<? super CollectionChange> onCollectionChange) {
-    return collections()
+    return collectionChangePublisher
         .filter(change -> ObservableObjectHelper.pathEquals(change, path, collection))
         .subscribe(onCollectionChange);
   }
@@ -198,7 +172,7 @@ public final class ObservableObjectImpl implements ObservableObject, EventPublis
   @Override
   public Disposable onCollectionObjectChange(String path, String collection,
       @NonNull Consumer<? super CollectionObjectChange> onCollectionObjectChange) {
-    Disposable disposable = collectionObjects()
+    Disposable disposable = collectionObjectChangePublisher
         .filter(change -> ObservableObjectHelper.pathEquals(change, path, collection))
         .subscribe(onCollectionObjectChange);
     if (ref != null) {
@@ -225,7 +199,7 @@ public final class ObservableObjectImpl implements ObservableObject, EventPublis
     }
     return disposable;
   }
-  
+
   @Override
   public void setPublisherWrapper(Consumer<Runnable> publisherWrapper) {
     this.publisherWrapper = publisherWrapper;
