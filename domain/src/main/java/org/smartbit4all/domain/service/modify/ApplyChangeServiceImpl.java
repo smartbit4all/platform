@@ -65,7 +65,10 @@ public class ApplyChangeServiceImpl implements ApplyChangeService {
 
     ApplyChangeOperation aco =
         createApplyChangeOperation(objectChange, configuration, object, null);
-    aco.execute();
+    // If the object has no change aco can be null
+    if (aco != null) {
+      aco.execute();
+    }
   }
 
   @Override
