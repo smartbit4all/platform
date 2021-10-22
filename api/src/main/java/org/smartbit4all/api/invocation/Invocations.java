@@ -185,10 +185,6 @@ public class Invocations {
     object.addCollectionEntry(
         constructConsumerName(consumerName),
         new ObjectReference().uri(callbackUri));
-
-    // TODO Should be saved here, or create two versions, where the object can be saved eg. in the
-    // APIs? This may cause multiple versions of the object just because of the invocation save.
-    storage.save(object);
   }
 
   /**
