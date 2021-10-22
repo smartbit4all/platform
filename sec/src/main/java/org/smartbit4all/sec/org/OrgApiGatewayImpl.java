@@ -3,6 +3,7 @@ package org.smartbit4all.sec.org;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 import org.smartbit4all.api.gateway.SecurityGatewayService;
 import org.smartbit4all.api.org.OrgApiImpl;
 import org.smartbit4all.api.org.bean.Group;
@@ -80,6 +81,57 @@ public class OrgApiGatewayImpl extends OrgApiImpl {
       }
     }
     return null;
+  }
+
+  @Override
+  public URI saveUser(User user) {
+    return secGatewayService.saveUser(user);
+  }
+
+  @Override
+  public URI saveGroup(Group group) {
+    return secGatewayService.saveGroup(group);
+  }
+
+  @Override
+  public void addUserToGroup(URI userUri, URI groupUri) {
+    secGatewayService.addUserToGroup(userUri, groupUri);
+  }
+
+  @Override
+  public void removeUser(URI userUri) {
+    secGatewayService.removeUser(userUri);
+  }
+
+  @Override
+  public void removeGroup(URI groupUri) {
+    secGatewayService.removeGroup(groupUri);
+  }
+
+  @Override
+  public void removeUserFromGroup(URI userUri, URI groupUri) {
+    secGatewayService.removeUserFromGroup(userUri, groupUri);
+  }
+
+  @Override
+  public void addChildGroup(Group parentGroup, Group childGroup) {
+    secGatewayService.addChildGroup(parentGroup, childGroup);
+  }
+
+  @Override
+  public List<Group> getSubGroups(URI groupUri) {
+    return secGatewayService.getSubGroups(groupUri);
+  }
+
+  @Override
+  public Optional<Group> getGroupByName(String name) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public void removeSubGroup(URI parentGroupUri, URI childGroupUri) {
+    secGatewayService.removeSubGroup(parentGroupUri, childGroupUri);
   }
 
 }

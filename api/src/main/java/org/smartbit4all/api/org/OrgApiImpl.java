@@ -1,5 +1,6 @@
 package org.smartbit4all.api.org;
 
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.net.URI;
 import java.util.ArrayList;
@@ -7,10 +8,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.org.bean.Group;
+import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.setting.LocaleString;
 import org.smartbit4all.core.utility.ReflectionUtility;
@@ -48,7 +51,7 @@ public abstract class OrgApiImpl implements OrgApi, InitializingBean {
           for (String key : ((EnumerablePropertySource) propertySource).getPropertyNames()) {
             if (key.startsWith(SUBGROUP_PREFIX)) {
               String groupId = key.substring(SUBGROUP_PREFIX.length());
-              List<Group> groupsList = new ArrayList<Group>();
+              List<Group> groupsList = new ArrayList<>();
               String property = (String) propertySource.getProperty(key);
               String[] groups = property.split(",");
               for (String group : groups) {
@@ -123,6 +126,126 @@ public abstract class OrgApiImpl implements OrgApi, InitializingBean {
       }
     }
     return additionalGroups;
+  }
+
+  @Override
+  public User getUser(URI userUri) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public List<User> getAllUsers() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public List<Group> getAllGroups() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public List<User> getUsersOfGroup(URI groupUri) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public List<Group> getGroupsOfUser(URI userUri) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public Group getGroup(URI groupUri) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public List<Group> getRootGroups() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public InputStream getUserImage(URI userUri) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public InputStream getGroupImage(URI groupUri) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public User getUserByUsername(String username) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public URI saveUser(User user) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public URI saveGroup(Group group) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public void addUserToGroup(URI userUri, URI groupUri) {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void removeUser(URI userUri) {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void removeGroup(URI groupUri) {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void removeUserFromGroup(URI userUri, URI groupUri) {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void addChildGroup(Group parentGroup, Group childGroup) {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public List<Group> getSubGroups(URI groupUri) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public Optional<Group> getGroupByName(String name) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public void removeSubGroup(URI parentGroupUri, URI childGroupUri) {
+    // TODO Auto-generated method stub
+
   }
 
 

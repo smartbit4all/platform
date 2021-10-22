@@ -26,6 +26,7 @@ public interface SecurityGatewayService {
    * @return
    * @throws Exception
    */
+  @Deprecated
   List<Group> getGroups();
 
   /**
@@ -34,6 +35,7 @@ public interface SecurityGatewayService {
    * @return
    * @throws Exception
    */
+  @Deprecated
   List<User> getUsers();
 
   /**
@@ -43,6 +45,7 @@ public interface SecurityGatewayService {
    * @return
    * @throws Exception
    */
+  @Deprecated
   List<User> getUsersOfGroup(URI groupUri);
 
   /**
@@ -52,6 +55,7 @@ public interface SecurityGatewayService {
    * @return
    * @throws Exception
    */
+  @Deprecated
   List<Group> getGroupsOfUser(URI userUri);
 
   /**
@@ -61,6 +65,7 @@ public interface SecurityGatewayService {
    * @return
    * @throws Exception
    */
+  @Deprecated
   User getUser(URI userUri);
 
   /**
@@ -69,6 +74,7 @@ public interface SecurityGatewayService {
    * @param username
    * @return user with the given username
    */
+  @Deprecated
   Optional<User> getUserByUsername(String username);
 
 
@@ -78,6 +84,7 @@ public interface SecurityGatewayService {
    * @param user
    * @return
    */
+  @Deprecated
   URI saveUser(User user);
 
   /**
@@ -91,6 +98,7 @@ public interface SecurityGatewayService {
    * @param children
    * @return
    */
+  @Deprecated
   URI saveGroup(String name, String description, URI kind, URI parent,
       List<URI> children);
 
@@ -100,6 +108,7 @@ public interface SecurityGatewayService {
    * @param group
    * @return
    */
+  @Deprecated
   URI saveGroup(Group group);
 
   /**
@@ -108,6 +117,7 @@ public interface SecurityGatewayService {
    * @param user
    * @param group
    */
+  @Deprecated
   void addUserToGroup(URI userUri, URI groupUri);
 
 
@@ -116,6 +126,7 @@ public interface SecurityGatewayService {
    * 
    * @param userUri
    */
+  @Deprecated
   void removeUser(URI userUri);
 
 
@@ -124,6 +135,7 @@ public interface SecurityGatewayService {
    * 
    * @param groupUri
    */
+  @Deprecated
   void removeGroup(URI groupUri);
 
 
@@ -133,6 +145,7 @@ public interface SecurityGatewayService {
    * @param user
    * @return
    */
+  @Deprecated
   URI updateUser(User user);
 
   /**
@@ -141,6 +154,7 @@ public interface SecurityGatewayService {
    * @param group
    * @return
    */
+  @Deprecated
   URI updateGroup(Group group);
 
   /**
@@ -149,6 +163,7 @@ public interface SecurityGatewayService {
    * @param userUri
    * @param groupUri
    */
+  @Deprecated
   void removeUserFromGroup(URI userUri, URI groupUri);
 
   /**
@@ -157,6 +172,7 @@ public interface SecurityGatewayService {
    * @param parentGroup
    * @param childGroup
    */
+  @Deprecated
   void addChildGroup(Group parentGroup, Group childGroup);
 
   /**
@@ -165,6 +181,7 @@ public interface SecurityGatewayService {
    * @param groupUri
    * @return
    */
+  @Deprecated
   Group getGroup(URI groupUri);
 
   /**
@@ -173,6 +190,7 @@ public interface SecurityGatewayService {
    * @param groupUri
    * @return
    */
+  @Deprecated
   List<Group> getSubGroups(URI groupUri);
 
   /**
@@ -181,6 +199,7 @@ public interface SecurityGatewayService {
    * @param name
    * @return group with the given name
    */
+  @Deprecated
   Optional<Group> getGroupByName(String name);
 
 
@@ -191,5 +210,6 @@ public interface SecurityGatewayService {
    * @param parentGroupUri
    * @param childGroupUri
    */
+  @Deprecated
   void removeSubGroup(URI parentGroupUri, URI childGroupUri);
 }
