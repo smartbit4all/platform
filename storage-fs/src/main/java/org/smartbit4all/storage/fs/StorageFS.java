@@ -30,6 +30,7 @@ import org.smartbit4all.domain.data.storage.StorageObject;
 import org.smartbit4all.domain.data.storage.StorageObject.StorageObjectOperation;
 import org.smartbit4all.domain.data.storage.StorageObjectLock;
 import org.smartbit4all.domain.data.storage.StorageObjectPhysicalLock;
+import org.smartbit4all.domain.data.storage.StorageSaveEvent;
 import org.smartbit4all.domain.data.storage.StorageUtil;
 
 public class StorageFS extends ObjectStorageImpl {
@@ -163,6 +164,9 @@ public class StorageFS extends ObjectStorageImpl {
       } else if (object.getObject() != null
           && object.getOperation() != StorageObjectOperation.DELETE) {
         File objectVersionFile = getObjectVersionFile(objectDataFile, newVersion.getSerialNo());
+        // Before writing into the version file set the URI to the versioned one.
+        object.definition().setUriToObj(object.getObject(), URI
+            .create(object.getUri().toString() + StringConstant.HASH + newVersion.getSerialNo()));
         // Write the version file first
         FileIO.write(objectVersionFile,
             object.definition().serialize(object.getObject()));
@@ -206,6 +210,16 @@ public class StorageFS extends ObjectStorageImpl {
       // Atomic move of the temp file.
       Files.move(objectDataFileTemp.toPath(), objectDataFile.toPath(),
           StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+
+      ObjectVersion oldVersion = currentVersion;
+      invokeOnSucceedFunctions(object, new StorageSaveEvent<Object>(() -> {
+        if (oldVersion != null) {
+          Object o = loadObjectVersion(object.definition(), objectDataFile, oldVersion);
+
+          return o;
+        }
+        return null;
+      }, object.getObject()));
 
     } catch (IOException e) {
       throw new IllegalArgumentException("Unable to finalize the transaction on " + object, e);
@@ -269,17 +283,13 @@ public class StorageFS extends ObjectStorageImpl {
     if (relatedVersion.getSerialNoData() != null
         && !skipData) {
 
-      File objectVersionFile = getObjectVersionFile(
-          storageObjectDataFile,
-          relatedVersion.getSerialNoData());
+      T object = loadObjectVersion(definition, storageObjectDataFile, relatedVersion);
 
-      BinaryData versionBinaryData = new BinaryData(objectVersionFile);
-
-      T object = definition.deserialize(versionBinaryData).orElse(null);
       if (object != null) {
         // This can ensure that the uri will be the exact uri used for the load.
         definition.setUri(object, uri);
       }
+
       storageObject = instanceOf(storage, definition, object, storageObjectData);
     } else {
       storageObject = instanceOf(storage, definition, uri, storageObjectData);
@@ -304,6 +314,19 @@ public class StorageFS extends ObjectStorageImpl {
     }
 
     return Optional.of(storageObject);
+  }
+
+  private <T> T loadObjectVersion(ObjectDefinition<T> definition,
+      File storageObjectDataFile,
+      ObjectVersion relatedVersion) {
+    File objectVersionFile = getObjectVersionFile(
+        storageObjectDataFile,
+        relatedVersion.getSerialNoData());
+
+    BinaryData versionBinaryData = new BinaryData(objectVersionFile);
+
+    T object = definition.deserialize(versionBinaryData).orElse(null);
+    return object;
   }
 
   @Override

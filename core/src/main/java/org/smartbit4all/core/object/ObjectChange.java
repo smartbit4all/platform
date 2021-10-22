@@ -32,6 +32,8 @@ import org.smartbit4all.core.utility.StringConstant;
  */
 public class ObjectChange {
 
+  public static final ObjectChange EMPTY = new ObjectChange(null, ChangeState.NOP);
+
   private final String path;
 
   /**
