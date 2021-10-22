@@ -1,10 +1,14 @@
 package org.smartbit4all.core.object;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.core.event.EventPublisherImpl;
+import org.smartbit4all.core.utility.PathUtility;
+import com.google.common.base.Strings;
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.functions.Consumer;
@@ -106,16 +110,17 @@ public final class ObservableObjectImpl implements ObservableObject, EventPublis
   }
 
   @Override
-  public Disposable onPropertyChange(String path, String property,
-      @NonNull Consumer<? super PropertyChange> onPropertyChange) {
+  public Disposable onPropertyChange(@NonNull Consumer<? super PropertyChange> onPropertyChange,
+      String... propertyPath) {
+    ObjectPropertyPath path = processPathParameter(propertyPath);
     Disposable disposable = propertyChangePublisher
-        .filter(change -> ObservableObjectHelper.pathEquals(change, path, property))
+        .filter(change -> ObservableObjectHelper.pathEquals(change, path))
         .subscribe(onPropertyChange);
     if (ref != null) {
-      ApiObjectRef pathRef = ref.getValueRefByPath(path);
+      ApiObjectRef pathRef = ref.getValueRefByPath(path.path);
       if (pathRef != null) {
-        Object value = pathRef.getValue(property);
-        PropertyChange currentChange = new PropertyChange(path, property, null, value);
+        Object value = pathRef.getValue(path.property);
+        PropertyChange currentChange = new PropertyChange(path.path, path.property, null, value);
         try {
           onPropertyChange.accept(currentChange);
         } catch (Throwable e) {
@@ -127,29 +132,34 @@ public final class ObservableObjectImpl implements ObservableObject, EventPublis
   }
 
   @Override
-  public Disposable onReferenceChange(String path, String reference,
-      @NonNull Consumer<? super ReferenceChange> onReferenceChange) {
+  public Disposable onReferenceChange(@NonNull Consumer<? super ReferenceChange> onReferenceChange,
+      String... referencePath) {
+    ObjectPropertyPath path = processPathParameter(referencePath);
     return referenceChangePublisher
-        .filter(change -> ObservableObjectHelper.pathEquals(change, path, reference))
+        .filter(change -> ObservableObjectHelper.pathEquals(change, path))
         .subscribe(onReferenceChange);
   }
 
   @Override
-  public Disposable onReferencedObjectChange(String path, String reference,
-      @NonNull Consumer<? super ReferencedObjectChange> onReferencedObjectChange) {
+  public Disposable onReferencedObjectChange(
+      @NonNull Consumer<? super ReferencedObjectChange> onReferencedObjectChange,
+      String... referencePath) {
+    ObjectPropertyPath path = processPathParameter(referencePath);
     Disposable disposable = referencedObjectChangePublisher
-        .filter(change -> ObservableObjectHelper.pathEquals(change, path, reference))
+        .filter(change -> ObservableObjectHelper.pathEquals(change, path))
         .subscribe(onReferencedObjectChange);
     if (ref != null) {
-      ApiObjectRef pathRef = ref.getValueRefByPath(path);
+      ApiObjectRef pathRef = ref.getValueRefByPath(path.path);
       if (pathRef != null) {
-        Object value = pathRef.getValue(reference);
+        Object value = pathRef.getValue(path.property);
         if (value != null) {
           if (!(value instanceof ApiObjectRef)) {
-            throw new IllegalArgumentException("Reference not found at " + path + "." + reference);
+            throw new IllegalArgumentException("Reference not found at " + path.toString());
           }
-          ReferencedObjectChange currentChange = new ReferencedObjectChange(path, reference,
-              new ObjectChangeSimple(path, ChangeState.NEW, ((ApiObjectRef) value).getObject()));
+          ReferencedObjectChange currentChange =
+              new ReferencedObjectChange(path.path, path.property,
+                  new ObjectChangeSimple(path.path, ChangeState.NEW,
+                      ((ApiObjectRef) value).getObject()));
           try {
             onReferencedObjectChange.accept(currentChange);
           } catch (Throwable e) {
@@ -162,29 +172,33 @@ public final class ObservableObjectImpl implements ObservableObject, EventPublis
   }
 
   @Override
-  public Disposable onCollectionChange(String path, String collection,
-      @NonNull Consumer<? super CollectionChange> onCollectionChange) {
+  public Disposable onCollectionChange(
+      @NonNull Consumer<? super CollectionChange> onCollectionChange, String... collectionPath) {
+    ObjectPropertyPath path = processPathParameter(collectionPath);
     return collectionChangePublisher
-        .filter(change -> ObservableObjectHelper.pathEquals(change, path, collection))
+        .filter(change -> ObservableObjectHelper.pathEquals(change, path))
         .subscribe(onCollectionChange);
   }
 
   @Override
-  public Disposable onCollectionObjectChange(String path, String collection,
-      @NonNull Consumer<? super CollectionObjectChange> onCollectionObjectChange) {
+  public Disposable onCollectionObjectChange(
+      @NonNull Consumer<? super CollectionObjectChange> onCollectionObjectChange,
+      String... collectionPath) {
+    ObjectPropertyPath path = processPathParameter(collectionPath);
     Disposable disposable = collectionObjectChangePublisher
-        .filter(change -> ObservableObjectHelper.pathEquals(change, path, collection))
+        .filter(change -> ObservableObjectHelper.pathEquals(change, path))
         .subscribe(onCollectionObjectChange);
     if (ref != null) {
-      ApiObjectRef pathRef = ref.getValueRefByPath(path);
+      ApiObjectRef pathRef = ref.getValueRefByPath(path.path);
       if (pathRef != null) {
-        Object value = pathRef.getValue(collection);
+        Object value = pathRef.getValue(path.property);
         if (value != null) {
           if (!(value instanceof ApiObjectCollection)) {
             throw new IllegalArgumentException(
-                "Collection not found at " + path + "." + collection);
+                "Collection not found at " + path.toString());
           }
-          CollectionObjectChange currentChange = new CollectionObjectChange(path, collection);
+          CollectionObjectChange currentChange =
+              new CollectionObjectChange(path.path, path.property);
           for (ApiObjectRef object : (ApiObjectCollection) value) {
             currentChange.getChanges()
                 .add(new ObjectChangeSimple(object.getPath(), ChangeState.NEW, object.getObject()));
@@ -203,5 +217,82 @@ public final class ObservableObjectImpl implements ObservableObject, EventPublis
   @Override
   public void setPublisherWrapper(Consumer<Runnable> publisherWrapper) {
     this.publisherWrapper = publisherWrapper;
+  }
+
+  @Override
+  public Disposable onPropertyChange(String path, String property,
+      @NonNull Consumer<? super PropertyChange> onPropertyChange) {
+    return onPropertyChange(onPropertyChange, path, property);
+  }
+
+  @Override
+  public Disposable onReferenceChange(String path, String reference,
+      @NonNull Consumer<? super ReferenceChange> onReferenceChange) {
+    return onReferenceChange(onReferenceChange, path, reference);
+  }
+
+  @Override
+  public Disposable onReferencedObjectChange(String path, String reference,
+      @NonNull Consumer<? super ReferencedObjectChange> onReferencedObjectChange) {
+    return onReferencedObjectChange(onReferencedObjectChange, path, reference);
+  }
+
+  @Override
+  public Disposable onCollectionChange(String path, String collection,
+      @NonNull Consumer<? super CollectionChange> onCollectionChange) {
+    return onCollectionChange(onCollectionChange, path, collection);
+  }
+
+  @Override
+  public Disposable onCollectionObjectChange(String path, String collection,
+      @NonNull Consumer<? super CollectionObjectChange> onCollectionObjectChange) {
+    return onCollectionObjectChange(onCollectionObjectChange, path, collection);
+  }
+
+  static class ObjectPropertyPath {
+    /**
+     * Path within the object, separated by "/" characters.
+     */
+    String path;
+
+    /**
+     * Name of the property / reference / collection.
+     */
+    String property;
+
+    @Override
+    public String toString() {
+      return path + "." + property;
+    }
+  }
+
+  private ObjectPropertyPath processPathParameter(String... propertyPath) {
+    // should be non-empty
+    if (propertyPath == null || propertyPath.length == 0) {
+      throw new IllegalArgumentException(
+          "No path was given when subscribing to observable object changes!");
+    }
+    // first item can be null or empty string - skip it
+    if (Strings.isNullOrEmpty(propertyPath[0])) {
+      if (propertyPath.length == 1) {
+        throw new IllegalArgumentException(
+            "Empty path was given when subscribing to observable object changes!");
+      }
+    }
+    // process all path parts: first split by "/"
+    List<String[]> processedPathsList = new ArrayList<>();
+    for (int i = 0; i < propertyPath.length; i++) {
+      processedPathsList.add(PathUtility.decomposePath(propertyPath[i]));
+    }
+    // then collect all parts, ignore empty ones
+    String[] processedPaths = processedPathsList.stream()
+        .flatMap(Arrays::stream)
+        .filter(part -> !Strings.isNullOrEmpty(part))
+        .toArray(String[]::new);
+
+    ObjectPropertyPath path = new ObjectPropertyPath();
+    path.path = PathUtility.concatPath(false, processedPaths);
+    path.property = processedPaths[processedPaths.length - 1];
+    return path;
   }
 }

@@ -58,4 +58,27 @@ public class PathUtility {
 
     return result;
   }
+
+  public static String concatPath(boolean includeLast, String... path) {
+    StringBuilder sb = new StringBuilder();
+    int max = includeLast ? path.length : path.length - 1;
+    for (int i = 0; i < max; i++) {
+      String part = path[i];
+      if (!Strings.isNullOrEmpty(part)) {
+        if (sb.length() != 0) {
+          sb.append("/");
+        }
+        sb.append(part);
+      }
+    }
+    return sb.toString();
+  }
+
+  public static String[] decomposePath(String path) {
+    if (Strings.isNullOrEmpty(path)) {
+      return new String[0];
+    }
+    String[] split = path.split("/");
+    return split;
+  }
 }

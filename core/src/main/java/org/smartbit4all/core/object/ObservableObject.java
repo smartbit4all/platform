@@ -63,20 +63,87 @@ public interface ObservableObject extends EventPublisher {
   @NotifyListeners
   void removeValue(String collectionElementPath);
 
+  @Deprecated
   Disposable onPropertyChange(String path, String property,
       @NonNull Consumer<? super PropertyChange> onPropertyChange);
 
+  @Deprecated
   Disposable onReferenceChange(String path, String reference,
       @NonNull Consumer<? super ReferenceChange> onReferenceChange);
 
+  @Deprecated
   Disposable onReferencedObjectChange(String path, String reference,
       @NonNull Consumer<? super ReferencedObjectChange> onReferencedObjectChange);
 
+  @Deprecated
   Disposable onCollectionChange(String path, String collection,
       @NonNull Consumer<? super CollectionChange> onCollectionChange);
 
+  @Deprecated
   Disposable onCollectionObjectChange(String path, String collection,
       @NonNull Consumer<? super CollectionObjectChange> onCollectionObjectChange);
+
+  /**
+   * Subscribe onPropertyChange consumer to property changes on propertyPath. propertyPath's last
+   * part specifies the property name, all other parts specify path to this property. Other parts
+   * may be omitted, if property is in the root object.
+   * 
+   * @param onPropertyChange
+   * @param propertyPath
+   * @return
+   */
+  Disposable onPropertyChange(@NonNull Consumer<? super PropertyChange> onPropertyChange,
+      String... propertyPath);
+
+  /**
+   * Subscribe onReferenceChange consumer to reference changes on referencePath. referencePath's
+   * last part specifies the reference name, all other parts specify path to this reference. Other
+   * parts may be omitted, if reference is in the root object.
+   * 
+   * @param onReferenceChange
+   * @param referencePath
+   * @return
+   */
+  Disposable onReferenceChange(@NonNull Consumer<? super ReferenceChange> onReferenceChange,
+      String... referencePath);
+
+  /**
+   * Subscribe onReferenceObjectChange consumer to reference changes on referencePath.
+   * referencePath's last part specifies the reference name, all other parts specify path to this
+   * reference. Other parts may be omitted, if reference is in the root object.
+   * 
+   * @param onReferencedObjectChange
+   * @param referencePath
+   * @return
+   */
+  Disposable onReferencedObjectChange(
+      @NonNull Consumer<? super ReferencedObjectChange> onReferencedObjectChange,
+      String... referencePath);
+
+  /**
+   * Subscribe onCollectionChange consumer to collection changes on collectionPath. collectionPath's
+   * last part specifies the collection name, all other parts specify path to this collection. Other
+   * parts may be omitted, if collection is in the root object.
+   * 
+   * @param onCollectionChange
+   * @param collectionPath
+   * @return
+   */
+  Disposable onCollectionChange(@NonNull Consumer<? super CollectionChange> onCollectionChange,
+      String... collectionPath);
+
+  /**
+   * Subscribe onCollectionObjectChange consumer to collection changes on collectionPath.
+   * collectionPath's last part specifies the collection name, all other parts specify path to this
+   * collection. Other parts may be omitted, if collection is in the root object.
+   * 
+   * @param onCollectionObjectChange
+   * @param collectionPath
+   * @return
+   */
+  Disposable onCollectionObjectChange(
+      @NonNull Consumer<? super CollectionObjectChange> onCollectionObjectChange,
+      String... collectionPath);
 
   /**
    * Sets a consumer that can do more before and after the event listeners are called (e.g. It can
