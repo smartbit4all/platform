@@ -50,8 +50,7 @@ public class OrgApiGatewayImpl extends OrgApiImpl {
 
   @Override
   public Group getGroup(URI groupUri) {
-    // TODO Auto-generated method stub
-    return null;
+    return secGatewayService.getGroup(groupUri);
   }
 
   @Override
@@ -125,13 +124,22 @@ public class OrgApiGatewayImpl extends OrgApiImpl {
 
   @Override
   public Optional<Group> getGroupByName(String name) {
-    // TODO Auto-generated method stub
-    return null;
+    return secGatewayService.getGroupByName(name);
   }
 
   @Override
   public void removeSubGroup(URI parentGroupUri, URI childGroupUri) {
     secGatewayService.removeSubGroup(parentGroupUri, childGroupUri);
+  }
+
+  @Override
+  public URI updateGroup(Group group) {
+    return secGatewayService.updateGroup(group);
+  }
+
+  @Override
+  public URI updateUser(User user) {
+    return secGatewayService.updateUser(user);
   }
 
 }

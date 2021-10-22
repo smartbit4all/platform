@@ -120,4 +120,21 @@ public interface OrgApi {
    * direct sub group.
    */
   void removeSubGroup(URI parentGroupUri, URI childGroupUri);
+
+  /**
+   * Update user.
+   * 
+   * @param user
+   * @return
+   */
+  URI updateUser(User user);
+
+
+  /**
+   * Update group.
+   * 
+   * @param group
+   * @return
+   */
+  URI updateGroup(Group group);
 }
