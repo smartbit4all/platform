@@ -16,7 +16,6 @@ package org.smartbit4all.ui.vaadin.components.filter2;
 
 import org.smartbit4all.api.value.bean.Value;
 import org.smartbit4all.core.object.ObservableObject;
-import org.smartbit4all.core.utility.PathUtility;
 import org.smartbit4all.ui.vaadin.components.binder.VaadinBinders;
 import org.smartbit4all.ui.vaadin.components.binder.VaadinHasItemsBinder;
 import org.smartbit4all.ui.vaadin.components.binder.VaadinHasValueBinder;
@@ -37,8 +36,7 @@ public class FilterOperationComboBoxView extends FilterOperationView {
 
     comboBinder = VaadinBinders.bind(comboBox, filterField, path, "possibleValues");
     selectionBinder =
-        VaadinBinders.bind(comboBox, filterField, PathUtility.concatPath(path, "selectedValue"),
-            null, true);
+        VaadinBinders.bindValue(comboBox, filterField, null, true, path, "selectedValue");
 
   }
 
