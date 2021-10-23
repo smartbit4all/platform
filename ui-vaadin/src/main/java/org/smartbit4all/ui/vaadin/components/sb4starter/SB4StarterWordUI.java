@@ -36,7 +36,7 @@ public class SB4StarterWordUI extends Dialog {
     main.setSizeFull();
 
     Label lblState = new Label();
-    VaadinBinders.bind(lblState, viewModel.sb4Starter(), SB4StarterWordFormModel.STATE);
+    VaadinBinders.bindLabel(lblState, viewModel.sb4Starter(), SB4StarterWordFormModel.STATE);
 
     btnAccept = new Button("Elfogad");
     btnAccept.addThemeVariants(ButtonVariant.LUMO_PRIMARY);

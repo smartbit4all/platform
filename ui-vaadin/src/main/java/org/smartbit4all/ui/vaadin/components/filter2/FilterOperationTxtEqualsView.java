@@ -31,7 +31,7 @@ public class FilterOperationTxtEqualsView extends FilterOperationView {
     textField = new TextField();
     add(textField);
 
-    binder = VaadinBinders.bind(textField, filterField, PathUtility.concatPath(path, "value1"));
+    binder = VaadinBinders.bindValue(textField, filterField, PathUtility.concatPath(path, "value1"));
   }
 
   @Override

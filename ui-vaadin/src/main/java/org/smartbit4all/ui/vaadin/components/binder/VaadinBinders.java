@@ -21,7 +21,7 @@ public class VaadinBinders {
   // return new VaadinButtonBinder<>(button, editing, function);
   // }
 
-  public static <WIDGET> VaadinHasValueBinder<WIDGET, WIDGET> bind(HasValue<?, WIDGET> field,
+  public static <WIDGET> VaadinHasValueBinder<WIDGET, WIDGET> bindValue(HasValue<?, WIDGET> field,
       ObservableObject observableObject, String... propertyPath) {
     return new VaadinHasValueBinder<>(field, observableObject, null, false, propertyPath);
   }
@@ -56,7 +56,7 @@ public class VaadinBinders {
     return new VaadinHasValueBinder<>(field, observableObject, converter, isRef, propertyPath);
   }
 
-  public static VaadinHasTextBinder bind(HasText label, ObservableObject observableObject,
+  public static VaadinHasTextBinder bindLabel(HasText label, ObservableObject observableObject,
       String... propertyPath) {
     return new VaadinHasTextBinder(label, observableObject, null, propertyPath);
   }
