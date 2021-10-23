@@ -108,17 +108,17 @@ public class FilterGroupView extends FlexLayout implements DropTarget<FlexLayout
     buttonsLayout.addClassName("filter-buttons");
     ctrlButtonsLayout = new FlexLayout();
 
-    filterGroup.onPropertyChange(path, "childGroupAllowed", this::onChildGroupAllowedChange);
-    filterGroup.onPropertyChange(path, "groupType", this::onGroupType);
-    filterGroup.onPropertyChange(path, "groupTypeChangeEnabled", this::onGroupTypeChangeEnabled);
-    filterGroup.onPropertyChange(path, "enabled", this::onEnabled);
-    filterGroup.onPropertyChange(path, "closeable", this::onCloseable);
-    filterGroup.onPropertyChange(path, "visible", this::onVisible);
-    filterGroup.onPropertyChange(path, "active", this::onActive);
-    filterGroup.onReferencedObjectChange(path, "label", this::labelChange);
+    filterGroup.onPropertyChange(this::onChildGroupAllowedChange, path, "childGroupAllowed");
+    filterGroup.onPropertyChange(this::onGroupType, path, "groupType");
+    filterGroup.onPropertyChange(this::onGroupTypeChangeEnabled, path, "groupTypeChangeEnabled");
+    filterGroup.onPropertyChange(this::onEnabled, path, "enabled");
+    filterGroup.onPropertyChange(this::onCloseable, path, "closeable");
+    filterGroup.onPropertyChange(this::onVisible, path, "visible");
+    filterGroup.onPropertyChange(this::onActive, path, "active");
+    filterGroup.onReferencedObjectChange(this::labelChange, path, "label");
 
-    filterGroup.onCollectionObjectChange(path, "filters", this::filtersChange);
-    filterGroup.onCollectionObjectChange(path, "groups", this::groupsChange);
+    filterGroup.onCollectionObjectChange(this::filtersChange, path, "filters");
+    filterGroup.onCollectionObjectChange(this::groupsChange, path, "groups");
   }
 
   private ComponentEventListener<ClickEvent<Button>> removeGroupClickListener() {
@@ -192,7 +192,7 @@ public class FilterGroupView extends FlexLayout implements DropTarget<FlexLayout
   private void onGroupType(PropertyChange change) {
     FilterGroupType groupType = (FilterGroupType) change.getNewValue();
     String btnGroupTypeLabel = "";
-    if(groupType != null) {
+    if (groupType != null) {
       btnGroupTypeLabel = TranslationUtil.INSTANCE().getPossibleTranslation(groupType.getValue());
     }
     btnGroupType.setText(btnGroupTypeLabel);

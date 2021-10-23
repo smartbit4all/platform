@@ -24,8 +24,7 @@ public class SB4StarterWordUI extends Dialog {
     this.viewModel = viewModel;
 
     viewModel.sb4Starter().setPublisherWrapper(VaadinPublisherWrapper.create());
-    viewModel.sb4Starter().onPropertyChange(null, SB4StarterWordFormModel.STATE,
-        this::onStateChanged);
+    viewModel.sb4Starter().onPropertyChange(this::onStateChanged, SB4StarterWordFormModel.STATE);
 
     createUI();
   }

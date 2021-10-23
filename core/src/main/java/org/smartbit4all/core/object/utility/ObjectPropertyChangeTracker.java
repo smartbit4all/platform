@@ -28,27 +28,23 @@ public class ObjectPropertyChangeTracker<T> {
     for (PropertyEntry entry : ref.getProperties()) {
       if (upper(entry.getPath()).equals(upper(propertyName))) {
         PropertyKind kind = entry.getMeta().getKind();
-        
+
         if (kind.equals(PropertyKind.VALUE)) {
-          
+
           observableObject.onPropertyChange(
-              null, 
-              propertyName, 
-              change -> setProperty(change.getNewValue()));
-          
+              change -> setProperty(change.getNewValue()), propertyName);
+
         } else if (kind.equals(PropertyKind.REFERENCE)) {
-          
+
           observableObject.onReferencedObjectChange(
-              null, 
-              propertyName, 
-              change -> setProperty(change.getChange().getObject()));
-          
+              change -> setProperty(change.getChange().getObject()), propertyName);
+
         }
         return;
       }
     }
   }
-  
+
   private String upper(String text) {
     return text == null ? "" : text.toUpperCase();
   }

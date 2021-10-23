@@ -219,36 +219,6 @@ public final class ObservableObjectImpl implements ObservableObject, EventPublis
     this.publisherWrapper = publisherWrapper;
   }
 
-  @Override
-  public Disposable onPropertyChange(String path, String property,
-      @NonNull Consumer<? super PropertyChange> onPropertyChange) {
-    return onPropertyChange(onPropertyChange, path, property);
-  }
-
-  @Override
-  public Disposable onReferenceChange(String path, String reference,
-      @NonNull Consumer<? super ReferenceChange> onReferenceChange) {
-    return onReferenceChange(onReferenceChange, path, reference);
-  }
-
-  @Override
-  public Disposable onReferencedObjectChange(String path, String reference,
-      @NonNull Consumer<? super ReferencedObjectChange> onReferencedObjectChange) {
-    return onReferencedObjectChange(onReferencedObjectChange, path, reference);
-  }
-
-  @Override
-  public Disposable onCollectionChange(String path, String collection,
-      @NonNull Consumer<? super CollectionChange> onCollectionChange) {
-    return onCollectionChange(onCollectionChange, path, collection);
-  }
-
-  @Override
-  public Disposable onCollectionObjectChange(String path, String collection,
-      @NonNull Consumer<? super CollectionObjectChange> onCollectionObjectChange) {
-    return onCollectionObjectChange(onCollectionObjectChange, path, collection);
-  }
-
   static class ObjectPropertyPath {
     /**
      * Path within the object, separated by "/" characters.

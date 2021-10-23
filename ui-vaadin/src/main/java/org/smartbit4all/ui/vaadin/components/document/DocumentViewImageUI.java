@@ -49,17 +49,16 @@ public class DocumentViewImageUI extends FlexLayout {
 
     createUI();
 
-    processEditing.process().onReferencedObjectChange(null, "mainImage", this::onMainImageChanged);
-    processEditing.process().onPropertyChange(null, "zoomValue", this::onZoomValueChanged);
+    processEditing.process().onReferencedObjectChange(this::onMainImageChanged, "mainImage");
+    processEditing.process().onPropertyChange(this::onZoomValueChanged, "zoomValue");
 
-    processEditing.process().onCollectionObjectChange(null, "thumbnails",
-        this::onThumbnailsChanged);
-    processEditing.process().onPropertyChange(null, "pageCount", this::onPageCountChanged);
-    processEditing.process().onPropertyChange(null, "pageIndex", this::onPageIndexChanged);
-    processEditing.process().onPropertyChange(null, "leftButtonEnabled",
-        this::onLeftButtonEnabledChanged);
-    processEditing.process().onPropertyChange(null, "rightButtonEnabled",
-        this::onRightButtonEnabledChanged);
+    processEditing.process().onCollectionObjectChange(this::onThumbnailsChanged, "thumbnails");
+    processEditing.process().onPropertyChange(this::onPageCountChanged, "pageCount");
+    processEditing.process().onPropertyChange(this::onPageIndexChanged, "pageIndex");
+    processEditing.process().onPropertyChange(
+        this::onLeftButtonEnabledChanged, "leftButtonEnabled");
+    processEditing.process().onPropertyChange(
+        this::onRightButtonEnabledChanged, "rightButtonEnabled");
   }
 
   private void createUI() {

@@ -63,26 +63,6 @@ public interface ObservableObject extends EventPublisher {
   @NotifyListeners
   void removeValue(String collectionElementPath);
 
-  @Deprecated
-  Disposable onPropertyChange(String path, String property,
-      @NonNull Consumer<? super PropertyChange> onPropertyChange);
-
-  @Deprecated
-  Disposable onReferenceChange(String path, String reference,
-      @NonNull Consumer<? super ReferenceChange> onReferenceChange);
-
-  @Deprecated
-  Disposable onReferencedObjectChange(String path, String reference,
-      @NonNull Consumer<? super ReferencedObjectChange> onReferencedObjectChange);
-
-  @Deprecated
-  Disposable onCollectionChange(String path, String collection,
-      @NonNull Consumer<? super CollectionChange> onCollectionChange);
-
-  @Deprecated
-  Disposable onCollectionObjectChange(String path, String collection,
-      @NonNull Consumer<? super CollectionObjectChange> onCollectionObjectChange);
-
   /**
    * Subscribe onPropertyChange consumer to property changes on propertyPath. propertyPath's last
    * part specifies the property name, all other parts specify path to this property. Other parts

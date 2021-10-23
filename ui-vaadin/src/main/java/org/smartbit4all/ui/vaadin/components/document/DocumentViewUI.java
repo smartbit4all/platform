@@ -34,11 +34,10 @@ public class DocumentViewUI extends FlexLayout {
     loadingSpinner = createLoadingSpinner();
 
     processEditing.process().setPublisherWrapper(VaadinPublisherWrapper.create());
-    processEditing.process().onPropertyChange(null, "loadingSpinnerDisplayed",
-        this::onLoadingSpinnerDisplayedChanged);
-    processEditing.process().onPropertyChange(null, "message", this::onMessageChanged);
-    processEditing.process().onReferencedObjectChange(null, "displayMode",
-        this::onDisplayModeChanged);
+    processEditing.process().onPropertyChange(
+        this::onLoadingSpinnerDisplayedChanged, "loadingSpinnerDisplayed");
+    processEditing.process().onPropertyChange(this::onMessageChanged, "message");
+    processEditing.process().onReferencedObjectChange(this::onDisplayModeChanged, "displayMode");
   }
 
   /**

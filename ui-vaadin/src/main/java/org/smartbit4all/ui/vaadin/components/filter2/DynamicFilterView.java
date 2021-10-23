@@ -40,8 +40,8 @@ public class DynamicFilterView {
     if (filterSelectorHolder != null) {
       filterSelectorHolder.add(filterSelectorLayout);
     }
-    dynamicFilterModel.onCollectionObjectChange(null, "selectors", this::onGroupSelectorChange);
-    dynamicFilterModel.onReferencedObjectChange(null, "root", this::onRootChange);
+    dynamicFilterModel.onCollectionObjectChange(this::onGroupSelectorChange, "selectors");
+    dynamicFilterModel.onReferencedObjectChange(this::onRootChange, "root");
   }
 
   private void onGroupSelectorChange(CollectionObjectChange changes) {
