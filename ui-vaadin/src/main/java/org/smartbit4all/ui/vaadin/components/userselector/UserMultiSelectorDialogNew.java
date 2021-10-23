@@ -15,8 +15,7 @@ public class UserMultiSelectorDialogNew extends UserSelectorDialogNew {
   protected void createAndBindUI(SelectionMode selectionMode) {
     super.createAndBindUI(selectionMode);
 
-    VaadinBinders.bind(grid, userSelectorVM.multiSelector(), null, "selectors");
-    VaadinBinders.bindSelection(grid.asMultiSelect(), userSelectorVM.multiSelector(), null,
-        "selected");
+    VaadinBinders.bindItems(grid, userSelectorVM.multiSelector(), "selectors");
+    VaadinBinders.bindSelection(grid.asMultiSelect(), userSelectorVM.multiSelector(), "selected");
   }
 }

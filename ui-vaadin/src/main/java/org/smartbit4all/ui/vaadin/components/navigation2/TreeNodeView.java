@@ -1,8 +1,6 @@
 package org.smartbit4all.ui.vaadin.components.navigation2;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.core.object.PropertyChange;
@@ -41,8 +39,6 @@ public class TreeNodeView extends FlexLayout {
   private Disposable navigationSubs;
   private Disposable levelSubs;
 
-  private Map<String, TreeNodeView> nodesByPath;
-
   private Boolean expanded = false;
   private FlexLayout itemLayout;
   private FlexLayout captionLayout;
@@ -53,21 +49,19 @@ public class TreeNodeView extends FlexLayout {
     this.viewModel = viewModel;
     this.path = path;
 
-    nodesByPath = new HashMap<>();
-
     createUI();
     ObservableObject model = this.viewModel.model();
-    treeNodeBinder = new VaadinTreeNodeBinder(childrenLayout, model, path, TreeNode.CHILDREN_NODES,
-        this::createSubTreeNodeView);
-    captionSubs = model.onPropertyChange(path, TreeNode.CAPTION, this::onCaptionChanged);
-    iconSubs = model.onPropertyChange(path, TreeNode.ICON, this::onIconChanged);
-    stylesSubs = model.onPropertyChange(path, TreeNode.STYLES, this::onStylesChanged);
-    stylesSubs = model.onPropertyChange(path, TreeNode.HAS_CHILDREN, this::onHasChildrenChanged);
-    expandedSubs = model.onPropertyChange(path, TreeNode.EXPANDED, this::onExpandedChanged);
-    selectedSubs = model.onPropertyChange(path, TreeNode.SELECTED, this::onSelectedChanged);
+    treeNodeBinder = new VaadinTreeNodeBinder(childrenLayout, model,
+        this::createSubTreeNodeView, path, TreeNode.CHILDREN_NODES);
+    captionSubs = model.onPropertyChange(this::onCaptionChanged, path, TreeNode.CAPTION);
+    iconSubs = model.onPropertyChange(this::onIconChanged, path, TreeNode.ICON);
+    stylesSubs = model.onPropertyChange(this::onStylesChanged, path, TreeNode.STYLES);
+    stylesSubs = model.onPropertyChange(this::onHasChildrenChanged, path, TreeNode.HAS_CHILDREN);
+    expandedSubs = model.onPropertyChange(this::onExpandedChanged, path, TreeNode.EXPANDED);
+    selectedSubs = model.onPropertyChange(this::onSelectedChanged, path, TreeNode.SELECTED);
     navigationSubs =
-        model.onPropertyChange(path, TreeNode.NAVIGATION_TARGET, this::onNavigationChanged);
-    levelSubs = model.onPropertyChange(path, TreeNode.LEVEL, this::onLevelChanged);
+        model.onPropertyChange(this::onNavigationChanged, path, TreeNode.NAVIGATION_TARGET);
+    levelSubs = model.onPropertyChange(this::onLevelChanged, path, TreeNode.LEVEL);
   }
 
   private void createUI() {

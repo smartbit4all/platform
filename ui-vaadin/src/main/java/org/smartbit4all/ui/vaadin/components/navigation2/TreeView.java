@@ -17,8 +17,9 @@ public class TreeView extends FlexLayout {
 
     addClassName("sb4-tree");
 
-    new VaadinTreeNodeBinder(this, viewModel.model(), null, TreeModel.ROOT_NODES,
-        (itemPath, item) -> new TreeNodeView(viewModel, itemPath));
+    new VaadinTreeNodeBinder(this, viewModel.model(),
+        (itemPath, item) -> new TreeNodeView(viewModel, itemPath),
+        TreeModel.ROOT_NODES);
   }
 
 }

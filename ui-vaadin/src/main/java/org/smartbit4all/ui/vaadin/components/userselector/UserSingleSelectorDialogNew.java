@@ -15,11 +15,11 @@ public class UserSingleSelectorDialogNew extends UserSelectorDialogNew {
   protected void createAndBindUI(SelectionMode selectionMode) {
     super.createAndBindUI(selectionMode);
 
-    VaadinBinders.bind(grid, userSelectorVM.singleSelector(), null, "selectors");
+    VaadinBinders.bindItems(grid, userSelectorVM.singleSelector(), "selectors");
     VaadinBinders.bindSelection(grid.asSingleSelect(), userSelectorVM.singleSelector(), null,
         "selected");
   }
-  
+
   @Override
   protected void saveAndCloseDialog() {
     String selectedUri = getUserUriStream()

@@ -34,7 +34,7 @@ public class FilterOperationComboBoxView extends FilterOperationView {
     comboBox.setItemLabelGenerator(Value::getDisplayValue);
     add(comboBox);
 
-    comboBinder = VaadinBinders.bind(comboBox, filterField, path, "possibleValues");
+    comboBinder = VaadinBinders.bindItems(comboBox, filterField, path, "possibleValues");
     selectionBinder =
         VaadinBinders.bindValue(comboBox, filterField, null, true, path, "selectedValue");
 

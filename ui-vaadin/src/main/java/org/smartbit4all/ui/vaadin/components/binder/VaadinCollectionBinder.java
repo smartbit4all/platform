@@ -14,23 +14,20 @@ public abstract class VaadinCollectionBinder<T> extends VaadinAbstractBinder {
 
   protected final ObservableObject observableObject;
 
-  protected String path;
-  protected String collection;
+  protected String[] collectionPath;
   protected final List<T> items;
   protected final Map<String, T> itemsByPath;
 
-  protected VaadinCollectionBinder(ObservableObject observableObject, String path,
-      String collection) {
+  protected VaadinCollectionBinder(ObservableObject observableObject, String... collectionPath) {
     this.observableObject = Objects.requireNonNull(observableObject);
-    this.path = path;
-    this.collection = collection;
+    this.collectionPath = collectionPath;
     this.items = new ArrayList<>();
     this.itemsByPath = new HashMap<>();
   }
 
   protected void registerModelObserver() {
-    this.disposable = this.observableObject.onCollectionObjectChange(path, collection,
-        this::onCollectionObjectChanged);
+    this.disposable = this.observableObject.onCollectionObjectChange(
+        this::onCollectionObjectChanged, collectionPath);
   }
 
   @SuppressWarnings("unchecked")

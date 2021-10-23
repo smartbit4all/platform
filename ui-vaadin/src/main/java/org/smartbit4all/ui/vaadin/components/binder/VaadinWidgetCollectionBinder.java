@@ -15,8 +15,8 @@ public class VaadinWidgetCollectionBinder<T, WIDGET extends Component>
   private BiFunction<String, T, WIDGET> createWidget;
 
   public VaadinWidgetCollectionBinder(HasComponents container, ObservableObject observableObject,
-      String path, String collectionName, BiFunction<String, T, WIDGET> createWidget) {
-    super(observableObject, path, collectionName);
+      BiFunction<String, T, WIDGET> createWidget, String... collectionPath) {
+    super(observableObject, collectionPath);
     this.container = container;
     this.createWidget = createWidget;
     widgetsByPath = new HashMap<>();
