@@ -59,13 +59,13 @@ public class VaadinBinders {
   }
 
   public static VaadinHasTextBinder bind(HasText label, ObservableObject observableObject,
-      String path) {
-    return new VaadinHasTextBinder(label, observableObject, path, null);
+      String... propertyPath) {
+    return new VaadinHasTextBinder(label, observableObject, null, propertyPath);
   }
 
-  public static VaadinHasTextBinder bind(HasText label, ObservableObject observableObject,
-      String path, Function<Object, String> converter) {
-    return new VaadinHasTextBinder(label, observableObject, path, converter);
+  public static VaadinHasTextBinder bindLabel(HasText label, ObservableObject observableObject,
+      Function<Object, String> converter, String... propertyPath) {
+    return new VaadinHasTextBinder(label, observableObject, converter, propertyPath);
   }
 
   public static <T> VaadinHasItemsBinder<T> bind(HasItems<T> grid, ObservableObject editing,

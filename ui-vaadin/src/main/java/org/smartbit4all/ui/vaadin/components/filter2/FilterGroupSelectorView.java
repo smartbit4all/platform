@@ -7,7 +7,6 @@ import org.smartbit4all.core.object.CollectionObjectChange;
 import org.smartbit4all.core.object.ObjectChangeSimple;
 import org.smartbit4all.core.object.ObjectEditing;
 import org.smartbit4all.core.object.ObservableObject;
-import org.smartbit4all.core.utility.PathUtility;
 import org.smartbit4all.ui.vaadin.components.binder.VaadinBinders;
 import com.vaadin.flow.component.details.Details;
 import com.vaadin.flow.component.details.DetailsVariant;
@@ -38,11 +37,12 @@ public class FilterGroupSelectorView extends Details {
     setSummary(summary);
     setOpened(true);
 
-    VaadinBinders.bind(summaryText, groupSelector,
-        PathUtility.concatPath(path, "labelCode"), s -> getTranslation((String) s));
+    VaadinBinders.bindLabel(summaryText, groupSelector,
+        s -> getTranslation((String) s),
+        path, "labelCode");
 
-    groupSelector.onCollectionObjectChange(path, "filters", this::onFiltersChange);
-    groupSelector.onPropertyChange(path, "visible", c -> setVisible((boolean) c.getNewValue()));
+    groupSelector.onCollectionObjectChange(this::onFiltersChange, path, "filters");
+    groupSelector.onPropertyChange(c -> setVisible((boolean) c.getNewValue()), path, "visible");
   }
 
   private void onFiltersChange(CollectionObjectChange changes) {
