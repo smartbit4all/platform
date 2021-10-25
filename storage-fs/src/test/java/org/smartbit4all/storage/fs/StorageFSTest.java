@@ -183,7 +183,7 @@ class StorageFSTest {
     for (int i = 0; i < versionCount; i++) {
 
       Optional<StorageObject<FSTestBean>> optLoaded = storage
-          .load(URI.create(uri.toString() + StringConstant.HASH + i), FSTestBean.class);
+          .load(URI.create(uri.toString() + StringConstant.HASH + (i + 1)), FSTestBean.class);
       StorageObject<FSTestBean> object = optLoaded.get();
       String title = object.getObject().getTitle();
       assertEquals("v" + i, title);

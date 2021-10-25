@@ -218,7 +218,7 @@ public class StorageFS extends ObjectStorageImpl {
 
           return o;
         }
-        return null;
+        return oldVersion;
       }, object.getObject()));
 
     } catch (IOException e) {

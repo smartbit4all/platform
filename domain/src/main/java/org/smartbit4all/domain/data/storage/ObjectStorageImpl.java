@@ -311,12 +311,13 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
       String versionSerialNoString = uri.getFragment();
       if (versionSerialNoString != null) {
         try {
-          int versionSerialNo = Integer.parseInt(versionSerialNoString);
+          int versionSerialNoIndex = Integer.parseInt(versionSerialNoString) - 1;
           List<ObjectVersion> versions = storageObjData.getVersions();
-          if (versions == null || versionSerialNo < 0 || versionSerialNo >= versions.size()) {
+          if (versions == null || versionSerialNoIndex < 0
+              || versionSerialNoIndex >= versions.size()) {
             throw new IllegalArgumentException("Invalid version number in " + uri + " object uri.");
           }
-          return versions.get(versionSerialNo);
+          return versions.get(versionSerialNoIndex);
         } catch (NumberFormatException e) {
           throw new IllegalArgumentException("Bad version format in " + uri + " object uri.", e);
         }
