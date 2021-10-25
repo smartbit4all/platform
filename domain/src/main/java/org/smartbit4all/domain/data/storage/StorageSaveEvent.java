@@ -50,6 +50,7 @@ public final class StorageSaveEvent<O> {
       O myOldVersion = getOldVersion();
       O myNewVersion = getNewVersion();
       ApiObjectRef ref = new ApiObjectRef(null, myOldVersion, new HashMap<>());
+      ref.renderAndCleanChanges();
       ref.mergeObject(myNewVersion);
       change = ref.renderAndCleanChanges().orElse(ObjectChange.EMPTY);
     }

@@ -49,6 +49,12 @@ public class PropertyMeta {
   private Method itemAdder;
 
   /**
+   * The fluid item putter method for the property (eg.
+   * <code>Person putAddressesItem(String addressId, Address address)</code>).
+   */
+  private Method itemPutter;
+
+  /**
    * The type of the property. We need this to transfer the value and identifies the
    * {@link TransferService} {@link Converter}.
    */
@@ -75,9 +81,17 @@ public class PropertyMeta {
      */
     REFERENCE,
     /**
-     * The collection is a container of references to other api objects.
+     * The collection is a container of references to other api objects. It's an ordered collection
+     * (a list) where the items are identified by their position.
      */
-    COLLECTION
+    COLLECTION,
+    /**
+     * The map is also a container of references to other api objects but string unique identifier
+     * is provided where the identifier is used in the change events and property path. So the
+     * identifier must be sanitized to be able to include in a path (there shouldn't be any / for
+     * example).
+     */
+    MAP
   }
 
   PropertyMeta(String name, Class<?> type, BeanMeta beanMeta) {
@@ -190,6 +204,14 @@ public class PropertyMeta {
 
   public final Class<?> getType() {
     return type;
+  }
+
+  public final Method getItemPutter() {
+    return itemPutter;
+  }
+
+  public final void setItemPutter(Method itemPutter) {
+    this.itemPutter = itemPutter;
   }
 
 }

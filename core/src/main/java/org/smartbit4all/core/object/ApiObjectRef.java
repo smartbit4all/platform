@@ -173,9 +173,13 @@ public class ApiObjectRef {
       addMethodToEntry(meta.getSetter(), entry);
       addMethodToEntry(meta.getFluidSetter(), entry);
       addMethodToEntry(meta.getItemAdder(), entry);
+      addMethodToEntry(meta.getItemPutter(), entry);
       if (meta.getKind() == PropertyKind.COLLECTION) {
         ApiObjectCollection collection = new ApiObjectCollection(this, meta);
         entry.setCollection(collection);
+      } else if (meta.getKind() == PropertyKind.MAP) {
+        ApiObjectMap map = new ApiObjectMap(this, meta);
+        entry.setMap(map);
       }
     }
   }
@@ -246,8 +250,14 @@ public class ApiObjectRef {
         case COLLECTION:
           // setValueInner all the time, ApiObjectRef / ApiObjectCollection should handle value
           // comparisons recursively
-          Object newObject = entry.getMeta().getValue(unwrappedObject);
-          setValueInner(newObject, entry, setObjectValue);
+          Object newCollection = entry.getMeta().getValue(unwrappedObject);
+          setValueInner(newCollection, entry, setObjectValue);
+          break;
+        case MAP:
+          // setValueInner all the time, ApiObjectRef / ApiObjectCollection should handle value
+          // comparisons recursively
+          Object newMap = entry.getMeta().getValue(unwrappedObject);
+          setValueInner(newMap, entry, setObjectValue);
           break;
         default:
           break;
@@ -320,6 +330,10 @@ public class ApiObjectRef {
 
         case COLLECTION:
           entry.getCollection().setOriginalCollection((Collection<Object>) value);
+          break;
+
+        case MAP:
+          entry.getMap().setOriginalMap((Map<String, Object>) value);
           break;
 
         default:
@@ -405,6 +419,18 @@ public class ApiObjectRef {
           addedRef = nextRef.addValueByPath(PathUtility.nextFullPath(nextPath), value);
         }
         break;
+      case MAP:
+        ApiObjectMap map = propertyEntry.getMap();
+        if (pathSize == 1) {
+          // Add the value to the collection
+          addedRef = map.putObject(path, value);
+        } else {
+          // call the setValueByPath on the collection element
+          String nextPath = PathUtility.nextFullPath(path);
+          ApiObjectRef nextRef = map.get(PathUtility.getRootPath(nextPath));
+          addedRef = nextRef.addValueByPath(PathUtility.nextFullPath(nextPath), value);
+        }
+        break;
       default:
         break;
     }
@@ -443,6 +469,18 @@ public class ApiObjectRef {
           }
           return nextRef.getValueRefByPath(PathUtility.nextFullPath(nextPath));
         }
+      case MAP:
+        ApiObjectMap map = propertyEntry.getMap();
+        if (pathSize == 2) {
+          return map.get(PathUtility.getLastPath(path));
+        } else {
+          String nextPath = PathUtility.nextFullPath(path);
+          ApiObjectRef nextRef = map.get(PathUtility.getRootPath(nextPath));
+          if (nextRef == null) {
+            return null;
+          }
+          return nextRef.getValueRefByPath(PathUtility.nextFullPath(nextPath));
+        }
       default:
         break;
     }
@@ -474,6 +512,18 @@ public class ApiObjectRef {
           // call the removeValueByPath on the collection element
           String nextPath = PathUtility.nextFullPath(path);
           ApiObjectRef nextRef = collection.getByIdx(PathUtility.getRootPath(nextPath));
+          nextRef.removeValueByPath(PathUtility.nextFullPath(nextPath));
+        }
+        break;
+      case MAP:
+        ApiObjectMap map = propertyEntry.getMap();
+        if (pathSize == 2) {
+          // Remove the index to the collection
+          map.remove(PathUtility.getLastPath(path));
+        } else {
+          // call the removeValueByPath on the collection element
+          String nextPath = PathUtility.nextFullPath(path);
+          ApiObjectRef nextRef = map.get(PathUtility.getRootPath(nextPath));
           nextRef.removeValueByPath(PathUtility.nextFullPath(nextPath));
         }
         break;
@@ -531,6 +581,17 @@ public class ApiObjectRef {
           ApiObjectRef nextRef = collection.getByIdx(PathUtility.getRootPath(nextPath));
           return nextRef.getValueByPath(PathUtility.nextFullPath(nextPath));
         }
+      case MAP:
+        ApiObjectMap map = propertyEntry.getMap();
+        // TODO Handle the index even if we have longer path into the given element.
+        if (pathSize == 2) {
+          // Remove the index to the collection
+          return map.get(PathUtility.getLastPath(upperPath)).getObject();
+        } else {
+          String nextPath = PathUtility.nextFullPath(upperPath);
+          ApiObjectRef nextRef = map.get(PathUtility.getRootPath(nextPath));
+          return nextRef.getValueByPath(PathUtility.nextFullPath(nextPath));
+        }
       default:
         return null;
     }
@@ -542,6 +603,8 @@ public class ApiObjectRef {
         return propertyEntry.getMeta().getValue(object);
       case COLLECTION:
         return propertyEntry.getCollection();
+      case MAP:
+        return propertyEntry.getMap();
       case REFERENCE:
         return propertyEntry.getReference();
       default:
@@ -624,6 +687,16 @@ public class ApiObjectRef {
             result.getCollectionObjects().add(changes.get().collectionObjectChanges);
           }
           break;
+        case MAP:
+          Optional<CollectionChanges> changesMap = entry.getMap().renderAndCleanChanges();
+          if (changesMap.isPresent()) {
+            if (result == null) {
+              result = new ObjectChange(path, ChangeState.MODIFIED);
+            }
+            result.getCollections().add(changesMap.get().collectionChanges);
+            result.getCollectionObjects().add(changesMap.get().collectionObjectChanges);
+          }
+          break;
         case REFERENCE:
           if (entry.getReference() != null) {
             ApiObjectRef ref = entry.getReference();
@@ -657,12 +730,21 @@ public class ApiObjectRef {
     return Optional.ofNullable(result);
   }
 
+  /**
+   * Use this instead of {@link #getWrapper(Class)}. It must be the same!
+   * 
+   * @return
+   */
   public Object getWrapper() {
-    return getWrapper(getMeta().getClazz());
+    return getWrapperInner(getMeta().getClazz());
   }
 
   @SuppressWarnings("unchecked")
   public <T> T getWrapper(Class<T> beanClass) {
+    return getWrapperInner(beanClass);
+  }
+
+  private final <T> T getWrapperInner(Class<T> beanClass) {
     if (wrapper == null) {
 
       Enhancer enhancer = new Enhancer();
@@ -691,6 +773,17 @@ public class ApiObjectRef {
           .collect(Collectors.toList());
     }
     return propertyList;
+  }
+
+  final String getPropertyPath(PropertyMeta propertyMeta) {
+    return (Strings.emptyToNull(getPath()) == null ? StringConstant.EMPTY
+        : (getPath() + StringConstant.SLASH))
+        + propertyMeta.getName();
+
+  }
+
+  private boolean isRefPathEmpty() {
+    return getPath() == null || getPath().isEmpty();
   }
 
   @SuppressWarnings("unchecked")
