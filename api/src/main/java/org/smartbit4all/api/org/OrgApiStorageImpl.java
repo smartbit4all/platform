@@ -33,7 +33,7 @@ import org.smartbit4all.domain.data.storage.StorageObjectReferenceEntry;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class OrgApiImplStorageImpl implements OrgApi, InitializingBean {
+public class OrgApiStorageImpl implements OrgApi, InitializingBean {
 
   private static final Logger log = LoggerFactory.getLogger(LocaleSettingApi.class);
 
@@ -511,11 +511,12 @@ public class OrgApiImplStorageImpl implements OrgApi, InitializingBean {
         StorageObject<User> oldUser = optionalUser.get();
         oldUser.setObject(user);
         return getStorage().save(oldUser);
+      } else {
+        throw new IllegalArgumentException("Failed to update user: " + user.toString());
       }
     } else {
-
+      throw new IllegalArgumentException("Failed to update user: " + user.toString());
     }
-    throw new IllegalArgumentException("Failed to update user: " + user.toString());
   }
 
 
