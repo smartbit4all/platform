@@ -8,7 +8,6 @@ import org.smartbit4all.core.SB4FunctionImpl;
 import org.smartbit4all.domain.data.DataColumn;
 import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.data.TableData;
-import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.domain.meta.PropertySet;
 import org.smartbit4all.domain.utility.crud.Crud;
 
@@ -32,12 +31,7 @@ public class ApplyChangeOperation extends SB4CompositeFunctionImpl<Void, List<Da
    */
   private DataRow row;
 
-  /**
-   * The unique identifier that must be set to be able to identify the given record. Generally a
-   * UUID can be used to identify the objects before storing it to the database. In this way the
-   * referential integrity of the database is based on this unique UUIDs.
-   */
-  private Property<?> uniqueId;
+  private String uniqueId;
 
   /**
    * The operations for the change.
@@ -145,11 +139,11 @@ public class ApplyChangeOperation extends SB4CompositeFunctionImpl<Void, List<Da
     this.operation = operation;
   }
 
-  public final Property<?> getUniqueId() {
+  public final String getUniqueId() {
     return uniqueId;
   }
 
-  public final void setUniqueId(Property<?> uniqueId) {
+  public final void setUniqueId(String uniqueId) {
     this.uniqueId = uniqueId;
   }
 
