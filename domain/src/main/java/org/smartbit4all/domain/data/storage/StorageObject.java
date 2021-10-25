@@ -15,6 +15,7 @@ import org.smartbit4all.api.storage.bean.ObjectReference;
 import org.smartbit4all.api.storage.bean.ObjectVersion;
 import org.smartbit4all.api.storage.bean.StorageObjectData;
 import org.smartbit4all.core.object.ObjectDefinition;
+import org.smartbit4all.core.utility.UriUtils;
 
 /**
  * The wrapper object for storage operations. It represents an object with all the belonging
@@ -154,13 +155,14 @@ public final class StorageObject<T> {
   }
 
   /**
-   * Used for the load to use the uri of the object itself.
+   * Used for the load to use the uri of the object itself. Remove the history (fragment) part of
+   * the URI.
    * 
    * @param object
    */
   final void setObjectInner(T object) {
     this.object = object;
-    uri = definition.getUri(object);
+    uri = UriUtils.removeFragment(definition.getUri(object));
   }
 
   /**
