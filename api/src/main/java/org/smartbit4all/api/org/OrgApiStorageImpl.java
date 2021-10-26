@@ -8,7 +8,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
@@ -220,8 +219,8 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
 
   @Override
   public URI saveGroup(Group group) {
-    Optional<Group> groupByName = getGroupByName(group.getName());
-    if (groupByName.isPresent()) {
+    Group groupByName = getGroupByName(group.getName());
+    if (groupByName != null) {
       throw new IllegalStateException("Group with name " + group.getName() + " already exists!");
     }
 
@@ -476,16 +475,16 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
   }
 
   @Override
-  public Optional<Group> getGroupByName(String name) {
+  public Group getGroupByName(String name) {
     URI uri = getOrCreateObjectReferenceURI(GROUP_LIST_REFERENCE, ObjectMap.class);
     ObjectMap groupObjectMap =
         getStorage().read(uri, ObjectMap.class);
     URI groupUri = groupObjectMap.getUris().get(name);
     if (groupUri == null) {
-      return Optional.empty();
+      return null;
     }
-    return getStorage().exists(groupUri) ? Optional.of(getStorage().read(groupUri, Group.class))
-        : Optional.empty();
+    return getStorage().exists(groupUri) ? getStorage().read(groupUri, Group.class)
+        : null;
   }
 
   @Override
@@ -539,13 +538,11 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
     if (name == null) {
       throw new IllegalArgumentException("Group: " + group.toString() + "has no name!");
     }
-    Optional<Group> groupByName = getGroupByName(name);
-    if (groupByName.isPresent()) {
-      if (getStorage().exists(groupByName.get().getUri())) {
-        StorageObject<Group> oldGroup = getStorage().load(groupByName.get().getUri(), Group.class);
-        oldGroup.setObject(group);
-        return getStorage().save(oldGroup);
-      }
+    Group groupByName = getGroupByName(name);
+    if (getStorage().exists(groupByName.getUri())) {
+      StorageObject<Group> oldGroup = getStorage().load(groupByName.getUri(), Group.class);
+      oldGroup.setObject(group);
+      return getStorage().save(oldGroup);
     }
     throw new IllegalArgumentException("Failed to update user: " + group.toString());
   }

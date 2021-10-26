@@ -3,7 +3,6 @@ package org.smartbit4all.sec.org;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 import org.smartbit4all.api.gateway.SecurityGatewayService;
 import org.smartbit4all.api.org.OrgApiImpl;
 import org.smartbit4all.api.org.bean.Group;
@@ -123,7 +122,7 @@ public class OrgApiGatewayImpl extends OrgApiImpl {
   }
 
   @Override
-  public Optional<Group> getGroupByName(String name) {
+  public Group getGroupByName(String name) {
     return secGatewayService.getGroupByName(name);
   }
 

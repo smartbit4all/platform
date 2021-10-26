@@ -17,7 +17,6 @@ package org.smartbit4all.api.org;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.org.bean.User;
 
@@ -112,7 +111,7 @@ public interface OrgApi {
   /**
    * Get all information of a group.
    */
-  Optional<Group> getGroupByName(String name);
+  Group getGroupByName(String name);
 
 
   /**
