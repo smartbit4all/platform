@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.session.UserSessionApi;
 import org.smartbit4all.api.session.bean.Session;
@@ -106,8 +105,8 @@ public class UserSessionApiSecImpl implements UserSessionApi {
       throw new IllegalStateException("Current authentication is not Session!");
     }
     URI sessionUri = ((Session) currentAuthentication.getPrincipal()).getUri();
-    Optional<StorageObject<Session>> storageObject = sessionStorage.load(sessionUri, Session.class);
-    return storageObject.orElse(null);
+    return sessionStorage.exists(sessionUri) ? sessionStorage.load(sessionUri, Session.class)
+        : null;
   }
 
 }

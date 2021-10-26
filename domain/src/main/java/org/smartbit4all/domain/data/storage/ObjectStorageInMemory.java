@@ -4,10 +4,8 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import org.smartbit4all.api.storage.bean.ObjectHistoryEntry;
-import org.smartbit4all.api.storage.bean.ObjectReferenceList;
 import org.smartbit4all.core.object.ApiObjectRef;
 import org.smartbit4all.core.object.ObjectApi;
 
@@ -25,11 +23,6 @@ public class ObjectStorageInMemory extends ObjectStorageImpl {
    */
   private Map<URI, StorageObject<?>> objectsByURI = new ConcurrentHashMap<>();
 
-  /**
-   * The references in the storage by their URI as key.
-   */
-  private Map<URI, Map<String, ObjectReferenceList>> referencesByURI = new ConcurrentHashMap<>();;
-
   public ObjectStorageInMemory(ObjectApi objectApi) {
     super(objectApi);
   }
@@ -41,25 +34,31 @@ public class ObjectStorageInMemory extends ObjectStorageImpl {
     try {
       StorageObject<?> copy = storageObject.copy();
       copy.setObjectObj(ApiObjectRef.unwrapObject(copy.getObject()));
+      StorageObject<?> oldVersion = objectsByURI.get(copy.getUri());
       objectsByURI.put(copy.getUri(), copy);
-      invokeOnSucceedFunctions(storageObject, new StorageSaveEvent(null, null));
+      invokeOnSucceedFunctions(storageObject, new StorageSaveEvent<>(
+          () -> oldVersion != null ? oldVersion.getObject() : null, copy.getObject()));
       return copy.getUri();
     } finally {
       objectLock.leave();
     }
   }
 
+  @SuppressWarnings("unchecked")
   @Override
-  public <T> Optional<StorageObject<T>> load(Storage storage, URI uri, Class<T> clazz,
+  public <T> StorageObject<T> load(Storage storage, URI uri, Class<T> clazz,
       StorageLoadOption... options) {
-    @SuppressWarnings("unchecked")
-    StorageObject<T> storageObject = (StorageObject<T>) objectsByURI.get(uri);
-    return Optional.ofNullable(storageObject);
+    return (StorageObject<T>) objectsByURI.get(uri);
   }
 
   @Override
   public List<ObjectHistoryEntry> loadHistory(Storage storage, URI uri) {
     return Collections.emptyList();
+  }
+
+  @Override
+  public boolean exists(URI uri) {
+    return objectsByURI.containsKey(uri);
   }
 
 }

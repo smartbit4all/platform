@@ -114,8 +114,7 @@ public class StorageIndexLoader<T> extends StorageLoader {
 
   private StorageObject<?> load(URI uri) {
 
-    return storage.load(uri)
-        .orElseThrow(() -> new RuntimeException("Cannot load object with URI: " + uri));
+    return storage.load(uri);
   }
 
   private DataRow getRow(TableData<?> tableData, DataRow dataRow) {

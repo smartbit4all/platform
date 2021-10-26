@@ -69,7 +69,7 @@ public class ContentAccessApiImpl implements ContentAccessApi {
     URI contentUri = objectShareApi.resolveUUID(uuid);
 
     if (contentUri != null) {
-      BinaryContent content = getStorage().read(contentUri, BinaryContent.class).get();
+      BinaryContent content = getStorage().read(contentUri, BinaryContent.class);
       BinaryData data = binaryContentApi.getBinaryData(content);
 
       publisher.onNext(new ContentAccessEventData()
@@ -88,7 +88,7 @@ public class ContentAccessApiImpl implements ContentAccessApi {
     URI contentUri = objectShareApi.resolveUUID(uuid);
 
     if (contentUri != null) {
-      BinaryContent content = getStorage().read(contentUri, BinaryContent.class).get();
+      BinaryContent content = getStorage().read(contentUri, BinaryContent.class);
       binaryContentApi.uploadContent(content, binaryData, content.getDataUri());
 
       publisher.onNext(new ContentAccessEventData()

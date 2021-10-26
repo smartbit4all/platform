@@ -122,15 +122,13 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
       Class<T> clazz) {
 
     URI uri = getOrCreateObjectReferenceURI(referenceName, clazz);
-    return getStorage().load(uri, clazz).orElseThrow(() -> new IllegalArgumentException(
-        "Settings reference with name: " + referenceName + " not found!"));
+    return getStorage().load(uri, clazz);
   }
 
   private <T> T readSettingsReference(String referenceName, Class<T> clazz) {
 
     URI uri = getOrCreateObjectReferenceURI(referenceName, clazz);
-    return getStorage().read(uri, clazz).orElseThrow(() -> new IllegalArgumentException(
-        "Settings reference with name: " + referenceName + " not found!"));
+    return getStorage().read(uri, clazz);
   }
 
   private <T> URI getOrCreateObjectReferenceURI(String referenceName, Class<T> clazz) {
@@ -204,22 +202,17 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
 
   @Override
   public User getUser(URI userUri) {
-    return getStorage().read(userUri, User.class)
-        .orElseThrow(
-            () -> new IllegalArgumentException("User with URI: " + userUri + " not found!"));
+    return getStorage().read(userUri, User.class);
   }
 
   @Override
   public Group getGroup(URI groupUri) {
-    return getStorage().read(groupUri, Group.class)
-        .orElseThrow(
-            () -> new IllegalArgumentException("Group with URI: " + groupUri + " not found!"));
+    return getStorage().read(groupUri, Group.class);
   }
 
   @Override
   public List<Group> getSubGroups(URI groupUri) {
-    Group group = getStorage().read(groupUri, Group.class)
-        .orElseThrow(() -> new IllegalArgumentException("Group with uri: " + " does not exist!"));
+    Group group = getStorage().read(groupUri, Group.class);
 
     return getStorage().read(group.getChildren(), Group.class);
   }
@@ -356,9 +349,8 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
    * @param clazz
    */
   private <T> void setObjectToDeleted(URI uri, Class<T> clazz) {
-    Optional<StorageObject<T>> optionalStorage = getStorage().load(uri, clazz);
-    if (optionalStorage.isPresent()) {
-      StorageObject<T> storageObject = optionalStorage.get();
+    if (getStorage().exists(uri)) {
+      StorageObject<T> storageObject = getStorage().load(uri, clazz);
       storageObject.setDeleted();
       getStorage().save(storageObject);
     }
@@ -475,26 +467,25 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
   public User getUserByUsername(String username) {
     URI uri = getOrCreateObjectReferenceURI(USER_LIST_REFERENCE, ObjectMap.class);
     ObjectMap userObjectMap =
-        getStorage().read(uri, ObjectMap.class).orElseThrow(() -> new IllegalArgumentException(
-            "User list in storage settings has not been initialized"));
+        getStorage().read(uri, ObjectMap.class);
     URI userUri = userObjectMap.getUris().get(username);
     if (userUri == null) {
       return null;
     }
-    return getStorage().read(userUri, User.class).orElse(null);
+    return getStorage().exists(userUri) ? getStorage().read(userUri, User.class) : null;
   }
 
   @Override
   public Optional<Group> getGroupByName(String name) {
     URI uri = getOrCreateObjectReferenceURI(GROUP_LIST_REFERENCE, ObjectMap.class);
     ObjectMap groupObjectMap =
-        getStorage().read(uri, ObjectMap.class).orElseThrow(() -> new IllegalArgumentException(
-            "Group list in storage settings has not been initialized"));
+        getStorage().read(uri, ObjectMap.class);
     URI groupUri = groupObjectMap.getUris().get(name);
     if (groupUri == null) {
       return Optional.empty();
     }
-    return getStorage().read(groupUri, Group.class);
+    return getStorage().exists(groupUri) ? Optional.of(getStorage().read(groupUri, Group.class))
+        : Optional.empty();
   }
 
   @Override
@@ -505,10 +496,8 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
     }
     User userByUsername = getUserByUsername(username);
     if (userByUsername != null) {
-      Optional<StorageObject<User>> optionalUser =
-          getStorage().load(userByUsername.getUri(), User.class);
-      if (optionalUser.isPresent()) {
-        StorageObject<User> oldUser = optionalUser.get();
+      if (getStorage().exists(userByUsername.getUri())) {
+        StorageObject<User> oldUser = getStorage().load(userByUsername.getUri(), User.class);
         oldUser.setObject(user);
         return getStorage().save(oldUser);
       } else {
@@ -552,10 +541,8 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
     }
     Optional<Group> groupByName = getGroupByName(name);
     if (groupByName.isPresent()) {
-      Optional<StorageObject<Group>> optionalGroup =
-          getStorage().load(groupByName.get().getUri(), Group.class);
-      if (optionalGroup.isPresent()) {
-        StorageObject<Group> oldGroup = optionalGroup.get();
+      if (getStorage().exists(groupByName.get().getUri())) {
+        StorageObject<Group> oldGroup = getStorage().load(groupByName.get().getUri(), Group.class);
         oldGroup.setObject(group);
         return getStorage().save(oldGroup);
       }

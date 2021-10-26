@@ -248,8 +248,6 @@ public class CompositeObjects {
 
     ComposeableObjectDef def = compObjDefStorage
         .load(defUri, ComposeableObjectDef.class)
-        .orElseThrow(() -> new IllegalArgumentException(
-            "CompDef URI does not exists: " + defUri))
         .getObject();
 
     return def;

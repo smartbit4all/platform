@@ -155,7 +155,7 @@ public class Storage {
    * @param options When loading we can instruct the loading to retrieve the necessary data only.
    * 
    */
-  public <T> Optional<StorageObject<T>> load(URI uri, Class<T> clazz,
+  public <T> StorageObject<T> load(URI uri, Class<T> clazz,
       StorageLoadOption... options) {
     return objectStorage.load(this, uri, clazz, options);
   }
@@ -169,7 +169,7 @@ public class Storage {
    * @param options When loading we can instruct the loading to retrieve the necessary data only.
    * @return We try to identify the class from the URI itself.
    */
-  public Optional<StorageObject<?>> load(URI uri, StorageLoadOption... options) {
+  public StorageObject<?> load(URI uri, StorageLoadOption... options) {
     return objectStorage.load(this, uri, options);
   }
 
@@ -198,8 +198,20 @@ public class Storage {
    * @param clazz The class of the object to load. Based on this class we can easily identify the
    *        {@link ObjectDefinition} responsible for this type of objects.
    */
-  public <T> Optional<T> read(URI uri, Class<T> clazz) {
+  public <T> T read(URI uri, Class<T> clazz) {
     return objectStorage.read(this, uri, clazz);
+  }
+
+  public boolean exists(URI uri) {
+    return true;
+  }
+
+  public boolean existsAll(List<URI> uris) {
+    return true;
+  }
+
+  public List<URI> findExistings(List<URI> uris) {
+    return Collections.emptyList();
   }
 
   /**
@@ -211,7 +223,7 @@ public class Storage {
    *        {@link StorageApi} and based on the scheme of the URI.
    * @return We try to identify the class from the URI itself.
    */
-  public Optional<?> read(URI uri) {
+  public Object read(URI uri) {
     return objectStorage.read(this, uri);
   }
 
@@ -305,22 +317,19 @@ public class Storage {
 
   public final StorageObject<StorageSettings> settings() {
     URI uri = getSettingsUri();
-    // TODO Lock the settings!!!!
-    Optional<StorageObject<StorageSettings>> optional =
-        objectStorage.load(this, uri, StorageSettings.class);
+    // TODO Lock the settings!!!! Optimistic lock will be enough.
     StorageObject<StorageSettings> storageObject;
-    if (!optional.isPresent()) {
+    try {
+      storageObject =
+          objectStorage.load(this, uri, StorageSettings.class);
+    } catch (ObjectNotFoundException e) {
       // It's missing now so we have to create is.
-      ObjectDefinition<StorageSettings> objectDefinition =
-          objectApi.definition(StorageSettings.class);
-      storageObject = new StorageObject<>(objectDefinition, this);
+      storageObject = instanceOf(StorageSettings.class);
       // At this point we already know the unique URI that can be used to refer from other objects
       // also.
       storageObject.setUri(uri);
       storageObject.setObject(new StorageSettings().schemeName(scheme));
       save(storageObject);
-    } else {
-      storageObject = optional.get();
     }
     return storageObject;
   }

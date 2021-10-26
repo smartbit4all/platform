@@ -35,13 +35,13 @@ public class CompositeObjectApi implements ComposeableObjectApi {
       URI definitionUri,
       Consumer<URI> nodeChangeListener) throws Exception {
 
-    Optional<CompositeObject> loaded = compositeStorage.read(
-        parentObjectUri,
-        CompositeObject.class);
-
-    if (loaded.isPresent()) {
-      CompositeObject compositeObject = loaded.get();
-      CompositeObjectDef def = loadCompositeObjectDef(loaded.get());
+    if (compositeStorage.exists(parentObjectUri)) {
+      CompositeObject compositeObject = compositeStorage.read(
+          parentObjectUri,
+          CompositeObject.class);
+      CompositeObjectDef def = loadCompositeObjectDef(compositeStorage.read(
+          parentObjectUri,
+          CompositeObject.class));
 
       Optional<CompositeObjectAssociation> association = def.getAssociations()
           .stream()
@@ -70,9 +70,8 @@ public class CompositeObjectApi implements ComposeableObjectApi {
 
   @Override
   public String getTitle(URI objectUri) throws Exception {
-    Optional<CompositeObject> loaded = compositeStorage.read(objectUri, CompositeObject.class);
-    if (loaded.isPresent()) {
-      CompositeObject compositeObject = loaded.get();
+    if (compositeStorage.exists(objectUri)) {
+      CompositeObject compositeObject = compositeStorage.read(objectUri, CompositeObject.class);
       if (!Strings.isNullOrEmpty(compositeObject.getCaption())) {
         return compositeObject.getCaption();
       }
@@ -88,10 +87,9 @@ public class CompositeObjectApi implements ComposeableObjectApi {
 
   @Override
   public String getIcon(URI objectUri) throws Exception {
-    Optional<CompositeObject> compositeObject =
-        compositeStorage.read(objectUri, CompositeObject.class);
-    if (compositeObject.isPresent()) {
-      CompositeObjectDef compositeDef = loadCompositeObjectDef(compositeObject.get());
+    if (compositeStorage.exists(objectUri)) {
+      CompositeObjectDef compositeDef =
+          loadCompositeObjectDef(compositeStorage.read(objectUri, CompositeObject.class));
       ComposeableObjectDef composeableDef = load(compositeDef);
 
       return composeableDef.getIcon();
@@ -111,20 +109,14 @@ public class CompositeObjectApi implements ComposeableObjectApi {
 
   private CompositeObjectDef loadCompositeObjectDef(CompositeObject compositeObject)
       throws Exception {
-
     return compositeStorage.read(
-        compositeObject.getCompositeDefUri(), CompositeObjectDef.class)
-        .orElseThrow(() -> new IllegalArgumentException(
-            "CompositeObjectDef does not exist with URI: " + compositeObject.getUri()));
+        compositeObject.getCompositeDefUri(), CompositeObjectDef.class);
   }
 
   private ComposeableObjectDef load(CompositeObjectDef def)
       throws Exception {
-
     return compositeStorage.read(
-        def.getComposeableDefUri(), ComposeableObjectDef.class)
-        .orElseThrow(() -> new IllegalArgumentException(
-            "CompositeObjectAssociation does not exist with URI: " + def.getComposeableDefUri()));
+        def.getComposeableDefUri(), ComposeableObjectDef.class);
   }
 
 }

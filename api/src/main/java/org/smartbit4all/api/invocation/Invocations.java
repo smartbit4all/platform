@@ -2,7 +2,6 @@ package org.smartbit4all.api.invocation;
 
 import java.lang.reflect.Method;
 import java.net.URI;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 import org.slf4j.Logger;
@@ -212,11 +211,9 @@ public class Invocations {
         .getCollection(constructConsumerName(consumerName))) {
 
       if (refEntry.getReferenceData() != null) {
-        Optional<InvocationRequestTemplate> invocationReqOpt = storage
-            .read(refEntry.getReferenceData().getUri(), InvocationRequestTemplate.class);
-        if (invocationReqOpt.isPresent()) {
-          // If we have the request template then parameterize and call.
-          InvocationRequestTemplate requestTemplate = invocationReqOpt.get();
+        try {
+          InvocationRequestTemplate requestTemplate = storage
+              .read(refEntry.getReferenceData().getUri(), InvocationRequestTemplate.class);
           if (requestTemplate.getParameters().size() == 1) {
             InvocationRequest request =
                 InvocationRequest.of(requestTemplate).setParameters(object.getUri());
@@ -229,6 +226,10 @@ public class Invocations {
               refEntry.setDelete(true);
             }
           }
+        } catch (Exception e) {
+          log.debug("Unable to find the registered consumers for {} storage object {}",
+              refEntry.getReferenceData().getUri(), object.getUri(),
+              e);
         }
       }
     }

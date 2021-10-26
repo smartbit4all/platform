@@ -3,9 +3,6 @@ package org.smartbit4all.sql.storage;
 import java.net.URI;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.storage.bean.ObjectHistoryEntry;
 import org.smartbit4all.core.object.ObjectApi;
@@ -18,8 +15,6 @@ import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Property;
 
 public class StorageSQL extends ObjectStorageImpl {
-
-  private static final Logger log = LoggerFactory.getLogger(StorageSQL.class);
 
   private EntityDefinition entityDef;
 
@@ -113,7 +108,7 @@ public class StorageSQL extends ObjectStorageImpl {
   }
 
   @Override
-  public <T> Optional<StorageObject<T>> load(Storage storage, URI uri, Class<T> clazz,
+  public <T> StorageObject<T> load(Storage storage, URI uri, Class<T> clazz,
       StorageLoadOption... options) {
     // TODO Auto-generated method stub
     return null;
@@ -273,6 +268,11 @@ public class StorageSQL extends ObjectStorageImpl {
     } else {
       return (Property<BinaryData>) entityDef.getProperty(contentFieldName);
     }
+  }
+
+  @Override
+  public boolean exists(URI uri) {
+    return true;
   }
 
 }

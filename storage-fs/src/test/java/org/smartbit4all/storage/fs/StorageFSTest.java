@@ -8,7 +8,6 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -121,7 +120,7 @@ class StorageFSTest {
     storageObject.setObject(binaryData.asObject());
     URI save = storage.save(storageObject);
 
-    BinaryDataObject bdResult = storage.read(save, BinaryDataObject.class).get();
+    BinaryDataObject bdResult = storage.read(save, BinaryDataObject.class);
 
     ByteArrayOutputStream bdos = new ByteArrayOutputStream();
     ByteStreams.copy(bdResult.getBinaryData().inputStream(), bdos);
@@ -150,8 +149,7 @@ class StorageFSTest {
 
     for (int i = 1; i < versionCount; i++) {
 
-      Optional<StorageObject<FSTestBean>> optLoaded = storage.load(uri, FSTestBean.class);
-      StorageObject<FSTestBean> object = optLoaded.get();
+      StorageObject<FSTestBean> object = storage.load(uri, FSTestBean.class);
       object.getObject().setTitle("v" + i);
       long startSave = System.currentTimeMillis();
       storage.save(object);
@@ -182,9 +180,8 @@ class StorageFSTest {
 
     for (int i = 0; i < versionCount; i++) {
 
-      Optional<StorageObject<FSTestBean>> optLoaded = storage
+      StorageObject<FSTestBean> object = storage
           .load(URI.create(uri.toString() + StringConstant.HASH + (i + 1)), FSTestBean.class);
-      StorageObject<FSTestBean> object = optLoaded.get();
       String title = object.getObject().getTitle();
       assertEquals("v" + i, title);
 
@@ -211,9 +208,9 @@ class StorageFSTest {
     }
 
     // Load the same version and modify the first one.
-    StorageObject<FSTestBean> storageObject1 = storage.load(uri, FSTestBean.class).get();
+    StorageObject<FSTestBean> storageObject1 = storage.load(uri, FSTestBean.class);
 
-    StorageObject<FSTestBean> storageObject2 = storage.load(uri, FSTestBean.class).get();
+    StorageObject<FSTestBean> storageObject2 = storage.load(uri, FSTestBean.class);
 
     storageObject1.getObject().setTitle("LockObject-modified");
 
@@ -240,7 +237,7 @@ class StorageFSTest {
 
     URI uri = storage.save(storageObject);
 
-    Optional<StorageObject<FSTestBean>> optLoaded = storage.load(uri, FSTestBean.class);
+    StorageObject<FSTestBean> optLoaded = storage.load(uri, FSTestBean.class);
 
     StorageObject<InvocationRequestTemplate> invocationReqObj =
         storage.instanceOf(InvocationRequestTemplate.class);
@@ -278,7 +275,7 @@ class StorageFSTest {
     assertEquals(myListUri, myListUriLoaded);
 
     ObjectMap referenceList =
-        storage.load(myListUriLoaded, ObjectMap.class).get().getObject();
+        storage.load(myListUriLoaded, ObjectMap.class).getObject();
 
     assertEquals(invocationUri, uriReloaded);
   }
@@ -293,7 +290,7 @@ class StorageFSTest {
 
     URI uri = storage.save(storageObject);
 
-    Optional<StorageObject<FSTestBean>> optLoaded = storage.load(uri, FSTestBean.class);
+    StorageObject<FSTestBean> optLoaded = storage.load(uri, FSTestBean.class);
 
     StorageObject<InvocationRequestTemplate> invocationReqObj =
         storage.instanceOf(InvocationRequestTemplate.class);
@@ -306,17 +303,17 @@ class StorageFSTest {
 
     String refId = "001";
     String referenceName = "independentInvocation";
-    optLoaded.get().setReference(referenceName,
+    optLoaded.setReference(referenceName,
         new ObjectReference().referenceId(refId).uri(invocationUri));
 
     // Update the uri.
-    uri = storage.save(optLoaded.get());
+    uri = storage.save(optLoaded);
 
     // Load again to check existing reference
     optLoaded = storage.load(uri, FSTestBean.class);
 
     StorageObjectReferenceEntry referenceEntry =
-        optLoaded.get().getReference(referenceName);
+        optLoaded.getReference(referenceName);
 
     assertEquals(invocationUri, referenceEntry.getReferenceData().getUri());
     assertEquals(refId, referenceEntry.getReferenceData().getReferenceId());
@@ -333,7 +330,7 @@ class StorageFSTest {
 
     URI uri = storage.save(storageObject);
 
-    Optional<StorageObject<FSTestBean>> optLoaded = storage.load(uri, FSTestBean.class);
+    StorageObject<FSTestBean> optLoaded = storage.load(uri, FSTestBean.class);
 
 
 
@@ -354,21 +351,21 @@ class StorageFSTest {
       URI invocationUri = storage.save(invocationReqObj);
 
       String refId = "00" + i;
-      optLoaded.get().addCollectionEntry(collectionName,
+      optLoaded.addCollectionEntry(collectionName,
           new ObjectReference().referenceId(refId).uri(invocationUri));
 
       entriesByRefId.put(refId, invocationUri);
     }
 
     // Update the object with the collection.
-    uri = storage.save(optLoaded.get());
+    uri = storage.save(optLoaded);
 
     // Load again to check existing reference
     optLoaded = storage.load(uri, FSTestBean.class);
 
     {
       List<StorageObjectReferenceEntry> collection =
-          optLoaded.get().getCollection(collectionName);
+          optLoaded.getCollection(collectionName);
 
 
       assertEquals(count, collection.size());
@@ -384,12 +381,12 @@ class StorageFSTest {
     // Load again to check existing reference
     optLoaded = storage.load(uri, FSTestBean.class, StorageLoadOption.skipData());
 
-    Assertions.assertNull(optLoaded.get().getObject(),
+    Assertions.assertNull(optLoaded.getObject(),
         "The StorageLoadOption.skipData() was set but the object is still loaded.");
 
     {
       List<StorageObjectReferenceEntry> currentCollection =
-          optLoaded.get().getCollection(collectionName);
+          optLoaded.getCollection(collectionName);
       currentCollection.stream().forEach(e -> {
         e.setDelete(true);
       });
@@ -407,22 +404,22 @@ class StorageFSTest {
       URI invocationUri = storage.save(invocationReqObj);
 
       String refId = "xx" + i;
-      optLoaded.get().addCollectionEntry(collectionName,
+      optLoaded.addCollectionEntry(collectionName,
           new ObjectReference().referenceId(refId).uri(invocationUri));
       entriesByRefId.put(refId, invocationUri);
     }
 
     // Update the object with the collection.
-    uri = storage.save(optLoaded.get());
+    uri = storage.save(optLoaded);
 
     // Load again to check existing reference
     optLoaded = storage.load(uri, FSTestBean.class);
 
     {
       List<StorageObjectReferenceEntry> collection =
-          optLoaded.get().getCollection(collectionName);
+          optLoaded.getCollection(collectionName);
 
-      Assertions.assertNotNull(optLoaded.get().getObject());
+      Assertions.assertNotNull(optLoaded.getObject());
 
       assertEquals(count, collection.size());
 
@@ -448,7 +445,7 @@ class StorageFSTest {
     }
 
     // Load the same version and modify the first one.
-    StorageObject<FSTestBean> storageObject1 = storage.load(uri, FSTestBean.class).get();
+    StorageObject<FSTestBean> storageObject1 = storage.load(uri, FSTestBean.class);
 
     storageObject1.getObject().setTitle("SucceedTest-modified");
 
@@ -472,8 +469,8 @@ class StorageFSTest {
 
     URI uri = storage.save(storageObject);
 
-    Optional<StorageObject<FSTestBean>> optLoaded = storage.load(uri, FSTestBean.class);
-    assertEquals(testText, optLoaded.get().getObject().getTitle());
+    StorageObject<FSTestBean> optLoaded = storage.load(uri, FSTestBean.class);
+    assertEquals(testText, optLoaded.getObject().getTitle());
   }
 
   // @Test

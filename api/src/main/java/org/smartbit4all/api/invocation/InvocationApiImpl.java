@@ -4,7 +4,6 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -113,14 +112,7 @@ public final class InvocationApiImpl implements InvocationApi, InitializingBean 
 
   @Override
   public InvocationRequestTemplate load(URI templateUri) {
-    Storage storage = getStorage();
-    Optional<InvocationRequestTemplate> result = null;
-    try {
-      result = storage.read(templateUri, InvocationRequestTemplate.class);
-    } catch (Exception e) {
-      new RuntimeException("Unable to load " + templateUri + " request template.", e);
-    }
-    return result.get();
+    return (InvocationRequestTemplate) getStorage().read(templateUri);
   }
 
   private void purge() {

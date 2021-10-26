@@ -23,6 +23,7 @@ import org.smartbit4all.core.io.utility.FileIO;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.utility.StringConstant;
+import org.smartbit4all.domain.data.storage.ObjectNotFoundException;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageLoadOption;
@@ -257,24 +258,33 @@ public class StorageFS extends ObjectStorageImpl {
   }
 
   @Override
-  public <T> Optional<StorageObject<T>> load(Storage storage, URI uri, Class<T> clazz,
+  public boolean exists(URI uri) {
+    File storageObjectDataFile = getDataFileByUri(uri, storedObjectFileExtension);
+    if (!storageObjectDataFile.exists()) {
+      return false;
+    }
+    return true;
+  }
+
+  @Override
+  public <T> StorageObject<T> load(Storage storage, URI uri, Class<T> clazz,
       StorageLoadOption... options) {
     // The normal load is not locking anything. There is an optimistic lock implemented by default.
     // Identify the class from the URI. The first part of the path in the URI is standing for the
     // object type (the class).
     ObjectDefinition<T> definition = objectApi.definition(clazz);
     if (definition == null) {
-      return Optional.empty();
+      throw new ObjectNotFoundException(uri, clazz, "Unable to retrieve object definition.");
     }
     File storageObjectDataFile = getDataFileByUri(uri, storedObjectFileExtension);
     if (!storageObjectDataFile.exists()) {
-      return Optional.empty();
+      throw new ObjectNotFoundException(uri, clazz, "Object data file not found.");
     }
     BinaryData storageObjectBinaryData = new BinaryData(storageObjectDataFile);
     Optional<StorageObjectData> optObject =
         storageObjectDataDef.deserialize(storageObjectBinaryData);
     if (!optObject.isPresent()) {
-      return Optional.empty();
+      throw new ObjectNotFoundException(uri, clazz, "Unable to load object data file.");
     }
     StorageObjectData storageObjectData = optObject.get();
     StorageObject<T> storageObject;
@@ -313,7 +323,7 @@ public class StorageFS extends ObjectStorageImpl {
       setOperation(storageObject, StorageObjectOperation.MODIFY_WITHOUT_DATA);
     }
 
-    return Optional.of(storageObject);
+    return storageObject;
   }
 
   private <T> T loadObjectVersion(ObjectDefinition<T> definition,
