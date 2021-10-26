@@ -23,6 +23,7 @@ import org.smartbit4all.core.io.utility.FileIO;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.utility.StringConstant;
+import org.smartbit4all.domain.data.storage.ObjectModificationException;
 import org.smartbit4all.domain.data.storage.ObjectNotFoundException;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.smartbit4all.domain.data.storage.Storage;
@@ -131,7 +132,7 @@ public class StorageFS extends ObjectStorageImpl {
         if (object.getVersion() != null
             && !StorageUtil.equalsVersion(object.getVersion(), currentVersion)) {
           if (object.isStrictVersionCheck()) {
-            throw new IllegalStateException("Unable to save " + object.getUri()
+            throw new ObjectModificationException("Unable to save " + object.getUri()
                 + " object because it has been modified in the meantime from " + object.getVersion()
                 + " --> " + currentVersion + " version");
           } else {

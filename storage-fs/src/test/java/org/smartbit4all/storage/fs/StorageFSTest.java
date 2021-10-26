@@ -17,10 +17,12 @@ import org.smartbit4all.api.invocation.bean.InvocationParameterTemplate;
 import org.smartbit4all.api.invocation.bean.InvocationRequestTemplate;
 import org.smartbit4all.api.storage.bean.ObjectHistoryEntry;
 import org.smartbit4all.api.storage.bean.ObjectMap;
+import org.smartbit4all.api.storage.bean.ObjectMapRequest;
 import org.smartbit4all.api.storage.bean.ObjectReference;
 import org.smartbit4all.api.storage.bean.StorageSettings;
 import org.smartbit4all.core.io.TestFileUtil;
 import org.smartbit4all.core.utility.StringConstant;
+import org.smartbit4all.domain.data.storage.ObjectModificationException;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageLoadOption;
@@ -33,6 +35,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(classes = {StorageFSTestConfig.class})
 class StorageFSTest {
+
+  private static final String MY_MAP = "MyMap";
 
   public static final String OBJECT_FILE_EXTENSION = "fs";
 
@@ -221,7 +225,7 @@ class StorageFSTest {
     storageObject2.getObject().setTitle("LockObject-paralell-modified");
     storageObject2.setStrictVersionCheck(true);
 
-    Assertions.assertThrows(IllegalStateException.class, () -> {
+    Assertions.assertThrows(ObjectModificationException.class, () -> {
       storage.save(storageObject2);
     });
 
@@ -458,6 +462,32 @@ class StorageFSTest {
 
   }
 
+  @Test
+  void attachedMapTest() throws Exception {
+    Storage storage = storageApi.get(StorageFSTestConfig.TESTSCHEME);
+
+    URI uri;
+    {
+      StorageObject<FSTestBean> storageObject = storage.instanceOf(FSTestBean.class);
+
+      storageObject.setObject(new FSTestBean("SucceedTest"));
+
+      uri = storage.save(storageObject);
+    }
+
+    ObjectMap attachedMap = storage.getAttachedMap(uri, MY_MAP);
+
+    Assertions.assertNotNull(attachedMap);
+
+    String keyA = "A";
+    storage.updateAttachedMap(uri,
+        new ObjectMapRequest().mapName(MY_MAP).putUrisToAddItem(keyA, uri));
+
+    attachedMap = storage.getAttachedMap(uri, MY_MAP);
+
+    assertEquals(uri, attachedMap.getUris().get(keyA));
+
+  }
 
   private void saveAndCheckLoad(
       Storage storage,

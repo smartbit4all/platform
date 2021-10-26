@@ -8,12 +8,16 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.storage.bean.ObjectHistoryEntry;
+import org.smartbit4all.api.storage.bean.ObjectMap;
+import org.smartbit4all.api.storage.bean.ObjectMapRequest;
+import org.smartbit4all.api.storage.bean.ObjectReference;
 import org.smartbit4all.api.storage.bean.StorageSettings;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
@@ -378,5 +382,76 @@ public class Storage {
   void setIndexInitiated(boolean indexInitiated) {
     this.indexInitiated = indexInitiated;
   }
+
+  /**
+   * Get or create the attached map with the given name.
+   * 
+   * @param objectUri The object to attach.
+   * @param mapName The name of the map. An application level content that is well-known by the
+   *        parties.
+   * @return The current version of the object map.
+   * 
+   *         TODO Later on add some subscription.
+   */
+  public ObjectMap getAttachedMap(URI objectUri, String mapName) {
+
+    return getOrCreateObjectMap(objectUri, mapName).getObject();
+
+  }
+
+  /**
+   * We can add and remove items to the named object map. If the map doesn't exist then it will
+   * create it first.
+   * 
+   * @param objectUri The object to attach.
+   * @param request The request that contains the name or the uri.
+   */
+  public void updateAttachedMap(URI objectUri, ObjectMapRequest request) {
+    if (request == null || ((request.getUrisToAdd() == null || request.getUrisToAdd().isEmpty())
+        && (request.getUrisToRemove() == null || request.getUrisToRemove().isEmpty()))) {
+      return;
+    }
+
+    StorageObject<ObjectMap> mapObject = getOrCreateObjectMap(objectUri, request.getMapName());
+
+    if (request.getUrisToAdd() != null) {
+      mapObject.getObject().getUris().putAll(request.getUrisToAdd());
+    }
+    if (request.getUrisToRemove() != null) {
+      for (Entry<String, URI> entry : request.getUrisToRemove().entrySet()) {
+        mapObject.getObject().getUris().remove(entry.getKey());
+      }
+    }
+
+    save(mapObject);
+
+  }
+
+  private final StorageObject<ObjectMap> getOrCreateObjectMap(URI objectUri, String mapName) {
+    StorageObject<?> storageObject =
+        load(objectUri, StorageLoadOption.skipData(), StorageLoadOption.lock());
+    StorageObjectReferenceEntry referenceEntry = storageObject.getReference(mapName);
+    StorageObject<ObjectMap> mapObject;
+    if (referenceEntry == null) {
+      // Construct the ObjectMap.
+      mapObject = instanceOf(ObjectMap.class);
+      ObjectMap objectMap = new ObjectMap().name(mapName);
+      mapObject.setObject(objectMap);
+      URI uri = save(mapObject);
+      storageObject.setReference(mapName, new ObjectReference().uri(uri).referenceId(mapName));
+      storageObject.setStrictVersionCheck(true);
+      try {
+        save(storageObject);
+      } catch (ObjectModificationException e) {
+        // If the given object is modified in the mean time then we must retry the whole function.
+        return getOrCreateObjectMap(objectUri, mapName);
+      }
+      return mapObject;
+    } else {
+      ObjectReference referenceData = referenceEntry.getReferenceData();
+      return load(referenceData.getUri(), ObjectMap.class, StorageLoadOption.lock());
+    }
+  }
+
 
 }
