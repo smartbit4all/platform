@@ -2,7 +2,6 @@ package org.smartbit4all.api.gateway;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.security.bean.AthenticationResult;
@@ -75,7 +74,7 @@ public interface SecurityGatewayService {
    * @return user with the given username
    */
   @Deprecated
-  Optional<User> getUserByUsername(String username);
+  User getUserByUsername(String username);
 
 
   /**
@@ -200,7 +199,7 @@ public interface SecurityGatewayService {
    * @return group with the given name
    */
   @Deprecated
-  Optional<Group> getGroupByName(String name);
+  Group getGroupByName(String name);
 
 
   /**
