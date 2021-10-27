@@ -178,7 +178,11 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
       URI objectUri, StorageObjectData data) {
     StorageObject<T> storageObject = new StorageObject<>(objectDefinition, storage);
     storageObject.setUri(objectUri);
-    storageObject.setUuid(UUID.fromString(PathUtility.getLastPath(objectUri.getPath())));
+    try {
+      storageObject.setUuid(UUID.fromString(PathUtility.getLastPath(objectUri.getPath())));
+    } catch (Exception e) {
+      // do nothing
+    }
     storageObject.setVersion(data.getCurrentVersion());
     return storageObject;
   }
