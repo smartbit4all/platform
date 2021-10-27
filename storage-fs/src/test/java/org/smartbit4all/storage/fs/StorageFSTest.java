@@ -134,7 +134,6 @@ class StorageFSTest {
 
     assertEquals("test", new String(bdos.toByteArray()));
 
-    // assertFalse(loaded.isPresent());
   }
 
   @Test
@@ -158,7 +157,9 @@ class StorageFSTest {
       StorageObject<FSTestBean> object = storage.load(uri, FSTestBean.class);
       object.getObject().setTitle("v" + i);
       long startSave = System.currentTimeMillis();
-      storage.save(object);
+      URI savedUri = storage.save(object);
+      assertEquals(savedUri, object.getUri());
+      assertEquals(URI.create(savedUri + StringConstant.HASH + (i + 1)), object.getVersionUri());
       saveTimes += System.currentTimeMillis() - startSave;
     }
 

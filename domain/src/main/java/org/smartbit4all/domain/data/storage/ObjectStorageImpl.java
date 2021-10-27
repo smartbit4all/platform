@@ -332,4 +332,9 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
     return this;
   }
 
+  protected void updateStorageObjectWithVersion(StorageObject<?> storageObject,
+      ObjectVersion version) {
+    storageObject.setVersion(version);
+  }
+
 }

@@ -212,6 +212,7 @@ public class StorageFS extends ObjectStorageImpl {
           StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
 
       ObjectVersion oldVersion = currentVersion;
+      updateStorageObjectWithVersion(object, newVersion);
       invokeOnSucceedFunctions(object, new StorageSaveEvent<Object>(() -> {
         if (oldVersion != null) {
           Object o = loadObjectVersion(object.definition(), objectDataFile, oldVersion);
