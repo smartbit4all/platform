@@ -8,6 +8,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -177,7 +178,7 @@ class StorageFSTest {
         + ", history retrieval time: "
         + (endTime - endCreationTime));
 
-    Assertions.assertTrue(totalCreationTime < 600);
+    Assertions.assertTrue(totalCreationTime < 1000);
 
     assertEquals(versionCount, loadHistory.size());
 
@@ -481,6 +482,19 @@ class StorageFSTest {
       uri = storage.save(storageObject);
     }
 
+    List<Object> collect = attachAndLoadMap(storage, uri);
+
+    assertEquals(1, collect.size());
+
+    assertEquals(uri, ((FSTestBean) collect.get(0)).getUri());
+
+    StorageObject<StorageSettings> settings = storage.settings();
+
+    attachAndLoadMap(storage, settings.getUri());
+
+  }
+
+  private List<Object> attachAndLoadMap(Storage storage, URI uri) {
     ObjectMap attachedMap = storage.getAttachedMap(uri, MY_MAP);
 
     Assertions.assertNotNull(attachedMap);
@@ -493,6 +507,9 @@ class StorageFSTest {
 
     assertEquals(uri, attachedMap.getUris().get(keyA));
 
+    List<Object> collect = attachedMap.getUris().values().stream().map(u -> storage.read(u))
+        .collect(Collectors.toList());
+    return collect;
   }
 
   private void saveAndCheckLoad(
