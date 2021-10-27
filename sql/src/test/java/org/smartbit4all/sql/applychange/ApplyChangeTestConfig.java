@@ -6,10 +6,10 @@ import java.util.function.Supplier;
 import javax.sql.DataSource;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.domain.meta.Property;
-import org.smartbit4all.domain.meta.PropertyRef;
 import org.smartbit4all.domain.meta.jdbc.JDBCDataConverterConfig;
 import org.smartbit4all.domain.service.identifier.NextIdentifier;
 import org.smartbit4all.domain.service.modify.ApplyChangeObjectConfig;
+import org.smartbit4all.domain.service.modify.ApplyChangeUtil;
 import org.smartbit4all.domain.utility.crud.Crud;
 import org.smartbit4all.sql.config.SQLConfig;
 import org.smartbit4all.sql.config.SQLDBParameter;
@@ -162,87 +162,42 @@ public class ApplyChangeTestConfig {
               .referredProperty(ticketDef.secondaryPerson().id())
           .build();
     };
-  }
-  
-  private Map<Property<?>, Object> createPrimarayKeyIdProvider(String uid, Property<Long> idProp, Property<String> uidProp) {
-    return createPrimarayKeyIdProvider(uid, idProp, uidProp, () -> getNextId(idService, "SQL_TEST_EXISTS_SEQ"));
-  }
-  
-  private Map<Property<?>, Object> createPrimarayKeyIdProvider(String uid, Property<Long> idProp, Property<String> uidProp, Supplier<Long> idProvider) {
-    Long id = null;
-    if(idProp instanceof PropertyRef) {
-      idProp = ((PropertyRef) idProp).getReferredOwnedProperty();
-    }
-    if(uidProp instanceof PropertyRef) {
-      uidProp = ((PropertyRef) uidProp).getReferredOwnedProperty();
-    }
-    try {
-      id = Crud.read(idProp.getEntityDef())
-        .select(idProp)
-        .where(uidProp.eq(uid))
-        .onlyOneValue(idProp).orElse(null);
-    } catch (Exception e) {
-      // nop
-    }
-    
-    if(id == null) {
-      id = idProvider.get();
-    }
-    return Collections.singletonMap(idProp, id);
-  }
-  
-  private Map<Property<?>, Object> createRefBeanAPrimaryKeyId(ADef aDef, SQLIdentifierService idService,
-      Object stringId) {
-    Long id = null;
-    try {
-      id = Crud.read(aDef)
-        .select(aDef.id())
-        .where(aDef.uid().eq((String) stringId))
-        .onlyOneValue(aDef.id()).orElse(null);
-    } catch (Exception e) {
-      // nop
-    }
-    
-    if(id == null) {
-      id = getNextId(idService, "SQL_TEST_EXISTS_SEQ");
-    }
-    return Collections.singletonMap(aDef.id(), id);
+ // @formatter:on
   }
 
-  private Map<Property<?>, Object> createTickedPrimaryKeyId(TicketDef ticketDef, SQLIdentifierService idService,
+  private Map<Property<?>, Object> createPrimarayKeyIdProvider(String uid, Property<Long> idProp,
+      Property<String> uidProp) {
+    return ApplyChangeUtil.createPrimarayKeyIdProvider(uid, idProp, uidProp,
+        () -> getNextId(idService, "SQL_TEST_EXISTS_SEQ"));
+  }
+
+
+  private Map<Property<?>, Object> createTickedPrimaryKeyId(TicketDef ticketDef,
+      SQLIdentifierService idService,
       Object stringId) {
     Long id = null;
     try {
       id = Crud.read(ticketDef)
-        .select(ticketDef.id())
-        .where(ticketDef.idString().eq((String) stringId))
-        .onlyOneValue(ticketDef.id()).orElse(null);
+          .select(ticketDef.id())
+          .where(ticketDef.idString().eq((String) stringId))
+          .onlyOneValue(ticketDef.id()).orElse(null);
     } catch (Exception e) {
       // nop
     }
-    
-    if(id == null) {
+
+    if (id == null) {
       id = getNextId(idService, "SQL_TEST_EXISTS_SEQ");
     }
     return Collections.singletonMap(ticketDef.id(), id);
   }
-  
-//  private ApplyChangeObjectConfig createPersonMapping(PersonDef personDef, AddressDef addressDef) {
-//     return ApplyChangeObjectConfig.builder(Person.class, personDef)
-//       .addPropertyMapping(Person.NAME, personDef.name())
-//       .addCollectionMapping(Person.ADDRESSES, addressDef.personId())
-//         .config(createAddressMapping(addressDef))
-//         .and()
-//       .build();
-//   }
-  
-   private ApplyChangeObjectConfig createAddressMapping(AddressDef addressDef) {
-     return ApplyChangeObjectConfig.builder(Address.class, addressDef)
-         .addPropertyMapping(Address.ZIP, addressDef.zip())
-         .addPropertyMapping(Address.CITY, addressDef.city())
-         .build();
-   }
-// @formatter:on
+
+
+  private ApplyChangeObjectConfig createAddressMapping(AddressDef addressDef) {
+    return ApplyChangeObjectConfig.builder(Address.class, addressDef)
+        .addPropertyMapping(Address.ZIP, addressDef.zip())
+        .addPropertyMapping(Address.CITY, addressDef.city())
+        .build();
+  }
 
   private Long getNextId(SQLIdentifierService idService, String sequence) {
     try {

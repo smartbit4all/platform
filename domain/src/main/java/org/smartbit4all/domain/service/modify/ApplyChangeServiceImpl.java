@@ -144,29 +144,32 @@ public class ApplyChangeServiceImpl implements ApplyChangeService {
       Object newValue = pChange.getNewValue();
       String propertyName = getPropertyNameFromChange(parentName, pChange);
 
-      PropertyMappingItem propertyMappingItem = config.getPropertyMappings().get(propertyName);
-      if (propertyMappingItem == null) {
+      List<PropertyMappingItem> propertyMappingItems =
+          config.getPropertyMappings().get(propertyName);
+      if (propertyMappingItems == null) {
         // there is no configuration for this bean field -> skip
         continue;
       }
 
-      // convert if needed
-      Property<?> property = propertyMappingItem.getProperty();
-      if (!property.type().isAssignableFrom(newValue.getClass())) {
-        newValue = transferService.convert(newValue, property.type());
-      }
+      for (PropertyMappingItem propertyMappingItem : propertyMappingItems) {
+        // convert if needed
+        Property<?> property = propertyMappingItem.getProperty();
+        if (!property.type().isAssignableFrom(newValue.getClass())) {
+          newValue = transferService.convert(newValue, property.type());
+        }
 
-      if (property instanceof PropertyOwned) {
-        setProperty(rootAco, property, newValue);
-      } else if (property instanceof PropertyRef) {
+        if (property instanceof PropertyOwned) {
+          setProperty(rootAco, property, newValue);
+        } else if (property instanceof PropertyRef) {
 
-        PropertyRef<?> propertyRef = (PropertyRef<?>) property;
-        ApplyChangeOperation referredAco =
-            getReferredAco(propertyRef, referredEntityAcosByName, changeOperation, config);
-        PropertyOwned<?> targetOwnedProperty = propertyRef.getReferredOwnedProperty();
-        setProperty(referredAco, targetOwnedProperty, newValue);
-      } else {
-        throw new RuntimeException("Unhandled property subtype");
+          PropertyRef<?> propertyRef = (PropertyRef<?>) property;
+          ApplyChangeOperation referredAco =
+              getReferredAco(propertyRef, referredEntityAcosByName, changeOperation, config);
+          PropertyOwned<?> targetOwnedProperty = propertyRef.getReferredOwnedProperty();
+          setProperty(referredAco, targetOwnedProperty, newValue);
+        } else {
+          throw new RuntimeException("Unhandled property subtype");
+        }
       }
     }
 
@@ -335,8 +338,17 @@ public class ApplyChangeServiceImpl implements ApplyChangeService {
   }
 
   private void setProperty(ApplyChangeOperation aco, Property<?> property, Object value) {
-    aco.getTableData().addColumnOwn(property);
-    aco.getRow().setObject(property, value);
+    try {
+      aco.getTableData().addColumnOwn(property);
+      aco.getRow().setObject(property, value);
+    } catch (Exception e) {
+      String msg = String.format(
+          "The given value can not be set! Value: [%1$s] of type [%2$s]. "
+              + "Target property: [%3$s] of type [%4$s]",
+          value.toString(), value.getClass().toString(), property.getUri(),
+          property.type().toString());
+      throw new IllegalStateException(msg, e);
+    }
   }
 
   private String createPotentialContainmentId(String parentId, String propertyName, int idx) {

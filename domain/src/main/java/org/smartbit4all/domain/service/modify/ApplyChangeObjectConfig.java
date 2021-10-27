@@ -19,7 +19,7 @@ public class ApplyChangeObjectConfig {
   private Property<String> entityIdProperty;
   private Function<Object, Map<Property<?>, Object>> entityPrimaryKeyIdProvider;
   private Map<String, ReferenceDescriptor> referenceDescriptorsByEntityName = new HashMap<>();
-  private Map<String, PropertyMappingItem> propertyMappings = new HashMap<>();
+  private Map<String, List<PropertyMappingItem>> propertyMappings = new HashMap<>();
   private Map<String, ReferenceMappingItem> referenceMappings = new HashMap<>();
   private Map<String, CollectionMappingItem> collectionMappings = new HashMap<>();
 
@@ -32,7 +32,13 @@ public class ApplyChangeObjectConfig {
       PropertyMappingItem pmi = new PropertyMappingItem();
       pmi.property = pmb.property;
       pmi.name = pmb.propertyName;
-      propertyMappings.put(pmb.propertyName, pmi);
+      List<PropertyMappingItem> pmis = propertyMappings.get(pmb.propertyName);
+      if (pmis == null) {
+        pmis = new ArrayList<>();
+        propertyMappings.put(pmb.propertyName, pmis);
+      }
+
+      pmis.add(pmi);
     });
 
     builder.referenceMappingBuilders.forEach(rmb -> {
@@ -70,7 +76,7 @@ public class ApplyChangeObjectConfig {
     return rootEntity;
   }
 
-  public Map<String, PropertyMappingItem> getPropertyMappings() {
+  public Map<String, List<PropertyMappingItem>> getPropertyMappings() {
     return propertyMappings;
   }
 
@@ -357,8 +363,7 @@ public class ApplyChangeObjectConfig {
       return this;
     }
 
-    public ReferenceMappingBuilder addReferenceMapping(String propertyName,
-        Property<?> referringProperty) {
+    public ReferenceMappingBuilder addReferenceMapping(String propertyName) {
       ReferenceMappingBuilder refMapBuilder =
           new ReferenceMappingBuilder(createReferencePropName(propertyName), rootBuilder);
       refMapBuilder.setParentBuilder(this);

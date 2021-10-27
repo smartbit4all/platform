@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Property;
@@ -57,11 +58,11 @@ public final class TableDatas {
    */
   public static List<DataRow> append(TableData<?> baseTableData, TableData<?>... otherTableDatas) {
     List<DataRow> results = new ArrayList<>();
-    if(otherTableDatas == null) {
+    if (otherTableDatas == null) {
       return results;
     }
     for (TableData<?> otherTableData : otherTableDatas) {
-      if(otherTableData != null) {
+      if (otherTableData != null) {
         Map<DataColumn<?>, DataColumn<?>> colMap = new HashMap<>();
         for (DataColumn<?> col : otherTableData.columns()) {
           Property<?> property = col.getProperty();
@@ -124,6 +125,94 @@ public final class TableDatas {
     }
 
     return sb.toString();
+  }
+
+  public static final String toStringAdv(TableData<?> dt) {
+
+    Map<String, Integer> colWithByColName = new HashMap<>();
+    for (DataColumn<?> column : dt.columns()) {
+      String colName = column.getName();
+      int length = colName.length();
+      for (DataRow row : dt.rows()) {
+        Object rowValue = dt.get(column, row);
+        int rowValueLength = 4;
+        if (rowValue != null) {
+          rowValueLength = rowValue.toString().length();
+        }
+        length = length < rowValueLength ? rowValueLength : length;
+      }
+
+      colWithByColName.put(colName, length);
+    }
+
+    StringBuilder hrBuilder = new StringBuilder();
+    long fullWidth =
+        colWithByColName.values().stream().collect(Collectors.summarizingInt(i -> i + 3)).getSum();
+    for (int i = 0; i < fullWidth; i++) {
+      hrBuilder.append("-");
+    }
+
+    String hr = hrBuilder.toString();
+
+    // Estimate the size of one cell with 20 bytes.
+    StringBuffer sb = new StringBuffer(dt.size() * dt.columnMap.size() * 20);
+    sb.append(hr).append(StringConstant.NEW_LINE);
+    // Print out the columns.
+    boolean firstColumn = true;
+    for (DataColumn<?> column : dt.columns()) {
+      if (!firstColumn) {
+        sb.append("|");
+      }
+      String colName = column.getName();
+      sb.append(" ");
+      sb.append(colName);
+      int colWidth = colWithByColName.get(column.getName());
+      String fill = createFillSpace(colName, colWidth);
+      sb.append(fill);
+      sb.append(" ");
+      firstColumn = false;
+    }
+
+    sb.append(StringConstant.NEW_LINE);
+    sb.append(hr);
+
+    // Print out the data.
+    for (DataRow row : dt.rows()) {
+      sb.append(StringConstant.NEW_LINE);
+      firstColumn = true;
+      for (DataColumn<?> column : dt.columns()) {
+        if (!firstColumn) {
+          sb.append("|");
+        }
+        Object value = dt.get(column, row);
+        String valueToWrite = "null";
+        if (value != null) {
+          valueToWrite = value.toString();
+        }
+        sb.append(" ");
+        sb.append(valueToWrite);
+        int colWidth = colWithByColName.get(column.getName());
+        String fill = createFillSpace(valueToWrite, colWidth);
+        sb.append(fill);
+        sb.append(" ");
+        firstColumn = false;
+      }
+    }
+
+    sb.append(StringConstant.NEW_LINE);
+    sb.append(hr);
+
+    return sb.toString();
+  }
+
+  private static String createFillSpace(String valueToWrite, int colWidth) {
+    int spaceNum = colWidth - valueToWrite.length();
+    StringBuilder fillBuilder = new StringBuilder();
+    for (int i = 0; i < spaceNum; i++) {
+      fillBuilder.append(" ");
+    }
+    String fill = fillBuilder.toString();
+    return fill;
   }
 
   /**

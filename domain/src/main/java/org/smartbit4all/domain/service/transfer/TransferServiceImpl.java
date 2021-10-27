@@ -320,7 +320,13 @@ public class TransferServiceImpl implements TransferService, InitializingBean {
   @SuppressWarnings("unchecked")
   @Override
   public <F, T> T convert(F value, Class<T> toType) {
-    return converterByType((Class<F>) value.getClass(), toType).convertTo(value);
+    Converter<F, T> converterByType = converterByType((Class<F>) value.getClass(), toType);
+    if (converterByType == null) {
+      String msg = String.format("There is no converter registered to convert %1$s to %2$s",
+          value.getClass(), toType);
+      throw new IllegalStateException(msg);
+    }
+    return converterByType.convertTo(value);
   }
 
 }
