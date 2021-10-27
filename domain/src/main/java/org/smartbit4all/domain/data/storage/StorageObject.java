@@ -267,6 +267,10 @@ public final class StorageObject<T> {
     return references;
   }
 
+  void setReferences(Map<String, StorageObjectReferenceEntry> references) {
+    this.references = references;
+  }
+
   /**
    * The collection map where the entries are identified by the
    * {@link ObjectReference#getReferenceId()}.
@@ -304,6 +308,10 @@ public final class StorageObject<T> {
 
   protected final Map<String, Map<String, StorageObjectReferenceEntry>> getCollections() {
     return collections;
+  }
+
+  void setCollections(Map<String, Map<String, StorageObjectReferenceEntry>> collections) {
+    this.collections = collections;
   }
 
   public final StorageObjectOperation getOperation() {

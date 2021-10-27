@@ -23,6 +23,15 @@ public class ObjectStorageInMemory extends ObjectStorageImpl {
    */
   private Map<URI, StorageObject<?>> objectsByURI = new ConcurrentHashMap<>();
 
+  /**
+   * The object in the storage by their URI as key.
+   */
+  private Map<URI, Map<String, StorageObjectReferenceEntry>> referencesByURI =
+      new ConcurrentHashMap<>();
+
+  private Map<URI, Map<String, Map<String, StorageObjectReferenceEntry>>> collectionsByURI =
+      new ConcurrentHashMap<>();
+
   public ObjectStorageInMemory(ObjectApi objectApi) {
     super(objectApi);
   }
@@ -36,6 +45,8 @@ public class ObjectStorageInMemory extends ObjectStorageImpl {
       copy.setObjectObj(ApiObjectRef.unwrapObject(copy.getObject()));
       StorageObject<?> oldVersion = objectsByURI.get(copy.getUri());
       objectsByURI.put(copy.getUri(), copy);
+      collectionsByURI.put(copy.getUri(), copy.getCollections());
+      referencesByURI.put(copy.getUri(), copy.getReferences());
       invokeOnSucceedFunctions(storageObject, new StorageSaveEvent<>(
           () -> oldVersion != null ? oldVersion.getObject() : null, copy.getObject()));
       return copy.getUri();
@@ -48,7 +59,13 @@ public class ObjectStorageInMemory extends ObjectStorageImpl {
   @Override
   public <T> StorageObject<T> load(Storage storage, URI uri, Class<T> clazz,
       StorageLoadOption... options) {
-    return (StorageObject<T>) objectsByURI.get(uri);
+    StorageObject<T> storageObject = (StorageObject<T>) objectsByURI.get(uri);
+    if (storageObject == null) {
+      throw new ObjectNotFoundException(uri, clazz, null);
+    }
+    storageObject.setReferences(referencesByURI.get(uri));
+    storageObject.setCollections(collectionsByURI.get(uri));
+    return storageObject;
   }
 
   @Override

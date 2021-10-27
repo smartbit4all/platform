@@ -85,13 +85,10 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
    * 
    */
   private void checkGroupExist(SecurityGroup securityGroup) {
-    URI uri = createSecurityGroupURI(securityGroup.getName());
-
-    Group group = getGroup(uri);
-    if (group == null) {
-      group = new Group()
-          .name(securityGroup.getDescription())
-          .uri(uri);
+    Group groupByName = getGroupByName(securityGroup.getName());
+    if (groupByName == null) {
+      Group group =
+          new Group().name(securityGroup.getName()).description(securityGroup.getDescription());
       saveGroup(group);
     }
   }
