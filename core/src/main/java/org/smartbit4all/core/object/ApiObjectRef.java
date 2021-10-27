@@ -297,11 +297,7 @@ public class ApiObjectRef {
    * @param value
    */
   public void setValue(String propertyName, Object value) {
-    PropertyEntry entry = properties.get(propertyName.toUpperCase());
-    if (entry == null) {
-      throw new IllegalArgumentException(
-          propertyName + " property not found in " + meta.getClazz().getName());
-    }
+    PropertyEntry entry = getPropertyEntryByName(propertyName);
     setValueInner(value, entry, true);
   }
 
@@ -354,7 +350,7 @@ public class ApiObjectRef {
     path = path.toUpperCase();
 
     String propertyName = PathUtility.getRootPath(path);
-    PropertyEntry propertyEntry = properties.get(propertyName);
+    PropertyEntry propertyEntry = getPropertyEntryByName(propertyName);
 
     switch (propertyEntry.getMeta().getKind()) {
       case VALUE:
@@ -395,7 +391,7 @@ public class ApiObjectRef {
     path = path.toUpperCase();
     ApiObjectRef addedRef = null;
     String propertyName = PathUtility.getRootPath(path);
-    PropertyEntry propertyEntry = properties.get(propertyName);
+    PropertyEntry propertyEntry = getPropertyEntryByName(propertyName);
 
     int pathSize = PathUtility.getPathSize(path);
     switch (propertyEntry.getMeta().getKind()) {
@@ -445,7 +441,7 @@ public class ApiObjectRef {
     path = path.toUpperCase();
 
     String propertyName = PathUtility.getRootPath(path);
-    PropertyEntry propertyEntry = properties.get(propertyName);
+    PropertyEntry propertyEntry = getPropertyEntryByName(propertyName);
 
     int pathSize = PathUtility.getPathSize(path);
     switch (propertyEntry.getMeta().getKind()) {
@@ -492,7 +488,7 @@ public class ApiObjectRef {
     path = path.toUpperCase();
 
     String propertyName = PathUtility.getRootPath(path);
-    PropertyEntry propertyEntry = properties.get(propertyName);
+    PropertyEntry propertyEntry = getPropertyEntryByName(propertyName);
 
     int pathSize = PathUtility.getPathSize(path);
     switch (propertyEntry.getMeta().getKind()) {
@@ -541,11 +537,7 @@ public class ApiObjectRef {
    * @return
    */
   public Object getValue(String propertyName) {
-    PropertyEntry propertyEntry = properties.get(propertyName.toUpperCase());
-    if (propertyEntry == null) {
-      throw new IllegalArgumentException(
-          propertyName + " property not found in " + meta.getClazz().getName());
-    }
+    PropertyEntry propertyEntry = getPropertyEntryByName(propertyName);
     return getValueInner(propertyEntry);
   }
 
@@ -560,7 +552,7 @@ public class ApiObjectRef {
     String upperPath = propertyPath.toUpperCase();
 
     String propertyName = PathUtility.getRootPath(upperPath);
-    PropertyEntry propertyEntry = properties.get(propertyName);
+    PropertyEntry propertyEntry = getPropertyEntryByName(propertyName);
 
     int pathSize = PathUtility.getPathSize(upperPath);
     switch (propertyEntry.getMeta().getKind()) {
@@ -802,4 +794,12 @@ public class ApiObjectRef {
     return object;
   }
 
+  private PropertyEntry getPropertyEntryByName(String propertyName) {
+    PropertyEntry entry = properties.get(propertyName.toUpperCase());
+    if (entry == null) {
+      throw new IllegalArgumentException(
+          propertyName + " property not found in " + meta.getClazz().getName());
+    }
+    return entry;
+  }
 }
