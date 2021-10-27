@@ -21,10 +21,10 @@ public class ExpressionEntityDefinitionExtractor {
               + entityDefinitions);
     }
 
-    if(entityDefinitions.size() < 1) {
-      Optional.empty();
+    if (entityDefinitions.size() < 1) {
+      return Optional.empty();
     }
-    
+
     return Optional.of(entityDefinitions.iterator().next());
   }
 
@@ -33,12 +33,12 @@ public class ExpressionEntityDefinitionExtractor {
     public Set<EntityDefinition> entityDefinitions = new HashSet<>();
 
     // TODO only extract entityDef from two opernd expressions, is this enough?
-    
+
     @Override
     public <T> void visit2Operand(Expression2Operand<T> expression) {
       entityDefinitions.add(expression.getOp().property().getEntityDef());
     }
-    
+
     public Set<EntityDefinition> getEntityDefinitions() {
       return entityDefinitions;
     }
