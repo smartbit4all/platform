@@ -4,14 +4,20 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Consumer;
 import org.smartbit4all.api.session.UserSessionApi;
 import org.smartbit4all.core.object.ObjectEditing;
+import org.smartbit4all.ui.api.navigation.model.Message;
+import org.smartbit4all.ui.api.navigation.model.MessageResult;
+import org.smartbit4all.ui.api.navigation.model.MessageResultType;
+import org.smartbit4all.ui.api.navigation.model.MessageType;
 import org.smartbit4all.ui.api.navigation.model.NavigableViewDescriptor;
 import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
 import org.smartbit4all.ui.common.api.UINavigationApiCommon;
 import org.smartbit4all.ui.vaadin.components.navigation.UIViewParameterVaadinTransition;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeLeaveEvent;
@@ -126,4 +132,54 @@ public abstract class UINavigationVaadinCommon extends UINavigationApiCommon {
 
   protected abstract String getViewNameAfterClose();
 
+  @Override
+  public void showMessage(Message message, Consumer<MessageResult> messageListener) {
+    // TODO icon handling, components for header / text
+    ConfirmDialog dialog = new ConfirmDialog();
+    dialog.setHeader(message.getHeader());
+    dialog.setText(message.getText());
+
+    MessageResult confirmed = findMessageResult(message, MessageResultType.CONFIRM);
+    MessageResult rejected = findMessageResult(message, MessageResultType.REJECT);
+    MessageResult canceled = findMessageResult(message, MessageResultType.CANCEL);
+
+    if (confirmed != null) {
+      dialog.setConfirmText(confirmed.getLabel());
+      if (messageListener != null) {
+        dialog.addConfirmListener(e -> messageListener.accept(confirmed));
+      }
+    } else {
+      // TODO default text
+      dialog.setConfirmText("OK");
+    }
+
+    // TODO other types
+    if (message.getType() == MessageType.ERROR) {
+      dialog.setConfirmButtonTheme("error primary");
+    }
+
+    if (rejected != null) {
+      dialog.setRejectable(true);
+      dialog.setRejectText(rejected.getLabel());
+      if (messageListener != null) {
+        dialog.addRejectListener(e -> messageListener.accept(rejected));
+      }
+    }
+    if (canceled != null) {
+      dialog.setCancelable(true);
+      dialog.setCancelText(rejected.getLabel());
+      if (messageListener != null) {
+        dialog.addCancelListener(e -> messageListener.accept(canceled));
+      }
+    }
+
+    dialog.open();
+  }
+
+  private MessageResult findMessageResult(Message message, MessageResultType type) {
+    return message.getPossibleResults().stream()
+        .filter(r -> r.getType() == type)
+        .findFirst()
+        .orElse(null);
+  }
 }

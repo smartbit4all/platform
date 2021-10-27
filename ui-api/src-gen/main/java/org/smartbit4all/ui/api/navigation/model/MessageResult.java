@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.smartbit4all.ui.api.navigation.model.MessageResultType;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
@@ -32,7 +33,8 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   MessageResult.CODE,
   MessageResult.LABEL,
-  MessageResult.ICON
+  MessageResult.ICON,
+  MessageResult.TYPE
 })
 @JsonTypeName("MessageResult")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -45,6 +47,9 @@ public class MessageResult {
 
   public static final String ICON = "icon";
   private String icon;
+
+  public static final String TYPE = "type";
+  private MessageResultType type;
 
 
   public MessageResult code(String code) {
@@ -128,6 +133,34 @@ public class MessageResult {
   }
 
 
+  public MessageResult type(MessageResultType type) {
+    
+    this.type = type;
+    return this;
+  }
+
+   /**
+   * Get type
+   * @return type
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public MessageResultType getType() {
+    return type;
+  }
+
+
+  @JsonProperty(TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setType(MessageResultType type) {
+    this.type = type;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -139,12 +172,13 @@ public class MessageResult {
     MessageResult messageResult = (MessageResult) o;
     return Objects.equals(this.code, messageResult.code) &&
         Objects.equals(this.label, messageResult.label) &&
-        Objects.equals(this.icon, messageResult.icon);
+        Objects.equals(this.icon, messageResult.icon) &&
+        Objects.equals(this.type, messageResult.type);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(code, label, icon);
+    return Objects.hash(code, label, icon, type);
   }
 
   @Override
@@ -154,6 +188,7 @@ public class MessageResult {
     sb.append("    code: ").append(toIndentedString(code)).append("\n");
     sb.append("    label: ").append(toIndentedString(label)).append("\n");
     sb.append("    icon: ").append(toIndentedString(icon)).append("\n");
+    sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("}");
     return sb.toString();
   }

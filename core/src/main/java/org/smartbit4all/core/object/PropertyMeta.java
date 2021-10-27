@@ -194,7 +194,8 @@ public class PropertyMeta {
     } catch (Exception e) {
       throw new IllegalArgumentException(
           getName() + " property can't be set to " + value + " in "
-              + beanMeta.getClazz().getName());
+              + beanMeta.getClazz().getName(),
+          e);
     }
   }
 

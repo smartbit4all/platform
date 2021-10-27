@@ -58,7 +58,7 @@ public class Message {
   private String text;
 
   public static final String POSSIBLE_RESULTS = "possibleResults";
-  private List<MessageResult> possibleResults = null;
+  private List<MessageResult> possibleResults = new ArrayList<>();
 
   public static final String SELECT_RESULT = "selectResult";
   private MessageResult selectResult;
@@ -181,9 +181,6 @@ public class Message {
   }
 
   public Message addPossibleResultsItem(MessageResult possibleResultsItem) {
-    if (this.possibleResults == null) {
-      this.possibleResults = new ArrayList<>();
-    }
     this.possibleResults.add(possibleResultsItem);
     return this;
   }
@@ -192,11 +189,11 @@ public class Message {
    * Get possibleResults
    * @return possibleResults
   **/
-  @javax.annotation.Nullable
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(POSSIBLE_RESULTS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public List<MessageResult> getPossibleResults() {
     return possibleResults;
@@ -204,7 +201,7 @@ public class Message {
 
 
   @JsonProperty(POSSIBLE_RESULTS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setPossibleResults(List<MessageResult> possibleResults) {
     this.possibleResults = possibleResults;
   }
