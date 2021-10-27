@@ -126,6 +126,8 @@ class StorageFSTest {
 
     BinaryDataObject bdResult = storage.read(save, BinaryDataObject.class);
 
+    assertEquals(save, bdResult.getUri());
+
     ByteArrayOutputStream bdos = new ByteArrayOutputStream();
     ByteStreams.copy(bdResult.getBinaryData().inputStream(), bdos);
     bdos.close();
@@ -184,10 +186,13 @@ class StorageFSTest {
 
     for (int i = 0; i < versionCount; i++) {
 
+      URI versionUri = URI.create(uri.toString() + StringConstant.HASH + (i + 1));
       StorageObject<FSTestBean> object = storage
-          .load(URI.create(uri.toString() + StringConstant.HASH + (i + 1)), FSTestBean.class);
+          .load(versionUri, FSTestBean.class);
       String title = object.getObject().getTitle();
       assertEquals("v" + i, title);
+      assertEquals(object.getUri(), uri);
+      assertEquals(object.getObject().getUri(), versionUri);
 
     }
 

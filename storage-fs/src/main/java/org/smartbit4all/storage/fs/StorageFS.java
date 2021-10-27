@@ -155,6 +155,7 @@ public class StorageFS extends ObjectStorageImpl {
       // The version is updated with the information attached if it's not a modification without
       // object.
       newVersion.transactionId(object.getTransactionId()).createdAt(ZonedDateTime.now());
+      newVersion.setCreatedBy(versionCreatedBy.get());
       storageObjectData.addVersionsItem(newVersion);
 
       // TODO Add dependency to UserSession!!
@@ -166,9 +167,6 @@ public class StorageFS extends ObjectStorageImpl {
       } else if (object.getObject() != null
           && object.getOperation() != StorageObjectOperation.DELETE) {
         File objectVersionFile = getObjectVersionFile(objectDataFile, newVersion.getSerialNo());
-        // Before writing into the version file set the URI to the versioned one.
-        object.definition().setUriToObj(object.getObject(), URI
-            .create(object.getUri().toString() + StringConstant.HASH + newVersion.getSerialNo()));
         // Write the version file first
         FileIO.write(objectVersionFile,
             object.definition().serialize(object.getObject()));

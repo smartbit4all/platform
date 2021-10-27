@@ -21,6 +21,7 @@ import org.smartbit4all.api.storage.bean.StorageObjectRelationData;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.utility.PathUtility;
+import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.storage.StorageObject.StorageObjectOperation;
 
 /**
@@ -56,6 +57,8 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
    * The object api gives access to the meta data of the objects.
    */
   protected final ObjectApi objectApi;
+
+  protected Supplier<String> versionCreatedBy = () -> StringConstant.UNKNOWN;
 
   protected boolean defaultStorage = false;
 
@@ -319,5 +322,14 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
     object.invokeOnSucceedFunctions(storageSaveEvent);
   }
 
+  /**
+   * This supplier is responsible for accessing the current user in the actual context.
+   * 
+   * @param currentUserSupplier
+   */
+  public final ObjectStorage currentUserSupplier(Supplier<String> versionCreatedBy) {
+    this.versionCreatedBy = versionCreatedBy;
+    return this;
+  }
 
 }
