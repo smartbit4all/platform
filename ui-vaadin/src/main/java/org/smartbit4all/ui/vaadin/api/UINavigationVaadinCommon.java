@@ -87,6 +87,9 @@ public abstract class UINavigationVaadinCommon extends UINavigationApiCommon {
       dialog.addDialogCloseActionListener(event -> onDialogClose(dialogUUID));
       dialogsByUUID.put(dialogUUID, dialog);
     }
+    dialog.setModal(true);
+    dialog.setCloseOnOutsideClick(false);
+    dialog.setCloseOnEsc(false);
     dialog.open();
     return view;
   }
