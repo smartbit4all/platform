@@ -44,7 +44,10 @@ public class ObjectStorageInMemory extends ObjectStorageImpl {
       StorageObject<?> copy = storageObject.copy();
       copy.setObjectObj(ApiObjectRef.unwrapObject(copy.getObject()));
       Object oldObj = getOldObj(objectsByURI.get(copy.getUri()));
-      objectsByURI.put(copy.getUri(), copy);
+      URI uri = copy.getUri();
+      objectsByURI.put(uri, copy);
+      referencesByURI.put(uri, storageObject.getReferences());
+      collectionsByURI.put(uri, storageObject.getCollections());
       invokeOnSucceedFunctions(storageObject,
           new StorageSaveEvent<>(() -> oldObj, ApiObjectRef.unwrapObject(copy.getObject())));
       return copy.getUri();
