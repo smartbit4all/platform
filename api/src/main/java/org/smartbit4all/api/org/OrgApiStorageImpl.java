@@ -5,9 +5,10 @@ import java.lang.reflect.Field;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
@@ -93,10 +94,6 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
     }
   }
 
-  private URI createSecurityGroupURI(String name) {
-    return URI.create("securitygroup:/" + name);
-  }
-
   @Override
   public void afterPropertiesSet() throws Exception {
     if (securityOptions != null) {
@@ -172,28 +169,46 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
 
   @Override
   public List<User> getUsersOfGroup(URI groupUri) {
-    UsersOfGroupCollection collection =
-        readSettingsReference(USERS_OF_GROUP_LIST_REFERENCE, UsersOfGroupCollection.class);
-    List<UsersOfGroup> usersOfGroupCollection = collection.getUsersOfGroupCollection();
-    for (UsersOfGroup usersOfGroup : usersOfGroupCollection) {
-      if (usersOfGroup.getGroupUri().equals(groupUri)) {
-        return getStorage().read(usersOfGroup.getUsers(), User.class);
+    Set<User> users = new HashSet<>();
+    List<URI> allSubgroups = getAllSubgroups(groupUri);
+    allSubgroups.add(groupUri);
+
+    for (URI uri : allSubgroups) {
+
+      UsersOfGroupCollection collection =
+          readSettingsReference(USERS_OF_GROUP_LIST_REFERENCE, UsersOfGroupCollection.class);
+      List<UsersOfGroup> usersOfGroupCollection = collection.getUsersOfGroupCollection();
+
+      for (UsersOfGroup usersOfGroup : usersOfGroupCollection) {
+
+        if (usersOfGroup.getGroupUri().equals(uri)) {
+          users.addAll(getStorage().read(usersOfGroup.getUsers(), User.class));
+        }
+
       }
     }
-    return Collections.emptyList();
+    return new ArrayList<>(users);
   }
 
   @Override
   public List<Group> getGroupsOfUser(URI userUri) {
+    Set<Group> groups = new HashSet<>();
     GroupsOfUserCollection collection =
         readSettingsReference(GROUPS_OF_USER_LIST_REFERENCE, GroupsOfUserCollection.class);
     List<GroupsOfUser> groupsOfUserCollection = collection.getGroupsOfUserCollection();
+
     for (GroupsOfUser groupsOfUser : groupsOfUserCollection) {
+
       if (groupsOfUser.getUserUri().equals(userUri)) {
-        return getStorage().read(groupsOfUser.getGroups(), Group.class);
+        List<Group> directGroups = getStorage().read(groupsOfUser.getGroups(), Group.class);
+        for (Group group : directGroups) {
+          groups.add(group);
+          groups.addAll(getStorage().read(getAllSubgroups(group.getUri()), Group.class));
+        }
       }
+
     }
-    return Collections.emptyList();
+    return new ArrayList<>(groups);
   }
 
   @Override
@@ -208,9 +223,24 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
 
   @Override
   public List<Group> getSubGroups(URI groupUri) {
-    Group group = getStorage().read(groupUri, Group.class);
+    return getStorage().read(getAllSubgroups(groupUri), Group.class);
+  }
 
-    return getStorage().read(group.getChildren(), Group.class);
+  /**
+   * Összegyűjti egy csoport összes alcsoportját.
+   * 
+   * @param groupUri
+   * @return
+   */
+  private List<URI> getAllSubgroups(URI groupUri) {
+    List<URI> subgroups = new ArrayList<>();
+    Group group = getStorage().read(groupUri, Group.class);
+    List<URI> children = group.getChildren();
+    subgroups.addAll(children);
+    for (URI uri : children) {
+      subgroups.addAll(getAllSubgroups(uri));
+    }
+    return subgroups;
   }
 
 
