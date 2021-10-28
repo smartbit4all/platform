@@ -3,6 +3,7 @@ package org.smartbit4all.ui.api.navigation;
 import org.smartbit4all.core.object.ObjectEditing;
 import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.core.object.PublishEvents;
+import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
 
 /**
  * The editing model for the navigation. It contains a navigation
@@ -15,5 +16,7 @@ public interface NavigationViewModel extends ObjectEditing {
   ObservableObject model();
 
   void refreshSelectedNode();
+  
+  NavigationTarget loadNavigationTarget();
 
 }

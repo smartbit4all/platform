@@ -1,10 +1,14 @@
 package org.smartbit4all.ui.vaadin.components.storage.history;
 
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 import org.smartbit4all.api.storage.bean.ObjectHistory;
 import org.smartbit4all.api.storage.bean.ObjectHistoryEntry;
 import org.smartbit4all.ui.api.data.storage.history.ObjectHistoryViewModel;
 import org.smartbit4all.ui.vaadin.components.binder.VaadinBinders;
-import com.vaadin.flow.component.Component;
+import org.smartbit4all.ui.vaadin.components.navigation.UIViewParameterVaadinTransition;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
@@ -12,31 +16,32 @@ import com.vaadin.flow.component.grid.Grid;
 public class ObjectHistoryDialog extends Dialog {
 
   private ObjectHistoryViewModel objectHistoryVM;
+  private String viewName;
+  private Map<String, Object> objectParams;
 
   private Grid<ObjectHistoryEntry> historyGrid;
   private Button close;
 
-  public <T extends ObjectVersionView> ObjectHistoryDialog(ObjectHistoryViewModel objectHistoryVM,
-      Class<T> cls) {
+  public ObjectHistoryDialog(ObjectHistoryViewModel objectHistoryVM, String viewName,
+      Map<String, Object> objectParams) {
     this.objectHistoryVM = objectHistoryVM;
+    this.viewName = viewName;
+    this.objectParams = objectParams;
 
-    createUI(cls);
+    URI objectUri = (URI) objectParams.get("entry");
+
+    createUI();
+    objectHistoryVM.setObjectHistoryRef(objectUri, objectUri.getScheme());
   }
 
-  private <T extends ObjectVersionView> void createUI(Class<T> cls) {
+  private void createUI() {
     setHeight("60%");
     setWidth("60%");
     setResizable(true);
 
     historyGrid = new Grid<>();
     historyGrid.addColumn(ObjectHistoryEntry::getSummary).setHeader("Verzió");
-    historyGrid.addComponentColumn(h -> {
-      try {
-        return openHistoryButton(h, cls);
-      } catch (Exception e1) {
-        throw new IllegalStateException();
-      }
-    });
+    historyGrid.addComponentColumn(h -> openHistoryButton(h));
 
     VaadinBinders.bind(historyGrid, objectHistoryVM.objectHistory(), null,
         ObjectHistory.OBJECT_HISTORY_ENTRIES);
@@ -47,14 +52,19 @@ public class ObjectHistoryDialog extends Dialog {
     add(historyGrid, close);
   }
 
-  private <T extends ObjectVersionView> Button openHistoryButton(ObjectHistoryEntry historyEntry,
-      Class<T> cls) throws Exception {
-    T versionView = cls.newInstance();
-    versionView.createUI(historyEntry.getVersionUri());
+  private Button openHistoryButton(ObjectHistoryEntry historyEntry) {
+    Map<String, Object> versionParams = new HashMap<>(objectParams);
 
-    ObjectHistoryDetailDialog historyDetails = new ObjectHistoryDetailDialog(versionView);
+    versionParams.put("entry", historyEntry.getVersionUri());
+
+    UIViewParameterVaadinTransition versionParam =
+        new UIViewParameterVaadinTransition(versionParams);
+
     Button open = new Button("Megnyitás",
-        e -> historyDetails.open());
+        e -> {
+          getUI().ifPresent(ui -> ui.navigate(viewName, versionParam.construct()));
+          close();
+        });
     open.getStyle().set("cursor", "pointer");
     return open;
   }

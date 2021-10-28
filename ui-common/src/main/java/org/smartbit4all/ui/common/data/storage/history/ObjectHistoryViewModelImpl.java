@@ -18,7 +18,6 @@ public class ObjectHistoryViewModelImpl extends ObjectEditingImpl
 
   private ObservableObjectImpl objectHistory;
   private ApiObjectRef objectHistoryRef;
-//  private ObjectHistory objectHistoryWrapper;
   private Map<Class<?>, ApiBeanDescriptor> objectHistoryDescriptor;
 
   public ObjectHistoryViewModelImpl(ObjectHistoryApi historyApi,
@@ -44,6 +43,5 @@ public class ObjectHistoryViewModelImpl extends ObjectEditingImpl
     objectHistory = new ObservableObjectImpl();
     objectHistoryRef = new ApiObjectRef(null, new ObjectHistory(), objectHistoryDescriptor);
     objectHistory.setRef(objectHistoryRef);
-//    objectHistoryWrapper = objectHistoryRef.getWrapper(ObjectHistory.class);
   }
 }

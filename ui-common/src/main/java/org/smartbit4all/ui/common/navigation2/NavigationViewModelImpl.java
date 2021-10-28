@@ -421,4 +421,13 @@ public class NavigationViewModelImpl extends ObjectEditingImpl implements Naviga
     }
     return null;
   }
+
+  @Override
+  public  NavigationTarget loadNavigationTarget() {
+    if (selectedNode != null) {
+      return selectedNode.getNavigationTarget();
+    }
+    
+    return null;
+  }
 }
