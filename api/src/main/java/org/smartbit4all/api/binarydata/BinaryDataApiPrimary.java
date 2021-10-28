@@ -29,11 +29,7 @@ public class BinaryDataApiPrimary extends BinaryDataApiImpl implements Initializ
   }
 
   private final BinaryDataApi api(URI uri) {
-    BinaryDataApi api = apiByName.get(uri.getScheme());
-    if (api == null) {
-      throw new IllegalArgumentException("The BinaryDataApi was not found for the " + uri);
-    }
-    return api;
+    return apiByName.get(uri.getScheme());
   }
 
   @Override
@@ -48,6 +44,9 @@ public class BinaryDataApiPrimary extends BinaryDataApiImpl implements Initializ
       return Optional.empty();
     }
     BinaryDataApi api = api(dataUri);
+    if (api == null) {
+      return Optional.empty();
+    }
     return api.load(dataUri);
   }
 

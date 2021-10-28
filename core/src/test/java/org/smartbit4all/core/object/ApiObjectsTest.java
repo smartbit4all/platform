@@ -1,6 +1,5 @@
 package org.smartbit4all.core.object;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -13,6 +12,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.core.utility.StringConstant;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ApiObjectsTest {
 
@@ -33,6 +33,7 @@ public class ApiObjectsTest {
     domainBeans.add(MasterDetailBean.class);
     domainBeans.add(ReferredBean.class);
     domainBeans.add(ReferredDetailBean.class);
+    domainBeans.add(DetailBeanWithId.class);
     result = ApiBeanDescriptor.of(domainBeans);
     // {
     // ApiBeanDescriptor descriptor = result.get(MasterBean.class);
@@ -329,6 +330,75 @@ public class ApiObjectsTest {
         + "}" + br
         + "}";
     Assertions.assertEquals(expected3, changesText3);
+
+  }
+
+  @Test
+  void testMap() {
+    MasterBean bean1 = new MasterBean();
+
+    ApiObjectRef ref =
+        new ApiObjectRef(null, bean1, descriptors);
+
+    MasterBean beanWrapper1 = ref.getWrapper(MasterBean.class);
+
+    beanWrapper1.counter(1).setName("name by wrapper");
+
+    beanWrapper1.setReferred(new ReferredBean());
+
+    beanWrapper1.getReferred().setName("referred name by wrapper");
+
+    String key1 = "key1";
+    String key2 = "key2";
+    String key3 = "key3";
+    beanWrapper1.getReferred()
+        .putDetailsByIdItem(key1, new DetailBeanWithId().id(key1).title("Key 1"))
+        .putDetailsByIdItem(key2, new DetailBeanWithId().id(key2).title("Key 2"));
+    Map<String, DetailBeanWithId> details = beanWrapper1.getReferred().getDetailsById();
+    {
+      details.put(key3, new DetailBeanWithId().id(key3).title("Key 3"));
+    }
+
+    for (DetailBeanWithId refDetailBean : details.values()) {
+      refDetailBean.setTitle(refDetailBean.getTitle() + " - modified");
+    }
+
+    beanWrapper1.setValid(true);
+    beanWrapper1.setEnabled(Boolean.FALSE);
+
+    Optional<ObjectChange> objectChange1 = ref.renderAndCleanChanges();
+    Assertions.assertTrue(objectChange1.isPresent());
+    String changesText1 = objectChange1.get().toString();
+    System.out.println("testModificationWithWrapper - Changes1 >>>>>>>" + br + changesText1
+        + br + "testModificationWithWrapper - Changes1 <<<<<<<");
+
+    String expected1 = "NEW" + br +
+        "counter: (null->1)" + br +
+        "enabled: (null->false)" + br +
+        "name: (null->name by wrapper)" + br +
+        "valid: (null->true)" + br +
+        "referred: {" + br +
+        "NEW" + br +
+        "name: (null->referred name by wrapper)" + br +
+        "detailsById.collection:" + br
+        + "detailsById.item - {" + br
+        + "NEW" + br
+        + "id: (null->key1)" + br
+        + "title: (null->Key 1 - modified)" + br
+        + "}" + br
+        + "detailsById.item - {" + br
+        + "NEW" + br
+        + "id: (null->key2)" + br
+        + "title: (null->Key 2 - modified)" + br
+        + "}" + br
+        + "detailsById.item - {" + br
+        + "NEW" + br
+        + "id: (null->key3)" + br
+        + "title: (null->Key 3 - modified)" + br
+        + "}" + br
+        + "}";
+
+    Assertions.assertEquals(expected1, changesText1);
 
   }
 

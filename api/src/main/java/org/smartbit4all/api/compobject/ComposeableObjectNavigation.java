@@ -95,20 +95,7 @@ public class ComposeableObjectNavigation extends NavigationImpl {
   }
 
   private ComposeableObjectDef getComposeableObjectDef(URI entryMetaUri) {
-    return loadComposeableObjectDef(entryMetaUri).orElseThrow(
-        () -> new IllegalArgumentException(
-            "ComposeableObjectDef not found with URI: " + entryMetaUri));
-  }
-
-  private Optional<ComposeableObjectDef> loadComposeableObjectDef(URI composeableObjectDefUri) {
-    try {
-      return compObjStorage.read(composeableObjectDefUri, ComposeableObjectDef.class);
-    } catch (Exception e) {
-      throw new RuntimeException(
-          "Error while loading ComposeableObjectDef from Storage with URI: "
-              + composeableObjectDefUri,
-          e);
-    }
+    return compObjStorage.read(entryMetaUri, ComposeableObjectDef.class);
   }
 
   private List<NavigationReferenceEntry> createNavigationReferenceEntries(

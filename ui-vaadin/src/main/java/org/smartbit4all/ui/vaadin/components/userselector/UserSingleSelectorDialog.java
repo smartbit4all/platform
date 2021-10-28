@@ -5,7 +5,7 @@ import org.smartbit4all.ui.vaadin.components.binder.VaadinBinders;
 import com.vaadin.flow.component.grid.Grid.SelectionMode;
 
 public class UserSingleSelectorDialog extends UserSelectorDialog {
-  
+
   private UserSingleSelectorViewModel userSelectorVM;
 
   public UserSingleSelectorDialog(String header, UserSingleSelectorViewModel userSelectorVM) {
@@ -17,8 +17,9 @@ public class UserSingleSelectorDialog extends UserSelectorDialog {
   @Override
   protected void createAndBindUI(SelectionMode selectionMode) {
     super.createAndBindUI(selectionMode);
-    
-    VaadinBinders.bind(grid, userSelectorVM.userSingleSelector(), null, "selectors");
-    VaadinBinders.bindSelection(grid.asSingleSelect(), userSelectorVM.userSingleSelector(), null, "selected");
+
+    VaadinBinders.bindItems(grid, userSelectorVM.userSingleSelector(), "selectors");
+    VaadinBinders.bindSelection(grid.asSingleSelect(), userSelectorVM.userSingleSelector(), null,
+        "selected");
   }
 }

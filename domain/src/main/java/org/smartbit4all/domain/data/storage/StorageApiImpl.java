@@ -5,11 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.domain.data.storage.index.StorageIndex;
 import org.springframework.beans.factory.InitializingBean;
@@ -22,8 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author Peter Boros
  */
 public final class StorageApiImpl implements StorageApi, InitializingBean {
-
-  private static final Logger log = LoggerFactory.getLogger(StorageApiImpl.class);
 
   /**
    * All the storages we have in the configuration. Autowired by spring.
@@ -161,15 +156,15 @@ public final class StorageApiImpl implements StorageApi, InitializingBean {
   // }
 
   @Override
-  public Optional<StorageObject<?>> load(URI uri) {
+  public StorageObject<?> load(URI uri) {
     if (uri == null || uri.getScheme() == null || uri.getScheme().isEmpty()) {
-      return Optional.empty();
+      throw new ObjectNotFoundException(uri, null, "Bad uri format");
     }
     String scheme = uri.getScheme();
     Storage storage = storagesByScheme.get(scheme);
     if (storage == null) {
-      log.debug("Unable to load {} uri, the Storage not found by the scheme", uri);
-      return Optional.empty();
+      throw new ObjectNotFoundException(uri, null,
+          "Unable to find storage scheme by uri. Might be a missing configuration.");
     }
 
     return storage.load(uri);
@@ -177,17 +172,14 @@ public final class StorageApiImpl implements StorageApi, InitializingBean {
 
   @SuppressWarnings("unchecked")
   @Override
-  public <T> Optional<StorageObject<T>> load(URI uri, Class<T> clazz) {
-    Optional<StorageObject<?>> loadResult = load(uri);
-    if (!loadResult.isPresent()) {
-      return Optional.empty();
-    }
-    if (!clazz.equals(loadResult.get().definition().getClazz())) {
+  public <T> StorageObject<T> load(URI uri, Class<T> clazz) {
+    StorageObject<?> loadResult = load(uri);
+    if (!clazz.equals(loadResult.definition().getClazz())) {
       throw new IllegalArgumentException(
-          "The class (" + loadResult.get().definition() + ") of loaded object identified by the "
+          "The class (" + loadResult.definition() + ") of loaded object identified by the "
               + uri + " is not what is expected. (" + clazz + ")");
     }
-    return Optional.of((StorageObject<T>) loadResult.get());
+    return (StorageObject<T>) loadResult;
   }
 
 }

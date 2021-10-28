@@ -23,6 +23,8 @@ import org.smartbit4all.core.io.utility.FileIO;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.utility.StringConstant;
+import org.smartbit4all.domain.data.storage.ObjectModificationException;
+import org.smartbit4all.domain.data.storage.ObjectNotFoundException;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageLoadOption;
@@ -30,6 +32,7 @@ import org.smartbit4all.domain.data.storage.StorageObject;
 import org.smartbit4all.domain.data.storage.StorageObject.StorageObjectOperation;
 import org.smartbit4all.domain.data.storage.StorageObjectLock;
 import org.smartbit4all.domain.data.storage.StorageObjectPhysicalLock;
+import org.smartbit4all.domain.data.storage.StorageSaveEvent;
 import org.smartbit4all.domain.data.storage.StorageUtil;
 
 public class StorageFS extends ObjectStorageImpl {
@@ -129,7 +132,7 @@ public class StorageFS extends ObjectStorageImpl {
         if (object.getVersion() != null
             && !StorageUtil.equalsVersion(object.getVersion(), currentVersion)) {
           if (object.isStrictVersionCheck()) {
-            throw new IllegalStateException("Unable to save " + object.getUri()
+            throw new ObjectModificationException("Unable to save " + object.getUri()
                 + " object because it has been modified in the meantime from " + object.getVersion()
                 + " --> " + currentVersion + " version");
           } else {
@@ -152,6 +155,7 @@ public class StorageFS extends ObjectStorageImpl {
       // The version is updated with the information attached if it's not a modification without
       // object.
       newVersion.transactionId(object.getTransactionId()).createdAt(ZonedDateTime.now());
+      newVersion.setCreatedBy(versionCreatedBy.get());
       storageObjectData.addVersionsItem(newVersion);
 
       // TODO Add dependency to UserSession!!
@@ -207,6 +211,17 @@ public class StorageFS extends ObjectStorageImpl {
       Files.move(objectDataFileTemp.toPath(), objectDataFile.toPath(),
           StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
 
+      ObjectVersion oldVersion = currentVersion;
+      updateStorageObjectWithVersion(object, newVersion);
+      invokeOnSucceedFunctions(object, new StorageSaveEvent<Object>(() -> {
+        if (oldVersion != null) {
+          Object o = loadObjectVersion(object.definition(), objectDataFile, oldVersion);
+
+          return o;
+        }
+        return oldVersion;
+      }, object.getObject()));
+
     } catch (IOException e) {
       throw new IllegalArgumentException("Unable to finalize the transaction on " + object, e);
     } finally {
@@ -243,24 +258,33 @@ public class StorageFS extends ObjectStorageImpl {
   }
 
   @Override
-  public <T> Optional<StorageObject<T>> load(Storage storage, URI uri, Class<T> clazz,
+  public boolean exists(URI uri) {
+    File storageObjectDataFile = getDataFileByUri(uri, storedObjectFileExtension);
+    if (!storageObjectDataFile.exists()) {
+      return false;
+    }
+    return true;
+  }
+
+  @Override
+  public <T> StorageObject<T> load(Storage storage, URI uri, Class<T> clazz,
       StorageLoadOption... options) {
     // The normal load is not locking anything. There is an optimistic lock implemented by default.
     // Identify the class from the URI. The first part of the path in the URI is standing for the
     // object type (the class).
     ObjectDefinition<T> definition = objectApi.definition(clazz);
     if (definition == null) {
-      return Optional.empty();
+      throw new ObjectNotFoundException(uri, clazz, "Unable to retrieve object definition.");
     }
     File storageObjectDataFile = getDataFileByUri(uri, storedObjectFileExtension);
     if (!storageObjectDataFile.exists()) {
-      return Optional.empty();
+      throw new ObjectNotFoundException(uri, clazz, "Object data file not found.");
     }
     BinaryData storageObjectBinaryData = new BinaryData(storageObjectDataFile);
     Optional<StorageObjectData> optObject =
         storageObjectDataDef.deserialize(storageObjectBinaryData);
     if (!optObject.isPresent()) {
-      return Optional.empty();
+      throw new ObjectNotFoundException(uri, clazz, "Unable to load object data file.");
     }
     StorageObjectData storageObjectData = optObject.get();
     StorageObject<T> storageObject;
@@ -269,17 +293,13 @@ public class StorageFS extends ObjectStorageImpl {
     if (relatedVersion.getSerialNoData() != null
         && !skipData) {
 
-      File objectVersionFile = getObjectVersionFile(
-          storageObjectDataFile,
-          relatedVersion.getSerialNoData());
+      T object = loadObjectVersion(definition, storageObjectDataFile, relatedVersion);
 
-      BinaryData versionBinaryData = new BinaryData(objectVersionFile);
-
-      T object = definition.deserialize(versionBinaryData).orElse(null);
       if (object != null) {
         // This can ensure that the uri will be the exact uri used for the load.
         definition.setUri(object, uri);
       }
+
       storageObject = instanceOf(storage, definition, object, storageObjectData);
     } else {
       storageObject = instanceOf(storage, definition, uri, storageObjectData);
@@ -303,7 +323,20 @@ public class StorageFS extends ObjectStorageImpl {
       setOperation(storageObject, StorageObjectOperation.MODIFY_WITHOUT_DATA);
     }
 
-    return Optional.of(storageObject);
+    return storageObject;
+  }
+
+  private <T> T loadObjectVersion(ObjectDefinition<T> definition,
+      File storageObjectDataFile,
+      ObjectVersion relatedVersion) {
+    File objectVersionFile = getObjectVersionFile(
+        storageObjectDataFile,
+        relatedVersion.getSerialNoData());
+
+    BinaryData versionBinaryData = new BinaryData(objectVersionFile);
+
+    T object = definition.deserialize(versionBinaryData).orElse(null);
+    return object;
   }
 
   @Override

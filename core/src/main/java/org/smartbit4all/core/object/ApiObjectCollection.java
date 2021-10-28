@@ -20,10 +20,8 @@ import org.smartbit4all.core.utility.StringConstant;
  * serial number of the references inside.
  * 
  * @author Peter Boros
- * @param <R>
- * @param <O>
  */
-public class ApiObjectCollection implements List<ApiObjectRef> {
+public final class ApiObjectCollection implements List<ApiObjectRef> {
 
   /**
    * The path of the given collection.
@@ -40,11 +38,6 @@ public class ApiObjectCollection implements List<ApiObjectRef> {
    * The property that is reference of the given connection in the parent object.
    */
   private final PropertyMeta property;
-
-  /**
-   * The state of the collection.
-   */
-  private ChangeState state = ChangeState.NEW;
 
   /**
    * The list of object references in a specific collection owned by an other {@link ApiObjectRef}.
@@ -78,12 +71,7 @@ public class ApiObjectCollection implements List<ApiObjectRef> {
     super();
     this.objectRef = objectRef;
     this.property = collectionProperty;
-    this.path = (isRefPathEmpty(objectRef) ? "" : (objectRef.getPath() + StringConstant.SLASH))
-        + collectionProperty.getName();
-  }
-
-  private boolean isRefPathEmpty(ApiObjectRef objectRef) {
-    return objectRef.getPath() == null || objectRef.getPath().isEmpty();
+    this.path = objectRef.getPropertyPath(collectionProperty);
   }
 
   /**

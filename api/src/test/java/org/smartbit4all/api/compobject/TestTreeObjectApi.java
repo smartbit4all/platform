@@ -32,11 +32,8 @@ public class TestTreeObjectApi implements ComposeableObjectApi {
   }
 
   private String getUri(URI objectUri) throws Exception {
-    Optional<TestTreeObject> testTreeObject = storage.read(objectUri, TestTreeObject.class);
-    if (testTreeObject.isPresent()) {
-      return testTreeObject.get().getUri().toString();
-    }
-    return null;
+    TestTreeObject testTreeObject = storage.read(objectUri, TestTreeObject.class);
+    return testTreeObject.getUri().toString();
   }
 
   @Override
@@ -44,12 +41,13 @@ public class TestTreeObjectApi implements ComposeableObjectApi {
       Consumer<URI> nodeChangeListener)
       throws Exception {
 
-    Optional<TestTreeObject> testTreeObject = storage.read(parentObjectUri, TestTreeObject.class);
-    if (testTreeObject.isPresent()) {
-      return createChildredComposeables(testTreeObject.get(), definitionUri);
+    try {
+      TestTreeObject testTreeObject = storage.read(parentObjectUri, TestTreeObject.class);
+      return createChildredComposeables(testTreeObject, definitionUri);
+    } catch (Exception e) {
+      return Collections.emptyList();
     }
 
-    return Collections.emptyList();
   }
 
   private List<ComposeableObject> createChildredComposeables(
@@ -82,7 +80,7 @@ public class TestTreeObjectApi implements ComposeableObjectApi {
 
   @Override
   public Optional<Object> loadObject(URI objectUri) throws Exception {
-    return Optional.ofNullable(storage.load(objectUri).orElse(null));
+    return Optional.ofNullable(storage.load(objectUri));
   }
 
 }

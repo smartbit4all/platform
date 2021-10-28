@@ -2,7 +2,6 @@ package org.smartbit4all.ui.vaadin.components.filter2;
 
 import org.smartbit4all.core.object.ObjectEditing;
 import org.smartbit4all.core.object.ObservableObject;
-import org.smartbit4all.core.utility.PathUtility;
 import org.smartbit4all.ui.vaadin.components.binder.VaadinBinders;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dnd.DragSource;
@@ -35,11 +34,13 @@ public class FilterFieldSelectorView extends FlexLayout
     add(label, button);
     addClassName("filtermeta-layout");
 
-    VaadinBinders.bind(label, filterSelector,
-        PathUtility.concatPath(path, "labelCode"), s -> getTranslation((String) s));
+    VaadinBinders.bindLabel(label, filterSelector,
+        s -> getTranslation((String) s),
+        path, "labelCode");
 
-    filterSelector.onPropertyChange(path, "enabled",
-        c -> button.setEnabled((Boolean) c.getNewValue()));
+    filterSelector.onPropertyChange(
+        c -> button.setEnabled((Boolean) c.getNewValue()),
+        path, "enabled");
   }
 
   public String getPath() {

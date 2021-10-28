@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.smartbit4all.api.gateway.SecurityGateways;
 import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.org.bean.User;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -97,7 +98,7 @@ public class OrgApiInMemory extends OrgApiImpl {
   }
 
   protected URI getGroupUri(String groupName) {
-    return URI.create("local:/group#" + groupName);
+    return SecurityGateways.generateURI(groupName);
   }
 
   public User addTestUser(String name, String userName, String email) {
@@ -169,7 +170,6 @@ public class OrgApiInMemory extends OrgApiImpl {
     List<Group> result = groups.values().stream()
         .filter(group -> group.getChildren().contains(userUri)).collect(Collectors.toList());
 
-    result.addAll(getAdditionalLocalGroups(result));
     return result;
   }
 
@@ -191,16 +191,6 @@ public class OrgApiInMemory extends OrgApiImpl {
 
   @Override
   public InputStream getGroupImage(URI groupUri) {
-    return null;
-  }
-
-  @Override
-  public User getUserByUsername(String username) {
-    for (User user : users.values()) {
-      if (user.getUsername().equals(username)) {
-        return user;
-      }
-    }
     return null;
   }
 

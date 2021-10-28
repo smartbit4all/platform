@@ -1,6 +1,9 @@
 package org.smartbit4all.api.setting;
 
+import java.net.URI;
 import java.util.Optional;
+import org.smartbit4all.api.storage.bean.ObjectMap;
+import org.smartbit4all.api.storage.bean.ObjectMapRequest;
 
 /**
  * This api is responsible for managing the application level settings. Every module can define one
@@ -31,5 +34,26 @@ import java.util.Optional;
  * @author Peter Boros
  */
 public interface ApplicationSettingApi {
+
+  /**
+   * Get or create the attached map with the given name.
+   * 
+   * @param userUri The user uri.
+   * @param mapName The name of the map. An application level content that is well-known by the
+   *        parties.
+   * @return The current version of the object map.
+   * 
+   *         TODO Later on add some subscription.
+   */
+  ObjectMap getMap(URI objectUri, String mapName);
+
+  /**
+   * We can add and remove items to the named object map. If the map doesn't exist then it will
+   * create it first.
+   * 
+   * @param userUri The user to attach.
+   * @param request The request that contains the name or the uri.
+   */
+  void updateMap(URI userUri, ObjectMapRequest request);
 
 }

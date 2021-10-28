@@ -8,12 +8,16 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.storage.bean.ObjectHistoryEntry;
+import org.smartbit4all.api.storage.bean.ObjectMap;
+import org.smartbit4all.api.storage.bean.ObjectMapRequest;
+import org.smartbit4all.api.storage.bean.ObjectReference;
 import org.smartbit4all.api.storage.bean.StorageSettings;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
@@ -155,7 +159,7 @@ public class Storage {
    * @param options When loading we can instruct the loading to retrieve the necessary data only.
    * 
    */
-  public <T> Optional<StorageObject<T>> load(URI uri, Class<T> clazz,
+  public <T> StorageObject<T> load(URI uri, Class<T> clazz,
       StorageLoadOption... options) {
     return objectStorage.load(this, uri, clazz, options);
   }
@@ -169,7 +173,7 @@ public class Storage {
    * @param options When loading we can instruct the loading to retrieve the necessary data only.
    * @return We try to identify the class from the URI itself.
    */
-  public Optional<StorageObject<?>> load(URI uri, StorageLoadOption... options) {
+  public StorageObject<?> load(URI uri, StorageLoadOption... options) {
     return objectStorage.load(this, uri, options);
   }
 
@@ -198,8 +202,20 @@ public class Storage {
    * @param clazz The class of the object to load. Based on this class we can easily identify the
    *        {@link ObjectDefinition} responsible for this type of objects.
    */
-  public <T> Optional<T> read(URI uri, Class<T> clazz) {
+  public <T> T read(URI uri, Class<T> clazz) {
     return objectStorage.read(this, uri, clazz);
+  }
+
+  public boolean exists(URI uri) {
+    return true;
+  }
+
+  public boolean existsAll(List<URI> uris) {
+    return true;
+  }
+
+  public List<URI> findExistings(List<URI> uris) {
+    return Collections.emptyList();
   }
 
   /**
@@ -211,7 +227,7 @@ public class Storage {
    *        {@link StorageApi} and based on the scheme of the URI.
    * @return We try to identify the class from the URI itself.
    */
-  public Optional<?> read(URI uri) {
+  public Object read(URI uri) {
     return objectStorage.read(this, uri);
   }
 
@@ -305,22 +321,19 @@ public class Storage {
 
   public final StorageObject<StorageSettings> settings() {
     URI uri = getSettingsUri();
-    // TODO Lock the settings!!!!
-    Optional<StorageObject<StorageSettings>> optional =
-        objectStorage.load(this, uri, StorageSettings.class);
+    // TODO Lock the settings!!!! Optimistic lock will be enough.
     StorageObject<StorageSettings> storageObject;
-    if (!optional.isPresent()) {
+    try {
+      storageObject =
+          objectStorage.load(this, uri, StorageSettings.class);
+    } catch (ObjectNotFoundException e) {
       // It's missing now so we have to create is.
-      ObjectDefinition<StorageSettings> objectDefinition =
-          objectApi.definition(StorageSettings.class);
-      storageObject = new StorageObject<>(objectDefinition, this);
+      storageObject = instanceOf(StorageSettings.class);
       // At this point we already know the unique URI that can be used to refer from other objects
       // also.
       storageObject.setUri(uri);
       storageObject.setObject(new StorageSettings().schemeName(scheme));
       save(storageObject);
-    } else {
-      storageObject = optional.get();
     }
     return storageObject;
   }
@@ -369,5 +382,109 @@ public class Storage {
   void setIndexInitiated(boolean indexInitiated) {
     this.indexInitiated = indexInitiated;
   }
+
+  /**
+   * Get or create the attached map with the given name.
+   * 
+   * @param objectUri The object to attach.
+   * @param mapName The name of the map. An application level content that is well-known by the
+   *        parties.
+   * @return The current version of the object map.
+   * 
+   *         TODO Later on add some subscription.
+   */
+  public ObjectMap getAttachedMap(URI objectUri, String mapName) {
+
+    return getOrCreateObjectMap(objectUri, mapName).getObject();
+
+  }
+
+  /**
+   * Reads the valid objects from the attached map.
+   * 
+   * @param <T> The type of the objects in the map.
+   * @param objectUri The uri of the object the amp is attached to.
+   * @param mapName The name of the map.
+   * @return The list of ther valid objects referred by the map.
+   */
+  public <T> List<T> readAttachedMap(URI objectUri, String mapName, Class<T> clazz) {
+    ObjectMap attachedMap = getAttachedMap(objectUri, mapName);
+    Map<String, URI> toRemove = null;
+    List<T> result = null;
+    for (Entry<String, URI> entry : attachedMap.getUris().entrySet()) {
+      try {
+        T read = read(entry.getValue(), clazz);
+        if (result == null) {
+          result = new ArrayList<>();
+        }
+        result.add(read);
+      } catch (ObjectNotFoundException e) {
+        // If the object is not exists then remove it from the map.
+        if (toRemove == null) {
+          toRemove = new HashMap<>();
+        }
+        toRemove.put(entry.getKey(), entry.getValue());
+      }
+    }
+    if (toRemove != null) {
+      updateAttachedMap(objectUri, new ObjectMapRequest().urisToRemove(toRemove));
+    }
+    return result == null ? Collections.emptyList() : result;
+  }
+
+  /**
+   * We can add and remove items to the named object map. If the map doesn't exist then it will
+   * create it first.
+   * 
+   * @param objectUri The object to attach.
+   * @param request The request that contains the name or the uri.
+   */
+  public void updateAttachedMap(URI objectUri, ObjectMapRequest request) {
+    if (request == null || ((request.getUrisToAdd() == null || request.getUrisToAdd().isEmpty())
+        && (request.getUrisToRemove() == null || request.getUrisToRemove().isEmpty()))) {
+      return;
+    }
+
+    StorageObject<ObjectMap> mapObject = getOrCreateObjectMap(objectUri, request.getMapName());
+
+    if (request.getUrisToAdd() != null) {
+      mapObject.getObject().getUris().putAll(request.getUrisToAdd());
+    }
+    if (request.getUrisToRemove() != null) {
+      for (Entry<String, URI> entry : request.getUrisToRemove().entrySet()) {
+        mapObject.getObject().getUris().remove(entry.getKey());
+      }
+    }
+
+    save(mapObject);
+
+  }
+
+  private final StorageObject<ObjectMap> getOrCreateObjectMap(URI objectUri, String mapName) {
+    StorageObject<?> storageObject =
+        load(objectUri, StorageLoadOption.skipData(), StorageLoadOption.lock());
+    StorageObjectReferenceEntry referenceEntry = storageObject.getReference(mapName);
+    StorageObject<ObjectMap> mapObject;
+    if (referenceEntry == null) {
+      // Construct the ObjectMap.
+      mapObject = instanceOf(ObjectMap.class);
+      ObjectMap objectMap = new ObjectMap().name(mapName);
+      mapObject.setObject(objectMap);
+      URI uri = save(mapObject);
+      storageObject.setReference(mapName, new ObjectReference().uri(uri).referenceId(mapName));
+      storageObject.setStrictVersionCheck(true);
+      try {
+        save(storageObject);
+      } catch (ObjectModificationException e) {
+        // If the given object is modified in the mean time then we must retry the whole function.
+        return getOrCreateObjectMap(objectUri, mapName);
+      }
+      return mapObject;
+    } else {
+      ObjectReference referenceData = referenceEntry.getReferenceData();
+      return load(referenceData.getUri(), ObjectMap.class, StorageLoadOption.lock());
+    }
+  }
+
 
 }

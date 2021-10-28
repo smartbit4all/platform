@@ -3,7 +3,6 @@ package org.smartbit4all.domain.data.storage;
 import java.net.URI;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import org.smartbit4all.api.storage.bean.ObjectHistoryEntry;
 import org.smartbit4all.core.object.ObjectDefinition;
 
@@ -35,7 +34,7 @@ public interface ObjectStorage {
    * @param options When loading we can instruct the loading to retrieve the necessary data only.
    * 
    */
-  <T> Optional<StorageObject<T>> load(Storage storage, URI uri, Class<T> clazz,
+  <T> StorageObject<T> load(Storage storage, URI uri, Class<T> clazz,
       StorageLoadOption... options);
 
   /**
@@ -47,7 +46,7 @@ public interface ObjectStorage {
    * @param options When loading we can instruct the loading to retrieve the necessary data only.
    * @return We try to identify the class from the URI itself.
    */
-  Optional<StorageObject<?>> load(Storage storage, URI uri, StorageLoadOption... options);
+  StorageObject<?> load(Storage storage, URI uri, StorageLoadOption... options);
 
   /**
    * Load the objects with the given URI.
@@ -72,7 +71,7 @@ public interface ObjectStorage {
    * @param clazz The class of the object to load. Based on this class we can easily identify the
    *        {@link ObjectDefinition} responsible for this type of objects.
    */
-  <T> Optional<T> read(Storage storage, URI uri, Class<T> clazz);
+  <T> T read(Storage storage, URI uri, Class<T> clazz);
 
   /**
    * Read the given object identified by the URI. We can not initiate a transaction with the result
@@ -83,7 +82,7 @@ public interface ObjectStorage {
    *        {@link StorageApi} and based on the scheme of the URI.
    * @return We try to identify the class from the URI itself.
    */
-  Optional<?> read(Storage storage, URI uri);
+  Object read(Storage storage, URI uri);
 
   /**
    * Read the given objects identified by the URI. We can not initiate a transaction with the result
@@ -114,5 +113,14 @@ public interface ObjectStorage {
    *         {@link Collections#emptyList()} instead of null.
    */
   List<ObjectHistoryEntry> loadHistory(Storage storage, URI uri);
+
+  /**
+   * Perform a quick check for existence of a given uri.
+   * 
+   * @param uri The object uri to check.
+   * @return Return true if the given entry exists. Doesn't check the consistency of the data
+   *         because it's not loading data itself.
+   */
+  boolean exists(URI uri);
 
 }

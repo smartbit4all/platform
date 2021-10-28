@@ -7,7 +7,7 @@ import java.util.Objects;
 import java.util.Set;
 import org.smartbit4all.core.object.CollectionObjectChange;
 import org.smartbit4all.core.object.ObservableObject;
-import com.google.common.base.Strings;
+import org.smartbit4all.core.utility.PathUtility;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasValidation;
 import com.vaadin.flow.component.UI;
@@ -29,14 +29,10 @@ public class VaadinMultiSelectBinder<C extends Component, T> extends VaadinColle
   private final String propertyPath;
 
   public VaadinMultiSelectBinder(MultiSelect<C, T> list, ObservableObject observableObject,
-      String path, String collectionName) {
-    super(observableObject, path, collectionName);
+      String... collectionPath) {
+    super(observableObject, collectionPath);
     this.list = list;
-    if (Strings.isNullOrEmpty(path)) {
-      propertyPath = collectionName;
-    } else {
-      propertyPath = path + "/" + collectionName;
-    }
+    propertyPath = PathUtility.concatPath(true, collectionPath);
     registerModelObserver();
     registerViewListener();
   }

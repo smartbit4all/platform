@@ -166,12 +166,38 @@ components:
       description: |
         Map of references as a container object for the Api.
         It can be used to key the URIs with some searchable string key.
-      required: [uri, uris]
+      required: [uri, name, uris]
       properties:
         uri:
           type: string
           format: uri
+        name:
+          type: string
+          description: The name is a unique identifier in the given context, let is be user, group or global.
         uris:
+          type: object
+          additionalProperties:
+            type: string
+            format: uri
+    ObjectMapRequest:
+      type: object
+      description: |
+        The request for adding and removing items from the ObjectMap. The Api accept this object as an input and
+        executes the commands.
+      properties:
+        mapUri:
+          type: string
+          description: If we know the exact uri of the given map, then we can use this to identify the map exactly.
+          format: uri
+        mapName:
+          type: string
+          description: If we know the name of the given map, then we can use this to identify the map exactly in the context.
+        urisToRemove:
+          type: object
+          additionalProperties:
+            type: string
+            format: uri
+        urisToAdd:
           type: object
           additionalProperties:
             type: string

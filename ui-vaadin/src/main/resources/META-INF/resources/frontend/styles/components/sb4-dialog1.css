@@ -1,0 +1,13 @@
+.sb4-dialog1 {
+	display: flex;
+	flex-direction: column;
+	min-width: 600px;
+}
+
+.sb4-dialog1-close-icon {
+	align-self: flex-end;
+	width: var(--lumo-size-s);
+	height: var(--lumo-size-s);
+	margin-bottom: calc(-2 * var(--lumo-size-s));
+}
+

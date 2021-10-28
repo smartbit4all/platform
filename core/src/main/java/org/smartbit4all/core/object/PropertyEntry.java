@@ -41,6 +41,11 @@ public final class PropertyEntry {
   ApiObjectCollection collection;
 
   /**
+   * The map reference of the given property if it's a {@link PropertyKind#MAP}.
+   */
+  ApiObjectMap map;
+
+  /**
    * In case of {@link PropertyKind#VALUE} if we change the value this change will
    */
   PropertyChange valueChange = null;
@@ -68,7 +73,8 @@ public final class PropertyEntry {
 
   void setChangedValue(Object oldValue, Object newValue) {
     if (valueChange == null) {
-      valueChange = new PropertyChange(PathUtility.getParentPath(path), meta.getName(), oldValue, newValue);
+      valueChange =
+          new PropertyChange(PathUtility.getParentPath(path), meta.getName(), oldValue, newValue);
     } else {
       valueChange.setNewValue(newValue);
     }
@@ -84,6 +90,14 @@ public final class PropertyEntry {
 
   public final String getPath() {
     return path;
+  }
+
+  public final void setMap(ApiObjectMap map) {
+    this.map = map;
+  }
+
+  public final ApiObjectMap getMap() {
+    return map;
   }
 
 }

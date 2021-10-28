@@ -43,8 +43,8 @@ public class FilterOperationMultiSelectView extends FilterOperationView {
 
     add(popUp);
 
-    popupBinder = VaadinBinders.bind(popUp, filterField, path, "possibleValues");
-    selectionBinder = VaadinBinders.bind(popUp, filterField, path + "/selectedValues");
+    popupBinder = VaadinBinders.bindItems(popUp, filterField, path, "possibleValues");
+    selectionBinder = VaadinBinders.bindValue(popUp, filterField, path + "/selectedValues");
   }
 
   @Override

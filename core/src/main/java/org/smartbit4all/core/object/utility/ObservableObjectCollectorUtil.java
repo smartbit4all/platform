@@ -45,9 +45,6 @@ public class ObservableObjectCollectorUtil {
     collectorList.clear();
 
     observable.onCollectionObjectChange(
-        null,
-        collectionName,
-
         changes -> {
           onObjectChange(
               (path, newElement) -> collectorList.add(newElement),
@@ -56,7 +53,8 @@ public class ObservableObjectCollectorUtil {
                   .warn("Cannot modify element with simple Collection collector!"),
               clazz,
               changes);
-        });
+        },
+        collectionName);
 
     return collectorList;
   }
@@ -69,9 +67,6 @@ public class ObservableObjectCollectorUtil {
     Map<String, T> collectorMap = new HashMap<>();
 
     observable.onCollectionObjectChange(
-        null,
-        collectionName,
-
         changes -> {
 
           onObjectChange(
@@ -81,7 +76,8 @@ public class ObservableObjectCollectorUtil {
               clazz,
               changes);
 
-        });
+        },
+        collectionName);
 
     return collectorMap;
   }

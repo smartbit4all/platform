@@ -1,8 +1,10 @@
 package org.smartbit4all.api.org;
 
+import java.net.URI;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.session.UserSessionApiLocal;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +19,7 @@ class OrgApiTest {
   private MyModuleSecurityOption security;
 
   @Autowired
-  private OrgApiInMemory orgApi;
+  private OrgApi orgApi;
 
   @Autowired
   private UserSessionApiLocal userSessionApi;
@@ -28,16 +30,19 @@ class OrgApiTest {
   @Test
   void testOrgApi() {
     // Prepare a real user to check the security.
-    User testUser = orgApi.addTestUser("Joe Public", "joe", "joe.public@smartbit4all.org");
+    URI testUserUri = orgApi.saveUser(
+        new User().name("Joe Public").username("joe").email("joe.public@smartbit4all.org"));
 
     // Without logging in we don't have any right!
     Assertions.assertFalse(security.admin.check());
 
 
-    orgApi.addTestGroup("org.smartbit4all.api.org.MyModuleSecurityOption.viewer", testUser);
+    Group viewerGroup =
+        orgApi.getGroupByName("org.smartbit4all.api.org.MyModuleSecurityOption.viewer");
+    orgApi.addUserToGroup(testUserUri, viewerGroup.getUri());
 
     // Set the current user - we logged in with this user.
-    userSessionApi.setCurrentUser(testUser);
+    userSessionApi.setCurrentUser(orgApi.getUser(testUserUri));
 
     // We already have this group --> we have the right to view
     Assertions.assertTrue(security.viewer.check());

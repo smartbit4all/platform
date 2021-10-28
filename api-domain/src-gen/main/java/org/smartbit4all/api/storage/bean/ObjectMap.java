@@ -36,6 +36,7 @@ import javax.validation.Valid;
 @ApiModel(description = "Map of references as a container object for the Api. It can be used to key the URIs with some searchable string key. ")
 @JsonPropertyOrder({
   ObjectMap.URI,
+  ObjectMap.NAME,
   ObjectMap.URIS
 })
 @JsonTypeName("ObjectMap")
@@ -43,6 +44,9 @@ import javax.validation.Valid;
 public class ObjectMap {
   public static final String URI = "uri";
   private URI uri;
+
+  public static final String NAME = "name";
+  private String name;
 
   public static final String URIS = "uris";
   private Map<String, URI> uris = new HashMap<>();
@@ -73,6 +77,33 @@ public class ObjectMap {
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setUri(URI uri) {
     this.uri = uri;
+  }
+
+
+  public ObjectMap name(String name) {
+    
+    this.name = name;
+    return this;
+  }
+
+   /**
+   * The name is a unique identifier in the given context, let is be user, group or global.
+   * @return name
+  **/
+  @NotNull
+  @ApiModelProperty(required = true, value = "The name is a unique identifier in the given context, let is be user, group or global.")
+  @JsonProperty(NAME)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public String getName() {
+    return name;
+  }
+
+
+  @JsonProperty(NAME)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setName(String name) {
+    this.name = name;
   }
 
 
@@ -119,12 +150,13 @@ public class ObjectMap {
     }
     ObjectMap objectMap = (ObjectMap) o;
     return Objects.equals(this.uri, objectMap.uri) &&
+        Objects.equals(this.name, objectMap.name) &&
         Objects.equals(this.uris, objectMap.uris);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, uris);
+    return Objects.hash(uri, name, uris);
   }
 
   @Override
@@ -132,6 +164,7 @@ public class ObjectMap {
     StringBuilder sb = new StringBuilder();
     sb.append("class ObjectMap {\n");
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
+    sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    uris: ").append(toIndentedString(uris)).append("\n");
     sb.append("}");
     return sb.toString();

@@ -87,6 +87,13 @@ public class DomainServiceConfig extends SB4Configuration {
   }
 
   @Bean
+  public Converter<Integer, String> integer2StringConverter() {
+    return new ConverterImpl<>(String.class,
+        (Integer l) -> l.toString(), Integer.class,
+        (String s) -> s == null ? null : Integer.valueOf(s));
+  }
+
+  @Bean
   public Converter<LocalDateTime, XMLGregorianCalendar> localDateTime2XMLGregorianCalendarConverter()
       throws DatatypeConfigurationException {
     // Assume that the DatatypeFactory is thread safe!

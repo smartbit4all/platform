@@ -72,6 +72,7 @@ components:
       required:
         - uri
         - type
+        - possibleResults
       properties:
         uri:
           type: string
@@ -104,6 +105,14 @@ components:
           type: string
         icon:
           type: string
+        type:
+          $ref: '#/components/schemas/MessageResultType'
+    MessageResultType:
+      type: string
+      enum:
+        - confirm
+        - reject
+        - cancel
     NavigableViewDescriptor:
       type: object
       properties:

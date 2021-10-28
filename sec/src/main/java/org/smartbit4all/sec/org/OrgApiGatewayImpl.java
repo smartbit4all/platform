@@ -49,8 +49,7 @@ public class OrgApiGatewayImpl extends OrgApiImpl {
 
   @Override
   public Group getGroup(URI groupUri) {
-    // TODO Auto-generated method stub
-    return null;
+    return secGatewayService.getGroup(groupUri);
   }
 
   @Override
@@ -80,6 +79,66 @@ public class OrgApiGatewayImpl extends OrgApiImpl {
       }
     }
     return null;
+  }
+
+  @Override
+  public URI saveUser(User user) {
+    return secGatewayService.saveUser(user);
+  }
+
+  @Override
+  public URI saveGroup(Group group) {
+    return secGatewayService.saveGroup(group);
+  }
+
+  @Override
+  public void addUserToGroup(URI userUri, URI groupUri) {
+    secGatewayService.addUserToGroup(userUri, groupUri);
+  }
+
+  @Override
+  public void removeUser(URI userUri) {
+    secGatewayService.removeUser(userUri);
+  }
+
+  @Override
+  public void removeGroup(URI groupUri) {
+    secGatewayService.removeGroup(groupUri);
+  }
+
+  @Override
+  public void removeUserFromGroup(URI userUri, URI groupUri) {
+    secGatewayService.removeUserFromGroup(userUri, groupUri);
+  }
+
+  @Override
+  public void addChildGroup(Group parentGroup, Group childGroup) {
+    secGatewayService.addChildGroup(parentGroup, childGroup);
+  }
+
+  @Override
+  public List<Group> getSubGroups(URI groupUri) {
+    return secGatewayService.getSubGroups(groupUri);
+  }
+
+  @Override
+  public Group getGroupByName(String name) {
+    return secGatewayService.getGroupByName(name);
+  }
+
+  @Override
+  public void removeSubGroup(URI parentGroupUri, URI childGroupUri) {
+    secGatewayService.removeSubGroup(parentGroupUri, childGroupUri);
+  }
+
+  @Override
+  public URI updateGroup(Group group) {
+    return secGatewayService.updateGroup(group);
+  }
+
+  @Override
+  public URI updateUser(User user) {
+    return secGatewayService.updateUser(user);
   }
 
 }

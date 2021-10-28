@@ -8,6 +8,8 @@ import java.util.Objects;
 import java.util.function.Function;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Property;
+import org.smartbit4all.domain.meta.PropertyOwned;
+import org.smartbit4all.domain.meta.PropertyRef;
 import org.smartbit4all.domain.meta.PropertySet;
 
 public class ApplyChangeObjectConfig {
@@ -16,7 +18,8 @@ public class ApplyChangeObjectConfig {
   private EntityDefinition rootEntity;
   private Property<String> entityIdProperty;
   private Function<Object, Map<Property<?>, Object>> entityPrimaryKeyIdProvider;
-  private Map<String, PropertyMappingItem> propertyMappings = new HashMap<>();
+  private Map<String, ReferenceDescriptor> referenceDescriptorsByEntityName = new HashMap<>();
+  private Map<String, List<PropertyMappingItem>> propertyMappings = new HashMap<>();
   private Map<String, ReferenceMappingItem> referenceMappings = new HashMap<>();
   private Map<String, CollectionMappingItem> collectionMappings = new HashMap<>();
 
@@ -29,23 +32,31 @@ public class ApplyChangeObjectConfig {
       PropertyMappingItem pmi = new PropertyMappingItem();
       pmi.property = pmb.property;
       pmi.name = pmb.propertyName;
-      propertyMappings.put(pmb.propertyName, pmi);
+      List<PropertyMappingItem> pmis = propertyMappings.get(pmb.propertyName);
+      if (pmis == null) {
+        pmis = new ArrayList<>();
+        propertyMappings.put(pmb.propertyName, pmis);
+      }
+
+      pmis.add(pmi);
     });
 
     builder.referenceMappingBuilders.forEach(rmb -> {
       ReferenceMappingItem rmi = new ReferenceMappingItem();
-      rmi.refferringRootProperty = rmb.referringProperty;
-      rmi.name = rmb.propertyName;
-      rmi.oc2AcoMapping = rmb.config;
+      rmi.name = rmb.referenceName;
       referenceMappings.put(rmi.name, rmi);
     });
 
     builder.collectionMappingBuilders.forEach(cmb -> {
       CollectionMappingItem cmi = new CollectionMappingItem();
       cmi.refferringDetailProperty = cmb.referringProperty;
+      cmi.referredProperty = cmb.referredProperty;
       cmi.name = cmb.propertyName;
       cmi.oc2AcoMapping = cmb.config;
       collectionMappings.put(cmi.name, cmi);
+    });
+    builder.referenceDescriptors.forEach(rd -> {
+      referenceDescriptorsByEntityName.put(rd.entityName, rd);
     });
   }
 
@@ -65,7 +76,7 @@ public class ApplyChangeObjectConfig {
     return rootEntity;
   }
 
-  public Map<String, PropertyMappingItem> getPropertyMappings() {
+  public Map<String, List<PropertyMappingItem>> getPropertyMappings() {
     return propertyMappings;
   }
 
@@ -83,6 +94,27 @@ public class ApplyChangeObjectConfig {
 
   public Function<Object, Map<Property<?>, Object>> getEntityPrimaryKeyIdProvider() {
     return entityPrimaryKeyIdProvider;
+  }
+
+  public ReferenceDescriptor getReferenceDescriptor(String entityName) {
+    return referenceDescriptorsByEntityName.get(entityName);
+  }
+
+  public static class ReferenceDescriptor {
+
+    private String entityName;
+    private Property<String> entityUuidProperty;
+    private Function<Object, Map<Property<?>, Object>> entityPrimaryKeyIdProvider;
+
+    public Property<String> getEntityUuidProperty() {
+      return entityUuidProperty;
+    }
+
+    public Function<Object, Map<Property<?>, Object>> getEntityPrimaryKeyIdProvider() {
+      return entityPrimaryKeyIdProvider;
+    }
+
+
   }
 
   public abstract static class MappingItem {
@@ -107,22 +139,13 @@ public class ApplyChangeObjectConfig {
 
   public static final class ReferenceMappingItem extends MappingItem {
 
-    private Property<?> refferringRootProperty;
-    private ApplyChangeObjectConfig oc2AcoMapping;
-
-    public Property<?> getRefferringRootProperty() {
-      return refferringRootProperty;
-    }
-
-    public ApplyChangeObjectConfig getOc2AcoMapping() {
-      return oc2AcoMapping;
-    }
 
   }
 
   public static final class CollectionMappingItem extends MappingItem {
 
     private Property<?> refferringDetailProperty;
+    private Property<?> referredProperty;
     private ApplyChangeObjectConfig oc2AcoMapping;
 
     public Property<?> getRefferringDetailProperty() {
@@ -133,6 +156,10 @@ public class ApplyChangeObjectConfig {
       return oc2AcoMapping;
     }
 
+    public Property<?> getReferredProperty() {
+      return referredProperty;
+    }
+
   }
 
   public static class Builder {
@@ -140,9 +167,10 @@ public class ApplyChangeObjectConfig {
     EntityDefinition entityDefinition;
     Property<String> entityIdProperty;
     Function<Object, Map<Property<?>, Object>> entityPrimaryKeyIdProvider;
+    List<ReferenceDescriptor> referenceDescriptors = new ArrayList<>();
     List<PropertyMappingBuilder> propertyMappingBuilders = new ArrayList<>();
-    List<ReferenceOrCollectionMappingBuilder> referenceMappingBuilders = new ArrayList<>();
-    List<ReferenceOrCollectionMappingBuilder> collectionMappingBuilders = new ArrayList<>();
+    List<ReferenceMappingBuilder> referenceMappingBuilders = new ArrayList<>();
+    List<CollectionMappingBuilderBase<?, ?>> collectionMappingBuilders = new ArrayList<>();
 
     protected Builder(String name, EntityDefinition entityDefinition) {
       Objects.requireNonNull(name, "Config name can not be null!");
@@ -168,27 +196,73 @@ public class ApplyChangeObjectConfig {
       return new PropertyMappingBuilder(propertyName, property, this).and();
     }
 
-    public ReferenceOrCollectionMappingBuilder addReferenceMapping(String propertyName,
-        Property<?> referringProperty) {
-      ReferenceOrCollectionMappingBuilder referenceOrCollectionMappingBuilder =
-          new ReferenceOrCollectionMappingBuilder(propertyName, referringProperty, this);
-      this.referenceMappingBuilders.add(referenceOrCollectionMappingBuilder);
-      return referenceOrCollectionMappingBuilder;
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Builder addEntityReferenceDescriptor(Property<String> uidProperty,
+        Function<Object, Map<Property<?>, Object>> entityPrimaryKeyIdProvider) {
+      Objects.requireNonNull(uidProperty, "uidProperty can not be null!");
+      Objects.requireNonNull(entityPrimaryKeyIdProvider,
+          "entityPrimaryKeyIdProvider can not be null!");
+      Property<String> propToSet = null;
+      if (uidProperty instanceof PropertyOwned) {
+        propToSet = uidProperty;
+      } else if (uidProperty instanceof PropertyRef) {
+        propToSet = ((PropertyRef) uidProperty).getReferredOwnedProperty();
+      } else {
+        throw new IllegalStateException("Unhandled Property type");
+      }
+
+      ReferenceDescriptor rd = new ReferenceDescriptor();
+      rd.entityUuidProperty = propToSet;
+      rd.entityName = propToSet.getEntityDef().entityDefName();
+      rd.entityPrimaryKeyIdProvider = entityPrimaryKeyIdProvider;
+      referenceDescriptors.add(rd);
+
+      return this;
     }
 
-    public ReferenceOrCollectionMappingBuilder addCollectionMapping(String propertyName,
-        Property<?> referringProperty) {
-      ReferenceOrCollectionMappingBuilder referenceOrCollectionMappingBuilder =
-          new ReferenceOrCollectionMappingBuilder(propertyName, referringProperty, this);
-      this.collectionMappingBuilders.add(referenceOrCollectionMappingBuilder);
-      return referenceOrCollectionMappingBuilder;
+    public ReferenceMappingBuilder addReferenceMapping(String propertyName) {
+      ReferenceMappingBuilder referenceMappingBuilder =
+          new ReferenceMappingBuilder(propertyName, this);
+      this.referenceMappingBuilders.add(referenceMappingBuilder);
+      return referenceMappingBuilder;
+    }
+
+    public CollectionMappingBuilder addCollectionMapping(String propertyName,
+        Property<?> referringProperty, ApplyChangeObjectConfig config) {
+      CollectionMappingBuilder collectionMappingBuilder =
+          new CollectionMappingBuilder(propertyName, referringProperty, config, this);
+      this.collectionMappingBuilders.add(collectionMappingBuilder);
+      return collectionMappingBuilder;
     }
 
     public ApplyChangeObjectConfig build() {
       checkContent();
       checkEntityIdProperty();
       checkEntityPrimaryKeyIdProvider();
+      handleCollectionReferProperties();
+      checkReferenceDescriptors();
       return new ApplyChangeObjectConfig(this);
+    }
+
+    private void checkReferenceDescriptors() {
+      // TODO should check if all needed reference descriptors are set
+      // need to check entity definition references with the types of the fks
+    }
+
+    private void handleCollectionReferProperties() {
+      for (CollectionMappingBuilderBase<?, ?> cmb : collectionMappingBuilders) {
+        if (cmb.referredProperty == null) {
+          // when there is no referred property set, it is handled as the detail points to the
+          // root's id
+          cmb.referredProperty = entityIdProperty;
+        }
+        if (!cmb.referredProperty.type().equals(cmb.referringProperty.type())) {
+          throw new IllegalStateException(
+              "The referred and the property types are not identical on collection "
+                  + cmb.propertyName);
+        }
+      }
+
     }
 
     private void checkContent() {
@@ -198,11 +272,9 @@ public class ApplyChangeObjectConfig {
             "Can not build ApplyChangeObjectConfig without declaring at least one inner property "
                 + "for a bean!");
       }
-      boolean hasMissingBuilder = referenceMappingBuilders.stream()
-          .anyMatch(rb -> rb.innerConfigBuilder == null);
-      hasMissingBuilder &= collectionMappingBuilders.stream()
-          .anyMatch(rb -> rb.innerConfigBuilder == null);
-      if (hasMissingBuilder) {
+      boolean hasMissingConfig = collectionMappingBuilders.stream()
+          .anyMatch(rb -> rb.config == null);
+      if (hasMissingConfig) {
         throw new IllegalStateException(
             "Can not build ApplyChangeObjectConfig with missing inner config declaration!");
       }
@@ -274,34 +346,141 @@ public class ApplyChangeObjectConfig {
 
   }
 
-  /*
-   * Now the structure of the reference and the collection is the same, so we implement only one
-   * builder for them. Later may be separate builders...
-   */
-  public static class ReferenceOrCollectionMappingBuilder {
+  public static class ReferenceMappingBuilder {
+    String referenceName;
+    Builder rootBuilder;
+    ReferenceMappingBuilder parentRefBuilder;
 
-    String propertyName;
-    Property<?> referringProperty;
-    Builder innerConfigBuilder;
-    ApplyChangeObjectConfig config;
-    private Builder parent;
-
-    private ReferenceOrCollectionMappingBuilder(String propertyName, Property<?> referringProperty,
-        Builder parent) {
-      Objects.requireNonNull(propertyName, "propertyName can not be null!");
-      Objects.requireNonNull(referringProperty, "referringProperty can not be null!");
-      this.propertyName = propertyName;
-      this.referringProperty = referringProperty;
-      this.parent = parent;
+    public ReferenceMappingBuilder(String referenceName, Builder builder) {
+      Objects.requireNonNull(referenceName, "referenceName can not be null!");
+      this.referenceName = referenceName;
+      this.rootBuilder = builder;
     }
 
-    public ReferenceOrCollectionMappingBuilder config(ApplyChangeObjectConfig config) {
-      this.config = config;
+    public ReferenceMappingBuilder addPropertyMapping(String propertyName, Property<?> property) {
+      new PropertyMappingBuilder(createReferencePropName(propertyName), property, rootBuilder)
+          .and();
       return this;
     }
 
-    public Builder and() {
+    public ReferenceMappingBuilder addReferenceMapping(String propertyName) {
+      ReferenceMappingBuilder refMapBuilder =
+          new ReferenceMappingBuilder(createReferencePropName(propertyName), rootBuilder);
+      refMapBuilder.setParentBuilder(this);
+      rootBuilder.referenceMappingBuilders.add(refMapBuilder);
+      return refMapBuilder;
+    }
+
+    public CollectionMappingBuilderRef addCollectionMapping(String propertyName,
+        Property<?> referringProperty, ApplyChangeObjectConfig config) {
+      CollectionMappingBuilderRef collectionMappingBuilder =
+          new CollectionMappingBuilderRef(createReferencePropName(propertyName), referringProperty,
+              config,
+              this, rootBuilder);
+      rootBuilder.collectionMappingBuilders.add(collectionMappingBuilder);
+      return collectionMappingBuilder;
+    }
+
+    private String createReferencePropName(String propertyName) {
+      return referenceName + "." + propertyName;
+    }
+
+    private void setParentBuilder(ReferenceMappingBuilder parentRefBuilder) {
+      this.parentRefBuilder = parentRefBuilder;
+    }
+
+    public ReferenceMappingBuilder and() {
+      if (parentRefBuilder == null) {
+        throw new RuntimeException(
+            "Can not call and() onn root ReferencaMappingBuilder! Call end() or build() instead!");
+      }
+      return parentRefBuilder;
+    }
+
+    public Builder end() {
+      return rootBuilder;
+    }
+
+    public ApplyChangeObjectConfig build() {
+      return rootBuilder.build();
+    }
+
+  }
+
+  public abstract static class CollectionMappingBuilderBase<P, T extends CollectionMappingBuilderBase<P, T>> {
+
+    String propertyName;
+    Property<?> referringProperty;
+    Property<?> referredProperty;
+    ApplyChangeObjectConfig config;
+    private P parent;
+
+    private CollectionMappingBuilderBase(String propertyName, Property<?> referringProperty,
+        ApplyChangeObjectConfig config,
+        P parent) {
+      Objects.requireNonNull(propertyName, "propertyName can not be null!");
+      Objects.requireNonNull(referringProperty, "referringProperty can not be null!");
+      Objects.requireNonNull(config, "config can not be null!");
+      this.propertyName = propertyName;
+      this.referringProperty = referringProperty;
+      this.config = config;
+      this.parent = parent;
+    }
+
+    abstract T self();
+
+    public T referredProperty(Property<?> referredProperty) {
+      Objects.requireNonNull(referredProperty, "referredProperty can not be null!");
+      this.referredProperty = referredProperty;
+      return self();
+    }
+
+    public P and() {
       return parent;
+    }
+
+  }
+
+  public static class CollectionMappingBuilder
+      extends CollectionMappingBuilderBase<Builder, CollectionMappingBuilder> {
+
+    public CollectionMappingBuilder(String propertyName, Property<?> referringProperty,
+        ApplyChangeObjectConfig config,
+        Builder parent) {
+      super(propertyName, referringProperty, config, parent);
+    }
+
+    @Override
+    CollectionMappingBuilder self() {
+      return this;
+    }
+
+  }
+
+  public static class CollectionMappingBuilderRef
+      extends CollectionMappingBuilderBase<ReferenceMappingBuilder, CollectionMappingBuilderRef> {
+
+    Builder rootBuilder;
+
+    public CollectionMappingBuilderRef(String propertyName, Property<?> referringProperty,
+        ApplyChangeObjectConfig config,
+        ReferenceMappingBuilder parent,
+        Builder rootBuilder) {
+      super(propertyName, referringProperty, config, parent);
+      this.rootBuilder = rootBuilder;
+    }
+
+    @Override
+    CollectionMappingBuilderRef self() {
+      return this;
+    }
+
+    public ApplyChangeObjectConfig build() {
+      return rootBuilder.build();
+    }
+
+    public Builder end() {
+      return rootBuilder;
     }
 
   }

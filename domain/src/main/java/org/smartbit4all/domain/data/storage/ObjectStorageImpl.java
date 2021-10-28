@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -22,6 +21,7 @@ import org.smartbit4all.api.storage.bean.StorageObjectRelationData;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.utility.PathUtility;
+import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.storage.StorageObject.StorageObjectOperation;
 
 /**
@@ -57,6 +57,8 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
    * The object api gives access to the meta data of the objects.
    */
   protected final ObjectApi objectApi;
+
+  protected Supplier<String> versionCreatedBy = () -> StringConstant.UNKNOWN;
 
   protected boolean defaultStorage = false;
 
@@ -94,22 +96,13 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
   public <T> List<StorageObject<T>> load(Storage storage, List<URI> uris, Class<T> clazz,
       StorageLoadOption... options) {
     return uris.parallelStream().map(u -> load(storage, u, clazz, options))
-        .filter(o -> o.isPresent())
-        .map(o -> o.get())
         .collect(Collectors.toList());
   }
 
   @Override
-  public Optional<StorageObject<?>> load(Storage storage, URI uri, StorageLoadOption... options) {
+  public StorageObject<?> load(Storage storage, URI uri, StorageLoadOption... options) {
     ObjectDefinition<?> objectDefinition = getDefinitionFromUri(uri);
-    Optional<StorageObject<?>> result = Optional.empty();
-    if (objectDefinition != null) {
-      Optional<?> load = load(storage, uri, objectDefinition.getClazz(), options);
-      if (load.isPresent()) {
-        result = Optional.of((StorageObject<?>) load.get());
-      }
-    }
-    return result;
+    return load(storage, uri, objectDefinition.getClazz(), options);
   }
 
   /**
@@ -135,15 +128,13 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
   }
 
   @Override
-  public <T> Optional<T> read(Storage storage, URI uri, Class<T> clazz) {
-    Optional<StorageObject<T>> load = load(storage, uri, clazz);
-    return load.isPresent() ? Optional.ofNullable(load.get().getObject()) : Optional.empty();
+  public <T> T read(Storage storage, URI uri, Class<T> clazz) {
+    return load(storage, uri, clazz).getObject();
   }
 
   @Override
-  public Optional<?> read(Storage storage, URI uri) {
-    Optional<StorageObject<?>> load = load(storage, uri);
-    return load.isPresent() ? Optional.ofNullable(load.get().getObject()) : Optional.empty();
+  public Object read(Storage storage, URI uri) {
+    return load(storage, uri).getObject();
   }
 
   @Override
@@ -187,7 +178,11 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
       URI objectUri, StorageObjectData data) {
     StorageObject<T> storageObject = new StorageObject<>(objectDefinition, storage);
     storageObject.setUri(objectUri);
-    storageObject.setUuid(UUID.fromString(PathUtility.getLastPath(objectUri.getPath())));
+    try {
+      storageObject.setUuid(UUID.fromString(PathUtility.getLastPath(objectUri.getPath())));
+    } catch (Exception e) {
+      // do nothing
+    }
     storageObject.setVersion(data.getCurrentVersion());
     return storageObject;
   }
@@ -311,18 +306,39 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
       String versionSerialNoString = uri.getFragment();
       if (versionSerialNoString != null) {
         try {
-          int versionSerialNo = Integer.parseInt(versionSerialNoString);
+          int versionSerialNoIndex = Integer.parseInt(versionSerialNoString) - 1;
           List<ObjectVersion> versions = storageObjData.getVersions();
-          if (versions == null || versionSerialNo < 0 || versionSerialNo >= versions.size()) {
+          if (versions == null || versionSerialNoIndex < 0
+              || versionSerialNoIndex >= versions.size()) {
             throw new IllegalArgumentException("Invalid version number in " + uri + " object uri.");
           }
-          return versions.get(versionSerialNo);
+          return versions.get(versionSerialNoIndex);
         } catch (NumberFormatException e) {
           throw new IllegalArgumentException("Bad version format in " + uri + " object uri.", e);
         }
       }
     }
     return storageObjData.getCurrentVersion();
+  }
+
+  protected void invokeOnSucceedFunctions(StorageObject<?> object,
+      StorageSaveEvent storageSaveEvent) {
+    object.invokeOnSucceedFunctions(storageSaveEvent);
+  }
+
+  /**
+   * This supplier is responsible for accessing the current user in the actual context.
+   * 
+   * @param currentUserSupplier
+   */
+  public final ObjectStorage currentUserSupplier(Supplier<String> versionCreatedBy) {
+    this.versionCreatedBy = versionCreatedBy;
+    return this;
+  }
+
+  protected void updateStorageObjectWithVersion(StorageObject<?> storageObject,
+      ObjectVersion version) {
+    storageObject.setVersion(version);
   }
 
 }

@@ -1,6 +1,7 @@
 package org.smartbit4all.sql.applychange;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.net.URI;
@@ -25,6 +26,12 @@ import org.smartbit4all.sql.testmodel_with_uri.TicketDef;
 import org.smartbit4all.sql.testmodel_with_uri.beans.TicketFCC;
 import org.smartbit4all.sql.testmodel_with_uri.beans.TicketFCC.Address;
 import org.smartbit4all.sql.testmodel_with_uri.beans.TicketFCC.Person;
+import org.smartbit4all.sql.testmodel_with_uri.refbeans.ACT_A_FCC;
+import org.smartbit4all.sql.testmodel_with_uri.refbeans.ACT_B;
+import org.smartbit4all.sql.testmodel_with_uri.refbeans.ACT_C;
+import org.smartbit4all.sql.testmodel_with_uri.refbeans.ACT_D;
+import org.smartbit4all.sql.testmodel_with_uri.refbeans.ADef;
+import org.smartbit4all.sql.testmodel_with_uri.refbeans.DDef;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -36,12 +43,16 @@ import org.springframework.test.context.jdbc.Sql;
     ApplyChangeTestConfig.class,
 })
 @Sql({"/script/applychanges/applychanges_schema.sql",
-    "/script/applychanges/applychanges_data_01.sql"})
+    "/script/applychanges/applychanges_data_01.sql",
+    "/script/applychanges/applychanges_refentities_schema.sql"
+})
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
 public class ApplyChangeTests {
 
-  private static Map<Class<?>, ApiBeanDescriptor> descriptors;
+  private static Map<Class<?>, ApiBeanDescriptor> ticketDescriptors;
+
+  private static Map<Class<?>, ApiBeanDescriptor> refbeanDescriptors;
 
   @Autowired
   private TicketDef ticketDef;
@@ -51,6 +62,12 @@ public class ApplyChangeTests {
 
   @Autowired
   private AddressDef addressDef;
+
+  @Autowired
+  private ADef aDef;
+
+  @Autowired
+  private DDef dDef;
 
   @Autowired
   private ApplyChangeService applyChangeService;
@@ -65,7 +82,113 @@ public class ApplyChangeTests {
     domainBeans.add(TicketFCC.class);
     domainBeans.add(Address.class);
     domainBeans.add(Person.class);
-    descriptors = ApiBeanDescriptor.of(domainBeans);
+    ticketDescriptors = ApiBeanDescriptor.of(domainBeans);
+
+    domainBeans = new HashSet<>();
+    domainBeans.add(ACT_A_FCC.class);
+    domainBeans.add(ACT_B.class);
+    domainBeans.add(ACT_C.class);
+    domainBeans.add(ACT_D.class);
+    refbeanDescriptors = ApiBeanDescriptor.of(domainBeans);
+  }
+
+  @Test
+  public void testApplyChangeWithReferences() throws Exception {
+
+    ACT_A_FCC actA = createActA();
+
+    applyChangeService.createBean(actA, refbeanDescriptors);
+
+    assertActA(actA);
+    assertActDs(actA);
+
+
+    ACT_A_FCC actAV2 = createModifiedActA();
+
+    applyChangeService.updateBean(actA, actAV2, refbeanDescriptors);
+
+    assertActA(actAV2);
+    assertActDs(actAV2);
+  }
+
+  private ACT_A_FCC createModifiedActA() {
+    ACT_A_FCC actAV2 = createActA();
+    actAV2.setAf1("af1_modified");
+    actAV2.setCf1("cf1_modified");
+    actAV2.getActB().setAf2("af2_modified");
+    actAV2.getActC().getActdList().get(1).setDf1("df1_modified");
+    actAV2.getActC().getActdList().get(0).setEf1("ef1_modified");
+    return actAV2;
+  }
+
+  private void assertActDs(ACT_A_FCC actA) throws Exception {
+    PropertySet dSelect = dDef.allProperties();
+    dSelect.addAll(dDef.eDef().allProperties());
+    TableData<DDef> dDefTd = Crud.read(dDef)
+        .select(dSelect)
+        .order(dDef.uid())
+        .listData();
+    System.out.println("----\nQueried D def result:\n" + dDefTd);
+    assertFalse(dDefTd.isEmpty());
+    assertTrue(dDefTd.size() == 2);
+    DataRow dRow = dDefTd.rows().get(0);
+    ACT_D actD = actA.getActC().getActdList().get(0);
+    assertD(dRow, actD);
+    dRow = dDefTd.rows().get(1);
+    actD = actA.getActC().getActdList().get(1);
+    assertD(dRow, actD);
+  }
+
+  private void assertActA(ACT_A_FCC actA) throws Exception {
+    PropertySet aSelect = aDef.allProperties();
+    aSelect.addAll(aDef.bDef().allProperties());
+    aSelect.addAll(aDef.bDef().cDef().allProperties());
+    aSelect.addAll(aDef.bDef().cDef().fDef().allProperties());
+    TableData<ADef> aDefTd = Crud.read(aDef)
+        .select(aSelect)
+        .listData();
+    System.out.println("----\nQueried FFC result:\n" + aDefTd);
+    assertFalse(aDefTd.isEmpty());
+    DataRow aRow = aDefTd.rows().get(0);
+    assertEquals(actA.getUid(), aRow.get(aDef.uid()));
+    assertEquals(actA.getAf1(), aRow.get(aDef.af1()));
+    assertEquals(actA.getCf1(), aRow.get(aDef.bDef().cDef().cf1()));
+    assertEquals(actA.getActB().getAf2(), aRow.get(aDef.af2()));
+    assertEquals(actA.getActB().getBf2(), aRow.get(aDef.bDef().bf2()));
+    assertEquals(actA.getActB().getCf2(), aRow.get(aDef.bDef().cDef().cf2()));
+    assertEquals(actA.getActC().getCf3(), aRow.get(aDef.bDef().cDef().cf3()));
+    assertEquals(actA.getActC().getFf1(), aRow.get(aDef.bDef().cDef().fDef().ff1()));
+  }
+
+  private void assertD(DataRow dRow, ACT_D actD) {
+    assertEquals(actD.getDf1(), dRow.get(dDef.df1()));
+    assertEquals(actD.getEf1(), dRow.get(dDef.eDef().ef1()));
+  }
+
+  private ACT_A_FCC createActA() {
+
+    ACT_A_FCC actA = new ACT_A_FCC();
+    ACT_B actB = new ACT_B();
+    ACT_C actC = new ACT_C();
+    ACT_D actD1 = new ACT_D();
+    ACT_D actD2 = new ACT_D();
+
+    actA.setUid("ACT_A_UUID");
+    actA.setAf1("af1_value");
+    actA.setCf1("cf1_value");
+    actA.setActB(actB);
+    actA.setActC(actC);
+    actB.setAf2("af2_value");
+    actB.setBf2("bf2_value");
+    actB.setCf2("cf2_value");
+    actC.setCf3("cf3_value");
+    actC.setFf1("ff1_value");
+    actC.setActdList(Arrays.asList(actD1, actD2));
+    actD1.setDf1("d1_df1_value");
+    actD1.setEf1("d1_ef1_value");
+    actD2.setDf1("d2_df1_value");
+    actD2.setDf1("d2_ef1_value");
+    return actA;
   }
 
   @Test
@@ -74,7 +197,8 @@ public class ApplyChangeTests {
     TicketFCC ticket = createTicketWithPersonsAndAddresses();
 
 
-    ApiObjectRef ticketObjectRef = new ApiObjectRef(ticket.getCustomNamedId(), ticket, descriptors);
+    ApiObjectRef ticketObjectRef =
+        new ApiObjectRef(ticket.getCustomNamedId(), ticket, ticketDescriptors);
     ObjectChange objectChange = ticketObjectRef.renderAndCleanChanges().orElse(null);
 
     assertNotNull(objectChange);
@@ -127,7 +251,7 @@ public class ApplyChangeTests {
     // =======
 
     ticketTd = Crud.read(ticketDef)
-        .select(ticketDef.allProperties())
+        .select(select)
         .where(ticketDef.idString().eq(ticket.getCustomNamedId()))
         .listData();
     row = ticketTd.rows().get(0);

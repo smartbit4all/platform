@@ -29,7 +29,7 @@ public class BinaryContentApiImpl implements BinaryContentApi {
       if (!binaryData.isPresent()) {
         Storage storage = dataUri == null ? null : storageApi.get(dataUri.getScheme());
         if (storage != null) {
-          BinaryDataObject binaryDataObject = storage.read(dataUri, BinaryDataObject.class).get();
+          BinaryDataObject binaryDataObject = storage.read(dataUri, BinaryDataObject.class);
           binaryData = Optional.of(binaryDataObject.getBinaryData());
         }
       }

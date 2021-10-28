@@ -31,36 +31,21 @@ public class VaadinHasValueBinder<WIDGET, DATA> extends VaadinAbstractBinder {
 
   private Validator<? super DATA> validator;
 
-  /**
-   * Use other constructor instead.
-   * 
-   * @param field
-   * @param observableObject
-   * @param path
-   */
-  @Deprecated
   public VaadinHasValueBinder(HasValue<?, WIDGET> field, ObservableObject observableObject,
-      String path, Converter<WIDGET, DATA> converter, boolean isRef) {
-    this(field, observableObject, PathUtility.getParentPath(path), PathUtility.getLastPath(path),
-        converter, isRef);
-  }
-
-  public VaadinHasValueBinder(HasValue<?, WIDGET> field, ObservableObject observableObject,
-      String path, String property, Converter<WIDGET, DATA> converter, boolean isRef) {
+      Converter<WIDGET, DATA> converter, boolean isRef, String... path) {
     super();
     this.field = field;
     this.observableObject = observableObject;
-    this.propertyPath = PathUtility.concatPath(path, property);
+    this.propertyPath = PathUtility.concatPath(true, path);
     this.converter = converter;
     if (this.converter != null) {
       initValueContext();
     }
 
     if (isRef) {
-      disposable =
-          observableObject.onReferencedObjectChange(path, property, this::onReferenceObjectChanged);
+      disposable = observableObject.onReferencedObjectChange(this::onReferenceObjectChanged, path);
     } else {
-      disposable = observableObject.onPropertyChange(path, property, this::onPropertyChanged);
+      disposable = observableObject.onPropertyChange(this::onPropertyChanged, path);
     }
 
     registerViewListener();

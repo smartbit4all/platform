@@ -23,6 +23,8 @@ public final class BeanMetaUtil {
   public static final String SET = "set";
   public static final String ADDITEM_PREFIX = "add";
   public static final String ADDITEM_POSTFIX = "Item";
+  public static final String PUTITEM_PREFIX = "put";
+  public static final String PUTITEM_POSTFIX = "Item";
 
   private BeanMetaUtil() {}
 
@@ -70,12 +72,25 @@ public final class BeanMetaUtil {
     allMethods.stream()
         .filter(method -> Modifier.isPublic(method.getModifiers())
             && method.getName().startsWith(ADDITEM_PREFIX)
-            && method.getName().length() > 7
-            && Character.isUpperCase(method.getName().charAt(3))
+            && method.getName().length() > (ADDITEM_PREFIX.length() + ADDITEM_POSTFIX.length())
+            && Character.isUpperCase(method.getName().charAt(ADDITEM_PREFIX.length()))
             && method.getName().endsWith(ADDITEM_POSTFIX)
             && method.getParameterCount() == 1
             && apiClass.equals(method.getReturnType()))
         .forEach(setter -> processItemAdderMethod(setter, meta));
+
+    // process all map put item methods: Bean putPropertiesItem(string key, item)
+    // e.g. Map<String, Type> values in Bean class -> Bean putValuesItem(String key, Type
+    // valuesItem);
+    allMethods.stream()
+        .filter(method -> Modifier.isPublic(method.getModifiers())
+            && method.getName().startsWith(PUTITEM_PREFIX)
+            && method.getName().length() > (PUTITEM_PREFIX.length() + PUTITEM_POSTFIX.length())
+            && Character.isUpperCase(method.getName().charAt(PUTITEM_PREFIX.length()))
+            && method.getName().endsWith(PUTITEM_POSTFIX)
+            && method.getParameterCount() == 2
+            && apiClass.equals(method.getReturnType()))
+        .forEach(setter -> processItemPutMethod(setter, meta));
 
     return meta;
   }
@@ -137,6 +152,14 @@ public final class BeanMetaUtil {
         propertyMeta.setKind(PropertyKind.COLLECTION);
       }
     }
+    if (propertyType.isAssignableFrom(Map.class)) {
+      // If we don't define the detail meta then try to identify the field for the bean property.
+      Class<?> genericType = lookupFieldGenericType(apiClass, propertyName, Map.class);
+      if (genericType != null
+          && (descriptor != null && descriptor.getAllApiBeanClass().contains(genericType))) {
+        propertyMeta.setKind(PropertyKind.MAP);
+      }
+    }
   }
 
   private static final void processSetterMethod(Method method, BeanMeta meta) {
@@ -159,11 +182,23 @@ public final class BeanMetaUtil {
 
   private static final void processItemAdderMethod(Method method, BeanMeta meta) {
     String name = method.getName();
-    String propertyKey = name.substring(3, name.length() - 4).toUpperCase();
+    String propertyKey = name
+        .substring(ADDITEM_PREFIX.length(), name.length() - ADDITEM_POSTFIX.length()).toUpperCase();
     PropertyMeta propertyMeta = meta.getProperties().get(propertyKey);
     if (propertyMeta != null) {
       // method without getter won't be processed
       propertyMeta.setItemAdder(method);
+    }
+  }
+
+  private static final void processItemPutMethod(Method method, BeanMeta meta) {
+    String name = method.getName();
+    String propertyKey = name
+        .substring(PUTITEM_PREFIX.length(), name.length() - PUTITEM_POSTFIX.length()).toUpperCase();
+    PropertyMeta propertyMeta = meta.getProperties().get(propertyKey);
+    if (propertyMeta != null) {
+      // method without getter won't be processed
+      propertyMeta.setItemPutter(method);
     }
   }
 
@@ -177,10 +212,21 @@ public final class BeanMetaUtil {
         Type genericType = field.getGenericType();
         if (genericType instanceof ParameterizedType) {
           Type[] actualTypeArguments = ((ParameterizedType) genericType).getActualTypeArguments();
-          if (actualTypeArguments != null && actualTypeArguments.length > 0) {
-            Type typeArg = actualTypeArguments[0];
-            if (typeArg instanceof Class<?>) {
-              return (Class<?>) typeArg;
+          if (actualTypeArguments != null) {
+            if (type.isAssignableFrom(List.class)) {
+              if (actualTypeArguments.length >= 1) {
+                Type typeArg = actualTypeArguments[0];
+                if (typeArg instanceof Class<?>) {
+                  return (Class<?>) typeArg;
+                }
+              }
+            } else if (type.isAssignableFrom(Map.class)) {
+              if (actualTypeArguments.length >= 2) {
+                Type typeArg = actualTypeArguments[1];
+                if (typeArg instanceof Class<?>) {
+                  return (Class<?>) typeArg;
+                }
+              }
             }
           }
         }

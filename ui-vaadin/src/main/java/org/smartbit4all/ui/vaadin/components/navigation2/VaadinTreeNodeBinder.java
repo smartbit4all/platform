@@ -9,8 +9,8 @@ import com.vaadin.flow.component.HasComponents;
 public class VaadinTreeNodeBinder extends VaadinWidgetCollectionBinder<TreeNode, TreeNodeView> {
 
   public VaadinTreeNodeBinder(HasComponents container, ObservableObject observableObject,
-      String path, String collectionName, BiFunction<String, TreeNode, TreeNodeView> createWidget) {
-    super(container, observableObject, path, collectionName, createWidget);
+      BiFunction<String, TreeNode, TreeNodeView> createWidget, String... collectionPath) {
+    super(container, observableObject, createWidget, collectionPath);
   }
 
   @Override

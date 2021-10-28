@@ -62,7 +62,7 @@ public class StatefulApiEditingTest {
   private StatefulBeanEditing initBeanEditing(StatefulBean bean, String expectedResult) {
     StatefulBeanEditing beanEditing = ctx.getBean(StatefulBeanEditing.class);
     beanEditing.setBean(bean);
-    beanEditing.bean().onPropertyChange(null, "Value", event -> bean.setResult(expectedResult));
+    beanEditing.bean().onPropertyChange(event -> bean.setResult(expectedResult), null, "Value");
     return beanEditing;
   }
 

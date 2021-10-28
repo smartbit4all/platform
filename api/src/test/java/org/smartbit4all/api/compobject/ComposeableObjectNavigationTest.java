@@ -1,7 +1,5 @@
 package org.smartbit4all.api.compobject;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.net.URI;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -20,6 +18,8 @@ import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest(classes = {ComposeableObjectNavigationTestConfig.class})
 public class ComposeableObjectNavigationTest {
@@ -160,8 +160,7 @@ public class ComposeableObjectNavigationTest {
     storage.save(newTestTreeObject);
 
     StorageObject<TestTreeObject> parentStorageObject = storage
-        .load(parentUri, TestTreeObject.class)
-        .get();
+        .load(parentUri, TestTreeObject.class);
 
     TestTreeObject parent = parentStorageObject.getObject();
     parent.addChild(testTreeObject2);

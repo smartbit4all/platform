@@ -51,39 +51,32 @@ class FilterViewUtils {
   public static VaadinHasValueBinder<LocalDate, String> bindDate(DatePicker date,
       ObservableObject filterField, String path,
       int number) {
-    String valuePath = PathUtility.concatPath(path, "value" + number);
-    VaadinHasValueBinder<LocalDate, String> binder = VaadinBinders.bind(date, filterField,
-        valuePath, String.class, new LocalDate2StringConverter());
+    VaadinHasValueBinder<LocalDate, String> binder = VaadinBinders.bindValue(date, filterField,
+        String.class, new LocalDate2StringConverter(), path, "value" + number);
     return binder;
   }
 
   public static VaadinHasValueBinder<LocalDateTime, String> bindDateTime(DateTimePicker dateTime,
       ObservableObject filterField,
       String path, int number) {
-    String valuePath = PathUtility.concatPath(path, "value" + number);
-    VaadinHasValueBinder<LocalDateTime, String> binder =
-        VaadinBinders.bind(dateTime, filterField, valuePath, String.class,
-            new LocalDateTime2StringConverter());
+    VaadinHasValueBinder<LocalDateTime, String> binder = VaadinBinders.bindValue(dateTime,
+        filterField, String.class, new LocalDateTime2StringConverter(), path, "value" + number);
     return binder;
   }
 
   public static VaadinHasValueBinder<TimeFilterOption, String> bindTimeFilterOptionCombo(
       ComboBox<TimeFilterOption> combo,
       ObservableObject filterField, String path, int number) {
-    String valuePath = PathUtility.concatPath(path, "value" + number);
-    VaadinHasValueBinder<TimeFilterOption, String> binder =
-        VaadinBinders.bind(combo, filterField, valuePath, String.class,
-            new TimeFilterOption2StringConverter());
+    VaadinHasValueBinder<TimeFilterOption, String> binder = VaadinBinders.bindValue(combo,
+        filterField, String.class, new TimeFilterOption2StringConverter(), path, "value" + number);
     return binder;
   }
 
   public static VaadinHasValueBinder<Integer, String> bindInteger(
       IntegerField integerField,
       ObservableObject filterField, String path, int number) {
-    String valuePath = PathUtility.concatPath(path, "value" + number);
-    VaadinHasValueBinder<Integer, String> binder =
-        VaadinBinders.bind(integerField, filterField, valuePath, String.class,
-            new Integer2StringConverter());
+    VaadinHasValueBinder<Integer, String> binder = VaadinBinders.bindValue(integerField,
+        filterField, String.class, new Integer2StringConverter(), path, "value" + number);
     return binder;
   }
 

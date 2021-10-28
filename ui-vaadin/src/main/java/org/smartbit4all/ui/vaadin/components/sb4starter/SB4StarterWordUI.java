@@ -1,66 +1,90 @@
 package org.smartbit4all.ui.vaadin.components.sb4starter;
 
+import java.util.function.BiConsumer;
+import org.smartbit4all.api.binarydata.BinaryContent;
 import org.smartbit4all.core.object.PropertyChange;
 import org.smartbit4all.ui.api.sb4starter.SB4StarterWordViewModel;
 import org.smartbit4all.ui.api.sb4starterui.model.SB4StarterWordFormModel;
 import org.smartbit4all.ui.api.sb4starterui.model.SB4StarterWordState;
 import org.smartbit4all.ui.vaadin.components.binder.VaadinBinders;
+import org.smartbit4all.ui.vaadin.components.navigation.Navigations;
 import org.smartbit4all.ui.vaadin.object.VaadinPublisherWrapper;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Label;
-import com.vaadin.flow.component.orderedlayout.FlexComponent.JustifyContentMode;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.BeforeEvent;
+import com.vaadin.flow.router.HasUrlParameter;
 
-public class SB4StarterWordUI extends Dialog {
+public class SB4StarterWordUI extends FlexLayout implements HasUrlParameter<String> {
 
   private SB4StarterWordViewModel viewModel;
 
   private Button btnAccept;
 
+  private Anchor downloadAnchor;
+
   public SB4StarterWordUI(SB4StarterWordViewModel viewModel) {
     this.viewModel = viewModel;
 
     viewModel.sb4Starter().setPublisherWrapper(VaadinPublisherWrapper.create());
-    viewModel.sb4Starter().onPropertyChange(null, SB4StarterWordFormModel.STATE,
-        this::onStateChanged);
+    viewModel.sb4Starter().onPropertyChange(this::onStateChanged, SB4StarterWordFormModel.STATE);
+    viewModel.sb4Starter().onPropertyChange(this::onStarterUrlChanged,
+        SB4StarterWordFormModel.SB4_STARTER_URL);
 
     createUI();
   }
 
+  @Override
+  public void setParameter(BeforeEvent event, String parameter) {
+    SB4StarterWordFormModel model =
+        (SB4StarterWordFormModel) Navigations.getParameter(event, "entry");
+    BiConsumer<BinaryContent, BinaryContent> acceptHandler =
+        (BiConsumer<BinaryContent, BinaryContent>) Navigations.getParameter(event, "acceptHandler");
+    try {
+      viewModel.initSb4StarterFormModel(model, acceptHandler);
+    } catch (Exception e) {
+      new ConfirmDialog("Hiba", e.getMessage(), "Ok", conf -> {
+      }).open();
+    }
+  }
+
   private void createUI() {
-    setWidth("400px");
+    // setWidth("400px");
     VerticalLayout main = new VerticalLayout();
     main.setSizeFull();
 
     Label lblState = new Label();
-    VaadinBinders.bind(lblState, viewModel.sb4Starter(), SB4StarterWordFormModel.STATE);
+    VaadinBinders.bindLabel(lblState, viewModel.sb4Starter(), SB4StarterWordFormModel.STATE);
 
-    btnAccept = new Button("Elfogad");
-    btnAccept.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+    btnAccept = createButton("Elfogad", SB4StarterWordViewModel.ACCEPT);
     btnAccept.setEnabled(false);
-    btnAccept.addClickListener(e -> {
-      viewModel.accept();
-      close();
-    });
 
-    Button btnClose = new Button("Elvet");
-    btnClose.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-    btnClose.addClickListener(e -> {
-      viewModel.close();
-      close();
-    });
+    Button btnClose = createButton("Elvet", SB4StarterWordViewModel.DECLINE);
+
+    downloadAnchor = new Anchor();
+    Button btnDownload = createButton("Letölt", SB4StarterWordViewModel.DOWNLOAD);
+    btnDownload.addClickListener(e -> btnDownload.setEnabled(false));
+    downloadAnchor.add(btnDownload);
 
     FlexLayout buttonArea = new FlexLayout();
     buttonArea.setWidthFull();
     buttonArea.setJustifyContentMode(JustifyContentMode.BETWEEN);
-    buttonArea.add(btnAccept, btnClose);
+    buttonArea.add(downloadAnchor, btnAccept, btnClose);
 
     main.add(lblState, buttonArea);
 
     add(main);
+  }
+
+  private Button createButton(String title, String commandCode) {
+    Button button = new Button(title);
+    button.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+    button.addClickListener(e -> viewModel.executeCommand(null, commandCode));
+    return button;
   }
 
   private void onStateChanged(PropertyChange propertyChange) {
@@ -68,6 +92,11 @@ public class SB4StarterWordUI extends Dialog {
     if (state == SB4StarterWordState.UPLOADED) {
       btnAccept.setEnabled(true);
     }
+  }
+
+  private void onStarterUrlChanged(PropertyChange propertyChange) {
+    String starterUrl = (String) propertyChange.getNewValue();
+    downloadAnchor.setHref(starterUrl);
   }
 
   // private String convertStateToString(SB4StarterWordState state) {

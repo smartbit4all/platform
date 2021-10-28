@@ -13,6 +13,7 @@ components:
   schemas:
     SB4Starter:
       type: object
+      required: [id, commands]
       additionalProperties: false
       properties:
         id:
@@ -25,6 +26,7 @@ components:
           
     SB4Command:
       type: object
+      required: [id, restUrl, sb4Files, command]
       additionalProperties: false
       properties:
         id:
@@ -35,12 +37,15 @@ components:
         restUrl:
           type: string
           format: uri
+          nullable: true
         sb4Files:
           type: array
+          nullable: true
           items:
             $ref: '#/components/schemas/SB4File'
         command:
           type: string
+          nullable: true
 
     CommandKind:
       type: string
@@ -52,6 +57,7 @@ components:
         
     SB4File:
       type: object
+      required: [id, filename]
       additionalProperties: false
       properties:
         id:

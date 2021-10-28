@@ -1,7 +1,6 @@
 package org.smartbit4all.domain.data.storage;
 
 import java.net.URI;
-import java.util.Optional;
 
 /**
  * The storage api is the access for the {@link Storage} instances defined in the configurations of
@@ -32,7 +31,7 @@ public interface StorageApi {
    * @param clazz The class of the object we need.
    * @return The object.
    */
-  <T> Optional<StorageObject<T>> load(URI uri, Class<T> clazz);
+  <T> StorageObject<T> load(URI uri, Class<T> clazz);
 
   /**
    * The StorageObject is loaded by the URI itself. In this case we are not sure about the type of
@@ -41,6 +40,6 @@ public interface StorageApi {
    * @param uri The uri of the object to load.
    * @return
    */
-  Optional<StorageObject<?>> load(URI uri);
+  StorageObject<?> load(URI uri);
 
 }

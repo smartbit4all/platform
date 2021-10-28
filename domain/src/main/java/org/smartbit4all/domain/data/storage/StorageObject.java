@@ -2,16 +2,21 @@ package org.smartbit4all.domain.data.storage;
 
 import java.lang.ref.WeakReference;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import org.smartbit4all.api.invocation.bean.InvocationRequestTemplate;
 import org.smartbit4all.api.storage.bean.ObjectReference;
 import org.smartbit4all.api.storage.bean.ObjectVersion;
 import org.smartbit4all.api.storage.bean.StorageObjectData;
 import org.smartbit4all.core.object.ObjectDefinition;
+import org.smartbit4all.core.utility.StringConstant;
+import org.smartbit4all.core.utility.UriUtils;
 
 /**
  * The wrapper object for storage operations. It represents an object with all the belonging
@@ -104,6 +109,15 @@ public final class StorageObject<T> {
   private Map<String, Map<String, StorageObjectReferenceEntry>> collections = new HashMap<>();
 
   /**
+   * The onSucceedFunctionList list is the ordered collection of the functions that should be
+   * executed when the {@link Storage#save(StorageObject)} is successfully finished.
+   * 
+   * 
+   * TODO Detailed specification.
+   */
+  private List<Consumer<StorageSaveEvent<T>>> onSucceedFunctionList = null;
+
+  /**
    * The Storage cann't be created directly! Use the Storage that would manage this object to have a
    * new one by {@link Storage#instanceOf(Class)} or load one by
    * {@link Storage#load(URI, Class, StorageLoadOption...)}
@@ -142,13 +156,14 @@ public final class StorageObject<T> {
   }
 
   /**
-   * Used for the load to use the uri of the object itself.
+   * Used for the load to use the uri of the object itself. Remove the history (fragment) part of
+   * the URI.
    * 
    * @param object
    */
   final void setObjectInner(T object) {
     this.object = object;
-    uri = definition.getUri(object);
+    uri = UriUtils.removeFragment(definition.getUri(object));
   }
 
   /**
@@ -208,10 +223,6 @@ public final class StorageObject<T> {
     return transactionId;
   }
 
-  public final StorageObject<T> onSucceed() {
-    return this;
-  }
-
   public final void setDeleted() {
     operation = StorageObjectOperation.DELETE;
   }
@@ -256,6 +267,10 @@ public final class StorageObject<T> {
     return references;
   }
 
+  void setReferences(Map<String, StorageObjectReferenceEntry> references) {
+    this.references = references;
+  }
+
   /**
    * The collection map where the entries are identified by the
    * {@link ObjectReference#getReferenceId()}.
@@ -295,6 +310,10 @@ public final class StorageObject<T> {
     return collections;
   }
 
+  void setCollections(Map<String, Map<String, StorageObjectReferenceEntry>> collections) {
+    this.collections = collections;
+  }
+
   public final StorageObjectOperation getOperation() {
     return operation;
   }
@@ -324,6 +343,15 @@ public final class StorageObject<T> {
     return version;
   }
 
+  /**
+   * @return Returns the version uri of the given object
+   */
+  public final URI getVersionUri() {
+    return version != null && uri.getFragment() == null
+        ? URI.create(uri.toString() + StringConstant.HASH + version.getSerialNo())
+        : uri;
+  }
+
   final void setVersion(ObjectVersion version) {
     this.version = version;
   }
@@ -334,6 +362,32 @@ public final class StorageObject<T> {
 
   public final void setStrictVersionCheck(boolean strictVersionCheck) {
     this.strictVersionCheck = strictVersionCheck;
+  }
+
+  /**
+   * This function can register a function that should be executed safely after the successful save
+   * operation. The function is going to be executed when before the commit point of the save. The
+   * {@link InvocationRequestTemplate} list will be produced and saved and all these requests will
+   * be executed by the InvocationApi. If we miss executing any of them then later on another node
+   * can catch these requests check the validity and execute them.
+   * 
+   * @param func The function to call
+   * @return
+   */
+  public final StorageObject<T> onSucceed(Consumer<StorageSaveEvent<T>> func) {
+    if (onSucceedFunctionList == null) {
+      onSucceedFunctionList = new ArrayList<>();
+    }
+    onSucceedFunctionList.add(func);
+    return this;
+  }
+
+  final void invokeOnSucceedFunctions(StorageSaveEvent<T> storageSaveEvent) {
+    if (onSucceedFunctionList != null) {
+      for (Consumer<StorageSaveEvent<T>> function : onSucceedFunctionList) {
+        function.accept(storageSaveEvent);
+      }
+    }
   }
 
 }

@@ -24,10 +24,8 @@ public class OrgApiTestConfig {
   }
 
   @Bean
-  public OrgApiInMemory orgApiInMemory(MyModuleSecurityOption myModuleSecurityOption) {
-    OrgApiInMemory orgApiInMemory = new OrgApiInMemory(null);
-    orgApiInMemory.analyzeSecurityOptions(myModuleSecurityOption);
-    return orgApiInMemory;
+  public OrgApiStorageImpl orgApi() {
+    return new OrgApiStorageImpl();
   }
 
   @Bean

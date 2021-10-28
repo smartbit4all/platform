@@ -800,7 +800,7 @@ public class Navigation {
     }
     // This will be the resolved navigation nodes by the
     Map<String, Optional<NavigationNode>> nodesByPath = new HashMap<>();
-    Map<NavigationNode, List<ResolvedPropertyEntry>> propertiesToResolveByNode = new HashMap<>();
+    Map<String, List<ResolvedPropertyEntry>> propertiesToResolveByNode = new HashMap<>();
     for (String qualifiedName : qualifiedNames) {
       String[] parts = qualifiedName.split(StringConstant.HASH);
       // We must have a proper qualified name!
@@ -828,11 +828,11 @@ public class Navigation {
           NavigationNode node = nodeIter.next();
           nodesByPath.put(navigationPath, Optional.of(node));
           propertyPathList = new ArrayList<>();
-          propertiesToResolveByNode.put(node, propertyPathList);
+          propertiesToResolveByNode.put(node.getId(), propertyPathList);
         }
       } else if (navigationNodeOpt.isPresent()) {
         // If we already have the proper node.
-        propertyPathList = propertiesToResolveByNode.get(navigationNodeOpt.get());
+        propertyPathList = propertiesToResolveByNode.get(navigationNodeOpt.get().getId());
       }
       // If we found the propertyPathList we add the current path else we give a debug log.
       if (propertyPathList != null) {
@@ -843,9 +843,9 @@ public class Navigation {
       }
     }
     Map<String, ResolvedValue> result = new HashMap<>();
-    for (Entry<NavigationNode, List<ResolvedPropertyEntry>> entry : propertiesToResolveByNode
+    for (Entry<String, List<ResolvedPropertyEntry>> entry : propertiesToResolveByNode
         .entrySet()) {
-      NavigationNode node = entry.getKey();
+      NavigationNode node = getNode(entry.getKey());
       List<ResolvedPropertyEntry> properties = entry.getValue();
       ApiObjectRef objectRef =
           api.loadObject(node.getEntry().getMetaUri(), node.getEntry().getObjectUri())

@@ -22,7 +22,7 @@ public class DocumentViewTextUI extends FlexLayout {
     this.processEditing = processEditing;
     textPanel = createTextPanel();
     add(textPanel);
-    VaadinBinders.bind(textArea, processEditing.process(), "text");
+    VaadinBinders.bindValue(textArea, processEditing.process(), "text");
   }
 
   public void onTextChanged(PropertyChange propertyChange) {

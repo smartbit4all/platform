@@ -109,6 +109,13 @@ public final class ObjectDefinition<T> {
     }
   }
 
+  @SuppressWarnings("unchecked")
+  public void setUriToObj(Object obj, URI uri) {
+    if (obj != null) {
+      uriSetter.accept((T) obj, uri);
+    }
+  }
+
   public String getId(T obj) {
     return obj != null && idGetter != null ? idGetter.apply(obj) : null;
   }

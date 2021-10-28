@@ -23,9 +23,9 @@ public class VaadinHasItemsBinder<T> extends VaadinCollectionBinder<T> {
 
   private HasItems<T> list;
 
-  public VaadinHasItemsBinder(HasItems<T> list, ObservableObject observableObject, String path,
-      String collectionName, ValueProvider<T, Object> idGetter) {
-    super(observableObject, path, collectionName);
+  public VaadinHasItemsBinder(HasItems<T> list, ObservableObject observableObject,
+      ValueProvider<T, Object> idGetter, String... collectionPath) {
+    super(observableObject, collectionPath);
     registerModelObserver();
     this.list = Objects.requireNonNull(list);
     if (list instanceof HasDataProvider) {

@@ -10,7 +10,6 @@ import org.smartbit4all.core.object.ObjectEditing;
 import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.core.object.PropertyChange;
 import org.smartbit4all.core.object.ReferencedObjectChange;
-import org.smartbit4all.core.utility.PathUtility;
 import org.smartbit4all.ui.api.filter.model.FilterFieldLabel;
 import org.smartbit4all.ui.api.filter.model.FilterLabelPosition;
 import org.smartbit4all.ui.vaadin.components.binder.VaadinBinders;
@@ -89,16 +88,16 @@ public class FilterFieldView extends FlexLayout implements DragSource<FilterFiel
     add(filterLayout);
 
 
-    filterField.onPropertyChange(path, "draggable", this::draggableChange);
-    filterField.onPropertyChange(path, "closeable", this::closeableChange);
-    filterField.onPropertyChange(path, "enabled", this::enabledChange);
-    filterField.onCollectionObjectChange(path, "operations", this::onOperationsChange);
-    filterField.onPropertyChange(PathUtility.concatPath(path, "selectedOperation"), "filterView",
-        this::operationViewChange);
-    filterField.onReferencedObjectChange(path, "label", this::labelChange);
-    VaadinBinders.bind(lblOperation, filterField,
-        PathUtility.concatPath(path, "selectedOperation/labelCode"),
-        s -> getTranslation((String) s));
+    filterField.onPropertyChange(this::draggableChange, path, "draggable");
+    filterField.onPropertyChange(this::closeableChange, path, "closeable");
+    filterField.onPropertyChange(this::enabledChange, path, "enabled");
+    filterField.onCollectionObjectChange(this::onOperationsChange, path, "operations");
+    filterField.onPropertyChange(this::operationViewChange,
+        path, "selectedOperation", "filterView");
+    filterField.onReferencedObjectChange(this::labelChange, path, "label");
+    VaadinBinders.bindLabel(lblOperation, filterField,
+        s -> getTranslation((String) s),
+        path, "selectedOperation/labelCode");
   }
 
   private void openOperationSelector(ClickEvent<FlexLayout> e) {
@@ -192,7 +191,7 @@ public class FilterFieldView extends FlexLayout implements DragSource<FilterFiel
     String filterView = (String) change.getNewValue();
     if (!filterView.equals(currentFilterView)) {
       FilterOperationView prevOperationView = operationView;
-      
+
       operationView = FilterOperationFactory.create(filterView, filterField, path);
 
       if (prevOperationView != null) {

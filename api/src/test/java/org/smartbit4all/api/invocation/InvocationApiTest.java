@@ -1,7 +1,6 @@
 package org.smartbit4all.api.invocation;
 
 import java.net.URI;
-import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -82,15 +81,15 @@ class InvocationApiTest {
 
     URI tdb1Uri = storage.save(soTdb1);
 
-    Optional<StorageObject<TestDataBean>> optTdb1 =
+    StorageObject<TestDataBean> optTdb1 =
         storage.load(soTdb1.getUri(), TestDataBean.class);
 
-    URI refUri = optTdb1.get().getReference("myRef").getReferenceData().getUri();
+    URI refUri = optTdb1.getReference("myRef").getReferenceData().getUri();
 
     Assertions.assertEquals(callbackUri, refUri);
 
     InvocationRequestTemplate requestTemplate =
-        storage.read(refUri, InvocationRequestTemplate.class).get();
+        storage.read(refUri, InvocationRequestTemplate.class);
 
     Assertions.assertEquals(TestApi.echoMethodTemplate, requestTemplate);
   }

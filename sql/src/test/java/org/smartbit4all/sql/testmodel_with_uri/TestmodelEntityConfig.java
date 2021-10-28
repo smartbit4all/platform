@@ -1,6 +1,12 @@
 package org.smartbit4all.sql.testmodel_with_uri;
 
 import org.smartbit4all.domain.meta.EntityConfiguration;
+import org.smartbit4all.sql.testmodel_with_uri.refbeans.ADef;
+import org.smartbit4all.sql.testmodel_with_uri.refbeans.BDef;
+import org.smartbit4all.sql.testmodel_with_uri.refbeans.CDef;
+import org.smartbit4all.sql.testmodel_with_uri.refbeans.DDef;
+import org.smartbit4all.sql.testmodel_with_uri.refbeans.EDef;
+import org.smartbit4all.sql.testmodel_with_uri.refbeans.FDef;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -23,6 +29,42 @@ public class TestmodelEntityConfig extends EntityConfiguration {
   public PersonDef personDef() {
     PersonDef perosnDef = createEntityProxy(PersonDef.class);
     return perosnDef;
+  }
+
+  @Bean(ADef.ENTITY_NAME)
+  public ADef aDef() {
+    ADef perosnDef = createEntityProxy(ADef.class);
+    return perosnDef;
+  }
+
+  @Bean(BDef.ENTITY_NAME)
+  public BDef bDef() {
+    BDef bDef = createEntityProxy(BDef.class);
+    return bDef;
+  }
+
+  @Bean(CDef.ENTITY_NAME)
+  public CDef cDef() {
+    CDef cDef = createEntityProxy(CDef.class);
+    return cDef;
+  }
+
+  @Bean(DDef.ENTITY_NAME)
+  public DDef dDef() {
+    DDef dDef = createEntityProxy(DDef.class);
+    return dDef;
+  }
+
+  @Bean(EDef.ENTITY_NAME)
+  public EDef eDef() {
+    EDef eDef = createEntityProxy(EDef.class);
+    return eDef;
+  }
+
+  @Bean(FDef.ENTITY_NAME)
+  public FDef fDef() {
+    FDef fDef = createEntityProxy(FDef.class);
+    return fDef;
   }
 
 }
