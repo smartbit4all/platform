@@ -400,6 +400,39 @@ public class Storage {
   }
 
   /**
+   * Reads the valid objects from the attached map.
+   * 
+   * @param <T> The type of the objects in the map.
+   * @param objectUri The uri of the object the amp is attached to.
+   * @param mapName The name of the map.
+   * @return The list of ther valid objects referred by the map.
+   */
+  public <T> List<T> readAttachedMap(URI objectUri, String mapName, Class<T> clazz) {
+    ObjectMap attachedMap = getAttachedMap(objectUri, mapName);
+    Map<String, URI> toRemove = null;
+    List<T> result = null;
+    for (Entry<String, URI> entry : attachedMap.getUris().entrySet()) {
+      try {
+        T read = read(entry.getValue(), clazz);
+        if (result == null) {
+          result = new ArrayList<>();
+        }
+        result.add(read);
+      } catch (ObjectNotFoundException e) {
+        // If the object is not exists then remove it from the map.
+        if (toRemove == null) {
+          toRemove = new HashMap<>();
+        }
+        toRemove.put(entry.getKey(), entry.getValue());
+      }
+    }
+    if (toRemove != null) {
+      updateAttachedMap(objectUri, new ObjectMapRequest().urisToRemove(toRemove));
+    }
+    return result == null ? Collections.emptyList() : result;
+  }
+
+  /**
    * We can add and remove items to the named object map. If the map doesn't exist then it will
    * create it first.
    * 

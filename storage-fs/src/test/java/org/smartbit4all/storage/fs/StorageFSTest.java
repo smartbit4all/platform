@@ -484,9 +484,16 @@ class StorageFSTest {
 
     List<Object> collect = attachAndLoadMap(storage, uri);
 
+    // Read the list directly
+    List<FSTestBean> readAttachedMap = storage.readAttachedMap(uri, MY_MAP, FSTestBean.class);
+
     assertEquals(1, collect.size());
 
+    assertEquals(1, readAttachedMap.size());
+
     assertEquals(uri, ((FSTestBean) collect.get(0)).getUri());
+
+    assertEquals(uri, readAttachedMap.get(0).getUri());
 
     StorageObject<StorageSettings> settings = storage.settings();
 
@@ -509,6 +516,7 @@ class StorageFSTest {
 
     List<Object> collect = attachedMap.getUris().values().stream().map(u -> storage.read(u))
         .collect(Collectors.toList());
+
     return collect;
   }
 
