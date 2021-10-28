@@ -1,7 +1,9 @@
 package org.smartbit4all.sql.applychange;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.sql.DataSource;
 import org.smartbit4all.core.object.ObjectDefinition;
@@ -108,6 +110,7 @@ public class ApplyChangeTestConfig {
             .addPropertyMapping("af2", aDef.af2())
             .addPropertyMapping("cf2", aDef.bDef().cDef().cf2())
             .addPropertyMapping("bf2", aDef.bDef().bf2())
+            .addPropertyProcessor("bf2", bf2PropertyProcessor(aDef))
             .end()
           .addReferenceMapping("actC")
             .addPropertyMapping("cf3", aDef.bDef().cDef().cf3())
@@ -163,6 +166,14 @@ public class ApplyChangeTestConfig {
           .build();
     };
  // @formatter:on
+  }
+
+  private Function<Object, Map<Property<?>, Object>> bf2PropertyProcessor(ADef aDef) {
+    return (beanPropValue) -> {
+      Map<Property<?>, Object> ret = new HashMap<>();
+      ret.put(aDef.bDef().cDef().fDef().ff2(), beanPropValue.toString() + "_CALCULATED");
+      return ret;
+    };
   }
 
   private Map<Property<?>, Object> createPrimarayKeyIdProvider(String uid, Property<Long> idProp,

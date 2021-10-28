@@ -31,6 +31,7 @@ import org.smartbit4all.domain.meta.Reference;
 import org.smartbit4all.domain.meta.Reference.Join;
 import org.smartbit4all.domain.service.modify.ApplyChangeObjectConfig.CollectionMappingItem;
 import org.smartbit4all.domain.service.modify.ApplyChangeObjectConfig.PropertyMappingItem;
+import org.smartbit4all.domain.service.modify.ApplyChangeObjectConfig.PropertyProcessorMappingItem;
 import org.smartbit4all.domain.service.modify.ApplyChangeObjectConfig.ReferenceDescriptor;
 import org.smartbit4all.domain.service.modify.ApplyChangeObjectConfig.ReferenceMappingItem;
 import org.smartbit4all.domain.service.modify.ApplyChangeOperation.ChangeOperation;
@@ -144,33 +145,12 @@ public class ApplyChangeServiceImpl implements ApplyChangeService {
       Object newValue = pChange.getNewValue();
       String propertyName = getPropertyNameFromChange(parentName, pChange);
 
-      List<PropertyMappingItem> propertyMappingItems =
-          config.getPropertyMappings().get(propertyName);
-      if (propertyMappingItems == null) {
-        // there is no configuration for this bean field -> skip
-        continue;
-      }
+      handlePropertyMappings(config, referredEntityAcosByName, changeOperation, rootAco, newValue,
+          propertyName);
 
-      for (PropertyMappingItem propertyMappingItem : propertyMappingItems) {
-        // convert if needed
-        Property<?> property = propertyMappingItem.getProperty();
-        if (!property.type().isAssignableFrom(newValue.getClass())) {
-          newValue = transferService.convert(newValue, property.type());
-        }
+      handlePropertyProcessors(config, referredEntityAcosByName, changeOperation, rootAco, newValue,
+          propertyName);
 
-        if (property instanceof PropertyOwned) {
-          setProperty(rootAco, property, newValue);
-        } else if (property instanceof PropertyRef) {
-
-          PropertyRef<?> propertyRef = (PropertyRef<?>) property;
-          ApplyChangeOperation referredAco =
-              getReferredAco(propertyRef, referredEntityAcosByName, changeOperation, config);
-          PropertyOwned<?> targetOwnedProperty = propertyRef.getReferredOwnedProperty();
-          setProperty(referredAco, targetOwnedProperty, newValue);
-        } else {
-          throw new RuntimeException("Unhandled property subtype");
-        }
-      }
     }
 
 
@@ -242,6 +222,62 @@ public class ApplyChangeServiceImpl implements ApplyChangeService {
         }
       }
 
+    }
+  }
+
+  private void handlePropertyMappings(ApplyChangeObjectConfig config,
+      Map<String, ApplyChangeOperation> referredEntityAcosByName, ChangeOperation changeOperation,
+      ApplyChangeOperation rootAco, Object newValue, String propertyName) {
+
+    List<PropertyMappingItem> propertyMappingItems =
+        config.getPropertyMappings().get(propertyName);
+    if (propertyMappingItems != null) {
+      for (PropertyMappingItem propertyMappingItem : propertyMappingItems) {
+        // convert if needed
+        Property<?> property = propertyMappingItem.getProperty();
+        setValueForEntityProperty(newValue, property, config, referredEntityAcosByName,
+            changeOperation, rootAco);
+      }
+    }
+  }
+
+  private void handlePropertyProcessors(ApplyChangeObjectConfig config,
+      Map<String, ApplyChangeOperation> referredEntityAcosByName, ChangeOperation changeOperation,
+      ApplyChangeOperation rootAco, Object newValue, String propertyName) {
+
+    PropertyProcessorMappingItem propertyProcessorMappingItem =
+        config.getPropertyProcessorMappings().get(propertyName);
+
+    if (propertyProcessorMappingItem != null) {
+      Map<Property<?>, Object> processedValuesForProperties =
+          propertyProcessorMappingItem.getPropertyProcessor().apply(newValue);
+      processedValuesForProperties.forEach((property, value) -> {
+        setValueForEntityProperty(value, property, config, referredEntityAcosByName,
+            changeOperation, rootAco);
+      });
+    }
+  }
+
+  private void setValueForEntityProperty(final Object newValue, Property<?> property,
+      ApplyChangeObjectConfig config,
+      Map<String, ApplyChangeOperation> referredEntityAcosByName, ChangeOperation changeOperation,
+      ApplyChangeOperation rootAco) {
+    Object valueToSet = newValue;
+    if (!property.type().isAssignableFrom(valueToSet.getClass())) {
+      valueToSet = transferService.convert(valueToSet, property.type());
+    }
+
+    if (property instanceof PropertyOwned) {
+      setProperty(rootAco, property, valueToSet);
+    } else if (property instanceof PropertyRef) {
+
+      PropertyRef<?> propertyRef = (PropertyRef<?>) property;
+      ApplyChangeOperation referredAco =
+          getReferredAco(propertyRef, referredEntityAcosByName, changeOperation, config);
+      PropertyOwned<?> targetOwnedProperty = propertyRef.getReferredOwnedProperty();
+      setProperty(referredAco, targetOwnedProperty, valueToSet);
+    } else {
+      throw new RuntimeException("Unhandled property subtype");
     }
   }
 

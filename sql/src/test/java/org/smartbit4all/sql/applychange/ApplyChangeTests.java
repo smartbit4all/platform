@@ -17,6 +17,7 @@ import org.smartbit4all.core.object.ApiObjectRef;
 import org.smartbit4all.core.object.ObjectChange;
 import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.data.TableData;
+import org.smartbit4all.domain.data.TableDatas;
 import org.smartbit4all.domain.meta.PropertySet;
 import org.smartbit4all.domain.service.modify.ApplyChangeService;
 import org.smartbit4all.domain.utility.crud.Crud;
@@ -128,7 +129,7 @@ public class ApplyChangeTests {
         .select(dSelect)
         .order(dDef.uid())
         .listData();
-    System.out.println("----\nQueried D def result:\n" + dDefTd);
+    System.out.println("----\nQueried D def result:\n" + TableDatas.toStringAdv(dDefTd));
     assertFalse(dDefTd.isEmpty());
     assertTrue(dDefTd.size() == 2);
     DataRow dRow = dDefTd.rows().get(0);
@@ -147,7 +148,7 @@ public class ApplyChangeTests {
     TableData<ADef> aDefTd = Crud.read(aDef)
         .select(aSelect)
         .listData();
-    System.out.println("----\nQueried FFC result:\n" + aDefTd);
+    System.out.println("----\nQueried FFC result:\n" + TableDatas.toStringAdv(aDefTd));
     assertFalse(aDefTd.isEmpty());
     DataRow aRow = aDefTd.rows().get(0);
     assertEquals(actA.getUid(), aRow.get(aDef.uid()));
@@ -158,6 +159,8 @@ public class ApplyChangeTests {
     assertEquals(actA.getActB().getCf2(), aRow.get(aDef.bDef().cDef().cf2()));
     assertEquals(actA.getActC().getCf3(), aRow.get(aDef.bDef().cDef().cf3()));
     assertEquals(actA.getActC().getFf1(), aRow.get(aDef.bDef().cDef().fDef().ff1()));
+    assertEquals(actA.getActB().getBf2() + "_CALCULATED",
+        aRow.get(aDef.bDef().cDef().fDef().ff2()));
   }
 
   private void assertD(DataRow dRow, ACT_D actD) {
@@ -215,7 +218,7 @@ public class ApplyChangeTests {
         .select(select)
         .where(ticketDef.idString().eq(ticket.getCustomNamedId()))
         .listData();
-    System.out.println("----\nQueried result:\n" + ticketTd);
+    System.out.println("----\nQueried result:\n" + TableDatas.toStringAdv(ticketTd));
 
     assertTrue(!ticketTd.isEmpty());
     DataRow row = ticketTd.rows().get(0);
@@ -229,7 +232,7 @@ public class ApplyChangeTests {
         .selectAllProperties()
         .where(addressDef.id().like("UUID%"))
         .listData();
-    System.out.println("----\nQueried address result:\n" + addressTd);
+    System.out.println("----\nQueried address result:\n" + TableDatas.toStringAdv(addressTd));
     assertTrue(addressTd.size() >= 3);
 
     System.out.println("\n========== CREATION SUCCESSFUL ===============\n");
@@ -255,7 +258,7 @@ public class ApplyChangeTests {
         .where(ticketDef.idString().eq(ticket.getCustomNamedId()))
         .listData();
     row = ticketTd.rows().get(0);
-    System.out.println("----\nQueried result:\n" + ticketTd);
+    System.out.println("----\nQueried result:\n" + TableDatas.toStringAdv(ticketTd));
     assertEquals(ticketV2.getTitle(), row.get(ticketDef.title()));
     assertEquals(ticketV2.getPrimaryPerson().getName(), row.get(ticketDef.primaryPerson().name()));
 
@@ -263,7 +266,7 @@ public class ApplyChangeTests {
         .selectAllProperties()
         .where(addressDef.city().eq("Address3"))
         .listData();
-    System.out.println("----\nQueried address result:\n" + addressTd);
+    System.out.println("----\nQueried address result:\n" + TableDatas.toStringAdv(addressTd));
     DataRow addressRow = addressTd.rows().get(0);
     assertEquals(ticketV2.getSecondaryPerson().getAddresses().get(1).getZip(),
         addressRow.get(addressDef.zip()));
