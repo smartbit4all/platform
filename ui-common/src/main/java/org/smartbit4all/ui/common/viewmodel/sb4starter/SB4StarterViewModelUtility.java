@@ -1,4 +1,4 @@
-package org.smartbit4all.ui.common.sb4starter;
+package org.smartbit4all.ui.common.viewmodel.sb4starter;
 
 import java.util.HashSet;
 import java.util.Map;

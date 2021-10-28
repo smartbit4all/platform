@@ -33,7 +33,8 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   SB4StarterWordFormModel.STATE,
   SB4StarterWordFormModel.START_CONTENT,
-  SB4StarterWordFormModel.RESULT_CONTENT
+  SB4StarterWordFormModel.RESULT_CONTENT,
+  SB4StarterWordFormModel.SB4_STARTER_URL
 })
 @JsonTypeName("SB4StarterWordFormModel")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -46,6 +47,9 @@ public class SB4StarterWordFormModel {
 
   public static final String RESULT_CONTENT = "resultContent";
   private org.smartbit4all.api.binarydata.BinaryContent resultContent = null;
+
+  public static final String SB4_STARTER_URL = "SB4StarterUrl";
+  private String sb4StarterUrl;
 
 
   public SB4StarterWordFormModel state(SB4StarterWordState state) {
@@ -132,6 +136,33 @@ public class SB4StarterWordFormModel {
   }
 
 
+  public SB4StarterWordFormModel sb4StarterUrl(String sb4StarterUrl) {
+    
+    this.sb4StarterUrl = sb4StarterUrl;
+    return this;
+  }
+
+   /**
+   * Get sb4StarterUrl
+   * @return sb4StarterUrl
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(SB4_STARTER_URL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getSb4StarterUrl() {
+    return sb4StarterUrl;
+  }
+
+
+  @JsonProperty(SB4_STARTER_URL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSb4StarterUrl(String sb4StarterUrl) {
+    this.sb4StarterUrl = sb4StarterUrl;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -143,12 +174,13 @@ public class SB4StarterWordFormModel {
     SB4StarterWordFormModel sb4StarterWordFormModel = (SB4StarterWordFormModel) o;
     return Objects.equals(this.state, sb4StarterWordFormModel.state) &&
         Objects.equals(this.startContent, sb4StarterWordFormModel.startContent) &&
-        Objects.equals(this.resultContent, sb4StarterWordFormModel.resultContent);
+        Objects.equals(this.resultContent, sb4StarterWordFormModel.resultContent) &&
+        Objects.equals(this.sb4StarterUrl, sb4StarterWordFormModel.sb4StarterUrl);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(state, startContent, resultContent);
+    return Objects.hash(state, startContent, resultContent, sb4StarterUrl);
   }
 
   @Override
@@ -158,6 +190,7 @@ public class SB4StarterWordFormModel {
     sb.append("    state: ").append(toIndentedString(state)).append("\n");
     sb.append("    startContent: ").append(toIndentedString(startContent)).append("\n");
     sb.append("    resultContent: ").append(toIndentedString(resultContent)).append("\n");
+    sb.append("    sb4StarterUrl: ").append(toIndentedString(sb4StarterUrl)).append("\n");
     sb.append("}");
     return sb.toString();
   }

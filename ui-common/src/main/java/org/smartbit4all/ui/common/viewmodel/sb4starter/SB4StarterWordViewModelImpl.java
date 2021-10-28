@@ -1,4 +1,4 @@
-package org.smartbit4all.ui.common.sb4starter;
+package org.smartbit4all.ui.common.viewmodel.sb4starter;
 
 import java.io.IOException;
 import java.net.URI;
@@ -9,27 +9,53 @@ import java.util.UUID;
 import java.util.function.BiConsumer;
 import org.smartbit4all.api.binarydata.BinaryContent;
 import org.smartbit4all.api.binarydata.BinaryData;
-import org.smartbit4all.api.binarydata.BinaryDataObjectSerializer;
+import org.smartbit4all.api.binarydata.BinaryDataObject;
 import org.smartbit4all.api.contentaccess.ContentAccessApi;
 import org.smartbit4all.api.sb4starter.bean.CommandKind;
 import org.smartbit4all.api.sb4starter.bean.SB4Command;
 import org.smartbit4all.api.sb4starter.bean.SB4File;
 import org.smartbit4all.api.sb4starter.bean.SB4Starter;
 import org.smartbit4all.core.object.ApiObjectRef;
+import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectEditingImpl;
 import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.core.object.ObservableObjectImpl;
+import org.smartbit4all.domain.data.storage.Storage;
+import org.smartbit4all.domain.data.storage.StorageApi;
+import org.smartbit4all.domain.data.storage.StorageObject;
+import org.smartbit4all.ui.api.navigation.UINavigationApi;
 import org.smartbit4all.ui.api.sb4starter.SB4StarterWordViewModel;
 import org.smartbit4all.ui.api.sb4starterui.model.SB4StarterWordFormModel;
 import org.smartbit4all.ui.api.sb4starterui.model.SB4StarterWordState;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import io.reactivex.rxjava3.disposables.Disposable;
 
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class SB4StarterWordViewModelImpl extends ObjectEditingImpl
     implements SB4StarterWordViewModel {
 
   protected ObservableObjectImpl sb4Starter = new ObservableObjectImpl();
 
-  private String contentAccessApiBaseUrl;
+  @Value("${contentaccess.client.base-uri}")
+  private String contentAccessBaseUri;
+
+  @Autowired
+  private ContentAccessApi contentAccessApi;
+
+  @Autowired
+  private UINavigationApi uiNavigationApi;
+
+  @Autowired
+  private ObjectApi objectApi;
+
+  @Autowired
+  private StorageApi storageApi;
 
   private BiConsumer<BinaryContent, BinaryContent> acceptHandler;
 
@@ -37,26 +63,19 @@ public class SB4StarterWordViewModelImpl extends ObjectEditingImpl
 
   private List<Disposable> eventListeners = new ArrayList<>();
 
-  private ContentAccessApi contentAccessApi;
-
-  private BinaryDataObjectSerializer serializer;
-
-  public SB4StarterWordViewModelImpl(String contentAccessApiBaseUrl,
-      BinaryDataObjectSerializer serializer,
-      ContentAccessApi contentAccessApi) {
-    this.contentAccessApiBaseUrl = contentAccessApiBaseUrl;
-    this.serializer = serializer;
-    this.contentAccessApi = contentAccessApi;
-  }
+  private Storage storage;
 
   @Override
   public void initSb4StarterFormModel(SB4StarterWordFormModel sb4StarterWordFormModel,
-      BiConsumer<BinaryContent, BinaryContent> acceptHandler) {
+      BiConsumer<BinaryContent, BinaryContent> acceptHandler) throws Exception {
     ref = new ApiObjectRef(null, sb4StarterWordFormModel,
         SB4StarterViewModelUtility.WORD_FORM_DESCRIPTOR);
     sb4Starter.setRef(ref);
     this.sb4StarterWordFormModel = ref.getWrapper(SB4StarterWordFormModel.class);
     this.acceptHandler = acceptHandler;
+
+    createSB4Starter();
+    sb4Starter.notifyListeners();
   }
 
   @Override
@@ -65,7 +84,25 @@ public class SB4StarterWordViewModelImpl extends ObjectEditingImpl
   }
 
   @Override
-  public BinaryData createSB4Starter() throws Exception {
+  public void executeCommand(String commandPath, String command, Object... params) {
+    switch (command) {
+      case ACCEPT:
+        accept();
+        break;
+      case DECLINE:
+        close();
+        break;
+      case DOWNLOAD:
+        break;
+      default:
+        super.executeCommand(commandPath, command, params);
+        break;
+    }
+  }
+
+  @Override
+  public void createSB4Starter() throws Exception {
+
     UUID startWordId = contentAccessApi.share(sb4StarterWordFormModel.getStartContent());
     subscribeToDownloadContent(startWordId);
 
@@ -75,7 +112,22 @@ public class SB4StarterWordViewModelImpl extends ObjectEditingImpl
     String wordFileName = sb4StarterWordFormModel.getStartContent().getFileName();
     BinaryData sb4Starter = createSB4Starter(startWordId, wordFileName, resultWordId);
 
-    return sb4Starter;
+    StorageObject<BinaryDataObject> sb4StarterObjectSo =
+        getStorage().instanceOf(BinaryDataObject.class);
+
+    sb4StarterObjectSo.setObject(sb4Starter.asObject());
+
+    URI sb4Uri = getStorage().save(sb4StarterObjectSo);
+
+    BinaryContent sb4starterContent = new BinaryContent()
+        .fileName(UUID.randomUUID() + ".sb4starter")
+        .dataUri(sb4Uri);
+
+    UUID sb4StarterSharedUUID = contentAccessApi.share(sb4starterContent);
+
+    String url =
+        "sb4starter:?url=" + contentAccessBaseUri + "&uuid=" + sb4StarterSharedUUID.toString();
+    sb4StarterWordFormModel.setSb4StarterUrl(url);
   }
 
   protected void subscribeToUploadContent(UUID resultWordId) throws Exception {
@@ -102,7 +154,7 @@ public class SB4StarterWordViewModelImpl extends ObjectEditingImpl
     SB4File startFile = new SB4File().filename(wordFileName).id(startWordId);
     SB4File resultFile = new SB4File().filename(wordFileName).id(resultWordId);
 
-    URI uri = URI.create(contentAccessApiBaseUrl);
+    URI uri = URI.create(contentAccessBaseUri);
 
     SB4Command downloadCommand =
         createaDefaultSB4Command(CommandKind.CONTENTACCESSDOWNLOAD, uri, startFile);
@@ -117,7 +169,8 @@ public class SB4StarterWordViewModelImpl extends ObjectEditingImpl
         .id(UUID.randomUUID())
         .commands(Arrays.asList(downloadCommand, wordEditCommand, uploadCommand));
 
-    return serializer.toJsonBinaryData(starter, SB4Starter.class);
+    ObjectDefinition<SB4Starter> sb4StarterDefinition = objectApi.definition(SB4Starter.class);
+    return sb4StarterDefinition.serialize(starter);
   }
 
   protected SB4Command createaDefaultSB4Command(CommandKind commandKind, URI uri, SB4File file) {
@@ -140,6 +193,14 @@ public class SB4StarterWordViewModelImpl extends ObjectEditingImpl
   @Override
   public void close() {
     eventListeners.forEach(listener -> listener.dispose());
+    uiNavigationApi.close(navigationTargetUUID);
+  }
+
+  private Storage getStorage() {
+    if (storage == null) {
+      storage = storageApi.get(SCHEMA);
+    }
+    return storage;
   }
 
 }

@@ -20,6 +20,8 @@ components:
           type: BinaryContent
         resultContent:
           type: BinaryContent
+        SB4StarterUrl:
+          type: string
     
     SB4StarterWordState:
       type: string
