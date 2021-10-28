@@ -55,7 +55,7 @@ public class SB4Command {
   private URI restUrl;
 
   public static final String SB4_FILES = "sb4Files";
-  private List<SB4File> sb4Files = null;
+  private List<SB4File> sb4Files = new ArrayList<>();
 
   public static final String COMMAND = "command";
   private String command;
@@ -71,11 +71,11 @@ public class SB4Command {
    * Get id
    * @return id
   **/
-  @javax.annotation.Nullable
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(ID)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public UUID getId() {
     return id;
@@ -83,7 +83,7 @@ public class SB4Command {
 
 
   @JsonProperty(ID)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setId(UUID id) {
     this.id = id;
   }
@@ -128,10 +128,11 @@ public class SB4Command {
    * @return restUrl
   **/
   @javax.annotation.Nullable
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(REST_URL)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public URI getRestUrl() {
     return restUrl;
@@ -139,7 +140,7 @@ public class SB4Command {
 
 
   @JsonProperty(REST_URL)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setRestUrl(URI restUrl) {
     this.restUrl = restUrl;
   }
@@ -152,9 +153,6 @@ public class SB4Command {
   }
 
   public SB4Command addSb4FilesItem(SB4File sb4FilesItem) {
-    if (this.sb4Files == null) {
-      this.sb4Files = new ArrayList<>();
-    }
     this.sb4Files.add(sb4FilesItem);
     return this;
   }
@@ -164,10 +162,11 @@ public class SB4Command {
    * @return sb4Files
   **/
   @javax.annotation.Nullable
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(SB4_FILES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public List<SB4File> getSb4Files() {
     return sb4Files;
@@ -175,7 +174,7 @@ public class SB4Command {
 
 
   @JsonProperty(SB4_FILES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setSb4Files(List<SB4File> sb4Files) {
     this.sb4Files = sb4Files;
   }
@@ -192,9 +191,10 @@ public class SB4Command {
    * @return command
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+  @NotNull
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(COMMAND)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public String getCommand() {
     return command;
@@ -202,7 +202,7 @@ public class SB4Command {
 
 
   @JsonProperty(COMMAND)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setCommand(String command) {
     this.command = command;
   }

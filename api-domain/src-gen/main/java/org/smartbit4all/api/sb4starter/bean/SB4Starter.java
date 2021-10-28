@@ -44,7 +44,7 @@ public class SB4Starter {
   private UUID id;
 
   public static final String COMMANDS = "commands";
-  private List<SB4Command> commands = null;
+  private List<SB4Command> commands = new ArrayList<>();
 
 
   public SB4Starter id(UUID id) {
@@ -57,11 +57,11 @@ public class SB4Starter {
    * Get id
    * @return id
   **/
-  @javax.annotation.Nullable
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(ID)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public UUID getId() {
     return id;
@@ -69,7 +69,7 @@ public class SB4Starter {
 
 
   @JsonProperty(ID)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setId(UUID id) {
     this.id = id;
   }
@@ -82,9 +82,6 @@ public class SB4Starter {
   }
 
   public SB4Starter addCommandsItem(SB4Command commandsItem) {
-    if (this.commands == null) {
-      this.commands = new ArrayList<>();
-    }
     this.commands.add(commandsItem);
     return this;
   }
@@ -93,11 +90,11 @@ public class SB4Starter {
    * Get commands
    * @return commands
   **/
-  @javax.annotation.Nullable
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(COMMANDS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public List<SB4Command> getCommands() {
     return commands;
@@ -105,7 +102,7 @@ public class SB4Starter {
 
 
   @JsonProperty(COMMANDS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setCommands(List<SB4Command> commands) {
     this.commands = commands;
   }

@@ -54,11 +54,11 @@ public class SB4File {
    * Get id
    * @return id
   **/
-  @javax.annotation.Nullable
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(ID)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public UUID getId() {
     return id;
@@ -66,7 +66,7 @@ public class SB4File {
 
 
   @JsonProperty(ID)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setId(UUID id) {
     this.id = id;
   }
@@ -82,10 +82,10 @@ public class SB4File {
    * Get filename
    * @return filename
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+  @NotNull
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(FILENAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public String getFilename() {
     return filename;
@@ -93,7 +93,7 @@ public class SB4File {
 
 
   @JsonProperty(FILENAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setFilename(String filename) {
     this.filename = filename;
   }
