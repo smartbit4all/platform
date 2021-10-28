@@ -43,16 +43,28 @@ public class ObjectStorageInMemory extends ObjectStorageImpl {
     try {
       StorageObject<?> copy = storageObject.copy();
       copy.setObjectObj(ApiObjectRef.unwrapObject(copy.getObject()));
-      StorageObject<?> oldVersion = objectsByURI.get(copy.getUri());
-      objectsByURI.put(copy.getUri(), copy);
-      collectionsByURI.put(copy.getUri(), copy.getCollections());
-      referencesByURI.put(copy.getUri(), copy.getReferences());
-      invokeOnSucceedFunctions(storageObject, new StorageSaveEvent<>(
-          () -> oldVersion != null ? oldVersion.getObject() : null, copy.getObject()));
+      Object oldObj = getOldObj(objectsByURI.get(copy.getUri()));
+      URI uri = copy.getUri();
+      objectsByURI.put(uri, copy);
+      referencesByURI.put(uri, storageObject.getReferences());
+      collectionsByURI.put(uri, storageObject.getCollections());
+      invokeOnSucceedFunctions(storageObject,
+          new StorageSaveEvent<>(() -> oldObj, ApiObjectRef.unwrapObject(copy.getObject())));
       return copy.getUri();
     } finally {
       objectLock.leave();
     }
+  }
+
+  private Object getOldObj(StorageObject<?> oldObj) {
+    Object unwrappedOldObj = null;
+    if (oldObj != null) {
+      Object obj = oldObj.getObject();
+      if (obj != null) {
+        unwrappedOldObj = ApiObjectRef.unwrapObject(obj);
+      }
+    }
+    return unwrappedOldObj;
   }
 
   @SuppressWarnings("unchecked")
@@ -63,9 +75,11 @@ public class ObjectStorageInMemory extends ObjectStorageImpl {
     if (storageObject == null) {
       throw new ObjectNotFoundException(uri, clazz, null);
     }
-    storageObject.setReferences(referencesByURI.get(uri));
-    storageObject.setCollections(collectionsByURI.get(uri));
-    return storageObject;
+    StorageObject<?> copy = storageObject.copy();
+    copy.setObjectObj(ApiObjectRef.unwrapObject(copy.getObject()));
+    copy.setReferences(referencesByURI.get(uri)); // FIXME should copy these too?
+    copy.setCollections(collectionsByURI.get(uri));
+    return (StorageObject<T>) copy;
   }
 
   @Override
