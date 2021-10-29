@@ -22,6 +22,7 @@ public class ApplyChangeObjectConfig {
   private Map<String, List<PropertyMappingItem>> propertyMappings = new HashMap<>();
   private Map<String, ReferenceMappingItem> referenceMappings = new HashMap<>();
   private Map<String, CollectionMappingItem> collectionMappings = new HashMap<>();
+  private Map<String, PropertyProcessorMappingItem> propertyProcessorMappings = new HashMap<>();
 
   private ApplyChangeObjectConfig(Builder builder) {
     this.name = builder.name;
@@ -57,6 +58,9 @@ public class ApplyChangeObjectConfig {
     });
     builder.referenceDescriptors.forEach(rd -> {
       referenceDescriptorsByEntityName.put(rd.entityName, rd);
+    });
+    builder.propertyProcessorMappingBuilders.forEach(ppm -> {
+      getPropertyProcessorMappings().put(ppm.name, ppm);
     });
   }
 
@@ -98,6 +102,10 @@ public class ApplyChangeObjectConfig {
 
   public ReferenceDescriptor getReferenceDescriptor(String entityName) {
     return referenceDescriptorsByEntityName.get(entityName);
+  }
+
+  public Map<String, PropertyProcessorMappingItem> getPropertyProcessorMappings() {
+    return propertyProcessorMappings;
   }
 
   public static class ReferenceDescriptor {
@@ -162,6 +170,17 @@ public class ApplyChangeObjectConfig {
 
   }
 
+  public static final class PropertyProcessorMappingItem extends MappingItem {
+
+    Function<Object, Map<Property<?>, Object>> propertyProcessor;
+
+    public Function<Object, Map<Property<?>, Object>> getPropertyProcessor() {
+      return propertyProcessor;
+    }
+
+
+  }
+
   public static class Builder {
     String name;
     EntityDefinition entityDefinition;
@@ -171,6 +190,7 @@ public class ApplyChangeObjectConfig {
     List<PropertyMappingBuilder> propertyMappingBuilders = new ArrayList<>();
     List<ReferenceMappingBuilder> referenceMappingBuilders = new ArrayList<>();
     List<CollectionMappingBuilderBase<?, ?>> collectionMappingBuilders = new ArrayList<>();
+    List<PropertyProcessorMappingItem> propertyProcessorMappingBuilders = new ArrayList<>();
 
     protected Builder(String name, EntityDefinition entityDefinition) {
       Objects.requireNonNull(name, "Config name can not be null!");
@@ -194,6 +214,17 @@ public class ApplyChangeObjectConfig {
       // now the properyMappint is simple and contains only mandatory fields, thus we create an own
       // builder for extendibility!
       return new PropertyMappingBuilder(propertyName, property, this).and();
+    }
+
+    public Builder addPropertyProcessor(String propertyName,
+        Function<Object, Map<Property<?>, Object>> propertyProcessor) {
+      Objects.requireNonNull(propertyName, "propertyName can not be null!");
+      Objects.requireNonNull(propertyProcessor, "propertyProcessor can not be null!");
+      PropertyProcessorMappingItem ppmi = new PropertyProcessorMappingItem();
+      ppmi.name = propertyName;
+      ppmi.propertyProcessor = propertyProcessor;
+      propertyProcessorMappingBuilders.add(ppmi);
+      return this;
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -379,6 +410,12 @@ public class ApplyChangeObjectConfig {
               this, rootBuilder);
       rootBuilder.collectionMappingBuilders.add(collectionMappingBuilder);
       return collectionMappingBuilder;
+    }
+
+    public ReferenceMappingBuilder addPropertyProcessor(String propertyName,
+        Function<Object, Map<Property<?>, Object>> propertyProcessor) {
+      rootBuilder.addPropertyProcessor(createReferencePropName(propertyName), propertyProcessor);
+      return this;
     }
 
     private String createReferencePropName(String propertyName) {

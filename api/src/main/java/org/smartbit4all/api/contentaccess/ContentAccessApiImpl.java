@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.smartbit4all.api.binarydata.BinaryContent;
 import org.smartbit4all.api.binarydata.BinaryContentApi;
 import org.smartbit4all.api.binarydata.BinaryData;
+import org.smartbit4all.api.binarydata.BinaryDataObject;
 import org.smartbit4all.api.contentaccess.bean.ContentAccessEventData;
 import org.smartbit4all.api.contentaccess.bean.Direction;
 import org.smartbit4all.api.objectshare.ObjectShareApi;
@@ -88,11 +89,18 @@ public class ContentAccessApiImpl implements ContentAccessApi {
     URI contentUri = objectShareApi.resolveUUID(uuid);
 
     if (contentUri != null) {
-      BinaryContent content = getStorage().read(contentUri, BinaryContent.class);
-      binaryContentApi.uploadContent(content, binaryData, content.getDataUri());
+      StorageObject<BinaryContent> contentSO = getStorage().load(contentUri, BinaryContent.class);
+
+      StorageObject<BinaryDataObject> storageObj =
+          getStorage().instanceOf(BinaryDataObject.class);
+      storageObj.setObject(binaryData.asObject());
+      URI savedDataUri = getStorage().save(storageObj);
+
+      contentSO.getObject().dataUri(savedDataUri);
+      getStorage().save(contentSO);
 
       publisher.onNext(new ContentAccessEventData()
-          .binaryContent(content)
+          .binaryContent(contentSO.getObject())
           .direction(Direction.UPLOAD)
           .uuid(uuid));
 
