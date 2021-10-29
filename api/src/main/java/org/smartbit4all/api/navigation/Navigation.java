@@ -185,6 +185,8 @@ public class Navigation {
     return nodesByAssocs;
   }
 
+
+
   /**
    * Get the children of a node
    * 
@@ -727,8 +729,7 @@ public class Navigation {
         if (metaUriByAssocName == null) {
           track.append(node.getEntry().getMetaUri()).append(StringConstant.ARROW)
               .append(actualAssociation).append(StringConstant.EQUAL);
-          metaUriByAssocName =
-              config.findAssocMetaUriByAssocName(node.getEntry().getMetaUri(), actualAssociation);
+          metaUriByAssocName = findAssocMetaUri(node, actualAssociation);
           if (metaUriByAssocName == null) {
             track.append(StringConstant.QUESTIONMARK);
             throw new IllegalArgumentException(
@@ -765,6 +766,20 @@ public class Navigation {
       actualNodes = nextRoundNodes;
     }
     return actualNodes;
+  }
+
+  /**
+   * We can identify meta uri of the association by the association name and an actual node.
+   * 
+   * @param actualAssociation
+   * @param node
+   * @return
+   */
+  public URI findAssocMetaUri(NavigationNode node, String actualAssociation) {
+    URI metaUriByAssocName;
+    metaUriByAssocName =
+        config.findAssocMetaUriByAssocName(node.getEntry().getMetaUri(), actualAssociation);
+    return metaUriByAssocName;
   }
 
   private static class ResolvedPropertyEntry {
