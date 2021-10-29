@@ -104,7 +104,12 @@ public class UINavigationVaadinRouting extends UINavigationVaadinCommon {
 
   @Override
   public void close(UUID navigationTargetUuid) {
-    // TODO Auto-generated method stub
+    if (dialogsByUUID.containsKey(navigationTargetUuid)) {
+      closeDialog(navigationTargetUuid);
+    } else {
+      // TODO what does close mean in this case? navigate back?
+    }
+    super.close(navigationTargetUuid);
 
   }
 
