@@ -14,11 +14,13 @@
  ******************************************************************************/
 package org.smartbit4all.ui.vaadin.components.selector;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import org.smartbit4all.ui.vaadin.util.Buttons;
 import org.smartbit4all.ui.vaadin.util.Css;
@@ -87,6 +89,8 @@ public class MultiSelectPopUp<T> extends CustomField<Set<T>> implements HasDataP
   private boolean tooltipEnabled = true;
 
   private Set<T> selectedItems = Collections.emptySet();
+
+  private List<Consumer<Set<T>>> onSaveListeners = new ArrayList<>();
 
   public MultiSelectPopUp() {
     super(Collections.emptySet());
@@ -215,9 +219,9 @@ public class MultiSelectPopUp<T> extends CustomField<Set<T>> implements HasDataP
       }
     });
 
-
     btndDialogSave.addClickListener(e -> {
       updateSelection();
+      onSaveListeners.forEach(onSaveListener -> onSaveListener.accept(selectedItems));
       dialog.close();
     });
 
@@ -236,7 +240,7 @@ public class MultiSelectPopUp<T> extends CustomField<Set<T>> implements HasDataP
         if (!selectedItems.isEmpty()) {
           grid.asMultiSelect().select(selectedItems);
         }
-        if(filter != null) {
+        if (filter != null) {
           filterField.focus();
         }
       } else {
@@ -487,4 +491,13 @@ public class MultiSelectPopUp<T> extends CustomField<Set<T>> implements HasDataP
     displayField.setEnabled(enabled);
     btnClear.setEnabled(enabled);
   }
+
+  public Registration addOnSaveListener(Consumer<Set<T>> listener) {
+    return Registration.addAndRemove(onSaveListeners, listener);
+  }
+
+  public void openDialog() {
+    dialog.open();
+  }
+
 }
