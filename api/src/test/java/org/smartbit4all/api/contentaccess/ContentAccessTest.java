@@ -35,8 +35,10 @@ public class ContentAccessTest {
   @BeforeAll
   static void clearContentAccessRootFolder() {
     File root = new File(UPLOAD_FOLDER_PATH);
-    for (File innerFile : root.listFiles()) {
-      innerFile.delete();
+    if (root.exists()) {
+      for (File innerFile : root.listFiles()) {
+        innerFile.delete();
+      }
     }
   }
 
