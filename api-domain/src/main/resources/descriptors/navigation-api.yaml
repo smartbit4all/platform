@@ -264,3 +264,19 @@ components:
               value:
                 type: string
                 description: 'The value of the parameter'
+    NavigationPath:
+      type: object
+      description: |
+        This object can hold a navigation path in a navigation. The path must start with an entry object uri.
+        This uri must be available as root or child of another node. The next path segment is an association and
+        an entry uri again. This can be used for selection and using these path we can restore the state of a navigation.
+      required: [seqments]
+      properties:
+        uri:
+          type: string
+          format: uri
+          description: The navigation can be saved using this.
+        segments:
+          type: array
+          items:
+            type: string

@@ -6,12 +6,15 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.smartbit4all.api.navigation.Navigation;
 import org.smartbit4all.api.navigation.bean.NavigationAssociation;
 import org.smartbit4all.api.navigation.bean.NavigationEntry;
 import org.smartbit4all.api.navigation.bean.NavigationNode;
+import org.smartbit4all.api.navigation.bean.NavigationPath;
+import org.smartbit4all.api.navigation.bean.NavigationReference;
 import org.smartbit4all.api.navigation.bean.NavigationView;
 import org.smartbit4all.core.object.ApiObjectRef;
 import org.smartbit4all.core.object.ObjectEditingImpl;
@@ -93,6 +96,72 @@ public class NavigationViewModelImpl extends ObjectEditingImpl implements Naviga
       selectedNode = node;
       selectedNode.setSelected(true);
       node.setNavigationTarget(getViewCommand(selectedNode));
+    }
+  }
+
+  @Override
+  public void setSelectedNode(NavigationNode node) {
+    select(findTreeNodeById(node.getId()));
+    notifyAllListeners();
+  }
+
+  @Override
+  public void setSelectedNode(NavigationPath path) {
+    if (path == null || path.getSegments().isEmpty()) {
+      return;
+    }
+    ListIterator<String> iterSegment = path.getSegments().listIterator();
+    if (iterSegment.hasNext()) {
+      String firstSegment = iterSegment.next();
+      List<NavigationNode> matchingRootNodes = navigationState.getRootNodes().stream()
+          .filter(n -> URI.create(firstSegment).equals(n.getEntry().getObjectUri()))
+          .collect(Collectors.toList());
+      ListIterator<NavigationNode> iterRoots = matchingRootNodes.listIterator();
+      if (iterRoots.hasNext()) {
+        NavigationNode node = iterRoots.next();
+        TreeNode treeNodeById;
+        do {
+          treeNodeById = findTreeNodeById(node.getId());
+          if (treeNodeById == null) {
+            break;
+          }
+          expand(treeNodeById);
+          // Now find the association.
+          if (!iterSegment.hasNext()) {
+            break;
+          }
+          String assoc = iterSegment.next();
+          URI assocMetaUri = navigationState.findAssocMetaUri(node, assoc);
+
+          NavigationAssociation association =
+              node.getAssociations().stream().filter(a -> a.getMetaUri().equals(assocMetaUri))
+                  .findFirst().orElse(null);
+
+          if (association == null) {
+            break;
+          }
+
+          treeNodeById = findTreeNodeById(association.getId());
+          if (treeNodeById != null) {
+            expand(treeNodeById);
+          }
+
+          // Step forward to have the next path segment with the node uri.
+          if (iterSegment.hasNext()) {
+            URI nextObjectUri = URI.create(iterSegment.next());
+            NavigationReference nextRef = association.getReferences().stream()
+                .filter(r -> r.getEndNode().getEntry().getObjectUri().equals(nextObjectUri))
+                .findFirst().orElse(null);
+            if (nextRef != null) {
+              node = nextRef.getEndNode();
+            }
+          }
+        } while (iterSegment.hasNext());
+        if (treeNodeById != null) {
+          select(treeNodeById);
+        }
+      }
+      notifyAllListeners();
     }
   }
 
