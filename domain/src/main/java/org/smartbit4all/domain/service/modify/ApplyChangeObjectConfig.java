@@ -298,7 +298,7 @@ public class ApplyChangeObjectConfig {
 
     private void checkContent() {
       if (propertyMappingBuilders.isEmpty() && referenceMappingBuilders.isEmpty()
-          && collectionMappingBuilders.isEmpty()) {
+          && collectionMappingBuilders.isEmpty() && propertyProcessorMappingBuilders.isEmpty()) {
         throw new IllegalStateException(
             "Can not build ApplyChangeObjectConfig without declaring at least one inner property "
                 + "for a bean!");
