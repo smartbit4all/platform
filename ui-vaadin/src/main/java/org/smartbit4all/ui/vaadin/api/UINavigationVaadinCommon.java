@@ -180,7 +180,7 @@ public abstract class UINavigationVaadinCommon extends UINavigationApiCommon {
     }
     if (canceled != null) {
       dialog.setCancelable(true);
-      dialog.setCancelText(rejected.getLabel());
+      dialog.setCancelText(canceled.getLabel());
       if (messageListener != null) {
         dialog.addCancelListener(e -> messageListener.accept(canceled));
       }
