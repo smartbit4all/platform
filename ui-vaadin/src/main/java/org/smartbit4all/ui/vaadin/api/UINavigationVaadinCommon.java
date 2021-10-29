@@ -67,13 +67,23 @@ public abstract class UINavigationVaadinCommon extends UINavigationApiCommon {
     try {
       ObjectEditing.currentConstructionUUID.set(navigationTarget.getUuid());
       Component view = VaadinService.getCurrent().getInstantiator()
-          .createComponent(navigableViewClasses.get(navigationTarget.getViewName()));
+          .createComponent(getViewClassByName(navigationTarget));
       return view;
     } finally {
       ObjectEditing.currentConstructionUUID.set(null);
     }
   }
 
+  protected Class<? extends Component> getViewClassByName(NavigationTarget navigationTarget) {
+    return navigableViewClasses.get(navigationTarget.getViewName());
+  }
+
+  /**
+   * Shows navigationTarget in dialog. Doesn't call callHasUrlImplementation()!
+   * 
+   * @param navigationTarget
+   * @return
+   */
   protected Component navigateToDialog(NavigationTarget navigationTarget) {
     UUID dialogUUID = navigationTarget.getUuid();
     Dialog dialog = dialogsByUUID.get(dialogUUID);
