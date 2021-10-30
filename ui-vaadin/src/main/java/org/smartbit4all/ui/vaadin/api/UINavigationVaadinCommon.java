@@ -100,6 +100,9 @@ public abstract class UINavigationVaadinCommon extends UINavigationApiCommon {
     dialog.setModal(true);
     dialog.setCloseOnOutsideClick(false);
     dialog.setCloseOnEsc(false);
+    if (navigationTarget.getFullSize()) {
+      dialog.setSizeFull();
+    }
     dialog.open();
     return view;
   }

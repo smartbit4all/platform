@@ -223,14 +223,16 @@ public class UINavigationVaadinTabbed extends UINavigationVaadinCommon {
 
   @Override
   public void close(UUID navigationTargetUuid) {
-    if (dialogsByUUID.containsKey(navigationTargetUuid)) {
-      closeDialog(navigationTargetUuid);
-    } else {
-      NavigationTarget target = navigationTargetsByUUID.get(navigationTargetUuid);
-      Tab tab = tabsByViewObjectId.get(getViewObjectId(target));
-      closeTab(tab);
-    }
-    super.close(navigationTargetUuid);
+    ui.access(() -> {
+      if (dialogsByUUID.containsKey(navigationTargetUuid)) {
+        closeDialog(navigationTargetUuid);
+      } else {
+        NavigationTarget target = navigationTargetsByUUID.get(navigationTargetUuid);
+        Tab tab = tabsByViewObjectId.get(getViewObjectId(target));
+        closeTab(tab);
+      }
+      super.close(navigationTargetUuid);
+    });
   }
 
 }
