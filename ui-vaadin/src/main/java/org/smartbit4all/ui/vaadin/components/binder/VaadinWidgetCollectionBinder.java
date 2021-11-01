@@ -52,4 +52,8 @@ public class VaadinWidgetCollectionBinder<T, WIDGET extends Component>
     }
     return super.deleteItem(itemPath);
   }
+
+  public WIDGET getWidgetByPath(String path) {
+    return widgetsByPath.get(path);
+  }
 }
