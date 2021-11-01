@@ -74,23 +74,25 @@ public class UINavigationVaadinTabbed extends UINavigationVaadinCommon {
 
   @Override
   public void navigateTo(NavigationTarget navigationTarget) {
-    checkNavigationParameters(navigationTarget);
-    super.navigateTo(navigationTarget);
-    try (UIViewParameterVaadinTransition param =
-        new UIViewParameterVaadinTransition(navigationTarget.getParameters())) {
+    ui.access(() -> {
 
-      Component view;
-      if (navigationTarget.getType() == NavigationTargetType.DIALOG) {
-        view = navigateToDialog(navigationTarget);
-      } else {
-        view = navigateToTab(navigationTarget);
+      checkNavigationParameters(navigationTarget);
+      super.navigateTo(navigationTarget);
+      try (UIViewParameterVaadinTransition param =
+          new UIViewParameterVaadinTransition(navigationTarget.getParameters())) {
+
+        Component view;
+        if (navigationTarget.getType() == NavigationTargetType.DIALOG) {
+          view = navigateToDialog(navigationTarget);
+        } else {
+          view = navigateToTab(navigationTarget);
+        }
+
+        callHasUrlImplementation(navigationTarget.getViewName(), param, view);
+      } catch (Exception e) {
+        log.error("Unexpected error", e);
       }
-
-      callHasUrlImplementation(navigationTarget.getViewName(), param, view);
-    } catch (Exception e) {
-      log.error("Unexpected error", e);
-    }
-
+    });
   }
 
   private Component navigateToTab(NavigationTarget navigationTarget) {
