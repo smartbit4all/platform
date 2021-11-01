@@ -2,6 +2,8 @@ package org.smartbit4all.ui.vaadin.util;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
+import com.vaadin.flow.component.HasStyle;
+import com.vaadin.flow.component.HasValue;
 
 public class Layouts {
 
@@ -39,6 +41,20 @@ public class Layouts {
       }
     }
     return anyChange;
+  }
+
+  public static void setStyleForAllChildren(Component parent, String style) {
+    parent.getChildren().forEach(
+        c -> ((HasStyle) c).addClassName(style));
+  }
+
+  public static void setAllChildrenReadOnly(Component parent, boolean readOnly) {
+    parent.getChildren().forEach(
+        c -> {
+          if (c instanceof HasValue) {
+            ((HasValue<?, ?>) c).setReadOnly(readOnly);
+          }
+        });
   }
 
 }
