@@ -185,8 +185,6 @@ public class Navigation {
     return nodesByAssocs;
   }
 
-
-
   /**
    * Get the children of a node
    * 
@@ -320,6 +318,27 @@ public class Navigation {
   }
 
   /**
+   * This function expand all the nodes in a given navigation and returns all the children nodes.
+   * 
+   * @param node The starting node in the navigation.
+   * @return All the children nodes under the given node.
+   */
+  public List<NavigationNode> expandRecursiveAndRetrieve(NavigationNode node, int depth) {
+    if (node == null || depth == 0) {
+      return Collections.emptyList();
+    }
+    expandAll(node);
+    Map<String, List<NavigationNode>> childrenNodes = getChildrenNodes(node.getId(), false);
+    List<NavigationNode> allChildren =
+        childrenNodes.values().stream().flatMap(list -> list.stream()).collect(Collectors.toList());
+    List<NavigationNode> result = new ArrayList<>(allChildren);
+    for (NavigationNode childNode : allChildren) {
+      result.addAll(expandRecursiveAndRetrieve(childNode, depth - 1));
+    }
+    return result;
+  }
+
+  /**
    * The expand all navigate the associations that hasn't been navigated yet.
    * 
    * @param node The starting node.
@@ -417,28 +436,6 @@ public class Navigation {
   private final Collection<? extends ApiItemChangeEvent<NavigationReference>> merge(
       NavigationNode startNode,
       NavigationAssociation association, List<NavigationReferenceEntry> references) {
-    // TODO implement merge!
-    // Naive impl: By default we clear the current references.
-    // List<ApiItemChangeEvent<NavigationReference>> result = null;
-    // if (association.getReferences() != null && !association.getReferences().isEmpty()) {
-    // association.getReferences().forEach(r -> this.references.remove(r.getId()));
-    // result = association.getReferences().stream()
-    // .map(r -> new ApiItemChangeEvent<NavigationReference>(ApiItemOperation.DELETED, r))
-    // .collect(Collectors.toList());
-    // } else {
-    // result = new ArrayList<>();
-    // }
-    // // We add all the references as new.
-    // List<NavigationReference> newReferences =
-    // references.stream().map(r -> registerReferenceEntry(startNode, association, r))
-    // .collect(Collectors.toList());
-    // newReferences.stream().forEach(r -> this.references.put(r.getId(), r));
-    // result.addAll(newReferences.stream()
-    // .map(r -> new ApiItemChangeEvent<NavigationReference>(ApiItemOperation.NEW, r))
-    // .collect(Collectors.toList()));
-    // association.setReferences(newReferences);
-    // association.setLastNavigation(Integer.valueOf((int) System.currentTimeMillis()));
-    // return result;
 
     List<ApiItemChangeEvent<NavigationReference>> result = new ArrayList<>();
 
