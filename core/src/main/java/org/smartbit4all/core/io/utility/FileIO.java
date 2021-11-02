@@ -83,7 +83,6 @@ public class FileIO {
     try (InputStream in = ByteSource.concat(byteSources).openStream()) {
 
       newFile.getParentFile().mkdirs();
-      System.out.println(newFile);
       Files.copy(in, newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
     } catch (Exception e) {
