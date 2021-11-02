@@ -1,4 +1,4 @@
-package org.smartbit4all.ui.vaadin.components.binder;
+package org.smartbit4all.ui.binder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,7 +10,7 @@ import org.smartbit4all.core.object.CollectionObjectChange;
 import org.smartbit4all.core.object.ObjectChangeSimple;
 import org.smartbit4all.core.object.ObservableObject;
 
-public abstract class VaadinCollectionBinder<T> extends VaadinAbstractBinder {
+public abstract class CollectionBinder<T> extends AbstractBinder {
 
   protected final ObservableObject observableObject;
 
@@ -18,13 +18,19 @@ public abstract class VaadinCollectionBinder<T> extends VaadinAbstractBinder {
   protected final List<T> items;
   protected final Map<String, T> itemsByPath;
 
-  protected VaadinCollectionBinder(ObservableObject observableObject, String... collectionPath) {
+  protected CollectionBinder(ObservableObject observableObject, String... collectionPath) {
     this.observableObject = Objects.requireNonNull(observableObject);
     this.collectionPath = collectionPath;
     this.items = new ArrayList<>();
     this.itemsByPath = new HashMap<>();
   }
 
+  /**
+   * For any subclass to work properly, subclass constructors should call this method after all data
+   * structures are initialized. This method most likely will result with a call to
+   * {@link #onCollectionObjectChanged(CollectionObjectChange)}, if observable object's ref is
+   * already set.
+   */
   protected void registerModelObserver() {
     this.disposable = this.observableObject.onCollectionObjectChange(
         this::onCollectionObjectChanged, collectionPath);

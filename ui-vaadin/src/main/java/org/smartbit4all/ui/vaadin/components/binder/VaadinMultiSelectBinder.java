@@ -8,6 +8,7 @@ import java.util.Set;
 import org.smartbit4all.core.object.CollectionObjectChange;
 import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.core.utility.PathUtility;
+import org.smartbit4all.ui.binder.CollectionBinder;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasValidation;
 import com.vaadin.flow.component.UI;
@@ -16,7 +17,7 @@ import com.vaadin.flow.data.binder.Validator;
 import com.vaadin.flow.data.binder.ValueContext;
 import com.vaadin.flow.data.selection.MultiSelect;
 
-public class VaadinMultiSelectBinder<C extends Component, T> extends VaadinCollectionBinder<T> {
+public class VaadinMultiSelectBinder<C extends Component, T> extends CollectionBinder<T> {
 
   protected boolean propertyChangeProgress = false;
 

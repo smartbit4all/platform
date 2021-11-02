@@ -6,6 +6,7 @@ import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.core.object.PropertyChange;
 import org.smartbit4all.core.object.ReferencedObjectChange;
 import org.smartbit4all.core.utility.PathUtility;
+import org.smartbit4all.ui.binder.AbstractBinder;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasValidation;
 import com.vaadin.flow.component.HasValue;
@@ -16,7 +17,7 @@ import com.vaadin.flow.data.binder.Validator;
 import com.vaadin.flow.data.binder.ValueContext;
 import com.vaadin.flow.data.converter.Converter;
 
-public class VaadinHasValueBinder<WIDGET, DATA> extends VaadinAbstractBinder {
+public class VaadinHasValueBinder<WIDGET, DATA> extends AbstractBinder {
 
   protected ObservableObject observableObject;
 

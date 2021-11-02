@@ -3,9 +3,10 @@ package org.smartbit4all.ui.vaadin.components.binder;
 import java.util.function.Function;
 import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.core.object.PropertyChange;
+import org.smartbit4all.ui.binder.AbstractBinder;
 import com.vaadin.flow.component.HasText;
 
-public class VaadinHasTextBinder extends VaadinAbstractBinder {
+public class VaadinHasTextBinder extends AbstractBinder {
 
   protected HasText label;
 

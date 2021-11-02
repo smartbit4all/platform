@@ -4,6 +4,7 @@ import java.util.Objects;
 import java.util.Set;
 import org.smartbit4all.core.object.CollectionObjectChange;
 import org.smartbit4all.core.object.ObservableObject;
+import org.smartbit4all.ui.binder.CollectionBinder;
 import org.smartbit4all.ui.vaadin.components.selector.MultiSelectPopUp;
 import org.smartbit4all.ui.vaadin.components.selector.MultiSelectPopUpList;
 import com.vaadin.flow.component.checkbox.CheckboxGroup;
@@ -19,7 +20,7 @@ import com.vaadin.flow.data.binder.HasDataProvider;
 import com.vaadin.flow.data.binder.HasItems;
 import com.vaadin.flow.function.ValueProvider;
 
-public class VaadinHasItemsBinder<T> extends VaadinCollectionBinder<T> {
+public class VaadinHasItemsBinder<T> extends CollectionBinder<T> {
 
   private HasItems<T> list;
 
