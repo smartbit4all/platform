@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import org.smartbit4all.api.storage.bean.ObjectHistoryEntry;
@@ -33,44 +34,17 @@ import javax.validation.Valid;
  * ObjectHistory
  */
 @JsonPropertyOrder({
-  ObjectHistory.TITLE,
-  ObjectHistory.OBJECT_HISTORY_ENTRIES
+  ObjectHistory.OBJECT_HISTORY_ENTRIES,
+  ObjectHistory.SELECTED_VERSION_URI
 })
 @JsonTypeName("ObjectHistory")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class ObjectHistory {
-  public static final String TITLE = "title";
-  private String title;
-
   public static final String OBJECT_HISTORY_ENTRIES = "objectHistoryEntries";
   private List<ObjectHistoryEntry> objectHistoryEntries = null;
 
-
-  public ObjectHistory title(String title) {
-    
-    this.title = title;
-    return this;
-  }
-
-   /**
-   * Get title
-   * @return title
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
-  @JsonProperty(TITLE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public String getTitle() {
-    return title;
-  }
-
-
-  @JsonProperty(TITLE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setTitle(String title) {
-    this.title = title;
-  }
+  public static final String SELECTED_VERSION_URI = "selectedVersionUri";
+  private URI selectedVersionUri;
 
 
   public ObjectHistory objectHistoryEntries(List<ObjectHistoryEntry> objectHistoryEntries) {
@@ -109,6 +83,34 @@ public class ObjectHistory {
   }
 
 
+  public ObjectHistory selectedVersionUri(URI selectedVersionUri) {
+    
+    this.selectedVersionUri = selectedVersionUri;
+    return this;
+  }
+
+   /**
+   * Get selectedVersionUri
+   * @return selectedVersionUri
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(SELECTED_VERSION_URI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public URI getSelectedVersionUri() {
+    return selectedVersionUri;
+  }
+
+
+  @JsonProperty(SELECTED_VERSION_URI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSelectedVersionUri(URI selectedVersionUri) {
+    this.selectedVersionUri = selectedVersionUri;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -118,21 +120,21 @@ public class ObjectHistory {
       return false;
     }
     ObjectHistory objectHistory = (ObjectHistory) o;
-    return Objects.equals(this.title, objectHistory.title) &&
-        Objects.equals(this.objectHistoryEntries, objectHistory.objectHistoryEntries);
+    return Objects.equals(this.objectHistoryEntries, objectHistory.objectHistoryEntries) &&
+        Objects.equals(this.selectedVersionUri, objectHistory.selectedVersionUri);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(title, objectHistoryEntries);
+    return Objects.hash(objectHistoryEntries, selectedVersionUri);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class ObjectHistory {\n");
-    sb.append("    title: ").append(toIndentedString(title)).append("\n");
     sb.append("    objectHistoryEntries: ").append(toIndentedString(objectHistoryEntries)).append("\n");
+    sb.append("    selectedVersionUri: ").append(toIndentedString(selectedVersionUri)).append("\n");
     sb.append("}");
     return sb.toString();
   }

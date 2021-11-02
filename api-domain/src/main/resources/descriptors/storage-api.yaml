@@ -75,12 +75,13 @@ components:
     ObjectHistory:
       type: object
       properties:
-        title:
-          type: string
         objectHistoryEntries:
           type: array
           items:
             $ref: '#/components/schemas/ObjectHistoryEntry'
+        selectedVersionUri:
+          type: string
+          format: uri
     ObjectHistoryEntry:
       type: object
       description: |

@@ -10,11 +10,18 @@ import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.core.object.ObservableObjectImpl;
 import org.smartbit4all.domain.data.storage.history.ObjectHistoryApi;
 import org.smartbit4all.ui.api.data.storage.history.ObjectHistoryViewModel;
+import org.smartbit4all.ui.api.navigation.UINavigationApi;
+import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
+import org.smartbit4all.ui.api.navigation.model.NavigationTargetType;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class ObjectHistoryViewModelImpl extends ObjectEditingImpl
     implements ObjectHistoryViewModel {
 
   private ObjectHistoryApi historyApi;
+  
+  @Autowired
+  private UINavigationApi uiNavigationApi;
 
   private ObservableObjectImpl objectHistory;
   private ApiObjectRef objectHistoryRef;
@@ -27,21 +34,42 @@ public class ObjectHistoryViewModelImpl extends ObjectEditingImpl
 
     initObjectHistory();
   }
+  
+  @Override
+  public void executeCommand(String commandPath, String command, Object... params) {
+    switch (command) {
+      case SET_OBJECT:
+        setObjectHistoryRef((URI) params[0], (String) params[1]);
+        break;
+      case OPEN_VERSION:
+        openVersion((URI) params[0], (String) params[1]);
+        break;
+      default:
+        super.executeCommand(commandPath, command, params);
+        break;
+    }
+  }
 
   @Override
   public ObservableObject objectHistory() {
     return objectHistory;
   }
-
-  @Override
-  public void setObjectHistoryRef(URI objectUri, String scheme) {
-    ObjectHistory objectHistory = historyApi.getObjectHistory(objectUri, scheme);
-    objectHistoryRef.setObject(objectHistory);
-  }
-
+  
   private void initObjectHistory() {
     objectHistory = new ObservableObjectImpl();
     objectHistoryRef = new ApiObjectRef(null, new ObjectHistory(), objectHistoryDescriptor);
     objectHistory.setRef(objectHistoryRef);
+  }
+
+  private void setObjectHistoryRef(URI objectUri, String scheme) {
+    ObjectHistory objectHistory = historyApi.getObjectHistory(objectUri, scheme);
+    objectHistoryRef.setObject(objectHistory);
+  }
+  
+  private void openVersion(URI versionUri, String viewName) {
+    uiNavigationApi.navigateTo(new NavigationTarget()
+        .viewName(viewName)
+        .type(NavigationTargetType.DIALOG)
+        .putParametersItem("entry", versionUri));
   }
 }
