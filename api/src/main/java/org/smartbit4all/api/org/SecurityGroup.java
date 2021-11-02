@@ -1,5 +1,7 @@
 package org.smartbit4all.api.org;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.session.UserSessionApi;
@@ -33,11 +35,19 @@ public final class SecurityGroup {
 
   private OrgApi api;
 
+  /**
+   * The sub groups of the security group.
+   */
+  private List<SecurityGroup> subGroups = Collections.emptyList();
+
   public SecurityGroup(String description, UserSessionApi userSessionApi,
       SecurityGroup... subGroups) {
     super();
     this.description = description;
     this.userSessionApi = userSessionApi;
+    if (subGroups != null && subGroups.length > 0) {
+      this.subGroups = Arrays.asList(subGroups);
+    }
   }
 
   public final String getName() {
@@ -77,6 +87,10 @@ public final class SecurityGroup {
 
   final void setOrgApi(OrgApi api) {
     this.api = api;
+  }
+
+  public final List<SecurityGroup> getSubGroups() {
+    return subGroups;
   }
 
 }

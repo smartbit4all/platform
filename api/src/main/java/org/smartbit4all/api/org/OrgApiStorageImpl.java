@@ -5,9 +5,11 @@ import java.lang.reflect.Field;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -59,9 +61,10 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
    * 
    * @param clazz
    */
-  public void analyzeSecurityOptions(SecurityOption option) {
+  private final Map<SecurityGroup, Group> analyzeSecurityOptions(SecurityOption option) {
     // Let's check the static LocaleString
     Field[] fields = option.getClass().getFields();
+    Map<SecurityGroup, Group> result = new HashMap<>();
     for (int i = 0; i < fields.length; i++) {
       Field field = fields[i];
       if (field.getType().isAssignableFrom(SecurityGroup.class)) {
@@ -72,33 +75,49 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
             String key = ReflectionUtility.getQualifiedName(field);
             securityGroup.setName(key);
 
-            checkGroupExist(securityGroup);
+            Group newGroup = checkGroupExist(securityGroup);
+            if (newGroup != null) {
+              result.put(securityGroup, newGroup);
+            }
+
           }
         } catch (IllegalArgumentException | IllegalAccessException e) {
           log.debug("Unable to access the value of the " + field, e);
         }
       }
     }
+    return result;
   }
 
   /**
    * If there is no Group for the SecurtyGroup, then create one.
    * 
    */
-  private void checkGroupExist(SecurityGroup securityGroup) {
+  private Group checkGroupExist(SecurityGroup securityGroup) {
     Group groupByName = getGroupByName(securityGroup.getName());
     if (groupByName == null) {
       Group group =
           new Group().name(securityGroup.getName()).description(securityGroup.getDescription());
       saveGroup(group);
+      return group;
     }
+    return null;
   }
 
   @Override
   public void afterPropertiesSet() throws Exception {
     if (securityOptions != null) {
+      Map<SecurityGroup, Group> allNewGroups = new HashMap<>();
       for (SecurityOption securityOption : securityOptions) {
-        analyzeSecurityOptions(securityOption);
+        allNewGroups.putAll(analyzeSecurityOptions(securityOption));
+      }
+      for (Entry<SecurityGroup, Group> entry : allNewGroups.entrySet()) {
+        for (SecurityGroup subGroup : entry.getKey().getSubGroups()) {
+          Group subGroupByName = getGroupByName(subGroup.getName());
+          if (subGroupByName != null) {
+            addChildGroup(entry.getValue(), subGroupByName);
+          }
+        }
       }
     }
   }
