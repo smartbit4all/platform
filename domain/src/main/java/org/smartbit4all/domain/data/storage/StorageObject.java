@@ -348,7 +348,7 @@ public final class StorageObject<T> {
    */
   public final URI getVersionUri() {
     return version != null && uri.getFragment() == null
-        ? URI.create(uri.toString() + StringConstant.HASH + version.getSerialNo())
+        ? URI.create(uri.toString() + StringConstant.HASH + version.getSerialNoData())
         : uri;
   }
 

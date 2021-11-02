@@ -245,8 +245,15 @@ public class Storage {
     return objectStorage.read(this, uris, clazz);
   }
 
+  /**
+   * Loads the full history of the given object.
+   * 
+   * @param uri The uri of the object.
+   * @return
+   */
   public List<ObjectHistoryEntry> loadHistory(URI uri) {
-    return objectStorage.loadHistory(this, uri);
+    ObjectDefinition<?> definition = objectApi.definition(uri);
+    return objectStorage.loadHistory(this, uri, definition);
   }
 
 

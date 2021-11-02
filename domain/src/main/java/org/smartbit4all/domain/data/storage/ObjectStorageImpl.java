@@ -266,6 +266,9 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
 
   protected final <T> void loadStorageObjectReferences(StorageObject<T> storageObject,
       StorageObjectRelationData storageObjectRelationData) {
+    if (storageObjectRelationData == null) {
+      return;
+    }
     Map<String, ObjectReference> currentReferences = storageObjectRelationData.getReferences();
     if (currentReferences != null) {
       for (Entry<String, ObjectReference> entry : currentReferences.entrySet()) {
@@ -295,30 +298,24 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
 
   /**
    * Analyze the uri and the storageObj. If the uri refers to a given version then it returns the
-   * given version else the {@link StorageObjectData#getCurrentVersion()}.
+   * given version else the {@link StorageObjectData#getCurrentVersion()}. The version identifies
+   * the object version {@link ObjectVersion#getSerialNoData()}! It's not related with the versions
+   * of the relations!
    * 
    * @param uri The uri.
    * @param storageObjData The storageObject data bean.
    * @return The related {@link ObjectVersion} from the storage object.
    */
-  protected final ObjectVersion getVersionByUri(URI uri, StorageObjectData storageObjData) {
-    if (uri != null) {
-      String versionSerialNoString = uri.getFragment();
-      if (versionSerialNoString != null) {
-        try {
-          int versionSerialNoIndex = Integer.parseInt(versionSerialNoString) - 1;
-          List<ObjectVersion> versions = storageObjData.getVersions();
-          if (versions == null || versionSerialNoIndex < 0
-              || versionSerialNoIndex >= versions.size()) {
-            throw new IllegalArgumentException("Invalid version number in " + uri + " object uri.");
-          }
-          return versions.get(versionSerialNoIndex);
-        } catch (NumberFormatException e) {
-          throw new IllegalArgumentException("Bad version format in " + uri + " object uri.", e);
-        }
+  protected final Long getVersionByUri(URI uri, StorageObjectData storageObjData) {
+    String versionSerialNoString = uri.getFragment();
+    if (versionSerialNoString != null) {
+      try {
+        return Long.valueOf(versionSerialNoString);
+      } catch (NumberFormatException e) {
+        throw new IllegalArgumentException("Bad version format in " + uri + " object uri.", e);
       }
     }
-    return storageObjData.getCurrentVersion();
+    return storageObjData.getCurrentVersion().getSerialNoData();
   }
 
   protected void invokeOnSucceedFunctions(StorageObject<?> object,

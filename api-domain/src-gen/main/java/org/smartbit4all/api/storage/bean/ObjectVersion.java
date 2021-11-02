@@ -34,7 +34,6 @@ import javax.validation.Valid;
  */
 @ApiModel(description = "The reference for a given version of the storage object. It contains all the properties about the version like time, user uri,  api operation that created the version. ")
 @JsonPropertyOrder({
-  ObjectVersion.SERIAL_NO,
   ObjectVersion.SERIAL_NO_DATA,
   ObjectVersion.SERIAL_NO_RELATION,
   ObjectVersion.TRANSACTION_ID,
@@ -46,20 +45,17 @@ import javax.validation.Valid;
 @JsonTypeName("ObjectVersion")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class ObjectVersion {
-  public static final String SERIAL_NO = "serialNo";
-  private Integer serialNo = 0;
-
   public static final String SERIAL_NO_DATA = "serialNoData";
-  private Integer serialNoData;
+  private Long serialNoData;
 
   public static final String SERIAL_NO_RELATION = "serialNoRelation";
-  private Integer serialNoRelation;
+  private Long serialNoRelation;
 
   public static final String TRANSACTION_ID = "transactionId";
   private UUID transactionId;
 
   public static final String CREATED_AT = "createdAt";
-  private java.time.ZonedDateTime createdAt;
+  private OffsetDateTime createdAt;
 
   public static final String CREATED_BY_URI = "createdByUri";
   private URI createdByUri;
@@ -71,34 +67,7 @@ public class ObjectVersion {
   private String operation;
 
 
-  public ObjectVersion serialNo(Integer serialNo) {
-    
-    this.serialNo = serialNo;
-    return this;
-  }
-
-   /**
-   * The serial number of the version starting from 1. Increased by every successful save.
-   * @return serialNo
-  **/
-  @NotNull
-  @ApiModelProperty(required = true, value = "The serial number of the version starting from 1. Increased by every successful save.")
-  @JsonProperty(SERIAL_NO)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-
-  public Integer getSerialNo() {
-    return serialNo;
-  }
-
-
-  @JsonProperty(SERIAL_NO)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setSerialNo(Integer serialNo) {
-    this.serialNo = serialNo;
-  }
-
-
-  public ObjectVersion serialNoData(Integer serialNoData) {
+  public ObjectVersion serialNoData(Long serialNoData) {
     
     this.serialNoData = serialNoData;
     return this;
@@ -113,19 +82,19 @@ public class ObjectVersion {
   @JsonProperty(SERIAL_NO_DATA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public Integer getSerialNoData() {
+  public Long getSerialNoData() {
     return serialNoData;
   }
 
 
   @JsonProperty(SERIAL_NO_DATA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setSerialNoData(Integer serialNoData) {
+  public void setSerialNoData(Long serialNoData) {
     this.serialNoData = serialNoData;
   }
 
 
-  public ObjectVersion serialNoRelation(Integer serialNoRelation) {
+  public ObjectVersion serialNoRelation(Long serialNoRelation) {
     
     this.serialNoRelation = serialNoRelation;
     return this;
@@ -140,14 +109,14 @@ public class ObjectVersion {
   @JsonProperty(SERIAL_NO_RELATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public Integer getSerialNoRelation() {
+  public Long getSerialNoRelation() {
     return serialNoRelation;
   }
 
 
   @JsonProperty(SERIAL_NO_RELATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setSerialNoRelation(Integer serialNoRelation) {
+  public void setSerialNoRelation(Long serialNoRelation) {
     this.serialNoRelation = serialNoRelation;
   }
 
@@ -180,30 +149,30 @@ public class ObjectVersion {
   }
 
 
-  public ObjectVersion createdAt(java.time.ZonedDateTime createdAt) {
+  public ObjectVersion createdAt(OffsetDateTime createdAt) {
     
     this.createdAt = createdAt;
     return this;
   }
 
    /**
-   * The exact date time when the given sersion was created at.
+   * The exact date time when the given version was created at.
    * @return createdAt
   **/
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The exact date time when the given sersion was created at.")
+  @ApiModelProperty(required = true, value = "The exact date time when the given version was created at.")
   @JsonProperty(CREATED_AT)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public java.time.ZonedDateTime getCreatedAt() {
+  public OffsetDateTime getCreatedAt() {
     return createdAt;
   }
 
 
   @JsonProperty(CREATED_AT)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setCreatedAt(java.time.ZonedDateTime createdAt) {
+  public void setCreatedAt(OffsetDateTime createdAt) {
     this.createdAt = createdAt;
   }
 
@@ -299,8 +268,7 @@ public class ObjectVersion {
       return false;
     }
     ObjectVersion objectVersion = (ObjectVersion) o;
-    return Objects.equals(this.serialNo, objectVersion.serialNo) &&
-        Objects.equals(this.serialNoData, objectVersion.serialNoData) &&
+    return Objects.equals(this.serialNoData, objectVersion.serialNoData) &&
         Objects.equals(this.serialNoRelation, objectVersion.serialNoRelation) &&
         Objects.equals(this.transactionId, objectVersion.transactionId) &&
         Objects.equals(this.createdAt, objectVersion.createdAt) &&
@@ -311,14 +279,13 @@ public class ObjectVersion {
 
   @Override
   public int hashCode() {
-    return Objects.hash(serialNo, serialNoData, serialNoRelation, transactionId, createdAt, createdByUri, createdBy, operation);
+    return Objects.hash(serialNoData, serialNoRelation, transactionId, createdAt, createdByUri, createdBy, operation);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class ObjectVersion {\n");
-    sb.append("    serialNo: ").append(toIndentedString(serialNo)).append("\n");
     sb.append("    serialNoData: ").append(toIndentedString(serialNoData)).append("\n");
     sb.append("    serialNoRelation: ").append(toIndentedString(serialNoRelation)).append("\n");
     sb.append("    transactionId: ").append(toIndentedString(transactionId)).append("\n");

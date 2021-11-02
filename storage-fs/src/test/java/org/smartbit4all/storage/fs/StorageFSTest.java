@@ -166,7 +166,7 @@ class StorageFSTest {
       long startSave = System.currentTimeMillis();
       URI savedUri = storage.save(object);
       assertEquals(savedUri, object.getUri());
-      assertEquals(URI.create(savedUri + StringConstant.HASH + (i + 1)), object.getVersionUri());
+      assertEquals(URI.create(savedUri + StringConstant.HASH + i), object.getVersionUri());
       saveTimes += System.currentTimeMillis() - startSave;
     }
 
@@ -196,7 +196,7 @@ class StorageFSTest {
 
     for (int i = 0; i < versionCount; i++) {
 
-      URI versionUri = URI.create(uri.toString() + StringConstant.HASH + (i + 1));
+      URI versionUri = URI.create(uri.toString() + StringConstant.HASH + i);
       StorageObject<FSTestBean> object = storage
           .load(versionUri, FSTestBean.class);
       String title = object.getObject().getTitle();
@@ -289,8 +289,6 @@ class StorageFSTest {
     storageObject.setObject(new FSTestBean("referencesTest"));
 
     URI uri = storage.save(storageObject);
-
-    StorageObject<FSTestBean> optLoaded = storage.load(uri, FSTestBean.class);
 
     StorageObject<InvocationRequestTemplate> invocationReqObj =
         storage.instanceOf(InvocationRequestTemplate.class);

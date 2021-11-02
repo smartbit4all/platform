@@ -44,14 +44,22 @@ components:
             The uri of the object represented by the storage object.
         currentVersion:
           type: object
-          $ref: '#/components/schemas/ObjectVersion'
-        versions:
+          $ref: '#/components/shemas/ObjectVersion'
+        deleted:
+          type: boolean
+          default: false
+          description: |
+            The deleted flag is set when the given object is deleted. The deletion is always logical so we know that the object
+            exists but we also know that it is already inactivated.
+        pendingVersions:
           type: array
           description: |
-            The versions of the object in creation order. The version serial number is increased one by one because only the
-            successful save opartions will produce new version.
+            The versions of the object that are currently in transaction. These version can be seen only by the transaction itself
+            but all other can see only the current version. At the end of the successful transaction the pending versions are cleared
+            and current version is set to the last version. The storage is going to repair the objects left behind by the broken 
+            transaction.
           items:
-            $ref: '#/components/schemas/ObjectVersion'
+            $ref: '#/components/shemas/ObjectVersion'
     StorageObjectRelationData:
       type: object
       description: |
@@ -86,7 +94,8 @@ components:
       type: object
       description: |
         When analysing the history the StorageApi creates a list of history entries for every version of the objects participates
-        in the related history.
+        in the related history. It can contain the object data changes without relation versions. These are the significant versions
+        that mean adat modification.
       required: [serialNo, createdAt, createdByUri]
       properties:
         summary:
@@ -118,15 +127,13 @@ components:
         api operation that created the version.
       required: [serialNo, createdAt, createdByUri]
       properties:
-        serialNo:
-          type: integer
-          default: 0
-          description: The serial number of the version starting from 1. Increased by every successful save.
         serialNoData:
           type: integer
+          format: int64
           description: If it is set then there is an attached version data.
         serialNoRelation:
           type: integer
+          format: int64
           description: If it is set then there is an attached version relation set.
         transactionId:
           type: string
@@ -137,7 +144,7 @@ components:
         createdAt:
           type: string
           format: date-time
-          description: The exact date time when the given sersion was created at.
+          description: The exact date time when the given version was created at.
         createdByUri:
           type: string
           format: uri

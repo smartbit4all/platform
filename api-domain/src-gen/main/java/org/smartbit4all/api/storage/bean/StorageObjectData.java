@@ -37,7 +37,8 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   StorageObjectData.URI,
   StorageObjectData.CURRENT_VERSION,
-  StorageObjectData.VERSIONS
+  StorageObjectData.DELETED,
+  StorageObjectData.PENDING_VERSIONS
 })
 @JsonTypeName("StorageObjectData")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -48,8 +49,11 @@ public class StorageObjectData {
   public static final String CURRENT_VERSION = "currentVersion";
   private ObjectVersion currentVersion;
 
-  public static final String VERSIONS = "versions";
-  private List<ObjectVersion> versions = new ArrayList<>();
+  public static final String DELETED = "deleted";
+  private Boolean deleted = false;
+
+  public static final String PENDING_VERSIONS = "pendingVersions";
+  private List<ObjectVersion> pendingVersions = null;
 
 
   public StorageObjectData uri(URI uri) {
@@ -108,36 +112,66 @@ public class StorageObjectData {
   }
 
 
-  public StorageObjectData versions(List<ObjectVersion> versions) {
+  public StorageObjectData deleted(Boolean deleted) {
     
-    this.versions = versions;
-    return this;
-  }
-
-  public StorageObjectData addVersionsItem(ObjectVersion versionsItem) {
-    this.versions.add(versionsItem);
+    this.deleted = deleted;
     return this;
   }
 
    /**
-   * The versions of the object in creation order. The version serial number is increased one by one because only the successful save opartions will produce new version. 
-   * @return versions
+   * The deleted flag is set when the given object is deleted. The deletion is always logical so we know that the object exists but we also know that it is already inactivated. 
+   * @return deleted
   **/
-  @NotNull
-  @Valid
-  @ApiModelProperty(required = true, value = "The versions of the object in creation order. The version serial number is increased one by one because only the successful save opartions will produce new version. ")
-  @JsonProperty(VERSIONS)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The deleted flag is set when the given object is deleted. The deletion is always logical so we know that the object exists but we also know that it is already inactivated. ")
+  @JsonProperty(DELETED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<ObjectVersion> getVersions() {
-    return versions;
+  public Boolean getDeleted() {
+    return deleted;
   }
 
 
-  @JsonProperty(VERSIONS)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setVersions(List<ObjectVersion> versions) {
-    this.versions = versions;
+  @JsonProperty(DELETED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setDeleted(Boolean deleted) {
+    this.deleted = deleted;
+  }
+
+
+  public StorageObjectData pendingVersions(List<ObjectVersion> pendingVersions) {
+    
+    this.pendingVersions = pendingVersions;
+    return this;
+  }
+
+  public StorageObjectData addPendingVersionsItem(ObjectVersion pendingVersionsItem) {
+    if (this.pendingVersions == null) {
+      this.pendingVersions = new ArrayList<>();
+    }
+    this.pendingVersions.add(pendingVersionsItem);
+    return this;
+  }
+
+   /**
+   * The versions of the object that are currently in transaction. These version can be seen only by the transaction itself but all other can see only the current version. At the end of the successful transaction the pending versions are cleared and current version is set to the last version. The storage is going to repair the objects left behind by the broken  transaction. 
+   * @return pendingVersions
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "The versions of the object that are currently in transaction. These version can be seen only by the transaction itself but all other can see only the current version. At the end of the successful transaction the pending versions are cleared and current version is set to the last version. The storage is going to repair the objects left behind by the broken  transaction. ")
+  @JsonProperty(PENDING_VERSIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<ObjectVersion> getPendingVersions() {
+    return pendingVersions;
+  }
+
+
+  @JsonProperty(PENDING_VERSIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setPendingVersions(List<ObjectVersion> pendingVersions) {
+    this.pendingVersions = pendingVersions;
   }
 
 
@@ -152,12 +186,13 @@ public class StorageObjectData {
     StorageObjectData storageObjectData = (StorageObjectData) o;
     return Objects.equals(this.uri, storageObjectData.uri) &&
         Objects.equals(this.currentVersion, storageObjectData.currentVersion) &&
-        Objects.equals(this.versions, storageObjectData.versions);
+        Objects.equals(this.deleted, storageObjectData.deleted) &&
+        Objects.equals(this.pendingVersions, storageObjectData.pendingVersions);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, currentVersion, versions);
+    return Objects.hash(uri, currentVersion, deleted, pendingVersions);
   }
 
   @Override
@@ -166,7 +201,8 @@ public class StorageObjectData {
     sb.append("class StorageObjectData {\n");
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    currentVersion: ").append(toIndentedString(currentVersion)).append("\n");
-    sb.append("    versions: ").append(toIndentedString(versions)).append("\n");
+    sb.append("    deleted: ").append(toIndentedString(deleted)).append("\n");
+    sb.append("    pendingVersions: ").append(toIndentedString(pendingVersions)).append("\n");
     sb.append("}");
     return sb.toString();
   }

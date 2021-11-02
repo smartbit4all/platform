@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -30,6 +30,7 @@ import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageLoadOption;
 import org.smartbit4all.domain.data.storage.StorageObject;
 import org.smartbit4all.domain.data.storage.StorageObject.StorageObjectOperation;
+import org.smartbit4all.domain.data.storage.StorageObjectHistoryEntry;
 import org.smartbit4all.domain.data.storage.StorageObjectLock;
 import org.smartbit4all.domain.data.storage.StorageObjectPhysicalLock;
 import org.smartbit4all.domain.data.storage.StorageSaveEvent;
@@ -47,17 +48,17 @@ public class StorageFS extends ObjectStorageImpl {
    * 
    * If set, the loadAll method only look for files with the given extension.
    */
-  private static final String storedObjectFileExtension = ".object";
+  private static final String storedObjectFileExtension = ".o";
 
   /**
    * The relation contents are stored in a file with this extension.
    */
-  private static final String storedObjectRelationFileExtension = ".relations";
+  private static final String storedObjectRelationFileExtension = ".r";
 
   /**
    * The lock file postfix.
    */
-  private static final String storedObjectLockFileExtension = ".lock";
+  private static final String storedObjectLockFileExtension = ".l";
 
   private ObjectDefinition<StorageObjectData> storageObjectDataDef;
 
@@ -77,6 +78,10 @@ public class StorageFS extends ObjectStorageImpl {
     return getDataFileByUri(object.getUri(), storedObjectFileExtension);
   }
 
+  private File getObjectVersionBasePath(StorageObject<?> object) {
+    return getDataFileByUri(object.getUri(), StringConstant.EMPTY);
+  }
+
   private File getDataFileByUri(URI objectUri, String extension) {
     return new File(rootFolder, objectUri.getScheme() + StringConstant.SLASH + objectUri.getPath()
         + extension);
@@ -84,6 +89,32 @@ public class StorageFS extends ObjectStorageImpl {
 
   private File getObjectLockFile(StorageObject<?> object) {
     return getDataFileByUri(object.getUri(), storedObjectLockFileExtension);
+  }
+
+  /**
+   * Constructs the File of the given object version.
+   * 
+   * @param objectHistoryBasePath
+   * @param newVersion
+   * @return
+   */
+  private File getObjectVersionFile(File objectHistoryBasePath, long serialNo) {
+    return new File(objectHistoryBasePath.getPath()
+        + FileIO.constructObjectPathByIndexWithHexaStructure(serialNo));
+  }
+
+  /**
+   * Constructs the File of the given object version.
+   * 
+   * @param objectHistoryBasePath
+   * @param version
+   * @return
+   */
+  private File getObjectRelationVersionFile(File objectHistoryBasePath, long serialNo) {
+    return new File(
+        objectHistoryBasePath.getPath() +
+            FileIO.constructObjectPathByIndexWithHexaStructure(serialNo)
+            + storedObjectRelationFileExtension);
   }
 
   @Override
@@ -116,6 +147,7 @@ public class StorageFS extends ObjectStorageImpl {
     try {
       // Load the StorageObjectData that is the api object of the storage itself.
       File objectDataFile = getObjectDataFile(object);
+      File objectVersionBasePath = getObjectVersionBasePath(object);
       // The temporary file of the StorageObjectData will be identified by the transaction id as
       // extension.
       StorageObjectData storageObjectData;
@@ -143,60 +175,70 @@ public class StorageFS extends ObjectStorageImpl {
         }
         // Increment the serial number. The given object is locked in the meantime so there is no
         // need to worry about the parallel modification.
-        newVersion = new ObjectVersion().serialNo(currentVersion.getSerialNo() + 1);
-      } else {
-        // The first version in the new object.
         newVersion = new ObjectVersion();
-        // This will be a new data file, fists we create the StorageObjectData save it into a new
+      } else {
+        // The first version in the new object. The version starts from 0. The object data and the
+        // object relation is also null. There is no version.
+        newVersion = new ObjectVersion();
+        // This will be a new data file, first we create the StorageObjectData save it into a new
         // data file.
         storageObjectData = new StorageObjectData().uri(object.getUri());
       }
 
       // The version is updated with the information attached if it's not a modification without
       // object.
-      newVersion.transactionId(object.getTransactionId()).createdAt(ZonedDateTime.now());
+      newVersion.transactionId(object.getTransactionId()).createdAt(OffsetDateTime.now());
       newVersion.setCreatedBy(versionCreatedBy.get());
-      storageObjectData.addVersionsItem(newVersion);
 
-      // TODO Add dependency to UserSession!!
+      File objectVersionFile = null;
       if (object.getOperation() == StorageObjectOperation.MODIFY_WITHOUT_DATA) {
-        // Set the new version data to the current version data.
+        // Set the new version data to the current version data there will be no new data version.
         if (currentVersion != null) {
           newVersion.setSerialNoData(currentVersion.getSerialNoData());
         }
       } else if (object.getObject() != null
           && object.getOperation() != StorageObjectOperation.DELETE) {
-        File objectVersionFile = getObjectVersionFile(objectDataFile, newVersion.getSerialNo());
-        // Write the version file first
-        FileIO.write(objectVersionFile,
-            object.definition().serialize(object.getObject()));
-        // The data serial number will be the serial number of the version.
-        newVersion.setSerialNoData(newVersion.getSerialNo());
+        newVersion
+            .setSerialNoData(
+                (currentVersion == null || currentVersion.getSerialNoData() == null) ? 0
+                    : (currentVersion.getSerialNoData() + 1));
+        objectVersionFile =
+            getObjectVersionFile(objectVersionBasePath, newVersion.getSerialNoData());
       }
 
       // Manage the references, load the current references
       File objectRelationFile = storageObjectData.getCurrentVersion() != null
           && storageObjectData.getCurrentVersion().getSerialNoRelation() != null
-              ? getObjectRelationVersionFile(objectDataFile,
+              ? getObjectRelationVersionFile(objectVersionBasePath,
                   storageObjectData.getCurrentVersion().getSerialNoRelation())
               : null;
-      StorageObjectRelationData relationData = null;
-      if (objectRelationFile != null && objectRelationFile.exists()) {
-        BinaryData dataFile = new BinaryData(objectRelationFile);
-        Optional<StorageObjectRelationData> relationDataOpt =
-            storageObjectRelationDataDef.deserialize(dataFile);
-        relationData = relationDataOpt.orElse(null);
-      }
       StorageObjectRelationData storageObjectReferences =
-          saveStorageObjectReferences(object, relationData);
+          saveStorageObjectReferences(object, loadRelationData(objectRelationFile));
+      File objectRelationVersionFile = null;
       if (storageObjectReferences != null) {
-        File objectRelationVersionFile =
-            getObjectRelationVersionFile(objectDataFile, newVersion.getSerialNo());
-        // Write the version file first
-        FileIO.write(objectRelationVersionFile,
-            storageObjectRelationDataDef.serialize(storageObjectReferences));
         // The data serial number will be the serial number of the version.
-        newVersion.setSerialNoRelation(newVersion.getSerialNo());
+        newVersion.setSerialNoRelation(
+            (currentVersion == null || currentVersion.getSerialNoRelation() == null) ? 0L
+                : (currentVersion.getSerialNoRelation() + 1));
+        objectRelationVersionFile =
+            getObjectRelationVersionFile(objectVersionBasePath, newVersion.getSerialNoRelation());
+      }
+
+      // Write the version files
+      if (objectVersionFile != null || objectRelationVersionFile != null) {
+        BinaryData binaryDataVersion =
+            objectApi.getDefaultSerializer().serialize(newVersion, ObjectVersion.class);
+        if (objectVersionFile != null) {
+          // Write the data version file
+          FileIO.writeMultipart(objectVersionFile,
+              binaryDataVersion,
+              object.definition().serialize(object.getObject()));
+        }
+        if (objectRelationVersionFile != null) {
+          // Write the version file first
+          FileIO.writeMultipart(objectRelationVersionFile, binaryDataVersion,
+              storageObjectRelationDataDef.serialize(storageObjectReferences));
+        }
       }
 
       // Set the current version, change it at the last point to be able to use earlier.
@@ -215,7 +257,8 @@ public class StorageFS extends ObjectStorageImpl {
       updateStorageObjectWithVersion(object, newVersion);
       invokeOnSucceedFunctions(object, new StorageSaveEvent<Object>(() -> {
         if (oldVersion != null) {
-          Object o = loadObjectVersion(object.definition(), objectDataFile, oldVersion);
+          Object o = loadObjectVersion(object.definition(), objectVersionBasePath,
+              oldVersion.getSerialNoData()).getObject();
 
           return o;
         }
@@ -228,33 +271,6 @@ public class StorageFS extends ObjectStorageImpl {
       storageObjectLock.leave();
     }
     return object.getUri();
-  }
-
-  /**
-   * Constructs the File of the given object version.
-   * 
-   * @param objectDataFile
-   * @param newVersion
-   * @return
-   */
-  private File getObjectVersionFile(File objectDataFile, Integer serialNo) {
-    File objectVersionFile =
-        new File(objectDataFile.getPath() + StringConstant.DOT + serialNo);
-    return objectVersionFile;
-  }
-
-  /**
-   * Constructs the File of the given object version.
-   * 
-   * @param objectDataFile
-   * @param version
-   * @return
-   */
-  private File getObjectRelationVersionFile(File objectDataFile, int serialNo) {
-    File objectVersionFile =
-        new File(objectDataFile.getPath() + storedObjectRelationFileExtension + StringConstant.DOT
-            + serialNo);
-    return objectVersionFile;
   }
 
   @Override
@@ -277,6 +293,7 @@ public class StorageFS extends ObjectStorageImpl {
       throw new ObjectNotFoundException(uri, clazz, "Unable to retrieve object definition.");
     }
     File storageObjectDataFile = getDataFileByUri(uri, storedObjectFileExtension);
+    File storageObjectVersionBasePath = getDataFileByUri(uri, StringConstant.EMPTY);
     if (!storageObjectDataFile.exists()) {
       throw new ObjectNotFoundException(uri, clazz, "Object data file not found.");
     }
@@ -288,12 +305,16 @@ public class StorageFS extends ObjectStorageImpl {
     }
     StorageObjectData storageObjectData = optObject.get();
     StorageObject<T> storageObject;
-    ObjectVersion relatedVersion = getVersionByUri(uri, storageObjectData);
+    ObjectVersion objectVersion = storageObjectData.getCurrentVersion();
+    Long versionDataSerialNo = getVersionByUri(uri, storageObjectData);
     boolean skipData = StorageLoadOption.checkSkipData(options);
-    if (relatedVersion.getSerialNoData() != null
-        && !skipData) {
+    if (versionDataSerialNo != null && !skipData) {
 
-      T object = loadObjectVersion(definition, storageObjectDataFile, relatedVersion);
+      StorageObjectHistoryEntry<T> loadObjectVersion =
+          loadObjectVersion(definition, storageObjectVersionBasePath,
+              versionDataSerialNo);
+      T object = loadObjectVersion.getObject();
+      objectVersion = loadObjectVersion.getVersion();
 
       if (object != null) {
         // This can ensure that the uri will be the exact uri used for the load.
@@ -305,19 +326,11 @@ public class StorageFS extends ObjectStorageImpl {
       storageObject = instanceOf(storage, definition, uri, storageObjectData);
     }
 
-    if (relatedVersion.getSerialNoRelation() != null) {
-      File relationVersionFile =
-          getObjectRelationVersionFile(storageObjectDataFile,
-              storageObjectData.getCurrentVersion().getSerialNoRelation());
-      if (relationVersionFile.exists()) {
-        BinaryData versionBinaryData = new BinaryData(relationVersionFile);
-
-        StorageObjectRelationData relationData =
-            storageObjectRelationDataDef.deserialize(versionBinaryData).orElse(null);
-        loadStorageObjectReferences(storageObject, relationData);
-      }
+    if (objectVersion != null && objectVersion.getSerialNoRelation() != null) {
+      loadStorageObjectReferences(storageObject,
+          loadRelationData(getObjectRelationVersionFile(storageObjectVersionBasePath,
+              objectVersion.getSerialNoRelation())));
     }
-
 
     if (skipData) {
       setOperation(storageObject, StorageObjectOperation.MODIFY_WITHOUT_DATA);
@@ -326,21 +339,39 @@ public class StorageFS extends ObjectStorageImpl {
     return storageObject;
   }
 
-  private <T> T loadObjectVersion(ObjectDefinition<T> definition,
-      File storageObjectDataFile,
-      ObjectVersion relatedVersion) {
+  private final StorageObjectRelationData loadRelationData(File relationVersionFile) {
+    if (relationVersionFile == null || !relationVersionFile.exists()) {
+      return null;
+    }
+    List<BinaryData> multipart = FileIO.readMultipart(relationVersionFile);
+    BinaryData versionBinaryData = multipart.get(1);
+
+    StorageObjectRelationData relationData =
+        storageObjectRelationDataDef.deserialize(versionBinaryData).orElse(null);
+    return relationData;
+  }
+
+  private <T> StorageObjectHistoryEntry<T> loadObjectVersion(ObjectDefinition<T> definition,
+      File historyBasePath,
+      long version) {
     File objectVersionFile = getObjectVersionFile(
-        storageObjectDataFile,
-        relatedVersion.getSerialNoData());
+        historyBasePath,
+        version);
 
-    BinaryData versionBinaryData = new BinaryData(objectVersionFile);
+    List<BinaryData> multipart = FileIO.readMultipart(objectVersionFile);
 
+    BinaryData versionObjectBinaryData = multipart.get(0);
+    BinaryData versionBinaryData = multipart.get(1);
+
+    ObjectVersion objectVersion = objectApi.getDefaultSerializer()
+        .deserialize(versionObjectBinaryData, ObjectVersion.class).get();
     T object = definition.deserialize(versionBinaryData).orElse(null);
-    return object;
+    return new StorageObjectHistoryEntry<T>(objectVersion, object);
   }
 
   @Override
-  public List<ObjectHistoryEntry> loadHistory(Storage storage, URI uri) {
+  public List<ObjectHistoryEntry> loadHistory(Storage storage, URI uri,
+      ObjectDefinition<?> defnition) {
     ObjectDefinition<?> definition = getDefinitionFromUri(uri);
     if (definition == null) {
       return Collections.emptyList();
@@ -349,32 +380,34 @@ public class StorageFS extends ObjectStorageImpl {
     if (!storageObjectDataFile.exists()) {
       return Collections.emptyList();
     }
+    File storageObjectVersionBasePath = getDataFileByUri(uri, StringConstant.EMPTY);
     BinaryData storageObjectBinaryData = new BinaryData(storageObjectDataFile);
     Optional<StorageObjectData> optObject =
         storageObjectDataDef.deserialize(storageObjectBinaryData);
     if (!optObject.isPresent()) {
-      return Collections.emptyList();
+      throw new ObjectNotFoundException(uri, null, "Unable to load object data file.");
     }
     StorageObjectData storageObjectData = optObject.get();
-    // Now we have the object data. We iterate the versions of the object and constructs the
-    // entries.
-    List<ObjectVersion> versions = storageObjectData.getVersions();
-    if (versions == null || versions.isEmpty()) {
+    ObjectVersion currentObjectVersion = storageObjectData.getCurrentVersion();
+
+    if (currentObjectVersion.getSerialNoData() == null) {
       return Collections.emptyList();
     }
+
+    long serialNoDataMax = currentObjectVersion.getSerialNoData() + 1;
     List<ObjectHistoryEntry> result = new ArrayList<>();
-    int lastDataVersion = -1;
-    for (ObjectVersion objectVersion : versions) {
-      if (lastDataVersion != objectVersion.getSerialNoData()) {
-        lastDataVersion = objectVersion.getSerialNoData();
-        result
-            .add(new ObjectHistoryEntry().version(objectVersion)
-                .summary(objectVersion.getSerialNo() + StringConstant.COMMA_SPACE
-                    + objectVersion.getCreatedAt() + StringConstant.COMMA_SPACE
-                    + objectVersion.getCreatedBy())
-                .objectType(definition.getAlias()).versionUri(URI.create(
-                    uri.toString() + StringConstant.HASH + objectVersion.getSerialNoData())));
-      }
+    for (long i = 0; i < serialNoDataMax; i++) {
+      getObjectVersionFile(storageObjectVersionBasePath, i);
+      StorageObjectHistoryEntry<?> loadObjectVersion =
+          loadObjectVersion(definition, storageObjectVersionBasePath, i);
+      ObjectVersion objectVersion = loadObjectVersion.getVersion();
+      result
+          .add(new ObjectHistoryEntry().version(objectVersion)
+              .summary(objectVersion.getSerialNoData() + StringConstant.COMMA_SPACE
+                  + objectVersion.getCreatedAt() + StringConstant.COMMA_SPACE
+                  + objectVersion.getCreatedBy())
+              .objectType(definition.getAlias()).versionUri(URI.create(
+                  uri.toString() + StringConstant.HASH + objectVersion.getSerialNoData())));
     }
     return result;
   }

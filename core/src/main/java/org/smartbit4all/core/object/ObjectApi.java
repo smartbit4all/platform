@@ -35,4 +35,9 @@ public interface ObjectApi {
    */
   BeanMeta meta(Class<?> apiClass);
 
+  /**
+   * @return The default serializer for the objects.
+   */
+  ObjectSerializer getDefaultSerializer();
+
 }

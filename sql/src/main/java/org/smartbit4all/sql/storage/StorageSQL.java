@@ -6,6 +6,7 @@ import java.util.List;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.storage.bean.ObjectHistoryEntry;
 import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageLoadOption;
@@ -115,7 +116,8 @@ public class StorageSQL extends ObjectStorageImpl {
   }
 
   @Override
-  public List<ObjectHistoryEntry> loadHistory(Storage storage, URI uri) {
+  public List<ObjectHistoryEntry> loadHistory(Storage storage, URI uri,
+      ObjectDefinition<?> definition) {
     return Collections.emptyList();
   }
 

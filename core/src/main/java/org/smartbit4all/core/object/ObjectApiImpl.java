@@ -56,6 +56,9 @@ public class ObjectApiImpl implements ObjectApi, InitializingBean {
   @Value("${objects.defaultSerializer:com.fasterxml.jackson.databind.ObjectMapper}")
   private String defaultSerializerName;
 
+  /**
+   * The default serializer for the objects.
+   */
   private ObjectSerializer defaultSerializer;
 
   /**
@@ -140,7 +143,6 @@ public class ObjectApiImpl implements ObjectApi, InitializingBean {
     return definitionsByAlias.get(rootPath);
   }
 
-  @SuppressWarnings("unchecked")
   private <T> ObjectDefinition<T> constructDefinition(Class<T> clazz) {
     ObjectDefinition<T> result = constructDefinitionBase(clazz);
     result.setDefaultSerializer(defaultSerializer);
@@ -220,6 +222,13 @@ public class ObjectApiImpl implements ObjectApi, InitializingBean {
               + " as domain object because the lack of URI property!");
     }
     return false;
+  }
+
+  /**
+   * @return The default serializer for the objects.
+   */
+  public final ObjectSerializer getDefaultSerializer() {
+    return defaultSerializer;
   }
 
 }

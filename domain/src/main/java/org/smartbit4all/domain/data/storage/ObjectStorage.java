@@ -112,7 +112,7 @@ public interface ObjectStorage {
    * @return The list of history entries. It mustn't be null, all the implementations must return
    *         {@link Collections#emptyList()} instead of null.
    */
-  List<ObjectHistoryEntry> loadHistory(Storage storage, URI uri);
+  List<ObjectHistoryEntry> loadHistory(Storage storage, URI uri, ObjectDefinition<?> defnition);
 
   /**
    * Perform a quick check for existence of a given uri.

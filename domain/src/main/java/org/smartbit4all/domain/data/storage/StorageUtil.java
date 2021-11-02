@@ -28,7 +28,7 @@ public class StorageUtil {
     if (v1 == null || v2 == null) {
       return false;
     }
-    return Objects.equals(v1.getSerialNo(), v2.getSerialNo());
+    return Objects.equals(v1.getSerialNoData(), v2.getSerialNoData());
   }
 
 }

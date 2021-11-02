@@ -14,6 +14,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.smartbit4all.api.binarydata.BinaryData;
+import org.smartbit4all.core.utility.StringConstant;
+import com.google.common.io.ByteSource;
+import com.google.common.primitives.Longs;
 
 /**
  * The basic file IO for the file system related operations based on objects.
@@ -30,22 +33,6 @@ public class FileIO {
     return getFileBinaryData(file);
   }
 
-  /**
-   * Reads an object uri based given extension file if exists.
-   * 
-   * @param rootFolder
-   * @param uri
-   * @param extension The specific extension as post fix for the file.
-   * @return
-   */
-  public static BinaryData read(File rootFolder, URI uri, String extension) {
-    if (uri == null || uri.getPath() == null) {
-      return null;
-    }
-    File file = new File(rootFolder, uri.getPath() + extension);
-    return getFileBinaryData(file);
-  }
-
   private static BinaryData getFileBinaryData(File file) {
     if (file.exists() && file.isFile()) {
       return new BinaryData(file);
@@ -55,19 +42,6 @@ public class FileIO {
 
   public static void write(File rootFolder, URI uri, BinaryData content) {
     File newFile = getFileByUri(rootFolder, uri);
-    write(newFile, content);
-  }
-
-  /**
-   * Write the file with specific extension based on the uri.
-   * 
-   * @param rootFolder
-   * @param uri
-   * @param extension
-   * @param content
-   */
-  public static void write(File rootFolder, URI uri, String extension, BinaryData content) {
-    File newFile = getFileByUri(rootFolder, uri, extension);
     write(newFile, content);
   }
 
@@ -81,6 +55,69 @@ public class FileIO {
     } catch (Exception e) {
       throw new IllegalArgumentException("Cannot write file: " + newFile, e);
     }
+  }
+
+  /**
+   * Special write that concatenates multiple {@link BinaryData}s into one single file. To be able
+   * to read the contents again the length appears in front of every content.
+   * 
+   * @param newFile
+   * @param contents
+   */
+  public static void writeMultipart(File newFile, BinaryData... contents) {
+    if (contents == null || contents.length == 0) {
+      return;
+    }
+    List<ByteSource> byteSources = new ArrayList<>(contents.length * 2);
+    for (BinaryData binaryData : contents) {
+      // Write the length first and the content next.
+      byteSources.add(ByteSource.wrap(Longs.toByteArray(binaryData.length())));
+      byteSources.add(new ByteSource() {
+
+        @Override
+        public InputStream openStream() throws IOException {
+          return binaryData.inputStream();
+        }
+      });
+    }
+    try (InputStream in = ByteSource.concat(byteSources).openStream()) {
+
+      newFile.getParentFile().mkdirs();
+      System.out.println(newFile);
+      Files.copy(in, newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+    } catch (Exception e) {
+      throw new IllegalArgumentException("Cannot write file: " + newFile, e);
+    }
+  }
+
+  public static List<BinaryData> readMultipart(File file) {
+    if (file == null || !file.exists() || !file.isFile()) {
+      return null;
+    }
+    ByteSource byteSource = com.google.common.io.Files.asByteSource(file);
+    long offset = 0;
+    long length = Long.BYTES;
+    ByteSource sliceLen = byteSource.slice(offset, length);
+    List<BinaryData> result = null;
+    try {
+      while (!sliceLen.isEmpty()) {
+        offset += length;
+        length = Longs.fromByteArray(sliceLen.read());
+        ByteSource sourceBinaryData = byteSource.slice(offset, length);
+        BinaryData binaryData = BinaryData.of(sourceBinaryData.openStream());
+        if (result == null) {
+          result = new ArrayList<>();
+        }
+        result.add(binaryData);
+        offset += length;
+        length = Long.BYTES;
+        sliceLen = byteSource.slice(offset, length);
+      }
+    } catch (IOException e) {
+      throw new IllegalStateException("Unable to read multipart file " + file, e);
+    }
+    return result != null ? result : Collections.emptyList();
   }
 
   public static boolean delete(File rootFolder, URI uri) {
@@ -156,6 +193,37 @@ public class FileIO {
     });
 
     return allFilePaths;
+  }
+
+  private static final int BUCKET_INDEX_MASK = 0xFF;
+
+  /**
+   * Constructs the path of an index in a list. To identify the given index exactly we use an
+   * algorithm where index is exactly identifies the version and the storage in a file system can be
+   * unlimited.
+   * 
+   * @param index
+   * @return
+   */
+  public static final String constructObjectPathByIndexWithHexaStructure(long index) {
+    int bucketIndex = (int) (index & BUCKET_INDEX_MASK);
+    long bucket = index >> 8;
+    StringBuilder sbBucket = new StringBuilder();
+    if (bucket > 0) {
+      // The path will be the hexadecimal format of the bucket digit by digit
+      String hexString = Long.toHexString(bucket).toUpperCase();
+      for (int i = 0; i < hexString.length(); i++) {
+        sbBucket.append(StringConstant.SLASH);
+        sbBucket.append(hexString.charAt(i));
+      }
+    }
+    sbBucket.append(StringConstant.SLASH);
+    String bucketIndexHex = Long.toHexString(bucketIndex).toUpperCase();
+    if (bucketIndexHex.length() == 1) {
+      sbBucket.append(StringConstant.ZERO);
+    }
+    sbBucket.append(bucketIndexHex);
+    return sbBucket.toString();
   }
 
 }

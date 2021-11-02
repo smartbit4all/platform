@@ -47,7 +47,7 @@ public class ObjectReference {
   private String referenceId;
 
   public static final String EXPIRATION_TIME = "expirationTime";
-  private java.time.ZonedDateTime expirationTime;
+  private OffsetDateTime expirationTime;
 
 
   public ObjectReference uri(URI uri) {
@@ -105,7 +105,7 @@ public class ObjectReference {
   }
 
 
-  public ObjectReference expirationTime(java.time.ZonedDateTime expirationTime) {
+  public ObjectReference expirationTime(OffsetDateTime expirationTime) {
     
     this.expirationTime = expirationTime;
     return this;
@@ -121,14 +121,14 @@ public class ObjectReference {
   @JsonProperty(EXPIRATION_TIME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public java.time.ZonedDateTime getExpirationTime() {
+  public OffsetDateTime getExpirationTime() {
     return expirationTime;
   }
 
 
   @JsonProperty(EXPIRATION_TIME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setExpirationTime(java.time.ZonedDateTime expirationTime) {
+  public void setExpirationTime(OffsetDateTime expirationTime) {
     this.expirationTime = expirationTime;
   }
 

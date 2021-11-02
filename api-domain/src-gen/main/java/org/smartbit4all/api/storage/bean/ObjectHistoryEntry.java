@@ -29,9 +29,9 @@ import javax.validation.constraints.*;
 import javax.validation.Valid;
 
 /**
- * When analysing the history the StorageApi creates a list of history entries for every version of the objects participates in the related history. 
+ * When analysing the history the StorageApi creates a list of history entries for every version of the objects participates in the related history. It can contain the object data changes without relation versions. These are the significant versions that mean adat modification. 
  */
-@ApiModel(description = "When analysing the history the StorageApi creates a list of history entries for every version of the objects participates in the related history. ")
+@ApiModel(description = "When analysing the history the StorageApi creates a list of history entries for every version of the objects participates in the related history. It can contain the object data changes without relation versions. These are the significant versions that mean adat modification. ")
 @JsonPropertyOrder({
   ObjectHistoryEntry.SUMMARY,
   ObjectHistoryEntry.CHANGES,
