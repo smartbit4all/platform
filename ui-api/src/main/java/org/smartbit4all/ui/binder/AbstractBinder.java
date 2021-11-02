@@ -1,8 +1,8 @@
-package org.smartbit4all.ui.vaadin.components.binder;
+package org.smartbit4all.ui.binder;
 
 import io.reactivex.rxjava3.disposables.Disposable;
 
-public class VaadinAbstractBinder {
+public class AbstractBinder {
 
   protected Disposable disposable;
 

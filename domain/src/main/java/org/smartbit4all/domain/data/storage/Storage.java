@@ -207,11 +207,11 @@ public class Storage {
   }
 
   public boolean exists(URI uri) {
-    return true;
+    return objectStorage.exists(uri);
   }
 
   public boolean existsAll(List<URI> uris) {
-    return true;
+    return !(uris.stream().anyMatch(uri -> !objectStorage.exists(uri)));
   }
 
   public List<URI> findExistings(List<URI> uris) {

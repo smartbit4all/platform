@@ -67,13 +67,23 @@ public abstract class UINavigationVaadinCommon extends UINavigationApiCommon {
     try {
       ObjectEditing.currentConstructionUUID.set(navigationTarget.getUuid());
       Component view = VaadinService.getCurrent().getInstantiator()
-          .createComponent(navigableViewClasses.get(navigationTarget.getViewName()));
+          .createComponent(getViewClassByName(navigationTarget));
       return view;
     } finally {
       ObjectEditing.currentConstructionUUID.set(null);
     }
   }
 
+  protected Class<? extends Component> getViewClassByName(NavigationTarget navigationTarget) {
+    return navigableViewClasses.get(navigationTarget.getViewName());
+  }
+
+  /**
+   * Shows navigationTarget in dialog. Doesn't call callHasUrlImplementation()!
+   * 
+   * @param navigationTarget
+   * @return
+   */
   protected Component navigateToDialog(NavigationTarget navigationTarget) {
     UUID dialogUUID = navigationTarget.getUuid();
     Dialog dialog = dialogsByUUID.get(dialogUUID);
@@ -90,6 +100,9 @@ public abstract class UINavigationVaadinCommon extends UINavigationApiCommon {
     dialog.setModal(true);
     dialog.setCloseOnOutsideClick(false);
     dialog.setCloseOnEsc(false);
+    if (navigationTarget.getFullSize()) {
+      dialog.setSizeFull();
+    }
     dialog.open();
     return view;
   }
@@ -170,7 +183,7 @@ public abstract class UINavigationVaadinCommon extends UINavigationApiCommon {
     }
     if (canceled != null) {
       dialog.setCancelable(true);
-      dialog.setCancelText(rejected.getLabel());
+      dialog.setCancelText(canceled.getLabel());
       if (messageListener != null) {
         dialog.addCancelListener(e -> messageListener.accept(canceled));
       }

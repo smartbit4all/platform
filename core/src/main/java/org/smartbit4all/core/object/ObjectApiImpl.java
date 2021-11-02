@@ -168,21 +168,28 @@ public class ObjectApiImpl implements ObjectApi, InitializingBean {
 
   @SuppressWarnings("unchecked")
   private static <T> void setupId(ObjectDefinition<T> result) {
-    setupObjectProperty(result, ID, ObjectDefinition::setIdGetter,
+    boolean isIdSet = setupObjectProperty(result, ID, ObjectDefinition::setIdGetter,
         ObjectDefinition::setIdSetter);
+    if (!isIdSet) {
+      // try to set the uri when there is no id field
+      setupObjectProperty(result, URI,
+          (od, getter) -> od.setIdGetter(o -> getter.apply((T) o).toString()),
+          (od, setter) -> od
+              .setIdSetter((o, u) -> setter.accept((T) o, java.net.URI.create((String) u))));
+    }
   }
 
   @SuppressWarnings("rawtypes")
-  private static <T> void setupObjectProperty(ObjectDefinition<T> result, String propertyName,
+  private static <T> boolean setupObjectProperty(ObjectDefinition<T> result, String propertyName,
       BiConsumer<ObjectDefinition, Function<T, ?>> getterSetter,
-      BiConsumer<ObjectDefinition, BiConsumer<T, ?>> setterSetter) {
-    setupObjectProperty(result, propertyName, getterSetter, setterSetter, false);
+      BiConsumer<ObjectDefinition, BiConsumer<T, Object>> setterSetter) {
+    return setupObjectProperty(result, propertyName, getterSetter, setterSetter, false);
   }
 
   @SuppressWarnings("rawtypes")
-  private static <T> void setupObjectProperty(ObjectDefinition<T> result, String propertyName,
+  private static <T> boolean setupObjectProperty(ObjectDefinition<T> result, String propertyName,
       BiConsumer<ObjectDefinition, Function<T, ?>> getterSetter,
-      BiConsumer<ObjectDefinition, BiConsumer<T, ?>> setterSetter,
+      BiConsumer<ObjectDefinition, BiConsumer<T, Object>> setterSetter,
       boolean isMandatory) {
     BeanMeta beanMeta = getMeta(result.getClazz());
     // The definition was not found in the context. We need to analyze the bean by reflection.
@@ -206,11 +213,13 @@ public class ObjectApiImpl implements ObjectApi, InitializingBean {
                   + result.getClazz() + ") domain object.");
         }
       });
+      return true;
     } else if (isMandatory) {
       throw new IllegalArgumentException(
           "Unable to use the " + result.getClazz()
               + " as domain object because the lack of URI property!");
     }
+    return false;
   }
 
 }

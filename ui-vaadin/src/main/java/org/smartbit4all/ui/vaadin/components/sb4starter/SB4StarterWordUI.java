@@ -18,6 +18,7 @@ import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
+import com.vaadin.flow.router.OptionalParameter;
 
 public class SB4StarterWordUI extends FlexLayout implements HasUrlParameter<String> {
 
@@ -39,7 +40,7 @@ public class SB4StarterWordUI extends FlexLayout implements HasUrlParameter<Stri
   }
 
   @Override
-  public void setParameter(BeforeEvent event, String parameter) {
+  public void setParameter(BeforeEvent event, @OptionalParameter String parameter) {
     SB4StarterWordFormModel model =
         (SB4StarterWordFormModel) Navigations.getParameter(event, "entry");
     BiConsumer<BinaryContent, BinaryContent> acceptHandler =

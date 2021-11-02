@@ -51,6 +51,9 @@ components:
           $ref: '#/components/schemas/NavigationTargetType'
         closeAfterNavigation:
           type: boolean
+        fullSize:
+          type: boolean
+          default: false
     NavigationTargetState:
       type: string
       enum:

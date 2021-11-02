@@ -307,7 +307,7 @@ public class ApplyChangeServiceImpl implements ApplyChangeService {
       referredAco = referredEntityAcosByName.get(referenceName);
       if (referredAco == null) {
         EntityDefinition targetEntityDef = reference.getTarget();
-        String referenceUuId = referenceName.replaceFirst("root", rootUuid);
+        String referenceUuId = referenceName.replaceFirst("root/", rootUuid + "#");
         referredAco = new ApplyChangeOperation(TableDatas.of(targetEntityDef), changeOperation);
         referredAco.setUniqueId(referenceUuId);
         referredEntityAcosByName.put(referenceName, referredAco);

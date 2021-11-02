@@ -20,8 +20,6 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.orderedlayout.FlexLayout;
-import com.vaadin.flow.component.orderedlayout.FlexLayout.FlexDirection;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.server.VaadinService;
@@ -56,15 +54,12 @@ public class UINavigationVaadinTabbed extends UINavigationVaadinCommon {
       throw new IllegalArgumentException("MainView may only be set once!");
     }
     this.mainView = mainView;
-    FlexLayout content = new FlexLayout();
-    content.setFlexDirection(FlexDirection.COLUMN);
     tabs = new Tabs(true);
     tabs.setSizeFull();
     this.mainView.addToNavbar(true, tabs);
     tabContents = new Div();
     tabContents.setSizeFull();
-    content.add(tabContents);
-    mainView.setContent(content);
+    mainView.setContent(tabContents);
     tabs.addSelectedChangeListener(event -> {
       viewsByTab.values().forEach(view -> view.setVisible(false));
       Tab selectedTab = tabs.getSelectedTab();
@@ -79,23 +74,25 @@ public class UINavigationVaadinTabbed extends UINavigationVaadinCommon {
 
   @Override
   public void navigateTo(NavigationTarget navigationTarget) {
-    checkNavigationParameters(navigationTarget);
-    super.navigateTo(navigationTarget);
-    try (UIViewParameterVaadinTransition param =
-        new UIViewParameterVaadinTransition(navigationTarget.getParameters())) {
+    ui.access(() -> {
 
-      Component view;
-      if (navigationTarget.getType() == NavigationTargetType.DIALOG) {
-        view = navigateToDialog(navigationTarget);
-      } else {
-        view = navigateToTab(navigationTarget);
+      checkNavigationParameters(navigationTarget);
+      super.navigateTo(navigationTarget);
+      try (UIViewParameterVaadinTransition param =
+          new UIViewParameterVaadinTransition(navigationTarget.getParameters())) {
+
+        Component view;
+        if (navigationTarget.getType() == NavigationTargetType.DIALOG) {
+          view = navigateToDialog(navigationTarget);
+        } else {
+          view = navigateToTab(navigationTarget);
+        }
+
+        callHasUrlImplementation(navigationTarget.getViewName(), param, view);
+      } catch (Exception e) {
+        log.error("Unexpected error", e);
       }
-
-      callHasUrlImplementation(navigationTarget.getViewName(), param, view);
-    } catch (Exception e) {
-      log.error("Unexpected error", e);
-    }
-
+    });
   }
 
   private Component navigateToTab(NavigationTarget navigationTarget) {
@@ -228,14 +225,16 @@ public class UINavigationVaadinTabbed extends UINavigationVaadinCommon {
 
   @Override
   public void close(UUID navigationTargetUuid) {
-    if (dialogsByUUID.containsKey(navigationTargetUuid)) {
-      closeDialog(navigationTargetUuid);
-    } else {
-      NavigationTarget target = navigationTargetsByUUID.get(navigationTargetUuid);
-      Tab tab = tabsByViewObjectId.get(getViewObjectId(target));
-      closeTab(tab);
-    }
-    super.close(navigationTargetUuid);
+    ui.access(() -> {
+      if (dialogsByUUID.containsKey(navigationTargetUuid)) {
+        closeDialog(navigationTargetUuid);
+      } else {
+        NavigationTarget target = navigationTargetsByUUID.get(navigationTargetUuid);
+        Tab tab = tabsByViewObjectId.get(getViewObjectId(target));
+        closeTab(tab);
+      }
+      super.close(navigationTargetUuid);
+    });
   }
 
 }

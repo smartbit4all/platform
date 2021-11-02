@@ -4,11 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
 import org.smartbit4all.core.object.ObservableObject;
+import org.smartbit4all.ui.binder.CollectionBinder;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
 
 public class VaadinWidgetCollectionBinder<T, WIDGET extends Component>
-    extends VaadinCollectionBinder<T> {
+    extends CollectionBinder<T> {
 
   private Map<String, WIDGET> widgetsByPath;
   private HasComponents container;
@@ -51,5 +52,9 @@ public class VaadinWidgetCollectionBinder<T, WIDGET extends Component>
       widgetsByPath.remove(itemPath);
     }
     return super.deleteItem(itemPath);
+  }
+
+  public WIDGET getWidgetByPath(String path) {
+    return widgetsByPath.get(path);
   }
 }
