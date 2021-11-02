@@ -239,7 +239,7 @@ public final class ApiObjectCollection implements List<ApiObjectRef> {
 
     if (originalCollection == null) {
       if (newValue != null) {
-        originalCollection = (List<Object>) newValue;
+        originalCollection = new ArrayList<>(newValue);
         for (Object refObject : originalCollection) {
           // TODO What would be the expectation in case of null in the list?
           if (refObject != null) {
@@ -291,7 +291,7 @@ public final class ApiObjectCollection implements List<ApiObjectRef> {
         removedObjects.addAll(items);
         items.clear();
       }
-      originalCollection = (List<Object>) newValue;
+      originalCollection = new ArrayList<>(newValue);
     }
 
   }

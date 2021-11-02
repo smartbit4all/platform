@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -130,7 +131,9 @@ public final class TableDatas {
   public static final String toStringAdv(TableData<?> dt) {
 
     Map<String, Integer> colWithByColName = new HashMap<>();
-    for (DataColumn<?> column : dt.columns()) {
+    Collection<DataColumn<?>> columns = dt.columns().stream()
+        .sorted(Comparator.comparing(col -> col.getName())).collect(Collectors.toList());
+    for (DataColumn<?> column : columns) {
       String colName = column.getName();
       int length = colName.length();
       for (DataRow row : dt.rows()) {
@@ -159,7 +162,7 @@ public final class TableDatas {
     sb.append(hr).append(StringConstant.NEW_LINE);
     // Print out the columns.
     boolean firstColumn = true;
-    for (DataColumn<?> column : dt.columns()) {
+    for (DataColumn<?> column : columns) {
       if (!firstColumn) {
         sb.append("|");
       }
@@ -180,7 +183,7 @@ public final class TableDatas {
     for (DataRow row : dt.rows()) {
       sb.append(StringConstant.NEW_LINE);
       firstColumn = true;
-      for (DataColumn<?> column : dt.columns()) {
+      for (DataColumn<?> column : columns) {
         if (!firstColumn) {
           sb.append("|");
         }
