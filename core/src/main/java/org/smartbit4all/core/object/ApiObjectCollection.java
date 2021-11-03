@@ -291,7 +291,11 @@ public final class ApiObjectCollection implements List<ApiObjectRef> {
         removedObjects.addAll(items);
         items.clear();
       }
-      originalCollection = new ArrayList<>(newValue);
+      if (newValue != null) {
+        originalCollection = new ArrayList<>(newValue);
+      } else {
+        originalCollection = null;
+      }
     }
 
   }
