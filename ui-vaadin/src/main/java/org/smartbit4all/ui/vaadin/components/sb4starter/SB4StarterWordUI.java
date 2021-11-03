@@ -17,10 +17,13 @@ import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEvent;
+import com.vaadin.flow.router.BeforeLeaveEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
+import com.vaadin.flow.router.internal.BeforeLeaveHandler;
 
-public class SB4StarterWordUI extends FlexLayout implements HasUrlParameter<String> {
+public class SB4StarterWordUI extends FlexLayout
+    implements HasUrlParameter<String>, BeforeLeaveHandler {
 
   private SB4StarterWordViewModel viewModel;
 
@@ -98,6 +101,13 @@ public class SB4StarterWordUI extends FlexLayout implements HasUrlParameter<Stri
   private void onStarterUrlChanged(PropertyChange propertyChange) {
     String starterUrl = (String) propertyChange.getNewValue();
     downloadAnchor.setHref(starterUrl);
+  }
+
+  @Override
+  public void beforeLeave(BeforeLeaveEvent event) {
+    if (viewModel != null) {
+      viewModel.executeCommand(null, SB4StarterWordViewModel.DECLINE);
+    }
   }
 
   // private String convertStateToString(SB4StarterWordState state) {
