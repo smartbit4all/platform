@@ -4,10 +4,29 @@
 	min-width: 600px;
 }
 
-.sb4-dialog1-close-icon {
-	align-self: flex-end;
-	width: var(--lumo-size-s);
-	height: var(--lumo-size-s);
-	margin-bottom: calc(-2 * var(--lumo-size-s));
+.sb4-dialog1-header {
+	display: flex;
+	width: 100%;
+	justify-content: space-between;
+	align-items: center;
+	background-color: var(--lumo-contrast-5pct);
+	border-radius: var(--lumo-border-radius-m);
+	padding-top: var(--lumo-space-s);
+	padding-bottom: var(--lumo-space-s);
 }
 
+.sb4-dialog1-header > label {
+	font-weight: 600;
+	font-size: var(--lumo-font-size-l);
+	flex-grow: 1;
+	padding-left: var(--lumo-space-s);
+	padding-right: var(--lumo-space-s);
+}
+
+.sb4-dialog1-close-icon {
+	padding-right: var(--lumo-space-s);
+}
+
+.sb4-dialog1-title-icon {
+	padding-left: var(--lumo-space-s);
+}

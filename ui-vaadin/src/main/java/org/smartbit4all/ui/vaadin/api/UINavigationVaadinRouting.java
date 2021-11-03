@@ -52,9 +52,9 @@ public class UINavigationVaadinRouting extends UINavigationVaadinCommon {
   }
 
   @Override
-  protected Class<? extends Component> getViewClassByName(NavigationTarget navigationTarget) {
+  protected Class<? extends Component> getViewClassByNavigationTarget(NavigationTarget navigationTarget) {
     // TODO Auto-generated method stub
-    Class<? extends Component> clazz = super.getViewClassByName(navigationTarget);
+    Class<? extends Component> clazz = super.getViewClassByNavigationTarget(navigationTarget);
     if (clazz == null) {
       return registerViewByRouting(navigationTarget.getViewName());
     }
@@ -92,12 +92,28 @@ public class UINavigationVaadinRouting extends UINavigationVaadinCommon {
   public void registerView(NavigableViewDescriptor viewDescriptor) {
     super.registerView(viewDescriptor);
     String viewName = viewDescriptor.getViewName();
+    Class<? extends Component> viewClass = navigableViewClasses.get(viewName);
+    registerVaadinRouteIfNotExists(viewName, viewClass);
+  }
+
+  @Override
+  public void registerView(NavigableViewDescriptor viewDescriptor, NavigationTargetType type) {
+    super.registerView(viewDescriptor, type);
+    if (type == NavigationTargetType.NORMAL) {
+      String viewName = viewDescriptor.getViewName();
+      Class<? extends Component> viewClass = navigableViewClassesByType.get(type).get(viewName);
+      registerVaadinRouteIfNotExists(viewName, viewClass);
+    }
+  }
+
+  private void registerVaadinRouteIfNotExists(String viewName,
+      Class<? extends Component> viewClass) {
     RouteConfiguration configuration = RouteConfiguration.forSessionScope();
     if (!configuration.isPathRegistered(viewName)) {
       if (mainLayout != null) {
-        configuration.setRoute(viewName, navigableViewClasses.get(viewName), mainLayout);
+        configuration.setRoute(viewName, viewClass, mainLayout);
       } else {
-        configuration.setRoute(viewName, navigableViewClasses.get(viewName));
+        configuration.setRoute(viewName, viewClass);
       }
     }
   }
@@ -110,7 +126,6 @@ public class UINavigationVaadinRouting extends UINavigationVaadinCommon {
       // TODO what does close mean in this case? navigate back?
     }
     super.close(navigationTargetUuid);
-
   }
 
   public void setMainLayout(Class<? extends RouterLayout> mainLayout) {

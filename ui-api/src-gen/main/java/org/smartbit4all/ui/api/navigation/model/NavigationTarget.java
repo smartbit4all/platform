@@ -43,7 +43,6 @@ import javax.validation.Valid;
   NavigationTarget.PARAMETERS,
   NavigationTarget.STATE,
   NavigationTarget.TYPE,
-  NavigationTarget.CLOSE_AFTER_NAVIGATION,
   NavigationTarget.FULL_SIZE
 })
 @JsonTypeName("NavigationTarget")
@@ -66,9 +65,6 @@ public class NavigationTarget {
 
   public static final String TYPE = "type";
   private NavigationTargetType type = NavigationTargetType.NORMAL;
-
-  public static final String CLOSE_AFTER_NAVIGATION = "closeAfterNavigation";
-  private Boolean closeAfterNavigation;
 
   public static final String FULL_SIZE = "fullSize";
   private Boolean fullSize = false;
@@ -245,33 +241,6 @@ public class NavigationTarget {
   }
 
 
-  public NavigationTarget closeAfterNavigation(Boolean closeAfterNavigation) {
-    
-    this.closeAfterNavigation = closeAfterNavigation;
-    return this;
-  }
-
-   /**
-   * Get closeAfterNavigation
-   * @return closeAfterNavigation
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
-  @JsonProperty(CLOSE_AFTER_NAVIGATION)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Boolean getCloseAfterNavigation() {
-    return closeAfterNavigation;
-  }
-
-
-  @JsonProperty(CLOSE_AFTER_NAVIGATION)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setCloseAfterNavigation(Boolean closeAfterNavigation) {
-    this.closeAfterNavigation = closeAfterNavigation;
-  }
-
-
   public NavigationTarget fullSize(Boolean fullSize) {
     
     this.fullSize = fullSize;
@@ -314,13 +283,12 @@ public class NavigationTarget {
         Objects.equals(this.parameters, navigationTarget.parameters) &&
         Objects.equals(this.state, navigationTarget.state) &&
         Objects.equals(this.type, navigationTarget.type) &&
-        Objects.equals(this.closeAfterNavigation, navigationTarget.closeAfterNavigation) &&
         Objects.equals(this.fullSize, navigationTarget.fullSize);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uuid, viewName, viewObjectUri, parameters, state, type, closeAfterNavigation, fullSize);
+    return Objects.hash(uuid, viewName, viewObjectUri, parameters, state, type, fullSize);
   }
 
   @Override
@@ -333,7 +301,6 @@ public class NavigationTarget {
     sb.append("    parameters: ").append(toIndentedString(parameters)).append("\n");
     sb.append("    state: ").append(toIndentedString(state)).append("\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
-    sb.append("    closeAfterNavigation: ").append(toIndentedString(closeAfterNavigation)).append("\n");
     sb.append("    fullSize: ").append(toIndentedString(fullSize)).append("\n");
     sb.append("}");
     return sb.toString();

@@ -115,7 +115,6 @@ public class UINavigationVaadinTabbed extends UINavigationVaadinCommon {
         tabsByViewObjectId.put(viewObjectId, tab);
       }
     }
-    closeCurrentTabBeforeNavigation(navigationTarget, tab);
     tabs.setSelectedTab(tab);
     if (hideDrawerOnSelect && mainView.isDrawerOpened()) {
       mainView.setDrawerOpened(false);
@@ -123,24 +122,12 @@ public class UINavigationVaadinTabbed extends UINavigationVaadinCommon {
     return view;
   }
 
-  private void closeCurrentTabBeforeNavigation(NavigationTarget navigationTarget, Tab tab) {
-    if (navigationTarget.getCloseAfterNavigation() != null) {
-      if (navigationTarget.getCloseAfterNavigation()) {
-        Tab currentSelectedTab = tabs.getSelectedTab();
-        if (currentSelectedTab != null && currentSelectedTab != tab) {
-          closeTab(currentSelectedTab);
-        }
-      }
-    }
-  }
-
   private Tab createTab(NavigationTarget navigationTarget) {
-    String viewName = navigationTarget.getViewName();
-    NavigableViewDescriptor viewDescriptor = navigableViews.get(viewName);
+    NavigableViewDescriptor viewDescriptor = getViewDescriptorByNavigationTarget(navigationTarget);
     // title
     String title = viewDescriptor.getTitle();
     if (Strings.isNullOrEmpty(title)) {
-      title = viewName;
+      title = navigationTarget.getViewName();
     }
     Tab tab = new Tab(title);
     // icon
@@ -163,7 +150,7 @@ public class UINavigationVaadinTabbed extends UINavigationVaadinCommon {
     if (VaadinService.getCurrent() == null) {
       throw new RuntimeException("VaadinService is not available!");
     }
-    NavigableViewDescriptor viewDescriptor = navigableViews.get(navigationTarget.getViewName());
+    NavigableViewDescriptor viewDescriptor = getViewDescriptorByNavigationTarget(navigationTarget);
     if (viewDescriptor == null) {
       throw new RuntimeException(
           "viewDescriptor not found for view " + navigationTarget.getViewName() + "!");
@@ -184,7 +171,6 @@ public class UINavigationVaadinTabbed extends UINavigationVaadinCommon {
         viewObjectUri == null ? navigationTarget.getUuid().toString() : viewObjectUri.toString();
     return navigationTarget.getViewName() + "-" + id;
   }
-
 
   private void closeTab(Tab tab) {
     tabs.remove(tab);
