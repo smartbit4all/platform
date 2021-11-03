@@ -1,8 +1,10 @@
 package org.smartbit4all.ui.common.data.storage.history;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Map;
 import org.smartbit4all.api.storage.bean.ObjectHistory;
+import org.smartbit4all.api.storage.bean.ObjectHistoryEntry;
 import org.smartbit4all.core.object.ApiBeanDescriptor;
 import org.smartbit4all.core.object.ApiObjectRef;
 import org.smartbit4all.core.object.ObjectEditingImpl;
@@ -68,8 +70,14 @@ public class ObjectHistoryViewModelImpl extends ObjectEditingImpl
   
   private void openVersion(URI versionUri, String viewName) {
     uiNavigationApi.navigateTo(new NavigationTarget()
-        .viewName(viewName)
+        .viewName(viewName + "Dialog")
         .type(NavigationTargetType.DIALOG)
         .putParametersItem("entry", versionUri));
+  }
+
+  @Override
+  public void setHistoryEntries(List<ObjectHistoryEntry> entries) {
+    ObjectHistory objectHistory = new ObjectHistory().objectHistoryEntries(entries);
+    objectHistoryRef.setObject(objectHistory);
   }
 }

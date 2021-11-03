@@ -499,4 +499,9 @@ public class NavigationViewModelImpl extends ObjectEditingImpl implements Naviga
     
     return null;
   }
+
+  @Override
+  public NavigationNode selectedNavigationNode() {
+    return navigationState.getNode(selectedNode.getIdentifier());
+  }
 }

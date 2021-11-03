@@ -34,5 +34,7 @@ public interface NavigationViewModel extends ObjectEditing {
    * @param path
    */
   void setSelectedNode(NavigationPath path);
+  
+  NavigationNode selectedNavigationNode();
 
 }
