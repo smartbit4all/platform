@@ -17,6 +17,7 @@ package org.smartbit4all.domain.config;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -170,6 +171,14 @@ public class DomainServiceConfig extends SB4Configuration {
   }
 
   @Bean
+  public Converter<OffsetDateTime, LocalDate> offsetDateTime2localDateConverter() {
+    return new ConverterImpl<>(LocalDate.class,
+        OffsetDateTime::toLocalDate, OffsetDateTime.class,
+        (LocalDate d) -> ZonedDateTime.of(d, LocalTime.MIN, ZoneId.systemDefault())
+            .toOffsetDateTime());
+  }
+
+  @Bean
   public Converter<URI, String> uri2String() {
     return new ConverterImpl<>(String.class, URI::toString, URI.class, s -> URI.create(s));
   }
@@ -178,7 +187,7 @@ public class DomainServiceConfig extends SB4Configuration {
   public StorageApi getStorageApi() {
     return new StorageApiImpl();
   }
-  
+
   @Bean
   public ObjectHistoryApi storageObjectHistoryApi(StorageApi storageApi) {
     return new ObjectHistoryApiImpl(storageApi);
