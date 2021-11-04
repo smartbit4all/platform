@@ -865,12 +865,14 @@ public class Navigation {
                   "Unable to load the " + node.getEntry() + " object."));
       for (ResolvedPropertyEntry resolvedPropertyEntry : properties) {
         Object value = objectRef.getValueByPath(resolvedPropertyEntry.name);
-        ResolvedValue resolvedValue = new ResolvedValue();
+        ResolvedValue resolvedValue;
         if (value == null) {
+          resolvedValue = new ResolvedValue();
           resolvedValue.setMessage(VALUE_NOT_FOUND);
         } else {
-          result.put(resolvedPropertyEntry.qualifiedName, new ResolvedValue(value));
+          resolvedValue = new ResolvedValue(value);
         }
+        result.put(resolvedPropertyEntry.qualifiedName, resolvedValue);
       }
     }
 
