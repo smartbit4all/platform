@@ -563,21 +563,16 @@ public class ApiObjectRef {
         return propertyEntry.getReference().getValueByPath(PathUtility.nextFullPath(upperPath));
       case COLLECTION:
         ApiObjectCollection collection = propertyEntry.getCollection();
-        // TODO Handle the index even if we have longer path into the given element.
         if (pathSize == 2) {
-          // Remove the index to the collection
-          return collection.get(Integer.valueOf(PathUtility.getLastPath(upperPath))).getObject();
+          return collection.getByIdx(PathUtility.getLastPath(upperPath)).getObject();
         } else {
-          // call the removeValueByPath on the collection element
           String nextPath = PathUtility.nextFullPath(upperPath);
           ApiObjectRef nextRef = collection.getByIdx(PathUtility.getRootPath(nextPath));
           return nextRef.getValueByPath(PathUtility.nextFullPath(nextPath));
         }
       case MAP:
         ApiObjectMap map = propertyEntry.getMap();
-        // TODO Handle the index even if we have longer path into the given element.
         if (pathSize == 2) {
-          // Remove the index to the collection
           return map.get(PathUtility.getLastPath(upperPath)).getObject();
         } else {
           String nextPath = PathUtility.nextFullPath(upperPath);
