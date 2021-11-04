@@ -39,6 +39,7 @@ import javax.validation.Valid;
   User.NAME,
   User.EMAIL,
   User.PASSWORD,
+  User.INACTIVE,
   User.ATTRIBUTES
 })
 @JsonTypeName("User")
@@ -58,6 +59,9 @@ public class User {
 
   public static final String PASSWORD = "password";
   private String password;
+
+  public static final String INACTIVE = "inactive";
+  private Boolean inactive = false;
 
   public static final String ATTRIBUTES = "attributes";
   private Map<String, String> attributes = new HashMap<>();
@@ -199,6 +203,33 @@ public class User {
   }
 
 
+  public User inactive(Boolean inactive) {
+    
+    this.inactive = inactive;
+    return this;
+  }
+
+   /**
+   * Get inactive
+   * @return inactive
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(INACTIVE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getInactive() {
+    return inactive;
+  }
+
+
+  @JsonProperty(INACTIVE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setInactive(Boolean inactive) {
+    this.inactive = inactive;
+  }
+
+
   public User attributes(Map<String, String> attributes) {
     
     this.attributes = attributes;
@@ -245,12 +276,13 @@ public class User {
         Objects.equals(this.name, user.name) &&
         Objects.equals(this.email, user.email) &&
         Objects.equals(this.password, user.password) &&
+        Objects.equals(this.inactive, user.inactive) &&
         Objects.equals(this.attributes, user.attributes);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, username, name, email, password, attributes);
+    return Objects.hash(uri, username, name, email, password, inactive, attributes);
   }
 
   @Override
@@ -262,6 +294,7 @@ public class User {
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    email: ").append(toIndentedString(email)).append("\n");
     sb.append("    password: ").append(toIndentedString(password)).append("\n");
+    sb.append("    inactive: ").append(toIndentedString(inactive)).append("\n");
     sb.append("    attributes: ").append(toIndentedString(attributes)).append("\n");
     sb.append("}");
     return sb.toString();

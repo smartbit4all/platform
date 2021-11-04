@@ -162,6 +162,9 @@ components:
           type: string
           format: password
           description: 'The encripted password of the user'
+        inactive:
+          type: boolean
+          default: false 
         attributes:
           type: object
           additionalProperties:
