@@ -537,8 +537,21 @@ public class ApiObjectRef {
    * @return
    */
   public Object getValue(String propertyName) {
-    PropertyEntry propertyEntry = getPropertyEntryByName(propertyName);
-    return getValueInner(propertyEntry);
+    int slashIndex = propertyName.lastIndexOf(StringConstant.SLASH);
+    if (slashIndex != -1) {
+      if (slashIndex + 1 == propertyName.length()) {
+        throw new IllegalArgumentException(
+            "Invalid parameter " + propertyName);
+      }
+      String path = propertyName.substring(0, slashIndex);
+      ApiObjectRef refObject = getValueRefByPath(path);
+      if (refObject == null) {
+        throw new IllegalArgumentException(
+            "Invalid parameter " + propertyName + ", no ApiObjectRef found on " + path);
+      }
+      return refObject.getValue(propertyName.substring(slashIndex + 1));
+    }
+    return getValueInner(getPropertyEntryByName(propertyName));
   }
 
   /**
