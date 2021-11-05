@@ -127,7 +127,8 @@ public class UINavigationVaadinTabbed extends UINavigationVaadinCommon {
 
   private Tab createTab(NavigationTarget navigationTarget) {
     String title = calculateTitle(navigationTarget);
-    Tab tab = new Tab(title);
+    Tab tab = new Tab();
+    tab.setLabel(title);
     // icon
     String icon = calculateIcon(navigationTarget);
     if (!Strings.isNullOrEmpty(icon)) {
@@ -225,7 +226,7 @@ public class UINavigationVaadinTabbed extends UINavigationVaadinCommon {
   public void setTitle(UUID navigationTargetUuid, String title) {
     Tab tab = tabsByUUID.get(navigationTargetUuid);
     if (tab != null) {
-      tab.setLabel(title);
+      tab.getElement().getChild(0).setText(title);
     } else {
       super.setTitle(navigationTargetUuid, title);
     }
