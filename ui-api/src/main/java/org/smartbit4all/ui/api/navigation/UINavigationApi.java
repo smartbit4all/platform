@@ -20,4 +20,6 @@ public interface UINavigationApi {
 
   void showMessage(Message message, Consumer<MessageResult> messageListener);
 
+  void setTitle(UUID navigationTargetUuid, String title);
+
 }

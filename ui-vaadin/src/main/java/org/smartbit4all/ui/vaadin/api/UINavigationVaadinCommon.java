@@ -41,6 +41,7 @@ public abstract class UINavigationVaadinCommon extends UINavigationApiCommon {
   protected UserSessionApi userSessionApi;
   protected UI ui;
   protected Map<UUID, Dialog> dialogsByUUID;
+  protected Map<UUID, Label> dialogLabelsByUUID;
   protected Map<UUID, Component> dialogViewsByUUID;
 
   public UINavigationVaadinCommon(UI ui, UserSessionApi userSessionApi) {
@@ -50,13 +51,15 @@ public abstract class UINavigationVaadinCommon extends UINavigationApiCommon {
     navigableViewClassesByType = new HashMap<>();
     dialogsByUUID = new HashMap<>();
     dialogViewsByUUID = new HashMap<>();
+    dialogLabelsByUUID = new HashMap<>();
+
   }
 
   @Override
   public void registerView(NavigableViewDescriptor viewDescriptor) {
     super.registerView(viewDescriptor);
     try {
-      @SuppressWarnings("rawtypes")
+      @SuppressWarnings("unchecked")
       Class<? extends Component> viewClass = getViewClass(viewDescriptor.getViewClassName());
       navigableViewClasses.put(viewDescriptor.getViewName(), viewClass);
     } catch (ClassNotFoundException e) {
@@ -69,7 +72,7 @@ public abstract class UINavigationVaadinCommon extends UINavigationApiCommon {
   public void registerView(NavigableViewDescriptor viewDescriptor, NavigationTargetType type) {
     super.registerView(viewDescriptor, type);
     try {
-      @SuppressWarnings("rawtypes")
+      @SuppressWarnings("unchecked")
       Class<? extends Component> viewClass = getViewClass(viewDescriptor.getViewClassName());
       Map<String, Class<? extends Component>> viewClasses = navigableViewClassesByType.get(type);
       if (viewClasses == null) {
@@ -129,34 +132,7 @@ public abstract class UINavigationVaadinCommon extends UINavigationApiCommon {
       dialogViewsByUUID.put(dialogUUID, view);
     }
     if (dialog == null) {
-      NavigableViewDescriptor viewDescriptor =
-          getViewDescriptorByNavigationTarget(navigationTarget);
-      // title
-      String titleText = viewDescriptor.getTitle();
-      if (Strings.isNullOrEmpty(titleText)) {
-        titleText = navigationTarget.getViewName();
-      }
-      // TODO icon handling, if necessary
-      Icon close = new Icon(VaadinIcon.CLOSE_SMALL);
-      close.addClassName("sb4-dialog1-close-icon");
-      // H3 title = new H3(titleText);
-      Label title = new Label(titleText);
-      FlexLayout header = new FlexLayout(title, close);
-      header.addClassName("sb4-dialog1-header");
-      String iconCode = viewDescriptor.getIcon();
-      if (!Strings.isNullOrEmpty(iconCode)) {
-        Icon icon = new Icon(iconCode);
-        icon.addClassName("sb4-dialog1-title-icon");
-        header.addComponentAsFirst(icon);
-      }
-      FlexLayout dialogLayout = new FlexLayout(header, view);
-      dialogLayout.addClassName("sb4-dialog1");
-
-      dialog = new Dialog(dialogLayout);
-      Dialog dialogToClose = dialog;
-      close.addClickListener(e -> dialogToClose.close());
-
-      dialog.addDialogCloseActionListener(event -> onDialogClose(dialogUUID));
+      dialog = createDialog(navigationTarget, view, dialogUUID);
       dialogsByUUID.put(dialogUUID, dialog);
     }
     dialog.setModal(true);
@@ -167,6 +143,42 @@ public abstract class UINavigationVaadinCommon extends UINavigationApiCommon {
     }
     dialog.open();
     return view;
+  }
+
+  protected Dialog createDialog(NavigationTarget navigationTarget, Component view,
+      UUID dialogUUID) {
+    Dialog dialog = new Dialog();
+    Icon titleIcon = null;
+    String iconCode = calculateIcon(navigationTarget);
+    if (!Strings.isNullOrEmpty(iconCode)) {
+      titleIcon = new Icon(iconCode);
+      titleIcon.addClassName("sb4-dialog1-title-icon");
+    }
+
+    String titleText = calculateTitle(navigationTarget);
+    Label title = new Label(titleText);
+    // TODO create DialogHeader composite, store it and use it for setTitle, setIcon?
+    dialogLabelsByUUID.put(dialogUUID, title);
+
+    Icon closeIcon = new Icon(VaadinIcon.CLOSE_SMALL);
+    closeIcon.addClassName("sb4-dialog1-close-icon");
+    closeIcon.addClickListener(e -> dialog.close());
+
+    FlexLayout header;
+    if (titleIcon == null) {
+      header = new FlexLayout(title, closeIcon);
+    } else {
+      header = new FlexLayout(titleIcon, title, closeIcon);
+    }
+    header.addClassName("sb4-dialog1-header");
+
+    FlexLayout dialogLayout = new FlexLayout(header, view);
+    dialogLayout.addClassName("sb4-dialog1");
+    dialog.add(dialogLayout);
+
+    dialog.addDialogCloseActionListener(event -> onDialogClose(dialogUUID));
+
+    return dialog;
   }
 
   protected void closeDialog(UUID navigationTargetUuid) {
@@ -184,6 +196,7 @@ public abstract class UINavigationVaadinCommon extends UINavigationApiCommon {
       dialogViewsByUUID.remove(dialogUUID);
     }
     dialogsByUUID.remove(dialogUUID);
+    dialogLabelsByUUID.remove(dialogUUID);
 
   }
 
@@ -259,5 +272,42 @@ public abstract class UINavigationVaadinCommon extends UINavigationApiCommon {
         .filter(r -> r.getType() == type)
         .findFirst()
         .orElse(null);
+  }
+
+  protected String calculateTitle(NavigationTarget navigationTarget) {
+    String title = navigationTarget.getTitle();
+    if (!Strings.isNullOrEmpty(title)) {
+      return title;
+    }
+    NavigableViewDescriptor viewDescriptor = getViewDescriptorByNavigationTarget(navigationTarget);
+    title = viewDescriptor.getTitle();
+    if (!Strings.isNullOrEmpty(title)) {
+      return title;
+    }
+    return navigationTarget.getViewName();
+  }
+
+  protected String calculateIcon(NavigationTarget navigationTarget) {
+    String icon = navigationTarget.getIcon();
+    if (!Strings.isNullOrEmpty(icon)) {
+      return icon;
+    }
+    NavigableViewDescriptor viewDescriptor = getViewDescriptorByNavigationTarget(navigationTarget);
+    icon = viewDescriptor.getIcon();
+    if (!Strings.isNullOrEmpty(icon)) {
+      return icon;
+    }
+    return navigationTarget.getIcon();
+  }
+
+  @Override
+  public void setTitle(UUID navigationTargetUuid, String title) {
+    if (dialogLabelsByUUID.containsKey(navigationTargetUuid)) {
+      Label label = dialogLabelsByUUID.get(navigationTargetUuid);
+      if (label != null) {
+        label.setText(title);
+      }
+    }
+
   }
 }

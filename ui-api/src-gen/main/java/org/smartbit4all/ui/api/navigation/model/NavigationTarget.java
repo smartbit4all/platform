@@ -43,7 +43,9 @@ import javax.validation.Valid;
   NavigationTarget.PARAMETERS,
   NavigationTarget.STATE,
   NavigationTarget.TYPE,
-  NavigationTarget.FULL_SIZE
+  NavigationTarget.FULL_SIZE,
+  NavigationTarget.TITLE,
+  NavigationTarget.ICON
 })
 @JsonTypeName("NavigationTarget")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -68,6 +70,12 @@ public class NavigationTarget {
 
   public static final String FULL_SIZE = "fullSize";
   private Boolean fullSize = false;
+
+  public static final String TITLE = "title";
+  private String title;
+
+  public static final String ICON = "icon";
+  private String icon;
 
 
   public NavigationTarget uuid(UUID uuid) {
@@ -268,6 +276,60 @@ public class NavigationTarget {
   }
 
 
+  public NavigationTarget title(String title) {
+    
+    this.title = title;
+    return this;
+  }
+
+   /**
+   * Get title
+   * @return title
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(TITLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getTitle() {
+    return title;
+  }
+
+
+  @JsonProperty(TITLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setTitle(String title) {
+    this.title = title;
+  }
+
+
+  public NavigationTarget icon(String icon) {
+    
+    this.icon = icon;
+    return this;
+  }
+
+   /**
+   * Get icon
+   * @return icon
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(ICON)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getIcon() {
+    return icon;
+  }
+
+
+  @JsonProperty(ICON)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setIcon(String icon) {
+    this.icon = icon;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -283,12 +345,14 @@ public class NavigationTarget {
         Objects.equals(this.parameters, navigationTarget.parameters) &&
         Objects.equals(this.state, navigationTarget.state) &&
         Objects.equals(this.type, navigationTarget.type) &&
-        Objects.equals(this.fullSize, navigationTarget.fullSize);
+        Objects.equals(this.fullSize, navigationTarget.fullSize) &&
+        Objects.equals(this.title, navigationTarget.title) &&
+        Objects.equals(this.icon, navigationTarget.icon);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uuid, viewName, viewObjectUri, parameters, state, type, fullSize);
+    return Objects.hash(uuid, viewName, viewObjectUri, parameters, state, type, fullSize, title, icon);
   }
 
   @Override
@@ -302,6 +366,8 @@ public class NavigationTarget {
     sb.append("    state: ").append(toIndentedString(state)).append("\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("    fullSize: ").append(toIndentedString(fullSize)).append("\n");
+    sb.append("    title: ").append(toIndentedString(title)).append("\n");
+    sb.append("    icon: ").append(toIndentedString(icon)).append("\n");
     sb.append("}");
     return sb.toString();
   }

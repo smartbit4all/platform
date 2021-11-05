@@ -52,6 +52,10 @@ components:
         fullSize:
           type: boolean
           default: false
+        title:
+          type: string
+        icon:
+          type: string
     NavigationTargetState:
       type: string
       enum:

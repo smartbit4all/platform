@@ -39,6 +39,7 @@ public class UINavigationVaadinTabbed extends UINavigationVaadinCommon {
   private Map<Tab, Component> viewsByTab;
 
   private Map<String, Tab> tabsByViewObjectId;
+  private Map<UUID, Tab> tabsByUUID;
 
   private boolean hideDrawerOnSelect = false;
 
@@ -47,6 +48,7 @@ public class UINavigationVaadinTabbed extends UINavigationVaadinCommon {
     navigationTargetsByTab = new HashMap<>();
     viewsByTab = new HashMap<>();
     tabsByViewObjectId = new HashMap<>();
+    tabsByUUID = new HashMap<>();
   }
 
   public void setMainView(AppLayout mainView) {
@@ -115,6 +117,7 @@ public class UINavigationVaadinTabbed extends UINavigationVaadinCommon {
         tabsByViewObjectId.put(viewObjectId, tab);
       }
     }
+    tabsByUUID.put(navigationTarget.getUuid(), tab);
     tabs.setSelectedTab(tab);
     if (hideDrawerOnSelect && mainView.isDrawerOpened()) {
       mainView.setDrawerOpened(false);
@@ -123,15 +126,10 @@ public class UINavigationVaadinTabbed extends UINavigationVaadinCommon {
   }
 
   private Tab createTab(NavigationTarget navigationTarget) {
-    NavigableViewDescriptor viewDescriptor = getViewDescriptorByNavigationTarget(navigationTarget);
-    // title
-    String title = viewDescriptor.getTitle();
-    if (Strings.isNullOrEmpty(title)) {
-      title = navigationTarget.getViewName();
-    }
+    String title = calculateTitle(navigationTarget);
     Tab tab = new Tab(title);
     // icon
-    String icon = viewDescriptor.getIcon();
+    String icon = calculateIcon(navigationTarget);
     if (!Strings.isNullOrEmpty(icon)) {
       tab.add(new Icon(icon));
     }
@@ -223,4 +221,13 @@ public class UINavigationVaadinTabbed extends UINavigationVaadinCommon {
     });
   }
 
+  @Override
+  public void setTitle(UUID navigationTargetUuid, String title) {
+    Tab tab = tabsByUUID.get(navigationTargetUuid);
+    if (tab != null) {
+      tab.setLabel(title);
+    } else {
+      super.setTitle(navigationTargetUuid, title);
+    }
+  }
 }
