@@ -21,6 +21,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.dialog.GeneratedVaadinDialog.OpenedChangeEvent;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -176,7 +177,9 @@ public abstract class UINavigationVaadinCommon extends UINavigationApiCommon {
     dialogLayout.addClassName("sb4-dialog1");
     dialog.add(dialogLayout);
 
-    dialog.addDialogCloseActionListener(event -> onDialogClose(dialogUUID));
+    // Ez nem a close-ra küld eventet
+    // dialog.addDialogCloseActionListener(event -> onDialogClose(dialogUUID));
+    dialog.addOpenedChangeListener(event -> onDialogClose(dialogUUID, event));
 
     return dialog;
   }
@@ -189,15 +192,16 @@ public abstract class UINavigationVaadinCommon extends UINavigationApiCommon {
     // all other logic is handled in onDialogClose closeListener
   }
 
-  protected void onDialogClose(Object dialogUUID) {
-    Component viewToClose = dialogViewsByUUID.get(dialogUUID);
-    if (viewToClose != null) {
-      callBeforeLeave(viewToClose);
-      dialogViewsByUUID.remove(dialogUUID);
+  protected void onDialogClose(Object dialogUUID, OpenedChangeEvent<Dialog> event) {
+    if (!event.getSource().isOpened()) {
+      Component viewToClose = dialogViewsByUUID.get(dialogUUID);
+      if (viewToClose != null) {
+        callBeforeLeave(viewToClose);
+        dialogViewsByUUID.remove(dialogUUID);
+      }
+      dialogsByUUID.remove(dialogUUID);
+      dialogLabelsByUUID.remove(dialogUUID);
     }
-    dialogsByUUID.remove(dialogUUID);
-    dialogLabelsByUUID.remove(dialogUUID);
-
   }
 
   protected void callHasUrlImplementation(String viewName, UIViewParameterVaadinTransition param,
