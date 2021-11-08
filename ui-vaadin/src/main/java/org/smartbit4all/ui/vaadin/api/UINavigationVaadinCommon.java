@@ -175,6 +175,9 @@ public abstract class UINavigationVaadinCommon extends UINavigationApiCommon {
 
     FlexLayout dialogLayout = new FlexLayout(header, view);
     dialogLayout.addClassName("sb4-dialog1");
+    if (navigationTarget.getFullSize()) {
+      dialogLayout.setHeightFull();
+    }
     dialog.add(dialogLayout);
 
     // Ez nem a close-ra küld eventet
