@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 
 public class TestFileUtil {
 
-  public static final String SRC_TEST_RESOURCES_TEST_FS = "/src/test/resources/test-fs";
+  public static final String SRC_TEST_RESOURCES_TEST_FS = "/test-fs";
 
   public static String getTestFsPath() {
     return java.nio.file.Paths

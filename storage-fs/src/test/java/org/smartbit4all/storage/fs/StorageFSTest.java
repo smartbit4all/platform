@@ -105,7 +105,6 @@ class StorageFSTest {
   @Autowired
   ObjectHistoryApi historyApi;
 
-
   @Test
   void saveLoadDeleteTest() throws Exception {
     Storage storage = storageApi.get(StorageFSTestConfig.TESTSCHEME);
@@ -120,7 +119,7 @@ class StorageFSTest {
   void saveLoadBinaryDataTest() throws Exception {
     Storage storage = storageApi.get(StorageFSTestConfig.TESTSCHEME);
 
-    File tempFile = new File(storageFS.getRootFolder(), "alma.txt");
+    File tempFile = File.createTempFile(getClass().getSimpleName(), "temp");
     FileWriter fw = new FileWriter(tempFile);
     fw.write("test");
     fw.close();

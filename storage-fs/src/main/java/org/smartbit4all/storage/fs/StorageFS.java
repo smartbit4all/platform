@@ -244,14 +244,7 @@ public class StorageFS extends ObjectStorageImpl {
       // Set the current version, change it at the last point to be able to use earlier.
       storageObjectData.currentVersion(newVersion);
 
-      // Write the data temporary file
-      File objectDataFileTemp =
-          new File(objectDataFile.getPath() + StringConstant.DOT + object.getTransactionId());
-      FileIO.write(objectDataFileTemp,
-          storageObjectDataDef.serialize(storageObjectData));
-      // Atomic move of the temp file.
-      Files.move(objectDataFileTemp.toPath(), objectDataFile.toPath(),
-          StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+      saveObjectData(object, objectDataFile, storageObjectData);
 
       ObjectVersion oldVersion = currentVersion;
       updateStorageObjectWithVersion(object, newVersion);
@@ -271,6 +264,18 @@ public class StorageFS extends ObjectStorageImpl {
       storageObjectLock.leave();
     }
     return object.getUri();
+  }
+
+  private void saveObjectData(StorageObject<?> object, File objectDataFile,
+      StorageObjectData storageObjectData) throws IOException {
+    // Write the data temporary file
+    File objectDataFileTemp =
+        new File(objectDataFile.getPath() + StringConstant.DOT + object.getTransactionId());
+    FileIO.write(objectDataFileTemp,
+        storageObjectDataDef.serialize(storageObjectData));
+    // Atomic move of the temp file.
+    Files.move(objectDataFileTemp.toPath(), objectDataFile.toPath(),
+        StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
   }
 
   @Override
@@ -487,6 +492,10 @@ public class StorageFS extends ObjectStorageImpl {
 
   public final File getRootFolder() {
     return rootFolder;
+  }
+
+  public final void setRootFolder(File rootFolder) {
+    this.rootFolder = rootFolder;
   }
 
   // @Override
