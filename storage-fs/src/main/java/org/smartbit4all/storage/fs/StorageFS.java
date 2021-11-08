@@ -168,9 +168,12 @@ public class StorageFS extends ObjectStorageImpl {
                 + " object because it has been modified in the meantime from " + object.getVersion()
                 + " --> " + currentVersion + " version");
           } else {
-            log.warn(
-                "The save of the {} object is overwriting the {} version with the modification of {} eralier version. It could lead loss of modification data!",
-                object.getUri(), currentVersion, object.getVersion());
+            if (log.isWarnEnabled()) {
+              String message = String.format(
+                  "The save of the %s object is overwriting the %s version with the modification of %s earlier version. It could lead loss of modification data!",
+                  object.getUri(), currentVersion, object.getVersion());
+              log.warn(message, new Exception());
+            }
           }
         }
         // Increment the serial number. The given object is locked in the meantime so there is no
