@@ -403,7 +403,7 @@ public class FilterService {
     LocalTime now = LocalTime.now();
     LocalDate today = LocalDate.now();
     LocalTime startTime = LocalTime.of(0, 0);
-    LocalTime endTime = LocalTime.of(23, 59, 59);
+    LocalTime endTime = LocalTime.MAX;
     LocalDate startDate = null;
     LocalDate endDate = null;
 

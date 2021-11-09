@@ -108,13 +108,25 @@ public class ConverterImpl<F extends Object, T extends Object> implements Conver
   @SuppressWarnings("unchecked")
   @Override
   public T convertTo(F fromValue) {
-    return (T) toward().apply(fromValue);
+    try {
+      return (T) toward().apply(fromValue);
+    } catch (Exception e) {
+      String msg = String.format("An error occured during converting value from $s to $s",
+          fromClass.getName(), toClass.getName());
+      throw new RuntimeException(msg, e);
+    }
   }
 
   @SuppressWarnings("unchecked")
   @Override
   public F convertFrom(T toValue) {
-    return (F) backward().apply(toValue);
+    try {
+      return (F) backward().apply(toValue);
+    } catch (Exception e) {
+      String msg = String.format("An error occured during converting value from $s to $s",
+          toClass.getName(), fromClass.getName());
+      throw new RuntimeException(msg, e);
+    }
   }
 
 }

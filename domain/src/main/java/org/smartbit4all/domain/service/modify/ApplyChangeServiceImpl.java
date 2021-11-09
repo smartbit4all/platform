@@ -98,13 +98,24 @@ public class ApplyChangeServiceImpl implements ApplyChangeService {
 
   private ApplyChangeOperation createApplyChangeOperation(ObjectChange objectChange,
       ApplyChangeObjectConfig config, Object rootObject, String potentialContainmentId) {
-    EntityDefinition rootEntity = config.getRootEntity();
     ChangeOperation changeOperation = getChangeOperation(objectChange.getOperation());
     if (changeOperation == null || !objectChange.hasChange()) {
       return null;
     }
-    TableData<EntityDefinition> rootTable = TableDatas.of(rootEntity);
     String rootId = getObjectId(rootObject, potentialContainmentId);
+    ApplyChangeOperation aco = createAcoBase(config, changeOperation, rootId);
+
+    Map<String, ApplyChangeOperation> referredEntityAcosByName = new HashMap<>();
+    referredEntityAcosByName.put("root", aco);
+
+    processObjectChange(objectChange, config, rootId, referredEntityAcosByName, "");
+    return aco;
+  }
+
+  private ApplyChangeOperation createAcoBase(ApplyChangeObjectConfig config,
+      ChangeOperation changeOperation, String rootId) {
+    EntityDefinition rootEntity = config.getRootEntity();
+    TableData<EntityDefinition> rootTable = TableDatas.of(rootEntity);
     Property<String> entityIdProperty = config.getEntityIdProperty();
     rootTable.addColumnOwn(entityIdProperty);
     DataRow rootRow = rootTable.addRow();
@@ -121,11 +132,6 @@ public class ApplyChangeServiceImpl implements ApplyChangeService {
 
     ApplyChangeOperation aco = new ApplyChangeOperation(rootTable, changeOperation);
     aco.setUniqueId(rootId);
-
-    Map<String, ApplyChangeOperation> referredEntityAcosByName = new HashMap<>();
-    referredEntityAcosByName.put("root", aco);
-
-    processObjectChange(objectChange, config, rootId, referredEntityAcosByName, "");
     return aco;
   }
 
@@ -207,10 +213,21 @@ public class ApplyChangeServiceImpl implements ApplyChangeService {
         // wont fit for this parameter. The path should be used instead..
         String containmentId =
             createPotentialContainmentId(rootId, collectionName, j);
+        ApplyChangeObjectConfig collectionConfig = collectionMappingItem.getOc2AcoMapping();
         ApplyChangeOperation collectionAco = createApplyChangeOperation(collectionChangeObject,
-            collectionMappingItem.getOc2AcoMapping(),
+            collectionConfig,
             collectionObject,
             containmentId);
+
+        if (false) {// TODO config has containmentProcessor
+          if (collectionAco == null) {
+            ChangeOperation collectionChangeOperation =
+                getChangeOperation(collectionChangeObject.getOperation());
+            collectionAco =
+                createAcoBase(collectionConfig, collectionChangeOperation, containmentId);
+          }
+          // process the collectionObject
+        }
 
         if (collectionAco != null) {
           Property<?> parentIdProp = referredProperty instanceof PropertyRef
@@ -263,7 +280,7 @@ public class ApplyChangeServiceImpl implements ApplyChangeService {
       Map<String, ApplyChangeOperation> referredEntityAcosByName, ChangeOperation changeOperation,
       ApplyChangeOperation rootAco) {
     Object valueToSet = newValue;
-    if (!property.type().isAssignableFrom(valueToSet.getClass())) {
+    if (valueToSet != null && !property.type().isAssignableFrom(valueToSet.getClass())) {
       valueToSet = transferService.convert(valueToSet, property.type());
     }
 
@@ -381,7 +398,8 @@ public class ApplyChangeServiceImpl implements ApplyChangeService {
       String msg = String.format(
           "The given value can not be set! Value: [%1$s] of type [%2$s]. "
               + "Target property: [%3$s] of type [%4$s]",
-          value.toString(), value.getClass().toString(), property.getUri(),
+          String.valueOf(value), value == null ? "null" : value.getClass().toString(),
+          property.getUri(),
           property.type().toString());
       throw new IllegalStateException(msg, e);
     }
