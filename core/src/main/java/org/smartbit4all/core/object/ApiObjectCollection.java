@@ -239,7 +239,7 @@ public final class ApiObjectCollection implements List<ApiObjectRef> {
 
     if (originalCollection == null) {
       if (newValue != null) {
-        originalCollection = new ArrayList<>(newValue);
+        originalCollection = (List<Object>) newValue;
         for (Object refObject : originalCollection) {
           // TODO What would be the expectation in case of null in the list?
           if (refObject != null) {
@@ -253,17 +253,15 @@ public final class ApiObjectCollection implements List<ApiObjectRef> {
       if (newValue != null) {
         // merge the values
         Iterator<Object> newValueIter = newValue.iterator();
-        Iterator<Object> origCollIter = originalCollection.iterator();
         Iterator<ApiObjectRef> itemsIter = items.iterator();
 
         while (itemsIter.hasNext()) {
-          Object origObject = origCollIter.next();
           ApiObjectRef objectRef = itemsIter.next();
 
           if (newValueIter.hasNext()) {
             // it's a new value on the place of on old one -> merge it
             Object currentNewObject = newValueIter.next();
-            if (Objects.equals(origObject, currentNewObject)) {
+            if (Objects.equals(objectRef.getObject(), currentNewObject)) {
               // no need to merge when they are equal objects
               continue;
             }
@@ -292,7 +290,7 @@ public final class ApiObjectCollection implements List<ApiObjectRef> {
         items.clear();
       }
       if (newValue != null) {
-        originalCollection = new ArrayList<>(newValue);
+        originalCollection = (List<Object>) newValue;
       } else {
         originalCollection = null;
       }

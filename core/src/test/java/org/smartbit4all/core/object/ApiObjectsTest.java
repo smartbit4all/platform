@@ -1,5 +1,6 @@
 package org.smartbit4all.core.object;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -12,7 +13,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.core.utility.StringConstant;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ApiObjectsTest {
 
@@ -191,11 +191,8 @@ public class ApiObjectsTest {
     MasterBean beanWrapper1 = ref.getWrapper(MasterBean.class);
 
     beanWrapper1.counter(1).setName("name by wrapper");
-
     beanWrapper1.setReferred(new ReferredBean());
-
     beanWrapper1.getReferred().setName("referred name by wrapper");
-
     beanWrapper1.getReferred()
         .addDetailsItem(new ReferredDetailBean())
         .addDetailsItem(new ReferredDetailBean());
@@ -212,6 +209,14 @@ public class ApiObjectsTest {
 
     beanWrapper1.setValid(true);
     beanWrapper1.setEnabled(Boolean.FALSE);
+
+    // check underlying object changes
+    assertEquals(1, bean1.getCounter());
+    assertEquals("name by wrapper", bean1.getName());
+    assertEquals("referred name by wrapper", bean1.getReferred().getName());
+
+    assertEquals(3, bean1.getReferred().getDetails().size());
+    assertEquals("referredDetailBean - name 1", bean1.getReferred().getDetails().get(0).getName());
 
     Optional<ObjectChange> objectChange1 = ref.renderAndCleanChanges();
     Assertions.assertTrue(objectChange1.isPresent());
