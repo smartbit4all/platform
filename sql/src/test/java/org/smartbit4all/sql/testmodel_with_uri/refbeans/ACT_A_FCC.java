@@ -1,5 +1,9 @@
 package org.smartbit4all.sql.testmodel_with_uri.refbeans;
 
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+
 public class ACT_A_FCC {
 
   String uid;
@@ -11,6 +15,8 @@ public class ACT_A_FCC {
   ACT_B actB;
 
   ACT_C actC;
+
+  private List<URI> buids = new ArrayList<>();
 
   public ACT_A_FCC() {}
 
@@ -61,6 +67,14 @@ public class ACT_A_FCC {
 
   public void setActC(ACT_C actC) {
     this.actC = actC;
+  }
+
+  public List<URI> getBuids() {
+    return buids;
+  }
+
+  public void setBuids(List<URI> buids) {
+    this.buids = buids;
   }
 
 }

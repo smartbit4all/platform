@@ -1,4 +1,4 @@
-package org.smartbit4all.domain.service.modify;
+package org.smartbit4all.domain.service.modify.applychange;
 
 import java.net.URI;
 import java.util.Collections;

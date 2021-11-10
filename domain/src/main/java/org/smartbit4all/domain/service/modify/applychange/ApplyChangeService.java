@@ -1,4 +1,4 @@
-package org.smartbit4all.domain.service.modify;
+package org.smartbit4all.domain.service.modify.applychange;
 
 import java.util.Map;
 import org.smartbit4all.core.object.ApiBeanDescriptor;

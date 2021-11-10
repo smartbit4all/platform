@@ -7,6 +7,7 @@ import org.smartbit4all.sql.testmodel_with_uri.refbeans.CDef;
 import org.smartbit4all.sql.testmodel_with_uri.refbeans.DDef;
 import org.smartbit4all.sql.testmodel_with_uri.refbeans.EDef;
 import org.smartbit4all.sql.testmodel_with_uri.refbeans.FDef;
+import org.smartbit4all.sql.testmodel_with_uri.refbeans.GDef;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -65,6 +66,12 @@ public class TestmodelEntityConfig extends EntityConfiguration {
   public FDef fDef() {
     FDef fDef = createEntityProxy(FDef.class);
     return fDef;
+  }
+
+  @Bean(GDef.ENTITY_NAME)
+  public GDef gDef() {
+    GDef gDef = createEntityProxy(GDef.class);
+    return gDef;
   }
 
 }

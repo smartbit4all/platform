@@ -51,7 +51,7 @@ public class ApiObjectsTest {
 
   @Test
   void testSampleBeanRead() throws ExecutionException {
-    BeanMeta meta = ApiObjects.meta(MasterBean.class, descriptors);
+    BeanMeta meta = ApiObjects.meta(MasterBean.class, descriptors, null);
     String description = meta.getDescription();
     System.out.println(description);
     String br = System.lineSeparator();
