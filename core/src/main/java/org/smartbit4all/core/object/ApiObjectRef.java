@@ -105,6 +105,8 @@ public class ApiObjectRef {
    */
   private final Map<Class<?>, ApiBeanDescriptor> descriptors;
 
+  private String qualifier;
+
   /**
    * The api object current state. The default is the new.
    */
@@ -118,6 +120,10 @@ public class ApiObjectRef {
 
   private Class<? extends Object> objectClass;
 
+  public ApiObjectRef(String path, Object object, Map<Class<?>, ApiBeanDescriptor> descriptors) {
+    this(path, object, descriptors, null);
+  }
+
   /**
    * Constructs a new api object reference.
    *
@@ -125,19 +131,21 @@ public class ApiObjectRef {
    * @param object The api object managed by the reference.
    * @param allBeanClasses All the bean classes we have in this api domain.
    */
-  public ApiObjectRef(String path, Object object, Map<Class<?>, ApiBeanDescriptor> descriptors) {
+  public ApiObjectRef(String path, Object object, Map<Class<?>, ApiBeanDescriptor> descriptors,
+      String qualifier) {
     super();
     this.descriptors = descriptors;
     if (object == null) {
       throw new IllegalArgumentException("The object must be set in an ApiObjectRef");
     }
     this.path = (path == null ? StringConstant.EMPTY : path);
-    initMeta(object, descriptors);
+    initMeta(object, descriptors, qualifier);
     initPropertyEntries(path);
     setObjectInternal(object, ChangeState.NEW);
   }
 
-  private void initMeta(Object object, Map<Class<?>, ApiBeanDescriptor> descriptors) {
+  private void initMeta(Object object, Map<Class<?>, ApiBeanDescriptor> descriptors,
+      String qualifier) {
     Class<?> objectClass = object.getClass();
     if (object instanceof Factory) {
       Callback callback = ((Factory) object).getCallback(0);
@@ -152,7 +160,13 @@ public class ApiObjectRef {
       }
     } else {
       try {
-        this.meta = ApiObjects.meta(objectClass, descriptors);
+        // if (Strings.isNullOrEmpty(qualifier)) {
+        // this.qualifier = objectClass.getName();
+        // } else {
+        // this.qualifier = qualifier + "-" + objectClass.getName();
+        // }
+        this.qualifier = qualifier;
+        this.meta = ApiObjects.meta(objectClass, descriptors, this.qualifier);
         this.descriptor = descriptors.get(objectClass);
         this.objectClass = objectClass;
       } catch (ExecutionException e) {
@@ -637,11 +651,11 @@ public class ApiObjectRef {
     this.currentState = currentState;
   }
 
-  public final ApiBeanDescriptor getDescriptor() {
+  final ApiBeanDescriptor getDescriptor() {
     return descriptor;
   }
 
-  public final Map<Class<?>, ApiBeanDescriptor> getDescriptors() {
+  final Map<Class<?>, ApiBeanDescriptor> getDescriptors() {
     return descriptors;
   }
 
