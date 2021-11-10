@@ -70,7 +70,7 @@ public class ObjectHistoryViewModelImpl extends ObjectEditingImpl
   
   private void openVersion(URI versionUri, String viewName) {
     uiNavigationApi.navigateTo(new NavigationTarget()
-        .viewName(viewName + "Dialog")
+        .viewName(viewName)
         .type(NavigationTargetType.DIALOG)
         .putParametersItem("entry", versionUri));
   }
