@@ -3,15 +3,18 @@ package org.smartbit4all.sql.applychange;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.sql.DataSource;
 import org.smartbit4all.core.object.ObjectDefinition;
+import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.domain.meta.jdbc.JDBCDataConverterConfig;
 import org.smartbit4all.domain.service.identifier.NextIdentifier;
-import org.smartbit4all.domain.service.modify.ApplyChangeObjectConfig;
-import org.smartbit4all.domain.service.modify.ApplyChangeUtil;
+import org.smartbit4all.domain.service.modify.applychange.ApplyChangeObjectConfig;
+import org.smartbit4all.domain.service.modify.applychange.ApplyChangeObjectConfig.CollectionProcessorConfig;
+import org.smartbit4all.domain.service.modify.applychange.ApplyChangeUtil;
 import org.smartbit4all.domain.utility.crud.Crud;
 import org.smartbit4all.sql.config.SQLConfig;
 import org.smartbit4all.sql.config.SQLDBParameter;
@@ -32,6 +35,7 @@ import org.smartbit4all.sql.testmodel_with_uri.refbeans.CDef;
 import org.smartbit4all.sql.testmodel_with_uri.refbeans.DDef;
 import org.smartbit4all.sql.testmodel_with_uri.refbeans.EDef;
 import org.smartbit4all.sql.testmodel_with_uri.refbeans.FDef;
+import org.smartbit4all.sql.testmodel_with_uri.refbeans.GDef;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -97,7 +101,7 @@ public class ApplyChangeTestConfig {
   @Bean
   public Supplier<ApplyChangeObjectConfig> acoRefbeanConfig(ADef aDef, BDef bDef, CDef cDef,
       EDef eDef, FDef fDef,
-      DDef dDef, SQLIdentifierService idService) {
+      DDef dDef, GDef gDef, SQLIdentifierService idService) {
 // @formatter:off
     return () -> {
       return ApplyChangeObjectConfig.builder(ACT_A_FCC.class, aDef)
@@ -115,7 +119,8 @@ public class ApplyChangeTestConfig {
           .addReferenceMapping("actC")
             .addPropertyMapping("cf3", aDef.bDef().cDef().cf3())
             .addPropertyMapping("ff1", aDef.bDef().cDef().fDef().ff1())
-            .addCollectionMapping("actdList", dDef.cId(), 
+            .addCollectionMapping("actdList", dDef.cId(), aDef.bDef().cDef().id())
+              .config(
                 ApplyChangeObjectConfig.builder(ACT_D.class, dDef)
                   .entityIdProperty(dDef.uid())
                   .entityPrimaryKeyIdProvider(stringId -> 
@@ -126,9 +131,13 @@ public class ApplyChangeTestConfig {
                       uid -> createPrimarayKeyIdProvider((String) uid, cDef.id(), cDef.uid()))
                   .addEntityReferenceDescriptor(eDef.uid(), 
                       uid -> createPrimarayKeyIdProvider((String) uid, eDef.id(), eDef.uid()))
-                .build())
-              .referredProperty(aDef.bDef().cDef().id())
+                  .build())
               .end()
+          .addCollectionMapping("buids", gDef.aId(), aDef.id())
+            .collectionProcessor(buidProcessor(bDef, gDef), 
+                CollectionProcessorConfig.of(gDef, gDef.uid(), id -> 
+                      createPrimarayKeyIdProvider(id.toString(), gDef.id(), gDef.uid())))
+            .and()
           .addEntityReferenceDescriptor(bDef.uid(), 
               uid -> createPrimarayKeyIdProvider((String) uid, bDef.id(), bDef.uid()))
           .addEntityReferenceDescriptor(cDef.uid(), 
@@ -139,6 +148,32 @@ public class ApplyChangeTestConfig {
     };
   }
 // @formatter:on
+
+  private BiFunction<Object, Object, Map<Property<?>, Object>> buidProcessor(BDef bDef, GDef gDef) {
+    return (aBean, bUid) -> {
+      ACT_A_FCC actA = (ACT_A_FCC) aBean;
+
+      Long bId = null;
+      String bf1 = null;
+      try {
+        DataRow bRow = Crud.read(bDef)
+            .select(bDef.id(), bDef.bf1())
+            .where(bDef.uid().eq(bUid.toString()))
+            .onlyOne()
+            .orElse(null);
+        bId = bRow.get(bDef.id());
+        bf1 = bRow.get(bDef.bf1());
+      } catch (Exception e) {
+        // nope
+      }
+
+      Map<Property<?>, Object> valuesByProps = new HashMap<>();
+      valuesByProps.put(gDef.bId(), bId);
+      valuesByProps.put(gDef.af1(), actA.getAf1());
+      valuesByProps.put(gDef.bf1(), bf1);
+      return valuesByProps;
+    };
+  }
 
 
   @Bean
@@ -154,15 +189,15 @@ public class ApplyChangeTestConfig {
           .addPropertyMapping(TicketFCC.URI, ticketDef.uri())
           .addReferenceMapping(TicketFCC.PRIMARY_PERSON/*, ticketDef.primaryPersonId()*/)
             .addPropertyMapping(Person.NAME, ticketDef.primaryPerson().name())
-            .addCollectionMapping(Person.ADDRESSES, addressDef.personId(), createAddressMapping(addressDef))
-              .referredProperty(ticketDef.primaryPerson().id())
+            .addCollectionMapping(Person.ADDRESSES, addressDef.personId(), ticketDef.primaryPerson().id())
+              .config(createAddressMapping(addressDef))
               .end()
             
             
           .addReferenceMapping(TicketFCC.SECONDARY_PERSON)
             .addPropertyMapping(Person.NAME, ticketDef.secondaryPerson().name())
-            .addCollectionMapping(Person.ADDRESSES, addressDef.personId(), createAddressMapping(addressDef))
-              .referredProperty(ticketDef.secondaryPerson().id())
+            .addCollectionMapping(Person.ADDRESSES, addressDef.personId(), ticketDef.primaryPerson().id())
+              .config(createAddressMapping(addressDef))
           .build();
     };
  // @formatter:on

@@ -1,10 +1,11 @@
-package org.smartbit4all.domain.service.modify;
+package org.smartbit4all.domain.service.modify.applychange;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Property;
@@ -12,7 +13,7 @@ import org.smartbit4all.domain.meta.PropertyOwned;
 import org.smartbit4all.domain.meta.PropertyRef;
 import org.smartbit4all.domain.meta.PropertySet;
 
-public class ApplyChangeObjectConfig {
+public class ApplyChangeObjectConfig implements EntityChangeConfig {
 
   private String name;
   private EntityDefinition rootEntity;
@@ -54,6 +55,7 @@ public class ApplyChangeObjectConfig {
       cmi.referredProperty = cmb.referredProperty;
       cmi.name = cmb.propertyName;
       cmi.oc2AcoMapping = cmb.config;
+      cmi.collectionProcessor = cmb.collectionProcessor;
       collectionMappings.put(cmi.name, cmi);
     });
     builder.referenceDescriptors.forEach(rd -> {
@@ -76,6 +78,7 @@ public class ApplyChangeObjectConfig {
     return name;
   }
 
+  @Override
   public EntityDefinition getRootEntity() {
     return rootEntity;
   }
@@ -92,10 +95,12 @@ public class ApplyChangeObjectConfig {
     return collectionMappings;
   }
 
+  @Override
   public Property<String> getEntityIdProperty() {
     return entityIdProperty;
   }
 
+  @Override
   public Function<Object, Map<Property<?>, Object>> getEntityPrimaryKeyIdProvider() {
     return entityPrimaryKeyIdProvider;
   }
@@ -155,6 +160,7 @@ public class ApplyChangeObjectConfig {
     private Property<?> refferringDetailProperty;
     private Property<?> referredProperty;
     private ApplyChangeObjectConfig oc2AcoMapping;
+    private CollectionProcessor collectionProcessor;
 
     public Property<?> getRefferringDetailProperty() {
       return refferringDetailProperty;
@@ -166,6 +172,32 @@ public class ApplyChangeObjectConfig {
 
     public Property<?> getReferredProperty() {
       return referredProperty;
+    }
+
+    public CollectionProcessor getCollectionProcessor() {
+      return collectionProcessor;
+    }
+
+  }
+
+  public static final class CollectionProcessor {
+    BiFunction<Object, Object, Map<Property<?>, Object>> collectionProcessorFunc;
+    CollectionProcessorConfig collectionProcessorConfig;
+
+    public CollectionProcessor(
+        BiFunction<Object, Object, Map<Property<?>, Object>> collectionProcessorFunc,
+        CollectionProcessorConfig collectionProcessorConfig) {
+      super();
+      this.collectionProcessorFunc = collectionProcessorFunc;
+      this.collectionProcessorConfig = collectionProcessorConfig;
+    }
+
+    public BiFunction<Object, Object, Map<Property<?>, Object>> getCollectionProcessorFunc() {
+      return collectionProcessorFunc;
+    }
+
+    public CollectionProcessorConfig getCollectionProcessorConfig() {
+      return collectionProcessorConfig;
     }
 
   }
@@ -259,9 +291,9 @@ public class ApplyChangeObjectConfig {
     }
 
     public CollectionMappingBuilder addCollectionMapping(String propertyName,
-        Property<?> referringProperty, ApplyChangeObjectConfig config) {
+        Property<?> referringProperty, Property<?> referredProperty) {
       CollectionMappingBuilder collectionMappingBuilder =
-          new CollectionMappingBuilder(propertyName, referringProperty, config, this);
+          new CollectionMappingBuilder(propertyName, referringProperty, referredProperty, this);
       this.collectionMappingBuilders.add(collectionMappingBuilder);
       return collectionMappingBuilder;
     }
@@ -304,10 +336,10 @@ public class ApplyChangeObjectConfig {
                 + "for a bean!");
       }
       boolean hasMissingConfig = collectionMappingBuilders.stream()
-          .anyMatch(rb -> rb.config == null);
+          .anyMatch(rb -> rb.config == null && rb.collectionProcessor == null);
       if (hasMissingConfig) {
         throw new IllegalStateException(
-            "Can not build ApplyChangeObjectConfig with missing inner config declaration!");
+            "Can not build ApplyChangeObjectConfig without at least a config or a collectionProcessor!");
       }
     }
 
@@ -403,10 +435,10 @@ public class ApplyChangeObjectConfig {
     }
 
     public CollectionMappingBuilderRef addCollectionMapping(String propertyName,
-        Property<?> referringProperty, ApplyChangeObjectConfig config) {
+        Property<?> referringProperty, Property<?> referredProperty) {
       CollectionMappingBuilderRef collectionMappingBuilder =
           new CollectionMappingBuilderRef(createReferencePropName(propertyName), referringProperty,
-              config,
+              referredProperty,
               this, rootBuilder);
       rootBuilder.collectionMappingBuilders.add(collectionMappingBuilder);
       return collectionMappingBuilder;
@@ -450,30 +482,49 @@ public class ApplyChangeObjectConfig {
     Property<?> referringProperty;
     Property<?> referredProperty;
     ApplyChangeObjectConfig config;
+    CollectionProcessor collectionProcessor;
     private P parent;
 
     private CollectionMappingBuilderBase(String propertyName, Property<?> referringProperty,
-        ApplyChangeObjectConfig config,
+        Property<?> referredProperty,
         P parent) {
       Objects.requireNonNull(propertyName, "propertyName can not be null!");
       Objects.requireNonNull(referringProperty, "referringProperty can not be null!");
-      Objects.requireNonNull(config, "config can not be null!");
+      Objects.requireNonNull(referredProperty, "referredProperty can not be null!");
       this.propertyName = propertyName;
       this.referringProperty = referringProperty;
-      this.config = config;
+      this.referredProperty = referredProperty;
       this.parent = parent;
     }
 
     abstract T self();
 
-    public T referredProperty(Property<?> referredProperty) {
-      Objects.requireNonNull(referredProperty, "referredProperty can not be null!");
-      this.referredProperty = referredProperty;
+    public T config(ApplyChangeObjectConfig config) {
+      Objects.requireNonNull(config, "config can not be null!");
+      this.config = config;
+      return self();
+    }
+
+    public T collectionProcessor(
+        BiFunction<Object, Object, Map<Property<?>, Object>> collectionProcessor,
+        CollectionProcessorConfig collectionProcessorConfig) {
+      Objects.requireNonNull(collectionProcessor, "collectionProcessor can not be null!");
+      Objects.requireNonNull(collectionProcessorConfig,
+          "collectionProcessorConfig can not be null!");
+      this.collectionProcessor =
+          new CollectionProcessor(collectionProcessor, collectionProcessorConfig);
       return self();
     }
 
     public P and() {
+      check();
       return parent;
+    }
+
+    protected void check() {
+      if (config == null && collectionProcessor == null) {
+        throw new IllegalStateException("config or collectionProcessor must be defined!");
+      }
     }
 
   }
@@ -482,9 +533,9 @@ public class ApplyChangeObjectConfig {
       extends CollectionMappingBuilderBase<Builder, CollectionMappingBuilder> {
 
     public CollectionMappingBuilder(String propertyName, Property<?> referringProperty,
-        ApplyChangeObjectConfig config,
+        Property<?> referredProperty,
         Builder parent) {
-      super(propertyName, referringProperty, config, parent);
+      super(propertyName, referringProperty, referredProperty, parent);
     }
 
     @Override
@@ -500,10 +551,10 @@ public class ApplyChangeObjectConfig {
     Builder rootBuilder;
 
     public CollectionMappingBuilderRef(String propertyName, Property<?> referringProperty,
-        ApplyChangeObjectConfig config,
+        Property<?> referredProperty,
         ReferenceMappingBuilder parent,
         Builder rootBuilder) {
-      super(propertyName, referringProperty, config, parent);
+      super(propertyName, referringProperty, referredProperty, parent);
       this.rootBuilder = rootBuilder;
     }
 
@@ -513,11 +564,59 @@ public class ApplyChangeObjectConfig {
     }
 
     public ApplyChangeObjectConfig build() {
+      check();
       return rootBuilder.build();
     }
 
     public Builder end() {
+      check();
       return rootBuilder;
+    }
+
+  }
+
+  public static class CollectionProcessorConfig implements EntityChangeConfig {
+
+    private EntityDefinition entityDef;
+    private Property<String> entityUidProperty;
+    private Function<Object, Map<Property<?>, Object>> entityIdProvider;
+
+    private CollectionProcessorConfig(EntityDefinition entityDef,
+        Property<String> entityUidProperty,
+        Function<Object, Map<Property<?>, Object>> entityIdProvider) {
+      this.entityDef = entityDef;
+      this.entityIdProvider = entityIdProvider;
+      this.entityUidProperty = entityUidProperty;
+    }
+
+    public static CollectionProcessorConfig of(EntityDefinition entityDef,
+        Property<String> entityUidProperty,
+        Function<Object, Map<Property<?>, Object>> entityIdProvider) {
+      return new CollectionProcessorConfig(entityDef, entityUidProperty, entityIdProvider);
+    }
+
+    public static CollectionProcessorConfig of(EntityDefinition entityDef,
+        Property<String> entityUidProperty) {
+      return new CollectionProcessorConfig(entityDef, entityUidProperty, null);
+    }
+
+    public static CollectionProcessorConfig of(EntityDefinition entityDef) {
+      return new CollectionProcessorConfig(entityDef, null, null);
+    }
+
+    @Override
+    public EntityDefinition getRootEntity() {
+      return entityDef;
+    }
+
+    @Override
+    public Property<String> getEntityIdProperty() {
+      return entityUidProperty;
+    }
+
+    @Override
+    public Function<Object, Map<Property<?>, Object>> getEntityPrimaryKeyIdProvider() {
+      return entityIdProvider;
     }
 
   }

@@ -1,4 +1,4 @@
-package org.smartbit4all.domain.service.modify;
+package org.smartbit4all.domain.service.modify.applychange;
 
 import java.util.List;
 import org.slf4j.Logger;
@@ -9,6 +9,10 @@ import org.smartbit4all.domain.data.DataColumn;
 import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.meta.PropertySet;
+import org.smartbit4all.domain.service.modify.Create;
+import org.smartbit4all.domain.service.modify.Delete;
+import org.smartbit4all.domain.service.modify.Update;
+import org.smartbit4all.domain.service.modify.UpdateOutput;
 import org.smartbit4all.domain.utility.crud.Crud;
 
 /**

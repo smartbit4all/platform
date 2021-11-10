@@ -1,4 +1,4 @@
-package org.smartbit4all.domain.service.modify;
+package org.smartbit4all.domain.service.modify.applychange;
 
 import java.util.HashMap;
 import java.util.List;
@@ -29,12 +29,13 @@ import org.smartbit4all.domain.meta.PropertyOwned;
 import org.smartbit4all.domain.meta.PropertyRef;
 import org.smartbit4all.domain.meta.Reference;
 import org.smartbit4all.domain.meta.Reference.Join;
-import org.smartbit4all.domain.service.modify.ApplyChangeObjectConfig.CollectionMappingItem;
-import org.smartbit4all.domain.service.modify.ApplyChangeObjectConfig.PropertyMappingItem;
-import org.smartbit4all.domain.service.modify.ApplyChangeObjectConfig.PropertyProcessorMappingItem;
-import org.smartbit4all.domain.service.modify.ApplyChangeObjectConfig.ReferenceDescriptor;
-import org.smartbit4all.domain.service.modify.ApplyChangeObjectConfig.ReferenceMappingItem;
-import org.smartbit4all.domain.service.modify.ApplyChangeOperation.ChangeOperation;
+import org.smartbit4all.domain.service.modify.applychange.ApplyChangeObjectConfig.CollectionMappingItem;
+import org.smartbit4all.domain.service.modify.applychange.ApplyChangeObjectConfig.CollectionProcessor;
+import org.smartbit4all.domain.service.modify.applychange.ApplyChangeObjectConfig.PropertyMappingItem;
+import org.smartbit4all.domain.service.modify.applychange.ApplyChangeObjectConfig.PropertyProcessorMappingItem;
+import org.smartbit4all.domain.service.modify.applychange.ApplyChangeObjectConfig.ReferenceDescriptor;
+import org.smartbit4all.domain.service.modify.applychange.ApplyChangeObjectConfig.ReferenceMappingItem;
+import org.smartbit4all.domain.service.modify.applychange.ApplyChangeOperation.ChangeOperation;
 import org.smartbit4all.domain.service.transfer.TransferService;
 import org.springframework.util.ObjectUtils;
 
@@ -108,11 +109,11 @@ public class ApplyChangeServiceImpl implements ApplyChangeService {
     Map<String, ApplyChangeOperation> referredEntityAcosByName = new HashMap<>();
     referredEntityAcosByName.put("root", aco);
 
-    processObjectChange(objectChange, config, rootId, referredEntityAcosByName, "");
+    processObjectChange(objectChange, config, rootId, rootObject, referredEntityAcosByName, "");
     return aco;
   }
 
-  private ApplyChangeOperation createAcoBase(ApplyChangeObjectConfig config,
+  private ApplyChangeOperation createAcoBase(EntityChangeConfig config,
       ChangeOperation changeOperation, String rootId) {
     EntityDefinition rootEntity = config.getRootEntity();
     TableData<EntityDefinition> rootTable = TableDatas.of(rootEntity);
@@ -136,7 +137,7 @@ public class ApplyChangeServiceImpl implements ApplyChangeService {
   }
 
   private void processObjectChange(ObjectChange objectChange, ApplyChangeObjectConfig config,
-      String rootId, Map<String, ApplyChangeOperation> referredEntityAcosByName,
+      String rootId, Object rootObject, Map<String, ApplyChangeOperation> referredEntityAcosByName,
       String parentName) {
 
     ChangeOperation changeOperation = getChangeOperation(objectChange.getOperation());
@@ -173,7 +174,7 @@ public class ApplyChangeServiceImpl implements ApplyChangeService {
       // create ApplyChangeOperation with recursive method
       ObjectChange changedReference = rChange.getChangedReference();
 
-      processObjectChange(changedReference, config, rootId, referredEntityAcosByName,
+      processObjectChange(changedReference, config, rootId, rootObject, referredEntityAcosByName,
           referenceName);
 
     }
@@ -214,19 +215,29 @@ public class ApplyChangeServiceImpl implements ApplyChangeService {
         String containmentId =
             createPotentialContainmentId(rootId, collectionName, j);
         ApplyChangeObjectConfig collectionConfig = collectionMappingItem.getOc2AcoMapping();
-        ApplyChangeOperation collectionAco = createApplyChangeOperation(collectionChangeObject,
-            collectionConfig,
-            collectionObject,
-            containmentId);
+        ApplyChangeOperation collectionAco = null;
+        if (collectionConfig != null) {
+          collectionAco = createApplyChangeOperation(collectionChangeObject,
+              collectionConfig,
+              collectionObject,
+              containmentId);
+        }
 
-        if (false) {// TODO config has containmentProcessor
+        CollectionProcessor collectionProcessor = collectionMappingItem.getCollectionProcessor();
+        if (collectionProcessor != null) {
           if (collectionAco == null) {
             ChangeOperation collectionChangeOperation =
                 getChangeOperation(collectionChangeObject.getOperation());
             collectionAco =
-                createAcoBase(collectionConfig, collectionChangeOperation, containmentId);
+                createAcoBase(collectionProcessor.getCollectionProcessorConfig(),
+                    collectionChangeOperation, containmentId);
           }
-          // process the collectionObject
+          Map<Property<?>, Object> valuesByProps =
+              collectionProcessor.getCollectionProcessorFunc().apply(rootObject, collectionObject);
+          if (!ObjectUtils.isEmpty(valuesByProps)) {
+            final ApplyChangeOperation collectionAcoFin = collectionAco;
+            valuesByProps.forEach((prop, value) -> setProperty(collectionAcoFin, prop, value));
+          }
         }
 
         if (collectionAco != null) {

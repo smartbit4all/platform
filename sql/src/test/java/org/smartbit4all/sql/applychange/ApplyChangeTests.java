@@ -19,7 +19,7 @@ import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.data.TableDatas;
 import org.smartbit4all.domain.meta.PropertySet;
-import org.smartbit4all.domain.service.modify.ApplyChangeService;
+import org.smartbit4all.domain.service.modify.applychange.ApplyChangeService;
 import org.smartbit4all.domain.utility.crud.Crud;
 import org.smartbit4all.sql.testmodel_with_uri.AddressDef;
 import org.smartbit4all.sql.testmodel_with_uri.PersonDef;
@@ -33,6 +33,7 @@ import org.smartbit4all.sql.testmodel_with_uri.refbeans.ACT_C;
 import org.smartbit4all.sql.testmodel_with_uri.refbeans.ACT_D;
 import org.smartbit4all.sql.testmodel_with_uri.refbeans.ADef;
 import org.smartbit4all.sql.testmodel_with_uri.refbeans.DDef;
+import org.smartbit4all.sql.testmodel_with_uri.refbeans.GDef;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -44,8 +45,8 @@ import org.springframework.test.context.jdbc.Sql;
     ApplyChangeTestConfig.class,
 })
 @Sql({"/script/applychanges/applychanges_schema.sql",
-    "/script/applychanges/applychanges_data_01.sql",
-    "/script/applychanges/applychanges_refentities_schema.sql"
+    "/script/applychanges/applychanges_refentities_schema.sql",
+    "/script/applychanges/applychanges_data_01.sql"
 })
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
@@ -71,6 +72,9 @@ public class ApplyChangeTests {
   private DDef dDef;
 
   @Autowired
+  private GDef gDef;
+
+  @Autowired
   private ApplyChangeService applyChangeService;
 
   @BeforeAll
@@ -90,6 +94,7 @@ public class ApplyChangeTests {
     domainBeans.add(ACT_B.class);
     domainBeans.add(ACT_C.class);
     domainBeans.add(ACT_D.class);
+    domainBeans.add(URI.class);
     refbeanDescriptors = ApiBeanDescriptor.of(domainBeans);
   }
 
@@ -103,6 +108,9 @@ public class ApplyChangeTests {
     assertActA(actA);
     assertActDs(actA);
 
+    TableData<GDef> gTable = Crud.read(gDef).selectAllProperties().listData();
+    System.out.println("Queried G def result:\n" + TableDatas.toStringAdv(gTable));
+    assertEquals(2, gTable.size());
 
     ACT_A_FCC actAV2 = createModifiedActA();
 
@@ -191,6 +199,9 @@ public class ApplyChangeTests {
     actD1.setEf1("d1_ef1_value");
     actD2.setDf1("d2_df1_value");
     actD2.setDf1("d2_ef1_value");
+
+    actA.getBuids().add(URI.create("b_0"));
+    actA.getBuids().add(URI.create("b_1"));
     return actA;
   }
 
