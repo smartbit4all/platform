@@ -136,4 +136,11 @@ public interface OrgApi {
    * @return
    */
   URI updateGroup(Group group);
+
+  /**
+   * Restore previously deleted user.
+   * 
+   * @param userUri
+   */
+  void restoreDeletedUser(URI userUri);
 }

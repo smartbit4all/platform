@@ -43,6 +43,7 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
   public static final String ORG_SCHEME = "org";
 
   private final String USER_OBJECTMAP_REFERENCE = "userList";
+  private final String INVALID_USER_OBJECTMAP_REFERENCE = "invalidUserList";
   private final String GROUP_OBJECTMAP_REFERENCE = "groupList";
 
   private final String USERS_OF_GROUP_LIST_REFERENCE = "usersOfGroupList";
@@ -350,11 +351,15 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
 
   @Override
   public void removeUser(URI userUri) {
-    // remove from storage
-    setObjectToDeleted(userUri, User.class);
+    // set to inactive
+    setUserToInactive(userUri);
 
-    // remove from setting USER_LIST_REFERENCE
-    removeUserFromUserListReference(userUri);
+    // remove from setting USER_OBJECTMAP_REFERENCE
+    removeItemFromObjectMapByValue(USER_OBJECTMAP_REFERENCE, userUri);
+
+    // add to INVALID_USER_OBJECTMAP-REFERENCE
+    User user = getUser(userUri);
+    addToObjectMap(INVALID_USER_OBJECTMAP_REFERENCE, user.getUsername(), userUri);
 
     // Collect Group containing user
     GroupsOfUser groupsOfUser = getGroupsOfUserObject(userUri);
@@ -372,7 +377,6 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
         }
       }
     }
-    // ... save
     getStorage().save(usersOfGroupCollectionReference);
 
     // Remove GroupsOfUser object
@@ -383,6 +387,12 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
     List<GroupsOfUser> groupsOfUserCollection = collection.getGroupsOfUserCollection();
     groupsOfUserCollection.removeIf(o -> o.getUserUri().equals(userUri));
     getStorage().save(storageObject);
+  }
+
+  private void setUserToInactive(URI userUri) {
+    StorageObject<User> userSO = getStorage().load(userUri, User.class);
+    userSO.getObject().setInactive(true);
+    getStorage().save(userSO);
   }
 
   /**
@@ -401,15 +411,10 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
   }
 
   /**
-   * Removes the user with the given uri from the USER_LIST_REFERNCE ObjectMap, which contains the
-   * username - userUri mapping of all existing users.
+   * Removes the object with the given uri from the ObjectMap
    * 
-   * @param userUri uri of the user to remove
+   * @param userUri
    */
-  private void removeUserFromUserListReference(URI userUri) {
-    removeItemFromObjectMapByValue(USER_OBJECTMAP_REFERENCE, userUri);
-  }
-
   private void removeItemFromObjectMapByValue(String mapName, URI value) {
     ObjectMap objectMap = loadObjectMap(mapName);
 
@@ -638,5 +643,25 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
         getStorage().settings().getUri(),
         new ObjectMapRequest().mapName(mapName).putUrisToRemoveItem(key, value));
   }
+
+  @Override
+  public void restoreDeletedUser(URI userUri) {
+
+    // remove from setting INVALID_USER_OBJECTMAP_REFERENCE
+    removeItemFromObjectMapByValue(INVALID_USER_OBJECTMAP_REFERENCE, userUri);
+
+    // add to USER_OBJECTMAP_REFERENCE
+    User user = getUser(userUri);
+    addToObjectMap(USER_OBJECTMAP_REFERENCE, user.getUsername(), userUri);
+
+    setUserToActive(userUri);
+  }
+
+  private void setUserToActive(URI userUri) {
+    StorageObject<User> userSO = getStorage().load(userUri, User.class);
+    userSO.getObject().setInactive(false);
+    getStorage().save(userSO);
+  }
+
 
 }

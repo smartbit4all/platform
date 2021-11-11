@@ -196,16 +196,36 @@ class OrgApiTest {
   }
 
   @Test
-  void removeGroup() {
+  void restoreUserTest() {
+    URI savedUser = orgApi.saveUser(new User().username("restoreUserTest"));
+
+    User user = orgApi.getUser(savedUser);
+    assertNotNull(user);
+
+    orgApi.removeUser(savedUser);
+    List<User> allUsers = orgApi.getAllUsers();
+
+    assertFalse(allUsers.contains(user));
+
+    orgApi.restoreDeletedUser(savedUser);
+
+    List<User> allUsers2 = orgApi.getAllUsers();
+    User reactivatedUser = orgApi.getUser(savedUser);
+    assertFalse(reactivatedUser.getInactive());
+    assertTrue(allUsers2.contains(reactivatedUser));
+
+  }
+
+  @Test
+  void removeGroupTest() {
     URI savedGroup = orgApi.saveGroup(new Group().name("removeGroupTest"));
     Group group = orgApi.getGroup(savedGroup);
     assertNotNull(group);
 
     orgApi.removeGroup(savedGroup);
-    Group removedGroup = orgApi.getGroup(savedGroup);
     List<Group> allGroups = orgApi.getAllGroups();
 
-    assertFalse(allGroups.contains(removedGroup));
+    assertFalse(allGroups.contains(group));
   }
 
   @Test

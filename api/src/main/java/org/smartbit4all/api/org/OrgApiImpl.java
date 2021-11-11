@@ -244,7 +244,6 @@ public abstract class OrgApiImpl implements OrgApi, InitializingBean {
   @Override
   public void removeSubGroup(URI parentGroupUri, URI childGroupUri) {
     // TODO Auto-generated method stub
-
   }
 
   @Override
@@ -257,6 +256,11 @@ public abstract class OrgApiImpl implements OrgApi, InitializingBean {
   public URI updateUser(User user) {
     // TODO Auto-generated method stub
     return null;
+  }
+
+  @Override
+  public void restoreDeletedUser(URI userUri) {
+    // TODO Auto-generated method stub
   }
 
 }
