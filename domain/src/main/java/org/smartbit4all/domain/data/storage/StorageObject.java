@@ -172,9 +172,10 @@ public final class StorageObject<T> {
    * 
    * @param object
    */
-  public final void setObject(T object) {
+  public final StorageObject<T> setObject(T object) {
     this.object = object;
     definition.setUri(object, uri);
+    return this;
   }
 
   /**
