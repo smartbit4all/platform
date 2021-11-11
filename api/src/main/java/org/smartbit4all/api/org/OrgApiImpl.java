@@ -263,4 +263,10 @@ public abstract class OrgApiImpl implements OrgApi, InitializingBean {
     // TODO Auto-generated method stub
   }
 
+  @Override
+  public List<User> getInactiveUsers() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
 }

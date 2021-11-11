@@ -128,7 +128,6 @@ public interface OrgApi {
    */
   URI updateUser(User user);
 
-
   /**
    * Update group.
    * 
@@ -143,4 +142,11 @@ public interface OrgApi {
    * @param userUri
    */
   void restoreDeletedUser(URI userUri);
+
+  /**
+   * List all users set to inactive status.
+   *
+   * @return
+   */
+  public List<User> getInactiveUsers();
 }

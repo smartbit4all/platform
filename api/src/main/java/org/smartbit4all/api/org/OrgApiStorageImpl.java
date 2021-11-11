@@ -43,7 +43,7 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
   public static final String ORG_SCHEME = "org";
 
   private final String USER_OBJECTMAP_REFERENCE = "userList";
-  private final String INVALID_USER_OBJECTMAP_REFERENCE = "invalidUserList";
+  private final String INACTIVE_USER_OBJECTMAP_REFERENCE = "inactiveUserList";
   private final String GROUP_OBJECTMAP_REFERENCE = "groupList";
 
   private final String USERS_OF_GROUP_LIST_REFERENCE = "usersOfGroupList";
@@ -185,6 +185,18 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
     List<User> users = new ArrayList<>();
 
     ObjectMap userObjectMap = loadObjectMap(USER_OBJECTMAP_REFERENCE);
+
+    Collection<URI> values = userObjectMap.getUris().values();
+    users = getStorage().read(new ArrayList<>(values), User.class);
+
+    return users;
+  }
+
+  @Override
+  public List<User> getInactiveUsers() {
+    List<User> users = new ArrayList<>();
+
+    ObjectMap userObjectMap = loadObjectMap(INACTIVE_USER_OBJECTMAP_REFERENCE);
 
     Collection<URI> values = userObjectMap.getUris().values();
     users = getStorage().read(new ArrayList<>(values), User.class);
@@ -359,7 +371,7 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
 
     // add to INVALID_USER_OBJECTMAP-REFERENCE
     User user = getUser(userUri);
-    addToObjectMap(INVALID_USER_OBJECTMAP_REFERENCE, user.getUsername(), userUri);
+    addToObjectMap(INACTIVE_USER_OBJECTMAP_REFERENCE, user.getUsername(), userUri);
 
     // Collect Group containing user
     GroupsOfUser groupsOfUser = getGroupsOfUserObject(userUri);
@@ -648,7 +660,7 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
   public void restoreDeletedUser(URI userUri) {
 
     // remove from setting INVALID_USER_OBJECTMAP_REFERENCE
-    removeItemFromObjectMapByValue(INVALID_USER_OBJECTMAP_REFERENCE, userUri);
+    removeItemFromObjectMapByValue(INACTIVE_USER_OBJECTMAP_REFERENCE, userUri);
 
     // add to USER_OBJECTMAP_REFERENCE
     User user = getUser(userUri);
