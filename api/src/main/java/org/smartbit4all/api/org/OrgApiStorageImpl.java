@@ -25,6 +25,7 @@ import org.smartbit4all.api.org.bean.UsersOfGroupCollection;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.setting.LocaleString;
 import org.smartbit4all.api.storage.bean.ObjectMap;
+import org.smartbit4all.api.storage.bean.ObjectMapRequest;
 import org.smartbit4all.api.storage.bean.ObjectReference;
 import org.smartbit4all.api.storage.bean.StorageSettings;
 import org.smartbit4all.core.utility.ReflectionUtility;
@@ -41,8 +42,8 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
 
   public static final String ORG_SCHEME = "org";
 
-  private final String USER_LIST_REFERENCE = "userList";
-  private final String GROUP_LIST_REFERENCE = "groupList";
+  private final String USER_OBJECTMAP_REFERENCE = "userList";
+  private final String GROUP_OBJECTMAP_REFERENCE = "groupList";
 
   private final String USERS_OF_GROUP_LIST_REFERENCE = "usersOfGroupList";
   private final String GROUPS_OF_USER_LIST_REFERENCE = "groupsOfUserList";
@@ -130,6 +131,10 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
   }
 
 
+  private ObjectMap loadObjectMap(String mapName) {
+    return getStorage().getAttachedMap(getStorage().settings().getUri(), mapName);
+  }
+
   private <T> StorageObject<T> loadSettingsReference(String referenceName,
       Class<T> clazz) {
 
@@ -166,7 +171,7 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
   public List<Group> getAllGroups() {
     List<Group> groups = new ArrayList<>();
 
-    ObjectMap groupObjectMap = readSettingsReference(GROUP_LIST_REFERENCE, ObjectMap.class);
+    ObjectMap groupObjectMap = loadObjectMap(GROUP_OBJECTMAP_REFERENCE);
 
     Collection<URI> values = groupObjectMap.getUris().values();
     groups = getStorage().read(new ArrayList<>(values), Group.class);
@@ -178,7 +183,7 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
   public List<User> getAllUsers() {
     List<User> users = new ArrayList<>();
 
-    ObjectMap userObjectMap = readSettingsReference(USER_LIST_REFERENCE, ObjectMap.class);
+    ObjectMap userObjectMap = loadObjectMap(USER_OBJECTMAP_REFERENCE);
 
     Collection<URI> values = userObjectMap.getUris().values();
     users = getStorage().read(new ArrayList<>(values), User.class);
@@ -203,7 +208,6 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
         if (usersOfGroup.getGroupUri().equals(uri)) {
           users.addAll(getStorage().read(usersOfGroup.getUsers(), User.class));
         }
-
       }
     }
     return new ArrayList<>(users);
@@ -274,12 +278,7 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
     groupStorageObj.setObject(group);
     URI uri = getStorage().save(groupStorageObj);
 
-    StorageObject<ObjectMap> groupStorage =
-        loadSettingsReference(GROUP_LIST_REFERENCE, ObjectMap.class);
-
-    ObjectMap uris = groupStorage.getObject();
-    uris.putUrisItem(group.getName(), uri);
-    getStorage().save(groupStorage);
+    addToObjectMap(GROUP_OBJECTMAP_REFERENCE, group.getName(), uri);
 
     return uri;
   }
@@ -408,12 +407,23 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
    * @param userUri uri of the user to remove
    */
   private void removeUserFromUserListReference(URI userUri) {
-    StorageObject<ObjectMap> userListReference =
-        loadSettingsReference(USER_LIST_REFERENCE, ObjectMap.class);
-    ObjectMap userList = userListReference.getObject();
-    Map<String, URI> userUris = userList.getUris();
-    userUris.values().remove(userUri);
-    getStorage().save(userListReference);
+    removeItemFromObjectMapByValue(USER_OBJECTMAP_REFERENCE, userUri);
+  }
+
+  private void removeItemFromObjectMapByValue(String mapName, URI value) {
+    ObjectMap objectMap = loadObjectMap(mapName);
+
+    String keyByValue = getKeyByValue(value, objectMap);
+    removeFromObjectMap(mapName, keyByValue, value);
+  }
+
+  private String getKeyByValue(URI value, ObjectMap objectMap) {
+    for (Entry<String, URI> entry : objectMap.getUris().entrySet()) {
+      if (entry.getValue().equals(value)) {
+        return entry.getKey();
+      }
+    }
+    return null;
   }
 
   /**
@@ -423,12 +433,7 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
    * @param userUri uri of the user to remove
    */
   private void removeGroupFromGroupListReference(URI groupUri) {
-    StorageObject<ObjectMap> groupListReference =
-        loadSettingsReference(GROUP_LIST_REFERENCE, ObjectMap.class);
-    ObjectMap groupList = groupListReference.getObject();
-    Map<String, URI> groupUris = groupList.getUris();
-    groupUris.values().remove(groupUri);
-    getStorage().save(groupListReference);
+    removeItemFromObjectMapByValue(GROUP_OBJECTMAP_REFERENCE, groupUri);
   }
 
 
@@ -510,9 +515,7 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
 
   @Override
   public User getUserByUsername(String username) {
-    URI uri = getOrCreateObjectReferenceURI(USER_LIST_REFERENCE, ObjectMap.class);
-    ObjectMap userObjectMap =
-        getStorage().read(uri, ObjectMap.class);
+    ObjectMap userObjectMap = loadObjectMap(USER_OBJECTMAP_REFERENCE);
     URI userUri = userObjectMap.getUris().get(username);
     if (userUri == null) {
       return null;
@@ -522,9 +525,7 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
 
   @Override
   public Group getGroupByName(String name) {
-    URI uri = getOrCreateObjectReferenceURI(GROUP_LIST_REFERENCE, ObjectMap.class);
-    ObjectMap groupObjectMap =
-        getStorage().read(uri, ObjectMap.class);
+    ObjectMap groupObjectMap = loadObjectMap(GROUP_OBJECTMAP_REFERENCE);
     URI groupUri = groupObjectMap.getUris().get(name);
     if (groupUri == null) {
       return null;
@@ -569,12 +570,7 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
     userStorageObj.setObject(user);
     URI uri = getStorage().save(userStorageObj);
 
-    StorageObject<ObjectMap> userStorage =
-        loadSettingsReference(USER_LIST_REFERENCE, ObjectMap.class);
-
-    ObjectMap uris = userStorage.getObject();
-    uris.putUrisItem(user.getUsername(), uri);
-    getStorage().save(userStorage);
+    addToObjectMap(USER_OBJECTMAP_REFERENCE, user.getUsername(), uri);
     return uri;
   }
 
@@ -631,6 +627,16 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
     return null;
   }
 
+  private void addToObjectMap(String mapName, String key, URI value) {
+    getStorage().updateAttachedMap(
+        getStorage().settings().getUri(),
+        new ObjectMapRequest().mapName(mapName).putUrisToAddItem(key, value));
+  }
 
+  private void removeFromObjectMap(String mapName, String key, URI value) {
+    getStorage().updateAttachedMap(
+        getStorage().settings().getUri(),
+        new ObjectMapRequest().mapName(mapName).putUrisToRemoveItem(key, value));
+  }
 
 }
