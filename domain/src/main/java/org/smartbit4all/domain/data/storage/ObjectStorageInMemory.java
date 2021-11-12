@@ -43,7 +43,8 @@ public class ObjectStorageInMemory extends ObjectStorageImpl {
     StorageObjectLock objectLock = acquire(storageObject.getUri());
     try {
       StorageObject<?> copy = storageObject.copy();
-      copy.getVersion().setSerialNoData(copy.getVersion().getSerialNoData() + 1);
+      // TODO handle versions...
+      // copy.getVersion().setSerialNoData(storageObject.getVersion().getSerialNoData() + 1);
       copy.setObjectObj(ApiObjectRef.unwrapObject(copy.getObject()));
       Object oldObj = getOldObj(objectsByURI.get(copy.getUri()));
       URI uri = copy.getUri();
