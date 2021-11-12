@@ -91,7 +91,7 @@ public class UserMultiSelectorViewModelImpl extends ObjectEditingImpl
 
   @Override
   public void initUserMultiSelectors(List<URI> selected) {
-    UserMultiSelector multiSelector = UserSelectorUtil.createUserMultiSelector(orgApi.getAllUsers(),
+    UserMultiSelector multiSelector = UserSelectorUtil.createUserMultiSelector(orgApi.getActiveUsers(),
 //        orgApi.getAllGroups(),
         selected);
 

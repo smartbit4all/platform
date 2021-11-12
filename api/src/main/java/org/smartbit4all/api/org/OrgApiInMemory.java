@@ -131,7 +131,7 @@ public class OrgApiInMemory extends OrgApiImpl {
   }
 
   @Override
-  public List<User> getAllUsers() {
+  public List<User> getActiveUsers() {
     return new ArrayList<>(users.values());
   }
 

@@ -134,7 +134,7 @@ public abstract class OrgApiImpl implements OrgApi, InitializingBean {
   }
 
   @Override
-  public List<User> getAllUsers() {
+  public List<User> getActiveUsers() {
     // TODO Auto-generated method stub
     return null;
   }
@@ -265,6 +265,12 @@ public abstract class OrgApiImpl implements OrgApi, InitializingBean {
 
   @Override
   public List<User> getInactiveUsers() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public List<User> getAllUsers() {
     // TODO Auto-generated method stub
     return null;
   }

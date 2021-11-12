@@ -30,7 +30,7 @@ public class OrgApiGatewayImpl extends OrgApiImpl {
   }
 
   @Override
-  public List<User> getAllUsers() {
+  public List<User> getActiveUsers() {
     return secGatewayService.getUsers();
   }
 

@@ -76,7 +76,7 @@ public class UserSelectorViewModelImpl extends ObjectEditingImpl implements User
   @Override
   public void setSingleSelectorRef(URI selectedUserUri) {
     UserSingleSelector userSingleSelector =
-        UserSelectorUtil.createUserSingleSelector(orgApi.getAllUsers(),
+        UserSelectorUtil.createUserSingleSelector(orgApi.getActiveUsers(),
             selectedUserUri);
     
     singleSelected = userSingleSelector.getSelected();
@@ -89,7 +89,7 @@ public class UserSelectorViewModelImpl extends ObjectEditingImpl implements User
   @Override
   public void setMultiSelectorRef(List<URI> selectedUserUris) {
     UserMultiSelector userMultiSelector =
-        UserSelectorUtil.createUserMultiSelector(orgApi.getAllUsers(),
+        UserSelectorUtil.createUserMultiSelector(orgApi.getActiveUsers(),
             selectedUserUris);
 
     multiSelectorRef.setObject(userMultiSelector);

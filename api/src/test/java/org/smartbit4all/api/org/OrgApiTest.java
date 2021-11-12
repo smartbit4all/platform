@@ -53,7 +53,6 @@ class OrgApiTest {
     // Without logging in we don't have any right!
     Assertions.assertFalse(security.admin.check());
 
-
     Group viewerGroup =
         orgApi.getGroupByName("org.smartbit4all.api.org.MyModuleSecurityOption.viewer");
     orgApi.addUserToGroup(testUserUri, viewerGroup.getUri());
@@ -111,13 +110,13 @@ class OrgApiTest {
     User savedUser = orgApi.getUser(savedUserUri);
     assertNotNull(savedUser);
 
-    List<User> items = orgApi.getAllUsers();
+    List<User> items = orgApi.getActiveUsers();
     int numOfUser = items.size();
     assertNotEquals(0, numOfUser);
 
     URI savedUserUri2 = orgApi.saveUser(new User().username("getUserTest2"));
 
-    List<User> items2 = orgApi.getAllUsers();
+    List<User> items2 = orgApi.getActiveUsers();
     assertEquals(numOfUser + 1, items2.size());
   }
 
@@ -203,13 +202,13 @@ class OrgApiTest {
     assertNotNull(user);
 
     orgApi.removeUser(savedUser);
-    List<User> allUsers = orgApi.getAllUsers();
+    List<User> allUsers = orgApi.getActiveUsers();
 
     assertFalse(allUsers.contains(user));
 
     orgApi.restoreDeletedUser(savedUser);
 
-    List<User> allUsers2 = orgApi.getAllUsers();
+    List<User> allUsers2 = orgApi.getActiveUsers();
     User reactivatedUser = orgApi.getUser(savedUser);
     assertFalse(reactivatedUser.getInactive());
     assertTrue(allUsers2.contains(reactivatedUser));

@@ -28,9 +28,20 @@ public interface OrgApi {
   User getUser(URI userUri);
 
   /**
-   * Returns every security user.
+   * Return all users active, and inactive.
    */
   List<User> getAllUsers();
+
+  /**
+   * Returns all the active users.
+   */
+  List<User> getActiveUsers();
+
+  /**
+   * Returns all users set to inactive status.
+   *
+   */
+  public List<User> getInactiveUsers();
 
   /**
    * Returns every group.
@@ -143,10 +154,4 @@ public interface OrgApi {
    */
   void restoreDeletedUser(URI userUri);
 
-  /**
-   * List all users set to inactive status.
-   *
-   * @return
-   */
-  public List<User> getInactiveUsers();
 }

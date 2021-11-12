@@ -41,7 +41,7 @@ public class UserSingleSelectorViewModelImpl extends ObjectEditingImpl
   @Override
   public void initUserSingleSelectors(URI selectedUserUri) {
     UserSingleSelector singleSelector =
-        UserSelectorUtil.createUserSingleSelector(orgApi.getAllUsers(),
+        UserSelectorUtil.createUserSingleSelector(orgApi.getActiveUsers(),
 //            orgApi.getAllGroups(),
             selectedUserUri);
 

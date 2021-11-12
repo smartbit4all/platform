@@ -181,13 +181,15 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
   }
 
   @Override
-  public List<User> getAllUsers() {
+  public List<User> getActiveUsers() {
     List<User> users = new ArrayList<>();
 
-    ObjectMap userObjectMap = loadObjectMap(USER_OBJECTMAP_REFERENCE);
+    ObjectMap activeUserObjectMap = loadObjectMap(USER_OBJECTMAP_REFERENCE);
+    Collection<URI> activeUserUris = activeUserObjectMap.getUris().values();
 
-    Collection<URI> values = userObjectMap.getUris().values();
-    users = getStorage().read(new ArrayList<>(values), User.class);
+    ArrayList<URI> userUris = new ArrayList<>(activeUserUris);
+
+    users = getStorage().read(userUris, User.class);
 
     return users;
   }
@@ -202,6 +204,15 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
     users = getStorage().read(new ArrayList<>(values), User.class);
 
     return users;
+  }
+
+  @Override
+  public List<User> getAllUsers() {
+    List<User> activeUsers = getActiveUsers();
+    List<User> inactiveUsers = getInactiveUsers();
+
+    activeUsers.addAll(inactiveUsers);
+    return activeUsers;
   }
 
   @Override
@@ -532,8 +543,12 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
 
   @Override
   public User getUserByUsername(String username) {
-    ObjectMap userObjectMap = loadObjectMap(USER_OBJECTMAP_REFERENCE);
-    URI userUri = userObjectMap.getUris().get(username);
+    ObjectMap activeObjectMap = loadObjectMap(USER_OBJECTMAP_REFERENCE);
+    ObjectMap inactiveObjectMap = loadObjectMap(INACTIVE_USER_OBJECTMAP_REFERENCE);
+
+    Map<String, URI> uris = activeObjectMap.getUris();
+    uris.putAll(inactiveObjectMap.getUris());
+    URI userUri = uris.get(username);
     if (userUri == null) {
       return null;
     }
