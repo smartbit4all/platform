@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -402,7 +403,9 @@ public class Storage {
    */
   public ObjectMap getAttachedMap(URI objectUri, String mapName) {
 
-    return getOrCreateObjectMap(objectUri, mapName).getObject();
+    return getOrCreateReferenceObject(objectUri, om -> {
+      om.setName(mapName);
+    }, ObjectMap.class, mapName).getObject();
 
   }
 
@@ -452,7 +455,9 @@ public class Storage {
       return;
     }
 
-    StorageObject<ObjectMap> mapObject = getOrCreateObjectMap(objectUri, request.getMapName());
+    StorageObject<ObjectMap> mapObject = getOrCreateReferenceObject(objectUri, om -> {
+      om.setName(request.getMapName());
+    }, ObjectMap.class, request.getMapName());
 
     if (request.getUrisToAdd() != null) {
       mapObject.getObject().getUris().putAll(request.getUrisToAdd());
@@ -467,29 +472,48 @@ public class Storage {
 
   }
 
-  private final StorageObject<ObjectMap> getOrCreateObjectMap(URI objectUri, String mapName) {
+  /**
+   * This function can find or create the attached reference object of an object identified by the
+   * uri.
+   * 
+   * @param <T>
+   * @param objectUri The master object uri
+   * @param parameterSetters The initialization of the newly created referred object.
+   * @param clazz The class of the referred object.
+   * @param referenceName The unique name of the reference inside the master object.
+   * @return
+   */
+  public final <T> StorageObject<T> getOrCreateReferenceObject(URI objectUri,
+      Consumer<T> parameterSetters, Class<T> clazz, String referenceName) {
     StorageObject<?> storageObject =
         load(objectUri, StorageLoadOption.skipData(), StorageLoadOption.lock());
-    StorageObjectReferenceEntry referenceEntry = storageObject.getReference(mapName);
-    StorageObject<ObjectMap> mapObject;
+    StorageObjectReferenceEntry referenceEntry = storageObject.getReference(referenceName);
+    StorageObject<T> newObjectSo;
     if (referenceEntry == null) {
       // Construct the ObjectMap.
-      mapObject = instanceOf(ObjectMap.class);
-      ObjectMap objectMap = new ObjectMap().name(mapName);
-      mapObject.setObject(objectMap);
-      URI uri = save(mapObject);
-      storageObject.setReference(mapName, new ObjectReference().uri(uri).referenceId(mapName));
+      newObjectSo = instanceOf(clazz);
+      T newObject;
+      try {
+        newObject = clazz.getConstructor().newInstance();
+      } catch (Exception e) {
+        throw new IllegalArgumentException("Unable to instanciate the " + clazz + " bean.", e);
+      }
+      parameterSetters.accept(newObject);
+      newObjectSo.setObject(newObject);
+      URI uri = save(newObjectSo);
+      storageObject.setReference(referenceName,
+          new ObjectReference().uri(uri).referenceId(referenceName));
       storageObject.setStrictVersionCheck(true);
       try {
         save(storageObject);
       } catch (ObjectModificationException e) {
         // If the given object is modified in the mean time then we must retry the whole function.
-        return getOrCreateObjectMap(objectUri, mapName);
+        return getOrCreateReferenceObject(objectUri, parameterSetters, clazz, referenceName);
       }
-      return mapObject;
+      return newObjectSo;
     } else {
       ObjectReference referenceData = referenceEntry.getReferenceData();
-      return load(referenceData.getUri(), ObjectMap.class, StorageLoadOption.lock());
+      return load(referenceData.getUri(), clazz, StorageLoadOption.lock());
     }
   }
 
