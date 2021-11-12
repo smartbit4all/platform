@@ -1,5 +1,6 @@
 package org.smartbit4all.storage.fs;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
@@ -34,7 +35,6 @@ import org.smartbit4all.domain.data.storage.history.ObjectHistoryApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import com.google.common.io.ByteStreams;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(classes = {StorageFSTestConfig.class})
 class StorageFSTest {
@@ -537,6 +537,66 @@ class StorageFSTest {
     StorageObject<StorageSettings> settings = storage.settings();
 
     attachAndLoadMap(storage, settings.getUri());
+
+  }
+
+  @Test
+  void uriVersionOptionTest() {
+    Storage storage = storageApi.get(StorageFSTestConfig.TESTSCHEME);
+
+    StorageObject<FSTestBean> storageObject = storage.instanceOf(FSTestBean.class);
+
+    storageObject.setObject(new FSTestBean("SucceedTest"));
+
+    URI simpleUri = storage.save(storageObject);
+    URI version0Uri = URI.create(simpleUri.toString() + "#0");
+
+    StorageObject<FSTestBean> beanSo = storage.load(simpleUri, FSTestBean.class);
+    assertEquals(simpleUri, beanSo.getObject().getUri());
+    assertEquals(version0Uri, beanSo.getVersionUri());
+
+    StorageObject<FSTestBean> beanSo2 =
+        storage.load(simpleUri, FSTestBean.class, StorageLoadOption.uriWithVersion(true));
+    assertEquals(version0Uri, beanSo2.getObject().getUri());
+    assertEquals(version0Uri, beanSo2.getVersionUri());
+
+    StorageObject<FSTestBean> beanSo3 =
+        storage.load(version0Uri, FSTestBean.class, StorageLoadOption.uriWithVersion(true));
+    assertEquals(version0Uri, beanSo3.getObject().getUri());
+    assertEquals(version0Uri, beanSo3.getVersionUri());
+
+    StorageObject<FSTestBean> beanSo4 =
+        storage.load(version0Uri, FSTestBean.class, StorageLoadOption.uriWithVersion(false));
+    assertEquals(simpleUri, beanSo4.getObject().getUri());
+    assertEquals(version0Uri, beanSo4.getVersionUri());
+
+    StorageObject<FSTestBean> beanSo5 = storage.load(version0Uri, FSTestBean.class);
+    assertEquals(version0Uri, beanSo5.getObject().getUri());
+    assertEquals(version0Uri, beanSo5.getVersionUri());
+
+
+    beanSo.getObject().setTitle("SucceedTest_MODIFIED");
+    URI modifiedUri = storage.save(storageObject);
+    assertEquals(simpleUri, modifiedUri);
+    URI version1Uri = URI.create(simpleUri.toString() + "#1");
+
+    StorageObject<FSTestBean> beanSo6 = storage.load(simpleUri, FSTestBean.class);
+    assertEquals(simpleUri, beanSo6.getObject().getUri());
+    assertEquals(version1Uri, beanSo6.getVersionUri());
+
+    StorageObject<FSTestBean> beanSo7 = storage.load(version1Uri, FSTestBean.class);
+    assertEquals(version1Uri, beanSo7.getObject().getUri());
+    assertEquals(version1Uri, beanSo7.getVersionUri());
+
+    StorageObject<FSTestBean> beanSo8 =
+        storage.load(version1Uri, FSTestBean.class, StorageLoadOption.uriWithVersion(true));
+    assertEquals(version1Uri, beanSo8.getObject().getUri());
+    assertEquals(version1Uri, beanSo8.getVersionUri());
+
+    StorageObject<FSTestBean> beanSo9 =
+        storage.load(version1Uri, FSTestBean.class, StorageLoadOption.uriWithVersion(false));
+    assertEquals(simpleUri, beanSo9.getObject().getUri());
+    assertEquals(version1Uri, beanSo9.getVersionUri());
 
   }
 

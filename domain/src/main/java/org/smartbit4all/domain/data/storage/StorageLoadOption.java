@@ -16,7 +16,7 @@ public class StorageLoadOption {
 
   public enum LoadInstruction {
 
-    SKIP_DATA_OBJECT, LOAD_REFERENCE, LOAD_COLLECTION, LOCK
+    SKIP_DATA_OBJECT, LOAD_REFERENCE, LOAD_COLLECTION, LOCK, URI_WITH_VERSION
 
   }
 
@@ -49,6 +49,12 @@ public class StorageLoadOption {
   private static final StorageLoadOption lock =
       new StorageLoadOption(LoadInstruction.LOCK, null, null, null);
 
+  private static final StorageLoadOption uriWithoutVersion =
+      new StorageLoadOption(LoadInstruction.URI_WITH_VERSION, "uriWithoutVersion", null, null);
+
+  private static final StorageLoadOption uriWithVersion =
+      new StorageLoadOption(LoadInstruction.URI_WITH_VERSION, "uriWithVersion", null, null);
+
   private StorageLoadOption(LoadInstruction instruction, String name, URI uri, String identifier) {
     super();
     this.instruction = instruction;
@@ -77,6 +83,17 @@ public class StorageLoadOption {
     return lock;
   }
 
+  /**
+   * Ensures that the loaded object's uri property contains the version part or not.
+   */
+  public static final StorageLoadOption uriWithVersion(boolean withVersion) {
+    if (withVersion) {
+      return uriWithVersion;
+    } else {
+      return uriWithoutVersion;
+    }
+  }
+
   public static final StorageLoadOption loadReference(String referenceName) {
     return new StorageLoadOption(LoadInstruction.LOAD_REFERENCE, referenceName, null, null);
   }
@@ -91,6 +108,28 @@ public class StorageLoadOption {
 
   public static final boolean checkLock(StorageLoadOption... options) {
     return check(LoadInstruction.LOCK, options);
+  }
+
+  public static final boolean checkUriWithVersionOption(StorageLoadOption... options) {
+    return check(LoadInstruction.URI_WITH_VERSION, options);
+  }
+
+  public static final boolean checkUriWithVersionValue(StorageLoadOption... options) {
+    StorageLoadOption withVersionOption = null;
+    if (options != null) {
+      for (StorageLoadOption option : options) {
+        if (option.instruction == LoadInstruction.URI_WITH_VERSION) {
+          withVersionOption = option;
+          break;
+        }
+      }
+    }
+    if (withVersionOption == null) {
+      throw new IllegalStateException(
+          "There is no uriWithVersion option in the given option list! "
+              + "Check the list before calling this method!");
+    }
+    return "uriWithVersion".equals(withVersionOption.name);
   }
 
   private static boolean check(LoadInstruction instruction, StorageLoadOption... options) {

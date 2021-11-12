@@ -249,17 +249,28 @@ public class StorageFS extends ObjectStorageImpl {
 
       saveObjectData(object, objectDataFile, storageObjectData);
 
+      URI oldVersionUri = object.getVersionUri();
       ObjectVersion oldVersion = currentVersion;
       updateStorageObjectWithVersion(object, newVersion);
-      invokeOnSucceedFunctions(object, new StorageSaveEvent<Object>(() -> {
-        if (oldVersion != null) {
-          Object o = loadObjectVersion(object.definition(), objectVersionBasePath,
-              oldVersion.getSerialNoData()).getObject();
+      URI newVersionUri = object.getVersionUri();
+      invokeOnSucceedFunctions(object, new StorageSaveEvent<>(
+          () -> {
+            if (oldVersion != null) {
+              return oldVersionUri;
+            }
+            return null;
+          },
+          () -> {
+            if (oldVersion != null) {
+              Object o = loadObjectVersion(object.definition(), objectVersionBasePath,
+                  oldVersion.getSerialNoData()).getObject();
 
-          return o;
-        }
-        return oldVersion;
-      }, object.getObject()));
+              return o;
+            }
+            return null;
+          },
+          newVersionUri,
+          object.getObject()));
 
     } catch (IOException e) {
       throw new IllegalArgumentException("Unable to finalize the transaction on " + object, e);
@@ -325,8 +336,7 @@ public class StorageFS extends ObjectStorageImpl {
       objectVersion = loadObjectVersion.getVersion();
 
       if (object != null) {
-        // This can ensure that the uri will be the exact uri used for the load.
-        definition.setUri(object, uri);
+        setObjectUriVersioByOptions(uri, definition, object, versionDataSerialNo, options);
       }
 
       storageObject = instanceOf(storage, definition, object, storageObjectData);
@@ -345,6 +355,31 @@ public class StorageFS extends ObjectStorageImpl {
     }
 
     return storageObject;
+  }
+
+  private <T> void setObjectUriVersioByOptions(URI uri, ObjectDefinition<T> definition, T object,
+      Long versionDataSerialNo,
+      StorageLoadOption[] options) {
+    if (!StorageLoadOption.checkUriWithVersionOption(options)) {
+      // If no options specified the default behavior is to return the with the requested uri
+      // This can ensure that the uri will be the exact uri used for the load.
+      definition.setUri(object, uri);
+    } else {
+      String uriTxt = uri.toString();
+      boolean uriHasVersion = uriTxt.contains(StringConstant.HASH);
+      boolean uriNeedsVersion = StorageLoadOption.checkUriWithVersionValue(options);
+
+      URI uriToSet = null;
+      if (!uriHasVersion && uriNeedsVersion) {
+        uriToSet = URI.create(uriTxt + StringConstant.HASH + versionDataSerialNo);
+      } else if (uriHasVersion && !uriNeedsVersion) {
+        uriToSet = URI.create(uriTxt.substring(0, uriTxt.indexOf(StringConstant.HASH)));
+      } else {
+        // (has and need) OR (has not and dont need)
+        uriToSet = uri;
+      }
+      definition.setUri(object, uriToSet);
+    }
   }
 
   private final StorageObjectRelationData loadRelationData(File relationVersionFile) {
@@ -374,7 +409,7 @@ public class StorageFS extends ObjectStorageImpl {
     ObjectVersion objectVersion = objectApi.getDefaultSerializer()
         .deserialize(versionObjectBinaryData, ObjectVersion.class).get();
     T object = definition.deserialize(versionBinaryData).orElse(null);
-    return new StorageObjectHistoryEntry<T>(objectVersion, object);
+    return new StorageObjectHistoryEntry<>(objectVersion, object);
   }
 
   @Override

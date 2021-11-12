@@ -43,6 +43,7 @@ public class ObjectStorageInMemory extends ObjectStorageImpl {
     StorageObjectLock objectLock = acquire(storageObject.getUri());
     try {
       StorageObject<?> copy = storageObject.copy();
+      copy.getVersion().setSerialNoData(copy.getVersion().getSerialNoData() + 1);
       copy.setObjectObj(ApiObjectRef.unwrapObject(copy.getObject()));
       Object oldObj = getOldObj(objectsByURI.get(copy.getUri()));
       URI uri = copy.getUri();
@@ -50,7 +51,11 @@ public class ObjectStorageInMemory extends ObjectStorageImpl {
       referencesByURI.put(uri, storageObject.getReferences());
       collectionsByURI.put(uri, storageObject.getCollections());
       invokeOnSucceedFunctions(storageObject,
-          new StorageSaveEvent<>(() -> oldObj, ApiObjectRef.unwrapObject(copy.getObject())));
+          new StorageSaveEvent<>(
+              () -> storageObject.getVersionUri(),
+              () -> oldObj,
+              copy.getVersionUri(),
+              ApiObjectRef.unwrapObject(copy.getObject())));
       return copy.getUri();
     } finally {
       objectLock.leave();

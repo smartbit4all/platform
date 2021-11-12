@@ -1,5 +1,6 @@
 package org.smartbit4all.domain.data.storage;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.function.Supplier;
 import org.smartbit4all.core.object.ApiObjectRef;
@@ -17,12 +18,17 @@ public final class StorageSaveEvent<O> {
   /**
    * A mandatory supplier to produce the old value of the given save event.
    */
-  private Supplier<O> oldValueSupplier;
+  private Supplier<O> oldVersionSupplier;
 
-  public StorageSaveEvent(Supplier<O> oldValueSupplier, O newVersion) {
+  private Supplier<URI> oldVersionUriSupplier;
+
+  public StorageSaveEvent(Supplier<URI> oldValueUriSupplier, Supplier<O> oldValueSupplier,
+      URI newVersionUri, O newVersion) {
     super();
-    this.oldValueSupplier = oldValueSupplier;
+    this.oldVersionSupplier = oldValueSupplier;
     this.newVersion = newVersion;
+    this.oldVersionUriSupplier = oldValueUriSupplier;
+    this.newVersionUri = newVersionUri;
   }
 
   /**
@@ -30,15 +36,30 @@ public final class StorageSaveEvent<O> {
    */
   private O oldVersion;
 
+  private URI oldVersionUri;
+
   private O newVersion;
+
+  private URI newVersionUri;
 
   private ObjectChange change;
 
   public final O getOldVersion() {
     if (oldVersion == null) {
-      oldVersion = oldValueSupplier.get();
+      oldVersion = oldVersionSupplier.get();
     }
     return oldVersion;
+  }
+
+  public final URI getOldVersionUri() {
+    if (oldVersionUri == null) {
+      oldVersionUri = oldVersionUriSupplier.get();
+    }
+    return oldVersionUri;
+  }
+
+  public final URI getNewVersionUri() {
+    return newVersionUri;
   }
 
   public final O getNewVersion() {
