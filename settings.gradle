@@ -1,3 +1,9 @@
+pluginManagement {
+  plugins {
+        id 'com.vaadin' version "${vaadinPluginVersion}" apply false
+    }
+}
+
 rootProject.name = 'platform'
 
 include 'core'

@@ -1,7 +1,7 @@
 plugins  {
-	id 'org.springframework.boot' version '2.2.4.RELEASE' apply false
-	id 'io.spring.dependency-management' version '1.0.9.RELEASE' apply false
-    id 'org.smartbit4all.platform.gradle.java' version "0.2.8" apply false
+	id 'org.springframework.boot' version '2.3.12.RELEASE' apply false
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE' apply false
+    id 'org.smartbit4all.platform.gradle.java' version "0.3.0" apply false
 	id "org.sonarqube" version "3.0"
 }
 
