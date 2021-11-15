@@ -22,6 +22,7 @@ import org.smartbit4all.api.storage.bean.StorageObjectRelationData;
 import org.smartbit4all.core.io.utility.FileIO;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
+import org.smartbit4all.core.object.ObjectSummarySupplier;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.storage.ObjectModificationException;
 import org.smartbit4all.domain.data.storage.ObjectNotFoundException;
@@ -414,8 +415,7 @@ public class StorageFS extends ObjectStorageImpl {
 
   @Override
   public List<ObjectHistoryEntry> loadHistory(Storage storage, URI uri,
-      ObjectDefinition<?> defnition) {
-    ObjectDefinition<?> definition = getDefinitionFromUri(uri);
+      ObjectDefinition<?> definition) {
     if (definition == null) {
       return Collections.emptyList();
     }
@@ -437,6 +437,8 @@ public class StorageFS extends ObjectStorageImpl {
       return Collections.emptyList();
     }
 
+    ObjectSummarySupplier<?> summarySupplier =
+        definition.getSummarySupplier(ObjectSummarySupplier.HISTORY);
     long serialNoDataMax = currentObjectVersion.getSerialNoData() + 1;
     List<ObjectHistoryEntry> result = new ArrayList<>();
     for (long i = 0; i < serialNoDataMax; i++) {
@@ -446,9 +448,10 @@ public class StorageFS extends ObjectStorageImpl {
       ObjectVersion objectVersion = loadObjectVersion.getVersion();
       result
           .add(new ObjectHistoryEntry().version(objectVersion)
-              .summary(objectVersion.getSerialNoData() + StringConstant.COMMA_SPACE
-                  + objectVersion.getCreatedAt() + StringConstant.COMMA_SPACE
-                  + objectVersion.getCreatedBy())
+              .summary(
+                  summarySupplier != null
+                      ? summarySupplier.getSummary(loadObjectVersion.getObject())
+                      : ObjectSummarySupplier.getDefaultSummary(loadObjectVersion.getObject()))
               .objectType(definition.getAlias()).versionUri(URI.create(
                   uri.toString() + StringConstant.HASH + objectVersion.getSerialNoData())));
     }

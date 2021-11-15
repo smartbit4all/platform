@@ -1,6 +1,5 @@
 package org.smartbit4all.storage.fs;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
@@ -24,6 +23,9 @@ import org.smartbit4all.api.storage.bean.ObjectMapRequest;
 import org.smartbit4all.api.storage.bean.ObjectReference;
 import org.smartbit4all.api.storage.bean.StorageSettings;
 import org.smartbit4all.core.io.TestFileUtil;
+import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.core.object.ObjectDefinition;
+import org.smartbit4all.core.object.ObjectSummarySupplier;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.storage.ObjectModificationException;
 import org.smartbit4all.domain.data.storage.Storage;
@@ -35,6 +37,7 @@ import org.smartbit4all.domain.data.storage.history.ObjectHistoryApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import com.google.common.io.ByteStreams;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(classes = {StorageFSTestConfig.class})
 class StorageFSTest {
@@ -105,6 +108,9 @@ class StorageFSTest {
   @Autowired
   ObjectHistoryApi historyApi;
 
+  @Autowired
+  ObjectApi objectApi;
+
   @Test
   void saveLoadDeleteTest() throws Exception {
     Storage storage = storageApi.get(StorageFSTestConfig.TESTSCHEME);
@@ -173,6 +179,12 @@ class StorageFSTest {
 
     List<ObjectHistoryEntry> loadHistory = storage.loadHistory(uri);
 
+    int versionSerial = 0;
+    for (ObjectHistoryEntry objectHistoryEntry : loadHistory) {
+      String title = "v" + versionSerial++;
+      assertEquals(title + " (" + uri + ")", objectHistoryEntry.getSummary());
+    }
+
     long endTime = System.currentTimeMillis();
 
     long totalCreationTime = endCreationTime - startCreationTime;
@@ -193,6 +205,9 @@ class StorageFSTest {
 
     long startLoad = System.currentTimeMillis();
 
+    ObjectDefinition<FSTestBean> objectDefinition = objectApi.definition(FSTestBean.class);
+    ObjectSummarySupplier<FSTestBean> summarySupplier = objectDefinition.getSummarySupplier();
+
     for (int i = 0; i < versionCount; i++) {
 
       URI versionUri = URI.create(uri.toString() + StringConstant.HASH + i);
@@ -202,6 +217,8 @@ class StorageFSTest {
       assertEquals("v" + i, title);
       assertEquals(object.getUri(), uri);
       assertEquals(object.getObject().getUri(), versionUri);
+      assertEquals(title + " (" + object.getObject().getUri() + ")",
+          summarySupplier.apply(object.getObject()));
 
     }
 

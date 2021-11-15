@@ -96,7 +96,7 @@ components:
         When analysing the history the StorageApi creates a list of history entries for every version of the objects participates
         in the related history. It can contain the object data changes without relation versions. These are the significant versions
         that mean adat modification.
-      required: [serialNo, createdAt, createdByUri]
+      required: [versionUri]
       properties:
         summary:
           type: string

@@ -9,6 +9,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartbit4all.core.utility.PathUtility;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,8 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
 public class ObjectApiImpl implements ObjectApi, InitializingBean {
+
+  private static final Logger log = LoggerFactory.getLogger(ObjectApiImpl.class);
 
   private static final String URI = "URI";
 
@@ -66,6 +70,16 @@ public class ObjectApiImpl implements ObjectApi, InitializingBean {
    */
   private static final Cache<Class<?>, BeanMeta> beanMetaCache = CacheBuilder.newBuilder().build();
 
+  /**
+   * The existing parameterized object summary producers. Pre processed while
+   * {@link #afterPropertiesSet()} and stored in the map with class as key.
+   */
+  @Autowired(required = false)
+  private List<ObjectSummarySupplier<?>> summarySuppliers;
+
+  private Map<Class<?>, Map<String, ObjectSummarySupplier<?>>> summarySuppliersByClass =
+      new HashMap<>();
+
   @Override
   public final BeanMeta meta(Class<?> apiClass) {
     return getMeta(apiClass);
@@ -91,9 +105,28 @@ public class ObjectApiImpl implements ObjectApi, InitializingBean {
 
   @Override
   public void afterPropertiesSet() throws Exception {
-    for (ObjectSerializer objectSerializer : serializers) {
-      serializersByName.put(objectSerializer.getName(), objectSerializer);
+    // Pre process the serializers.
+    if (serializers != null) {
+      for (ObjectSerializer objectSerializer : serializers) {
+        serializersByName.put(objectSerializer.getName(), objectSerializer);
+      }
     }
+    // Pre process the summary suppliers.
+    if (summarySuppliers != null) {
+      for (ObjectSummarySupplier<?> summarySupplier : summarySuppliers) {
+        Map<String, ObjectSummarySupplier<?>> suppliers = summarySuppliersByClass
+            .computeIfAbsent(summarySupplier.getClazz(), c -> new HashMap<>());
+        // If there is another supplier then we replace it and give a warning.
+        ObjectSummarySupplier<?> prevSupplier =
+            suppliers.put(summarySupplier.getName(), summarySupplier);
+        if (prevSupplier != null) {
+          log.warn("There are more than one summary supplier for the " + summarySupplier.getClazz()
+              + " (" + prevSupplier.getClass() + " is replace with " + summarySupplier.getClass()
+              + ")");
+        }
+      }
+    }
+
     defaultSerializer = serializersByName.get(defaultSerializerName);
     if (definitions != null) {
       for (ObjectDefinition<?> objectDefinition : definitions) {
@@ -118,8 +151,13 @@ public class ObjectApiImpl implements ObjectApi, InitializingBean {
         if (objectDefinition.getAlias() == null) {
           objectDefinition.setAlias(getDefaultAlias(objectDefinition.getClazz()));
         }
+        objectDefinition
+            .setupSummariesByName(summarySuppliersByClass.get(objectDefinition.getClazz()));
+
         definitionsByClass.put(objectDefinition.getClazz(), objectDefinition);
         definitionsByAlias.put(objectDefinition.getAlias(), objectDefinition);
+
+        objectDefinition.setNewlyCreated(false);
       }
     }
   }
@@ -130,7 +168,11 @@ public class ObjectApiImpl implements ObjectApi, InitializingBean {
     ObjectDefinition<T> objectDefinition =
         (ObjectDefinition<T>) definitionsByClass.computeIfAbsent(clazz,
             this::constructDefinition);
-    definitionsByAlias.put(objectDefinition.getAlias(), objectDefinition);
+    if (objectDefinition.isNewlyCreated()) {
+      definitionsByAlias.put(objectDefinition.getAlias(), objectDefinition);
+      objectDefinition.setNewlyCreated(false);
+    }
+
     return objectDefinition;
   }
 
@@ -140,12 +182,19 @@ public class ObjectApiImpl implements ObjectApi, InitializingBean {
       return null;
     }
     String rootPath = PathUtility.getRootPath(objectUri.getPath());
-    return definitionsByAlias.get(rootPath);
+    try {
+      Class<?> clazz = Class.forName(getClassNameFromAlias(rootPath));
+      return definition(clazz);
+    } catch (ClassNotFoundException e) {
+      throw new IllegalArgumentException("Unable to initiate " + rootPath + " class.", e);
+    }
   }
 
   private <T> ObjectDefinition<T> constructDefinition(Class<T> clazz) {
     ObjectDefinition<T> result = constructDefinitionBase(clazz);
     result.setDefaultSerializer(defaultSerializer);
+    result.setupSummariesByName(summarySuppliersByClass.get(clazz));
+
     return result;
   }
 
@@ -160,6 +209,10 @@ public class ObjectApiImpl implements ObjectApi, InitializingBean {
 
   private static String getDefaultAlias(Class<?> clazz) {
     return clazz.getName().replace('.', '_');
+  }
+
+  private static String getClassNameFromAlias(String alias) {
+    return alias.replace('_', '.');
   }
 
   @SuppressWarnings("unchecked")
@@ -227,6 +280,7 @@ public class ObjectApiImpl implements ObjectApi, InitializingBean {
   /**
    * @return The default serializer for the objects.
    */
+  @Override
   public final ObjectSerializer getDefaultSerializer() {
     return defaultSerializer;
   }

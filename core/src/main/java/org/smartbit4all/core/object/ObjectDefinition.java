@@ -1,6 +1,9 @@
 package org.smartbit4all.core.object;
 
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -18,6 +21,8 @@ public final class ObjectDefinition<T> {
    * The java class of the object.
    */
   private Class<T> clazz;
+
+  private boolean newlyCreated = true;
 
   /**
    * The URI property of the object. The URI is the unique identifier and storage locator of the
@@ -53,6 +58,12 @@ public final class ObjectDefinition<T> {
    * available in the context then it will be the {@link #defaultSerializer}.
    */
   private String preferredSerializerName;
+
+  /**
+   * The object summaries by name. There is always at least one default summary that contains the
+   * uri and all the string properties of the given class.
+   */
+  private Map<String, ObjectSummarySupplier<T>> summariesByName = null;
 
   public ObjectDefinition(Class<T> clazz) {
     super();
@@ -166,6 +177,48 @@ public final class ObjectDefinition<T> {
 
   public final boolean hasId() {
     return idGetter != null && idSetter != null;
+  }
+
+  final Map<String, ObjectSummarySupplier<T>> getSummariesByName() {
+    return summariesByName;
+  }
+
+  @SuppressWarnings("unchecked")
+  final void setupSummariesByName(Map<String, ObjectSummarySupplier<?>> summariesByNameParam) {
+    if (summariesByName == null) {
+      summariesByName = new HashMap<>();
+      if (summariesByNameParam != null) {
+        for (Entry<String, ObjectSummarySupplier<?>> entry : summariesByNameParam.entrySet()) {
+          summariesByName.put(entry.getKey(), (ObjectSummarySupplier<T>) entry.getValue());
+        }
+      } else {
+        summariesByName.put(ObjectSummarySupplier.DEFAULT,
+            new ObjectSummarySupplier<T>(clazz, ObjectSummarySupplier.DEFAULT) {
+
+              @Override
+              public String apply(T t) {
+                return ObjectSummarySupplier.getDefaultSummary(t);
+              }
+            });
+      }
+    }
+  }
+
+  public final ObjectSummarySupplier<T> getSummarySupplier() {
+    return getSummarySupplier(ObjectSummarySupplier.DEFAULT);
+  }
+
+  public final ObjectSummarySupplier<T> getSummarySupplier(String name) {
+    ObjectSummarySupplier<T> supplier = summariesByName.get(name);
+    return supplier == null ? summariesByName.get(ObjectSummarySupplier.DEFAULT) : supplier;
+  }
+
+  final boolean isNewlyCreated() {
+    return newlyCreated;
+  }
+
+  final void setNewlyCreated(boolean newlyCreated) {
+    this.newlyCreated = newlyCreated;
   }
 
 }
