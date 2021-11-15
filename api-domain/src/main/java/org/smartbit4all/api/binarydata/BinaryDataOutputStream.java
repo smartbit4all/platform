@@ -108,10 +108,20 @@ public class BinaryDataOutputStream extends OutputStream {
    * means that from the first byte it uses the temp file as storage. The -1 means that all of the
    * content will be stored in memory without any temp file.
    * 
-   * @param memoryLimit
-   * @throws Exception
    */
-  public BinaryDataOutputStream(int memoryLimit) throws Exception {
+  public BinaryDataOutputStream() {
+    this(-1, null);
+  }
+
+  /**
+   * The {@link BinaryData} store the content in memory till this limit. If we reach it then it
+   * switch to temp file and copy the currently available content into this new temp file. The 0
+   * means that from the first byte it uses the temp file as storage. The -1 means that all of the
+   * content will be stored in memory without any temp file.
+   * 
+   * @param memoryLimit
+   */
+  public BinaryDataOutputStream(int memoryLimit) {
     this(memoryLimit, null);
   }
 
@@ -122,15 +132,18 @@ public class BinaryDataOutputStream extends OutputStream {
    * content will be stored in memory without any temp file.
    * 
    * @param memoryLimit
-   * @throws Exception
    */
-  public BinaryDataOutputStream(int memoryLimit, MessageDigest messageDigest) throws Exception {
+  public BinaryDataOutputStream(int memoryLimit, MessageDigest messageDigest) {
     super();
     this.memoryLimit = memoryLimit;
     this.messageDigest = messageDigest;
     if (memoryLimit == 0) {
       // We start in a temp file from the first byte.
-      initTempFile();
+      try {
+        initTempFile();
+      } catch (Exception e) {
+        throw new IllegalArgumentException("Unable to init the temp file", e);
+      }
     } else {
       // Start in the memory.
       osByteArray = new ByteArrayOutputStream();
