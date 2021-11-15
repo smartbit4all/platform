@@ -541,12 +541,17 @@ public class FilterService {
     return null;
   }
 
+  @SuppressWarnings("unchecked")
   private <T> Expression createDateIntervalExpression(Property<?> property,
       FilterOperandValue value1Operand, FilterOperandValue value2Operand,
       Function<FilterOperandValue, T> operandConverter) {
     T value1 = operandConverter.apply(value1Operand);
     T value2 = operandConverter.apply(value2Operand);
-    @SuppressWarnings("unchecked")
+    if (property.type().equals(LocalDateTime.class)) {
+      if (value2 != null) {
+        value2 = (T) ((LocalDateTime) value2).withSecond(59).withNano(999999999);
+      }
+    }
     Property<T> actualProperty = (Property<T>) property;
     if (value1 == null && value2 != null) {
       // Less than upper bound.
