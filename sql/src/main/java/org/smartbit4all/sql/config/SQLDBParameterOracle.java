@@ -26,7 +26,23 @@ public class SQLDBParameterOracle extends SQLDBParameterBase {
   public SQLDBParameterOracle() {
     super();
     type = SupportedDatabase.ORACLE;
-    datetimeSQL = "select sysdate from dual";
+  }
+
+  @Override
+  public String getDatetimeSQL() {
+    return "select sysdate from dual";
+  }
+
+  @Override
+  public String getTableNamesSQL() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("SELECT table_name ")
+        .append("FROM all_tables ");
+    if (!DEFAULT.equals(schema)) {
+      sb.append("WHERE owner='").append(schema).append("' ");
+    }
+    sb.append("AND table_type='BASE TABLE';");
+    return sb.toString();
   }
 
 }

@@ -23,7 +23,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
  * 
  * @author Peter Boros
  */
-public class SQLDBParameterBase implements SQLDBParameter {
+public abstract class SQLDBParameterBase implements SQLDBParameter {
 
   public static final String SB4DSSTRING = "SB4DSSTRING";
 
@@ -41,8 +41,6 @@ public class SQLDBParameterBase implements SQLDBParameter {
   protected SupportedDatabase type;
 
   protected String name;
-
-  protected String datetimeSQL;
 
   protected String schema;
 
@@ -64,8 +62,11 @@ public class SQLDBParameterBase implements SQLDBParameter {
   }
 
   @Override
-  public String getDatetimeSQL() {
-    return datetimeSQL;
+  public abstract String getDatetimeSQL();
+
+  @Override
+  public String getTableRownumSQL(String table) {
+    return "select count(1) where exists (select * from " + table + ");";
   }
 
   @Override

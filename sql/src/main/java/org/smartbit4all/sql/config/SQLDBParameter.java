@@ -44,6 +44,10 @@ public interface SQLDBParameter {
    */
   String getDatetimeSQL();
 
+  String getTableRownumSQL(String table);
+
+  String getTableNamesSQL();
+
   /**
    * If null then we skip the schema at SQL level.
    * 
