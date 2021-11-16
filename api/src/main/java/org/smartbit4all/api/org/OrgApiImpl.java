@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.org.bean.User;
+import org.smartbit4all.api.session.UserSessionApi;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.setting.LocaleString;
 import org.smartbit4all.core.utility.ReflectionUtility;
@@ -40,6 +41,9 @@ public abstract class OrgApiImpl implements OrgApi, InitializingBean {
 
   @Autowired
   private StorageApi storageApi;
+
+  @Autowired
+  private UserSessionApi userSessionApi;
 
   public OrgApiImpl(Environment env) {
 
@@ -81,8 +85,13 @@ public abstract class OrgApiImpl implements OrgApi, InitializingBean {
           SecurityGroup securityGroup = (SecurityGroup) field.get(option);
           if (securityGroup != null) {
             securityGroup.setOrgApi(this);
+            securityGroup.setUserSessionApi(userSessionApi);
             String key = ReflectionUtility.getQualifiedName(field);
             securityGroup.setName(key);
+            String name = securityGroup.getTitle();
+            if (name == null) {
+              securityGroup.setTitle(field.getName());
+            }
           }
         } catch (IllegalArgumentException | IllegalAccessException e) {
           log.debug("Unable to access the value of the " + field, e);

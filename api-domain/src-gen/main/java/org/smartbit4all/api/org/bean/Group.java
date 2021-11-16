@@ -34,6 +34,7 @@ import javax.validation.Valid;
  */
 @JsonPropertyOrder({
   Group.URI,
+  Group.TITLE,
   Group.NAME,
   Group.DESCRIPTION,
   Group.KIND,
@@ -45,6 +46,9 @@ import javax.validation.Valid;
 public class Group {
   public static final String URI = "uri";
   private URI uri;
+
+  public static final String TITLE = "title";
+  private String title;
 
   public static final String NAME = "name";
   private String name;
@@ -87,6 +91,33 @@ public class Group {
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setUri(URI uri) {
     this.uri = uri;
+  }
+
+
+  public Group title(String title) {
+    
+    this.title = title;
+    return this;
+  }
+
+   /**
+   * The title of the group, can be used as display name
+   * @return title
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The title of the group, can be used as display name")
+  @JsonProperty(TITLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getTitle() {
+    return title;
+  }
+
+
+  @JsonProperty(TITLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setTitle(String title) {
+    this.title = title;
   }
 
 
@@ -243,6 +274,7 @@ public class Group {
     }
     Group group = (Group) o;
     return Objects.equals(this.uri, group.uri) &&
+        Objects.equals(this.title, group.title) &&
         Objects.equals(this.name, group.name) &&
         Objects.equals(this.description, group.description) &&
         Objects.equals(this.kind, group.kind) &&
@@ -252,7 +284,7 @@ public class Group {
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, name, description, kind, parent, children);
+    return Objects.hash(uri, title, name, description, kind, parent, children);
   }
 
   @Override
@@ -260,6 +292,7 @@ public class Group {
     StringBuilder sb = new StringBuilder();
     sb.append("class Group {\n");
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
+    sb.append("    title: ").append(toIndentedString(title)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    description: ").append(toIndentedString(description)).append("\n");
     sb.append("    kind: ").append(toIndentedString(kind)).append("\n");

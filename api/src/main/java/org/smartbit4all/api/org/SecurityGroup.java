@@ -1,7 +1,6 @@
 package org.smartbit4all.api.org;
 
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.session.UserSessionApi;
@@ -18,7 +17,12 @@ import org.smartbit4all.api.session.UserSessionApi;
 public final class SecurityGroup {
 
   /**
-   * The name of the given security group.
+   * The title of the given security group.
+   */
+  private String title;
+
+  /**
+   * The name of the given security group, that is also used as a unique identifier.
    */
   private String name;
 
@@ -38,16 +42,25 @@ public final class SecurityGroup {
   /**
    * The sub groups of the security group.
    */
-  private List<SecurityGroup> subGroups = Collections.emptyList();
+  private List<SecurityGroup> subGroups = new ArrayList<>();
 
-  public SecurityGroup(String description, UserSessionApi userSessionApi,
-      SecurityGroup... subGroups) {
-    super();
+  public static SecurityGroup of() {
+    return new SecurityGroup();
+  }
+
+  public SecurityGroup title(String title) {
+    this.title = title;
+    return this;
+  }
+
+  public SecurityGroup description(String description) {
     this.description = description;
-    this.userSessionApi = userSessionApi;
-    if (subGroups != null && subGroups.length > 0) {
-      this.subGroups = Arrays.asList(subGroups);
-    }
+    return this;
+  }
+
+  public SecurityGroup subgroup(SecurityGroup subgroup) {
+    subGroups.add(subgroup);
+    return this;
   }
 
   public final String getName() {
@@ -91,6 +104,22 @@ public final class SecurityGroup {
 
   public final List<SecurityGroup> getSubGroups() {
     return subGroups;
+  }
+
+  public UserSessionApi getUserSessionApi() {
+    return userSessionApi;
+  }
+
+  void setUserSessionApi(UserSessionApi userSessionApi) {
+    this.userSessionApi = userSessionApi;
+  }
+
+  public String getTitle() {
+    return title;
+  }
+
+  void setTitle(String name) {
+    this.title = name;
   }
 
 }

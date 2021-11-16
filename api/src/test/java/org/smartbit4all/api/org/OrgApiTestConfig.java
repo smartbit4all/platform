@@ -19,8 +19,8 @@ public class OrgApiTestConfig {
   }
 
   @Bean
-  public MyModuleSecurityOption myModuleSecurityOption(UserSessionApi userSessionApi) {
-    return new MyModuleSecurityOption(userSessionApi);
+  public MyModuleSecurityOption myModuleSecurityOption() {
+    return new MyModuleSecurityOption();
   }
 
   @Bean
