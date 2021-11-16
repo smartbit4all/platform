@@ -35,7 +35,8 @@ public class UINavigationVaadinRouting extends UINavigationVaadinCommon {
       ObjectEditing.currentConstructionUUID.set(navigationTarget.getUuid());
       String viewName = navigationTarget.getViewName();
       try (UIViewParameterVaadinTransition param =
-          new UIViewParameterVaadinTransition(navigationTarget.getParameters())) {
+          new UIViewParameterVaadinTransition(navigationTarget.getUuid(),
+              navigationTarget.getParameters())) {
         if (navigationTarget.getType() == NavigationTargetType.DIALOG) {
           Component view = navigateToDialog(navigationTarget);
           callHasUrlImplementation(viewName, param, view);
@@ -52,7 +53,8 @@ public class UINavigationVaadinRouting extends UINavigationVaadinCommon {
   }
 
   @Override
-  protected Class<? extends Component> getViewClassByNavigationTarget(NavigationTarget navigationTarget) {
+  protected Class<? extends Component> getViewClassByNavigationTarget(
+      NavigationTarget navigationTarget) {
     // TODO Auto-generated method stub
     Class<? extends Component> clazz = super.getViewClassByNavigationTarget(navigationTarget);
     if (clazz == null) {

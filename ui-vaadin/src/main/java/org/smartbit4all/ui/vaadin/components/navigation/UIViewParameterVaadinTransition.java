@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
 import com.vaadin.flow.router.QueryParameters;
@@ -44,14 +45,17 @@ public class UIViewParameterVaadinTransition implements AutoCloseable {
    */
   private String identifier;
 
-  private Map<String, Object> parameters;
-
   private static final AtomicLong sequence = new AtomicLong();
 
   public UIViewParameterVaadinTransition(Map<String, Object> parameters) {
+    this(null, parameters);
+  }
+
+  public UIViewParameterVaadinTransition(UUID uuid, Map<String, Object> parameters) {
     super();
     if (parameters != null) {
-      identifier = String.valueOf(sequence.getAndIncrement());
+      identifier =
+          uuid == null ? String.valueOf(sequence.getAndIncrement()) : uuid.toString();
       parameterMap.put(identifier, parameters);
     }
   }
@@ -79,6 +83,21 @@ public class UIViewParameterVaadinTransition implements AutoCloseable {
       throw new ParameterMissingException("Parameter " + parameterKey + " is missing");
     }
     return result;
+  }
+
+  public static UUID extractUUID(QueryParameters queryParameters) {
+    if (queryParameters == null || queryParameters.getParameters() == null) {
+      return null;
+    }
+    List<String> list = queryParameters.getParameters().get(PARAM);
+    if (list == null || list.size() != 1) {
+      return null;
+    }
+    try {
+      return UUID.fromString(list.get(0));
+    } catch (Exception e) {
+      return null;
+    }
   }
 
   @Override

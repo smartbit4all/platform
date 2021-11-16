@@ -81,7 +81,8 @@ public class UINavigationVaadinTabbed extends UINavigationVaadinCommon {
       checkNavigationParameters(navigationTarget);
       super.navigateTo(navigationTarget);
       try (UIViewParameterVaadinTransition param =
-          new UIViewParameterVaadinTransition(navigationTarget.getParameters())) {
+          new UIViewParameterVaadinTransition(navigationTarget.getUuid(),
+              navigationTarget.getParameters())) {
 
         Component view;
         if (navigationTarget.getType() == NavigationTargetType.DIALOG) {
