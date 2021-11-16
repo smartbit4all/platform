@@ -7,12 +7,12 @@ public class JDBCUriImpl implements JDBCUri {
 
   @Override
   public String app2ext(URI appValue) {
-    return appValue.toString();
+    return appValue == null ? null : appValue.toString();
   }
 
   @Override
   public URI ext2app(String extValue) {
-    return URI.create(extValue);
+    return extValue == null ? null : URI.create(extValue);
   }
 
 }
