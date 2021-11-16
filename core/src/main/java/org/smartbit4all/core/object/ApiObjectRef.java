@@ -465,7 +465,11 @@ public class ApiObjectRef {
         if (pathSize == 1) {
           return propertyEntry.getReference();
         } else {
-          return propertyEntry.getReference().getValueRefByPath(PathUtility.nextFullPath(path));
+          ApiObjectRef reference = propertyEntry.getReference();
+          if (reference == null) {
+            return null;
+          }
+          return reference.getValueRefByPath(PathUtility.nextFullPath(path));
         }
       case COLLECTION:
         ApiObjectCollection collection = propertyEntry.getCollection();
@@ -558,12 +562,11 @@ public class ApiObjectRef {
             "Invalid parameter " + propertyName);
       }
       String path = propertyName.substring(0, slashIndex);
-      ApiObjectRef refObject = getValueRefByPath(path);
-      if (refObject == null) {
-        throw new IllegalArgumentException(
-            "Invalid parameter " + propertyName + ", no ApiObjectRef found on " + path);
+      ApiObjectRef reference = getValueRefByPath(path);
+      if (reference == null) {
+        return null;
       }
-      return refObject.getValue(propertyName.substring(slashIndex + 1));
+      return reference.getValue(propertyName.substring(slashIndex + 1));
     }
     return getValueInner(getPropertyEntryByName(propertyName));
   }
@@ -587,7 +590,12 @@ public class ApiObjectRef {
         return propertyEntry.getMeta().getValue(object);
       case REFERENCE:
         // Call the getValueByPath on reference with new path
-        return propertyEntry.getReference().getValueByPath(PathUtility.nextFullPath(upperPath));
+
+        ApiObjectRef reference = propertyEntry.getReference();
+        if (reference == null) {
+          return null;
+        }
+        return reference.getValueByPath(PathUtility.nextFullPath(upperPath));
       case COLLECTION:
         ApiObjectCollection collection = propertyEntry.getCollection();
         if (pathSize == 2) {
