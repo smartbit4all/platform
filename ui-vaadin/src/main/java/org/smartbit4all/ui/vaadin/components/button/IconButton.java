@@ -22,7 +22,9 @@ public class IconButton {
     newButton.getElement().appendChild(icon.getElement());
     newButton.getElement().appendChild(new Div(new Label(text)).getElement());
 
-    newButton.addClickListener(listener);
+    if (listener != null) {
+      newButton.addClickListener(listener);
+    }
 
     return newButton;
   }
