@@ -76,7 +76,11 @@ public class UINavigationVaadinRouting extends UINavigationVaadinCommon {
 
     Class<? extends Component> viewClass = null;
     for (RouteData route : routes) {
-      if (viewName.equals(route.getUrl())) {
+      String template = route.getTemplate();
+      if (template != null && template.contains("/:")) {
+        template = template.split("/:")[0];
+      }
+      if (viewName.equals(template)) {
         viewClass = route.getNavigationTarget();
         break;
       }
