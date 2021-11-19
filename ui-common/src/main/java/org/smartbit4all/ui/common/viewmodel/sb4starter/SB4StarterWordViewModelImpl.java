@@ -42,8 +42,8 @@ public class SB4StarterWordViewModelImpl extends ObjectEditingImpl
 
   protected ObservableObjectImpl sb4Starter = new ObservableObjectImpl();
 
-  @Value("${contentaccess.client.base-uri}")
-  private String contentAccessBaseUri;
+  @Value("${openapi.contentAccess.base-path}")
+  private String contentAccessBasePath;
 
   @Autowired
   private ContentAccessApi contentAccessApi;
@@ -65,15 +65,19 @@ public class SB4StarterWordViewModelImpl extends ObjectEditingImpl
 
   private Storage storage;
 
+  private String baseUrl;
+
   @Override
   public void initSb4StarterFormModel(SB4StarterWordFormModel sb4StarterWordFormModel,
-      BiConsumer<BinaryContent, BinaryContent> acceptHandler) throws Exception {
+      BiConsumer<BinaryContent, BinaryContent> acceptHandler, String baseLocation)
+      throws Exception {
     ref = new ApiObjectRef(null, sb4StarterWordFormModel,
         SB4StarterViewModelUtility.WORD_FORM_DESCRIPTOR);
     sb4Starter.setRef(ref);
     this.sb4StarterWordFormModel = ref.getWrapper(SB4StarterWordFormModel.class);
     this.acceptHandler = acceptHandler;
 
+    this.baseUrl = baseLocation + contentAccessBasePath;
     createSB4Starter();
     sb4Starter.notifyListeners();
   }
@@ -126,7 +130,8 @@ public class SB4StarterWordViewModelImpl extends ObjectEditingImpl
     UUID sb4StarterSharedUUID = contentAccessApi.share(sb4starterContent);
 
     String url =
-        "sb4starter:?url=" + contentAccessBaseUri + "&uuid=" + sb4StarterSharedUUID.toString();
+        "sb4starter:?url=" + baseUrl + "&uuid="
+            + sb4StarterSharedUUID.toString();
     sb4StarterWordFormModel.setSb4StarterUrl(url);
   }
 
@@ -154,7 +159,7 @@ public class SB4StarterWordViewModelImpl extends ObjectEditingImpl
     SB4File startFile = new SB4File().filename(wordFileName).id(startWordId);
     SB4File resultFile = new SB4File().filename(wordFileName).id(resultWordId);
 
-    URI uri = URI.create(contentAccessBaseUri);
+    URI uri = URI.create(baseUrl);
 
     SB4Command downloadCommand =
         createaDefaultSB4Command(CommandKind.CONTENTACCESSDOWNLOAD, uri, startFile);

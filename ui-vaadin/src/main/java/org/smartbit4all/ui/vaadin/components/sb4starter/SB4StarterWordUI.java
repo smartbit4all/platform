@@ -21,6 +21,8 @@ import com.vaadin.flow.router.BeforeLeaveEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.internal.BeforeLeaveHandler;
+import com.vaadin.flow.server.VaadinService;
+import com.vaadin.flow.server.VaadinServletRequest;
 
 public class SB4StarterWordUI extends FlexLayout
     implements HasUrlParameter<String>, BeforeLeaveHandler {
@@ -49,7 +51,10 @@ public class SB4StarterWordUI extends FlexLayout
     BiConsumer<BinaryContent, BinaryContent> acceptHandler =
         (BiConsumer<BinaryContent, BinaryContent>) Navigations.getParameter(event, "acceptHandler");
     try {
-      viewModel.initSb4StarterFormModel(model, acceptHandler);
+      VaadinServletRequest request = (VaadinServletRequest) VaadinService.getCurrentRequest();
+      StringBuffer uriString = request.getRequestURL();
+      String baseLocation = uriString.toString();
+      viewModel.initSb4StarterFormModel(model, acceptHandler, baseLocation);
     } catch (Exception e) {
       new ConfirmDialog("Hiba", e.getMessage(), "Ok", conf -> {
       }).open();
