@@ -12,21 +12,21 @@ public class IconButton {
   public static Button createIconButton(
       String text,
       Icon icon,
-      String iconSize,
       ComponentEventListener<ClickEvent<Button>> listener) {
 
-    Button newButton = new Button();
+    Button button = new Button();
+    button.addClassName("sb4-iconbutton");
 
-    icon.setSize(iconSize);
-
-    newButton.getElement().appendChild(icon.getElement());
-    newButton.getElement().appendChild(new Div(new Label(text)).getElement());
+    button.getElement().appendChild(icon.getElement());
+    Label label = new Label(text);
+    label.addClassName("sb4-iconbutton-label");
+    button.getElement().appendChild(new Div(label).getElement());
 
     if (listener != null) {
-      newButton.addClickListener(listener);
+      button.addClickListener(listener);
     }
 
-    return newButton;
+    return button;
   }
 
 }

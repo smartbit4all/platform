@@ -229,3 +229,12 @@
 /* TODO: upload  */
 /* TODO: task-grid-components, other grid components  */
 
+.sb4-iconbutton {
+	width: 150px;
+	height: 150px;
+	margin-right: var(--lumo-space-m);
+}
+
+.sb4-iconbutton-label {
+    white-space: initial;
+}
