@@ -141,10 +141,11 @@
 }
 
 .sb4-page1-cards {
-    margin-top: auto;
+    /*margin-top: auto;*/
     /*margin-bottom: -88px; this is not responsive for different screen sizes*/
     margin-top: 2%;
-    
+    width: 100%;
+    justify-content: center;
 }
 
 .sb4-page1-card {
@@ -158,7 +159,7 @@
     width: 100%;
     height: 100%;
     align-items: center;
-    
+    flex-basis: 10%;
 }
 
 .sb4-page1-card-top {

@@ -11,7 +11,7 @@ import org.smartbit4all.ui.api.navigation.model.NavigableViewDescriptor;
 import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
 import org.smartbit4all.ui.api.navigation.model.NavigationTargetType;
 import org.smartbit4all.ui.vaadin.components.navigation.UIViewParameterVaadinTransition;
-import com.google.common.base.Strings;
+import org.springframework.util.ObjectUtils;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
@@ -49,19 +49,10 @@ public class UINavigationVaadinTabbed extends UINavigationVaadinCommon {
     viewsByTab = new HashMap<>();
     tabsByViewObjectId = new HashMap<>();
     tabsByUUID = new HashMap<>();
-  }
-
-  public void setMainView(AppLayout mainView) {
-    if (this.mainView != null) {
-      throw new IllegalArgumentException("MainView may only be set once!");
-    }
-    this.mainView = mainView;
     tabs = new Tabs(true);
     tabs.setSizeFull();
-    this.mainView.addToNavbar(true, tabs);
     tabContents = new Div();
     tabContents.setSizeFull();
-    mainView.setContent(tabContents);
     tabs.addSelectedChangeListener(event -> {
       viewsByTab.values().forEach(view -> view.setVisible(false));
       Tab selectedTab = tabs.getSelectedTab();
@@ -72,6 +63,15 @@ public class UINavigationVaadinTabbed extends UINavigationVaadinCommon {
         }
       }
     });
+  }
+
+  public void setMainView(AppLayout mainView) {
+    if (this.mainView != null) {
+      throw new IllegalArgumentException("MainView may only be set once!");
+    }
+    this.mainView = mainView;
+    this.mainView.addToNavbar(true, tabs);
+    this.mainView.setContent(tabContents);
   }
 
   @Override
@@ -120,33 +120,38 @@ public class UINavigationVaadinTabbed extends UINavigationVaadinCommon {
     }
     tabsByUUID.put(navigationTarget.getUuid(), tab);
     tabs.setSelectedTab(tab);
-    if (hideDrawerOnSelect && mainView.isDrawerOpened()) {
-      mainView.setDrawerOpened(false);
+    if (mainView != null) {
+      if (hideDrawerOnSelect && mainView.isDrawerOpened()) {
+        mainView.setDrawerOpened(false);
+      }
     }
     return view;
   }
 
   private Tab createTab(NavigationTarget navigationTarget) {
     String title = calculateTitle(navigationTarget);
-    Tab tab = new Tab();
-    tab.setLabel(title);
-    // icon
-    String icon = calculateIcon(navigationTarget);
-    if (!Strings.isNullOrEmpty(icon)) {
-      tab.add(new Icon(icon));
-    }
-    // closeButton
-    Button closeButton = new Button(VaadinIcon.CLOSE_SMALL.create(), event -> closeTab(tab));
-    closeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
-    tab.add(closeButton);
+    String iconKey = calculateIcon(navigationTarget);
+    Icon icon = ObjectUtils.isEmpty(iconKey) ? null : new Icon(iconKey);
+
+    Tab tab = createTab(title, icon);
 
     return tab;
   }
 
-  private void checkNavigationParameters(NavigationTarget navigationTarget) {
-    if (mainView == null) {
-      throw new IllegalArgumentException("MainView must be set before navigation!");
+  protected Tab createTab(String title, Icon icon) {
+    Tab tab = new Tab(title);
+
+    if (icon != null) {
+      tab.add(icon);
     }
+
+    Button closeButton = new Button(VaadinIcon.CLOSE_SMALL.create(), event -> closeTab(tab));
+    closeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
+    tab.add(closeButton);
+    return tab;
+  }
+
+  private void checkNavigationParameters(NavigationTarget navigationTarget) {
     if (VaadinService.getCurrent() == null) {
       throw new RuntimeException("VaadinService is not available!");
     }
@@ -231,5 +236,13 @@ public class UINavigationVaadinTabbed extends UINavigationVaadinCommon {
     } else {
       super.setTitle(navigationTargetUuid, title);
     }
+  }
+
+  public Tabs getTabs() {
+    return tabs;
+  }
+
+  public Div getTabContents() {
+    return tabContents;
   }
 }
