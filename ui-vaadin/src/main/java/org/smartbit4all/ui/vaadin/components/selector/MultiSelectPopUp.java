@@ -500,4 +500,9 @@ public class MultiSelectPopUp<T> extends CustomField<Set<T>> implements HasDataP
     dialog.open();
   }
 
+  public void setSelection(Set<T> selection) {
+    grid.asMultiSelect().select(selection);
+    updateSelection();
+  }
+
 }
