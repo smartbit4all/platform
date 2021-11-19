@@ -37,11 +37,10 @@ public class SQLDBParameterOracle extends SQLDBParameterBase {
   public String getTableNamesSQL() {
     StringBuilder sb = new StringBuilder();
     sb.append("SELECT table_name ")
-        .append("FROM all_tables ");
-    if (!DEFAULT.equals(schema)) {
-      sb.append("WHERE owner='").append(schema).append("' ");
+        .append("FROM user_tables ");
+    if (schema != null) {
+      sb.append("WHERE owner='").append(schema);
     }
-    sb.append("AND table_type='BASE TABLE';");
     return sb.toString();
   }
 

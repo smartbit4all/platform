@@ -66,7 +66,7 @@ public abstract class SQLDBParameterBase implements SQLDBParameter {
 
   @Override
   public String getTableRownumSQL(String table) {
-    return "select count(1) where exists (select * from " + table + ");";
+    return "select count(1) from " + table;
   }
 
   @Override
