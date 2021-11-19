@@ -77,9 +77,16 @@ public class SB4StarterWordViewModelImpl extends ObjectEditingImpl
     this.sb4StarterWordFormModel = ref.getWrapper(SB4StarterWordFormModel.class);
     this.acceptHandler = acceptHandler;
 
-    this.baseUrl = baseLocation + contentAccessBasePath;
+    this.baseUrl = baseLocation + getContentAccesBasePath();
     createSB4Starter();
     sb4Starter.notifyListeners();
+  }
+
+  private String getContentAccesBasePath() {
+    if (contentAccessBasePath.startsWith("/")) {
+      return contentAccessBasePath.substring(1);
+    }
+    return contentAccessBasePath;
   }
 
   @Override
