@@ -5,9 +5,7 @@ import java.util.Objects;
 import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.core.object.PropertyChange;
 import org.smartbit4all.ui.api.navigation.NavigationViewModel;
-import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
 import org.smartbit4all.ui.api.tree.model.TreeNode;
-import org.smartbit4all.ui.vaadin.components.navigation.UIViewParameterVaadinTransition;
 import org.smartbit4all.ui.vaadin.localization.TranslationUtil;
 import org.smartbit4all.ui.vaadin.util.Css;
 import com.vaadin.flow.component.html.Div;
@@ -36,7 +34,6 @@ public class TreeNodeView extends FlexLayout {
   private Disposable stylesSubs;
   private Disposable expandedSubs;
   private Disposable selectedSubs;
-  private Disposable navigationSubs;
   private Disposable levelSubs;
 
   private Boolean expanded = false;
@@ -59,8 +56,6 @@ public class TreeNodeView extends FlexLayout {
     stylesSubs = model.onPropertyChange(this::onHasChildrenChanged, path, TreeNode.HAS_CHILDREN);
     expandedSubs = model.onPropertyChange(this::onExpandedChanged, path, TreeNode.EXPANDED);
     selectedSubs = model.onPropertyChange(this::onSelectedChanged, path, TreeNode.SELECTED);
-    navigationSubs =
-        model.onPropertyChange(this::onNavigationChanged, path, TreeNode.NAVIGATION_TARGET);
     levelSubs = model.onPropertyChange(this::onLevelChanged, path, TreeNode.LEVEL);
   }
 
@@ -160,17 +155,6 @@ public class TreeNodeView extends FlexLayout {
     }
   }
 
-  private void onNavigationChanged(PropertyChange change) {
-    NavigationTarget command = (NavigationTarget) change.getNewValue();
-    if (command != null) {
-      UIViewParameterVaadinTransition param =
-          new UIViewParameterVaadinTransition(command.getParameters());
-
-      getUI().ifPresent(ui -> ui.navigate(command.getViewName(), param.construct()));
-
-    }
-  }
-
   private void onLevelChanged(PropertyChange change) {
     Integer level = (Integer) change.getNewValue();
     String width = "calc(" + (7 * level) + "em / 3)"; // + 3
@@ -211,10 +195,6 @@ public class TreeNodeView extends FlexLayout {
     if (selectedSubs != null) {
       selectedSubs.dispose();
       selectedSubs = null;
-    }
-    if (navigationSubs != null) {
-      navigationSubs.dispose();
-      navigationSubs = null;
     }
     if (levelSubs != null) {
       levelSubs.dispose();

@@ -21,6 +21,7 @@ import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectEditingImpl;
 import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.core.object.ObservableObjectImpl;
+import org.smartbit4all.core.object.ObservablePublisherWrapper;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageObject;
@@ -40,7 +41,7 @@ import io.reactivex.rxjava3.disposables.Disposable;
 public class SB4StarterWordViewModelImpl extends ObjectEditingImpl
     implements SB4StarterWordViewModel {
 
-  protected ObservableObjectImpl sb4Starter = new ObservableObjectImpl();
+  private final ObservableObjectImpl sb4Starter;
 
   @Value("${openapi.contentAccess.base-path}")
   private String contentAccessBasePath;
@@ -66,6 +67,10 @@ public class SB4StarterWordViewModelImpl extends ObjectEditingImpl
   private Storage storage;
 
   private String baseUrl;
+
+  public SB4StarterWordViewModelImpl(@Autowired ObservablePublisherWrapper publisherWrapper) {
+    sb4Starter = new ObservableObjectImpl(publisherWrapper);
+  }
 
   @Override
   public void initSb4StarterFormModel(SB4StarterWordFormModel sb4StarterWordFormModel,

@@ -20,7 +20,9 @@ import org.smartbit4all.core.object.ApiObjectRef;
 import org.smartbit4all.core.object.ObjectEditingImpl;
 import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.core.object.ObservableObjectImpl;
+import org.smartbit4all.core.object.ObservablePublisherWrapper;
 import org.smartbit4all.ui.api.navigation.NavigationViewModel;
+import org.smartbit4all.ui.api.navigation.UINavigationApi;
 import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
 import org.smartbit4all.ui.api.tree.model.TreeModel;
 import org.smartbit4all.ui.api.tree.model.TreeNode;
@@ -31,7 +33,7 @@ public class NavigationViewModelImpl extends ObjectEditingImpl implements Naviga
 
   private TreeModel model;
 
-  private ObservableObjectImpl modelObservable;
+  private final ObservableObjectImpl modelObservable;
 
   private Navigation navigationState;
 
@@ -39,11 +41,16 @@ public class NavigationViewModelImpl extends ObjectEditingImpl implements Naviga
 
   private Map<String, TreeNode> treeNodesById;
 
-  public NavigationViewModelImpl(Navigation navigation) {
+  private UINavigationApi uiNavigationApi;
+
+  public NavigationViewModelImpl(Navigation navigation,
+      ObservablePublisherWrapper publisherWrapper,
+      UINavigationApi uiNavigationApi) {
     this.navigationState = navigation;
+    this.uiNavigationApi = uiNavigationApi;
     ref = new ApiObjectRef(null, new TreeModel(),
         NavigationViewModelHelper.getNavigationDescriptors());
-    modelObservable = new ObservableObjectImpl();
+    modelObservable = new ObservableObjectImpl(publisherWrapper);
     modelObservable.setRef(ref);
     model = ref.getWrapper(TreeModel.class);
     treeNodesById = new HashMap<>();
@@ -95,7 +102,11 @@ public class NavigationViewModelImpl extends ObjectEditingImpl implements Naviga
     } else {
       selectedNode = node;
       selectedNode.setSelected(true);
-      node.setNavigationTarget(getViewCommand(selectedNode));
+      NavigationTarget navigationTarget = getViewCommand(selectedNode);
+      node.setNavigationTarget(navigationTarget);
+      if (navigationTarget != null) {
+        uiNavigationApi.navigateTo(navigationTarget);
+      }
     }
   }
 
@@ -492,11 +503,11 @@ public class NavigationViewModelImpl extends ObjectEditingImpl implements Naviga
   }
 
   @Override
-  public  NavigationTarget loadNavigationTarget() {
+  public NavigationTarget loadNavigationTarget() {
     if (selectedNode != null) {
       return selectedNode.getNavigationTarget();
     }
-    
+
     return null;
   }
 

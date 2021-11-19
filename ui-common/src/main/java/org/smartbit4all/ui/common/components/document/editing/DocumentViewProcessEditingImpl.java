@@ -9,13 +9,14 @@ import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.documentview.bean.DisplayMode;
 import org.smartbit4all.api.documentview.bean.DocumentViewProcess;
 import org.smartbit4all.api.documentview.bean.ImageWithAlt;
-import org.smartbit4all.api.mimetype.MimeTypeHandlerApi;
 import org.smartbit4all.api.mimetype.MimeTypeHandler;
+import org.smartbit4all.api.mimetype.MimeTypeHandlerApi;
 import org.smartbit4all.core.object.ApiBeanDescriptor;
 import org.smartbit4all.core.object.ApiObjectRef;
 import org.smartbit4all.core.object.ObjectEditingImpl;
 import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.core.object.ObservableObjectImpl;
+import org.smartbit4all.core.object.ObservablePublisherWrapper;
 import org.smartbit4all.ui.api.components.document.editing.DocumentViewProcessEditing;
 
 /**
@@ -24,7 +25,7 @@ import org.smartbit4all.ui.api.components.document.editing.DocumentViewProcessEd
 public class DocumentViewProcessEditingImpl extends ObjectEditingImpl
     implements DocumentViewProcessEditing {
 
-  protected ObservableObjectImpl publisher;
+  private final ObservableObjectImpl publisher;
 
   private Map<Class<?>, ApiBeanDescriptor> documentViewDescriptor;
 
@@ -37,11 +38,11 @@ public class DocumentViewProcessEditingImpl extends ObjectEditingImpl
   private List<BinaryData> images = new ArrayList<>();
 
   public DocumentViewProcessEditingImpl(Map<Class<?>, ApiBeanDescriptor> documentViewDescriptor,
-      MimeTypeHandlerApi mimeTypeHandlerApi) {
+      MimeTypeHandlerApi mimeTypeHandlerApi, ObservablePublisherWrapper publisherWrapper) {
     super();
     this.documentViewDescriptor = documentViewDescriptor;
     this.mimeTypeHandlerApi = mimeTypeHandlerApi;
-    this.publisher = new ObservableObjectImpl();
+    this.publisher = new ObservableObjectImpl(publisherWrapper);
 
     initDocumentViewProcess();
   }
@@ -59,11 +60,11 @@ public class DocumentViewProcessEditingImpl extends ObjectEditingImpl
   }
 
   /**
-   * With the help of {@link MimeTypeHandlerApi} decides whether the document with the certain format can
-   * be displayed or not, and what type of display is required, according to that, converts the
-   * content into image(s) or text, which will be displayed in the attached UI. If the document
-   * consists of more than one page, it also displays every page as small images (thumbnails) next
-   * to the actual page shown.
+   * With the help of {@link MimeTypeHandlerApi} decides whether the document with the certain
+   * format can be displayed or not, and what type of display is required, according to that,
+   * converts the content into image(s) or text, which will be displayed in the attached UI. If the
+   * document consists of more than one page, it also displays every page as small images
+   * (thumbnails) next to the actual page shown.
    */
   @Override
   public synchronized void setDocument(BinaryData document, URI uri, String mimeType) {

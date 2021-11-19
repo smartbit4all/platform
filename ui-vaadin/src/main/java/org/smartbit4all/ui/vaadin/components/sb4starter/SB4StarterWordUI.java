@@ -8,7 +8,6 @@ import org.smartbit4all.ui.api.sb4starterui.model.SB4StarterWordFormModel;
 import org.smartbit4all.ui.api.sb4starterui.model.SB4StarterWordState;
 import org.smartbit4all.ui.vaadin.components.binder.VaadinBinders;
 import org.smartbit4all.ui.vaadin.components.navigation.Navigations;
-import org.smartbit4all.ui.vaadin.object.VaadinPublisherWrapper;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
@@ -36,7 +35,6 @@ public class SB4StarterWordUI extends FlexLayout
   public SB4StarterWordUI(SB4StarterWordViewModel viewModel) {
     this.viewModel = viewModel;
 
-    viewModel.sb4Starter().setPublisherWrapper(VaadinPublisherWrapper.create());
     viewModel.sb4Starter().onPropertyChange(this::onStateChanged, SB4StarterWordFormModel.STATE);
     viewModel.sb4Starter().onPropertyChange(this::onStarterUrlChanged,
         SB4StarterWordFormModel.SB4_STARTER_URL);

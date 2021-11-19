@@ -1,10 +1,10 @@
 package org.smartbit4all.ui.vaadin.components.document;
 
 import org.smartbit4all.api.documentview.bean.DisplayMode;
+import org.smartbit4all.api.documentview.bean.DocumentViewProcess;
 import org.smartbit4all.core.object.PropertyChange;
 import org.smartbit4all.core.object.ReferencedObjectChange;
 import org.smartbit4all.ui.api.components.document.editing.DocumentViewProcessEditing;
-import org.smartbit4all.ui.vaadin.object.VaadinPublisherWrapper;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
@@ -29,15 +29,19 @@ public class DocumentViewUI extends FlexLayout {
     this.processEditing = processEditing;
     setId("right-panel");
 
-    imageView = new DocumentViewImageUI(processEditing);
-    textView = new DocumentViewTextUI(processEditing);
+    imageView = new DocumentViewImageUI(this.processEditing);
+    textView = new DocumentViewTextUI(this.processEditing);
     loadingSpinner = createLoadingSpinner();
 
-    processEditing.process().setPublisherWrapper(VaadinPublisherWrapper.create());
-    processEditing.process().onPropertyChange(
-        this::onLoadingSpinnerDisplayedChanged, "loadingSpinnerDisplayed");
-    processEditing.process().onPropertyChange(this::onMessageChanged, "message");
-    processEditing.process().onReferencedObjectChange(this::onDisplayModeChanged, "displayMode");
+    this.processEditing.process().onPropertyChange(
+        this::onLoadingSpinnerDisplayedChanged,
+        DocumentViewProcess.LOADING_SPINNER_DISPLAYED);
+    this.processEditing.process().onPropertyChange(
+        this::onMessageChanged,
+        DocumentViewProcess.MESSAGE);
+    this.processEditing.process().onReferencedObjectChange(
+        this::onDisplayModeChanged,
+        DocumentViewProcess.DISPLAY_MODE);
   }
 
   /**

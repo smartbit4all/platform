@@ -14,7 +14,10 @@
  ******************************************************************************/
 package org.smartbit4all.core.config;
 
+import org.smartbit4all.core.object.ObservablePublisherWrapper;
+import org.smartbit4all.core.object.ObservablePublisherWrapperImpl;
 import org.smartbit4all.core.object.proxy.ProxyStatefulApiConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
@@ -30,5 +33,9 @@ import org.springframework.context.annotation.Import;
 @Import({CoreServiceConfig.class, ProxyStatefulApiConfiguration.class})
 public class CoreConfig {
 
+  @Bean
+  public ObservablePublisherWrapper publisherWrapperFallback() {
+    return new ObservablePublisherWrapperImpl();
+  }
 
 }

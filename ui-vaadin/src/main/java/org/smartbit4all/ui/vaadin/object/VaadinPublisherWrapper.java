@@ -1,7 +1,7 @@
 package org.smartbit4all.ui.vaadin.object;
 
+import org.smartbit4all.core.object.ObservablePublisherWrapper;
 import com.vaadin.flow.component.UI;
-import io.reactivex.rxjava3.functions.Consumer;
 
 /**
  * If we are not on Vaadin UI thread open one and execute the event notifications on this thread.
@@ -9,11 +9,11 @@ import io.reactivex.rxjava3.functions.Consumer;
  * @author Zoltan Suller
  *
  */
-public class VaadinPublisherWrapper implements Consumer<Runnable> {
+public class VaadinPublisherWrapper implements ObservablePublisherWrapper {
 
   private UI ui;
 
-  VaadinPublisherWrapper(UI ui) {
+  public VaadinPublisherWrapper(UI ui) {
     super();
     this.ui = ui;
   }
@@ -28,7 +28,4 @@ public class VaadinPublisherWrapper implements Consumer<Runnable> {
     }
   }
 
-  public static VaadinPublisherWrapper create() {
-    return new VaadinPublisherWrapper(UI.getCurrent());
-  }
 }

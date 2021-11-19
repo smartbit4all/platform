@@ -27,7 +27,7 @@ public final class ObservableObjectImpl implements ObservableObject, EventPublis
 
   ApiObjectRef ref;
 
-  private Consumer<Runnable> publisherWrapper;
+  private final ObservablePublisherWrapper publisherWrapper;
 
   private PublishSubject<PropertyChange> propertyChangePublisher = PublishSubject.create();
   private PublishSubject<ReferenceChange> referenceChangePublisher = PublishSubject.create();
@@ -36,6 +36,14 @@ public final class ObservableObjectImpl implements ObservableObject, EventPublis
   private PublishSubject<CollectionChange> collectionChangePublisher = PublishSubject.create();
   private PublishSubject<CollectionObjectChange> collectionObjectChangePublisher =
       PublishSubject.create();
+
+  public ObservableObjectImpl() {
+    this(null);
+  }
+
+  public ObservableObjectImpl(ObservablePublisherWrapper publisherWrapper) {
+    this.publisherWrapper = publisherWrapper;
+  }
 
   private void notify(ObjectChange objectChange) {
     if (publisherWrapper != null) {
@@ -212,11 +220,6 @@ public final class ObservableObjectImpl implements ObservableObject, EventPublis
       }
     }
     return disposable;
-  }
-
-  @Override
-  public void setPublisherWrapper(Consumer<Runnable> publisherWrapper) {
-    this.publisherWrapper = publisherWrapper;
   }
 
   static class ObjectPropertyPath {

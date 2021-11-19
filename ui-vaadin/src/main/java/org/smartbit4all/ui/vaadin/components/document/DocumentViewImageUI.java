@@ -1,5 +1,6 @@
 package org.smartbit4all.ui.vaadin.components.document;
 
+import org.smartbit4all.api.documentview.bean.DocumentViewProcess;
 import org.smartbit4all.api.documentview.bean.ImageWithAlt;
 import org.smartbit4all.core.object.ChangeState;
 import org.smartbit4all.core.object.CollectionObjectChange;
@@ -49,16 +50,21 @@ public class DocumentViewImageUI extends FlexLayout {
 
     createUI();
 
-    processEditing.process().onReferencedObjectChange(this::onMainImageChanged, "mainImage");
-    processEditing.process().onPropertyChange(this::onZoomValueChanged, "zoomValue");
+    processEditing.process().onReferencedObjectChange(this::onMainImageChanged,
+        DocumentViewProcess.MAIN_IMAGE);
+    processEditing.process().onPropertyChange(this::onZoomValueChanged,
+        DocumentViewProcess.ZOOM_VALUE);
 
-    processEditing.process().onCollectionObjectChange(this::onThumbnailsChanged, "thumbnails");
-    processEditing.process().onPropertyChange(this::onPageCountChanged, "pageCount");
-    processEditing.process().onPropertyChange(this::onPageIndexChanged, "pageIndex");
+    processEditing.process().onCollectionObjectChange(this::onThumbnailsChanged,
+        DocumentViewProcess.THUMBNAILS);
+    processEditing.process().onPropertyChange(this::onPageCountChanged,
+        DocumentViewProcess.PAGE_COUNT);
+    processEditing.process().onPropertyChange(this::onPageIndexChanged,
+        DocumentViewProcess.PAGE_INDEX);
     processEditing.process().onPropertyChange(
-        this::onLeftButtonEnabledChanged, "leftButtonEnabled");
+        this::onLeftButtonEnabledChanged, DocumentViewProcess.LEFT_BUTTON_ENABLED);
     processEditing.process().onPropertyChange(
-        this::onRightButtonEnabledChanged, "rightButtonEnabled");
+        this::onRightButtonEnabledChanged, DocumentViewProcess.RIGHT_BUTTON_ENABLED);
   }
 
   private void createUI() {

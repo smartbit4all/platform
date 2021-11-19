@@ -15,6 +15,7 @@
 package org.smartbit4all.ui.vaadin.config;
 
 import org.smartbit4all.api.session.UserSessionApi;
+import org.smartbit4all.core.object.ObservablePublisherWrapper;
 import org.smartbit4all.ui.api.navigation.UINavigationApi;
 import org.smartbit4all.ui.common.components.user.UserComponentBaseController;
 import org.smartbit4all.ui.common.components.user.UserComponentBaseControllerImpl;
@@ -22,6 +23,7 @@ import org.smartbit4all.ui.common.components.user.UserComponentConfiguration;
 import org.smartbit4all.ui.common.config.UiCommonConfig;
 import org.smartbit4all.ui.vaadin.api.UINavigationVaadinRouting;
 import org.smartbit4all.ui.vaadin.components.user.UserComponentBase;
+import org.smartbit4all.ui.vaadin.object.VaadinPublisherWrapper;
 import org.smartbit4all.ui.vaadin.service.DefaultUserComponentFactory;
 import org.smartbit4all.ui.vaadin.service.UserComponentFactory;
 import org.springframework.beans.factory.ObjectFactory;
@@ -63,6 +65,12 @@ public class UIVaadinConfig {
   @UIScope
   public UINavigationApi uiNavigationApi(UI ui, UserSessionApi userSessionApi) {
     return new UINavigationVaadinRouting(ui, userSessionApi);
+  }
+
+  @Bean
+  @UIScope
+  public ObservablePublisherWrapper publisherWrapper(UI ui) {
+    return new VaadinPublisherWrapper(ui);
   }
 
 }

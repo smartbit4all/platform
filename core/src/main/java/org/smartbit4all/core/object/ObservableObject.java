@@ -125,12 +125,4 @@ public interface ObservableObject extends EventPublisher {
       @NonNull Consumer<? super CollectionObjectChange> onCollectionObjectChange,
       String... collectionPath);
 
-  /**
-   * Sets a consumer that can do more before and after the event listeners are called (e.g. It can
-   * open a UI thread if it is not on one)
-   * 
-   * @param publisherWrapper
-   */
-  void setPublisherWrapper(Consumer<Runnable> publisherWrapper);
-
 }

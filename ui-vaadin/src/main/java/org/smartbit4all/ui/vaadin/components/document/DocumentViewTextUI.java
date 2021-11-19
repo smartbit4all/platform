@@ -1,5 +1,6 @@
 package org.smartbit4all.ui.vaadin.components.document;
 
+import org.smartbit4all.api.documentview.bean.DocumentViewProcess;
 import org.smartbit4all.core.object.PropertyChange;
 import org.smartbit4all.ui.api.components.document.editing.DocumentViewProcessEditing;
 import org.smartbit4all.ui.vaadin.components.binder.VaadinBinders;
@@ -15,14 +16,14 @@ public class DocumentViewTextUI extends FlexLayout {
 
   private FlexLayout textPanel;
   private TextArea textArea;
-  
+
   private DocumentViewProcessEditing processEditing;
-  
+
   public DocumentViewTextUI(DocumentViewProcessEditing processEditing) {
     this.processEditing = processEditing;
     textPanel = createTextPanel();
     add(textPanel);
-    VaadinBinders.bindValue(textArea, processEditing.process(), "text");
+    VaadinBinders.bindValue(textArea, this.processEditing.process(), DocumentViewProcess.TEXT);
   }
 
   public void onTextChanged(PropertyChange propertyChange) {
@@ -44,5 +45,5 @@ public class DocumentViewTextUI extends FlexLayout {
     layout.add(textArea);
     return layout;
   }
-  
+
 }
