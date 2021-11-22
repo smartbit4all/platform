@@ -1,9 +1,7 @@
 package org.smartbit4all.ui.binder;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import org.smartbit4all.core.object.ChangeState;
 import org.smartbit4all.core.object.CollectionObjectChange;
@@ -16,13 +14,13 @@ public abstract class CollectionBinder<T> extends AbstractBinder {
 
   protected String[] collectionPath;
   protected final List<T> items;
-  protected final Map<String, T> itemsByPath;
+  protected final List<String> itemPaths;
 
   protected CollectionBinder(ObservableObject observableObject, String... collectionPath) {
     this.observableObject = Objects.requireNonNull(observableObject);
     this.collectionPath = collectionPath;
     this.items = new ArrayList<>();
-    this.itemsByPath = new HashMap<>();
+    this.itemPaths = new ArrayList<>();
   }
 
   /**
@@ -44,13 +42,13 @@ public abstract class CollectionBinder<T> extends AbstractBinder {
       if (change.getOperation().equals(ChangeState.NEW) ||
           change.getOperation().equals(ChangeState.MODIFIED)) {
         item = (T) change.getObject();
-        T oldValue = itemsByPath.get(itemPath);
-        if (oldValue == null) {
+        int idx = itemPaths.indexOf(itemPath);
+        if (idx < 0) {
           // NEW
           addItem(itemPath, item);
         } else {
           // MODIFY
-          modifyItem(itemPath, item, oldValue);
+          items.set(idx, item);
         }
       } else if (change.getOperation().equals(ChangeState.DELETED)) {
         item = deleteItem(itemPath);
@@ -59,23 +57,18 @@ public abstract class CollectionBinder<T> extends AbstractBinder {
   }
 
   protected void addItem(String itemPath, T item) {
-    items.add(item);
-    itemsByPath.put(itemPath, item);
-  }
-
-  protected void modifyItem(String itemPath, T newValue, T oldValue) {
-    if (oldValue != newValue) {
-      items.replaceAll(i -> i == oldValue ? newValue : i);
-      itemsByPath.put(itemPath, newValue);
+    if (itemPaths.contains(itemPath)) {
+      throw new IllegalArgumentException("ItemPath added more than once: " + itemPath);
     }
+    itemPaths.add(itemPath);
+    items.add(item);
+
   }
 
   protected T deleteItem(String itemPath) {
-    T item = itemsByPath.remove(itemPath);
-    if (item != null) {
-      items.remove(item);
-    }
-    return item;
+    int idx = itemPaths.indexOf(itemPath);
+    itemPaths.remove(idx);
+    return items.remove(idx);
   }
 
 }
