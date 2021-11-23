@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.smartbit4all.ui.vaadin.util.Buttons;
 import org.smartbit4all.ui.vaadin.util.Css;
@@ -39,6 +40,7 @@ import com.vaadin.flow.component.HtmlComponent;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.customfield.CustomField;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.Grid.Column;
@@ -64,6 +66,8 @@ import com.vaadin.flow.function.ValueProvider;
 import com.vaadin.flow.shared.Registration;
 import dev.mett.vaadin.tooltip.Tooltips;
 
+@CssImport(value = "./styles/components/multiselect/multiselect-popup.css",
+    themeFor = "vaadin-grid")
 public class MultiSelectPopUp<T> extends CustomField<Set<T>> implements HasDataProvider<T> {
 
   private static final long serialVersionUID = 958524394032196451L;
@@ -89,6 +93,8 @@ public class MultiSelectPopUp<T> extends CustomField<Set<T>> implements HasDataP
   private boolean tooltipEnabled = true;
 
   private Set<T> selectedItems = Collections.emptySet();
+
+  private Function<T, Boolean> itemDisableCalculator;
 
   private List<Consumer<Set<T>>> onSaveListeners = new ArrayList<>();
 
@@ -193,6 +199,18 @@ public class MultiSelectPopUp<T> extends CustomField<Set<T>> implements HasDataP
         multiSelect.deselect(item);
       } else {
         multiSelect.select(item);
+      }
+    });
+
+    grid.addSelectionListener(event -> {
+      if (itemDisableCalculator != null) {
+        event.getAllSelectedItems().forEach(item -> {
+
+          // Revert selection if item cannot be selected
+          if (itemDisableCalculator.apply(item)) {
+            grid.deselect(item);
+          }
+        });
       }
     });
 
@@ -403,6 +421,14 @@ public class MultiSelectPopUp<T> extends CustomField<Set<T>> implements HasDataP
   @Override
   public void setDataProvider(DataProvider<T, ?> dataProvider) {
     grid.setDataProvider(dataProvider);
+  }
+
+  public void setItemDisableCalculator(Function<T, Boolean> itemSelectCalculator) {
+    Objects.requireNonNull(itemSelectCalculator, "itemSelectCalculator can not be null!");
+    itemDisableCalculator = itemSelectCalculator;
+    grid.setClassNameGenerator(
+        item -> itemSelectCalculator.apply(item) ? "no-select"
+            : null);
   }
 
   public DataProvider<T, ?> getDataProvider() {
