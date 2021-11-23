@@ -52,8 +52,7 @@ public class DocumentViewProcessEditingImpl extends ObjectEditingImpl
     return publisher;
   }
 
-  @Override
-  public void initDocumentViewProcess() {
+  private void initDocumentViewProcess() {
     ref = new ApiObjectRef(null, new DocumentViewProcess(), documentViewDescriptor);
     publisher.setRef(ref);
     processWrapper = ref.getWrapper(DocumentViewProcess.class);

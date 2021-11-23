@@ -12,9 +12,6 @@ public interface DocumentViewProcessEditing {
   @PublishEvents("OBJECT")
   ObservableObject process();
 
-  @NotifyListeners
-  void initDocumentViewProcess();
-
   @Async
   void setDocument(BinaryData document, URI uri, String mimeType);
 
@@ -41,7 +38,7 @@ public interface DocumentViewProcessEditing {
 
   @NotifyListeners
   void displayLoadingSpinner();
-  
+
   void setActualPageWidth(int pageWidth);
-  
+
 }
