@@ -90,6 +90,9 @@ public class DocumentViewProcessEditingImpl extends ObjectEditingImpl
    * (thumbnails) next to the actual page shown.
    */
   private void setThumbnails() {
+    if (processWrapper.getThumbnails() != null) {
+      processWrapper.getThumbnails().clear();
+    }
     if (images.size() > 1) {
       List<ImageWithAlt> byteImageWithAlts = new LinkedList<>();
       for (int i = 0; i < images.size(); ++i) {
