@@ -100,16 +100,16 @@ public class StorageObjectLock {
    */
   public boolean enter() {
     boolean result = false;
+    // When entering we must wait for the execution even if we will be able to run or we just need
+    // to recreate the object lock. In both cases the current process must be finished before
+    // continuing.
+    mutexExecution.lock();
     mutexCounter.lock();
     try {
       if (threadCount > 0) {
         threadCount++;
         result = true;
       }
-      // When entering we must wait for the execution even if we will be able to run or we just need
-      // to recreate the object lock. In both cases the current process must be finished before
-      // continuing.
-      mutexExecution.lock();
     } finally {
       mutexCounter.unlock();
     }
@@ -131,8 +131,8 @@ public class StorageObjectLock {
         lockRemover.accept(objectURI);
       }
     } finally {
-      mutexExecution.unlock();
       mutexCounter.unlock();
+      mutexExecution.unlock();
     }
   }
 

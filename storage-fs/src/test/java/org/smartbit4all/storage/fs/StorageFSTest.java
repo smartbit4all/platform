@@ -1,17 +1,25 @@
 package org.smartbit4all.storage.fs;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.binarydata.BinaryDataObject;
 import org.smartbit4all.api.invocation.bean.InvocationParameterTemplate;
@@ -37,9 +45,9 @@ import org.smartbit4all.domain.data.storage.history.ObjectHistoryApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import com.google.common.io.ByteStreams;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(classes = {StorageFSTestConfig.class})
+@TestInstance(Lifecycle.PER_CLASS)
 class StorageFSTest {
 
   private static final String MY_MAP = "MyMap";
@@ -95,8 +103,15 @@ class StorageFSTest {
   }
 
   @BeforeAll
-  static void init() throws IOException {
+  void init() throws IOException {
     TestFileUtil.initTestDirectory();
+    Storage storage = storageApi.get(StorageFSTestConfig.TESTSCHEME);
+    StorageObject<FSTestBean> storageObject = storage.instanceOf(FSTestBean.class);
+
+    storageObject.setObject(new FSTestBean("collectionsTest"));
+
+    collectionsTestUri = storage.save(storageObject);
+
   }
 
   @Autowired
@@ -110,6 +125,8 @@ class StorageFSTest {
 
   @Autowired
   ObjectApi objectApi;
+
+  private URI collectionsTestUri;
 
   @Test
   void saveLoadDeleteTest() throws Exception {
@@ -387,20 +404,42 @@ class StorageFSTest {
 
   }
 
-  @Test
+  @RepeatedTest(5)
   void collectionsTest() throws Exception {
+    ExecutorService pool = Executors.newFixedThreadPool(5);
+    List<Future<?>> futures = new ArrayList<>();
+    for (int i = 0; i < 5; i++) {
+      Future<?> submit = pool.submit(() -> {
+        try {
+          collectionsTestInner();
+        } catch (Exception e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+      });
+      futures.add(submit);
+    }
+    futures.forEach(f -> {
+      try {
+        f.get();
+      } catch (Exception e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+    });
+  }
+
+  void collectionsTestInner() {
     Storage storage = storageApi.get(StorageFSTestConfig.TESTSCHEME);
 
-    StorageObject<FSTestBean> storageObject = storage.instanceOf(FSTestBean.class);
+    // StorageObject<FSTestBean> storageObject = storage.instanceOf(FSTestBean.class);
+    // storageObject.setObject(new FSTestBean("collectionsTest"));
+    // URI uri = storage.save(storageObject);
 
-    storageObject.setObject(new FSTestBean("collectionsTest"));
-
-    URI uri = storage.save(storageObject);
-
-    StorageObject<FSTestBean> optLoaded = storage.load(uri, FSTestBean.class);
+    StorageObject<FSTestBean> optLoaded = storage.load(collectionsTestUri, FSTestBean.class);
 
 
-
+    // String collectionName = "independentInvocations - " + Thread.currentThread().getName();
     String collectionName = "independentInvocations";
 
     int count = 20;
@@ -425,10 +464,11 @@ class StorageFSTest {
     }
 
     // Update the object with the collection.
-    uri = storage.save(optLoaded);
+    URI uriAfterSave = storage.save(optLoaded);
+    assertEquals(collectionsTestUri, uriAfterSave);
 
     // Load again to check existing reference
-    optLoaded = storage.load(uri, FSTestBean.class);
+    optLoaded = storage.load(collectionsTestUri, FSTestBean.class);
 
     {
       List<StorageObjectReferenceEntry> collection =
@@ -446,7 +486,7 @@ class StorageFSTest {
 
     // Try to update the collection without creating a new version!
     // Load again to check existing reference
-    optLoaded = storage.load(uri, FSTestBean.class, StorageLoadOption.skipData());
+    optLoaded = storage.load(collectionsTestUri, FSTestBean.class, StorageLoadOption.skipData());
 
     Assertions.assertNull(optLoaded.getObject(),
         "The StorageLoadOption.skipData() was set but the object is still loaded.");
@@ -477,10 +517,11 @@ class StorageFSTest {
     }
 
     // Update the object with the collection.
-    uri = storage.save(optLoaded);
+    uriAfterSave = storage.save(optLoaded);
+    assertEquals(collectionsTestUri, uriAfterSave);
 
     // Load again to check existing reference
-    optLoaded = storage.load(uri, FSTestBean.class);
+    optLoaded = storage.load(collectionsTestUri, FSTestBean.class);
 
     {
       List<StorageObjectReferenceEntry> collection =
