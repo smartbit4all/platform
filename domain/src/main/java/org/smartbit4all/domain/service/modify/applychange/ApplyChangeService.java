@@ -20,14 +20,21 @@ public interface ApplyChangeService {
   void applyChange(ObjectChange objectChange, Object object) throws Exception;
 
   void createBean(Object newBean, Map<Class<?>, ApiBeanDescriptor> descriptor,
-      ApplyChangeObjectConfig configuration) throws Exception;
+      ApplyChangeObjectConfig configuration, String qualifier) throws Exception;
 
   void createBean(Object newBean, Map<Class<?>, ApiBeanDescriptor> descriptor) throws Exception;
 
+  void createBean(Object newBean, Map<Class<?>, ApiBeanDescriptor> descriptor, String qualifier)
+      throws Exception;
+
   void updateBean(Object oldBean, Object newBean, Map<Class<?>, ApiBeanDescriptor> descriptor,
-      ApplyChangeObjectConfig configuration) throws Exception;
+      ApplyChangeObjectConfig configuration, String qualifier) throws Exception;
 
   void updateBean(Object oldBean, Object newBean, Map<Class<?>, ApiBeanDescriptor> descriptor)
+      throws Exception;
+
+  void updateBean(Object oldBean, Object newBean, Map<Class<?>, ApiBeanDescriptor> descriptor,
+      String qualifier)
       throws Exception;
 
 }

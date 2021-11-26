@@ -472,9 +472,9 @@ public class ApplyChangeServiceImpl implements ApplyChangeService {
 
   @Override
   public void createBean(Object newBean, Map<Class<?>, ApiBeanDescriptor> descriptor,
-      ApplyChangeObjectConfig configuration) throws Exception {
+      ApplyChangeObjectConfig configuration, String qualifier) throws Exception {
     newBean = ApiObjectRef.unwrapObject(newBean);
-    ApiObjectRef apiObjRef = new ApiObjectRef(null, newBean, descriptor);
+    ApiObjectRef apiObjRef = new ApiObjectRef(null, newBean, descriptor, qualifier);
     ObjectChange change = apiObjRef.renderAndCleanChanges().orElse(null);
     applyChange(change, newBean, configuration);
   }
@@ -482,17 +482,24 @@ public class ApplyChangeServiceImpl implements ApplyChangeService {
   @Override
   public void createBean(Object newBean, Map<Class<?>, ApiBeanDescriptor> descriptor)
       throws Exception {
+    createBean(newBean, descriptor, null);
+  }
+
+  @Override
+  public void createBean(Object newBean, Map<Class<?>, ApiBeanDescriptor> descriptor,
+      String qualifier) throws Exception {
     ApplyChangeObjectConfig config = getConfig(newBean);
-    createBean(newBean, descriptor, config);
+    createBean(newBean, descriptor, config, qualifier);
   }
 
   @Override
   public void updateBean(Object oldBean, Object newBean,
-      Map<Class<?>, ApiBeanDescriptor> descriptor, ApplyChangeObjectConfig configuration)
+      Map<Class<?>, ApiBeanDescriptor> descriptor, ApplyChangeObjectConfig configuration,
+      String qualifier)
       throws Exception {
     oldBean = ApiObjectRef.unwrapObject(oldBean);
     newBean = ApiObjectRef.unwrapObject(newBean);
-    ApiObjectRef apiObjRef = new ApiObjectRef(null, oldBean, descriptor);
+    ApiObjectRef apiObjRef = new ApiObjectRef(null, oldBean, descriptor, qualifier);
     apiObjRef.renderAndCleanChanges();
     apiObjRef.mergeObject(newBean);
     ObjectChange change = apiObjRef.renderAndCleanChanges().orElse(null);
@@ -504,8 +511,14 @@ public class ApplyChangeServiceImpl implements ApplyChangeService {
   @Override
   public void updateBean(Object oldBean, Object newBean,
       Map<Class<?>, ApiBeanDescriptor> descriptor) throws Exception {
+    updateBean(oldBean, newBean, descriptor, null);
+  }
+
+  @Override
+  public void updateBean(Object oldBean, Object newBean,
+      Map<Class<?>, ApiBeanDescriptor> descriptor, String qualifier) throws Exception {
     ApplyChangeObjectConfig config = getConfig(newBean);
-    updateBean(oldBean, newBean, descriptor, config);
+    updateBean(oldBean, newBean, descriptor, config, qualifier);
   }
 
 

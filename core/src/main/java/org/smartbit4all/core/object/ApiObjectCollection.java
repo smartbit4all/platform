@@ -82,7 +82,7 @@ public final class ApiObjectCollection implements List<ApiObjectRef> {
    */
   private final ApiObjectRef constructObjectRef(Object refObject) {
     return new ApiObjectRef(path + StringConstant.SLASH + sequence.getAndIncrement(), refObject,
-        objectRef.getDescriptors());
+        objectRef.getDescriptors(), objectRef.getQualifier());
   }
 
   @Override

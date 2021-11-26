@@ -326,7 +326,8 @@ public class ApiObjectRef {
         case REFERENCE:
           if (value != null) {
             if (entry.getReference() == null) {
-              ApiObjectRef newRef = new ApiObjectRef(entry.getPath(), value, descriptors);
+              ApiObjectRef newRef =
+                  new ApiObjectRef(entry.getPath(), value, descriptors, qualifier);
               entry.setReference(newRef);
             } else {
               entry.getReference().setObject(value);
@@ -665,6 +666,10 @@ public class ApiObjectRef {
 
   final Map<Class<?>, ApiBeanDescriptor> getDescriptors() {
     return descriptors;
+  }
+
+  final String getQualifier() {
+    return qualifier;
   }
 
   /**

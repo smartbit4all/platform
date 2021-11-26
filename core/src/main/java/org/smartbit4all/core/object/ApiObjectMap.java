@@ -74,7 +74,7 @@ public final class ApiObjectMap implements Map<String, ApiObjectRef> {
    */
   private final ApiObjectRef constructObjectRef(String key, Object refObject) {
     return new ApiObjectRef(path + StringConstant.SLASH + key, refObject,
-        objectRef.getDescriptors());
+        objectRef.getDescriptors(), objectRef.getQualifier());
   }
 
   @Override
