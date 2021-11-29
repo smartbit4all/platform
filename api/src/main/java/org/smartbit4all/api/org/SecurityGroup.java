@@ -1,5 +1,6 @@
 package org.smartbit4all.api.org;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import org.smartbit4all.api.org.bean.Group;
@@ -89,8 +90,18 @@ public final class SecurityGroup {
       // If we are not logged in then we doesn't have any assigned group.
       return false;
     }
+    return check(userSessionApi.currentUser().getUri());
+  }
+
+  /**
+   * Checks if the given group is assigned to the given user.
+   * 
+   * @return true if there is no api for accessing the user rights or if the group is not assigned
+   *         to the user. Else we get false.
+   */
+  public boolean check(URI userUri) {
     // Naive implementation. Get all the groups we have for the user and try to find the group.
-    List<Group> groupsOfUser = api.getGroupsOfUser(userSessionApi.currentUser().getUri());
+    List<Group> groupsOfUser = api.getGroupsOfUser(userUri);
     if (groupsOfUser == null) {
       return false;
     }
