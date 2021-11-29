@@ -31,6 +31,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -324,18 +325,50 @@ public class Navigation {
    * @return All the children nodes under the given node.
    */
   public List<NavigationNode> expandRecursiveAndRetrieve(NavigationNode node, int depth) {
+    return expandRecursiveAndRetrieve(node, n -> true, depth);
+  }
+
+  /**
+   * This function expand all the nodes in a given navigation and returns all the children nodes.
+   * 
+   * @param node The starting node in the navigation.
+   * @param The recursion predicate examine if the given node will be included or not. Using this we
+   *        can prevent adding the same node because of the circles in the navigation.
+   * @return All the children nodes under the given node.
+   */
+  public List<NavigationNode> expandRecursiveAndRetrieve(NavigationNode node,
+      Predicate<NavigationNode> recursionFilter, int depth) {
+    Map<URI, NavigationNode> result = new HashMap<>();
+    expandRecursiveAndRetrieve(node, recursionFilter, depth, result);
+    return new ArrayList<>(result.values());
+  }
+
+  /**
+   * This function expand all the nodes in a given navigation and returns all the children nodes.
+   * 
+   * @param node The starting node in the navigation.
+   * @param The recursion predicate examine if the given node will be included or not. Using this we
+   *        can prevent adding the same node because of the circles in the navigation.
+   * @return All the children nodes under the given node.
+   */
+  private void expandRecursiveAndRetrieve(NavigationNode node,
+      Predicate<NavigationNode> recursionFilter, int depth, Map<URI, NavigationNode> result) {
     if (node == null || depth == 0) {
-      return Collections.emptyList();
+      return;
     }
     expandAll(node);
     Map<String, List<NavigationNode>> childrenNodes = getChildrenNodes(node.getId(), false);
     List<NavigationNode> allChildren =
-        childrenNodes.values().stream().flatMap(list -> list.stream()).collect(Collectors.toList());
-    List<NavigationNode> result = new ArrayList<>(allChildren);
+        childrenNodes.values().stream().flatMap(list -> list.stream()).filter(recursionFilter)
+            .collect(Collectors.toList());
     for (NavigationNode childNode : allChildren) {
-      result.addAll(expandRecursiveAndRetrieve(childNode, depth - 1));
+      NavigationNode navigationNode = result.get(childNode.getEntry().getObjectUri());
+      if (navigationNode == null) {
+        // A new navigation node was found, add this to the result.
+        result.put(childNode.getEntry().getObjectUri(), childNode);
+        expandRecursiveAndRetrieve(node, recursionFilter, depth - 1, result);
+      }
     }
-    return result;
   }
 
   /**
