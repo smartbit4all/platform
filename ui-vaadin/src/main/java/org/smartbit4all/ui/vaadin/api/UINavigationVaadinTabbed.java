@@ -1,9 +1,12 @@
 package org.smartbit4all.ui.vaadin.api;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.session.UserSessionApi;
@@ -23,6 +26,7 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.server.VaadinService;
+import com.vaadin.flow.shared.Registration;
 
 // TODO inherit from ui-common / UINavigationImpl?
 public class UINavigationVaadinTabbed extends UINavigationVaadinCommon {
@@ -40,6 +44,8 @@ public class UINavigationVaadinTabbed extends UINavigationVaadinCommon {
 
   private Map<String, Tab> tabsByViewObjectId;
   private Map<UUID, Tab> tabsByUUID;
+
+  private List<Consumer<Component>> onTabChangeListeners = new ArrayList<>();
 
   private boolean hideDrawerOnSelect = false;
 
@@ -60,9 +66,14 @@ public class UINavigationVaadinTabbed extends UINavigationVaadinCommon {
         Component selectedView = viewsByTab.get(selectedTab);
         if (selectedView != null) {
           selectedView.setVisible(true);
+          onTabChangeListeners.forEach(l -> l.accept(selectedView));
         }
       }
     });
+  }
+
+  public Registration addTabChangedListener(Consumer<Component> onTabChangeListener) {
+    return Registration.addAndRemove(onTabChangeListeners, onTabChangeListener);
   }
 
   public void setMainView(AppLayout mainView) {
