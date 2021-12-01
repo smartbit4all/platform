@@ -42,6 +42,7 @@ public class ObjectSerializerByObjectMapper implements ObjectSerializer {
     super();
     objectMapper = new ObjectMapper();
     objectMapper.registerModule(new JavaTimeModule());
+    // Task 5641: Storage - OffsetDateTime formatting with default serializer
     objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     objectMapper.configure(DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE, false);
     objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
