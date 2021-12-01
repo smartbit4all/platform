@@ -101,12 +101,6 @@ public final class NavigationPrimary extends NavigationImpl implements Initializ
     return result;
   }
 
-  @Override
-  public Map<URI, List<NavigationReferenceEntry>> navigate(URI objectUri,
-      List<URI> associationMetaUris) {
-    return navigate(objectUri, associationMetaUris, null);
-  }
-
   /**
    * This uri is a meta uri from the navigation could be association or entry meta uri.
    * 

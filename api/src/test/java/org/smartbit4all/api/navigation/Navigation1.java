@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
 import org.smartbit4all.api.navigation.bean.NavigationAssociationMeta;
 import org.smartbit4all.api.navigation.bean.NavigationEntry;
 import org.smartbit4all.api.navigation.bean.NavigationEntryMeta;
@@ -52,7 +53,7 @@ public class Navigation1 extends NavigationImpl {
 
   @Override
   public Map<URI, List<NavigationReferenceEntry>> navigate(URI objectUri,
-      List<URI> associationMetaUris) {
+      List<URI> associationMetaUris, Consumer<URI> nodeChangedListener) {
     Map<URI, List<NavigationReferenceEntry>> result = new HashMap<>();
     for (URI associationUri : associationMetaUris) {
       if (ASSOC_BEAN2S_OF_BEAN1_META.getUri().equals(associationUri)) {

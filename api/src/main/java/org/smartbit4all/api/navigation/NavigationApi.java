@@ -60,21 +60,6 @@ public interface NavigationApi {
    * @param associationMetaUris The list of associations to identify the direction we want to
    *        navigate. If we skip this parameter (null) then we will have all the associations
    *        defined in the {@link NavigationEntry} meta.
-   * @return The map of the references by the URI of association meta we passed in the associations
-   *         parameter.
-   * @throws Exception
-   */
-  Map<URI, List<NavigationReferenceEntry>> navigate(URI objectUri, List<URI> associationMetaUris);
-
-  /**
-   * The navigate will queries all the data sources to populate the associations starts from the
-   * given entry.
-   * 
-   * @param objectUri The URI of the api object that is the starting point of the navigation. It
-   *        must be a valid URI that can be the starting point of the associations we provided.
-   * @param associationMetaUris The list of associations to identify the direction we want to
-   *        navigate. If we skip this parameter (null) then we will have all the associations
-   *        defined in the {@link NavigationEntry} meta.
    * @param callBack This callback api could be an instance that should be notified when some data
    *        of the newly created entries changed.
    * @return The map of the references by the URI of association meta we passed in the associations

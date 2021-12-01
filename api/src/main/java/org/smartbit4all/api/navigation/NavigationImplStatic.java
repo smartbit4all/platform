@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.navigation.NavigationConfig.ConfigBuilder;
@@ -173,7 +174,7 @@ public class NavigationImplStatic extends NavigationImpl {
 
   @Override
   public Map<URI, List<NavigationReferenceEntry>> navigate(URI objectUri,
-      List<URI> associationMetaUris) {
+      List<URI> associationMetaUris, Consumer<URI> nodeChangedListener) {
     Map<URI, List<NavigationReferenceEntry>> result = new LinkedHashMap<>();
     Map<URI, List<NavigationReferenceEntry>> referenceMaps = entryReferenceMaps.get(objectUri);
     for (URI uri : associationMetaUris) {

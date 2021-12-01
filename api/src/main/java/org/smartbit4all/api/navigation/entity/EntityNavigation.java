@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import org.smartbit4all.api.navigation.Navigation;
 import org.smartbit4all.api.navigation.NavigationImpl;
@@ -81,7 +82,7 @@ public class EntityNavigation extends NavigationImpl {
 
   @Override
   public Map<URI, List<NavigationReferenceEntry>> navigate(URI objectUri,
-      List<URI> associationMetaUris) {
+      List<URI> associationMetaUris, Consumer<URI> nodeChangedListener) {
     Map<URI, List<NavigationReferenceEntry>> naviResult = new HashMap<>();
     String objectEntityName = EntityUris.getEntityName(objectUri);
     EntityDefinition entityDef = entityManager.definition(objectUri);

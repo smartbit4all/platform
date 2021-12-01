@@ -65,14 +65,6 @@ public class ComposeableObjectNavigation extends NavigationImpl {
   }
 
   @Override
-  public Map<URI, List<NavigationReferenceEntry>> navigate(
-      URI objectUri,
-      List<URI> associationMetaUris) {
-
-    return navigate(objectUri, associationMetaUris, null);
-  }
-
-  @Override
   public NavigationEntry getEntry(URI entryMetaUri, URI objectUri) {
     try {
       ComposeableObjectDef compDef = getComposeableObjectDef(entryMetaUri);
