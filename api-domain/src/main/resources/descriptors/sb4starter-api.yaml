@@ -54,6 +54,7 @@ components:
         - WordEdit
         - ExecuteCommand
         - ContentAccessUpload
+        - ExpandSystemVariable
         
     SB4File:
       type: object

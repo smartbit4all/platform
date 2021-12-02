@@ -33,7 +33,9 @@ public enum CommandKind {
   
   EXECUTECOMMAND("ExecuteCommand"),
   
-  CONTENTACCESSUPLOAD("ContentAccessUpload");
+  CONTENTACCESSUPLOAD("ContentAccessUpload"),
+  
+  EXPANDSYSTEMVARIABLE("ExpandSystemVariable");
 
   private String value;
 
