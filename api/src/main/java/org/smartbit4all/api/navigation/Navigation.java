@@ -475,6 +475,7 @@ public class Navigation {
     Map<URI, NavigationReference> oldReferences =
         association.getReferences() == null ? Collections.emptyMap()
             : association.getReferences().stream()
+                .filter(r -> r.getEndNode() != null && r.getEndNode().getEntry() != null)
                 .collect(Collectors.toMap(r -> r.getEndNode().getEntry().getObjectUri(), r -> r));
 
     // We create a new list based on the references. If a
