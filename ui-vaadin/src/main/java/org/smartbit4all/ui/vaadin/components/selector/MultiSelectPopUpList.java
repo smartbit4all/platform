@@ -171,6 +171,7 @@ public class MultiSelectPopUpList<T> extends CustomField<List<T>> implements Has
     dialog.add(dialogLayout);
     dialog.setResizable(true);
     dialog.setWidth("25rem");
+
   }
 
   @SuppressWarnings({"unchecked", "rawtypes"})
@@ -249,7 +250,7 @@ public class MultiSelectPopUpList<T> extends CustomField<List<T>> implements Has
         if (!selectedItems.isEmpty()) {
           grid.asMultiSelect().select(selectedItems);
         }
-        if(filter != null) {
+        if (filter != null) {
           filterField.focus();
         }
       } else {
@@ -366,7 +367,7 @@ public class MultiSelectPopUpList<T> extends CustomField<List<T>> implements Has
     return displayItems;
   }
 
-  private void addGridColumn(ValueProvider<T, ?> itemDisplayValueProvider) {
+  private void addGridColumn(ValueProvider<T, ?> itemDisplayValueProvider, String columnName) {
     Column<T> column = grid.addColumn(new ComponentRenderer<Component, T>(item -> {
       Object display = itemDisplayValueProvider.apply(item);
       if (display instanceof Component) {
@@ -380,16 +381,29 @@ public class MultiSelectPopUpList<T> extends CustomField<List<T>> implements Has
     if (filter != null) {
       column.setHeader(filterField);
     }
+    if (columnName != null) {
+      column.setHeader(columnName);
+    }
   }
 
   public void setItemDisplayValueProvider(ValueProvider<T, ?> itemDisplayValueProvider) {
+    setItemDisplayValueProvider(itemDisplayValueProvider, null);
+  }
+
+  public void setItemDisplayValueProvider(ValueProvider<T, ?> itemDisplayValueProvider,
+      String columnName) {
     Objects.requireNonNull(itemDisplayValueProvider);
     this.itemDisplayValueProvider = itemDisplayValueProvider;
 
     if (grid.getColumnByKey(COL_DISPLAY) != null) {
       grid.removeColumnByKey(COL_DISPLAY);
     }
-    addGridColumn(itemDisplayValueProvider);
+    addGridColumn(itemDisplayValueProvider, columnName);
+  }
+
+  public void addColumn(ValueProvider<T, ?> columnValueProvider, String columnName) {
+    Objects.requireNonNull(columnValueProvider);
+    grid.addColumn(item -> columnValueProvider.apply(item)).setHeader(columnName);
   }
 
   public SerializableBiPredicate<T, Object> getFilter() {
@@ -505,5 +519,9 @@ public class MultiSelectPopUpList<T> extends CustomField<List<T>> implements Has
     super.setEnabled(enabled);
     displayField.setEnabled(enabled);
     btnClear.setEnabled(enabled);
+  }
+
+  public MultiSelect<Grid<T>, T> asMultiSelect() {
+    return grid.asMultiSelect();
   }
 }
