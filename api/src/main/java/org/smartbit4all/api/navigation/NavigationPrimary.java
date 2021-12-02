@@ -31,6 +31,7 @@ import org.smartbit4all.api.navigation.bean.NavigationReferenceEntry;
 import org.smartbit4all.core.object.ApiObjectRef;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import io.reactivex.rxjava3.disposables.Disposable;
 
 /**
  * This primary implementation is responsible for routing and merging the navigation requests among
@@ -170,4 +171,17 @@ public final class NavigationPrimary extends NavigationImpl implements Initializ
     return result;
   }
 
+  @Override
+  public Disposable subscribeEntryForChanges(NavigationEntry entry,
+      Consumer<URI> nodeChangeListener) {
+    NavigationApi api = api(entry.getMetaUri());
+    if (api != null) {
+      return api.subscribeEntryForChanges(entry, nodeChangeListener);
+    } else {
+      log.warn(
+          "Unable to find navigation api for the meta: " + entry.getMetaUri() + " ("
+              + entry.getObjectUri() + ")");
+    }
+    return null;
+  }
 }

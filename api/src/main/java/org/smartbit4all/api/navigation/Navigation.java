@@ -968,4 +968,8 @@ public class Navigation {
     return Collections.unmodifiableList(roots);
   }
 
+  public Disposable subscribeNodeForChanges(NavigationNode node, Consumer<URI> nodeChangeListener) {
+    return api.subscribeEntryForChanges(node.getEntry(), nodeChangeListener);
+  }
+
 }

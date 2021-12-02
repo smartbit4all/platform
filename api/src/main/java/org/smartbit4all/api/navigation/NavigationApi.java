@@ -23,6 +23,7 @@ import org.smartbit4all.api.navigation.bean.NavigationConfig;
 import org.smartbit4all.api.navigation.bean.NavigationEntry;
 import org.smartbit4all.api.navigation.bean.NavigationReferenceEntry;
 import org.smartbit4all.core.object.ApiObjectRef;
+import io.reactivex.rxjava3.disposables.Disposable;
 
 /**
  * The platform level collaboration API for navigating the data nodes. The api is built on the
@@ -98,5 +99,7 @@ public interface NavigationApi {
    * @return
    */
   Navigation start(String navigationConfigName);
+
+  Disposable subscribeEntryForChanges(NavigationEntry entry, Consumer<URI> entryChangeListener);
 
 }

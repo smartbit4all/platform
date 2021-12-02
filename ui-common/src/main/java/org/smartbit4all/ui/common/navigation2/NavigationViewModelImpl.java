@@ -28,6 +28,7 @@ import org.smartbit4all.ui.api.tree.model.TreeModel;
 import org.smartbit4all.ui.api.tree.model.TreeNode;
 import org.smartbit4all.ui.api.tree.model.TreeNodeKind;
 import com.google.common.base.Strings;
+import io.reactivex.rxjava3.disposables.Disposable;
 
 public class NavigationViewModelImpl extends ObjectEditingImpl implements NavigationViewModel {
 
@@ -40,6 +41,8 @@ public class NavigationViewModelImpl extends ObjectEditingImpl implements Naviga
   private TreeNode selectedNode;
 
   private Map<String, TreeNode> treeNodesById;
+
+  private Map<String, Disposable> subscriptionsById;
 
   private UINavigationApi uiNavigationApi;
 
@@ -54,6 +57,7 @@ public class NavigationViewModelImpl extends ObjectEditingImpl implements Naviga
     modelObservable.setRef(ref);
     model = ref.getWrapper(TreeModel.class);
     treeNodesById = new HashMap<>();
+    subscriptionsById = new HashMap<>();
     navigationState.subscribeForNodeRefresh(this::refreshNavigationNode);
     navigationState.subscribeForRootNodeAdded(this::rootNodeAdded);
     navigationState.subscribeForRootNodeRemoved(this::rootNodeRemoved);
@@ -180,25 +184,33 @@ public class NavigationViewModelImpl extends ObjectEditingImpl implements Naviga
   public void refreshSelectedNode() {
     if (selectedNode != null) {
       if (selectedNode.getKind() == TreeNodeKind.ASSOCIATION) {
-        navigationState.forceRefreshAssociation(selectedNode.getIdentifier());
-        NavigationAssociation assoc = navigationState.getAssociation(selectedNode.getIdentifier());
-        if (assoc != null) {
-          navigationState.expandAll(assoc, true);
-          refreshNavigationAssociation(assoc);
-        } else {
-          throw new RuntimeException("Assoc not found: " + selectedNode);
-        }
+        refreshAssociationNode(selectedNode.getIdentifier());
       } else if (selectedNode.getKind() == TreeNodeKind.ENTRY) {
-        navigationState.forceRefreshEntry(selectedNode.getIdentifier());
-        NavigationNode navigationNode = navigationState.getNode(selectedNode.getIdentifier());
-        if (navigationNode != null) {
-          navigationState.refreshNavigationEntry(navigationNode);
-          navigationState.expandAll(navigationNode, true);
-          refreshNavigationNode(navigationNode);
-        } else {
-          throw new RuntimeException("Node not found: " + selectedNode);
-        }
+        refreshNavigationNode(selectedNode.getIdentifier());
       }
+    }
+  }
+
+  private void refreshNavigationNode(String nodeId) {
+    navigationState.forceRefreshEntry(nodeId);
+    NavigationNode navigationNode = navigationState.getNode(nodeId);
+    if (navigationNode != null) {
+      navigationState.refreshNavigationEntry(navigationNode);
+      navigationState.expandAll(navigationNode, true);
+      refreshNavigationNode(navigationNode);
+    } else {
+      throw new RuntimeException("Node not found: " + treeNodesById.get(nodeId));
+    }
+  }
+
+  private void refreshAssociationNode(String nodeId) {
+    navigationState.forceRefreshAssociation(nodeId);
+    NavigationAssociation assoc = navigationState.getAssociation(nodeId);
+    if (assoc != null) {
+      navigationState.expandAll(assoc, true);
+      refreshNavigationAssociation(assoc);
+    } else {
+      throw new RuntimeException("Assoc not found: " + treeNodesById.get(nodeId));
     }
   }
 
@@ -283,38 +295,55 @@ public class NavigationViewModelImpl extends ObjectEditingImpl implements Naviga
   }
 
   private TreeNode createOrUpdateTreeNodeEntry(NavigationNode node, int level) {
-    TreeNode treeNode = treeNodesById.get(node.getId());
+    String nodeId = node.getId();
+    TreeNode treeNode = treeNodesById.get(nodeId);
     if (treeNode == null) {
       treeNode = new TreeNode()
           .kind(TreeNodeKind.ENTRY)
-          .identifier(node.getId())
+          .identifier(nodeId)
           .caption(node.getEntry().getName())
           .icon(node.getEntry().getIcon())
           .actions(node.getEntry().getActions())
           .level(level);
-      treeNodesById.put(treeNode.getIdentifier(), treeNode);
+      treeNodesById.put(nodeId, treeNode);
     } else {
       updateTreeNodeEntry(treeNode, node);
       treeNode.setLevel(level);
+    }
+    if (!subscriptionsById.containsKey(nodeId)) {
+      Disposable disposable =
+          navigationState.subscribeNodeForChanges(node, uri -> refreshNavigationNode(nodeId));
+      if (disposable != null) {
+        subscriptionsById.put(nodeId, disposable);
+      }
     }
     return treeNode;
   }
 
   private TreeNode createOrUpdateTreeNodeAssoc(NavigationAssociation navigationAssociation,
       int level) {
-    TreeNode treeNode = treeNodesById.get(navigationAssociation.getId());
+    String assocId = navigationAssociation.getId();
+    TreeNode treeNode = treeNodesById.get(assocId);
     if (treeNode == null) {
       treeNode = new TreeNode()
           .kind(TreeNodeKind.ASSOCIATION)
-          .identifier(navigationAssociation.getId())
+          .identifier(assocId)
           .caption(getAssociationNodeCaption(navigationAssociation))
           .icon(navigationAssociation.getIcon())
           .styles(getNavigationAssociationStyles(navigationAssociation))
           .level(level);
-      treeNodesById.put(treeNode.getIdentifier(), treeNode);
+      treeNodesById.put(assocId, treeNode);
     } else {
       updateTreeNodeAssoc(treeNode, navigationAssociation);
       treeNode.setLevel(level);
+    }
+    if (!subscriptionsById.containsKey(assocId)) {
+      NavigationNode parentNode = navigationState.getNode(navigationAssociation.getNodeId());
+      Disposable disposable = navigationState.subscribeNodeForChanges(parentNode,
+          uri -> refreshAssociationNode(assocId));
+      if (disposable != null) {
+        subscriptionsById.put(assocId, disposable);
+      }
     }
     return treeNode;
   }
@@ -514,5 +543,10 @@ public class NavigationViewModelImpl extends ObjectEditingImpl implements Naviga
   @Override
   public NavigationNode selectedNavigationNode() {
     return navigationState.getNode(selectedNode.getIdentifier());
+  }
+
+  @Override
+  public void onCloseWindow() {
+    subscriptionsById.values().forEach(d -> d.dispose());
   }
 }

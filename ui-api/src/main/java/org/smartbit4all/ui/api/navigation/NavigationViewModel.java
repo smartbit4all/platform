@@ -18,7 +18,7 @@ public interface NavigationViewModel extends ObjectEditing {
   ObservableObject model();
 
   void refreshSelectedNode();
-  
+
   NavigationTarget loadNavigationTarget();
 
   /**
@@ -34,7 +34,9 @@ public interface NavigationViewModel extends ObjectEditing {
    * @param path
    */
   void setSelectedNode(NavigationPath path);
-  
+
   NavigationNode selectedNavigationNode();
+
+  void onCloseWindow();
 
 }

@@ -16,9 +16,12 @@ package org.smartbit4all.api.navigation;
 
 import java.net.URI;
 import java.util.Optional;
+import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.navigation.bean.NavigationEntry;
 import org.smartbit4all.core.object.ApiObjectRef;
+import io.reactivex.rxjava3.disposables.Disposable;
 
 /**
  * The basic implementation of the {@link NavigationApi}.
@@ -51,4 +54,9 @@ public abstract class NavigationImpl implements NavigationApi {
     return null;
   }
 
+  @Override
+  public Disposable subscribeEntryForChanges(NavigationEntry entry,
+      Consumer<URI> nodeChangeListener) {
+    return null;
+  }
 }

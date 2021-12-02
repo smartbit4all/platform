@@ -2,6 +2,7 @@ package org.smartbit4all.ui.vaadin.components.navigation2;
 
 import org.smartbit4all.ui.api.navigation.NavigationViewModel;
 import org.smartbit4all.ui.api.tree.model.TreeModel;
+import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 
@@ -20,4 +21,9 @@ public class TreeView extends FlexLayout {
         TreeModel.ROOT_NODES);
   }
 
+  @Override
+  protected void onDetach(DetachEvent detachEvent) {
+    super.onDetach(detachEvent);
+    viewModel.onCloseWindow();
+  }
 }
