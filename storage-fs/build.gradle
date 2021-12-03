@@ -4,6 +4,7 @@ plugins {
 
 dependencies {
 	api project(':domain')
+	implementation 'org.springframework:spring-tx:5.3.13'
 
 	testImplementation project(':gson')
 

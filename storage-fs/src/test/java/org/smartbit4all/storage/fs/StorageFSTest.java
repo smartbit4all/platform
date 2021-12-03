@@ -1,6 +1,5 @@
 package org.smartbit4all.storage.fs;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
@@ -45,6 +44,7 @@ import org.smartbit4all.domain.data.storage.history.ObjectHistoryApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import com.google.common.io.ByteStreams;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(classes = {StorageFSTestConfig.class})
 @TestInstance(Lifecycle.PER_CLASS)
@@ -126,6 +126,9 @@ class StorageFSTest {
   @Autowired
   ObjectApi objectApi;
 
+  @Autowired
+  StorageFSTestApi testApi;
+
   private URI collectionsTestUri;
 
   @Test
@@ -134,6 +137,8 @@ class StorageFSTest {
 
     saveAndCheckLoad(storage, "test string1");
     saveAndCheckLoad(storage, "test string2");
+
+    testApi.saveAndLoad(storage, MY_MAP);
 
     // assertFalse(loaded.isPresent());
   }
@@ -410,33 +415,24 @@ class StorageFSTest {
     List<Future<?>> futures = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
       Future<?> submit = pool.submit(() -> {
-        try {
-          collectionsTestInner();
-        } catch (Exception e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
-        }
+        collectionsTestInner(false);
       });
       futures.add(submit);
     }
-    futures.forEach(f -> {
-      try {
-        f.get();
-      } catch (Exception e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
-    });
+    for (Future<?> future : futures) {
+      future.get();
+    }
   }
 
-  void collectionsTestInner() {
+  void collectionsTestInner(boolean assumeSingleThread) {
     Storage storage = storageApi.get(StorageFSTestConfig.TESTSCHEME);
 
     // StorageObject<FSTestBean> storageObject = storage.instanceOf(FSTestBean.class);
     // storageObject.setObject(new FSTestBean("collectionsTest"));
     // URI uri = storage.save(storageObject);
 
-    StorageObject<FSTestBean> optLoaded = storage.load(collectionsTestUri, FSTestBean.class);
+    StorageObject<FSTestBean> optLoaded =
+        storage.load(collectionsTestUri, FSTestBean.class, StorageLoadOption.lock());
 
 
     // String collectionName = "independentInvocations - " + Thread.currentThread().getName();
@@ -477,16 +473,19 @@ class StorageFSTest {
 
       assertEquals(count, collection.size());
 
-      for (StorageObjectReferenceEntry entry : collection) {
-        String referenceId = entry.getReferenceData().getReferenceId();
-        URI storedUri = entriesByRefId.get(referenceId);
-        assertEquals(storedUri, entry.getReferenceData().getUri());
+      if (assumeSingleThread) {
+        for (StorageObjectReferenceEntry entry : collection) {
+          String referenceId = entry.getReferenceData().getReferenceId();
+          URI storedUri = entriesByRefId.get(referenceId);
+          assertEquals(storedUri, entry.getReferenceData().getUri());
+        }
       }
     }
 
     // Try to update the collection without creating a new version!
     // Load again to check existing reference
-    optLoaded = storage.load(collectionsTestUri, FSTestBean.class, StorageLoadOption.skipData());
+    optLoaded = storage.load(collectionsTestUri, FSTestBean.class, StorageLoadOption.skipData(),
+        StorageLoadOption.lock());
 
     Assertions.assertNull(optLoaded.getObject(),
         "The StorageLoadOption.skipData() was set but the object is still loaded.");
@@ -531,10 +530,12 @@ class StorageFSTest {
 
       assertEquals(count, collection.size());
 
-      for (StorageObjectReferenceEntry entry : collection) {
-        String referenceId = entry.getReferenceData().getReferenceId();
-        URI storedUri = entriesByRefId.get(referenceId);
-        assertEquals(storedUri, entry.getReferenceData().getUri());
+      if (assumeSingleThread) {
+        for (StorageObjectReferenceEntry entry : collection) {
+          String referenceId = entry.getReferenceData().getReferenceId();
+          URI storedUri = entriesByRefId.get(referenceId);
+          assertEquals(storedUri, entry.getReferenceData().getUri());
+        }
       }
     }
   }
