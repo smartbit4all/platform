@@ -19,6 +19,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.smartbit4all.core.object.ApiObjectCollection;
 import org.smartbit4all.core.object.ApiObjectRef;
@@ -31,6 +33,7 @@ import org.smartbit4all.ui.vaadin.util.Css.SpaceType;
 import org.smartbit4all.ui.vaadin.util.Css.TextColor;
 import org.smartbit4all.ui.vaadin.util.Icons;
 import org.smartbit4all.ui.vaadin.util.Labels;
+import org.springframework.util.ObjectUtils;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -96,8 +99,13 @@ public class MultiSelectPopUpList<T> extends CustomField<List<T>> implements Has
 
   private boolean tooltipComponentsEnabled = false;
   private boolean tooltipEnabled = true;
+  private boolean simpleSelectAllPropertiesText = true;
 
   private List<T> selectedItems = Collections.emptyList();
+
+  private Function<T, Boolean> itemDisableCalculator;
+
+  private List<Consumer<List<T>>> onSaveListeners = new ArrayList<>();
 
   public MultiSelectPopUpList() {
     super(Collections.emptyList());
@@ -114,11 +122,11 @@ public class MultiSelectPopUpList<T> extends CustomField<List<T>> implements Has
     icnInfo = Icons.createIcon(IconSize.S, TextColor.TERTIARY, VaadinIcon.INFO_CIRCLE_O);
     ((Icon) btnClear.getIcon()).setColor(TextColor.TERTIARY);
     btnClear.getElement().getStyle().set("margin-top", "0px");
+    btnClear.getElement().getStyle().set("margin-bottom", "0px");
     btnClear.getElement().getStyle().set("padding-right", "0px");
-    icnInfo.getElement().getStyle().set("margin-top", "12px");
-    icnInfo.getElement().getStyle().set("padding-right", "8px");
+    icnInfo.getElement().getStyle().set("margin-top", "8px");
+    icnInfo.getElement().getStyle().set("padding-right", "5px");
     buttonBox = new FlexLayout(btnClear, icnInfo);
-    buttonBox.getStyle().set("position", "absolute");
     Css.setAlignSelf(AlignSelf.FLEX_END, buttonBox);
     Css.setZIndex(5, buttonBox);
 
@@ -127,18 +135,16 @@ public class MultiSelectPopUpList<T> extends CustomField<List<T>> implements Has
     layout.setFlexDirection(FlexDirection.COLUMN);
     layout.getStyle().set("position", "relative");
 
-    // setting the display text ending gradient so it looks better when it is too
-    // long.
-    // we set the input element's css from js here...
-    String textEndGradientStyle =
-        "--_lumo-text-field-overflow-mask-image: linear-gradient(to left, transparent 2.6em, #000 5.05em)";
-    displayField.getElement().getNode().runWhenAttached(ui -> {
-      ui.getPage().executeJs(
-          "$0.shadowRoot.querySelector('input').style.cssText='" + textEndGradientStyle + "'",
-          displayField);
+
+    displayField.setSuffixComponent(buttonBox);
+    // displayField.setClearButtonVisible(true);
+    displayField.addValueChangeListener(e -> {
+      if (e.isFromClient() && ObjectUtils.isEmpty(e.getValue())) {
+        this.clear();
+      }
     });
 
-    layout.add(buttonBox, displayField);
+    layout.add(displayField);
     add(layout);
   }
 
@@ -192,6 +198,8 @@ public class MultiSelectPopUpList<T> extends CustomField<List<T>> implements Has
     btnClear.addClickListener(e -> {
       this.clear();
     });
+    btnClear.getElement().addEventListener("click", e -> {
+    }).addEventData("event.stopPropagation()");
 
     // select/unselect items on rowclick
     grid.addItemClickListener(e -> {
@@ -203,6 +211,18 @@ public class MultiSelectPopUpList<T> extends CustomField<List<T>> implements Has
         } else {
           multiSelect.select(item);
         }
+      }
+    });
+
+    grid.addSelectionListener(event -> {
+      if (itemDisableCalculator != null) {
+        event.getAllSelectedItems().forEach(item -> {
+
+          // Revert selection if item cannot be selected
+          if (itemDisableCalculator.apply(item)) {
+            grid.deselect(item);
+          }
+        });
       }
     });
 
@@ -232,6 +252,7 @@ public class MultiSelectPopUpList<T> extends CustomField<List<T>> implements Has
 
     btndDialogSave.addClickListener(e -> {
       updateSelection();
+      onSaveListeners.forEach(onSaveListener -> onSaveListener.accept(selectedItems));
       dialog.close();
     });
 
@@ -283,7 +304,8 @@ public class MultiSelectPopUpList<T> extends CustomField<List<T>> implements Has
       return "";
     } else if (selectionSize == 1) {
       return getSelectedItemsDisplayText();
-    } else if (grid.getDataProvider().size(new Query<>()) == selectionSize) {
+    } else if (simpleSelectAllPropertiesText
+        && grid.getDataProvider().size(new Query<>()) == selectionSize) {
       String allSelectedTxt = getTranslation("multiselect.allselected");
       String placeHolder = getPlaceHolder();
       if (placeHolder != null && !placeHolder.isEmpty()) {
@@ -310,7 +332,8 @@ public class MultiSelectPopUpList<T> extends CustomField<List<T>> implements Has
         htmlOfDisplay = htmlOfDisplay.replaceAll("\\r|\\n", "");
         Tooltips.getCurrent().setTooltip(icnInfo, htmlOfDisplay);
       } else {
-        Tooltips.getCurrent().setTooltip(icnInfo, getSelectedItemsDisplayText());
+        // Tooltips.getCurrent().setTooltip(icnInfo, getSelectedItemsDisplayText());
+        icnInfo.getElement().setAttribute("title", getSelectedItemsDisplayText());
       }
     }
   }
@@ -423,6 +446,14 @@ public class MultiSelectPopUpList<T> extends CustomField<List<T>> implements Has
     }
   }
 
+  public void setItemDisableCalculator(Function<T, Boolean> itemSelectCalculator) {
+    Objects.requireNonNull(itemSelectCalculator, "itemSelectCalculator can not be null!");
+    itemDisableCalculator = itemSelectCalculator;
+    grid.setClassNameGenerator(
+        item -> itemSelectCalculator.apply(item) ? "no-select"
+            : null);
+  }
+
   @Override
   public void setDataProvider(DataProvider<T, ?> dataProvider) {
     grid.setDataProvider(dataProvider);
@@ -521,7 +552,28 @@ public class MultiSelectPopUpList<T> extends CustomField<List<T>> implements Has
     btnClear.setEnabled(enabled);
   }
 
+  public Registration addOnSaveListener(Consumer<List<T>> listener) {
+    return Registration.addAndRemove(onSaveListeners, listener);
+  }
+
+  public void openDialog() {
+    dialog.open();
+  }
+
+  public void setSelection(List<T> selection) {
+    grid.asMultiSelect().select(selection);
+    updateSelection();
+  }
+
   public MultiSelect<Grid<T>, T> asMultiSelect() {
     return grid.asMultiSelect();
+  }
+
+  public boolean isSimpleSelectAllPropertiesText() {
+    return simpleSelectAllPropertiesText;
+  }
+
+  public void setSimpleSelectAllPropertiesText(boolean simpleSelectAllPropertiesText) {
+    this.simpleSelectAllPropertiesText = simpleSelectAllPropertiesText;
   }
 }

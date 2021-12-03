@@ -32,6 +32,7 @@ import org.smartbit4all.ui.vaadin.util.Css.SpaceType;
 import org.smartbit4all.ui.vaadin.util.Css.TextColor;
 import org.smartbit4all.ui.vaadin.util.Icons;
 import org.smartbit4all.ui.vaadin.util.Labels;
+import org.springframework.util.ObjectUtils;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -91,6 +92,7 @@ public class MultiSelectPopUp<T> extends CustomField<Set<T>> implements HasDataP
 
   private boolean tooltipComponentsEnabled = false;
   private boolean tooltipEnabled = true;
+  private boolean simpleSelectAllPropertiesText = true;
 
   private Set<T> selectedItems = Collections.emptySet();
 
@@ -113,11 +115,11 @@ public class MultiSelectPopUp<T> extends CustomField<Set<T>> implements HasDataP
     icnInfo = Icons.createIcon(IconSize.S, TextColor.TERTIARY, VaadinIcon.INFO_CIRCLE_O);
     ((Icon) btnClear.getIcon()).setColor(TextColor.TERTIARY);
     btnClear.getElement().getStyle().set("margin-top", "0px");
+    btnClear.getElement().getStyle().set("margin-bottom", "0px");
     btnClear.getElement().getStyle().set("padding-right", "0px");
-    icnInfo.getElement().getStyle().set("margin-top", "12px");
-    icnInfo.getElement().getStyle().set("padding-right", "8px");
+    icnInfo.getElement().getStyle().set("margin-top", "8px");
+    icnInfo.getElement().getStyle().set("padding-right", "5px");
     buttonBox = new FlexLayout(btnClear, icnInfo);
-    buttonBox.getStyle().set("position", "absolute");
     Css.setAlignSelf(AlignSelf.FLEX_END, buttonBox);
     Css.setZIndex(5, buttonBox);
 
@@ -126,18 +128,16 @@ public class MultiSelectPopUp<T> extends CustomField<Set<T>> implements HasDataP
     layout.setFlexDirection(FlexDirection.COLUMN);
     layout.getStyle().set("position", "relative");
 
-    // setting the display text ending gradient so it looks better when it is too
-    // long.
-    // we set the input element's css from js here...
-    String textEndGradientStyle =
-        "--_lumo-text-field-overflow-mask-image: linear-gradient(to left, transparent 2.6em, #000 5.05em)";
-    displayField.getElement().getNode().runWhenAttached(ui -> {
-      ui.getPage().executeJs(
-          "$0.shadowRoot.querySelector('input').style.cssText='" + textEndGradientStyle + "'",
-          displayField);
+
+    displayField.setSuffixComponent(buttonBox);
+    // displayField.setClearButtonVisible(true);
+    displayField.addValueChangeListener(e -> {
+      if (e.isFromClient() && ObjectUtils.isEmpty(e.getValue())) {
+        this.clear();
+      }
     });
 
-    layout.add(buttonBox, displayField);
+    layout.add(displayField);
     add(layout);
   }
 
@@ -190,6 +190,8 @@ public class MultiSelectPopUp<T> extends CustomField<Set<T>> implements HasDataP
     btnClear.addClickListener(e -> {
       this.clear();
     });
+    btnClear.getElement().addEventListener("click", e -> {
+    }).addEventData("event.stopPropagation()");
 
     // select/unselect items on rowclick
     grid.addItemClickListener(e -> {
@@ -291,7 +293,8 @@ public class MultiSelectPopUp<T> extends CustomField<Set<T>> implements HasDataP
       return "";
     } else if (selectionSize == 1) {
       return getSelectedItemsDisplayText();
-    } else if (grid.getDataProvider().size(new Query<>()) == selectionSize) {
+    } else if (simpleSelectAllPropertiesText
+        && grid.getDataProvider().size(new Query<>()) == selectionSize) {
       String allSelectedTxt = getTranslation("multiselect.allselected");
       String placeHolder = getPlaceHolder();
       if (placeHolder != null && !placeHolder.isEmpty()) {
@@ -318,7 +321,8 @@ public class MultiSelectPopUp<T> extends CustomField<Set<T>> implements HasDataP
         htmlOfDisplay = htmlOfDisplay.replaceAll("\\r|\\n", "");
         Tooltips.getCurrent().setTooltip(icnInfo, htmlOfDisplay);
       } else {
-        Tooltips.getCurrent().setTooltip(icnInfo, getSelectedItemsDisplayText());
+        // Tooltips.getCurrent().setTooltip(icnInfo, getSelectedItemsDisplayText());
+        icnInfo.getElement().setAttribute("title", getSelectedItemsDisplayText());
       }
     }
   }
@@ -529,6 +533,18 @@ public class MultiSelectPopUp<T> extends CustomField<Set<T>> implements HasDataP
   public void setSelection(Set<T> selection) {
     grid.asMultiSelect().select(selection);
     updateSelection();
+  }
+
+  public MultiSelect<Grid<T>, T> asMultiSelect() {
+    return grid.asMultiSelect();
+  }
+
+  public boolean isSimpleSelectAllPropertiesText() {
+    return simpleSelectAllPropertiesText;
+  }
+
+  public void setSimpleSelectAllPropertiesText(boolean simpleSelectAllPropertiesText) {
+    this.simpleSelectAllPropertiesText = simpleSelectAllPropertiesText;
   }
 
 }
