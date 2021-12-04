@@ -6,7 +6,8 @@ plugins {
 dependencies {
 	api project(':api-domain')
 	
-	api 'org.springframework:spring-context:5.2.3.RELEASE'
+	api 'org.springframework.boot:spring-boot-starter'
+
     api "io.reactivex.rxjava3:rxjava:3.0.12"
     api 'org.openapitools:jackson-databind-nullable:0.2.1'
     

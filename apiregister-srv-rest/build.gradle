@@ -7,11 +7,8 @@ dependencies {
 	api project(':apiregister-domain-rest')
 	
 	
-	api 'org.springframework:spring-context:5.2.3.RELEASE'
-	api 'org.springframework:spring-web:5.2.3.RELEASE'
-
 	api 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.3'
-	api 'org.springframework:spring-webmvc:5.3.7'
+	api 'org.springframework:spring-webmvc'
 	api 'javax.servlet:javax.servlet-api:4.0.1'
 }
 

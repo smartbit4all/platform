@@ -1,7 +1,5 @@
 plugins  {
-	id 'org.springframework.boot' version '2.3.12.RELEASE' apply false
-	id 'io.spring.dependency-management' version '1.0.11.RELEASE' apply false
-    id 'org.smartbit4all.platform.gradle.java' version "0.3.0" apply false
+    id 'org.smartbit4all.platform.gradle.java' version '0.3.4' apply false
 	id "org.sonarqube" version "3.0"
 }
 
@@ -17,7 +15,6 @@ subprojects {
 	
     apply plugin: 'org.smartbit4all.platform.gradle.java'
     apply plugin: 'maven-publish'
-
     group "org.smartbit4all.platform"
     version "1.0.3-SNAPSHOT"
 
@@ -25,11 +22,7 @@ subprojects {
     targetCompatibility = JavaVersion.VERSION_1_8
 
     dependencies {
-    	implementation 'org.slf4j:slf4j-api:1.7.30'
-        api 'com.google.guava:guava:30.1-jre'
-    	testImplementation 'org.slf4j:slf4j-simple:1.7.30'
-        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.2'
-        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.2'
+        api 'com.google.guava:guava:31.0.1-jre'
     }
 
 	java {

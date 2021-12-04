@@ -4,15 +4,9 @@ plugins {
 
 dependencies {
 	api project(':domain')
-	implementation 'org.springframework:spring-tx:5.3.13'
+	implementation 'org.springframework:spring-tx'
 
 	testImplementation project(':gson')
-
-	testImplementation('org.springframework.boot:spring-boot-starter-test:2.3.8.RELEASE') {
-		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-		exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
-        exclude group: 'ch.qos.logback', module: 'logback-classic'
-	}
 
     testImplementation testFixtures(project(':core'))
 	testFixturesApi project(':core')

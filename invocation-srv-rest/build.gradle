@@ -7,20 +7,16 @@ dependencies {
 	api project(':invocation-domain-rest')
 	
 	
-	api 'org.springframework:spring-context:5.2.3.RELEASE'
-	api 'org.springframework:spring-web:5.2.3.RELEASE'
-	api 'org.springframework.boot:spring-boot-autoconfigure:2.3.5.RELEASE'
+	api 'org.springframework.boot:spring-boot-autoconfigure'
 
 	api 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.3'
-	api 'org.springframework:spring-webmvc:5.3.7'
+	api 'org.springframework:spring-webmvc'
 	api 'javax.servlet:javax.servlet-api:4.0.1'
 	
-	testImplementation 'org.springframework.boot:spring-boot-starter-web:2.3.5.RELEASE'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test:2.3.5.RELEASE'
+	testImplementation 'org.springframework.boot:spring-boot-starter-web'
 }
 
 smartbit4all {
-	springBootTest = true;
     openApi {
         apiDescriptorMapping = [
         	"${rootDir}/invocation-domain-rest/src/main/resources/descriptors/invocation-api.yaml" : "invocation"

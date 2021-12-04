@@ -13,5 +13,4 @@ dependencies {
 
 	testImplementation 'com.vaadin:vaadin-testbench'
 	
-	api 'org.springframework.boot:spring-boot-autoconfigure:2.3.5.RELEASE'
 }

@@ -5,22 +5,13 @@ plugins {
 dependencies {
 	api project(':api')
 
-	implementation 'org.springframework:spring-context:5.2.3.RELEASE'
-	implementation 'org.springframework:spring-web:5.2.3.RELEASE'
+	implementation 'org.springframework:spring-webmvc'
 	implementation 'javax.servlet:javax.servlet-api:4.0.1'
 	
-	//TODO find smaller dependency
-	implementation 'org.springframework:spring-webmvc:5.3.7'
-	
-    testImplementation('org.springframework.boot:spring-boot-starter-web:2.3.4.RELEASE') {
+    testImplementation('org.springframework.boot:spring-boot-starter-web') {
 		exclude group: 'ch.qos.logback', module: 'logback-classic'
 	}
 	
-	testImplementation('org.springframework.boot:spring-boot-starter-test:2.3.4.RELEASE') {
-		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-		exclude group: 'ch.qos.logback', module: 'logback-classic'
-	}
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 smartbit4all {

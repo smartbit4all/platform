@@ -1,14 +1,8 @@
 dependencies {
 	api project(':domain')
-	compile 'org.springframework:spring-jdbc:5.2.3.RELEASE'
+	compile 'org.springframework:spring-jdbc'
 	
 	testImplementation 'com.h2database:h2:1.4.200'
-	testImplementation('org.springframework.boot:spring-boot-starter-test:2.3.8.RELEASE') {
-		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-		exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
-        exclude group: 'ch.qos.logback', module: 'logback-classic'
-	}
-	testRuntimeOnly "org.junit.platform:junit-platform-commons:1.7.0"
-	
+
 	testImplementation project(':gson')
 }
