@@ -606,7 +606,7 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
   @Override
   public URI saveUser(User user) {
     if (user.getUsername() == null) {
-      throw new IllegalArgumentException("Username is required!");
+      throw new IllegalArgumentException("Username is required! User: " + user);
     }
     User userByUsername = getUserByUsername(user.getUsername());
     if (userByUsername != null) {
