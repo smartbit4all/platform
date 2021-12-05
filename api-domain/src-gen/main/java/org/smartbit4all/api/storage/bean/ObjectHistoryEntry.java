@@ -25,6 +25,7 @@ import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
 import org.smartbit4all.api.storage.bean.ObjectVersion;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 
@@ -122,11 +123,12 @@ public class ObjectHistoryEntry {
    * The uri of the object version that can be used to read the given version. 
    * @return versionUri
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "The uri of the object version that can be used to read the given version. ")
+  @ApiModelProperty(required = true, value = "The uri of the object version that can be used to read the given version. ")
   @JsonProperty(VERSION_URI)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public URI getVersionUri() {
     return versionUri;
@@ -134,7 +136,7 @@ public class ObjectHistoryEntry {
 
 
   @JsonProperty(VERSION_URI)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setVersionUri(URI versionUri) {
     this.versionUri = versionUri;
   }

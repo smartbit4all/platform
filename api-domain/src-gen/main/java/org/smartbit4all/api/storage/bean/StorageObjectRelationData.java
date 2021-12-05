@@ -29,6 +29,7 @@ import java.util.Map;
 import org.smartbit4all.api.storage.bean.ObjectReference;
 import org.smartbit4all.api.storage.bean.ObjectReferenceList;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 
@@ -64,6 +65,7 @@ public class StorageObjectRelationData {
    * The uri of the object represented by the storage object. 
    * @return uri
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @Valid
   @ApiModelProperty(required = true, value = "The uri of the object represented by the storage object. ")

@@ -24,6 +24,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 
@@ -55,6 +56,7 @@ public class StorageSettings {
    * Get uri
    * @return uri
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @Valid
   @ApiModelProperty(required = true, value = "")

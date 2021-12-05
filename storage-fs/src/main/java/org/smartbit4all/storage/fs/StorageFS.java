@@ -26,8 +26,10 @@ import org.smartbit4all.core.object.ObjectSummarySupplier;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.storage.ObjectModificationException;
 import org.smartbit4all.domain.data.storage.ObjectNotFoundException;
+import org.smartbit4all.domain.data.storage.ObjectStorage;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.smartbit4all.domain.data.storage.Storage;
+import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageLoadOption;
 import org.smartbit4all.domain.data.storage.StorageObject;
 import org.smartbit4all.domain.data.storage.StorageObject.StorageObjectOperation;
@@ -36,7 +38,16 @@ import org.smartbit4all.domain.data.storage.StorageObjectLock;
 import org.smartbit4all.domain.data.storage.StorageObjectPhysicalLock;
 import org.smartbit4all.domain.data.storage.StorageSaveEvent;
 import org.smartbit4all.domain.data.storage.StorageUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 
+/**
+ * The file system based implementation of the {@link ObjectStorage} interface. This is responsible
+ * for storing and retrieving the objects using an expandable file system structure. The location of
+ * the object file is determined by the URI of the object so we have a very fast pointer based
+ * access to the data.
+ * 
+ * @author Peter Boros
+ */
 public class StorageFS extends ObjectStorageImpl {
 
   private static final Logger log = LoggerFactory.getLogger(StorageFS.class);
@@ -61,9 +72,24 @@ public class StorageFS extends ObjectStorageImpl {
    */
   private static final String storedObjectLockFileExtension = ".l";
 
+  /**
+   * The {@link ObjectDefinition} of the {@link StorageObjectData} that is basic api object of the
+   * {@link StorageApi}.
+   */
   private ObjectDefinition<StorageObjectData> storageObjectDataDef;
 
+  /**
+   * The {@link ObjectDefinition} of the {@link StorageObjectRelationData} that is basic api object
+   * of the {@link StorageApi}.
+   */
   private ObjectDefinition<StorageObjectRelationData> storageObjectRelationDataDef;
+
+  /**
+   * The transaction manager (there must be only one in one application) that is configured. Used to
+   * identify if there is an active transaction initiated on the current {@link Thread}.
+   */
+  @Autowired(required = false)
+  private StorageTransactionManagerFS transactionManager;
 
   /**
    * @param rootFolder The root folder, in which the storage place the files.
@@ -191,7 +217,9 @@ public class StorageFS extends ObjectStorageImpl {
 
       // The version is updated with the information attached if it's not a modification without
       // object.
-      newVersion.transactionId(object.getTransactionId()).createdAt(OffsetDateTime.now());
+      // TODO Inject transaction!
+      newVersion.transactionId(object.getTransactionId().toString())
+          .createdAt(OffsetDateTime.now());
       newVersion.setCreatedBy(versionCreatedBy.get());
 
       File objectVersionFile = null;

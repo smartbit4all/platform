@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.smartbit4all.api.storage.bean.ObjectVersion;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 
@@ -66,6 +67,7 @@ public class StorageObjectData {
    * The uri of the object represented by the storage object. 
    * @return uri
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @Valid
   @ApiModelProperty(required = true, value = "The uri of the object represented by the storage object. ")
@@ -94,6 +96,7 @@ public class StorageObjectData {
    * Get currentVersion
    * @return currentVersion
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @Valid
   @ApiModelProperty(required = true, value = "")

@@ -48,6 +48,11 @@ public class Storage {
 
   private static final String SETTINGS = "settings";
 
+  /**
+   * The name of the storage transaction manager.
+   */
+  public static final String STORAGETX = "storageTX";
+
   private static final Logger log = LoggerFactory.getLogger(Storage.class);
 
   /**
@@ -111,6 +116,14 @@ public class Storage {
     return storageObject;
   }
 
+  /**
+   * Save the given {@link StorageObject}.
+   * 
+   * @param <T>
+   * @param object The storage object that must not be null otherwise a {@link NullPointerException}
+   *        runtime exception is going to be thrown..
+   * @return The URI of the saved object.
+   */
   public <T> URI save(StorageObject<T> object) {
     URI result = objectStorage.save(object);
 
@@ -120,6 +133,25 @@ public class Storage {
     }
 
     return result;
+  }
+
+  /**
+   * Save the given object as new into the storage. If we save a new instance then there is no need
+   * to use the {@link StorageObject} because there will no concurrent issue or any other problem.
+   * 
+   * @param <T>
+   * @param object The object to save. The URI will be generated so there is no need and no
+   *        influence of the previously set URI! Don't set any URI or be aware of skipping this.
+   * @return The URI of the newly created object.
+   */
+  public <T> URI saveAsNew(T object) {
+    if (object == null) {
+      return null;
+    }
+    @SuppressWarnings("unchecked")
+    StorageObject<T> storageObject = (StorageObject<T>) instanceOf(object.getClass());
+    storageObject.setObject(object);
+    return save(storageObject);
   }
 
   @SuppressWarnings("unchecked")

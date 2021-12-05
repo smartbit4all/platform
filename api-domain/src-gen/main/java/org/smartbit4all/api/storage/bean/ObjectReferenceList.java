@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.smartbit4all.api.storage.bean.ObjectReference;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 
@@ -57,6 +58,7 @@ public class ObjectReferenceList {
    * The type of the reference. It can be the qualified name of the java bean class or anything else that can exactly identify the type of the reference object.   
    * @return referenceTypeClass
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @ApiModelProperty(required = true, value = "The type of the reference. It can be the qualified name of the java bean class or anything else that can exactly identify the type of the reference object.   ")
   @JsonProperty(REFERENCE_TYPE_CLASS)
@@ -89,6 +91,7 @@ public class ObjectReferenceList {
    * Get references
    * @return references
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @Valid
   @ApiModelProperty(required = true, value = "")

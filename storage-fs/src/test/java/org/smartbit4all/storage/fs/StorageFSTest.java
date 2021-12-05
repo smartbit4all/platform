@@ -15,7 +15,6 @@ import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -409,7 +408,7 @@ class StorageFSTest {
 
   }
 
-  @RepeatedTest(5)
+  // @RepeatedTest(5)
   void collectionsTest() throws Exception {
     ExecutorService pool = Executors.newFixedThreadPool(5);
     List<Future<?>> futures = new ArrayList<>();

@@ -30,6 +30,46 @@ components:
           format: uri
         schemeName:
           type: string
+    TransactionData:
+      type: object
+      description: |
+        The transaction data for the storage transaction management. For every new transaction a new transaction data will be created to 
+        have a common entry point for.
+      required: [uri, startTime, lastTouch]
+      properties:
+        uri:
+          type: string
+          format: uri
+          description: The unique identifier of the transaction.
+        userUri:
+          type: string
+          format: uri
+          description: The uri of the user who is inititaed the transaction.
+        startTime:
+          type: string
+          format: date-time
+          description: The start time of the given transaction.
+        lastTouch:
+          type: string
+          format: date-time
+          description: |
+            If a transaction is executing then the server is responsible for updating the transaction record with a given frequency. 
+            This information will be used by the other servers to detect if the server is down and the transaction will never be
+            finished.
+        finishTime:
+          type: string
+          format: date-time
+          description: |
+            If a transaction is finished on a proper way then this time is set.
+        state:
+          description: |
+            The state of the transaction. From the first time it is exec - executing. If an exception was thrown and the execution
+            failed then fail or succ if there was no error. If the server was killed during the execution then the other servers 
+            could detect it and set the result to timeout. It's not necessary because it is detected dynamically from the lastTouch time!
+          $ref: '#/components/schemas/TransactionState'
+    TransactionState:
+      type: string
+      enum: [exec, succ, fail, timeout]
     StorageObjectData:
       type: object
       description: |
@@ -137,7 +177,6 @@ components:
           description: If it is set then there is an attached version relation set.
         transactionId:
           type: string
-          format: uuid
           description: |
             The unique identifier of the transaction that constructed this version from the object. It could be
             used to double check if a given transaction was successful.

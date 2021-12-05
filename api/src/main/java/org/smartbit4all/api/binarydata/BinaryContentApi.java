@@ -3,6 +3,13 @@ package org.smartbit4all.api.binarydata;
 import java.io.InputStream;
 import java.net.URI;
 
+/**
+ * The {@link BinaryContent} is a platform level structure to generalize the file attachment for
+ * every api. The attachment contains the file name, the size and the mime type of the given
+ * content. It can be used as referred object and this api is responsible for storing them.
+ * 
+ * @author Peter Boros
+ */
 public interface BinaryContentApi {
 
   /**
@@ -59,7 +66,7 @@ public interface BinaryContentApi {
    * @return
    */
   void uploadContent(BinaryContent binaryContent, BinaryData data, URI dataUri);
-  
+
   /**
    * Remove the BinaryData from the BinaryContent.
    * 

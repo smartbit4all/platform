@@ -33,9 +33,9 @@ public class StorageFSTestConfig {
     return new StorageFSTestApiImpl();
   }
 
-  @Bean("storageTx")
-  public StorageTransactionManager transactionManager() {
-    return new StorageTransactionManager();
+  @Bean(Storage.STORAGETX)
+  public StorageTransactionManagerFS transactionManager() {
+    return new StorageTransactionManagerFS();
   }
 
 }

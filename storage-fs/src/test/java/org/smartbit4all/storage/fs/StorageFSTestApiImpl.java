@@ -2,9 +2,9 @@ package org.smartbit4all.storage.fs;
 
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
+import org.smartbit4all.domain.data.storage.TransactionalStorage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 public class StorageFSTestApiImpl implements StorageFSTestApi {
 
@@ -15,14 +15,27 @@ public class StorageFSTestApiImpl implements StorageFSTestApi {
   StorageFSTestApi self;
 
   @Override
-  @Transactional("storageTx")
+  @TransactionalStorage
   public FSTestBean saveAndLoad(Storage storage, String testText) {
+    try {
+      Thread.sleep(50);
+    } catch (InterruptedException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
     self.doSomething();
     return null;
   }
 
   @Override
-  @Transactional(transactionManager = "storageTx", propagation = Propagation.REQUIRES_NEW)
-  public void doSomething() {}
+  @TransactionalStorage(propagation = Propagation.REQUIRES_NEW)
+  public void doSomething() {
+    try {
+      Thread.sleep(50);
+    } catch (InterruptedException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+  }
 
 }

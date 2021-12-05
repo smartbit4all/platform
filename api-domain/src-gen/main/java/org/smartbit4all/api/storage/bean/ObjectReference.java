@@ -25,6 +25,7 @@ import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 
@@ -60,6 +61,7 @@ public class ObjectReference {
    * The identifier of the referenced object. This is an URI that identifies the object in the domain. 
    * @return uri
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @Valid
   @ApiModelProperty(required = true, value = "The identifier of the referenced object. This is an URI that identifies the object in the domain. ")

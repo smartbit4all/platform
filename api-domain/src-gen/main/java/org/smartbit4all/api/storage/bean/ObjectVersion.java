@@ -24,8 +24,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
 import java.time.OffsetDateTime;
-import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 
@@ -52,7 +52,7 @@ public class ObjectVersion {
   private Long serialNoRelation;
 
   public static final String TRANSACTION_ID = "transactionId";
-  private UUID transactionId;
+  private String transactionId;
 
   public static final String CREATED_AT = "createdAt";
   private OffsetDateTime createdAt;
@@ -121,7 +121,7 @@ public class ObjectVersion {
   }
 
 
-  public ObjectVersion transactionId(UUID transactionId) {
+  public ObjectVersion transactionId(String transactionId) {
     
     this.transactionId = transactionId;
     return this;
@@ -132,19 +132,18 @@ public class ObjectVersion {
    * @return transactionId
   **/
   @javax.annotation.Nullable
-  @Valid
   @ApiModelProperty(value = "The unique identifier of the transaction that constructed this version from the object. It could be used to double check if a given transaction was successful. ")
   @JsonProperty(TRANSACTION_ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public UUID getTransactionId() {
+  public String getTransactionId() {
     return transactionId;
   }
 
 
   @JsonProperty(TRANSACTION_ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setTransactionId(UUID transactionId) {
+  public void setTransactionId(String transactionId) {
     this.transactionId = transactionId;
   }
 
@@ -159,6 +158,7 @@ public class ObjectVersion {
    * The exact date time when the given version was created at.
    * @return createdAt
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @Valid
   @ApiModelProperty(required = true, value = "The exact date time when the given version was created at.")
@@ -187,6 +187,7 @@ public class ObjectVersion {
    * The reference of the user or any other participant who created the given version.
    * @return createdByUri
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @Valid
   @ApiModelProperty(required = true, value = "The reference of the user or any other participant who created the given version.")
