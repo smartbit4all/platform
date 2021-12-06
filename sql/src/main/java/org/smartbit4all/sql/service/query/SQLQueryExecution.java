@@ -48,6 +48,7 @@ import org.smartbit4all.sql.SQLStatementBuilder;
 import org.smartbit4all.sql.SQLStatementBuilderIF;
 import org.smartbit4all.sql.SQLTableNode;
 import org.smartbit4all.sql.SQLWhere;
+import org.smartbit4all.sql.config.SQLDBParameter;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -103,8 +104,11 @@ final class SQLQueryExecution {
   final QueryOutput queryOutput;
 
   private String schema;
-  
-  public SQLQueryExecution(JdbcTemplate jdbcTemplate, QueryInput query, String schema) {
+
+  protected SQLDBParameter sqlDBParameter;
+
+  public SQLQueryExecution(JdbcTemplate jdbcTemplate, QueryInput query, String schema,
+      SQLDBParameter sqlDBParameter) {
     super();
     this.jdbcTemplate = jdbcTemplate;
     this.queryInput = query;
@@ -114,6 +118,7 @@ final class SQLQueryExecution {
     aliasIndex = 1;
     columnIndex = 1;
     this.schema = schema;
+    this.sqlDBParameter = sqlDBParameter;
   }
 
   /**
@@ -129,8 +134,8 @@ final class SQLQueryExecution {
     SQLSelectFromTableNode rootTable = new SQLSelectFromTableNode(tableNode, nextTableAlias());
     // This map must be a list based map to preserve the order.
     Map<String, Property<?>> columnMap = new HashMap<>();
-    // SQLStatementBuilderIF builder = entityDef.context().get(SQLStatementBuilderIF.class);
-    SQLStatementBuilderIF builder = new SQLStatementBuilder(SupportedDatabase.ORACLE);
+    SQLStatementBuilderIF builder = new SQLStatementBuilder(
+        sqlDBParameter != null ? sqlDBParameter.getType() : SupportedDatabase.ORACLE);
     select.setQueryLimit(queryInput.limit());
     select.setDistinctQuery(queryInput.isDistinct());
     for (Property<?> property : queryInput.properties()) {
@@ -248,16 +253,16 @@ final class SQLQueryExecution {
       OperandProperty<?> operandProperty = (OperandProperty<?>) operand;
       SQLSelectColumn column = setupProperty(rootTable, operandProperty.property(), builder);
       operandProperty.setQualifier(column.from().alias());
-      
+
       // set the qualifiers of the required operand properties too
-      if(column instanceof SQLComputedColumn) {
+      if (column instanceof SQLComputedColumn) {
         ArrayList<SQLSelectColumn> requiredColumns =
             ((SQLComputedColumn) column).getRequiredColumns();
         List<OperandProperty<?>> requiredOperandProperties =
             operandProperty.getRequiredOperandProperties();
-        if(requiredOperandProperties != null && requiredColumns != null) {
+        if (requiredOperandProperties != null && requiredColumns != null) {
           // no checks on the size of the lists: these MUST match at this point!
-          for(int i = 0 ; i < requiredOperandProperties.size(); i++) {
+          for (int i = 0; i < requiredOperandProperties.size(); i++) {
             requiredOperandProperties.get(i).setQualifier(requiredColumns.get(i).from().alias());
           }
         }
@@ -351,7 +356,7 @@ final class SQLQueryExecution {
           nextColumnAlias());
     } else if (property instanceof PropertyComputed<?>) {
       // computed properties will be skipped.
-      
+
       // Here comes the rowFetchFunction.add(Computation...)
     } else if (property instanceof PropertySqlComputed<?>) {
       PropertySqlComputed<?> propertySqlComputed = (PropertySqlComputed<?>) property;
@@ -373,19 +378,19 @@ final class SQLQueryExecution {
       column = new SQLComputedColumn(table, sqlComputedColumn, propertySqlComputed.getName(),
           requiredColumns);
     }
-    
+
     PropertyFunction propertyFunction = property.getPropertyFunction();
     if (propertyFunction != null) {
       /*
-       * In case the property has applied functions on it, we need to create an SQLComputedColumn
-       * A property like this can has other dependent properties and these are also need to be set
-       * up with the right sql aliases, so we call the setupProperty method recursively.
-       * These computed SQLSelectColumns then will be added as required columns to the result. 
+       * In case the property has applied functions on it, we need to create an SQLComputedColumn A
+       * property like this can has other dependent properties and these are also need to be set up
+       * with the right sql aliases, so we call the setupProperty method recursively. These computed
+       * SQLSelectColumns then will be added as required columns to the result.
        */
-      
+
       List<Property<?>> requiredProperties = propertyFunction.getRequiredProperties();
       ArrayList<SQLSelectColumn> requiredColumns = new ArrayList<>();
-      if(requiredProperties != null && !requiredProperties.isEmpty()) {
+      if (requiredProperties != null && !requiredProperties.isEmpty()) {
         for (Property<?> requiredProperty : requiredProperties) {
           if (requiredProperty instanceof PropertyComputed) {
             // TODO only after rowFetchFunction evaluation?
@@ -401,7 +406,7 @@ final class SQLQueryExecution {
           .collect(Collectors.toList());
       String functionSqlString = builder.getFunctionSqlString(propertyFunction,
           column.getNameWithFrom(), requiredParamSqlStrings);
-      column = new SQLComputedColumn(column.from(), functionSqlString, nextColumnAlias(), 
+      column = new SQLComputedColumn(column.from(), functionSqlString, nextColumnAlias(),
           requiredColumns);
     }
     return column;

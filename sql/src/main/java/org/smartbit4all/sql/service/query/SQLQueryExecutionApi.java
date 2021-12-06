@@ -4,6 +4,7 @@ import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.service.query.QueryExecutionApi;
 import org.smartbit4all.domain.service.query.QueryInput;
 import org.smartbit4all.domain.service.query.QueryOutput;
+import org.smartbit4all.sql.config.SQLDBParameter;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 public class SQLQueryExecutionApi implements QueryExecutionApi {
@@ -15,14 +16,23 @@ public class SQLQueryExecutionApi implements QueryExecutionApi {
 
   private String schema = null;
 
+  protected SQLDBParameter sqlDBParameter;
+
   public SQLQueryExecutionApi(JdbcTemplate jdbcTemplate) {
     super();
     this.jdbcTemplate = jdbcTemplate;
   }
 
+  public SQLQueryExecutionApi(JdbcTemplate jdbcTemplate, SQLDBParameter sqlDBParameter) {
+    super();
+    this.jdbcTemplate = jdbcTemplate;
+    this.sqlDBParameter = sqlDBParameter;
+  }
+
   @Override
   public <E extends EntityDefinition> QueryOutput execute(QueryInput queryInput) throws Exception {
-    SQLQueryExecution queryExecution = new SQLQueryExecution(jdbcTemplate, queryInput, schema);
+    SQLQueryExecution queryExecution =
+        new SQLQueryExecution(jdbcTemplate, queryInput, schema, sqlDBParameter);
     queryExecution.execute();
     return queryExecution.queryOutput;
   }
@@ -35,5 +45,5 @@ public class SQLQueryExecutionApi implements QueryExecutionApi {
   public void setSchema(String schema) {
     this.schema = schema;
   }
-  
+
 }
