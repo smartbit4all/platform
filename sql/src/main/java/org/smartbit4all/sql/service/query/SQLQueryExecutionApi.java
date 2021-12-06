@@ -23,12 +23,6 @@ public class SQLQueryExecutionApi implements QueryExecutionApi {
     this.jdbcTemplate = jdbcTemplate;
   }
 
-  public SQLQueryExecutionApi(JdbcTemplate jdbcTemplate, SQLDBParameter sqlDBParameter) {
-    super();
-    this.jdbcTemplate = jdbcTemplate;
-    this.sqlDBParameter = sqlDBParameter;
-  }
-
   @Override
   public <E extends EntityDefinition> QueryOutput execute(QueryInput queryInput) throws Exception {
     SQLQueryExecution queryExecution =
@@ -44,6 +38,10 @@ public class SQLQueryExecutionApi implements QueryExecutionApi {
 
   public void setSchema(String schema) {
     this.schema = schema;
+  }
+
+  public void setSqlDbParameter(SQLDBParameter sqlDBParameter) {
+    this.sqlDBParameter = sqlDBParameter;
   }
 
 }
