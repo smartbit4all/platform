@@ -323,6 +323,9 @@ public class StorageFS extends ObjectStorageImpl {
 
   @Override
   public boolean exists(URI uri) {
+    if (uri == null) {
+      return false;
+    }
     File storageObjectDataFile = getDataFileByUri(uri, storedObjectFileExtension);
     if (!storageObjectDataFile.exists()) {
       return false;
