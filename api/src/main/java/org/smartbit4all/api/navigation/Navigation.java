@@ -893,20 +893,23 @@ public class Navigation {
         .entrySet()) {
       NavigationNode node = getNode(entry.getKey());
       List<ResolvedPropertyEntry> properties = entry.getValue();
-      ApiObjectRef objectRef =
-          api.loadObject(node.getEntry().getMetaUri(), node.getEntry().getObjectUri())
-              .orElseThrow(() -> new IllegalArgumentException(
-                  "Unable to load the " + node.getEntry() + " object."));
-      for (ResolvedPropertyEntry resolvedPropertyEntry : properties) {
-        Object value = objectRef.getValueByPath(resolvedPropertyEntry.name);
-        ResolvedValue resolvedValue;
-        if (value == null) {
-          resolvedValue = new ResolvedValue();
-          resolvedValue.setMessage(VALUE_NOT_FOUND);
-        } else {
-          resolvedValue = new ResolvedValue(value);
+      Optional<ApiObjectRef> objectRefOpt =
+          api.loadObject(node.getEntry().getMetaUri(), node.getEntry().getObjectUri());
+      if (objectRefOpt != null && objectRefOpt.isPresent()) {
+        ApiObjectRef objectRef = objectRefOpt.get();
+        for (ResolvedPropertyEntry resolvedPropertyEntry : properties) {
+          Object value = objectRef.getValueByPath(resolvedPropertyEntry.name);
+          ResolvedValue resolvedValue;
+          if (value == null) {
+            resolvedValue = new ResolvedValue();
+            resolvedValue.setMessage(VALUE_NOT_FOUND);
+          } else {
+            resolvedValue = new ResolvedValue(value);
+          }
+          result.put(resolvedPropertyEntry.qualifiedName, resolvedValue);
         }
-        result.put(resolvedPropertyEntry.qualifiedName, resolvedValue);
+      } else {
+        log.error("Unable to load the object: " + node.getEntry());
       }
     }
 
