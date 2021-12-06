@@ -530,7 +530,9 @@ public class Storage {
       } catch (Exception e) {
         throw new IllegalArgumentException("Unable to instanciate the " + clazz + " bean.", e);
       }
-      parameterSetters.accept(newObject);
+      if (parameterSetters != null) {
+        parameterSetters.accept(newObject);
+      }
       newObjectSo.setObject(newObject);
       URI uri = save(newObjectSo);
       storageObject.setReference(referenceName,
