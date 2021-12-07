@@ -55,27 +55,33 @@ public class VaadinHasItemsBinder<T> extends CollectionBinder<T> {
     if (list instanceof Grid) {
       Grid<T> grid = (Grid<T>) list;
 
-      GridSelectionModel<T> selectionModel = ((Grid<T>) list).getSelectionModel();
+      // FIXME
+      // Getting error with "((Grid<T>) list).getDataProvider().refreshAll();" when using GridPro
+      // with editable field that refreshes other Grid fields
+      if ("com.vaadin.flow.component.gridpro.GridPro".equals(list.getClass().getName())) {
+        GridSelectionModel<T> selectionModel = ((Grid<T>) list).getSelectionModel();
 
-      // Save selection before setting items
-      if (selectionModel != null && selectionModel.getSelectedItems() != null
-          && !selectionModel.getSelectedItems().isEmpty()) {
+        // Save selection before setting items
+        if (selectionModel != null && selectionModel.getSelectedItems() != null
+            && !selectionModel.getSelectedItems().isEmpty()) {
 
-        if (selectionModel instanceof GridSingleSelectionModel) {
-          SingleSelect<Grid<T>, T> asSingleSelect = grid.asSingleSelect();
-          T value = asSingleSelect.getValue();
-          grid.setItems(items);
-          asSingleSelect.setValue(value);
+          if (selectionModel instanceof GridSingleSelectionModel) {
+            SingleSelect<Grid<T>, T> asSingleSelect = grid.asSingleSelect();
+            T value = asSingleSelect.getValue();
+            grid.setItems(items);
+            asSingleSelect.setValue(value);
+          } else {
+            MultiSelect<Grid<T>, T> asMultiSelect = grid.asMultiSelect();
+            Set<T> value = asMultiSelect.getValue();
+            grid.setItems(items);
+            grid.asMultiSelect().setValue(value);
+          }
         } else {
-          MultiSelect<Grid<T>, T> asMultiSelect = grid.asMultiSelect();
-          Set<T> value = asMultiSelect.getValue();
           grid.setItems(items);
-          grid.asMultiSelect().setValue(value);
         }
       } else {
-        grid.setItems(items);
+        ((Grid<T>) list).getDataProvider().refreshAll();
       }
-      // ((Grid<T>) list).getDataProvider().refreshAll();
     } else if (list instanceof ComboBox) {
       ((ComboBox<T>) list).getDataProvider().refreshAll();
     } else if (list instanceof CheckboxGroup) {
