@@ -67,6 +67,10 @@ public abstract class CollectionBinder<T> extends AbstractBinder {
 
   protected T deleteItem(String itemPath) {
     int idx = itemPaths.indexOf(itemPath);
+    return deleteItemByIndex(idx);
+  }
+
+  protected T deleteItemByIndex(int idx) {
     itemPaths.remove(idx);
     return items.remove(idx);
   }
