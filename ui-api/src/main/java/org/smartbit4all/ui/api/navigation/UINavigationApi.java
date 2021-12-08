@@ -2,6 +2,7 @@ package org.smartbit4all.ui.api.navigation;
 
 import java.util.UUID;
 import java.util.function.Consumer;
+import org.smartbit4all.api.org.SecurityGroup;
 import org.smartbit4all.ui.api.navigation.model.Message;
 import org.smartbit4all.ui.api.navigation.model.MessageResult;
 import org.smartbit4all.ui.api.navigation.model.NavigableViewDescriptor;
@@ -13,6 +14,8 @@ public interface UINavigationApi {
   void registerView(NavigableViewDescriptor viewDescriptor);
 
   void registerView(NavigableViewDescriptor viewDescriptor, NavigationTargetType type);
+
+  void registerSecurityGroup(String viewName, SecurityGroup securityGroup);
 
   void navigateTo(NavigationTarget navigationTarget);
 

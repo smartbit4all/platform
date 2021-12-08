@@ -30,6 +30,10 @@ public class UINavigationVaadinRouting extends UINavigationVaadinCommon {
 
   @Override
   public void navigateTo(NavigationTarget navigationTarget) {
+    if (!checkSecurity(navigationTarget)) {
+      showSecurityError(navigationTarget);
+      return;
+    }
     super.navigateTo(navigationTarget);
     try {
       ObjectEditing.currentConstructionUUID.set(navigationTarget.getUuid());
@@ -112,10 +116,11 @@ public class UINavigationVaadinRouting extends UINavigationVaadinCommon {
     }
   }
 
+  @SuppressWarnings("unchecked")
   private void registerVaadinRouteIfNotExists(String viewName,
       Class<? extends Component> viewClass) {
     RouteConfiguration configuration = RouteConfiguration.forSessionScope();
-    if (!configuration.isPathRegistered(viewName)) {
+    if (!configuration.isPathAvailable(viewName)) {
       if (mainLayout != null) {
         configuration.setRoute(viewName, viewClass, mainLayout);
       } else {

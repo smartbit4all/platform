@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
+import org.smartbit4all.api.org.SecurityGroup;
 import org.smartbit4all.api.session.UserSessionApi;
 import org.smartbit4all.core.object.ObjectEditing;
 import org.smartbit4all.ui.api.navigation.model.Message;
@@ -45,6 +46,8 @@ public abstract class UINavigationVaadinCommon extends UINavigationApiCommon {
   protected Map<UUID, Label> dialogLabelsByUUID;
   protected Map<UUID, Component> dialogViewsByUUID;
 
+  protected Map<String, SecurityGroup> securityGroupByView;
+
   public UINavigationVaadinCommon(UI ui, UserSessionApi userSessionApi) {
     this.ui = ui;
     this.userSessionApi = userSessionApi;
@@ -53,7 +56,7 @@ public abstract class UINavigationVaadinCommon extends UINavigationApiCommon {
     dialogsByUUID = new HashMap<>();
     dialogViewsByUUID = new HashMap<>();
     dialogLabelsByUUID = new HashMap<>();
-
+    securityGroupByView = new HashMap<>();
   }
 
   @Override
@@ -287,9 +290,11 @@ public abstract class UINavigationVaadinCommon extends UINavigationApiCommon {
       return title;
     }
     NavigableViewDescriptor viewDescriptor = getViewDescriptorByNavigationTarget(navigationTarget);
-    title = viewDescriptor.getTitle();
-    if (!Strings.isNullOrEmpty(title)) {
-      return title;
+    if (viewDescriptor != null) {
+      title = viewDescriptor.getTitle();
+      if (!Strings.isNullOrEmpty(title)) {
+        return title;
+      }
     }
     return navigationTarget.getViewName();
   }
@@ -317,4 +322,27 @@ public abstract class UINavigationVaadinCommon extends UINavigationApiCommon {
     }
 
   }
+
+  @Override
+  public void registerSecurityGroup(String viewName, SecurityGroup securityGroup) {
+    securityGroupByView.put(viewName, securityGroup);
+  }
+
+  protected boolean checkSecurity(NavigationTarget navigationTarget) {
+    SecurityGroup securityGroup = securityGroupByView.get(navigationTarget.getViewName());
+    if (securityGroup == null) {
+      return true;
+    }
+    return securityGroup.check();
+  }
+
+  protected void showSecurityError(NavigationTarget navigationTarget) {
+    String title = calculateTitle(navigationTarget);
+    Message securityMessage = new Message()
+        .header("Nem megfelelő jogosultság")
+        .text("A képernyő megfelelő jogosultság hiányában nem nyitható ki (" + title + ")!")
+        .type(MessageType.ERROR);
+    showMessage(securityMessage, null);
+  }
+
 }

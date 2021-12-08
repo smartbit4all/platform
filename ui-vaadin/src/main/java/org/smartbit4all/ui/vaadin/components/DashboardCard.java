@@ -1,6 +1,7 @@
 package org.smartbit4all.ui.vaadin.components;
 
-import org.smartbit4all.ui.vaadin.components.navigation.Navigation;
+import org.smartbit4all.ui.api.navigation.UINavigationApi;
+import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
@@ -12,14 +13,17 @@ public class DashboardCard extends FlexLayout {
 
   private VaadinIcon topIcon;
   private VaadinIcon bottomIcon;
+  protected UINavigationApi uiNavigationApi;
 
-  public DashboardCard(String titleText, String viewName) {
-    this(titleText, viewName, VaadinIcon.PLUS, VaadinIcon.ARROW_RIGHT);
+  public DashboardCard(UINavigationApi uiNavigationApi, String titleText, String viewName) {
+    this(uiNavigationApi, titleText, viewName, VaadinIcon.PLUS, VaadinIcon.ARROW_RIGHT);
   }
 
-  public DashboardCard(String titleText, String viewName, VaadinIcon topIcon,
+  public DashboardCard(UINavigationApi uiNavigationApi, String titleText, String viewName,
+      VaadinIcon topIcon,
       VaadinIcon bottomIcon) {
     super();
+    this.uiNavigationApi = uiNavigationApi;
     this.topIcon = topIcon;
     this.bottomIcon = bottomIcon;
 
@@ -28,9 +32,10 @@ public class DashboardCard extends FlexLayout {
     createTitle(titleText);
     createBottomButton(viewName);
   }
-  
-  public DashboardCard(String titleText, String viewName, VaadinIcon topIcon) {
-    this(titleText, viewName, topIcon, VaadinIcon.ARROW_RIGHT);
+
+  public DashboardCard(UINavigationApi uiNavigationApi, String titleText, String viewName,
+      VaadinIcon topIcon) {
+    this(uiNavigationApi, titleText, viewName, topIcon, VaadinIcon.ARROW_RIGHT);
   }
 
   public DashboardCard(String titleText,
@@ -53,9 +58,9 @@ public class DashboardCard extends FlexLayout {
 
   protected void createBottomButton(String viewName) {
     ComponentEventListener<ClickEvent<Button>> clickListener =
-        event -> getUI().ifPresent(ui -> Navigation
-            .to(viewName)
-            .navigate(ui));
+        event -> uiNavigationApi.navigateTo(
+            new NavigationTarget()
+                .viewName(viewName));
     createBottomButton(clickListener);
   }
 
@@ -74,9 +79,9 @@ public class DashboardCard extends FlexLayout {
 
   protected void createTopButton(String viewName) {
     ComponentEventListener<ClickEvent<Button>> listener =
-        event -> getUI().ifPresent(ui -> Navigation
-            .to(viewName)
-            .navigate(ui));
+        event -> uiNavigationApi.navigateTo(
+            new NavigationTarget()
+                .viewName(viewName));
     createTopButton(listener);
   }
 

@@ -88,7 +88,10 @@ public class UINavigationVaadinTabbed extends UINavigationVaadinCommon {
   @Override
   public void navigateTo(NavigationTarget navigationTarget) {
     ui.access(() -> {
-
+      if (!checkSecurity(navigationTarget)) {
+        showSecurityError(navigationTarget);
+        return;
+      }
       checkNavigationParameters(navigationTarget);
       super.navigateTo(navigationTarget);
       try (UIViewParameterVaadinTransition param =
