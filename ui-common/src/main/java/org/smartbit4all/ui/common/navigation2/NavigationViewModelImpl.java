@@ -463,8 +463,8 @@ public class NavigationViewModelImpl extends ObjectEditingImpl implements Naviga
     if (nodeToRefresh != null) {
       nodeToRefresh.setChildrenNodesLoaded(false);
       loadChildren(nodeToRefresh);
+      nodeToRefresh.getChildrenNodes().forEach(this::loadChildren);
       updateTreeNodeAssoc(nodeToRefresh, navigationAssociation);
-
       notifyAllListeners();
     }
   }
@@ -484,6 +484,7 @@ public class NavigationViewModelImpl extends ObjectEditingImpl implements Naviga
     if (nodeToRefresh != null) {
       nodeToRefresh.setChildrenNodesLoaded(false);
       loadChildren(nodeToRefresh);
+      nodeToRefresh.getChildrenNodes().forEach(this::loadChildren);
       updateTreeNodeEntry(nodeToRefresh, navigationNode);
       notifyAllListeners();
     }
