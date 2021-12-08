@@ -23,8 +23,6 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
 import org.smartbit4all.api.storage.bean.ObjectVersion;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -38,8 +36,8 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   StorageObjectData.URI,
   StorageObjectData.CURRENT_VERSION,
-  StorageObjectData.DELETED,
-  StorageObjectData.PENDING_VERSIONS
+  StorageObjectData.PENDING_VERSION,
+  StorageObjectData.DELETED
 })
 @JsonTypeName("StorageObjectData")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -50,11 +48,11 @@ public class StorageObjectData {
   public static final String CURRENT_VERSION = "currentVersion";
   private ObjectVersion currentVersion;
 
+  public static final String PENDING_VERSION = "pendingVersion";
+  private ObjectVersion pendingVersion;
+
   public static final String DELETED = "deleted";
   private Boolean deleted = false;
-
-  public static final String PENDING_VERSIONS = "pendingVersions";
-  private List<ObjectVersion> pendingVersions = null;
 
 
   public StorageObjectData uri(URI uri) {
@@ -115,6 +113,34 @@ public class StorageObjectData {
   }
 
 
+  public StorageObjectData pendingVersion(ObjectVersion pendingVersion) {
+    
+    this.pendingVersion = pendingVersion;
+    return this;
+  }
+
+   /**
+   * Get pendingVersion
+   * @return pendingVersion
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(PENDING_VERSION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public ObjectVersion getPendingVersion() {
+    return pendingVersion;
+  }
+
+
+  @JsonProperty(PENDING_VERSION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setPendingVersion(ObjectVersion pendingVersion) {
+    this.pendingVersion = pendingVersion;
+  }
+
+
   public StorageObjectData deleted(Boolean deleted) {
     
     this.deleted = deleted;
@@ -142,42 +168,6 @@ public class StorageObjectData {
   }
 
 
-  public StorageObjectData pendingVersions(List<ObjectVersion> pendingVersions) {
-    
-    this.pendingVersions = pendingVersions;
-    return this;
-  }
-
-  public StorageObjectData addPendingVersionsItem(ObjectVersion pendingVersionsItem) {
-    if (this.pendingVersions == null) {
-      this.pendingVersions = new ArrayList<>();
-    }
-    this.pendingVersions.add(pendingVersionsItem);
-    return this;
-  }
-
-   /**
-   * The versions of the object that are currently in transaction. These version can be seen only by the transaction itself but all other can see only the current version. At the end of the successful transaction the pending versions are cleared and current version is set to the last version. The storage is going to repair the objects left behind by the broken  transaction. 
-   * @return pendingVersions
-  **/
-  @javax.annotation.Nullable
-  @Valid
-  @ApiModelProperty(value = "The versions of the object that are currently in transaction. These version can be seen only by the transaction itself but all other can see only the current version. At the end of the successful transaction the pending versions are cleared and current version is set to the last version. The storage is going to repair the objects left behind by the broken  transaction. ")
-  @JsonProperty(PENDING_VERSIONS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public List<ObjectVersion> getPendingVersions() {
-    return pendingVersions;
-  }
-
-
-  @JsonProperty(PENDING_VERSIONS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setPendingVersions(List<ObjectVersion> pendingVersions) {
-    this.pendingVersions = pendingVersions;
-  }
-
-
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -189,13 +179,13 @@ public class StorageObjectData {
     StorageObjectData storageObjectData = (StorageObjectData) o;
     return Objects.equals(this.uri, storageObjectData.uri) &&
         Objects.equals(this.currentVersion, storageObjectData.currentVersion) &&
-        Objects.equals(this.deleted, storageObjectData.deleted) &&
-        Objects.equals(this.pendingVersions, storageObjectData.pendingVersions);
+        Objects.equals(this.pendingVersion, storageObjectData.pendingVersion) &&
+        Objects.equals(this.deleted, storageObjectData.deleted);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, currentVersion, deleted, pendingVersions);
+    return Objects.hash(uri, currentVersion, pendingVersion, deleted);
   }
 
   @Override
@@ -204,8 +194,8 @@ public class StorageObjectData {
     sb.append("class StorageObjectData {\n");
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    currentVersion: ").append(toIndentedString(currentVersion)).append("\n");
+    sb.append("    pendingVersion: ").append(toIndentedString(pendingVersion)).append("\n");
     sb.append("    deleted: ").append(toIndentedString(deleted)).append("\n");
-    sb.append("    pendingVersions: ").append(toIndentedString(pendingVersions)).append("\n");
     sb.append("}");
     return sb.toString();
   }

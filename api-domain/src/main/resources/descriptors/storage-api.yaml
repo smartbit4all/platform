@@ -84,6 +84,17 @@ components:
             The uri of the object represented by the storage object.
         currentVersion:
           type: object
+          description: |
+            This is the current version descriptor that is repeated here to have a direct reference for the latest sucessfuly
+            transacted version here.
+          $ref: '#/components/shemas/ObjectVersion'
+        pendingVersion:
+          type: object
+          description: |
+            This is the pending version descriptor that is repeated here to have a direct reference for the currently transacted 
+            version. If the given object has pending version then depending on the caller there can be more result. We always check
+            if we are the transaction or not. If we are the transaction then we can use the pending version. Else reading use the
+            current version, locking or saving will be blocked until the finish of the transaction. 
           $ref: '#/components/shemas/ObjectVersion'
         deleted:
           type: boolean
@@ -91,15 +102,6 @@ components:
           description: |
             The deleted flag is set when the given object is deleted. The deletion is always logical so we know that the object
             exists but we also know that it is already inactivated.
-        pendingVersions:
-          type: array
-          description: |
-            The versions of the object that are currently in transaction. These version can be seen only by the transaction itself
-            but all other can see only the current version. At the end of the successful transaction the pending versions are cleared
-            and current version is set to the last version. The storage is going to repair the objects left behind by the broken 
-            transaction.
-          items:
-            $ref: '#/components/shemas/ObjectVersion'
     StorageObjectRelationData:
       type: object
       description: |

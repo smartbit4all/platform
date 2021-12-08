@@ -3,6 +3,7 @@ package org.smartbit4all.domain.data.storage;
 import java.net.URI;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
 import org.smartbit4all.api.storage.bean.ObjectHistoryEntry;
 import org.smartbit4all.core.object.ObjectDefinition;
 
@@ -122,5 +123,14 @@ public interface ObjectStorage {
    *         because it's not loading data itself.
    */
   boolean exists(URI uri);
+
+  /**
+   * Retrieve the {@link StorageObjectLock} attached to the given object URI. This is just the Lock
+   * object that should be used as a normal {@link Lock} implementation.
+   * 
+   * @param objectUri The object URI the lock is attached to.
+   * @return The {@link StorageObjectLock} object for tha
+   */
+  StorageObjectLock getLock(URI objectUri);
 
 }

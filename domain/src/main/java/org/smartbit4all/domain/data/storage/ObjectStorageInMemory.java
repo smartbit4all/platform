@@ -39,8 +39,12 @@ public class ObjectStorageInMemory extends ObjectStorageImpl {
 
   @Override
   public URI save(StorageObject<?> storageObject) {
+    if (storageObject == null) {
+      return null;
+    }
     // Only put the original Object into to Map. Unwrap if wrapped.
-    StorageObjectLock objectLock = acquire(storageObject.getUri());
+    StorageObjectLock objectLock = getLock(storageObject.getUri());
+    objectLock.lock();
     try {
       StorageObject<?> copy = storageObject.copy();
       // TODO handle versions...
@@ -59,7 +63,7 @@ public class ObjectStorageInMemory extends ObjectStorageImpl {
               ApiObjectRef.unwrapObject(copy.getObject())));
       return copy.getUri();
     } finally {
-      objectLock.leave();
+      objectLock.unlockAndRelease();
     }
   }
 

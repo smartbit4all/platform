@@ -7,7 +7,7 @@ import org.smartbit4all.domain.data.storage.Storage;
  * 
  * @author Peter Boros
  */
-public interface StorageFSTestApi {
+public interface StorageTestApi {
 
   FSTestBean saveAndLoad(
       Storage storage,

@@ -16,7 +16,7 @@ public class StorageLoadOption {
 
   public enum LoadInstruction {
 
-    SKIP_DATA_OBJECT, LOAD_REFERENCE, LOAD_COLLECTION, LOCK, URI_WITH_VERSION
+    SKIP_DATA_OBJECT, LOAD_REFERENCE, LOAD_COLLECTION, URI_WITH_VERSION
 
   }
 
@@ -46,9 +46,6 @@ public class StorageLoadOption {
   private static final StorageLoadOption skipData =
       new StorageLoadOption(LoadInstruction.SKIP_DATA_OBJECT, null, null, null);
 
-  private static final StorageLoadOption lock =
-      new StorageLoadOption(LoadInstruction.LOCK, null, null, null);
-
   private static final StorageLoadOption uriWithoutVersion =
       new StorageLoadOption(LoadInstruction.URI_WITH_VERSION, "uriWithoutVersion", null, null);
 
@@ -76,14 +73,6 @@ public class StorageLoadOption {
   }
 
   /**
-   * 
-   * @return
-   */
-  public static final StorageLoadOption lock() {
-    return lock;
-  }
-
-  /**
    * Ensures that the loaded object's uri property contains the version part or not.
    */
   public static final StorageLoadOption uriWithVersion(boolean withVersion) {
@@ -104,10 +93,6 @@ public class StorageLoadOption {
 
   public static final boolean checkSkipData(StorageLoadOption... options) {
     return check(LoadInstruction.SKIP_DATA_OBJECT, options);
-  }
-
-  public static final boolean checkLock(StorageLoadOption... options) {
-    return check(LoadInstruction.LOCK, options);
   }
 
   public static final boolean checkUriWithVersionOption(StorageLoadOption... options) {

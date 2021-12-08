@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.locks.Lock;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
@@ -487,20 +488,26 @@ public class Storage {
       return;
     }
 
-    StorageObject<ObjectMap> mapObject = getOrCreateReferenceObject(objectUri, om -> {
-      om.setName(request.getMapName());
-    }, ObjectMap.class, request.getMapName());
+    StorageObjectLock lock = getLock(objectUri);
+    lock.lock();
+    try {
+      StorageObject<ObjectMap> mapObject = getOrCreateReferenceObject(objectUri, om -> {
+        om.setName(request.getMapName());
+      }, ObjectMap.class, request.getMapName());
 
-    if (request.getUrisToAdd() != null) {
-      mapObject.getObject().getUris().putAll(request.getUrisToAdd());
-    }
-    if (request.getUrisToRemove() != null) {
-      for (Entry<String, URI> entry : request.getUrisToRemove().entrySet()) {
-        mapObject.getObject().getUris().remove(entry.getKey());
+      if (request.getUrisToAdd() != null) {
+        mapObject.getObject().getUris().putAll(request.getUrisToAdd());
       }
-    }
+      if (request.getUrisToRemove() != null) {
+        for (Entry<String, URI> entry : request.getUrisToRemove().entrySet()) {
+          mapObject.getObject().getUris().remove(entry.getKey());
+        }
+      }
 
-    save(mapObject);
+      save(mapObject);
+    } finally {
+      lock.unlockAndRelease();
+    }
 
   }
 
@@ -517,39 +524,55 @@ public class Storage {
    */
   public final <T> StorageObject<T> getOrCreateReferenceObject(URI objectUri,
       Consumer<T> parameterSetters, Class<T> clazz, String referenceName) {
-    StorageObject<?> storageObject =
-        load(objectUri, StorageLoadOption.skipData(), StorageLoadOption.lock());
-    StorageObjectReferenceEntry referenceEntry = storageObject.getReference(referenceName);
-    StorageObject<T> newObjectSo;
-    if (referenceEntry == null) {
-      // Construct the ObjectMap.
-      newObjectSo = instanceOf(clazz);
-      T newObject;
-      try {
-        newObject = clazz.getConstructor().newInstance();
-      } catch (Exception e) {
-        throw new IllegalArgumentException("Unable to instanciate the " + clazz + " bean.", e);
+    StorageObjectLock objectLock = getLock(objectUri);
+    objectLock.lock();
+    try {
+      StorageObject<?> storageObject =
+          load(objectUri, StorageLoadOption.skipData());
+      StorageObjectReferenceEntry referenceEntry = storageObject.getReference(referenceName);
+      StorageObject<T> newObjectSo;
+      if (referenceEntry == null) {
+        // Construct the ObjectMap.
+        newObjectSo = instanceOf(clazz);
+        T newObject;
+        try {
+          newObject = clazz.getConstructor().newInstance();
+        } catch (Exception e) {
+          throw new IllegalArgumentException("Unable to instanciate the " + clazz + " bean.", e);
+        }
+        if (parameterSetters != null) {
+          parameterSetters.accept(newObject);
+        }
+        newObjectSo.setObject(newObject);
+        URI uri = save(newObjectSo);
+        storageObject.setReference(referenceName,
+            new ObjectReference().uri(uri).referenceId(referenceName));
+        storageObject.setStrictVersionCheck(true);
+        try {
+          save(storageObject);
+        } catch (ObjectModificationException e) {
+          // If the given object is modified in the mean time then we must retry the whole function.
+          return getOrCreateReferenceObject(objectUri, parameterSetters, clazz, referenceName);
+        }
+        return newObjectSo;
+      } else {
+        ObjectReference referenceData = referenceEntry.getReferenceData();
+        return load(referenceData.getUri(), clazz);
       }
-      if (parameterSetters != null) {
-        parameterSetters.accept(newObject);
-      }
-      newObjectSo.setObject(newObject);
-      URI uri = save(newObjectSo);
-      storageObject.setReference(referenceName,
-          new ObjectReference().uri(uri).referenceId(referenceName));
-      storageObject.setStrictVersionCheck(true);
-      try {
-        save(storageObject);
-      } catch (ObjectModificationException e) {
-        // If the given object is modified in the mean time then we must retry the whole function.
-        return getOrCreateReferenceObject(objectUri, parameterSetters, clazz, referenceName);
-      }
-      return newObjectSo;
-    } else {
-      ObjectReference referenceData = referenceEntry.getReferenceData();
-      return load(referenceData.getUri(), clazz, StorageLoadOption.lock());
+    } finally {
+      objectLock.unlock();
     }
   }
 
+  /**
+   * Retrieve the {@link StorageObjectLock} attached to the given object URI. This is just the Lock
+   * object that should be used as a normal {@link Lock} implementation.
+   * 
+   * @param objectUri The object URI the lock is attached to.
+   * @return The {@link StorageObjectLock} object for tha
+   */
+  public StorageObjectLock getLock(URI objectUri) {
+    return objectStorage.getLock(objectUri);
+  }
 
 }

@@ -6,13 +6,13 @@ import org.smartbit4all.domain.data.storage.TransactionalStorage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
 
-public class StorageFSTestApiImpl implements StorageFSTestApi {
+public class StorageTestApiImpl implements StorageTestApi {
 
   @Autowired
   StorageApi storageApi;
 
   @Autowired
-  StorageFSTestApi self;
+  StorageTestApi self;
 
   @Override
   @TransactionalStorage

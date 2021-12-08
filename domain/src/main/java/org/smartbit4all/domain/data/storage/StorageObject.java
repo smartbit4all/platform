@@ -81,6 +81,13 @@ public final class StorageObject<T> {
   private ObjectVersion version;
 
   /**
+   * The lock belongs to this {@link StorageObject}. It's set when we load the object with
+   * {@link StorageLoadOption#lock()} option. Otherwise a lock is managed by the save operation and
+   * not saved directly here in advance.
+   */
+  private StorageObjectLock lock;
+
+  /**
    * If it's true then the save will check if the current version matched with version is the same.
    * If it differs then the save throws an exception. We have to reload the object and try again or
    * we must setup a lock to avoid parallel modification.
@@ -389,6 +396,14 @@ public final class StorageObject<T> {
         function.accept(storageSaveEvent);
       }
     }
+  }
+
+  final StorageObjectLock getLock() {
+    return lock;
+  }
+
+  final void setLock(StorageObjectLock lock) {
+    this.lock = lock;
   }
 
 }

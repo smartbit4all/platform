@@ -3,7 +3,6 @@ package org.smartbit4all.storage.fs;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,7 +13,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -28,7 +27,6 @@ import org.smartbit4all.api.storage.bean.ObjectMap;
 import org.smartbit4all.api.storage.bean.ObjectMapRequest;
 import org.smartbit4all.api.storage.bean.ObjectReference;
 import org.smartbit4all.api.storage.bean.StorageSettings;
-import org.smartbit4all.core.io.TestFileUtil;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectSummarySupplier;
@@ -38,16 +36,15 @@ import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageLoadOption;
 import org.smartbit4all.domain.data.storage.StorageObject;
+import org.smartbit4all.domain.data.storage.StorageObjectLock;
 import org.smartbit4all.domain.data.storage.StorageObjectReferenceEntry;
 import org.smartbit4all.domain.data.storage.history.ObjectHistoryApi;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import com.google.common.io.ByteStreams;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest(classes = {StorageFSTestConfig.class})
 @TestInstance(Lifecycle.PER_CLASS)
-class StorageFSTest {
+class StorageTest {
 
   private static final String MY_MAP = "MyMap";
 
@@ -101,23 +98,8 @@ class StorageFSTest {
 
   }
 
-  @BeforeAll
-  void init() throws IOException {
-    TestFileUtil.initTestDirectory();
-    Storage storage = storageApi.get(StorageFSTestConfig.TESTSCHEME);
-    StorageObject<FSTestBean> storageObject = storage.instanceOf(FSTestBean.class);
-
-    storageObject.setObject(new FSTestBean("collectionsTest"));
-
-    collectionsTestUri = storage.save(storageObject);
-
-  }
-
   @Autowired
   StorageApi storageApi;
-
-  @Autowired
-  StorageFS storageFS;
 
   @Autowired
   ObjectHistoryApi historyApi;
@@ -126,13 +108,13 @@ class StorageFSTest {
   ObjectApi objectApi;
 
   @Autowired
-  StorageFSTestApi testApi;
+  StorageTestApi testApi;
 
-  private URI collectionsTestUri;
+  protected URI collectionsTestUri;
 
   @Test
   void saveLoadDeleteTest() throws Exception {
-    Storage storage = storageApi.get(StorageFSTestConfig.TESTSCHEME);
+    Storage storage = storageApi.get(StorageTestConfig.TESTSCHEME);
 
     saveAndCheckLoad(storage, "test string1");
     saveAndCheckLoad(storage, "test string2");
@@ -144,7 +126,7 @@ class StorageFSTest {
 
   @Test
   void saveLoadBinaryDataTest() throws Exception {
-    Storage storage = storageApi.get(StorageFSTestConfig.TESTSCHEME);
+    Storage storage = storageApi.get(StorageTestConfig.TESTSCHEME);
 
     File tempFile = File.createTempFile(getClass().getSimpleName(), "temp");
     FileWriter fw = new FileWriter(tempFile);
@@ -172,7 +154,7 @@ class StorageFSTest {
   @Test
   void historyTest() throws Exception {
     long startCreationTime = System.currentTimeMillis();
-    Storage storage = storageApi.get(StorageFSTestConfig.TESTSCHEME);
+    Storage storage = storageApi.get(StorageTestConfig.TESTSCHEME);
 
     StorageObject<FSTestBean> storageObject = storage.instanceOf(FSTestBean.class);
 
@@ -252,7 +234,7 @@ class StorageFSTest {
 
   @Test
   void objectHistoryTest() throws Exception {
-    Storage storage = storageApi.get(StorageFSTestConfig.TESTSCHEME);
+    Storage storage = storageApi.get(StorageTestConfig.TESTSCHEME);
     StorageObject<FSTestBean> storageObject = storage.instanceOf(FSTestBean.class);
 
     storageObject.setObject(new FSTestBean("v0"));
@@ -263,7 +245,7 @@ class StorageFSTest {
     object.getObject().setTitle("v" + 1);
     storage.save(object);
 
-    ObjectHistory objectHistory = historyApi.getObjectHistory(uri, StorageFSTestConfig.TESTSCHEME);
+    ObjectHistory objectHistory = historyApi.getObjectHistory(uri, StorageTestConfig.TESTSCHEME);
 
     assertEquals(2, objectHistory.getObjectHistoryEntries().size());
 
@@ -286,7 +268,7 @@ class StorageFSTest {
 
   @Test
   void optimisticLockTest() throws Exception {
-    Storage storage = storageApi.get(StorageFSTestConfig.TESTSCHEME);
+    Storage storage = storageApi.get(StorageTestConfig.TESTSCHEME);
 
     URI uri;
     {
@@ -319,13 +301,13 @@ class StorageFSTest {
 
   @Test
   void settingsTest() throws Exception {
-    Storage storage = storageApi.get(StorageFSTestConfig.TESTSCHEME);
+    Storage storage = storageApi.get(StorageTestConfig.TESTSCHEME);
 
     StorageObject<FSTestBean> storageObject = storage.instanceOf(FSTestBean.class);
 
     storageObject.setObject(new FSTestBean("referencesTest"));
 
-    URI uri = storage.save(storageObject);
+    storage.save(storageObject);
 
     StorageObject<InvocationRequestTemplate> invocationReqObj =
         storage.instanceOf(InvocationRequestTemplate.class);
@@ -365,12 +347,14 @@ class StorageFSTest {
     ObjectMap referenceList =
         storage.load(myListUriLoaded, ObjectMap.class).getObject();
 
+    assertEquals(soMyList.getObject().getUris().size(), referenceList.getUris().size());
+
     assertEquals(invocationUri, uriReloaded);
   }
 
   @Test
   void referencesTest() throws Exception {
-    Storage storage = storageApi.get(StorageFSTestConfig.TESTSCHEME);
+    Storage storage = storageApi.get(StorageTestConfig.TESTSCHEME);
 
     StorageObject<FSTestBean> storageObject = storage.instanceOf(FSTestBean.class);
 
@@ -408,13 +392,13 @@ class StorageFSTest {
 
   }
 
-  // @RepeatedTest(5)
+  @RepeatedTest(5)
   void collectionsTest() throws Exception {
     ExecutorService pool = Executors.newFixedThreadPool(5);
     List<Future<?>> futures = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
       Future<?> submit = pool.submit(() -> {
-        collectionsTestInner(false);
+        collectionsTestInner(true);
       });
       futures.add(submit);
     }
@@ -424,124 +408,131 @@ class StorageFSTest {
   }
 
   void collectionsTestInner(boolean assumeSingleThread) {
-    Storage storage = storageApi.get(StorageFSTestConfig.TESTSCHEME);
+    Storage storage = storageApi.get(StorageTestConfig.TESTSCHEME);
 
     // StorageObject<FSTestBean> storageObject = storage.instanceOf(FSTestBean.class);
     // storageObject.setObject(new FSTestBean("collectionsTest"));
     // URI uri = storage.save(storageObject);
+    StorageObjectLock lock = storage.getLock(collectionsTestUri);
 
-    StorageObject<FSTestBean> optLoaded =
-        storage.load(collectionsTestUri, FSTestBean.class, StorageLoadOption.lock());
+    lock.lock();
+    try {
 
-
-    // String collectionName = "independentInvocations - " + Thread.currentThread().getName();
-    String collectionName = "independentInvocations";
-
-    int count = 20;
-
-    Map<String, URI> entriesByRefId = new HashMap<>();
-    for (int i = 0; i < count; i++) {
-      StorageObject<InvocationRequestTemplate> invocationReqObj =
-          storage.instanceOf(InvocationRequestTemplate.class);
-
-      invocationReqObj
-          .setObject(new InvocationRequestTemplate().apiClass(StorageApi.class.getName())
-              .executionApi("LOCAL").methodName("save")
-              .addParametersItem(new InvocationParameterTemplate().defaultValueString("param1")));
-
-      URI invocationUri = storage.save(invocationReqObj);
-
-      String refId = "00" + i;
-      optLoaded.addCollectionEntry(collectionName,
-          new ObjectReference().referenceId(refId).uri(invocationUri));
-
-      entriesByRefId.put(refId, invocationUri);
-    }
-
-    // Update the object with the collection.
-    URI uriAfterSave = storage.save(optLoaded);
-    assertEquals(collectionsTestUri, uriAfterSave);
-
-    // Load again to check existing reference
-    optLoaded = storage.load(collectionsTestUri, FSTestBean.class);
-
-    {
-      List<StorageObjectReferenceEntry> collection =
-          optLoaded.getCollection(collectionName);
+      StorageObject<FSTestBean> optLoaded =
+          storage.load(collectionsTestUri, FSTestBean.class);
 
 
-      assertEquals(count, collection.size());
 
-      if (assumeSingleThread) {
-        for (StorageObjectReferenceEntry entry : collection) {
-          String referenceId = entry.getReferenceData().getReferenceId();
-          URI storedUri = entriesByRefId.get(referenceId);
-          assertEquals(storedUri, entry.getReferenceData().getUri());
+      // String collectionName = "independentInvocations - " + Thread.currentThread().getName();
+      String collectionName = "independentInvocations";
+
+      int count = 20;
+
+      Map<String, URI> entriesByRefId = new HashMap<>();
+      for (int i = 0; i < count; i++) {
+        StorageObject<InvocationRequestTemplate> invocationReqObj =
+            storage.instanceOf(InvocationRequestTemplate.class);
+
+        invocationReqObj
+            .setObject(new InvocationRequestTemplate().apiClass(StorageApi.class.getName())
+                .executionApi("LOCAL").methodName("save")
+                .addParametersItem(new InvocationParameterTemplate().defaultValueString("param1")));
+
+        URI invocationUri = storage.save(invocationReqObj);
+
+        String refId = "00" + i;
+        optLoaded.addCollectionEntry(collectionName,
+            new ObjectReference().referenceId(refId).uri(invocationUri));
+
+        entriesByRefId.put(refId, invocationUri);
+      }
+
+      // Update the object with the collection.
+      URI uriAfterSave = storage.save(optLoaded);
+      assertEquals(collectionsTestUri, uriAfterSave);
+
+      // Load again to check existing reference
+      optLoaded = storage.load(collectionsTestUri, FSTestBean.class);
+
+      {
+        List<StorageObjectReferenceEntry> collection =
+            optLoaded.getCollection(collectionName);
+
+
+        assertEquals(count, collection.size());
+
+        if (assumeSingleThread) {
+          for (StorageObjectReferenceEntry entry : collection) {
+            String referenceId = entry.getReferenceData().getReferenceId();
+            URI storedUri = entriesByRefId.get(referenceId);
+            assertEquals(storedUri, entry.getReferenceData().getUri());
+          }
         }
       }
-    }
 
-    // Try to update the collection without creating a new version!
-    // Load again to check existing reference
-    optLoaded = storage.load(collectionsTestUri, FSTestBean.class, StorageLoadOption.skipData(),
-        StorageLoadOption.lock());
+      // Try to update the collection without creating a new version!
+      // Load again to check existing reference
+      optLoaded = storage.load(collectionsTestUri, FSTestBean.class, StorageLoadOption.skipData());
 
-    Assertions.assertNull(optLoaded.getObject(),
-        "The StorageLoadOption.skipData() was set but the object is still loaded.");
+      Assertions.assertNull(optLoaded.getObject(),
+          "The StorageLoadOption.skipData() was set but the object is still loaded.");
 
-    {
-      List<StorageObjectReferenceEntry> currentCollection =
-          optLoaded.getCollection(collectionName);
-      currentCollection.stream().forEach(e -> {
-        e.setDelete(true);
-      });
-    }
+      {
+        List<StorageObjectReferenceEntry> currentCollection =
+            optLoaded.getCollection(collectionName);
+        currentCollection.stream().forEach(e -> {
+          e.setDelete(true);
+        });
+      }
 
-    for (int i = 0; i < count; i++) {
-      StorageObject<InvocationRequestTemplate> invocationReqObj =
-          storage.instanceOf(InvocationRequestTemplate.class);
+      for (int i = 0; i < count; i++) {
+        StorageObject<InvocationRequestTemplate> invocationReqObj =
+            storage.instanceOf(InvocationRequestTemplate.class);
 
-      invocationReqObj
-          .setObject(new InvocationRequestTemplate().apiClass(StorageApi.class.getName())
-              .executionApi("LOCAL").methodName("save")
-              .addParametersItem(new InvocationParameterTemplate().defaultValueString("param1")));
+        invocationReqObj
+            .setObject(new InvocationRequestTemplate().apiClass(StorageApi.class.getName())
+                .executionApi("LOCAL").methodName("save")
+                .addParametersItem(new InvocationParameterTemplate().defaultValueString("param1")));
 
-      URI invocationUri = storage.save(invocationReqObj);
+        URI invocationUri = storage.save(invocationReqObj);
 
-      String refId = "xx" + i;
-      optLoaded.addCollectionEntry(collectionName,
-          new ObjectReference().referenceId(refId).uri(invocationUri));
-      entriesByRefId.put(refId, invocationUri);
-    }
+        String refId = "xx" + i;
+        optLoaded.addCollectionEntry(collectionName,
+            new ObjectReference().referenceId(refId).uri(invocationUri));
+        entriesByRefId.put(refId, invocationUri);
+      }
 
-    // Update the object with the collection.
-    uriAfterSave = storage.save(optLoaded);
-    assertEquals(collectionsTestUri, uriAfterSave);
+      // Update the object with the collection.
+      uriAfterSave = storage.save(optLoaded);
+      assertEquals(collectionsTestUri, uriAfterSave);
 
-    // Load again to check existing reference
-    optLoaded = storage.load(collectionsTestUri, FSTestBean.class);
+      // Load again to check existing reference
+      optLoaded = storage.load(collectionsTestUri, FSTestBean.class);
 
-    {
-      List<StorageObjectReferenceEntry> collection =
-          optLoaded.getCollection(collectionName);
+      {
+        List<StorageObjectReferenceEntry> collection =
+            optLoaded.getCollection(collectionName);
 
-      Assertions.assertNotNull(optLoaded.getObject());
+        Assertions.assertNotNull(optLoaded.getObject());
 
-      assertEquals(count, collection.size());
+        assertEquals(count, collection.size());
 
-      if (assumeSingleThread) {
-        for (StorageObjectReferenceEntry entry : collection) {
-          String referenceId = entry.getReferenceData().getReferenceId();
-          URI storedUri = entriesByRefId.get(referenceId);
-          assertEquals(storedUri, entry.getReferenceData().getUri());
+        if (assumeSingleThread) {
+          for (StorageObjectReferenceEntry entry : collection) {
+            String referenceId = entry.getReferenceData().getReferenceId();
+            URI storedUri = entriesByRefId.get(referenceId);
+            assertEquals(storedUri, entry.getReferenceData().getUri());
+          }
         }
       }
+    } finally {
+      lock.unlockAndRelease();
     }
   }
 
   @Test
   void onSucceedTest() throws Exception {
-    Storage storage = storageApi.get(StorageFSTestConfig.TESTSCHEME);
+    Storage storage = storageApi.get(StorageTestConfig.TESTSCHEME);
 
     URI uri;
     {
@@ -568,7 +559,7 @@ class StorageFSTest {
 
   @Test
   void attachedMapTest() throws Exception {
-    Storage storage = storageApi.get(StorageFSTestConfig.TESTSCHEME);
+    Storage storage = storageApi.get(StorageTestConfig.TESTSCHEME);
 
     URI uri;
     {
@@ -600,7 +591,7 @@ class StorageFSTest {
 
   @Test
   void uriVersionOptionTest() {
-    Storage storage = storageApi.get(StorageFSTestConfig.TESTSCHEME);
+    Storage storage = storageApi.get(StorageTestConfig.TESTSCHEME);
 
     StorageObject<FSTestBean> storageObject = storage.instanceOf(FSTestBean.class);
 

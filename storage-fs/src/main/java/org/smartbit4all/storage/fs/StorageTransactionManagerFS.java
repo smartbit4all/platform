@@ -8,7 +8,6 @@ import org.smartbit4all.api.storage.bean.TransactionData;
 import org.smartbit4all.api.storage.bean.TransactionState;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
-import org.smartbit4all.domain.data.storage.StorageLoadOption;
 import org.smartbit4all.domain.data.storage.StorageObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -83,7 +82,7 @@ public class StorageTransactionManagerFS extends AbstractPlatformTransactionMana
     if (status.getTransaction() instanceof TransactionData) {
       TransactionData transactionData = (TransactionData) status.getTransaction();
       StorageObject<TransactionData> so = storage.get().load(transactionData.getUri(),
-          TransactionData.class, StorageLoadOption.lock());
+          TransactionData.class);
       if (so.getObject().getState() == TransactionState.EXEC) {
         // If we are the currently executing transaction then we can commit this.
         OffsetDateTime now = OffsetDateTime.now();
@@ -98,7 +97,7 @@ public class StorageTransactionManagerFS extends AbstractPlatformTransactionMana
     if (status.getTransaction() instanceof TransactionData) {
       TransactionData transactionData = (TransactionData) status.getTransaction();
       StorageObject<TransactionData> so = storage.get().load(transactionData.getUri(),
-          TransactionData.class, StorageLoadOption.lock());
+          TransactionData.class);
       if (so.getObject().getState() == TransactionState.EXEC) {
         // If we are the currently executing transaction then we can set it failed.
         OffsetDateTime now = OffsetDateTime.now();

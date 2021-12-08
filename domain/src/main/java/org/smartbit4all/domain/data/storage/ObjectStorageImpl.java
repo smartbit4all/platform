@@ -38,7 +38,7 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
    * OverlappingFileLockException caused by locking the same file in the same JVM. The file locks
    * belong to an operating system process.
    */
-  private Map<URI, StorageObjectLock> locks = new HashMap<>();
+  private Map<URI, StorageObjectLockEntry> locks = new HashMap<>();
 
   /**
    * The operations on the locks are exclusive.
@@ -67,28 +67,31 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
     this.objectApi = objectApi;
   }
 
-  protected final StorageObjectLock acquire(URI objectUri) {
+  @Override
+  public StorageObjectLock getLock(URI objectUri) {
     lockMutex.lock();
-    StorageObjectLock storageObjectLock;
     try {
-      storageObjectLock = locks.computeIfAbsent(objectUri,
-          u -> new StorageObjectLock(u, uri -> {
-            lockMutex.lock();
-            try {
+      StorageObjectLockEntry entry = locks.get(objectUri);
+      if (entry == null) {
+        final StorageObjectLockEntry newEntry =
+            new StorageObjectLockEntry(objectUri, getAcquire(), getReleaser());
+        // TODO implement rather a complete object to hold object locks!
+        newEntry.setLockRemover(uri -> {
+          lockMutex.lock();
+          try {
+            if (newEntry.isEmpty()) {
               locks.remove(uri);
-            } finally {
-              lockMutex.unlock();
             }
-          }, getAcquire(), getReleaser()));
+          } finally {
+            lockMutex.unlock();
+          }
+        });
+        locks.put(objectUri, newEntry);
+        entry = newEntry;
+      }
+      return entry.getLock();
     } finally {
       lockMutex.unlock();
-    }
-    // Depending on the state we try to acquire the exclusive right.
-    if (storageObjectLock.enter()) {
-      return storageObjectLock;
-    } else {
-      // Try to acquire again because we found a destroyed instance of the lock.
-      return acquire(objectUri);
     }
   }
 

@@ -1,7 +1,7 @@
 package org.smartbit4all.storage.fs;
 
-import org.smartbit4all.core.io.TestFileUtil;
 import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.domain.config.DomainConfig;
 import org.smartbit4all.domain.data.storage.ObjectStorage;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.springframework.context.annotation.Bean;
@@ -10,20 +10,20 @@ import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
-@Import({StorageTestConfig.class})
+@Import({DomainConfig.class})
 @EnableTransactionManagement
-public class StorageFSTestConfig {
+public class StorageTestConfig {
+
+  public static final String TESTSCHEME = "testscheme";
 
   @Bean
-  public ObjectStorage defaultStorage(ObjectApi objectApi) {
-    return new StorageFS(
-        TestFileUtil.testFsRootFolder(),
-        objectApi);
+  public Storage testStorageScheme(ObjectApi objectApi, ObjectStorage objectStorage) {
+    return new Storage(TESTSCHEME, objectApi, objectStorage);
   }
 
-  @Bean(Storage.STORAGETX)
-  public StorageTransactionManagerFS transactionManager() {
-    return new StorageTransactionManagerFS();
+  @Bean
+  public StorageTestApi storageFSTestApi() {
+    return new StorageTestApiImpl();
   }
 
 }

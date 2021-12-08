@@ -170,7 +170,8 @@ public class StorageFS extends ObjectStorageImpl {
   @Override
   public URI save(StorageObject<?> object) {
 
-    StorageObjectLock storageObjectLock = acquire(object.getUri());
+    StorageObjectLock storageObjectLock = getLock(object.getUri());
+    storageObjectLock.lock();
     try {
       // Load the StorageObjectData that is the api object of the storage itself.
       File objectDataFile = getObjectDataFile(object);
@@ -304,7 +305,7 @@ public class StorageFS extends ObjectStorageImpl {
     } catch (IOException e) {
       throw new IllegalArgumentException("Unable to finalize the transaction on " + object, e);
     } finally {
-      storageObjectLock.leave();
+      storageObjectLock.unlockAndRelease();
     }
     return object.getUri();
   }
@@ -502,62 +503,6 @@ public class StorageFS extends ObjectStorageImpl {
   // return getFileBinaryData(file);
   // }
 
-  // @Override
-  // public Optional<T> load(URI uri) {
-  // BinaryData binaryData = FileIO.read(rootFolder, uri);
-  //
-  // if (binaryData == null) {
-  // return Optional.empty();
-  // }
-  //
-  // return fromJsonBinaryData(binaryData);
-  // }
-  //
-  // @Override
-  // public List<T> load(List<URI> uris) {
-  // List<T> result = new ArrayList<>();
-  //
-  // for (URI uri : uris) {
-  // Optional<T> loaded = load(uri);
-  // if (loaded.isPresent()) {
-  // result.add(loaded.get());
-  // }
-  // }
-  //
-  // return result;
-  // }
-
-  // @Override
-  // public List<T> loadAll() {
-  // List<BinaryData> datas;
-  // try {
-  // datas = FileIO.readAllFiles(rootFolder, storedObjectFileExtension);
-  // } catch (IOException e) {
-  // String msg = "Unable to load all object from " + clazz + " storage (" + rootFolder + ")";
-  // log.error(msg, e);
-  // throw new IllegalStateException(msg, e);
-  // }
-  //
-  // if (datas.isEmpty()) {
-  // return Collections.emptyList();
-  // }
-  //
-  // List<T> objects = new ArrayList<>();
-  // for (BinaryData data : datas) {
-  // Optional<T> object = fromJsonBinaryData(data);
-  // if (object.isPresent()) {
-  // objects.add(object.get());
-  // }
-  // }
-  //
-  // return objects;
-  // }
-
-  // @Override
-  // public boolean delete(URI uri) {
-  // return FileIO.delete(rootFolder, uri);
-  // }
-
   public String getStoredObjectFileExtension() {
     return storedObjectFileExtension;
   }
@@ -569,44 +514,5 @@ public class StorageFS extends ObjectStorageImpl {
   public final void setRootFolder(File rootFolder) {
     this.rootFolder = rootFolder;
   }
-
-  // @Override
-  // public void saveReferences(ObjectReferenceRequest referenceRequest) {
-  // if (referenceRequest == null) {
-  // return;
-  // }
-  // Optional<ObjectReferenceList> currentReeferences =
-  // loadReferences(referenceRequest.getObjectUri(), referenceRequest.getTypeClassName());
-  // ObjectReferenceList references =
-  // currentReeferences.orElse(new ObjectReferenceList().uri(referenceRequest.getObjectUri())
-  // .referenceTypeClass(referenceRequest.getTypeClassName()));
-  //
-  // String extension =
-  // StringConstant.DOT + referenceRequest.getTypeClassName() + referencesExtension;
-  // if (!referenceRequest.updateReferences(references)) {
-  // // Delete the reference file
-  // FileIO.delete(rootFolder, referenceRequest.getObjectUri(),
-  // extension);
-  // return;
-  // }
-  //
-  // FileIO.write(rootFolder, referenceRequest.getObjectUri(),
-  // extension,
-  // serializer.toJsonBinaryData(references, ObjectReferenceList.class));
-  // }
-  //
-  // @Override
-  // public Optional<ObjectReferenceList> loadReferences(URI uri, String typeClassName) {
-  // String extension = StringConstant.DOT + typeClassName + referencesExtension;
-  // BinaryData binaryData = FileIO.read(rootFolder, uri, extension);
-  //
-  // if (binaryData == null) {
-  // return Optional.empty();
-  // }
-  //
-  // Optional<ObjectReferenceList> optional =
-  // serializer.fromJsonBinaryData(binaryData, ObjectReferenceList.class);
-  // return optional.isPresent() ? Optional.of(optional.get()) : Optional.empty();
-  // }
 
 }
