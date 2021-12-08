@@ -3,7 +3,6 @@ package org.smartbit4all.api.compobject;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 import org.smartbit4all.api.compobject.bean.ComposeableObject;
 
 /**
@@ -18,8 +17,8 @@ public interface ComposeableObjectApi {
 
   public static final String SCHEME = "composeableapi";
 
-  public List<ComposeableObject> getChildren(URI parentObjectUri, URI definitionUri,
-      Consumer<URI> nodeChangeListener) throws Exception;
+  public List<ComposeableObject> getChildren(URI parentObjectUri, URI definitionUri)
+      throws Exception;
 
   public String getTitle(URI objectUri) throws Exception;
 

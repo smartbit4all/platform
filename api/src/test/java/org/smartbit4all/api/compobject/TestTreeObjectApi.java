@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 import org.smartbit4all.api.compobject.bean.ComposeableObject;
 import org.smartbit4all.domain.data.storage.Storage;
 
@@ -37,8 +36,7 @@ public class TestTreeObjectApi implements ComposeableObjectApi {
   }
 
   @Override
-  public List<ComposeableObject> getChildren(URI parentObjectUri, URI definitionUri,
-      Consumer<URI> nodeChangeListener)
+  public List<ComposeableObject> getChildren(URI parentObjectUri, URI definitionUri)
       throws Exception {
 
     try {

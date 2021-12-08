@@ -67,8 +67,7 @@ public interface NavigationApi {
    *         parameter.
    * @throws Exception
    */
-  Map<URI, List<NavigationReferenceEntry>> navigate(URI objectUri, List<URI> associationMetaUris,
-      Consumer<URI> nodeChangedListener);
+  Map<URI, List<NavigationReferenceEntry>> navigate(URI objectUri, List<URI> associationMetaUris);
 
   /**
    * Retrieve the entries from the navigations.

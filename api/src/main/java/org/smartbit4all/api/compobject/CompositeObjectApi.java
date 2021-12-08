@@ -4,7 +4,6 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import org.smartbit4all.api.compobject.bean.ComposeableObject;
 import org.smartbit4all.api.compobject.bean.ComposeableObjectDef;
@@ -32,8 +31,7 @@ public class CompositeObjectApi implements ComposeableObjectApi {
   @Override
   public List<ComposeableObject> getChildren(
       URI parentObjectUri,
-      URI definitionUri,
-      Consumer<URI> nodeChangeListener) throws Exception {
+      URI definitionUri) throws Exception {
 
     if (compositeStorage.exists(parentObjectUri)) {
       CompositeObject compositeObject = compositeStorage.read(

@@ -74,7 +74,7 @@ public final class NavigationPrimary extends NavigationImpl implements Initializ
 
   @Override
   public Map<URI, List<NavigationReferenceEntry>> navigate(URI objectUri,
-      List<URI> associationMetaUris, Consumer<URI> nodeChangedListener) {
+      List<URI> associationMetaUris) {
     // In this case the scheme of the uri in the NavigationAssociationMeta identifies the api to
     // delegate.
     if (associationMetaUris == null || associationMetaUris.isEmpty()) {
@@ -96,7 +96,7 @@ public final class NavigationPrimary extends NavigationImpl implements Initializ
         .entrySet()) {
       // Call the given api with the list as parameter and merge the result.
       Map<URI, List<NavigationReferenceEntry>> navigate =
-          requestEntry.getKey().navigate(objectUri, requestEntry.getValue(), nodeChangedListener);
+          requestEntry.getKey().navigate(objectUri, requestEntry.getValue());
       result.putAll(navigate);
     }
     return result;

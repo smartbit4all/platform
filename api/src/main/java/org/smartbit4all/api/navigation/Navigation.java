@@ -416,7 +416,7 @@ public class Navigation {
     ArrayList<URI> assocMetaUris = new ArrayList<>(naviAssocByMetaUri.keySet());
 
     Map<URI, List<NavigationReferenceEntry>> navigation =
-        api.navigate(currentObjectUri, assocMetaUris, this::nodeChanged);
+        api.navigate(currentObjectUri, assocMetaUris);
 
     List<ApiItemChangeEvent<NavigationReference>> result = new ArrayList<>();
     for (Entry<URI, List<NavigationReferenceEntry>> entry : navigation

@@ -58,9 +58,15 @@ public class NavigationViewModelImpl extends ObjectEditingImpl implements Naviga
     model = ref.getWrapper(TreeModel.class);
     treeNodesById = new HashMap<>();
     subscriptionsById = new HashMap<>();
-    navigationState.subscribeForNodeRefresh(this::refreshNavigationNode);
-    navigationState.subscribeForRootNodeAdded(this::rootNodeAdded);
-    navigationState.subscribeForRootNodeRemoved(this::rootNodeRemoved);
+    Disposable subscribeForNodeRefresh =
+        navigationState.subscribeForNodeRefresh(this::refreshNavigationNode);
+    Disposable subscribeForRootNodeAdded =
+        navigationState.subscribeForRootNodeAdded(this::rootNodeAdded);
+    Disposable subscribeForRootNodeRemoved =
+        navigationState.subscribeForRootNodeRemoved(this::rootNodeRemoved);
+    subscriptionsById.put("subscribeForNodeRefresh", subscribeForNodeRefresh);
+    subscriptionsById.put("subscribeForRootNodeAdded", subscribeForRootNodeAdded);
+    subscriptionsById.put("subscribeForRootNodeRemoved", subscribeForRootNodeRemoved);
   }
 
   @Override

@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.compobject.bean.ComposeableObject;
@@ -45,15 +44,14 @@ public class ComposeableObjectNavigation extends NavigationImpl {
   @Override
   public Map<URI, List<NavigationReferenceEntry>> navigate(
       URI objectUri,
-      List<URI> associationMetaUris,
-      Consumer<URI> nodeChangedListener) {
+      List<URI> associationMetaUris) {
 
     Map<URI, List<NavigationReferenceEntry>> result = new HashMap<>();
     for (URI associationMetaUri : associationMetaUris) {
       try {
         List<NavigationReferenceEntry> navReferenceEntries = createNavigationReferenceEntries(
             objectUri,
-            getComposeableObjectDef(associationMetaUri), nodeChangedListener);
+            getComposeableObjectDef(associationMetaUri));
 
         result.put(associationMetaUri, navReferenceEntries);
       } catch (Exception e) {
@@ -92,13 +90,11 @@ public class ComposeableObjectNavigation extends NavigationImpl {
 
   private List<NavigationReferenceEntry> createNavigationReferenceEntries(
       URI objectUri,
-      ComposeableObjectDef compObjDef,
-      Consumer<URI> nodeChangeListener) throws Exception {
+      ComposeableObjectDef compObjDef) throws Exception {
 
     List<ComposeableObject> children = composeableObjectApi.getChildren(
         objectUri,
-        compObjDef,
-        nodeChangeListener);
+        compObjDef);
 
     List<NavigationReferenceEntry> result = new ArrayList<>();
 
