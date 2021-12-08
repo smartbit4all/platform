@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
@@ -261,7 +260,7 @@ public final class ApiObjectCollection implements List<ApiObjectRef> {
           if (newValueIter.hasNext()) {
             // it's a new value on the place of on old one -> merge it
             Object currentNewObject = newValueIter.next();
-            if (Objects.equals(objectRef.getObject(), currentNewObject)) {
+            if (objectRef.getObject() == currentNewObject) {
               // no need to merge when they are equal objects
               continue;
             }
