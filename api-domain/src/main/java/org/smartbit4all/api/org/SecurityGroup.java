@@ -3,8 +3,7 @@ package org.smartbit4all.api.org;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import org.smartbit4all.api.org.bean.Group;
-import org.smartbit4all.api.session.UserSessionApi;
+import java.util.function.BiFunction;
 
 /**
  * The security group is an object representing a security group the user can be assigned to. The
@@ -32,13 +31,7 @@ public final class SecurityGroup {
    */
   private String description;
 
-  /**
-   * The api to access the current user and it's settings. If we doesn't have this api then the
-   * check is always true. Without security everything is allowed.
-   */
-  private UserSessionApi userSessionApi;
-
-  private OrgApi api;
+  private BiFunction<SecurityGroup, URI, Boolean> securityPredicate;
 
   /**
    * The sub groups of the security group.
@@ -83,14 +76,7 @@ public final class SecurityGroup {
    *         to the user. Else we get false.
    */
   public boolean check() {
-    if (api == null || name == null) {
-      return true;
-    }
-    if (userSessionApi.currentUser() == null) {
-      // If we are not logged in then we doesn't have any assigned group.
-      return false;
-    }
-    return check(userSessionApi.currentUser().getUri());
+    return check(null);
   }
 
   /**
@@ -100,29 +86,14 @@ public final class SecurityGroup {
    *         to the user. Else we get false.
    */
   public boolean check(URI userUri) {
-    // Naive implementation. Get all the groups we have for the user and try to find the group.
-    List<Group> groupsOfUser = api.getGroupsOfUser(userUri);
-    if (groupsOfUser == null) {
-      return false;
+    if (securityPredicate == null) {
+      return true;
     }
-
-    return groupsOfUser.parallelStream().anyMatch(g -> name.equals(g.getName()));
-  }
-
-  final void setOrgApi(OrgApi api) {
-    this.api = api;
+    return securityPredicate.apply(this, userUri);
   }
 
   public final List<SecurityGroup> getSubGroups() {
     return subGroups;
-  }
-
-  public UserSessionApi getUserSessionApi() {
-    return userSessionApi;
-  }
-
-  void setUserSessionApi(UserSessionApi userSessionApi) {
-    this.userSessionApi = userSessionApi;
   }
 
   public String getTitle() {
@@ -131,6 +102,10 @@ public final class SecurityGroup {
 
   void setTitle(String name) {
     this.title = name;
+  }
+
+  public void setSecurityPredicate(BiFunction<SecurityGroup, URI, Boolean> securityPredicate) {
+    this.securityPredicate = securityPredicate;
   }
 
 }

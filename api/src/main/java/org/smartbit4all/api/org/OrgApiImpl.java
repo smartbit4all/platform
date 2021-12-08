@@ -43,6 +43,9 @@ public abstract class OrgApiImpl implements OrgApi, InitializingBean {
   private StorageApi storageApi;
 
   @Autowired
+  private OrgApi self;
+
+  @Autowired
   private UserSessionApi userSessionApi;
 
   public OrgApiImpl(Environment env) {
@@ -84,8 +87,8 @@ public abstract class OrgApiImpl implements OrgApi, InitializingBean {
         try {
           SecurityGroup securityGroup = (SecurityGroup) field.get(option);
           if (securityGroup != null) {
-            securityGroup.setOrgApi(this);
-            securityGroup.setUserSessionApi(userSessionApi);
+            securityGroup.setSecurityPredicate(
+                (sg, uri) -> OrgUtils.securityPredicate(self, userSessionApi, sg, uri));
             String key = ReflectionUtility.getQualifiedName(field);
             securityGroup.setName(key);
             String name = securityGroup.getTitle();
