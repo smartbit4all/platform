@@ -139,6 +139,11 @@ public class UINavigationVaadinTabbed extends UINavigationVaadinCommon {
         mainView.setDrawerOpened(false);
       }
     }
+
+    if (view instanceof TabAwareComponent) {
+      ((TabAwareComponent) view).setTab(tab);
+    }
+
     return view;
   }
 
@@ -258,5 +263,9 @@ public class UINavigationVaadinTabbed extends UINavigationVaadinCommon {
 
   public Div getTabContents() {
     return tabContents;
+  }
+
+  public static interface TabAwareComponent {
+    void setTab(Tab tab);
   }
 }
