@@ -1,16 +1,12 @@
 package org.smartbit4all.sec.session;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import org.smartbit4all.api.org.bean.User;
+import org.smartbit4all.api.session.Session;
 import org.smartbit4all.api.session.UserSessionApi;
-import org.smartbit4all.api.session.bean.Session;
-import org.smartbit4all.domain.data.storage.Storage;
-import org.smartbit4all.domain.data.storage.StorageApi;
-import org.smartbit4all.domain.data.storage.StorageObject;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -23,27 +19,15 @@ public class UserSessionApiSecImpl implements UserSessionApi {
 
   private List<AuthenticationUserProvider> userProviders = new ArrayList<>();
 
-  private StorageApi storageApi;
-
-  private Storage sessionStorage;
-
-  public UserSessionApiSecImpl(StorageApi storageApi,
-      AuthenticationUserProvider authenticationUserProvider,
+  public UserSessionApiSecImpl(AuthenticationUserProvider authenticationUserProvider,
       AuthenticationUserProvider... authenticationUserProviders) {
 
     Objects.requireNonNull(authenticationUserProvider,
         "authenticationUserProvider can not be bull!");
 
-    this.storageApi = storageApi;
     userProviders.add(authenticationUserProvider);
     if (authenticationUserProviders != null && authenticationUserProviders.length > 0) {
       userProviders.addAll(Arrays.asList(authenticationUserProviders));
-    }
-  }
-
-  private void initSessionStorage() {
-    if (sessionStorage == null) {
-      sessionStorage = storageApi.get(UserSessionApi.SCHEME);
     }
   }
 
@@ -80,22 +64,12 @@ public class UserSessionApiSecImpl implements UserSessionApi {
   }
 
   @Override
-  public StorageObject<Session> startSession(URI userUri) {
-    initSessionStorage();
-    StorageObject<Session> sessionSO = sessionStorage.instanceOf(Session.class);
-    Session session = new Session().userUri(userUri);
-    sessionSO.setObject(session);
-    saveSession(sessionSO);
-    return sessionSO;
+  public Session startSession(User user) {
+    return new Session().user(user);
   }
 
   @Override
-  public void saveSession(StorageObject<Session> session) {
-    sessionStorage.save(session);
-  }
-
-  @Override
-  public StorageObject<Session> currentSession() {
+  public Session currentSession() {
     Authentication currentAuthentication = getCurrentAuthentication();
     if (currentAuthentication == null) {
       throw new IllegalStateException("There is no current authentication int the context!!");
@@ -104,9 +78,7 @@ public class UserSessionApiSecImpl implements UserSessionApi {
         !(currentAuthentication.getPrincipal() instanceof Session)) {
       throw new IllegalStateException("Current authentication is not Session!");
     }
-    URI sessionUri = ((Session) currentAuthentication.getPrincipal()).getUri();
-    return sessionStorage.exists(sessionUri) ? sessionStorage.load(sessionUri, Session.class)
-        : null;
+    return (Session) currentAuthentication.getPrincipal();
   }
 
 }

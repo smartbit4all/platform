@@ -2,7 +2,7 @@ package org.smartbit4all.sec.session;
 
 import org.smartbit4all.api.org.OrgApi;
 import org.smartbit4all.api.org.bean.User;
-import org.smartbit4all.api.session.bean.Session;
+import org.smartbit4all.api.session.Session;
 import org.springframework.security.core.Authentication;
 
 public class AuthenticationUserProviders {
@@ -30,10 +30,15 @@ public class AuthenticationUserProviders {
       public User getUser(Authentication authentication) {
         return (User) authentication.getPrincipal();
       }
+
+      @Override
+      public Session getSession(Authentication authentication) {
+        return null;
+      }
     };
   }
 
-  public static AuthenticationUserProvider sessionBasedUserProvider(OrgApi orgApi) {
+  public static AuthenticationUserProvider sessionBasedUserProvider() {
     return new AuthenticationUserProvider() {
 
       @Override
@@ -49,7 +54,12 @@ public class AuthenticationUserProviders {
       @Override
       public User getUser(Authentication authentication) {
         Session session = (Session) authentication.getPrincipal();
-        return orgApi.getUser(session.getUserUri());
+        return session.getUser();
+      }
+
+      @Override
+      public Session getSession(Authentication authentication) {
+        return (Session) authentication.getPrincipal();
       }
     };
   }
@@ -84,6 +94,10 @@ public class AuthenticationUserProviders {
         return null;
       }
 
+      @Override
+      public Session getSession(Authentication authentication) {
+        return null;
+      }
     };
   }
 

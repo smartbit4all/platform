@@ -1,6 +1,7 @@
 package org.smartbit4all.sec.session;
 
 import org.smartbit4all.api.org.bean.User;
+import org.smartbit4all.api.session.Session;
 import org.springframework.security.core.Authentication;
 
 /**
@@ -12,6 +13,8 @@ import org.springframework.security.core.Authentication;
 public interface AuthenticationUserProvider {
 
   User getUser(Authentication authentication);
+
+  Session getSession(Authentication authentication);
 
   boolean supports(Authentication authentication);
 
