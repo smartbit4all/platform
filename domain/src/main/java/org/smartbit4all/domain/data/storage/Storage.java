@@ -5,15 +5,12 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.locks.Lock;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.storage.bean.ObjectHistoryEntry;
@@ -24,11 +21,6 @@ import org.smartbit4all.api.storage.bean.StorageSettings;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.utility.StringConstant;
-import org.smartbit4all.domain.data.storage.index.ExpressionEntityDefinitionExtractor;
-import org.smartbit4all.domain.data.storage.index.StorageIndex;
-import org.smartbit4all.domain.meta.EntityDefinition;
-import org.smartbit4all.domain.meta.Expression;
-import org.springframework.util.Assert;
 
 /**
  * 
@@ -60,13 +52,6 @@ public class Storage {
    * This is the physical storage that is responsible for save and load of the objects.
    */
   private ObjectStorage objectStorage;
-
-  /**
-   * The index definitions of the storage
-   */
-  private Map<Class<?>, StorageObjectIndices<?>> indexes = new HashMap<>();
-
-  private boolean indexInitiated = false;
 
   /**
    * The scheme managed by the given logical storage. This is used as naming of the
@@ -126,14 +111,7 @@ public class Storage {
    * @return The URI of the saved object.
    */
   public <T> URI save(StorageObject<T> object) {
-    URI result = objectStorage.save(object);
-
-    // TODO HACK. Deleted case should be handled, if the indexing is not dead idea
-    if (object.getObject() != null) {
-      updateIndexes(object);
-    }
-
-    return result;
+    return objectStorage.save(object);
   }
 
   /**
@@ -153,25 +131,6 @@ public class Storage {
     StorageObject<T> storageObject = (StorageObject<T>) instanceOf(object.getClass());
     storageObject.setObject(object);
     return save(storageObject);
-  }
-
-  @SuppressWarnings("unchecked")
-  private final <T> List<StorageIndex<T>> getIndices(ObjectDefinition<T> objectDefinition) {
-    StorageObjectIndices<T> storageObjectIndices =
-        (StorageObjectIndices<T>) indexes.get(objectDefinition.getClazz());
-    return storageObjectIndices != null ? storageObjectIndices.get() : Collections.emptyList();
-  }
-
-  private <T> void updateIndexes(StorageObject<T> object) {
-    for (StorageIndex<T> index : getIndices(object.definition())) {
-      try {
-        index.updateIndex(object.getObject());
-      } catch (Exception e) {
-        log.error("Unable to update storage index.", e);
-        throw new IllegalStateException(
-            "Failed to update storage index for " + object, e);
-      }
-    }
   }
 
   public <T> List<StorageObject<T>> load(List<URI> uris, Class<T> clazz) {
@@ -291,71 +250,6 @@ public class Storage {
   }
 
 
-  /**
-   * List the datas which fulfill the criteria of the given expression. The expression must only
-   * contains properties of the given entity definition!
-   */
-  public <T> List<StorageObject<T>> listDatas(ObjectDefinition<T> objectDefinition,
-      Expression expression) throws Exception {
-    List<URI> uris = listUris(objectDefinition, expression);
-    return load(uris, objectDefinition.getClazz());
-  }
-
-  /**
-   * TODO This evaluation should be handled by Query API (eg. exists), so use this judiciously, only
-   * if other solutions are not fit for the task.
-   * 
-   * List the datas by the intersection of the given expression results The result list contains the
-   * values which fulfill all expression criterion. The expression must only contains properties of
-   * the given entity definition!
-   */
-  public <T> List<StorageObject<T>> listDatas(ObjectDefinition<T> objectDefinition,
-      List<Expression> expressions)
-      throws Exception {
-
-    Assert.notEmpty(expressions, "No expression given in listData call");
-
-    List<URI> resultUris = new ArrayList<>();
-
-    Iterator<Expression> iterExpression = expressions.iterator();
-
-    Expression firstExpression = iterExpression.next();
-    resultUris.addAll(listUris(objectDefinition, firstExpression));
-
-    while (iterExpression.hasNext()) {
-      Expression expression = iterExpression.next();
-      List<URI> uris = listUris(objectDefinition, expression);
-      resultUris = intersectUriLists(resultUris, uris);
-    }
-
-    return load(resultUris, objectDefinition.getClazz());
-  }
-
-  public <T> List<URI> listUris(ObjectDefinition<T> objectDefinition, Expression expression)
-      throws Exception {
-    List<URI> uris = new ArrayList<>();
-
-    for (StorageIndex<T> index : getIndices(objectDefinition)) {
-      Optional<EntityDefinition> expressionEntityDef =
-          ExpressionEntityDefinitionExtractor.getOnlyEntityDefinition(expression);
-
-      if (expressionEntityDef.isPresent() &&
-          index.getEntityDef().equals(expressionEntityDef.get())) {
-
-        uris.addAll(index.listUris(expression));
-      }
-    }
-
-    return uris;
-  }
-
-  public static List<URI> intersectUriLists(List<URI> resultUris, List<URI> uris) {
-    return uris.stream()
-        .distinct()
-        .filter(resultUris::contains)
-        .collect(Collectors.toList());
-  }
-
   protected final String getScheme() {
     return scheme;
   }
@@ -407,21 +301,6 @@ public class Storage {
           + SETTINGS);
     }
     return settingsuri;
-  }
-
-  public void addIndex(StorageObjectIndices<?> index, Class<?> clazz) {
-    if (indexes == null) {
-      indexes = new HashMap<>();
-    }
-    indexes.put(clazz, index);
-  }
-
-  boolean isIndexInitiated() {
-    return indexInitiated;
-  }
-
-  void setIndexInitiated(boolean indexInitiated) {
-    this.indexInitiated = indexInitiated;
   }
 
   /**

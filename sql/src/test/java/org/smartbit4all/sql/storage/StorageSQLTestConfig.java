@@ -19,8 +19,7 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 @Import({
     SQLConfig.class,
     SQLIdentifierService.class,
-    JDBCDataConverterConfig.class,
-    TestSearchDefConfig.class
+    JDBCDataConverterConfig.class
 })
 public class StorageSQLTestConfig {
 

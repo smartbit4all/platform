@@ -1,14 +1,12 @@
 package org.smartbit4all.domain.data.storage;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.smartbit4all.core.object.ObjectApi;
-import org.smartbit4all.domain.data.storage.index.StorageIndex;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -50,21 +48,8 @@ public final class StorageApiImpl implements StorageApi, InitializingBean {
   @Autowired
   private ObjectApi objectApi;
 
-  @Autowired(required = false)
-  private List<StorageObjectIndices<?>> objectIndices;
-
-  private Map<String, List<StorageObjectIndices<?>>> objectIndicesByScheme = new HashMap<>();
-
   @Override
   public void afterPropertiesSet() throws Exception {
-    if (objectIndices != null) {
-      for (StorageObjectIndices<?> index : objectIndices) {
-        objectIndicesByScheme.computeIfAbsent(index.getScheme(), s -> {
-          return new ArrayList<>();
-        }).add(index);
-      }
-    }
-
     if (storages != null) {
       for (Storage storage : storages) {
         storagesByScheme.put(storage.getScheme(), storage);
@@ -113,19 +98,6 @@ public final class StorageApiImpl implements StorageApi, InitializingBean {
       } finally {
         rwlStorages.writeLock().unlock();
       }
-    }
-    if (storage != null && !storage.isIndexInitiated()) {
-      List<StorageObjectIndices<?>> indices = objectIndicesByScheme.get(storage.getScheme());
-      if (indices != null) {
-        for (StorageObjectIndices<?> index : indices) {
-          storage.addIndex(index, index.getClazz());
-
-          for (StorageIndex<?> storageIndex : index.get()) {
-            storageIndex.setStorage(storage);
-          }
-        }
-      }
-      storage.setIndexInitiated(true);
     }
     return storage;
   }

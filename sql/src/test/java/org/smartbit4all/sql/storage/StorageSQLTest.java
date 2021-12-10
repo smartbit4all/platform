@@ -1,11 +1,6 @@
 package org.smartbit4all.sql.storage;
 
 import java.net.URI;
-import java.util.Optional;
-import java.util.function.Function;
-import org.smartbit4all.domain.data.storage.index.StorageIndexField;
-import org.smartbit4all.domain.data.storage.index.StorageIndexer;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -19,9 +14,6 @@ import org.springframework.test.context.jdbc.Sql;
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
 class StorageSQLTest {
-
-  @Autowired
-  private TestSearchDef testSearchDef;
 
   public static class TestData {
 
@@ -184,82 +176,5 @@ class StorageSQLTest {
   // StorageReindexerSQL reindexer = new StorageReindexerSQL(testSearchDef, TestSearchDef.KEY);
   // assertEquals(4, reindexer.listAllUris().size());
   // }
-
-  private StorageIndexField<TestData, Boolean> createIsActiveIndexField(
-      TestSearchDef testSearchDef,
-      String activeList,
-      StorageIndexer<TestData> indexApi) {
-
-    Function<TestData, Optional<Boolean>> isActiveCalculator = (testData) -> {
-
-      if (testData.getData().contains(activeList)) {
-        return Optional.of(Boolean.TRUE);
-      } else {
-        return Optional.of(Boolean.FALSE);
-      }
-
-    };
-
-    StorageIndexField<TestData, Boolean> isActiveIndex = new StorageIndexField<>(
-        testSearchDef,
-        testSearchDef.key(),
-        testSearchDef.isActive(),
-        isActiveCalculator,
-        indexApi);
-
-    return isActiveIndex;
-  }
-
-  private StorageIndexField<TestData, String> createEmptyStateIndexField(
-      TestSearchDef testSearchDef,
-      String activeList, String closedList, String notInAnyState,
-      StorageIndexer<TestData> indexApi) {
-
-    Function<TestData, Optional<String>> emptyStateCalculator = (testData) -> {
-
-      if (!testData.getData().contains(activeList) && !testData.getData().contains(closedList)) {
-        return Optional.of(notInAnyState);
-      } else {
-        return Optional.empty();
-      }
-
-    };
-
-    StorageIndexField<TestData, String> emptyStateIndex = new StorageIndexField<>(
-        testSearchDef,
-        testSearchDef.key(),
-        testSearchDef.emptyState(),
-        emptyStateCalculator,
-        indexApi);
-
-    return emptyStateIndex;
-  }
-
-  private StorageIndexField<TestData, String> createStateIndexField(
-      TestSearchDef testSearchDef,
-      String activeList, String closedList,
-      StorageIndexer<TestData> indexApi) {
-
-    Function<TestData, Optional<String>> stateCalculator = (testData) -> {
-
-      if (testData.getData().contains(activeList)) {
-        return Optional.of(activeList);
-      } else if (testData.getData().contains(closedList)) {
-        return Optional.of(closedList);
-      } else {
-        return Optional.empty();
-      }
-
-    };
-
-    StorageIndexField<TestData, String> stateIndex = new StorageIndexField<>(
-        testSearchDef,
-        testSearchDef.key(),
-        testSearchDef.state(),
-        stateCalculator,
-        indexApi);
-
-    return stateIndex;
-  }
 
 }
