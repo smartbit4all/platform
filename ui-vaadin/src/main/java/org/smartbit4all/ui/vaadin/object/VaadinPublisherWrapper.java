@@ -21,11 +21,11 @@ public class VaadinPublisherWrapper implements ObservablePublisherWrapper {
   @Override
   public void accept(Runnable uiEventNotifications) throws Throwable {
 
-    if (UI.getCurrent() == null) {
-      ui.access(() -> uiEventNotifications.run());
-    } else {
-      uiEventNotifications.run();
-    }
+    ui.access(() -> uiEventNotifications.run());
+    // if (UI.getCurrent() == null) {
+    // } else {
+    // uiEventNotifications.run();
+    // }
   }
 
 }

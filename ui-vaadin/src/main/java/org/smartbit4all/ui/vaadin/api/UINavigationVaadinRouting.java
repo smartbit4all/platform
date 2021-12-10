@@ -30,30 +30,31 @@ public class UINavigationVaadinRouting extends UINavigationVaadinCommon {
 
   @Override
   public void navigateTo(NavigationTarget navigationTarget) {
-    if (!checkSecurity(navigationTarget)) {
-      showSecurityError(navigationTarget);
-      return;
-    }
-    super.navigateTo(navigationTarget);
-    try {
-      ObjectEditing.currentConstructionUUID.set(navigationTarget.getUuid());
-      String viewName = navigationTarget.getViewName();
-      try (UIViewParameterVaadinTransition param =
-          new UIViewParameterVaadinTransition(navigationTarget.getUuid(),
-              navigationTarget.getParameters())) {
-        if (navigationTarget.getType() == NavigationTargetType.DIALOG) {
-          Component view = navigateToDialog(navigationTarget);
-          callHasUrlImplementation(viewName, param, view);
-        } else {
-          ui.navigate(viewName, param.construct());
-        }
-      } catch (Exception e) {
-        log.error("Unexpected error", e);
+    ui.access(() -> {
+      if (!checkSecurity(navigationTarget)) {
+        showSecurityError(navigationTarget);
+        return;
       }
-    } finally {
-      ObjectEditing.currentConstructionUUID.set(null);
-    }
-
+      super.navigateTo(navigationTarget);
+      try {
+        ObjectEditing.currentConstructionUUID.set(navigationTarget.getUuid());
+        String viewName = navigationTarget.getViewName();
+        try (UIViewParameterVaadinTransition param =
+            new UIViewParameterVaadinTransition(navigationTarget.getUuid(),
+                navigationTarget.getParameters())) {
+          if (navigationTarget.getType() == NavigationTargetType.DIALOG) {
+            Component view = navigateToDialog(navigationTarget);
+            callHasUrlImplementation(viewName, param, view);
+          } else {
+            ui.navigate(viewName, param.construct());
+          }
+        } catch (Exception e) {
+          log.error("Unexpected error", e);
+        }
+      } finally {
+        ObjectEditing.currentConstructionUUID.set(null);
+      }
+    });
   }
 
   @Override
