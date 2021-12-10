@@ -28,6 +28,7 @@ import java.util.List;
 import org.smartbit4all.ui.api.navigation.model.MessageResult;
 import org.smartbit4all.ui.api.navigation.model.MessageType;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 
@@ -74,6 +75,7 @@ public class Message {
    * Get uri
    * @return uri
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @Valid
   @ApiModelProperty(required = true, value = "")
@@ -102,6 +104,7 @@ public class Message {
    * Get type
    * @return type
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @Valid
   @ApiModelProperty(required = true, value = "")
@@ -189,6 +192,7 @@ public class Message {
    * Get possibleResults
    * @return possibleResults
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @Valid
   @ApiModelProperty(required = true, value = "")

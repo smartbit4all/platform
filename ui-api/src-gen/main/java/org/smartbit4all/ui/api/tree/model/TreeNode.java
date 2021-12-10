@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.smartbit4all.ui.api.tree.model.TreeNodeKind;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 
@@ -36,6 +37,7 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   TreeNode.KIND,
   TreeNode.IDENTIFIER,
+  TreeNode.OBJECT_URI,
   TreeNode.CAPTION,
   TreeNode.SHORT_DESCRIPTION,
   TreeNode.ICON,
@@ -57,6 +59,9 @@ public class TreeNode {
 
   public static final String IDENTIFIER = "identifier";
   private String identifier;
+
+  public static final String OBJECT_URI = "objectUri";
+  private URI objectUri;
 
   public static final String CAPTION = "caption";
   private String caption;
@@ -147,6 +152,34 @@ public class TreeNode {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIdentifier(String identifier) {
     this.identifier = identifier;
+  }
+
+
+  public TreeNode objectUri(URI objectUri) {
+    
+    this.objectUri = objectUri;
+    return this;
+  }
+
+   /**
+   * Get objectUri
+   * @return objectUri
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(OBJECT_URI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public URI getObjectUri() {
+    return objectUri;
+  }
+
+
+  @JsonProperty(OBJECT_URI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setObjectUri(URI objectUri) {
+    this.objectUri = objectUri;
   }
 
 
@@ -317,6 +350,7 @@ public class TreeNode {
    * Get childrenNodes
    * @return childrenNodes
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @Valid
   @ApiModelProperty(required = true, value = "")
@@ -509,6 +543,7 @@ public class TreeNode {
     TreeNode treeNode = (TreeNode) o;
     return Objects.equals(this.kind, treeNode.kind) &&
         Objects.equals(this.identifier, treeNode.identifier) &&
+        Objects.equals(this.objectUri, treeNode.objectUri) &&
         Objects.equals(this.caption, treeNode.caption) &&
         Objects.equals(this.shortDescription, treeNode.shortDescription) &&
         Objects.equals(this.icon, treeNode.icon) &&
@@ -525,7 +560,7 @@ public class TreeNode {
 
   @Override
   public int hashCode() {
-    return Objects.hash(kind, identifier, caption, shortDescription, icon, actions, styles, childrenNodes, hasChildren, expanded, selected, childrenNodesLoaded, navigationTarget, level);
+    return Objects.hash(kind, identifier, objectUri, caption, shortDescription, icon, actions, styles, childrenNodes, hasChildren, expanded, selected, childrenNodesLoaded, navigationTarget, level);
   }
 
   @Override
@@ -534,6 +569,7 @@ public class TreeNode {
     sb.append("class TreeNode {\n");
     sb.append("    kind: ").append(toIndentedString(kind)).append("\n");
     sb.append("    identifier: ").append(toIndentedString(identifier)).append("\n");
+    sb.append("    objectUri: ").append(toIndentedString(objectUri)).append("\n");
     sb.append("    caption: ").append(toIndentedString(caption)).append("\n");
     sb.append("    shortDescription: ").append(toIndentedString(shortDescription)).append("\n");
     sb.append("    icon: ").append(toIndentedString(icon)).append("\n");

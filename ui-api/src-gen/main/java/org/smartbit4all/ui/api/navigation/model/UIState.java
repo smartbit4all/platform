@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 
@@ -57,6 +58,7 @@ public class UIState {
    * Get uri
    * @return uri
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @Valid
   @ApiModelProperty(required = true, value = "")
@@ -90,6 +92,7 @@ public class UIState {
    * Get views
    * @return views
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @Valid
   @ApiModelProperty(required = true, value = "")

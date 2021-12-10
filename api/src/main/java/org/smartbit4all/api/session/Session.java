@@ -4,7 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.function.Consumer;
 import org.smartbit4all.api.org.bean.User;
+import org.smartbit4all.core.reactive.ObjectChangePublisher;
+import io.reactivex.rxjava3.disposables.Disposable;
 
 /**
  * Session
@@ -18,14 +21,20 @@ public class Session {
 
   private final Map<String, Object> parameters = new HashMap<>();
 
-  public Session() {
+  private ObjectChangePublisher<String> publisher;
+
+  public Session(ObjectChangePublisher<String> publisher) {
+    this.publisher = publisher;
     uuid = UUID.randomUUID();
+  }
+
+  public Disposable subscribeForParameterChange(String key, Consumer<String> observer) {
+    return publisher.subscribeForChange(key, observer);
   }
 
   public UUID getUuid() {
     return uuid;
   }
-
 
   public Session user(User user) {
     this.user = user;
@@ -42,11 +51,13 @@ public class Session {
 
   public Session parameter(String key, Object value) {
     parameters.put(key, value);
+    publisher.onNext(key);
     return this;
   }
 
   public void setParameter(String key, Object value) {
     parameters.put(key, value);
+    publisher.onNext(key);
   }
 
   public Object getParameter(String key) {
@@ -55,6 +66,7 @@ public class Session {
 
   public void clearParameter(String key) {
     parameters.remove(key);
+    publisher.onNext(key);
   }
 
   public Map<String, Object> getParameters() {

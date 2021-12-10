@@ -43,12 +43,16 @@ public class NavigationViewModelImpl extends ObjectEditingImpl implements Naviga
   private TreeNode selectedNode;
 
   private Map<String, TreeNode> treeNodesById;
+  private Map<URI, TreeNode> treeNodesByObjectUri;
+  private Map<String, String> parentNodesByNode;
 
   private Map<String, Disposable> subscriptionsById;
 
   private UINavigationApi uiNavigationApi;
 
   private UserSessionApi userSessionApi;
+
+  private URI objecUriToSelect;
 
   public NavigationViewModelImpl(Navigation navigation,
       ObservablePublisherWrapper publisherWrapper,
@@ -70,6 +74,8 @@ public class NavigationViewModelImpl extends ObjectEditingImpl implements Naviga
     modelObservable.setRef(ref);
     model = ref.getWrapper(TreeModel.class);
     treeNodesById = new HashMap<>();
+    treeNodesByObjectUri = new HashMap<>();
+    parentNodesByNode = new HashMap<>();
     subscriptionsById = new HashMap<>();
     Disposable subscribeForNodeRefresh =
         navigationState.subscribeForNodeRefresh(this::refreshNavigationNode);
@@ -80,6 +86,12 @@ public class NavigationViewModelImpl extends ObjectEditingImpl implements Naviga
     subscriptionsById.put("subscribeForNodeRefresh", subscribeForNodeRefresh);
     subscriptionsById.put("subscribeForRootNodeAdded", subscribeForRootNodeAdded);
     subscriptionsById.put("subscribeForRootNodeRemoved", subscribeForRootNodeRemoved);
+    if (this.userSessionApi != null) {
+      subscriptionsById.put(
+          OBJECT_URI_TO_SELECT,
+          this.userSessionApi.currentSession()
+              .subscribeForParameterChange(OBJECT_URI_TO_SELECT, this::sessionParameterChange));
+    }
   }
 
   @Override
@@ -253,7 +265,6 @@ public class NavigationViewModelImpl extends ObjectEditingImpl implements Naviga
               } else {
                 parent.getChildrenNodes().add(n);
               }
-              handleObjectUriToSelect(parent, n);
             });
       } else {
         // TreeNodeKind.ENTRY. Other, like reference?
@@ -300,7 +311,6 @@ public class NavigationViewModelImpl extends ObjectEditingImpl implements Naviga
               } else {
                 parent.getChildrenNodes().add(n);
               }
-              handleObjectUriToSelect(parent, n);
             }
             // parent.getChildrenNodes().addAll(nodes);
           }
@@ -312,8 +322,12 @@ public class NavigationViewModelImpl extends ObjectEditingImpl implements Naviga
           select(parent);
         }
         parent.getChildrenNodes().remove(n);
+        treeNodesById.remove(n.getIdentifier());
+        treeNodesByObjectUri.remove(n.getObjectUri());
+        parentNodesByNode.remove(n.getIdentifier());
       }
       parent.setChildrenNodesLoaded(Boolean.TRUE);
+      handleObjectUriToSelect(parent);
     }
     parent.setHasChildren(parent.getChildrenNodes().size() > 0);
   }
@@ -323,14 +337,22 @@ public class NavigationViewModelImpl extends ObjectEditingImpl implements Naviga
     String nodeId = node.getId();
     TreeNode treeNode = treeNodesById.get(nodeId);
     if (treeNode == null) {
+      URI objectUri = node.getEntry() == null ? null : node.getEntry().getObjectUri();
       treeNode = new TreeNode()
           .kind(TreeNodeKind.ENTRY)
           .identifier(nodeId)
+          .objectUri(objectUri)
           .caption(node.getEntry().getName())
           .icon(node.getEntry().getIcon())
           .actions(node.getEntry().getActions())
           .level(level);
       treeNodesById.put(nodeId, treeNode);
+      if (objectUri != null) {
+        treeNodesByObjectUri.put(objectUri, treeNode);
+      }
+      if (parent != null) {
+        parentNodesByNode.put(nodeId, parent.getIdentifier());
+      }
     } else {
       updateTreeNodeEntry(treeNode, node);
       treeNode.setLevel(level);
@@ -392,28 +414,60 @@ public class NavigationViewModelImpl extends ObjectEditingImpl implements Naviga
         .styles(getNavigationAssociationStyles(navigationAssociation));
   }
 
-  private void handleObjectUriToSelect(TreeNode parent, TreeNode treeNode) {
-    if (userSessionApi != null) {
+  private void sessionParameterChange(String paramKey) {
+    if (OBJECT_URI_TO_SELECT.equals(paramKey)) {
       Session session = userSessionApi.currentSession();
-      if (session != null) {
-        URI objecUri = (URI) session.getParameter(OBJECT_URI_TO_SELECT);
-        if (objecUri != null) {
-          NavigationNode navNode = navigationState.getNode(treeNode.getIdentifier());
-          if (navNode != null && navNode.getEntry() != null
-              && objecUri.equals(navNode.getEntry().getObjectUri())) {
-            if (parent != null && !Boolean.TRUE.equals(parent.getExpanded())) {
-              parent.setExpanded(Boolean.TRUE);
-            }
-            // we need the wrapper..
-            TreeNode nodeWrapper = findTreeNodeById(treeNode.getIdentifier());
-            if (nodeWrapper != null) {
-              select(nodeWrapper);
-              session.clearParameter(OBJECT_URI_TO_SELECT);
-            }
+      objecUriToSelect = (URI) session.getParameter(OBJECT_URI_TO_SELECT);
+      if (objecUriToSelect != null) {
+        TreeNode treeNode = treeNodesByObjectUri.get(objecUriToSelect);
+        if (treeNode != null) {
+          TreeNode parent = null;
+          String parentId = parentNodesByNode.get(treeNode.getIdentifier());
+          if (parentId != null) {
+            parent = treeNodesById.get(parentId);
+          }
+          if (handleObjectUriToSelect(parent, treeNode)) {
+            notifyAllListeners();
           }
         }
       }
     }
+  }
+
+  private void handleObjectUriToSelect(TreeNode parent) {
+    if (objecUriToSelect != null && parent != null) {
+      for (TreeNode treeNode : parent.getChildrenNodes()) {
+        if (handleObjectUriToSelect(parent, treeNode)) {
+          break;
+        }
+      }
+    }
+  }
+
+  private boolean handleObjectUriToSelect(TreeNode parent, TreeNode treeNode) {
+    if (objecUriToSelect != null && treeNode != null) {
+      if (objecUriToSelect.equals(treeNode.getObjectUri())) {
+        parent = getWrappedTreeNode(parent);
+        if (parent != null && !Boolean.TRUE.equals(parent.getExpanded())) {
+          parent.setExpanded(Boolean.TRUE);
+        }
+        treeNode = getWrappedTreeNode(treeNode);
+        if (treeNode != null) {
+          select(treeNode);
+          objecUriToSelect = null;
+          userSessionApi.currentSession().clearParameter(OBJECT_URI_TO_SELECT);
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  private TreeNode getWrappedTreeNode(TreeNode treeNode) {
+    if (treeNode == null || ApiObjectRef.isWrappedObject(treeNode)) {
+      return treeNode;
+    }
+    return findTreeNodeById(treeNode.getIdentifier());
   }
 
   private TreeNode getTreeNodeByPath(String path) {

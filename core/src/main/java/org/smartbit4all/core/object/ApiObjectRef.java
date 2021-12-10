@@ -809,8 +809,18 @@ public class ApiObjectRef {
 
   }
 
-  private boolean isRefPathEmpty() {
-    return getPath() == null || getPath().isEmpty();
+  public static <T> boolean isWrappedObject(T object) {
+    Class<?> objectClass = object.getClass();
+    if (object instanceof Factory) {
+      Callback callback = ((Factory) object).getCallback(0);
+      if (callback instanceof ApiObjectRefInvocationHandler) {
+        return true;
+      } else {
+        throw new IllegalArgumentException(
+            "The object can't be processed as bean " + objectClass);
+      }
+    }
+    return false;
   }
 
   @SuppressWarnings("unchecked")

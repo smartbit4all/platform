@@ -30,6 +30,7 @@ import java.util.UUID;
 import org.smartbit4all.ui.api.navigation.model.NavigationTargetState;
 import org.smartbit4all.ui.api.navigation.model.NavigationTargetType;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 
@@ -88,6 +89,7 @@ public class NavigationTarget {
    * Get uuid
    * @return uuid
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @Valid
   @ApiModelProperty(required = true, value = "")
@@ -116,6 +118,7 @@ public class NavigationTarget {
    * Get viewName
    * @return viewName
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @ApiModelProperty(required = true, value = "")
   @JsonProperty(VIEW_NAME)
@@ -176,6 +179,7 @@ public class NavigationTarget {
    * Get parameters
    * @return parameters
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @ApiModelProperty(required = true, value = "")
   @JsonProperty(PARAMETERS)
@@ -203,6 +207,7 @@ public class NavigationTarget {
    * Get state
    * @return state
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @Valid
   @ApiModelProperty(required = true, value = "")
@@ -231,6 +236,7 @@ public class NavigationTarget {
    * Get type
    * @return type
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @Valid
   @ApiModelProperty(required = true, value = "")

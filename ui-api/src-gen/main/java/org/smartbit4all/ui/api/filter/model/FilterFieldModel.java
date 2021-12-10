@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.smartbit4all.ui.api.filter.model.FilterFieldLabel;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 
@@ -242,6 +243,7 @@ public class FilterFieldModel {
    * Get operations
    * @return operations
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @Valid
   @ApiModelProperty(required = true, value = "")
@@ -275,6 +277,7 @@ public class FilterFieldModel {
    * Get possibleValues
    * @return possibleValues
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @Valid
   @ApiModelProperty(required = true, value = "")
@@ -308,6 +311,7 @@ public class FilterFieldModel {
    * Get selectedValues
    * @return selectedValues
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @Valid
   @ApiModelProperty(required = true, value = "")

@@ -76,7 +76,7 @@ public class UserSessionApiSecImpl implements UserSessionApi {
 
   @Override
   public Session startSession(User user) {
-    return new Session().user(user);
+    return new Session(new ObjectChangePublisherSpringSecAware<String>()).user(user);
   }
 
 }

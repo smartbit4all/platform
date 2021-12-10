@@ -36,6 +36,9 @@ components:
           $ref: '#/components/schemas/TreeNodeKind'
         identifier:
           type: string
+        objectUri:
+          type: string
+          format: uri
         caption:
           type: string
         shortDescription:

@@ -27,6 +27,7 @@ import java.util.List;
 import org.smartbit4all.ui.api.filter.model.FilterFieldModel;
 import org.smartbit4all.ui.api.filter.model.FilterGroupLabel;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 
@@ -101,6 +102,7 @@ public class FilterGroupModel {
    * Get id
    * @return id
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @ApiModelProperty(required = true, value = "")
   @JsonProperty(ID)
@@ -378,6 +380,7 @@ public class FilterGroupModel {
    * Get groups
    * @return groups
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @Valid
   @ApiModelProperty(required = true, value = "")
@@ -411,6 +414,7 @@ public class FilterGroupModel {
    * Get filters
    * @return filters
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @Valid
   @ApiModelProperty(required = true, value = "")
