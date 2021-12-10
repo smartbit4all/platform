@@ -17,9 +17,13 @@ package org.smartbit4all.core.config;
 import org.smartbit4all.core.object.ObservablePublisherWrapper;
 import org.smartbit4all.core.object.ObservablePublisherWrapperImpl;
 import org.smartbit4all.core.object.proxy.ProxyStatefulApiConfiguration;
+import org.smartbit4all.core.reactive.ObjectChangePublisher;
+import org.smartbit4all.core.reactive.ObjectChangePublisherImpl;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Scope;
 
 
 /**
@@ -34,8 +38,16 @@ import org.springframework.context.annotation.Import;
 public class CoreConfig {
 
   @Bean
+  @ConditionalOnMissingBean(type = "ObservablePublisherWrapper")
   public ObservablePublisherWrapper publisherWrapperFallback() {
     return new ObservablePublisherWrapperImpl();
+  }
+
+  @Bean
+  @Scope("prototype")
+  @ConditionalOnMissingBean(type = "ObjectChangePublisher")
+  public ObjectChangePublisher<?> objectChangePublisherDefault() {
+    return new ObjectChangePublisherImpl<>();
   }
 
 }
