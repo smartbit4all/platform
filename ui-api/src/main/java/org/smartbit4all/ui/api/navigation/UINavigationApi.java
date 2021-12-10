@@ -15,7 +15,13 @@ public interface UINavigationApi {
 
   void registerView(NavigableViewDescriptor viewDescriptor, NavigationTargetType type);
 
-  void registerSecurityGroup(String viewName, SecurityGroup securityGroup);
+  /**
+   * View identified by viewName will be available if any securityGroup.check returns true.
+   * 
+   * @param viewName
+   * @param securityGroups
+   */
+  void registerSecurityGroup(String viewName, SecurityGroup... securityGroups);
 
   void navigateTo(NavigationTarget navigationTarget);
 

@@ -1,7 +1,10 @@
 package org.smartbit4all.ui.vaadin.api;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -46,7 +49,7 @@ public abstract class UINavigationVaadinCommon extends UINavigationApiCommon {
   protected Map<UUID, Label> dialogLabelsByUUID;
   protected Map<UUID, Component> dialogViewsByUUID;
 
-  protected Map<String, SecurityGroup> securityGroupByView;
+  protected Map<String, List<SecurityGroup>> securityGroupByView;
 
   public UINavigationVaadinCommon(UI ui, UserSessionApi userSessionApi) {
     this.ui = ui;
@@ -324,16 +327,21 @@ public abstract class UINavigationVaadinCommon extends UINavigationApiCommon {
   }
 
   @Override
-  public void registerSecurityGroup(String viewName, SecurityGroup securityGroup) {
-    securityGroupByView.put(viewName, securityGroup);
+  public void registerSecurityGroup(String viewName, SecurityGroup... securityGroups) {
+    List<SecurityGroup> groupList = securityGroupByView.get(viewName);
+    if (groupList == null) {
+      groupList = new ArrayList<>();
+      securityGroupByView.put(viewName, groupList);
+    }
+    groupList.addAll(Arrays.asList(securityGroups));
   }
 
   protected boolean checkSecurity(NavigationTarget navigationTarget) {
-    SecurityGroup securityGroup = securityGroupByView.get(navigationTarget.getViewName());
-    if (securityGroup == null) {
+    List<SecurityGroup> securityGroups = securityGroupByView.get(navigationTarget.getViewName());
+    if (securityGroups == null) {
       return true;
     }
-    return securityGroup.check();
+    return securityGroups.stream().anyMatch(group -> group.check());
   }
 
   protected void showSecurityError(NavigationTarget navigationTarget) {
