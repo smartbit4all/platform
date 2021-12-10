@@ -33,11 +33,23 @@ public class UserSessionApiSecImpl implements UserSessionApi {
 
   @Override
   public User currentUser() {
+    Authentication currentAuthentication = getCurrentAuthentication();
+    AuthenticationUserProvider userProvider = findUserProvider(currentAuthentication);
+    return userProvider.getUser(currentAuthentication);
+  }
+
+  @Override
+  public Session currentSession() {
+    Authentication currentAuthentication = getCurrentAuthentication();
+    AuthenticationUserProvider userProvider = findUserProvider(currentAuthentication);
+    return userProvider.getSession(currentAuthentication);
+  }
+
+  private AuthenticationUserProvider findUserProvider(Authentication currentAuthentication) {
     if (userProviders.isEmpty()) {
       throw new IllegalStateException("There is no AutenticationUserProviders registered!");
     }
 
-    Authentication currentAuthentication = getCurrentAuthentication();
     if (currentAuthentication == null) {
       throw new IllegalStateException("There is no current authentication int the context!!");
     }
@@ -51,8 +63,7 @@ public class UserSessionApiSecImpl implements UserSessionApi {
       throw new IllegalStateException("There is no AutenticationUserProviders registered for the"
           + "current Authentication properties!");
     }
-
-    return userProvider.getUser(currentAuthentication);
+    return userProvider;
   }
 
   private Authentication getCurrentAuthentication() {
@@ -66,19 +77,6 @@ public class UserSessionApiSecImpl implements UserSessionApi {
   @Override
   public Session startSession(User user) {
     return new Session().user(user);
-  }
-
-  @Override
-  public Session currentSession() {
-    Authentication currentAuthentication = getCurrentAuthentication();
-    if (currentAuthentication == null) {
-      throw new IllegalStateException("There is no current authentication int the context!!");
-    }
-    if (currentAuthentication.getPrincipal() == null ||
-        !(currentAuthentication.getPrincipal() instanceof Session)) {
-      throw new IllegalStateException("Current authentication is not Session!");
-    }
-    return (Session) currentAuthentication.getPrincipal();
   }
 
 }
