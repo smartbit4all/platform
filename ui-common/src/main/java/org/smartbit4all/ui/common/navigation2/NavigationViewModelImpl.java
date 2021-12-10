@@ -16,6 +16,8 @@ import org.smartbit4all.api.navigation.bean.NavigationNode;
 import org.smartbit4all.api.navigation.bean.NavigationPath;
 import org.smartbit4all.api.navigation.bean.NavigationReference;
 import org.smartbit4all.api.navigation.bean.NavigationView;
+import org.smartbit4all.api.session.Session;
+import org.smartbit4all.api.session.UserSessionApi;
 import org.smartbit4all.core.object.ApiObjectRef;
 import org.smartbit4all.core.object.ObjectEditingImpl;
 import org.smartbit4all.core.object.ObservableObject;
@@ -46,11 +48,22 @@ public class NavigationViewModelImpl extends ObjectEditingImpl implements Naviga
 
   private UINavigationApi uiNavigationApi;
 
+  private UserSessionApi userSessionApi;
+
   public NavigationViewModelImpl(Navigation navigation,
       ObservablePublisherWrapper publisherWrapper,
       UINavigationApi uiNavigationApi) {
+    this(navigation, publisherWrapper, uiNavigationApi, null);
+  }
+
+  public NavigationViewModelImpl(Navigation navigation,
+      ObservablePublisherWrapper publisherWrapper,
+      UINavigationApi uiNavigationApi,
+      UserSessionApi userSessionApi) {
     this.navigationState = navigation;
     this.uiNavigationApi = uiNavigationApi;
+    this.userSessionApi = userSessionApi;
+
     ref = new ApiObjectRef(null, new TreeModel(),
         NavigationViewModelHelper.getNavigationDescriptors());
     modelObservable = new ObservableObjectImpl(publisherWrapper);
@@ -101,6 +114,9 @@ public class NavigationViewModelImpl extends ObjectEditingImpl implements Naviga
 
   private void collapse(TreeNode node) {
     node.setExpanded(Boolean.FALSE);
+    if (node.getChildrenNodes().contains(selectedNode)) {
+      select(node);
+    }
   }
 
   private void select(TreeNode node) {
@@ -230,13 +246,14 @@ public class NavigationViewModelImpl extends ObjectEditingImpl implements Naviga
       if (parent.getKind() == TreeNodeKind.ASSOCIATION) {
         navigationState.getReferencedNodes(parent.getIdentifier())
             .stream()
-            .map(n -> createOrUpdateTreeNodeEntry(n, parent.getLevel() + 1))
+            .map(n -> createOrUpdateTreeNodeEntry(n, parent))
             .forEachOrdered(n -> {
               if (oldChildren.containsKey(n.getIdentifier())) {
                 oldChildren.remove(n.getIdentifier());
               } else {
                 parent.getChildrenNodes().add(n);
               }
+              handleObjectUriToSelect(parent, n);
             });
       } else {
         // TreeNodeKind.ENTRY. Other, like reference?
@@ -260,7 +277,7 @@ public class NavigationViewModelImpl extends ObjectEditingImpl implements Naviga
             navigationState.getChildrenNodes(parent.getIdentifier(), true);
         nodesByAssocIds.forEach((assocId, nodes) -> {
           List<TreeNode> treeNodes = nodes.stream()
-              .map(navNode -> createOrUpdateTreeNodeEntry(navNode, parent.getLevel() + 1))
+              .map(navNode -> createOrUpdateTreeNodeEntry(navNode, parent))
               .collect(Collectors.toList());
           treeNodesByOrderedAssocIds.put(assocId, treeNodes);
         });
@@ -272,7 +289,7 @@ public class NavigationViewModelImpl extends ObjectEditingImpl implements Naviga
             .forEach(navigationAssociation -> {
               treeNodesByOrderedAssocIds.put(navigationAssociation.getId(),
                   Collections.singletonList(
-                      createOrUpdateTreeNodeAssoc(navigationAssociation, parent.getLevel() + 1)));
+                      createOrUpdateTreeNodeAssoc(navigationAssociation, parent)));
             });
 
         treeNodesByOrderedAssocIds.forEach((assoc, nodes) -> {
@@ -283,6 +300,7 @@ public class NavigationViewModelImpl extends ObjectEditingImpl implements Naviga
               } else {
                 parent.getChildrenNodes().add(n);
               }
+              handleObjectUriToSelect(parent, n);
             }
             // parent.getChildrenNodes().addAll(nodes);
           }
@@ -300,7 +318,8 @@ public class NavigationViewModelImpl extends ObjectEditingImpl implements Naviga
     parent.setHasChildren(parent.getChildrenNodes().size() > 0);
   }
 
-  private TreeNode createOrUpdateTreeNodeEntry(NavigationNode node, int level) {
+  private TreeNode createOrUpdateTreeNodeEntry(NavigationNode node, TreeNode parent) {
+    int level = parent == null ? 0 : parent.getLevel() + 1;
     String nodeId = node.getId();
     TreeNode treeNode = treeNodesById.get(nodeId);
     if (treeNode == null) {
@@ -327,7 +346,8 @@ public class NavigationViewModelImpl extends ObjectEditingImpl implements Naviga
   }
 
   private TreeNode createOrUpdateTreeNodeAssoc(NavigationAssociation navigationAssociation,
-      int level) {
+      TreeNode parent) {
+    int level = parent == null ? 0 : parent.getLevel() + 1;
     String assocId = navigationAssociation.getId();
     TreeNode treeNode = treeNodesById.get(assocId);
     if (treeNode == null) {
@@ -370,6 +390,30 @@ public class NavigationViewModelImpl extends ObjectEditingImpl implements Naviga
         .caption(getAssociationNodeCaption(navigationAssociation))
         .icon(navigationAssociation.getIcon())
         .styles(getNavigationAssociationStyles(navigationAssociation));
+  }
+
+  private void handleObjectUriToSelect(TreeNode parent, TreeNode treeNode) {
+    if (userSessionApi != null) {
+      Session session = userSessionApi.currentSession();
+      if (session != null) {
+        URI objecUri = (URI) session.getParameter(OBJECT_URI_TO_SELECT);
+        if (objecUri != null) {
+          NavigationNode navNode = navigationState.getNode(treeNode.getIdentifier());
+          if (navNode != null && navNode.getEntry() != null
+              && objecUri.equals(navNode.getEntry().getObjectUri())) {
+            if (parent != null && !Boolean.TRUE.equals(parent.getExpanded())) {
+              parent.setExpanded(Boolean.TRUE);
+            }
+            // we need the wrapper..
+            TreeNode nodeWrapper = findTreeNodeById(treeNode.getIdentifier());
+            if (nodeWrapper != null) {
+              select(nodeWrapper);
+              session.clearParameter(OBJECT_URI_TO_SELECT);
+            }
+          }
+        }
+      }
+    }
   }
 
   private TreeNode getTreeNodeByPath(String path) {
@@ -497,7 +541,7 @@ public class NavigationViewModelImpl extends ObjectEditingImpl implements Naviga
   }
 
   private void rootNodeAdded(NavigationNode rootNode) {
-    TreeNode treeNode = createOrUpdateTreeNodeEntry(rootNode, 0);
+    TreeNode treeNode = createOrUpdateTreeNodeEntry(rootNode, null);
     loadChildren(treeNode);
     model.getRootNodes().add(treeNode);
     notifyAllListeners();
@@ -556,4 +600,5 @@ public class NavigationViewModelImpl extends ObjectEditingImpl implements Naviga
   public void onCloseWindow() {
     subscriptionsById.values().forEach(d -> d.dispose());
   }
+
 }

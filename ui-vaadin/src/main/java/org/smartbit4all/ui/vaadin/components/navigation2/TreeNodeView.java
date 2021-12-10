@@ -148,7 +148,7 @@ public class TreeNodeView extends FlexLayout {
 
   private void onSelectedChanged(PropertyChange change) {
     Boolean selected = (Boolean) change.getNewValue();
-    if (selected) {
+    if (selected != null && selected) {
       itemLayout.addClassName("sb4-tree-node-item-selected");
     } else {
       itemLayout.removeClassName("sb4-tree-node-item-selected");

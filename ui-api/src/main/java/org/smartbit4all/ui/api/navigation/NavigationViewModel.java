@@ -14,6 +14,8 @@ import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
  */
 public interface NavigationViewModel extends ObjectEditing {
 
+  public static final String OBJECT_URI_TO_SELECT = "NavigationViewModel.OBJECT_URI_TO_SELECT";
+
   @PublishEvents("MODEL")
   ObservableObject model();
 
