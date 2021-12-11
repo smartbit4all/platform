@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -12,6 +13,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
@@ -37,6 +40,8 @@ import org.smartbit4all.domain.data.storage.StorageObject;
 import org.smartbit4all.domain.data.storage.StorageObjectReferenceEntry;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 public class OrgApiStorageImpl implements OrgApi, InitializingBean {
 
@@ -75,6 +80,33 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
 
   @Autowired
   private UserSessionApi userSessionApi;
+
+  /**
+   * The cache for the groups of user.
+   */
+  private Cache<URI, List<Group>> groupsOfUserCache =
+      CacheBuilder.newBuilder().concurrencyLevel(10).build();
+
+  /**
+   * The cache for the groups of user.
+   */
+  private Cache<URI, List<User>> usersOfGroupCache =
+      CacheBuilder.newBuilder().concurrencyLevel(10).build();
+
+  /**
+   * The cache for the groups of user.
+   */
+  private Cache<String, Group> groupByNameCache =
+      CacheBuilder.newBuilder().concurrencyLevel(10).build();
+
+  /**
+   * Invalidate the cache after modification.
+   */
+  private final void invalidateCache() {
+    groupsOfUserCache.invalidateAll();
+    usersOfGroupCache.invalidateAll();
+    groupByNameCache.invalidateAll();
+  }
 
   /**
    * This function analyze the given class to discover the {@link LocaleString} fields. We add this
@@ -238,45 +270,68 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
 
   @Override
   public List<User> getUsersOfGroup(URI groupUri) {
-    Set<User> users = new HashSet<>();
-    List<URI> allSubgroups = getAllSubgroups(groupUri);
-    allSubgroups.add(groupUri);
+    try {
+      return usersOfGroupCache.get(groupUri, new Callable<List<User>>() {
 
-    for (URI uri : allSubgroups) {
+        @Override
+        public List<User> call() throws Exception {
+          Set<User> users = new HashSet<>();
+          List<URI> allSubgroups = getAllSubgroups(groupUri);
+          allSubgroups.add(groupUri);
 
-      UsersOfGroupCollection collection =
-          readSettingsReference(USERS_OF_GROUP_LIST_REFERENCE, UsersOfGroupCollection.class);
-      List<UsersOfGroup> usersOfGroupCollection = collection.getUsersOfGroupCollection();
+          for (URI uri : allSubgroups) {
 
-      for (UsersOfGroup usersOfGroup : usersOfGroupCollection) {
+            UsersOfGroupCollection collection =
+                readSettingsReference(USERS_OF_GROUP_LIST_REFERENCE, UsersOfGroupCollection.class);
+            List<UsersOfGroup> usersOfGroupCollection = collection.getUsersOfGroupCollection();
 
-        if (usersOfGroup.getGroupUri().equals(uri)) {
-          users.addAll(storage.get().read(usersOfGroup.getUsers(), User.class));
+            for (UsersOfGroup usersOfGroup : usersOfGroupCollection) {
+
+              if (usersOfGroup.getGroupUri().equals(uri)) {
+                users.addAll(storage.get().read(usersOfGroup.getUsers(), User.class));
+              }
+            }
+          }
+          return new ArrayList<>(users);
         }
-      }
+
+      });
+    } catch (ExecutionException e) {
+      log.error("Unable to retrieve the users of group.", e);
+      return Collections.emptyList();
     }
-    return new ArrayList<>(users);
   }
 
   @Override
   public List<Group> getGroupsOfUser(URI userUri) {
-    Set<Group> groups = new HashSet<>();
-    GroupsOfUserCollection collection =
-        readSettingsReference(GROUPS_OF_USER_LIST_REFERENCE, GroupsOfUserCollection.class);
-    List<GroupsOfUser> groupsOfUserCollection = collection.getGroupsOfUserCollection();
+    try {
+      return groupsOfUserCache.get(userUri, new Callable<List<Group>>() {
 
-    for (GroupsOfUser groupsOfUser : groupsOfUserCollection) {
+        @Override
+        public List<Group> call() throws Exception {
+          Set<Group> groups = new HashSet<>();
+          GroupsOfUserCollection collection =
+              readSettingsReference(GROUPS_OF_USER_LIST_REFERENCE, GroupsOfUserCollection.class);
+          List<GroupsOfUser> groupsOfUserCollection = collection.getGroupsOfUserCollection();
 
-      if (groupsOfUser.getUserUri().equals(userUri)) {
-        List<Group> directGroups = storage.get().read(groupsOfUser.getGroups(), Group.class);
-        for (Group group : directGroups) {
-          groups.add(group);
-          groups.addAll(storage.get().read(getAllSubgroups(group.getUri()), Group.class));
+          for (GroupsOfUser groupsOfUser : groupsOfUserCollection) {
+
+            if (groupsOfUser.getUserUri().equals(userUri)) {
+              List<Group> directGroups = storage.get().read(groupsOfUser.getGroups(), Group.class);
+              for (Group group : directGroups) {
+                groups.add(group);
+                groups.addAll(storage.get().read(getAllSubgroups(group.getUri()), Group.class));
+              }
+            }
+
+          }
+          return new ArrayList<>(groups);
         }
-      }
-
+      });
+    } catch (ExecutionException e) {
+      log.error("Unable to retrieve the groups of user.", e);
+      return Collections.emptyList();
     }
-    return new ArrayList<>(groups);
   }
 
   @Override
@@ -325,6 +380,8 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
 
     addToObjectMap(GROUP_OBJECTMAP_REFERENCE, group.getName(), uri);
 
+    invalidateCache();
+
     return uri;
   }
 
@@ -361,6 +418,8 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
     GroupsOfUserCollection groupsOfUserCollection = groupsOfUserCollectionStorage.getObject();
     groupsOfUserCollection.getGroupsOfUserCollection().add(groupsOfUser);
     storage.get().save(groupsOfUserCollectionStorage);
+
+    invalidateCache();
   }
 
   private GroupsOfUser getGroupsOfUserObject(URI userUri) {
@@ -431,12 +490,16 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
     List<GroupsOfUser> groupsOfUserCollection = collection.getGroupsOfUserCollection();
     groupsOfUserCollection.removeIf(o -> o.getUserUri().equals(userUri));
     storage.get().save(storageObject);
+
+    invalidateCache();
   }
 
   private void setUserToInactive(URI userUri) {
     StorageObject<User> userSO = storage.get().load(userUri, User.class);
     userSO.getObject().setInactive(true);
     storage.get().save(userSO);
+
+    invalidateCache();
   }
 
   /**
@@ -521,6 +584,8 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
     List<UsersOfGroup> usersOfGroupCollection = collection.getUsersOfGroupCollection();
     usersOfGroupCollection.removeIf(o -> o.getGroupUri().equals(groupUri));
     storage.get().save(storageObject);
+
+    invalidateCache();
   }
 
   @Override
@@ -547,6 +612,8 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
       }
     }
     storage.get().save(usersOfGroupReference);
+
+    invalidateCache();
 
   }
 
@@ -578,13 +645,26 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
 
   @Override
   public Group getGroupByName(String name) {
-    ObjectMap groupObjectMap = loadObjectMap(GROUP_OBJECTMAP_REFERENCE);
-    URI groupUri = groupObjectMap.getUris().get(name);
-    if (groupUri == null) {
+    try {
+      return groupByNameCache.get(name, new Callable<Group>() {
+
+        @Override
+        public Group call() throws Exception {
+          ObjectMap groupObjectMap = loadObjectMap(GROUP_OBJECTMAP_REFERENCE);
+          URI groupUri = groupObjectMap.getUris().get(name);
+          if (groupUri == null) {
+            return null;
+          }
+          return storage.get().exists(groupUri) ? storage.get().read(groupUri, Group.class)
+              : null;
+        }
+
+      });
+    } catch (ExecutionException e) {
+      log.error("Unable to retrieve the groups by name.", e);
       return null;
     }
-    return storage.get().exists(groupUri) ? storage.get().read(groupUri, Group.class)
-        : null;
+
   }
 
   @Override
@@ -598,7 +678,9 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
       if (storage.get().exists(userByUsername.getUri())) {
         StorageObject<User> oldUser = storage.get().load(userByUsername.getUri(), User.class);
         oldUser.setObject(user);
-        return storage.get().save(oldUser);
+        URI uri = storage.get().save(oldUser);
+        invalidateCache();
+        return uri;
       } else {
         throw new IllegalArgumentException("Failed to update user: " + user.toString());
       }
@@ -624,6 +706,9 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
     URI uri = storage.get().save(userStorageObj);
 
     addToObjectMap(USER_OBJECTMAP_REFERENCE, user.getUsername(), uri);
+
+    invalidateCache();
+
     return uri;
   }
 
@@ -637,7 +722,9 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
     if (storage.get().exists(groupByName.getUri())) {
       StorageObject<Group> oldGroup = storage.get().load(groupByName.getUri(), Group.class);
       oldGroup.setObject(group);
-      return storage.get().save(oldGroup);
+      URI uri = storage.get().save(oldGroup);
+      invalidateCache();
+      return uri;
     }
     throw new IllegalArgumentException("Failed to update user: " + group.toString());
   }
@@ -709,6 +796,7 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
     StorageObject<User> userSO = storage.get().load(userUri, User.class);
     userSO.getObject().setInactive(false);
     storage.get().save(userSO);
+    invalidateCache();
   }
 
 }
