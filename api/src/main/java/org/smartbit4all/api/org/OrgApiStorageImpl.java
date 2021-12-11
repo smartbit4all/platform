@@ -282,17 +282,14 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
           List<URI> allSubgroups = getAllSubgroups(groupUri);
           allSubgroups.add(groupUri);
 
-          for (URI uri : allSubgroups) {
+          UsersOfGroupCollection collection =
+              readSettingsReference(USERS_OF_GROUP_LIST_REFERENCE, UsersOfGroupCollection.class);
+          List<UsersOfGroup> usersOfGroupCollection = collection.getUsersOfGroupCollection();
 
-            UsersOfGroupCollection collection =
-                readSettingsReference(USERS_OF_GROUP_LIST_REFERENCE, UsersOfGroupCollection.class);
-            List<UsersOfGroup> usersOfGroupCollection = collection.getUsersOfGroupCollection();
+          for (UsersOfGroup usersOfGroup : usersOfGroupCollection) {
 
-            for (UsersOfGroup usersOfGroup : usersOfGroupCollection) {
-
-              if (usersOfGroup.getGroupUri().equals(uri)) {
-                users.addAll(storage.get().read(usersOfGroup.getUsers(), User.class));
-              }
+            if (usersOfGroup.getGroupUri().equals(groupUri)) {
+              users.addAll(storage.get().read(usersOfGroup.getUsers(), User.class));
             }
           }
           return new ArrayList<>(users);
