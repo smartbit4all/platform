@@ -1,5 +1,6 @@
 package org.smartbit4all.storage.fs;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
@@ -13,6 +14,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -41,9 +43,9 @@ import org.smartbit4all.domain.data.storage.StorageObjectReferenceEntry;
 import org.smartbit4all.domain.data.storage.history.ObjectHistoryApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.io.ByteStreams;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @TestInstance(Lifecycle.PER_CLASS)
+@Disabled
 class StorageTest {
 
   private static final String MY_MAP = "MyMap";
