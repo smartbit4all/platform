@@ -99,6 +99,8 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
   private Cache<String, Group> groupByNameCache =
       CacheBuilder.newBuilder().concurrencyLevel(10).build();
 
+  public static final Group GROUP_NOT_FOUND = new Group().name("GROUP_NOT_FOUND");
+
   /**
    * Invalidate the cache after modification.
    */
@@ -646,20 +648,21 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
   @Override
   public Group getGroupByName(String name) {
     try {
-      return groupByNameCache.get(name, new Callable<Group>() {
+      Group group = groupByNameCache.get(name, new Callable<Group>() {
 
         @Override
         public Group call() throws Exception {
           ObjectMap groupObjectMap = loadObjectMap(GROUP_OBJECTMAP_REFERENCE);
           URI groupUri = groupObjectMap.getUris().get(name);
           if (groupUri == null) {
-            return null;
+            return GROUP_NOT_FOUND;
           }
           return storage.get().exists(groupUri) ? storage.get().read(groupUri, Group.class)
-              : null;
+              : GROUP_NOT_FOUND;
         }
 
       });
+      return group == GROUP_NOT_FOUND ? null : group;
     } catch (ExecutionException e) {
       log.error("Unable to retrieve the groups by name.", e);
       return null;
