@@ -31,6 +31,11 @@ public final class SecurityGroup {
    */
   private String description;
 
+  /**
+   * If set to true group should be unmodifiable.
+   */
+  private boolean builtIn;
+
   private BiFunction<SecurityGroup, URI, Boolean> securityPredicate;
 
   /**
@@ -54,6 +59,11 @@ public final class SecurityGroup {
 
   public SecurityGroup subgroup(SecurityGroup subgroup) {
     subGroups.add(subgroup);
+    return this;
+  }
+
+  public SecurityGroup builtIn(boolean builtIn) {
+    this.builtIn = builtIn;
     return this;
   }
 
@@ -102,6 +112,14 @@ public final class SecurityGroup {
 
   void setTitle(String name) {
     this.title = name;
+  }
+
+  public boolean isbuiltIn() {
+    return builtIn;
+  }
+
+  void setBuiltIn(boolean builtIn) {
+    this.builtIn = builtIn;
   }
 
   public void setSecurityPredicate(BiFunction<SecurityGroup, URI, Boolean> securityPredicate) {

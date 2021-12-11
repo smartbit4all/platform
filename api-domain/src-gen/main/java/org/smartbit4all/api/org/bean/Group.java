@@ -26,6 +26,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 
@@ -37,7 +38,8 @@ import javax.validation.Valid;
   Group.TITLE,
   Group.NAME,
   Group.DESCRIPTION,
-  Group.KIND,
+  Group.KIND_CODE,
+  Group.BUILT_IN,
   Group.PARENT,
   Group.CHILDREN
 })
@@ -56,8 +58,11 @@ public class Group {
   public static final String DESCRIPTION = "description";
   private String description;
 
-  public static final String KIND = "kind";
-  private URI kind;
+  public static final String KIND_CODE = "kindCode";
+  private String kindCode;
+
+  public static final String BUILT_IN = "builtIn";
+  private Boolean builtIn = false;
 
   public static final String PARENT = "parent";
   private URI parent;
@@ -76,6 +81,7 @@ public class Group {
    * The uri of the group
    * @return uri
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @Valid
   @ApiModelProperty(required = true, value = "The uri of the group")
@@ -131,6 +137,7 @@ public class Group {
    * The name of the group
    * @return name
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @ApiModelProperty(required = true, value = "The name of the group")
   @JsonProperty(NAME)
@@ -175,31 +182,57 @@ public class Group {
   }
 
 
-  public Group kind(URI kind) {
+  public Group kindCode(String kindCode) {
     
-    this.kind = kind;
+    this.kindCode = kindCode;
     return this;
   }
 
    /**
-   * The uri of the kind of the group. Eg.: role, organization, team etc.
-   * @return kind
+   * The kind code of the group. Eg.: role, organization, team etc.
+   * @return kindCode
   **/
-  @NotNull
-  @Valid
-  @ApiModelProperty(required = true, value = "The uri of the kind of the group. Eg.: role, organization, team etc.")
-  @JsonProperty(KIND)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The kind code of the group. Eg.: role, organization, team etc.")
+  @JsonProperty(KIND_CODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public URI getKind() {
-    return kind;
+  public String getKindCode() {
+    return kindCode;
   }
 
 
-  @JsonProperty(KIND)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setKind(URI kind) {
-    this.kind = kind;
+  @JsonProperty(KIND_CODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setKindCode(String kindCode) {
+    this.kindCode = kindCode;
+  }
+
+
+  public Group builtIn(Boolean builtIn) {
+    
+    this.builtIn = builtIn;
+    return this;
+  }
+
+   /**
+   * Built in groups are unmodifiable
+   * @return builtIn
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "Built in groups are unmodifiable")
+  @JsonProperty(BUILT_IN)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getBuiltIn() {
+    return builtIn;
+  }
+
+
+  @JsonProperty(BUILT_IN)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setBuiltIn(Boolean builtIn) {
+    this.builtIn = builtIn;
   }
 
 
@@ -213,6 +246,7 @@ public class Group {
    * The uri of the parent group
    * @return parent
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @Valid
   @ApiModelProperty(required = true, value = "The uri of the parent group")
@@ -246,6 +280,7 @@ public class Group {
    * The uris of the child groups
    * @return children
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @Valid
   @ApiModelProperty(required = true, value = "The uris of the child groups")
@@ -277,14 +312,15 @@ public class Group {
         Objects.equals(this.title, group.title) &&
         Objects.equals(this.name, group.name) &&
         Objects.equals(this.description, group.description) &&
-        Objects.equals(this.kind, group.kind) &&
+        Objects.equals(this.kindCode, group.kindCode) &&
+        Objects.equals(this.builtIn, group.builtIn) &&
         Objects.equals(this.parent, group.parent) &&
         Objects.equals(this.children, group.children);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, title, name, description, kind, parent, children);
+    return Objects.hash(uri, title, name, description, kindCode, builtIn, parent, children);
   }
 
   @Override
@@ -295,7 +331,8 @@ public class Group {
     sb.append("    title: ").append(toIndentedString(title)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    description: ").append(toIndentedString(description)).append("\n");
-    sb.append("    kind: ").append(toIndentedString(kind)).append("\n");
+    sb.append("    kindCode: ").append(toIndentedString(kindCode)).append("\n");
+    sb.append("    builtIn: ").append(toIndentedString(builtIn)).append("\n");
     sb.append("    parent: ").append(toIndentedString(parent)).append("\n");
     sb.append("    children: ").append(toIndentedString(children)).append("\n");
     sb.append("}");

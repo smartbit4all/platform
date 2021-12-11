@@ -186,10 +186,13 @@ components:
         description:
           type: string
           description: 'The description of the group'
-        kind:
+        kindCode:
           type: string
-          format: uri
-          description: 'The uri of the kind of the group. Eg.: role, organization, team etc.'
+          description: 'The kind code of the group. Eg.: role, organization, team etc.'
+        builtIn:
+          type: boolean
+          default: false
+          description: 'Built in groups are unmodifiable'
         parent:
           type: string
           format: uri

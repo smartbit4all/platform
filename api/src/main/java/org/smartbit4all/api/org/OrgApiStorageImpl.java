@@ -161,7 +161,8 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
           new Group()
               .name(securityGroup.getName())
               .title(securityGroup.getTitle())
-              .description(securityGroup.getDescription());
+              .description(securityGroup.getDescription())
+              .builtIn(securityGroup.isbuiltIn());
       saveGroup(group);
       return group;
     }
