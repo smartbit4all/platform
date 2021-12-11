@@ -59,7 +59,13 @@ public class TranslationProvider implements I18NProvider {
       derivedLocale = LOCALE_EN_GB;
     }
 
-    final ResourceBundle bundle = ResourceBundle.getBundle(BUNDLE_PREFIX, derivedLocale);
+    ResourceBundle bundle;
+
+    try {
+      bundle = ResourceBundle.getBundle(BUNDLE_PREFIX, derivedLocale);
+    } catch (Throwable tr) {
+      bundle = ResourceBundle.getBundle(BUNDLE_PREFIX, LOCALE_HU_HU);
+    }
 
     String value;
     try {
