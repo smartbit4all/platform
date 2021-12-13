@@ -135,13 +135,6 @@ components:
         name:
           type: string
           description: 'The well-formed name of the association.'
-        alias:
-          type: string
-          description: |
-            The optinal alias of the navigation entry. It can be useful to provide specific node from a previously defined
-            navigation node. If we have a contact and we would like to provide a primaryContact as a special contact then
-            we can define the contact again with a special alias. We can use this alias to supply the navigation entry during
-            the navigate or the getEntry.
         associations:
           type: array
           items:
@@ -232,6 +225,14 @@ components:
           type: string
           format: uri
           description: 'The URI identifies the meta object of the entry'
+        parentAssocMetaUri:
+          type: string
+          format: uri
+          description: The URI of the association meta that produces the actual entry.
+        parentObjectUri:
+          type: string
+          format: uri
+          description: The URI of the parent entry object.
         name:
           type: string
           description: 'The name of the entry'

@@ -97,6 +97,13 @@ public final class NavigationPrimary extends NavigationImpl implements Initializ
       // Call the given api with the list as parameter and merge the result.
       Map<URI, List<NavigationReferenceEntry>> navigate =
           requestEntry.getKey().navigate(objectUri, requestEntry.getValue());
+      for (Entry<URI, List<NavigationReferenceEntry>> entry : navigate.entrySet()) {
+        for (NavigationReferenceEntry ref : entry.getValue()) {
+          NavigationEntry endEntry = ref.getEndEntry();
+          endEntry.setParentAssocMetaUri(entry.getKey());
+          endEntry.setParentObjectUri(objectUri);
+        }
+      }
       result.putAll(navigate);
     }
     return result;

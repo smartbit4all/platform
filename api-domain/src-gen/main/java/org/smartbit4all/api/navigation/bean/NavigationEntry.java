@@ -37,6 +37,8 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   NavigationEntry.OBJECT_URI,
   NavigationEntry.META_URI,
+  NavigationEntry.PARENT_ASSOC_META_URI,
+  NavigationEntry.PARENT_OBJECT_URI,
   NavigationEntry.NAME,
   NavigationEntry.ICON,
   NavigationEntry.STYLES,
@@ -51,6 +53,12 @@ public class NavigationEntry {
 
   public static final String META_URI = "metaUri";
   private URI metaUri;
+
+  public static final String PARENT_ASSOC_META_URI = "parentAssocMetaUri";
+  private URI parentAssocMetaUri;
+
+  public static final String PARENT_OBJECT_URI = "parentObjectUri";
+  private URI parentObjectUri;
 
   public static final String NAME = "name";
   private String name;
@@ -121,6 +129,62 @@ public class NavigationEntry {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMetaUri(URI metaUri) {
     this.metaUri = metaUri;
+  }
+
+
+  public NavigationEntry parentAssocMetaUri(URI parentAssocMetaUri) {
+    
+    this.parentAssocMetaUri = parentAssocMetaUri;
+    return this;
+  }
+
+   /**
+   * The URI of the association meta that produces the actual entry.
+   * @return parentAssocMetaUri
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "The URI of the association meta that produces the actual entry.")
+  @JsonProperty(PARENT_ASSOC_META_URI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public URI getParentAssocMetaUri() {
+    return parentAssocMetaUri;
+  }
+
+
+  @JsonProperty(PARENT_ASSOC_META_URI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setParentAssocMetaUri(URI parentAssocMetaUri) {
+    this.parentAssocMetaUri = parentAssocMetaUri;
+  }
+
+
+  public NavigationEntry parentObjectUri(URI parentObjectUri) {
+    
+    this.parentObjectUri = parentObjectUri;
+    return this;
+  }
+
+   /**
+   * The URI of the parent entry object.
+   * @return parentObjectUri
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "The URI of the parent entry object.")
+  @JsonProperty(PARENT_OBJECT_URI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public URI getParentObjectUri() {
+    return parentObjectUri;
+  }
+
+
+  @JsonProperty(PARENT_OBJECT_URI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setParentObjectUri(URI parentObjectUri) {
+    this.parentObjectUri = parentObjectUri;
   }
 
 
@@ -297,6 +361,8 @@ public class NavigationEntry {
     NavigationEntry navigationEntry = (NavigationEntry) o;
     return Objects.equals(this.objectUri, navigationEntry.objectUri) &&
         Objects.equals(this.metaUri, navigationEntry.metaUri) &&
+        Objects.equals(this.parentAssocMetaUri, navigationEntry.parentAssocMetaUri) &&
+        Objects.equals(this.parentObjectUri, navigationEntry.parentObjectUri) &&
         Objects.equals(this.name, navigationEntry.name) &&
         Objects.equals(this.icon, navigationEntry.icon) &&
         Objects.equals(this.styles, navigationEntry.styles) &&
@@ -306,7 +372,7 @@ public class NavigationEntry {
 
   @Override
   public int hashCode() {
-    return Objects.hash(objectUri, metaUri, name, icon, styles, views, actions);
+    return Objects.hash(objectUri, metaUri, parentAssocMetaUri, parentObjectUri, name, icon, styles, views, actions);
   }
 
   @Override
@@ -315,6 +381,8 @@ public class NavigationEntry {
     sb.append("class NavigationEntry {\n");
     sb.append("    objectUri: ").append(toIndentedString(objectUri)).append("\n");
     sb.append("    metaUri: ").append(toIndentedString(metaUri)).append("\n");
+    sb.append("    parentAssocMetaUri: ").append(toIndentedString(parentAssocMetaUri)).append("\n");
+    sb.append("    parentObjectUri: ").append(toIndentedString(parentObjectUri)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    icon: ").append(toIndentedString(icon)).append("\n");
     sb.append("    styles: ").append(toIndentedString(styles)).append("\n");

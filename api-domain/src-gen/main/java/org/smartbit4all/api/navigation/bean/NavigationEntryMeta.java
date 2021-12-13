@@ -38,7 +38,6 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   NavigationEntryMeta.URI,
   NavigationEntryMeta.NAME,
-  NavigationEntryMeta.ALIAS,
   NavigationEntryMeta.ASSOCIATIONS
 })
 @JsonTypeName("NavigationEntryMeta")
@@ -49,9 +48,6 @@ public class NavigationEntryMeta {
 
   public static final String NAME = "name";
   private String name;
-
-  public static final String ALIAS = "alias";
-  private String alias;
 
   public static final String ASSOCIATIONS = "associations";
   private List<NavigationAssociationMeta> associations = null;
@@ -114,33 +110,6 @@ public class NavigationEntryMeta {
   }
 
 
-  public NavigationEntryMeta alias(String alias) {
-    
-    this.alias = alias;
-    return this;
-  }
-
-   /**
-   * The optinal alias of the navigation entry. It can be useful to provide specific node from a previously defined navigation node. If we have a contact and we would like to provide a primaryContact as a special contact then we can define the contact again with a special alias. We can use this alias to supply the navigation entry during the navigate or the getEntry. 
-   * @return alias
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "The optinal alias of the navigation entry. It can be useful to provide specific node from a previously defined navigation node. If we have a contact and we would like to provide a primaryContact as a special contact then we can define the contact again with a special alias. We can use this alias to supply the navigation entry during the navigate or the getEntry. ")
-  @JsonProperty(ALIAS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public String getAlias() {
-    return alias;
-  }
-
-
-  @JsonProperty(ALIAS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setAlias(String alias) {
-    this.alias = alias;
-  }
-
-
   public NavigationEntryMeta associations(List<NavigationAssociationMeta> associations) {
     
     this.associations = associations;
@@ -188,13 +157,12 @@ public class NavigationEntryMeta {
     NavigationEntryMeta navigationEntryMeta = (NavigationEntryMeta) o;
     return Objects.equals(this.uri, navigationEntryMeta.uri) &&
         Objects.equals(this.name, navigationEntryMeta.name) &&
-        Objects.equals(this.alias, navigationEntryMeta.alias) &&
         Objects.equals(this.associations, navigationEntryMeta.associations);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, name, alias, associations);
+    return Objects.hash(uri, name, associations);
   }
 
   @Override
@@ -203,7 +171,6 @@ public class NavigationEntryMeta {
     sb.append("class NavigationEntryMeta {\n");
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
-    sb.append("    alias: ").append(toIndentedString(alias)).append("\n");
     sb.append("    associations: ").append(toIndentedString(associations)).append("\n");
     sb.append("}");
     return sb.toString();
