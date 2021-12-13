@@ -25,6 +25,7 @@ import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
 import org.smartbit4all.api.navigation.bean.NavigationEntryMeta;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 
@@ -68,6 +69,7 @@ public class NavigationAssociationMeta {
    * The uri of the resource that uniquely identifies the given navigation inside the navigation api.
    * @return uri
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @Valid
   @ApiModelProperty(required = true, value = "The uri of the resource that uniquely identifies the given navigation inside the navigation api.")
@@ -96,6 +98,7 @@ public class NavigationAssociationMeta {
    * The well-formed name of the association.
    * @return name
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @ApiModelProperty(required = true, value = "The well-formed name of the association.")
   @JsonProperty(NAME)
@@ -123,6 +126,7 @@ public class NavigationAssociationMeta {
    * Get startEntry
    * @return startEntry
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @Valid
   @ApiModelProperty(required = true, value = "")
@@ -151,6 +155,7 @@ public class NavigationAssociationMeta {
    * Get endEntry
    * @return endEntry
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @Valid
   @ApiModelProperty(required = true, value = "")

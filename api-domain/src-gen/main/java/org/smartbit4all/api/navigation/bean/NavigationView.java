@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 
@@ -56,6 +57,7 @@ public class NavigationView {
    * The symbolic name of the view that must be supported by the given UI implementation.
    * @return name
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @ApiModelProperty(required = true, value = "The symbolic name of the view that must be supported by the given UI implementation.")
   @JsonProperty(NAME)
@@ -94,7 +96,7 @@ public class NavigationView {
   @javax.annotation.Nullable
   @ApiModelProperty(value = "")
   @JsonProperty(PARAMETERS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
 
   public Map<String, Object> getParameters() {
     return parameters;
@@ -102,7 +104,7 @@ public class NavigationView {
 
 
   @JsonProperty(PARAMETERS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
   public void setParameters(Map<String, Object> parameters) {
     this.parameters = parameters;
   }

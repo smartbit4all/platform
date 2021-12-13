@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.smartbit4all.api.navigation.bean.NavigationAssociationMeta;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 
@@ -37,6 +38,7 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   NavigationEntryMeta.URI,
   NavigationEntryMeta.NAME,
+  NavigationEntryMeta.ALIAS,
   NavigationEntryMeta.ASSOCIATIONS
 })
 @JsonTypeName("NavigationEntryMeta")
@@ -47,6 +49,9 @@ public class NavigationEntryMeta {
 
   public static final String NAME = "name";
   private String name;
+
+  public static final String ALIAS = "alias";
+  private String alias;
 
   public static final String ASSOCIATIONS = "associations";
   private List<NavigationAssociationMeta> associations = null;
@@ -62,6 +67,7 @@ public class NavigationEntryMeta {
    * The uri of the resource that uniquely identifies the given entry inside the navigation api.
    * @return uri
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @Valid
   @ApiModelProperty(required = true, value = "The uri of the resource that uniquely identifies the given entry inside the navigation api.")
@@ -90,6 +96,7 @@ public class NavigationEntryMeta {
    * The well-formed name of the association.
    * @return name
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @ApiModelProperty(required = true, value = "The well-formed name of the association.")
   @JsonProperty(NAME)
@@ -104,6 +111,33 @@ public class NavigationEntryMeta {
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setName(String name) {
     this.name = name;
+  }
+
+
+  public NavigationEntryMeta alias(String alias) {
+    
+    this.alias = alias;
+    return this;
+  }
+
+   /**
+   * The optinal alias of the navigation entry. It can be useful to provide specific node from a previously defined navigation node. If we have a contact and we would like to provide a primaryContact as a special contact then we can define the contact again with a special alias. We can use this alias to supply the navigation entry during the navigate or the getEntry. 
+   * @return alias
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The optinal alias of the navigation entry. It can be useful to provide specific node from a previously defined navigation node. If we have a contact and we would like to provide a primaryContact as a special contact then we can define the contact again with a special alias. We can use this alias to supply the navigation entry during the navigate or the getEntry. ")
+  @JsonProperty(ALIAS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getAlias() {
+    return alias;
+  }
+
+
+  @JsonProperty(ALIAS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setAlias(String alias) {
+    this.alias = alias;
   }
 
 
@@ -154,12 +188,13 @@ public class NavigationEntryMeta {
     NavigationEntryMeta navigationEntryMeta = (NavigationEntryMeta) o;
     return Objects.equals(this.uri, navigationEntryMeta.uri) &&
         Objects.equals(this.name, navigationEntryMeta.name) &&
+        Objects.equals(this.alias, navigationEntryMeta.alias) &&
         Objects.equals(this.associations, navigationEntryMeta.associations);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, name, associations);
+    return Objects.hash(uri, name, alias, associations);
   }
 
   @Override
@@ -168,6 +203,7 @@ public class NavigationEntryMeta {
     sb.append("class NavigationEntryMeta {\n");
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    alias: ").append(toIndentedString(alias)).append("\n");
     sb.append("    associations: ").append(toIndentedString(associations)).append("\n");
     sb.append("}");
     return sb.toString();

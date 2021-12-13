@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.smartbit4all.api.navigation.bean.NavigationReference;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 
@@ -82,6 +83,7 @@ public class NavigationAssociation {
    * The unique identifier of the given association - UUID
    * @return id
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @ApiModelProperty(required = true, value = "The unique identifier of the given association - UUID")
   @JsonProperty(ID)

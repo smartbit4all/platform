@@ -25,6 +25,7 @@ import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
 import org.smartbit4all.api.navigation.bean.NavigationEntry;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 
@@ -64,6 +65,7 @@ public class NavigationReferenceEntry {
    * The identifier of the reference that is constructed as startEntry.uri + [ \&quot;-\&quot; assocEntry.uri + ] \&quot;-\&quot; + endEntry.uri
    * @return id
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @ApiModelProperty(required = true, value = "The identifier of the reference that is constructed as startEntry.uri + [ \"-\" assocEntry.uri + ] \"-\" + endEntry.uri")
   @JsonProperty(ID)

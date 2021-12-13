@@ -27,6 +27,7 @@ import java.util.List;
 import org.smartbit4all.api.navigation.bean.NavigationAssociation;
 import org.smartbit4all.api.navigation.bean.NavigationEntry;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 
@@ -62,6 +63,7 @@ public class NavigationNode {
    * The unique identifier of the given node - UUID
    * @return id
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @ApiModelProperty(required = true, value = "The unique identifier of the given node - UUID")
   @JsonProperty(ID)
@@ -89,6 +91,7 @@ public class NavigationNode {
    * Get entry
    * @return entry
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @Valid
   @ApiModelProperty(required = true, value = "")
