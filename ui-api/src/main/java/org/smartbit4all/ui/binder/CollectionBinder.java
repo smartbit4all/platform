@@ -48,7 +48,7 @@ public abstract class CollectionBinder<T> extends AbstractBinder {
           addItem(itemPath, item);
         } else {
           // MODIFY
-          items.set(idx, item);
+          modifyItem(idx, item);
         }
       } else if (change.getOperation().equals(ChangeState.DELETED)) {
         item = deleteItem(itemPath);
@@ -73,6 +73,10 @@ public abstract class CollectionBinder<T> extends AbstractBinder {
   protected T deleteItemByIndex(int idx) {
     itemPaths.remove(idx);
     return items.remove(idx);
+  }
+
+  protected void modifyItem(int idx, T newItem) {
+    items.set(idx, newItem);
   }
 
 }
