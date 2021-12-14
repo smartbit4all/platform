@@ -1,12 +1,13 @@
 package org.smartbit4all.ui.vaadin.components.userselector;
 
+import org.smartbit4all.api.userselector.bean.UserMultiSelector;
 import org.smartbit4all.ui.api.userselector.UserSelectorViewModel;
 import org.smartbit4all.ui.vaadin.components.binder.VaadinBinders;
 import com.vaadin.flow.component.grid.Grid.SelectionMode;
 
-public class UserMultiSelectorDialogNew extends UserSelectorDialogNew {
+public class UserMultiSelectorDialog extends UserSelectorDialog {
 
-  public UserMultiSelectorDialogNew(UserSelectorViewModel userSelectorVM, String header) {
+  public UserMultiSelectorDialog(UserSelectorViewModel userSelectorVM, String header) {
     super(userSelectorVM, header);
     createAndBindUI(SelectionMode.MULTI);
   }
@@ -15,7 +16,9 @@ public class UserMultiSelectorDialogNew extends UserSelectorDialogNew {
   protected void createAndBindUI(SelectionMode selectionMode) {
     super.createAndBindUI(selectionMode);
 
-    VaadinBinders.bindItems(grid, userSelectorVM.multiSelector(), "selectors");
-    VaadinBinders.bindSelection(grid.asMultiSelect(), userSelectorVM.multiSelector(), "selected");
+    VaadinBinders.bindItems(grid, userSelectorVM.multiSelector(),
+        UserMultiSelector.SELECTORS);
+    VaadinBinders.bindSelection(grid.asMultiSelect(), userSelectorVM.multiSelector(),
+        UserMultiSelector.SELECTED);
   }
 }
