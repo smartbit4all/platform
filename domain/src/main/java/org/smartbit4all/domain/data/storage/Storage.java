@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.concurrent.locks.Lock;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.storage.bean.ObjectHistoryEntry;
@@ -37,7 +38,7 @@ import org.smartbit4all.core.utility.StringConstant;
  * @author Zoltan Szegedi
  *
  */
-public class Storage {
+public final class Storage {
 
   private static final String SETTINGS = "settings";
 
@@ -128,6 +129,38 @@ public class Storage {
     return save(storageObject);
   }
 
+  /**
+   * This function is locking and loading the object identified by the object uri
+   * 
+   * @param <T>
+   * @param objectUri
+   * @param clazz
+   * @param update
+   */
+  public <T> void update(URI objectUri, Class<T> clazz, Function<T, T> update) {
+    StorageObjectLock lock = getLock(objectUri);
+    lock.lock();
+    try {
+      StorageObject<T> so =
+          load(objectUri, clazz);
+      so.setObject(update.apply(so.getObject()));
+      save(so);
+    } finally {
+      lock.unlock();
+    }
+  }
+
+
+
+  /**
+   * Load all the object identified by the uris from the uri list.
+   * 
+   * @param <T> The class is a typed parameter.
+   * @param uris
+   * @param clazz The class to define the required object.
+   * @return The list of the {@link StorageObject}s found.
+   * @throws ObjectNotFoundException if any of the uris is not found on the storage.
+   */
   public <T> List<StorageObject<T>> load(List<URI> uris, Class<T> clazz) {
     if (uris == null || uris.isEmpty()) {
       return Collections.emptyList();
@@ -249,6 +282,19 @@ public class Storage {
     return scheme;
   }
 
+  /**
+   * Constructs the {@link StorageSettings} object if it doesn't exist.
+   * 
+   * @return Return the URI of the existing {@link StorageSettings} object URI.
+   */
+  public final URI settingsUri() {
+    URI uri = getSettingsUri();
+    if (!objectStorage.exists(uri)) {
+      constructSettingsObject(uri);
+    }
+    return uri;
+  }
+
   public final StorageObject<StorageSettings> settings() {
     URI uri = getSettingsUri();
     // TODO Lock the settings!!!! Optimistic lock will be enough.
@@ -257,14 +303,20 @@ public class Storage {
       storageObject =
           objectStorage.load(this, uri, StorageSettings.class);
     } catch (ObjectNotFoundException e) {
-      // It's missing now so we have to create is.
-      storageObject = instanceOf(StorageSettings.class);
-      // At this point we already know the unique URI that can be used to refer from other objects
-      // also.
-      storageObject.setUri(uri);
-      storageObject.setObject(new StorageSettings().schemeName(scheme));
-      save(storageObject);
+      storageObject = constructSettingsObject(uri);
     }
+    return storageObject;
+  }
+
+  private final StorageObject<StorageSettings> constructSettingsObject(URI uri) {
+    StorageObject<StorageSettings> storageObject;
+    // It's missing now so we have to create is.
+    storageObject = instanceOf(StorageSettings.class);
+    // At this point we already know the unique URI that can be used to refer from other objects
+    // also.
+    storageObject.setUri(uri);
+    storageObject.setObject(new StorageSettings().schemeName(scheme));
+    save(storageObject);
     return storageObject;
   }
 
