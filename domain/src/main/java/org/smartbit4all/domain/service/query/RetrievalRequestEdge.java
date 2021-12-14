@@ -31,7 +31,7 @@ public final class RetrievalRequestEdge {
 
   /**
    * The referred node that is pointed by the edge. The starting node contains this edge in a list
-   * {@link RetrieveExecutionNode#edges}.
+   * RetrieveExecutionNode#edges.
    */
   final RetrievalRequestNode node;
 
@@ -61,7 +61,7 @@ public final class RetrievalRequestEdge {
    * {@link RetrievalRequestNode} query.
    * 
    * @param node
-   * @param reference
+   * @param navigationRole
    */
   public RetrievalRequestEdge(RetrievalRequestNode node, AssociationRole navigationRole) {
     super();

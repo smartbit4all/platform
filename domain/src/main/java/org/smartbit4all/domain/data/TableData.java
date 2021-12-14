@@ -202,8 +202,6 @@ public final class TableData<E extends EntityDefinition> {
    * @param <T>
    * @param column
    * @param row
-   * @return Returns the raw data from the given cell of the data table. It return the value without
-   *         any transformation.
    */
   public <T> void set(DataColumn<T> column, DataRow row, T value) {
     column.setValue(row, value);
@@ -214,11 +212,9 @@ public final class TableData<E extends EntityDefinition> {
    * if we have a referred column then we need to use the reference for the given data table to
    * access the row.
    * 
-   * @param <T>
    * @param column
    * @param row
-   * @return Returns the raw data from the given cell of the data table. It return the value without
-   *         any transformation.
+   * @param value
    */
   public void setObject(DataColumn<?> column, DataRow row, Object value) {
     column.setValue(row, value);
@@ -453,7 +449,6 @@ public final class TableData<E extends EntityDefinition> {
    * 
    * @return We get back the newly created row object. It's a direct reference for the newly created
    *         row.
-   * @throws InvalidRowException
    */
   public DataRow addRow() {
     return rowModel.addRow(1, null, true).get(0);

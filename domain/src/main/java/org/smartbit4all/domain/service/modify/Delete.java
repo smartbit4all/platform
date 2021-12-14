@@ -30,7 +30,7 @@ public interface Delete<E extends EntityDefinition>
   /**
    * The modification source that defines the identified records to delete.
    * 
-   * @param source
+   * @param data
    * @return
    */
   Delete<E> by(TableData<E> data);

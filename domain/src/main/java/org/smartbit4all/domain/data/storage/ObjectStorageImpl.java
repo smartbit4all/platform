@@ -205,7 +205,7 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
    * 
    * @param <T>
    * @param storageObject The storage object from the request.
-   * @param storageObjectData The {@link StorageObjectData}
+   * @param relationData The {@link StorageObjectRelationData}
    */
   protected final <T> StorageObjectRelationData saveStorageObjectReferences(
       StorageObject<T> storageObject, StorageObjectRelationData relationData) {
@@ -329,7 +329,7 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
   /**
    * This supplier is responsible for accessing the current user in the actual context.
    * 
-   * @param currentUserSupplier
+   * @param versionCreatedBy
    */
   public final ObjectStorage currentUserSupplier(Supplier<String> versionCreatedBy) {
     this.versionCreatedBy = versionCreatedBy;

@@ -356,8 +356,8 @@ public final class TableDatas {
    * @param <T> The subtype (subinterface) of {@link EntityDefinition} that is used by the table
    *        data.
    * @param entityDef The object of the entity definition that is used by the table data.
-   * @param properties The properties that will be initialized as columns in the table data <u>in an
-   *        ordered implementation of {@link Collection}</u>
+   * @param orderedProperties The properties that will be initialized as columns in the table data
+   *        <u>in an ordered implementation of {@link Collection}</u>
    * @return A new instance of {@link BuilderWithOrderedProperties}
    */
   public static <T extends EntityDefinition> BuilderWithOrderedProperties<T> builderWithOrderedProperties(

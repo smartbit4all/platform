@@ -19,6 +19,7 @@ import java.util.List;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.domain.meta.Reference;
+import org.smartbit4all.domain.service.dataset.DataSetEntry;
 
 /**
  * The entities in a system can come from several domains. All the application logics can use these

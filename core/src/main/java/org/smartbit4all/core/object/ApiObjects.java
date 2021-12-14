@@ -35,8 +35,10 @@ final class ApiObjects {
    * The meta descriptor for the given api class.
    * 
    * @param apiClass
-   * @param allDomainClasses The related classes are the other bean classes referred by the object
+   * @param descriptors The related classes are the other bean classes referred by the object
    *        hierarchy.
+   * @param qualifier Qualifier of bean classes, it will be used to cache bean class descriptors
+   *        into separate caches identified by this qualifier.
    * @return The BeanMeta descriptor.
    * @throws ExecutionException
    */

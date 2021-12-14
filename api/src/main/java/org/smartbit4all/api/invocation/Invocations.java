@@ -190,11 +190,8 @@ public class Invocations {
    * This operation tries to call the consumers and if it's failed that remove the given consumer
    * from the collection.
    * 
+   * @param object
    * @param consumerName
-   * @param uri
-   * @param storageClass
-   * @param storage
-   * @param storageApi
    * @param invocationApi
    */
   public static final void callConsumers(

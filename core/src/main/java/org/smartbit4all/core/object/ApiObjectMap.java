@@ -53,10 +53,10 @@ public final class ApiObjectMap implements Map<String, ApiObjectRef> {
   /**
    * Constructs a collection reference that manages the changes of a collection. Doesn't sets /
    * initializes original collection, it should be done separately with
-   * {@link #setOriginalCollection(Collection)}.
+   * {@link #setOriginalMap(Map)}.
    * 
    * @param objectRef
-   * @param collectionProperty
+   * @param mapProperty
    */
   ApiObjectMap(ApiObjectRef objectRef, PropertyMeta mapProperty) {
     super();

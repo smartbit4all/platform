@@ -203,8 +203,6 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
    * @param operand The operand to append. If it's an {@link OperandProperty} then it will be
    *        appended as column. But if it's an {@link OperandLiteral} then it will create the bind
    *        value {@link SQLBindValueLiteral}.
-   * @return The {@link SQLBindValueLiteral} if it has been created or null if it was property and
-   *         added as a column.
    */
   @Override
   public final void append(List<SQLBindValueLiteral> bindList, Operand<?> operand) {
@@ -320,7 +318,6 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
   /**
    * Append a simple string to the SQL statement. Used if we have a never changing constant.
    * 
-   * @param sqlFragment The fragment of the SQL statement.
    */
   @Override
   public final SQLStatementBuilderIF append(BooleanOperator booleanOperator) {

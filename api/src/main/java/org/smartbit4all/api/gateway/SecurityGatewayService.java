@@ -23,7 +23,6 @@ public interface SecurityGatewayService {
    * Returns every security group.
    * 
    * @return
-   * @throws Exception
    */
   @Deprecated
   List<Group> getGroups();
@@ -32,7 +31,6 @@ public interface SecurityGatewayService {
    * Returns every security user.
    * 
    * @return
-   * @throws Exception
    */
   @Deprecated
   List<User> getUsers();
@@ -42,7 +40,6 @@ public interface SecurityGatewayService {
    * 
    * @param groupUri
    * @return
-   * @throws Exception
    */
   @Deprecated
   List<User> getUsersOfGroup(URI groupUri);
@@ -52,7 +49,6 @@ public interface SecurityGatewayService {
    * 
    * @param userUri
    * @return
-   * @throws Exception
    */
   @Deprecated
   List<Group> getGroupsOfUser(URI userUri);
@@ -62,7 +58,6 @@ public interface SecurityGatewayService {
    * 
    * @param userUri
    * @return
-   * @throws Exception
    */
   @Deprecated
   User getUser(URI userUri);
@@ -89,7 +84,6 @@ public interface SecurityGatewayService {
   /**
    * Creates Group and adds it to storage.
    * 
-   * @param groupName
    * @param name
    * @param description
    * @param kind
@@ -113,8 +107,8 @@ public interface SecurityGatewayService {
   /**
    * Binds user and group together by adding to usersOfGroup, and groupsOfUser storage.
    * 
-   * @param user
-   * @param group
+   * @param userUri
+   * @param groupUri
    */
   @Deprecated
   void addUserToGroup(URI userUri, URI groupUri);

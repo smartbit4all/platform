@@ -50,7 +50,6 @@ public interface EntityDefinition extends SB4Service {
     /**
      * Constructs a table node.
      * 
-     * @param schema The database schema.
      * @param name The name of the table.
      */
     public TableDefinition(String name) {

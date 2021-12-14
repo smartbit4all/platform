@@ -156,7 +156,7 @@ public final class LocaleSettingApi implements InitializingBean {
    * This function analyze the given class to discover the {@link LocaleString} fields. We add this
    * API for them to enable locale specific behavior for them.
    * 
-   * @param clazz
+   * @param option
    */
   public void analyzeLocaleStrings(LocaleOption option) {
     // Let's check the static LocaleString

@@ -40,7 +40,6 @@ public abstract class ChangeItem {
   /**
    * Constructing a new instance with the give parent URI.
    * 
-   * @param uri
    */
   ChangeItem(String path, String name) {
     super();

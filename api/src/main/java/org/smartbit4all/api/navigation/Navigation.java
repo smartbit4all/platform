@@ -332,8 +332,9 @@ public class Navigation {
    * This function expand all the nodes in a given navigation and returns all the children nodes.
    * 
    * @param node The starting node in the navigation.
-   * @param The recursion predicate examine if the given node will be included or not. Using this we
-   *        can prevent adding the same node because of the circles in the navigation.
+   * @param recursionFilter The recursion predicate examine if the given node will be included or
+   *        not. Using this we can prevent adding the same node because of the circles in the
+   *        navigation.
    * @return All the children nodes under the given node.
    */
   public List<NavigationNode> expandRecursiveAndRetrieve(NavigationNode node,
@@ -347,9 +348,9 @@ public class Navigation {
    * This function expand all the nodes in a given navigation and returns all the children nodes.
    * 
    * @param node The starting node in the navigation.
-   * @param The recursion predicate examine if the given node will be included or not. Using this we
-   *        can prevent adding the same node because of the circles in the navigation.
-   * @return All the children nodes under the given node.
+   * @param recursionFilter The recursion predicate examine if the given node will be included or
+   *        not. Using this we can prevent adding the same node because of the circles in the
+   *        navigation.
    */
   private void expandRecursiveAndRetrieve(NavigationNode node,
       Predicate<NavigationNode> recursionFilter, int depth, Map<URI, NavigationNode> result) {
@@ -442,7 +443,7 @@ public class Navigation {
    * with the currently existing nodes! So be careful and use this only for adding root nodes for
    * the navigation.
    * 
-   * @param entryMeta An existing meta descriptor for the navigation we have.
+   * @param entryMetaUri The URI of an existing meta descriptor for the navigation we have.
    * @param objectUri The URI of the Api object exposed by the original API.
    * 
    * @return

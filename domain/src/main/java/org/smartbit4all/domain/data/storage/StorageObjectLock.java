@@ -16,10 +16,6 @@ import java.util.concurrent.locks.Lock;
  * 
  * One time usage!!!
  * 
- * Usage: We can get an instance of the lock with the {@link Storage#getLock(URI)} and at the end of
- * the usage we can free up the instance with calling the
- * {@link Storage#releaseLock(StorageObjectLock)} or even with loosing the reference for the lock!
- * In this case the {@link StorageObjectLockEntry} is detected by the
  * 
  * @author Peter Boros
  */

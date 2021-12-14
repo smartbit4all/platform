@@ -19,7 +19,6 @@ import com.vaadin.flow.function.SerializablePredicate;
  * @author Vaadin Ltd
  * @since 1.2
  *
- * @param <T> data type
  */
 public class TreeDataProvider
     extends AbstractHierarchicalDataProvider<TreeNode, SerializablePredicate<TreeNode>>

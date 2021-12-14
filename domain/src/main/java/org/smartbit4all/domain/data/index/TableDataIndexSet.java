@@ -65,8 +65,6 @@ public class TableDataIndexSet {
   /**
    * Get or create the unique index for the given property.
    * 
-   * @param property The property.
-   * 
    */
   @SuppressWarnings("unchecked")
   public <T1 extends Comparable<?>, T2 extends Comparable<?>> UniqueIndex2<T1, T2> unique(
@@ -81,8 +79,6 @@ public class TableDataIndexSet {
   /**
    * Get or create the unique index for the given property.
    * 
-   * @param property The property.
-   * 
    */
   @SuppressWarnings("unchecked")
   public <T> UniqueIndex<T> unique(DataColumn<T> column) {
@@ -95,8 +91,6 @@ public class TableDataIndexSet {
 
   /**
    * Get or create the unique index for the given property.
-   * 
-   * @param property The property.
    * 
    */
   @SuppressWarnings("unchecked")
@@ -128,8 +122,6 @@ public class TableDataIndexSet {
   /**
    * Get or create the index for the given property.
    * 
-   * @param property The property.
-   * 
    */
   @SuppressWarnings("unchecked")
   public <T1 extends Comparable<?>, T2 extends Comparable<?>> NonUniqueIndex2<T1, T2> nonUnique(
@@ -144,8 +136,6 @@ public class TableDataIndexSet {
   /**
    * Get or create the index for the given property.
    * 
-   * @param property The property.
-   * 
    */
   @SuppressWarnings("unchecked")
   public <T> NonUniqueIndex<T> nonUnique(DataColumn<T> column) {
@@ -158,8 +148,6 @@ public class TableDataIndexSet {
 
   /**
    * Get or create the index for the given property.
-   * 
-   * @param property The property.
    * 
    */
   @SuppressWarnings("unchecked")
@@ -176,8 +164,6 @@ public class TableDataIndexSet {
   /**
    * Returns the index for the given column if any.
    * 
-   * @param <T>
-   * @param column The column.
    * @return The index if exists and null if we don't have any.
    */
   public TableDataIndex find(IndexType type, Property<?>... properties) {

@@ -280,7 +280,6 @@ public abstract class Property<T> {
 
   /**
    * 
-   * @param values
    * @return Returns a between expression with the given operand values as lowerbound and
    *         upperbound.
    * 
@@ -291,7 +290,6 @@ public abstract class Property<T> {
 
   /**
    * 
-   * @param values
    * @return Returns a between expression with the given values as lowerbound and upperbound.
    * 
    */
@@ -406,10 +404,10 @@ public abstract class Property<T> {
   public final Property<T> function(String functionName) {
     return function(PropertyFunction.withSelfPropertyArgument(functionName));
   }
-  
+
   /**
    * Applies the given function on property. </br>
-   * Use the {@link PropertyFunction#build(String)} static method to create a 
+   * Use the {@link PropertyFunction#build(String)} static method to create a
    * {@link PropertyFunction} instance.
    */
   public Property<T> function(PropertyFunction propertyFunction) {

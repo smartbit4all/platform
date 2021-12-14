@@ -1,18 +1,16 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
  * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 package org.smartbit4all.core;
 
@@ -98,7 +96,6 @@ public class SB4ContextImpl implements SB4Context {
     /**
      * Create a new registry entry.
      * 
-     * @param instance The loaded instance as the implementation of the service.
      * @param proxy The proxy created as the facade for the given service interface.
      * @param invocationHandler The invocation handler that serves the invocations of the interface.
      */
@@ -113,9 +110,8 @@ public class SB4ContextImpl implements SB4Context {
     /**
      * Create a new registry entry.
      * 
-     * @param instance The loaded instance as the implementation of the service.
-     * @param proxy The proxy created as the facade for the given service interface.
-     * @param invocationHandler The invocation handler that serves the invocations of the interface.
+     * @param serviceIF
+     * @param implClass
      */
     <T extends SB4Service> RegistryEntry(Class<T> serviceIF, Class<? extends T> implClass) {
       super();
@@ -194,7 +190,6 @@ public class SB4ContextImpl implements SB4Context {
    * TODO It's not the final API. It will be redesigned with the injection framework implementation.
    * 
    * @param <T> The class of the {@link SB4Service}
-   * @param serviceInstance The implementation instance of the interface.
    * @param serviceIF The class of the service interface to implement.
    * @param invocationHandler The invocation handler for interface definition. If it's null then all
    *        the invocations go directly to the serviceInstance. There is no tricky aspect. It's

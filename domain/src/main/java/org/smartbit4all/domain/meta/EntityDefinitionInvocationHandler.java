@@ -363,8 +363,7 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
    * @param joins
    * @param targetEntityClazz
    * @param referenceName
-   * @param referenceMethodName
-   * @param entityMethodName
+   * @param referenceMandatory
    */
   private void processReference(Join[] joins,
       Class<? extends EntityDefinition> targetEntityClazz,

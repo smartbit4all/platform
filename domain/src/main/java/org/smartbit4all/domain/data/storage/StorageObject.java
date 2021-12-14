@@ -81,9 +81,9 @@ public final class StorageObject<T> {
   private ObjectVersion version;
 
   /**
-   * The lock belongs to this {@link StorageObject}. It's set when we load the object with
-   * {@link StorageLoadOption#lock()} option. Otherwise a lock is managed by the save operation and
-   * not saved directly here in advance.
+   * The lock belongs to this {@link StorageObject}. TODO: clarify! It's set when we load the object
+   * with StorageLoadOption#lock() option. Otherwise a lock is managed by the save operation and not
+   * saved directly here in advance.
    */
   private StorageObjectLock lock;
 
@@ -246,7 +246,6 @@ public final class StorageObject<T> {
   }
 
   /**
-   * @param <T>
    * @param referenceName The name of the reference.
    * @param containedObject The object itself that will be saved by the storage that we are working
    *        with currently.

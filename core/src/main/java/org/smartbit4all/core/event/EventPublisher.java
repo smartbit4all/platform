@@ -15,7 +15,7 @@
 package org.smartbit4all.core.event;
 
 /**
- * A marker interface for the {@link EventAware}s to offer the {@link EventDefinition} for the
+ * A marker interface for the <code>EventAware</code>s to offer the {@link EventDefinition} for the
  * consumers. The implementations will have the named operation for every event.
  * 
  * @author Peter Boros

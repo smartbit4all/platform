@@ -14,12 +14,12 @@ public class QueryOutputResultAssembler {
   public static final int COLUMNNOTACCEPTED = -1;
 
   private QueryOutput queryOutput;
-  
+
   /**
    * The existing or the newly created {@link TableData}.
    */
   private TableData<?> tableData;
-  
+
 
   /**
    * The current row used for setting the values.
@@ -35,12 +35,12 @@ public class QueryOutputResultAssembler {
    * The index based access to the {@link DataColumn}.
    */
   List<DataColumn<?>> columnsByIndex = new ArrayList<>();
-  
+
   public QueryOutputResultAssembler(QueryOutput queryOutput) {
     Objects.requireNonNull(queryOutput, "queryOutput can not be null!");
     this.queryOutput = queryOutput;
   }
-  
+
 
   /**
    * A call back function to notify that the fetch began.
@@ -56,7 +56,7 @@ public class QueryOutputResultAssembler {
    * This ensure the given result that it will accept the given {@link Property} as a fetch result.
    * 
    * @param property The property to accept.
-   * @return The index that can be used to set the value of the result. 
+   * @return The index that can be used to set the value of the result.
    */
   public int accept(Property<?> property) {
     columnsByIndex.add(tableData.addColumnOwn(property));
@@ -79,8 +79,8 @@ public class QueryOutputResultAssembler {
    * Adding a new row for the result. The new row will be the iterated so the next
    * {@link #setValue(int, Object)} will work on this.
    * 
-   * @return Return true if the result can accept the next line. If it's false then the
-   *         {@link QueryRequest} will skip the rest of the result and stop fetching.
+   * @return Return true if the result can accept the next line. If it's false then the QueryRequest
+   *         will skip the rest of the result and stop fetching.
    */
   public boolean startRow() {
     row = tableData.addRow();
@@ -104,5 +104,5 @@ public class QueryOutputResultAssembler {
   public void finish() {
     queryOutput.setTableData(tableData);
   }
-  
+
 }

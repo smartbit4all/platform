@@ -111,9 +111,9 @@ import org.smartbit4all.domain.meta.Reference;
 public class RetrievalRequest {
 
   /**
-   * The nodes of the retrieval request where every node contains a simple {@link QueryRequest}.
-   * They must be named uniquely in this context. We can add new queries named manually but without
-   * naming the Retrieval will name the query.
+   * The nodes of the retrieval request where every node contains a simple QueryRequest. They must
+   * be named uniquely in this context. We can add new queries named manually but without naming the
+   * Retrieval will name the query.
    */
   Map<String, RetrievalRequestNode> nodes = new HashMap<>();
 

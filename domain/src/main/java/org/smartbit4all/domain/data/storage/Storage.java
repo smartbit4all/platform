@@ -66,11 +66,6 @@ public class Storage {
 
   private URI settingsuri;
 
-  /**
-   * @param clazz The class that is managed by the storage instance.
-   * @param objectStorage Stores the serialized objects
-   * @param indexes Indexes for the given type
-   */
   public Storage(String scheme, ObjectApi objectApi, ObjectStorage objectStorage) {
     this.objectStorage = objectStorage;
     this.objectApi = objectApi;
@@ -83,8 +78,8 @@ public class Storage {
    * @param <T>
    * @param clazz The class that represents a domain object.
    * @return A new Instance of the {@link StorageObject} that already has an URI! If we save this
-   *         without {@link #getObjectUri(T)} then it will be an empty object but we can subscribe
-   *         for it's events.
+   *         without {@link StorageObject#setObject(Object)} then it will be an empty object but we
+   *         can subscribe for it's events.
    */
   public <T> StorageObject<T> instanceOf(Class<T> clazz) {
     ObjectDefinition<T> objectDefinition = objectApi.definition(clazz);

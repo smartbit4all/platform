@@ -19,8 +19,8 @@ import java.util.List;
 
 /**
  * The clause is a section of {@link Expression}s with the same logical operator (AND, OR) among
- * them. If we have an expression tree built up from {@link ExpressionBooleFormula} and all of them
- * are AND then it's equivalent with a AND clause containing all the conditions from the tree.
+ * them. If we have an expression tree built up from {@link ExpressionBoolean} and all of them are
+ * AND then it's equivalent with a AND clause containing all the conditions from the tree.
  * 
  * It can be used as a list of {@link Expression} instead of having a List.
  * 
@@ -210,7 +210,7 @@ public final class ExpressionClause extends Expression implements ExpressionCont
   public ExpressionClause add(Expression expression) {
     if (expression instanceof ExpressionClause) {
       ExpressionClause clauseToAdd = (ExpressionClause) expression;
-      if(!clauseToAdd.expressions.isEmpty()) {
+      if (!clauseToAdd.expressions.isEmpty()) {
         if (this.operator == clauseToAdd.operator) {
           this.expressions.addAll(clauseToAdd.expressions);
         } else {

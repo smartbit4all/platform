@@ -358,7 +358,6 @@ public final class DataRow {
    * @param <C>
    * @param <T>
    * @param column
-   * @param row
    * @param converter
    * @return
    */
@@ -416,7 +415,6 @@ public final class DataRow {
   /**
    * see {@link TableData#set(DataColumn, DataRow, Object)}
    * 
-   * @param <T>
    * @param column
    * @param value
    */
@@ -435,11 +433,10 @@ public final class DataRow {
   }
 
   /**
-   * see {@link TableData#set(DataColumn, DataRow, Comparable)}
+   * see {@link TableData#set(DataColumn, DataRow, Object)}
    * 
    * @param <T>
-   * @param column
-   * @param value
+   * @param bean
    * @throws ExecutionException If something went wrong with the mapping of the given bean then we
    *         have to handle the exception.
    */
@@ -558,12 +555,12 @@ public final class DataRow {
       Object thisObject = this.get(thisProperty);
       Object otherObject = oRow.get(otherProperty);
 
-      if(thisObject == null) {
-        
-        if(otherObject != null) {
+      if (thisObject == null) {
+
+        if (otherObject != null) {
           return false;
         }
-        
+
       } else if (!thisObject.equals(otherObject)) {
         return false;
       }

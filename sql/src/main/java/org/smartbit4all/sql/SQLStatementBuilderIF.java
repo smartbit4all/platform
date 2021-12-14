@@ -108,8 +108,6 @@ public interface SQLStatementBuilderIF extends SB4Service {
    * @param operand The operand to append. If it's an {@link OperandProperty} then it will be
    *        appended as column. But if it's an {@link OperandLiteral} then it will create the bind
    *        value {@link SQLBindValueLiteral}.
-   * @return The {@link SQLBindValueLiteral} if it has been created or null if it was property and
-   *         added as a column.
    */
   void append(List<SQLBindValueLiteral> bindList, Operand<?> operand);
 
@@ -139,7 +137,6 @@ public interface SQLStatementBuilderIF extends SB4Service {
   /**
    * Append a simple string to the SQL statement. Used if we have a never changing constant.
    * 
-   * @param sqlFragment The fragment of the SQL statement.
    */
   SQLStatementBuilderIF append(BooleanOperator booleanOperator);
 
@@ -353,12 +350,12 @@ public interface SQLStatementBuilderIF extends SB4Service {
   /**
    * Returns the function as a column.
    * 
-   * @param baseParam
    * @param propertyFunction
-   * @param requiredOperandProperties
+   * @param baseParam
+   * @param requiredParamSqlStrings
    * @return
    */
-  String getFunctionSqlString(PropertyFunction propertyFunction, String baseParam, 
+  String getFunctionSqlString(PropertyFunction propertyFunction, String baseParam,
       List<String> requiredParamSqlStrings);
 
 }

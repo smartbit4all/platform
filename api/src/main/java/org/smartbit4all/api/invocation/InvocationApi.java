@@ -22,7 +22,7 @@ public interface InvocationApi {
   /**
    * We can save an invocation template.
    * 
-   * @param requestTemplateThe template.
+   * @param requestTemplate The template.
    * @return Generates an URI for the saved request template.
    */
   URI save(InvocationRequestTemplate requestTemplate);

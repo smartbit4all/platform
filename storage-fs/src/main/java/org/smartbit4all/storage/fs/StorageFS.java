@@ -122,7 +122,7 @@ public class StorageFS extends ObjectStorageImpl {
    * Constructs the File of the given object version.
    * 
    * @param objectHistoryBasePath
-   * @param newVersion
+   * @param serialNo
    * @return
    */
   private File getObjectVersionFile(File objectHistoryBasePath, long serialNo) {
@@ -134,7 +134,7 @@ public class StorageFS extends ObjectStorageImpl {
    * Constructs the File of the given object version.
    * 
    * @param objectHistoryBasePath
-   * @param version
+   * @param serialNo
    * @return
    */
   private File getObjectRelationVersionFile(File objectHistoryBasePath, long serialNo) {
@@ -490,14 +490,14 @@ public class StorageFS extends ObjectStorageImpl {
     return result;
   }
 
-  /**
-   * Reads an object uri based given extension file if exists.
-   * 
-   * @param rootFolder
-   * @param uri
-   * @param extension The specific extension as post fix for the file.
-   * @return
-   */
+  // /**
+  // * Reads an object uri based given extension file if exists.
+  // *
+  // * @param rootFolder
+  // * @param uri
+  // * @param extension The specific extension as post fix for the file.
+  // * @return
+  // */
   // private File lockFile(File rootFolder, URI uri) {
   // File file = new File(rootFolder, uri.getPath() + storedObjectFileExtension);
   // return getFileBinaryData(file);

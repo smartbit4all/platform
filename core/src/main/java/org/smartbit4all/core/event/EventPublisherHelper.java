@@ -34,7 +34,7 @@ import com.google.common.cache.CacheBuilder;
  * {@link EventDefinition}s on the API of the instance. Using this the implementation provide meta
  * API for accessing the event for example by URI.
  * 
- * The helper is used by the API implementations to support the {@link EventAware} behavior.
+ * The helper is used by the API implementations to support the <code>EventAware</code> behavior.
  * Typically the events() is supported by a helper that provides {@link Proxy} with
  * {@link InvocationHandler}.
  * 
@@ -284,5 +284,5 @@ public class EventPublisherHelper<P extends EventPublisher> implements Invocatio
   public static <T extends EventPublisher> EventPublisherHelper<T> get(T eventPublisher) {
     return (EventPublisherHelper<T>) Proxy.getInvocationHandler(eventPublisher);
   }
-  
+
 }

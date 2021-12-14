@@ -84,7 +84,6 @@ final class ExpressionEvaluation extends ExpressionVisitor {
   /**
    * Initiate the visitor for the traverse algorithm.
    * 
-   * @param currentPlan
    */
   public ExpressionEvaluation(TableData<?> tableData, TableDataIndexSet indexSet,
       Expression expression) {
@@ -106,7 +105,6 @@ final class ExpressionEvaluation extends ExpressionVisitor {
   /**
    * Initiate the visitor for the traverse algorithm.
    * 
-   * @param currentPlan
    */
   public ExpressionEvaluation(
       StorageLoader loader,

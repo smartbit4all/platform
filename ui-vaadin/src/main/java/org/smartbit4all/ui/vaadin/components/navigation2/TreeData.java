@@ -251,7 +251,7 @@ public class TreeData implements Serializable {
   }
 
   /**
-   * Clear all items from this structure. Shorthand for calling {@link #removeItem(Object)} with
+   * Clear all items from this structure. Shorthand for calling {@link #removeItem(TreeNode)} with
    * null.
    *
    * @return this

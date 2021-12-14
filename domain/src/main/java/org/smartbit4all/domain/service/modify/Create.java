@@ -31,7 +31,7 @@ public interface Create<E extends EntityDefinition>
   /**
    * Set the values based on a {@link TableData}.
    * 
-   * @param tableData The table data with the values for the create (insert) statement.
+   * @param data The table data with the values for the create (insert) statement.
    * @return Fluid API
    * 
    */

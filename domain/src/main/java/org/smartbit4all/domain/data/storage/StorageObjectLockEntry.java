@@ -1,6 +1,5 @@
 package org.smartbit4all.domain.data.storage;
 
-import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.net.URI;
 import java.util.Map;
@@ -85,7 +84,6 @@ final class StorageObjectLockEntry {
    *        on the storage to give an exclusive access to the given object and avoid parallel
    *        modification and inconsistency.
    * 
-   * @throws IOException
    */
   StorageObjectLockEntry(URI objectURI,
       Supplier<StorageObjectPhysicalLock> acquire,

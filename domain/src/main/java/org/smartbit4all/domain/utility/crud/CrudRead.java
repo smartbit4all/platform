@@ -40,15 +40,16 @@ import org.smartbit4all.domain.service.transfer.TransferService;
 
 public class CrudRead<E extends EntityDefinition> {
 
-//  private QueryRequest query;
+  // private QueryRequest query;
   private QueryInput queryInput;
   private QueryOutput queryOutput;
 
   private E entityDef;
-  
+
   enum QueryOutputMode {
     INTO, APPEND
   }
+
   private QueryOutputMode queryOutputMode = QueryOutputMode.INTO;
 
   CrudRead(E entityDef) {
@@ -111,7 +112,7 @@ public class CrudRead<E extends EntityDefinition> {
     }
 
     QueryOutput output = Queries.execute(queryInput);
-    
+
     TableData<?> baseTableData = queryOutput.getTableData();
     TableData<?> resultTableData = output.getTableData();
     switch (queryOutputMode) {
@@ -171,7 +172,6 @@ public class CrudRead<E extends EntityDefinition> {
    * In this case we want to run the query and retrieve the first value from the first row.
    * Typically the result of the count, sum avg etc. functions can be executed in this way.
    * 
-   * @param <T>
    * @return
    * @throws Exception
    */
@@ -182,7 +182,7 @@ public class CrudRead<E extends EntityDefinition> {
   }
 
   /**
-   * @param msg exception message when there are more than one result rows
+   * @param multipleRowsExceptionMessage exception message when there are more than one result rows
    * @return
    * @throws Exception
    */
@@ -254,6 +254,7 @@ public class CrudRead<E extends EntityDefinition> {
       return Optional.empty();
     }
   }
+
   /**
    * We can add all columns to the query.
    * 
@@ -296,18 +297,19 @@ public class CrudRead<E extends EntityDefinition> {
     return this;
   }
 
-//  public void setInput(QueryInput input) {
-//    query.setInput(input);
-//  }
-//
-//
-//  public void setOutput(QueryOutput output) {
-//    query.setOutput(output);
-//  }
+  // public void setInput(QueryInput input) {
+  // query.setInput(input);
+  // }
+  //
+  //
+  // public void setOutput(QueryOutput output) {
+  // query.setOutput(output);
+  // }
 
 
   /**
    * We can add all columns to the query.
+   * 
    * @deprecated use {@link #selectAllProperties()} instead!
    * @return Fluid API
    */
@@ -320,7 +322,7 @@ public class CrudRead<E extends EntityDefinition> {
   /**
    * Defines a sort order for the query.
    * 
-   * @param sortOrder
+   * @param order
    * @return Fluid API
    */
   public CrudRead<E> order(SortOrderProperty order) {
@@ -331,7 +333,7 @@ public class CrudRead<E extends EntityDefinition> {
   /**
    * Defines a sort order for the query with ascending parameter.
    * 
-   * @param sortOrder
+   * @param property
    * @return Fluid API
    */
   public CrudRead<E> order(Property<?> property) {
@@ -349,7 +351,7 @@ public class CrudRead<E extends EntityDefinition> {
   }
 
   /**
-   * @param groupBy The list of properties to use for grouping by.
+   * @param groupBys The list of properties to use for grouping by.
    * @return Fluid API
    */
   public CrudRead<E> groupBy(Property<?>... groupBys) {
@@ -447,7 +449,7 @@ public class CrudRead<E extends EntityDefinition> {
   /**
    * Query result will appear in result parameter. All existing rows will be deleted.
    * 
-   * @param property
+   * @param result
    * @return Fluid API
    */
   public CrudRead<E> into(TableData<E> result) {
@@ -459,7 +461,7 @@ public class CrudRead<E extends EntityDefinition> {
   /**
    * Query result will be appended to the result parameter. Existing rows will NOT be deleted.
    * 
-   * @param property
+   * @param result
    * @return Fluid API
    */
   public CrudRead<E> append(TableData<E> result) {
@@ -512,7 +514,6 @@ public class CrudRead<E extends EntityDefinition> {
   /**
    * Returns the output of the Query.
    * 
-   * @param output
    * @return Fluid API
    */
   public QueryOutput output() {
@@ -553,7 +554,7 @@ public class CrudRead<E extends EntityDefinition> {
     initLock(timeOut);
     return this;
   }
-  
+
   private final CrudRead<E> initLock(long timeout) {
     if (queryInput != null) {
       queryInput.setLockRequest(new LockRequest(timeout));
@@ -564,7 +565,7 @@ public class CrudRead<E extends EntityDefinition> {
   /**
    * Add the properties to the query by a bean.
    * 
-   * @param the bean that has fields translatable to entity properties
+   * @param beanClass The bean that has fields translatable to entity properties
    * @return
    * @throws Exception
    */
@@ -574,7 +575,6 @@ public class CrudRead<E extends EntityDefinition> {
     queryInput.select(binding.bindingsByProperties().keySet());
     return this;
   }
-
 
   public TableData<E> result() {
     return (TableData<E>) queryOutput.getTableData();

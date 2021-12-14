@@ -1,18 +1,16 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
  * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 package org.smartbit4all.domain.data;
 
@@ -76,7 +74,7 @@ public class EntityCollaboration {
    * 
    * @param <T> The data type of the given property. The column will store the values from this data
    *        type.
-   * @param property Property of the {@link #entityDef}.
+   * @param property Property of the entity.
    * @return Return the data column defined in the root entity to be able to access the data value.
    */
   public <T> DataColumn<T> addColumn(Property<T> property) {
@@ -99,8 +97,9 @@ public class EntityCollaboration {
 
   /**
    * @param <T>
-   * @param property The reference propery with a join path to access the final property at the end.
-   * @param joinIndex The index of the join that we have to process. We can start with 0 to process
+   * @param property The reference property with a join path to access the final property at the
+   *        end.
+   * @param joinIter The index of the join that we have to process. We can start with 0 to process
    *        the first join and we can increase the value by the next recursion level.
    * @param tableData A currently existing data table in the model. This source of the currently
    *        processed join.

@@ -19,8 +19,8 @@ import org.smartbit4all.domain.meta.EntityDefinition;
 /**
  * This API is responsible for executing query against the current application setup. In a simple
  * application there can a be an SQL level implementation. But in a complex application there can be
- * special contributions for executing a query object. A single {@link QueryRequest} is executed by
- * the {@link QueryExecutionApi} and this Api orchestrates these query executions.
+ * special contributions for executing a query object. A single QueryRequest is executed by the
+ * {@link QueryExecutionApi} and this Api orchestrates these query executions.
  * 
  * @author Peter Boros
  */
@@ -63,7 +63,7 @@ public interface QueryApi {
   /**
    * Executes a single query by the given input
    * 
-   * @param queryInput
+   * @param retrieval
    * @return the query output with a new TableData and a name matching the input
    * @throws Exception
    */

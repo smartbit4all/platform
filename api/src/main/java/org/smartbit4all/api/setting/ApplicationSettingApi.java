@@ -38,7 +38,7 @@ public interface ApplicationSettingApi {
   /**
    * Get or create the attached map with the given name.
    * 
-   * @param userUri The user uri.
+   * @param objectUri The user uri.
    * @param mapName The name of the map. An application level content that is well-known by the
    *        parties.
    * @return The current version of the object map.

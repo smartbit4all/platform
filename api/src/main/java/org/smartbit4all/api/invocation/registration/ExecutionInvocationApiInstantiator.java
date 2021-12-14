@@ -11,25 +11,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 /**
- * With the {@value #PROTOCOL} protokol there is a proxy created without any implementation. This
- * way the call is delegated to specified execution api which is (in most cases) a remote one. 
+ * With the {@value this#getProtocol()} protokol there is a proxy created without any
+ * implementation. This way the call is delegated to specified execution api which is (in most
+ * cases) a remote one.
  */
 public class ExecutionInvocationApiInstantiator implements ProtocolSpecificApiInstantiator {
 
   public static final String APIINFO_PARAM_EXECUTION_API = "executionApi";
-  
+
   @Autowired
   private InvocationApi invocationApi;
-  
+
   @Autowired
   private ApplicationContext appContext;
-  
-  
-  
+
   @Override
   public Object instantiate(ApiInfo apiInfo) throws Exception {
     String interfaceQualifiedName = apiInfo.getInterfaceQualifiedName();
-    String executionApi = (String) apiInfo.getParameters().get(APIINFO_PARAM_EXECUTION_API);
+    String executionApi = apiInfo.getParameters().get(APIINFO_PARAM_EXECUTION_API);
     Class<?> interfaceType = Class.forName(interfaceQualifiedName);
     InvocationExecutionDelegation delegationAsOriginalApi =
         new InvocationExecutionDelegation(invocationApi, executionApi, appContext);
@@ -42,13 +41,12 @@ public class ExecutionInvocationApiInstantiator implements ProtocolSpecificApiIn
     return Invocations.EXECUTION;
   }
 
-  
   public static class InvocationExecutionDelegation implements InvocationExecutionApi {
-    
+
     InvocationApi invocationApi;
     String executionApi;
     ApplicationContext appContext;
-    
+
     public InvocationExecutionDelegation(InvocationApi invocationApi, String executionApi,
         ApplicationContext appContext) {
       this.invocationApi = invocationApi;
@@ -68,9 +66,7 @@ public class ExecutionInvocationApiInstantiator implements ProtocolSpecificApiIn
           Invocations.getModifiedRequestToCallInnerApi(request, apiInstance, executionApi);
       return invocationApi.invoke(modifiedRequest);
     }
-    
-    
+
   }
-  
-  
+
 }

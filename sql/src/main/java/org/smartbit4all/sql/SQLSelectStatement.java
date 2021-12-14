@@ -111,7 +111,7 @@ public class SQLSelectStatement implements SQLStatementNode {
 
   /**
    * Set the from section of the select. It's a graph and must contains all the from sections before
-   * run {@link #render(SQLStatementBuilder)}.
+   * run {@link #render(SQLStatementBuilderIF)}.
    * 
    * @param root The root node that is the starting point of rendering.
    */

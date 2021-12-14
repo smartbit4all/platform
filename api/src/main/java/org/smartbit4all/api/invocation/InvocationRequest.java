@@ -150,7 +150,6 @@ public class InvocationRequest {
    * 
    * @param name The name of the parameter.
    * @param value The value object
-   * @param typeClass The type of the value.
    * @return
    */
   public InvocationRequest addParameter(String name, Object value) {

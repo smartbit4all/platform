@@ -1,18 +1,16 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
  * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 package org.smartbit4all.domain.data;
 
@@ -83,7 +81,6 @@ final class TableDataRowModel {
    * 
    * @param row The row to check.
    * @param notNull If true then the row must be set and exception will be thrown if null.
-   * @throws InvalidRowException
    * @return The position of the given row.
    */
   private final int checkRow(DataRow row, boolean notNull) {
@@ -140,7 +137,6 @@ final class TableDataRowModel {
    * 
    * @param fromRow The start row of the row range to remove. Inclusive
    * @param toRow The end of the row range. Inclusive.
-   * @throws InvalidRowException
    */
   final void hideRange(DataRow fromRow, DataRow toRow) {
     if (fromRow == null || toRow == null) {
@@ -224,7 +220,6 @@ final class TableDataRowModel {
    *        new rows will be placed at the end of the list.
    * @param after If it's true then the new rows will be added after the row parameter. If false the
    *        they will appear before this row.
-   * @throws InvalidRowException
    */
   final List<DataRow> addRow(int newRows, DataRow row, boolean after) {
 

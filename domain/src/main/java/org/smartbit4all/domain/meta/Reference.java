@@ -156,10 +156,8 @@ public class Reference<S extends EntityDefinition, T extends EntityDefinition> {
    * Constructing a new reference between two entity.
    * 
    * @param source The source entity definition.
-   * @param sourceRole The name of the source.
-   * @param name The name of the reference.
    * @param target The target (referred) entity definition
-   * @param targetRole The name of the target.
+   * @param name The name of the reference.
    */
   public Reference(S source, T target, String name) {
     super();

@@ -16,7 +16,7 @@ public interface StorageApi {
    * Retrieves the {@link Storage} instance responsible for persisting in the given scheme.
    * Typically every module has a scheme used by the apis in the module.
    * 
-   * @param clazz The class.
+   * @param scheme The scheme name.
    * @return The storage if it exists.
    */
   Storage get(String scheme);

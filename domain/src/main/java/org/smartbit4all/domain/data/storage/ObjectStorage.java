@@ -12,15 +12,14 @@ import org.smartbit4all.core.object.ObjectDefinition;
  * 
  * @author Zoltan Szegedi
  *
- * @param <T> Type of the object, which can be stored with the ObjectStorage.
  */
 public interface ObjectStorage {
 
   /**
    * Save the object. The {@link StorageObject} always has an URI but the content is not necessarily
-   * filled. If we add a {@link StorageObject#isDelete()} == true object or with a null object then
-   * it results a version where the content is empty. We can call this deleted but it's not really
-   * the deletion.
+   * filled. TODO: clarify! "If we add a StorageObject#isDelete() == true object or with a null
+   * object then it results a version where the content is empty. We can call this deleted but it's
+   * not really the deletion."
    */
   URI save(StorageObject<?> object);
 

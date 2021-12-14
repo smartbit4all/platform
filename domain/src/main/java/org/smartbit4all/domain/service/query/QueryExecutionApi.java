@@ -3,7 +3,7 @@ package org.smartbit4all.domain.service.query;
 import org.smartbit4all.domain.meta.EntityDefinition;
 
 /**
- * This api is responsible for executing a {@link QueryRequest} object against a specific technology and
+ * This api is responsible for executing a QueryRequest object against a specific technology and
  * data store. This API can be parameterized to the {@link EntityDefinition} but can be overridden
  * in the Query definition also. The {@link QueryApi} will collect all the available
  * {@link QueryExecutionApi}s to serve the complex query requests. In a given query the

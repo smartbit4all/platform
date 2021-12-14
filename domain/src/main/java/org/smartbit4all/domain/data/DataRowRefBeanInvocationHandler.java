@@ -1,18 +1,16 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
  * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 package org.smartbit4all.domain.data;
 
@@ -36,14 +34,13 @@ final class DataRowRefBeanInvocationHandler implements InvocationHandler {
    * Construct an invocation handler that is bound with the given {@link TableData} instance. We can
    * use this to iterate with this typed interface.
    * 
-   * @param td The table data instance.
-   * @param beanClazz The bean class we have.
    */
   DataRowRefBeanInvocationHandler(TableDataBeanBinding binding, DataRow row) {
     this.binding = binding;
     this.row = row;
   }
 
+  @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
     // If it's getter or setter then it will be served based on the current row.
     DataBind dataBind = binding.bindMap.get(method);

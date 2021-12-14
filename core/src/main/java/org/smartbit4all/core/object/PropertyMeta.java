@@ -56,7 +56,7 @@ public class PropertyMeta {
 
   /**
    * The type of the property. We need this to transfer the value and identifies the
-   * {@link TransferService} {@link Converter}.
+   * <code>TransferService</code> <code>Converter</code>.
    */
   private final Class<?> type;
 

@@ -57,7 +57,7 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 
 /**
  * Responsible for managing all the information during SQL execution of a query. This will be
- * initiated for every execution and refers to the original {@link QueryRequest} object.
+ * initiated for every execution and refers to the original {@link QueryInput} object.
  * 
  * @author Peter Boros
  */
@@ -241,7 +241,7 @@ final class SQLQueryExecution {
 
   /**
    * Examine if the given operand is an {@link OperandProperty} and if it is then
-   * {@link #setupProperty(SQLSelectFromTableNode, Property, SQLStatementBuilderIF)} and set the
+   * {@link #setupProperty(SQLSelectFromNode, Property, SQLStatementBuilderIF)} and set the
    * qualifier for the operand.
    * 
    * @param rootTable

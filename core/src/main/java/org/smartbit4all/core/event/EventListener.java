@@ -21,7 +21,7 @@ import java.util.function.Consumer;
  * 
  * @author Peter Boros
  *
- * @param <R>
+ * @param <E>
  */
 public interface EventListener<E> extends Consumer<E> {
 

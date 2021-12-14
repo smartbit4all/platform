@@ -66,9 +66,6 @@ public class ObjectChange {
    */
   private final List<CollectionObjectChange> collectionObjects = new ArrayList<>();
 
-  /**
-   * @param objectUri
-   */
   ObjectChange(String path, ChangeState operation) {
     this.path = path;
     this.operation = operation;

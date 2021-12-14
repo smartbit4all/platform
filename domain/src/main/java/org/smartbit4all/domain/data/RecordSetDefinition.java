@@ -1,18 +1,16 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
  * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 package org.smartbit4all.domain.data;
 
@@ -30,8 +28,8 @@ import org.smartbit4all.domain.meta.Expression;
 public abstract class RecordSetDefinition<E extends EntityDefinition> {
 
   /**
-   * Helps to filter which rows belongs to the given {@link TableDataRecordSet}. It's instantiated
-   * for every {@link TableDataRecordSet}.
+   * Helps to filter which rows belongs to the given TableDataRecordSet. It's instantiated for every
+   * TableDataRecordSet.
    * 
    * @param tableData The data table to filter.
    * @param rows The rows to evaluate.
@@ -40,9 +38,8 @@ public abstract class RecordSetDefinition<E extends EntityDefinition> {
   abstract List<DataRow> filter(TableData<E> tableData, List<DataRow> rows);
 
   /**
-   * The reverse operation. If a new row is added through the {@link TableDataRecordSet} then with
-   * this function the definition might ensure that this the new row will belong to the given record
-   * set.
+   * The reverse operation. If a new row is added through the TableDataRecordSet then with this
+   * function the definition might ensure that this the new row will belong to the given record set.
    * 
    * @param tableData The data table.
    * @param rows The rows to prepare.

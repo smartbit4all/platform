@@ -47,7 +47,6 @@ public class EventSubscription<E> {
    * Fire the event if it's relevant for the subscription or not.
    * 
    * @param eventObject
-   * @return
    */
   final void fire(E eventObject) {
     if (!checkEvent(eventObject)) {

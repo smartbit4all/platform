@@ -177,7 +177,7 @@ public final class ApiObjectCollection implements List<ApiObjectRef> {
   /**
    * Removes all of the elements of this collection that satisfy the given predicate.
    * 
-   * @param o
+   * @param filter
    * @return
    */
   @Override

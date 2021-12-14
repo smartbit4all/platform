@@ -17,7 +17,6 @@ import org.smartbit4all.domain.meta.Property;
  * 
  * @author Peter Boros
  *
- * @param <E>
  */
 public abstract class StorageLoader {
 

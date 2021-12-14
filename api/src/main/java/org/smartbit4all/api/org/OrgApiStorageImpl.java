@@ -114,7 +114,7 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
    * This function analyze the given class to discover the {@link LocaleString} fields. We add this
    * API for them to enable locale specific behavior for them.
    * 
-   * @param clazz
+   * @param option
    */
   private final Map<SecurityGroup, Group> analyzeSecurityOptions(SecurityOption option) {
     // Let's check the static LocaleString
@@ -520,7 +520,8 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
   /**
    * Removes the object with the given uri from the ObjectMap
    * 
-   * @param userUri
+   * @param mapName Identifier of ObjectMap to remove from.
+   * @param value Value to remove from ObjectMap.
    */
   private void removeItemFromObjectMapByValue(String mapName, URI value) {
     ObjectMap objectMap = loadObjectMap(mapName);
@@ -542,7 +543,7 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
    * Removes the group with the given uri from the GROUP_LIST_REFERNCE ObjectMap, which contains the
    * name - groupUri mapping of all existing groups.
    * 
-   * @param userUri uri of the user to remove
+   * @param groupUri URI of the group to remove.
    */
   private void removeGroupFromGroupListReference(URI groupUri) {
     removeItemFromObjectMapByValue(GROUP_OBJECTMAP_REFERENCE, groupUri);

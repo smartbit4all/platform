@@ -134,8 +134,8 @@ public class FilterService {
 
   /**
    * @param filterGroup
+   * @param groupClause
    * @param filterExceptionChangeHandlers
-   * @param groupStarterClause
    */
   private final void recurseGroups(FilterGroup filterGroup, ExpressionClause groupClause,
       Collection<? extends Filters.FilterExpressionHandler> filterExceptionChangeHandlers) {
@@ -222,8 +222,8 @@ public class FilterService {
   }
 
   /**
-   * Creates an expression based on the specified parameters of the filterField.</br>
-   * This method does not use the serviec's registered factories.
+   * Creates an expression based on the specified parameters of the filterField. This method does
+   * not use the serviec's registered factories.
    * 
    * @param <PT> the type of the property
    * @param filterField The filterField that holds all the data to create the expression

@@ -24,7 +24,6 @@ import java.util.Set;
  * interface class. So it can be accessed dynamically runtime.
  * 
  * @author Peter Boros
- * @param <E>
  *
  */
 public class PropertySet implements Set<Property<?>> {

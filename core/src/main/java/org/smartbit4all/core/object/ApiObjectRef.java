@@ -129,7 +129,9 @@ public class ApiObjectRef {
    *
    * @param path The path for the current ApiObjectRef instance. The root is an empty path.
    * @param object The api object managed by the reference.
-   * @param allBeanClasses All the bean classes we have in this api domain.
+   * @param descriptors All the bean classes we have in this api domain.
+   * @param qualifier Qualifier of bean classes, it will be used to cache bean class descriptors
+   *        into separate caches identified by this qualifier.
    */
   public ApiObjectRef(String path, Object object, Map<Class<?>, ApiBeanDescriptor> descriptors,
       String qualifier) {

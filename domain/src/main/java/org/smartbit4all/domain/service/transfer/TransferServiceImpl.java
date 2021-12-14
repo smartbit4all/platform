@@ -82,7 +82,6 @@ public class TransferServiceImpl implements TransferService, InitializingBean {
   /**
    * Get the descriptor from the cache.
    * 
-   * @param clazz
    * @return
    * @throws ExecutionException
    */

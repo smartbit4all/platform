@@ -31,7 +31,6 @@ public @interface TransactionalStorage {
    * TransactionManager} bean definition.
    * 
    * @since 4.2
-   * @see #value
    * @see org.springframework.transaction.PlatformTransactionManager
    * @see org.springframework.transaction.ReactiveTransactionManager
    */

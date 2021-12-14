@@ -35,7 +35,7 @@ import java.util.List;
  *       |         |
  * OR -- +         -- Exp2 ( Property(B) = Literal("alma") )
  *       |
- *       |         -- Exp2 ( Property(C) = Literal( {@link SimpleDateFormat#parse("2020.03.15")}) )
+ *       |         -- Exp2 ( Property(C) = Literal( <code>SimpleDateFormat#parse("2020.03.15")</code>) )
  *       |         |
  *       -- AND -- +              -- Exp1 ( Property(B) ISNULL )
  *                 |              |
@@ -128,7 +128,6 @@ public abstract class Expression {
    * The visitor object must implement the API for visiting all kind of expressions.
    * 
    * @param visitor
-   * @return
    */
   public abstract void accept(ExpressionVisitor visitor);
 
