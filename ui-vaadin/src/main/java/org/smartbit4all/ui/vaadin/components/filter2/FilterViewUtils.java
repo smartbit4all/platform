@@ -28,14 +28,16 @@ class FilterViewUtils {
 
   public static DatePicker createDatePicker() {
     DatePicker date = new DatePicker();
-    date.setMax(LocalDate.now());
+    // TODO paraméterezhető kell legyen
+    // date.setMax(LocalDate.now());
     ComponentLocalizations.localize(date);
     return date;
   }
 
   public static DateTimePicker createDateTimePicker() {
     DateTimePicker dateTime = new DateTimePicker();
-    dateTime.setMax(LocalDate.now().plusDays(1l).atStartOfDay().minusMinutes(1l));
+    // TODO paraméterezhető kell legyen
+    // dateTime.setMax(LocalDate.now().plusDays(1l).atStartOfDay().minusMinutes(1l));
     ComponentLocalizations.localize(dateTime);
     return dateTime;
   }
