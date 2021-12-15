@@ -651,6 +651,20 @@ public class Navigation {
   }
 
   public static NavigationAssociationMeta assocMeta(
+      String navigationName,
+      String assocName,
+      NavigationEntryMeta startEntry,
+      NavigationEntryMeta endEntry,
+      NavigationEntryMeta associationEntry) {
+    return assocMeta(
+        URI.create(navigationName + ":/" + assocName),
+        assocName,
+        startEntry,
+        endEntry,
+        associationEntry);
+  }
+
+  public static NavigationAssociationMeta assocMeta(
       URI uri,
       String name,
       NavigationEntryMeta startEntry,
