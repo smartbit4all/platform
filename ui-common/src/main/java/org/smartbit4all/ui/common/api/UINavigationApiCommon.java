@@ -55,12 +55,18 @@ public abstract class UINavigationApiCommon implements UINavigationApi {
       Map<String, NavigableViewDescriptor> viewDescriptors =
           navigableViewsByType.get(navigationTarget.getType());
       if (viewDescriptors != null) {
-        NavigableViewDescriptor viewDescriptor = viewDescriptors.get(navigationTarget.getViewName());
+        NavigableViewDescriptor viewDescriptor =
+            viewDescriptors.get(navigationTarget.getViewName());
         if (viewDescriptor != null) {
           return viewDescriptor;
         }
       }
     }
     return navigableViews.get(navigationTarget.getViewName());
+  }
+
+  @Override
+  public NavigationTarget getNavigationTargetByUuid(UUID navigationTargetUuid) {
+    return navigationTargetsByUUID.get(navigationTargetUuid);
   }
 }
