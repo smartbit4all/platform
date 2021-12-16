@@ -682,6 +682,10 @@ public class Navigation {
     return result;
   }
 
+  public static NavigationEntryMeta entryMeta(String navigationName, String entryName) {
+    return entryMeta(URI.create(navigationName + ":/" + entryName), entryName);
+  }
+
   public static NavigationEntryMeta entryMeta(URI uri, String name) {
     NavigationEntryMeta result = new NavigationEntryMeta();
     result.setUri(uri);
