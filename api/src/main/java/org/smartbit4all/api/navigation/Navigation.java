@@ -914,7 +914,7 @@ public class Navigation {
       List<ResolvedPropertyEntry> properties = entry.getValue();
       Optional<ApiObjectRef> objectRefOpt =
           api.loadObject(node.getEntry().getMetaUri(), node.getEntry().getObjectUri());
-      if (objectRefOpt != null && objectRefOpt.isPresent()) {
+      if (objectRefOpt.isPresent()) {
         ApiObjectRef objectRef = objectRefOpt.get();
         for (ResolvedPropertyEntry resolvedPropertyEntry : properties) {
           Object value = objectRef.getValueByPath(resolvedPropertyEntry.name);
