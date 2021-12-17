@@ -119,7 +119,11 @@ public class CrudRead<E extends EntityDefinition> {
       case INTO:
         baseTableData.clearRows();
       case APPEND:
-        TableDatas.append(baseTableData, resultTableData);
+        if (baseTableData.isEmpty() && baseTableData.columns().isEmpty()) {
+          queryOutput.setTableData(resultTableData);
+        } else {
+          TableDatas.append(baseTableData, resultTableData);
+        }
       default:
         break;
     }
