@@ -16,6 +16,8 @@ public interface NavigationViewModel extends ObjectEditing {
 
   public static final String OBJECT_URI_TO_SELECT = "NavigationViewModel.OBJECT_URI_TO_SELECT";
 
+  public static final String NAVIGATION_NAME = "NavigationViewModel.NAVIGATION_NAME";
+
   @PublishEvents("MODEL")
   ObservableObject model();
 

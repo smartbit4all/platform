@@ -31,4 +31,6 @@ public interface UINavigationApi {
 
   void setTitle(UUID navigationTargetUuid, String title);
 
+  NavigationTarget getNavigationTargetByUuid(UUID navigationTargetUuid);
+
 }
