@@ -310,9 +310,10 @@ public class BinaryData {
       bdos = new BinaryDataOutputStream(MEMORY_LIMIT);
       ByteStreams.copy(is, bdos);
       bdos.close();
+      is.close();
       return bdos.data();
     } catch (Exception e) {
-      log.error("message", e);
+      log.error("Unable to process the given InputSream", e);
       return null;
     }
   }
