@@ -26,18 +26,20 @@ public interface NavigationViewModel extends ObjectEditing {
   NavigationTarget loadNavigationTarget();
 
   /**
-   * Select the node if it's already exists and opened.
+   * Select the node if it's already exists and opened. If node is null or a treeNode couldn't be
+   * found by node, selection will change to empty (unselect).
    * 
    * @param node
    */
   void setSelectedNode(NavigationNode node);
 
   /**
-   * Open the given path and select the last segment.
+   * Open the given path and select the last segment. If a treeNode is not found on the path,
+   * selection won't change!
    * 
    * @param path
    */
-  void setSelectedNode(NavigationPath path);
+  void setSelectedNodeByPath(NavigationPath path);
 
   NavigationNode selectedNavigationNode();
 

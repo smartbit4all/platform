@@ -135,11 +135,13 @@ public class NavigationViewModelImpl extends ObjectEditingImpl implements Naviga
     if (selectedNode != null) {
       selectedNode.setSelected(false);
     }
-    if (selectedNode == node) {
+    if (selectedNode == node || node == null) {
       selectedNode = null;
+      model.setSelectedNodeIdentifier(null);
     } else {
       selectedNode = node;
       selectedNode.setSelected(true);
+      model.setSelectedNodeIdentifier(selectedNode.getIdentifier());
       NavigationTarget navigationTarget = getViewCommand(selectedNode);
       node.setNavigationTarget(navigationTarget);
       if (navigationTarget != null) {
@@ -150,12 +152,16 @@ public class NavigationViewModelImpl extends ObjectEditingImpl implements Naviga
 
   @Override
   public void setSelectedNode(NavigationNode node) {
-    select(findTreeNodeById(node.getId()));
+    if (node == null) {
+      select(null);
+    } else {
+      select(findTreeNodeById(node.getId()));
+    }
     notifyAllListeners();
   }
 
   @Override
-  public void setSelectedNode(NavigationPath path) {
+  public void setSelectedNodeByPath(NavigationPath path) {
     if (path == null || path.getSegments().isEmpty()) {
       return;
     }
