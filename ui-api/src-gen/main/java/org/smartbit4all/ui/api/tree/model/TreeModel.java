@@ -34,13 +34,17 @@ import javax.validation.Valid;
  * TreeModel
  */
 @JsonPropertyOrder({
-  TreeModel.ROOT_NODES
+  TreeModel.ROOT_NODES,
+  TreeModel.SELECTED_NODE_IDENTIFIER
 })
 @JsonTypeName("TreeModel")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class TreeModel {
   public static final String ROOT_NODES = "rootNodes";
   private List<TreeNode> rootNodes = new ArrayList<>();
+
+  public static final String SELECTED_NODE_IDENTIFIER = "selectedNodeIdentifier";
+  private String selectedNodeIdentifier;
 
 
   public TreeModel rootNodes(List<TreeNode> rootNodes) {
@@ -77,6 +81,33 @@ public class TreeModel {
   }
 
 
+  public TreeModel selectedNodeIdentifier(String selectedNodeIdentifier) {
+    
+    this.selectedNodeIdentifier = selectedNodeIdentifier;
+    return this;
+  }
+
+   /**
+   * Get selectedNodeIdentifier
+   * @return selectedNodeIdentifier
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(SELECTED_NODE_IDENTIFIER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getSelectedNodeIdentifier() {
+    return selectedNodeIdentifier;
+  }
+
+
+  @JsonProperty(SELECTED_NODE_IDENTIFIER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSelectedNodeIdentifier(String selectedNodeIdentifier) {
+    this.selectedNodeIdentifier = selectedNodeIdentifier;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -86,12 +117,13 @@ public class TreeModel {
       return false;
     }
     TreeModel treeModel = (TreeModel) o;
-    return Objects.equals(this.rootNodes, treeModel.rootNodes);
+    return Objects.equals(this.rootNodes, treeModel.rootNodes) &&
+        Objects.equals(this.selectedNodeIdentifier, treeModel.selectedNodeIdentifier);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(rootNodes);
+    return Objects.hash(rootNodes, selectedNodeIdentifier);
   }
 
   @Override
@@ -99,6 +131,7 @@ public class TreeModel {
     StringBuilder sb = new StringBuilder();
     sb.append("class TreeModel {\n");
     sb.append("    rootNodes: ").append(toIndentedString(rootNodes)).append("\n");
+    sb.append("    selectedNodeIdentifier: ").append(toIndentedString(selectedNodeIdentifier)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -27,6 +27,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/TreeNode'
+        selectedNodeIdentifier:
+          type: string
     TreeNode:
       type: object
       required:
