@@ -26,7 +26,7 @@ components:
           
     SB4Command:
       type: object
-      required: [id, restUrl, sb4Files, command]
+      required: [id, commandKind, restUrl, sb4Files, command, successfulExitCodes, onErrorCommands]
       additionalProperties: false
       properties:
         id:
@@ -46,6 +46,14 @@ components:
         command:
           type: string
           nullable: true
+        successfulExitCodes:
+          type: array
+          items:
+            type: integer
+        onErrorCommands:
+          type: array
+          items:
+            $ref: '#/components/schemas/SB4Command'
 
     CommandKind:
       type: string

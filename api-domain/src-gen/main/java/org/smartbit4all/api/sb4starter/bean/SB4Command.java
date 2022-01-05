@@ -29,6 +29,7 @@ import java.util.UUID;
 import org.smartbit4all.api.sb4starter.bean.CommandKind;
 import org.smartbit4all.api.sb4starter.bean.SB4File;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 
@@ -40,7 +41,9 @@ import javax.validation.Valid;
   SB4Command.COMMAND_KIND,
   SB4Command.REST_URL,
   SB4Command.SB4_FILES,
-  SB4Command.COMMAND
+  SB4Command.COMMAND,
+  SB4Command.SUCCESSFUL_EXIT_CODES,
+  SB4Command.ON_ERROR_COMMANDS
 })
 @JsonTypeName("SB4Command")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -60,6 +63,12 @@ public class SB4Command {
   public static final String COMMAND = "command";
   private String command;
 
+  public static final String SUCCESSFUL_EXIT_CODES = "successfulExitCodes";
+  private List<Integer> successfulExitCodes = new ArrayList<>();
+
+  public static final String ON_ERROR_COMMANDS = "onErrorCommands";
+  private List<SB4Command> onErrorCommands = new ArrayList<>();
+
 
   public SB4Command id(UUID id) {
     
@@ -71,6 +80,7 @@ public class SB4Command {
    * Get id
    * @return id
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @Valid
   @ApiModelProperty(required = true, value = "")
@@ -99,11 +109,12 @@ public class SB4Command {
    * Get commandKind
    * @return commandKind
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(COMMAND_KIND)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public CommandKind getCommandKind() {
     return commandKind;
@@ -111,7 +122,7 @@ public class SB4Command {
 
 
   @JsonProperty(COMMAND_KIND)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setCommandKind(CommandKind commandKind) {
     this.commandKind = commandKind;
   }
@@ -208,6 +219,73 @@ public class SB4Command {
   }
 
 
+  public SB4Command successfulExitCodes(List<Integer> successfulExitCodes) {
+    
+    this.successfulExitCodes = successfulExitCodes;
+    return this;
+  }
+
+  public SB4Command addSuccessfulExitCodesItem(Integer successfulExitCodesItem) {
+    this.successfulExitCodes.add(successfulExitCodesItem);
+    return this;
+  }
+
+   /**
+   * Get successfulExitCodes
+   * @return successfulExitCodes
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(SUCCESSFUL_EXIT_CODES)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public List<Integer> getSuccessfulExitCodes() {
+    return successfulExitCodes;
+  }
+
+
+  @JsonProperty(SUCCESSFUL_EXIT_CODES)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setSuccessfulExitCodes(List<Integer> successfulExitCodes) {
+    this.successfulExitCodes = successfulExitCodes;
+  }
+
+
+  public SB4Command onErrorCommands(List<SB4Command> onErrorCommands) {
+    
+    this.onErrorCommands = onErrorCommands;
+    return this;
+  }
+
+  public SB4Command addOnErrorCommandsItem(SB4Command onErrorCommandsItem) {
+    this.onErrorCommands.add(onErrorCommandsItem);
+    return this;
+  }
+
+   /**
+   * Get onErrorCommands
+   * @return onErrorCommands
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @Valid
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(ON_ERROR_COMMANDS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public List<SB4Command> getOnErrorCommands() {
+    return onErrorCommands;
+  }
+
+
+  @JsonProperty(ON_ERROR_COMMANDS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setOnErrorCommands(List<SB4Command> onErrorCommands) {
+    this.onErrorCommands = onErrorCommands;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -221,12 +299,14 @@ public class SB4Command {
         Objects.equals(this.commandKind, sb4Command.commandKind) &&
         Objects.equals(this.restUrl, sb4Command.restUrl) &&
         Objects.equals(this.sb4Files, sb4Command.sb4Files) &&
-        Objects.equals(this.command, sb4Command.command);
+        Objects.equals(this.command, sb4Command.command) &&
+        Objects.equals(this.successfulExitCodes, sb4Command.successfulExitCodes) &&
+        Objects.equals(this.onErrorCommands, sb4Command.onErrorCommands);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, commandKind, restUrl, sb4Files, command);
+    return Objects.hash(id, commandKind, restUrl, sb4Files, command, successfulExitCodes, onErrorCommands);
   }
 
   @Override
@@ -238,6 +318,8 @@ public class SB4Command {
     sb.append("    restUrl: ").append(toIndentedString(restUrl)).append("\n");
     sb.append("    sb4Files: ").append(toIndentedString(sb4Files)).append("\n");
     sb.append("    command: ").append(toIndentedString(command)).append("\n");
+    sb.append("    successfulExitCodes: ").append(toIndentedString(successfulExitCodes)).append("\n");
+    sb.append("    onErrorCommands: ").append(toIndentedString(onErrorCommands)).append("\n");
     sb.append("}");
     return sb.toString();
   }
