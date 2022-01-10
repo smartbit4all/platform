@@ -36,9 +36,10 @@ public class QueryOutputResultAssembler {
    */
   List<DataColumn<?>> columnsByIndex = new ArrayList<>();
 
-  public QueryOutputResultAssembler(QueryOutput queryOutput) {
+  public QueryOutputResultAssembler(QueryInput queryInput, QueryOutput queryOutput) {
     Objects.requireNonNull(queryOutput, "queryOutput can not be null!");
     this.queryOutput = queryOutput;
+    this.entityDef = queryInput.entityDef();
   }
 
 

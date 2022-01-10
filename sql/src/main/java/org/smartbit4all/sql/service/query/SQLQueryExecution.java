@@ -32,7 +32,6 @@ import org.smartbit4all.domain.meta.SortOrderProperty;
 import org.smartbit4all.domain.service.query.QueryInput;
 import org.smartbit4all.domain.service.query.QueryOutput;
 import org.smartbit4all.domain.service.query.QueryOutputResultAssembler;
-import org.smartbit4all.domain.service.query.QueryResult;
 import org.smartbit4all.domain.utility.SupportedDatabase;
 import org.smartbit4all.sql.SQLComputedColumn;
 import org.smartbit4all.sql.SQLGroupByColumn;
@@ -277,7 +276,8 @@ final class SQLQueryExecution {
     ResultSetMetaData metaData = resultSet.getMetaData();
     int indexTrans[] = new int[metaData.getColumnCount()];
     Property<?> propertyTrans[] = new Property<?>[metaData.getColumnCount()];
-    QueryOutputResultAssembler resultAssembler = new QueryOutputResultAssembler(this.queryOutput);
+    QueryOutputResultAssembler resultAssembler =
+        new QueryOutputResultAssembler(this.queryInput, this.queryOutput);
     resultAssembler.start();
     for (int i = 0; i < metaData.getColumnCount(); i++) {
       String columnName = builder.getColumnAssignedColumnName(metaData, i + 1).toUpperCase();
