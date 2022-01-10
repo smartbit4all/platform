@@ -14,16 +14,26 @@
  ******************************************************************************/
 package org.smartbit4all.api.binarydata;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.binarydata.BinaryData.AutoCloseInputStream;
-import org.smartbit4all.api.binarydata.BinaryDataOutputStream;
 import com.google.common.io.ByteStreams;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class BinaryDataTest {
+
+  @AfterAll
+  public static void purgeAll() throws InterruptedException {
+    Runtime.getRuntime().gc();
+    Thread.sleep(100);
+    BinaryData.purgeDataFiles();
+  }
 
   @Test
   void testInMemory() throws Exception {
@@ -47,6 +57,35 @@ class BinaryDataTest {
 
     testWrite(os);
 
+  }
+
+  @Test
+  void testTempFilePurge() throws Exception {
+    List<BinaryData> binaryDataRefList = new ArrayList<>();
+    for (int i = 0; i < 10; i++) {
+      BinaryDataOutputStream os = new BinaryDataOutputStream(0);
+      testWrite(os);
+      binaryDataRefList.add(os.data());
+    }
+    List<String> tempFiles = new ArrayList<>();
+    for (BinaryData binaryData : binaryDataRefList) {
+      tempFiles.add(binaryData.getDataFile().getAbsolutePath());
+      System.out.println(binaryData.getDataFile());
+    }
+    // Remove all the references
+    binaryDataRefList.clear();
+
+    Runtime.getRuntime().gc();
+    Thread.sleep(100);
+
+    // Call the purge
+    BinaryData.purgeDataFiles();
+
+    // Check the existence of the temp files
+    for (String tempPath : tempFiles) {
+      File file = new File(tempPath);
+      Assertions.assertFalse(file.exists(), "The temp file exists after the purge " + file);
+    }
   }
 
   private void testWrite(BinaryDataOutputStream os) throws IOException {

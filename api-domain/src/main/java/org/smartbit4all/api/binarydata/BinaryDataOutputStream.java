@@ -64,6 +64,11 @@ public class BinaryDataOutputStream extends OutputStream {
   private File dataFile;
 
   /**
+   * If a temp file initiated then we have a .
+   */
+  private boolean tempFile;
+
+  /**
    * If we fill the data into a temp file then this output stream is the active one with a
    * {@link BufferedOutputStream} in front of it. The {@link #osBuffered} will be {@link #osActive}
    * but it will be inner stream.
@@ -210,6 +215,7 @@ public class BinaryDataOutputStream extends OutputStream {
       // In this case we have a temp file with the content.
       closeFileStreams();
       data = new BinaryData(dataFile);
+      data.setDeleteDataFile(true);
     }
     osActive = null;
     if (messageDigest != null) {

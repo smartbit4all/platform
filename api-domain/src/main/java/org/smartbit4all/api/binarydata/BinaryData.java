@@ -20,6 +20,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.google.common.io.ByteStreams;
@@ -31,6 +33,12 @@ import com.google.common.io.ByteStreams;
  * {@link ByteArrayOutputStream} and the {@link ByteArrayInputStream} in our code and that's all.
  * There is a limit that remains in the memory but if we have more byte then it switch to temp file.
  * The {@link BinaryData} uses the Java temp file management API.
+ * 
+ * If the #deleteDataFile is true then the {@link #dataFile} if any is removed after loosing the
+ * reference to {@link BinaryData} itself. The removal is scheduled so the deletion of the file is
+ * not immediate. Normally the creation of a {@link BinaryData} with {@link BinaryDataOutputStream}
+ * set this to true, because in this case a temp file could be created. Any other situation like
+ * using an existing file must be managed by the programmer.
  * 
  * @author Peter Boros
  */
@@ -53,9 +61,8 @@ public class BinaryData {
   /**
    * If true then at the end of life cycle the data file must be deleted explicitly.
    * 
-   * TODO Implement with PhantomReference and Spring TaskExecutor.
    */
-  // private boolean deleteDataFile = true;
+  private boolean deleteDataFile = false;
 
   /**
    * The number of bytes stored in the binary data.
@@ -77,37 +84,28 @@ public class BinaryData {
    */
   private String mimeType;
 
-  // private static class PhantomRef extends PhantomReference<BinaryData> {
-  //
-  // /**
-  // * The file that must be deleted at the cleanup session.
-  // */
-  // File file;
-  //
-  // public PhantomRef(BinaryData referent, File file, ReferenceQueue<? super BinaryData> q) {
-  // super(referent, q);
-  // this.file = file;
-  // }
-  //
-  // }
-  //
-  // /**
-  // * The reference queue for disposing the phantom reachable file based {@link BinaryData}.
-  // */
-  // private static final ReferenceQueue<PhantomRef> referenceQueue = new ReferenceQueue<>();
-  //
-  // private static final TaskExecutor cleanupExecutor;
-  //
-  // static {
-  // cleanupExecutor.submit(new Runnable() {
-  //
-  // @Override
-  // public void run() {
-  // // TODO Auto-generated method stub
-  //
-  // }
-  // });
-  // }
+  /**
+   * The reference queue for queuing the temp files to delete after finalizing the
+   * {@link BinaryData} itself.
+   */
+  public static final BlockingQueue<File> dataFilesPurgeQueue =
+      new LinkedBlockingQueue<>();
+
+  public static final int purgeDataFiles() {
+    File file;
+    int removed = 0;
+    while ((file = dataFilesPurgeQueue.poll()) != null) {
+      if (file != null && file.exists()) {
+        try {
+          file.delete();
+        } catch (Exception e) {
+          log.warn("Unable to delete temp file " + file);
+        }
+      }
+      removed++;
+    }
+    return removed;
+  }
 
   /**
    * Constructs the binary data based on a byte array.
@@ -130,6 +128,13 @@ public class BinaryData {
     super();
     this.dataFile = dataFile;
     this.length = dataFile.length();
+  }
+
+  @Override
+  protected void finalize() throws Throwable {
+    if (deleteDataFile) {
+      dataFilesPurgeQueue.add(dataFile);
+    }
   }
 
   public static final class AutoCloseInputStream extends InputStream {
@@ -230,7 +235,7 @@ public class BinaryData {
       return new ByteArrayInputStream(data);
     } else {
       try {
-        return new AutoCloseInputStream(new FileInputStream(dataFile));
+        return new AutoCloseInputStream(new FileInputStream(getDataFile()));
         // return new AutoCloseInputStream(Files.newInputStream(Paths.get(dataFile.toURI())));
         // return new FileInputStream(dataFile);
       } catch (IOException e) {
@@ -291,7 +296,7 @@ public class BinaryData {
     return data;
   }
 
-  public File getDataFile() {
+  public final File getDataFile() {
     return dataFile;
   }
 
@@ -320,6 +325,30 @@ public class BinaryData {
 
   public BinaryDataObject asObject() {
     return new BinaryDataObject(this);
+  }
+
+  /**
+   * If it's true then the {@link #dataFile} if any is removed after loosing the reference to
+   * {@link BinaryData} itself. The removal is scheduled so the deletion of the file is not
+   * immediate.
+   * 
+   * @return
+   */
+  final boolean isDeleteDataFile() {
+    return deleteDataFile;
+  }
+
+  /**
+   * If it's true then the {@link #dataFile} if any is removed after loosing the reference to
+   * {@link BinaryData} itself. The removal is scheduled so the deletion of the file is not
+   * immediate. Normally the creation of a {@link BinaryData} with {@link BinaryDataOutputStream}
+   * set this to true, because in this case a temp file could be created. Any other situation like
+   * using an existing file must be managed by the programmer.
+   * 
+   * @param deleteDataFile
+   */
+  final void setDeleteDataFile(boolean deleteDataFile) {
+    this.deleteDataFile = deleteDataFile;
   }
 
 }

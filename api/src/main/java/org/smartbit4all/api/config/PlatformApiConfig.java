@@ -31,7 +31,7 @@ import org.springframework.context.annotation.Scope;
  * @author Peter Boros
  */
 @Configuration
-@Import({DomainConfig.class})
+@Import({DomainConfig.class, PlatformApiScheduledConfig.class})
 public class PlatformApiConfig {
 
   @Bean
