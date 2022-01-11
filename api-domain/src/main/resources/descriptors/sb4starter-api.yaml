@@ -23,7 +23,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SB4Command'
-          
+        keepWorkingDirectory:
+          type: boolean
+          default: false
+
     SB4Command:
       type: object
       required: [id, commandKind, restUrl, sb4Files, command, successfulExitCodes, onErrorCommands]

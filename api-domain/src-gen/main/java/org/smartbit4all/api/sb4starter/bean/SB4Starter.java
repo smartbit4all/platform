@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.UUID;
 import org.smartbit4all.api.sb4starter.bean.SB4Command;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 
@@ -35,7 +36,8 @@ import javax.validation.Valid;
  */
 @JsonPropertyOrder({
   SB4Starter.ID,
-  SB4Starter.COMMANDS
+  SB4Starter.COMMANDS,
+  SB4Starter.KEEP_WORKING_DIRECTORY
 })
 @JsonTypeName("SB4Starter")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -45,6 +47,9 @@ public class SB4Starter {
 
   public static final String COMMANDS = "commands";
   private List<SB4Command> commands = new ArrayList<>();
+
+  public static final String KEEP_WORKING_DIRECTORY = "keepWorkingDirectory";
+  private Boolean keepWorkingDirectory = false;
 
 
   public SB4Starter id(UUID id) {
@@ -57,6 +62,7 @@ public class SB4Starter {
    * Get id
    * @return id
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @Valid
   @ApiModelProperty(required = true, value = "")
@@ -90,6 +96,7 @@ public class SB4Starter {
    * Get commands
    * @return commands
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @Valid
   @ApiModelProperty(required = true, value = "")
@@ -108,6 +115,33 @@ public class SB4Starter {
   }
 
 
+  public SB4Starter keepWorkingDirectory(Boolean keepWorkingDirectory) {
+    
+    this.keepWorkingDirectory = keepWorkingDirectory;
+    return this;
+  }
+
+   /**
+   * Get keepWorkingDirectory
+   * @return keepWorkingDirectory
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(KEEP_WORKING_DIRECTORY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getKeepWorkingDirectory() {
+    return keepWorkingDirectory;
+  }
+
+
+  @JsonProperty(KEEP_WORKING_DIRECTORY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setKeepWorkingDirectory(Boolean keepWorkingDirectory) {
+    this.keepWorkingDirectory = keepWorkingDirectory;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -118,12 +152,13 @@ public class SB4Starter {
     }
     SB4Starter sb4Starter = (SB4Starter) o;
     return Objects.equals(this.id, sb4Starter.id) &&
-        Objects.equals(this.commands, sb4Starter.commands);
+        Objects.equals(this.commands, sb4Starter.commands) &&
+        Objects.equals(this.keepWorkingDirectory, sb4Starter.keepWorkingDirectory);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, commands);
+    return Objects.hash(id, commands, keepWorkingDirectory);
   }
 
   @Override
@@ -132,6 +167,7 @@ public class SB4Starter {
     sb.append("class SB4Starter {\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    commands: ").append(toIndentedString(commands)).append("\n");
+    sb.append("    keepWorkingDirectory: ").append(toIndentedString(keepWorkingDirectory)).append("\n");
     sb.append("}");
     return sb.toString();
   }
