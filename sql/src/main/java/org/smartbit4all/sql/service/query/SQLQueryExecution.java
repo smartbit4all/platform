@@ -122,7 +122,7 @@ final class SQLQueryExecution {
 
   /**
    * This execute constructs the {@link SQLSelectStatement} and execute it. It uses the
-   * {@link QueryResult} to fetch into.
+   * {@link #queryOutput} to fetch into.
    * 
    * @throws Exception
    */
