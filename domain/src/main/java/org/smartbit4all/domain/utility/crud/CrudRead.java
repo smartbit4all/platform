@@ -20,6 +20,7 @@ import java.util.UUID;
 import org.smartbit4all.domain.config.DomainAPI;
 import org.smartbit4all.domain.data.DataColumn;
 import org.smartbit4all.domain.data.DataRow;
+import org.smartbit4all.domain.data.DataRowValBeanInvocationHandler;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.data.TableDatas;
 import org.smartbit4all.domain.meta.EntityDefinition;
@@ -27,12 +28,15 @@ import org.smartbit4all.domain.meta.Expression;
 import org.smartbit4all.domain.meta.ExpressionContainer;
 import org.smartbit4all.domain.meta.LockRequest;
 import org.smartbit4all.domain.meta.Property;
+import org.smartbit4all.domain.meta.PropertyRef;
 import org.smartbit4all.domain.meta.PropertySet;
+import org.smartbit4all.domain.meta.Reference;
 import org.smartbit4all.domain.meta.SortOrderProperty;
 import org.smartbit4all.domain.service.query.Queries;
 import org.smartbit4all.domain.service.query.QueryInput;
 import org.smartbit4all.domain.service.query.QueryOutput;
 import org.smartbit4all.domain.service.transfer.BeanEntityBinding;
+import org.smartbit4all.domain.service.transfer.TransferService;
 
 public class CrudRead<E extends EntityDefinition> {
 
