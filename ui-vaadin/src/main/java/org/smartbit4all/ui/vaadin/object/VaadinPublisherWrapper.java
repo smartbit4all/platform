@@ -2,6 +2,7 @@ package org.smartbit4all.ui.vaadin.object;
 
 import org.smartbit4all.core.object.ObservablePublisherWrapper;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.UIDetachedException;
 
 /**
  * If we are not on Vaadin UI thread open one and execute the event notifications on this thread.
@@ -21,11 +22,13 @@ public class VaadinPublisherWrapper implements ObservablePublisherWrapper {
   @Override
   public void accept(Runnable uiEventNotifications) throws Throwable {
 
-    ui.access(() -> uiEventNotifications.run());
-    // if (UI.getCurrent() == null) {
-    // } else {
-    // uiEventNotifications.run();
-    // }
+    try {
+      ui.access(() -> {
+        uiEventNotifications.run();
+      });
+    } catch (UIDetachedException e) {
+      // do nothing, no UI probably closed
+    }
   }
 
 }
