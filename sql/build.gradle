@@ -1,6 +1,6 @@
 dependencies {
 	api project(':domain')
-	compile 'org.springframework:spring-jdbc'
+	api 'org.springframework:spring-jdbc'
 	
 	testImplementation 'com.h2database:h2:1.4.200'
 
