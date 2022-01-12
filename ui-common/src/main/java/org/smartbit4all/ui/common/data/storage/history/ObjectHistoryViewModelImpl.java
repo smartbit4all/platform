@@ -21,7 +21,7 @@ public class ObjectHistoryViewModelImpl extends ObjectEditingImpl
     implements ObjectHistoryViewModel {
 
   private ObjectHistoryApi historyApi;
-  
+
   @Autowired
   private UINavigationApi uiNavigationApi;
 
@@ -36,7 +36,7 @@ public class ObjectHistoryViewModelImpl extends ObjectEditingImpl
 
     initObjectHistory();
   }
-  
+
   @Override
   public void executeCommand(String commandPath, String command, Object... params) {
     switch (command) {
@@ -56,7 +56,7 @@ public class ObjectHistoryViewModelImpl extends ObjectEditingImpl
   public ObservableObject objectHistory() {
     return objectHistory;
   }
-  
+
   private void initObjectHistory() {
     objectHistory = new ObservableObjectImpl();
     objectHistoryRef = new ApiObjectRef(null, new ObjectHistory(), objectHistoryDescriptor);
@@ -67,12 +67,13 @@ public class ObjectHistoryViewModelImpl extends ObjectEditingImpl
     ObjectHistory objectHistory = historyApi.getObjectHistory(objectUri, scheme);
     objectHistoryRef.setObject(objectHistory);
   }
-  
+
   private void openVersion(URI versionUri, String viewName) {
     uiNavigationApi.navigateTo(new NavigationTarget()
         .viewName(viewName)
         .type(NavigationTargetType.DIALOG)
-        .putParametersItem("entry", versionUri));
+        .putParametersItem("entry", versionUri)
+        .putParametersItem("history", Boolean.TRUE));
   }
 
   @Override
