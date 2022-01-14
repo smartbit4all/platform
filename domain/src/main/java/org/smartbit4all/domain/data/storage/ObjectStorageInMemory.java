@@ -56,11 +56,12 @@ public class ObjectStorageInMemory extends ObjectStorageImpl {
       referencesByURI.put(uri, storageObject.getReferences());
       collectionsByURI.put(uri, storageObject.getCollections());
       invokeOnSucceedFunctions(storageObject,
-          new StorageSaveEvent<>(
+          new StorageSaveEvent(
               () -> storageObject.getVersionUri(),
               () -> oldObj,
               copy.getVersionUri(),
-              ApiObjectRef.unwrapObject(copy.getObject())));
+              ApiObjectRef.unwrapObject(copy.getObject()),
+              storageObject.definition().getClazz()));
       return copy.getUri();
     } finally {
       objectLock.unlockAndRelease();

@@ -23,6 +23,7 @@ import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.utility.PathUtility;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.storage.StorageObject.StorageObjectOperation;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * The abstract basic implementation of the {@link ObjectStorage}.
@@ -61,6 +62,9 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
   protected Supplier<String> versionCreatedBy = () -> StringConstant.UNKNOWN;
 
   protected boolean defaultStorage = false;
+
+  @Autowired(required = false)
+  private List<ObjectStorageSaveSucceedListener> onSucceedListeners;
 
   public ObjectStorageImpl(ObjectApi objectApi) {
     super();
@@ -323,6 +327,9 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
 
   protected void invokeOnSucceedFunctions(StorageObject<?> object,
       StorageSaveEvent storageSaveEvent) {
+    if (onSucceedListeners != null) {
+      onSucceedListeners.forEach(l -> l.doOnSave(storageSaveEvent));
+    }
     object.invokeOnSucceedFunctions(storageSaveEvent);
   }
 

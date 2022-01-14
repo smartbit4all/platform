@@ -10,10 +10,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import org.smartbit4all.api.invocation.bean.InvocationRequestTemplate;
 import org.smartbit4all.api.storage.bean.ObjectReference;
 import org.smartbit4all.api.storage.bean.ObjectVersion;
-import org.smartbit4all.api.storage.bean.StorageObjectData;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.core.utility.UriUtils;
@@ -122,7 +120,7 @@ public final class StorageObject<T> {
    * 
    * TODO Detailed specification.
    */
-  private List<Consumer<StorageSaveEvent<T>>> onSucceedFunctionList = null;
+  private List<Consumer<StorageSaveEvent>> onSucceedFunctionList = null;
 
   /**
    * The Storage cann't be created directly! Use the Storage that would manage this object to have a
@@ -381,7 +379,7 @@ public final class StorageObject<T> {
    * @param func The function to call
    * @return
    */
-  public final StorageObject<T> onSucceed(Consumer<StorageSaveEvent<T>> func) {
+  public final StorageObject<T> onSucceed(Consumer<StorageSaveEvent> func) {
     if (onSucceedFunctionList == null) {
       onSucceedFunctionList = new ArrayList<>();
     }
@@ -389,9 +387,9 @@ public final class StorageObject<T> {
     return this;
   }
 
-  final void invokeOnSucceedFunctions(StorageSaveEvent<T> storageSaveEvent) {
+  final void invokeOnSucceedFunctions(StorageSaveEvent storageSaveEvent) {
     if (onSucceedFunctionList != null) {
-      for (Consumer<StorageSaveEvent<T>> function : onSucceedFunctionList) {
+      for (Consumer<StorageSaveEvent> function : onSucceedFunctionList) {
         function.accept(storageSaveEvent);
       }
     }

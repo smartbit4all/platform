@@ -290,3 +290,31 @@ components:
           type: string
           format: date-time
           description: The expiration time for the reference.
+    StorageSaveEventObject:
+      type: object
+      description: |
+        When StorageObjects are saved the saving process may manage StorageSaveEvents which also can be stored. For this purpose this
+        object can be used.
+        A StorageSaveEventObject point to the next event. This way a linked list can be created of these events.
+      required: [uri]
+      properties:
+        uri:
+          type: string
+          format: uri
+          description: |
+            The identifier of the StorageSaveEventObject object.  
+        oldVersion:
+          description: |
+            The uri of the object before the save event. It can be null if the object is a new instance.
+          type: string
+          format: uri
+        newVersion:
+          description: |
+            The uri of the object after the save event.
+          type: string
+          format: uri
+        nextEvent:
+          description: |
+            The uri of the next save event.
+          type: string
+          format: uri

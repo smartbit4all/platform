@@ -551,8 +551,8 @@ class StorageTest {
     storageObject1.getObject().setTitle("SucceedTest-modified");
 
     storageObject1.onSucceed(e -> {
-      assertEquals("SucceedTest", e.getOldVersion().getTitle());
-      assertEquals("SucceedTest-modified", e.getNewVersion().getTitle());
+      assertEquals("SucceedTest", ((FSTestBean) e.getOldVersion()).getTitle());
+      assertEquals("SucceedTest-modified", ((FSTestBean) e.getNewVersion()).getTitle());
     });
 
     storage.save(storageObject1);

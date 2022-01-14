@@ -26,10 +26,8 @@ import org.smartbit4all.core.object.ObjectSummarySupplier;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.storage.ObjectModificationException;
 import org.smartbit4all.domain.data.storage.ObjectNotFoundException;
-import org.smartbit4all.domain.data.storage.ObjectStorage;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.smartbit4all.domain.data.storage.Storage;
-import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageLoadOption;
 import org.smartbit4all.domain.data.storage.StorageObject;
 import org.smartbit4all.domain.data.storage.StorageObject.StorageObjectOperation;
@@ -283,7 +281,7 @@ public class StorageFS extends ObjectStorageImpl {
       ObjectVersion oldVersion = currentVersion;
       updateStorageObjectWithVersion(object, newVersion);
       URI newVersionUri = object.getVersionUri();
-      invokeOnSucceedFunctions(object, new StorageSaveEvent<>(
+      invokeOnSucceedFunctions(object, new StorageSaveEvent(
           () -> {
             if (oldVersion != null) {
               return oldVersionUri;
@@ -300,7 +298,8 @@ public class StorageFS extends ObjectStorageImpl {
             return null;
           },
           newVersionUri,
-          object.getObject()));
+          object.getObject(),
+          object.definition().getClazz()));
 
     } catch (IOException e) {
       throw new IllegalArgumentException("Unable to finalize the transaction on " + object, e);
