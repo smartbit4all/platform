@@ -11,6 +11,8 @@ import org.smartbit4all.api.invocation.registration.ApiRegisterImpl;
 import org.smartbit4all.api.invocation.registration.LocalApiInstantiator;
 import org.smartbit4all.api.invocation.registration.ProtocolSpecificApiInstantiator;
 import org.smartbit4all.api.navigation.NavigationApi;
+import org.smartbit4all.api.navigation.NavigationFeatureApi;
+import org.smartbit4all.api.navigation.NavigationFeatureApiImpl;
 import org.smartbit4all.api.navigation.NavigationPrimary;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.setting.LocaleUsage;
@@ -76,6 +78,11 @@ public class PlatformApiConfig {
   public FilterService filtersService(EntityManager entityManager,
       TransferService transferService) {
     return new FilterService(entityManager, transferService);
+  }
+
+  @Bean
+  public NavigationFeatureApi navigationFeatureApi() {
+    return new NavigationFeatureApiImpl();
   }
 
 }

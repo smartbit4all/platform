@@ -1,7 +1,5 @@
 package org.smartbit4all.api.navigation;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,6 +13,8 @@ import org.smartbit4all.api.navigation.bean.NavigationNode;
 import org.smartbit4all.api.navigation.bean.NavigationView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(classes = NavigationTestConfig.class)
 class NavigationStaticTest {
@@ -30,6 +30,9 @@ class NavigationStaticTest {
 
   @Autowired
   NavigationApi navigationApi;
+
+  @Autowired
+  NavigationFeatureApi featureApi;
 
   @BeforeAll
   static void setUpBeforeClass() throws Exception {}
@@ -300,4 +303,55 @@ class NavigationStaticTest {
     assertTrue(results.contains(bean32.getName()));
     assertTrue(results.contains(bean33.getName()));
   }
+
+  @Test
+  void testFeaturesWithNavigation1() {
+    TestBean4 bean4 = TestBeans.bean4Of(
+        "testbean4name",
+        Arrays.asList("address4", "address44"));
+
+    TestBean3 bean3 = TestBeans.bean3Of(
+        "testbean3name",
+        Arrays.asList("address3", "address33"),
+        bean4);
+
+    TestBean2 bean2 = TestBeans.bean2Of(
+        "testbean2name",
+        Arrays.asList("address2", "address22"),
+        Arrays.asList(bean3));
+
+    TestBean1 bean1 = TestBeans.bean1Of(
+        "testbean1name",
+        Arrays.asList("address1", "address11"),
+        Arrays.asList(bean2));
+
+    nav1.setBeans(Arrays.asList(bean1));
+
+    ConfigBuilder builder = NavigationConfig.builder();
+    builder.addAssociationMeta(Navigation1.ASSOC_BEAN2S_OF_BEAN1_META);
+    builder.addAssociationMeta(Navigation1.ASSOC_BEAN3S_OF_BEAN2_META);
+    NavigationConfig navConfig = builder.build();
+
+    Navigation navigation = new Navigation(navConfig, navigationApi);
+    NavigationNode rootNode =
+        navigation.addRootNode(Navigation1.ENTRY_BEAN1_META.getUri(), bean1.getUri());
+
+    StringBuilder sb = new StringBuilder();
+    traverseObjectWriter(navigation, rootNode, sb, 0);
+
+    System.out.println(sb);
+
+  }
+
+  void traverseObjectWriter(Navigation navigation, NavigationNode currentNode,
+      StringBuilder builder, int dept) {
+    List<ObjectTitleWriter> api =
+        featureApi.api(ObjectTitleWriter.class, currentNode.getEntry().getMetaUri());
+    api.stream().forEach(a -> a.write(currentNode.getEntry().getName(), builder, dept));
+    navigation.expandAll(currentNode);
+    currentNode.getAssociations().stream()
+        .flatMap(a -> a.getReferences().stream().map(r -> r.getEndNode()))
+        .forEach(n -> traverseObjectWriter(navigation, n, builder, dept + 1));
+  }
+
 }

@@ -23,4 +23,9 @@ public class NavigationTestConfig {
   Navigation3 navigation3() {
     return new Navigation3(Navigation3.NAV_NAME);
   }
+
+  @Bean
+  SummaryAddOn summaryAddOn() {
+    return new SummaryAddOn();
+  }
 }
