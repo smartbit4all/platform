@@ -348,4 +348,10 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
     storageObject.setVersion(version);
   }
 
+  @Override
+  public ObjectHistoryIterator objectHistory(URI uri, ObjectDefinition<?> definition) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
 }

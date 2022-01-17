@@ -132,4 +132,15 @@ public interface ObjectStorage {
    */
   StorageObjectLock getLock(URI objectUri);
 
+  /**
+   * Creates an {@link ObjectHistoryIterator} that can iterate through the
+   * {@link StorageObjectHistoryEntry}s of the object found with the given uri, making available to
+   * investigate the full history of that object.
+   * 
+   * @param uri
+   * @param definition
+   * @return
+   */
+  ObjectHistoryIterator objectHistory(URI uri, ObjectDefinition<?> definition);
+
 }

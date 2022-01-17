@@ -277,6 +277,20 @@ public final class Storage {
     return objectStorage.loadHistory(this, uri, definition);
   }
 
+  /**
+   * Creates an {@link ObjectHistoryIterator} that can iterate through the
+   * {@link StorageObjectHistoryEntry}s of the object found with the given uri, making available to
+   * investigate the full history of that object.
+   * 
+   * @param <T>
+   * @param uri
+   * @param clazz
+   * @return
+   */
+  public ObjectHistoryIterator objectHistory(URI uri) {
+    ObjectDefinition<?> definition = objectApi.definition(uri);
+    return objectStorage.objectHistory(uri, definition);
+  }
 
   protected final String getScheme() {
     return scheme;

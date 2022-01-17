@@ -8,6 +8,7 @@ import java.nio.file.StandardCopyOption;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -24,6 +25,7 @@ import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectSummarySupplier;
 import org.smartbit4all.core.utility.StringConstant;
+import org.smartbit4all.domain.data.storage.ObjectHistoryIterator;
 import org.smartbit4all.domain.data.storage.ObjectModificationException;
 import org.smartbit4all.domain.data.storage.ObjectNotFoundException;
 import org.smartbit4all.domain.data.storage.ObjectStorage;
@@ -489,6 +491,53 @@ public class StorageFS extends ObjectStorageImpl {
                   uri.toString() + StringConstant.HASH + objectVersion.getSerialNoData())));
     }
     return result;
+  }
+
+  @Override
+  public ObjectHistoryIterator objectHistory(URI uri, ObjectDefinition<?> definition) {
+    if (definition == null) {
+      return null;
+    }
+
+    File storageObjectDataFile = getDataFileByUri(uri, storedObjectFileExtension);
+    if (!storageObjectDataFile.exists()) {
+      return null;
+    }
+
+    BinaryData storageObjectBinaryData = new BinaryData(storageObjectDataFile);
+    Optional<StorageObjectData> optObject =
+        storageObjectDataDef.deserialize(storageObjectBinaryData);
+    if (!optObject.isPresent()) {
+      throw new ObjectNotFoundException(uri, null, "Unable to load object data file.");
+    }
+
+    ObjectVersion currentObjectVersion = optObject.get().getCurrentVersion();
+    if (currentObjectVersion.getSerialNoData() == null) {
+      return null;
+    }
+
+    long serialNoDataMax = currentObjectVersion.getSerialNoData();
+
+    return new ObjectHistoryIterator() {
+
+      @Override
+      public Iterator<StorageObjectHistoryEntry<?>> iterator() {
+        return new Iterator<StorageObjectHistoryEntry<?>>() {
+
+          @Override
+          public boolean hasNext() {
+            return i < serialNoDataMax;
+          }
+
+          @Override
+          public StorageObjectHistoryEntry<?> next() {
+            return loadObjectVersion(definition, getDataFileByUri(uri, StringConstant.EMPTY), ++i);
+          }
+
+        };
+      }
+
+    };
   }
 
   // /**

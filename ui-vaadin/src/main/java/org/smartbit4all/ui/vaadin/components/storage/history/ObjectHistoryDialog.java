@@ -100,7 +100,7 @@ public class ObjectHistoryDialog extends Dialog {
     textArea.setWidthFull();
 
     if (entry.getChanges() == null) {
-      textArea.setValue("Nincs megjeleníthető változás");
+      textArea.setValue("Létrehozáskor keletkezett verzió.");
     } else {
       textArea.setValue(entry.getChanges());
     }
