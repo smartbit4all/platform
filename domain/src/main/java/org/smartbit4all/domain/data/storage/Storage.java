@@ -14,7 +14,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.smartbit4all.api.storage.bean.ObjectHistoryEntry;
 import org.smartbit4all.api.storage.bean.ObjectMap;
 import org.smartbit4all.api.storage.bean.ObjectMapRequest;
 import org.smartbit4all.api.storage.bean.ObjectReference;
@@ -264,17 +263,6 @@ public final class Storage {
    */
   public <T> List<T> read(List<URI> uris, Class<T> clazz) {
     return objectStorage.read(this, uris, clazz);
-  }
-
-  /**
-   * Loads the full history of the given object.
-   * 
-   * @param uri The uri of the object.
-   * @return
-   */
-  public List<ObjectHistoryEntry> loadHistory(URI uri) {
-    ObjectDefinition<?> definition = objectApi.definition(uri);
-    return objectStorage.loadHistory(this, uri, definition);
   }
 
   /**

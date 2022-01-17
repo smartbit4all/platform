@@ -6,8 +6,6 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -16,14 +14,12 @@ import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.binarydata.BinaryData;
-import org.smartbit4all.api.storage.bean.ObjectHistoryEntry;
 import org.smartbit4all.api.storage.bean.ObjectVersion;
 import org.smartbit4all.api.storage.bean.StorageObjectData;
 import org.smartbit4all.api.storage.bean.StorageObjectRelationData;
 import org.smartbit4all.core.io.utility.FileIO;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
-import org.smartbit4all.core.object.ObjectSummarySupplier;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.storage.ObjectHistoryIterator;
 import org.smartbit4all.domain.data.storage.ObjectModificationException;
@@ -446,51 +442,6 @@ public class StorageFS extends ObjectStorageImpl {
         .deserialize(versionObjectBinaryData, ObjectVersion.class).get();
     T object = definition.deserialize(versionBinaryData).orElse(null);
     return new StorageObjectHistoryEntry<>(objectVersion, object);
-  }
-
-  @Override
-  public List<ObjectHistoryEntry> loadHistory(Storage storage, URI uri,
-      ObjectDefinition<?> definition) {
-    if (definition == null) {
-      return Collections.emptyList();
-    }
-    File storageObjectDataFile = getDataFileByUri(uri, storedObjectFileExtension);
-    if (!storageObjectDataFile.exists()) {
-      return Collections.emptyList();
-    }
-    File storageObjectVersionBasePath = getDataFileByUri(uri, StringConstant.EMPTY);
-    BinaryData storageObjectBinaryData = new BinaryData(storageObjectDataFile);
-    Optional<StorageObjectData> optObject =
-        storageObjectDataDef.deserialize(storageObjectBinaryData);
-    if (!optObject.isPresent()) {
-      throw new ObjectNotFoundException(uri, null, "Unable to load object data file.");
-    }
-    StorageObjectData storageObjectData = optObject.get();
-    ObjectVersion currentObjectVersion = storageObjectData.getCurrentVersion();
-
-    if (currentObjectVersion.getSerialNoData() == null) {
-      return Collections.emptyList();
-    }
-
-    ObjectSummarySupplier<?> summarySupplier =
-        definition.getSummarySupplier(ObjectSummarySupplier.HISTORY);
-    long serialNoDataMax = currentObjectVersion.getSerialNoData() + 1;
-    List<ObjectHistoryEntry> result = new ArrayList<>();
-    for (long i = 0; i < serialNoDataMax; i++) {
-      getObjectVersionFile(storageObjectVersionBasePath, i);
-      StorageObjectHistoryEntry<?> loadObjectVersion =
-          loadObjectVersion(definition, storageObjectVersionBasePath, i);
-      ObjectVersion objectVersion = loadObjectVersion.getVersion();
-      result
-          .add(new ObjectHistoryEntry().version(objectVersion)
-              .summary(
-                  summarySupplier != null
-                      ? summarySupplier.getSummary(loadObjectVersion.getObject())
-                      : ObjectSummarySupplier.getDefaultSummary(loadObjectVersion.getObject()))
-              .objectType(definition.getAlias()).versionUri(URI.create(
-                  uri.toString() + StringConstant.HASH + objectVersion.getSerialNoData())));
-    }
-    return result;
   }
 
   @Override

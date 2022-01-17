@@ -1,14 +1,10 @@
 package org.smartbit4all.domain.data.storage;
 
 import java.net.URI;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import org.smartbit4all.api.storage.bean.ObjectHistoryEntry;
 import org.smartbit4all.core.object.ApiObjectRef;
 import org.smartbit4all.core.object.ObjectApi;
-import org.smartbit4all.core.object.ObjectDefinition;
 
 /**
  * Simple Map based implementation of object storage. It can be used for testing with storage. There
@@ -92,12 +88,6 @@ public class ObjectStorageInMemory extends ObjectStorageImpl {
     copy.setReferences(referencesByURI.get(uri)); // FIXME should copy these too?
     copy.setCollections(collectionsByURI.get(uri));
     return (StorageObject<T>) copy;
-  }
-
-  @Override
-  public List<ObjectHistoryEntry> loadHistory(Storage storage, URI uri,
-      ObjectDefinition<?> definition) {
-    return Collections.emptyList();
   }
 
   @Override

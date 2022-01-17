@@ -64,7 +64,8 @@ public class ObjectHistoryViewModelImpl extends ObjectEditingImpl
   }
 
   private void setObjectHistoryRef(URI objectUri, String scheme) {
-    ObjectHistory objectHistory = historyApi.getObjectHistory(objectUri, scheme);
+    List<ObjectHistoryEntry> historyEntries = historyApi.getObjectHistory(objectUri, scheme);
+    ObjectHistory objectHistory = new ObjectHistory().objectHistoryEntries(historyEntries);
     objectHistoryRef.setObject(objectHistory);
   }
 

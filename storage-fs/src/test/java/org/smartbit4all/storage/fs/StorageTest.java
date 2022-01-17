@@ -23,16 +23,11 @@ import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.binarydata.BinaryDataObject;
 import org.smartbit4all.api.invocation.bean.InvocationParameterTemplate;
 import org.smartbit4all.api.invocation.bean.InvocationRequestTemplate;
-import org.smartbit4all.api.storage.bean.ObjectHistory;
-import org.smartbit4all.api.storage.bean.ObjectHistoryEntry;
 import org.smartbit4all.api.storage.bean.ObjectMap;
 import org.smartbit4all.api.storage.bean.ObjectMapRequest;
 import org.smartbit4all.api.storage.bean.ObjectReference;
 import org.smartbit4all.api.storage.bean.StorageSettings;
 import org.smartbit4all.core.object.ObjectApi;
-import org.smartbit4all.core.object.ObjectDefinition;
-import org.smartbit4all.core.object.ObjectSummarySupplier;
-import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.storage.ObjectModificationException;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
@@ -40,7 +35,6 @@ import org.smartbit4all.domain.data.storage.StorageLoadOption;
 import org.smartbit4all.domain.data.storage.StorageObject;
 import org.smartbit4all.domain.data.storage.StorageObjectLock;
 import org.smartbit4all.domain.data.storage.StorageObjectReferenceEntry;
-import org.smartbit4all.domain.data.storage.history.ObjectHistoryApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.io.ByteStreams;
 
@@ -104,9 +98,6 @@ class StorageTest {
   StorageApi storageApi;
 
   @Autowired
-  ObjectHistoryApi historyApi;
-
-  @Autowired
   ObjectApi objectApi;
 
   @Autowired
@@ -151,121 +142,6 @@ class StorageTest {
 
     assertEquals("test", new String(bdos.toByteArray()));
 
-  }
-
-  @Test
-  void historyTest() throws Exception {
-    long startCreationTime = System.currentTimeMillis();
-    Storage storage = storageApi.get(StorageTestConfig.TESTSCHEME);
-
-    StorageObject<FSTestBean> storageObject = storage.instanceOf(FSTestBean.class);
-
-    storageObject.setObject(new FSTestBean("v0"));
-
-    URI uri = storage.save(storageObject);
-
-    int versionCount = 100;
-    // Creating more versions.
-
-    long saveTimes = 0;
-
-    for (int i = 1; i < versionCount; i++) {
-
-      StorageObject<FSTestBean> object = storage.load(uri, FSTestBean.class);
-      object.getObject().setTitle("v" + i);
-      long startSave = System.currentTimeMillis();
-      URI savedUri = storage.save(object);
-      assertEquals(savedUri, object.getUri());
-      assertEquals(URI.create(savedUri + StringConstant.HASH + i), object.getVersionUri());
-      saveTimes += System.currentTimeMillis() - startSave;
-    }
-
-    long endCreationTime = System.currentTimeMillis();
-
-    List<ObjectHistoryEntry> loadHistory = storage.loadHistory(uri);
-
-    int versionSerial = 0;
-    for (ObjectHistoryEntry objectHistoryEntry : loadHistory) {
-      String title = "v" + versionSerial++;
-      assertEquals(title + " (" + uri + ")", objectHistoryEntry.getSummary());
-    }
-
-    long endTime = System.currentTimeMillis();
-
-    long totalCreationTime = endCreationTime - startCreationTime;
-
-    System.out.println("Total creation time: " + (totalCreationTime) + ", Total save time: "
-        + saveTimes + " , creationOneObject: "
-        + (totalCreationTime / versionCount) + ", save one object: " + (saveTimes / versionCount)
-        + ", history retrieval time: "
-        + (endTime - endCreationTime));
-
-    Assertions.assertTrue(totalCreationTime < 1000);
-
-    assertEquals(versionCount, loadHistory.size());
-
-
-
-    // Load a specific version
-
-    long startLoad = System.currentTimeMillis();
-
-    ObjectDefinition<FSTestBean> objectDefinition = objectApi.definition(FSTestBean.class);
-    ObjectSummarySupplier<FSTestBean> summarySupplier = objectDefinition.getSummarySupplier();
-
-    for (int i = 0; i < versionCount; i++) {
-
-      URI versionUri = URI.create(uri.toString() + StringConstant.HASH + i);
-      StorageObject<FSTestBean> object = storage
-          .load(versionUri, FSTestBean.class);
-      String title = object.getObject().getTitle();
-      assertEquals("v" + i, title);
-      assertEquals(object.getUri(), uri);
-      assertEquals(object.getObject().getUri(), versionUri);
-      assertEquals(title + " (" + object.getObject().getUri() + ")",
-          summarySupplier.apply(object.getObject()));
-
-    }
-
-    long endLoad = System.currentTimeMillis();
-
-    System.out.println("Total load time: " + (endLoad - startLoad) + ", load one object: "
-        + (endLoad - startLoad) / versionCount);
-    // assertFalse(loaded.isPresent());
-  }
-
-  @Test
-  void objectHistoryTest() throws Exception {
-    Storage storage = storageApi.get(StorageTestConfig.TESTSCHEME);
-    StorageObject<FSTestBean> storageObject = storage.instanceOf(FSTestBean.class);
-
-    storageObject.setObject(new FSTestBean("v0"));
-
-    URI uri = storage.save(storageObject);
-
-    StorageObject<FSTestBean> object = storage.load(uri, FSTestBean.class);
-    object.getObject().setTitle("v" + 1);
-    storage.save(object);
-
-    ObjectHistory objectHistory = historyApi.getObjectHistory(uri, StorageTestConfig.TESTSCHEME);
-
-    assertEquals(2, objectHistory.getObjectHistoryEntries().size());
-
-    URI v0Uri = objectHistory.getObjectHistoryEntries().get(0).getVersionUri();
-    assertEquals(URI.create(uri.toString() + StringConstant.HASH + 0), v0Uri);
-
-    StorageObject<FSTestBean> v0obj = storage.load(v0Uri, FSTestBean.class);
-    FSTestBean v0bean = v0obj.getObject();
-
-    assertEquals("v0", v0bean.getTitle());
-
-    URI v1Uri = objectHistory.getObjectHistoryEntries().get(1).getVersionUri();
-    assertEquals(URI.create(uri.toString() + StringConstant.HASH + 1), v1Uri);
-
-    StorageObject<FSTestBean> v1obj = storage.load(v1Uri, FSTestBean.class);;
-    FSTestBean v1bean = v1obj.getObject();
-
-    assertEquals("v1", v1bean.getTitle());
   }
 
   @Test

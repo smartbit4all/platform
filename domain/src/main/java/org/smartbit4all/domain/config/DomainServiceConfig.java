@@ -33,8 +33,6 @@ import org.smartbit4all.domain.application.TimeManagementService;
 import org.smartbit4all.domain.application.TimeManagementServiceImpl;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageApiImpl;
-import org.smartbit4all.domain.data.storage.history.ObjectHistoryApi;
-import org.smartbit4all.domain.data.storage.history.ObjectHistoryApiImpl;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.service.entity.EntityManager;
 import org.smartbit4all.domain.service.entity.EntityManagerImpl;
@@ -190,11 +188,6 @@ public class DomainServiceConfig extends SB4Configuration {
   @Bean
   public StorageApi getStorageApi() {
     return new StorageApiImpl();
-  }
-
-  @Bean
-  public ObjectHistoryApi storageObjectHistoryApi(StorageApi storageApi) {
-    return new ObjectHistoryApiImpl(storageApi);
   }
 
   @Bean
