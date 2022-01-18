@@ -270,9 +270,7 @@ public final class Storage {
    * {@link StorageObjectHistoryEntry}s of the object found with the given uri, making available to
    * investigate the full history of that object.
    * 
-   * @param <T>
    * @param uri
-   * @param clazz
    * @return
    */
   public ObjectHistoryIterator objectHistory(URI uri) {
