@@ -30,7 +30,7 @@ public interface NavigationFeatureApi {
    * 
    * @param <A> Typed by the class of the requested api.
    * @param apiClass The class of the requested api.
-   * @param entryMeta The meta object of the navigation entry.
+   * @param meta The meta object of the navigation entry.
    * @return The api if exists.
    */
   <A> List<A> api(Class<A> apiClass, URI meta);

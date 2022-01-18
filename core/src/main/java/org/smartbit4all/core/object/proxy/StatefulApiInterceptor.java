@@ -26,7 +26,7 @@ import org.aopalliance.intercept.MethodInvocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.core.event.EventPublisher;
-import org.smartbit4all.core.event.EventPublisherImpl;
+import org.smartbit4all.core.event.ListenerAware;
 import org.smartbit4all.core.object.NotifyListeners;
 import org.smartbit4all.core.object.ObjectEditing;
 import org.smartbit4all.core.object.PublishEvents;
@@ -77,8 +77,8 @@ public class StatefulApiInterceptor implements MethodInterceptor {
 
     for (Method publisherImpl : publishersToCall) {
       EventPublisher publisher = (EventPublisher) publisherImpl.invoke(invocation.getThis());
-      if (publisher instanceof EventPublisherImpl) {
-        ((EventPublisherImpl) publisher).notifyListeners();
+      if (publisher instanceof ListenerAware) {
+        ((ListenerAware) publisher).notifyListeners();
       }
     }
     return result;

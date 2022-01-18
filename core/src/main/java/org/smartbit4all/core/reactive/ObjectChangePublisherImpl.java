@@ -23,7 +23,7 @@ public class ObjectChangePublisherImpl<T> implements ObjectChangePublisher<T> {
       try {
         if (object == null) {
           return publisher
-              .subscribe(u -> observer.accept(u));
+              .subscribe(u -> publishTo(observer, u));
         }
         return publisher
             .filter(changedObject -> changedObject.equals(object))

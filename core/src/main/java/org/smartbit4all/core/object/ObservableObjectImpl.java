@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.smartbit4all.core.event.EventPublisherImpl;
+import org.smartbit4all.core.event.ListenerAware;
 import org.smartbit4all.core.utility.PathUtility;
 import com.google.common.base.Strings;
 import io.reactivex.rxjava3.annotations.NonNull;
@@ -21,7 +21,7 @@ import io.reactivex.rxjava3.subjects.PublishSubject;
  * @author Peter Boros
  *
  */
-public final class ObservableObjectImpl implements ObservableObject, EventPublisherImpl {
+public final class ObservableObjectImpl implements ObservableObject, ListenerAware {
 
   private static final Logger log = LoggerFactory.getLogger(ObservableObjectImpl.class);
 

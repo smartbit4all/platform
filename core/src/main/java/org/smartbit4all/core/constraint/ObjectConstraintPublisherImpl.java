@@ -15,7 +15,7 @@
 package org.smartbit4all.core.constraint;
 
 import java.lang.ref.WeakReference;
-import org.smartbit4all.core.event.EventPublisherImpl;
+import org.smartbit4all.core.event.ListenerAware;
 import org.smartbit4all.core.object.ApiObjectRef;
 import org.smartbit4all.core.utility.StringConstant;
 
@@ -25,7 +25,7 @@ import org.smartbit4all.core.utility.StringConstant;
  * @author Peter Boros
  */
 public final class ObjectConstraintPublisherImpl
-    implements ObjectConstraintPublisher, EventPublisherImpl {
+    implements ObjectConstraintPublisher, ListenerAware {
 
   private WeakReference<ApiObjectRef> apiObjectRef;
 
