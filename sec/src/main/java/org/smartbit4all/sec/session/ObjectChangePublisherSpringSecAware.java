@@ -26,16 +26,16 @@ public class ObjectChangePublisherSpringSecAware<T> extends ObjectChangePublishe
 
   @Override
   protected void publishTo(Consumer<T> observer, T object) {
-    SecurityContext context = contextByConsumer.get(observer);
-    SecurityContext oldContext = SecurityContextHolder.getContext();
-    if (context == oldContext) {
+    SecurityContext subscribeContext = contextByConsumer.get(observer);
+    SecurityContext currentContext = SecurityContextHolder.getContext();
+    if (subscribeContext == currentContext || subscribeContext.getAuthentication() == null) {
       super.publishTo(observer, object);
     } else {
-      SecurityContextHolder.setContext(context);
+      SecurityContextHolder.setContext(subscribeContext);
       try {
         super.publishTo(observer, object);
       } finally {
-        SecurityContextHolder.setContext(oldContext);
+        SecurityContextHolder.setContext(currentContext);
       }
     }
   }
