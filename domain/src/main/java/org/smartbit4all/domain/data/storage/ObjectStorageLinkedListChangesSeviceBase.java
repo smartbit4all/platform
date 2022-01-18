@@ -2,24 +2,25 @@ package org.smartbit4all.domain.data.storage;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import org.smartbit4all.api.storage.bean.ObjectMap;
 import org.smartbit4all.api.storage.bean.ObjectMapRequest;
 import org.smartbit4all.api.storage.bean.StorageSaveEventObject;
 import org.smartbit4all.api.storage.bean.StorageSettings;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class ObjectStorageLinkedListChangesSeviceBase
-    implements ObjectStorageLinkListChangesService, ObjectStorageSaveSucceedListener,
-    InitializingBean {
+    implements ObjectStorageLinkListChangesService, ObjectStorageSaveSucceedListener {
 
+  private static final String SCHEME = "linked-changes";
   private static final String SETTINGS_LINKEDEVENTS = "LINKEDEVENTS";
   private static final String SETTINGS_LINKEDEVENTS_FIRST = "FIRST";
   private static final String SETTINGS_LINKEDEVENTS_LAST = "LAST";
 
-  @Autowired
+  private static final List<String> DEDICATED_OBJECT_MAPS =
+      Arrays.asList(SETTINGS_LINKEDEVENTS, SETTINGS_LINKEDEVENTS_FIRST, SETTINGS_LINKEDEVENTS_LAST);
+
   private StorageApi storageApi;
 
   private Storage llcStorage;
@@ -27,16 +28,21 @@ public abstract class ObjectStorageLinkedListChangesSeviceBase
 
   private List<ObjectStorageLinkedListChangeListener> linkedListChangeListeners = new ArrayList<>();
 
-  @Override
-  public void afterPropertiesSet() throws Exception {
-    llcSettings = getLlcStorage().settings().getObject();
-    checkFirstEmptyEvent();
+  public ObjectStorageLinkedListChangesSeviceBase(StorageApi storageApi) {
+    this.storageApi = storageApi;
+  }
+
+  private synchronized void init() {
+    if (llcStorage == null) {
+      llcStorage = storageApi.get(SCHEME);
+      llcSettings = llcStorage.settings().getObject();
+      checkFirstEmptyEvent();
+    }
   }
 
   @Override
   public void doOnSave(StorageSaveEvent saveEvent) {
-    if (StorageSaveEventObject.class.equals(saveEvent.getType())) {
-      // skip the StorageSaveEventObject saves to avoid loops
+    if (skipSave(saveEvent)) {
       return;
     }
 
@@ -55,7 +61,34 @@ public abstract class ObjectStorageLinkedListChangesSeviceBase
     getLlcStorage().save(saveEventObjectSo);
   }
 
-  private void handleSaveEventObjectSave(StorageSaveEvent e) {
+  private boolean skipSave(StorageSaveEvent saveEvent) {
+    if (StorageSaveEventObject.class.equals(saveEvent.getType())) {
+      // skip the StorageSaveEventObject saves to avoid loops
+      return true;
+    }
+    if (ObjectMap.class.equals(saveEvent.getType())) {
+      String mapName = ((ObjectMap) saveEvent.getNewVersion()).getName();
+      if (DEDICATED_OBJECT_MAPS.contains(mapName)) {
+        // skip the save if its an ObjectMap used to manage the linked list!
+        return true;
+      }
+    }
+    if (StorageSettings.class.equals(saveEvent.getType())) {
+      StorageSettings storageSettings = (StorageSettings) saveEvent.getNewVersion();
+      if (storageSettings == null) {
+        // its an attached map modification. now we skip it..
+        return true;
+      }
+      String scheme = storageSettings.getSchemeName();
+      if (SCHEME.equals(scheme)) {
+        // skip the local storage settings modifications
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private synchronized void handleSaveEventObjectSave(StorageSaveEvent e) {
     StorageSaveEventObject saveEventObject = (StorageSaveEventObject) e.getNewVersion();
     if (saveEventObject == null || saveEventObject.getNewVersion() == null) {
       return;
@@ -87,7 +120,7 @@ public abstract class ObjectStorageLinkedListChangesSeviceBase
 
   private Storage getLlcStorage() {
     if (llcStorage == null) {
-      llcStorage = storageApi.get("storageSaveEventObject");
+      init();
     }
     return llcStorage;
   }
