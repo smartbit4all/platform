@@ -13,7 +13,7 @@ import org.smartbit4all.api.storage.bean.StorageSettings;
 public abstract class ObjectStorageLinkedListChangesSeviceBase
     implements ObjectStorageLinkListChangesService, ObjectStorageSaveSucceedListener {
 
-  private static final String SCHEME = "linked-changes";
+  public static final String SCHEME = "linked-changes";
   private static final String SETTINGS_LINKEDEVENTS = "LINKEDEVENTS";
   private static final String SETTINGS_LINKEDEVENTS_FIRST = "FIRST";
   private static final String SETTINGS_LINKEDEVENTS_LAST = "LAST";
