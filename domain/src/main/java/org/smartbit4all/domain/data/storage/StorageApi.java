@@ -42,4 +42,14 @@ public interface StorageApi {
    */
   StorageObject<?> load(URI uri);
 
+  /**
+   * Creates an {@link ObjectHistoryIterator} that can iterate through the
+   * {@link StorageObjectHistoryEntry}s of the object found with the given uri, making available to
+   * investigate the full history of that object.
+   * 
+   * @param uri
+   * @return
+   */
+  ObjectHistoryIterator objectHistory(URI uri);
+
 }

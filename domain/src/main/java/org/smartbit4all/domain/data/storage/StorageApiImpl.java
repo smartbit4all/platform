@@ -129,6 +129,12 @@ public final class StorageApiImpl implements StorageApi, InitializingBean {
 
   @Override
   public StorageObject<?> load(URI uri) {
+    Storage storage = getStorageByUri(uri);
+
+    return storage.load(uri);
+  }
+
+  private final Storage getStorageByUri(URI uri) {
     if (uri == null || uri.getScheme() == null || uri.getScheme().isEmpty()) {
       throw new ObjectNotFoundException(uri, null, "Bad uri format");
     }
@@ -138,8 +144,7 @@ public final class StorageApiImpl implements StorageApi, InitializingBean {
       throw new ObjectNotFoundException(uri, null,
           "Unable to find storage scheme by uri. Might be a missing configuration.");
     }
-
-    return storage.load(uri);
+    return storage;
   }
 
   @SuppressWarnings("unchecked")
@@ -152,6 +157,20 @@ public final class StorageApiImpl implements StorageApi, InitializingBean {
               + uri + " is not what is expected. (" + clazz + ")");
     }
     return (StorageObject<T>) loadResult;
+  }
+
+  /**
+   * Creates an {@link ObjectHistoryIterator} that can iterate through the
+   * {@link StorageObjectHistoryEntry}s of the object found with the given uri, making available to
+   * investigate the full history of that object.
+   * 
+   * @param uri
+   * @return
+   */
+  @Override
+  public ObjectHistoryIterator objectHistory(URI uri) {
+    Storage storage = getStorageByUri(uri);
+    return storage.objectHistory(uri);
   }
 
 }

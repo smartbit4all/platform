@@ -51,7 +51,7 @@ public class UserSessionApiSecImpl implements UserSessionApi {
     }
 
     if (currentAuthentication == null) {
-      throw new IllegalStateException("There is no current authentication int the context!!");
+      throw new IllegalStateException("There is no current authentication in the context!!");
     }
 
     AuthenticationUserProvider userProvider = userProviders.stream()

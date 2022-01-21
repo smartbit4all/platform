@@ -41,7 +41,7 @@ public class ObjectHistoryViewModelImpl extends ObjectEditingImpl
   public void executeCommand(String commandPath, String command, Object... params) {
     switch (command) {
       case SET_OBJECT:
-        setObjectHistoryRef((URI) params[0], (String) params[1]);
+        setObjectHistoryRef((URI) params[0]);
         break;
       case OPEN_VERSION:
         openVersion((URI) params[0], (String) params[1]);
@@ -63,8 +63,8 @@ public class ObjectHistoryViewModelImpl extends ObjectEditingImpl
     objectHistory.setRef(objectHistoryRef);
   }
 
-  private void setObjectHistoryRef(URI objectUri, String scheme) {
-    List<ObjectHistoryEntry> historyEntries = historyApi.getObjectHistory(objectUri, scheme);
+  private void setObjectHistoryRef(URI objectUri) {
+    List<ObjectHistoryEntry> historyEntries = historyApi.getObjectHistory(objectUri);
     ObjectHistory objectHistory = new ObjectHistory().objectHistoryEntries(historyEntries);
     objectHistoryRef.setObject(objectHistory);
   }
