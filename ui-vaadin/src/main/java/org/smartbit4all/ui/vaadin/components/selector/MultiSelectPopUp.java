@@ -121,7 +121,6 @@ public class MultiSelectPopUp<T> extends CustomField<Set<T>> implements HasDataP
     icnInfo.getElement().getStyle().set("padding-right", "5px");
     buttonBox = new FlexLayout(btnClear, icnInfo);
     Css.setAlignSelf(AlignSelf.FLEX_END, buttonBox);
-    Css.setZIndex(5, buttonBox);
 
     FlexLayout layout = new FlexLayout();
     layout.setWidthFull();
