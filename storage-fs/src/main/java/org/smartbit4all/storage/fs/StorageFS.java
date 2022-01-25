@@ -323,7 +323,7 @@ public class StorageFS extends ObjectStorageImpl {
         newVersionUri,
         object.getObject(),
         object.definition().getClazz());
-    if (transactionManager.isInTransaction()) {
+    if (transactionManager != null && transactionManager.isInTransaction()) {
       transactionManager.addOnSucceed(object, event);
     } else {
       invokeOnSucceedFunctions(object, event);
