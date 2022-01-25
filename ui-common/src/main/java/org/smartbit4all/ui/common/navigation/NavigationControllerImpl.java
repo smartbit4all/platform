@@ -17,6 +17,7 @@ package org.smartbit4all.ui.common.navigation;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,13 +63,18 @@ public class NavigationControllerImpl implements NavigationController {
    */
   private NavigationViewOption options = new NavigationViewOption();
 
-
   @Autowired
   protected Actions actions;
 
   private NavigationTreeNode selectedNode;
 
   private List<NavigationActionListener> actionListeners = new ArrayList<>();
+
+  private boolean infiniteTreeEnabled = true;
+
+  private Map<URI, NavigationTreeNode> treeNodesByUri = new HashMap<>();
+
+  private Map<NavigationTreeNode, List<NavigationTreeNode>> childrenByParent = new HashMap<>();
 
   private static NavigationTreeNode treeNodeOf(NavigationNode node) {
     return new NavigationTreeNode(
@@ -83,6 +89,11 @@ public class NavigationControllerImpl implements NavigationController {
 
   public NavigationControllerImpl(NavigationApi api) {
     this.api = api;
+  }
+
+  @Override
+  public void setInfiniteTreeEnabled(boolean enabled) {
+    this.infiniteTreeEnabled = enabled;
   }
 
   @Override
@@ -119,92 +130,131 @@ public class NavigationControllerImpl implements NavigationController {
   public int getChildCount(NavigationTreeNode node) {
     // return node == null ? rootNodes.size() :
     // navigationState.numberOfChildren(node.getIdentifier());
-    if (node == null) {
-      return rootNodes.size();
-    }
-    if (node.isKind(Kind.ASSOCIATION)) {
-      // In case of association we have the references as counter.
-      return navigationState.numberOfReferences(node.getIdentifier());
-    }
-    NavigationNode navigationNode = navigationState.getNode(node.getIdentifier());
-    if (navigationNode != null) {
-      navigationState.expandAll(navigationNode);
-    }
-    return navigationState.numberOfChildren(node.getIdentifier(), true);
+    return getChildren(node).collect(Collectors.toList()).size();
+    // if (node == null) {
+    // return rootNodes.size();
+    // }
+    // if (node.isKind(Kind.ASSOCIATION)) {
+    // // In case of association we have the references as counter.
+    // return navigationState.numberOfReferences(node.getIdentifier());
+    // }
+    // NavigationNode navigationNode = navigationState.getNode(node.getIdentifier());
+    // if (navigationNode != null) {
+    // navigationState.expandAll(navigationNode);
+    // }
+    // return navigationState.numberOfChildren(node.getIdentifier(), true);
   }
 
   @Override
   public Stream<NavigationTreeNode> getChildren(NavigationTreeNode parent) {
+    return getChildrenInternal(parent).stream();
+  }
+
+  protected List<NavigationTreeNode> getChildrenInternal(NavigationTreeNode parent) {
+    if (childrenByParent.containsKey(parent)) {
+      return childrenByParent.get(parent);
+    }
+
+    List<NavigationTreeNode> childrenNodes;
     if (parent == null) {
-      return rootNodes.stream().map(NavigationControllerImpl::treeNodeOf);
-    }
-
-    // Kind kind, String identifier, String caption, String shortDescription,
-    // String icon, String[] styles
-    if (parent.isKind(Kind.ASSOCIATION)) {
-      return navigationState.getReferencedNodes(parent.getIdentifier())
-          .stream()
-          .map(NavigationControllerImpl::treeNodeOf);
-    }
-
-    NavigationNode node = navigationState.getNode(parent.getIdentifier());
-    if (node != null) {
-      navigationState.expandAll(node);
-    }
-
-    List<NavigationAssociation> associations =
-        node.getAssociations() == null ? Collections.emptyList() : node.getAssociations();
-
-    // create map with nulls to define the order
-    LinkedHashMap<String, List<NavigationTreeNode>> treeNodesByOrderedAssocIds =
-        new LinkedHashMap<>();
-    associations.forEach(a -> {
-      treeNodesByOrderedAssocIds.put(a.getId(), null);
-    });
-
-    Map<String, List<NavigationNode>> nodesByAssocIds =
-        navigationState.getChildrenNodes(parent.getIdentifier(), true);
-    nodesByAssocIds.forEach((assocId, nodes) -> {
-      List<NavigationTreeNode> treeNodes = nodes.stream()
-          .map(n -> new NavigationTreeNode(Kind.ENTRY, n.getId(), n.getEntry().getName(), null,
-              n.getEntry().getIcon(), null, n.getEntry().getActions()))
+      childrenNodes = rootNodes.stream()
+          .map(this::createAndStoreTreeNode)
           .collect(Collectors.toList());
-      treeNodesByOrderedAssocIds.put(assocId, treeNodes);
-    });
+    } else if (parent.isKind(Kind.ASSOCIATION)) {
+      childrenNodes = navigationState.getReferencedNodes(parent.getIdentifier())
+          .stream()
+          .filter(n -> !isNavNodeAlreadyPresent(n))
+          .map(this::createAndStoreTreeNode)
+          .collect(Collectors.toList());
+    } else {
 
-
-    // TODO Correct name for the association
-    associations.stream()
-        .filter(a -> !a.getHidden())
-        .forEach(navigationAssociation -> {
-          String[] styles = null;
-          if (navigationAssociation.getReferences() == null
-              || navigationAssociation.getReferences().isEmpty()) {
-            styles = new String[] {"empty"};
-          }
-
-          NavigationTreeNode treeNode = new NavigationTreeNode(
-              Kind.ASSOCIATION,
-              navigationAssociation.getId(),
-              getAssociationNodeCaption(navigationAssociation),
-              null,
-              navigationAssociation.getIcon(),
-              styles,
-              null);
-
-          treeNodesByOrderedAssocIds.put(navigationAssociation.getId(),
-              Collections.singletonList(treeNode));
-        });
-
-
-    List<NavigationTreeNode> resultTreeNodes = new ArrayList<>();
-    treeNodesByOrderedAssocIds.forEach((assoc, nodes) -> {
-      if (nodes != null) {
-        resultTreeNodes.addAll(nodes);
+      NavigationNode node = navigationState.getNode(parent.getIdentifier());
+      if (node != null) {
+        navigationState.expandAll(node);
       }
-    });
-    return resultTreeNodes.stream();
 
+      List<NavigationAssociation> associations =
+          node.getAssociations() == null ? Collections.emptyList() : node.getAssociations();
+
+      // create map with nulls to define the order
+      LinkedHashMap<String, List<NavigationTreeNode>> treeNodesByOrderedAssocIds =
+          new LinkedHashMap<>();
+      associations.forEach(a -> {
+        treeNodesByOrderedAssocIds.put(a.getId(), null);
+      });
+
+      Map<String, List<NavigationNode>> nodesByAssocIds =
+          navigationState.getChildrenNodes(parent.getIdentifier(), true);
+      // for (List<NavigationNode> nodeList : nodesByAssocIds.values()) {
+      // List<NavigationNode> toRemove = nodeList.stream()
+      // .filter(n -> n.getEntry().getObjectUri() != null
+      // && treeNodesByUri.containsKey(n.getEntry().getObjectUri()))
+      // .collect(Collectors.toList());
+      // nodeList.removeAll(toRemove);
+      // }
+      nodesByAssocIds.forEach((assocId, nodes) -> {
+        List<NavigationTreeNode> treeNodes = nodes.stream()
+            .filter(n -> !isNavNodeAlreadyPresent(n))
+            .map(this::createAndStoreTreeNode)
+            .collect(Collectors.toList());
+        treeNodesByOrderedAssocIds.put(assocId, treeNodes);
+      });
+
+      // TODO Correct name for the association
+      associations.stream()
+          .filter(a -> !a.getHidden())
+          .forEach(navigationAssociation -> {
+            String[] styles = null;
+            if (navigationAssociation.getReferences() == null
+                || navigationAssociation.getReferences().isEmpty()) {
+              styles = new String[] {"empty"};
+            }
+
+            NavigationTreeNode treeNode = new NavigationTreeNode(
+                Kind.ASSOCIATION,
+                navigationAssociation.getId(),
+                getAssociationNodeCaption(navigationAssociation),
+                null,
+                navigationAssociation.getIcon(),
+                styles,
+                null);
+
+            treeNodesByOrderedAssocIds.put(navigationAssociation.getId(),
+                Collections.singletonList(treeNode));
+          });
+
+      childrenNodes = new ArrayList<>();
+      treeNodesByOrderedAssocIds.forEach((assoc, nodes) -> {
+        if (nodes != null) {
+          childrenNodes.addAll(nodes);
+        }
+      });
+    }
+    childrenByParent.put(parent, childrenNodes);
+    return childrenNodes;
+
+  }
+
+  private NavigationTreeNode createAndStoreTreeNode(NavigationNode node) {
+    NavigationTreeNode treeNode = treeNodeOf(node);
+    if (!infiniteTreeEnabled) {
+      // store only if we use it for anything
+      if (node.getEntry() != null) {
+        URI objectUri = node.getEntry().getObjectUri();
+        if (objectUri != null) {
+          treeNodesByUri.put(objectUri, treeNode);
+        }
+      }
+    }
+    return treeNode;
+  }
+
+  private boolean isNavNodeAlreadyPresent(NavigationNode n) {
+    if (infiniteTreeEnabled) {
+      return false;
+    }
+    return n.getEntry().getObjectUri() != null
+        && treeNodesByUri.containsKey(n.getEntry().getObjectUri());
   }
 
   private String getAssociationNodeCaption(NavigationAssociation association) {

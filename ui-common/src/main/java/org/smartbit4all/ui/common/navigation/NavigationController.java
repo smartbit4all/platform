@@ -68,4 +68,6 @@ public interface NavigationController extends UIController {
 
   void navigateTo(NavigationTarget command);
 
+  void setInfiniteTreeEnabled(boolean enabled);
+
 }
