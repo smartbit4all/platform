@@ -281,25 +281,8 @@ public class StorageFS extends ObjectStorageImpl {
       ObjectVersion oldVersion = currentVersion;
       updateStorageObjectWithVersion(object, newVersion);
       URI newVersionUri = object.getVersionUri();
-      invokeOnSucceedFunctions(object, new StorageSaveEvent(
-          () -> {
-            if (oldVersion != null) {
-              return oldVersionUri;
-            }
-            return null;
-          },
-          () -> {
-            if (oldVersion != null) {
-              Object o = loadObjectVersion(object.definition(), objectVersionBasePath,
-                  oldVersion.getSerialNoData()).getObject();
-
-              return o;
-            }
-            return null;
-          },
-          newVersionUri,
-          object.getObject(),
-          object.definition().getClazz()));
+      invokeOnSucceedFunctions(object, oldVersion, oldVersionUri, newVersionUri,
+          objectVersionBasePath);
 
     } catch (IOException e) {
       throw new IllegalArgumentException("Unable to finalize the transaction on " + object, e);
@@ -307,6 +290,50 @@ public class StorageFS extends ObjectStorageImpl {
       storageObjectLock.unlockAndRelease();
     }
     return object.getUri();
+  }
+
+  /**
+   * Invoke the on succeed functions depending on having a transaction or not. If we have an active
+   * transaction then the functions is going to be called at the successful transaction end.
+   * 
+   * @param object
+   * @param oldVersion
+   * @param oldVersionUri
+   * @param newVersionUri
+   * @param objectVersionBasePath
+   */
+  void invokeOnSucceedFunctions(StorageObject<?> object, ObjectVersion oldVersion,
+      URI oldVersionUri, URI newVersionUri, File objectVersionBasePath) {
+    StorageSaveEvent event = new StorageSaveEvent(
+        () -> {
+          if (oldVersion != null) {
+            return oldVersionUri;
+          }
+          return null;
+        },
+        () -> {
+          if (oldVersion != null) {
+            Object o = loadObjectVersion(object.definition(), objectVersionBasePath,
+                oldVersion.getSerialNoData()).getObject();
+
+            return o;
+          }
+          return null;
+        },
+        newVersionUri,
+        object.getObject(),
+        object.definition().getClazz());
+    if (transactionManager.isInTransaction()) {
+      transactionManager.addOnSucceed(object, event);
+    } else {
+      invokeOnSucceedFunctions(object, event);
+    }
+  }
+
+  @Override
+  protected void invokeOnSucceedFunctions(StorageObject<?> object,
+      StorageSaveEvent storageSaveEvent) {
+    super.invokeOnSucceedFunctions(object, storageSaveEvent);
   }
 
   private void saveObjectData(StorageObject<?> object, File objectDataFile,
