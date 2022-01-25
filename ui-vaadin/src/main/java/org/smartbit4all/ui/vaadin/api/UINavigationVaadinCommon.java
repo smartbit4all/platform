@@ -1,7 +1,5 @@
 package org.smartbit4all.ui.vaadin.api;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -49,8 +47,6 @@ public abstract class UINavigationVaadinCommon extends UINavigationApiCommon {
   protected Map<UUID, Label> dialogLabelsByUUID;
   protected Map<UUID, Component> dialogViewsByUUID;
 
-  protected Map<String, List<SecurityGroup>> securityGroupByView;
-
   public UINavigationVaadinCommon(UI ui, UserSessionApi userSessionApi) {
     this.ui = ui;
     this.userSessionApi = userSessionApi;
@@ -59,7 +55,6 @@ public abstract class UINavigationVaadinCommon extends UINavigationApiCommon {
     dialogsByUUID = new HashMap<>();
     dialogViewsByUUID = new HashMap<>();
     dialogLabelsByUUID = new HashMap<>();
-    securityGroupByView = new HashMap<>();
   }
 
   @Override
@@ -324,16 +319,6 @@ public abstract class UINavigationVaadinCommon extends UINavigationApiCommon {
       }
     }
 
-  }
-
-  @Override
-  public void registerSecurityGroup(String viewName, SecurityGroup... securityGroups) {
-    List<SecurityGroup> groupList = securityGroupByView.get(viewName);
-    if (groupList == null) {
-      groupList = new ArrayList<>();
-      securityGroupByView.put(viewName, groupList);
-    }
-    groupList.addAll(Arrays.asList(securityGroups));
   }
 
   protected boolean checkSecurity(NavigationTarget navigationTarget) {

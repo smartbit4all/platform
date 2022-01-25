@@ -1,24 +1,34 @@
 package org.smartbit4all.ui.common.api;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Consumer;
+import org.smartbit4all.api.org.SecurityGroup;
 import org.smartbit4all.ui.api.navigation.UINavigationApi;
+import org.smartbit4all.ui.api.navigation.model.Message;
+import org.smartbit4all.ui.api.navigation.model.MessageResult;
 import org.smartbit4all.ui.api.navigation.model.NavigableViewDescriptor;
 import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
 import org.smartbit4all.ui.api.navigation.model.NavigationTargetType;
 
-public abstract class UINavigationApiCommon implements UINavigationApi {
+public class UINavigationApiCommon implements UINavigationApi {
 
   protected Map<UUID, NavigationTarget> navigationTargetsByUUID;
 
   protected Map<String, NavigableViewDescriptor> navigableViews;
   protected Map<NavigationTargetType, Map<String, NavigableViewDescriptor>> navigableViewsByType;
 
+  protected Map<String, List<SecurityGroup>> securityGroupByView;
+
   public UINavigationApiCommon() {
     navigationTargetsByUUID = new HashMap<>();
     navigableViews = new HashMap<>();
     navigableViewsByType = new HashMap<>();
+    securityGroupByView = new HashMap<>();
   }
 
   @Override
@@ -68,5 +78,25 @@ public abstract class UINavigationApiCommon implements UINavigationApi {
   @Override
   public NavigationTarget getNavigationTargetByUuid(UUID navigationTargetUuid) {
     return navigationTargetsByUUID.get(navigationTargetUuid);
+  }
+
+  @Override
+  public void registerSecurityGroup(String viewName, SecurityGroup... securityGroups) {
+    List<SecurityGroup> groupList = securityGroupByView.get(viewName);
+    if (groupList == null) {
+      groupList = new ArrayList<>();
+      securityGroupByView.put(viewName, groupList);
+    }
+    groupList.addAll(Arrays.asList(securityGroups));
+  }
+
+  @Override
+  public void showMessage(Message message, Consumer<MessageResult> messageListener) {
+    // TODO Auto-generated method stub
+  }
+
+  @Override
+  public void setTitle(UUID navigationTargetUuid, String title) {
+    // TODO Auto-generated method stub
   }
 }
