@@ -101,4 +101,24 @@ public class AuthenticationUserProviders {
     };
   }
 
+  public static AuthenticationUserProvider technicalUserProvider(User technicalUser) {
+    return new AuthenticationUserProvider() {
+
+      @Override
+      public User getUser(Authentication authentication) {
+        return technicalUser;
+      }
+
+      @Override
+      public boolean supports(Authentication authentication) {
+        return authentication == null;
+      }
+
+      @Override
+      public Session getSession(Authentication authentication) {
+        return null;
+      }
+    };
+  }
+
 }

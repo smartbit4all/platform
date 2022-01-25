@@ -19,6 +19,12 @@ public class UserSessionApiSecImpl implements UserSessionApi {
 
   private List<AuthenticationUserProvider> userProviders = new ArrayList<>();
 
+  private AuthenticationUserProvider technicalUserProvider;
+
+  public void setTechnicalUserProvider(AuthenticationUserProvider technicalUserProvider) {
+    this.technicalUserProvider = technicalUserProvider;
+  }
+
   public UserSessionApiSecImpl(AuthenticationUserProvider authenticationUserProvider,
       AuthenticationUserProvider... authenticationUserProviders) {
 
@@ -51,6 +57,9 @@ public class UserSessionApiSecImpl implements UserSessionApi {
     }
 
     if (currentAuthentication == null) {
+      if (technicalUserProvider != null) {
+        return technicalUserProvider;
+      }
       throw new IllegalStateException("There is no current authentication in the context!!");
     }
 
