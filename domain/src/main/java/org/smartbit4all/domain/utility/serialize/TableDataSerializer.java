@@ -170,7 +170,8 @@ public final class TableDataSerializer {
     for (DataColumn<?> col : columns) {
       Property<?> property = col.getProperty();
       writeObject(property.getUri());
-      writeType(SerializationType.getType(property.type()));
+      // writeType(SerializationType.getType(property.type())); //FIXME the property contains the
+      // type
     }
 
   }
