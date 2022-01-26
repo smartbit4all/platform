@@ -57,9 +57,6 @@ public class UserSessionApiSecImpl implements UserSessionApi {
     }
 
     if (currentAuthentication == null) {
-      if (technicalUserProvider != null) {
-        return technicalUserProvider;
-      }
       throw new IllegalStateException("There is no current authentication in the context!!");
     }
 
