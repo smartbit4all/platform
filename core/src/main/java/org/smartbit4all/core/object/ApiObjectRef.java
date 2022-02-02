@@ -451,7 +451,7 @@ public class ApiObjectRef {
   }
 
   public ApiObjectRef getValueRefByPath(String path) {
-    if (Strings.isNullOrEmpty(path)) {
+    if (Strings.isNullOrEmpty(path) || "/".equals(path)) {
       return this;
     }
     // TODO
