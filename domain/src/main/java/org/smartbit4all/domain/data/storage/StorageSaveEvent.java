@@ -1,9 +1,10 @@
 package org.smartbit4all.domain.data.storage;
 
 import java.net.URI;
-import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Supplier;
 import org.smartbit4all.api.storage.bean.StorageSaveEventObject;
+import org.smartbit4all.core.object.ApiBeanDescriptor;
 import org.smartbit4all.core.object.ApiObjectRef;
 import org.smartbit4all.core.object.ObjectChange;
 
@@ -70,11 +71,11 @@ public final class StorageSaveEvent {
     return newVersion;
   }
 
-  public final ObjectChange getChange() {
+  public final ObjectChange getChange(Map<Class<?>, ApiBeanDescriptor> descriptors) {
     if (change == null) {
       Object myOldVersion = getOldVersion();
       Object myNewVersion = getNewVersion();
-      ApiObjectRef ref = new ApiObjectRef(null, myOldVersion, new HashMap<>(), "storageSave");
+      ApiObjectRef ref = new ApiObjectRef(null, myOldVersion, descriptors, "storageSave");
       ref.renderAndCleanChanges();
       ref.mergeObject(myNewVersion);
       change = ref.renderAndCleanChanges().orElse(ObjectChange.EMPTY);
