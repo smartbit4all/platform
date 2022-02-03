@@ -42,7 +42,9 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
 
   protected abstract T load(URI uri);
 
-  protected abstract Disposable subscribeForChanges(URI uri, Consumer<URI> listener);
+  protected Disposable subscribeForChanges(URI uri, Consumer<URI> listener) {
+    return null;
+  }
 
   protected void notifyAllListeners() {
     data.notifyListeners();
