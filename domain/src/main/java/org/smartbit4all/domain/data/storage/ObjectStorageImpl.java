@@ -328,7 +328,13 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
   protected void invokeOnSucceedFunctions(StorageObject<?> object,
       StorageSaveEvent storageSaveEvent) {
     if (onSucceedListeners != null) {
-      onSucceedListeners.forEach(l -> l.doOnSave(storageSaveEvent));
+      for (ObjectStorageSaveSucceedListener succeedListener : onSucceedListeners) {
+        String scheme = object.getStorage().getScheme();
+        if (succeedListener.supportsType(storageSaveEvent.getNewVersion().getClass())
+            && succeedListener.supportsSchema(scheme)) {
+          succeedListener.doOnSave(storageSaveEvent);
+        }
+      }
     }
     object.invokeOnSucceedFunctions(storageSaveEvent);
   }
