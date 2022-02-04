@@ -19,6 +19,7 @@ import org.smartbit4all.core.object.ObservablePublisherWrapperImpl;
 import org.smartbit4all.core.object.proxy.ProxyStatefulApiConfiguration;
 import org.smartbit4all.core.reactive.ObjectChangePublisher;
 import org.smartbit4all.core.reactive.ObjectChangePublisherImpl;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -44,7 +45,7 @@ public class CoreConfig {
   }
 
   @Bean
-  @Scope("prototype")
+  @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
   @ConditionalOnMissingBean(type = "ObjectChangePublisher")
   public ObjectChangePublisher<?> objectChangePublisherDefault() {
     return new ObjectChangePublisherImpl<>();
