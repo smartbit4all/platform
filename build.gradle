@@ -11,6 +11,15 @@ sonarqube {
   }
 }
 
+gradle.taskGraph.whenReady {
+    allTasks
+        .filter { it.hasProperty("duplicatesStrategy") } // Because it's some weird decorated wrapper that I can't cast.
+        .forEach {
+            it.setProperty("duplicatesStrategy", "EXCLUDE")
+        }
+}
+
+
 subprojects {
 	
     apply plugin: 'org.smartbit4all.platform.gradle.java'
@@ -28,14 +37,6 @@ subprojects {
 	java {
 		withSourcesJar()
 	}
-
-gradle.taskGraph.whenReady {
-    allTasks
-        .filter { it.hasProperty("duplicatesStrategy") } // Because it's some weird decorated wrapper that I can't cast.
-        .forEach {
-            it.setProperty("duplicatesStrategy", "EXCLUDE")
-        }
-}
 
     publishing {
         publications {
