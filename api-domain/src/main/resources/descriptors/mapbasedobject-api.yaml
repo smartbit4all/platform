@@ -1,0 +1,163 @@
+openapi: 3.0.1
+info:
+  title: map based api
+  description: Map based dynamic objects.
+  termsOfService: ''
+  contact:
+    email: info@it4all.hu
+  version: 1.0.0
+tags:
+- name: MapBasedObject
+paths:
+  /nope:
+    post:
+      summary: Placeholder for generation
+      responses:
+        '200':
+          description: nope
+                
+components:
+  schemas:
+    MapBasedObjectData:
+      type: object
+      description: |
+        This is the storage format of the dynamic, map based object. Acts like a simple java bean
+        designed in open api yaml. The programming interface the MapBasedObject merges all the maps
+        to ensure the uniqueness of the properties.
+      required: [uri]
+      properties:
+        uri:
+          type: string
+          format: uri
+        stringPropertyMap:
+          type: object
+          additionalProperties: 
+            $ref: '#/components/schemas/StringValue'
+        stringListMap:
+          type: object
+          additionalProperties: 
+            $ref: '#/components/schemas/StringValueList'
+        integerPropertyMap:
+          type: object
+          additionalProperties: 
+            $ref: '#/components/schemas/IntegerValue'
+        integerListMap:
+          type: object
+          additionalProperties: 
+            $ref: '#/components/schemas/IntegerValueList'
+        longPropertyMap:
+          type: object
+          additionalProperties: 
+            $ref: '#/components/schemas/LongValue'
+        longListMap:
+          type: object
+          additionalProperties: 
+            $ref: '#/components/schemas/LongValueList'
+        localDateTimePropertyMap:
+          type: object
+          additionalProperties: 
+            $ref: '#/components/schemas/LocalDateTimeValue'
+        localDateTimeListMap:
+          type: object
+          additionalProperties: 
+            $ref: '#/components/schemas/LocalDateTimeValueList'
+        objectPropertyMap:
+          type: object
+          additionalProperties: 
+            $ref: '#/components/schemas/ObjectValue'
+        objectListMap:
+          type: object
+          additionalProperties: 
+            $ref: '#/components/schemas/ObjectValueList'
+    StringValue:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+        value:
+          type: string
+    StringValueList:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+        values:
+          type: array
+          items:
+            type: string
+    IntegerValue:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+        value:
+          type: integer
+    IntegerValueList:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+        values:
+          type: array
+          items:
+            type: integer
+    LongValue:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+        value:
+          type: integer
+          format: int64
+    LongValueList:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+        values:
+          type: array
+          items:
+            type: integer
+            format: int64
+    LocalDateTimeValue:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+        value:
+          type: LocalDateTime
+    LocalDateTimeValueList:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+        values:
+          type: array
+          items:
+            type: LocalDateTime
+    ObjectValue:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+        value:
+          $ref: '#/components/schemas/MapBasedObjectData'
+    ObjectValueList:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+        value:
+          type: array
+          items:
+            $ref: '#/components/schemas/MapBasedObjectData'
