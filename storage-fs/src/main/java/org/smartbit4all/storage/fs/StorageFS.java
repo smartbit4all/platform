@@ -61,6 +61,15 @@ public class StorageFS extends ObjectStorageImpl {
   private static final String storedObjectFileExtension = ".o";
 
   /**
+   * The file extension (*.extension) of the serialized object files. This file contains the stored
+   * object directly so the changes are saved immediately regardless of the active transactions.
+   * These objects are used to have an up to date state information about anything.
+   * 
+   * If set, the loadAll method only look for files with the given extension.
+   */
+  private static final String mutableStoredObjectFileExtension = ".m";
+
+  /**
    * The relation contents are stored in a file with this extension.
    */
   private static final String storedObjectRelationFileExtension = ".r";

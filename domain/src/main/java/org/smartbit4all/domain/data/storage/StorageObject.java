@@ -88,12 +88,48 @@ public final class StorageObject<T> {
   private StorageObjectLock lock;
 
   /**
+   * These are the version policies that can be used in the storage object to instruct the object
+   * storage about the new and new versions of an object.
+   * 
+   * @author Peter Boros
+   */
+  public enum VersionPolicyMode {
+    /**
+     * In this case all the saves results new and new versions about the given object regardless of
+     * if it was really changed or not.
+     */
+    ALLVERSION,
+    /**
+     * The save is going to compare the new version with the currently active one. If there is no
+     * difference then it will skip the creation of the new version. TODO Not implemented yet.
+     */
+    MERGESAMEVERSIONS,
+    /**
+     * In this case there will be only one version from a given object. This policy can be used to
+     * optimize the usage of control objects where the versions are not really useful.
+     */
+    SINGLEVERSION
+  }
+
+  /**
+   * These are the version policies that can be used in the storage object to instruct the object
+   * storage about the new and new versions of an object. The default is the
+   * {@link VersionPolicyMode#ALLVERSION} to ensure the maximal audit level.
+   */
+  private VersionPolicyMode versionPolicy = VersionPolicyMode.ALLVERSION;
+
+  /**
    * If it's true then the save will check if the current version matched with version is the same.
    * If it differs then the save throws an exception. We have to reload the object and try again or
    * we must setup a lock to avoid parallel modification.
    */
   private boolean strictVersionCheck = false;
 
+  /**
+   * The storage object operation gives instructions to object storage about the given object.
+   * 
+   * @author Peter Boros
+   */
   public enum StorageObjectOperation {
 
     CREATE, MODIFY, MODIFY_WITHOUT_DATA, DELETE
@@ -138,18 +174,32 @@ public final class StorageObject<T> {
     this.storageRef = new WeakReference<>(storage);
   }
 
+  /**
+   * @return The URI of the object {@link #uri}.
+   */
   public final URI getUri() {
     return uri;
   }
 
+  /**
+   * The URI of the object {@link #uri}.
+   * 
+   * @param uri
+   */
   final void setUri(URI uri) {
     this.uri = uri;
   }
 
+  /**
+   * @return The {@link #uuid} of the object.
+   */
   public final UUID getUuid() {
     return uuid;
   }
 
+  /**
+   * @param uuid The {@link #uuid} of the object.
+   */
   final void setUuid(UUID uuid) {
     this.uuid = uuid;
   }
@@ -403,6 +453,26 @@ public final class StorageObject<T> {
 
   final void setLock(StorageObjectLock lock) {
     this.lock = lock;
+  }
+
+  /**
+   * These are the version policies that can be used in the storage object to instruct the object
+   * storage about the new and new versions of an object.
+   * 
+   * @return The {@link #versionPolicy}
+   */
+  public final VersionPolicyMode getVersionPolicy() {
+    return versionPolicy;
+  }
+
+  /**
+   * These are the version policies that can be used in the storage object to instruct the object
+   * storage about the new and new versions of an object.
+   * 
+   * @param versionPolicy The {@link #versionPolicy}
+   */
+  final void setVersionPolicy(VersionPolicyMode versionPolicy) {
+    this.versionPolicy = versionPolicy;
   }
 
 }

@@ -21,6 +21,7 @@ import org.smartbit4all.api.storage.bean.StorageSettings;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.utility.StringConstant;
+import org.smartbit4all.domain.data.storage.StorageObject.VersionPolicyMode;
 
 /**
  * 
@@ -64,8 +65,25 @@ public final class Storage {
    */
   private ObjectApi objectApi;
 
+  /**
+   * The "global" setting uri for the storage schema. Used to save global reference objects, lists
+   * and maps.
+   */
   private URI settingsuri;
 
+  /**
+   * The given storage is versioned by default. It means that we save all the changes of an object
+   * as new version.
+   */
+  private boolean versioned = true;
+
+  /**
+   * Construct a new storage that is a logical schema for the storage system.
+   * 
+   * @param scheme
+   * @param objectApi
+   * @param objectStorage
+   */
   public Storage(String scheme, ObjectApi objectApi, ObjectStorage objectStorage) {
     this.objectStorage = objectStorage;
     this.objectApi = objectApi;
@@ -94,6 +112,9 @@ public final class Storage {
     UUID uuid = UUID.randomUUID();
     storageObject.setUri(constructUri(objectDefinition, uuid));
     storageObject.setUuid(uuid);
+    if (!versioned) {
+      storageObject.setVersionPolicy(VersionPolicyMode.SINGLEVERSION);
+    }
     return storageObject;
   }
 
@@ -339,6 +360,11 @@ public final class Storage {
     return uri;
   }
 
+  /**
+   * Retrieve and generate if missing the setting object uri.
+   * 
+   * @return Teh settings object uri of the storage.
+   */
   private final URI getSettingsUri() {
     if (settingsuri == null) {
       ObjectDefinition<StorageSettings> objectDefinition =
@@ -495,10 +521,18 @@ public final class Storage {
    * object that should be used as a normal {@link Lock} implementation.
    * 
    * @param objectUri The object URI the lock is attached to.
-   * @return The {@link StorageObjectLock} object for tha
+   * @return The {@link StorageObjectLock}
    */
   public StorageObjectLock getLock(URI objectUri) {
     return objectStorage.getLock(objectUri);
+  }
+
+  public final boolean isVersioned() {
+    return versioned;
+  }
+
+  final void setVersioned(boolean versioned) {
+    this.versioned = versioned;
   }
 
 }
