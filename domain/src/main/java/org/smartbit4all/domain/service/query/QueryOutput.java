@@ -14,7 +14,11 @@
  ******************************************************************************/
 package org.smartbit4all.domain.service.query;
 
+import java.util.Objects;
+import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.domain.data.TableData;
+import org.smartbit4all.domain.data.TableDatas;
+import org.smartbit4all.domain.meta.EntityDefinition;
 
 public class QueryOutput {
 
@@ -24,18 +28,36 @@ public class QueryOutput {
   private String name;
 
   /**
-   * The existing or the newly created {@link TableData}.
+   * The in-memory tableData result or in case of serialized data it is an empty tableData holding
+   * the meta information
    */
   private TableData<?> tableData;
-  
+
+  /**
+   * When the result is serialized, it is stored in this {@link BinaryData}. The BinaryData can only
+   * be file based, so the data will not be kept in memory.
+   */
+  private BinaryData serializedTableData;
+
+  private EntityDefinition entityDef;
+
+  public QueryOutput(String name, EntityDefinition entityDef) {
+    Objects.requireNonNull(name, "name can not be null!");
+    Objects.requireNonNull(entityDef, "entityDef can not be null!");
+    this.name = name;
+    this.entityDef = entityDef;
+  }
+
   public String getName() {
     return name;
   }
 
-  public void setName(String name) {
-    this.name = name;
-  }
-
+  /**
+   * Returns the {@link TableData} of the result. If the corresponding
+   * {@link QueryInput#isResultSerialized()} was true, the table data holds only the meta of the
+   * result and the data is stored in the {@link #serializedTableData}. Else the {@link TableData}
+   * stores the data too.
+   */
   public TableData<?> getTableData() {
     return tableData;
   }
@@ -44,9 +66,69 @@ public class QueryOutput {
     this.tableData = tableData;
   }
 
+  /**
+   * Returns the query result serialized {@link TableData} as a {@link BinaryData}. It is null if
+   * the {@link QueryInput#setResultSerialized(boolean)} has not been set to true.
+   */
+  public BinaryData getSerializedTableData() {
+    return serializedTableData;
+  }
+
+  public void setSerializedTableData(BinaryData serializedTableData) {
+    this.serializedTableData = serializedTableData;
+  }
+
+  /**
+   * Copies the result of the given query output to this, overriding the existing result.
+   */
+  public void copyResult(QueryOutput queryOutput) {
+    Objects.requireNonNull(queryOutput, "queryOutput can not be null!");
+    if (!queryOutput.entityDef.getUri().equals(this.entityDef.getUri())) {
+      throw new IllegalArgumentException(
+          "Can not copy queryOutput results with different EntityDefinitions!");
+    }
+
+    // FIXME should be deep copy instead?
+    this.tableData = queryOutput.tableData;
+    this.setSerializedTableData(queryOutput.getSerializedTableData());
+  }
+
+  /**
+   * Appends the result of the given query output to this, adding to the existing result.
+   */
+  public void appendResult(QueryOutput queryOutput) {
+    Objects.requireNonNull(queryOutput, "queryOutput can not be null!");
+    if (!queryOutput.entityDef.getUri().equals(this.entityDef.getUri())) {
+      throw new IllegalArgumentException(
+          "Can not copy queryOutput results with different EntityDefinitions!");
+    }
+
+    TableDatas.append(this.tableData, queryOutput.tableData);
+    // TODO append serielized file content
+  }
+
+  /**
+   * @return if the result of the output serialized.
+   */
+  public boolean isResultSerialized() {
+    return getSerializedTableData() != null;
+  }
+
+  public boolean hasResult() {
+    return this.tableData != null;
+  }
+
   @Override
   public String toString() {
-    return getTableData().toString();
+    StringBuilder sb = new StringBuilder();
+    sb.append("name: ").append(name).append("\n");
+    sb.append("isSerialized: ").append(isResultSerialized()).append("\n");
+    if (isResultSerialized()) {
+      sb.append("meta:\n").append(this.tableData.toString()).append("\n");
+    } else {
+      sb.append("data:\n").append(this.tableData.toString()).append("\n");
+    }
+    return sb.toString();
   }
 
 }

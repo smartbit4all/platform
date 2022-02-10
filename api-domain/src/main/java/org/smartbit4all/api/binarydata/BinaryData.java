@@ -18,8 +18,10 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.RandomAccessFile;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import org.slf4j.Logger;
@@ -349,6 +351,14 @@ public class BinaryData {
    */
   final void setDeleteDataFile(boolean deleteDataFile) {
     this.deleteDataFile = deleteDataFile;
+  }
+
+  public RandomAccessFile asRandomAccessFile() throws FileNotFoundException {
+    if (dataFile == null || !dataFile.exists()) {
+      throw new IllegalStateException(
+          "asRandomAccessFile() can be called only on file based BinaryData!");
+    }
+    return new RandomAccessFile(dataFile, "r");
   }
 
 }

@@ -32,6 +32,7 @@ import org.smartbit4all.domain.meta.SortOrderProperty;
 import org.smartbit4all.domain.service.query.QueryInput;
 import org.smartbit4all.domain.service.query.QueryOutput;
 import org.smartbit4all.domain.service.query.QueryOutputResultAssembler;
+import org.smartbit4all.domain.service.query.QueryOutputResultAssemblers;
 import org.smartbit4all.domain.utility.SupportedDatabase;
 import org.smartbit4all.sql.SQLComputedColumn;
 import org.smartbit4all.sql.SQLGroupByColumn;
@@ -111,8 +112,7 @@ final class SQLQueryExecution {
     super();
     this.jdbcTemplate = jdbcTemplate;
     this.queryInput = query;
-    queryOutput = new QueryOutput();
-    queryOutput.setName(query.getName());
+    queryOutput = new QueryOutput(query.getName(), query.entityDef());
     select = new SQLSelectStatement();
     aliasIndex = 1;
     columnIndex = 1;
@@ -277,7 +277,7 @@ final class SQLQueryExecution {
     int indexTrans[] = new int[metaData.getColumnCount()];
     Property<?> propertyTrans[] = new Property<?>[metaData.getColumnCount()];
     QueryOutputResultAssembler resultAssembler =
-        new QueryOutputResultAssembler(this.queryInput, this.queryOutput);
+        QueryOutputResultAssemblers.create(this.queryInput, this.queryOutput);
     resultAssembler.start();
     for (int i = 0; i < metaData.getColumnCount(); i++) {
       String columnName = builder.getColumnAssignedColumnName(metaData, i + 1).toUpperCase();
@@ -285,6 +285,7 @@ final class SQLQueryExecution {
       indexTrans[i] = resultAssembler.accept(property);
       propertyTrans[i] = property;
     }
+    resultAssembler.finishColumns();
     // Iterate the JDBC result set.
     while (resultSet.next()) {
       resultAssembler.startRow();

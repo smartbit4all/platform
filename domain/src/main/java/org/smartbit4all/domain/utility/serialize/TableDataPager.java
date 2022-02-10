@@ -1,11 +1,13 @@
 package org.smartbit4all.domain.utility.serialize;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.domain.data.DataColumn;
 import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.data.TableData;
@@ -46,16 +48,6 @@ public final class TableDataPager<E extends EntityDefinition> {
   private boolean hasActivePage = false;
 
   /**
-   * The file that contains the table data.
-   */
-  private RandomAccessFile tableDataContent;
-
-  /**
-   * The file.
-   */
-  private File file;
-
-  /**
    * The list of the row indices loaded from the file.
    */
   private List<Long> rowIndices;
@@ -66,44 +58,56 @@ public final class TableDataPager<E extends EntityDefinition> {
 
   private long rowIndicesPointer;
 
+  private RafGetter rafGetter;
+
   /**
    * Constructs a table data pager. Load the structure of the table data and the row indices.
    * 
    * @param entityDefClazz
-   * @param file
    * @throws IOException
    */
-  private TableDataPager(Class<E> entityDefClazz, File file, EntityManager entityManager)
+  private TableDataPager(Class<E> entityDefClazz, RafGetter rafGetter, EntityManager entityManager)
       throws Exception {
     this.entityDefClazz = entityDefClazz;
-    this.file = file;
     this.entityManager = entityManager;
-    tableDataContent = new RandomAccessFile(file, "r");
-    readRowIndices();
-    readEntityDefMeta();
+    this.rafGetter = rafGetter;
+    RandomAccessFile raf = rafGetter.getRaf();
+    readRowIndices(raf);
+    readEntityDefMeta(raf);
+    raf.close();
   }
 
-  private void readRowIndices() throws IOException {
-    if (tableDataContent.length() < Long.BYTES) {
+  private TableDataPager(Class<E> entityDefClazz, File file, EntityManager entityManager)
+      throws Exception {
+    this(entityDefClazz, () -> new RandomAccessFile(file, "r"), entityManager);
+  }
+
+  private TableDataPager(Class<E> entityDefClazz, BinaryData binaryData,
+      EntityManager entityManager) throws Exception {
+    this(entityDefClazz, () -> binaryData.asRandomAccessFile(), entityManager);
+  }
+
+  private void readRowIndices(RandomAccessFile raf) throws IOException {
+    if (raf.length() < Long.BYTES) {
       throw new IllegalArgumentException(
-          "The " + file + " file is not enough long to contain a table data as content. (length="
-              + tableDataContent.length() + ")");
+          "The underlying file is not enough long to contain a table data as content. (length="
+              + raf.length() + ")");
     }
-    tableDataContent.seek(tableDataContent.length() - Long.BYTES);
-    rowIndicesPointer = readLong();
-    tableDataContent.seek(rowIndicesPointer);
-    int numberOfRows = readInt();
+    raf.seek(raf.length() - Long.BYTES);
+    rowIndicesPointer = readLong(raf);
+    raf.seek(rowIndicesPointer);
+    int numberOfRows = readInt(raf);
     rowIndices = new ArrayList<>(numberOfRows);
     while (numberOfRows > 0) {
-      rowIndices.add(readLong());
+      rowIndices.add(readLong(raf));
       numberOfRows--;
     }
   }
 
   @SuppressWarnings("unchecked")
-  private void readEntityDefMeta() throws Exception {
-    tableDataContent.seek(0);
-    URI entityDefUri = readObject(URI.class);
+  private void readEntityDefMeta(RandomAccessFile raf) throws Exception {
+    raf.seek(0);
+    URI entityDefUri = readObject(URI.class, raf);
     EntityDefinition entityDef = entityManager.definition(entityDefUri);
     if (entityDef == null) {
       throw new Exception("EntityDefinition uri can not be parsed from file!");
@@ -114,9 +118,9 @@ public final class TableDataPager<E extends EntityDefinition> {
               + " different EntityDefinitionin subclass!");
     }
     activePage = (TableData<E>) TableDatas.of(entityDef);
-    int numberOfColumns = readInt();
+    int numberOfColumns = readInt(raf);
     while (numberOfColumns > 0) {
-      URI columnPropertyUri = readObject(URI.class);
+      URI columnPropertyUri = readObject(URI.class, raf);
       Property<?> columnProperty = entityManager.property(columnPropertyUri);
       activePage.addColumnOwn(columnProperty);
       numberOfColumns--;
@@ -134,46 +138,46 @@ public final class TableDataPager<E extends EntityDefinition> {
    * @throws IOException
    */
   @SuppressWarnings("unchecked")
-  private <T> T readObject(Class<T> clazz) throws IOException {
-    byte typeValue = tableDataContent.readByte();
+  private <T> T readObject(Class<T> clazz, RandomAccessFile raf) throws IOException {
+    byte typeValue = raf.readByte();
     SerializationType<T> type = (SerializationType<T>) SerializationType.types[typeValue];
     SerializationType requestedType = SerializationType.getType(clazz);
     if (type != requestedType && type != SerializationType.NULL
         && type != SerializationType.NULL_VALUE) {
-      throw new IllegalArgumentException("Type mismatch when reading " + clazz + " from the "
-          + file + " (" + type + " was found instead)");
+      throw new IllegalArgumentException("Type mismatch when reading " + clazz
+          + " from the underlying file (" + type + " was found instead)");
     }
     if (type == SerializationType.NULL_VALUE) {
       return null;
     }
-    int length = tableDataContent.readInt();
+    int length = raf.readInt();
     byte[] bytes = new byte[length];
-    tableDataContent.read(bytes);
+    raf.read(bytes);
     Object object = type.getDeserializer().apply(bytes);
     return (T) object;
   }
 
   /**
-   * The {@link #tableDataContent} is already at the position!
+   * The {@link RandomAccessFile} parameter is already at the position!
    * 
    * @return
    * @throws IOException
    */
-  private int readInt() throws IOException {
+  private int readInt(RandomAccessFile raf) throws IOException {
     byte bytes[] = new byte[Integer.BYTES];
-    tableDataContent.read(bytes);
+    raf.read(bytes);
     return Ints.fromByteArray(bytes);
   }
 
   /**
-   * The {@link #tableDataContent} is already at the position!
+   * The {@link RandomAccessFile} parameter is already at the position!
    * 
    * @return
    * @throws IOException
    */
-  private long readLong() throws IOException {
+  private long readLong(RandomAccessFile raf) throws IOException {
     byte bytes[] = new byte[Long.BYTES];
-    tableDataContent.read(bytes);
+    raf.read(bytes);
     return Longs.fromByteArray(bytes);
   }
 
@@ -211,36 +215,41 @@ public final class TableDataPager<E extends EntityDefinition> {
     }
     Long offsetIdx = rowIndices.get(offset);
 
+    RandomAccessFile raf = rafGetter.getRaf();
     long pointer = offsetIdx.longValue();
     activePageFirstRowIdx = pointer;
-    tableDataContent.seek(pointer);
+    raf.seek(pointer);
     while (limit > 0 && pointer < rowIndicesPointer) {
-      readRow();
+      readRow(raf);
       activePageLastRowIdx = pointer;
-      pointer = tableDataContent.getFilePointer();
+      pointer = raf.getFilePointer();
       limit--;
     }
 
+    raf.close();
     return activePage;
   }
 
-  private void readRow() throws Exception {
+  private void readRow(RandomAccessFile raf) throws Exception {
     DataRow newRow = activePage.addRow();
     for (DataColumn<?> column : activePage.columns()) {
-      Object value = readObject(column.getProperty().type());
+      Object value = readObject(column.getProperty().type(), raf);
       newRow.setObject(column, value);
     }
   }
 
-  /**
-   * Closes the pager to free allocated resources.
-   */
-  public void close() throws IOException {
-    tableDataContent.close();
-  }
 
   public static <T extends EntityDefinition> TableDataPager<T> create(Class<T> entityDefClazz,
       File file, EntityManager entityManager) throws Exception {
     return new TableDataPager<>(entityDefClazz, file, entityManager);
+  }
+
+  public static <T extends EntityDefinition> TableDataPager<T> create(Class<T> entityDefClazz,
+      BinaryData binaryData, EntityManager entityManager) throws Exception {
+    return new TableDataPager<>(entityDefClazz, binaryData, entityManager);
+  }
+
+  private static interface RafGetter {
+    RandomAccessFile getRaf() throws FileNotFoundException;
   }
 }

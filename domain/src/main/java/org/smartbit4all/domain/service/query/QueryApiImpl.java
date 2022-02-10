@@ -305,6 +305,11 @@ public class QueryApiImpl implements QueryApi {
       round.queries.entrySet().parallelStream().forEach(e -> {
         try {
           QueryOutput queryOutput = execute(e.getValue());
+          if (queryOutput.isResultSerialized()) {
+            // TODO this case should be also handled during a retrieval process!
+            throw new IllegalStateException(
+                "QueryOutput can not have serialized result in a Retrieval!");
+          }
           if (e.getKey().getResult() == null) {
             e.getKey().setResult(queryOutput.getTableData());
             e.getKey().getNewRows().addAll(e.getKey().getResult().rows());

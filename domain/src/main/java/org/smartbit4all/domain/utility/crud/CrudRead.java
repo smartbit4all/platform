@@ -15,14 +15,14 @@
 package org.smartbit4all.domain.utility.crud;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
+import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.domain.config.DomainAPI;
 import org.smartbit4all.domain.data.DataColumn;
 import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.data.DataRowValBeanInvocationHandler;
 import org.smartbit4all.domain.data.TableData;
-import org.smartbit4all.domain.data.TableDatas;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Expression;
 import org.smartbit4all.domain.meta.ExpressionContainer;
@@ -32,11 +32,13 @@ import org.smartbit4all.domain.meta.PropertyRef;
 import org.smartbit4all.domain.meta.PropertySet;
 import org.smartbit4all.domain.meta.Reference;
 import org.smartbit4all.domain.meta.SortOrderProperty;
+import org.smartbit4all.domain.service.entity.EntityManager;
 import org.smartbit4all.domain.service.query.Queries;
 import org.smartbit4all.domain.service.query.QueryInput;
 import org.smartbit4all.domain.service.query.QueryOutput;
 import org.smartbit4all.domain.service.transfer.BeanEntityBinding;
 import org.smartbit4all.domain.service.transfer.TransferService;
+import org.smartbit4all.domain.utility.serialize.TableDataPager;
 
 public class CrudRead<E extends EntityDefinition> {
 
@@ -55,25 +57,15 @@ public class CrudRead<E extends EntityDefinition> {
     this(entityDef, new QueryInput());
   }
 
+  CrudRead(E entityDef, String name) {
+    this(entityDef, new QueryInput(name));
+  }
+
   CrudRead(E entityDef, QueryInput query) {
     this.entityDef = entityDef;
     query.from(entityDef);
-    query.setName(UUID.randomUUID().toString());
     this.queryInput = query;
-    this.queryOutput = new QueryOutput();
-    queryOutput.setTableData(TableDatas.of(entityDef));
-  }
-
-  /**
-   * The name of the query if we would like to refer it from another expression.
-   * 
-   * @param name The name of query.
-   * @return Fluid API
-   */
-  public CrudRead<E> nameAs(String name) {
-    queryInput.setName(name);
-    queryOutput.setName(name);
-    return this;
+    this.queryOutput = new QueryOutput(queryInput.getName(), entityDef);
   }
 
   /**
@@ -104,26 +96,20 @@ public class CrudRead<E extends EntityDefinition> {
 
 
   public void execute() throws Exception {
-    if (result() == null) {
-      throw new IllegalStateException(
-          "CrudQuery execute can not be called without the result set! Maybe you"
-              + " want to use the listData() or list(BeanClass) function instead!");
-    }
+    Objects.requireNonNull(queryInput, "Can not execute query with null value QueryInput!");
 
     QueryOutput output = Queries.execute(queryInput);
 
-    TableData<?> baseTableData = queryOutput.getTableData();
-    TableData<?> resultTableData = output.getTableData();
+    if (this.queryOutput == null || !this.queryOutput.hasResult()) {
+      this.queryOutput = output;
+      return;
+    }
+
     switch (queryOutputMode) {
       case INTO:
-        baseTableData.clearRows();
+        this.queryOutput.copyResult(output);
       case APPEND:
-        if (resultTableData != null && baseTableData.isEmpty()
-            && baseTableData.columns().isEmpty()) {
-          queryOutput.setTableData(resultTableData);
-        } else {
-          TableDatas.append(baseTableData, resultTableData);
-        }
+        this.queryOutput.appendResult(output);
       default:
         break;
     }
@@ -474,6 +460,31 @@ public class CrudRead<E extends EntityDefinition> {
     return this;
   }
 
+  /**
+   * Query result will appear in result parameter. All existing rows will be deleted.
+   * 
+   * @param resultData
+   * @return Fluid API
+   */
+  public CrudRead<E> into(BinaryData resultData) {
+    this.queryInput.setResultSerialized(true);
+    this.queryOutput.setSerializedTableData(resultData);
+    this.queryOutputMode = QueryOutputMode.INTO;
+    return this;
+  }
+
+  /**
+   * Query result will be appended to the result parameter. Existing rows will NOT be deleted.
+   * 
+   * @param resultData
+   * @return Fluid API
+   */
+  public CrudRead<E> append(BinaryData resultData) {
+    this.queryOutput.setSerializedTableData(resultData);
+    this.queryOutputMode = QueryOutputMode.APPEND;
+    return this;
+  }
+
 
   /**
    * The from sets the {@link EntityDefinition} that is the root for the query. All the related
@@ -489,7 +500,8 @@ public class CrudRead<E extends EntityDefinition> {
   }
 
   /**
-   * Set the input of the Query.
+   * Set the input of the Query. The {@link QueryInput}'s name and EntityDefinition must match the
+   * input's name and EntityDefinition!
    * 
    * @param input
    * @return Fluid API
@@ -505,7 +517,8 @@ public class CrudRead<E extends EntityDefinition> {
   }
 
   /**
-   * Sets the output of the Query.
+   * Sets the output of the Query. The {@link QueryOutput}'s name and EntityDefinition must match
+   * the input's name and EntityDefinition!
    * 
    * @param output
    * @return Fluid API
@@ -580,24 +593,32 @@ public class CrudRead<E extends EntityDefinition> {
     return this;
   }
 
-  public TableData<E> result() {
-    return (TableData<E>) queryOutput.getTableData();
-  }
-
-
   /**
    * Executes the query and returns the {@link TableData} as a result.
    * 
    * @return Return the result as the typed table data of the given entity.
    * @throws Exception
    */
+  @SuppressWarnings("unchecked")
   public TableData<E> listData() throws Exception {
-    if (queryOutput.getTableData() == null) {
-      TableData<E> result = new TableData<>(entityDef);
-      queryOutput.setTableData(result);
-    }
     execute();
     return (TableData<E>) queryOutput.getTableData();
+  }
+
+  /**
+   * Executes the query into a serialized {@link TableData} then builds a dynamic pager on it. This
+   * {@link TableDataPager} can be used to fetch result fragments so only the required information
+   * will be loaded into memory.
+   */
+  public TableDataPager<E> pageData(Class<E> entityDefClazz, EntityManager entityManager)
+      throws Exception {
+    if (!queryInput.isResultSerialized()) {
+      queryInput.setResultSerialized(true);
+    }
+    execute();
+    BinaryData resultFile = queryOutput.getSerializedTableData();
+
+    return TableDataPager.create(entityDefClazz, resultFile, entityManager);
   }
 
   /**

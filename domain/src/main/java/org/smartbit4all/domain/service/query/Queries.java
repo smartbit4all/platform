@@ -7,7 +7,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import org.smartbit4all.core.SB4Function;
 import org.smartbit4all.core.SB4FunctionImpl;
-import org.smartbit4all.domain.data.TableDatas;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Reference;
 import org.smartbit4all.domain.meta.SortOrderProperty;
@@ -99,23 +98,13 @@ public class Queries implements InitializingBean {
     private QueryFunction(QueryInput queryInput, QueryExecution execution) {
       this.input = queryInput;
       this.execution = execution;
-      this.output = new QueryOutput();
-      output.setName(input.getName());
+      this.output = new QueryOutput(input.getName(), queryInput.entityDef);
     }
 
     @Override
     public void execute() throws Exception {
       QueryOutput result = execution.execute(input);
-      if (output.getTableData() == null) {
-        output.setTableData(result.getTableData());
-      } else {
-        /*
-         * clear the table data no matter if it had previous data. The output must contain exact
-         * result of the query
-         */
-        output.getTableData().clearRows();
-        TableDatas.append(output.getTableData(), result.getTableData());
-      }
+      output.copyResult(result);
     }
 
   }

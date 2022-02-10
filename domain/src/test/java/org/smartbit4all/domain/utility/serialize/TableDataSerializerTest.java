@@ -86,8 +86,6 @@ public class TableDataSerializerTest {
     fetchedData = pager.fetch(105, 1000);
     assertEquals(0, fetchedData.size());
 
-    pager.close();
-
   }
 
 }

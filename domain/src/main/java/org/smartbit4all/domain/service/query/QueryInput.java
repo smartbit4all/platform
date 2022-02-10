@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Expression;
 import org.smartbit4all.domain.meta.LockRequest;
@@ -26,6 +27,7 @@ import org.smartbit4all.domain.meta.PropertyRef;
 import org.smartbit4all.domain.meta.PropertySet;
 import org.smartbit4all.domain.meta.Reference;
 import org.smartbit4all.domain.meta.SortOrderProperty;
+import org.springframework.util.StringUtils;
 
 public class QueryInput {
   /**
@@ -76,7 +78,19 @@ public class QueryInput {
    */
   protected EntityDefinition entityDef;
 
-  public void setName(String name) {
+  /**
+   * The result is stored in memory or is serialized based on thid flag.
+   */
+  private boolean isResultSerialized;
+
+  public QueryInput() {
+    this(UUID.randomUUID().toString());
+  }
+
+  public QueryInput(String name) {
+    if (StringUtils.isEmpty(name)) {
+      throw new IllegalArgumentException("The name parameter can not be null!");
+    }
     this.name = name;
   }
 
@@ -186,6 +200,14 @@ public class QueryInput {
 
   public void setLockRequest(LockRequest lockRequest) {
     this.lockRequest = lockRequest;
+  }
+
+  public boolean isResultSerialized() {
+    return isResultSerialized;
+  }
+
+  public void setResultSerialized(boolean isResultSerialized) {
+    this.isResultSerialized = isResultSerialized;
   }
 
 }

@@ -1,18 +1,16 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
  * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 package org.smartbit4all.domain.meta;
 
@@ -26,6 +24,7 @@ import org.smartbit4all.domain.service.CrudServiceFactory;
 import org.smartbit4all.domain.service.identifier.IdentifierService;
 import org.smartbit4all.domain.service.identifier.NextIdentifier;
 import org.smartbit4all.domain.service.modify.Create;
+import org.smartbit4all.domain.utility.crud.Crud;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -70,8 +69,11 @@ public class EntityServiceImpl<E extends EntityDefinition>
       String sequenceName, Map<Property<?>, Object> extraValues) throws Exception {
     // We try to lock the records by querying with lock. We must collect the values of the unique
     // columns.
-    TableData<E> result = new TableData<>(entityDef);
-    crud().read().selectAllProperties().where(uniqueProperty.eq(uniqueValue)).lock().into(result).execute();
+    TableData<E> result = Crud.read(entityDef)
+        .selectAllProperties()
+        .where(uniqueProperty.eq(uniqueValue))
+        .lock()
+        .listData();
     if (result.isEmpty()) {
       // The record is missing from the database so we try to insert it
       IdentifierService identifierService = ctx.getBean(IdentifierService.class);

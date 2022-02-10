@@ -1,57 +1,24 @@
 package org.smartbit4all.domain.service.query;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import org.smartbit4all.domain.data.DataColumn;
-import org.smartbit4all.domain.data.DataRow;
-import org.smartbit4all.domain.data.TableData;
-import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Property;
 
-public class QueryOutputResultAssembler {
+public interface QueryOutputResultAssembler {
 
   public static final int COLUMNNOTACCEPTED = -1;
-
-  private QueryOutput queryOutput;
-
-  /**
-   * The existing or the newly created {@link TableData}.
-   */
-  private TableData<?> tableData;
-
-
-  /**
-   * The current row used for setting the values.
-   */
-  DataRow row;
-
-  /**
-   * The {@link EntityDefinition} the query is based on.
-   */
-  EntityDefinition entityDef;
-
-  /**
-   * The index based access to the {@link DataColumn}.
-   */
-  List<DataColumn<?>> columnsByIndex = new ArrayList<>();
-
-  public QueryOutputResultAssembler(QueryInput queryInput, QueryOutput queryOutput) {
-    Objects.requireNonNull(queryOutput, "queryOutput can not be null!");
-    this.queryOutput = queryOutput;
-    this.entityDef = queryInput.entityDef();
-  }
-
 
   /**
    * A call back function to notify that the fetch began.
    */
-  public void start() {
-    if (tableData == null) {
-      tableData = new TableData<>(entityDef);
-    }
-    tableData.clearRows();
-  }
+  void start();
+
+  /**
+   * Adding a new row for the result. The new row will be the iterated so the next
+   * {@link #setValue(int, Object)} will work on this.
+   * 
+   * @return Return true if the result can accept the next line. If it's false then the QueryRequest
+   *         will skip the rest of the result and stop fetching.
+   */
+  boolean startRow();
 
   /**
    * This ensure the given result that it will accept the given {@link Property} as a fetch result.
@@ -59,10 +26,21 @@ public class QueryOutputResultAssembler {
    * @param property The property to accept.
    * @return The index that can be used to set the value of the result.
    */
-  public int accept(Property<?> property) {
-    columnsByIndex.add(tableData.addColumnOwn(property));
-    return columnsByIndex.size() - 1;
-  }
+  int accept(Property<?> property);
+
+  /**
+   * When the query is over and every accessible record is fetched or at least the fetch is stopped
+   * with any other reason then this function is called. It's a notification that the post process
+   * can start.
+   */
+  void finish();
+
+  /**
+   * The query will call back this function when the reading from the data source is ready and all
+   * the stored properties are set. At this event the result can filter, compute or do some other
+   * post processing.
+   */
+  void finishRow();
 
   /**
    * The {@link QueryResult} acts like an iterator for the fetch result. This function set the
@@ -72,38 +50,13 @@ public class QueryOutputResultAssembler {
    *        method.
    * @param value The value to set.
    */
-  public void setValue(int index, Object value) {
-    tableData.setObject(columnsByIndex.get(index), row, value);
-  }
+  void setValue(int index, Object value);
 
   /**
-   * Adding a new row for the result. The new row will be the iterated so the next
-   * {@link #setValue(int, Object)} will work on this.
-   * 
-   * @return Return true if the result can accept the next line. If it's false then the QueryRequest
-   *         will skip the rest of the result and stop fetching.
+   * Finalizes the columns and the meta of the result.
    */
-  public boolean startRow() {
-    row = tableData.addRow();
-    return true;
-  }
+  void finishColumns();
 
-  /**
-   * The query will call back this function when the reading from the data source is ready and all
-   * the stored properties are set. At this event the result can filter, compute or do some other
-   * post processing.
-   */
-  public void finishRow() {
-    row = null;
-  }
 
-  /**
-   * When the query is over and every accessible record is fetched or at least the fetch is stopped
-   * with any other reason then this function is called. It's a notification that the post process
-   * can start.
-   */
-  public void finish() {
-    queryOutput.setTableData(tableData);
-  }
 
 }
