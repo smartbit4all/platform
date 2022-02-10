@@ -32,6 +32,8 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public abstract class ObjectStorageImpl implements ObjectStorage {
 
+  private static final String STORAGEMGMT = "storagemgmt";
+
   private static final Logger log = LoggerFactory.getLogger(ObjectStorageImpl.class);
 
   /**
@@ -45,6 +47,22 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
    * The operations on the locks are exclusive.
    */
   private Lock lockMutex = new ReentrantLock(true);
+
+  /**
+   * The unique identifier of the given object storage instance. This uri is generated on demand
+   * when we ask for the uri value. Else it's not generated and saved.
+   */
+  private URI uri = null;
+
+  /**
+   * The lock for the uri creation.
+   */
+  private Lock lockUri = new ReentrantLock();
+
+  /**
+   * The storage schema for the storage management.
+   */
+  private Storage storage;
 
   protected Supplier<StorageObjectPhysicalLock> getAcquire() {
     return null;
@@ -69,6 +87,8 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
   public ObjectStorageImpl(ObjectApi objectApi) {
     super();
     this.objectApi = objectApi;
+    storage = new Storage(STORAGEMGMT, objectApi, this);
+    storage.setVersioned(false);
   }
 
   @Override
@@ -358,6 +378,28 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
   public ObjectHistoryIterator objectHistory(URI uri, ObjectDefinition<?> definition) {
     // TODO Auto-generated method stub
     return null;
+  }
+
+  @Override
+  public void maintain() {
+    log.warn(
+        "The maintenance of the " + getClass().getName() + " object storage is not implemented");
+
+  }
+
+  @Override
+  public URI getURI() {
+    if (uri == null) {
+      lockUri.lock();
+      try {
+        if (uri == null) {
+          // TODO TBC
+        }
+      } finally {
+        lockUri.unlock();
+      }
+    }
+    return uri;
   }
 
 }

@@ -6,7 +6,22 @@ import java.util.concurrent.locks.Lock;
 import org.smartbit4all.core.object.ObjectDefinition;
 
 /**
- * ObjectStorage can store serialized objects, identified by their URIs.
+ * ObjectStorage can store serialized objects, identified by their URIs. The object storage instance
+ * is important because the configured instance is responsible for accessing the persistent objects
+ * in the physical storage. The configured instance is the basic item for this. The instance has an
+ * uri to identify and this object is updated periodically while the given instance is active. The
+ * instance is responsible for executing invocations. If an instance is getting down then the rest
+ * of the instances will distribute its tasks and continue working. There are two main task that is
+ * managed.
+ * 
+ * The first one is the transactions. If an instance has transactions then the post processing of
+ * the transacted objects is managed by the given runtime. It can be useful to finish up the
+ * transactions of a previously active instance. It depends on the transaction system of the
+ * physical storage.
+ * 
+ * The other thing is the API calls attached to the successful transaction. These are channels
+ * associated with instances. The channel can be associated to one instance or can be managed by all
+ * instances. The execution model can be sequential or parallel.
  * 
  * @author Zoltan Szegedi
  *
@@ -128,5 +143,17 @@ public interface ObjectStorage {
    * @return
    */
   ObjectHistoryIterator objectHistory(URI uri, ObjectDefinition<?> definition);
+
+  /**
+   * The scheduled function to manage the object storage instance.
+   */
+  void maintain();
+
+  /**
+   * The uri of the object storage instance.
+   * 
+   * @return
+   */
+  URI getURI();
 
 }

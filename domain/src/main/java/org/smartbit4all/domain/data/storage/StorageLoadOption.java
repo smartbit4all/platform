@@ -16,7 +16,7 @@ public class StorageLoadOption {
 
   public enum LoadInstruction {
 
-    SKIP_DATA_OBJECT, LOAD_REFERENCE, LOAD_COLLECTION, URI_WITH_VERSION
+    SKIP_DATA_OBJECT, LOAD_REFERENCE, LOAD_COLLECTION, URI_WITH_VERSION, SINGLE_VERSION_LOAD
 
   }
 
@@ -51,6 +51,9 @@ public class StorageLoadOption {
 
   private static final StorageLoadOption uriWithVersion =
       new StorageLoadOption(LoadInstruction.URI_WITH_VERSION, "uriWithVersion", null, null);
+
+  private static final StorageLoadOption loadSingleVersion =
+      new StorageLoadOption(LoadInstruction.SINGLE_VERSION_LOAD, "loadSingleVersion", null, null);
 
   private StorageLoadOption(LoadInstruction instruction, String name, URI uri, String identifier) {
     super();
