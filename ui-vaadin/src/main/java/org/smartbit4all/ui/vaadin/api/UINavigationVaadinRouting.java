@@ -26,7 +26,7 @@ public class UINavigationVaadinRouting extends UINavigationVaadinCommon {
 
   public UINavigationVaadinRouting(UI ui, UserSessionApi userSessionApi) {
     super(ui, userSessionApi);
-    if (userSessionApi.currentSession() != null) {
+    if (userSessionApi != null && userSessionApi.currentSession() != null) {
       userSessionApi.currentSession().subscribeForParameterChange(UINAVIGATION_CURRENT_NAV_TARGET,
           this::sessionParameterChange);
     }
