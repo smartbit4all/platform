@@ -637,10 +637,8 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
   @Override
   public User getUserByUsername(String username) {
     ObjectMap activeObjectMap = loadObjectMap(USER_OBJECTMAP_REFERENCE);
-    ObjectMap inactiveObjectMap = loadObjectMap(INACTIVE_USER_OBJECTMAP_REFERENCE);
 
     Map<String, URI> uris = activeObjectMap.getUris();
-    uris.putAll(inactiveObjectMap.getUris());
     URI userUri = uris.get(username);
     if (userUri == null) {
       return null;
@@ -687,12 +685,10 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
         URI uri = storage.get().save(oldUser);
         invalidateCache();
         return uri;
-      } else {
-        throw new IllegalArgumentException("Failed to update user: " + user.toString());
       }
-    } else {
       throw new IllegalArgumentException("Failed to update user: " + user.toString());
     }
+    throw new IllegalArgumentException("Failed to update user: " + user.toString());
   }
 
 
@@ -701,8 +697,10 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
     if (user.getUsername() == null) {
       throw new IllegalArgumentException("Username is required! User: " + user);
     }
-    User userByUsername = getUserByUsername(user.getUsername());
-    if (userByUsername != null) {
+
+    boolean anyMatch =
+        getAllUsers().stream().anyMatch(u -> u.getUsername().equals(user.getUsername()));
+    if (anyMatch) {
       throw new IllegalStateException(
           "User with username " + user.getUsername() + "already exists!");
     }
