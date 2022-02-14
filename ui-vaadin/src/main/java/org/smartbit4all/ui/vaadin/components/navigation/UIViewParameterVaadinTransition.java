@@ -14,7 +14,6 @@
  ******************************************************************************/
 package org.smartbit4all.ui.vaadin.components.navigation;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -60,15 +59,6 @@ public class UIViewParameterVaadinTransition implements AutoCloseable {
     }
   }
 
-  public QueryParameters construct() {
-    if (identifier == null) {
-      return null;
-    }
-    Map<String, List<String>> params = new HashMap<>();
-    params.put(PARAM, Arrays.asList(identifier));
-    return new QueryParameters(params);
-  }
-
   public static Map<String, Object> extract(QueryParameters queryParameters) {
     if (queryParameters == null || queryParameters.getParameters() == null) {
       return Collections.emptyMap();
@@ -83,21 +73,6 @@ public class UIViewParameterVaadinTransition implements AutoCloseable {
       throw new ParameterMissingException("Parameter " + parameterKey + " is missing");
     }
     return result;
-  }
-
-  public static UUID extractUUID(QueryParameters queryParameters) {
-    if (queryParameters == null || queryParameters.getParameters() == null) {
-      return null;
-    }
-    List<String> list = queryParameters.getParameters().get(PARAM);
-    if (list == null || list.size() != 1) {
-      return null;
-    }
-    try {
-      return UUID.fromString(list.get(0));
-    } catch (Exception e) {
-      return null;
-    }
   }
 
   @Override

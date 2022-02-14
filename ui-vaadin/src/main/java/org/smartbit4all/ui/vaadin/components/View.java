@@ -19,6 +19,11 @@ public class View<T extends ViewModel> extends FlexLayout
     this.viewModel = viewModel;
   }
 
+  // public View(ViewModelApi viewModelApi, Class<T> vmClazz) {
+  // this.viewModel =
+  // viewModelApi.get(vmClazz, ObjectEditing.currentNavigationTarget.get());
+  // }
+
   @Override
   public void setParameter(BeforeEvent event, @OptionalParameter String parameter) {
     URI uri = Navigations.getUriParameter(event);

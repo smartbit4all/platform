@@ -10,7 +10,6 @@ import org.smartbit4all.ui.api.navigation.model.NavigableViewDescriptor;
 import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
 import org.smartbit4all.ui.api.navigation.model.NavigationTargetType;
 import org.smartbit4all.ui.api.viewmodel.ObjectEditing;
-import org.smartbit4all.ui.vaadin.components.navigation.UIViewParameterVaadinTransition;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.router.RouteConfiguration;
@@ -44,15 +43,12 @@ public class UINavigationVaadinRouting extends UINavigationVaadinCommon {
     ui.access(() -> {
       try {
         ObjectEditing.currentNavigationTarget.set(navigationTarget);
-        String viewName = navigationTarget.getViewName();
-        try (UIViewParameterVaadinTransition param =
-            new UIViewParameterVaadinTransition(navigationTarget.getUuid(),
-                navigationTarget.getParameters())) {
+        try {
           if (navigationTarget.getType() == NavigationTargetType.DIALOG) {
             Component view = navigateToDialog(navigationTarget);
-            callHasUrlImplementation(viewName, param, view);
+            callHasUrlImplementation(navigationTarget, view);
           } else {
-            ui.navigate(viewName, param.construct());
+            ui.navigate(navigationTarget.getViewName(), createQueryParameters(navigationTarget));
           }
         } catch (Exception e) {
           log.error("Unexpected error", e);

@@ -3,6 +3,8 @@ package org.smartbit4all.ui.api.viewmodel;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import org.slf4j.Logger;
@@ -12,6 +14,7 @@ import org.smartbit4all.core.object.ApiObjectRef;
 import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.core.object.ObservableObjectImpl;
 import org.smartbit4all.core.object.ObservablePublisherWrapper;
+import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
 import io.reactivex.rxjava3.disposables.Disposable;
 
 public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements ViewModel {
@@ -53,6 +56,10 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
 
   protected abstract T load(URI uri);
 
+  protected T load(NavigationTarget navigationTarget) {
+    return null;
+  }
+
   protected Disposable subscribeForChanges(URI uri, Consumer<URI> listener) {
     return null;
   }
@@ -64,6 +71,14 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
   @Override
   public ObservableObject data() {
     return data;
+  }
+
+  @Override
+  public void initByUUID(UUID uuid) {
+    // TODO Auto-generated method stub
+    if (Objects.equals(uuid, navigationTargetUUID)) {
+      load(navigationTarget);
+    }
   }
 
   @Override

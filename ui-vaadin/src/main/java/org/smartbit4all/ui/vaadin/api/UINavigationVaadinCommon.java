@@ -1,7 +1,9 @@
 package org.smartbit4all.ui.vaadin.api;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -15,7 +17,6 @@ import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
 import org.smartbit4all.ui.api.navigation.model.NavigationTargetType;
 import org.smartbit4all.ui.api.viewmodel.ObjectEditing;
 import org.smartbit4all.ui.common.api.UINavigationApiCommon;
-import org.smartbit4all.ui.vaadin.components.navigation.UIViewParameterVaadinTransition;
 import com.google.common.base.Strings;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
@@ -43,6 +44,8 @@ public abstract class UINavigationVaadinCommon extends UINavigationApiCommon {
   protected Map<UUID, Dialog> dialogsByUUID;
   protected Map<UUID, Label> dialogLabelsByUUID;
   protected Map<UUID, Component> dialogViewsByUUID;
+
+  private static final String PARAM = "param";
 
   public UINavigationVaadinCommon(UI ui, UserSessionApi userSessionApi) {
     super(userSessionApi);
@@ -91,13 +94,14 @@ public abstract class UINavigationVaadinCommon extends UINavigationApiCommon {
   }
 
   protected Component createView(NavigationTarget navigationTarget) {
+    NavigationTarget oldTarget = ObjectEditing.currentNavigationTarget.get();
     try {
       ObjectEditing.currentNavigationTarget.set(navigationTarget);
       return VaadinService.getCurrent()
           .getInstantiator()
           .createComponent(getViewClassByNavigationTarget(navigationTarget));
     } finally {
-      ObjectEditing.currentNavigationTarget.remove();
+      ObjectEditing.currentNavigationTarget.set(oldTarget);
     }
   }
 
@@ -203,11 +207,10 @@ public abstract class UINavigationVaadinCommon extends UINavigationApiCommon {
     }
   }
 
-  protected void callHasUrlImplementation(String viewName, UIViewParameterVaadinTransition param,
-      Component view) {
+  protected void callHasUrlImplementation(NavigationTarget navigationTarget, Component view) {
     if (view instanceof HasUrlParameter) {
-      QueryParameters queryParams = param.construct();
-      Location location = new Location(viewName, queryParams);
+      QueryParameters queryParams = createQueryParameters(navigationTarget);
+      Location location = new Location(navigationTarget.getViewName(), queryParams);
       BeforeEnterEvent event =
           new BeforeEnterEvent(ui.getRouter(), null, location, null, ui, Collections.emptyList());
       ((HasUrlParameter<?>) view).setParameter(event, null);
@@ -285,6 +288,15 @@ public abstract class UINavigationVaadinCommon extends UINavigationApiCommon {
       }
     }
 
+  }
+
+  protected QueryParameters createQueryParameters(NavigationTarget navigationTarget) {
+    if (navigationTarget == null || navigationTarget.getUuid() == null) {
+      return null;
+    }
+    Map<String, List<String>> params = new HashMap<>();
+    params.put(PARAM, Arrays.asList(navigationTarget.getUuid().toString()));
+    return new QueryParameters(params);
   }
 
 }

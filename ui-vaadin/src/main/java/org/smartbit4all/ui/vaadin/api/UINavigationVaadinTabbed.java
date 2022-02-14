@@ -14,7 +14,6 @@ import org.smartbit4all.api.session.UserSessionApi;
 import org.smartbit4all.ui.api.navigation.model.NavigableViewDescriptor;
 import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
 import org.smartbit4all.ui.api.navigation.model.NavigationTargetType;
-import org.smartbit4all.ui.vaadin.components.navigation.UIViewParameterVaadinTransition;
 import org.springframework.util.ObjectUtils;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
@@ -100,9 +99,7 @@ public class UINavigationVaadinTabbed extends UINavigationVaadinCommon {
   @Override
   protected void navigateToInternal(NavigationTarget navigationTarget) {
     ui.access(() -> {
-      try (UIViewParameterVaadinTransition param =
-          new UIViewParameterVaadinTransition(navigationTarget.getUuid(),
-              navigationTarget.getParameters())) {
+      try {
 
         Component view;
         if (navigationTarget.getType() == NavigationTargetType.DIALOG) {
@@ -111,7 +108,7 @@ public class UINavigationVaadinTabbed extends UINavigationVaadinCommon {
           view = navigateToTab(navigationTarget);
         }
 
-        callHasUrlImplementation(navigationTarget.getViewName(), param, view);
+        callHasUrlImplementation(navigationTarget, view);
       } catch (Exception e) {
         log.error("Unexpected error", e);
       }
