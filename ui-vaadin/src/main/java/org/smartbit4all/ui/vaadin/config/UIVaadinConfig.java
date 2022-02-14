@@ -27,6 +27,7 @@ import org.smartbit4all.ui.vaadin.object.VaadinPublisherWrapper;
 import org.smartbit4all.ui.vaadin.service.DefaultUserComponentFactory;
 import org.smartbit4all.ui.vaadin.service.UserComponentFactory;
 import org.springframework.beans.factory.ObjectFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -63,7 +64,8 @@ public class UIVaadinConfig {
 
   @Bean
   @UIScope
-  public UINavigationApi uiNavigationApi(UI ui, UserSessionApi userSessionApi) {
+  public UINavigationApi uiNavigationApi(UI ui,
+      @Autowired(required = false) UserSessionApi userSessionApi) {
     return new UINavigationVaadinRouting(ui, userSessionApi);
   }
 

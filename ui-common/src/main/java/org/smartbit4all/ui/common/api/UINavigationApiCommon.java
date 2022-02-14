@@ -50,7 +50,7 @@ public class UINavigationApiCommon implements UINavigationApi {
       navigationTarget.setUuid(UUID.randomUUID());
     }
     navigationTargetsByUUID.put(navigationTarget.getUuid(), navigationTarget);
-    if (userSessionApi.currentSession() != null) {
+    if (userSessionApi != null && userSessionApi.currentSession() != null) {
       userSessionApi.currentSession().setParameter(UINAVIGATION_CURRENT_NAV_TARGET,
           navigationTarget);
     } else {
