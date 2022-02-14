@@ -9,11 +9,11 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.smartbit4all.api.session.Session;
 import org.smartbit4all.api.session.UserSessionApi;
 import org.smartbit4all.ui.api.navigation.model.NavigableViewDescriptor;
 import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
 import org.smartbit4all.ui.api.navigation.model.NavigationTargetType;
+import org.smartbit4all.ui.api.viewmodel.ObjectEditing;
 import org.springframework.util.ObjectUtils;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
@@ -70,17 +70,7 @@ public class UINavigationVaadinTabbed extends UINavigationVaadinCommon {
         }
       }
     });
-    if (userSessionApi.currentSession() != null) {
-      userSessionApi.currentSession().subscribeForParameterChange(UINAVIGATION_CURRENT_NAV_TARGET,
-          this::sessionParameterChange);
-    }
-  }
-
-  private void sessionParameterChange(String paramKey) {
-    if (UINAVIGATION_CURRENT_NAV_TARGET.equals(paramKey)) {
-      Session session = userSessionApi.currentSession();
-      navigateToInternal((NavigationTarget) session.getParameter(UINAVIGATION_CURRENT_NAV_TARGET));
-    }
+    initSessionParameterListener();
   }
 
   public Registration addTabChangedListener(Consumer<Component> onTabChangeListener) {
@@ -99,8 +89,9 @@ public class UINavigationVaadinTabbed extends UINavigationVaadinCommon {
   @Override
   protected void navigateToInternal(NavigationTarget navigationTarget) {
     ui.access(() -> {
+      NavigationTarget oldTarget = ObjectEditing.currentNavigationTarget.get();
       try {
-
+        ObjectEditing.currentNavigationTarget.set(navigationTarget);
         Component view;
         if (navigationTarget.getType() == NavigationTargetType.DIALOG) {
           view = navigateToDialog(navigationTarget);
@@ -111,6 +102,8 @@ public class UINavigationVaadinTabbed extends UINavigationVaadinCommon {
         callHasUrlImplementation(navigationTarget, view);
       } catch (Exception e) {
         log.error("Unexpected error", e);
+      } finally {
+        ObjectEditing.currentNavigationTarget.set(oldTarget);
       }
     });
   }

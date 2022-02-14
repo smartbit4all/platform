@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.smartbit4all.api.session.Session;
 import org.smartbit4all.api.session.UserSessionApi;
 import org.smartbit4all.ui.api.navigation.model.NavigableViewDescriptor;
 import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
@@ -25,22 +24,13 @@ public class UINavigationVaadinRouting extends UINavigationVaadinCommon {
 
   public UINavigationVaadinRouting(UI ui, UserSessionApi userSessionApi) {
     super(ui, userSessionApi);
-    if (userSessionApi != null && userSessionApi.currentSession() != null) {
-      userSessionApi.currentSession().subscribeForParameterChange(UINAVIGATION_CURRENT_NAV_TARGET,
-          this::sessionParameterChange);
-    }
-  }
-
-  private void sessionParameterChange(String paramKey) {
-    if (UINAVIGATION_CURRENT_NAV_TARGET.equals(paramKey)) {
-      Session session = userSessionApi.currentSession();
-      navigateToInternal((NavigationTarget) session.getParameter(UINAVIGATION_CURRENT_NAV_TARGET));
-    }
+    initSessionParameterListener();
   }
 
   @Override
   protected void navigateToInternal(NavigationTarget navigationTarget) {
     ui.access(() -> {
+      NavigationTarget oldTarget = ObjectEditing.currentNavigationTarget.get();
       try {
         ObjectEditing.currentNavigationTarget.set(navigationTarget);
         try {
@@ -54,7 +44,7 @@ public class UINavigationVaadinRouting extends UINavigationVaadinCommon {
           log.error("Unexpected error", e);
         }
       } finally {
-        ObjectEditing.currentNavigationTarget.remove();
+        ObjectEditing.currentNavigationTarget.set(oldTarget);
       }
     });
   }

@@ -94,6 +94,7 @@ public abstract class UINavigationVaadinCommon extends UINavigationApiCommon {
   }
 
   protected Component createView(NavigationTarget navigationTarget) {
+    // this might be unnecessary, since createView is called from navigateToInternal only
     NavigationTarget oldTarget = ObjectEditing.currentNavigationTarget.get();
     try {
       ObjectEditing.currentNavigationTarget.set(navigationTarget);

@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
 import org.smartbit4all.api.org.SecurityGroup;
+import org.smartbit4all.api.session.Session;
 import org.smartbit4all.api.session.UserSessionApi;
 import org.smartbit4all.ui.api.navigation.UINavigationApi;
 import org.smartbit4all.ui.api.navigation.model.Message;
@@ -38,6 +39,20 @@ public class UINavigationApiCommon implements UINavigationApi {
     navigableViews = new HashMap<>();
     navigableViewsByType = new HashMap<>();
     securityGroupByView = new HashMap<>();
+  }
+
+  protected void initSessionParameterListener() {
+    if (userSessionApi != null && userSessionApi.currentSession() != null) {
+      userSessionApi.currentSession().subscribeForParameterChange(UINAVIGATION_CURRENT_NAV_TARGET,
+          this::sessionParameterChange);
+    }
+  }
+
+  private void sessionParameterChange(String paramKey) {
+    if (UINAVIGATION_CURRENT_NAV_TARGET.equals(paramKey)) {
+      Session session = userSessionApi.currentSession();
+      navigateToInternal((NavigationTarget) session.getParameter(UINAVIGATION_CURRENT_NAV_TARGET));
+    }
   }
 
   @Override
