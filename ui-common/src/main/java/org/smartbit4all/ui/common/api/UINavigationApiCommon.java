@@ -12,9 +12,11 @@ import org.smartbit4all.api.session.UserSessionApi;
 import org.smartbit4all.ui.api.navigation.UINavigationApi;
 import org.smartbit4all.ui.api.navigation.model.Message;
 import org.smartbit4all.ui.api.navigation.model.MessageResult;
+import org.smartbit4all.ui.api.navigation.model.MessageType;
 import org.smartbit4all.ui.api.navigation.model.NavigableViewDescriptor;
 import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
 import org.smartbit4all.ui.api.navigation.model.NavigationTargetType;
+import com.google.common.base.Strings;
 
 public class UINavigationApiCommon implements UINavigationApi {
 
@@ -39,7 +41,11 @@ public class UINavigationApiCommon implements UINavigationApi {
   }
 
   @Override
-  public void navigateTo(NavigationTarget navigationTarget) {
+  public final void navigateTo(NavigationTarget navigationTarget) {
+    if (!checkSecurity(navigationTarget)) {
+      showSecurityError(navigationTarget);
+      return;
+    }
     if (navigationTarget.getUuid() == null) {
       navigationTarget.setUuid(UUID.randomUUID());
     }
@@ -47,8 +53,12 @@ public class UINavigationApiCommon implements UINavigationApi {
     if (userSessionApi.currentSession() != null) {
       userSessionApi.currentSession().setParameter(UINAVIGATION_CURRENT_NAV_TARGET,
           navigationTarget);
+    } else {
+      navigateToInternal(navigationTarget);
     }
   }
+
+  protected void navigateToInternal(NavigationTarget navigationTarget) {}
 
   @Override
   public void registerView(NavigableViewDescriptor viewDescriptor) {
@@ -110,4 +120,50 @@ public class UINavigationApiCommon implements UINavigationApi {
   public void setTitle(UUID navigationTargetUuid, String title) {
     // TODO Auto-generated method stub
   }
+
+  protected boolean checkSecurity(NavigationTarget navigationTarget) {
+    List<SecurityGroup> securityGroups = securityGroupByView.get(navigationTarget.getViewName());
+    if (securityGroups == null) {
+      return true;
+    }
+    return securityGroups.stream().anyMatch(SecurityGroup::check);
+  }
+
+  protected void showSecurityError(NavigationTarget navigationTarget) {
+    String title = calculateTitle(navigationTarget);
+    Message securityMessage = new Message()
+        .header("Nem megfelelő jogosultság")
+        .text("A képernyő megfelelő jogosultság hiányában nem nyitható ki (" + title + ")!")
+        .type(MessageType.ERROR);
+    showMessage(securityMessage, null);
+  }
+
+  protected String calculateTitle(NavigationTarget navigationTarget) {
+    String title = navigationTarget.getTitle();
+    if (!Strings.isNullOrEmpty(title)) {
+      return title;
+    }
+    NavigableViewDescriptor viewDescriptor = getViewDescriptorByNavigationTarget(navigationTarget);
+    if (viewDescriptor != null) {
+      title = viewDescriptor.getTitle();
+      if (!Strings.isNullOrEmpty(title)) {
+        return title;
+      }
+    }
+    return navigationTarget.getViewName();
+  }
+
+  protected String calculateIcon(NavigationTarget navigationTarget) {
+    String icon = navigationTarget.getIcon();
+    if (!Strings.isNullOrEmpty(icon)) {
+      return icon;
+    }
+    NavigableViewDescriptor viewDescriptor = getViewDescriptorByNavigationTarget(navigationTarget);
+    icon = viewDescriptor.getIcon();
+    if (!Strings.isNullOrEmpty(icon)) {
+      return icon;
+    }
+    return navigationTarget.getIcon();
+  }
+
 }

@@ -9,13 +9,17 @@ public interface UserSessionApi {
   User currentUser();
 
   default Session startSession(User user) {
-    throw new UnsupportedOperationException(
-        "UserSessionApi session hadling not implemented in " + this.getClass().getName() + "!");
+    // TODO quick fix
+    return null;
+    // throw new UnsupportedOperationException(
+    // "UserSessionApi session hadling not implemented in " + this.getClass().getName() + "!");
   }
 
   default Session currentSession() {
-    throw new UnsupportedOperationException(
-        "UserSessionApi session hadling not implemented in " + this.getClass().getName() + "!");
+    // TODO quick fix
+    return null;
+    // throw new UnsupportedOperationException(
+    // "UserSessionApi session hadling not implemented in " + this.getClass().getName() + "!");
   }
 
 }

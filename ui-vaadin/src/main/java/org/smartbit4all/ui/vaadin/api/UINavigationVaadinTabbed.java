@@ -71,8 +71,10 @@ public class UINavigationVaadinTabbed extends UINavigationVaadinCommon {
         }
       }
     });
-    userSessionApi.currentSession().subscribeForParameterChange(UINAVIGATION_CURRENT_NAV_TARGET,
-        this::sessionParameterChange);
+    if (userSessionApi.currentSession() != null) {
+      userSessionApi.currentSession().subscribeForParameterChange(UINAVIGATION_CURRENT_NAV_TARGET,
+          this::sessionParameterChange);
+    }
   }
 
   private void sessionParameterChange(String paramKey) {
@@ -96,15 +98,7 @@ public class UINavigationVaadinTabbed extends UINavigationVaadinCommon {
   }
 
   @Override
-  public void navigateTo(NavigationTarget navigationTarget) {
-    if (!checkSecurity(navigationTarget)) {
-      showSecurityError(navigationTarget);
-      return;
-    }
-    super.navigateTo(navigationTarget);
-  }
-
-  private void navigateToInternal(NavigationTarget navigationTarget) {
+  protected void navigateToInternal(NavigationTarget navigationTarget) {
     ui.access(() -> {
       try (UIViewParameterVaadinTransition param =
           new UIViewParameterVaadinTransition(navigationTarget.getUuid(),

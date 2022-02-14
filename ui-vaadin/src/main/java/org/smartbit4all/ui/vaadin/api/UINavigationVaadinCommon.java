@@ -2,11 +2,9 @@ package org.smartbit4all.ui.vaadin.api;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
-import org.smartbit4all.api.org.SecurityGroup;
 import org.smartbit4all.api.session.UserSessionApi;
 import org.smartbit4all.ui.api.navigation.model.Message;
 import org.smartbit4all.ui.api.navigation.model.MessageResult;
@@ -278,34 +276,6 @@ public abstract class UINavigationVaadinCommon extends UINavigationApiCommon {
         .orElse(null);
   }
 
-  protected String calculateTitle(NavigationTarget navigationTarget) {
-    String title = navigationTarget.getTitle();
-    if (!Strings.isNullOrEmpty(title)) {
-      return title;
-    }
-    NavigableViewDescriptor viewDescriptor = getViewDescriptorByNavigationTarget(navigationTarget);
-    if (viewDescriptor != null) {
-      title = viewDescriptor.getTitle();
-      if (!Strings.isNullOrEmpty(title)) {
-        return title;
-      }
-    }
-    return navigationTarget.getViewName();
-  }
-
-  protected String calculateIcon(NavigationTarget navigationTarget) {
-    String icon = navigationTarget.getIcon();
-    if (!Strings.isNullOrEmpty(icon)) {
-      return icon;
-    }
-    NavigableViewDescriptor viewDescriptor = getViewDescriptorByNavigationTarget(navigationTarget);
-    icon = viewDescriptor.getIcon();
-    if (!Strings.isNullOrEmpty(icon)) {
-      return icon;
-    }
-    return navigationTarget.getIcon();
-  }
-
   @Override
   public void setTitle(UUID navigationTargetUuid, String title) {
     if (dialogLabelsByUUID.containsKey(navigationTargetUuid)) {
@@ -315,23 +285,6 @@ public abstract class UINavigationVaadinCommon extends UINavigationApiCommon {
       }
     }
 
-  }
-
-  protected boolean checkSecurity(NavigationTarget navigationTarget) {
-    List<SecurityGroup> securityGroups = securityGroupByView.get(navigationTarget.getViewName());
-    if (securityGroups == null) {
-      return true;
-    }
-    return securityGroups.stream().anyMatch(SecurityGroup::check);
-  }
-
-  protected void showSecurityError(NavigationTarget navigationTarget) {
-    String title = calculateTitle(navigationTarget);
-    Message securityMessage = new Message()
-        .header("Nem megfelelő jogosultság")
-        .text("A képernyő megfelelő jogosultság hiányában nem nyitható ki (" + title + ")!")
-        .type(MessageType.ERROR);
-    showMessage(securityMessage, null);
   }
 
 }

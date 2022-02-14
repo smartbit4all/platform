@@ -26,8 +26,10 @@ public class UINavigationVaadinRouting extends UINavigationVaadinCommon {
 
   public UINavigationVaadinRouting(UI ui, UserSessionApi userSessionApi) {
     super(ui, userSessionApi);
-    userSessionApi.currentSession().subscribeForParameterChange(UINAVIGATION_CURRENT_NAV_TARGET,
-        this::sessionParameterChange);
+    if (userSessionApi.currentSession() != null) {
+      userSessionApi.currentSession().subscribeForParameterChange(UINAVIGATION_CURRENT_NAV_TARGET,
+          this::sessionParameterChange);
+    }
   }
 
   private void sessionParameterChange(String paramKey) {
@@ -38,15 +40,7 @@ public class UINavigationVaadinRouting extends UINavigationVaadinCommon {
   }
 
   @Override
-  public void navigateTo(NavigationTarget navigationTarget) {
-    if (!checkSecurity(navigationTarget)) {
-      showSecurityError(navigationTarget);
-      return;
-    }
-    super.navigateTo(navigationTarget);
-  }
-
-  private void navigateToInternal(NavigationTarget navigationTarget) {
+  protected void navigateToInternal(NavigationTarget navigationTarget) {
     ui.access(() -> {
       try {
         ObjectEditing.currentConstructionUUID.set(navigationTarget.getUuid());
@@ -64,7 +58,7 @@ public class UINavigationVaadinRouting extends UINavigationVaadinCommon {
           log.error("Unexpected error", e);
         }
       } finally {
-        ObjectEditing.currentConstructionUUID.set(null);
+        ObjectEditing.currentConstructionUUID.remove();
       }
     });
   }
