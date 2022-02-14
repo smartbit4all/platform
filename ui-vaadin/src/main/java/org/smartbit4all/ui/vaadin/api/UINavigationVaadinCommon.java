@@ -92,12 +92,12 @@ public abstract class UINavigationVaadinCommon extends UINavigationApiCommon {
 
   protected Component createView(NavigationTarget navigationTarget) {
     try {
-      ObjectEditing.currentConstructionUUID.set(navigationTarget);
+      ObjectEditing.currentNavigationTarget.set(navigationTarget);
       return VaadinService.getCurrent()
           .getInstantiator()
           .createComponent(getViewClassByNavigationTarget(navigationTarget));
     } finally {
-      ObjectEditing.currentConstructionUUID.remove();
+      ObjectEditing.currentNavigationTarget.remove();
     }
   }
 

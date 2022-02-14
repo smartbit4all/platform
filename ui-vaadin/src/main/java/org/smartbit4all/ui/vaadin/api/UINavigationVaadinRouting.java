@@ -43,7 +43,7 @@ public class UINavigationVaadinRouting extends UINavigationVaadinCommon {
   protected void navigateToInternal(NavigationTarget navigationTarget) {
     ui.access(() -> {
       try {
-        ObjectEditing.currentConstructionUUID.set(navigationTarget);
+        ObjectEditing.currentNavigationTarget.set(navigationTarget);
         String viewName = navigationTarget.getViewName();
         try (UIViewParameterVaadinTransition param =
             new UIViewParameterVaadinTransition(navigationTarget.getUuid(),
@@ -58,7 +58,7 @@ public class UINavigationVaadinRouting extends UINavigationVaadinCommon {
           log.error("Unexpected error", e);
         }
       } finally {
-        ObjectEditing.currentConstructionUUID.remove();
+        ObjectEditing.currentNavigationTarget.remove();
       }
     });
   }

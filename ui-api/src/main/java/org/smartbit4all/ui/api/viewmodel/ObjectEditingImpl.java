@@ -3,7 +3,6 @@ package org.smartbit4all.ui.api.viewmodel;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.smartbit4all.core.constraint.ObjectConstraintPublisher;
 import org.smartbit4all.core.object.ApiObjectRef;
 import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
 
@@ -13,22 +12,15 @@ public class ObjectEditingImpl implements ObjectEditing {
 
   protected ApiObjectRef ref;
 
-  protected ObjectConstraintPublisher constraints;
-
   protected NavigationTarget navigationTarget;
 
   protected UUID navigationTargetUUID;
 
   public ObjectEditingImpl() {
-    navigationTarget = currentConstructionUUID.get();
+    navigationTarget = currentNavigationTarget.get();
     if (navigationTarget != null) {
       navigationTargetUUID = navigationTarget.getUuid();
     }
-  }
-
-  @Override
-  public ObjectConstraintPublisher constraints() {
-    return constraints;
   }
 
   @Override

@@ -19,11 +19,11 @@ import java.util.Objects;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.ui.api.navigation.UINavigationApi;
 import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
 import org.smartbit4all.ui.common.navigation.NavigationController;
 import org.smartbit4all.ui.common.navigation.NavigationTreeNode;
 import org.smartbit4all.ui.common.navigation.NavigationView;
-import org.smartbit4all.ui.vaadin.components.navigation.UIViewParameterVaadinTransition;
 import org.smartbit4all.ui.vaadin.localization.TranslationUtil;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
@@ -58,11 +58,14 @@ public class NavigationTreeView implements NavigationView {
 
   private UI ui;
 
+  private UINavigationApi uiNavigationApi;
+
   public NavigationTreeView(NavigationController controller,
-      TreeGrid<NavigationTreeNode> treeComponent) {
+      TreeGrid<NavigationTreeNode> treeComponent, UINavigationApi uiNavigationApi) {
     super();
     this.tree = treeComponent;
     this.controller = controller;
+    this.uiNavigationApi = uiNavigationApi;
     controller.setUI(this);
     // Adapt the given tree and add the necessary parameters.
 
@@ -126,14 +129,7 @@ public class NavigationTreeView implements NavigationView {
   @Override
   public void navigateTo(NavigationTarget command) {
     if (command != null) {
-      try (UIViewParameterVaadinTransition param =
-          new UIViewParameterVaadinTransition(command.getParameters())) {
-
-        tree.getUI().ifPresent(ui -> ui.navigate(command.getViewName(), param.construct()));
-
-      } catch (Exception e) {
-        log.error("Unable to pass parameters", e);
-      }
+      uiNavigationApi.navigateTo(command);
     }
   }
 
