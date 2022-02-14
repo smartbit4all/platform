@@ -73,7 +73,7 @@ public class ObjectHistoryViewModelImpl extends ObjectEditingImpl
     uiNavigationApi.navigateTo(new NavigationTarget()
         .viewName(viewName)
         .type(NavigationTargetType.DIALOG)
-        .putParametersItem("entry", versionUri)
+        .objectUri(versionUri)
         .putParametersItem("history", Boolean.TRUE));
   }
 
