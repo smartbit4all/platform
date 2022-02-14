@@ -178,7 +178,7 @@ public class UINavigationVaadinTabbed extends UINavigationVaadinCommon {
   }
 
   private String getViewObjectId(NavigationTarget navigationTarget) {
-    URI viewObjectUri = navigationTarget.getViewObjectUri();
+    URI viewObjectUri = navigationTarget.getObjectUri();
     if (viewObjectUri == null) {
       if (navigationTarget.getParameters().containsKey("entry")) {
         Object viewObjectUriObj = navigationTarget.getParameters().get("entry");
