@@ -181,14 +181,24 @@ public class QueryApiImpl implements QueryApi {
     QueryResult queryResult = execute(executionPlan);
     List<QueryOutput> results = queryResult.getResults();
     if (results == null || results.isEmpty()) {
-      // FIXME is null an acceptable return value here?
-      return null;
+      throw new Exception(
+          "The query execution for the given QueryInput finished with no QueryResult!");
     }
 
-    return results.stream()
+    QueryOutput output = results.stream()
         .filter(r -> queryInput.getName().equals(r.getName()))
         .findAny()
         .orElse(null);
+
+    if (output == null) {
+      throw new Exception(
+          "There is no matching QueryOutput for the input with name: " + queryInput.getName());
+    }
+    if (!output.hasResult()) {
+      throw new Exception("The query execution for the given QueryInput finished with no result!");
+    }
+
+    return output;
   }
 
   private QueryOutput executeWithoutPrepare(QueryInput queryInput) throws Exception {

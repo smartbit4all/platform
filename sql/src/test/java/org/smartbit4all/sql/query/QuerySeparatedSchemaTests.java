@@ -1,6 +1,7 @@
 package org.smartbit4all.sql.query;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.data.TableDatas;
@@ -35,13 +36,16 @@ public class QuerySeparatedSchemaTests {
   @Test
   public void simpleSeparatedSchemaCrudTest() throws Exception {
     sqlQueryExecutionApi.setSchema("BADSCHEMA");
-    assertEquals(0, Crud.read(addressDef).selectAllProperties().listData().size());
+    assertThrows(Exception.class,
+        () -> Crud.read(addressDef).selectAllProperties().listData().size());
 
     sqlQueryExecutionApi.setSchema(null);
-    assertEquals(0, Crud.read(addressDef).selectAllProperties().listData().size());
+    assertThrows(Exception.class,
+        () -> Crud.read(addressDef).selectAllProperties().listData().size());
 
     sqlQueryExecutionApi.setSchema("");
-    assertEquals(0, Crud.read(addressDef).selectAllProperties().listData().size());
+    assertThrows(Exception.class,
+        () -> Crud.read(addressDef).selectAllProperties().listData().size());
 
     sqlQueryExecutionApi.setSchema("test2");
     TableData<AddressDef> addresses = Crud.read(addressDef).selectAllProperties().listData();
