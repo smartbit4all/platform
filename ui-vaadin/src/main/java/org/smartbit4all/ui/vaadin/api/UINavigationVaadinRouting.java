@@ -43,7 +43,7 @@ public class UINavigationVaadinRouting extends UINavigationVaadinCommon {
   protected void navigateToInternal(NavigationTarget navigationTarget) {
     ui.access(() -> {
       try {
-        ObjectEditing.currentConstructionUUID.set(navigationTarget.getUuid());
+        ObjectEditing.currentConstructionUUID.set(navigationTarget);
         String viewName = navigationTarget.getViewName();
         try (UIViewParameterVaadinTransition param =
             new UIViewParameterVaadinTransition(navigationTarget.getUuid(),
