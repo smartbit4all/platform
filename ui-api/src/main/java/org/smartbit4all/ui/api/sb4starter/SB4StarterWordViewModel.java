@@ -2,9 +2,9 @@ package org.smartbit4all.ui.api.sb4starter;
 
 import java.util.function.BiConsumer;
 import org.smartbit4all.api.binarydata.BinaryContent;
-import org.smartbit4all.core.object.ObjectEditing;
 import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.ui.api.sb4starterui.model.SB4StarterWordFormModel;
+import org.smartbit4all.ui.api.viewmodel.ObjectEditing;
 
 public interface SB4StarterWordViewModel extends ObjectEditing {
 

@@ -21,7 +21,6 @@ import org.smartbit4all.api.filter.bean.FilterOperation;
 import org.smartbit4all.api.value.ValueApi;
 import org.smartbit4all.api.value.bean.Value;
 import org.smartbit4all.core.object.ApiObjectRef;
-import org.smartbit4all.core.object.ObjectEditingImpl;
 import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.core.object.ObservableObjectImpl;
 import org.smartbit4all.core.utility.PathUtility;
@@ -34,6 +33,7 @@ import org.smartbit4all.ui.api.filter.model.FilterGroupLabel;
 import org.smartbit4all.ui.api.filter.model.FilterGroupModel;
 import org.smartbit4all.ui.api.filter.model.FilterGroupSelectorModel;
 import org.smartbit4all.ui.api.filter.model.FilterLabelPosition;
+import org.smartbit4all.ui.api.viewmodel.ObjectEditingImpl;
 import com.google.common.base.Strings;
 
 public class DynamicFilterViewModelImpl extends ObjectEditingImpl

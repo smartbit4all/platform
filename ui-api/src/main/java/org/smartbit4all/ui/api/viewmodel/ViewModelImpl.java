@@ -1,4 +1,4 @@
-package org.smartbit4all.core.object;
+package org.smartbit4all.ui.api.viewmodel;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -7,6 +7,11 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.core.object.ApiBeanDescriptor;
+import org.smartbit4all.core.object.ApiObjectRef;
+import org.smartbit4all.core.object.ObservableObject;
+import org.smartbit4all.core.object.ObservableObjectImpl;
+import org.smartbit4all.core.object.ObservablePublisherWrapper;
 import io.reactivex.rxjava3.disposables.Disposable;
 
 public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements ViewModel {
@@ -33,8 +38,14 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
   protected ViewModelImpl(ObservablePublisherWrapper publisherWrapper,
       Map<Class<?>, ApiBeanDescriptor> apiBeanDescriptors,
       Class<T> modelClazz) {
+    this("/", publisherWrapper, apiBeanDescriptors, modelClazz);
+  }
+
+  protected ViewModelImpl(String path, ObservablePublisherWrapper publisherWrapper,
+      Map<Class<?>, ApiBeanDescriptor> apiBeanDescriptors,
+      Class<T> modelClazz) {
     super();
-    this.path = "/";
+    this.path = path;
     data = new ObservableObjectImpl(publisherWrapper);
     this.apiBeanDescriptors = apiBeanDescriptors;
     this.modelClazz = modelClazz;

@@ -1,7 +1,7 @@
 package org.smartbit4all.ui.vaadin.components;
 
 import java.net.URI;
-import org.smartbit4all.core.object.ViewModel;
+import org.smartbit4all.ui.api.viewmodel.ViewModel;
 import org.smartbit4all.ui.vaadin.components.navigation.Navigations;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.router.BeforeEvent;

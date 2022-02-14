@@ -7,7 +7,6 @@ import org.smartbit4all.api.storage.bean.ObjectHistory;
 import org.smartbit4all.api.storage.bean.ObjectHistoryEntry;
 import org.smartbit4all.core.object.ApiBeanDescriptor;
 import org.smartbit4all.core.object.ApiObjectRef;
-import org.smartbit4all.core.object.ObjectEditingImpl;
 import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.core.object.ObservableObjectImpl;
 import org.smartbit4all.domain.data.storage.history.ObjectHistoryApi;
@@ -15,6 +14,7 @@ import org.smartbit4all.ui.api.data.storage.history.ObjectHistoryViewModel;
 import org.smartbit4all.ui.api.navigation.UINavigationApi;
 import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
 import org.smartbit4all.ui.api.navigation.model.NavigationTargetType;
+import org.smartbit4all.ui.api.viewmodel.ObjectEditingImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class ObjectHistoryViewModelImpl extends ObjectEditingImpl

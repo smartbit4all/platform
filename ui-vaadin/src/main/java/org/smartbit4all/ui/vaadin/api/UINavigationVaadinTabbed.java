@@ -9,6 +9,7 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.session.Session;
 import org.smartbit4all.api.session.UserSessionApi;
 import org.smartbit4all.ui.api.navigation.model.NavigableViewDescriptor;
 import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
@@ -70,6 +71,15 @@ public class UINavigationVaadinTabbed extends UINavigationVaadinCommon {
         }
       }
     });
+    userSessionApi.currentSession().subscribeForParameterChange(UINAVIGATION_CURRENT_NAV_TARGET,
+        this::sessionParameterChange);
+  }
+
+  private void sessionParameterChange(String paramKey) {
+    if (UINAVIGATION_CURRENT_NAV_TARGET.equals(paramKey)) {
+      Session session = userSessionApi.currentSession();
+      navigateToInternal((NavigationTarget) session.getParameter(UINAVIGATION_CURRENT_NAV_TARGET));
+    }
   }
 
   public Registration addTabChangedListener(Consumer<Component> onTabChangeListener) {
@@ -87,13 +97,15 @@ public class UINavigationVaadinTabbed extends UINavigationVaadinCommon {
 
   @Override
   public void navigateTo(NavigationTarget navigationTarget) {
+    if (!checkSecurity(navigationTarget)) {
+      showSecurityError(navigationTarget);
+      return;
+    }
+    super.navigateTo(navigationTarget);
+  }
+
+  private void navigateToInternal(NavigationTarget navigationTarget) {
     ui.access(() -> {
-      if (!checkSecurity(navigationTarget)) {
-        showSecurityError(navigationTarget);
-        return;
-      }
-      checkNavigationParameters(navigationTarget);
-      super.navigateTo(navigationTarget);
       try (UIViewParameterVaadinTransition param =
           new UIViewParameterVaadinTransition(navigationTarget.getUuid(),
               navigationTarget.getParameters())) {

@@ -1,7 +1,9 @@
-package org.smartbit4all.core.object;
+package org.smartbit4all.ui.api.viewmodel;
 
 import java.util.UUID;
 import org.smartbit4all.core.constraint.ObjectConstraintPublisher;
+import org.smartbit4all.core.object.NotifyListeners;
+import org.smartbit4all.core.object.PublishEvents;
 
 public interface ObjectEditing {
 

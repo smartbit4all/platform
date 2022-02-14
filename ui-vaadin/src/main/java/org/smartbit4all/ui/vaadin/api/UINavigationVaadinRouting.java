@@ -4,11 +4,12 @@ import java.util.List;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.session.Session;
 import org.smartbit4all.api.session.UserSessionApi;
-import org.smartbit4all.core.object.ObjectEditing;
 import org.smartbit4all.ui.api.navigation.model.NavigableViewDescriptor;
 import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
 import org.smartbit4all.ui.api.navigation.model.NavigationTargetType;
+import org.smartbit4all.ui.api.viewmodel.ObjectEditing;
 import org.smartbit4all.ui.vaadin.components.navigation.UIViewParameterVaadinTransition;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
@@ -16,7 +17,6 @@ import com.vaadin.flow.router.RouteConfiguration;
 import com.vaadin.flow.router.RouteData;
 import com.vaadin.flow.router.RouterLayout;
 
-// TODO inherit from ui-common / UINavigationImpl?
 public class UINavigationVaadinRouting extends UINavigationVaadinCommon {
 
 
@@ -26,16 +26,28 @@ public class UINavigationVaadinRouting extends UINavigationVaadinCommon {
 
   public UINavigationVaadinRouting(UI ui, UserSessionApi userSessionApi) {
     super(ui, userSessionApi);
+    userSessionApi.currentSession().subscribeForParameterChange(UINAVIGATION_CURRENT_NAV_TARGET,
+        this::sessionParameterChange);
+  }
+
+  private void sessionParameterChange(String paramKey) {
+    if (UINAVIGATION_CURRENT_NAV_TARGET.equals(paramKey)) {
+      Session session = userSessionApi.currentSession();
+      navigateToInternal((NavigationTarget) session.getParameter(UINAVIGATION_CURRENT_NAV_TARGET));
+    }
   }
 
   @Override
   public void navigateTo(NavigationTarget navigationTarget) {
+    if (!checkSecurity(navigationTarget)) {
+      showSecurityError(navigationTarget);
+      return;
+    }
+    super.navigateTo(navigationTarget);
+  }
+
+  private void navigateToInternal(NavigationTarget navigationTarget) {
     ui.access(() -> {
-      if (!checkSecurity(navigationTarget)) {
-        showSecurityError(navigationTarget);
-        return;
-      }
-      super.navigateTo(navigationTarget);
       try {
         ObjectEditing.currentConstructionUUID.set(navigationTarget.getUuid());
         String viewName = navigationTarget.getViewName();

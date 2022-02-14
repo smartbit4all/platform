@@ -1,4 +1,4 @@
-package org.smartbit4all.core.stateful;
+package org.smartbit4all.ui.api.stateful;
 
 import java.util.HashSet;
 import java.util.Map;

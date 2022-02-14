@@ -19,7 +19,6 @@ import org.smartbit4all.api.navigation.bean.NavigationView;
 import org.smartbit4all.api.session.Session;
 import org.smartbit4all.api.session.UserSessionApi;
 import org.smartbit4all.core.object.ApiObjectRef;
-import org.smartbit4all.core.object.ObjectEditingImpl;
 import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.core.object.ObservableObjectImpl;
 import org.smartbit4all.core.object.ObservablePublisherWrapper;
@@ -29,6 +28,7 @@ import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
 import org.smartbit4all.ui.api.tree.model.TreeModel;
 import org.smartbit4all.ui.api.tree.model.TreeNode;
 import org.smartbit4all.ui.api.tree.model.TreeNodeKind;
+import org.smartbit4all.ui.api.viewmodel.ObjectEditingImpl;
 import com.google.common.base.Strings;
 import io.reactivex.rxjava3.disposables.Disposable;
 

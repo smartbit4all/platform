@@ -8,7 +8,6 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import org.smartbit4all.api.org.SecurityGroup;
 import org.smartbit4all.api.session.UserSessionApi;
-import org.smartbit4all.core.object.ObjectEditing;
 import org.smartbit4all.ui.api.navigation.model.Message;
 import org.smartbit4all.ui.api.navigation.model.MessageResult;
 import org.smartbit4all.ui.api.navigation.model.MessageResultType;
@@ -16,6 +15,7 @@ import org.smartbit4all.ui.api.navigation.model.MessageType;
 import org.smartbit4all.ui.api.navigation.model.NavigableViewDescriptor;
 import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
 import org.smartbit4all.ui.api.navigation.model.NavigationTargetType;
+import org.smartbit4all.ui.api.viewmodel.ObjectEditing;
 import org.smartbit4all.ui.common.api.UINavigationApiCommon;
 import org.smartbit4all.ui.vaadin.components.navigation.UIViewParameterVaadinTransition;
 import com.google.common.base.Strings;
@@ -41,15 +41,14 @@ public abstract class UINavigationVaadinCommon extends UINavigationApiCommon {
   protected Map<String, Class<? extends Component>> navigableViewClasses;
   protected Map<NavigationTargetType, Map<String, Class<? extends Component>>> navigableViewClassesByType;
 
-  protected UserSessionApi userSessionApi;
   protected UI ui;
   protected Map<UUID, Dialog> dialogsByUUID;
   protected Map<UUID, Label> dialogLabelsByUUID;
   protected Map<UUID, Component> dialogViewsByUUID;
 
   public UINavigationVaadinCommon(UI ui, UserSessionApi userSessionApi) {
+    super(userSessionApi);
     this.ui = ui;
-    this.userSessionApi = userSessionApi;
     navigableViewClasses = new HashMap<>();
     navigableViewClassesByType = new HashMap<>();
     dialogsByUUID = new HashMap<>();
@@ -96,11 +95,11 @@ public abstract class UINavigationVaadinCommon extends UINavigationApiCommon {
   protected Component createView(NavigationTarget navigationTarget) {
     try {
       ObjectEditing.currentConstructionUUID.set(navigationTarget.getUuid());
-      Component view = VaadinService.getCurrent().getInstantiator()
+      return VaadinService.getCurrent()
+          .getInstantiator()
           .createComponent(getViewClassByNavigationTarget(navigationTarget));
-      return view;
     } finally {
-      ObjectEditing.currentConstructionUUID.set(null);
+      ObjectEditing.currentConstructionUUID.remove();
     }
   }
 
@@ -176,13 +175,11 @@ public abstract class UINavigationVaadinCommon extends UINavigationApiCommon {
 
     FlexLayout dialogLayout = new FlexLayout(header, view);
     dialogLayout.addClassName("sb4-dialog1");
-    if (navigationTarget.getFullSize()) {
+    if (Boolean.TRUE.equals(navigationTarget.getFullSize())) {
       dialogLayout.setHeightFull();
     }
     dialog.add(dialogLayout);
 
-    // Ez nem a close-ra küld eventet
-    // dialog.addDialogCloseActionListener(event -> onDialogClose(dialogUUID));
     dialog.addOpenedChangeListener(event -> onDialogClose(dialogUUID, event));
 
     return dialog;
@@ -271,8 +268,7 @@ public abstract class UINavigationVaadinCommon extends UINavigationApiCommon {
         dialog.addCancelListener(e -> messageListener.accept(canceled));
       }
     }
-
-    dialog.open();
+    ui.access(dialog::open);
   }
 
   private MessageResult findMessageResult(Message message, MessageResultType type) {
@@ -326,7 +322,7 @@ public abstract class UINavigationVaadinCommon extends UINavigationApiCommon {
     if (securityGroups == null) {
       return true;
     }
-    return securityGroups.stream().anyMatch(group -> group.check());
+    return securityGroups.stream().anyMatch(SecurityGroup::check);
   }
 
   protected void showSecurityError(NavigationTarget navigationTarget) {

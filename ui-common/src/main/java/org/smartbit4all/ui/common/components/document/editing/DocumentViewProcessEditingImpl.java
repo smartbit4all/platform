@@ -13,11 +13,11 @@ import org.smartbit4all.api.mimetype.MimeTypeHandler;
 import org.smartbit4all.api.mimetype.MimeTypeHandlerApi;
 import org.smartbit4all.core.object.ApiBeanDescriptor;
 import org.smartbit4all.core.object.ApiObjectRef;
-import org.smartbit4all.core.object.ObjectEditingImpl;
 import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.core.object.ObservableObjectImpl;
 import org.smartbit4all.core.object.ObservablePublisherWrapper;
 import org.smartbit4all.ui.api.components.document.editing.DocumentViewProcessEditing;
+import org.smartbit4all.ui.api.viewmodel.ObjectEditingImpl;
 
 /**
  * Handles the panel used for viewing documents in images.

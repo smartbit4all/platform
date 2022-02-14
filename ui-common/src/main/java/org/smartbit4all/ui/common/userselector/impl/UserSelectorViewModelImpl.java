@@ -13,10 +13,10 @@ import org.smartbit4all.api.userselector.bean.UserSingleSelector;
 import org.smartbit4all.api.userselector.util.UserSelectorUtil;
 import org.smartbit4all.core.object.ApiBeanDescriptor;
 import org.smartbit4all.core.object.ApiObjectRef;
-import org.smartbit4all.core.object.ObjectEditingImpl;
 import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.core.object.ObservableObjectImpl;
 import org.smartbit4all.ui.api.userselector.UserSelectorViewModel;
+import org.smartbit4all.ui.api.viewmodel.ObjectEditingImpl;
 
 public class UserSelectorViewModelImpl extends ObjectEditingImpl implements UserSelectorViewModel {
 

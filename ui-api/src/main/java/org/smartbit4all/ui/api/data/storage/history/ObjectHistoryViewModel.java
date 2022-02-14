@@ -3,9 +3,9 @@ package org.smartbit4all.ui.api.data.storage.history;
 import java.util.List;
 import org.smartbit4all.api.storage.bean.ObjectHistoryEntry;
 import org.smartbit4all.core.object.NotifyListeners;
-import org.smartbit4all.core.object.ObjectEditing;
 import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.core.object.PublishEvents;
+import org.smartbit4all.ui.api.viewmodel.ObjectEditing;
 
 public interface ObjectHistoryViewModel extends ObjectEditing {
   

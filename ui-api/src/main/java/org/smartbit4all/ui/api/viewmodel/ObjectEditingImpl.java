@@ -1,9 +1,10 @@
-package org.smartbit4all.core.object;
+package org.smartbit4all.ui.api.viewmodel;
 
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.core.constraint.ObjectConstraintPublisher;
+import org.smartbit4all.core.object.ApiObjectRef;
 
 public class ObjectEditingImpl implements ObjectEditing {
 

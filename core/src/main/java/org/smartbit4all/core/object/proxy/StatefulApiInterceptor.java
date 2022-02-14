@@ -28,17 +28,16 @@ import org.slf4j.LoggerFactory;
 import org.smartbit4all.core.event.EventPublisher;
 import org.smartbit4all.core.event.ListenerAware;
 import org.smartbit4all.core.object.NotifyListeners;
-import org.smartbit4all.core.object.ObjectEditing;
 import org.smartbit4all.core.object.PublishEvents;
 import org.smartbit4all.core.utility.ReflectionUtility;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
 /**
- * This {@link MethodInterceptor} implementation is responsible for the {@link ObjectEditing}
- * interface. It manages the {@link PublishEvents} and {@link NotifyListeners} annotated methods.
- * Collects all the {@link EventPublisher}s and notify their listeners when calling the
- * {@link NotifyListeners} annotated methods.
+ * This {@link MethodInterceptor} implementation is responsible for the ObjectEditing interface. It
+ * manages the {@link PublishEvents} and {@link NotifyListeners} annotated methods. Collects all the
+ * {@link EventPublisher}s and notify their listeners when calling the {@link NotifyListeners}
+ * annotated methods.
  * 
  * @author Zoltan Suller
  */

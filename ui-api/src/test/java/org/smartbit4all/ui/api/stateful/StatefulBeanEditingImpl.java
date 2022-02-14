@@ -1,11 +1,11 @@
-package org.smartbit4all.core.stateful;
+package org.smartbit4all.ui.api.stateful;
 
 import java.util.Map;
 import org.smartbit4all.core.object.ApiBeanDescriptor;
 import org.smartbit4all.core.object.ApiObjectRef;
-import org.smartbit4all.core.object.ObjectEditingImpl;
 import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.core.object.ObservableObjectImpl;
+import org.smartbit4all.ui.api.viewmodel.ObjectEditingImpl;
 
 public class StatefulBeanEditingImpl extends ObjectEditingImpl implements StatefulBeanEditing {
 

@@ -1,11 +1,11 @@
 package org.smartbit4all.ui.common.filter2.impl;
 
 import org.smartbit4all.core.object.ApiObjectRef;
-import org.smartbit4all.core.object.ObjectEditingImpl;
 import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.core.object.ObservableObjectImpl;
 import org.smartbit4all.ui.api.filter.FilterFieldViewModel;
 import org.smartbit4all.ui.api.filter.model.FilterFieldModel;
+import org.smartbit4all.ui.api.viewmodel.ObjectEditingImpl;
 
 public class FilterFieldViewModelImpl extends ObjectEditingImpl implements FilterFieldViewModel {
 

@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
 import org.smartbit4all.api.org.SecurityGroup;
+import org.smartbit4all.api.session.UserSessionApi;
 import org.smartbit4all.ui.api.navigation.UINavigationApi;
 import org.smartbit4all.ui.api.navigation.model.Message;
 import org.smartbit4all.ui.api.navigation.model.MessageResult;
@@ -17,6 +18,8 @@ import org.smartbit4all.ui.api.navigation.model.NavigationTargetType;
 
 public class UINavigationApiCommon implements UINavigationApi {
 
+  protected UserSessionApi userSessionApi;
+
   protected Map<UUID, NavigationTarget> navigationTargetsByUUID;
 
   protected Map<String, NavigableViewDescriptor> navigableViews;
@@ -24,7 +27,11 @@ public class UINavigationApiCommon implements UINavigationApi {
 
   protected Map<String, List<SecurityGroup>> securityGroupByView;
 
-  public UINavigationApiCommon() {
+  public static final String UINAVIGATION_CURRENT_NAV_TARGET =
+      "UINavigationApi.currentNavigationTarget";
+
+  public UINavigationApiCommon(UserSessionApi userSessionApi) {
+    this.userSessionApi = userSessionApi;
     navigationTargetsByUUID = new HashMap<>();
     navigableViews = new HashMap<>();
     navigableViewsByType = new HashMap<>();
@@ -37,6 +44,10 @@ public class UINavigationApiCommon implements UINavigationApi {
       navigationTarget.setUuid(UUID.randomUUID());
     }
     navigationTargetsByUUID.put(navigationTarget.getUuid(), navigationTarget);
+    if (userSessionApi.currentSession() != null) {
+      userSessionApi.currentSession().setParameter(UINAVIGATION_CURRENT_NAV_TARGET,
+          navigationTarget);
+    }
   }
 
   @Override

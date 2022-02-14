@@ -2,10 +2,10 @@ package org.smartbit4all.ui.api.navigation;
 
 import org.smartbit4all.api.navigation.bean.NavigationNode;
 import org.smartbit4all.api.navigation.bean.NavigationPath;
-import org.smartbit4all.core.object.ObjectEditing;
 import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.core.object.PublishEvents;
 import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
+import org.smartbit4all.ui.api.viewmodel.ObjectEditing;
 
 /**
  * The editing model for the navigation. It contains a navigation

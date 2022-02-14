@@ -1,4 +1,4 @@
-package org.smartbit4all.core.stateful;
+package org.smartbit4all.ui.api.stateful;
 
 public class StatefulBean {
 

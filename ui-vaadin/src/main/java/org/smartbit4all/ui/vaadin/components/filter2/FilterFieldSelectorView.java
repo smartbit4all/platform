@@ -1,7 +1,7 @@
 package org.smartbit4all.ui.vaadin.components.filter2;
 
-import org.smartbit4all.core.object.ObjectEditing;
 import org.smartbit4all.core.object.ObservableObject;
+import org.smartbit4all.ui.api.viewmodel.ObjectEditing;
 import org.smartbit4all.ui.vaadin.components.binder.VaadinBinders;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dnd.DragSource;
