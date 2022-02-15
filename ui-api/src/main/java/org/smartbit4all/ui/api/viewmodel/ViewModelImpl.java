@@ -41,24 +41,33 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
   protected ViewModelImpl(ObservablePublisherWrapper publisherWrapper,
       Map<Class<?>, ApiBeanDescriptor> apiBeanDescriptors,
       Class<T> modelClazz) {
-    this("/", publisherWrapper, apiBeanDescriptors, modelClazz);
-  }
-
-  protected ViewModelImpl(String path, ObservablePublisherWrapper publisherWrapper,
-      Map<Class<?>, ApiBeanDescriptor> apiBeanDescriptors,
-      Class<T> modelClazz) {
     super();
-    this.path = path;
+    this.path = null;
     data = new ObservableObjectImpl(publisherWrapper);
     this.apiBeanDescriptors = apiBeanDescriptors;
     this.modelClazz = modelClazz;
   }
 
-  protected abstract T load(URI uri);
 
-  protected T load(NavigationTarget navigationTarget) {
-    return null;
-  }
+  /**
+   * Register commands here.
+   */
+  protected abstract void initCommands();
+
+  /**
+   * Load model by parameters in navigationTarget.
+   * 
+   * @param navigationTarget
+   * @return
+   */
+  protected abstract T load(NavigationTarget navigationTarget);
+
+  /**
+   * This should return model.getUri() in a typed way.
+   * 
+   * @return
+   */
+  protected abstract URI getUri();
 
   protected Disposable subscribeForChanges(URI uri, Consumer<URI> listener) {
     return null;
@@ -75,29 +84,59 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
 
   @Override
   public void initByUUID(UUID uuid) {
-    // TODO Auto-generated method stub
     if (Objects.equals(uuid, navigationTargetUUID)) {
-      load(navigationTarget);
+      if (ref != null) {
+        throw new IllegalArgumentException("ref already initialized in ViewModel when initByUUID!");
+      }
+      T loadedObject = load(navigationTarget);
+      this.path = "/";
+      ref = new ApiObjectRef(null,
+          loadedObject,
+          apiBeanDescriptors);
+      initCommon();
+    } else {
+      // remove navigationTargetUUID, navigationTarget?
     }
   }
 
   @Override
-  public void init(URI objectUri) {
-    T loadedObject = load(objectUri);
-    if (ref == null) {
-
-      ref = new ApiObjectRef(null,
-          loadedObject,
-          apiBeanDescriptors);
-      model = ref.getWrapper(modelClazz);
-      data.setRef(ref);
-
-      listener = this::init;
-      subscription = subscribeForChanges(objectUri, listener);
-    } else {
-      ref.setObject(loadedObject);
+  public void initByParentRef(ApiObjectRef parentRef, String path) {
+    if (ref != null) {
+      throw new IllegalArgumentException("ref already initialized in ViewModel when initByRef!");
     }
+    this.path = path;
+    ref = parentRef.getValueRefByPath(path);
+    initCommon();
+  }
+
+  /**
+   * Common initialization, called after ref is set.
+   */
+  private void initCommon() {
+    model = ref.getWrapper(modelClazz);
+    data.setRef(ref);
+    initCommands();
+    initSubscription();
     notifyAllListeners();
+  }
+
+  protected void initSubscription() {
+    URI uri = getUri();
+    if (uri != null) {
+      listener = this::updateModel;
+      subscription = subscribeForChanges(uri, listener);
+    }
+  }
+
+  protected void updateModel(URI updatedObjectUri) {
+    if (ref == null) {
+      throw new IllegalArgumentException("ref not initialized in ViewModel when updating!");
+    }
+    if (Objects.equals(getUri(), updatedObjectUri)) {
+      T loadedObject = load(navigationTarget);
+      ref.setObject(loadedObject);
+      notifyAllListeners();
+    }
   }
 
   @Override
@@ -125,6 +164,11 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
     registerWrapperCommand(commandPath, commandCode, new WrapperCommand<>(command, clazz));
   }
 
+  protected void registerCommandWithParams(String commandCode,
+      Consumer<Object[]> command) {
+    registerCommandWithParams(commandCode, modelClazz, (m, p) -> command.accept(p));
+  }
+
   protected <O> void registerCommandWithParams(String commandCode, Class<O> clazz,
       BiConsumer<O, Object[]> command) {
     registerCommandWithParams(null, commandCode, clazz, command);
@@ -137,6 +181,9 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
 
   private <O> void registerWrapperCommand(String commandPath, String commandCode,
       WrapperCommand<O> wrapperCommand) {
+    if (path == null) {
+      throw new IllegalArgumentException("registerCommand called before initialization!");
+    }
     if (commandPath == null) {
       commandPath = path;
     } else {
@@ -148,7 +195,7 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
   }
 
   @Override
-  public void executeCommand(String commandPath, String commandCode, Object... params) {
+  public final void executeCommand(String commandPath, String commandCode, Object... params) {
     if (commandPath == null) {
       commandPath = path;
     }
