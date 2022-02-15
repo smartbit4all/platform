@@ -61,12 +61,19 @@ components:
             The unique identifier of the given paragraph to identify inside a documentation. By default it is the serial number of the
             paragraph in the array. But if we modify the sort order or delete any item then it is always the largest id + 1 in case of
             a new paragraph.
+        orderNo:
+          type: integer
+          description: |
+            The order number in the paragraph list of the owner documentation..
         kind:
           $ref: '#/components/schemas/ParagraphKind'
         contentUri:
           type: string
           format: uri
           description: If the given paragraph is a reference to any other object then this is the URI.
+        fragmentId:
+          type: string
+          description: The fragment is used to identify an element inside the given .
         text:
           type: string
           format: html

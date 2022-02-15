@@ -1,6 +1,8 @@
 package org.smartbit4all.api.config;
 
 import java.util.List;
+import org.smartbit4all.api.documentation.DocumentationApi;
+import org.smartbit4all.api.documentation.DocumentationApiImpl;
 import org.smartbit4all.api.filter.util.FilterService;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.InvocationApiImpl;
@@ -83,6 +85,11 @@ public class PlatformApiConfig {
   @Bean
   public NavigationFeatureApi navigationFeatureApi() {
     return new NavigationFeatureApiImpl();
+  }
+
+  @Bean
+  public DocumentationApi documentationApi() {
+    return new DocumentationApiImpl();
   }
 
 }

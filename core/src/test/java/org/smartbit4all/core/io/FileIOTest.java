@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.core.io.utility.FileIO;
+import org.smartbit4all.core.utility.PathUtility;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -94,6 +95,15 @@ public class FileIOTest {
     assertEquals("second", new String(readMultipart.get(1).getData()));
     assertEquals("third", new String(readMultipart.get(2).getData()));
 
+  }
+
+  @Test
+  void uriFragment() throws IOException {
+    URI uri = URI.create("scheme:/path1/path2#frag1/frag2");
+    String[] fragPath = PathUtility.decomposePath(uri.getFragment());
+    assertEquals(2, fragPath.length);
+    assertEquals("frag1", fragPath[0]);
+    assertEquals("frag2", fragPath[1]);
   }
 
   @Test

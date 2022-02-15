@@ -35,6 +35,7 @@ import javax.validation.Valid;
 @ApiModel(description = "The reference is contained by the documentation and connect it with different kind of objects as paragraph. The paragraph can be contained when the container is stored in the paragraph. And even the referrer are part of the model to ensure the reactive events when a documentation is changing. ")
 @JsonPropertyOrder({
   ParagraphData.ID,
+  ParagraphData.ORDER_NO,
   ParagraphData.KIND,
   ParagraphData.CONTENT_URI,
   ParagraphData.TEXT
@@ -44,6 +45,9 @@ import javax.validation.Valid;
 public class ParagraphData {
   public static final String ID = "id";
   private Integer id;
+
+  public static final String ORDER_NO = "orderNo";
+  private Integer orderNo;
 
   public static final String KIND = "kind";
   private ParagraphKind kind;
@@ -79,6 +83,33 @@ public class ParagraphData {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setId(Integer id) {
     this.id = id;
+  }
+
+
+  public ParagraphData orderNo(Integer orderNo) {
+    
+    this.orderNo = orderNo;
+    return this;
+  }
+
+   /**
+   * The order number in the paragraph list of the owner documentation.. 
+   * @return orderNo
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The order number in the paragraph list of the owner documentation.. ")
+  @JsonProperty(ORDER_NO)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getOrderNo() {
+    return orderNo;
+  }
+
+
+  @JsonProperty(ORDER_NO)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setOrderNo(Integer orderNo) {
+    this.orderNo = orderNo;
   }
 
 
@@ -177,6 +208,7 @@ public class ParagraphData {
     }
     ParagraphData paragraphData = (ParagraphData) o;
     return Objects.equals(this.id, paragraphData.id) &&
+        Objects.equals(this.orderNo, paragraphData.orderNo) &&
         Objects.equals(this.kind, paragraphData.kind) &&
         Objects.equals(this.contentUri, paragraphData.contentUri) &&
         Objects.equals(this.text, paragraphData.text);
@@ -184,7 +216,7 @@ public class ParagraphData {
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, kind, contentUri, text);
+    return Objects.hash(id, orderNo, kind, contentUri, text);
   }
 
   @Override
@@ -192,6 +224,7 @@ public class ParagraphData {
     StringBuilder sb = new StringBuilder();
     sb.append("class ParagraphData {\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    orderNo: ").append(toIndentedString(orderNo)).append("\n");
     sb.append("    kind: ").append(toIndentedString(kind)).append("\n");
     sb.append("    contentUri: ").append(toIndentedString(contentUri)).append("\n");
     sb.append("    text: ").append(toIndentedString(text)).append("\n");

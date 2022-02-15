@@ -2,6 +2,7 @@ package org.smartbit4all.api.documentation;
 
 import java.net.URI;
 import org.smartbit4all.api.documentation.bean.DocumentationData;
+import org.smartbit4all.domain.data.storage.Storage;
 
 /**
  * The {@link Documentation} is a building block for the platform based applications. This special
@@ -45,6 +46,18 @@ public interface DocumentationApi {
    *        it's a new instance.
    * @return
    */
-  URI save(Documentation doc);
+  URI save(Storage storage, Documentation doc);
+
+  /**
+   * Constructs a new instance of {@link Documentation} based on {@link DocumentationData} stored
+   * into the given storage.
+   *
+   * @param containerUri The uri of the container object.
+   * @param containerPropertyName The property name of the container object that holds the uri of
+   *        the {@link DocumentationData} object.
+   * @param storage The storage to save into.
+   * @return The Documentation that has a {@link Documentation#data} that is not saved yet.
+   */
+  Documentation newInstance(URI containerUri, String containerPropertyName, Storage storage);
 
 }
