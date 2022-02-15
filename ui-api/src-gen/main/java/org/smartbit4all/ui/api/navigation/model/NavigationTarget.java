@@ -40,7 +40,7 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   NavigationTarget.UUID,
   NavigationTarget.VIEW_NAME,
-  NavigationTarget.VIEW_OBJECT_URI,
+  NavigationTarget.OBJECT_URI,
   NavigationTarget.PARAMETERS,
   NavigationTarget.STATE,
   NavigationTarget.TYPE,
@@ -57,8 +57,8 @@ public class NavigationTarget {
   public static final String VIEW_NAME = "viewName";
   private String viewName;
 
-  public static final String VIEW_OBJECT_URI = "viewObjectUri";
-  private URI viewObjectUri;
+  public static final String OBJECT_URI = "objectUri";
+  private URI objectUri;
 
   public static final String PARAMETERS = "parameters";
   private Map<String, Object> parameters = new HashMap<>();
@@ -136,31 +136,31 @@ public class NavigationTarget {
   }
 
 
-  public NavigationTarget viewObjectUri(URI viewObjectUri) {
+  public NavigationTarget objectUri(URI objectUri) {
     
-    this.viewObjectUri = viewObjectUri;
+    this.objectUri = objectUri;
     return this;
   }
 
    /**
-   * Get viewObjectUri
-   * @return viewObjectUri
+   * Get objectUri
+   * @return objectUri
   **/
   @javax.annotation.Nullable
   @Valid
   @ApiModelProperty(value = "")
-  @JsonProperty(VIEW_OBJECT_URI)
+  @JsonProperty(OBJECT_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public URI getViewObjectUri() {
-    return viewObjectUri;
+  public URI getObjectUri() {
+    return objectUri;
   }
 
 
-  @JsonProperty(VIEW_OBJECT_URI)
+  @JsonProperty(OBJECT_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setViewObjectUri(URI viewObjectUri) {
-    this.viewObjectUri = viewObjectUri;
+  public void setObjectUri(URI objectUri) {
+    this.objectUri = objectUri;
   }
 
 
@@ -347,7 +347,7 @@ public class NavigationTarget {
     NavigationTarget navigationTarget = (NavigationTarget) o;
     return Objects.equals(this.uuid, navigationTarget.uuid) &&
         Objects.equals(this.viewName, navigationTarget.viewName) &&
-        Objects.equals(this.viewObjectUri, navigationTarget.viewObjectUri) &&
+        Objects.equals(this.objectUri, navigationTarget.objectUri) &&
         Objects.equals(this.parameters, navigationTarget.parameters) &&
         Objects.equals(this.state, navigationTarget.state) &&
         Objects.equals(this.type, navigationTarget.type) &&
@@ -358,7 +358,7 @@ public class NavigationTarget {
 
   @Override
   public int hashCode() {
-    return Objects.hash(uuid, viewName, viewObjectUri, parameters, state, type, fullSize, title, icon);
+    return Objects.hash(uuid, viewName, objectUri, parameters, state, type, fullSize, title, icon);
   }
 
   @Override
@@ -367,7 +367,7 @@ public class NavigationTarget {
     sb.append("class NavigationTarget {\n");
     sb.append("    uuid: ").append(toIndentedString(uuid)).append("\n");
     sb.append("    viewName: ").append(toIndentedString(viewName)).append("\n");
-    sb.append("    viewObjectUri: ").append(toIndentedString(viewObjectUri)).append("\n");
+    sb.append("    objectUri: ").append(toIndentedString(objectUri)).append("\n");
     sb.append("    parameters: ").append(toIndentedString(parameters)).append("\n");
     sb.append("    state: ").append(toIndentedString(state)).append("\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");

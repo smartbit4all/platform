@@ -12,6 +12,9 @@ public interface SB4StarterWordViewModel extends ObjectEditing {
 
   public static final String SCHEMA = "SB4STARTER";
 
+  public static final String PARAM_FORMMODEL = "SB4StarterWordViewModel.SB4StarterWordFormModel";
+  public static final String PARAM_ACCEPTHANDLER = "SB4StarterWordViewModel.acceptHandler";
+
   static final String DOWNLOAD = "download";
   static final String ACCEPT = "accept";
   static final String DECLINE = "decline";

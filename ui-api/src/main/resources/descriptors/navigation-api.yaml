@@ -39,7 +39,7 @@ components:
           format: uuid
         viewName:
           type: string
-        viewObjectUri:
+        objectUri:
           type: string
           format: uri
         parameters:

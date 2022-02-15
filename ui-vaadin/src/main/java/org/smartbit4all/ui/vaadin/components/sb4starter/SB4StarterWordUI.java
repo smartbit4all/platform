@@ -45,9 +45,11 @@ public class SB4StarterWordUI extends FlexLayout
   @Override
   public void setParameter(BeforeEvent event, @OptionalParameter String parameter) {
     SB4StarterWordFormModel model =
-        (SB4StarterWordFormModel) Navigations.getParameter(event, "entry");
+        (SB4StarterWordFormModel) Navigations.getParameter(event,
+            SB4StarterWordViewModel.PARAM_FORMMODEL);
     BiConsumer<BinaryContent, BinaryContent> acceptHandler =
-        (BiConsumer<BinaryContent, BinaryContent>) Navigations.getParameter(event, "acceptHandler");
+        (BiConsumer<BinaryContent, BinaryContent>) Navigations.getParameter(event,
+            SB4StarterWordViewModel.PARAM_ACCEPTHANDLER);
     try {
       VaadinServletRequest request = (VaadinServletRequest) VaadinService.getCurrentRequest();
       StringBuffer uriString = request.getRequestURL();

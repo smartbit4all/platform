@@ -14,6 +14,7 @@ import org.smartbit4all.ui.api.navigation.model.NavigableViewDescriptor;
 import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
 import org.smartbit4all.ui.api.navigation.model.NavigationTargetType;
 import org.smartbit4all.ui.api.viewmodel.ObjectEditing;
+import org.smartbit4all.ui.vaadin.components.navigation.Navigations;
 import org.springframework.util.ObjectUtils;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
@@ -178,15 +179,7 @@ public class UINavigationVaadinTabbed extends UINavigationVaadinCommon {
   }
 
   private String getViewObjectId(NavigationTarget navigationTarget) {
-    URI viewObjectUri = navigationTarget.getViewObjectUri();
-    if (viewObjectUri == null) {
-      if (navigationTarget.getParameters().containsKey("entry")) {
-        Object viewObjectUriObj = navigationTarget.getParameters().get("entry");
-        if (viewObjectUriObj instanceof URI) {
-          viewObjectUri = (URI) viewObjectUriObj;
-        }
-      }
-    }
+    URI viewObjectUri = Navigations.getUriParameter(navigationTarget);
     String id =
         viewObjectUri == null ? navigationTarget.getUuid().toString() : viewObjectUri.toString();
     return navigationTarget.getViewName() + "-" + id;

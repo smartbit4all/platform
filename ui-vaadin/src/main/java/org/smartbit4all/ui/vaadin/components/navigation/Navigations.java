@@ -14,12 +14,35 @@ public class Navigations {
 
   private Navigations() {}
 
+  @Deprecated
   public static final String ENTRY_PARAM = "entry";
 
   private static final String PARAM = "param";
 
   public static URI getUriParameter(BeforeEvent event) {
+    URI uri = getUriParameter();
+    if (uri != null) {
+      return uri;
+    }
+    // fallback - non existent in theory...
     return (URI) getParameter(event, ENTRY_PARAM);
+  }
+
+  public static URI getUriParameter() {
+    return getUriParameter(ObjectEditing.currentNavigationTarget.get());
+  }
+
+  public static URI getUriParameter(NavigationTarget navigationTarget) {
+    if (navigationTarget != null) {
+      URI uri = navigationTarget.getObjectUri();
+      if (uri != null) {
+        return uri;
+      }
+      if (navigationTarget.getParameters().containsKey(ENTRY_PARAM)) {
+        return (URI) navigationTarget.getParameters().get(ENTRY_PARAM);
+      }
+    }
+    return null;
   }
 
   public static Object getParameter(BeforeEvent event, String paramName) {
