@@ -45,11 +45,21 @@ public interface StorageApi {
   /**
    * Creates an {@link ObjectHistoryIterator} that can iterate through the
    * {@link StorageObjectHistoryEntry}s of the object found with the given uri, making available to
-   * investigate the full history of that object.
+   * investigate the full history of that object. In order from the most oldest to the most recent.
    * 
    * @param uri
    * @return
    */
   ObjectHistoryIterator objectHistory(URI uri);
+
+  /**
+   * Creates an {@link ObjectHistoryIterator} that can iterate through the
+   * {@link StorageObjectHistoryEntry}s of the object found with the given uri, making available to
+   * investigate the full history of that object. In order from the most recent to the oldest.
+   * 
+   * @param uri
+   * @return
+   */
+  ObjectHistoryIterator objectHistoryReverse(URI uri);
 
 }

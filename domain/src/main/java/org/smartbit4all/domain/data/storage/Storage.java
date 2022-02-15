@@ -289,7 +289,7 @@ public final class Storage {
   /**
    * Creates an {@link ObjectHistoryIterator} that can iterate through the
    * {@link StorageObjectHistoryEntry}s of the object found with the given uri, making available to
-   * investigate the full history of that object.
+   * investigate the full history of that object. In order from the oldest to the most recent.
    * 
    * @param uri
    * @return
@@ -297,6 +297,19 @@ public final class Storage {
   public ObjectHistoryIterator objectHistory(URI uri) {
     ObjectDefinition<?> definition = objectApi.definition(uri);
     return objectStorage.objectHistory(uri, definition);
+  }
+
+  /**
+   * Creates an {@link ObjectHistoryIterator} that can iterate through the
+   * {@link StorageObjectHistoryEntry}s of the object found with the given uri, making available to
+   * investigate the full history of that object. In order from the most recent to the oldest.
+   * 
+   * @param uri
+   * @return
+   */
+  public ObjectHistoryIterator objectHistoryReverse(URI uri) {
+    ObjectDefinition<?> definition = objectApi.definition(uri);
+    return objectStorage.objectHistoryReverse(uri, definition);
   }
 
   protected final String getScheme() {

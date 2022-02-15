@@ -527,6 +527,55 @@ public class StorageFS extends ObjectStorageImpl {
     };
   }
 
+  @Override
+  public ObjectHistoryIterator objectHistoryReverse(URI uri, ObjectDefinition<?> definition) {
+    if (definition == null) {
+      return null;
+    }
+
+    File storageObjectDataFile = getDataFileByUri(uri, storedObjectFileExtension);
+    if (!storageObjectDataFile.exists()) {
+      return null;
+    }
+
+    BinaryData storageObjectBinaryData = new BinaryData(storageObjectDataFile);
+    Optional<StorageObjectData> optObject =
+        storageObjectDataDef.deserialize(storageObjectBinaryData);
+    if (!optObject.isPresent()) {
+      throw new ObjectNotFoundException(uri, null, "Unable to load object data file.");
+    }
+
+    ObjectVersion currentObjectVersion = optObject.get().getCurrentVersion();
+    if (currentObjectVersion.getSerialNoData() == null) {
+      return null;
+    }
+
+    long serialNoDataMax = currentObjectVersion.getSerialNoData();
+
+    return new ObjectHistoryIterator() {
+
+      private long i = serialNoDataMax + 1;
+
+      @Override
+      public Iterator<StorageObjectHistoryEntry<?>> iterator() {
+        return new Iterator<StorageObjectHistoryEntry<?>>() {
+
+          @Override
+          public boolean hasNext() {
+            return i > 0;
+          }
+
+          @Override
+          public StorageObjectHistoryEntry<?> next() {
+            return loadObjectVersion(definition, getDataFileByUri(uri, StringConstant.EMPTY), --i);
+          }
+
+        };
+      }
+
+    };
+  }
+
   // /**
   // * Reads an object uri based given extension file if exists.
   // *

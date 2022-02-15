@@ -162,7 +162,8 @@ public final class StorageApiImpl implements StorageApi, InitializingBean {
   /**
    * Creates an {@link ObjectHistoryIterator} that can iterate through the
    * {@link StorageObjectHistoryEntry}s of the object found with the given uri, making available to
-   * investigate the full history of that object.
+   * investigate the full history of that object. In order from the oldest version to the most
+   * recent.
    * 
    * @param uri
    * @return
@@ -173,4 +174,19 @@ public final class StorageApiImpl implements StorageApi, InitializingBean {
     return storage.objectHistory(uri);
   }
 
+
+  /**
+   * Creates an {@link ObjectHistoryIterator} that can iterate through the
+   * {@link StorageObjectHistoryEntry}s of the object found with the given uri, making available to
+   * investigate the full history of that object. In order from the most recent version to the
+   * oldest.
+   * 
+   * @param uri
+   * @return
+   */
+  @Override
+  public ObjectHistoryIterator objectHistoryReverse(URI uri) {
+    Storage storage = getStorageByUri(uri);
+    return storage.objectHistoryReverse(uri);
+  }
 }

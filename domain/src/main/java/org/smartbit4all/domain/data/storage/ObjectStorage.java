@@ -136,13 +136,26 @@ public interface ObjectStorage {
   /**
    * Creates an {@link ObjectHistoryIterator} that can iterate through the
    * {@link StorageObjectHistoryEntry}s of the object found with the given uri, making available to
-   * investigate the full history of that object.
+   * investigate the full history of that object. In order from the oldest version to the most
+   * recent.
    * 
    * @param uri
    * @param definition
    * @return
    */
   ObjectHistoryIterator objectHistory(URI uri, ObjectDefinition<?> definition);
+
+  /**
+   * Creates an {@link ObjectHistoryIterator} that can iterate through the
+   * {@link StorageObjectHistoryEntry}s of the object found with the given uri, making available to
+   * investigate the full history of that object. In order from the most recent version to the
+   * oldest.
+   * 
+   * @param uri
+   * @param definition
+   * @return
+   */
+  ObjectHistoryIterator objectHistoryReverse(URI uri, ObjectDefinition<?> definition);
 
   /**
    * The scheduled function to manage the object storage instance.

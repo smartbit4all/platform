@@ -381,6 +381,12 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
   }
 
   @Override
+  public ObjectHistoryIterator objectHistoryReverse(URI uri, ObjectDefinition<?> definition) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
   public void maintain() {
     log.warn(
         "The maintenance of the " + getClass().getName() + " object storage is not implemented");
