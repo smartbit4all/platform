@@ -33,6 +33,7 @@ import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.domain.meta.PropertySet;
+import org.springframework.util.ObjectUtils;
 
 /**
  * Companion class of {@link TableData}
@@ -216,6 +217,107 @@ public final class TableDatas {
     }
     String fill = fillBuilder.toString();
     return fill;
+  }
+
+  /**
+   * Sorts the rows of the given {@link TableData} by the given {@link SortProperty}-ies.</br>
+   * 
+   * @param <E> The {@link EntityDefinition} of the {@link TableData}
+   * @param tableData The source {@link TableData}
+   * @param sortProperties The properties describing the sort orders
+   */
+  public static <E extends EntityDefinition> void sort(TableData<E> tableData,
+      List<SortProperty> sortProperties) {
+    Objects.requireNonNull(tableData, "tableData can not be null!");
+    if (ObjectUtils.isEmpty(sortProperties)) {
+      throw new IllegalArgumentException("sortProperties can not be null nor empty!");
+    }
+
+    // check the sortProperties
+    for (SortProperty sortProp : sortProperties) {
+      if (tableData.getColumn(sortProp.getProperty()) == null) {
+        throw new IllegalArgumentException(
+            "The given TableData has no property with the descibed SortProperty: ["
+                + sortProp.getProperty().getUri() + "]!");
+      }
+    }
+
+    sortRows(tableData.rowModel.rows, sortProperties);
+  }
+
+  /**
+   * Creates a new {@link TableData} that is sorted by the given {@link SortProperty}-ies.</br>
+   * The source and the result TableData both will exist in the memory, so be aware of the double
+   * memory consumption.
+   * 
+   * @param <E> The {@link EntityDefinition} of the {@link TableData}
+   * @param tableData The source {@link TableData}
+   * @param sortProperties The properties describing the sort orders
+   * @return The new sorted {@link TableData}
+   */
+  public static <E extends EntityDefinition> TableData<E> sortToNew(TableData<E> tableData,
+      List<SortProperty> sortProperties) {
+    Objects.requireNonNull(tableData, "tableData can not be null!");
+    if (ObjectUtils.isEmpty(sortProperties)) {
+      throw new IllegalArgumentException("sortProperties can not be null nor empty!");
+    }
+
+    // check the sortProperties
+    for (SortProperty sortProp : sortProperties) {
+      if (tableData.getColumn(sortProp.getProperty()) == null) {
+        throw new IllegalArgumentException(
+            "The given TableData has no property with the descibed SortProperty: ["
+                + sortProp.getProperty().getUri() + "]!");
+      }
+    }
+
+    TableData<E> result = copy(tableData);
+    sortRows(result.rowModel.rows, sortProperties);
+
+    return result;
+  }
+
+  private static void sortRows(List<DataRow> rows, List<SortProperty> sortProperties) {
+    Collections.sort(rows, getDataRowComparator(sortProperties));
+  }
+
+  public static Comparator<DataRow> getDataRowComparator(List<SortProperty> sortProperties) {
+    return (row1, row2) -> {
+      for (SortProperty sortProp : sortProperties) {
+        Property<?> prop = sortProp.getProperty();
+        Comparator<Object> comparator = (Comparator<Object>) prop.getComparator();
+        if (comparator == null) {
+          return 0;
+        }
+        int res = comparator.compare(row1.get(prop), row2.get(prop));
+        if (res != 0) {
+          return sortProp.isAscending() ? res : res * -1;
+        }
+      }
+
+      return 0;
+    };
+  }
+
+  /**
+   * Returns a new empty {@link TableData} with the columns of the given source.
+   */
+  public static <E extends EntityDefinition> TableData<E> copyMeta(TableData<E> sourceTableData) {
+    return of(sourceTableData.entity(), sourceTableData.properties());
+  }
+
+  /**
+   * Returns a new copy instance of the given {@link TableData}
+   */
+  public static <E extends EntityDefinition> TableData<E> copy(TableData<E> sourceTableData) {
+    TableData<E> copy = copyMeta(sourceTableData);
+    for (DataRow row : sourceTableData.rows()) {
+      DataRow newRow = copy.addRow();
+      for (Property<?> prop : sourceTableData.properties()) {
+        newRow.setObject(prop, row.get(prop));
+      }
+    }
+    return copy;
   }
 
   /**
@@ -598,10 +700,32 @@ public final class TableDatas {
 
   }
 
-  // public static void copy(TableData<?> tableDataStorage, TableData<?> tableData) {
-  // List<DataColumn<?>> columnMap = new ArrayList<DataColumn<?>>();
-  // for (DataColumn<?> columns : tableData.columns()) {
-  // }
-  // }
+  public static class SortProperty {
+
+    private Property<?> property;
+    private boolean ascending;
+
+    private SortProperty(Property<?> property, boolean ascending) {
+      this.property = property;
+      this.ascending = ascending;
+    }
+
+    public Property<?> getProperty() {
+      return property;
+    }
+
+    public boolean isAscending() {
+      return ascending;
+    }
+
+    public static SortProperty ascending(Property<?> property) {
+      return new SortProperty(property, true);
+    }
+
+    public static SortProperty descending(Property<?> property) {
+      return new SortProperty(property, false);
+    }
+
+  }
 
 }

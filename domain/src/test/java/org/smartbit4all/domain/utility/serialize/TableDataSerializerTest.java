@@ -4,15 +4,21 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.smartbit4all.domain.config.DomainConfig;
 import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.data.TableDatas;
+import org.smartbit4all.domain.data.TableDatas.SortProperty;
 import org.smartbit4all.domain.security.SecurityEntityConfiguration;
 import org.smartbit4all.domain.security.UserAccountDef;
 import org.smartbit4all.domain.service.entity.EntityManager;
+import org.smartbit4all.domain.utility.SerializedTableDataSorter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -86,6 +92,48 @@ public class TableDataSerializerTest {
     fetchedData = pager.fetch(105, 1000);
     assertEquals(0, fetchedData.size());
 
+  }
+
+  @Test
+  public void testSerializedSorter() throws Exception {
+    File tempFile = new File(tempDir, "TableDataSerializerTest-testSerializedSorter.temp");
+
+    TableData<UserAccountDef> tableData =
+        TableDatas.of(userAccountDef, userAccountDef.allProperties());
+
+    TableDataSerializer serializer =
+        TableDataSerializer.to(new FileOutputStream(tempFile)).tableData(tableData);
+
+    final int testRowCount = 1000;
+    for (int i = 0; i < testRowCount; i++) {
+      DataRow row = serializer.addRow();
+      row.set(userAccountDef.id(), Long.valueOf(testRowCount - i));
+      row.set(userAccountDef.firstname(), "firstname-" + i);
+      row.set(userAccountDef.lastname(), "lastname-" + i / 10);
+      row.set(userAccountDef.fullname(), null);
+      row.set(userAccountDef.name(), "firstname lastname" + i % 100);
+      // row.set(userAccountDef.getUri(), URI.create("users:/user#" + i));
+    }
+    serializer.finish();
+
+    TableDataPager<UserAccountDef> pager =
+        TableDataPager.create(UserAccountDef.class, tempFile, entityManager);
+
+    List<Integer> sortedIndexes = SerializedTableDataSorter.getSortedIndexes(pager,
+        Collections.singletonList(SortProperty.ascending(userAccountDef.id())));
+
+    List<Integer> expectedIndexes = new ArrayList<>(testRowCount);
+    for (int i = 1; i <= testRowCount; i++) {
+      expectedIndexes.add(testRowCount - i);
+    }
+
+    assertEquals(expectedIndexes, sortedIndexes);
+
+    List<Integer> sortedIndexes2 = SerializedTableDataSorter.getSortedIndexes(pager,
+        Arrays.asList(SortProperty.descending(userAccountDef.lastname()),
+            SortProperty.ascending(userAccountDef.firstname())));
+
+    System.out.println(sortedIndexes2);
   }
 
 }
