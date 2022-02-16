@@ -195,7 +195,7 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
   }
 
   @Override
-  public final void executeCommand(String commandPath, String commandCode, Object... params) {
+  public void executeCommand(String commandPath, String commandCode, Object... params) {
     if (commandPath == null) {
       commandPath = path;
     }
