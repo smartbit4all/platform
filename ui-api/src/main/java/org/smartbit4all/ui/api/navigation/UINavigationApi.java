@@ -8,6 +8,7 @@ import org.smartbit4all.ui.api.navigation.model.MessageResult;
 import org.smartbit4all.ui.api.navigation.model.NavigableViewDescriptor;
 import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
 import org.smartbit4all.ui.api.navigation.model.NavigationTargetType;
+import org.smartbit4all.ui.api.viewmodel.ViewModel;
 
 public interface UINavigationApi {
 
@@ -32,5 +33,9 @@ public interface UINavigationApi {
   void setTitle(UUID navigationTargetUuid, String title);
 
   NavigationTarget getNavigationTargetByUuid(UUID navigationTargetUuid);
+
+  <T extends ViewModel> T createViewModel(NavigationTarget navigationTarget, Class<T> clazz);
+
+  <T extends ViewModel> T createViewModel(ViewModel parent, String path, Class<T> clazz);
 
 }

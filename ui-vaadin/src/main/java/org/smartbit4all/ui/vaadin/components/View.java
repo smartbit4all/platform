@@ -28,7 +28,7 @@ public class View<T extends ViewModel> extends FlexLayout
   public void setParameter(BeforeEvent event, @OptionalParameter String parameter) {
     NavigationTarget navigationTarget = ObjectEditing.currentNavigationTarget.get();
     if (navigationTarget != null) {
-      viewModel.initByUUID(navigationTarget.getUuid());
+      viewModel.initByNavigationTarget(navigationTarget);
     }
   }
 

@@ -17,7 +17,12 @@ import org.smartbit4all.ui.api.navigation.model.MessageType;
 import org.smartbit4all.ui.api.navigation.model.NavigableViewDescriptor;
 import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
 import org.smartbit4all.ui.api.navigation.model.NavigationTargetType;
+import org.smartbit4all.ui.api.viewmodel.ObjectEditing;
+import org.smartbit4all.ui.api.viewmodel.ViewModel;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import com.google.common.base.Strings;
+import io.reactivex.rxjava3.disposables.Disposable;
 
 public class UINavigationApiCommon implements UINavigationApi {
 
@@ -33,8 +38,19 @@ public class UINavigationApiCommon implements UINavigationApi {
   public static final String UINAVIGATION_CURRENT_NAV_TARGET =
       "UINavigationApi.currentNavigationTarget";
 
+  protected static final String UINAVIGATION_UUID =
+      "UINavigationApi.UUID";
+
+  protected UUID uuid;
+
+  @Autowired
+  ApplicationContext context;
+
+  private Disposable subscription;
+
   public UINavigationApiCommon(UserSessionApi userSessionApi) {
     this.userSessionApi = userSessionApi;
+    this.uuid = UUID.randomUUID();
     navigationTargetsByUUID = new HashMap<>();
     navigableViews = new HashMap<>();
     navigableViewsByType = new HashMap<>();
@@ -43,7 +59,8 @@ public class UINavigationApiCommon implements UINavigationApi {
 
   protected void initSessionParameterListener() {
     if (userSessionApi != null && userSessionApi.currentSession() != null) {
-      userSessionApi.currentSession().subscribeForParameterChange(UINAVIGATION_CURRENT_NAV_TARGET,
+      subscription = userSessionApi.currentSession().subscribeForParameterChange(
+          UINAVIGATION_CURRENT_NAV_TARGET,
           this::sessionParameterChange);
     }
   }
@@ -55,8 +72,15 @@ public class UINavigationApiCommon implements UINavigationApi {
     }
   }
 
+  protected void handleUIDestroyed() {
+    if (subscription != null) {
+      subscription.dispose();
+      subscription = null;
+    }
+  }
+
   @Override
-  public final void navigateTo(NavigationTarget navigationTarget) {
+  public void navigateTo(NavigationTarget navigationTarget) {
     if (!checkSecurity(navigationTarget)) {
       showSecurityError(navigationTarget);
       return;
@@ -64,6 +88,7 @@ public class UINavigationApiCommon implements UINavigationApi {
     if (navigationTarget.getUuid() == null) {
       navigationTarget.setUuid(UUID.randomUUID());
     }
+    navigationTarget.putParametersItem(UINAVIGATION_UUID, uuid);
     navigationTargetsByUUID.put(navigationTarget.getUuid(), navigationTarget);
     if (userSessionApi != null && userSessionApi.currentSession() != null) {
       userSessionApi.currentSession().setParameter(UINAVIGATION_CURRENT_NAV_TARGET,
@@ -181,4 +206,26 @@ public class UINavigationApiCommon implements UINavigationApi {
     return navigationTarget.getIcon();
   }
 
+  @Override
+  public <T extends ViewModel> T createViewModel(NavigationTarget navigationTarget,
+      Class<T> clazz) {
+    NavigationTarget oldTarget = ObjectEditing.currentNavigationTarget.get();
+    T viewModel;
+    try {
+      ObjectEditing.currentNavigationTarget.set(navigationTarget);
+      // viewModel = context.getAutowireCapableBeanFactory().createBean(clazz);
+      viewModel = context.getBean(clazz);
+      viewModel.initByNavigationTarget(navigationTarget);
+    } finally {
+      ObjectEditing.currentNavigationTarget.set(oldTarget);
+    }
+    return viewModel;
+  }
+
+  @Override
+  public <T extends ViewModel> T createViewModel(ViewModel parent, String path, Class<T> clazz) {
+    T viewModel = context.getBean(clazz);
+    parent.addChild(viewModel, path);
+    return viewModel;
+  }
 }

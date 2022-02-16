@@ -29,24 +29,27 @@ public class UINavigationVaadinRouting extends UINavigationVaadinCommon {
 
   @Override
   protected void navigateToInternal(NavigationTarget navigationTarget) {
-    ui.access(() -> {
-      NavigationTarget oldTarget = ObjectEditing.currentNavigationTarget.get();
-      try {
-        ObjectEditing.currentNavigationTarget.set(navigationTarget);
+    UUID apiUUID = (UUID) navigationTarget.getParameters().get(UINAVIGATION_UUID);
+    if (uuid.equals(apiUUID)) {
+      ui.access(() -> {
+        NavigationTarget oldTarget = ObjectEditing.currentNavigationTarget.get();
         try {
-          if (navigationTarget.getType() == NavigationTargetType.DIALOG) {
-            Component view = navigateToDialog(navigationTarget);
-            callHasUrlImplementation(navigationTarget, view);
-          } else {
-            ui.navigate(navigationTarget.getViewName(), createQueryParameters(navigationTarget));
+          ObjectEditing.currentNavigationTarget.set(navigationTarget);
+          try {
+            if (navigationTarget.getType() == NavigationTargetType.DIALOG) {
+              Component view = navigateToDialog(navigationTarget);
+              callHasUrlImplementation(navigationTarget, view);
+            } else {
+              ui.navigate(navigationTarget.getViewName(), createQueryParameters(navigationTarget));
+            }
+          } catch (Exception e) {
+            log.error("Unexpected error", e);
           }
-        } catch (Exception e) {
-          log.error("Unexpected error", e);
+        } finally {
+          ObjectEditing.currentNavigationTarget.set(oldTarget);
         }
-      } finally {
-        ObjectEditing.currentNavigationTarget.set(oldTarget);
-      }
-    });
+      });
+    }
   }
 
   @Override

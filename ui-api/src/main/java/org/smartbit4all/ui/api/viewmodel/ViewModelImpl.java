@@ -4,7 +4,6 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import org.slf4j.Logger;
@@ -14,14 +13,16 @@ import org.smartbit4all.core.object.ApiObjectRef;
 import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.core.object.ObservableObjectImpl;
 import org.smartbit4all.core.object.ObservablePublisherWrapper;
+import org.smartbit4all.core.utility.ReflectionUtility;
 import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
+import org.springframework.aop.support.AopUtils;
 import io.reactivex.rxjava3.disposables.Disposable;
 
 public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements ViewModel {
 
   private static final Logger log = LoggerFactory.getLogger(ViewModelImpl.class);
 
-  // TODO handle path
+  private ViewModelImpl<?> parent;
   private String path;
 
   protected ObservableObjectImpl data;
@@ -48,6 +49,17 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
     this.modelClazz = modelClazz;
   }
 
+  @Override
+  public void addChild(ViewModel child, String path) {
+    // ???
+    if (AopUtils.isAopProxy(child)) {
+      child = ReflectionUtility.getProxyTarget(child);
+    }
+    if (child instanceof ViewModelImpl) {
+      ViewModelImpl<?> childVM = (ViewModelImpl<?>) child;
+      childVM.initByParentRef(this, path);
+    }
+  }
 
   /**
    * Register commands here.
@@ -83,29 +95,30 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
   }
 
   @Override
-  public void initByUUID(UUID uuid) {
-    if (Objects.equals(uuid, navigationTargetUUID)) {
-      if (ref != null) {
-        throw new IllegalArgumentException("ref already initialized in ViewModel when initByUUID!");
-      }
-      T loadedObject = load(navigationTarget);
-      this.path = "/";
-      ref = new ApiObjectRef(null,
-          loadedObject,
-          apiBeanDescriptors);
-      initCommon();
-    } else {
-      // remove navigationTargetUUID, navigationTarget?
+  public void initByNavigationTarget(NavigationTarget navigationTarget) {
+    this.navigationTarget = navigationTarget;
+    this.navigationTargetUUID = navigationTarget.getUuid();
+    if (ref != null) {
+      throw new IllegalArgumentException("ref already initialized in ViewModel when initByUUID!");
     }
+    T loadedObject = load(navigationTarget);
+    this.path = "";
+    ref = new ApiObjectRef(null,
+        loadedObject,
+        apiBeanDescriptors);
+    initCommon();
   }
 
-  @Override
-  public void initByParentRef(ApiObjectRef parentRef, String path) {
+  /**
+   * Used when a child view model is created.
+   */
+  protected void initByParentRef(ViewModelImpl<?> parent, String path) {
     if (ref != null) {
       throw new IllegalArgumentException("ref already initialized in ViewModel when initByRef!");
     }
     this.path = path;
-    ref = parentRef.getValueRefByPath(path);
+    this.parent = parent;
+    ref = parent.ref.getValueRefByPath(path);
     initCommon();
   }
 
@@ -145,6 +158,12 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
       subscription.dispose();
       subscription = null;
     }
+    if (ref != null) {
+      ref = null;
+      data.setRef(null);
+      model = null;
+      commandsByCode.clear();
+    }
   }
 
   protected void registerCommand(String commandCode, Runnable command) {
@@ -179,38 +198,54 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
     registerWrapperCommand(commandPath, commandCode, new WrapperCommand<>(command, clazz));
   }
 
-  private <O> void registerWrapperCommand(String commandPath, String commandCode,
-      WrapperCommand<O> wrapperCommand) {
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  protected void registerWrapperCommand(String commandPath, String commandCode,
+      WrapperCommand wrapperCommand) {
     if (path == null) {
       throw new IllegalArgumentException("registerCommand called before initialization!");
     }
-    if (commandPath == null) {
-      commandPath = path;
+    if (parent == null) {
+      Map<String, WrapperCommand<?>> commandMap =
+          commandsByCode.computeIfAbsent(commandPath, c -> new HashMap<>());
+      commandMap.put(commandCode, wrapperCommand);
     } else {
-      commandPath = path + commandPath;
+      if (commandPath == null) {
+        commandPath = path;
+      } else {
+        commandPath = path + "/" + commandPath;
+      }
+      parent.registerWrapperCommand(commandPath, commandCode, wrapperCommand);
     }
-    Map<String, WrapperCommand<?>> commandMap =
-        commandsByCode.computeIfAbsent(commandPath, c -> new HashMap<>());
-    commandMap.put(commandCode, wrapperCommand);
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public void executeCommand(String commandPath, String commandCode, Object... params) {
-    if (commandPath == null) {
-      commandPath = path;
-    }
-    Map<String, WrapperCommand<?>> commandMap = commandsByCode.get(commandPath);
-    if (commandMap == null) {
-      super.executeCommand(commandPath, commandCode, params);
+    WrapperCommand<?> command = findWrapperCommand(commandPath, commandCode);
+    if (command != null) {
+      command.execute(commandPath, commandCode, params);
     } else {
-      WrapperCommand<?> command = commandMap.get(commandCode);
-      if (command != null) {
-        command.execute(commandPath, commandCode, params);
-      } else {
-        super.executeCommand(commandPath, commandCode, params);
-      }
+      super.executeCommand(commandPath, commandCode, params);
     }
     notifyAllListeners();
+  }
+
+  @SuppressWarnings("rawtypes")
+  private WrapperCommand findWrapperCommand(String commandPath, String commandCode) {
+    if (parent != null) {
+      if (commandPath == null) {
+        commandPath = path;
+      } else {
+        commandPath = path + "/" + commandPath;
+      }
+      return parent.findWrapperCommand(commandPath, commandCode);
+    }
+    WrapperCommand<?> command = null;
+    Map<String, WrapperCommand<?>> commandMap = commandsByCode.get(commandPath);
+    if (commandMap != null) {
+      command = commandMap.get(commandCode);
+    }
+    return command;
   }
 
   private class WrapperCommand<O> {
@@ -239,7 +274,7 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
       } else {
         if (params != null && params.length > 0) {
           log.debug(
-              "Command (" + commandCode + ") declared without params, but called with params!");
+              "Command ({}) declared without params, but called with params!", commandCode);
         }
         commandWithoutParams.accept(object);
       }

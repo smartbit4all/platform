@@ -89,24 +89,27 @@ public class UINavigationVaadinTabbed extends UINavigationVaadinCommon {
 
   @Override
   protected void navigateToInternal(NavigationTarget navigationTarget) {
-    ui.access(() -> {
-      NavigationTarget oldTarget = ObjectEditing.currentNavigationTarget.get();
-      try {
-        ObjectEditing.currentNavigationTarget.set(navigationTarget);
-        Component view;
-        if (navigationTarget.getType() == NavigationTargetType.DIALOG) {
-          view = navigateToDialog(navigationTarget);
-        } else {
-          view = navigateToTab(navigationTarget);
-        }
+    UUID apiUUID = (UUID) navigationTarget.getParameters().get(UINAVIGATION_UUID);
+    if (uuid.equals(apiUUID)) {
+      ui.access(() -> {
+        NavigationTarget oldTarget = ObjectEditing.currentNavigationTarget.get();
+        try {
+          ObjectEditing.currentNavigationTarget.set(navigationTarget);
+          Component view;
+          if (navigationTarget.getType() == NavigationTargetType.DIALOG) {
+            view = navigateToDialog(navigationTarget);
+          } else {
+            view = navigateToTab(navigationTarget);
+          }
 
-        callHasUrlImplementation(navigationTarget, view);
-      } catch (Exception e) {
-        log.error("Unexpected error", e);
-      } finally {
-        ObjectEditing.currentNavigationTarget.set(oldTarget);
-      }
-    });
+          callHasUrlImplementation(navigationTarget, view);
+        } catch (Exception e) {
+          log.error("Unexpected error", e);
+        } finally {
+          ObjectEditing.currentNavigationTarget.set(oldTarget);
+        }
+      });
+    }
   }
 
   private Component navigateToTab(NavigationTarget navigationTarget) {

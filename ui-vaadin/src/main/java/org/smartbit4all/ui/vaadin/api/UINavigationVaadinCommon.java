@@ -50,6 +50,7 @@ public abstract class UINavigationVaadinCommon extends UINavigationApiCommon {
   public UINavigationVaadinCommon(UI ui, UserSessionApi userSessionApi) {
     super(userSessionApi);
     this.ui = ui;
+    ui.addDetachListener(event -> handleUIDestroyed());
     navigableViewClasses = new HashMap<>();
     navigableViewClassesByType = new HashMap<>();
     dialogsByUUID = new HashMap<>();

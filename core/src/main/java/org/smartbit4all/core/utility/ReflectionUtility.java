@@ -20,6 +20,9 @@ import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Predicate;
+import org.springframework.aop.TargetSource;
+import org.springframework.aop.framework.Advised;
+import org.springframework.aop.support.AopUtils;
 
 /**
  * This class is a collection of useful utility functions to discover java types. This class is
@@ -214,4 +217,20 @@ public class ReflectionUtility {
     return field.getDeclaringClass().getName() + StringConstant.DOT + field.getName();
   }
 
+  public static <T> T getProxyTarget(Object proxy) {
+    if (!AopUtils.isAopProxy(proxy)) {
+      throw new IllegalStateException("Target must be a proxy");
+    }
+    TargetSource targetSource = ((Advised) proxy).getTargetSource();
+    return getTarget(targetSource);
+  }
+
+  @SuppressWarnings("unchecked")
+  private static <T> T getTarget(TargetSource targetSource) {
+    try {
+      return (T) targetSource.getTarget();
+    } catch (Exception e) {
+      throw new IllegalStateException(e);
+    }
+  }
 }
