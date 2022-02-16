@@ -119,6 +119,7 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
     this.path = path;
     this.parent = parent;
     ref = parent.ref.getValueRefByPath(path);
+    ref.reevaluateChanges();
     initCommon();
   }
 

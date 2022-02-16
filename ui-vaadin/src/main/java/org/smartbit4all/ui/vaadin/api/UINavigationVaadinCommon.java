@@ -107,6 +107,21 @@ public abstract class UINavigationVaadinCommon extends UINavigationApiCommon {
     }
   }
 
+  @Override
+  public <T> T createView(NavigationTarget navigationTarget, Class<T> clazz) {
+    NavigationTarget oldTarget = ObjectEditing.currentNavigationTarget.get();
+    T viewModel;
+    try {
+      ObjectEditing.currentNavigationTarget.set(navigationTarget);
+      // viewModel = context.getAutowireCapableBeanFactory().createBean(clazz);
+      viewModel = context.getBean(clazz);
+      callHasUrlImplementation(navigationTarget, (Component) viewModel);
+    } finally {
+      ObjectEditing.currentNavigationTarget.set(oldTarget);
+    }
+    return viewModel;
+  }
+
   protected Class<? extends Component> getViewClassByNavigationTarget(
       NavigationTarget navigationTarget) {
     if (navigationTarget.getType() != null) {

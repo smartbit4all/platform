@@ -29,6 +29,8 @@ public class View<T extends ViewModel> extends FlexLayout
     NavigationTarget navigationTarget = ObjectEditing.currentNavigationTarget.get();
     if (navigationTarget != null) {
       viewModel.initByNavigationTarget(navigationTarget);
+    } else {
+      event.rerouteTo("");
     }
   }
 

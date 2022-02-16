@@ -849,4 +849,11 @@ public class ApiObjectRef {
     }
     return entry;
   }
+
+  public void reevaluateChanges() {
+    Object obj = object;
+    object = null;
+    setObjectInternal(obj, ChangeState.NEW);
+  }
+
 }

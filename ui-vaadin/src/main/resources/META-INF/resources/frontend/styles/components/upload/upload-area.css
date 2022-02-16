@@ -9,3 +9,7 @@
 :host([theme~="empty-upload"]) slot[name="file-list"] {
   display: none;
 }
+
+:host {
+	min-height: 250px;
+}

@@ -44,7 +44,7 @@ public class UINavigationApiCommon implements UINavigationApi {
   protected UUID uuid;
 
   @Autowired
-  ApplicationContext context;
+  protected ApplicationContext context;
 
   private Disposable subscription;
 
@@ -227,5 +227,10 @@ public class UINavigationApiCommon implements UINavigationApi {
     T viewModel = context.getBean(clazz);
     parent.addChild(viewModel, path);
     return viewModel;
+  }
+
+  @Override
+  public <T> T createView(NavigationTarget navigationTarget, Class<T> clazz) {
+    throw new UnsupportedOperationException("CreateView unsupported in ui-common");
   }
 }
