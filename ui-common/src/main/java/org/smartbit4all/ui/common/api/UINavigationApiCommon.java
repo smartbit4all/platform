@@ -10,6 +10,7 @@ import java.util.function.Consumer;
 import org.smartbit4all.api.org.SecurityGroup;
 import org.smartbit4all.api.session.Session;
 import org.smartbit4all.api.session.UserSessionApi;
+import org.smartbit4all.core.utility.ReflectionUtility;
 import org.smartbit4all.ui.api.navigation.UINavigationApi;
 import org.smartbit4all.ui.api.navigation.model.Message;
 import org.smartbit4all.ui.api.navigation.model.MessageResult;
@@ -19,6 +20,7 @@ import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
 import org.smartbit4all.ui.api.navigation.model.NavigationTargetType;
 import org.smartbit4all.ui.api.viewmodel.ObjectEditing;
 import org.smartbit4all.ui.api.viewmodel.ViewModel;
+import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import com.google.common.base.Strings;
@@ -34,6 +36,8 @@ public class UINavigationApiCommon implements UINavigationApi {
   protected Map<NavigationTargetType, Map<String, NavigableViewDescriptor>> navigableViewsByType;
 
   protected Map<String, List<SecurityGroup>> securityGroupByView;
+
+  protected Map<UUID, ViewModel> viewModelsByUuid;
 
   public static final String UINAVIGATION_CURRENT_NAV_TARGET =
       "UINavigationApi.currentNavigationTarget";
@@ -55,6 +59,7 @@ public class UINavigationApiCommon implements UINavigationApi {
     navigableViews = new HashMap<>();
     navigableViewsByType = new HashMap<>();
     securityGroupByView = new HashMap<>();
+    viewModelsByUuid = new HashMap<>();
   }
 
   protected void initSessionParameterListener() {
@@ -118,6 +123,7 @@ public class UINavigationApiCommon implements UINavigationApi {
   @Override
   public void close(UUID navigationTargetUuid) {
     navigationTargetsByUUID.remove(navigationTargetUuid);
+    viewModelsByUuid.remove(navigationTargetUuid);
   }
 
   protected NavigableViewDescriptor getViewDescriptorByNavigationTarget(
@@ -213,7 +219,6 @@ public class UINavigationApiCommon implements UINavigationApi {
     T viewModel;
     try {
       ObjectEditing.currentNavigationTarget.set(navigationTarget);
-      // viewModel = context.getAutowireCapableBeanFactory().createBean(clazz);
       viewModel = context.getBean(clazz);
       viewModel.initByNavigationTarget(navigationTarget);
     } finally {
@@ -233,4 +238,14 @@ public class UINavigationApiCommon implements UINavigationApi {
   public <T> T createView(NavigationTarget navigationTarget, Class<T> clazz) {
     throw new UnsupportedOperationException("CreateView unsupported in ui-common");
   }
+
+  @Override
+  public ViewModel getViewModelByUuid(UUID navigationTargetUuid) {
+    ViewModel vm = viewModelsByUuid.get(navigationTargetUuid);
+    if (AopUtils.isAopProxy(vm)) {
+      vm = ReflectionUtility.getProxyTarget(vm);
+    }
+    return vm;
+  }
+
 }

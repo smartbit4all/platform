@@ -5,9 +5,12 @@ plugins {
 dependencies {
 	api project(':api')
 	api project(':ui-api')
+	api project(':ui-common')
 	
 	api 'org.springframework:spring-webmvc'
 	api 'javax.servlet:javax.servlet-api:4.0.1'
+
+	testImplementation 'org.springframework.boot:spring-boot-starter-web'
 }
 
 smartbit4all {

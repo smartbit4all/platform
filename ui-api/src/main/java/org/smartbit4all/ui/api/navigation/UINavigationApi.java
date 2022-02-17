@@ -40,4 +40,6 @@ public interface UINavigationApi {
 
   <T> T createView(NavigationTarget navigationTarget, Class<T> clazz);
 
+  ViewModel getViewModelByUuid(UUID navigationTargetUuid);
+
 }

@@ -281,4 +281,17 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
       }
     }
   }
+
+  public void setObject(Object object) {
+    ref.setObject(object);
+    notifyAllListeners();
+  }
+
+  public Object getObject() {
+    return ref.getObject();
+  }
+
+  public Class<T> getModelClazz() {
+    return modelClazz;
+  }
 }
