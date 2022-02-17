@@ -3,6 +3,7 @@ package org.smartbit4all.ui.vaadin.components;
 import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
 import org.smartbit4all.ui.api.viewmodel.ObjectEditing;
 import org.smartbit4all.ui.api.viewmodel.ViewModel;
+import org.smartbit4all.ui.vaadin.components.navigation.ParameterMissingException;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.BeforeLeaveEvent;
@@ -30,7 +31,7 @@ public class View<T extends ViewModel> extends FlexLayout
     if (navigationTarget != null) {
       viewModel.initByNavigationTarget(navigationTarget);
     } else {
-      event.rerouteTo("");
+      throw new ParameterMissingException("View initialized without NavigationTarget!");
     }
   }
 

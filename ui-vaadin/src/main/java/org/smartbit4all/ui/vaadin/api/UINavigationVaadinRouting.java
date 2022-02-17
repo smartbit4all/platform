@@ -55,7 +55,6 @@ public class UINavigationVaadinRouting extends UINavigationVaadinCommon {
   @Override
   protected Class<? extends Component> getViewClassByNavigationTarget(
       NavigationTarget navigationTarget) {
-    // TODO Auto-generated method stub
     Class<? extends Component> clazz = super.getViewClassByNavigationTarget(navigationTarget);
     if (clazz == null) {
       return registerViewByRouting(navigationTarget.getViewName());
@@ -86,7 +85,7 @@ public class UINavigationVaadinRouting extends UINavigationVaadinCommon {
       }
     }
     if (viewClass == null) {
-      throw new RuntimeException("No view found for dialog " + viewName);
+      throw new IllegalArgumentException("No view found for dialog " + viewName);
     }
     registerView(new NavigableViewDescriptor()
         .viewName(viewName)

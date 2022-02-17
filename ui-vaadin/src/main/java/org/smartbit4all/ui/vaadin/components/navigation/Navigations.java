@@ -60,11 +60,11 @@ public class Navigations {
     }
     NavigationTarget navigationTarget = ObjectEditing.currentNavigationTarget.get();
     if (navigationTarget == null) {
-      throw new IllegalArgumentException("No navigationTarget defined in call!");
+      throw new ParameterMissingException("No navigationTarget defined in call!");
     }
     UUID uuid = navigationTarget.getUuid();
     if (uuid == null) {
-      throw new IllegalArgumentException("NavigationTarget without UUID found!");
+      throw new ParameterMissingException("NavigationTarget without UUID found!");
     }
     String parameterKey = list.get(0);
     if (uuid.toString().equals(parameterKey)) {
