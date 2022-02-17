@@ -1,5 +1,6 @@
 package org.smartbit4all.ui.vaadin.components;
 
+import org.smartbit4all.ui.api.navigation.UINavigationApi;
 import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
 import org.smartbit4all.ui.api.viewmodel.ObjectEditing;
 import org.smartbit4all.ui.api.viewmodel.ViewModel;
@@ -20,10 +21,10 @@ public class View<T extends ViewModel> extends FlexLayout
     this.viewModel = viewModel;
   }
 
-  // public View(ViewModelApi viewModelApi, Class<T> vmClazz) {
-  // this.viewModel =
-  // viewModelApi.get(vmClazz, ObjectEditing.currentNavigationTarget.get());
-  // }
+  public View(UINavigationApi uiNavigationApiApi, Class<T> vmClazz) {
+    this.viewModel =
+        uiNavigationApiApi.createViewModel(ObjectEditing.currentNavigationTarget.get(), vmClazz);
+  }
 
   @Override
   public void setParameter(BeforeEvent event, @OptionalParameter String parameter) {

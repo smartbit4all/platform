@@ -1,0 +1,28 @@
+plugins {
+	id 'org.smartbit4all.platform.gradle.openapi'
+}
+
+dependencies {
+	api project(':api')
+	api project(':ui-api')
+	
+	api 'org.springframework:spring-webmvc'
+	api 'javax.servlet:javax.servlet-api:4.0.1'
+}
+
+smartbit4all {
+    openApi {
+        apiDescriptorMapping = [
+        	"${rootDir}/ui-api/src/main/resources/descriptors/navigation-api.yaml" : "navigation"
+        ]
+        apiPackagePrefix = "org.smartbit4all.ui.api"
+        apiPackagePostfix = "restserver"
+        invokerPackagePrefix = "org.smartbit4all.ui.api"
+        invokerPackagePostfix = "restserver.util"
+		genApiRestServer = true
+		importMappings = [
+			"NavigationTarget" : "org.smartbit4all.ui.api.navigation.model.NavigationTarget",
+			"CommandData" : "org.smartbit4all.ui.api.navigation.model.CommandData"
+		]
+    }
+}
