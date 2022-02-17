@@ -1,42 +1,35 @@
 package org.smartbit4all.ui.vaadin.components.sb4starter;
 
-import java.util.function.BiConsumer;
-import org.smartbit4all.api.binarydata.BinaryContent;
 import org.smartbit4all.core.object.PropertyChange;
+import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
 import org.smartbit4all.ui.api.sb4starter.SB4StarterWordViewModel;
 import org.smartbit4all.ui.api.sb4starterui.model.SB4StarterWordFormModel;
 import org.smartbit4all.ui.api.sb4starterui.model.SB4StarterWordState;
+import org.smartbit4all.ui.api.viewmodel.ObjectEditing;
+import org.smartbit4all.ui.vaadin.components.View;
 import org.smartbit4all.ui.vaadin.components.binder.VaadinBinders;
-import org.smartbit4all.ui.vaadin.components.navigation.Navigations;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.BeforeLeaveEvent;
-import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
-import com.vaadin.flow.router.internal.BeforeLeaveHandler;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinServletRequest;
 
-public class SB4StarterWordUI extends FlexLayout
-    implements HasUrlParameter<String>, BeforeLeaveHandler {
-
-  private SB4StarterWordViewModel viewModel;
+public class SB4StarterWordUI extends View<SB4StarterWordViewModel> {
 
   private Button btnAccept;
 
   private Anchor downloadAnchor;
 
   public SB4StarterWordUI(SB4StarterWordViewModel viewModel) {
-    this.viewModel = viewModel;
-
-    viewModel.sb4Starter().onPropertyChange(this::onStateChanged, SB4StarterWordFormModel.STATE);
-    viewModel.sb4Starter().onPropertyChange(this::onStarterUrlChanged,
+    super(viewModel);
+    viewModel.data().onPropertyChange(this::onStateChanged, SB4StarterWordFormModel.STATE);
+    viewModel.data().onPropertyChange(this::onStarterUrlChanged,
         SB4StarterWordFormModel.SB4_STARTER_URL);
 
     createUI();
@@ -44,21 +37,16 @@ public class SB4StarterWordUI extends FlexLayout
 
   @Override
   public void setParameter(BeforeEvent event, @OptionalParameter String parameter) {
-    SB4StarterWordFormModel model =
-        (SB4StarterWordFormModel) Navigations.getParameter(event,
-            SB4StarterWordViewModel.PARAM_FORMMODEL);
-    BiConsumer<BinaryContent, BinaryContent> acceptHandler =
-        (BiConsumer<BinaryContent, BinaryContent>) Navigations.getParameter(event,
-            SB4StarterWordViewModel.PARAM_ACCEPTHANDLER);
-    try {
+    NavigationTarget navigationTarget = ObjectEditing.currentNavigationTarget.get();
+    if (navigationTarget != null) {
       VaadinServletRequest request = (VaadinServletRequest) VaadinService.getCurrentRequest();
       StringBuffer uriString = request.getRequestURL();
       String baseLocation = uriString.toString();
-      viewModel.initSb4StarterFormModel(model, acceptHandler, baseLocation);
-    } catch (Exception e) {
-      new ConfirmDialog("Hiba", e.getMessage(), "Ok", conf -> {
-      }).open();
+
+      navigationTarget.putParametersItem(SB4StarterWordViewModel.PARAM_BASELOCATION, baseLocation);
     }
+    super.setParameter(event, parameter);
+
   }
 
   private void createUI() {
@@ -67,7 +55,7 @@ public class SB4StarterWordUI extends FlexLayout
     main.setSizeFull();
 
     Label lblState = new Label();
-    VaadinBinders.bindLabel(lblState, viewModel.sb4Starter(), SB4StarterWordFormModel.STATE);
+    VaadinBinders.bindLabel(lblState, viewModel.data(), SB4StarterWordFormModel.STATE);
 
     btnAccept = createButton("Elfogad", SB4StarterWordViewModel.ACCEPT);
     btnAccept.setEnabled(false);
@@ -113,6 +101,7 @@ public class SB4StarterWordUI extends FlexLayout
     if (viewModel != null) {
       viewModel.executeCommand(null, SB4StarterWordViewModel.DECLINE);
     }
+    super.beforeLeave(event);
   }
 
   // private String convertStateToString(SB4StarterWordState state) {
