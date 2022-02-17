@@ -217,12 +217,13 @@ public class ReflectionUtility {
     return field.getDeclaringClass().getName() + StringConstant.DOT + field.getName();
   }
 
+  @SuppressWarnings("unchecked")
   public static <T> T getProxyTarget(Object proxy) {
-    if (!AopUtils.isAopProxy(proxy)) {
-      throw new IllegalStateException("Target must be a proxy");
+    if (AopUtils.isAopProxy(proxy)) {
+      TargetSource targetSource = ((Advised) proxy).getTargetSource();
+      return getTarget(targetSource);
     }
-    TargetSource targetSource = ((Advised) proxy).getTargetSource();
-    return getTarget(targetSource);
+    return (T) proxy;
   }
 
   @SuppressWarnings("unchecked")

@@ -15,7 +15,6 @@ import org.smartbit4all.core.object.ObservableObjectImpl;
 import org.smartbit4all.core.object.ObservablePublisherWrapper;
 import org.smartbit4all.core.utility.ReflectionUtility;
 import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
-import org.springframework.aop.support.AopUtils;
 import io.reactivex.rxjava3.disposables.Disposable;
 
 public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements ViewModel {
@@ -52,9 +51,7 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
   @Override
   public void addChild(ViewModel child, String path) {
     // ???
-    if (AopUtils.isAopProxy(child)) {
-      child = ReflectionUtility.getProxyTarget(child);
-    }
+    child = ReflectionUtility.getProxyTarget(child);
     if (child instanceof ViewModelImpl) {
       ViewModelImpl<?> childVM = (ViewModelImpl<?>) child;
       childVM.initByParentRef(this, path);

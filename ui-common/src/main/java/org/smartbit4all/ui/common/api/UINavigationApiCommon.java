@@ -20,7 +20,6 @@ import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
 import org.smartbit4all.ui.api.navigation.model.NavigationTargetType;
 import org.smartbit4all.ui.api.viewmodel.ObjectEditing;
 import org.smartbit4all.ui.api.viewmodel.ViewModel;
-import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import com.google.common.base.Strings;
@@ -242,10 +241,7 @@ public class UINavigationApiCommon implements UINavigationApi {
   @Override
   public ViewModel getViewModelByUuid(UUID navigationTargetUuid) {
     ViewModel vm = viewModelsByUuid.get(navigationTargetUuid);
-    if (AopUtils.isAopProxy(vm)) {
-      vm = ReflectionUtility.getProxyTarget(vm);
-    }
-    return vm;
+    return ReflectionUtility.getProxyTarget(vm);
   }
 
 }
