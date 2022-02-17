@@ -9,7 +9,93 @@ info:
 tags:
   - name: navigation
     description: navigation
-paths: {}
+paths:
+  /createViewModel:
+    post:
+      tags:
+      - view-model
+      summary: ''
+      operationId: 'createViewModel'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NavigationTarget'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NavigationTarget'
+  /setData/{uuid}:
+    post:
+      tags:
+      - view-model
+      summary: ''
+      operationId: 'setData'
+      parameters: 
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: ''
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ViewData'
+      responses:
+        '200':
+          description: ''
+  /executeCommand/{uuid}:
+    post:
+      tags:
+      - view-model
+      summary: ''
+      operationId: 'executeCommand'
+      parameters: 
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: ''
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ViewData'
+      responses:
+        '200':
+          description: ''
+  /getData/{uuid}:
+    get:
+      tags:
+      - view-model
+      summary: ''
+      operationId: 'getData'
+      parameters: 
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: ''
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ViewData'
 components:
   schemas:
     UIState:
@@ -129,3 +215,18 @@ components:
           type: string
         icon:
           type: string
+    ViewData:
+      type: object          
+    CommandData:
+      type: object
+      properties:
+        commandPath:
+          type: string
+        commandCode:
+          type: string
+        params:
+          type: array
+          items:
+            type: string
+
+          
