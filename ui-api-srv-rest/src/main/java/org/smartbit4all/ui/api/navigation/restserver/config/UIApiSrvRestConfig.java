@@ -3,6 +3,7 @@ package org.smartbit4all.ui.api.navigation.restserver.config;
 import org.smartbit4all.api.config.PlatformApiConfig;
 import org.smartbit4all.api.session.UserSessionApi;
 import org.smartbit4all.ui.api.navigation.UINavigationApi;
+import org.smartbit4all.ui.api.navigation.restserver.ViewModelApiController;
 import org.smartbit4all.ui.api.navigation.restserver.ViewModelApiDelegate;
 import org.smartbit4all.ui.api.navigation.restserver.impl.ViewModelApiDelegateImpl;
 import org.smartbit4all.ui.common.api.UINavigationApiHeadless;
@@ -23,6 +24,11 @@ public class UIApiSrvRestConfig {
   @Bean
   public ViewModelApiDelegate invocationApiDelegate() {
     return new ViewModelApiDelegateImpl();
+  }
+
+  @Bean
+  public ViewModelApiController viewModelApiController(ViewModelApiDelegate viewModelApiDelegate) {
+    return new ViewModelApiController(viewModelApiDelegate);
   }
 
   @Bean

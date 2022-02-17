@@ -1,4 +1,4 @@
-package org.smartbit4all.ui.api.navigation.restserver;
+package org.smartbit4all.ui.api.navigation.restserver.test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -55,7 +55,7 @@ public class ViewModelApiTest {
   public void setup() {
     uiNavigationApi.registerView(new NavigableViewDescriptor()
         .viewName("test-view")
-        .viewClassName("org.smartbit4all.ui.api.navigation.restserver.TestViewModel"));
+        .viewClassName(TestViewModel.class.getName()));
   }
 
   @Test

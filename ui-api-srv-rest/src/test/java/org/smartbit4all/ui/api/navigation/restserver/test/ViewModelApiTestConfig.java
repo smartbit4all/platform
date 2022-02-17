@@ -1,4 +1,4 @@
-package org.smartbit4all.ui.api.navigation.restserver;
+package org.smartbit4all.ui.api.navigation.restserver.test;
 
 import org.smartbit4all.api.config.PlatformApiConfig;
 import org.smartbit4all.core.object.ObservablePublisherWrapper;

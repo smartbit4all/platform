@@ -1,4 +1,4 @@
-package org.smartbit4all.ui.api.navigation.restserver;
+package org.smartbit4all.ui.api.navigation.restserver.test;
 
 import java.util.HashSet;
 import java.util.Map;
