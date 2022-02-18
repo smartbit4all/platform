@@ -624,9 +624,19 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
 
   @Override
   public void addChildGroup(Group parentGroup, Group childGroup) {
+    if (parentGroup.getChildren().contains(childGroup.getUri())) {
+      return;
+    }
+
     childGroup.setParent(parentGroup.getUri());
+    if (getGroupByName(childGroup.getName()) == null) {
+      saveGroup(childGroup);
+    } else {
+      updateGroup(childGroup);
+    }
+
     parentGroup.getChildren().add(childGroup.getUri());
-    updateGroup(childGroup);
+
     if (getGroupByName(parentGroup.getName()) == null) {
       saveGroup(parentGroup);
     } else {
