@@ -53,6 +53,14 @@ components:
           type: object
           additionalProperties: 
             $ref: '#/components/schemas/LongValueList'
+        booleanPropertyMap:
+          type: object
+          additionalProperties: 
+            $ref: '#/components/schemas/BooleanValue'
+        booleanListMap:
+          type: object
+          additionalProperties: 
+            $ref: '#/components/schemas/BooleanValueList'
         localDateTimePropertyMap:
           type: object
           additionalProperties: 
@@ -125,6 +133,24 @@ components:
           items:
             type: integer
             format: int64
+    BooleanValue:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+        value:
+          type: boolean 
+    BooleanValueList:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+        values:
+          type: array
+          items:
+            type: boolean 
     LocalDateTimeValue:
       type: object
       required: [name]
@@ -157,7 +183,7 @@ components:
       properties:
         name:
           type: string
-        value:
+        values:
           type: array
           items:
             $ref: '#/components/schemas/MapBasedObjectData'

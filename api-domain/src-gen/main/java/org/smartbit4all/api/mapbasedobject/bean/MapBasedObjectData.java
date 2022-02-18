@@ -26,6 +26,8 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.smartbit4all.api.mapbasedobject.bean.BooleanValue;
+import org.smartbit4all.api.mapbasedobject.bean.BooleanValueList;
 import org.smartbit4all.api.mapbasedobject.bean.IntegerValue;
 import org.smartbit4all.api.mapbasedobject.bean.IntegerValueList;
 import org.smartbit4all.api.mapbasedobject.bean.LocalDateTimeValue;
@@ -53,6 +55,8 @@ import javax.validation.Valid;
   MapBasedObjectData.INTEGER_LIST_MAP,
   MapBasedObjectData.LONG_PROPERTY_MAP,
   MapBasedObjectData.LONG_LIST_MAP,
+  MapBasedObjectData.BOOLEAN_PROPERTY_MAP,
+  MapBasedObjectData.BOOLEAN_LIST_MAP,
   MapBasedObjectData.LOCAL_DATE_TIME_PROPERTY_MAP,
   MapBasedObjectData.LOCAL_DATE_TIME_LIST_MAP,
   MapBasedObjectData.OBJECT_PROPERTY_MAP,
@@ -81,6 +85,12 @@ public class MapBasedObjectData {
 
   public static final String LONG_LIST_MAP = "longListMap";
   private Map<String, LongValueList> longListMap = null;
+
+  public static final String BOOLEAN_PROPERTY_MAP = "booleanPropertyMap";
+  private Map<String, BooleanValue> booleanPropertyMap = null;
+
+  public static final String BOOLEAN_LIST_MAP = "booleanListMap";
+  private Map<String, BooleanValueList> booleanListMap = null;
 
   public static final String LOCAL_DATE_TIME_PROPERTY_MAP = "localDateTimePropertyMap";
   private Map<String, LocalDateTimeValue> localDateTimePropertyMap = null;
@@ -340,6 +350,78 @@ public class MapBasedObjectData {
   }
 
 
+  public MapBasedObjectData booleanPropertyMap(Map<String, BooleanValue> booleanPropertyMap) {
+    
+    this.booleanPropertyMap = booleanPropertyMap;
+    return this;
+  }
+
+  public MapBasedObjectData putBooleanPropertyMapItem(String key, BooleanValue booleanPropertyMapItem) {
+    if (this.booleanPropertyMap == null) {
+      this.booleanPropertyMap = new HashMap<>();
+    }
+    this.booleanPropertyMap.put(key, booleanPropertyMapItem);
+    return this;
+  }
+
+   /**
+   * Get booleanPropertyMap
+   * @return booleanPropertyMap
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(BOOLEAN_PROPERTY_MAP)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Map<String, BooleanValue> getBooleanPropertyMap() {
+    return booleanPropertyMap;
+  }
+
+
+  @JsonProperty(BOOLEAN_PROPERTY_MAP)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setBooleanPropertyMap(Map<String, BooleanValue> booleanPropertyMap) {
+    this.booleanPropertyMap = booleanPropertyMap;
+  }
+
+
+  public MapBasedObjectData booleanListMap(Map<String, BooleanValueList> booleanListMap) {
+    
+    this.booleanListMap = booleanListMap;
+    return this;
+  }
+
+  public MapBasedObjectData putBooleanListMapItem(String key, BooleanValueList booleanListMapItem) {
+    if (this.booleanListMap == null) {
+      this.booleanListMap = new HashMap<>();
+    }
+    this.booleanListMap.put(key, booleanListMapItem);
+    return this;
+  }
+
+   /**
+   * Get booleanListMap
+   * @return booleanListMap
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(BOOLEAN_LIST_MAP)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Map<String, BooleanValueList> getBooleanListMap() {
+    return booleanListMap;
+  }
+
+
+  @JsonProperty(BOOLEAN_LIST_MAP)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setBooleanListMap(Map<String, BooleanValueList> booleanListMap) {
+    this.booleanListMap = booleanListMap;
+  }
+
+
   public MapBasedObjectData localDateTimePropertyMap(Map<String, LocalDateTimeValue> localDateTimePropertyMap) {
     
     this.localDateTimePropertyMap = localDateTimePropertyMap;
@@ -500,6 +582,8 @@ public class MapBasedObjectData {
         Objects.equals(this.integerListMap, mapBasedObjectData.integerListMap) &&
         Objects.equals(this.longPropertyMap, mapBasedObjectData.longPropertyMap) &&
         Objects.equals(this.longListMap, mapBasedObjectData.longListMap) &&
+        Objects.equals(this.booleanPropertyMap, mapBasedObjectData.booleanPropertyMap) &&
+        Objects.equals(this.booleanListMap, mapBasedObjectData.booleanListMap) &&
         Objects.equals(this.localDateTimePropertyMap, mapBasedObjectData.localDateTimePropertyMap) &&
         Objects.equals(this.localDateTimeListMap, mapBasedObjectData.localDateTimeListMap) &&
         Objects.equals(this.objectPropertyMap, mapBasedObjectData.objectPropertyMap) &&
@@ -508,7 +592,7 @@ public class MapBasedObjectData {
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, stringPropertyMap, stringListMap, integerPropertyMap, integerListMap, longPropertyMap, longListMap, localDateTimePropertyMap, localDateTimeListMap, objectPropertyMap, objectListMap);
+    return Objects.hash(uri, stringPropertyMap, stringListMap, integerPropertyMap, integerListMap, longPropertyMap, longListMap, booleanPropertyMap, booleanListMap, localDateTimePropertyMap, localDateTimeListMap, objectPropertyMap, objectListMap);
   }
 
   @Override
@@ -522,6 +606,8 @@ public class MapBasedObjectData {
     sb.append("    integerListMap: ").append(toIndentedString(integerListMap)).append("\n");
     sb.append("    longPropertyMap: ").append(toIndentedString(longPropertyMap)).append("\n");
     sb.append("    longListMap: ").append(toIndentedString(longListMap)).append("\n");
+    sb.append("    booleanPropertyMap: ").append(toIndentedString(booleanPropertyMap)).append("\n");
+    sb.append("    booleanListMap: ").append(toIndentedString(booleanListMap)).append("\n");
     sb.append("    localDateTimePropertyMap: ").append(toIndentedString(localDateTimePropertyMap)).append("\n");
     sb.append("    localDateTimeListMap: ").append(toIndentedString(localDateTimeListMap)).append("\n");
     sb.append("    objectPropertyMap: ").append(toIndentedString(objectPropertyMap)).append("\n");

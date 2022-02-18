@@ -66,7 +66,7 @@ public class ObjectChange {
    */
   private final List<CollectionObjectChange> collectionObjects = new ArrayList<>();
 
-  ObjectChange(String path, ChangeState operation) {
+  public ObjectChange(String path, ChangeState operation) {
     this.path = path;
     this.operation = operation;
   }

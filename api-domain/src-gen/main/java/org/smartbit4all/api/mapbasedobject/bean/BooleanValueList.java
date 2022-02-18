@@ -24,30 +24,29 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
-import org.smartbit4all.api.mapbasedobject.bean.MapBasedObjectData;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 
 /**
- * ObjectValueList
+ * BooleanValueList
  */
 @JsonPropertyOrder({
-  ObjectValueList.NAME,
-  ObjectValueList.VALUES
+  BooleanValueList.NAME,
+  BooleanValueList.VALUES
 })
-@JsonTypeName("ObjectValueList")
+@JsonTypeName("BooleanValueList")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
-public class ObjectValueList {
+public class BooleanValueList {
   public static final String NAME = "name";
   private String name;
 
   public static final String VALUES = "values";
-  private List<MapBasedObjectData> values = null;
+  private List<Boolean> values = null;
 
 
-  public ObjectValueList name(String name) {
+  public BooleanValueList name(String name) {
     
     this.name = name;
     return this;
@@ -75,13 +74,13 @@ public class ObjectValueList {
   }
 
 
-  public ObjectValueList values(List<MapBasedObjectData> values) {
+  public BooleanValueList values(List<Boolean> values) {
     
     this.values = values;
     return this;
   }
 
-  public ObjectValueList addValuesItem(MapBasedObjectData valuesItem) {
+  public BooleanValueList addValuesItem(Boolean valuesItem) {
     if (this.values == null) {
       this.values = new ArrayList<>();
     }
@@ -94,19 +93,18 @@ public class ObjectValueList {
    * @return values
   **/
   @javax.annotation.Nullable
-  @Valid
   @ApiModelProperty(value = "")
   @JsonProperty(VALUES)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<MapBasedObjectData> getValues() {
+  public List<Boolean> getValues() {
     return values;
   }
 
 
   @JsonProperty(VALUES)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setValues(List<MapBasedObjectData> values) {
+  public void setValues(List<Boolean> values) {
     this.values = values;
   }
 
@@ -119,9 +117,9 @@ public class ObjectValueList {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    ObjectValueList objectValueList = (ObjectValueList) o;
-    return Objects.equals(this.name, objectValueList.name) &&
-        Objects.equals(this.values, objectValueList.values);
+    BooleanValueList booleanValueList = (BooleanValueList) o;
+    return Objects.equals(this.name, booleanValueList.name) &&
+        Objects.equals(this.values, booleanValueList.values);
   }
 
   @Override
@@ -132,7 +130,7 @@ public class ObjectValueList {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class ObjectValueList {\n");
+    sb.append("class BooleanValueList {\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    values: ").append(toIndentedString(values)).append("\n");
     sb.append("}");

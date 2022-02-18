@@ -22,32 +22,29 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.util.ArrayList;
-import java.util.List;
-import org.smartbit4all.api.mapbasedobject.bean.MapBasedObjectData;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 
 /**
- * ObjectValueList
+ * BooleanValue
  */
 @JsonPropertyOrder({
-  ObjectValueList.NAME,
-  ObjectValueList.VALUES
+  BooleanValue.NAME,
+  BooleanValue.VALUE
 })
-@JsonTypeName("ObjectValueList")
+@JsonTypeName("BooleanValue")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
-public class ObjectValueList {
+public class BooleanValue {
   public static final String NAME = "name";
   private String name;
 
-  public static final String VALUES = "values";
-  private List<MapBasedObjectData> values = null;
+  public static final String VALUE = "value";
+  private Boolean value;
 
 
-  public ObjectValueList name(String name) {
+  public BooleanValue name(String name) {
     
     this.name = name;
     return this;
@@ -75,39 +72,30 @@ public class ObjectValueList {
   }
 
 
-  public ObjectValueList values(List<MapBasedObjectData> values) {
+  public BooleanValue value(Boolean value) {
     
-    this.values = values;
-    return this;
-  }
-
-  public ObjectValueList addValuesItem(MapBasedObjectData valuesItem) {
-    if (this.values == null) {
-      this.values = new ArrayList<>();
-    }
-    this.values.add(valuesItem);
+    this.value = value;
     return this;
   }
 
    /**
-   * Get values
-   * @return values
+   * Get value
+   * @return value
   **/
   @javax.annotation.Nullable
-  @Valid
   @ApiModelProperty(value = "")
-  @JsonProperty(VALUES)
+  @JsonProperty(VALUE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<MapBasedObjectData> getValues() {
-    return values;
+  public Boolean getValue() {
+    return value;
   }
 
 
-  @JsonProperty(VALUES)
+  @JsonProperty(VALUE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setValues(List<MapBasedObjectData> values) {
-    this.values = values;
+  public void setValue(Boolean value) {
+    this.value = value;
   }
 
 
@@ -119,22 +107,22 @@ public class ObjectValueList {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    ObjectValueList objectValueList = (ObjectValueList) o;
-    return Objects.equals(this.name, objectValueList.name) &&
-        Objects.equals(this.values, objectValueList.values);
+    BooleanValue booleanValue = (BooleanValue) o;
+    return Objects.equals(this.name, booleanValue.name) &&
+        Objects.equals(this.value, booleanValue.value);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, values);
+    return Objects.hash(name, value);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class ObjectValueList {\n");
+    sb.append("class BooleanValue {\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
-    sb.append("    values: ").append(toIndentedString(values)).append("\n");
+    sb.append("    value: ").append(toIndentedString(value)).append("\n");
     sb.append("}");
     return sb.toString();
   }
