@@ -356,14 +356,14 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
    * @return
    */
   private List<URI> getAllSubgroups(URI groupUri) {
-    List<URI> subgroups = new ArrayList<>();
+    Set<URI> subgroups = new HashSet<>();
     Group group = storage.get().read(groupUri, Group.class);
     List<URI> children = group.getChildren();
     subgroups.addAll(children);
     for (URI uri : children) {
       subgroups.addAll(getAllSubgroups(uri));
     }
-    return subgroups;
+    return new ArrayList<>(subgroups);
   }
 
 
@@ -628,13 +628,6 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
       return;
     }
 
-    childGroup.setParent(parentGroup.getUri());
-    if (getGroupByName(childGroup.getName()) == null) {
-      saveGroup(childGroup);
-    } else {
-      updateGroup(childGroup);
-    }
-
     parentGroup.getChildren().add(childGroup.getUri());
 
     if (getGroupByName(parentGroup.getName()) == null) {
@@ -761,6 +754,7 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
     Group parentGroup = getGroup(parentGroupUri);
     parentGroup.getChildren().removeIf(c -> c.equals(childGroupUri));
     updateGroup(parentGroup);
+
   }
 
   @Override
