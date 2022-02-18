@@ -106,18 +106,6 @@ public final class ObservableObjectImpl implements ObservableObject, ListenerAwa
   }
 
   @Override
-  public void addValue(String collectionPath, Object value) {
-    ref.addValueByPath(collectionPath, value);
-    notifyListeners();
-  }
-
-  @Override
-  public void removeValue(String collectionElementPath) {
-    ref.removeValueByPath(collectionElementPath);
-    notifyListeners();
-  }
-
-  @Override
   public Disposable onPropertyChange(@NonNull Consumer<? super PropertyChange> onPropertyChange,
       String... propertyPath) {
     ObjectPropertyPath path = processPathParameter(propertyPath);

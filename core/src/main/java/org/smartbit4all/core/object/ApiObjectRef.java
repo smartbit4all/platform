@@ -575,8 +575,8 @@ public class ApiObjectRef {
   }
 
   /**
-   * Get the value of a given path. Works only with properties and references and ignore the
-   * collections. Always return the value let it be a bean or even a collection.
+   * Get the value of a given path. Always return the value let it be a bean or even a collection,
+   * or an item in a collection.
    * 
    * @param propertyPath The name of the property.
    * @return

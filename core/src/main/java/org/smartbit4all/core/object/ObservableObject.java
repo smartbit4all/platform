@@ -57,12 +57,6 @@ public interface ObservableObject extends EventPublisher {
   @NotifyListeners
   void setValue(String propertyPath, Object value);
 
-  @NotifyListeners
-  void addValue(String collectionPath, Object value);
-
-  @NotifyListeners
-  void removeValue(String collectionElementPath);
-
   /**
    * Subscribe onPropertyChange consumer to property changes on propertyPath. propertyPath's last
    * part specifies the property name, all other parts specify path to this property. Other parts
