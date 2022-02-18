@@ -89,7 +89,7 @@ public abstract class SQLDBParameterBase implements SQLDBParameter {
   }
 
   protected void createTemTable(JdbcTemplate jdbcTemplate, String tableName, String columnType) {
-    jdbcTemplate.execute("CREATE GLOBAL TEMPORARY TABLE " + tableName
+    jdbcTemplate.execute("CREATE TABLE " + tableName
         + " (ID NUMBER(18) NOT NULL, VAL " + columnType + " NULL)");
     jdbcTemplate.execute("CREATE INDEX " + tableName
         + "_ID_IDX ON " + tableName + " (ID)");

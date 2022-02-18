@@ -15,6 +15,7 @@
 package org.smartbit4all.sql.config;
 
 import org.smartbit4all.domain.utility.SupportedDatabase;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
  * The ORACLE implementation of the database configuration.
@@ -42,6 +43,16 @@ public class SQLDBParameterOracle extends SQLDBParameterBase {
       sb.append("WHERE owner='").append(schema);
     }
     return sb.toString();
+  }
+
+  protected void createTemTable(JdbcTemplate jdbcTemplate, String tableName, String columnType) {
+    jdbcTemplate.execute("CREATE GLOBAL TEMPORARY TABLE " + tableName
+        + " (ID NUMBER(18) NOT NULL, VAL " + columnType + " NULL)");
+    jdbcTemplate.execute("CREATE INDEX " + tableName
+        + "_ID_IDX ON " + tableName + " (ID)");
+    jdbcTemplate.execute("CREATE INDEX " + tableName
+        + "_VAL_IDX ON " + tableName + " (VAL)");
+
   }
 
 }
