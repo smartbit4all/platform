@@ -30,9 +30,13 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.jdbc.Sql;
 
-@SpringBootTest(classes = {
-    ExistTestConfig.class,
-})
+@SpringBootTest(
+    classes = {
+        ExistTestConfig.class,
+    },
+    properties = {
+        "platform.sql.temptable-autocreate.enabled=true"
+    })
 @Sql({"/script/exists_schema.sql", "/script/exists_data_01.sql"})
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)

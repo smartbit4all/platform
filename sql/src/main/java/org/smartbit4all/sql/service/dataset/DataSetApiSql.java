@@ -1,6 +1,9 @@
 package org.smartbit4all.sql.service.dataset;
 
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.Random;
@@ -14,6 +17,7 @@ import org.smartbit4all.domain.service.dataset.DataSetEntry;
 import org.smartbit4all.sql.config.SQLConfig;
 import org.smartbit4all.sql.config.SQLDBParameter;
 import org.smartbit4all.sql.config.SQLDBParameterBase;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
@@ -27,7 +31,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
  * 
  * @author Peter Boros
  */
-public class DataSetApiSql implements DataSetApi {
+public class DataSetApiSql implements DataSetApi, InitializingBean {
 
   @Autowired
   JdbcTemplate jdbcTemplate;
@@ -128,6 +132,41 @@ public class DataSetApiSql implements DataSetApi {
   public int getLimit() {
     SQLDBParameter db = sqlConfig.db(SQLDBParameterBase.DEFAULT);
     return db.saveInDataSetLimit();
+  }
+
+  @Override
+  public void afterPropertiesSet() throws Exception {
+    checkTempTables();
+  }
+
+  private void checkTempTables() throws SQLException, Exception {
+    SQLDBParameter db = sqlConfig.db(SQLDBParameterBase.DEFAULT);
+    String integerDataSetTableName = db.getIntegerDataSetTableName();
+    String stringDataSetTableName = db.getStringDataSetTableName();
+
+    Connection connection = jdbcTemplate.getDataSource().getConnection();
+    checkTable(connection, integerDataSetTableName);
+    checkTable(connection, stringDataSetTableName);
+  }
+
+  private void checkTable(Connection connection, String tableName) throws Exception {
+    if (!tableExists(connection, tableName)) {
+      log.warn(
+          "The database doesn't contain the temporary table [{}]! "
+              + "It may cause query functionality problems!",
+          tableName);
+      if (autoCreateEnabled) {
+        log.warn("Since the 'platform.sql.temptable-autocreate.enabled' property is set to true, "
+            + "there will be an attempt to create the [{}] table.", tableName);
+      }
+    }
+  }
+
+  private boolean tableExists(Connection connection, String tableName) throws SQLException {
+    DatabaseMetaData meta = connection.getMetaData();
+    ResultSet resultSet = meta.getTables(null, null, tableName, new String[] {"TABLE"});
+
+    return resultSet.next();
   }
 
 }
