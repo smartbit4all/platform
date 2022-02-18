@@ -266,7 +266,7 @@ class OrgApiTest {
   }
 
   @Test
-  void removeSubGgroupTest() {
+  void removeSubGroupTest() {
     orgApi.saveGroup(new Group().name("Group1"));
     orgApi.saveGroup(new Group().name("Group2"));
     orgApi.saveGroup(new Group().name("Group3"));
@@ -292,6 +292,24 @@ class OrgApiTest {
     orgApi.removeSubGroup(group1.getUri(), group2.getUri());
     assertFalse(
         orgApi.getGroupByName("Group1").getChildren().contains(group2.getUri()));
+  }
+
+  @Test
+  void addSubroupTest() {
+    URI parentGroupUri = orgApi.saveGroup(new Group().name("ParentGroup"));
+    Group parentGroup = orgApi.getGroup(parentGroupUri);
+    URI childGroupUri1 = orgApi.saveGroup(new Group().name("ChildGroup1"));
+    Group childGroup1 = orgApi.getGroup(childGroupUri1);
+    URI childGroupUri2 = orgApi.saveGroup(new Group().name("ChildGroup2"));
+    Group childGroup2 = orgApi.getGroup(childGroupUri2);
+
+    orgApi.addChildGroup(parentGroup, childGroup1);
+    orgApi.addChildGroup(parentGroup, childGroup2);
+    orgApi.addChildGroup(parentGroup, childGroup1);
+
+    Group updatedParentGroup = orgApi.getGroup(parentGroupUri);
+    List<URI> children = updatedParentGroup.getChildren();
+    assertTrue(children.size() == 2);
   }
 
   private boolean groupHasUser(User testUser, Group testGroup) {
