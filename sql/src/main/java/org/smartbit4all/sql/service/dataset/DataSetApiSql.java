@@ -15,6 +15,7 @@ import org.smartbit4all.sql.config.SQLConfig;
 import org.smartbit4all.sql.config.SQLDBParameter;
 import org.smartbit4all.sql.config.SQLDBParameterBase;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -36,6 +37,9 @@ public class DataSetApiSql implements DataSetApi {
 
   @Autowired
   private JDBCDataConverterHelper helper;
+
+  @Value("${platform.sql.temptable-autocreate.enabled:false}")
+  private boolean autoCreateEnabled;
 
   /**
    * TODO More stable solution for generating unique identifier.
@@ -70,15 +74,20 @@ public class DataSetApiSql implements DataSetApi {
       executeInsert(values, id, sql);
     } catch (DataAccessException e) {
       // Could happen because of the missing table. We try to create the table and execute again.
-      if (tableName.contains(SQLDBParameterBase.SB4DSINT)) {
-        db.createIntegerDataSetTable(jdbcTemplate);
+      if (autoCreateEnabled) {
+        if (tableName.contains(SQLDBParameterBase.SB4DSINT)) {
+          db.createIntegerDataSetTable(jdbcTemplate);
+        } else {
+          db.createStringDataSetTable(jdbcTemplate);
+        }
+        try {
+          executeInsert(values, id, sql);
+        } catch (Exception e1) {
+          log.warn("Unable to insert temporary data set. " + property, e1);
+          return null;
+        }
       } else {
-        db.createStringDataSetTable(jdbcTemplate);
-      }
-      try {
-        executeInsert(values, id, sql);
-      } catch (Exception e1) {
-        log.warn("Unable to insert temporary data set. " + property, e1);
+        log.warn("Missing temporary table [{}]!", tableName, e);
         return null;
       }
     }
