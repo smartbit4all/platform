@@ -189,4 +189,9 @@ public final class StorageApiImpl implements StorageApi, InitializingBean {
     Storage storage = getStorageByUri(uri);
     return storage.objectHistoryReverse(uri);
   }
+
+  @Override
+  public final ObjectStorage getDefaultObjectStorage() {
+    return defaultObjectStorage;
+  }
 }

@@ -62,4 +62,6 @@ public interface StorageApi {
    */
   ObjectHistoryIterator objectHistoryReverse(URI uri);
 
+  ObjectStorage getDefaultObjectStorage();
+
 }

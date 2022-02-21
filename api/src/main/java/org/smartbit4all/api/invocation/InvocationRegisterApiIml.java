@@ -23,7 +23,7 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Initiali
 
   private static final Logger log = LoggerFactory.getLogger(InvocationRegisterApiIml.class);
 
-  @Autowired
+  @Autowired(required = false)
   private StorageApi storageApi;
 
   /**
@@ -59,7 +59,8 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Initiali
 
     @Override
     public Storage get() {
-      if (storageInstance == null) {
+      if (storageInstance == null && storageApi != null
+          && storageApi.getDefaultObjectStorage() != null) {
         storageInstance = storageApi.get(Invocations.APIREGISTRATION_SCHEME);
       }
       return storageInstance;
@@ -75,6 +76,9 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Initiali
 
   @Override
   public void afterPropertiesSet() throws Exception {
+    if (storage.get() == null) {
+      return;
+    }
     if (!storage.get().exists(registryUri)) {
       try {
         storage.get().saveAsNew(new ApiRegistryData().uri(registryUri));
@@ -84,11 +88,13 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Initiali
     }
     storage.get().update(registryUri, ApiRegistryData.class, r -> {
       // We save all the provided apis into the invocation store.
-      for (ProviderApiInvocationHandler<?> apiHandler : providedApis) {
-        ApiData apiData = apiHandler.getData();
-        if (!storage.get().exists(apiData.getUri())) {
-          storage.get().saveAsNew(apiData);
-          r.putApisItem(apiData.getUri().toString(), apiData.getUri());
+      if (providedApis != null) {
+        for (ProviderApiInvocationHandler<?> apiHandler : providedApis) {
+          ApiData apiData = apiHandler.getData();
+          if (!storage.get().exists(apiData.getUri())) {
+            storage.get().saveAsNew(apiData);
+            r.putApisItem(apiData.getUri().toString(), apiData.getUri());
+          }
         }
       }
       return r;
@@ -98,7 +104,7 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Initiali
   @Override
   @Scheduled(fixedDelayString = "${invocationregistry.refresh.fixeddelay:5000}")
   public void refreshRegistry() {
-    if (!storage.get().exists(registryUri)) {
+    if (storage.get() == null || !storage.get().exists(registryUri)) {
       return;
     }
     ApiRegistryData registryData = storage.get().read(registryUri, ApiRegistryData.class);

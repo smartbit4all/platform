@@ -32,7 +32,7 @@ public class BinaryContentTest {
   public static final String BINARYDATA_SCHEMA = "testFS";
 
   final static BinaryData testFile =
-      new BinaryData(new File("src/test/resources/lorem-ipsum.pdf"));
+      new BinaryData(new File("test/resources/lorem-ipsum.pdf"));
 
   @Autowired
   private BinaryDataApi binaryDataApi;
