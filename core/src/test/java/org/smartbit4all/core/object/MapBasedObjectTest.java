@@ -8,8 +8,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.api.mapbasedobject.bean.MapBasedObjectData;
 import org.smartbit4all.core.object.utility.MapBasedObjectUtil;
@@ -404,57 +407,137 @@ class MapBasedObjectTest {
     assertTrue(list.contains(addedNamesValue));
   }
 
-  // @Test
-  // void apiObjectRefTest() {
-  // List<ReferredBean> beans = new ArrayList<>();
-  // ReferredBean bean1 = new ReferredBean();
-  // bean1.setName("bean1");
-  // beans.add(bean1);
-  //
-  // Set<Class<?>> domainBeans;
-  // Map<Class<?>, ApiBeanDescriptor> descriptors;
-  // domainBeans = new HashSet<>();
-  // domainBeans.add(TestObject.class);
-  // domainBeans.add(ReferredBean.class);
-  // descriptors = ApiBeanDescriptor.of(domainBeans);
-  //
-  // TestObject testObj = new TestObject(beans);
-  // ApiObjectRef ref = new ApiObjectRef(null, testObj, descriptors);
-  // Optional<ObjectChange> change = ref.renderAndCleanChanges();
-  //
-  // ReferredBean bean2 = new ReferredBean();
-  // bean2.setName("bean2");
-  // beans.add(bean2);
-  // ref.setObject(testObj);
-  // Optional<ObjectChange> change2 = ref.renderAndCleanChanges();
-  //
-  // ReferredBean bean3 = new ReferredBean();
-  // bean3.setName("bean3");
-  // beans.add(bean3);
-  // ref.setObject(testObj);
-  // Optional<ObjectChange> change3 = ref.renderAndCleanChanges();
-  //
-  // beans.remove(1);
-  // ref.setObject(testObj);
-  // Optional<ObjectChange> change4 = ref.renderAndCleanChanges();
-  //
-  // System.out.println();
-  // }
+  @Test
+  void apiObjectRefTest() {
 
-  public class TestObject {
-    private List<ReferredBean> beans;
+    // render changes from ApiObjectRef
 
-    public TestObject(List<ReferredBean> beans) {
-      this.beans = beans;
-    }
+    MasterBean beanToRef = constructMasterBean();
 
-    public List<ReferredBean> getBeans() {
-      return beans;
-    }
+    Map<Class<?>, ApiBeanDescriptor> descriptors;
+    Set<Class<?>> domainBeans = new HashSet<>();
+    domainBeans.add(MasterBean.class);
+    domainBeans.add(MasterDetailBean.class);
+    domainBeans.add(ReferredBean.class);
+    domainBeans.add(ReferredDetailBean.class);
+    descriptors = ApiBeanDescriptor.of(domainBeans);
 
-    public void setBeans(List<ReferredBean> beans) {
-      this.beans = beans;
-    }
+    ApiObjectRef ref = new ApiObjectRef(null, beanToRef, descriptors);
+    ObjectChange refChanges = ref.renderAndCleanChanges().get();
+
+    // render changes from MapBasedObject
+
+    MapBasedObjectData beanToObj = constructMasterBeanData();
+
+    MapBasedObject obj = MapBasedObject.of(beanToObj);
+    ObjectChange objChanges = obj.renderAndCleanChanges().get();
+
+    // compare the changes from the two sources
+
+    assertEquals(refChanges.getProperties().size(), objChanges.getProperties().size());
+    assertEquals(refChanges.getReferences().size(), objChanges.getReferences().size());
+    assertEquals(refChanges.getCollections().size(), objChanges.getCollections().size());
+    assertEquals(refChanges.getReferencedObjects().size(),
+        objChanges.getReferencedObjects().size());
+    assertEquals(refChanges.getCollectionObjects().size(),
+        objChanges.getCollectionObjects().size());
+
+    // make new changes and render them
+
+    ref.setValueByPath("name", "newName");
+    ref.setValueByPath("referred/name", "newName");
+    ref.setValueByPath("referred/details/0/name", "newName");
+
+    // ReferredDetailBean detBean = new ReferredDetailBean();
+    // detBean.setName("newAddedDetail");
+    // ref.setValueByPath("referred/details/1", detBean);
+
+    refChanges = ref.renderAndCleanChanges().get();
+
+    obj.setValueByPath("name", "newName");
+    obj.setValueByPath("referred/name", "newName");
+    obj.setValueByPath("referred/details/0/name", "newName");
+
+    // TODO test it after fix
+    // MapBasedObjectData detData = new MapBasedObjectData();
+    // MapBasedObjectUtil.addNewPropertyToData(detData, "name", "newAddedDetail");
+    // obj.setValueByPath("referred/details/1", detData);
+
+    objChanges = obj.renderAndCleanChanges().get();
+
+    // compare the changes again from the two sources
+
+    assertEquals(refChanges.getProperties().size(), objChanges.getProperties().size());
+    assertEquals(refChanges.getReferences().size(), objChanges.getReferences().size());
+    assertEquals(refChanges.getCollections().size(), objChanges.getCollections().size());
+    assertEquals(refChanges.getReferencedObjects().size(),
+        objChanges.getReferencedObjects().size());
+    assertEquals(refChanges.getCollectionObjects().size(),
+        objChanges.getCollectionObjects().size());
   }
 
+  private MasterBean constructMasterBean() {
+    MasterBean bean1 = new MasterBean();
+    bean1.setCounter(1);
+    bean1.setName("name");
+    bean1.setValid(true);
+    bean1.setStringList(Arrays.asList("first", "second"));
+    {
+      ReferredBean refBean = new ReferredBean();
+      refBean.setName("refName");
+      {
+        ReferredDetailBean detBean = new ReferredDetailBean();
+        detBean.setName("refDetailName1");
+        refBean.addDetailsItem(detBean);
+      }
+      {
+        ReferredDetailBean detBean = new ReferredDetailBean();
+        detBean.setName("refDetailName2");
+        refBean.addDetailsItem(detBean);
+      }
+      bean1.setReferred(refBean);
+    }
+    {
+      MasterDetailBean detBean = new MasterDetailBean();
+      detBean.setDetailName("detailName1");
+      bean1.getDetails().add(detBean);
+    }
+    {
+      MasterDetailBean detBean = new MasterDetailBean();
+      detBean.setDetailName("detailName2");
+      bean1.getDetails().add(detBean);
+    }
+    return bean1;
+  }
+
+  private MapBasedObjectData constructMasterBeanData() {
+    MapBasedObjectData refDetailData1 = new MapBasedObjectData();
+    MapBasedObjectUtil.addNewPropertyToData(refDetailData1, "name", "refDetailName1");
+
+    MapBasedObjectData refDetailData2 = new MapBasedObjectData();
+    MapBasedObjectUtil.addNewPropertyToData(refDetailData2, "name", "refDetailName2");
+
+    MapBasedObjectData refData = new MapBasedObjectData();
+    MapBasedObjectUtil.addNewPropertyToData(refData, "name", "refName");
+    MapBasedObjectUtil.addNewPropertyToData(refData, "details",
+        Arrays.asList(refDetailData1, refDetailData2));
+
+    MapBasedObjectData masterDetailData1 = new MapBasedObjectData();
+    MapBasedObjectUtil.addNewPropertyToData(masterDetailData1, "detailName", "detailName1");
+
+    MapBasedObjectData masterDetailData2 = new MapBasedObjectData();
+    MapBasedObjectUtil.addNewPropertyToData(masterDetailData2, "detailName", "detailName2");
+
+    MapBasedObjectData masterBeanData = new MapBasedObjectData();
+    MapBasedObjectUtil.addNewPropertyToData(masterBeanData, "counter", 1);
+    MapBasedObjectUtil.addNewPropertyToData(masterBeanData, "name", "name");
+    MapBasedObjectUtil.addNewPropertyToData(masterBeanData, "valid", true);
+    MapBasedObjectUtil.addNewPropertyToData(masterBeanData, "stringList",
+        Arrays.asList("first", "second"));
+    MapBasedObjectUtil.addNewPropertyToData(masterBeanData, "referred", refData);
+    MapBasedObjectUtil.addNewPropertyToData(masterBeanData, "details",
+        Arrays.asList(masterDetailData1, masterDetailData2));
+
+    return masterBeanData;
+  }
 }

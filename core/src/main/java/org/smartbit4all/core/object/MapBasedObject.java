@@ -1,12 +1,12 @@
 package org.smartbit4all.core.object;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.smartbit4all.api.mapbasedobject.bean.MapBasedObjectData;
 import org.smartbit4all.api.mapbasedobject.bean.ObjectValue;
 import org.smartbit4all.api.mapbasedobject.bean.ObjectValueList;
@@ -46,12 +46,33 @@ public class MapBasedObject {
    */
   private MapBasedObject previousState;
 
-  private String name = null;
+  /**
+   * In case of an embedded object the path contains the property name of the parent objects in
+   * order separated by slashes.
+   */
+  private String path;
 
-  public MapBasedObject() {}
+  /**
+   * Constructor for root object.
+   */
+  public MapBasedObject() {
+    this.path = "";
+  }
 
-  public MapBasedObject(String name) {
-    this.name = name;
+  /**
+   * Constructor for embedded objects.
+   * 
+   * @param path The path includes in order the name of the parent objects containing this object.
+   */
+  private MapBasedObject(String path) {
+    this.path = path;
+  }
+
+  /**
+   * @return The path of the object.
+   */
+  public final String getPath() {
+    return path;
   }
 
   /**
@@ -62,7 +83,11 @@ public class MapBasedObject {
    * @return The new {@link MapBasedObject} including the given data properties.
    */
   public static final MapBasedObject of(MapBasedObjectData data) {
-    MapBasedObject result = new MapBasedObject();
+    return of(data, "");
+  }
+
+  private static final MapBasedObject of(MapBasedObjectData data, String path) {
+    MapBasedObject result = new MapBasedObject(path);
 
     setValuesByDataMap(result, data.getStringPropertyMap(), String.class);
     setValuesByDataMap(result, data.getStringListMap(), String.class);
@@ -77,17 +102,27 @@ public class MapBasedObject {
 
     Map<String, ObjectValue> objectPropertyMap = data.getObjectPropertyMap();
     if (objectPropertyMap != null) {
-      objectPropertyMap
-          .forEach((key, value) -> result.addProperty(key, of(value.getValue())));
+      objectPropertyMap.forEach(
+          (key, value) -> result.addProperty(key,
+              of(value.getValue(), getObjectPath(path, key))));
     }
 
     Map<String, ObjectValueList> objectListMap = data.getObjectListMap();
     if (objectListMap != null) {
-      objectListMap
-          .forEach((key, value) -> result.addProperty(key, listOf(value.getValues())));
+      objectListMap.forEach(
+          (key, value) -> result.addProperty(key,
+              listOf(value.getValues(), getObjectPath(path, key))));
     }
 
     return result;
+  }
+
+  private static String getObjectPath(String parentPath, String key) {
+    return parentPath.isEmpty() ? key : parentPath + "/" + key;
+  }
+
+  private void addProperty(String key, Object value) {
+    propertyMap.put(key, value);
   }
 
   private static void setValuesByDataMap(MapBasedObject object, Map<String, ?> dataMap,
@@ -107,7 +142,16 @@ public class MapBasedObject {
    * @return The new list of {@link MapBasedObject}s including the given data properties.
    */
   public static List<MapBasedObject> listOf(List<MapBasedObjectData> datas) {
-    return datas.stream().map(data -> of(data)).collect(Collectors.toList());
+    return listOf(datas, "");
+  }
+
+  private static List<MapBasedObject> listOf(List<MapBasedObjectData> datas, String path) {
+    List<MapBasedObject> result = new ArrayList<>();
+    int ind = 0;
+    for (MapBasedObjectData data : datas) {
+      result.add(of(data, path + "/" + ind++));
+    }
+    return result;
   }
 
   /**
@@ -123,10 +167,6 @@ public class MapBasedObject {
       MapBasedObjectUtil.addObjectPropertyToData(result, key, value);
     });
     return result;
-  }
-
-  private void addProperty(String key, Object value) {
-    propertyMap.put(key, value);
   }
 
   /**
@@ -150,111 +190,178 @@ public class MapBasedObject {
 
       Object actualValue = MapBasedObjectUtil.getActualValue(value);
       if (actualValue instanceof MapBasedObject) {
-        Optional<ObjectChange> refChangeOpt =
-            ((MapBasedObject) actualValue).renderAndCleanChanges();
-        if (refChangeOpt.isPresent()) {
-          if (result == null) {
-            result = new ObjectChange(null, changeState);
-          }
-          result.getReferences().add(new ReferenceChange(null, key, refChangeOpt.get()));
-        }
+        result = renderReferenceChange(result, changeState, key, actualValue);
 
-      } else if (actualValue instanceof List) {
-        List<?> list = (List<?>) actualValue;
-        if (list.isEmpty()) {
-          Object prevValue = previousState.propertyMap.get(key);
-          if (prevValue != null && prevValue instanceof List<?>) {
-            List<?> prevList = (List<?>) prevValue;
-            if (!prevList.isEmpty() && prevList.get(0) instanceof MapBasedObject) {
-              CollectionChange collectionChange = new CollectionChange(null, key);
-              int ind = 0;
-              for (Object obj : prevList) {
-                collectionChange.getChanges()
-                    .add(new ObjectChange(key + "/" + ind++, ChangeState.DELETED));
-              }
-              if (result == null) {
-                result = new ObjectChange(null, changeState);
-              }
-              result.getCollections().add(collectionChange);
-            }
-          }
-        } else if (list.get(0) instanceof MapBasedObject) {
-          CollectionChange collectionChange = new CollectionChange(null, key);
-          list.forEach(o -> {
-            Optional<ObjectChange> itemChangeOpt =
-                ((MapBasedObject) o).renderAndCleanChanges();
-            if (itemChangeOpt.isPresent()) {
-              collectionChange.getChanges().add(itemChangeOpt.get());
-            }
-          });
+      } else if (actualValue instanceof List && !MapBasedObjectUtil.isValueList(value)) {
+        result = renderCollectionChange(result, changeState, key, actualValue);
 
-          if (previousState != null) {
-            Object prevValue = previousState.propertyMap.get(key);
-            if (prevValue != null && prevValue instanceof List<?>) {
-              List<?> prevList = (List<?>) prevValue;
-              if (!prevList.isEmpty() && prevList.get(0) instanceof MapBasedObject) {
-                int ind = 0;
-                for (Object obj : prevList) {
-                  // TODO how to compare MapBasedObjects
-                  if (!list.contains(obj)) {
-                    collectionChange.getChanges()
-                        .add(new ObjectChange(key + "/" + ind, ChangeState.DELETED));
-                    ind++;
-                  }
-                }
-              }
-            }
-          }
-
-          if (!collectionChange.getChanges().isEmpty()) {
-            if (result == null) {
-              result = new ObjectChange(null, changeState);
-            }
-            result.getCollections().add(collectionChange);
-          }
-        }
-
-      } else if (actualValue == null) {
-        Object prevValue = previousState.propertyMap.get(key);
-        if (prevValue != null) {
-          if (result == null) {
-            result = new ObjectChange(null, changeState);
-          }
-          result.getReferences()
-              .add(new ReferenceChange(null, key, new ObjectChange(key, ChangeState.DELETED)));
-        }
+      } else if (value == null) {
+        result = renderDeletedReferenceChange(result, changeState, key);
 
       } else {
-        if (previousState == null || !previousState.propertyMap.containsKey(key)) {
-          if (actualValue != null) {
-            if (result == null) {
-              result = new ObjectChange(null, changeState);
-            }
-            result.getProperties().add(new PropertyChange(null, key, null, actualValue));
-          }
-
-        } else {
-          Object prevValue =
-              MapBasedObjectUtil.getActualValue(previousState.propertyMap.get(key));
-          if (!prevValue.equals(actualValue)) {
-            if (result == null) {
-              result = new ObjectChange(null, changeState);
-            }
-            result.getProperties().add(new PropertyChange(null, key, prevValue, actualValue));
-          }
-        }
+        result = renderPropertyChange(result, changeState, key, actualValue);
       }
     }
 
     // will it be necessary?
-    renderDeletedFromPropertyMapChanges(result);
+    result = renderDeletedFromPropertyMapChanges(result);
 
     previousState = deepCopy();
 
     return Optional.ofNullable(result);
   }
 
-  private void renderDeletedFromPropertyMapChanges(ObjectChange result) {
+  private ObjectChange renderReferenceChange(ObjectChange result, ChangeState changeState,
+      String key,
+      Object actualValue) {
+    MapBasedObject embeddedObj = (MapBasedObject) actualValue;
+    Optional<ObjectChange> refChangeOpt = embeddedObj.renderAndCleanChanges();
+    if (refChangeOpt.isPresent()) {
+      if (result == null) {
+        result = new ObjectChange(path, changeState);
+      }
+      ObjectChange refChange = refChangeOpt.get();
+      result.getReferences().add(new ReferenceChange(path, key, refChange));
+      result.getReferencedObjects().add(new ReferencedObjectChange(path, key,
+          new ObjectChangeSimple(embeddedObj.path, refChange.getOperation(), actualValue)));
+    }
+    return result;
+  }
+
+  private ObjectChange renderCollectionChange(ObjectChange result, ChangeState changeState,
+      String key, Object actualValue) {
+    List<?> list = (List<?>) actualValue;
+    if (list.isEmpty()) {
+      result = renderDeletedCollectionChange(result, changeState, key);
+
+    } else if (list.get(0) instanceof MapBasedObject) {
+      result = renderCollectionChange(result, changeState, key, list);
+    }
+    return result;
+  }
+
+  private ObjectChange renderCollectionChange(ObjectChange result, ChangeState changeState,
+      String key, List<?> list) {
+    CollectionChange collectionChange = new CollectionChange(path, key);
+    CollectionObjectChange collectionObjectChange = new CollectionObjectChange(path, key);
+    int ind = 0;
+    for (Object obj : list) {
+      Optional<ObjectChange> itemChangeOpt =
+          ((MapBasedObject) obj).renderAndCleanChanges();
+      if (itemChangeOpt.isPresent()) {
+        collectionChange.getChanges().add(itemChangeOpt.get());
+        collectionObjectChange.getChanges()
+            .add(new ObjectChangeSimple(getCollectionChangePath(key, ind),
+                itemChangeOpt.get().getOperation(), obj));
+      }
+      ind++;
+    }
+
+    // TODO how to compare MapBasedObject list items
+    // if (previousState != null) {
+    // Object prevValue = previousState.propertyMap.get(key);
+    // if (prevValue != null && prevValue instanceof List<?>) {
+    // List<?> prevList = (List<?>) prevValue;
+    // if (!prevList.isEmpty() && prevList.get(0) instanceof MapBasedObject) {
+    // ind = 0;
+    // for (Object obj : prevList) {
+    // if (!list.contains(obj)) {
+    // collectionChange.getChanges()
+    // .add(new ObjectChange(getCollectionChangePath(key, ind),
+    // ChangeState.DELETED));
+    // collectionObjectChange.getChanges()
+    // .add(new ObjectChangeSimple(getCollectionChangePath(key, ind),
+    // ChangeState.DELETED,
+    // obj));
+    // ind++;
+    // }
+    // }
+    // }
+    // }
+    // }
+
+    if (!collectionChange.getChanges().isEmpty()) {
+      if (result == null) {
+        result = new ObjectChange(path, changeState);
+      }
+      result.getCollections().add(collectionChange);
+      result.getCollectionObjects().add(collectionObjectChange);
+    }
+    return result;
+  }
+
+  private ObjectChange renderDeletedCollectionChange(ObjectChange result, ChangeState changeState,
+      String key) {
+    Object prevValue = previousState.propertyMap.get(key);
+    if (prevValue != null && prevValue instanceof List<?>) {
+      List<?> prevList = (List<?>) prevValue;
+      if (!prevList.isEmpty() && prevList.get(0) instanceof MapBasedObject) {
+        CollectionChange collectionChange = new CollectionChange(path, key);
+        CollectionObjectChange collectionObjectChange = new CollectionObjectChange(path, key);
+        int ind = 0;
+        for (Object obj : prevList) {
+          collectionChange.getChanges()
+              .add(new ObjectChange(getCollectionChangePath(key, ind), ChangeState.DELETED));
+          collectionObjectChange.getChanges()
+              .add(new ObjectChangeSimple(getCollectionChangePath(key, ind),
+                  ChangeState.DELETED,
+                  obj));
+          ind++;
+        }
+        if (result == null) {
+          result = new ObjectChange(path, changeState);
+        }
+        result.getCollections().add(collectionChange);
+        result.getCollectionObjects().add(collectionObjectChange);
+      }
+    }
+    return result;
+  }
+
+  private ObjectChange renderDeletedReferenceChange(ObjectChange result, ChangeState changeState,
+      String key) {
+    Object prevValue = previousState.propertyMap.get(key);
+    if (prevValue != null) {
+      if (result == null) {
+        result = new ObjectChange(path, changeState);
+      }
+      result.getReferences()
+          .add(new ReferenceChange(path, key, new ObjectChange(key, ChangeState.DELETED)));
+      result.getReferencedObjects().add(new ReferencedObjectChange(path, key,
+          new ObjectChangeSimple(path + StringConstant.SLASH + key, ChangeState.DELETED,
+              null)));
+    }
+    return result;
+  }
+
+  private ObjectChange renderPropertyChange(ObjectChange result, ChangeState changeState,
+      String key, Object actualValue) {
+    if (previousState == null || !previousState.propertyMap.containsKey(key)) {
+      if (actualValue != null) {
+        if (result == null) {
+          result = new ObjectChange(path, changeState);
+        }
+        result.getProperties().add(new PropertyChange(path, key, null, actualValue));
+      }
+
+    } else {
+      Object prevValue =
+          MapBasedObjectUtil.getActualValue(previousState.propertyMap.get(key));
+      if (!prevValue.equals(actualValue)) {
+        if (result == null) {
+          result = new ObjectChange(path, changeState);
+        }
+        result.getProperties().add(new PropertyChange(path, key, prevValue, actualValue));
+      }
+    }
+    return result;
+  }
+
+  private String getCollectionChangePath(String key, int index) {
+    return getObjectPath(path, key) + StringConstant.SLASH + index;
+  }
+
+  private ObjectChange renderDeletedFromPropertyMapChanges(ObjectChange result) {
     if (previousState != null) {
       for (Map.Entry<String, Object> entry : previousState.propertyMap.entrySet()) {
         String key = entry.getKey();
@@ -265,29 +372,43 @@ public class MapBasedObject {
           if (actualValue instanceof MapBasedObject) {
             ObjectChange change = new ObjectChange(key, ChangeState.DELETED);
             if (result == null) {
-              result = new ObjectChange(null, ChangeState.MODIFIED);
+              result = new ObjectChange(path, ChangeState.MODIFIED);
             }
-            result.getReferences().add(new ReferenceChange(null, key, change));
+            result.getReferences().add(new ReferenceChange(path, key, change));
+            result.getReferencedObjects().add(new ReferencedObjectChange(path, key,
+                new ObjectChangeSimple(path + StringConstant.SLASH + key, ChangeState.DELETED,
+                    null)));
 
           } else if (actualValue instanceof List) {
             List<?> list = (List<?>) actualValue;
             if (!list.isEmpty()) {
-              CollectionChange collectionChange = new CollectionChange(null, key);
-              list.forEach(o -> {
-                ObjectChange change = new ObjectChange(key, ChangeState.DELETED);
-                collectionChange.getChanges().add(change);
-              });
+              CollectionChange collectionChange = new CollectionChange(path, key);
+              CollectionObjectChange collectionObjectChange = new CollectionObjectChange(path, key);
+
+              int ind = 0;
+              for (Object obj : list) {
+                collectionChange.getChanges()
+                    .add(new ObjectChange(getCollectionChangePath(key, ind), ChangeState.DELETED));
+                collectionObjectChange.getChanges()
+                    .add(new ObjectChangeSimple(getCollectionChangePath(key, ind),
+                        ChangeState.DELETED,
+                        obj));
+                ind++;
+              }
+
               if (!collectionChange.getChanges().isEmpty()) {
                 if (result == null) {
-                  result = new ObjectChange(null, ChangeState.MODIFIED);
+                  result = new ObjectChange(path, ChangeState.MODIFIED);
                 }
                 result.getCollections().add(collectionChange);
+                result.getCollectionObjects().add(collectionObjectChange);
               }
             }
           }
         }
       }
     }
+    return result;
   }
 
   /**
@@ -306,7 +427,7 @@ public class MapBasedObject {
 
   /**
    * @param path
-   * @return The value found in the property map by the given path.
+   * @return The actual value found in the property map by the given path.
    */
   public Object getValueByPath(String path) {
     String rootPath = PathUtility.getRootPath(path);
@@ -360,8 +481,9 @@ public class MapBasedObject {
    * Sets the given value to the property found by the given path.
    * 
    * @param path
-   * @param value
-   * @param clazz
+   * @param value The actual value that will be set to the property value.
+   * @param clazz Defines the property value type, if the property is newly added and the value is
+   *        null or empty list.
    */
   public void setValueByPath(String path, Object value, Class<?> clazz) {
     String lastPath = PathUtility.getLastPath(path);
@@ -471,13 +593,26 @@ public class MapBasedObject {
     }
   }
 
+  /**
+   * @param path The parent object of the property found by this path will be searched. If a
+   *        MapBasedObject is not found in the middle of the path, it will be created.
+   * @return The MapBasedObject that contains directly the property found by the given path.
+   */
   private MapBasedObject getParentObject(String path) {
     String parentPath = PathUtility.getParentPath(path);
     if (parentPath == null) {
       return this;
     }
+    return getOrCreateObject(parentPath);
+  }
 
-    String rootPath = PathUtility.getRootPath(parentPath);
+  /**
+   * @param path The MapBasedObject will be searched by this path. If a MapBasedObject is not found
+   *        in the middle of the path, it will be created.
+   * @return The MapBasedObject found (or created) by the given path.
+   */
+  private MapBasedObject getOrCreateObject(String path) {
+    String rootPath = PathUtility.getRootPath(path);
     Object value = propertyMap.get(rootPath);
 
     if (value == null) {
@@ -486,26 +621,26 @@ public class MapBasedObject {
     }
 
     if (value instanceof MapBasedObject) {
-      if (PathUtility.getPathSize(parentPath) == 1) {
+      if (PathUtility.getPathSize(path) == 1) {
         return (MapBasedObject) value;
       }
-      value = ((MapBasedObject) value).getParentObject(PathUtility.nextFullPath(parentPath));
+      value = ((MapBasedObject) value).getOrCreateObject(PathUtility.nextFullPath(path));
 
     } else if (value instanceof List<?> &&
         !((List<?>) value).isEmpty() &&
         ((List<?>) value).get(0) instanceof MapBasedObject) {
 
-      if (PathUtility.getPathSize(parentPath) == 1) {
+      if (PathUtility.getPathSize(path) == 1) {
         return this;
       } else {
-        String nextPath = PathUtility.nextFullPath(parentPath);
+        String nextPath = PathUtility.nextFullPath(path);
         try {
           int index = Integer.parseInt(PathUtility.getRootPath(nextPath));
           List<MapBasedObject> list = (List<MapBasedObject>) value;
-          if (PathUtility.getPathSize(parentPath) == 2) {
+          if (PathUtility.getPathSize(path) == 2) {
             return list.get(index);
           } else {
-            value = list.get(index).getParentObject(PathUtility.nextFullPath(nextPath));
+            value = list.get(index).getOrCreateObject(PathUtility.nextFullPath(nextPath));
           }
         } catch (NumberFormatException e) {
           throw new IllegalArgumentException(

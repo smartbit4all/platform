@@ -1,6 +1,10 @@
 package org.smartbit4all.core.object;
 
-import org.smartbit4all.core.object.ObservableObjectImpl.ObjectPropertyPath;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import org.smartbit4all.core.utility.PathUtility;
+import com.google.common.base.Strings;
 
 public class ObservableObjectHelper {
 
@@ -15,4 +19,50 @@ public class ObservableObjectHelper {
     return text == null ? "" : text.toUpperCase();
   }
 
+  static class ObjectPropertyPath {
+    /**
+     * Path within the object, separated by "/" characters.
+     */
+    String path;
+
+    /**
+     * Name of the property / reference / collection.
+     */
+    String property;
+
+    @Override
+    public String toString() {
+      return path + "." + property;
+    }
+  }
+
+  static ObjectPropertyPath processPathParameter(String... propertyPath) {
+    // should be non-empty
+    if (propertyPath == null || propertyPath.length == 0) {
+      throw new IllegalArgumentException(
+          "No path was given when subscribing to observable object changes!");
+    }
+    // first item can be null or empty string - skip it
+    if (Strings.isNullOrEmpty(propertyPath[0])) {
+      if (propertyPath.length == 1) {
+        throw new IllegalArgumentException(
+            "Empty path was given when subscribing to observable object changes!");
+      }
+    }
+    // process all path parts: first split by "/"
+    List<String[]> processedPathsList = new ArrayList<>();
+    for (int i = 0; i < propertyPath.length; i++) {
+      processedPathsList.add(PathUtility.decomposePath(propertyPath[i]));
+    }
+    // then collect all parts, ignore empty ones
+    String[] processedPaths = processedPathsList.stream()
+        .flatMap(Arrays::stream)
+        .filter(part -> !Strings.isNullOrEmpty(part))
+        .toArray(String[]::new);
+
+    ObjectPropertyPath path = new ObjectPropertyPath();
+    path.path = PathUtility.concatPath(false, processedPaths);
+    path.property = processedPaths[processedPaths.length - 1];
+    return path;
+  }
 }

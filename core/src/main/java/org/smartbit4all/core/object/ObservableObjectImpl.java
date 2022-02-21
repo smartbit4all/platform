@@ -1,14 +1,11 @@
 package org.smartbit4all.core.object;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.core.event.ListenerAware;
-import org.smartbit4all.core.utility.PathUtility;
-import com.google.common.base.Strings;
+import org.smartbit4all.core.object.ObservableObjectHelper.ObjectPropertyPath;
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.functions.Consumer;
@@ -108,7 +105,7 @@ public final class ObservableObjectImpl implements ObservableObject, ListenerAwa
   @Override
   public Disposable onPropertyChange(@NonNull Consumer<? super PropertyChange> onPropertyChange,
       String... propertyPath) {
-    ObjectPropertyPath path = processPathParameter(propertyPath);
+    ObjectPropertyPath path = ObservableObjectHelper.processPathParameter(propertyPath);
     Disposable disposable = propertyChangePublisher
         .filter(change -> ObservableObjectHelper.pathEquals(change, path))
         .subscribe(onPropertyChange);
@@ -130,7 +127,7 @@ public final class ObservableObjectImpl implements ObservableObject, ListenerAwa
   @Override
   public Disposable onReferenceChange(@NonNull Consumer<? super ReferenceChange> onReferenceChange,
       String... referencePath) {
-    ObjectPropertyPath path = processPathParameter(referencePath);
+    ObjectPropertyPath path = ObservableObjectHelper.processPathParameter(referencePath);
     return referenceChangePublisher
         .filter(change -> ObservableObjectHelper.pathEquals(change, path))
         .subscribe(onReferenceChange);
@@ -140,7 +137,7 @@ public final class ObservableObjectImpl implements ObservableObject, ListenerAwa
   public Disposable onReferencedObjectChange(
       @NonNull Consumer<? super ReferencedObjectChange> onReferencedObjectChange,
       String... referencePath) {
-    ObjectPropertyPath path = processPathParameter(referencePath);
+    ObjectPropertyPath path = ObservableObjectHelper.processPathParameter(referencePath);
     Disposable disposable = referencedObjectChangePublisher
         .filter(change -> ObservableObjectHelper.pathEquals(change, path))
         .subscribe(onReferencedObjectChange);
@@ -170,7 +167,7 @@ public final class ObservableObjectImpl implements ObservableObject, ListenerAwa
   @Override
   public Disposable onCollectionChange(
       @NonNull Consumer<? super CollectionChange> onCollectionChange, String... collectionPath) {
-    ObjectPropertyPath path = processPathParameter(collectionPath);
+    ObjectPropertyPath path = ObservableObjectHelper.processPathParameter(collectionPath);
     return collectionChangePublisher
         .filter(change -> ObservableObjectHelper.pathEquals(change, path))
         .subscribe(onCollectionChange);
@@ -180,7 +177,7 @@ public final class ObservableObjectImpl implements ObservableObject, ListenerAwa
   public Disposable onCollectionObjectChange(
       @NonNull Consumer<? super CollectionObjectChange> onCollectionObjectChange,
       String... collectionPath) {
-    ObjectPropertyPath path = processPathParameter(collectionPath);
+    ObjectPropertyPath path = ObservableObjectHelper.processPathParameter(collectionPath);
     Disposable disposable = collectionObjectChangePublisher
         .filter(change -> ObservableObjectHelper.pathEquals(change, path))
         .subscribe(onCollectionObjectChange);
@@ -208,52 +205,5 @@ public final class ObservableObjectImpl implements ObservableObject, ListenerAwa
       }
     }
     return disposable;
-  }
-
-  static class ObjectPropertyPath {
-    /**
-     * Path within the object, separated by "/" characters.
-     */
-    String path;
-
-    /**
-     * Name of the property / reference / collection.
-     */
-    String property;
-
-    @Override
-    public String toString() {
-      return path + "." + property;
-    }
-  }
-
-  private ObjectPropertyPath processPathParameter(String... propertyPath) {
-    // should be non-empty
-    if (propertyPath == null || propertyPath.length == 0) {
-      throw new IllegalArgumentException(
-          "No path was given when subscribing to observable object changes!");
-    }
-    // first item can be null or empty string - skip it
-    if (Strings.isNullOrEmpty(propertyPath[0])) {
-      if (propertyPath.length == 1) {
-        throw new IllegalArgumentException(
-            "Empty path was given when subscribing to observable object changes!");
-      }
-    }
-    // process all path parts: first split by "/"
-    List<String[]> processedPathsList = new ArrayList<>();
-    for (int i = 0; i < propertyPath.length; i++) {
-      processedPathsList.add(PathUtility.decomposePath(propertyPath[i]));
-    }
-    // then collect all parts, ignore empty ones
-    String[] processedPaths = processedPathsList.stream()
-        .flatMap(Arrays::stream)
-        .filter(part -> !Strings.isNullOrEmpty(part))
-        .toArray(String[]::new);
-
-    ObjectPropertyPath path = new ObjectPropertyPath();
-    path.path = PathUtility.concatPath(false, processedPaths);
-    path.property = processedPaths[processedPaths.length - 1];
-    return path;
   }
 }
