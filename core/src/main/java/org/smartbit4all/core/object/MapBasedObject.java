@@ -471,7 +471,6 @@ public class MapBasedObject {
     }
   }
 
-  // object/objects/2/name --- object/objects ---
   private MapBasedObject getParentObject(String path) {
     String parentPath = PathUtility.getParentPath(path);
     if (parentPath == null) {
@@ -513,10 +512,9 @@ public class MapBasedObject {
               "Item index not found after MapBasedObject list property name, path: " + path);
         }
       }
+    } else if (MapBasedObjectUtil.isValueList(value)) {
+      return this;
     } else {
-
-      // TODO handle proeprty value list with item index
-
       throw new IllegalArgumentException(
           "Not embedded single MapBasedObject or list found in the middle of the path, class: " +
               (value == null ? "null" : value.getClass().getName()));

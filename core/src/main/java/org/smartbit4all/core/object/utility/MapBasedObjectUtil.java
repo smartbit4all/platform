@@ -535,4 +535,12 @@ public class MapBasedObjectUtil {
       }
     }
   }
+
+  public static boolean isValueList(Object value) {
+    return value instanceof StringValueList ||
+        value instanceof IntegerValueList ||
+        value instanceof LongValueList ||
+        value instanceof BooleanValueList ||
+        value instanceof LocalDateTimeValueList;
+  }
 }

@@ -8,11 +8,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.api.mapbasedobject.bean.MapBasedObjectData;
 import org.smartbit4all.core.object.utility.MapBasedObjectUtil;
@@ -290,10 +287,6 @@ class MapBasedObjectTest {
     assertThrows(IllegalArgumentException.class,
         () -> object.setValueByPath(addressKey + "/" + numberKey, 2));
 
-    assertThrows(IllegalArgumentException.class,
-        () -> object.setValueByPath(numberDataKey + "/" + numberKey, 2));
-
-    object.setValueByPath(numberDataKey, new MapBasedObjectData());
     object.setValueByPath(numberDataKey + "/" + numberKey, 2);
     assertEquals(2, object.getValueByPath(numberDataKey + "/" + numberKey));
 
@@ -411,42 +404,42 @@ class MapBasedObjectTest {
     assertTrue(list.contains(addedNamesValue));
   }
 
-  @Test
-  void apiObjectRefTest() {
-    List<ReferredBean> beans = new ArrayList<>();
-    ReferredBean bean1 = new ReferredBean();
-    bean1.setName("bean1");
-    beans.add(bean1);
-
-    Set<Class<?>> domainBeans;
-    Map<Class<?>, ApiBeanDescriptor> descriptors;
-    domainBeans = new HashSet<>();
-    domainBeans.add(TestObject.class);
-    domainBeans.add(ReferredBean.class);
-    descriptors = ApiBeanDescriptor.of(domainBeans);
-
-    TestObject testObj = new TestObject(beans);
-    ApiObjectRef ref = new ApiObjectRef(null, testObj, descriptors);
-    Optional<ObjectChange> change = ref.renderAndCleanChanges();
-
-    ReferredBean bean2 = new ReferredBean();
-    bean2.setName("bean2");
-    beans.add(bean2);
-    ref.setObject(testObj);
-    Optional<ObjectChange> change2 = ref.renderAndCleanChanges();
-
-    ReferredBean bean3 = new ReferredBean();
-    bean3.setName("bean3");
-    beans.add(bean3);
-    ref.setObject(testObj);
-    Optional<ObjectChange> change3 = ref.renderAndCleanChanges();
-
-    beans.remove(1);
-    ref.setObject(testObj);
-    Optional<ObjectChange> change4 = ref.renderAndCleanChanges();
-
-    System.out.println();
-  }
+  // @Test
+  // void apiObjectRefTest() {
+  // List<ReferredBean> beans = new ArrayList<>();
+  // ReferredBean bean1 = new ReferredBean();
+  // bean1.setName("bean1");
+  // beans.add(bean1);
+  //
+  // Set<Class<?>> domainBeans;
+  // Map<Class<?>, ApiBeanDescriptor> descriptors;
+  // domainBeans = new HashSet<>();
+  // domainBeans.add(TestObject.class);
+  // domainBeans.add(ReferredBean.class);
+  // descriptors = ApiBeanDescriptor.of(domainBeans);
+  //
+  // TestObject testObj = new TestObject(beans);
+  // ApiObjectRef ref = new ApiObjectRef(null, testObj, descriptors);
+  // Optional<ObjectChange> change = ref.renderAndCleanChanges();
+  //
+  // ReferredBean bean2 = new ReferredBean();
+  // bean2.setName("bean2");
+  // beans.add(bean2);
+  // ref.setObject(testObj);
+  // Optional<ObjectChange> change2 = ref.renderAndCleanChanges();
+  //
+  // ReferredBean bean3 = new ReferredBean();
+  // bean3.setName("bean3");
+  // beans.add(bean3);
+  // ref.setObject(testObj);
+  // Optional<ObjectChange> change3 = ref.renderAndCleanChanges();
+  //
+  // beans.remove(1);
+  // ref.setObject(testObj);
+  // Optional<ObjectChange> change4 = ref.renderAndCleanChanges();
+  //
+  // System.out.println();
+  // }
 
   public class TestObject {
     private List<ReferredBean> beans;
