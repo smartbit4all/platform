@@ -186,7 +186,8 @@ public class ObjectApiImpl implements ObjectApi, InitializingBean {
       Class<?> clazz = Class.forName(getClassNameFromAlias(rootPath));
       return definition(clazz);
     } catch (ClassNotFoundException e) {
-      throw new IllegalArgumentException("Unable to initiate " + rootPath + " class.", e);
+      throw new IllegalArgumentException(
+          "Unable to initiate " + rootPath + " class from " + objectUri + " URI.", e);
     }
   }
 
@@ -207,7 +208,7 @@ public class ObjectApiImpl implements ObjectApi, InitializingBean {
     return result;
   }
 
-  private static String getDefaultAlias(Class<?> clazz) {
+  public static String getDefaultAlias(Class<?> clazz) {
     return clazz.getName().replace('.', '_');
   }
 

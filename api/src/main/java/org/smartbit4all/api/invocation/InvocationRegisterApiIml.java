@@ -12,6 +12,7 @@ import org.smartbit4all.api.contribution.ContributionApi;
 import org.smartbit4all.api.contribution.PrimaryApi;
 import org.smartbit4all.api.invocation.bean.ApiData;
 import org.smartbit4all.api.invocation.bean.ApiRegistryData;
+import org.smartbit4all.core.object.ObjectApiImpl;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
@@ -72,7 +73,7 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Initiali
    */
   private URI registryUri =
       URI.create(Invocations.APIREGISTRATION_SCHEME + StringConstant.COLON + StringConstant.SLASH
-          + ApiRegistryData.class.getName().replace(StringConstant.DOT, StringConstant.SLASH));
+          + ObjectApiImpl.getDefaultAlias(ApiRegistryData.class));
 
   @Override
   public void afterPropertiesSet() throws Exception {

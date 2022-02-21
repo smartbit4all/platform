@@ -38,7 +38,7 @@ public class PathUtility {
   public static String getRootPath(String path) {
     Path fullPath = Paths.get(path);
     if (fullPath.getNameCount() < 2) {
-      return path;
+      return path.startsWith(StringConstant.SLASH) ? path.substring(1) : path;
     }
 
     return fullPath.iterator().next().toString();
