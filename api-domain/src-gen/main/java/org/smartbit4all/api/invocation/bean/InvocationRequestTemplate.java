@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.UUID;
 import org.smartbit4all.api.invocation.bean.InvocationParameterTemplate;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 
@@ -133,6 +134,7 @@ public class InvocationRequestTemplate {
    * The fully qualified name of the api. In case of java it is the name of the class.
    * @return apiClass
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @ApiModelProperty(required = true, value = "The fully qualified name of the api. In case of java it is the name of the class.")
   @JsonProperty(API_CLASS)
@@ -215,6 +217,7 @@ public class InvocationRequestTemplate {
    * The name of the method to call
    * @return methodName
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @ApiModelProperty(required = true, value = "The name of the method to call")
   @JsonProperty(METHOD_NAME)
@@ -247,6 +250,7 @@ public class InvocationRequestTemplate {
    * Get parameters
    * @return parameters
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @Valid
   @ApiModelProperty(required = true, value = "")

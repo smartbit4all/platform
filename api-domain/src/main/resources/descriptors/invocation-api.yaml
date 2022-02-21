@@ -58,3 +58,89 @@ components:
         typeClass:
           type: string
           description: The fully qualified type class name of the parameter.
+    ApiRegistryData:
+      type: object
+      required: [uri,apis]
+      description: |
+        The common registry entry for the invocation system. It has a special URI to be able to identify it globally.
+      properties:
+        uri:
+          type: string
+          format: uri
+        apis:
+          type: string
+          description: |
+            The available apis of a tenant.
+          additionalProperties:
+            type: string
+            format: uri
+    ApiData:
+      type: object
+      required: [uri,module,interfaceName,name,methods]
+      description: |
+        An api is a programming interface consists of methods to call. An api can be provided by many deployment units at the
+        same time. When a deployment unit starts it collects all the apis and methods it has and register it into the storage.
+        If another deployment unit has a registration for this api as a remote proxy then this proxy is going to be initiated
+        and will be able to call the newly started node. If we have a primary api that collects the available secondary apis
+        of an interface then the primary api local instances will be notified about the availability of the given interface
+        instance. The remote registration is not saved here to avoid circular references.
+      properties:
+        uri:
+          type: string
+          format: uri
+        module:
+          type: string
+          description: |
+            The name of the module that is responsible for the given api. It is mandatory to be able to identify exactly the
+            given api.
+        interfaceName:
+          type: string
+          description: |
+            The fully qualified name of the api interface. In case of java it is the name of the interface. There can be more than
+            one implementation from an interface class provided by one or more module. But they have to have a unique name in this
+            case.
+        name:
+          type: string
+          description: |
+            The name of the instance that is equal to the name of the interface if we have only one instance. But if we have
+            more than one provided implementation than it is uniquely identify them. Normally in java spring application this
+            is the name of the service. It is useful when we have multiple secondary apis registered and the primary api is
+            going to collect them all.
+        methods:
+          type: array
+          description: |
+            The available methods of the given api interface. All of the methods in the interface are provided by default. If we need
+            limited interface then we need to create this interface and publish it.
+          items:
+            $ref: '#/components/schemas/MethodData'
+    MethodData:
+      type: object
+      required: [uri,name,parameters]
+      description: |
+        The method of an api that can be called.
+      properties:
+        uri:
+          type: string
+          format: uri
+        name:
+          type: string
+        returnType:
+          type: string
+          description: The qualified name of the type / class or structure. Migth be empty if there is no return value at all.
+        parameters:
+          type: array
+          description: The parameters of the given method.
+          items:
+            $ref: '#/components/schemas/ParameterData'
+    ParameterData:
+      type: object
+      required: [name,typeName]
+      description: |
+        The parameter of a given method.
+      properties:
+        name:
+          type: string
+          description: Unique name of the parameter.
+        typeName:
+          type: string
+          description: The fully qualified name of the parameter data.

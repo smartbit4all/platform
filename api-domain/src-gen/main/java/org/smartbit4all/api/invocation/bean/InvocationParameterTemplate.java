@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 
@@ -57,6 +58,7 @@ public class InvocationParameterTemplate {
    * The symbolic name of the parameter. Must be set and unique inside an invocation request template.
    * @return name
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @ApiModelProperty(required = true, value = "The symbolic name of the parameter. Must be set and unique inside an invocation request template.")
   @JsonProperty(NAME)
@@ -111,6 +113,7 @@ public class InvocationParameterTemplate {
    * The fully qualified type class name of the parameter.
    * @return typeClass
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @ApiModelProperty(required = true, value = "The fully qualified type class name of the parameter.")
   @JsonProperty(TYPE_CLASS)

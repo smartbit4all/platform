@@ -88,7 +88,6 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
     super();
     this.objectApi = objectApi;
     storage = new Storage(STORAGEMGMT, objectApi, this);
-    storage.setVersioned(false);
   }
 
   @Override
@@ -122,6 +121,7 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
   @Override
   public <T> List<StorageObject<T>> load(Storage storage, List<URI> uris, Class<T> clazz,
       StorageLoadOption... options) {
+    // TODO The same thread locks must be used and acquired by all the threads.
     return uris.parallelStream().map(u -> load(storage, u, clazz, options))
         .collect(Collectors.toList());
   }

@@ -2,6 +2,8 @@ package org.smartbit4all.api.config;
 
 import org.smartbit4all.api.binarydata.BinaryDataMaintenanceApi;
 import org.smartbit4all.api.binarydata.BinaryDataMaintenanceApiImpl;
+import org.smartbit4all.api.invocation.InvocationRegisterApi;
+import org.smartbit4all.api.invocation.InvocationRegisterApiIml;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -18,6 +20,11 @@ public class PlatformApiScheduledConfig {
   @Bean
   public BinaryDataMaintenanceApi binaryDataMaintenanceApi() {
     return new BinaryDataMaintenanceApiImpl();
+  }
+
+  @Bean
+  public InvocationRegisterApi invocationRegisterApi() {
+    return new InvocationRegisterApiIml();
   }
 
 }

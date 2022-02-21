@@ -1,6 +1,5 @@
 package org.smartbit4all.storage.fs;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
@@ -37,6 +36,7 @@ import org.smartbit4all.domain.data.storage.StorageObjectLock;
 import org.smartbit4all.domain.data.storage.StorageObjectReferenceEntry;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.io.ByteStreams;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @TestInstance(Lifecycle.PER_CLASS)
 @Disabled
@@ -108,6 +108,18 @@ class StorageTest {
   @Test
   void saveLoadDeleteTest() throws Exception {
     Storage storage = storageApi.get(StorageTestConfig.TESTSCHEME);
+
+    saveAndCheckLoad(storage, "test string1");
+    saveAndCheckLoad(storage, "test string2");
+
+    testApi.saveAndLoad(storage, MY_MAP);
+
+    // assertFalse(loaded.isPresent());
+  }
+
+  @Test
+  void saveLoadDeleteTestForSingleVersion() throws Exception {
+    Storage storage = storageApi.get(StorageTestConfig.TESTSCHEMESINGLE);
 
     saveAndCheckLoad(storage, "test string1");
     saveAndCheckLoad(storage, "test string2");

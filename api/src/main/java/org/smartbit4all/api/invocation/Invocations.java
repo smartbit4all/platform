@@ -1,6 +1,7 @@
 package org.smartbit4all.api.invocation;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.net.URI;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -22,6 +23,7 @@ import org.smartbit4all.domain.data.storage.StorageObjectReferenceEntry;
 public class Invocations {
 
   public static final String INVOCATION_SCHEME = "invocation";
+  public static final String APIREGISTRATION_SCHEME = "apis";
 
   public static final String PARAMETER1 = "parameter1";
   public static final String LOCAL = "local";
@@ -238,6 +240,27 @@ public class Invocations {
 
   private static String constructConsumerName(String consumerName) {
     return SUBSCRIBED_CONSUMERS_PREFIX + consumerName;
+  }
+
+  /**
+   * Constructs a new provider api instance for the configuration. Should be used from the Java
+   * based configurations when constructing the instances.
+   * 
+   * @param <T> The type of the interface
+   * @param module The name of the module that provides the given api.
+   * @param name The name of the api if it means anything. For singleton apis it influences nothing.
+   * @param apiInstance The api instance that will serve the requests at the end.
+   */
+  public static <T> ProviderApiInvocationHandler<T> asProvider(Class<T> interfaceClass,
+      String module, String name,
+      T apiInstance) {
+    return ProviderApiInvocationHandler.providerOf(interfaceClass, module, name, apiInstance);
+  }
+
+  @SuppressWarnings("unchecked")
+  public static <T> T asRemote(Class<T> interfaceClass, String module, String name) {
+    return (T) Proxy.newProxyInstance(interfaceClass.getClassLoader(), new Class[] {interfaceClass},
+        new RemoteApiInvocationHandler(module, interfaceClass, name));
   }
 
 }

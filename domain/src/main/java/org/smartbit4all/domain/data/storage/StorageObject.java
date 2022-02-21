@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.invocation.bean.InvocationRequestTemplate;
 import org.smartbit4all.api.storage.bean.ObjectReference;
 import org.smartbit4all.api.storage.bean.ObjectVersion;
@@ -93,7 +94,7 @@ public final class StorageObject<T> {
    * 
    * @author Peter Boros
    */
-  public enum VersionPolicyMode {
+  public enum VersionPolicy {
     /**
      * In this case all the saves results new and new versions about the given object regardless of
      * if it was really changed or not.
@@ -110,13 +111,6 @@ public final class StorageObject<T> {
      */
     SINGLEVERSION
   }
-
-  /**
-   * These are the version policies that can be used in the storage object to instruct the object
-   * storage about the new and new versions of an object. The default is the
-   * {@link VersionPolicyMode#ALLVERSION} to ensure the maximal audit level.
-   */
-  private VersionPolicyMode versionPolicy = VersionPolicyMode.ALLVERSION;
 
   /**
    * If it's true then the save will check if the current version matched with version is the same.
@@ -231,7 +225,11 @@ public final class StorageObject<T> {
    */
   public final StorageObject<T> setObject(T object) {
     this.object = object;
-    definition.setUri(object, uri);
+    if (definition.isExplicitUri()) {
+      uri = definition.getUri(object);
+    } else {
+      definition.setUri(object, uri);
+    }
     return this;
   }
 
@@ -456,23 +454,10 @@ public final class StorageObject<T> {
   }
 
   /**
-   * These are the version policies that can be used in the storage object to instruct the object
-   * storage about the new and new versions of an object.
-   * 
-   * @return The {@link #versionPolicy}
+   * @return The serialized form of the object by the {@link ObjectDefinition} defined.
    */
-  public final VersionPolicyMode getVersionPolicy() {
-    return versionPolicy;
-  }
-
-  /**
-   * These are the version policies that can be used in the storage object to instruct the object
-   * storage about the new and new versions of an object.
-   * 
-   * @param versionPolicy The {@link #versionPolicy}
-   */
-  final void setVersionPolicy(VersionPolicyMode versionPolicy) {
-    this.versionPolicy = versionPolicy;
+  public final BinaryData serialize() {
+    return definition.serialize(object);
   }
 
 }

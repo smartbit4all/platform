@@ -21,7 +21,7 @@ import org.smartbit4all.api.storage.bean.StorageSettings;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.utility.StringConstant;
-import org.smartbit4all.domain.data.storage.StorageObject.VersionPolicyMode;
+import org.smartbit4all.domain.data.storage.StorageObject.VersionPolicy;
 
 /**
  * 
@@ -72,10 +72,11 @@ public final class Storage {
   private URI settingsuri;
 
   /**
-   * The given storage is versioned by default. It means that we save all the changes of an object
-   * as new version.
+   * These are the version policies that can be used in the storage object to instruct the object
+   * storage about the new and new versions of an object. The default is the
+   * {@link VersionPolicy#ALLVERSION} to ensure the maximal audit level.
    */
-  private boolean versioned = true;
+  private VersionPolicy versionPolicy = VersionPolicy.ALLVERSION;
 
   /**
    * Construct a new storage that is a logical schema for the storage system.
@@ -85,9 +86,23 @@ public final class Storage {
    * @param objectStorage
    */
   public Storage(String scheme, ObjectApi objectApi, ObjectStorage objectStorage) {
+    this(scheme, objectApi, objectStorage, VersionPolicy.ALLVERSION);
+  }
+
+  /**
+   * Construct a new storage that is a logical schema for the storage system.
+   * 
+   * @param scheme
+   * @param objectApi
+   * @param objectStorage
+   * @param versionPolicy
+   */
+  public Storage(String scheme, ObjectApi objectApi, ObjectStorage objectStorage,
+      VersionPolicy versionPolicy) {
     this.objectStorage = objectStorage;
     this.objectApi = objectApi;
     this.scheme = scheme;
+    this.versionPolicy = versionPolicy;
   }
 
   /**
@@ -110,10 +125,9 @@ public final class Storage {
     // At this point we already know the unique URI that can be used to refer from other objects
     // also.
     UUID uuid = UUID.randomUUID();
-    storageObject.setUri(constructUri(objectDefinition, uuid));
     storageObject.setUuid(uuid);
-    if (!versioned) {
-      storageObject.setVersionPolicy(VersionPolicyMode.SINGLEVERSION);
+    if (!objectDefinition.isExplicitUri()) {
+      storageObject.setUri(constructUri(objectDefinition, uuid));
     }
     return storageObject;
   }
@@ -540,12 +554,24 @@ public final class Storage {
     return objectStorage.getLock(objectUri);
   }
 
-  public final boolean isVersioned() {
-    return versioned;
+  /**
+   * These are the version policies that can be used in the storage object to instruct the object
+   * storage about the new and new versions of an object.
+   * 
+   * @return The {@link #versionPolicy}
+   */
+  public final VersionPolicy getVersionPolicy() {
+    return versionPolicy;
   }
 
-  final void setVersioned(boolean versioned) {
-    this.versioned = versioned;
+  /**
+   * These are the version policies that can be used in the storage object to instruct the object
+   * storage about the new and new versions of an object.
+   * 
+   * @param versionPolicy The {@link #versionPolicy}
+   */
+  public final void setVersionPolicy(VersionPolicy versionPolicy) {
+    this.versionPolicy = versionPolicy;
   }
 
 }
