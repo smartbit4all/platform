@@ -31,16 +31,16 @@ public interface ViewModelApi {
      * @param orgSmartbit4allUiApiNavigationModelNavigationTarget  (required)
      * @return  (status code 201)
      */
-    @ApiOperation(value = "", nickname = "createViewModel", notes = "", response = org.smartbit4all.ui.api.navigation.model.NavigationTarget.class, tags={ "view-model", })
+    @ApiOperation(value = "", nickname = "createViewModel", notes = "", response = org.smartbit4all.ui.api.navigation.model.ViewModelData.class, tags={ "view-model", })
     @ApiResponses(value = { 
-        @ApiResponse(code = 201, message = "", response = org.smartbit4all.ui.api.navigation.model.NavigationTarget.class) })
+        @ApiResponse(code = 201, message = "", response = org.smartbit4all.ui.api.navigation.model.ViewModelData.class) })
     @RequestMapping(
         method = RequestMethod.POST,
         value = "/createViewModel",
         produces = { "application/json" },
         consumes = { "application/json" }
     )
-    default ResponseEntity<org.smartbit4all.ui.api.navigation.model.NavigationTarget> createViewModel(@ApiParam(value = "", required = true) @Valid @RequestBody org.smartbit4all.ui.api.navigation.model.NavigationTarget orgSmartbit4allUiApiNavigationModelNavigationTarget) throws Exception {
+    default ResponseEntity<org.smartbit4all.ui.api.navigation.model.ViewModelData> createViewModel(@ApiParam(value = "", required = true) @Valid @RequestBody org.smartbit4all.ui.api.navigation.model.NavigationTarget orgSmartbit4allUiApiNavigationModelNavigationTarget) throws Exception {
         return getDelegate().createViewModel(orgSmartbit4allUiApiNavigationModelNavigationTarget);
     }
 
@@ -52,55 +52,56 @@ public interface ViewModelApi {
      * @param orgSmartbit4allUiApiNavigationModelCommandData  (required)
      * @return  (status code 200)
      */
-    @ApiOperation(value = "", nickname = "executeCommand", notes = "", tags={ "view-model", })
+    @ApiOperation(value = "", nickname = "executeCommand", notes = "", response = org.smartbit4all.ui.api.navigation.model.CommandResult.class, tags={ "view-model", })
     @ApiResponses(value = { 
-        @ApiResponse(code = 200, message = "") })
+        @ApiResponse(code = 200, message = "", response = org.smartbit4all.ui.api.navigation.model.CommandResult.class) })
     @RequestMapping(
         method = RequestMethod.POST,
         value = "/executeCommand/{uuid}",
+        produces = { "application/json" },
         consumes = { "application/json" }
     )
-    default ResponseEntity<Void> executeCommand(@ApiParam(value = "", required = true) @PathVariable("uuid") UUID uuid,@ApiParam(value = "", required = true) @Valid @RequestBody org.smartbit4all.ui.api.navigation.model.CommandData orgSmartbit4allUiApiNavigationModelCommandData) throws Exception {
+    default ResponseEntity<org.smartbit4all.ui.api.navigation.model.CommandResult> executeCommand(@ApiParam(value = "", required = true) @PathVariable("uuid") UUID uuid,@ApiParam(value = "", required = true) @Valid @RequestBody org.smartbit4all.ui.api.navigation.model.CommandData orgSmartbit4allUiApiNavigationModelCommandData) throws Exception {
         return getDelegate().executeCommand(uuid, orgSmartbit4allUiApiNavigationModelCommandData);
     }
 
 
     /**
-     * GET /getData/{uuid}
+     * GET /getModel/{uuid}
      *
      * @param uuid  (required)
      * @return  (status code 200)
      */
-    @ApiOperation(value = "", nickname = "getData", notes = "", response = Object.class, tags={ "view-model", })
+    @ApiOperation(value = "", nickname = "getModel", notes = "", response = org.smartbit4all.ui.api.navigation.model.ViewModelData.class, tags={ "view-model", })
     @ApiResponses(value = { 
-        @ApiResponse(code = 200, message = "", response = Object.class) })
+        @ApiResponse(code = 200, message = "", response = org.smartbit4all.ui.api.navigation.model.ViewModelData.class) })
     @RequestMapping(
         method = RequestMethod.GET,
-        value = "/getData/{uuid}",
+        value = "/getModel/{uuid}",
         produces = { "application/json" }
     )
-    default ResponseEntity<Object> getData(@ApiParam(value = "", required = true) @PathVariable("uuid") UUID uuid) throws Exception {
-        return getDelegate().getData(uuid);
+    default ResponseEntity<org.smartbit4all.ui.api.navigation.model.ViewModelData> getModel(@ApiParam(value = "", required = true) @PathVariable("uuid") UUID uuid) throws Exception {
+        return getDelegate().getModel(uuid);
     }
 
 
     /**
-     * POST /setData/{uuid}
+     * POST /setModel/{uuid}
      *
      * @param uuid  (required)
      * @param body  (required)
      * @return  (status code 200)
      */
-    @ApiOperation(value = "", nickname = "setData", notes = "", tags={ "view-model", })
+    @ApiOperation(value = "", nickname = "setModel", notes = "", tags={ "view-model", })
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "") })
     @RequestMapping(
         method = RequestMethod.POST,
-        value = "/setData/{uuid}",
+        value = "/setModel/{uuid}",
         consumes = { "application/json" }
     )
-    default ResponseEntity<Void> setData(@ApiParam(value = "", required = true) @PathVariable("uuid") UUID uuid,@ApiParam(value = "", required = true) @Valid @RequestBody Object body) throws Exception {
-        return getDelegate().setData(uuid, body);
+    default ResponseEntity<Void> setModel(@ApiParam(value = "", required = true) @PathVariable("uuid") UUID uuid,@ApiParam(value = "", required = true) @Valid @RequestBody Object body) throws Exception {
+        return getDelegate().setModel(uuid, body);
     }
 
 }

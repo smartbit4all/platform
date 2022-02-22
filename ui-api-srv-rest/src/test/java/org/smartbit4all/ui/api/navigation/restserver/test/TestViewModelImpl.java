@@ -1,32 +1,38 @@
 package org.smartbit4all.ui.api.navigation.restserver.test;
 
 import java.net.URI;
-import java.util.UUID;
+import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.core.object.ObservablePublisherWrapper;
+import org.smartbit4all.ui.api.navigation.UINavigationApi;
 import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
 import org.smartbit4all.ui.api.viewmodel.ViewModelImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Instead of creating a separate test bean for model, we use an existing bean.
  *
  */
-public class TestViewModelImpl extends ViewModelImpl<NavigationTarget> implements TestViewModel {
+public class TestViewModelImpl extends ViewModelImpl<User> implements TestViewModel {
+
+  @Autowired
+  UINavigationApi uiNavigationApi;
 
   protected TestViewModelImpl(ObservablePublisherWrapper publisherWrapper) {
-    super(publisherWrapper, TestDescriptors.TEST_DESCRIPTORS, NavigationTarget.class);
+    super(publisherWrapper, TestDescriptors.TEST_DESCRIPTORS, User.class);
   }
 
   @Override
   protected void initCommands() {
     registerCommand(TEST_COMMAND, this::execTestCommand);
+    registerCommand(MODIFY, this::modify);
   }
 
   @Override
-  protected NavigationTarget load(NavigationTarget navigationTarget) {
-    return new NavigationTarget()
-        .uuid(UUID.randomUUID())
-        .title("test title")
-        .viewName("data-for-view");
+  protected User load(NavigationTarget navigationTarget) {
+    return new User()
+        .uri(URI.create("test:/user1"))
+        .name("Test User")
+        .email("test@email.com");
   }
 
   @Override
@@ -35,6 +41,12 @@ public class TestViewModelImpl extends ViewModelImpl<NavigationTarget> implement
   }
 
   private void execTestCommand() {
-    model.setTitle(model.getTitle() + "+command");
+    model.setName(model.getName() + "+command");
+  }
+
+  private void modify() {
+    uiNavigationApi.navigateTo(new NavigationTarget()
+        .viewName(MODIFY_VIEW)
+        .objectUri(model.getUri()));
   }
 }

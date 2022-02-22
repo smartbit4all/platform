@@ -22,9 +22,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 import org.smartbit4all.ui.api.navigation.model.Message;
 import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
 import org.smartbit4all.ui.api.navigation.model.ViewModelData;
@@ -34,60 +31,27 @@ import javax.validation.constraints.*;
 import javax.validation.Valid;
 
 /**
- * UIState
+ * CommandResult
  */
 @JsonPropertyOrder({
-  UIState.UUID,
-  UIState.UI_TO_OPEN,
-  UIState.MESSAGE_TO_OPEN,
-  UIState.VIEWS
+  CommandResult.UI_TO_OPEN,
+  CommandResult.MESSAGE_TO_OPEN,
+  CommandResult.VIEW
 })
-@JsonTypeName("UIState")
+@JsonTypeName("CommandResult")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
-public class UIState {
-  public static final String UUID = "uuid";
-  private UUID uuid;
-
+public class CommandResult {
   public static final String UI_TO_OPEN = "uiToOpen";
   private NavigationTarget uiToOpen;
 
   public static final String MESSAGE_TO_OPEN = "messageToOpen";
   private Message messageToOpen;
 
-  public static final String VIEWS = "views";
-  private List<ViewModelData> views = new ArrayList<>();
+  public static final String VIEW = "view";
+  private ViewModelData view;
 
 
-  public UIState uuid(UUID uuid) {
-    
-    this.uuid = uuid;
-    return this;
-  }
-
-   /**
-   * Get uuid
-   * @return uuid
-  **/
-  @javax.annotation.Nonnull
-  @NotNull
-  @Valid
-  @ApiModelProperty(required = true, value = "")
-  @JsonProperty(UUID)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-
-  public UUID getUuid() {
-    return uuid;
-  }
-
-
-  @JsonProperty(UUID)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setUuid(UUID uuid) {
-    this.uuid = uuid;
-  }
-
-
-  public UIState uiToOpen(NavigationTarget uiToOpen) {
+  public CommandResult uiToOpen(NavigationTarget uiToOpen) {
     
     this.uiToOpen = uiToOpen;
     return this;
@@ -115,7 +79,7 @@ public class UIState {
   }
 
 
-  public UIState messageToOpen(Message messageToOpen) {
+  public CommandResult messageToOpen(Message messageToOpen) {
     
     this.messageToOpen = messageToOpen;
     return this;
@@ -143,37 +107,31 @@ public class UIState {
   }
 
 
-  public UIState views(List<ViewModelData> views) {
+  public CommandResult view(ViewModelData view) {
     
-    this.views = views;
-    return this;
-  }
-
-  public UIState addViewsItem(ViewModelData viewsItem) {
-    this.views.add(viewsItem);
+    this.view = view;
     return this;
   }
 
    /**
-   * Get views
-   * @return views
+   * Get view
+   * @return view
   **/
-  @javax.annotation.Nonnull
-  @NotNull
+  @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(required = true, value = "")
-  @JsonProperty(VIEWS)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  @ApiModelProperty(value = "")
+  @JsonProperty(VIEW)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<ViewModelData> getViews() {
-    return views;
+  public ViewModelData getView() {
+    return view;
   }
 
 
-  @JsonProperty(VIEWS)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setViews(List<ViewModelData> views) {
-    this.views = views;
+  @JsonProperty(VIEW)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setView(ViewModelData view) {
+    this.view = view;
   }
 
 
@@ -185,26 +143,24 @@ public class UIState {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    UIState uiState = (UIState) o;
-    return Objects.equals(this.uuid, uiState.uuid) &&
-        Objects.equals(this.uiToOpen, uiState.uiToOpen) &&
-        Objects.equals(this.messageToOpen, uiState.messageToOpen) &&
-        Objects.equals(this.views, uiState.views);
+    CommandResult commandResult = (CommandResult) o;
+    return Objects.equals(this.uiToOpen, commandResult.uiToOpen) &&
+        Objects.equals(this.messageToOpen, commandResult.messageToOpen) &&
+        Objects.equals(this.view, commandResult.view);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uuid, uiToOpen, messageToOpen, views);
+    return Objects.hash(uiToOpen, messageToOpen, view);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class UIState {\n");
-    sb.append("    uuid: ").append(toIndentedString(uuid)).append("\n");
+    sb.append("class CommandResult {\n");
     sb.append("    uiToOpen: ").append(toIndentedString(uiToOpen)).append("\n");
     sb.append("    messageToOpen: ").append(toIndentedString(messageToOpen)).append("\n");
-    sb.append("    views: ").append(toIndentedString(views)).append("\n");
+    sb.append("    view: ").append(toIndentedString(view)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -1,6 +1,7 @@
 package org.smartbit4all.ui.api.viewmodel;
 
 import java.net.URI;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -15,6 +16,7 @@ import org.smartbit4all.core.object.ObservableObjectImpl;
 import org.smartbit4all.core.object.ObservablePublisherWrapper;
 import org.smartbit4all.core.utility.ReflectionUtility;
 import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
+import org.smartbit4all.ui.api.navigation.model.ViewModelData;
 import io.reactivex.rxjava3.disposables.Disposable;
 
 public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements ViewModel {
@@ -38,6 +40,8 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
 
   protected Map<String, Map<String, WrapperCommand<?>>> commandsByCode = new HashMap<>();
 
+  protected Map<String, ViewModel> childrenByPath = new HashMap<>();
+
   protected ViewModelImpl(ObservablePublisherWrapper publisherWrapper,
       Map<Class<?>, ApiBeanDescriptor> apiBeanDescriptors,
       Class<T> modelClazz) {
@@ -55,6 +59,7 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
     if (child instanceof ViewModelImpl) {
       ViewModelImpl<?> childVM = (ViewModelImpl<?>) child;
       childVM.initByParentRef(this, path);
+      childrenByPath.put(path, childVM);
     }
   }
 
@@ -291,4 +296,25 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
   public Class<T> getModelClazz() {
     return modelClazz;
   }
+
+  @Override
+  public Map<String, ViewModel> getChildren() {
+    return Collections.unmodifiableMap(childrenByPath);
+  }
+
+  public T getModel() {
+    return model;
+  }
+
+  @Override
+  public ViewModelData getViewModelData() {
+    ViewModelData result = new ViewModelData()
+        .uuid(navigationTargetUUID)
+        .navigationTarget(navigationTarget)
+        .path(path)
+        .model(model);
+    childrenByPath.forEach((p, vm) -> result.putChildrenItem(p, vm.getViewModelData()));
+    return result;
+  }
+
 }
