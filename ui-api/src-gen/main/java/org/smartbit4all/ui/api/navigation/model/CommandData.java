@@ -33,6 +33,7 @@ import javax.validation.Valid;
  * CommandData
  */
 @JsonPropertyOrder({
+  CommandData.MODEL,
   CommandData.COMMAND_PATH,
   CommandData.COMMAND_CODE,
   CommandData.PARAMS
@@ -40,6 +41,9 @@ import javax.validation.Valid;
 @JsonTypeName("CommandData")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class CommandData {
+  public static final String MODEL = "model";
+  private Object model;
+
   public static final String COMMAND_PATH = "commandPath";
   private String commandPath;
 
@@ -48,6 +52,33 @@ public class CommandData {
 
   public static final String PARAMS = "params";
   private List<String> params = null;
+
+
+  public CommandData model(Object model) {
+    
+    this.model = model;
+    return this;
+  }
+
+   /**
+   * Get model
+   * @return model
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(MODEL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Object getModel() {
+    return model;
+  }
+
+
+  @JsonProperty(MODEL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setModel(Object model) {
+    this.model = model;
+  }
 
 
   public CommandData commandPath(String commandPath) {
@@ -148,20 +179,22 @@ public class CommandData {
       return false;
     }
     CommandData commandData = (CommandData) o;
-    return Objects.equals(this.commandPath, commandData.commandPath) &&
+    return Objects.equals(this.model, commandData.model) &&
+        Objects.equals(this.commandPath, commandData.commandPath) &&
         Objects.equals(this.commandCode, commandData.commandCode) &&
         Objects.equals(this.params, commandData.params);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(commandPath, commandCode, params);
+    return Objects.hash(model, commandPath, commandCode, params);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class CommandData {\n");
+    sb.append("    model: ").append(toIndentedString(model)).append("\n");
     sb.append("    commandPath: ").append(toIndentedString(commandPath)).append("\n");
     sb.append("    commandCode: ").append(toIndentedString(commandCode)).append("\n");
     sb.append("    params: ").append(toIndentedString(params)).append("\n");

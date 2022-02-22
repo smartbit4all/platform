@@ -111,12 +111,9 @@ public class UINavigationApiCommon implements UINavigationApi {
 
   @Override
   public void registerView(NavigableViewDescriptor viewDescriptor, NavigationTargetType type) {
-    Map<String, NavigableViewDescriptor> viewsByName = navigableViewsByType.get(type);
-    if (viewsByName == null) {
-      viewsByName = new HashMap<>();
-      navigableViewsByType.put(type, viewsByName);
-    }
-    viewsByName.put(viewDescriptor.getViewName(), viewDescriptor);
+    navigableViewsByType
+        .computeIfAbsent(type, t -> new HashMap<>())
+        .put(viewDescriptor.getViewName(), viewDescriptor);
   }
 
   @Override
@@ -148,12 +145,9 @@ public class UINavigationApiCommon implements UINavigationApi {
 
   @Override
   public void registerSecurityGroup(String viewName, SecurityGroup... securityGroups) {
-    List<SecurityGroup> groupList = securityGroupByView.get(viewName);
-    if (groupList == null) {
-      groupList = new ArrayList<>();
-      securityGroupByView.put(viewName, groupList);
-    }
-    groupList.addAll(Arrays.asList(securityGroups));
+    securityGroupByView
+        .computeIfAbsent(viewName, s -> new ArrayList<>())
+        .addAll(Arrays.asList(securityGroups));
   }
 
   @Override

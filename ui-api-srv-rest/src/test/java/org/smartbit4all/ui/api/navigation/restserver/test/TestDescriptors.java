@@ -3,8 +3,9 @@ package org.smartbit4all.ui.api.navigation.restserver.test;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import org.smartbit4all.api.org.bean.Group;
+import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.core.object.ApiBeanDescriptor;
-import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
 
 public class TestDescriptors {
 
@@ -22,7 +23,8 @@ public class TestDescriptors {
   public static Set<Class<?>> collectDomainBeans() {
     Set<Class<?>> domainBeans = new HashSet<>();
 
-    domainBeans.add(NavigationTarget.class);
+    domainBeans.add(User.class);
+    domainBeans.add(Group.class);
     return domainBeans;
   }
 }

@@ -28,13 +28,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/NavigationTarget'
-  /setData/{uuid}:
+                $ref: '#/components/schemas/ViewModelData'
+  /setModel/{uuid}:
     post:
       tags:
       - view-model
       summary: ''
-      operationId: 'setData'
+      operationId: 'setModel'
       parameters: 
         - in: path
           name: uuid
@@ -75,12 +75,16 @@ paths:
       responses:
         '200':
           description: ''
-  /getData/{uuid}:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommandResult'
+  /getModel/{uuid}:
     get:
       tags:
       - view-model
       summary: ''
-      operationId: 'getData'
+      operationId: 'getModel'
       parameters: 
         - in: path
           name: uuid
@@ -95,22 +99,57 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ViewData'
+                $ref: '#/components/schemas/ViewModelData'
 components:
   schemas:
+    AppState:
+      type: object
+      description:
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        uis:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/UIState'
     UIState:
       type: object
       required:
-        - uri
+        - uuid
         - views
       properties:
-        uri:
+        uuid:
           type: string
-          format: URI
+          format: uuid
+        uiToOpen:
+          $ref: '#/components/schemas/NavigationTarget'
+        messageToOpen:
+          $ref: '#/components/schemas/Message'
         views:
           type: array
           items:
-            $ref: '#/components/schemas/NavigationTarget'
+            $ref: '#/components/schemas/ViewModelData'
+    ViewModelData:
+      type: object
+      description: Represent a viewmodel's data.
+      required:
+        - uuid
+        - children
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        path:
+          type: string
+        navigationTarget:
+          $ref: '#/components/schemas/NavigationTarget'
+        model:
+          $ref: '#/components/schemas/ViewData'
+        children:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ViewModelData'
     NavigationTarget:
       type: object
       required:
@@ -220,6 +259,8 @@ components:
     CommandData:
       type: object
       properties:
+        model:
+          $ref: '#/components/schemas/ViewData'
         commandPath:
           type: string
         commandCode:
@@ -228,5 +269,12 @@ components:
           type: array
           items:
             type: string
-
-          
+    CommandResult:
+      type: object
+      properties:
+        uiToOpen:
+          $ref: '#/components/schemas/NavigationTarget'
+        messageToOpen:
+          $ref: '#/components/schemas/Message'
+        view:
+          $ref: '#/components/schemas/ViewModelData'

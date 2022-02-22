@@ -1,8 +1,10 @@
 package org.smartbit4all.ui.api.viewmodel;
 
+import java.util.Map;
 import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.core.object.PublishEvents;
 import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
+import org.smartbit4all.ui.api.navigation.model.ViewModelData;
 
 public interface ViewModel extends ObjectEditing {
 
@@ -25,6 +27,10 @@ public interface ViewModel extends ObjectEditing {
   void onCloseWindow();
 
   void addChild(ViewModel child, String path);
+
+  Map<String, ViewModel> getChildren();
+
+  ViewModelData getViewModelData();
 
   // TODO finish, finishEditing?
 

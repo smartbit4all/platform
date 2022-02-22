@@ -25,7 +25,10 @@ smartbit4all {
 		genApiRestServer = true
 		importMappings = [
 			"NavigationTarget" : "org.smartbit4all.ui.api.navigation.model.NavigationTarget",
-			"CommandData" : "org.smartbit4all.ui.api.navigation.model.CommandData"
+			"UIState" : "org.smartbit4all.ui.api.navigation.model.UIState",
+			"ViewModelData" : "org.smartbit4all.ui.api.navigation.model.ViewModelData",
+			"CommandData" : "org.smartbit4all.ui.api.navigation.model.CommandData",
+			"CommandResult" : "org.smartbit4all.ui.api.navigation.model.CommandResult"
 		]
     }
 }
