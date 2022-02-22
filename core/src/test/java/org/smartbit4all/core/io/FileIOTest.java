@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.core.io.utility.FileIO;
 import org.smartbit4all.core.utility.PathUtility;
+import com.google.common.io.ByteStreams;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -91,9 +92,9 @@ public class FileIOTest {
 
     List<BinaryData> readMultipart = FileIO.readMultipart(multipartFile);
     assertEquals(3, readMultipart.size());
-    assertEquals("first", new String(readMultipart.get(0).getData()));
-    assertEquals("second", new String(readMultipart.get(1).getData()));
-    assertEquals("third", new String(readMultipart.get(2).getData()));
+    assertEquals("first", new String(ByteStreams.toByteArray(readMultipart.get(0).inputStream())));
+    assertEquals("second", new String(ByteStreams.toByteArray(readMultipart.get(1).inputStream())));
+    assertEquals("third", new String(ByteStreams.toByteArray(readMultipart.get(2).inputStream())));
 
   }
 

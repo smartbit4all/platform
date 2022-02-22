@@ -26,6 +26,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.google.common.io.ByteSource;
 import com.google.common.io.ByteStreams;
 
 /**
@@ -42,9 +43,16 @@ import com.google.common.io.ByteStreams;
  * set this to true, because in this case a temp file could be created. Any other situation like
  * using an existing file must be managed by the programmer.
  * 
+ * The {@link BinaryData} can also encapsulate {@link ByteSource} that is a Guava construction for
+ * accessing part of Files. In this way if we have a large file with many {@link BinaryData} inside
+ * then we can use the {@link ByteSource} as a pointer to the original content and there is no need
+ * to copy it into another format.
+ * 
  * @author Peter Boros
  */
 public class BinaryData {
+
+  private static final byte[] EMPTY_BYTES = new byte[0];
 
   private static final int MEMORY_LIMIT = 8 * 1024;
 
@@ -59,6 +67,12 @@ public class BinaryData {
    * If the binary data is temp file based then this is the temp file reference.
    */
   private File dataFile;
+
+  /**
+   * If the {@link BinaryData} is initiated as {@link ByteSource} then it's an non mutable content
+   * as usual and can be accessed via {@link InputStream}.
+   */
+  private ByteSource byteSource;
 
   /**
    * If true then at the end of life cycle the data file must be deleted explicitly.
@@ -130,6 +144,21 @@ public class BinaryData {
     super();
     this.dataFile = dataFile;
     this.length = dataFile.length();
+  }
+
+  /**
+   * Constructs the binary data based on a file. Usually this file is a temp file but the
+   * {@link BinaryData} can work on normal files also with caution.
+   * 
+   * @param byteSource The {@link ByteSource} that contains all the data. A valid ByteSource with
+   *        known size must be used to avoid unnecessary reading and {@link IOException}.
+   * @throws IOException If the {@link ByteSource} is not available and / or the size is not
+   *         available.
+   */
+  public BinaryData(ByteSource byteSource) throws IOException {
+    super();
+    this.byteSource = byteSource;
+    this.length = byteSource.size();
   }
 
   @Override
@@ -235,19 +264,35 @@ public class BinaryData {
     if (data != null) {
       // In this case we have all the data in memory. We can use the ByteArrayInputStream
       return new ByteArrayInputStream(data);
+    } else if (byteSource != null) {
+      try {
+        return new AutoCloseInputStream(byteSource.openBufferedStream());
+      } catch (IOException e) {
+        return constructEmptyData(
+            "The BinaryData doesn't have the a valid ByteSource with the content. Assume that the content is empty!",
+            e);
+      }
     } else {
       try {
         return new AutoCloseInputStream(new FileInputStream(getDataFile()));
-        // return new AutoCloseInputStream(Files.newInputStream(Paths.get(dataFile.toURI())));
-        // return new FileInputStream(dataFile);
       } catch (IOException e) {
-        log.error(
+        return constructEmptyData(
             "The BinaryData doesn't have the temp file with the content. Assume that the content is empty!",
             e);
-        data = new byte[0];
-        return new ByteArrayInputStream(data);
       }
     }
+  }
+
+  /**
+   * 
+   * @param message
+   * @param e
+   * @return
+   */
+  private final InputStream constructEmptyData(String message, IOException e) {
+    log.error(message, e);
+    data = EMPTY_BYTES;
+    return new ByteArrayInputStream(data);
   }
 
   /**
@@ -284,22 +329,52 @@ public class BinaryData {
   /**
    * The hash of the content if it was calculated during the construction.
    * 
-   * @return
+   * @return The hash if available. Else we get null!
    */
   public String hash() {
     return hash;
   }
 
+  /**
+   * Set the hash of the binary data. Doesn't check the value! Use it with caution.
+   * 
+   * @param hash The hash key.
+   */
   void setHash(String hash) {
     this.hash = hash;
   }
 
+  /**
+   * Use it with caution it will contain the data if and only if it is stored in the memory. The
+   * file or byte source is not processed to produce the byte array! USE THE {@link #inputStream()}
+   * INSTEAD! {@link ByteStreams#toByteArray(InputStream)} can be used as utility to do so.
+   * 
+   * @return The {@link #data} array if any!
+   */
   public byte[] getData() {
     return data;
   }
 
+  /**
+   * Use it with caution it will contain the data file if and only if it is stored in data file. The
+   * byte array or byte source is not processed to produce the data file! USE THE
+   * {@link #inputStream()} INSTEAD!
+   * 
+   * @return The {@link #dataFile} if any!
+   */
   public final File getDataFile() {
     return dataFile;
+  }
+
+  /**
+   * Use it with caution it will contain the {@link ByteSource} if and only if it is stored in
+   * {@link ByteSource}. The byte array or file is not processed to produce the data file! USE THE
+   * {@link #inputStream()} INSTEAD!
+   * 
+   * @return The {@link #byteSource} if any!
+   */
+  public final ByteSource getByteSource() {
+    return byteSource;
   }
 
   /**
@@ -325,6 +400,12 @@ public class BinaryData {
     }
   }
 
+  /**
+   * The BinaryData itself is not object of the StorageApi because the lack of URI. It doesn't have
+   * identity just a programming concept.
+   * 
+   * @return The object for save into a Storage.
+   */
   public BinaryDataObject asObject() {
     return new BinaryDataObject(this);
   }

@@ -90,6 +90,12 @@ public class FileIO {
     }
   }
 
+  /**
+   * Read the content of the multipart file into {@link BinaryData} objects.
+   * 
+   * @param file The multipart file.
+   * @return All the {@link BinaryData} contains the {@link ByteSource} points to the given
+   */
   public static List<BinaryData> readMultipart(File file) {
     if (file == null || !file.exists() || !file.isFile()) {
       return null;
@@ -103,8 +109,8 @@ public class FileIO {
       while (!sliceLen.isEmpty()) {
         offset += length;
         length = Longs.fromByteArray(sliceLen.read());
-        ByteSource sourceBinaryData = byteSource.slice(offset, length);
-        BinaryData binaryData = BinaryData.of(sourceBinaryData.openStream());
+        ByteSource byteSourceSlice = byteSource.slice(offset, length);
+        BinaryData binaryData = new BinaryData(byteSourceSlice);
         if (result == null) {
           result = new ArrayList<>();
         }
