@@ -222,7 +222,8 @@ public class StorageFS extends ObjectStorageImpl {
    */
   private final void saveSingleVersionObject(StorageObject<?> object) throws IOException {
     File objectDataFile = getObjectDataFile(object.getUri(), object.getStorage());
-    StorageObjectData storageObjectData = new StorageObjectData().uri(object.getUri());
+    StorageObjectData storageObjectData = new StorageObjectData().uri(object.getUri())
+        .className(object.definition().getClazz().getName());
     saveObjectDataInline(object, objectDataFile, storageObjectData);
   }
 
@@ -274,7 +275,8 @@ public class StorageFS extends ObjectStorageImpl {
       newVersion = new ObjectVersion();
       // This will be a new data file, first we create the StorageObjectData save it into a new
       // data file.
-      storageObjectData = new StorageObjectData().uri(object.getUri());
+      storageObjectData = new StorageObjectData().uri(object.getUri())
+          .className(object.definition().getClazz().getName());
     }
 
     // The version is updated with the information attached if it's not a modification without
@@ -437,10 +439,6 @@ public class StorageFS extends ObjectStorageImpl {
     // The normal load is not locking anything. There is an optimistic lock implemented by default.
     // Identify the class from the URI. The first part of the path in the URI is standing for the
     // object type (the class).
-    ObjectDefinition<T> definition = objectApi.definition(clazz);
-    if (definition == null) {
-      throw new ObjectNotFoundException(uri, clazz, "Unable to retrieve object definition.");
-    }
     File storageObjectDataFile = getObjectDataFile(uri, storage);
     if (!storageObjectDataFile.exists()) {
       throw new ObjectNotFoundException(uri, clazz, "Object data file not found.");
@@ -455,6 +453,9 @@ public class StorageFS extends ObjectStorageImpl {
         throw new ObjectNotFoundException(uri, clazz, "Unable to load object data file.");
       }
       @SuppressWarnings("unchecked")
+      ObjectDefinition<T> definition =
+          (ObjectDefinition<T>) getObjectDefinition(uri, optObject.get(), clazz);
+      @SuppressWarnings("unchecked")
       T obj = definition.deserialize(dataParts.get(1)).orElse(null);
       return instanceOf(storage, definition, obj, optObject.get());
     }
@@ -467,6 +468,9 @@ public class StorageFS extends ObjectStorageImpl {
       throw new ObjectNotFoundException(uri, clazz, "Unable to load object data file.");
     }
     StorageObjectData storageObjectData = optObject.get();
+    @SuppressWarnings("unchecked")
+    ObjectDefinition<T> definition =
+        (ObjectDefinition<T>) getObjectDefinition(uri, storageObjectData, clazz);
     StorageObject<T> storageObject;
     ObjectVersion objectVersion = storageObjectData.getCurrentVersion();
     Long versionDataSerialNo = getVersionByUri(uri, storageObjectData);

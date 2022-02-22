@@ -36,6 +36,7 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   StorageObjectData.URI,
   StorageObjectData.CURRENT_VERSION,
+  StorageObjectData.CLASS_NAME,
   StorageObjectData.PENDING_VERSION,
   StorageObjectData.DELETED
 })
@@ -47,6 +48,9 @@ public class StorageObjectData {
 
   public static final String CURRENT_VERSION = "currentVersion";
   private ObjectVersion currentVersion;
+
+  public static final String CLASS_NAME = "className";
+  private String className;
 
   public static final String PENDING_VERSION = "pendingVersion";
   private ObjectVersion pendingVersion;
@@ -110,6 +114,33 @@ public class StorageObjectData {
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setCurrentVersion(ObjectVersion currentVersion) {
     this.currentVersion = currentVersion;
+  }
+
+
+  public StorageObjectData className(String className) {
+    
+    this.className = className;
+    return this;
+  }
+
+   /**
+   * The fully qualified name of the bean class. Normally the URI of the given object can contain the class but also the StorageObjectData contains it. If we have this in the StorageObjectData then we use this. If it is missing then we try to figure out from the URI. 
+   * @return className
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The fully qualified name of the bean class. Normally the URI of the given object can contain the class but also the StorageObjectData contains it. If we have this in the StorageObjectData then we use this. If it is missing then we try to figure out from the URI. ")
+  @JsonProperty(CLASS_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getClassName() {
+    return className;
+  }
+
+
+  @JsonProperty(CLASS_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setClassName(String className) {
+    this.className = className;
   }
 
 
@@ -179,13 +210,14 @@ public class StorageObjectData {
     StorageObjectData storageObjectData = (StorageObjectData) o;
     return Objects.equals(this.uri, storageObjectData.uri) &&
         Objects.equals(this.currentVersion, storageObjectData.currentVersion) &&
+        Objects.equals(this.className, storageObjectData.className) &&
         Objects.equals(this.pendingVersion, storageObjectData.pendingVersion) &&
         Objects.equals(this.deleted, storageObjectData.deleted);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, currentVersion, pendingVersion, deleted);
+    return Objects.hash(uri, currentVersion, className, pendingVersion, deleted);
   }
 
   @Override
@@ -194,6 +226,7 @@ public class StorageObjectData {
     sb.append("class StorageObjectData {\n");
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    currentVersion: ").append(toIndentedString(currentVersion)).append("\n");
+    sb.append("    className: ").append(toIndentedString(className)).append("\n");
     sb.append("    pendingVersion: ").append(toIndentedString(pendingVersion)).append("\n");
     sb.append("    deleted: ").append(toIndentedString(deleted)).append("\n");
     sb.append("}");

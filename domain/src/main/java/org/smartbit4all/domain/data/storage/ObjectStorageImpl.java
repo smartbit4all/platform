@@ -128,18 +128,33 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
 
   @Override
   public StorageObject<?> load(Storage storage, URI uri, StorageLoadOption... options) {
-    ObjectDefinition<?> objectDefinition = getDefinitionFromUri(uri);
-    return load(storage, uri, objectDefinition.getClazz(), options);
+    return load(storage, uri, null, options);
   }
 
   /**
-   * Analyze the uri and extract the object definition alias from this. Using the {@link #objectApi}
-   * identifies the {@link ObjectDefinition} belongs to the alias.
+   * Analyze the uri and the {@link StorageObjectData} to extract the object definition from the
+   * alias or from the {@link StorageObjectData}. Using the {@link #objectApi} identifies the
+   * {@link ObjectDefinition} belongs to the given class. This function is called when the
+   * {@link Class} is not defined for the {@link StorageObject}.
    * 
    * @param uri The uri of an object.
+   * @param objectData The {@link StorageObjectData}.
    * @return The {@link ObjectDefinition} or null if not found.
    */
-  protected ObjectDefinition<?> getDefinitionFromUri(URI uri) {
+  protected ObjectDefinition<?> getObjectDefinition(URI uri, StorageObjectData objectData,
+      Class<?> clazz) {
+    if (clazz != null) {
+      return objectApi.definition(clazz);
+    }
+    if (objectData != null && objectData.getClassName() != null) {
+      try {
+        Class<?> clazzByData = Class.forName(objectData.getClassName());
+        return objectApi.definition(clazzByData);
+      } catch (ClassNotFoundException e) {
+        throw new IllegalArgumentException(
+            "Unable to initiate " + objectData.getClassName() + " class from " + uri + " URI.", e);
+      }
+    }
     if (uri == null || uri.getScheme() == null || uri.getScheme().isEmpty()) {
       return null;
     }
@@ -151,6 +166,9 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
 
     // Try to identify the ObjectDefintion by the URI
     ObjectDefinition<?> objectDefinition = objectApi.definition(uri);
+    if (objectDefinition == null) {
+      throw new ObjectNotFoundException(uri, clazz, "Unable to retrieve object definition.");
+    }
     return objectDefinition;
   }
 

@@ -88,6 +88,11 @@ components:
             This is the current version descriptor that is repeated here to have a direct reference for the latest sucessfuly
             transacted version here.
           $ref: '#/components/shemas/ObjectVersion'
+        className:
+          type: string
+          description: |
+            The fully qualified name of the bean class. Normally the URI of the given object can contain the class but also the StorageObjectData
+            contains it. If we have this in the StorageObjectData then we use this. If it is missing then we try to figure out from the URI.
         pendingVersion:
           type: object
           description: |
