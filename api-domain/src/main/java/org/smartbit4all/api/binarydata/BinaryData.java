@@ -266,7 +266,7 @@ public class BinaryData {
       return new ByteArrayInputStream(data);
     } else if (byteSource != null) {
       try {
-        return new AutoCloseInputStream(byteSource.openBufferedStream());
+        return new AutoCloseInputStream(byteSource.openStream());
       } catch (IOException e) {
         return constructEmptyData(
             "The BinaryData doesn't have the a valid ByteSource with the content. Assume that the content is empty!",
