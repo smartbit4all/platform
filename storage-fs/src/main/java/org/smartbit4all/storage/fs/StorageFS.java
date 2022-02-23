@@ -165,7 +165,7 @@ public class StorageFS extends ObjectStorageImpl {
   }
 
   @Override
-  protected Supplier<StorageObjectPhysicalLock> getAcquire() {
+  protected Supplier<StorageObjectPhysicalLock> physicalLockSupplier() {
     // TODO Implement the locking of the files to have cluster safe physical lock fro the objects.
     // // Lock the original object file if exists.
     // File objectLockFile = getObjectLockFile(object);
@@ -179,12 +179,12 @@ public class StorageFS extends ObjectStorageImpl {
     // } else {
     // // The given object doesn't exist so we can write the temp file and move it at the end.
     // }
-    return super.getAcquire();
+    return super.physicalLockSupplier();
   }
 
   @Override
-  protected Consumer<StorageObjectPhysicalLock> getReleaser() {
-    return super.getReleaser();
+  protected Consumer<StorageObjectPhysicalLock> physicalLockReleaser() {
+    return super.physicalLockReleaser();
   }
 
   @Override
@@ -434,6 +434,18 @@ public class StorageFS extends ObjectStorageImpl {
   }
 
   @Override
+  public Long lastModified(URI uri) {
+    if (uri == null) {
+      return null;
+    }
+    File storageObjectDataFile = getDataFileByUri(uri, storedObjectFileExtension);
+    if (!storageObjectDataFile.exists()) {
+      return null;
+    }
+    return storageObjectDataFile.lastModified();
+  }
+
+  @Override
   public <T> StorageObject<T> load(Storage storage, URI uri, Class<T> clazz,
       StorageLoadOption... options) {
     // The normal load is not locking anything. There is an optimistic lock implemented by default.
@@ -675,10 +687,6 @@ public class StorageFS extends ObjectStorageImpl {
 
   public final File getRootFolder() {
     return rootFolder;
-  }
-
-  public final void setRootFolder(File rootFolder) {
-    this.rootFolder = rootFolder;
   }
 
 }

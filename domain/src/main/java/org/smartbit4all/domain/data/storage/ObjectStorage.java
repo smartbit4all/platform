@@ -125,6 +125,15 @@ public interface ObjectStorage {
   boolean exists(URI uri);
 
   /**
+   * Retrieves the last modification date (time) for the given object.
+   * 
+   * @param uri The object uri.
+   * @return Return the modification time based on the storage time. Null if the given URI doesn't
+   *         exist
+   */
+  Long lastModified(URI uri);
+
+  /**
    * Retrieve the {@link StorageObjectLock} attached to the given object URI. This is just the Lock
    * object that should be used as a normal {@link Lock} implementation.
    * 
@@ -156,17 +165,5 @@ public interface ObjectStorage {
    * @return
    */
   ObjectHistoryIterator objectHistoryReverse(URI uri, ObjectDefinition<?> definition);
-
-  /**
-   * The scheduled function to manage the object storage instance.
-   */
-  void maintain();
-
-  /**
-   * The uri of the object storage instance.
-   * 
-   * @return
-   */
-  URI getURI();
 
 }

@@ -49,26 +49,22 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
   private Lock lockMutex = new ReentrantLock(true);
 
   /**
-   * The unique identifier of the given object storage instance. This uri is generated on demand
-   * when we ask for the uri value. Else it's not generated and saved.
+   * The extension point for the given {@link ObjectStorage} implementation to add a supplier
+   * function for getting lock.
+   * 
+   * @return The supplier
    */
-  private URI uri = null;
-
-  /**
-   * The lock for the uri creation.
-   */
-  private Lock lockUri = new ReentrantLock();
-
-  /**
-   * The storage schema for the storage management.
-   */
-  private Storage storage;
-
-  protected Supplier<StorageObjectPhysicalLock> getAcquire() {
+  protected Supplier<StorageObjectPhysicalLock> physicalLockSupplier() {
     return null;
   }
 
-  protected Consumer<StorageObjectPhysicalLock> getReleaser() {
+  /**
+   * The extension point for the given {@link ObjectStorage} implementation to add a release
+   * function to free lock.
+   * 
+   * @return The consumer
+   */
+  protected Consumer<StorageObjectPhysicalLock> physicalLockReleaser() {
     return null;
   }
 
@@ -87,7 +83,6 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
   public ObjectStorageImpl(ObjectApi objectApi) {
     super();
     this.objectApi = objectApi;
-    storage = new Storage(STORAGEMGMT, objectApi, this);
   }
 
   @Override
@@ -97,7 +92,7 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
       StorageObjectLockEntry entry = locks.get(objectUri);
       if (entry == null) {
         final StorageObjectLockEntry newEntry =
-            new StorageObjectLockEntry(objectUri, getAcquire(), getReleaser());
+            new StorageObjectLockEntry(objectUri, physicalLockSupplier(), physicalLockReleaser());
         // TODO implement rather a complete object to hold object locks!
         newEntry.setLockRemover(uri -> {
           lockMutex.lock();
@@ -405,25 +400,8 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
   }
 
   @Override
-  public void maintain() {
-    log.warn(
-        "The maintenance of the " + getClass().getName() + " object storage is not implemented");
-
-  }
-
-  @Override
-  public URI getURI() {
-    if (uri == null) {
-      lockUri.lock();
-      try {
-        if (uri == null) {
-          // TODO TBC
-        }
-      } finally {
-        lockUri.unlock();
-      }
-    }
-    return uri;
+  public Long lastModified(URI uri) {
+    return System.currentTimeMillis();
   }
 
 }

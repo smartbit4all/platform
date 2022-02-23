@@ -144,3 +144,32 @@ components:
         typeName:
           type: string
           description: The fully qualified name of the parameter data.
+    ApplicationRuntimeData:
+      type: object
+      required: [uri,module,interfaceName,name,methods]
+      description: |
+        The application runtime can be saved into the storage in this object.
+      properties:
+        uri:
+          type: string
+          format: uri
+          description: The URI of the instance.
+        uuid:
+          type: string
+          format: UUID
+          description: The unique identifier of the runtime instance.
+        ipAddress:
+          type: string
+          description: The ip address of the runtime.
+        serverPort:
+          type: integer
+          format: int32
+          description: The server port of the runtime.
+        timeOffset:
+          type: integer
+          format: int64
+          description: The server time offset compared to the storage time.
+        lastTouchTime:
+          type: integer
+          format: int64
+          description: The last time when the given runtime updated the entry in the storage.

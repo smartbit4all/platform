@@ -10,6 +10,7 @@ import org.smartbit4all.api.invocation.InvocationExecutionApi;
 import org.smartbit4all.api.invocation.InvocationExecutionApiLocal;
 import org.smartbit4all.api.invocation.bean.ApiData;
 import org.smartbit4all.api.invocation.bean.ApiRegistryData;
+import org.smartbit4all.api.invocation.bean.ApplicationRuntimeData;
 import org.smartbit4all.api.invocation.registration.ApiRegister;
 import org.smartbit4all.api.invocation.registration.ApiRegisterImpl;
 import org.smartbit4all.api.invocation.registration.LocalApiInstantiator;
@@ -21,6 +22,7 @@ import org.smartbit4all.api.navigation.NavigationPrimary;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.setting.LocaleUsage;
 import org.smartbit4all.api.setting.LocaleUsageImpl;
+import org.smartbit4all.core.object.ObjectApiImpl;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.domain.config.DomainConfig;
 import org.smartbit4all.domain.service.entity.EntityManager;
@@ -31,7 +33,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * The smartbit4all platform api config.
@@ -98,22 +99,23 @@ public class PlatformApiConfig {
 
   @Bean
   public ObjectDefinition<ApiData> apiDataObjectDefinition() {
-    ObjectDefinition<ApiData> result = new ObjectDefinition<>(ApiData.class);
-    result.setAlias(ApiData.class.getName().replace('.', '-'));
-    result.setPreferredSerializerName(ObjectMapper.class.getName());
-    result.setUriGetter(ApiData::getUri);
-    result.setUriSetter(ApiData::setUri);
+    ObjectDefinition<ApiData> result = ObjectApiImpl.constructDefinitionBase(ApiData.class);
     result.setExplicitUri(true);
     return result;
   }
 
   @Bean
   public ObjectDefinition<ApiRegistryData> apiRegistryDataDefinition() {
-    ObjectDefinition<ApiRegistryData> result = new ObjectDefinition<>(ApiRegistryData.class);
-    result.setAlias(ApiRegistryData.class.getName().replace('.', '-'));
-    result.setPreferredSerializerName(ObjectMapper.class.getName());
-    result.setUriGetter(ApiRegistryData::getUri);
-    result.setUriSetter(ApiRegistryData::setUri);
+    ObjectDefinition<ApiRegistryData> result =
+        ObjectApiImpl.constructDefinitionBase(ApiRegistryData.class);
+    result.setExplicitUri(true);
+    return result;
+  }
+
+  @Bean
+  public ObjectDefinition<ApplicationRuntimeData> applicationRuntimeData() {
+    ObjectDefinition<ApplicationRuntimeData> result =
+        ObjectApiImpl.constructDefinitionBase(ApplicationRuntimeData.class);
     result.setExplicitUri(true);
     return result;
   }

@@ -22,6 +22,9 @@ public class StorageTestFS extends StorageTest {
     storageObject.setObject(new FSTestBean("collectionsTest"));
 
     collectionsTestUri = storage.save(storageObject);
+    System.getenv().forEach((k, v) -> {
+      System.out.println(k + ":" + v);
+    });
   }
 
 }
