@@ -63,4 +63,13 @@ public class CollectionObjectChange extends ChangeItem {
     return sb.toString();
   }
 
+  public static CollectionObjectChange copyWithoutParent(CollectionObjectChange original,
+      String parentPath) {
+    String path = ObservableObjectHelper.removeParentPath(original.getPath(), parentPath);
+    CollectionObjectChange result = new CollectionObjectChange(path, original.getName());
+    original.getChanges().forEach(
+        ch -> result.getChanges().add(ObjectChangeSimple.copyWithoutParent(ch, parentPath)));
+    return result;
+  }
+
 }

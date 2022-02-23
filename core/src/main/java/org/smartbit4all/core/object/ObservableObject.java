@@ -15,6 +15,7 @@
 package org.smartbit4all.core.object;
 
 import org.smartbit4all.core.event.EventPublisher;
+import org.smartbit4all.core.event.ListenerAware;
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.functions.Consumer;
@@ -52,7 +53,7 @@ import io.reactivex.rxjava3.functions.Consumer;
  * 
  * @author Peter Boros
  */
-public interface ObservableObject extends EventPublisher {
+public interface ObservableObject extends EventPublisher, ListenerAware {
 
   @NotifyListeners
   void setValue(String propertyPath, Object value);

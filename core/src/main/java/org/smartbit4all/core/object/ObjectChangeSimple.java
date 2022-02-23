@@ -47,4 +47,10 @@ public class ObjectChangeSimple {
     sb.append(object == null ? StringConstant.NULL : object.toString());
     return sb.toString();
   }
+
+  public static ObjectChangeSimple copyWithoutParent(ObjectChangeSimple original,
+      String parentPath) {
+    String path = ObservableObjectHelper.removeParentPath(original.getPath(), parentPath);
+    return new ObjectChangeSimple(path, original.operation, original.object);
+  }
 }

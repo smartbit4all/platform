@@ -66,4 +66,9 @@ public class PropertyChange extends ChangeItem {
         + StringConstant.ARROW + newValue + StringConstant.RIGHT_PARENTHESIS;
   }
 
+  public static PropertyChange copyWithoutParent(PropertyChange original, String parentPath) {
+    String path = ObservableObjectHelper.removeParentPath(original.getPath(), parentPath);
+    return new PropertyChange(path, original.getName(),
+        original.getOldValue(), original.getNewValue());
+  }
 }

@@ -130,4 +130,23 @@ public class ObjectChange {
     return sb.toString();
   }
 
+  public static ObjectChange copyWithoutParent(ObjectChange original, String parentPath) {
+    String path = ObservableObjectHelper.removeParentPath(original.getPath(), parentPath);
+    ObjectChange result = new ObjectChange(path, original.getOperation());
+    original.getProperties().forEach(
+        ch -> result.getProperties().add(PropertyChange.copyWithoutParent(ch, parentPath)));
+    original.getReferences().forEach(
+        ch -> result.getReferences().add(ReferenceChange.copyWithoutParent(ch, parentPath)));
+    original.getReferencedObjects().forEach(
+        ch -> result.getReferencedObjects()
+            .add(ReferencedObjectChange.copyWithoutParent(ch, parentPath)));
+    original.getCollections().forEach(
+        ch -> result.getCollections().add(CollectionChange.copyWithoutParent(ch, parentPath)));
+    original.getCollectionObjects().forEach(
+        ch -> result.getCollectionObjects()
+            .add(CollectionObjectChange.copyWithoutParent(ch, parentPath)));
+
+    return result;
+  }
+
 }

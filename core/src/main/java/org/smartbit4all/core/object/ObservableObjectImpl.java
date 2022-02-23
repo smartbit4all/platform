@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.smartbit4all.core.event.ListenerAware;
 import org.smartbit4all.core.object.ObservableObjectHelper.ObjectPropertyPath;
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.disposables.Disposable;
@@ -18,7 +17,7 @@ import io.reactivex.rxjava3.subjects.PublishSubject;
  * @author Peter Boros
  *
  */
-public final class ObservableObjectImpl implements ObservableObject, ListenerAware {
+public final class ObservableObjectImpl implements ObservableObject {
 
   private static final Logger log = LoggerFactory.getLogger(ObservableObjectImpl.class);
 
@@ -34,12 +33,18 @@ public final class ObservableObjectImpl implements ObservableObject, ListenerAwa
   private PublishSubject<CollectionObjectChange> collectionObjectChangePublisher =
       PublishSubject.create();
 
+  private ObservableObject parent;
+  private String parentPath;
+
+  private boolean anyNonParentSubscription;
+
   public ObservableObjectImpl() {
     this(null);
   }
 
   public ObservableObjectImpl(ObservablePublisherWrapper publisherWrapper) {
     this.publisherWrapper = publisherWrapper;
+    anyNonParentSubscription = false;
   }
 
   private void notify(ObjectChange objectChange) {
@@ -82,9 +87,13 @@ public final class ObservableObjectImpl implements ObservableObject, ListenerAwa
 
   @Override
   public void notifyListeners() {
-    Optional<ObjectChange> renderAndCleanChanges = ref.renderAndCleanChanges();
-    if (renderAndCleanChanges.isPresent()) {
-      notify(renderAndCleanChanges.get());
+    if (parent != null) {
+      parent.notifyListeners();
+    } else {
+      Optional<ObjectChange> renderAndCleanChanges = ref.renderAndCleanChanges();
+      if (renderAndCleanChanges.isPresent()) {
+        notify(renderAndCleanChanges.get());
+      }
     }
   }
 
@@ -98,13 +107,24 @@ public final class ObservableObjectImpl implements ObservableObject, ListenerAwa
 
   @Override
   public void setValue(String propertyPath, Object value) {
-    ref.setValueByPath(propertyPath, value);
-    notifyListeners();
+    if (parent != null) {
+      parent.setValue(parentPath + "/" + propertyPath, value);
+    } else {
+      ref.setValueByPath(propertyPath, value);
+      notifyListeners();
+    }
   }
 
   @Override
   public Disposable onPropertyChange(@NonNull Consumer<? super PropertyChange> onPropertyChange,
       String... propertyPath) {
+    if (parent != null) {
+      return parent.onPropertyChange(
+          ch -> onPropertyChange
+              .accept(PropertyChange.copyWithoutParent(ch, parentPath)),
+          ObservableObjectHelper.concat(parentPath, propertyPath));
+    }
+    anyNonParentSubscription = true;
     ObjectPropertyPath path = ObservableObjectHelper.processPathParameter(propertyPath);
     Disposable disposable = propertyChangePublisher
         .filter(change -> ObservableObjectHelper.pathEquals(change, path))
@@ -127,6 +147,13 @@ public final class ObservableObjectImpl implements ObservableObject, ListenerAwa
   @Override
   public Disposable onReferenceChange(@NonNull Consumer<? super ReferenceChange> onReferenceChange,
       String... referencePath) {
+    if (parent != null) {
+      return parent.onReferenceChange(
+          ch -> onReferenceChange
+              .accept(ReferenceChange.copyWithoutParent(ch, parentPath)),
+          ObservableObjectHelper.concat(parentPath, referencePath));
+    }
+    anyNonParentSubscription = true;
     ObjectPropertyPath path = ObservableObjectHelper.processPathParameter(referencePath);
     return referenceChangePublisher
         .filter(change -> ObservableObjectHelper.pathEquals(change, path))
@@ -137,6 +164,13 @@ public final class ObservableObjectImpl implements ObservableObject, ListenerAwa
   public Disposable onReferencedObjectChange(
       @NonNull Consumer<? super ReferencedObjectChange> onReferencedObjectChange,
       String... referencePath) {
+    if (parent != null) {
+      return parent.onReferencedObjectChange(
+          ch -> onReferencedObjectChange
+              .accept(ReferencedObjectChange.copyWithoutParent(ch, parentPath)),
+          ObservableObjectHelper.concat(parentPath, referencePath));
+    }
+    anyNonParentSubscription = true;
     ObjectPropertyPath path = ObservableObjectHelper.processPathParameter(referencePath);
     Disposable disposable = referencedObjectChangePublisher
         .filter(change -> ObservableObjectHelper.pathEquals(change, path))
@@ -167,6 +201,13 @@ public final class ObservableObjectImpl implements ObservableObject, ListenerAwa
   @Override
   public Disposable onCollectionChange(
       @NonNull Consumer<? super CollectionChange> onCollectionChange, String... collectionPath) {
+    if (parent != null) {
+      return parent.onCollectionChange(
+          ch -> onCollectionChange
+              .accept(CollectionChange.copyWithoutParent(ch, parentPath)),
+          ObservableObjectHelper.concat(parentPath, collectionPath));
+    }
+    anyNonParentSubscription = true;
     ObjectPropertyPath path = ObservableObjectHelper.processPathParameter(collectionPath);
     return collectionChangePublisher
         .filter(change -> ObservableObjectHelper.pathEquals(change, path))
@@ -177,6 +218,13 @@ public final class ObservableObjectImpl implements ObservableObject, ListenerAwa
   public Disposable onCollectionObjectChange(
       @NonNull Consumer<? super CollectionObjectChange> onCollectionObjectChange,
       String... collectionPath) {
+    if (parent != null) {
+      return parent.onCollectionObjectChange(
+          ch -> onCollectionObjectChange
+              .accept(CollectionObjectChange.copyWithoutParent(ch, parentPath)),
+          ObservableObjectHelper.concat(parentPath, collectionPath));
+    }
+    anyNonParentSubscription = true;
     ObjectPropertyPath path = ObservableObjectHelper.processPathParameter(collectionPath);
     Disposable disposable = collectionObjectChangePublisher
         .filter(change -> ObservableObjectHelper.pathEquals(change, path))
@@ -206,4 +254,14 @@ public final class ObservableObjectImpl implements ObservableObject, ListenerAwa
     }
     return disposable;
   }
+
+  public void setParentRef(ObservableObject parent, String path) {
+    if (anyNonParentSubscription) {
+      throw new IllegalArgumentException(
+          "Parent set to ObservableObject, but subscription already happened!");
+    }
+    this.parent = parent;
+    this.parentPath = path;
+  }
+
 }

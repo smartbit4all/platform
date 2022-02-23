@@ -19,6 +19,28 @@ public class ObservableObjectHelper {
     return text == null ? "" : text.toUpperCase();
   }
 
+  static String[] concat(String path, String[] paths) {
+    int size = paths == null ? 1 : paths.length + 1;
+    String[] result = new String[size];
+    result[0] = path;
+    if (paths != null) {
+      for (int i = 0; i < paths.length; i++) {
+        result[i + 1] = paths[i];
+      }
+    }
+    return result;
+  }
+
+  static String removeParentPath(String path, String parentPath) {
+    if (path == null || parentPath == null) {
+      return path;
+    }
+    if (path.startsWith(parentPath)) {
+      return path.substring(parentPath.length());
+    }
+    return path;
+  }
+
   static class ObjectPropertyPath {
     /**
      * Path within the object, separated by "/" characters.

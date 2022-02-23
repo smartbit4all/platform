@@ -47,4 +47,11 @@ public class ReferencedObjectChange extends ChangeItem {
         + change.toString() + StringConstant.NEW_LINE + StringConstant.RIGHT_CURLY;
   }
 
+  public static ReferencedObjectChange copyWithoutParent(ReferencedObjectChange original,
+      String parentPath) {
+    String path = ObservableObjectHelper.removeParentPath(original.getPath(), parentPath);
+    return new ReferencedObjectChange(path, original.getName(),
+        ObjectChangeSimple.copyWithoutParent(original.getChange(), parentPath));
+  }
+
 }
