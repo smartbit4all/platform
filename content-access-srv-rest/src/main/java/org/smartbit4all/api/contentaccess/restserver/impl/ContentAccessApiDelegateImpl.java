@@ -7,8 +7,7 @@ import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.contentaccess.ContentAccessApi;
 import org.smartbit4all.api.contentaccess.restserver.ContentAccessApiDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,9 +22,7 @@ public class ContentAccessApiDelegateImpl implements ContentAccessApiDelegate {
     try {
       BinaryData content = contentAccessApi.download(uuid);
       // TODO BinaryDataResource??
-      Resource res = content.getDataFile() == null ? new ByteArrayResource(content.getData())
-          : new FileSystemResource(content.getDataFile());
-
+      Resource res = new InputStreamResource(content.inputStream());
       return ResponseEntity
           .ok()
           .body(res);
