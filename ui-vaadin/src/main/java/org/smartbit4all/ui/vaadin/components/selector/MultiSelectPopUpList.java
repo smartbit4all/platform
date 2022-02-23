@@ -250,6 +250,7 @@ public class MultiSelectPopUpList<T> extends CustomField<List<T>> implements Has
 
 
     btndDialogSave.addClickListener(e -> {
+      filterField.clear();
       updateSelection();
       onSaveListeners.forEach(onSaveListener -> onSaveListener.accept(selectedItems));
       dialog.close();
