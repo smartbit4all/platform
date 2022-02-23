@@ -9,19 +9,23 @@ import org.smartbit4all.ui.api.tree.model.TreeNode;
 
 public class NavigationViewModelHelper {
 
-  private static Map<Class<?>, ApiBeanDescriptor> navigationDescriptors;
-
-  static {
-    Set<Class<?>> beans = new HashSet<>();
-    beans.add(TreeModel.class);
-    beans.add(TreeNode.class);
-    navigationDescriptors = ApiBeanDescriptor.of(beans);
-  }
-
   private NavigationViewModelHelper() {}
 
-  public static Map<Class<?>, ApiBeanDescriptor> getNavigationDescriptors() {
-    return navigationDescriptors;
+  public static Map<Class<?>, ApiBeanDescriptor> NAVIGATION_DESCRIPTORS =
+      initNavigationDescriptors();
+
+  private static Map<Class<?>, ApiBeanDescriptor> initNavigationDescriptors() {
+    Set<Class<?>> domainBeans = collectDomainBeans();
+
+    return ApiBeanDescriptor.of(domainBeans);
+  }
+
+  public static Set<Class<?>> collectDomainBeans() {
+    Set<Class<?>> domainBeans = new HashSet<>();
+
+    domainBeans.add(TreeModel.class);
+    domainBeans.add(TreeNode.class);
+    return domainBeans;
   }
 
 }

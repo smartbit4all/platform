@@ -255,7 +255,7 @@ public final class ObservableObjectImpl implements ObservableObject {
     return disposable;
   }
 
-  public void setParentRef(ObservableObject parent, String path) {
+  public void setParent(ObservableObject parent, String path) {
     if (anyNonParentSubscription) {
       throw new IllegalArgumentException(
           "Parent set to ObservableObject, but subscription already happened!");

@@ -2,24 +2,23 @@ package org.smartbit4all.ui.api.navigation;
 
 import org.smartbit4all.api.navigation.bean.NavigationNode;
 import org.smartbit4all.api.navigation.bean.NavigationPath;
-import org.smartbit4all.core.object.ObservableObject;
-import org.smartbit4all.core.object.PublishEvents;
 import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
-import org.smartbit4all.ui.api.viewmodel.ObjectEditing;
+import org.smartbit4all.ui.api.viewmodel.ViewModel;
 
 /**
  * The editing model for the navigation. It contains a navigation
  * 
  * @author Peter Boros
  */
-public interface NavigationViewModel extends ObjectEditing {
+public interface NavigationViewModel extends ViewModel {
+
+  public static final String EXPAND = "tree.expand";
+  public static final String COLLAPSE = "tree.collapse";
+  public static final String SELECT = "tree.select";
 
   public static final String OBJECT_URI_TO_SELECT = "NavigationViewModel.OBJECT_URI_TO_SELECT";
 
   public static final String NAVIGATION_NAME = "NavigationViewModel.NAVIGATION_NAME";
-
-  @PublishEvents("MODEL")
-  ObservableObject model();
 
   void refreshSelectedNode();
 
@@ -42,7 +41,5 @@ public interface NavigationViewModel extends ObjectEditing {
   void setSelectedNodeByPath(NavigationPath path);
 
   NavigationNode selectedNavigationNode();
-
-  void onCloseWindow();
 
 }

@@ -1,6 +1,5 @@
 package org.smartbit4all.ui.api.viewmodel;
 
-import java.util.Map;
 import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.core.object.PublishEvents;
 import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
@@ -28,7 +27,7 @@ public interface ViewModel extends ObjectEditing {
 
   void addChild(ViewModel child, String path);
 
-  Map<String, ViewModel> getChildren();
+  <V extends ViewModel> V getChild(String path);
 
   ViewModelData getViewModelData();
 

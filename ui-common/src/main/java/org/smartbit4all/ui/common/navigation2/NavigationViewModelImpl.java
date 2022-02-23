@@ -19,8 +19,6 @@ import org.smartbit4all.api.navigation.bean.NavigationView;
 import org.smartbit4all.api.session.Session;
 import org.smartbit4all.api.session.UserSessionApi;
 import org.smartbit4all.core.object.ApiObjectRef;
-import org.smartbit4all.core.object.ObservableObject;
-import org.smartbit4all.core.object.ObservableObjectImpl;
 import org.smartbit4all.core.object.ObservablePublisherWrapper;
 import org.smartbit4all.ui.api.navigation.NavigationViewModel;
 import org.smartbit4all.ui.api.navigation.UINavigationApi;
@@ -28,15 +26,12 @@ import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
 import org.smartbit4all.ui.api.tree.model.TreeModel;
 import org.smartbit4all.ui.api.tree.model.TreeNode;
 import org.smartbit4all.ui.api.tree.model.TreeNodeKind;
-import org.smartbit4all.ui.api.viewmodel.ObjectEditingImpl;
+import org.smartbit4all.ui.api.viewmodel.ViewModelImpl;
 import com.google.common.base.Strings;
 import io.reactivex.rxjava3.disposables.Disposable;
 
-public class NavigationViewModelImpl extends ObjectEditingImpl implements NavigationViewModel {
-
-  private TreeModel model;
-
-  private final ObservableObjectImpl modelObservable;
+public class NavigationViewModelImpl extends ViewModelImpl<TreeModel>
+    implements NavigationViewModel {
 
   private Navigation navigationState;
 
@@ -54,29 +49,28 @@ public class NavigationViewModelImpl extends ObjectEditingImpl implements Naviga
 
   private URI objecUriToSelect;
 
-  public NavigationViewModelImpl(Navigation navigation,
-      ObservablePublisherWrapper publisherWrapper,
-      UINavigationApi uiNavigationApi) {
-    this(navigation, publisherWrapper, uiNavigationApi, null);
-  }
-
-  public NavigationViewModelImpl(Navigation navigation,
+  public NavigationViewModelImpl(
       ObservablePublisherWrapper publisherWrapper,
       UINavigationApi uiNavigationApi,
       UserSessionApi userSessionApi) {
-    this.navigationState = navigation;
+    super(publisherWrapper, NavigationViewModelHelper.NAVIGATION_DESCRIPTORS, TreeModel.class);
     this.uiNavigationApi = uiNavigationApi;
     this.userSessionApi = userSessionApi;
 
-    ref = new ApiObjectRef(null, new TreeModel(),
-        NavigationViewModelHelper.getNavigationDescriptors());
-    modelObservable = new ObservableObjectImpl(publisherWrapper);
-    modelObservable.setRef(ref);
-    model = ref.getWrapper(TreeModel.class);
     treeNodesById = new HashMap<>();
     treeNodesByObjectUri = new HashMap<>();
     parentNodesByNode = new HashMap<>();
     subscriptionsById = new HashMap<>();
+    if (this.userSessionApi != null) {
+      subscriptionsById.put(
+          OBJECT_URI_TO_SELECT,
+          this.userSessionApi.currentSession()
+              .subscribeForParameterChange(OBJECT_URI_TO_SELECT, this::sessionParameterChange));
+    }
+  }
+
+  protected void setNavigation(Navigation navigation) {
+    this.navigationState = navigation;
     Disposable subscribeForNodeRefresh =
         navigationState.subscribeForNodeRefresh(this::refreshNavigationNode);
     Disposable subscribeForRootNodeAdded =
@@ -86,36 +80,24 @@ public class NavigationViewModelImpl extends ObjectEditingImpl implements Naviga
     subscriptionsById.put("subscribeForNodeRefresh", subscribeForNodeRefresh);
     subscriptionsById.put("subscribeForRootNodeAdded", subscribeForRootNodeAdded);
     subscriptionsById.put("subscribeForRootNodeRemoved", subscribeForRootNodeRemoved);
-    if (this.userSessionApi != null) {
-      subscriptionsById.put(
-          OBJECT_URI_TO_SELECT,
-          this.userSessionApi.currentSession()
-              .subscribeForParameterChange(OBJECT_URI_TO_SELECT, this::sessionParameterChange));
-    }
+
   }
 
   @Override
-  public ObservableObject model() {
-    return modelObservable;
+  protected void initCommands() {
+    registerCommand("*", EXPAND, TreeNode.class, this::expand);
+    registerCommand("*", COLLAPSE, TreeNode.class, this::collapse);
+    registerCommand("*", SELECT, TreeNode.class, this::select);
   }
 
   @Override
-  public void executeCommand(String commandPath, String command, Object... params) {
-    switch (command) {
-      case "expand":
-        expand(getTreeNodeByPath(commandPath));
-        break;
-      case "collapse":
-        collapse(getTreeNodeByPath(commandPath));
-        break;
-      case "select":
-        select(getTreeNodeByPath(commandPath));
-        break;
-      default:
-        // super.executeCommand(commandPath, command, params);
-        break;
-    }
-    notifyAllListeners();
+  protected TreeModel load(NavigationTarget navigationTarget) {
+    return new TreeModel();
+  }
+
+  @Override
+  protected URI getUri() {
+    return null;
   }
 
   private void expand(TreeNode node) {
@@ -476,14 +458,6 @@ public class NavigationViewModelImpl extends ObjectEditingImpl implements Naviga
     return findTreeNodeById(treeNode.getIdentifier());
   }
 
-  private TreeNode getTreeNodeByPath(String path) {
-    return ref.getValueRefByPath(path).getWrapper(TreeNode.class);
-  }
-
-  public void notifyAllListeners() {
-    modelObservable.notifyListeners();
-  }
-
   private String getAssociationNodeCaption(NavigationAssociation association) {
     String associationCaption = association.getCaption();
     if (Strings.isNullOrEmpty(associationCaption)) {
@@ -658,7 +632,51 @@ public class NavigationViewModelImpl extends ObjectEditingImpl implements Naviga
 
   @Override
   public void onCloseWindow() {
-    subscriptionsById.values().forEach(d -> d.dispose());
+    subscriptionsById.values().forEach(Disposable::dispose);
+  }
+
+  /**
+   * Creates a NavigationViewModel instance, sets the navigationState and initializes it. Typically
+   * used when creating the viewModel in UI.
+   * 
+   * NOTE: this is not the recommended way to use NavigationViewModel, you should use it as a child
+   * model.
+   * 
+   * @param navigation
+   * @param publisherWrapper
+   * @param uiNavigationApi
+   * @param userSessionApi
+   * @return
+   */
+  public static NavigationViewModel createForUI(Navigation navigation,
+      ObservablePublisherWrapper publisherWrapper,
+      UINavigationApi uiNavigationApi,
+      UserSessionApi userSessionApi) {
+    NavigationViewModelImpl result =
+        new NavigationViewModelImpl(publisherWrapper, uiNavigationApi, userSessionApi);
+    result.setNavigation(navigation);
+    result.initByNavigationTarget(null);
+    return result;
+  }
+
+  /**
+   * Creates a NavigationViewModel instance and sets the navigationState, but not initializes it.
+   * Typically used when create the viewModel as a child.
+   * 
+   * @param navigation
+   * @param publisherWrapper
+   * @param uiNavigationApi
+   * @param userSessionApi
+   * @return
+   */
+  public static NavigationViewModel createWithNavigation(Navigation navigation,
+      ObservablePublisherWrapper publisherWrapper,
+      UINavigationApi uiNavigationApi,
+      UserSessionApi userSessionApi) {
+    NavigationViewModelImpl result =
+        new NavigationViewModelImpl(publisherWrapper, uiNavigationApi, userSessionApi);
+    result.setNavigation(navigation);
+    return result;
   }
 
 }

@@ -1,7 +1,6 @@
 package org.smartbit4all.ui.api.viewmodel;
 
 import java.net.URI;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -17,14 +16,19 @@ import org.smartbit4all.core.object.ObservablePublisherWrapper;
 import org.smartbit4all.core.utility.ReflectionUtility;
 import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
 import org.smartbit4all.ui.api.navigation.model.ViewModelData;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import io.reactivex.rxjava3.disposables.Disposable;
 
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements ViewModel {
 
   private static final Logger log = LoggerFactory.getLogger(ViewModelImpl.class);
 
-  private ViewModelImpl<?> parent;
-  private String path;
+  protected ViewModelImpl<?> parent;
+  protected String path;
 
   protected ObservableObjectImpl data;
 
@@ -38,6 +42,9 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
 
   private Map<Class<?>, ApiBeanDescriptor> apiBeanDescriptors;
 
+  /**
+   * First key: commandCode, embedded map key: commandPath (may be null)
+   */
   protected Map<String, Map<String, WrapperCommand<?>>> commandsByCode = new HashMap<>();
 
   protected Map<String, ViewModel> childrenByPath = new HashMap<>();
@@ -46,7 +53,6 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
       Map<Class<?>, ApiBeanDescriptor> apiBeanDescriptors,
       Class<T> modelClazz) {
     super();
-    this.path = null;
     data = new ObservableObjectImpl(publisherWrapper);
     this.apiBeanDescriptors = apiBeanDescriptors;
     this.modelClazz = modelClazz;
@@ -99,7 +105,7 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
   @Override
   public void initByNavigationTarget(NavigationTarget navigationTarget) {
     this.navigationTarget = navigationTarget;
-    this.navigationTargetUUID = navigationTarget.getUuid();
+    this.navigationTargetUUID = navigationTarget == null ? null : navigationTarget.getUuid();
     if (ref != null) {
       throw new IllegalArgumentException("ref already initialized in ViewModel when initByUUID!");
     }
@@ -131,9 +137,17 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
   private void initCommon() {
     model = ref.getWrapper(modelClazz);
     data.setRef(ref);
+    if (parent != null) {
+      data.setParent(parent.data, path);
+    }
+    initChildViewModels();
     initCommands();
     initSubscription();
     notifyAllListeners();
+  }
+
+  protected void initChildViewModels() {
+    // init child view models in implementations
   }
 
   protected void initSubscription() {
@@ -207,18 +221,21 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
     if (path == null) {
       throw new IllegalArgumentException("registerCommand called before initialization!");
     }
-    if (parent == null) {
-      Map<String, WrapperCommand<?>> commandMap =
-          commandsByCode.computeIfAbsent(commandPath, c -> new HashMap<>());
-      commandMap.put(commandCode, wrapperCommand);
+    if (parent != null) {
+      parent.registerWrapperCommand(commandPathWithParent(commandPath), commandCode,
+          wrapperCommand);
     } else {
-      if (commandPath == null) {
-        commandPath = path;
-      } else {
-        commandPath = path + "/" + commandPath;
-      }
-      parent.registerWrapperCommand(commandPath, commandCode, wrapperCommand);
+      Map<String, WrapperCommand<?>> commandMap =
+          commandsByCode.computeIfAbsent(commandCode, c -> new HashMap<>());
+      commandMap.put(commandPath, wrapperCommand);
     }
+  }
+
+  private String commandPathWithParent(String commandPath) {
+    if (commandPath == null) {
+      return path;
+    }
+    return path + "/" + commandPath;
   }
 
   @SuppressWarnings("unchecked")
@@ -236,19 +253,34 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
   @SuppressWarnings("rawtypes")
   private WrapperCommand findWrapperCommand(String commandPath, String commandCode) {
     if (parent != null) {
-      if (commandPath == null) {
-        commandPath = path;
-      } else {
-        commandPath = path + "/" + commandPath;
-      }
-      return parent.findWrapperCommand(commandPath, commandCode);
+      return parent.findWrapperCommand(commandPathWithParent(commandPath), commandCode);
     }
     WrapperCommand<?> command = null;
-    Map<String, WrapperCommand<?>> commandMap = commandsByCode.get(commandPath);
+    Map<String, WrapperCommand<?>> commandMap = commandsByCode.get(commandCode);
     if (commandMap != null) {
-      command = commandMap.get(commandCode);
+      command = commandMap.get(commandPath);
+      if (command == null) {
+        // no exact match, find *
+        String executedPath = commandPath;
+        String matchingPath = commandMap.keySet().stream()
+            .filter(p -> pathMatch(p, executedPath))
+            .findFirst()
+            .orElse(null);
+        command = commandMap.get(matchingPath);
+      }
     }
     return command;
+  }
+
+  private boolean pathMatch(String registeredPath, String executedPath) {
+    if (executedPath == null || registeredPath == null) {
+      return false;
+    }
+    if (registeredPath.endsWith("*")) {
+      String prefix = registeredPath.substring(0, registeredPath.length() - 1);
+      return executedPath.startsWith(prefix);
+    }
+    return false;
   }
 
   private class WrapperCommand<O> {
@@ -269,8 +301,19 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
       this.clazz = clazz;
     }
 
-    public void execute(String path, String commandCode, Object... params) {
-      Object value = ref.getValueRefByPath(path).getWrapper(clazz);
+    public void execute(String commandPath, String commandCode, Object... params) {
+      Object value;
+      if (parent != null) {
+        if (commandPath == null) {
+          commandPath = commandPathWithParent(commandPath);
+        }
+        if (!commandPath.startsWith(path)) {
+          commandPath = commandPathWithParent(commandPath);
+        }
+        value = parent.ref.getValueRefByPath(commandPath).getWrapper(clazz);
+      } else {
+        value = ref.getValueRefByPath(commandPath).getWrapper(clazz);
+      }
       O object = clazz.cast(value);
       if (commandWithParams != null) {
         commandWithParams.accept(object, params);
@@ -297,9 +340,10 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
     return modelClazz;
   }
 
+  @SuppressWarnings("unchecked")
   @Override
-  public Map<String, ViewModel> getChildren() {
-    return Collections.unmodifiableMap(childrenByPath);
+  public <V extends ViewModel> V getChild(String path) {
+    return (V) childrenByPath.get(path);
   }
 
   public T getModel() {

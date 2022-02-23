@@ -6,6 +6,7 @@ import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.core.object.PropertyChange;
 import org.smartbit4all.ui.api.navigation.NavigationViewModel;
 import org.smartbit4all.ui.api.tree.model.TreeNode;
+import org.smartbit4all.ui.api.viewmodel.ViewModel;
 import org.smartbit4all.ui.vaadin.localization.TranslationUtil;
 import org.smartbit4all.ui.vaadin.util.Css;
 import com.vaadin.flow.component.html.Div;
@@ -18,7 +19,7 @@ import io.reactivex.rxjava3.disposables.Disposable;
 
 public class TreeNodeView extends FlexLayout {
 
-  private NavigationViewModel viewModel;
+  private ViewModel viewModel;
   private String path;
   private Label label;
   private Icon icon;
@@ -42,12 +43,12 @@ public class TreeNodeView extends FlexLayout {
   private Div spacerLayout;
   private Boolean hasChildren;
 
-  public TreeNodeView(NavigationViewModel viewModel, String path) {
+  public TreeNodeView(ViewModel viewModel, String path) {
     this.viewModel = viewModel;
     this.path = path;
 
     createUI();
-    ObservableObject model = this.viewModel.model();
+    ObservableObject model = this.viewModel.data();
     treeNodeBinder = new VaadinTreeNodeBinder(childrenLayout, model,
         this::createSubTreeNodeView, path, TreeNode.CHILDREN_NODES);
     captionSubs = model.onPropertyChange(this::onCaptionChanged, path, TreeNode.CAPTION);
@@ -67,7 +68,7 @@ public class TreeNodeView extends FlexLayout {
     toggle = new Span();
     toggle.addClassName("sb4-tree-toggle");
     toggle.addClickListener(event -> {
-      String command = expanded ? "collapse" : "expand";
+      String command = expanded ? NavigationViewModel.COLLAPSE : NavigationViewModel.EXPAND;
       viewModel.executeCommand(path, command);
     });
     Css.stopClickEventPropagation(toggle);
@@ -77,7 +78,8 @@ public class TreeNodeView extends FlexLayout {
     captionLayout.addClassName("sb4-tree-node-caption");
     itemLayout = new FlexLayout(spacerLayout, toggle, captionLayout);
     itemLayout.addClassName("sb4-tree-node-item");
-    itemLayout.addClickListener(event -> viewModel.executeCommand(path, "select"));
+    itemLayout
+        .addClickListener(event -> viewModel.executeCommand(path, NavigationViewModel.SELECT));
     childrenLayout = new FlexLayout();
     childrenLayout.addClassName("sb4-tree-node-children");
 
