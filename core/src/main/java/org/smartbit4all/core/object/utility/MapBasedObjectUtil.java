@@ -507,35 +507,63 @@ public class MapBasedObjectUtil {
     }
   }
 
+  /**
+   * If the given value can be added to the given property map value list, sets the value to the
+   * item specified by the given index.
+   * 
+   * @param valueList
+   * @param index
+   * @param value
+   */
   public static void setPropertyValueListItem(Object valueList, int index, Object value) {
     if (canBeAdded(valueList, value)) {
       if (valueList instanceof StringValueList) {
-        ((StringValueList) valueList).getValues().set(index, (String) value);
+        addOrSetListItem(((StringValueList) valueList).getValues(), index, (String) value);
 
       } else if (valueList instanceof IntegerValueList) {
-        ((IntegerValueList) valueList).getValues().set(index, (Integer) value);
+        addOrSetListItem(((IntegerValueList) valueList).getValues(), index, (Integer) value);
 
       } else if (valueList instanceof LongValueList) {
-        ((LongValueList) valueList).getValues().set(index, (Long) value);
+        addOrSetListItem(((LongValueList) valueList).getValues(), index, (Long) value);
 
       } else if (valueList instanceof BooleanValueList) {
-        ((BooleanValueList) valueList).getValues().set(index, (Boolean) value);
+        addOrSetListItem(((BooleanValueList) valueList).getValues(), index, (Boolean) value);
 
       } else if (valueList instanceof LocalDateTimeValueList) {
-        ((LocalDateTimeValueList) valueList).getValues().set(index, (LocalDateTime) value);
+        addOrSetListItem(((LocalDateTimeValueList) valueList).getValues(), index,
+            (LocalDateTime) value);
 
       } else if (valueList instanceof List<?>) {
         if (value instanceof MapBasedObjectData) {
-          ((List<MapBasedObject>) valueList).set(index,
+          addOrSetListItem((List<MapBasedObject>) valueList, index,
               MapBasedObject.of((MapBasedObjectData) value));
 
         } else if (value instanceof MapBasedObject) {
-          ((List<MapBasedObject>) valueList).set(index, (MapBasedObject) value);
+          addOrSetListItem((List<MapBasedObject>) valueList, index, (MapBasedObject) value);
         }
       }
     }
   }
 
+  private static <T> void addOrSetListItem(List<T> list, int index, T item) {
+    int size = list.size();
+    if (size > index) {
+      list.set(index, item);
+
+    } else if (size == index) {
+      list.add(item);
+
+    } else {
+      throw new IndexOutOfBoundsException(
+          "List size: " + size + ", Given index: " + index);
+    }
+  }
+
+  /**
+   * @param value
+   * @return True, if the given value is a {@link MapBasedObject}'s property value list (not a
+   *         simple {@link List}!).
+   */
   public static boolean isValueList(Object value) {
     return value instanceof StringValueList ||
         value instanceof IntegerValueList ||

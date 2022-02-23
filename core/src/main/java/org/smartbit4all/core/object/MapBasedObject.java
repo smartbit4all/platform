@@ -53,6 +53,12 @@ public class MapBasedObject {
   private String path;
 
   /**
+   * In case of embedded MapBasedObject lists, the removed items will be stored there to be able to
+   * render the deleted collection changes effectively.
+   */
+  private final List<MapBasedObject> deletedObjectItems = new ArrayList<>();
+
+  /**
    * Constructor for root object.
    */
   public MapBasedObject() {
@@ -203,17 +209,16 @@ public class MapBasedObject {
       }
     }
 
-    // will it be necessary?
     result = renderDeletedFromPropertyMapChanges(result);
 
+    deletedObjectItems.clear();
     previousState = deepCopy();
 
     return Optional.ofNullable(result);
   }
 
   private ObjectChange renderReferenceChange(ObjectChange result, ChangeState changeState,
-      String key,
-      Object actualValue) {
+      String key, Object actualValue) {
     MapBasedObject embeddedObj = (MapBasedObject) actualValue;
     Optional<ObjectChange> refChangeOpt = embeddedObj.renderAndCleanChanges();
     if (refChangeOpt.isPresent()) {
@@ -244,41 +249,31 @@ public class MapBasedObject {
       String key, List<?> list) {
     CollectionChange collectionChange = new CollectionChange(path, key);
     CollectionObjectChange collectionObjectChange = new CollectionObjectChange(path, key);
+
     int ind = 0;
     for (Object obj : list) {
+      String itemPath = getCollectionChangePath(key, ind);
       Optional<ObjectChange> itemChangeOpt =
           ((MapBasedObject) obj).renderAndCleanChanges();
       if (itemChangeOpt.isPresent()) {
-        collectionChange.getChanges().add(itemChangeOpt.get());
+        ObjectChange itemChange = itemChangeOpt.get();
+        collectionChange.getChanges().add(itemChange);
         collectionObjectChange.getChanges()
-            .add(new ObjectChangeSimple(getCollectionChangePath(key, ind),
-                itemChangeOpt.get().getOperation(), obj));
+            .add(new ObjectChangeSimple(itemPath, itemChange.getOperation(), obj));
       }
       ind++;
     }
 
-    // TODO how to compare MapBasedObject list items
-    // if (previousState != null) {
-    // Object prevValue = previousState.propertyMap.get(key);
-    // if (prevValue != null && prevValue instanceof List<?>) {
-    // List<?> prevList = (List<?>) prevValue;
-    // if (!prevList.isEmpty() && prevList.get(0) instanceof MapBasedObject) {
-    // ind = 0;
-    // for (Object obj : prevList) {
-    // if (!list.contains(obj)) {
-    // collectionChange.getChanges()
-    // .add(new ObjectChange(getCollectionChangePath(key, ind),
-    // ChangeState.DELETED));
-    // collectionObjectChange.getChanges()
-    // .add(new ObjectChangeSimple(getCollectionChangePath(key, ind),
-    // ChangeState.DELETED,
-    // obj));
-    // ind++;
-    // }
-    // }
-    // }
-    // }
-    // }
+    for (MapBasedObject deletedObj : deletedObjectItems) {
+      String deletedPath = deletedObj.path;
+      String listKey = deletedPath.substring(0, deletedPath.indexOf(StringConstant.SLASH));
+      if (listKey.equals(key)) {
+        String deletedItemPath = getObjectPath(path, deletedPath);
+        collectionChange.getChanges().add(new ObjectChange(deletedItemPath, ChangeState.DELETED));
+        collectionObjectChange.getChanges()
+            .add(new ObjectChangeSimple(deletedItemPath, ChangeState.DELETED, deletedObj));
+      }
+    }
 
     if (!collectionChange.getChanges().isEmpty()) {
       if (result == null) {
@@ -300,12 +295,10 @@ public class MapBasedObject {
         CollectionObjectChange collectionObjectChange = new CollectionObjectChange(path, key);
         int ind = 0;
         for (Object obj : prevList) {
-          collectionChange.getChanges()
-              .add(new ObjectChange(getCollectionChangePath(key, ind), ChangeState.DELETED));
+          String itemPath = getCollectionChangePath(key, ind);
+          collectionChange.getChanges().add(new ObjectChange(itemPath, ChangeState.DELETED));
           collectionObjectChange.getChanges()
-              .add(new ObjectChangeSimple(getCollectionChangePath(key, ind),
-                  ChangeState.DELETED,
-                  obj));
+              .add(new ObjectChangeSimple(itemPath, ChangeState.DELETED, obj));
           ind++;
         }
         if (result == null) {
@@ -328,8 +321,7 @@ public class MapBasedObject {
       result.getReferences()
           .add(new ReferenceChange(path, key, new ObjectChange(key, ChangeState.DELETED)));
       result.getReferencedObjects().add(new ReferencedObjectChange(path, key,
-          new ObjectChangeSimple(path + StringConstant.SLASH + key, ChangeState.DELETED,
-              null)));
+          new ObjectChangeSimple(path + StringConstant.SLASH + key, ChangeState.DELETED, null)));
     }
     return result;
   }
@@ -375,9 +367,9 @@ public class MapBasedObject {
               result = new ObjectChange(path, ChangeState.MODIFIED);
             }
             result.getReferences().add(new ReferenceChange(path, key, change));
-            result.getReferencedObjects().add(new ReferencedObjectChange(path, key,
-                new ObjectChangeSimple(path + StringConstant.SLASH + key, ChangeState.DELETED,
-                    null)));
+            result.getReferencedObjects()
+                .add(new ReferencedObjectChange(path, key, new ObjectChangeSimple(
+                    path + StringConstant.SLASH + key, ChangeState.DELETED, null)));
 
           } else if (actualValue instanceof List) {
             List<?> list = (List<?>) actualValue;
@@ -391,8 +383,7 @@ public class MapBasedObject {
                     .add(new ObjectChange(getCollectionChangePath(key, ind), ChangeState.DELETED));
                 collectionObjectChange.getChanges()
                     .add(new ObjectChangeSimple(getCollectionChangePath(key, ind),
-                        ChangeState.DELETED,
-                        obj));
+                        ChangeState.DELETED, obj));
                 ind++;
               }
 
@@ -418,7 +409,8 @@ public class MapBasedObject {
    * @return
    */
   public MapBasedObject deepCopy() {
-    MapBasedObject result = new MapBasedObject();
+    MapBasedObject result = new MapBasedObject(path);
+    result.deletedObjectItems.addAll(deletedObjectItems);
     propertyMap.forEach((key, value) -> {
       result.addProperty(key, MapBasedObjectUtil.deepCopyPropertyValue(value));
     });
@@ -438,7 +430,6 @@ public class MapBasedObject {
       if (PathUtility.getPathSize(path) > 1) {
         value = ((MapBasedObject) value).getValueByPath(PathUtility.nextFullPath(path));
       }
-
     } else if (value instanceof List<?> &&
         !((List<?>) value).isEmpty() &&
         ((List<?>) value).get(0) instanceof MapBasedObject) {
@@ -454,7 +445,6 @@ public class MapBasedObject {
               "Item index not found after MapBasedObject list property name, path: " + path);
         }
       }
-
     } else {
       if (PathUtility.getPathSize(path) > 1) {
         throw new IllegalArgumentException(
@@ -462,7 +452,6 @@ public class MapBasedObject {
                 (value == null ? "null" : value.getClass().getName()));
       }
     }
-
     return value;
   }
 
@@ -492,8 +481,7 @@ public class MapBasedObject {
       int pathSize = PathUtility.getPathSize(path);
       String key = PathUtility.subpath(path, pathSize - 2, pathSize - 1);
       Object currentValue = parentObject.propertyMap.get(key);
-
-      MapBasedObjectUtil.setPropertyValueListItem(currentValue, Integer.valueOf(lastPath), value);
+      setValueListItem(currentValue, Integer.valueOf(lastPath), value);
 
     } else {
       String key = lastPath;
@@ -506,6 +494,13 @@ public class MapBasedObject {
 
       Object newValue = MapBasedObjectUtil.createPropertyValue(key, value, currentValue, clazz);
       if (currentValue == null || currentValue.getClass().equals(newValue.getClass())) {
+        if (currentValue instanceof MapBasedObject) {
+          transferAttributes((MapBasedObject) currentValue, (MapBasedObject) newValue);
+
+        } else if (currentValue instanceof List<?>) {
+          storeInfoFromOldList((List<MapBasedObject>) currentValue,
+              (List<MapBasedObject>) newValue);
+        }
         parentObject.addProperty(key, newValue);
 
       } else {
@@ -515,6 +510,67 @@ public class MapBasedObject {
                 "Given class: " + value.getClass().getName());
       }
     }
+
+  }
+
+  private void setValueListItem(Object valueList, int index, Object value) {
+    if (value instanceof MapBasedObject || value instanceof MapBasedObjectData) {
+      if (valueList instanceof List<?>) {
+        List<MapBasedObject> list = (List<MapBasedObject>) valueList;
+        MapBasedObject newObj = value instanceof MapBasedObject
+            ? (MapBasedObject) value
+            : of((MapBasedObjectData) value);
+
+        int size = list.size();
+        if (size > index) {
+          transferAttributes(list.get(index), newObj);
+          list.set(index, newObj);
+
+        } else if (size == index) {
+          list.add(newObj);
+
+        } else {
+          throw new IndexOutOfBoundsException(
+              "List size: " + size + ", Given index: " + index);
+        }
+      }
+
+    } else {
+      MapBasedObjectUtil.setPropertyValueListItem(valueList, index, value);
+    }
+  }
+
+  /**
+   * Store the information from the previous MapBasedObject list items in the new ones. Transfer the
+   * MapBasedObject attributes other than the propertyMap from the old object to the new one. If the
+   * size of the old list is bigger, store the deleted MapBasedObject items too.
+   * 
+   * @param oldList
+   * @param newList
+   */
+  private void storeInfoFromOldList(List<MapBasedObject> oldList, List<MapBasedObject> newList) {
+    int ind = 0;
+    while (ind < oldList.size() && ind < newList.size()) {
+      transferAttributes(oldList.get(ind), newList.get(ind));
+      ind++;
+    }
+    while (ind < oldList.size()) {
+      deletedObjectItems.add(oldList.get(ind));
+      ind++;
+    }
+  }
+
+  /**
+   * Transfer the MapBasedObject attributes other than the propertyMap from the given object to the
+   * other given one.
+   * 
+   * @param from
+   * @param to
+   */
+  private void transferAttributes(MapBasedObject from, MapBasedObject to) {
+    to.path = from.path;
+    to.previousState = from.deepCopy();
+    to.deletedObjectItems.addAll(from.deletedObjectItems);
   }
 
   /**
@@ -577,6 +633,9 @@ public class MapBasedObject {
         int counter = 0;
         for (Object object : collection) {
           if (counter == index) {
+            if (object instanceof MapBasedObject) {
+              deletedObjectItems.add((MapBasedObject) object);
+            }
             collection.remove(object);
             break;
           }
@@ -595,7 +654,7 @@ public class MapBasedObject {
 
   /**
    * @param path The parent object of the property found by this path will be searched. If a
-   *        MapBasedObject is not found in the middle of the path, it will be created.
+   *        MapBasedObject is not found in the path, it will be created.
    * @return The MapBasedObject that contains directly the property found by the given path.
    */
   private MapBasedObject getParentObject(String path) {
@@ -608,7 +667,7 @@ public class MapBasedObject {
 
   /**
    * @param path The MapBasedObject will be searched by this path. If a MapBasedObject is not found
-   *        in the middle of the path, it will be created.
+   *        in the path, it will be created.
    * @return The MapBasedObject found (or created) by the given path.
    */
   private MapBasedObject getOrCreateObject(String path) {

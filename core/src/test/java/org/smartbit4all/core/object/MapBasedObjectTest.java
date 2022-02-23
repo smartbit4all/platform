@@ -408,7 +408,7 @@ class MapBasedObjectTest {
   }
 
   @Test
-  void apiObjectRefTest() {
+  void compareWithApiObjectRefTest() {
 
     // render changes from ApiObjectRef
 
@@ -448,9 +448,29 @@ class MapBasedObjectTest {
     ref.setValueByPath("referred/name", "newName");
     ref.setValueByPath("referred/details/0/name", "newName");
 
-    // ReferredDetailBean detBean = new ReferredDetailBean();
-    // detBean.setName("newAddedDetail");
-    // ref.setValueByPath("referred/details/1", detBean);
+    // ReferredBean refBean = new ReferredBean();
+    // refBean.setName("newRefName");
+    // ref.setValueByPath("referred", refBean);
+
+    // MasterDetailBean detBean = new MasterDetailBean();
+    // detBean.setDetailName("newAddedDetail");
+    // ref.setValueByPath("details/1", detBean);
+
+    // ReferredDetailBean refDetBean = new ReferredDetailBean();
+    // refDetBean.setName("newAddedDetail");
+    // ref.setValueByPath("referred/details/1", refDetBean);
+
+    // List<MasterDetailBean> detBeans = new ArrayList<>();
+    // MasterDetailBean detBean = new MasterDetailBean();
+    // detBean.setDetailName("detailName1");
+    // MasterDetailBean detBean2 = new MasterDetailBean();
+    // detBean2.setDetailName("detailName2");
+    // MasterDetailBean detBean3 = new MasterDetailBean();
+    // detBean3.setDetailName("detailName3");
+    // MasterDetailBean detBean4 = new MasterDetailBean();
+    // detBean4.setDetailName("detailName4");
+    // ref.setValueByPath("details", Arrays.asList(detBean));
+    // ref.setValueByPath("details", Arrays.asList(detBean, detBean2, detBean3));
 
     refChanges = ref.renderAndCleanChanges().get();
 
@@ -458,10 +478,29 @@ class MapBasedObjectTest {
     obj.setValueByPath("referred/name", "newName");
     obj.setValueByPath("referred/details/0/name", "newName");
 
-    // TODO test it after fix
+    // MapBasedObjectData refBeanData = new MapBasedObjectData();
+    // MapBasedObjectUtil.addNewPropertyToData(refBeanData, "name", "newRefName");
+    // obj.setValueByPath("referred", refBeanData);
+
     // MapBasedObjectData detData = new MapBasedObjectData();
-    // MapBasedObjectUtil.addNewPropertyToData(detData, "name", "newAddedDetail");
-    // obj.setValueByPath("referred/details/1", detData);
+    // MapBasedObjectUtil.addNewPropertyToData(detData, "detailName", "newAddedDetail");
+    // obj.setValueByPath("details/1", detData);
+
+    // MapBasedObjectData refDetData = new MapBasedObjectData();
+    // MapBasedObjectUtil.addNewPropertyToData(refDetData, "name", "newAddedDetail");
+    // obj.setValueByPath("referred/details/1", refDetData);
+
+    // MapBasedObjectData detBeanData = new MapBasedObjectData();
+    // MapBasedObjectUtil.addNewPropertyToData(detBeanData, "detailName", "detailName1");
+    // MapBasedObjectData detBeanData2 = new MapBasedObjectData();
+    // MapBasedObjectUtil.addNewPropertyToData(detBeanData2, "detailName", "detailName2");
+    // MapBasedObjectData detBeanData3 = new MapBasedObjectData();
+    // MapBasedObjectUtil.addNewPropertyToData(detBeanData3, "detailName", "detailName3");
+    // MapBasedObjectData detBeanData4 = new MapBasedObjectData();
+    // MapBasedObjectUtil.addNewPropertyToData(detBeanData4, "detailName", "detailName4");
+    // obj.setValueByPath("details", Arrays.asList(detBeanData));
+    // obj.setValueByPath("details",
+    // Arrays.asList(detBeanData, detBeanData2, detBeanData3));
 
     objChanges = obj.renderAndCleanChanges().get();
 
