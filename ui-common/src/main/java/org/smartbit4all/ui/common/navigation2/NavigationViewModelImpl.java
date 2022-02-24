@@ -183,7 +183,7 @@ public class NavigationViewModelImpl extends ViewModelImpl<TreeModel>
     if (node == null) {
       select(null);
     } else {
-      select(findTreeNodeById(node.getId()));
+      select(getWrappedTreeNode(node.getId()));
     }
     notifyAllListeners();
   }
@@ -204,7 +204,7 @@ public class NavigationViewModelImpl extends ViewModelImpl<TreeModel>
         NavigationNode node = iterRoots.next();
         TreeNode treeNodeById;
         do {
-          treeNodeById = findTreeNodeById(node.getId());
+          treeNodeById = getWrappedTreeNode(node.getId());
           if (treeNodeById == null) {
             break;
           }
@@ -224,7 +224,7 @@ public class NavigationViewModelImpl extends ViewModelImpl<TreeModel>
             break;
           }
 
-          treeNodeById = findTreeNodeById(association.getId());
+          treeNodeById = getWrappedTreeNode(association.getId());
           if (treeNodeById != null) {
             expand(treeNodeById);
           }
@@ -599,7 +599,7 @@ public class NavigationViewModelImpl extends ViewModelImpl<TreeModel>
   }
 
   private void refreshNavigationAssociation(NavigationAssociation navigationAssociation) {
-    TreeNode nodeToRefresh = findTreeNodeById(navigationAssociation.getId());
+    TreeNode nodeToRefresh = getWrappedTreeNode(navigationAssociation.getId());
     if (nodeToRefresh != null) {
       nodeToRefresh.setChildrenNodesLoaded(false);
       loadChildren(nodeToRefresh);
@@ -620,7 +620,7 @@ public class NavigationViewModelImpl extends ViewModelImpl<TreeModel>
 
   private void refreshNavigationNode(NavigationNode navigationNode) {
 
-    TreeNode nodeToRefresh = findTreeNodeById(navigationNode.getId());
+    TreeNode nodeToRefresh = getWrappedTreeNode(navigationNode.getId());
     if (nodeToRefresh != null) {
       nodeToRefresh.setChildrenNodesLoaded(false);
       loadChildren(nodeToRefresh);
