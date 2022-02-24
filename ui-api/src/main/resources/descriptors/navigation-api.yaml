@@ -48,7 +48,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ViewData'
+              $ref: '#/components/schemas/Object'
       responses:
         '200':
           description: ''
@@ -145,7 +145,7 @@ components:
         navigationTarget:
           $ref: '#/components/schemas/NavigationTarget'
         model:
-          $ref: '#/components/schemas/ViewData'
+          $ref: '#/components/schemas/Object'
         children:
           type: object
           additionalProperties:
@@ -254,13 +254,13 @@ components:
           type: string
         icon:
           type: string
-    ViewData:
+    Object:
       type: object          
     CommandData:
       type: object
       properties:
         model:
-          $ref: '#/components/schemas/ViewData'
+          $ref: '#/components/schemas/Object'
         commandPath:
           type: string
         commandCode:
@@ -268,7 +268,7 @@ components:
         params:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/Object'
     CommandResult:
       type: object
       properties:

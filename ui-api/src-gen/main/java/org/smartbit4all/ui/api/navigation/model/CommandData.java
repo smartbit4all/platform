@@ -51,7 +51,7 @@ public class CommandData {
   private String commandCode;
 
   public static final String PARAMS = "params";
-  private List<String> params = null;
+  private List<Object> params = null;
 
 
   public CommandData model(Object model) {
@@ -135,13 +135,13 @@ public class CommandData {
   }
 
 
-  public CommandData params(List<String> params) {
+  public CommandData params(List<Object> params) {
     
     this.params = params;
     return this;
   }
 
-  public CommandData addParamsItem(String paramsItem) {
+  public CommandData addParamsItem(Object paramsItem) {
     if (this.params == null) {
       this.params = new ArrayList<>();
     }
@@ -158,14 +158,14 @@ public class CommandData {
   @JsonProperty(PARAMS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<String> getParams() {
+  public List<Object> getParams() {
     return params;
   }
 
 
   @JsonProperty(PARAMS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setParams(List<String> params) {
+  public void setParams(List<Object> params) {
     this.params = params;
   }
 
