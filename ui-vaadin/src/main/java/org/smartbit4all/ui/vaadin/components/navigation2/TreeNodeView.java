@@ -30,6 +30,7 @@ public class TreeNodeView extends FlexLayout {
   private List<String> styles;
 
   private FlexLayout childrenLayout;
+  private Disposable identifierSubs;
   private Disposable captionSubs;
   private Disposable iconSubs;
   private Disposable stylesSubs;
@@ -37,6 +38,7 @@ public class TreeNodeView extends FlexLayout {
   private Disposable selectedSubs;
   private Disposable levelSubs;
 
+  private String identifier;
   private boolean expanded = false;
   private FlexLayout itemLayout;
   private FlexLayout captionLayout;
@@ -51,6 +53,7 @@ public class TreeNodeView extends FlexLayout {
     ObservableObject model = this.viewModel.data();
     treeNodeBinder = new VaadinTreeNodeBinder(childrenLayout, model,
         this::createSubTreeNodeView, path, TreeNode.CHILDREN_NODES);
+    identifierSubs = model.onPropertyChange(this::onIdentifierChanged, path, TreeNode.IDENTIFIER);
     captionSubs = model.onPropertyChange(this::onCaptionChanged, path, TreeNode.CAPTION);
     iconSubs = model.onPropertyChange(this::onIconChanged, path, TreeNode.ICON);
     stylesSubs = model.onPropertyChange(this::onStylesChanged, path, TreeNode.STYLES);
@@ -67,7 +70,8 @@ public class TreeNodeView extends FlexLayout {
     icon = new Icon(VaadinIcon.CIRCLE_THIN);
     toggle = new Span();
     toggle.addClassName("sb4-tree-toggle");
-    toggle.addClickListener(event -> viewModel.executeCommand(path, NavigationViewModel.TOGGLE));
+    toggle.addClickListener(
+        event -> viewModel.executeCommand(identifier, NavigationViewModel.TOGGLE));
     Css.stopClickEventPropagation(toggle);
     spacerLayout = new Div();
     spacerLayout.addClassName("sb4-tree-node-spacer");
@@ -76,7 +80,8 @@ public class TreeNodeView extends FlexLayout {
     itemLayout = new FlexLayout(spacerLayout, toggle, captionLayout);
     itemLayout.addClassName("sb4-tree-node-item");
     itemLayout
-        .addClickListener(event -> viewModel.executeCommand(path, NavigationViewModel.SELECT));
+        .addClickListener(
+            event -> viewModel.executeCommand(identifier, NavigationViewModel.SELECT));
     childrenLayout = new FlexLayout();
     childrenLayout.addClassName("sb4-tree-node-children");
 
@@ -94,6 +99,10 @@ public class TreeNodeView extends FlexLayout {
     }
     String title = TranslationUtil.INSTANCE().getPossibleTranslation(caption);
     return title;
+  }
+
+  private void onIdentifierChanged(PropertyChange change) {
+    identifier = (String) change.getNewValue();
   }
 
   private void onCaptionChanged(PropertyChange change) {
@@ -168,6 +177,10 @@ public class TreeNodeView extends FlexLayout {
     if (treeNodeBinder != null) {
       treeNodeBinder.unbind();
       treeNodeBinder = null;
+    }
+    if (identifierSubs != null) {
+      identifierSubs.dispose();
+      identifierSubs = null;
     }
     if (captionSubs != null) {
       captionSubs.dispose();

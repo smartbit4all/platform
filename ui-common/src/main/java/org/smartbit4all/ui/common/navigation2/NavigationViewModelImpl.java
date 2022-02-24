@@ -38,6 +38,7 @@ public class NavigationViewModelImpl extends ViewModelImpl<TreeModel>
   private TreeNode selectedNode;
 
   private Map<String, TreeNode> treeNodesById;
+  private Map<String, TreeNode> treeNodeWrappersById;
   private Map<URI, TreeNode> treeNodesByObjectUri;
   private Map<String, String> parentNodesByNode;
 
@@ -58,6 +59,7 @@ public class NavigationViewModelImpl extends ViewModelImpl<TreeModel>
     this.userSessionApi = userSessionApi;
 
     treeNodesById = new HashMap<>();
+    treeNodeWrappersById = new HashMap<>();
     treeNodesByObjectUri = new HashMap<>();
     parentNodesByNode = new HashMap<>();
     subscriptionsById = new HashMap<>();
@@ -89,6 +91,29 @@ public class NavigationViewModelImpl extends ViewModelImpl<TreeModel>
     registerCommand("*", COLLAPSE, TreeNode.class, this::collapse);
     registerCommand("*", TOGGLE, TreeNode.class, this::toggle);
     registerCommand("*", SELECT, TreeNode.class, this::select);
+  }
+
+  @Override
+  public void executeCommand(String commandPath, String commandCode, Object... params) {
+    switch (commandCode) {
+      case EXPAND:
+        expand(getWrappedTreeNode(commandPath));
+        break;
+      case COLLAPSE:
+        collapse(getWrappedTreeNode(commandPath));
+        break;
+      case TOGGLE:
+        toggle(getWrappedTreeNode(commandPath));
+        break;
+      case SELECT:
+        select(getWrappedTreeNode(commandPath));
+        break;
+
+      default:
+        super.executeCommand(commandPath, commandCode, params);
+        break;
+    }
+    notifyAllListeners();
   }
 
   @Override
@@ -321,6 +346,7 @@ public class NavigationViewModelImpl extends ViewModelImpl<TreeModel>
         }
         parent.getChildrenNodes().remove(n);
         treeNodesById.remove(n.getIdentifier());
+        treeNodeWrappersById.remove(n.getIdentifier());
         treeNodesByObjectUri.remove(n.getObjectUri());
         parentNodesByNode.remove(n.getIdentifier());
       }
@@ -461,11 +487,20 @@ public class NavigationViewModelImpl extends ViewModelImpl<TreeModel>
     return false;
   }
 
+  private TreeNode getWrappedTreeNode(String identifier) {
+    TreeNode result = treeNodeWrappersById.get(identifier);
+    if (result != null) {
+      return result;
+    }
+    return getWrappedTreeNode(treeNodesById.get(identifier));
+  }
+
   private TreeNode getWrappedTreeNode(TreeNode treeNode) {
     if (treeNode == null || ApiObjectRef.isWrappedObject(treeNode)) {
       return treeNode;
     }
-    return findTreeNodeById(treeNode.getIdentifier());
+    return treeNodeWrappersById.computeIfAbsent(treeNode.getIdentifier(),
+        id -> findTreeNodeById(treeNode.getIdentifier()));
   }
 
   private String getAssociationNodeCaption(NavigationAssociation association) {
