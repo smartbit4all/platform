@@ -600,7 +600,7 @@ public class MapBasedObject {
 
     if (MapBasedObjectUtil.canBeAdded(mapValueList, value)) {
       Object collectionValue = parentObject.getValueByPath(key);
-      Object toAdd = value instanceof MapBasedObjectData ? of((MapBasedObjectData) value) : value;
+      Object toAdd = MapBasedObjectUtil.convertToValidValue(value);
       ((Collection) collectionValue).add(toAdd);
     }
 

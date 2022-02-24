@@ -208,6 +208,7 @@ class MapBasedObjectTest {
             LocalDateTime.of(2022, 7, 7, 0, 0));
     String newSubStringValue = "newTestSubName";
     String newStringListItemValue = "newTestListItemName";
+    TestEnum newEnumValue = TestEnum.VALUE1;
 
     object.setValueByPath(nameKey, newStringValue);
     object.setValueByPath(namesKey, new ArrayList<>(newStringListValue));
@@ -231,6 +232,9 @@ class MapBasedObjectTest {
     assertEquals(newLongValue, object.getValueByPath(heightKey));
     assertEquals(newBooleanValue, object.getValueByPath(validKey));
     assertEquals(newLocalDateTimeValue, object.getValueByPath(dateKey));
+
+    object.setValueByPath(nameKey, newEnumValue);
+    assertEquals(newEnumValue.toString(), object.getValueByPath(nameKey));
 
     values = object.getValueByPath(namesKey);
     assertTrue(values instanceof List);
@@ -513,6 +517,10 @@ class MapBasedObjectTest {
         objChanges.getReferencedObjects().size());
     assertEquals(refChanges.getCollectionObjects().size(),
         objChanges.getCollectionObjects().size());
+  }
+
+  private enum TestEnum {
+    VALUE1, VALUE2, VALUE3;
   }
 
   private MasterBean constructMasterBean() {

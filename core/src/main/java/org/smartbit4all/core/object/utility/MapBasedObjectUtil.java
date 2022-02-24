@@ -227,6 +227,9 @@ public class MapBasedObjectUtil {
     } else if (value instanceof String) {
       return new StringValue().name(key).value((String) value);
 
+    } else if (value instanceof Enum) {
+      return new StringValue().name(key).value(((Enum<?>) value).toString());
+
     } else if (value instanceof Integer) {
       return new IntegerValue().name(key).value((Integer) value);
 
@@ -398,7 +401,7 @@ public class MapBasedObjectUtil {
 
     String expectedValueClass = null;
     if (mapValueList instanceof StringValueList) {
-      if (value == null || value instanceof String) {
+      if (value == null || value instanceof String || value instanceof Enum) {
         return true;
       }
       expectedValueClass = String.class.getName();
@@ -517,31 +520,34 @@ public class MapBasedObjectUtil {
    */
   public static void setPropertyValueListItem(Object valueList, int index, Object value) {
     if (canBeAdded(valueList, value)) {
-      if (valueList instanceof StringValueList) {
+      if (value instanceof String) {
         addOrSetListItem(((StringValueList) valueList).getValues(), index, (String) value);
 
-      } else if (valueList instanceof IntegerValueList) {
+      } else if (value instanceof Enum) {
+        addOrSetListItem(((StringValueList) valueList).getValues(), index,
+            ((Enum<?>) value).toString());
+
+      } else if (value instanceof Integer) {
         addOrSetListItem(((IntegerValueList) valueList).getValues(), index, (Integer) value);
 
-      } else if (valueList instanceof LongValueList) {
+      } else if (value instanceof Long) {
         addOrSetListItem(((LongValueList) valueList).getValues(), index, (Long) value);
 
-      } else if (valueList instanceof BooleanValueList) {
+      } else if (value instanceof Boolean) {
         addOrSetListItem(((BooleanValueList) valueList).getValues(), index, (Boolean) value);
 
-      } else if (valueList instanceof LocalDateTimeValueList) {
+      } else if (value instanceof LocalDateTime) {
         addOrSetListItem(((LocalDateTimeValueList) valueList).getValues(), index,
             (LocalDateTime) value);
 
-      } else if (valueList instanceof List<?>) {
-        if (value instanceof MapBasedObjectData) {
-          addOrSetListItem((List<MapBasedObject>) valueList, index,
-              MapBasedObject.of((MapBasedObjectData) value));
+      } else if (value instanceof MapBasedObjectData) {
+        addOrSetListItem((List<MapBasedObject>) valueList, index,
+            MapBasedObject.of((MapBasedObjectData) value));
 
-        } else if (value instanceof MapBasedObject) {
-          addOrSetListItem((List<MapBasedObject>) valueList, index, (MapBasedObject) value);
-        }
+      } else if (value instanceof MapBasedObject) {
+        addOrSetListItem((List<MapBasedObject>) valueList, index, (MapBasedObject) value);
       }
+
     }
   }
 
@@ -570,5 +576,21 @@ public class MapBasedObjectUtil {
         value instanceof LongValueList ||
         value instanceof BooleanValueList ||
         value instanceof LocalDateTimeValueList;
+  }
+
+  /**
+   * Converts the given value if it is neccesary to be able to be stored by {@link MapBasedObject}.
+   * 
+   * @param value
+   * @return
+   */
+  public static Object convertToValidValue(Object value) {
+    if (value instanceof MapBasedObjectData) {
+      return MapBasedObject.of((MapBasedObjectData) value);
+
+    } else if (value instanceof Enum) {
+      return ((Enum<?>) value).toString();
+    }
+    return value;
   }
 }
