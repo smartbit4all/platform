@@ -14,6 +14,7 @@ public interface NavigationViewModel extends ViewModel {
 
   public static final String EXPAND = "tree.expand";
   public static final String COLLAPSE = "tree.collapse";
+  public static final String TOGGLE = "tree.toggle";
   public static final String SELECT = "tree.select";
 
   public static final String OBJECT_URI_TO_SELECT = "NavigationViewModel.OBJECT_URI_TO_SELECT";

@@ -37,11 +37,11 @@ public class TreeNodeView extends FlexLayout {
   private Disposable selectedSubs;
   private Disposable levelSubs;
 
-  private Boolean expanded = false;
+  private boolean expanded = false;
   private FlexLayout itemLayout;
   private FlexLayout captionLayout;
   private Div spacerLayout;
-  private Boolean hasChildren;
+  private boolean hasChildren;
 
   public TreeNodeView(ViewModel viewModel, String path) {
     this.viewModel = viewModel;
@@ -67,10 +67,7 @@ public class TreeNodeView extends FlexLayout {
     icon = new Icon(VaadinIcon.CIRCLE_THIN);
     toggle = new Span();
     toggle.addClassName("sb4-tree-toggle");
-    toggle.addClickListener(event -> {
-      String command = expanded ? NavigationViewModel.COLLAPSE : NavigationViewModel.EXPAND;
-      viewModel.executeCommand(path, command);
-    });
+    toggle.addClickListener(event -> viewModel.executeCommand(path, NavigationViewModel.TOGGLE));
     Css.stopClickEventPropagation(toggle);
     spacerLayout = new Div();
     spacerLayout.addClassName("sb4-tree-node-spacer");
@@ -121,18 +118,12 @@ public class TreeNodeView extends FlexLayout {
   }
 
   private void onExpandedChanged(PropertyChange change) {
-    expanded = (Boolean) change.getNewValue();
-    if (expanded == null) {
-      expanded = Boolean.FALSE;
-    }
+    expanded = Boolean.TRUE.equals(change.getNewValue());
     refreshToggle();
   }
 
   private void onHasChildrenChanged(PropertyChange change) {
-    hasChildren = (Boolean) change.getNewValue();
-    if (hasChildren == null) {
-      hasChildren = Boolean.FALSE;
-    }
+    hasChildren = Boolean.TRUE.equals(change.getNewValue());
     refreshToggle();
   }
 

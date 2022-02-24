@@ -87,6 +87,7 @@ public class NavigationViewModelImpl extends ViewModelImpl<TreeModel>
   protected void initCommands() {
     registerCommand("*", EXPAND, TreeNode.class, this::expand);
     registerCommand("*", COLLAPSE, TreeNode.class, this::collapse);
+    registerCommand("*", TOGGLE, TreeNode.class, this::toggle);
     registerCommand("*", SELECT, TreeNode.class, this::select);
   }
 
@@ -111,6 +112,15 @@ public class NavigationViewModelImpl extends ViewModelImpl<TreeModel>
     if (node.getChildrenNodes().contains(selectedNode)) {
       select(node);
     }
+  }
+
+  private void toggle(TreeNode node) {
+    if (Boolean.TRUE.equals(node.getExpanded())) {
+      collapse(node);
+    } else {
+      expand(node);
+    }
+
   }
 
   private void select(TreeNode node) {
