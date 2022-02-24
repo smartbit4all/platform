@@ -339,7 +339,10 @@ public class MapBasedObject {
     } else {
       Object prevValue =
           MapBasedObjectUtil.getActualValue(previousState.propertyMap.get(key));
-      if (!prevValue.equals(actualValue)) {
+      if (prevValue == null && actualValue == null) {
+        return result;
+      }
+      if (prevValue == null || actualValue == null || !prevValue.equals(actualValue)) {
         if (result == null) {
           result = new ObjectChange(path, changeState);
         }
