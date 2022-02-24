@@ -107,7 +107,9 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
     this.navigationTarget = navigationTarget;
     this.navigationTargetUUID = navigationTarget == null ? null : navigationTarget.getUuid();
     if (ref != null) {
-      throw new IllegalArgumentException("ref already initialized in ViewModel when initByUUID!");
+      onCloseWindow();
+      // throw new IllegalArgumentException("ref already initialized in ViewModel when
+      // initByUUID!");
     }
     T loadedObject = load(navigationTarget);
     this.path = "";
