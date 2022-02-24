@@ -38,6 +38,8 @@ import org.smartbit4all.api.mapbasedobject.bean.ObjectValue;
 import org.smartbit4all.api.mapbasedobject.bean.ObjectValueList;
 import org.smartbit4all.api.mapbasedobject.bean.StringValue;
 import org.smartbit4all.api.mapbasedobject.bean.StringValueList;
+import org.smartbit4all.api.mapbasedobject.bean.UriValue;
+import org.smartbit4all.api.mapbasedobject.bean.UriValueList;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -57,6 +59,8 @@ import javax.validation.Valid;
   MapBasedObjectData.LONG_LIST_MAP,
   MapBasedObjectData.BOOLEAN_PROPERTY_MAP,
   MapBasedObjectData.BOOLEAN_LIST_MAP,
+  MapBasedObjectData.URI_PROPERTY_MAP,
+  MapBasedObjectData.URI_LIST_MAP,
   MapBasedObjectData.LOCAL_DATE_TIME_PROPERTY_MAP,
   MapBasedObjectData.LOCAL_DATE_TIME_LIST_MAP,
   MapBasedObjectData.OBJECT_PROPERTY_MAP,
@@ -91,6 +95,12 @@ public class MapBasedObjectData {
 
   public static final String BOOLEAN_LIST_MAP = "booleanListMap";
   private Map<String, BooleanValueList> booleanListMap = null;
+
+  public static final String URI_PROPERTY_MAP = "uriPropertyMap";
+  private Map<String, UriValue> uriPropertyMap = null;
+
+  public static final String URI_LIST_MAP = "uriListMap";
+  private Map<String, UriValueList> uriListMap = null;
 
   public static final String LOCAL_DATE_TIME_PROPERTY_MAP = "localDateTimePropertyMap";
   private Map<String, LocalDateTimeValue> localDateTimePropertyMap = null;
@@ -422,6 +432,78 @@ public class MapBasedObjectData {
   }
 
 
+  public MapBasedObjectData uriPropertyMap(Map<String, UriValue> uriPropertyMap) {
+    
+    this.uriPropertyMap = uriPropertyMap;
+    return this;
+  }
+
+  public MapBasedObjectData putUriPropertyMapItem(String key, UriValue uriPropertyMapItem) {
+    if (this.uriPropertyMap == null) {
+      this.uriPropertyMap = new HashMap<>();
+    }
+    this.uriPropertyMap.put(key, uriPropertyMapItem);
+    return this;
+  }
+
+   /**
+   * Get uriPropertyMap
+   * @return uriPropertyMap
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(URI_PROPERTY_MAP)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Map<String, UriValue> getUriPropertyMap() {
+    return uriPropertyMap;
+  }
+
+
+  @JsonProperty(URI_PROPERTY_MAP)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setUriPropertyMap(Map<String, UriValue> uriPropertyMap) {
+    this.uriPropertyMap = uriPropertyMap;
+  }
+
+
+  public MapBasedObjectData uriListMap(Map<String, UriValueList> uriListMap) {
+    
+    this.uriListMap = uriListMap;
+    return this;
+  }
+
+  public MapBasedObjectData putUriListMapItem(String key, UriValueList uriListMapItem) {
+    if (this.uriListMap == null) {
+      this.uriListMap = new HashMap<>();
+    }
+    this.uriListMap.put(key, uriListMapItem);
+    return this;
+  }
+
+   /**
+   * Get uriListMap
+   * @return uriListMap
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(URI_LIST_MAP)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Map<String, UriValueList> getUriListMap() {
+    return uriListMap;
+  }
+
+
+  @JsonProperty(URI_LIST_MAP)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setUriListMap(Map<String, UriValueList> uriListMap) {
+    this.uriListMap = uriListMap;
+  }
+
+
   public MapBasedObjectData localDateTimePropertyMap(Map<String, LocalDateTimeValue> localDateTimePropertyMap) {
     
     this.localDateTimePropertyMap = localDateTimePropertyMap;
@@ -584,6 +666,8 @@ public class MapBasedObjectData {
         Objects.equals(this.longListMap, mapBasedObjectData.longListMap) &&
         Objects.equals(this.booleanPropertyMap, mapBasedObjectData.booleanPropertyMap) &&
         Objects.equals(this.booleanListMap, mapBasedObjectData.booleanListMap) &&
+        Objects.equals(this.uriPropertyMap, mapBasedObjectData.uriPropertyMap) &&
+        Objects.equals(this.uriListMap, mapBasedObjectData.uriListMap) &&
         Objects.equals(this.localDateTimePropertyMap, mapBasedObjectData.localDateTimePropertyMap) &&
         Objects.equals(this.localDateTimeListMap, mapBasedObjectData.localDateTimeListMap) &&
         Objects.equals(this.objectPropertyMap, mapBasedObjectData.objectPropertyMap) &&
@@ -592,7 +676,7 @@ public class MapBasedObjectData {
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, stringPropertyMap, stringListMap, integerPropertyMap, integerListMap, longPropertyMap, longListMap, booleanPropertyMap, booleanListMap, localDateTimePropertyMap, localDateTimeListMap, objectPropertyMap, objectListMap);
+    return Objects.hash(uri, stringPropertyMap, stringListMap, integerPropertyMap, integerListMap, longPropertyMap, longListMap, booleanPropertyMap, booleanListMap, uriPropertyMap, uriListMap, localDateTimePropertyMap, localDateTimeListMap, objectPropertyMap, objectListMap);
   }
 
   @Override
@@ -608,6 +692,8 @@ public class MapBasedObjectData {
     sb.append("    longListMap: ").append(toIndentedString(longListMap)).append("\n");
     sb.append("    booleanPropertyMap: ").append(toIndentedString(booleanPropertyMap)).append("\n");
     sb.append("    booleanListMap: ").append(toIndentedString(booleanListMap)).append("\n");
+    sb.append("    uriPropertyMap: ").append(toIndentedString(uriPropertyMap)).append("\n");
+    sb.append("    uriListMap: ").append(toIndentedString(uriListMap)).append("\n");
     sb.append("    localDateTimePropertyMap: ").append(toIndentedString(localDateTimePropertyMap)).append("\n");
     sb.append("    localDateTimeListMap: ").append(toIndentedString(localDateTimeListMap)).append("\n");
     sb.append("    objectPropertyMap: ").append(toIndentedString(objectPropertyMap)).append("\n");

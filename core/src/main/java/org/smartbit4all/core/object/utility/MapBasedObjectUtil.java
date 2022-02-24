@@ -1,5 +1,6 @@
 package org.smartbit4all.core.object.utility;
 
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +18,8 @@ import org.smartbit4all.api.mapbasedobject.bean.ObjectValue;
 import org.smartbit4all.api.mapbasedobject.bean.ObjectValueList;
 import org.smartbit4all.api.mapbasedobject.bean.StringValue;
 import org.smartbit4all.api.mapbasedobject.bean.StringValueList;
+import org.smartbit4all.api.mapbasedobject.bean.UriValue;
+import org.smartbit4all.api.mapbasedobject.bean.UriValueList;
 import org.smartbit4all.core.object.MapBasedObject;
 import org.smartbit4all.core.utility.StringConstant;
 
@@ -60,6 +63,12 @@ public class MapBasedObjectUtil {
 
     } else if (value instanceof BooleanValueList) {
       data.putBooleanListMapItem(key, (BooleanValueList) value);
+
+    } else if (value instanceof UriValue) {
+      data.putUriPropertyMapItem(key, (UriValue) value);
+
+    } else if (value instanceof UriValueList) {
+      data.putUriListMapItem(key, (UriValueList) value);
 
     } else if (value instanceof LocalDateTimeValue) {
       data.putLocalDateTimePropertyMapItem(key, (LocalDateTimeValue) value);
@@ -129,6 +138,15 @@ public class MapBasedObjectUtil {
       return new BooleanValueList().name(copiedValue.getName())
           .values(new ArrayList<>(copiedValue.getValues()));
 
+    } else if (propertyValue instanceof UriValue) {
+      UriValue copiedValue = (UriValue) propertyValue;
+      return new UriValue().name(copiedValue.getName()).value(copiedValue.getValue());
+
+    } else if (propertyValue instanceof UriValueList) {
+      UriValueList copiedValue = (UriValueList) propertyValue;
+      return new UriValueList().name(copiedValue.getName())
+          .values(new ArrayList<>(copiedValue.getValues()));
+
     } else if (propertyValue instanceof LocalDateTimeValue) {
       LocalDateTimeValue copiedValue = (LocalDateTimeValue) propertyValue;
       return new LocalDateTimeValue().name(copiedValue.getName()).value(copiedValue.getValue());
@@ -189,6 +207,12 @@ public class MapBasedObjectUtil {
     } else if (propertyValue instanceof BooleanValueList) {
       return ((BooleanValueList) propertyValue).getValues();
 
+    } else if (propertyValue instanceof UriValue) {
+      return ((UriValue) propertyValue).getValue();
+
+    } else if (propertyValue instanceof UriValueList) {
+      return ((UriValueList) propertyValue).getValues();
+
     } else if (propertyValue instanceof LocalDateTimeValue) {
       return ((LocalDateTimeValue) propertyValue).getValue();
 
@@ -239,6 +263,9 @@ public class MapBasedObjectUtil {
     } else if (value instanceof Boolean) {
       return new BooleanValue().name(key).value((Boolean) value);
 
+    } else if (value instanceof URI) {
+      return new UriValue().name(key).value((URI) value);
+
     } else if (value instanceof LocalDateTime) {
       return new LocalDateTimeValue().name(key).value((LocalDateTime) value);
 
@@ -278,6 +305,11 @@ public class MapBasedObjectUtil {
           List<Boolean> values =
               list.stream().map(e -> (Boolean) e).collect(Collectors.toList());
           return new BooleanValueList().name(key).values(values);
+
+        } else if (item instanceof URI) {
+          List<URI> values =
+              list.stream().map(e -> (URI) e).collect(Collectors.toList());
+          return new UriValueList().name(key).values(values);
 
         } else if (item instanceof LocalDateTime) {
           List<LocalDateTime> values =
@@ -325,6 +357,12 @@ public class MapBasedObjectUtil {
     } else if (prevValue instanceof BooleanValueList) {
       return new BooleanValueList().name(key).values(null);
 
+    } else if (prevValue instanceof UriValue) {
+      return new UriValue().name(key).value(null);
+
+    } else if (prevValue instanceof UriValueList) {
+      return new UriValueList().name(key).values(null);
+
     } else if (prevValue instanceof LocalDateTimeValue) {
       return new LocalDateTimeValue().name(key).value(null);
 
@@ -356,6 +394,9 @@ public class MapBasedObjectUtil {
     } else if (clazz.equals(Boolean.class)) {
       return new BooleanValue().name(key).value(null);
 
+    } else if (clazz.equals(URI.class)) {
+      return new UriValue().name(key).value(null);
+
     } else if (clazz.equals(LocalDateTime.class)) {
       return new LocalDateTimeValue().name(key).value(null);
 
@@ -377,6 +418,9 @@ public class MapBasedObjectUtil {
 
     } else if (clazz.equals(Boolean.class)) {
       return new BooleanValueList().name(key).values(new ArrayList<>());
+
+    } else if (clazz.equals(URI.class)) {
+      return new UriValueList().name(key).values(new ArrayList<>());
 
     } else if (clazz.equals(LocalDateTime.class)) {
       return new LocalDateTimeValueList().name(key).values(new ArrayList<>());
@@ -424,6 +468,12 @@ public class MapBasedObjectUtil {
       }
       expectedValueClass = Boolean.class.getName();
 
+    } else if (mapValueList instanceof UriValueList) {
+      if (value == null || value instanceof URI) {
+        return true;
+      }
+      expectedValueClass = URI.class.getName();
+
     } else if (mapValueList instanceof LocalDateTimeValueList) {
       if (value == null || value instanceof LocalDateTime) {
         return true;
@@ -454,6 +504,10 @@ public class MapBasedObjectUtil {
     if (value instanceof String) {
       data.putStringPropertyMapItem(key, new StringValue().name(key).value((String) value));
 
+    } else if (value instanceof Enum) {
+      data.putStringPropertyMapItem(key,
+          new StringValue().name(key).value(((Enum<?>) value).toString()));
+
     } else if (value instanceof Integer) {
       data.putIntegerPropertyMapItem(key, new IntegerValue().name(key).value((Integer) value));
 
@@ -462,6 +516,9 @@ public class MapBasedObjectUtil {
 
     } else if (value instanceof Boolean) {
       data.putBooleanPropertyMapItem(key, new BooleanValue().name(key).value((Boolean) value));
+
+    } else if (value instanceof URI) {
+      data.putUriPropertyMapItem(key, new UriValue().name(key).value((URI) value));
 
     } else if (value instanceof LocalDateTime) {
       data.putLocalDateTimePropertyMapItem(key,
@@ -480,6 +537,11 @@ public class MapBasedObjectUtil {
               list.stream().map(e -> (String) e).collect(Collectors.toList());
           data.putStringListMapItem(key, new StringValueList().name(key).values(values));
 
+        } else if (item instanceof Enum) {
+          List<String> values =
+              list.stream().map(e -> ((Enum<?>) e).toString()).collect(Collectors.toList());
+          data.putStringListMapItem(key, new StringValueList().name(key).values(values));
+
         } else if (item instanceof Integer) {
           List<Integer> values =
               list.stream().map(e -> (Integer) e).collect(Collectors.toList());
@@ -494,6 +556,11 @@ public class MapBasedObjectUtil {
           List<Boolean> values =
               list.stream().map(e -> (Boolean) e).collect(Collectors.toList());
           data.putBooleanListMapItem(key, new BooleanValueList().name(key).values(values));
+
+        } else if (item instanceof URI) {
+          List<URI> values =
+              list.stream().map(e -> (URI) e).collect(Collectors.toList());
+          data.putUriListMapItem(key, new UriValueList().name(key).values(values));
 
         } else if (item instanceof LocalDateTime) {
           List<LocalDateTime> values =
@@ -536,6 +603,9 @@ public class MapBasedObjectUtil {
       } else if (value instanceof Boolean) {
         addOrSetListItem(((BooleanValueList) valueList).getValues(), index, (Boolean) value);
 
+      } else if (value instanceof URI) {
+        addOrSetListItem(((UriValueList) valueList).getValues(), index, (URI) value);
+
       } else if (value instanceof LocalDateTime) {
         addOrSetListItem(((LocalDateTimeValueList) valueList).getValues(), index,
             (LocalDateTime) value);
@@ -575,6 +645,7 @@ public class MapBasedObjectUtil {
         value instanceof IntegerValueList ||
         value instanceof LongValueList ||
         value instanceof BooleanValueList ||
+        value instanceof UriValueList ||
         value instanceof LocalDateTimeValueList;
   }
 

@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -70,6 +71,8 @@ class MapBasedObjectTest {
     String heightsKey = "heights";
     String validKey = "valid";
     String validitiesKey = "validities";
+    String uriKey = "uri";
+    String urisKey = "uris";
     String dateKey = "date";
     String datesKey = "dates";
     String objectKey = "object";
@@ -83,6 +86,8 @@ class MapBasedObjectTest {
     List<Long> longListValue = Arrays.asList(170l, 180l);
     Boolean booleanValue = true;
     List<Boolean> booleanListValue = Arrays.asList(false, true);
+    URI uriValue = URI.create("/testUri");
+    List<URI> uriListValue = Arrays.asList(URI.create("/testUri2"), URI.create("/testUri3"));
     LocalDateTime localDateTimeValue = LocalDateTime.of(2022, 1, 1, 0, 0);
     List<LocalDateTime> localDateTimeListValue =
         Arrays.asList(LocalDateTime.of(2022, 2, 2, 0, 0), LocalDateTime.of(2022, 3, 3, 0, 0));
@@ -96,6 +101,8 @@ class MapBasedObjectTest {
     MapBasedObjectUtil.addNewPropertyToData(data, heightsKey, longListValue);
     MapBasedObjectUtil.addNewPropertyToData(data, validKey, booleanValue);
     MapBasedObjectUtil.addNewPropertyToData(data, validitiesKey, booleanListValue);
+    MapBasedObjectUtil.addNewPropertyToData(data, uriKey, uriValue);
+    MapBasedObjectUtil.addNewPropertyToData(data, urisKey, uriListValue);
     MapBasedObjectUtil.addNewPropertyToData(data, dateKey, localDateTimeValue);
     MapBasedObjectUtil.addNewPropertyToData(data, datesKey, localDateTimeListValue);
     MapBasedObjectUtil.addNewPropertyToData(data, objectKey, subData);
@@ -118,6 +125,7 @@ class MapBasedObjectTest {
     assertEquals(integerValue, object.getValueByPath(ageKey));
     assertEquals(longValue, object.getValueByPath(heightKey));
     assertEquals(booleanValue, object.getValueByPath(validKey));
+    assertEquals(uriValue, object.getValueByPath(uriKey));
     assertEquals(localDateTimeValue, object.getValueByPath(dateKey));
 
     values = object.getValueByPath(namesKey);
@@ -135,6 +143,10 @@ class MapBasedObjectTest {
     values = object.getValueByPath(validitiesKey);
     assertTrue(values instanceof List);
     assertEquals(booleanListValue.size(), ((List) values).size());
+
+    values = object.getValueByPath(urisKey);
+    assertTrue(values instanceof List);
+    assertEquals(uriListValue.size(), ((List) values).size());
 
     values = object.getValueByPath(datesKey);
     assertTrue(values instanceof List);
@@ -173,6 +185,8 @@ class MapBasedObjectTest {
     assertTrue(newData.getLongListMap().containsKey(heightsKey));
     assertTrue(newData.getBooleanPropertyMap().containsKey(validKey));
     assertTrue(newData.getBooleanListMap().containsKey(validitiesKey));
+    assertTrue(newData.getUriPropertyMap().containsKey(uriKey));
+    assertTrue(newData.getUriListMap().containsKey(urisKey));
     assertTrue(newData.getLocalDateTimePropertyMap().containsKey(dateKey));
     assertTrue(newData.getLocalDateTimeListMap().containsKey(datesKey));
     assertTrue(newData.getObjectPropertyMap().containsKey(objectKey));
@@ -186,6 +200,8 @@ class MapBasedObjectTest {
     assertEquals(data.getLongListMap().size(), newData.getLongListMap().size());
     assertEquals(data.getBooleanPropertyMap().size(), newData.getBooleanPropertyMap().size());
     assertEquals(data.getBooleanListMap().size(), newData.getBooleanListMap().size());
+    assertEquals(data.getUriPropertyMap().size(), newData.getUriPropertyMap().size());
+    assertEquals(data.getUriListMap().size(), newData.getUriListMap().size());
     assertEquals(data.getLocalDateTimePropertyMap().size(),
         newData.getLocalDateTimePropertyMap().size());
     assertEquals(data.getLocalDateTimeListMap().size(), newData.getLocalDateTimeListMap().size());
@@ -202,6 +218,9 @@ class MapBasedObjectTest {
     List<Long> newLongListValue = Arrays.asList(175l, 185l, 195l);
     Boolean newBooleanValue = false;
     List<Boolean> newBooleanListValue = Arrays.asList(true, false, true);
+    URI newUriValue = URI.create("/newTestUri");
+    List<URI> newUriListValue = Arrays.asList(URI.create("/newTestUri1"),
+        URI.create("/newTestUri2"), URI.create("/newTestUri3"));
     LocalDateTime newLocalDateTimeValue = LocalDateTime.of(2022, 4, 4, 0, 0);
     List<LocalDateTime> newLocalDateTimeListValue =
         Arrays.asList(LocalDateTime.of(2022, 5, 5, 0, 0), LocalDateTime.of(2022, 6, 6, 0, 0),
@@ -218,6 +237,8 @@ class MapBasedObjectTest {
     object.setValueByPath(heightsKey, new ArrayList<>(newLongListValue));
     object.setValueByPath(validKey, newBooleanValue);
     object.setValueByPath(validitiesKey, new ArrayList<>(newBooleanListValue));
+    object.setValueByPath(uriKey, newUriValue);
+    object.setValueByPath(urisKey, new ArrayList<>(newUriListValue));
     object.setValueByPath(dateKey, newLocalDateTimeValue);
     object.setValueByPath(datesKey, new ArrayList<>(newLocalDateTimeListValue));
     object.setValueByPath(objectKey + "/" + subNameKey, newSubStringValue);
@@ -230,6 +251,7 @@ class MapBasedObjectTest {
     assertEquals(newStringValue, object.getValueByPath(nameKey));
     assertEquals(newIntegerValue, object.getValueByPath(ageKey));
     assertEquals(newLongValue, object.getValueByPath(heightKey));
+    assertEquals(newUriValue, object.getValueByPath(uriKey));
     assertEquals(newBooleanValue, object.getValueByPath(validKey));
     assertEquals(newLocalDateTimeValue, object.getValueByPath(dateKey));
 
@@ -251,6 +273,10 @@ class MapBasedObjectTest {
     values = object.getValueByPath(validitiesKey);
     assertTrue(values instanceof List);
     assertEquals(newBooleanListValue.size(), ((List) values).size());
+
+    values = object.getValueByPath(urisKey);
+    assertTrue(values instanceof List);
+    assertEquals(newUriListValue.size(), ((List) values).size());
 
     values = object.getValueByPath(datesKey);
     assertTrue(values instanceof List);
@@ -350,6 +376,15 @@ class MapBasedObjectTest {
     assertTrue(list.contains(addedValiditiesValue));
     object.addValueByPath(validitiesKey, null);
     list = (List) object.getValueByPath(validitiesKey);
+    assertEquals(5, list.size());
+
+    URI addedUrisValue = URI.create("/testAddedUri");
+    object.addValueByPath(urisKey, addedUrisValue);
+    list = (List) object.getValueByPath(urisKey);
+    assertEquals(4, list.size());
+    assertTrue(list.contains(addedUrisValue));
+    object.addValueByPath(urisKey, null);
+    list = (List) object.getValueByPath(urisKey);
     assertEquals(5, list.size());
 
     LocalDateTime addedDatesValue = LocalDateTime.of(2022, 6, 6, 0, 0);

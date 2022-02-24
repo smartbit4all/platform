@@ -1,5 +1,6 @@
 package org.smartbit4all.core.object;
 
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -97,6 +98,8 @@ public class MapBasedObject {
 
     setValuesByDataMap(result, data.getStringPropertyMap(), String.class);
     setValuesByDataMap(result, data.getStringListMap(), String.class);
+    setValuesByDataMap(result, data.getUriPropertyMap(), URI.class);
+    setValuesByDataMap(result, data.getUriListMap(), URI.class);
     setValuesByDataMap(result, data.getIntegerPropertyMap(), Integer.class);
     setValuesByDataMap(result, data.getIntegerListMap(), Integer.class);
     setValuesByDataMap(result, data.getLongPropertyMap(), Long.class);

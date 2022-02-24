@@ -61,6 +61,14 @@ components:
           type: object
           additionalProperties: 
             $ref: '#/components/schemas/BooleanValueList'
+        uriPropertyMap:
+          type: object
+          additionalProperties: 
+            $ref: '#/components/schemas/UriValue'
+        uriListMap:
+          type: object
+          additionalProperties: 
+            $ref: '#/components/schemas/UriValueList'
         localDateTimePropertyMap:
           type: object
           additionalProperties: 
@@ -151,6 +159,26 @@ components:
           type: array
           items:
             type: boolean 
+    UriValue:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+        value:
+          type: string
+          format: uri
+    UriValueList:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+        values:
+          type: array
+          items:
+            type: string
+            format: uri
     LocalDateTimeValue:
       type: object
       required: [name]
