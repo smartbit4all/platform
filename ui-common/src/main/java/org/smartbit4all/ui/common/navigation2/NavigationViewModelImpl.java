@@ -61,7 +61,7 @@ public class NavigationViewModelImpl extends ViewModelImpl<TreeModel>
     treeNodesByObjectUri = new HashMap<>();
     parentNodesByNode = new HashMap<>();
     subscriptionsById = new HashMap<>();
-    if (this.userSessionApi != null) {
+    if (this.userSessionApi != null && this.userSessionApi.currentSession() != null) {
       subscriptionsById.put(
           OBJECT_URI_TO_SELECT,
           this.userSessionApi.currentSession()
@@ -664,8 +664,8 @@ public class NavigationViewModelImpl extends ViewModelImpl<TreeModel>
       UserSessionApi userSessionApi) {
     NavigationViewModelImpl result =
         new NavigationViewModelImpl(publisherWrapper, uiNavigationApi, userSessionApi);
-    result.setNavigation(navigation);
     result.initByNavigationTarget(null);
+    result.setNavigation(navigation);
     return result;
   }
 
