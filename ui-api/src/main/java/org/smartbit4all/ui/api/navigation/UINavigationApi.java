@@ -36,7 +36,7 @@ public interface UINavigationApi {
 
   <T extends ViewModel> T createViewModel(NavigationTarget navigationTarget, Class<T> clazz);
 
-  <T extends ViewModel> T createViewModel(ViewModel parent, String path, Class<T> clazz);
+  <T extends ViewModel> T createAndAddChildViewModel(ViewModel parent, String path, Class<T> clazz);
 
   <T> T createView(NavigationTarget navigationTarget, Class<T> clazz);
 

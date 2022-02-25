@@ -221,7 +221,7 @@ public class UINavigationApiCommon implements UINavigationApi {
   }
 
   @Override
-  public <T extends ViewModel> T createViewModel(ViewModel parent, String path, Class<T> clazz) {
+  public <T extends ViewModel> T createAndAddChildViewModel(ViewModel parent, String path, Class<T> clazz) {
     NavigationTarget oldTarget = ObjectEditing.currentNavigationTarget.get();
     T viewModel;
     try {

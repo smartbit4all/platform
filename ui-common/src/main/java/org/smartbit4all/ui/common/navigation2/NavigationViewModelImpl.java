@@ -20,12 +20,14 @@ import org.smartbit4all.api.session.Session;
 import org.smartbit4all.api.session.UserSessionApi;
 import org.smartbit4all.core.object.ApiObjectRef;
 import org.smartbit4all.core.object.ObservablePublisherWrapper;
+import org.smartbit4all.core.utility.ReflectionUtility;
 import org.smartbit4all.ui.api.navigation.NavigationViewModel;
 import org.smartbit4all.ui.api.navigation.UINavigationApi;
 import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
 import org.smartbit4all.ui.api.tree.model.TreeModel;
 import org.smartbit4all.ui.api.tree.model.TreeNode;
 import org.smartbit4all.ui.api.tree.model.TreeNodeKind;
+import org.smartbit4all.ui.api.viewmodel.ViewModel;
 import org.smartbit4all.ui.api.viewmodel.ViewModelImpl;
 import com.google.common.base.Strings;
 import io.reactivex.rxjava3.disposables.Disposable;
@@ -719,19 +721,22 @@ public class NavigationViewModelImpl extends ViewModelImpl<TreeModel>
    * Creates a NavigationViewModel instance and sets the navigationState, but not initializes it.
    * Typically used when create the viewModel as a child.
    * 
-   * @param navigation
-   * @param publisherWrapper
+   * @param parent
+   * @param path
    * @param uiNavigationApi
-   * @param userSessionApi
    * @return
    */
-  public static NavigationViewModel createWithNavigation(Navigation navigation,
-      ObservablePublisherWrapper publisherWrapper,
-      UINavigationApi uiNavigationApi,
-      UserSessionApi userSessionApi) {
-    NavigationViewModelImpl result =
-        new NavigationViewModelImpl(publisherWrapper, uiNavigationApi, userSessionApi);
-    result.setNavigation(navigation);
+  public static NavigationViewModel createAsChild(ViewModel parent, String path,
+      UINavigationApi uiNavigationApi, Navigation navigation) {
+    NavigationViewModel result =
+        uiNavigationApi.createAndAddChildViewModel(parent, path, NavigationViewModel.class);
+    Object impl = ReflectionUtility.getProxyTarget(result);
+    if (impl instanceof NavigationViewModelImpl) {
+      ((NavigationViewModelImpl) impl).setNavigation(navigation);
+    } else {
+      throw new IllegalArgumentException(
+          "Unknown implementation of NavigationViewModel: " + impl.getClass().getName());
+    }
     return result;
   }
 

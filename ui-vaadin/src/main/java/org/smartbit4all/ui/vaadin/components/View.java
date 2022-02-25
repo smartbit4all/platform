@@ -1,6 +1,5 @@
 package org.smartbit4all.ui.vaadin.components;
 
-import org.smartbit4all.ui.api.navigation.UINavigationApi;
 import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
 import org.smartbit4all.ui.api.viewmodel.ObjectEditing;
 import org.smartbit4all.ui.api.viewmodel.ViewModel;
@@ -19,11 +18,6 @@ public class View<T extends ViewModel> extends FlexLayout
 
   public View(T viewModel) {
     this.viewModel = viewModel;
-  }
-
-  public View(UINavigationApi uiNavigationApiApi, Class<T> vmClazz) {
-    this.viewModel =
-        uiNavigationApiApi.createViewModel(ObjectEditing.currentNavigationTarget.get(), vmClazz);
   }
 
   @Override
