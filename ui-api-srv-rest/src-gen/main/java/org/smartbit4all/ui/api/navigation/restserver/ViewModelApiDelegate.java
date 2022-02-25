@@ -49,7 +49,7 @@ public interface ViewModelApiDelegate {
      *
      * @param vmUuid  (required)
      * @param dataUuid  (required)
-     * @return File with the given uuid. (status code 200)
+     * @return Data in given ViewModel (vmUuid) with the given dataUuid. (status code 200)
      * @see ViewModelApi#download
      */
     default ResponseEntity<org.springframework.core.io.Resource> download(UUID vmUuid,

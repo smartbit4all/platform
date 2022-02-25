@@ -149,7 +149,7 @@ paths:
           required: true
       responses:
         '200':
-          description: 'File with the given uuid.'
+          description: 'Data in given ViewModel (vmUuid) with the given dataUuid.'
           content:
             application/octet-stream:
               schema:

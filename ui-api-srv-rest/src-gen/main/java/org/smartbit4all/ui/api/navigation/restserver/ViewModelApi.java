@@ -50,11 +50,11 @@ public interface ViewModelApi {
      *
      * @param vmUuid  (required)
      * @param dataUuid  (required)
-     * @return File with the given uuid. (status code 200)
+     * @return Data in given ViewModel (vmUuid) with the given dataUuid. (status code 200)
      */
     @ApiOperation(value = "", nickname = "download", notes = "", response = org.springframework.core.io.Resource.class, tags={ "view-model", })
     @ApiResponses(value = { 
-        @ApiResponse(code = 200, message = "File with the given uuid.", response = org.springframework.core.io.Resource.class) })
+        @ApiResponse(code = 200, message = "Data in given ViewModel (vmUuid) with the given dataUuid.", response = org.springframework.core.io.Resource.class) })
     @RequestMapping(
         method = RequestMethod.GET,
         value = "/download/{vmUuid}/{dataUuid}",
