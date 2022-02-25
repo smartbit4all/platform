@@ -1,6 +1,8 @@
 package org.smartbit4all.ui.api.navigation.restserver.impl;
 
+import java.io.InputStream;
 import java.util.UUID;
+import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.core.utility.ReflectionUtility;
 import org.smartbit4all.ui.api.navigation.UINavigationApi;
 import org.smartbit4all.ui.api.navigation.model.CommandData;
@@ -13,6 +15,7 @@ import org.smartbit4all.ui.api.viewmodel.ViewModelImpl;
 import org.smartbit4all.ui.common.api.UINavigationApiHeadless;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ViewModelApiDelegateImpl implements ViewModelApiDelegate {
@@ -90,5 +93,22 @@ public class ViewModelApiDelegateImpl implements ViewModelApiDelegate {
       ((UINavigationApiHeadless) uiHackApi).clearUiToOpen();
     }
     return ResponseEntity.ok(result);
+  }
+
+  @Override
+  public ResponseEntity<CommandResult> upload(UUID uuid, CommandData command, MultipartFile content)
+      throws Exception {
+    ViewModel vm = uiNavigationApi.getViewModelByUuid(uuid);
+    if (vm == null) {
+      return ResponseEntity.notFound().build();
+    }
+    try (InputStream is = content.getInputStream()) {
+
+      BinaryData binaryData = BinaryData.of(is);
+      command.addParamsItem(binaryData);
+
+      return executeCommand(uuid, command);
+    }
+
   }
 }

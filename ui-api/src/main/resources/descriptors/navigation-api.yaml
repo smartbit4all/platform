@@ -100,6 +100,34 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ViewModelData'
+  /upload:
+    post:
+      tags:
+      - view-model
+      summary: 'Executes a command similar to executeCommand, but appends a BinaryData to it params'
+      operationId: 'upload'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                uuid:
+                  type: string
+                  format: uuid
+                command:
+                  $ref: '#/components/schemas/CommandData'
+                content:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommandResult'
 components:
   schemas:
     AppState:

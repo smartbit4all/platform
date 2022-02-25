@@ -102,4 +102,29 @@ public interface ViewModelApiDelegate {
 
     }
 
+    /**
+     * POST /upload : Executes a command similar to executeCommand, but appends a BinaryData to it params
+     *
+     * @param uuid  (optional)
+     * @param command  (optional)
+     * @param content  (optional)
+     * @return  (status code 200)
+     * @see ViewModelApi#upload
+     */
+    default ResponseEntity<org.smartbit4all.ui.api.navigation.model.CommandResult> upload(UUID uuid,
+        org.smartbit4all.ui.api.navigation.model.CommandData command,
+        MultipartFile content) throws Exception {
+        getRequest().ifPresent(request -> {
+            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"view\" : { \"path\" : \"path\", \"navigationTarget\" : { \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" } }, \"children\" : { \"key\" : { \"path\" : \"path\", \"navigationTarget\" : { \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" } }, \"children\" : { }, \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" } }, \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" }, \"messageToOpen\" : { \"possibleResults\" : [ { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\" }, { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\" } ], \"selectResult\" : { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\" }, \"header\" : \"header\", \"text\" : \"text\", \"uri\" : \"uri\" }, \"uiToOpen\" : { \"viewName\" : \"viewName\", \"fullSize\" : false, \"icon\" : \"icon\", \"objectUri\" : \"https://openapi-generator.tech\", \"title\" : \"title\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" } } }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+            }
+        });
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+
+    }
+
 }

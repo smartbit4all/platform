@@ -11,4 +11,6 @@ public interface TestViewModel extends ViewModel {
 
   public static final String MODIFY = "modify";
 
+  public static final String UPLOAD = "upload";
+
 }

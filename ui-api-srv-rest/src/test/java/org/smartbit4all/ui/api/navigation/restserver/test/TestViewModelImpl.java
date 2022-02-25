@@ -1,6 +1,7 @@
 package org.smartbit4all.ui.api.navigation.restserver.test;
 
 import java.net.URI;
+import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.core.object.ObservablePublisherWrapper;
 import org.smartbit4all.ui.api.navigation.UINavigationApi;
@@ -25,6 +26,7 @@ public class TestViewModelImpl extends ViewModelImpl<User> implements TestViewMo
   protected void initCommands() {
     registerCommand(TEST_COMMAND, this::execTestCommand);
     registerCommand(MODIFY, this::modify);
+    registerCommandWithParams(UPLOAD, this::upload);
   }
 
   @Override
@@ -49,4 +51,11 @@ public class TestViewModelImpl extends ViewModelImpl<User> implements TestViewMo
         .viewName(MODIFY_VIEW)
         .objectUri(model.getUri()));
   }
+
+  private void upload(Object[] params) {
+    checkParamNumber(UPLOAD, 1, params);
+    BinaryData binaryData = (BinaryData) params[0];
+    model.setName(model.getName() + "-length:" + binaryData.length());
+  }
+
 }

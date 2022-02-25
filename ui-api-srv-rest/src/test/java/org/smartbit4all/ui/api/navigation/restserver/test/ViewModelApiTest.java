@@ -3,6 +3,8 @@ package org.smartbit4all.ui.api.navigation.restserver.test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import java.io.File;
+import java.util.Arrays;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
@@ -23,6 +25,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -82,7 +91,7 @@ public class ViewModelApiTest {
   }
 
   @Test
-  @Order(1)
+  @Order(10)
   void handleData() {
 
     User model = getUser();
@@ -103,7 +112,7 @@ public class ViewModelApiTest {
   }
 
   @Test
-  @Order(2)
+  @Order(20)
   void simpleCommand() {
     User model = getUser();
     String originalName = model.getName();
@@ -124,7 +133,7 @@ public class ViewModelApiTest {
   }
 
   @Test
-  @Order(3)
+  @Order(30)
   void testNavigateCommand() {
     User model = getUser();
     String originalName = model.getName();
@@ -145,6 +154,41 @@ public class ViewModelApiTest {
     ViewModelData view = commandResult.getView();
     model = objectMapper.convertValue(view.getModel(), User.class);
     assertEquals(originalName, model.getName());
+    assertEquals("test@email.com", model.getEmail());
+
+  }
+
+  @Test
+  @Order(40)
+  void testUploadCommand() {
+    User model = getUser();
+    String originalName = model.getName();
+
+    CommandData commandData = new CommandData()
+        .model(null)
+        .commandPath(null)
+        .commandCode(TestViewModel.UPLOAD);
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+    // headers.set(HttpHeaders.ACCEPT, "application/json, application/*+json");
+    headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+
+    String testFile = "src/test/resources/lorem-ipsum.pdf";
+    MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+    body.add("uuid", viewModelUUID);
+    body.add("command", commandData);
+    body.add("content", new FileSystemResource(testFile));
+    HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+
+    ResponseEntity<CommandResult> response = restTemplate
+        .postForEntity(getUrl("upload", null), requestEntity, CommandResult.class);
+
+    CommandResult commandResult = response.getBody();
+    ViewModelData view = commandResult.getView();
+    model = objectMapper.convertValue(view.getModel(), User.class);
+    long fileLength = new File(testFile).length();
+    assertEquals(originalName + "-length:" + fileLength, model.getName());
     assertEquals("test@email.com", model.getEmail());
 
   }

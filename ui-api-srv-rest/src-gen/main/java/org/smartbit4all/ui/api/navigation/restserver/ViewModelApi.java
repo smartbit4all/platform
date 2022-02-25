@@ -104,4 +104,26 @@ public interface ViewModelApi {
         return getDelegate().setModel(uuid, body);
     }
 
+
+    /**
+     * POST /upload : Executes a command similar to executeCommand, but appends a BinaryData to it params
+     *
+     * @param uuid  (optional)
+     * @param command  (optional)
+     * @param content  (optional)
+     * @return  (status code 200)
+     */
+    @ApiOperation(value = "Executes a command similar to executeCommand, but appends a BinaryData to it params", nickname = "upload", notes = "", response = org.smartbit4all.ui.api.navigation.model.CommandResult.class, tags={ "view-model", })
+    @ApiResponses(value = { 
+        @ApiResponse(code = 200, message = "", response = org.smartbit4all.ui.api.navigation.model.CommandResult.class) })
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/upload",
+        produces = { "application/json" },
+        consumes = { "multipart/form-data" }
+    )
+    default ResponseEntity<org.smartbit4all.ui.api.navigation.model.CommandResult> upload(@ApiParam(value = "") @Valid @RequestPart(value = "uuid", required = false) UUID uuid,@ApiParam(value = "") @Valid @RequestPart(value = "command", required = false) org.smartbit4all.ui.api.navigation.model.CommandData command,@ApiParam(value = "") @Valid @RequestPart(value = "content", required = false) MultipartFile content) throws Exception {
+        return getDelegate().upload(uuid, command, content);
+    }
+
 }
