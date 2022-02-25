@@ -484,6 +484,9 @@ public class MapBasedObjectUtil {
       if (value instanceof MapBasedObject || value instanceof MapBasedObjectData) {
         return true;
       }
+      if (value == null) {
+        throw new IllegalArgumentException("Null cannot be added to MapBasedObject list.");
+      }
       expectedValueClass = MapBasedObject.class.getName();
     }
 
@@ -496,7 +499,7 @@ public class MapBasedObjectUtil {
       throw new IllegalArgumentException(
           "Collection and added value classes are not matching:" + StringConstant.NEW_LINE +
               "Expected class: " + expectedValueClass + StringConstant.NEW_LINE +
-              "Given class: " + value.getClass().getName());
+              "Given class: " + (value == null ? "null" : value.getClass().getName()));
     }
   }
 

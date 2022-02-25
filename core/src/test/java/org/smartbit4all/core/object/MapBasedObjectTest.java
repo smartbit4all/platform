@@ -243,7 +243,6 @@ class MapBasedObjectTest {
     object.setValueByPath(datesKey, new ArrayList<>(newLocalDateTimeListValue));
     object.setValueByPath(objectKey + "/" + subNameKey, newSubStringValue);
     object.setValueByPath(objectsKey, new ArrayList<>(Arrays.asList(subData4, subData5)));
-    // TODO test MapBasedObject list
 
     objectChange = object.renderAndCleanChanges();
     System.out.println(StringConstant.NEW_LINE + objectChange.get());
@@ -293,11 +292,15 @@ class MapBasedObjectTest {
     assertEquals(subStringValue4, ((MapBasedObject) list.get(0)).getValueByPath(subNameKey4));
     assertEquals(subStringValue5, ((MapBasedObject) list.get(1)).getValueByPath(subNameKey5));
 
+    // get/setValueByPath test with longer paths, indexes
+
     assertEquals(newSubStringValue, object.getValueByPath(objectKey + "/" + subNameKey));
-    // TODO test MapBasedObject list
 
     object.setValueByPath(namesKey + "/2", newStringListItemValue);
+    assertEquals(newStringListItemValue, object.getValueByPath(namesKey + "/2"));
+
     object.setValueByPath(objectsKey + "/1", subData6);
+    assertEquals(subStringValue6, object.getValueByPath(objectsKey + "/1/" + subNameKey6));
 
     objectChange = object.renderAndCleanChanges();
     System.out.println(StringConstant.NEW_LINE + objectChange.get());
@@ -387,7 +390,7 @@ class MapBasedObjectTest {
     list = (List) object.getValueByPath(urisKey);
     assertEquals(5, list.size());
 
-    LocalDateTime addedDatesValue = LocalDateTime.of(2022, 6, 6, 0, 0);
+    LocalDateTime addedDatesValue = LocalDateTime.of(2022, 8, 8, 0, 0);
     object.addValueByPath(datesKey, addedDatesValue);
     list = (List) object.getValueByPath(datesKey);
     assertEquals(4, list.size());
@@ -396,23 +399,33 @@ class MapBasedObjectTest {
     list = (List) object.getValueByPath(datesKey);
     assertEquals(5, list.size());
 
+    object.addValueByPath(objectsKey, subData);
+    list = (List) object.getValueByPath(objectsKey);
+    assertEquals(3, list.size());
+    assertEquals(subStringValue, ((MapBasedObject) list.get(2)).getValueByPath(subNameKey));
+    assertThrows(IllegalArgumentException.class, () -> object.addValueByPath(objectsKey, null));
+    list = (List) object.getValueByPath(objectsKey);
+    assertEquals(3, list.size());
+
     objectChange = object.renderAndCleanChanges();
     System.out.println(StringConstant.NEW_LINE + objectChange.get());
-
-    // TODO test MapBasedObject list
 
     assertThrows(IllegalArgumentException.class,
         () -> object.addValueByPath("notExistingKey", addedNamesValue));
     assertThrows(IllegalArgumentException.class,
+        () -> object.addValueByPath(namesKey + "/1", addedNamesValue));
+    assertThrows(IllegalArgumentException.class,
         () -> object.addValueByPath(nameKey, addedNamesValue));
     assertThrows(IllegalArgumentException.class,
-        () -> object.addValueByPath(nameKey, addedAgesValue));
+        () -> object.addValueByPath(ageKey, addedAgesValue));
     assertThrows(IllegalArgumentException.class,
-        () -> object.addValueByPath(nameKey, addedHeightsValue));
+        () -> object.addValueByPath(heightKey, addedHeightsValue));
     assertThrows(IllegalArgumentException.class,
-        () -> object.addValueByPath(nameKey, addedValiditiesValue));
+        () -> object.addValueByPath(validKey, addedValiditiesValue));
     assertThrows(IllegalArgumentException.class,
-        () -> object.addValueByPath(nameKey, addedDatesValue));
+        () -> object.addValueByPath(uriKey, addedUrisValue));
+    assertThrows(IllegalArgumentException.class,
+        () -> object.addValueByPath(dateKey, addedDatesValue));
 
     // removeValueByPath test
 
@@ -423,12 +436,48 @@ class MapBasedObjectTest {
     object.removeValueByPath(namesKey + "/2");
     assertEquals(3, list.size());
 
+    object.removeValueByPath(agesKey + "/3");
+    list = (List) object.getValueByPath(agesKey);
+    assertTrue(!list.contains(addedAgesValue));
+    assertEquals(4, list.size());
+    object.removeValueByPath(agesKey + "/2");
+    assertEquals(3, list.size());
+
+    object.removeValueByPath(heightsKey + "/3");
+    list = (List) object.getValueByPath(heightsKey);
+    assertTrue(!list.contains(addedHeightsValue));
+    assertEquals(4, list.size());
+    object.removeValueByPath(heightsKey + "/2");
+    assertEquals(3, list.size());
+
+    list = (List) object.getValueByPath(validitiesKey);
+    object.removeValueByPath(validitiesKey + "/1");
+    list = (List) object.getValueByPath(validitiesKey);
+    assertTrue(!list.contains(false));
+    assertEquals(4, list.size());
+    object.removeValueByPath(validitiesKey + "/2");
+    assertEquals(3, list.size());
+
+    object.removeValueByPath(urisKey + "/3");
+    list = (List) object.getValueByPath(urisKey);
+    assertTrue(!list.contains(addedUrisValue));
+    assertEquals(4, list.size());
+    object.removeValueByPath(urisKey + "/2");
+    assertEquals(3, list.size());
+
+    object.removeValueByPath(datesKey + "/3");
+    list = (List) object.getValueByPath(datesKey);
+    assertTrue(!list.contains(addedDatesValue));
+    assertEquals(4, list.size());
+    object.removeValueByPath(datesKey + "/2");
+    assertEquals(3, list.size());
+
     assertThrows(IllegalArgumentException.class,
         () -> object.removeValueByPath(namesKey));
     assertThrows(IllegalArgumentException.class,
         () -> object.removeValueByPath(namesKey + "/notnumber"));
-
-    // TODO more types, incorrect parameters
+    assertThrows(IndexOutOfBoundsException.class,
+        () -> object.removeValueByPath(namesKey + "/8"));
 
     // embedded empty list test
 

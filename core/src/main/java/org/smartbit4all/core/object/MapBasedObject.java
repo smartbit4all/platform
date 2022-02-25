@@ -98,14 +98,14 @@ public class MapBasedObject {
 
     setValuesByDataMap(result, data.getStringPropertyMap(), String.class);
     setValuesByDataMap(result, data.getStringListMap(), String.class);
-    setValuesByDataMap(result, data.getUriPropertyMap(), URI.class);
-    setValuesByDataMap(result, data.getUriListMap(), URI.class);
     setValuesByDataMap(result, data.getIntegerPropertyMap(), Integer.class);
     setValuesByDataMap(result, data.getIntegerListMap(), Integer.class);
     setValuesByDataMap(result, data.getLongPropertyMap(), Long.class);
     setValuesByDataMap(result, data.getLongListMap(), Long.class);
     setValuesByDataMap(result, data.getBooleanPropertyMap(), Boolean.class);
     setValuesByDataMap(result, data.getBooleanListMap(), Boolean.class);
+    setValuesByDataMap(result, data.getUriPropertyMap(), URI.class);
+    setValuesByDataMap(result, data.getUriListMap(), URI.class);
     setValuesByDataMap(result, data.getLocalDateTimePropertyMap(), LocalDateTime.class);
     setValuesByDataMap(result, data.getLocalDateTimeListMap(), LocalDateTime.class);
 
@@ -445,11 +445,24 @@ public class MapBasedObject {
         try {
           int index = Integer.parseInt(PathUtility.getRootPath(nextPath));
           List<MapBasedObject> list = (List<MapBasedObject>) value;
-          value = list.get(index).getValueByPath(PathUtility.nextFullPath(nextPath));
+          value = PathUtility.getPathSize(nextPath) == 1
+              ? list.get(index)
+              : list.get(index).getValueByPath(PathUtility.nextFullPath(nextPath));
         } catch (NumberFormatException e) {
           throw new IllegalArgumentException(
               "Item index not found after MapBasedObject list property name, path: " + path);
         }
+      }
+    } else if (value instanceof List<?> &&
+        !((List<?>) value).isEmpty() &&
+        PathUtility.getPathSize(path) == 2) {
+      try {
+        int index = Integer.parseInt(PathUtility.getLastPath(path));
+        List<?> list = (List<?>) value;
+        value = list.get(index);
+      } catch (NumberFormatException e) {
+        throw new IllegalArgumentException(
+            "Item index not found after value list property name, path: " + path);
       }
     } else {
       if (PathUtility.getPathSize(path) > 1) {
