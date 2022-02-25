@@ -53,4 +53,12 @@ public class UINavigationApiHeadless extends UINavigationApiCommon {
     this.uiToOpen = null;
   }
 
+  @Override
+  public <T extends ViewModel> T createAndAddChildViewModel(ViewModel parent, String path,
+      Class<T> clazz) {
+    T viewModel = super.createAndAddChildViewModel(parent, path, clazz);
+    // TODO fix this hack
+    viewModelsByUuid.put(viewModel.getViewModelData().getUuid(), viewModel);
+    return viewModel;
+  }
 }
