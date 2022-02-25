@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
-import org.smartbit4all.ui.api.navigation.model.ViewModelDataSimple;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -38,15 +37,14 @@ import javax.validation.Valid;
  */
 @ApiModel(description = "Represent a viewmodel's data.")
 @JsonPropertyOrder({
-  ViewModelData.UUID,
-  ViewModelData.PATH,
-  ViewModelData.NAVIGATION_TARGET,
-  ViewModelData.MODEL,
-  ViewModelData.CHILDREN
+  ViewModelDataSimple.UUID,
+  ViewModelDataSimple.PATH,
+  ViewModelDataSimple.NAVIGATION_TARGET,
+  ViewModelDataSimple.CHILDREN
 })
-@JsonTypeName("ViewModelData")
+@JsonTypeName("ViewModelDataSimple")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
-public class ViewModelData {
+public class ViewModelDataSimple {
   public static final String UUID = "uuid";
   private UUID uuid;
 
@@ -56,14 +54,11 @@ public class ViewModelData {
   public static final String NAVIGATION_TARGET = "navigationTarget";
   private NavigationTarget navigationTarget;
 
-  public static final String MODEL = "model";
-  private Object model;
-
   public static final String CHILDREN = "children";
   private Map<String, ViewModelDataSimple> children = new HashMap<>();
 
 
-  public ViewModelData uuid(UUID uuid) {
+  public ViewModelDataSimple uuid(UUID uuid) {
     
     this.uuid = uuid;
     return this;
@@ -92,7 +87,7 @@ public class ViewModelData {
   }
 
 
-  public ViewModelData path(String path) {
+  public ViewModelDataSimple path(String path) {
     
     this.path = path;
     return this;
@@ -119,7 +114,7 @@ public class ViewModelData {
   }
 
 
-  public ViewModelData navigationTarget(NavigationTarget navigationTarget) {
+  public ViewModelDataSimple navigationTarget(NavigationTarget navigationTarget) {
     
     this.navigationTarget = navigationTarget;
     return this;
@@ -147,40 +142,13 @@ public class ViewModelData {
   }
 
 
-  public ViewModelData model(Object model) {
-    
-    this.model = model;
-    return this;
-  }
-
-   /**
-   * Get model
-   * @return model
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
-  @JsonProperty(MODEL)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Object getModel() {
-    return model;
-  }
-
-
-  @JsonProperty(MODEL)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setModel(Object model) {
-    this.model = model;
-  }
-
-
-  public ViewModelData children(Map<String, ViewModelDataSimple> children) {
+  public ViewModelDataSimple children(Map<String, ViewModelDataSimple> children) {
     
     this.children = children;
     return this;
   }
 
-  public ViewModelData putChildrenItem(String key, ViewModelDataSimple childrenItem) {
+  public ViewModelDataSimple putChildrenItem(String key, ViewModelDataSimple childrenItem) {
     this.children.put(key, childrenItem);
     return this;
   }
@@ -216,27 +184,25 @@ public class ViewModelData {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    ViewModelData viewModelData = (ViewModelData) o;
-    return Objects.equals(this.uuid, viewModelData.uuid) &&
-        Objects.equals(this.path, viewModelData.path) &&
-        Objects.equals(this.navigationTarget, viewModelData.navigationTarget) &&
-        Objects.equals(this.model, viewModelData.model) &&
-        Objects.equals(this.children, viewModelData.children);
+    ViewModelDataSimple viewModelDataSimple = (ViewModelDataSimple) o;
+    return Objects.equals(this.uuid, viewModelDataSimple.uuid) &&
+        Objects.equals(this.path, viewModelDataSimple.path) &&
+        Objects.equals(this.navigationTarget, viewModelDataSimple.navigationTarget) &&
+        Objects.equals(this.children, viewModelDataSimple.children);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uuid, path, navigationTarget, model, children);
+    return Objects.hash(uuid, path, navigationTarget, children);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class ViewModelData {\n");
+    sb.append("class ViewModelDataSimple {\n");
     sb.append("    uuid: ").append(toIndentedString(uuid)).append("\n");
     sb.append("    path: ").append(toIndentedString(path)).append("\n");
     sb.append("    navigationTarget: ").append(toIndentedString(navigationTarget)).append("\n");
-    sb.append("    model: ").append(toIndentedString(model)).append("\n");
     sb.append("    children: ").append(toIndentedString(children)).append("\n");
     sb.append("}");
     return sb.toString();

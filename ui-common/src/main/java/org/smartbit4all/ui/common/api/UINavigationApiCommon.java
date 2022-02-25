@@ -222,8 +222,17 @@ public class UINavigationApiCommon implements UINavigationApi {
 
   @Override
   public <T extends ViewModel> T createViewModel(ViewModel parent, String path, Class<T> clazz) {
-    T viewModel = context.getBean(clazz);
-    parent.addChild(viewModel, path);
+    NavigationTarget oldTarget = ObjectEditing.currentNavigationTarget.get();
+    T viewModel;
+    try {
+      NavigationTarget navigationTarget = new NavigationTarget()
+          .uuid(UUID.randomUUID());
+      ObjectEditing.currentNavigationTarget.set(navigationTarget);
+      viewModel = context.getBean(clazz);
+      parent.addChild(viewModel, path);
+    } finally {
+      ObjectEditing.currentNavigationTarget.set(oldTarget);
+    }
     return viewModel;
   }
 

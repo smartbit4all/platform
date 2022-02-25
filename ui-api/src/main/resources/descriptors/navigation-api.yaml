@@ -149,7 +149,25 @@ components:
         children:
           type: object
           additionalProperties:
-            $ref: '#/components/schemas/ViewModelData'
+            $ref: '#/components/schemas/ViewModelDataSimple'
+    ViewModelDataSimple:
+      type: object
+      description: Represent a viewmodel's data.
+      required:
+        - uuid
+        - children
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        path:
+          type: string
+        navigationTarget:
+          $ref: '#/components/schemas/NavigationTarget'
+        children:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ViewModelDataSimple'
     NavigationTarget:
       type: object
       required:

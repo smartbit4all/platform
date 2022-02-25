@@ -16,6 +16,7 @@ import org.smartbit4all.core.object.ObservablePublisherWrapper;
 import org.smartbit4all.core.utility.ReflectionUtility;
 import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
 import org.smartbit4all.ui.api.navigation.model.ViewModelData;
+import org.smartbit4all.ui.api.navigation.model.ViewModelDataSimple;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -359,7 +360,14 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
         .navigationTarget(navigationTarget)
         .path(path)
         .model(model);
-    childrenByPath.forEach((p, vm) -> result.putChildrenItem(p, vm.getViewModelData()));
+    childrenByPath.forEach((p, vm) -> {
+      ViewModelData d = vm.getViewModelData();
+      result.putChildrenItem(p, new ViewModelDataSimple()
+          .uuid(d.getUuid())
+          .path(d.getPath())
+          .navigationTarget(d.getNavigationTarget())
+          .children(d.getChildren()));
+    });
     return result;
   }
 
