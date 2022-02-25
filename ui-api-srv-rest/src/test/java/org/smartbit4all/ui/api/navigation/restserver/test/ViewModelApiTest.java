@@ -1,8 +1,10 @@
 package org.smartbit4all.ui.api.navigation.restserver.test;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.File;
 import java.util.Arrays;
 import java.util.UUID;
@@ -13,7 +15,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.TestMethodOrder;
-import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.ui.api.navigation.UINavigationApi;
 import org.smartbit4all.ui.api.navigation.model.CommandData;
 import org.smartbit4all.ui.api.navigation.model.CommandResult;
@@ -26,8 +27,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
@@ -63,6 +66,9 @@ public class ViewModelApiTest {
   @Value("${openapi.invocation.base-path:/}")
   private String path;
 
+  @Value("${viewModelApi.testFile:src/test/resources/lorem-ipsum.pdf}")
+  private String testFile;
+
   private UUID viewModelUUID;
 
   @BeforeAll
@@ -94,28 +100,26 @@ public class ViewModelApiTest {
   @Order(10)
   void handleData() {
 
-    User model = getUser();
+    TestModel model = getTestModel();
 
-    assertEquals("Test User", model.getName());
-    assertEquals("test@email.com", model.getEmail());
+    assertEquals("Test User", model.getUser().getName());
+    assertEquals("test@email.com", model.getUser().getEmail());
 
-    model.setName("Modified User");
+    model.getUser().setName("Modified User");
 
     restTemplate.postForObject(getUrl("setModel", viewModelUUID), model, Void.class);
 
-    model = getUser();
-    assertEquals("Modified User", model.getName());
-    assertEquals("test@email.com", model.getEmail());
-
-    model.setName("Modified User 123");
+    model = getTestModel();
+    assertEquals("Modified User", model.getUser().getName());
+    assertEquals("test@email.com", model.getUser().getEmail());
 
   }
 
   @Test
   @Order(20)
   void simpleCommand() {
-    User model = getUser();
-    String originalName = model.getName();
+    TestModel model = getTestModel();
+    String originalName = model.getUser().getName();
 
     CommandData commandData = new CommandData()
         .model(model)
@@ -125,18 +129,17 @@ public class ViewModelApiTest {
     CommandResult commandResult = restTemplate
         .postForObject(getUrl("executeCommand", viewModelUUID), commandData, CommandResult.class);
     assertNull(commandResult.getUiToOpen());
-    model = objectMapper.convertValue(commandResult.getView().getModel(), User.class);
-    assertEquals(originalName + "+command", model.getName());
-    assertEquals("test@email.com", model.getEmail());
-
+    model = objectMapper.convertValue(commandResult.getView().getModel(), TestModel.class);
+    assertEquals(originalName + "+command", model.getUser().getName());
+    assertEquals("test@email.com", model.getUser().getEmail());
 
   }
 
   @Test
   @Order(30)
   void testNavigateCommand() {
-    User model = getUser();
-    String originalName = model.getName();
+    TestModel model = getTestModel();
+    String originalName = model.getUser().getName();
 
     CommandData commandData = new CommandData()
         .model(null)
@@ -147,22 +150,22 @@ public class ViewModelApiTest {
         .postForObject(getUrl("executeCommand", viewModelUUID), commandData, CommandResult.class);
     NavigationTarget navigationTarget = commandResult.getUiToOpen();
     assertNotNull(navigationTarget);
-    assertEquals(model.getUri(), navigationTarget.getObjectUri());
+    assertEquals(model.getUser().getUri(), navigationTarget.getObjectUri());
     assertEquals(TestViewModel.MODIFY_VIEW, navigationTarget.getViewName());
 
     // model unchanged
     ViewModelData view = commandResult.getView();
-    model = objectMapper.convertValue(view.getModel(), User.class);
-    assertEquals(originalName, model.getName());
-    assertEquals("test@email.com", model.getEmail());
+    model = objectMapper.convertValue(view.getModel(), TestModel.class);
+    assertEquals(originalName, model.getUser().getName());
+    assertEquals("test@email.com", model.getUser().getEmail());
 
   }
 
   @Test
   @Order(40)
   void testUploadCommand() {
-    User model = getUser();
-    String originalName = model.getName();
+    TestModel model = getTestModel();
+    String originalName = model.getUser().getName();
 
     CommandData commandData = new CommandData()
         .model(null)
@@ -174,7 +177,7 @@ public class ViewModelApiTest {
     // headers.set(HttpHeaders.ACCEPT, "application/json, application/*+json");
     headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
 
-    String testFile = "src/test/resources/lorem-ipsum.pdf";
+    // testFile = "src/test/resources/lorem-ipsum.pdf";
     MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
     body.add("uuid", viewModelUUID);
     body.add("command", commandData);
@@ -186,15 +189,36 @@ public class ViewModelApiTest {
 
     CommandResult commandResult = response.getBody();
     ViewModelData view = commandResult.getView();
-    model = objectMapper.convertValue(view.getModel(), User.class);
+    model = objectMapper.convertValue(view.getModel(), TestModel.class);
     long fileLength = new File(testFile).length();
-    assertEquals(originalName + "-length:" + fileLength, model.getName());
-    assertEquals("test@email.com", model.getEmail());
+    assertEquals(originalName + "-length:" + fileLength, model.getUser().getName());
+    assertEquals("test@email.com", model.getUser().getEmail());
 
   }
 
-  private User getUser() {
-    return objectMapper.convertValue(getViewModelData().getModel(), User.class);
+  @Test
+  @Order(50)
+  void testDownload() {
+    TestModel model = getTestModel();
+    UUID dataUuid = model.getDataUuid();
+    assertNotNull(dataUuid);
+
+    String path = getUrl("download", viewModelUUID) + "/" + dataUuid;
+    ResponseEntity<Resource> response =
+        restTemplate.exchange(path, HttpMethod.GET, HttpEntity.EMPTY, Resource.class);
+
+    assertTrue(response.getStatusCode().is2xxSuccessful());
+    Resource content = response.getBody();
+    assertNotNull(content);
+    long fileLength = new File(testFile).length();
+    assertDoesNotThrow(() -> {
+      assertEquals(fileLength, content.contentLength());
+    });
+
+  }
+
+  private TestModel getTestModel() {
+    return objectMapper.convertValue(getViewModelData().getModel(), TestModel.class);
   }
 
   private ViewModelData getViewModelData() {

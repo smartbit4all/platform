@@ -46,6 +46,26 @@ public interface ViewModelApi {
 
 
     /**
+     * GET /download/{vmUuid}/{dataUuid}
+     *
+     * @param vmUuid  (required)
+     * @param dataUuid  (required)
+     * @return File with the given uuid. (status code 200)
+     */
+    @ApiOperation(value = "", nickname = "download", notes = "", response = org.springframework.core.io.Resource.class, tags={ "view-model", })
+    @ApiResponses(value = { 
+        @ApiResponse(code = 200, message = "File with the given uuid.", response = org.springframework.core.io.Resource.class) })
+    @RequestMapping(
+        method = RequestMethod.GET,
+        value = "/download/{vmUuid}/{dataUuid}",
+        produces = { "application/octet-stream" }
+    )
+    default ResponseEntity<org.springframework.core.io.Resource> download(@ApiParam(value = "", required = true) @PathVariable("vmUuid") UUID vmUuid,@ApiParam(value = "", required = true) @PathVariable("dataUuid") UUID dataUuid) throws Exception {
+        return getDelegate().download(vmUuid, dataUuid);
+    }
+
+
+    /**
      * POST /executeCommand/{uuid}
      *
      * @param uuid  (required)

@@ -14,6 +14,8 @@ import org.smartbit4all.ui.api.viewmodel.ViewModel;
 import org.smartbit4all.ui.api.viewmodel.ViewModelImpl;
 import org.smartbit4all.ui.common.api.UINavigationApiHeadless;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -109,6 +111,22 @@ public class ViewModelApiDelegateImpl implements ViewModelApiDelegate {
 
       return executeCommand(uuid, command);
     }
-
   }
+
+  @Override
+  public ResponseEntity<Resource> download(UUID vmUuid, UUID dataUuid) throws Exception {
+    ViewModel vm = uiNavigationApi.getViewModelByUuid(vmUuid);
+    if (vm == null) {
+      return ResponseEntity.notFound().build();
+    }
+    BinaryData content = vm.download(dataUuid);
+    if (content == null) {
+      return ResponseEntity.notFound().build();
+    }
+    Resource res = new InputStreamResource(content.inputStream());
+    return ResponseEntity
+        .ok()
+        .body(res);
+  }
+
 }

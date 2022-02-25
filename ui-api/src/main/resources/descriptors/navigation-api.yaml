@@ -128,6 +128,33 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CommandResult'
+  /download/{vmUuid}/{dataUuid}:
+    get:
+      tags:
+      - view-model
+      summary: ''
+      operationId: 'download'
+      parameters:
+        - in: path
+          name: vmUuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+        - in: path
+          name: dataUuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+      responses:
+        '200':
+          description: 'File with the given uuid.'
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
 components:
   schemas:
     AppState:

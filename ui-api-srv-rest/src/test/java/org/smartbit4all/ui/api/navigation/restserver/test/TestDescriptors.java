@@ -25,6 +25,7 @@ public class TestDescriptors {
 
     domainBeans.add(User.class);
     domainBeans.add(Group.class);
+    domainBeans.add(TestModel.class);
     return domainBeans;
   }
 }

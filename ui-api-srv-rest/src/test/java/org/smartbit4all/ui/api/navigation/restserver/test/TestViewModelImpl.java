@@ -1,6 +1,7 @@
 package org.smartbit4all.ui.api.navigation.restserver.test;
 
 import java.net.URI;
+import java.util.UUID;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.core.object.ObservablePublisherWrapper;
@@ -13,13 +14,13 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Instead of creating a separate test bean for model, we use an existing bean.
  *
  */
-public class TestViewModelImpl extends ViewModelImpl<User> implements TestViewModel {
+public class TestViewModelImpl extends ViewModelImpl<TestModel> implements TestViewModel {
 
   @Autowired
   UINavigationApi uiNavigationApi;
 
   protected TestViewModelImpl(ObservablePublisherWrapper publisherWrapper) {
-    super(publisherWrapper, TestDescriptors.TEST_DESCRIPTORS, User.class);
+    super(publisherWrapper, TestDescriptors.TEST_DESCRIPTORS, TestModel.class);
   }
 
   @Override
@@ -30,11 +31,11 @@ public class TestViewModelImpl extends ViewModelImpl<User> implements TestViewMo
   }
 
   @Override
-  protected User load(NavigationTarget navigationTarget) {
-    return new User()
+  protected TestModel load(NavigationTarget navigationTarget) {
+    return new TestModel().user(new User()
         .uri(URI.create("test:/user1"))
         .name("Test User")
-        .email("test@email.com");
+        .email("test@email.com"));
   }
 
   @Override
@@ -43,19 +44,23 @@ public class TestViewModelImpl extends ViewModelImpl<User> implements TestViewMo
   }
 
   private void execTestCommand() {
-    model.setName(model.getName() + "+command");
+    model.getUser().setName(model.getUser().getName() + "+command");
   }
 
   private void modify() {
     uiNavigationApi.navigateTo(new NavigationTarget()
         .viewName(MODIFY_VIEW)
-        .objectUri(model.getUri()));
+        .objectUri(model.getUser().getUri()));
   }
 
   private void upload(Object[] params) {
     checkParamNumber(UPLOAD, 1, params);
     BinaryData binaryData = (BinaryData) params[0];
-    model.setName(model.getName() + "-length:" + binaryData.length());
+    model.getUser().setName(model.getUser().getName() + "-length:" + binaryData.length());
+    UUID dataUuid = UUID.randomUUID();
+    registerDownload(dataUuid, () -> binaryData);
+    model.setDataUuid(dataUuid);
+
   }
 
 }

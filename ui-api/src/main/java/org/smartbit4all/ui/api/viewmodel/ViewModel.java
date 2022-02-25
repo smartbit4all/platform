@@ -1,5 +1,7 @@
 package org.smartbit4all.ui.api.viewmodel;
 
+import java.util.UUID;
+import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.core.object.PublishEvents;
 import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
@@ -30,6 +32,8 @@ public interface ViewModel extends ObjectEditing {
   <V extends ViewModel> V getChild(String path);
 
   ViewModelData getViewModelData();
+
+  BinaryData download(UUID dataUuid);
 
   // TODO finish, finishEditing?
 

@@ -4,10 +4,13 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.core.object.ApiBeanDescriptor;
 import org.smartbit4all.core.object.ApiObjectRef;
 import org.smartbit4all.core.object.ObservableObject;
@@ -43,6 +46,7 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
 
   private Map<Class<?>, ApiBeanDescriptor> apiBeanDescriptors;
 
+  private Map<UUID, Supplier<BinaryData>> registeredDownloadDatas;
   /**
    * First key: commandCode, embedded map key: commandPath (may be null)
    */
@@ -57,6 +61,7 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
     data = new ObservableObjectImpl(publisherWrapper);
     this.apiBeanDescriptors = apiBeanDescriptors;
     this.modelClazz = modelClazz;
+    registeredDownloadDatas = new HashMap<>();
   }
 
   @Override
@@ -369,6 +374,23 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
           .children(d.getChildren()));
     });
     return result;
+  }
+
+  protected void registerDownload(UUID dataUuid, Supplier<BinaryData> supplier) {
+    registeredDownloadDatas.put(dataUuid, supplier);
+  }
+
+  protected void unregisterDownload(UUID dataUuid) {
+    registeredDownloadDatas.remove(dataUuid);
+  }
+
+  @Override
+  public BinaryData download(UUID dataUuid) {
+    Supplier<BinaryData> supplier = registeredDownloadDatas.get(dataUuid);
+    if (supplier == null) {
+      return null;
+    }
+    return supplier.get();
   }
 
 }
