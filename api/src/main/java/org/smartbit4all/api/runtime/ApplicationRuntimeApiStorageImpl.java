@@ -8,7 +8,6 @@ import java.util.UUID;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.apache.logging.log4j.util.Strings;
-import org.smartbit4all.api.invocation.bean.ApiRegistryData;
 import org.smartbit4all.api.invocation.bean.ApplicationRuntimeData;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.storage.Storage;
@@ -69,7 +68,7 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
    * Auto wires the port number that we are serving currently. Need to have alternatives if it's not
    * available.
    */
-  @Value("${local.server.port:-1}")
+  @Value("${server.port:-1}")
   private int port;
 
   @Autowired
@@ -105,6 +104,7 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
         return r.lastTouchTime(currentTimeMillis);
       });
     }
+    // If we successfully saved ourself then read all the active runtime we have in this register.
   }
 
   @Override
@@ -138,7 +138,8 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
     return new ApplicationRuntimeData().uuid(runtime.getUuid()).ipAddress(runtime.getIp())
         .serverPort(runtime.getPort()).timeOffset(runtime.getTimeOffset())
         .uri(URI.create(CLUSTER + StringConstant.COLON + StringConstant.SLASH
-            + ApiRegistryData.class.getName().replace('.', '/') + StringConstant.SLASH + "active"
+            + ApplicationRuntimeData.class.getName().replace('.', '/') + StringConstant.SLASH
+            + "active"
             + StringConstant.SLASH + runtime.getUuid()));
   }
 
