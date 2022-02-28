@@ -199,11 +199,17 @@ public class ViewModelApiTest {
   @Test
   @Order(50)
   void testDownload() {
-    TestModel model = getTestModel();
-    UUID dataUuid = model.getDataUuid();
-    assertNotNull(dataUuid);
+    String downloadIdentifier = "001";
+    CommandData commandData = new CommandData()
+        .model(null)
+        .commandPath(null)
+        .commandCode(TestViewModel.DOWNLOAD)
+        .addParamsItem(downloadIdentifier);
 
-    String path = getUrl("download", viewModelUUID) + "/" + dataUuid;
+    restTemplate
+        .postForObject(getUrl("executeCommand", viewModelUUID), commandData, CommandResult.class);
+
+    String path = getUrl("download", viewModelUUID) + "/" + downloadIdentifier;
     ResponseEntity<Resource> response =
         restTemplate.exchange(path, HttpMethod.GET, HttpEntity.EMPTY, Resource.class);
 

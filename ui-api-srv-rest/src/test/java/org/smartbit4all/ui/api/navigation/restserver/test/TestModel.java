@@ -11,7 +11,6 @@
 package org.smartbit4all.ui.api.navigation.restserver.test;
 
 import java.util.Objects;
-import java.util.UUID;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import org.smartbit4all.api.org.bean.User;
@@ -25,17 +24,13 @@ import io.swagger.annotations.ApiModelProperty;
  * User
  */
 @JsonPropertyOrder({
-    TestModel.USER,
-    TestModel.DATA_UUID
+    TestModel.USER
 })
 @JsonTypeName("User")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class TestModel {
   public static final String USER = "user";
   private User user;
-
-  public static final String DATA_UUID = "username";
-  private UUID dataUuid;
 
   public TestModel user(User user) {
 
@@ -66,33 +61,6 @@ public class TestModel {
   }
 
 
-  public TestModel dataUuid(UUID dataUuid) {
-
-    this.dataUuid = dataUuid;
-    return this;
-  }
-
-  /**
-   * The username
-   * 
-   * @return username
-   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "The username")
-  @JsonProperty(DATA_UUID)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public UUID getDataUuid() {
-    return dataUuid;
-  }
-
-
-  @JsonProperty(DATA_UUID)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setDataUuid(UUID username) {
-    this.dataUuid = username;
-  }
-
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -102,13 +70,12 @@ public class TestModel {
       return false;
     }
     TestModel user = (TestModel) o;
-    return Objects.equals(this.user, user.user) &&
-        Objects.equals(this.dataUuid, user.dataUuid);
+    return Objects.equals(this.user, user.user);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(user, dataUuid);
+    return Objects.hash(user);
   }
 
   @Override
@@ -116,7 +83,6 @@ public class TestModel {
     StringBuilder sb = new StringBuilder();
     sb.append("class User {\n");
     sb.append("    uri: ").append(toIndentedString(user)).append("\n");
-    sb.append("    username: ").append(toIndentedString(dataUuid)).append("\n");
     sb.append("}");
     return sb.toString();
   }

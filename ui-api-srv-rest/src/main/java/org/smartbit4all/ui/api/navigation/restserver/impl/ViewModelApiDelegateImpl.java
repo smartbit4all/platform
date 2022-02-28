@@ -114,12 +114,12 @@ public class ViewModelApiDelegateImpl implements ViewModelApiDelegate {
   }
 
   @Override
-  public ResponseEntity<Resource> download(UUID vmUuid, UUID dataUuid) throws Exception {
+  public ResponseEntity<Resource> download(UUID vmUuid, String dataIdentifier) throws Exception {
     ViewModel vm = uiNavigationApi.getViewModelByUuid(vmUuid);
     if (vm == null) {
       return ResponseEntity.notFound().build();
     }
-    BinaryData content = vm.download(dataUuid);
+    BinaryData content = vm.getDownloadData(dataIdentifier);
     if (content == null) {
       return ResponseEntity.notFound().build();
     }

@@ -45,15 +45,15 @@ public interface ViewModelApiDelegate {
     }
 
     /**
-     * GET /download/{vmUuid}/{dataUuid}
+     * GET /download/{vmUuid}/{dataIdentifier}
      *
      * @param vmUuid  (required)
-     * @param dataUuid  (required)
+     * @param dataIdentifier  (required)
      * @return Data in given ViewModel (vmUuid) with the given dataUuid. (status code 200)
      * @see ViewModelApi#download
      */
     default ResponseEntity<org.springframework.core.io.Resource> download(UUID vmUuid,
-        UUID dataUuid) throws Exception {
+        String dataIdentifier) throws Exception {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 
     }

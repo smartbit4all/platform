@@ -4,7 +4,6 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -46,7 +45,7 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
 
   private Map<Class<?>, ApiBeanDescriptor> apiBeanDescriptors;
 
-  private Map<UUID, Supplier<BinaryData>> registeredDownloadDatas;
+  private Map<String, Supplier<BinaryData>> registeredDownloadDatas;
   /**
    * First key: commandCode, embedded map key: commandPath (may be null)
    */
@@ -376,17 +375,17 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
     return result;
   }
 
-  protected void registerDownload(UUID dataUuid, Supplier<BinaryData> supplier) {
-    registeredDownloadDatas.put(dataUuid, supplier);
+  protected void registerDownloadData(String identifier, Supplier<BinaryData> supplier) {
+    registeredDownloadDatas.put(identifier, supplier);
   }
 
-  protected void unregisterDownload(UUID dataUuid) {
-    registeredDownloadDatas.remove(dataUuid);
+  protected void unregisterDownload(String identifier) {
+    registeredDownloadDatas.remove(identifier);
   }
 
   @Override
-  public BinaryData download(UUID dataUuid) {
-    Supplier<BinaryData> supplier = registeredDownloadDatas.get(dataUuid);
+  public BinaryData getDownloadData(String identifier) {
+    Supplier<BinaryData> supplier = registeredDownloadDatas.get(identifier);
     if (supplier == null) {
       return null;
     }

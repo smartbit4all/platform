@@ -128,7 +128,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CommandResult'
-  /download/{vmUuid}/{dataUuid}:
+  /download/{vmUuid}/{dataIdentifier}:
     get:
       tags:
       - view-model
@@ -142,10 +142,9 @@ paths:
             format: uuid
           required: true
         - in: path
-          name: dataUuid
+          name: dataIdentifier
           schema:
             type: string
-            format: uuid
           required: true
       responses:
         '200':

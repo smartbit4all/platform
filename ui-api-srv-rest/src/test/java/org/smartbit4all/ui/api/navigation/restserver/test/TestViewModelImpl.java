@@ -1,7 +1,6 @@
 package org.smartbit4all.ui.api.navigation.restserver.test;
 
 import java.net.URI;
-import java.util.UUID;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.core.object.ObservablePublisherWrapper;
@@ -18,6 +17,7 @@ public class TestViewModelImpl extends ViewModelImpl<TestModel> implements TestV
 
   @Autowired
   UINavigationApi uiNavigationApi;
+  private BinaryData binaryData;
 
   protected TestViewModelImpl(ObservablePublisherWrapper publisherWrapper) {
     super(publisherWrapper, TestDescriptors.TEST_DESCRIPTORS, TestModel.class);
@@ -28,6 +28,7 @@ public class TestViewModelImpl extends ViewModelImpl<TestModel> implements TestV
     registerCommand(TEST_COMMAND, this::execTestCommand);
     registerCommand(MODIFY, this::modify);
     registerCommandWithParams(UPLOAD, this::upload);
+    registerCommandWithParams(DOWNLOAD, this::download);
   }
 
   @Override
@@ -55,12 +56,14 @@ public class TestViewModelImpl extends ViewModelImpl<TestModel> implements TestV
 
   private void upload(Object[] params) {
     checkParamNumber(UPLOAD, 1, params);
-    BinaryData binaryData = (BinaryData) params[0];
+    // it may be part of the model, for test it's just a member field
+    binaryData = (BinaryData) params[0];
     model.getUser().setName(model.getUser().getName() + "-length:" + binaryData.length());
-    UUID dataUuid = UUID.randomUUID();
-    registerDownload(dataUuid, () -> binaryData);
-    model.setDataUuid(dataUuid);
-
   }
 
+  private void download(Object[] params) {
+    checkParamNumber(DOWNLOAD, 1, params);
+    String identifier = (String) params[0];
+    registerDownloadData(identifier, () -> binaryData);
+  }
 }

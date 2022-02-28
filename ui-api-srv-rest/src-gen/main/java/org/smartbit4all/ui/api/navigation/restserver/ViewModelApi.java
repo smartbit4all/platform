@@ -46,10 +46,10 @@ public interface ViewModelApi {
 
 
     /**
-     * GET /download/{vmUuid}/{dataUuid}
+     * GET /download/{vmUuid}/{dataIdentifier}
      *
      * @param vmUuid  (required)
-     * @param dataUuid  (required)
+     * @param dataIdentifier  (required)
      * @return Data in given ViewModel (vmUuid) with the given dataUuid. (status code 200)
      */
     @ApiOperation(value = "", nickname = "download", notes = "", response = org.springframework.core.io.Resource.class, tags={ "view-model", })
@@ -57,11 +57,11 @@ public interface ViewModelApi {
         @ApiResponse(code = 200, message = "Data in given ViewModel (vmUuid) with the given dataUuid.", response = org.springframework.core.io.Resource.class) })
     @RequestMapping(
         method = RequestMethod.GET,
-        value = "/download/{vmUuid}/{dataUuid}",
+        value = "/download/{vmUuid}/{dataIdentifier}",
         produces = { "application/octet-stream" }
     )
-    default ResponseEntity<org.springframework.core.io.Resource> download(@ApiParam(value = "", required = true) @PathVariable("vmUuid") UUID vmUuid,@ApiParam(value = "", required = true) @PathVariable("dataUuid") UUID dataUuid) throws Exception {
-        return getDelegate().download(vmUuid, dataUuid);
+    default ResponseEntity<org.springframework.core.io.Resource> download(@ApiParam(value = "", required = true) @PathVariable("vmUuid") UUID vmUuid,@ApiParam(value = "", required = true) @PathVariable("dataIdentifier") String dataIdentifier) throws Exception {
+        return getDelegate().download(vmUuid, dataIdentifier);
     }
 
 
