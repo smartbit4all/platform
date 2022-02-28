@@ -33,19 +33,19 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
   protected ViewModelImpl<?> parent;
   protected String path;
 
-  protected ObservableObjectImpl data;
+  protected final ObservableObjectImpl data;
 
   protected T model;
 
-  private Class<T> modelClazz;
+  private final Class<T> modelClazz;
 
   protected Consumer<URI> listener;
 
   private Disposable subscription;
 
-  private Map<Class<?>, ApiBeanDescriptor> apiBeanDescriptors;
+  private final Map<Class<?>, ApiBeanDescriptor> apiBeanDescriptors;
 
-  private Map<String, Supplier<BinaryData>> registeredDownloadDatas;
+  private final Map<String, Supplier<BinaryData>> registeredDownloadDatas;
   /**
    * First key: commandCode, embedded map key: commandPath (may be null)
    */
@@ -188,6 +188,7 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
       model = null;
       commandsByCode.clear();
     }
+    registeredDownloadDatas.clear();
   }
 
   protected void registerCommand(String commandCode, Runnable command) {
