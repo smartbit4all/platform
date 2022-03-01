@@ -12,7 +12,7 @@ public class UINavigationApiHeadless extends UINavigationApiCommon {
 
   private static final Logger log = LoggerFactory.getLogger(UINavigationApiHeadless.class);
 
-  private NavigationTarget uiToOpen;
+  static final ThreadLocal<NavigationTarget> uiToOpen = new ThreadLocal<>();
 
   public UINavigationApiHeadless(UserSessionApi userSessionApi) {
     super(userSessionApi);
@@ -34,7 +34,7 @@ public class UINavigationApiHeadless extends UINavigationApiCommon {
         viewModel = (ViewModel) context.getBean(viewModelClass);
         viewModel.initByNavigationTarget(navigationTarget);
         viewModelsByUuid.put(navigationTarget.getUuid(), viewModel);
-        this.uiToOpen = navigationTarget;
+        UINavigationApiHeadless.uiToOpen.set(navigationTarget);
       } finally {
         ObjectEditing.currentNavigationTarget.set(oldTarget);
       }
@@ -45,12 +45,12 @@ public class UINavigationApiHeadless extends UINavigationApiCommon {
 
   }
 
-  public NavigationTarget getUiToOpen() {
-    return uiToOpen;
+  public static NavigationTarget getUiToOpen() {
+    return uiToOpen.get();
   }
 
-  public void clearUiToOpen() {
-    this.uiToOpen = null;
+  public static void clearUiToOpen() {
+    uiToOpen.set(null);
   }
 
   @Override

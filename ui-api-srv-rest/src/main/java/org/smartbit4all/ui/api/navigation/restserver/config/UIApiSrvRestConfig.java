@@ -22,8 +22,8 @@ import org.springframework.context.annotation.Primary;
 public class UIApiSrvRestConfig {
 
   @Bean
-  public ViewModelApiDelegate invocationApiDelegate() {
-    return new ViewModelApiDelegateImpl();
+  public ViewModelApiDelegate invocationApiDelegate(UINavigationApi uiNavigationApi) {
+    return new ViewModelApiDelegateImpl(uiNavigationApi);
   }
 
   @Bean

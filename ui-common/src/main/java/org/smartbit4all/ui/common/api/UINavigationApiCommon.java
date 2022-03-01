@@ -94,7 +94,8 @@ public class UINavigationApiCommon implements UINavigationApi {
     }
     navigationTarget.putParametersItem(UINAVIGATION_UUID, uuid);
     navigationTargetsByUUID.put(navigationTarget.getUuid(), navigationTarget);
-    if (userSessionApi != null && userSessionApi.currentSession() != null) {
+    if (subscription != null &&
+        userSessionApi != null && userSessionApi.currentSession() != null) {
       userSessionApi.currentSession().setParameter(UINAVIGATION_CURRENT_NAV_TARGET,
           navigationTarget);
     } else {
@@ -221,7 +222,8 @@ public class UINavigationApiCommon implements UINavigationApi {
   }
 
   @Override
-  public <T extends ViewModel> T createAndAddChildViewModel(ViewModel parent, String path, Class<T> clazz) {
+  public <T extends ViewModel> T createAndAddChildViewModel(ViewModel parent, String path,
+      Class<T> clazz) {
     NavigationTarget oldTarget = ObjectEditing.currentNavigationTarget.get();
     T viewModel;
     try {

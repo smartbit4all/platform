@@ -28,16 +28,22 @@ public class ViewModelApiDelegateImpl implements ViewModelApiDelegate {
   @Autowired
   private ObjectMapper objectMapper;
 
+  public ViewModelApiDelegateImpl(UINavigationApi uiNavigationApi) {
+    UINavigationApi uiApi = ReflectionUtility.getProxyTarget(uiNavigationApi);
+    if (!(uiApi instanceof UINavigationApiHeadless)) {
+      throw new IllegalArgumentException(
+          "ViewModelApi needs a UINavigationApiHeadless, but received"
+              + uiApi.getClass().getName());
+    }
+    this.uiNavigationApi = uiNavigationApi;
+  }
+
   @Override
   public ResponseEntity<ViewModelData> createViewModel(NavigationTarget navigationTarget)
       throws Exception {
 
     uiNavigationApi.navigateTo(navigationTarget);
-    UINavigationApi uiHackApi = ReflectionUtility.getProxyTarget(uiNavigationApi);
-    if (uiHackApi instanceof UINavigationApiHeadless) {
-      ((UINavigationApiHeadless) uiHackApi).clearUiToOpen();
-    }
-
+    UINavigationApiHeadless.clearUiToOpen();
     return getModel(navigationTarget.getUuid());
   }
 
@@ -88,12 +94,8 @@ public class ViewModelApiDelegateImpl implements ViewModelApiDelegate {
     CommandResult result = new CommandResult()
         .view(vm.getViewModelData());
     // getUiToOpen
-    UINavigationApi uiHackApi = ReflectionUtility.getProxyTarget(uiNavigationApi);
-    if (uiHackApi instanceof UINavigationApiHeadless) {
-      NavigationTarget uiToOpen = ((UINavigationApiHeadless) uiHackApi).getUiToOpen();
-      result.setUiToOpen(uiToOpen);
-      ((UINavigationApiHeadless) uiHackApi).clearUiToOpen();
-    }
+    result.setUiToOpen(UINavigationApiHeadless.getUiToOpen());
+    UINavigationApiHeadless.clearUiToOpen();
     return ResponseEntity.ok(result);
   }
 

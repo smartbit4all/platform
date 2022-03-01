@@ -63,7 +63,7 @@ public class ViewModelApiTest {
   @LocalServerPort
   private int serverPort;
 
-  @Value("${openapi.invocation.base-path:/}")
+  @Value("${openapi.navigation.base-path:/}")
   private String path;
 
   @Value("${viewModelApi.testFile:src/test/resources/lorem-ipsum.pdf}")
