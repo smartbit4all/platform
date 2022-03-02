@@ -170,9 +170,13 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
       throw new IllegalArgumentException("ref not initialized in ViewModel when updating!");
     }
     if (Objects.equals(getUri(), updatedObjectUri)) {
-      T loadedObject = load(navigationTarget);
-      ref.setObject(loadedObject);
-      notifyAllListeners();
+      if (parent != null && parent.getUri() != null) {
+        parent.updateModel(parent.getUri());
+      } else {
+        T loadedObject = load(navigationTarget);
+        ref.setObject(loadedObject);
+        notifyAllListeners();
+      }
     }
   }
 
@@ -310,18 +314,7 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
     }
 
     public void execute(String commandPath, String commandCode, Object... params) {
-      Object value;
-      if (parent != null) {
-        if (commandPath == null) {
-          commandPath = commandPathWithParent(commandPath);
-        }
-        if (!commandPath.startsWith(path)) {
-          commandPath = commandPathWithParent(commandPath);
-        }
-        value = parent.ref.getValueRefByPath(commandPath).getWrapper(clazz);
-      } else {
-        value = ref.getValueRefByPath(commandPath).getWrapper(clazz);
-      }
+      Object value = getValueForCommand(commandPath, commandCode, clazz, params);
       O object = clazz.cast(value);
       if (commandWithParams != null) {
         commandWithParams.accept(object, params);
@@ -333,6 +326,20 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
         commandWithoutParams.accept(object);
       }
     }
+  }
+
+  protected Object getValueForCommand(String commandPath, String commandCode, Class<?> clazz,
+      Object... params) {
+    if (parent != null) {
+      if (commandPath == null) {
+        commandPath = commandPathWithParent(commandPath);
+      }
+      if (!commandPath.startsWith(path)) {
+        commandPath = commandPathWithParent(commandPath);
+      }
+      return parent.getValueForCommand(commandPath, commandCode, clazz, params);
+    }
+    return ref.getValueRefByPath(commandPath).getWrapper(clazz);
   }
 
   public void setObject(Object object) {
@@ -364,7 +371,7 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
         .uuid(navigationTargetUUID)
         .navigationTarget(navigationTarget)
         .path(path)
-        .model(model);
+        .model(ApiObjectRef.unwrapObject(model));
     childrenByPath.forEach((p, vm) -> {
       ViewModelData d = vm.getViewModelData();
       result.putChildrenItem(p, new ViewModelDataSimple()

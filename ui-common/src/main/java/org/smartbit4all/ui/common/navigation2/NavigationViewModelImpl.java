@@ -96,37 +96,15 @@ public class NavigationViewModelImpl extends ViewModelImpl<TreeModel>
   }
 
   @Override
-  public void executeCommand(String commandPath, String commandCode, Object... params) {
+  protected Object getValueForCommand(String commandPath, String commandCode, Class<?> clazz,
+      Object... params) {
     if (TOGGLE.equals(commandCode) ||
         SELECT.equals(commandCode) ||
         EXPAND.equals(commandCode) ||
         COLLAPSE.equals(commandCode)) {
-      TreeNode wrappedTreeNode = getWrappedTreeNode(commandPath);
-      if (wrappedTreeNode != null) {
-        switch (commandCode) {
-          case EXPAND:
-            expand(wrappedTreeNode);
-            break;
-          case COLLAPSE:
-            collapse(wrappedTreeNode);
-            break;
-          case TOGGLE:
-            toggle(wrappedTreeNode);
-            break;
-          case SELECT:
-            select(wrappedTreeNode);
-            break;
-          default:
-            // NOP, commandCode checked before entering switch
-            break;
-        }
-        notifyAllListeners();
-      } else {
-        super.executeCommand(commandPath, commandCode, params);
-      }
-    } else {
-      super.executeCommand(commandPath, commandCode, params);
+      return getWrappedTreeNode(commandPath);
     }
+    return super.getValueForCommand(commandPath, commandCode, clazz, params);
   }
 
   @Override
