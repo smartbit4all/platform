@@ -3,6 +3,7 @@ package org.smartbit4all.sec.session;
 import org.smartbit4all.api.org.OrgApi;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.session.Session;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 
 public class AuthenticationUserProviders {
@@ -60,6 +61,26 @@ public class AuthenticationUserProviders {
       @Override
       public Session getSession(Authentication authentication) {
         return (Session) authentication.getPrincipal();
+      }
+    };
+  }
+
+  public static AuthenticationUserProvider anonymousUserProvider() {
+    return new AuthenticationUserProvider() {
+
+      @Override
+      public boolean supports(Authentication authentication) {
+        return authentication instanceof AnonymousAuthenticationToken;
+      }
+
+      @Override
+      public User getUser(Authentication authentication) {
+        return null;
+      }
+
+      @Override
+      public Session getSession(Authentication authentication) {
+        return null;
       }
     };
   }
