@@ -67,7 +67,8 @@ public class UserSessionApiSecImpl implements UserSessionApi {
 
     if (userProvider == null) {
       throw new IllegalStateException("There is no AutenticationUserProviders registered for the"
-          + "current Authentication properties!");
+          + "current Authentication token! authTokenType: [" + currentAuthentication.getClass()
+          + "]");
     }
     return userProvider;
   }
