@@ -9,6 +9,7 @@ import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -300,6 +301,18 @@ public class FileIO {
     }
   }
 
+  /**
+   * The unlock use a file system lock via {@link RandomAccessFile} for the lock file. If it fails
+   * then we retry until we successfully read the content of the lock file. If we could read it then
+   * we check the validity. In case of a valid lock we have to wait and try again.
+   * 
+   * @param myLockData The lock data we would like to commit for the object.
+   * @param lockFile The lock file.
+   * @param waitUntil Defines the waiting policy. -1 means wait forever, 0 means try only once, an
+   *        exact number means the waiting for this millisecond.
+   * @throws InterruptedException If the Thread is interrupted.
+   * @throws FileLocked If the waiting for the lock is finished.
+   */
   public static final void unlockObjectFile(FileLockData myLockData, File lockFile,
       long waitUntil)
       throws InterruptedException, FileLocked {
@@ -333,6 +346,13 @@ public class FileIO {
     }
   }
 
+  /**
+   * Utility function to write the {@link FileLockData} object.
+   * 
+   * @param fileChannel The {@link FileChannel} to write into.
+   * @param lockData The lock data to write.
+   * @throws IOException
+   */
   private static void writeFileLockData(FileChannel fileChannel, FileLockData lockData)
       throws IOException {
     if (lockData != null) {
@@ -341,6 +361,12 @@ public class FileIO {
     }
   }
 
+  /**
+   * Read the {@link FileLockData} object from a lock file.
+   * 
+   * @param fileChannel The {@link FileChannel} to read from.
+   * @return The data object.
+   */
   private static FileLockData readFileLockData(FileChannel fileChannel) {
     try {
       return new FileLockData(readString(fileChannel), readString(fileChannel));
@@ -349,6 +375,14 @@ public class FileIO {
     }
   }
 
+  /**
+   * Read a String from the {@link FileChannel}. It reads a four byte integer as a length of the
+   * following string. Then read the string assuming utf-8 char set.
+   * 
+   * @param fileChannel The {@link FileChannel} to read from.
+   * @return The String read from the FileChannel current position.
+   * @throws IOException
+   */
   private static String readString(FileChannel fileChannel) throws IOException {
     ByteBuffer lenBuffer = ByteBuffer.wrap(new byte[Integer.BYTES]);
     fileChannel.read(lenBuffer);
@@ -357,16 +391,27 @@ public class FileIO {
     ByteBuffer stringBuffer = ByteBuffer.wrap(new byte[length]);
     stringBuffer.rewind();
     fileChannel.read(stringBuffer);
-    return new String(stringBuffer.array());
+    return new String(stringBuffer.array(), StandardCharsets.UTF_8);
   }
 
+  /**
+   * Writes a String into the file channel current position. Writes the length into a four byte
+   * integer and the String bytes with utf-8 encoding.
+   * 
+   * @param fileChannel The file channel.
+   * @param string The string to write out.
+   * @throws IOException
+   */
   private static void writeString(FileChannel fileChannel, String string) throws IOException {
-    ByteBuffer lenBuffer = ByteBuffer.allocate(Integer.BYTES).putInt(string.length());
+    ByteBuffer lenBuffer =
+        ByteBuffer.allocate(Integer.BYTES).putInt(string == null ? 0 : string.length());
     lenBuffer.rewind();
     fileChannel.write(lenBuffer);
-    ByteBuffer stringBuffer = ByteBuffer.wrap(string.getBytes());
-    stringBuffer.rewind();
-    fileChannel.write(stringBuffer);
+    if (string != null) {
+      ByteBuffer stringBuffer = ByteBuffer.wrap(string.getBytes(StandardCharsets.UTF_8));
+      stringBuffer.rewind();
+      fileChannel.write(stringBuffer);
+    }
   }
 
   /**
@@ -383,38 +428,52 @@ public class FileIO {
       if (file == null || !file.exists() || !file.isFile()) {
         return null;
       }
+      FileInputStream fis = null;
       try {
-        FileInputStream fis = new FileInputStream(file);
+        fis = new FileInputStream(file);
         return reader.apply(fis);
       } catch (IOException e) {
         // We must try again.
         log.debug("Unable to read " + file);
         waitTime = waitTime * rnd.nextInt(4);
-        Thread.sleep(waitTime);
+      } finally {
+        if (fis != null) {
+          try {
+            fis.close();
+          } catch (IOException e) {
+            // NOP Already closed...
+          }
+        }
       }
+      Thread.sleep(waitTime);
     }
   }
 
   /**
-   * The read object file tries to read the object file without any error. It will retry until
-   * succeeded with longer wait period to avoid collision with other processes.
+   * The finalization means that we execute an atomic move transactionFile -> objectFile. We can use
+   * this function if we have a consistent transaction object. The move can fail because of the read
+   * from the object file. If it fails then we can try it again until we succeed.
    * 
-   * @param file The object file to read.
-   * @throws InterruptedException
+   * @param transactionFile The transaction file that contains the consistent next version. This is
+   *        the source of the movement. It must exists to execute this operation.
+   * @param objectFile The object file that is the target of the move. This is optional, if this is
+   *        the creation of the object then we have no previous version.
+   * @throws InterruptedException If the thread is interrupted we get the original exception.
    */
-  public static final <T> T readFileWithLock(File file, Function<InputStream, T> reader)
+  public static final void finalizeWrite(File transactionFile, File objectFile)
       throws InterruptedException {
     long waitTime = 10;
     while (true) {
-      if (file == null || !file.exists() || !file.isFile()) {
-        return null;
+      if (transactionFile == null || !transactionFile.exists() || !transactionFile.isFile()) {
+        return;
       }
       try {
-        FileInputStream fis = new FileInputStream(file);
-        return reader.apply(fis);
+        Files.move(transactionFile.toPath(), objectFile.toPath(),
+            StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+        return;
       } catch (IOException e) {
         // We must try again.
-        log.debug("Unable to read " + file);
+        log.debug("Unable to finalize {} -> {}", transactionFile, objectFile);
         waitTime = waitTime * rnd.nextInt(4);
         Thread.sleep(waitTime);
       }

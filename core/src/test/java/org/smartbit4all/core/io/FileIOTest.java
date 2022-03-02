@@ -1,15 +1,22 @@
 package org.smartbit4all.core.io;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.core.io.utility.FileIO;
 import org.smartbit4all.core.utility.PathUtility;
+import org.smartbit4all.core.utility.StringConstant;
 import com.google.common.io.ByteStreams;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -137,6 +144,41 @@ public class FileIOTest {
 
     FileIO.delete(TestFileUtil.testFsRootFolder(), uri2);
     assertEquals(0, readAllFiles(testFolder).size());
+  }
+
+  /**
+   * Special test case examining the result of the {@link FileIOLockTestRuntime}. It is the test.txt
+   * that is analyzed. If the test.txt is missing then the test is succeeded to avoid unnecessary
+   * pipeline fails.
+   * 
+   * @throws IOException
+   */
+  @Test
+  void testLockTestRuntime() throws IOException {
+    File file = new File("test.txt");
+    if (!file.exists()) {
+      return;
+    }
+    BufferedReader reader = new BufferedReader(new FileReader(file));
+    String line = reader.readLine();
+    Map<String, List<Integer>> numbersByInstances = new HashMap<>();
+    while (line != null) {
+      String[] split = line.split(StringConstant.SEMICOLON);
+      if (split != null && split.length == 3) {
+        List<Integer> list = numbersByInstances.computeIfAbsent(split[0], s -> new ArrayList<>());
+        list.add(Integer.valueOf(split[2]));
+      }
+      line = reader.readLine();
+    }
+    reader.close();
+    for (List<Integer> list : numbersByInstances.values()) {
+      // If we have all the items.
+      Assertions.assertEquals(1000, list.size());
+      // The list must be monotone from 0 - 999
+      for (int i = 0; i < 1000; i++) {
+        Assertions.assertEquals(i, list.get(i));
+      }
+    }
   }
 
   private List<BinaryData> readAllFiles(String testFolder) throws IOException {
