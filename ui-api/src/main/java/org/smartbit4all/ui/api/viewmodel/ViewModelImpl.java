@@ -314,18 +314,7 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
     }
 
     public void execute(String commandPath, String commandCode, Object... params) {
-      Object value;
-      if (parent != null) {
-        if (commandPath == null) {
-          commandPath = commandPathWithParent(commandPath);
-        }
-        if (!commandPath.startsWith(path)) {
-          commandPath = commandPathWithParent(commandPath);
-        }
-        value = parent.ref.getValueRefByPath(commandPath).getWrapper(clazz);
-      } else {
-        value = ref.getValueRefByPath(commandPath).getWrapper(clazz);
-      }
+      Object value = getValueForCommand(commandPath, commandCode, clazz, params);
       O object = clazz.cast(value);
       if (commandWithParams != null) {
         commandWithParams.accept(object, params);
@@ -337,6 +326,20 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
         commandWithoutParams.accept(object);
       }
     }
+  }
+
+  protected Object getValueForCommand(String commandPath, String commandCode, Class<?> clazz,
+      Object... params) {
+    if (parent != null) {
+      if (commandPath == null) {
+        commandPath = commandPathWithParent(commandPath);
+      }
+      if (!commandPath.startsWith(path)) {
+        commandPath = commandPathWithParent(commandPath);
+      }
+      return parent.getValueForCommand(commandPath, commandCode, clazz, params);
+    }
+    return ref.getValueRefByPath(commandPath).getWrapper(clazz);
   }
 
   public void setObject(Object object) {
