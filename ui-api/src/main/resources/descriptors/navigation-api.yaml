@@ -115,7 +115,6 @@ paths:
               properties:
                 uuid:
                   type: string
-                  format: uuid
                 command:
                   $ref: '#/components/schemas/CommandData'
                 content:

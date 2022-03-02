@@ -142,7 +142,7 @@ public interface ViewModelApi {
         produces = { "application/json" },
         consumes = { "multipart/form-data" }
     )
-    default ResponseEntity<org.smartbit4all.ui.api.navigation.model.CommandResult> upload(@ApiParam(value = "") @Valid @RequestPart(value = "uuid", required = false) UUID uuid,@ApiParam(value = "") @Valid @RequestPart(value = "command", required = false) org.smartbit4all.ui.api.navigation.model.CommandData command,@ApiParam(value = "") @Valid @RequestPart(value = "content", required = false) MultipartFile content) throws Exception {
+    default ResponseEntity<org.smartbit4all.ui.api.navigation.model.CommandResult> upload(@ApiParam(value = "") @Valid @RequestPart(value = "uuid", required = false) String uuid,@ApiParam(value = "") @Valid @RequestPart(value = "command", required = false) org.smartbit4all.ui.api.navigation.model.CommandData command,@ApiParam(value = "") @Valid @RequestPart(value = "content", required = false) MultipartFile content) throws Exception {
         return getDelegate().upload(uuid, command, content);
     }
 

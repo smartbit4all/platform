@@ -125,7 +125,7 @@ public interface ViewModelApiDelegate {
      * @return  (status code 200)
      * @see ViewModelApi#upload
      */
-    default ResponseEntity<org.smartbit4all.ui.api.navigation.model.CommandResult> upload(UUID uuid,
+    default ResponseEntity<org.smartbit4all.ui.api.navigation.model.CommandResult> upload(String uuid,
         org.smartbit4all.ui.api.navigation.model.CommandData command,
         MultipartFile content) throws Exception {
         getRequest().ifPresent(request -> {

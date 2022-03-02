@@ -21,6 +21,10 @@ public class UINavigationApiHeadless extends UINavigationApiCommon {
   @Override
   protected void navigateToInternal(NavigationTarget navigationTarget) {
     NavigableViewDescriptor desc = getViewDescriptorByNavigationTarget(navigationTarget);
+    if (desc == null) {
+      throw new IllegalArgumentException(
+          "ViewClass not found for view" + navigationTarget.getViewName());
+    }
     try {
       Class<?> viewModelClass = Class.forName(desc.getViewClassName());
       if (!ViewModel.class.isAssignableFrom(viewModelClass)) {

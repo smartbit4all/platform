@@ -100,8 +100,10 @@ public class ViewModelApiDelegateImpl implements ViewModelApiDelegate {
   }
 
   @Override
-  public ResponseEntity<CommandResult> upload(UUID uuid, CommandData command, MultipartFile content)
+  public ResponseEntity<CommandResult> upload(String uuidStr, CommandData command,
+      MultipartFile content)
       throws Exception {
+    UUID uuid = UUID.fromString(uuidStr);
     ViewModel vm = uiNavigationApi.getViewModelByUuid(uuid);
     if (vm == null) {
       return ResponseEntity.notFound().build();

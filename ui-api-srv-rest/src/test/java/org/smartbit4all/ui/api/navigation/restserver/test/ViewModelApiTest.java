@@ -179,7 +179,7 @@ public class ViewModelApiTest {
 
     // testFile = "src/test/resources/lorem-ipsum.pdf";
     MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-    body.add("uuid", viewModelUUID);
+    body.add("uuid", viewModelUUID.toString());
     body.add("command", commandData);
     body.add("content", new FileSystemResource(testFile));
     HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
