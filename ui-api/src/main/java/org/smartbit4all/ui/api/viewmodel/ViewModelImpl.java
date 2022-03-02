@@ -170,9 +170,13 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
       throw new IllegalArgumentException("ref not initialized in ViewModel when updating!");
     }
     if (Objects.equals(getUri(), updatedObjectUri)) {
-      T loadedObject = load(navigationTarget);
-      ref.setObject(loadedObject);
-      notifyAllListeners();
+      if (parent != null && parent.getUri() != null) {
+        parent.updateModel(parent.getUri());
+      } else {
+        T loadedObject = load(navigationTarget);
+        ref.setObject(loadedObject);
+        notifyAllListeners();
+      }
     }
   }
 
@@ -364,7 +368,7 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
         .uuid(navigationTargetUUID)
         .navigationTarget(navigationTarget)
         .path(path)
-        .model(model);
+        .model(ApiObjectRef.unwrapObject(model));
     childrenByPath.forEach((p, vm) -> {
       ViewModelData d = vm.getViewModelData();
       result.putChildrenItem(p, new ViewModelDataSimple()
