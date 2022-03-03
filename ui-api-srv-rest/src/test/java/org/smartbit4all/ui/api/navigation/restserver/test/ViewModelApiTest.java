@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.File;
 import java.util.Arrays;
@@ -18,6 +19,9 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.smartbit4all.ui.api.navigation.UINavigationApi;
 import org.smartbit4all.ui.api.navigation.model.CommandData;
 import org.smartbit4all.ui.api.navigation.model.CommandResult;
+import org.smartbit4all.ui.api.navigation.model.Message;
+import org.smartbit4all.ui.api.navigation.model.MessageResult;
+import org.smartbit4all.ui.api.navigation.model.MessageResultType;
 import org.smartbit4all.ui.api.navigation.model.NavigableViewDescriptor;
 import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
 import org.smartbit4all.ui.api.navigation.model.ViewModelData;
@@ -31,11 +35,13 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -220,6 +226,52 @@ public class ViewModelApiTest {
     assertDoesNotThrow(() -> {
       assertEquals(fileLength, content.contentLength());
     });
+
+  }
+
+  @Test
+  @Order(60)
+  void testMessage() {
+    TestModel model = getTestModel();
+    String originalName = model.getUser().getName();
+
+    CommandData commandData = new CommandData()
+        .model(null)
+        .commandPath(null)
+        .commandCode(TestViewModel.QUESTION);
+
+    CommandResult commandResult = restTemplate
+        .postForObject(getUrl("executeCommand", viewModelUUID), commandData, CommandResult.class);
+    Message message = commandResult.getMessageToOpen();
+    assertNotNull(message);
+    assertEquals(viewModelUUID, message.getViewModelUuid());
+    assertEquals("Are you sure?", message.getText());
+
+    // model unchanged
+    ViewModelData view = commandResult.getView();
+    model = objectMapper.convertValue(view.getModel(), TestModel.class);
+    assertEquals(originalName, model.getUser().getName());
+    assertEquals("test@email.com", model.getUser().getEmail());
+
+    // send fake messageResult
+    String messageUrl = getUrl("message", message.getUuid());
+    MessageResult fakeResult = new MessageResult()
+        .type(MessageResultType.CONFIRM)
+        .code("igaz");
+    HttpClientErrorException ex = assertThrows(HttpClientErrorException.class,
+        () -> restTemplate.postForObject(messageUrl, fakeResult, CommandResult.class));
+    assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+
+    // send correct (confirm) messageResult
+    MessageResult messageResult = message.getPossibleResults().stream()
+        .filter(r -> r.getType() == MessageResultType.CONFIRM)
+        .findFirst()
+        .orElse(null);
+    commandResult = restTemplate.postForObject(messageUrl, messageResult, CommandResult.class);
+    view = commandResult.getView();
+    model = objectMapper.convertValue(view.getModel(), TestModel.class);
+    assertEquals(originalName + "-message:true", model.getUser().getName());
+    assertEquals("test@email.com", model.getUser().getEmail());
 
   }
 

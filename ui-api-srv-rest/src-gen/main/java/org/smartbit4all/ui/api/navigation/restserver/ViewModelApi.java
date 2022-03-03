@@ -106,6 +106,27 @@ public interface ViewModelApi {
 
 
     /**
+     * POST /message/{uuid}
+     *
+     * @param uuid Message UUID. (required)
+     * @param orgSmartbit4allUiApiNavigationModelMessageResult  (required)
+     * @return  (status code 200)
+     */
+    @ApiOperation(value = "", nickname = "message", notes = "", response = org.smartbit4all.ui.api.navigation.model.CommandResult.class, tags={ "view-model", })
+    @ApiResponses(value = { 
+        @ApiResponse(code = 200, message = "", response = org.smartbit4all.ui.api.navigation.model.CommandResult.class) })
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/message/{uuid}",
+        produces = { "application/json" },
+        consumes = { "application/json" }
+    )
+    default ResponseEntity<org.smartbit4all.ui.api.navigation.model.CommandResult> message(@ApiParam(value = "Message UUID.", required = true) @PathVariable("uuid") UUID uuid,@ApiParam(value = "", required = true) @Valid @RequestBody org.smartbit4all.ui.api.navigation.model.MessageResult orgSmartbit4allUiApiNavigationModelMessageResult) throws Exception {
+        return getDelegate().message(uuid, orgSmartbit4allUiApiNavigationModelMessageResult);
+    }
+
+
+    /**
      * POST /setModel/{uuid}
      *
      * @param uuid  (required)

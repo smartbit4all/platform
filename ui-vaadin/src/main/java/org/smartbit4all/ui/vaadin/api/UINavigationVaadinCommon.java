@@ -248,6 +248,7 @@ public abstract class UINavigationVaadinCommon extends UINavigationApiCommon {
 
   @Override
   public void showMessage(Message message, Consumer<MessageResult> messageListener) {
+    super.showMessage(message, messageListener);
     // TODO icon handling, components for header / text
     ConfirmDialog dialog = new ConfirmDialog();
     dialog.setHeader(message.getHeader());

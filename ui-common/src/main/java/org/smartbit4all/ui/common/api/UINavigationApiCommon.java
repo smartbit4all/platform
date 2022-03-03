@@ -153,7 +153,9 @@ public class UINavigationApiCommon implements UINavigationApi {
 
   @Override
   public void showMessage(Message message, Consumer<MessageResult> messageListener) {
-    // TODO Auto-generated method stub
+    if (message.getUuid() == null) {
+      message.setUuid(UUID.randomUUID());
+    }
   }
 
   @Override

@@ -153,6 +153,33 @@ paths:
               schema:
                 type: string
                 format: binary
+  /message/{uuid}:
+    post:
+      tags:
+      - view-model
+      summary: ''
+      operationId: 'message'
+      parameters: 
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: 'Message UUID.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MessageResult'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommandResult'
 components:
   schemas:
     AppState:
@@ -271,13 +298,18 @@ components:
     Message:
       type: object
       required:
-        - uri
+        - uuid
         - type
         - possibleResults
       properties:
-        uri:
+        uuid:
           type: string
-          format: URI
+          description: Unique identifier of message. Will be generated if left empty.
+          format: uuid
+        viewModelUuid:
+          type: string
+          description: Identifier of viewModel to refresh after message is answered.
+          format: uuid
         type:
           $ref: '#/components/schemas/MessageType'
         header:

@@ -15,4 +15,6 @@ public interface TestViewModel extends ViewModel {
 
   public static final String DOWNLOAD = "download";
 
+  public static final String QUESTION = "question";
+
 }

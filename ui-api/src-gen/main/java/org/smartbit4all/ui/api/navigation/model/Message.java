@@ -22,9 +22,9 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import org.smartbit4all.ui.api.navigation.model.MessageResult;
 import org.smartbit4all.ui.api.navigation.model.MessageType;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -36,7 +36,8 @@ import javax.validation.Valid;
  * Message
  */
 @JsonPropertyOrder({
-  Message.URI,
+  Message.UUID,
+  Message.VIEW_MODEL_UUID,
   Message.TYPE,
   Message.HEADER,
   Message.TEXT,
@@ -46,8 +47,11 @@ import javax.validation.Valid;
 @JsonTypeName("Message")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class Message {
-  public static final String URI = "uri";
-  private URI uri;
+  public static final String UUID = "uuid";
+  private UUID uuid;
+
+  public static final String VIEW_MODEL_UUID = "viewModelUuid";
+  private UUID viewModelUuid;
 
   public static final String TYPE = "type";
   private MessageType type;
@@ -65,32 +69,60 @@ public class Message {
   private MessageResult selectResult;
 
 
-  public Message uri(URI uri) {
+  public Message uuid(UUID uuid) {
     
-    this.uri = uri;
+    this.uuid = uuid;
     return this;
   }
 
    /**
-   * Get uri
-   * @return uri
+   * Unique identifier of message. Will be generated if left empty.
+   * @return uuid
   **/
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
-  @JsonProperty(URI)
+  @ApiModelProperty(required = true, value = "Unique identifier of message. Will be generated if left empty.")
+  @JsonProperty(UUID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public URI getUri() {
-    return uri;
+  public UUID getUuid() {
+    return uuid;
   }
 
 
-  @JsonProperty(URI)
+  @JsonProperty(UUID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setUri(URI uri) {
-    this.uri = uri;
+  public void setUuid(UUID uuid) {
+    this.uuid = uuid;
+  }
+
+
+  public Message viewModelUuid(UUID viewModelUuid) {
+    
+    this.viewModelUuid = viewModelUuid;
+    return this;
+  }
+
+   /**
+   * Identifier of viewModel to refresh after message is answered.
+   * @return viewModelUuid
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "Identifier of viewModel to refresh after message is answered.")
+  @JsonProperty(VIEW_MODEL_UUID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public UUID getViewModelUuid() {
+    return viewModelUuid;
+  }
+
+
+  @JsonProperty(VIEW_MODEL_UUID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setViewModelUuid(UUID viewModelUuid) {
+    this.viewModelUuid = viewModelUuid;
   }
 
 
@@ -248,7 +280,8 @@ public class Message {
       return false;
     }
     Message message = (Message) o;
-    return Objects.equals(this.uri, message.uri) &&
+    return Objects.equals(this.uuid, message.uuid) &&
+        Objects.equals(this.viewModelUuid, message.viewModelUuid) &&
         Objects.equals(this.type, message.type) &&
         Objects.equals(this.header, message.header) &&
         Objects.equals(this.text, message.text) &&
@@ -258,14 +291,15 @@ public class Message {
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, type, header, text, possibleResults, selectResult);
+    return Objects.hash(uuid, viewModelUuid, type, header, text, possibleResults, selectResult);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class Message {\n");
-    sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
+    sb.append("    uuid: ").append(toIndentedString(uuid)).append("\n");
+    sb.append("    viewModelUuid: ").append(toIndentedString(viewModelUuid)).append("\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("    header: ").append(toIndentedString(header)).append("\n");
     sb.append("    text: ").append(toIndentedString(text)).append("\n");

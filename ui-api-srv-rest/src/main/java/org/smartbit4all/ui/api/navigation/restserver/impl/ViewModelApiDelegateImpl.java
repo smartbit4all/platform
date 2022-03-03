@@ -1,12 +1,17 @@
 package org.smartbit4all.ui.api.navigation.restserver.impl;
 
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
+import java.util.function.Consumer;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.core.utility.ReflectionUtility;
 import org.smartbit4all.ui.api.navigation.UINavigationApi;
 import org.smartbit4all.ui.api.navigation.model.CommandData;
 import org.smartbit4all.ui.api.navigation.model.CommandResult;
+import org.smartbit4all.ui.api.navigation.model.Message;
+import org.smartbit4all.ui.api.navigation.model.MessageResult;
 import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
 import org.smartbit4all.ui.api.navigation.model.ViewModelData;
 import org.smartbit4all.ui.api.navigation.restserver.ViewModelApiDelegate;
@@ -28,6 +33,9 @@ public class ViewModelApiDelegateImpl implements ViewModelApiDelegate {
   @Autowired
   private ObjectMapper objectMapper;
 
+  private Map<UUID, Message> messagesByUuid = new HashMap<>();
+  private Map<UUID, Consumer<MessageResult>> messageHandlersByUuid = new HashMap<>();
+
   public ViewModelApiDelegateImpl(UINavigationApi uiNavigationApi) {
     UINavigationApi uiApi = ReflectionUtility.getProxyTarget(uiNavigationApi);
     if (!(uiApi instanceof UINavigationApiHeadless)) {
@@ -44,6 +52,8 @@ public class ViewModelApiDelegateImpl implements ViewModelApiDelegate {
 
     uiNavigationApi.navigateTo(navigationTarget);
     UINavigationApiHeadless.clearUiToOpen();
+    UINavigationApiHeadless.clearMessageToOpen();
+    UINavigationApiHeadless.clearMessageToOpenHandler();
     return getModel(navigationTarget.getUuid());
   }
 
@@ -91,12 +101,28 @@ public class ViewModelApiDelegateImpl implements ViewModelApiDelegate {
       return ResponseEntity.notFound().build();
     }
     // getModel
-    CommandResult result = new CommandResult()
-        .view(vm.getViewModelData());
+    CommandResult result = createCommandResult(vm);
+    return ResponseEntity.ok(result);
+  }
+
+  private CommandResult createCommandResult(ViewModel vm) {
+    CommandResult result = new CommandResult();
+    if (vm != null) {
+      result.setView(vm.getViewModelData());
+    }
     // getUiToOpen
     result.setUiToOpen(UINavigationApiHeadless.getUiToOpen());
+    Message message = UINavigationApiHeadless.getMessageToOpen();
+    result.setMessageToOpen(message);
+    if (result.getMessageToOpen() != null) {
+      messagesByUuid.put(message.getUuid(), message);
+      messageHandlersByUuid.put(message.getUuid(),
+          UINavigationApiHeadless.getMessageToOpenHandler());
+    }
     UINavigationApiHeadless.clearUiToOpen();
-    return ResponseEntity.ok(result);
+    UINavigationApiHeadless.clearMessageToOpen();
+    UINavigationApiHeadless.clearMessageToOpenHandler();
+    return result;
   }
 
   @Override
@@ -133,4 +159,26 @@ public class ViewModelApiDelegateImpl implements ViewModelApiDelegate {
         .body(res);
   }
 
+  @Override
+  public ResponseEntity<CommandResult> message(UUID uuid, MessageResult messageResult)
+      throws Exception {
+    Message message = messagesByUuid.get(uuid);
+    if (message == null) {
+      return ResponseEntity.notFound().build();
+    }
+    if (!message.getPossibleResults().contains(messageResult)) {
+      return ResponseEntity.badRequest().build();
+    }
+    Consumer<MessageResult> handler = messageHandlersByUuid.get(uuid);
+    if (handler != null) {
+      handler.accept(messageResult);
+      messageHandlersByUuid.remove(uuid);
+    }
+    messagesByUuid.remove(uuid);
+    ViewModel vm = null;
+    if (message.getViewModelUuid() != null) {
+      vm = uiNavigationApi.getViewModelByUuid(message.getViewModelUuid());
+    }
+    return ResponseEntity.ok(createCommandResult(vm));
+  }
 }

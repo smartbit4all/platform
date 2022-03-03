@@ -5,6 +5,9 @@ import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.core.object.ObservablePublisherWrapper;
 import org.smartbit4all.ui.api.navigation.UINavigationApi;
+import org.smartbit4all.ui.api.navigation.model.Message;
+import org.smartbit4all.ui.api.navigation.model.MessageResult;
+import org.smartbit4all.ui.api.navigation.model.MessageResultType;
 import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
 import org.smartbit4all.ui.api.viewmodel.ViewModelImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +32,7 @@ public class TestViewModelImpl extends ViewModelImpl<TestModel> implements TestV
     registerCommand(MODIFY, this::modify);
     registerCommandWithParams(UPLOAD, this::upload);
     registerCommandWithParams(DOWNLOAD, this::download);
+    registerCommand(QUESTION, this::question);
   }
 
   @Override
@@ -65,5 +69,24 @@ public class TestViewModelImpl extends ViewModelImpl<TestModel> implements TestV
     checkParamNumber(DOWNLOAD, 1, params);
     String identifier = (String) params[0];
     registerDownloadData(identifier, () -> binaryData);
+  }
+
+  private void question() {
+    Message message = new Message()
+        .viewModelUuid(navigationTargetUUID)
+        .header("Question")
+        .text("Are you sure?")
+        .addPossibleResultsItem(new MessageResult()
+            .code("true")
+            .label("Yes")
+            .type(MessageResultType.CONFIRM))
+        .addPossibleResultsItem(new MessageResult()
+            .code("false")
+            .label("No")
+            .type(MessageResultType.REJECT));
+
+    uiNavigationApi.showMessage(message, result -> {
+      model.getUser().setName(model.getUser().getName() + "-message:" + result.getCode());
+    });
   }
 }
