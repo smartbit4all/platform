@@ -244,6 +244,7 @@ public class ViewModelApiTest {
         .postForObject(getUrl("executeCommand", viewModelUUID), commandData, CommandResult.class);
     Message message = commandResult.getMessageToOpen();
     assertNotNull(message);
+    assertNotNull(message.getUuid());
     assertEquals(viewModelUUID, message.getViewModelUuid());
     assertEquals("Are you sure?", message.getText());
 
