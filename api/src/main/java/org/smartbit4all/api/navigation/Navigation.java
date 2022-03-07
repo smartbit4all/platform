@@ -45,7 +45,7 @@ import org.smartbit4all.api.navigation.bean.NavigationNode;
 import org.smartbit4all.api.navigation.bean.NavigationReference;
 import org.smartbit4all.api.navigation.bean.NavigationReferenceEntry;
 import org.smartbit4all.api.navigation.bean.NavigationView;
-import org.smartbit4all.core.object.ApiObjectRef;
+import org.smartbit4all.core.object.DomainObjectRef;
 import org.smartbit4all.core.utility.StringConstant;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.subjects.PublishSubject;
@@ -912,10 +912,10 @@ public class Navigation {
         .entrySet()) {
       NavigationNode node = getNode(entry.getKey());
       List<ResolvedPropertyEntry> properties = entry.getValue();
-      Optional<ApiObjectRef> objectRefOpt =
+      Optional<DomainObjectRef> objectRefOpt =
           api.loadObject(node.getEntry().getMetaUri(), node.getEntry().getObjectUri());
       if (objectRefOpt.isPresent()) {
-        ApiObjectRef objectRef = objectRefOpt.get();
+        DomainObjectRef objectRef = objectRefOpt.get();
         for (ResolvedPropertyEntry resolvedPropertyEntry : properties) {
           Object value = objectRef.getValueByPath(resolvedPropertyEntry.name);
           ResolvedValue resolvedValue;

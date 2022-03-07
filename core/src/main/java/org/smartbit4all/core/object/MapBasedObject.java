@@ -779,4 +779,9 @@ public class MapBasedObject implements DomainObjectRef {
     return (T) this;
   }
 
+  @Override
+  public Object getValue(String propertyName) {
+    return getValueByPath(propertyName);
+  }
+
 }

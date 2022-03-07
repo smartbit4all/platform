@@ -20,7 +20,7 @@ import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.navigation.bean.NavigationEntry;
-import org.smartbit4all.core.object.ApiObjectRef;
+import org.smartbit4all.core.object.DomainObjectRef;
 import io.reactivex.rxjava3.disposables.Disposable;
 
 /**
@@ -45,7 +45,7 @@ public abstract class NavigationImpl implements NavigationApi {
   }
 
   @Override
-  public Optional<ApiObjectRef> loadObject(URI entryMetaUri, URI objectUri) {
+  public Optional<DomainObjectRef> loadObject(URI entryMetaUri, URI objectUri) {
     return Optional.empty();
   }
 

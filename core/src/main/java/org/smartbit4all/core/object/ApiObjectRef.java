@@ -564,6 +564,7 @@ public class ApiObjectRef implements DomainObjectRef {
    * @param propertyName The name of the property.
    * @return
    */
+  @Override
   public Object getValue(String propertyName) {
     int slashIndex = propertyName.lastIndexOf(StringConstant.SLASH);
     if (slashIndex != -1) {

@@ -10,7 +10,7 @@ public interface DomainObjectRef {
 
   DomainObjectRef getValueRefByPath(String path);
 
-  Object getValueByPath(String name);
+  Object getValueByPath(String path);
 
   void setValueByPath(String path, Object value);
 
@@ -25,4 +25,6 @@ public interface DomainObjectRef {
   <T> T getWrapper(Class<T> beanClass);
 
   void reevaluateChanges();
+
+  Object getValue(String propertyName);
 }
