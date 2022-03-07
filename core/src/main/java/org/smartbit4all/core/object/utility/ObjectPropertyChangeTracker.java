@@ -24,7 +24,7 @@ public class ObjectPropertyChangeTracker<T> {
   }
 
   private void onPropertyChange(ObservableObject observableObject, String propertyName) {
-    ApiObjectRef ref = ((ObservableObjectImpl) observableObject).getRef();
+    ApiObjectRef ref = (ApiObjectRef) ((ObservableObjectImpl) observableObject).getRef();
     for (PropertyEntry entry : ref.getProperties()) {
       if (upper(entry.getPath()).equals(upper(propertyName))) {
         PropertyKind kind = entry.getMeta().getKind();

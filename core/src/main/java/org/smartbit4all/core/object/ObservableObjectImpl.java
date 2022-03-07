@@ -21,7 +21,7 @@ public final class ObservableObjectImpl implements ObservableObject {
 
   private static final Logger log = LoggerFactory.getLogger(ObservableObjectImpl.class);
 
-  ApiObjectRef ref;
+  DomainObjectRef ref;
 
   private final ObservablePublisherWrapper publisherWrapper;
 
@@ -97,13 +97,13 @@ public final class ObservableObjectImpl implements ObservableObject {
     }
   }
 
-  public final ApiObjectRef getRef() {
+  public final DomainObjectRef getRef() {
     return ref;
   }
 
   @Override
   public final void setRef(DomainObjectRef ref) {
-    this.ref = (ApiObjectRef) ref;
+    this.ref = ref;
   }
 
   @Override
@@ -131,7 +131,7 @@ public final class ObservableObjectImpl implements ObservableObject {
         .filter(change -> ObservableObjectHelper.pathEquals(change, path))
         .subscribe(onPropertyChange);
     if (ref != null) {
-      ApiObjectRef pathRef = ref.getValueRefByPath(path.path);
+      DomainObjectRef pathRef = ref.getValueRefByPath(path.path);
       if (pathRef != null) {
         Object value = pathRef.getValue(path.property);
         PropertyChange currentChange = new PropertyChange(path.path, path.property, null, value);
@@ -177,7 +177,7 @@ public final class ObservableObjectImpl implements ObservableObject {
         .filter(change -> ObservableObjectHelper.pathEquals(change, path))
         .subscribe(onReferencedObjectChange);
     if (ref != null) {
-      ApiObjectRef pathRef = ref.getValueRefByPath(path.path);
+      DomainObjectRef pathRef = ref.getValueRefByPath(path.path);
       if (pathRef != null) {
         Object value = pathRef.getValue(path.property);
         if (value != null) {
@@ -231,20 +231,18 @@ public final class ObservableObjectImpl implements ObservableObject {
         .filter(change -> ObservableObjectHelper.pathEquals(change, path))
         .subscribe(onCollectionObjectChange);
     if (ref != null) {
-      ApiObjectRef pathRef = ref.getValueRefByPath(path.path);
+      DomainObjectRef pathRef = ref.getValueRefByPath(path.path);
       if (pathRef != null) {
         Object value = pathRef.getValue(path.property);
         if (value != null) {
-          if (!(value instanceof ApiObjectCollection)) {
-            throw new IllegalArgumentException(
-                "Collection not found at " + path.toString());
+          CollectionObjectChange currentChange = null;
+          if (pathRef instanceof ApiObjectRef) {
+            currentChange = getApiObjectRefCollectionChange(path, value);
+
+          } else if (pathRef instanceof MapBasedObject) {
+            currentChange = getMapBasedObjectCollectionChange(path, value);
           }
-          CollectionObjectChange currentChange =
-              new CollectionObjectChange(path.path, path.property);
-          for (ApiObjectRef object : (ApiObjectCollection) value) {
-            currentChange.getChanges()
-                .add(new ObjectChangeSimple(object.getPath(), ChangeState.NEW, object.getObject()));
-          }
+
           try {
             onCollectionObjectChange.accept(currentChange);
           } catch (Throwable e) {
@@ -254,6 +252,39 @@ public final class ObservableObjectImpl implements ObservableObject {
       }
     }
     return disposable;
+  }
+
+  private CollectionObjectChange getApiObjectRefCollectionChange(ObjectPropertyPath path,
+      Object value) {
+    if (!(value instanceof ApiObjectCollection)) {
+      throw new IllegalArgumentException("Collection not found at " + path.toString());
+    }
+    CollectionObjectChange currentChange = new CollectionObjectChange(path.path, path.property);
+    for (ApiObjectRef object : (ApiObjectCollection) value) {
+      currentChange.getChanges()
+          .add(new ObjectChangeSimple(object.getPath(), ChangeState.NEW, object.getObject()));
+    }
+    return currentChange;
+  }
+
+  private CollectionObjectChange getMapBasedObjectCollectionChange(ObjectPropertyPath path,
+      Object value) {
+    if (!(value instanceof List<?>)) {
+      throw new IllegalArgumentException("Collection not found at " + path.toString());
+    }
+    CollectionObjectChange currentChange = new CollectionObjectChange(path.path, path.property);
+    List<?> list = (List<?>) value;
+    if (!list.isEmpty()) {
+      if (!(list.get(0) instanceof MapBasedObject)) {
+        throw new IllegalArgumentException(
+            "Invalid collection items found at " + path.toString());
+      }
+      for (MapBasedObject object : (List<MapBasedObject>) value) {
+        currentChange.getChanges()
+            .add(new ObjectChangeSimple(object.getPath(), ChangeState.NEW, object));
+      }
+    }
+    return currentChange;
   }
 
   @Override
