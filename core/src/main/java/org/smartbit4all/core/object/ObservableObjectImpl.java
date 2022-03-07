@@ -101,8 +101,9 @@ public final class ObservableObjectImpl implements ObservableObject {
     return ref;
   }
 
-  public final void setRef(ApiObjectRef ref) {
-    this.ref = ref;
+  @Override
+  public final void setRef(DomainObjectRef ref) {
+    this.ref = (ApiObjectRef) ref;
   }
 
   @Override
@@ -255,6 +256,7 @@ public final class ObservableObjectImpl implements ObservableObject {
     return disposable;
   }
 
+  @Override
   public void setParent(ObservableObject parent, String path) {
     if (anyNonParentSubscription) {
       throw new IllegalArgumentException(

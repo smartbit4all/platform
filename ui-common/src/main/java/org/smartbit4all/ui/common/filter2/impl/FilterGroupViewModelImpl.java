@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.smartbit4all.api.filter.bean.FilterGroupType;
 import org.smartbit4all.api.filter.bean.FilterOperation;
 import org.smartbit4all.core.object.ApiObjectRef;
+import org.smartbit4all.core.object.DomainObjectRef;
 import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.core.object.ObservableObjectImpl;
 import org.smartbit4all.core.utility.PathUtility;
@@ -85,18 +86,18 @@ public class FilterGroupViewModelImpl extends ObjectEditingImpl implements Filte
     if (Objects.equals(targetGroupPath, originalGroupPath)) {
       return;
     }
-    ApiObjectRef filterRef = ref.getValueRefByPath(filterPath);
+    DomainObjectRef filterRef = ref.getValueRefByPath(filterPath);
     FilterFieldModel filter = filterRef.getWrapper(FilterFieldModel.class);
     closeFilterField(filterPath);
-    ApiObjectRef groupRef = ref.getValueRefByPath(targetGroupPath);
+    DomainObjectRef groupRef = ref.getValueRefByPath(targetGroupPath);
     FilterGroupModel group = groupRef.getWrapper(FilterGroupModel.class);
     group.getFilters().add(filter);
   }
 
   private void changeFilterOperation(String filterFieldPath, String operationPath) {
-    ApiObjectRef filterRef = ref.getValueRefByPath(filterFieldPath);
+    DomainObjectRef filterRef = ref.getValueRefByPath(filterFieldPath);
     FilterFieldModel filter = filterRef.getWrapper(FilterFieldModel.class);
-    ApiObjectRef operationRef = ref.getValueRefByPath(operationPath);
+    DomainObjectRef operationRef = ref.getValueRefByPath(operationPath);
     FilterOperation operation = operationRef.getWrapper(FilterOperation.class);
     if (!filter.getSelectedOperation().getId().equals(operation.getId())) {
       filter.setSelectedOperation(operation);
@@ -108,7 +109,7 @@ public class FilterGroupViewModelImpl extends ObjectEditingImpl implements Filte
   }
 
   private void changeGroupType(String filterGroupPath) {
-    ApiObjectRef currentRef = ref.getValueRefByPath(filterGroupPath);
+    DomainObjectRef currentRef = ref.getValueRefByPath(filterGroupPath);
     if (currentRef != null) {
       FilterGroupModel currentFilterGroup = currentRef.getWrapper(FilterGroupModel.class);
       FilterGroupType current = currentFilterGroup.getGroupType();
@@ -121,7 +122,7 @@ public class FilterGroupViewModelImpl extends ObjectEditingImpl implements Filte
   }
 
   private void addChildGroup(String parentGroupPath) {
-    ApiObjectRef parentRef = ref.getValueRefByPath(parentGroupPath);
+    DomainObjectRef parentRef = ref.getValueRefByPath(parentGroupPath);
     if (parentRef != null) {
       FilterGroupModel parentFilterGroup = parentRef.getWrapper(FilterGroupModel.class);
       FilterGroupModel childFilterGroup = new FilterGroupModel();
@@ -131,7 +132,7 @@ public class FilterGroupViewModelImpl extends ObjectEditingImpl implements Filte
       childFilterGroup.setGroupTypeChangeEnabled(parentFilterGroup.getGroupTypeChangeEnabled());
       childFilterGroup.setChildGroupAllowed(parentFilterGroup.getChildGroupAllowed());
       childFilterGroup.setCloseable(Boolean.TRUE);
-      ApiObjectRef childRef =
+      DomainObjectRef childRef =
           ref.addValueByPath(PathUtility.concatPath(parentGroupPath, "groups"), childFilterGroup);
       changeActive(childRef.getPath());
     }
@@ -164,7 +165,7 @@ public class FilterGroupViewModelImpl extends ObjectEditingImpl implements Filte
   }
 
   private void setActiveByPath(String groupPath, Boolean active) {
-    ApiObjectRef currentRef = ref.getValueRefByPath(groupPath);
+    DomainObjectRef currentRef = ref.getValueRefByPath(groupPath);
     if (currentRef != null) {
       if (currentRef.getObject() instanceof FilterGroupModel) {
         currentRef.getWrapper(FilterGroupModel.class).setActive(active);

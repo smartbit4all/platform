@@ -19,22 +19,27 @@ import org.smartbit4all.core.utility.StringConstant;
 
 /**
  * Object used for merging all the maps from {@link MapBasedObjectData} to ensure the uniqueness of
- * the properties in it.
+ * the properties in it.<br>
  * 
  * After the merge, manages further operations with the property map according to given path
- * parameters.
+ * parameters.<br>
+ * <br>
+ * The path includes unique property names separated by slashes:
  * 
- * The path includes unique property names separated by slashes. A path without slash refers to a
- * property inside the current MapBasedObject (e.g propertyName). A path with slashes refers to an
- * embedded property reached by the MapBasedObjects included in this one (e.g
- * embeddedObjectPropertyName/propertyName). Embedded MapBasedObject can be reached from list too by
- * writing the item index after the list property name also separated by a slash (e.g
- * embeddedObjectListPropertyName/itemIndex/propertyName).
+ * <ul>
+ * <li>A path without slash refers to a property inside the current MapBasedObject (e.g
+ * propertyName).</li>
+ * <li>A path with slashes refers to an embedded property reached by the MapBasedObjects included in
+ * this one (e.g embeddedObjectPropertyName/propertyName).</li>
+ * <li>Embedded MapBasedObject can be reached from list too by writing the item index after the list
+ * property name also separated by a slash (e.g
+ * embeddedObjectListPropertyName/itemIndex/propertyName).</li>
+ * </ul>
  * 
  * @author Andras Pallo
  *
  */
-public class MapBasedObject {
+public class MapBasedObject implements DomainObjectRef {
 
   /**
    * Key is the property name. Value can be simple value (e.g {@link StringValue}), value list (e.g
@@ -78,6 +83,7 @@ public class MapBasedObject {
   /**
    * @return The path of the object.
    */
+  @Override
   public final String getPath() {
     return path;
   }
@@ -96,6 +102,12 @@ public class MapBasedObject {
   private static final MapBasedObject of(MapBasedObjectData data, String path) {
     MapBasedObject result = new MapBasedObject(path);
 
+    setData(data, path, result);
+
+    return result;
+  }
+
+  private static void setData(MapBasedObjectData data, String path, MapBasedObject result) {
     setValuesByDataMap(result, data.getStringPropertyMap(), String.class);
     setValuesByDataMap(result, data.getStringListMap(), String.class);
     setValuesByDataMap(result, data.getIntegerPropertyMap(), Integer.class);
@@ -122,8 +134,6 @@ public class MapBasedObject {
           (key, value) -> result.addProperty(key,
               listOf(value.getValues(), getObjectPath(path, key))));
     }
-
-    return result;
   }
 
   private static String getObjectPath(String parentPath, String key) {
@@ -183,6 +193,7 @@ public class MapBasedObject {
    * 
    * @return
    */
+  @Override
   public final Optional<ObjectChange> renderAndCleanChanges() {
     ObjectChange result = null;
 
@@ -427,6 +438,7 @@ public class MapBasedObject {
    * @param path
    * @return The actual value found in the property map by the given path.
    */
+  @Override
   public Object getValueByPath(String path) {
     String rootPath = PathUtility.getRootPath(path);
 
@@ -481,6 +493,7 @@ public class MapBasedObject {
    * @param path
    * @param value
    */
+  @Override
   public void setValueByPath(String path, Object value) {
     setValueByPath(path, value, null);
   }
@@ -599,6 +612,7 @@ public class MapBasedObject {
    * @param value
    * @return The {@link MapBasedObject} including the collection that contains the new value.
    */
+  @Override
   public MapBasedObject addValueByPath(String path, Object value) {
     String key = PathUtility.getLastPath(path);
 
@@ -632,6 +646,7 @@ public class MapBasedObject {
    * 
    * @param path
    */
+  @Override
   public void removeValueByPath(String path) {
     if (PathUtility.getPathSize(path) < 2) {
       throw new IllegalArgumentException(
@@ -733,6 +748,40 @@ public class MapBasedObject {
               (value == null ? "null" : value.getClass().getName()));
     }
     return (MapBasedObject) value;
+  }
+
+  @Override
+  public DomainObjectRef getValueRefByPath(String path) {
+    return getParentObject(path);
+  }
+
+  @Override
+  public void reevaluateChanges() {
+    // TODO is it necessary here?
+  }
+
+  @Override
+  public void setObject(Object loadedObject) {
+    MapBasedObjectData newObject = (MapBasedObjectData) loadedObject;
+    // Clear all and set new object data.
+    // TODO Previous state - changes? clear...
+    setData(newObject, getPath(), this);
+  }
+
+  @Override
+  public Object getObject() {
+    // TODO It should be a wrapper class...
+    return toData(this);
+  }
+
+  @Override
+  public <T> T getWrapper(Class<T> clazz) {
+    return (T) this;
+  }
+
+  @Override
+  public Object getValue(String propertyName) {
+    return getValueByPath(propertyName);
   }
 
 }

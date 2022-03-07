@@ -16,6 +16,7 @@ import org.smartbit4all.api.navigation.bean.NavigationReferenceEntry;
 import org.smartbit4all.api.navigation.bean.NavigationView;
 import org.smartbit4all.core.object.ApiBeanDescriptor;
 import org.smartbit4all.core.object.ApiObjectRef;
+import org.smartbit4all.core.object.DomainObjectRef;
 
 public class Navigation3 extends NavigationImpl {
   public static final String NAV_NAME = "nav3";
@@ -84,7 +85,7 @@ public class Navigation3 extends NavigationImpl {
   }
 
   @Override
-  public Optional<ApiObjectRef> loadObject(URI entryMetaUri, URI objectUri) {
+  public Optional<DomainObjectRef> loadObject(URI entryMetaUri, URI objectUri) {
     if (Navigation2.ENTRY_BEAN2_META.getUri().equals(entryMetaUri)) {
       return getOptionalRef(TestBean2.class, objectUri);
 
@@ -94,7 +95,7 @@ public class Navigation3 extends NavigationImpl {
     return Optional.empty();
   }
 
-  private <T extends TestBean> Optional<ApiObjectRef> getOptionalRef(
+  private <T extends TestBean> Optional<DomainObjectRef> getOptionalRef(
       Class<T> clazz, URI objectUri) {
     TestBean bean1 = getBean(clazz, objectUri);
     if (bean1 == null) {

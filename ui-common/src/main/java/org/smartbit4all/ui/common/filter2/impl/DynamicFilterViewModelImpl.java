@@ -21,6 +21,7 @@ import org.smartbit4all.api.filter.bean.FilterOperation;
 import org.smartbit4all.api.value.ValueApi;
 import org.smartbit4all.api.value.bean.Value;
 import org.smartbit4all.core.object.ApiObjectRef;
+import org.smartbit4all.core.object.DomainObjectRef;
 import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.core.object.ObservableObjectImpl;
 import org.smartbit4all.core.utility.PathUtility;
@@ -100,7 +101,7 @@ public class DynamicFilterViewModelImpl extends ObjectEditingImpl
 
     dynamicFilterModel.setRoot(root);
     rootFilterGroupViewModel = new FilterGroupViewModelImpl();
-    rootFilterGroupViewModel.setRef(ref);
+    rootFilterGroupViewModel.setRef((ApiObjectRef) ref);
 
     FilterConfig filterConfig = filterApi.getFilterConfig(filterConfigUri);
     for (FilterGroupMeta groupMeta : filterConfig.getFilterGroupMetas()) {
@@ -239,7 +240,7 @@ public class DynamicFilterViewModelImpl extends ObjectEditingImpl
   }
 
   private FilterFieldModel createFilterFieldFromSelectorPath(String selectorPath) {
-    ApiObjectRef filterSelectorRef = ref.getValueRefByPath(selectorPath);
+    DomainObjectRef filterSelectorRef = ref.getValueRefByPath(selectorPath);
     FilterFieldSelectorModel filterSelector =
         filterSelectorRef.getWrapper(FilterFieldSelectorModel.class);
     return createFilterFieldFromSelector(filterSelector);
@@ -294,7 +295,7 @@ public class DynamicFilterViewModelImpl extends ObjectEditingImpl
         return dynamicFilterModel.getRoot();
       }
     }
-    ApiObjectRef groupRef = ref.getValueRefByPath(groupPath);
+    DomainObjectRef groupRef = ref.getValueRefByPath(groupPath);
     return groupRef.getWrapper(FilterGroupModel.class);
   }
 
@@ -328,7 +329,7 @@ public class DynamicFilterViewModelImpl extends ObjectEditingImpl
 
   private FilterGroupSelectorModel getSelectorGroupBySelector(String selectorPath) {
     String selectorGroupPath = PathUtility.subpath(selectorPath, 0, 2);
-    ApiObjectRef selectorGroupRef = ref.getValueRefByPath(selectorGroupPath);
+    DomainObjectRef selectorGroupRef = ref.getValueRefByPath(selectorGroupPath);
     FilterGroupSelectorModel selectorGroup =
         selectorGroupRef.getWrapper(FilterGroupSelectorModel.class);
     return selectorGroup;

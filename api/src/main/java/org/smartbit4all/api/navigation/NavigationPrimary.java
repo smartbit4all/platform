@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.navigation.bean.NavigationAssociationMeta;
 import org.smartbit4all.api.navigation.bean.NavigationEntry;
 import org.smartbit4all.api.navigation.bean.NavigationReferenceEntry;
-import org.smartbit4all.core.object.ApiObjectRef;
+import org.smartbit4all.core.object.DomainObjectRef;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import io.reactivex.rxjava3.disposables.Disposable;
@@ -154,7 +154,7 @@ public final class NavigationPrimary extends NavigationImpl implements Initializ
   }
 
   @Override
-  public Optional<ApiObjectRef> loadObject(URI entryMetaUri, URI objectUri) {
+  public Optional<DomainObjectRef> loadObject(URI entryMetaUri, URI objectUri) {
     NavigationApi api = api(entryMetaUri);
     if (api != null) {
       return api.loadObject(entryMetaUri, objectUri);

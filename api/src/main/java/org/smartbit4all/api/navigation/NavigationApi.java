@@ -22,7 +22,7 @@ import java.util.function.Consumer;
 import org.smartbit4all.api.navigation.bean.NavigationConfig;
 import org.smartbit4all.api.navigation.bean.NavigationEntry;
 import org.smartbit4all.api.navigation.bean.NavigationReferenceEntry;
-import org.smartbit4all.core.object.ApiObjectRef;
+import org.smartbit4all.core.object.DomainObjectRef;
 import io.reactivex.rxjava3.disposables.Disposable;
 
 /**
@@ -78,14 +78,14 @@ public interface NavigationApi {
   /**
    * The navigation api offer a contribution for the apis to participate in a navigation. If we have
    * a navigation node in a navigation that it might have an object behind. With this service we can
-   * ask the underlying api to load the object and we can use it inside an {@link ApiObjectRef} to
+   * ask the underlying api to load the object and we can use it inside a {@link DomainObjectRef} to
    * access it's properties.
    *
    * @param entryMetaUri entry meta.
    * @param objectUri The uri of the object.
-   * @return The {@link ApiObjectRef} initiated with the object identified by the uri.
+   * @return The {@link DomainObjectRef} initiated with the object identified by the uri.
    */
-  Optional<ApiObjectRef> loadObject(URI entryMetaUri, URI objectUri);
+  Optional<DomainObjectRef> loadObject(URI entryMetaUri, URI objectUri);
 
   /**
    * Constructs a navigation with the called api and navigation config, only if a config can be

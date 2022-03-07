@@ -3,14 +3,14 @@ package org.smartbit4all.ui.api.viewmodel;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.smartbit4all.core.object.ApiObjectRef;
+import org.smartbit4all.core.object.DomainObjectRef;
 import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
 
 public class ObjectEditingImpl implements ObjectEditing {
 
   private static final Logger log = LoggerFactory.getLogger(ObjectEditingImpl.class);
 
-  protected ApiObjectRef ref;
+  protected DomainObjectRef ref;
 
   protected NavigationTarget navigationTarget;
 
