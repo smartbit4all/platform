@@ -24,6 +24,7 @@ import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import org.smartbit4all.api.mapbasedobject.bean.MapBasedObjectData;
 import org.smartbit4all.core.object.ApiObjectCollection.CollectionChanges;
 import org.smartbit4all.core.object.PropertyMeta.PropertyKind;
 import org.smartbit4all.core.utility.PathUtility;
@@ -329,17 +330,26 @@ public class ApiObjectRef implements DomainObjectRef {
           break;
 
         case REFERENCE:
-          if (value != null) {
-            if (entry.getReference() == null) {
-              ApiObjectRef newRef =
-                  new ApiObjectRef(entry.getPath(), value, descriptors, qualifier);
-              entry.setReference(newRef);
+          DomainObjectRef ref = entry.getReference();
+          if (ref == null) {
+            if (value instanceof MapBasedObjectData) {
+              entry.setReference(
+                  MapBasedObject.of((MapBasedObjectData) value));
+            } else if (value != null) {
+              entry.setReference(
+                  new ApiObjectRef(entry.getPath(), value, descriptors, qualifier));
             } else {
-              entry.getReference().setObject(value);
+              // ref == null && value == null --> NOP
             }
+          } else if (value != null) {
+            // ref != null && value != null
+            ref.setObject(value);
           } else {
-            if (entry.getReference() != null) {
-              entry.getReference().setCurrentState(ChangeState.DELETED);
+            // ref != null && value == null
+            if (ref instanceof MapBasedObject) {
+              ref.setObject(new MapBasedObjectData());
+            } else {
+              ((ApiObjectRef) ref).setCurrentState(ChangeState.DELETED);
             }
           }
           break;
@@ -408,10 +418,10 @@ public class ApiObjectRef implements DomainObjectRef {
   }
 
   @Override
-  public ApiObjectRef addValueByPath(String path, Object value) {
+  public DomainObjectRef addValueByPath(String path, Object value) {
     // TODO
     path = path.toUpperCase();
-    ApiObjectRef addedRef = null;
+    DomainObjectRef addedRef = null;
     String propertyName = PathUtility.getRootPath(path);
     PropertyEntry propertyEntry = getPropertyEntryByName(propertyName);
 
@@ -456,7 +466,7 @@ public class ApiObjectRef implements DomainObjectRef {
   }
 
   @Override
-  public ApiObjectRef getValueRefByPath(String path) {
+  public DomainObjectRef getValueRefByPath(String path) {
     if (Strings.isNullOrEmpty(path) || "/".equals(path)) {
       return this;
     }
@@ -474,7 +484,7 @@ public class ApiObjectRef implements DomainObjectRef {
         if (pathSize == 1) {
           return propertyEntry.getReference();
         } else {
-          ApiObjectRef reference = propertyEntry.getReference();
+          DomainObjectRef reference = propertyEntry.getReference();
           if (reference == null) {
             return null;
           }
@@ -482,7 +492,10 @@ public class ApiObjectRef implements DomainObjectRef {
         }
       case COLLECTION:
         ApiObjectCollection collection = propertyEntry.getCollection();
-        if (pathSize == 2) {
+        if (pathSize == 1) {
+          // path references to ApiObjectCollection -> not a DomainObjectRef
+          return null;
+        } else if (pathSize == 2) {
           return collection.getByIdx(PathUtility.getLastPath(path));
         } else {
           String nextPath = PathUtility.nextFullPath(path);
@@ -494,7 +507,10 @@ public class ApiObjectRef implements DomainObjectRef {
         }
       case MAP:
         ApiObjectMap map = propertyEntry.getMap();
-        if (pathSize == 2) {
+        if (pathSize == 1) {
+          // path references to ApiObjectMap -> not a DomainObjectRef
+          return null;
+        } else if (pathSize == 2) {
           return map.get(PathUtility.getLastPath(path));
         } else {
           String nextPath = PathUtility.nextFullPath(path);
@@ -529,7 +545,9 @@ public class ApiObjectRef implements DomainObjectRef {
         break;
       case COLLECTION:
         ApiObjectCollection collection = propertyEntry.getCollection();
-        if (pathSize == 2) {
+        if (pathSize == 1) {
+          // path references to ApiObjectCollection -> not a DomainObjectRef -> NOP
+        } else if (pathSize == 2) {
           // Remove the index to the collection
           collection.removeByIdx(PathUtility.getLastPath(path));
         } else {
@@ -541,7 +559,9 @@ public class ApiObjectRef implements DomainObjectRef {
         break;
       case MAP:
         ApiObjectMap map = propertyEntry.getMap();
-        if (pathSize == 2) {
+        if (pathSize == 1) {
+          // path references to ApiObjectMap -> not a DomainObjectRef -> NOP
+        } else if (pathSize == 2) {
           // Remove the index to the collection
           map.remove(PathUtility.getLastPath(path));
         } else {
@@ -573,7 +593,7 @@ public class ApiObjectRef implements DomainObjectRef {
             "Invalid parameter " + propertyName);
       }
       String path = propertyName.substring(0, slashIndex);
-      ApiObjectRef reference = getValueRefByPath(path);
+      DomainObjectRef reference = getValueRefByPath(path);
       if (reference == null) {
         return null;
       }
@@ -603,14 +623,16 @@ public class ApiObjectRef implements DomainObjectRef {
       case REFERENCE:
         // Call the getValueByPath on reference with new path
 
-        ApiObjectRef reference = propertyEntry.getReference();
+        DomainObjectRef reference = propertyEntry.getReference();
         if (reference == null) {
           return null;
         }
         return reference.getValueByPath(PathUtility.nextFullPath(upperPath));
       case COLLECTION:
         ApiObjectCollection collection = propertyEntry.getCollection();
-        if (pathSize == 2) {
+        if (pathSize == 1) {
+          return collection.originalCollection;
+        } else if (pathSize == 2) {
           return collection.getByIdx(PathUtility.getLastPath(upperPath)).getObject();
         } else {
           String nextPath = PathUtility.nextFullPath(upperPath);
@@ -619,7 +641,9 @@ public class ApiObjectRef implements DomainObjectRef {
         }
       case MAP:
         ApiObjectMap map = propertyEntry.getMap();
-        if (pathSize == 2) {
+        if (pathSize == 1) {
+          return map.originalMap;
+        } else if (pathSize == 2) {
           return map.get(PathUtility.getLastPath(upperPath)).getObject();
         } else {
           String nextPath = PathUtility.nextFullPath(upperPath);
@@ -738,7 +762,7 @@ public class ApiObjectRef implements DomainObjectRef {
           break;
         case REFERENCE:
           if (entry.getReference() != null) {
-            ApiObjectRef ref = entry.getReference();
+            DomainObjectRef ref = entry.getReference();
             Optional<ObjectChange> refChangeOpt = ref.renderAndCleanChanges();
             if (refChangeOpt.isPresent()) {
               ObjectChange refChange = refChangeOpt.get();

@@ -54,7 +54,7 @@ public final class ApiObjectCollection implements List<ApiObjectRef> {
    * The reference of the original collection in the bean. It can be replace at once and can be
    * edited item by item.
    */
-  private List<Object> originalCollection;
+  List<Object> originalCollection;
 
   private AtomicLong sequence = new AtomicLong();
 

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.smartbit4all.core.object.ApiObjectRef;
 import org.smartbit4all.core.object.ChangeState;
+import org.smartbit4all.core.object.DomainObjectRef;
 import org.smartbit4all.core.object.PropertyEntry;
 import org.smartbit4all.core.object.PropertyMeta.PropertyKind;
 import org.smartbit4all.core.utility.StringConstant;
@@ -139,7 +140,7 @@ public final class HierarchicalConstraintHelper<C> {
    * @return
    */
   private final List<ConstraintChange<C>> renderAndCleanChangesRec(
-      List<ConstraintChange<C>> changeList, ApiObjectRef actualApiObjectRef,
+      List<ConstraintChange<C>> changeList, DomainObjectRef actualApiObjectRef,
       boolean newObject,
       ConstraintEntry<C> actualEntry, ConstraintEntry<C> nearestExistingEntry,
       C actualValue) {
@@ -158,30 +159,36 @@ public final class HierarchicalConstraintHelper<C> {
         nextActualValue = actualEntry.getValue();
       }
     }
-    for (PropertyEntry propery : actualApiObjectRef.getProperties()) {
-      String propertyName = propery.getMeta().getName();
-      ConstraintEntry<C> childEntry =
-          actualEntry == null ? null : actualEntry.children.get(propertyName);
-      if (propery.getMeta().getKind() == PropertyKind.VALUE) {
-        ConstraintChange<C> change =
-            evaluateEntry(newObject, childEntry, nextNearestEntry,
-                nextActualValue,
-                path.isEmpty() ? propertyName : path + StringConstant.SLASH + propertyName);
-        if (change != null) {
-          changeList.add(change);
-        }
-      } else if (propery.getMeta().getKind() == PropertyKind.REFERENCE
-          && propery.getReference() != null) {
-        renderAndCleanChangesRec(changeList, propery.getReference(),
-            newObject || propery.getReference().getCurrentState() == ChangeState.NEW, childEntry,
-            nextNearestEntry, nextActualValue);
-      } else if (propery.getMeta().getKind() == PropertyKind.COLLECTION) {
-        for (ApiObjectRef collectionItem : propery.getCollection()) {
-          if (collectionItem != null) {
-            renderAndCleanChangesRec(changeList, collectionItem,
-                newObject || collectionItem.getCurrentState() == ChangeState.NEW,
-                childEntry,
-                nextNearestEntry, nextActualValue);
+    if (actualApiObjectRef instanceof ApiObjectRef) {
+      for (PropertyEntry property : ((ApiObjectRef) actualApiObjectRef).getProperties()) {
+        String propertyName = property.getMeta().getName();
+        ConstraintEntry<C> childEntry =
+            actualEntry == null ? null : actualEntry.children.get(propertyName);
+        if (property.getMeta().getKind() == PropertyKind.VALUE) {
+          ConstraintChange<C> change =
+              evaluateEntry(newObject, childEntry, nextNearestEntry,
+                  nextActualValue,
+                  path.isEmpty() ? propertyName : path + StringConstant.SLASH + propertyName);
+          if (change != null) {
+            changeList.add(change);
+          }
+        } else if (property.getMeta().getKind() == PropertyKind.REFERENCE
+            && property.getReference() != null) {
+          if (property.getReference() instanceof ApiObjectRef) {
+            newObject =
+                newObject || ((ApiObjectRef) property.getReference())
+                    .getCurrentState() == ChangeState.NEW;
+          }
+          renderAndCleanChangesRec(changeList, property.getReference(),
+              newObject, childEntry, nextNearestEntry, nextActualValue);
+        } else if (property.getMeta().getKind() == PropertyKind.COLLECTION) {
+          for (ApiObjectRef collectionItem : property.getCollection()) {
+            if (collectionItem != null) {
+              renderAndCleanChangesRec(changeList, collectionItem,
+                  newObject || collectionItem.getCurrentState() == ChangeState.NEW,
+                  childEntry,
+                  nextNearestEntry, nextActualValue);
+            }
           }
         }
       }

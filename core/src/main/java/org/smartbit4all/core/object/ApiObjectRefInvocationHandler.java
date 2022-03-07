@@ -28,6 +28,8 @@ public class ApiObjectRefInvocationHandler implements InvocationHandler {
           return ((ApiObjectCollection) valueInner).getProxy();
         } else if (valueInner instanceof ApiObjectMap) {
           return ((ApiObjectMap) valueInner).getProxy();
+        } else if (valueInner instanceof MapBasedObject) {
+          return valueInner;
         }
         return valueInner;
       } else if (method.equals(meta.getSetter())) {

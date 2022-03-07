@@ -46,6 +46,7 @@ public class MapBasedObject implements DomainObjectRef {
    * {@link StringValueList}), {@link MapBasedObject} or list of {@link MapBasedObject}s.
    */
   private final Map<String, Object> propertyMap = new HashMap<>();
+  private final Map<String, Object> propertyMapUpper = new HashMap<>();
 
   /**
    * The stored state of the object immediately after the last renderAndCleanChanges() was done.
@@ -142,6 +143,15 @@ public class MapBasedObject implements DomainObjectRef {
 
   private void addProperty(String key, Object value) {
     propertyMap.put(key, value);
+    propertyMapUpper.put(key == null ? key : key.toUpperCase(), value);
+  }
+
+  private Object getProperty(String key) {
+    Object object = propertyMap.get(key);
+    if (object == null) {
+      object = propertyMapUpper.get(key == null ? key : key.toUpperCase());
+    }
+    return object;
   }
 
   private static void setValuesByDataMap(MapBasedObject object, Map<String, ?> dataMap,
@@ -301,7 +311,7 @@ public class MapBasedObject implements DomainObjectRef {
 
   private ObjectChange renderDeletedCollectionChange(ObjectChange result, ChangeState changeState,
       String key) {
-    Object prevValue = previousState.propertyMap.get(key);
+    Object prevValue = previousState.getProperty(key);
     if (prevValue != null && prevValue instanceof List<?>) {
       List<?> prevList = (List<?>) prevValue;
       if (!prevList.isEmpty() && prevList.get(0) instanceof MapBasedObject) {
@@ -327,7 +337,7 @@ public class MapBasedObject implements DomainObjectRef {
 
   private ObjectChange renderDeletedReferenceChange(ObjectChange result, ChangeState changeState,
       String key) {
-    Object prevValue = previousState.propertyMap.get(key);
+    Object prevValue = previousState.getProperty(key);
     if (prevValue != null) {
       if (result == null) {
         result = new ObjectChange(path, changeState);
@@ -352,7 +362,7 @@ public class MapBasedObject implements DomainObjectRef {
 
     } else {
       Object prevValue =
-          MapBasedObjectUtil.getActualValue(previousState.propertyMap.get(key));
+          MapBasedObjectUtil.getActualValue(previousState.getProperty(key));
       if (prevValue == null && actualValue == null) {
         return result;
       }
@@ -442,7 +452,7 @@ public class MapBasedObject implements DomainObjectRef {
   public Object getValueByPath(String path) {
     String rootPath = PathUtility.getRootPath(path);
 
-    Object value = MapBasedObjectUtil.getActualValue(propertyMap.get(rootPath));
+    Object value = MapBasedObjectUtil.getActualValue(getProperty(rootPath));
 
     if (value instanceof MapBasedObject) {
       if (PathUtility.getPathSize(path) > 1) {
@@ -512,12 +522,12 @@ public class MapBasedObject implements DomainObjectRef {
     if (isItemIndex(lastPath)) {
       int pathSize = PathUtility.getPathSize(path);
       String key = PathUtility.subpath(path, pathSize - 2, pathSize - 1);
-      Object currentValue = parentObject.propertyMap.get(key);
+      Object currentValue = parentObject.getProperty(key);
       setValueListItem(currentValue, Integer.valueOf(lastPath), value);
 
     } else {
       String key = lastPath;
-      Object currentValue = parentObject.propertyMap.get(key);
+      Object currentValue = parentObject.getProperty(key);
 
       if (value == null && clazz == null && currentValue == null) {
         throw new IllegalArgumentException(
@@ -622,7 +632,7 @@ public class MapBasedObject implements DomainObjectRef {
     }
 
     MapBasedObject parentObject = getParentObject(path);
-    Object mapValueList = parentObject.propertyMap.get(key);
+    Object mapValueList = parentObject.getProperty(key);
 
     if (mapValueList == null) {
       throw new IllegalArgumentException("Collection is null, path: " + path);
@@ -706,7 +716,7 @@ public class MapBasedObject implements DomainObjectRef {
    */
   private MapBasedObject getOrCreateObject(String path) {
     String rootPath = PathUtility.getRootPath(path);
-    Object value = propertyMap.get(rootPath);
+    Object value = getProperty(rootPath);
 
     if (value == null) {
       value = new MapBasedObject();

@@ -1,6 +1,7 @@
 package org.smartbit4all.core.object;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -12,6 +13,8 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.smartbit4all.api.mapbasedobject.bean.MapBasedObjectData;
+import org.smartbit4all.core.object.utility.MapBasedObjectUtil;
 import org.smartbit4all.core.utility.StringConstant;
 
 public class ApiObjectsTest {
@@ -34,6 +37,8 @@ public class ApiObjectsTest {
     domainBeans.add(ReferredBean.class);
     domainBeans.add(ReferredDetailBean.class);
     domainBeans.add(DetailBeanWithId.class);
+    domainBeans.add(HybridBean.class);
+    domainBeans.add(MapBasedObjectData.class);
     result = ApiBeanDescriptor.of(domainBeans);
     // {
     // ApiBeanDescriptor descriptor = result.get(MasterBean.class);
@@ -418,10 +423,62 @@ public class ApiObjectsTest {
     assertEquals(Arrays.asList("first", "second"), masterBeanRef.getValueByPath("stringlist"));
     assertEquals("refname", masterBeanRef.getValueByPath("referred/name"));
 
-    // TODO test collection after fixed
-    // assertEquals(masterBean.getDetails(), masterBeanRef.getValueByPath("details"));
-    // assertEquals(masterBean.getReferred().getDetails(),
-    // masterBeanRef.getValueByPath("referred/details"));
+    assertEquals(masterBean.getDetails(), masterBeanRef.getValueByPath("details"));
+    assertEquals(masterBean.getReferred().getDetails(),
+        masterBeanRef.getValueByPath("referred/details"));
+  }
+
+  @Test
+  void testHybridModification() {
+    MasterBean masterBean = constructBean();
+    MapBasedObjectData data = new MapBasedObjectData();
+    MapBasedObjectData person = new MapBasedObjectData();
+    MapBasedObjectUtil.addNewPropertyToData(person, "name", "Test User");
+    MapBasedObjectUtil.addNewPropertyToData(person, "email", "test@test.hu");
+    MapBasedObjectUtil.addNewPropertyToData(data, "person", person);
+    MapBasedObjectUtil.addNewPropertyToData(data, "important", true);
+
+    HybridBean hybridBean = new HybridBean();
+    hybridBean.setMasterBean(masterBean);
+    hybridBean.setData(data);
+
+    DomainObjectRef hybridBeanRef =
+        new ApiObjectRef(null, hybridBean, descriptors);
+
+    // masterBean
+    assertEquals("name", hybridBeanRef.getValueByPath("masterBean/name"));
+    assertEquals(1L, hybridBeanRef.getValueByPath("masterBean/counter"));
+    assertEquals(Arrays.asList("first", "second"),
+        hybridBeanRef.getValueByPath("masterBean/stringlist"));
+    assertEquals("refname", hybridBeanRef.getValueByPath("masterBean/referred/name"));
+
+    // data
+    assertEquals("Test User", hybridBeanRef.getValueByPath("data/person/name"));
+    assertEquals("test@test.hu", hybridBeanRef.getValueByPath("data/person/email"));
+    assertEquals(Boolean.TRUE, hybridBeanRef.getValueByPath("data/important"));
+
+    Optional<ObjectChange> objectChange = hybridBeanRef.renderAndCleanChanges();
+    System.out.println(objectChange.get());
+
+    DomainObjectRef dataRefObj = hybridBeanRef.getValueRefByPath("data");
+    assertTrue(dataRefObj instanceof MapBasedObject);
+    MapBasedObject dataRef = (MapBasedObject) dataRefObj;
+    dataRef.setValueByPath("person/name", "Modified User");
+    assertEquals("Modified User", hybridBeanRef.getValueByPath("data/person/name"));
+
+    objectChange = hybridBeanRef.renderAndCleanChanges();
+    List<ReferenceChange> dataChanged = objectChange.get().getReferences();
+    assertEquals(1, dataChanged.size());
+    assertEquals("data", dataChanged.get(0).getName());
+    List<ReferenceChange> personChanged = dataChanged.get(0).getChangedReference().getReferences();
+    assertEquals(1, personChanged.size());
+    assertEquals("person", personChanged.get(0).getName());
+    List<PropertyChange> nameChange = personChanged.get(0).getChangedReference().getProperties();
+    assertEquals(1, nameChange.size());
+    assertEquals("Test User", nameChange.get(0).getOldValue());
+    assertEquals("Modified User", nameChange.get(0).getNewValue());
+
+    System.out.println(objectChange.get());
   }
 
   private MasterBean constructBean() {

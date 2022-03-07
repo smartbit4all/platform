@@ -33,7 +33,7 @@ public final class PropertyEntry {
    * If the meta defines a reference {@link PropertyKind#REFERENCE} then it's the
    * {@link ApiObjectRef} for the given reference.
    */
-  ApiObjectRef reference;
+  DomainObjectRef reference;
 
   /**
    * The collection reference of the given property if it's a {@link PropertyKind#COLLECTION}.
@@ -55,11 +55,11 @@ public final class PropertyEntry {
     return meta;
   }
 
-  public final ApiObjectRef getReference() {
+  public final DomainObjectRef getReference() {
     return reference;
   }
 
-  public final void setReference(ApiObjectRef reference) {
+  public final void setReference(DomainObjectRef reference) {
     this.reference = reference;
   }
 

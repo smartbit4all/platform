@@ -48,7 +48,7 @@ public final class ApiObjectMap implements Map<String, ApiObjectRef> {
   /**
    * The reference of the original map in the original object.
    */
-  private Map<String, Object> originalMap;
+  Map<String, Object> originalMap;
 
   /**
    * Constructs a collection reference that manages the changes of a collection. Doesn't sets /
