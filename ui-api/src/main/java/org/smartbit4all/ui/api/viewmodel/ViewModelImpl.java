@@ -33,7 +33,7 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
   protected ViewModelImpl<?> parent;
   protected String path;
 
-  protected final ObservableObjectImpl data;
+  protected final ObservableObject data;
 
   protected T model;
 

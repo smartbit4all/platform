@@ -27,6 +27,11 @@ public class ObservableMapBasedObjectImpl implements ObservableObject, ListenerA
   private PublishSubject<CollectionObjectChange> collectionObjectChangePublisher =
       PublishSubject.create();
 
+  private ObservableObject parent;
+  private String parentPath;
+
+  private boolean anyNonParentSubscription;
+
   public ObservableMapBasedObjectImpl() {
     this(null);
   }
@@ -195,6 +200,21 @@ public class ObservableMapBasedObjectImpl implements ObservableObject, ListenerA
       }
     }
     return disposable;
+  }
+
+  @Override
+  public void setParent(ObservableObject parent, String path) {
+    if (anyNonParentSubscription) {
+      throw new IllegalArgumentException(
+          "Parent set to ObservableObject, but subscription already happened!");
+    }
+    this.parent = parent;
+    this.parentPath = path;
+  }
+
+  @Override
+  public void setRef(DomainObjectRef ref) {
+    setObject((MapBasedObject) ref);
   }
 
 }

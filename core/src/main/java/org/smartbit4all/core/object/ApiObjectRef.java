@@ -57,7 +57,7 @@ import com.google.common.base.Strings;
  * 
  * @author Peter Boros
  */
-public class ApiObjectRef {
+public class ApiObjectRef implements DomainObjectRef {
 
   /**
    * The path identifies the object reference inside the namespace. The namespace is an object
@@ -207,6 +207,7 @@ public class ApiObjectRef {
    * 
    * @param object
    */
+  @Override
   public void setObject(Object object) {
     setObjectInternal(object, ChangeState.MODIFIED);
   }
@@ -287,10 +288,12 @@ public class ApiObjectRef {
     }
   }
 
+  @Override
   public String getPath() {
     return path;
   }
 
+  @Override
   public final Object getObject() {
     return object;
   }
@@ -362,6 +365,7 @@ public class ApiObjectRef {
     }
   }
 
+  @Override
   public void setValueByPath(String path, Object value) {
     // TODO
     path = path.toUpperCase();
@@ -403,6 +407,7 @@ public class ApiObjectRef {
     }
   }
 
+  @Override
   public ApiObjectRef addValueByPath(String path, Object value) {
     // TODO
     path = path.toUpperCase();
@@ -450,6 +455,7 @@ public class ApiObjectRef {
     return addedRef;
   }
 
+  @Override
   public ApiObjectRef getValueRefByPath(String path) {
     if (Strings.isNullOrEmpty(path) || "/".equals(path)) {
       return this;
@@ -504,6 +510,7 @@ public class ApiObjectRef {
     return null;
   }
 
+  @Override
   public void removeValueByPath(String path) {
     // TODO
     path = path.toUpperCase();
@@ -581,6 +588,7 @@ public class ApiObjectRef {
    * @param propertyPath The name of the property.
    * @return
    */
+  @Override
   public Object getValueByPath(String propertyPath) {
     String upperPath = propertyPath.toUpperCase();
 
@@ -689,6 +697,7 @@ public class ApiObjectRef {
    *         changes of the context object and later we will find the item changes of the inner
    *         collections.
    */
+  @Override
   public final Optional<ObjectChange> renderAndCleanChanges() {
     ObjectChange result = null;
     if (getCurrentState() != null && getCurrentState() != ChangeState.NOP) {
@@ -769,6 +778,7 @@ public class ApiObjectRef {
   }
 
   @SuppressWarnings("unchecked")
+  @Override
   public <T> T getWrapper(Class<T> beanClass) {
     return getWrapperInner(beanClass);
   }
@@ -850,6 +860,7 @@ public class ApiObjectRef {
     return entry;
   }
 
+  @Override
   public void reevaluateChanges() {
     Object obj = object;
     object = null;

@@ -120,4 +120,9 @@ public interface ObservableObject extends EventPublisher, ListenerAware {
       @NonNull Consumer<? super CollectionObjectChange> onCollectionObjectChange,
       String... collectionPath);
 
+
+  void setRef(DomainObjectRef ref);
+
+  void setParent(ObservableObject data, String path);
+
 }
