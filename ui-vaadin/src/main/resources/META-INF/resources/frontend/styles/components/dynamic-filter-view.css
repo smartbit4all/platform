@@ -191,3 +191,11 @@ vaadin-date-time-picker-time-picker {
 	min-width: 0;
 	flex-grow: 1;
 }
+
+.clickable-operation {
+	color: var(--lumo-primary-color);
+}
+
+.clickable-operation:hover {
+	background-color: var(--lumo-shade-10pct);
+}

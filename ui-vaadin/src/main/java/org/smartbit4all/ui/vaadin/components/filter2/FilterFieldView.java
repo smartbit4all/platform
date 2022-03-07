@@ -39,6 +39,8 @@ public class FilterFieldView extends FlexLayout implements DragSource<FilterFiel
   private String currentFilterView;
 
   private FlexLayout optionsLayout;
+  private FlexLayout operationWrapper;
+  private Label lblOperation;
 
   private Map<String, Button> operations = new HashMap<>();
 
@@ -58,8 +60,8 @@ public class FilterFieldView extends FlexLayout implements DragSource<FilterFiel
     lblFilterName = new Label();
     lblFilterName.addClassName("filter-name");
 
-    FlexLayout operationWrapper = new FlexLayout();
-    Label lblOperation = new Label();
+    operationWrapper = new FlexLayout();
+    lblOperation = new Label();
     lblOperation.addClassName("operation-name");
     operationWrapper.add(lblOperation);
     operationWrapper.addClickListener(this::openOperationSelector);
@@ -134,6 +136,15 @@ public class FilterFieldView extends FlexLayout implements DragSource<FilterFiel
         operations.remove(operationPath);
       }
     }
+    refreshOperationLabel();
+  }
+
+  private void refreshOperationLabel() {
+    if (optionsLayout.getComponentCount() > 1 && operationWrapper.isEnabled()) {
+      lblOperation.addClassName("clickable-operation");
+    } else {
+      lblOperation.removeClassName("clickable-operation");
+    }
   }
 
   private void draggableChange(PropertyChange change) {
@@ -165,8 +176,10 @@ public class FilterFieldView extends FlexLayout implements DragSource<FilterFiel
   private void enabledChange(PropertyChange change) {
     filterEnabled = Boolean.TRUE.equals(change.getNewValue());
     if (operationView != null) {
-      operationView.setEnabled(filterEnabled);
+      operationView.setFilterEnabled(filterEnabled);
+      operationWrapper.setEnabled(filterEnabled);
     }
+    refreshOperationLabel();
     refreshCloseButton();
   }
 
