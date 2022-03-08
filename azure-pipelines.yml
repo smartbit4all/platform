@@ -17,6 +17,9 @@ schedules:
 pool:
   vmImage: 'ubuntu-latest'
 
+variables:
+  GRADLE_USER_HOME: $(Pipeline.Workspace)/.gradle
+
 steps:
 - checkout: self
 - task: Cache@2
