@@ -32,8 +32,8 @@ steps:
   displayName: Configure gradle caching
 - task: Gradle@2
   inputs:
-    workingDirectory: 'platform'
-    gradleWrapperFile: 'platform/gradlew'
+    # workingDirectory: 'platform'
+    gradleWrapperFile: './gradlew'
     gradleOptions: '-Xmx3072m'
     javaHomeOption: 'JDKVersion'
     jdkVersionOption: '1.8'
@@ -44,5 +44,5 @@ steps:
     options: '--build-cache'
 - script: |   
     # stop the Gradle daemon to ensure no files are left open (impacting the save cache operation later)
-    ./platform/gradlew --stop    
+    ./gradlew --stop    
   displayName: Build
