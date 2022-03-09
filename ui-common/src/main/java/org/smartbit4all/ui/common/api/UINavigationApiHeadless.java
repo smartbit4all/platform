@@ -4,6 +4,7 @@ import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.session.UserSessionApi;
+import org.smartbit4all.core.utility.ReflectionUtility;
 import org.smartbit4all.ui.api.navigation.model.Message;
 import org.smartbit4all.ui.api.navigation.model.MessageResult;
 import org.smartbit4all.ui.api.navigation.model.NavigableViewDescriptor;
@@ -35,6 +36,7 @@ public class UINavigationApiHeadless extends UINavigationApiCommon {
       Class<?> viewModelClass = Class.forName(desc.getViewClassName());
       ViewModel viewModel = viewModelsByUuid.get(navigationTarget.getUuid());
       if (viewModel != null) {
+        viewModel = ReflectionUtility.getProxyTarget(viewModel);
         if (!viewModelClass.isAssignableFrom(viewModel.getClass())) {
           throw new IllegalStateException(
               "Existing view's class (" + viewModel.getClass().getName()
