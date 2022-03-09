@@ -33,20 +33,30 @@ public class UINavigationApiHeadless extends UINavigationApiCommon {
     }
     try {
       Class<?> viewModelClass = Class.forName(desc.getViewClassName());
-      if (!ViewModel.class.isAssignableFrom(viewModelClass)) {
-        throw new IllegalArgumentException(
-            "ViewClass is not ViewModel for view" + navigationTarget.getViewName());
-      }
-      NavigationTarget oldTarget = ObjectEditing.currentNavigationTarget.get();
-      ViewModel viewModel;
-      try {
-        ObjectEditing.currentNavigationTarget.set(navigationTarget);
-        viewModel = (ViewModel) context.getBean(viewModelClass);
-        viewModel.initByNavigationTarget(navigationTarget);
-        viewModelsByUuid.put(navigationTarget.getUuid(), viewModel);
+      ViewModel viewModel = viewModelsByUuid.get(navigationTarget.getUuid());
+      if (viewModel != null) {
+        if (!viewModelClass.isAssignableFrom(viewModel.getClass())) {
+          throw new IllegalStateException(
+              "Existing view's class (" + viewModel.getClass().getName()
+                  + ") is not assignable from specified viewModelClass (" + viewModelClass.getName()
+                  + ") for view " + navigationTarget.getViewName());
+        }
         UINavigationApiHeadless.uiToOpen.set(navigationTarget);
-      } finally {
-        ObjectEditing.currentNavigationTarget.set(oldTarget);
+      } else {
+        if (!ViewModel.class.isAssignableFrom(viewModelClass)) {
+          throw new IllegalArgumentException(
+              "ViewClass is not ViewModel for view" + navigationTarget.getViewName());
+        }
+        NavigationTarget oldTarget = ObjectEditing.currentNavigationTarget.get();
+        try {
+          ObjectEditing.currentNavigationTarget.set(navigationTarget);
+          viewModel = (ViewModel) context.getBean(viewModelClass);
+          viewModel.initByNavigationTarget(navigationTarget);
+          viewModelsByUuid.put(navigationTarget.getUuid(), viewModel);
+          UINavigationApiHeadless.uiToOpen.set(navigationTarget);
+        } finally {
+          ObjectEditing.currentNavigationTarget.set(oldTarget);
+        }
       }
     } catch (ClassNotFoundException e) {
       throw new IllegalArgumentException(
