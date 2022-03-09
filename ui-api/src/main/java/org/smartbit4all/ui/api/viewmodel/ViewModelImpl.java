@@ -400,4 +400,16 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
     return supplier.get();
   }
 
+  protected URI getUriParameter(Object[] params, int idx) {
+    URI uri;
+    if (params[idx] instanceof String) {
+      uri = URI.create((String) params[idx]);
+    } else if (params[0] instanceof URI) {
+      uri = (URI) params[idx];
+    } else {
+      throw new RuntimeException("URI parameter not found");
+    }
+    return uri;
+  }
+
 }
