@@ -2,13 +2,18 @@ package org.smartbit4all.sec.session;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.session.Session;
 import org.smartbit4all.api.session.UserSessionApi;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import com.google.common.base.Strings;
 
 /**
  * Returns a smartbit4all User based on the principal of the current Spring Security Context. </br>
@@ -17,9 +22,16 @@ import org.springframework.security.core.context.SecurityContextHolder;
  */
 public class UserSessionApiSecImpl implements UserSessionApi {
 
+
+  private static final Logger log = LoggerFactory.getLogger(UserSessionApiSecImpl.class);
+
+  private static final String SESSION_TOKEN = "UserSessionApiSecImpl.SESSION_TOKEN";
+
   private List<AuthenticationUserProvider> userProviders = new ArrayList<>();
 
   private AuthenticationUserProvider technicalUserProvider;
+
+  private Map<String, Session> savedSessions = new HashMap<>();
 
   public void setTechnicalUserProvider(AuthenticationUserProvider technicalUserProvider) {
     this.technicalUserProvider = technicalUserProvider;
@@ -83,6 +95,47 @@ public class UserSessionApiSecImpl implements UserSessionApi {
   @Override
   public Session startSession(User user) {
     return new Session(new ObjectChangePublisherSpringSecAware<String>()).user(user);
+  }
+
+  @Override
+  public void storeCurrentSession(String token) {
+    Session currentSession = currentSession();
+    if (currentSession != null) {
+      if (savedSessions.containsKey(token)) {
+        String originalToken = (String) currentSession.getParameter(SESSION_TOKEN);
+        log.warn("storeCurrentSession will override an existing Session with token " + token +
+            ". Original token: " + originalToken);
+      }
+      currentSession.setParameter(SESSION_TOKEN, token);
+      savedSessions.put(token, currentSession);
+    } else {
+      log.warn("storeCurrentSession called when session is not present");
+    }
+  }
+
+  @Override
+  public Session getSessionByToken(String token) {
+    return savedSessions.get(token);
+  }
+
+  @Override
+  public void removeCurrentSession() {
+    Session currentSession = currentSession();
+    if (currentSession != null) {
+      String token = (String) currentSession.getParameter(SESSION_TOKEN);
+      if (!Strings.isNullOrEmpty(token)) {
+        if (savedSessions.containsKey(token)) {
+          savedSessions.remove(token);
+        } else {
+          log.warn(
+              "removeCurrentSession called but current session is not stored. token: " + token);
+        }
+      } else {
+        log.warn("removeCurrentSession called but current session doesnt have a token");
+      }
+    } else {
+      log.warn("removeCurrentSession called when session is not present");
+    }
   }
 
 }

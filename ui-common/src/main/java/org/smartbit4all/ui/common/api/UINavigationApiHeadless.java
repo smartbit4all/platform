@@ -27,6 +27,12 @@ public class UINavigationApiHeadless extends UINavigationApiCommon {
 
   @Override
   protected void navigateToInternal(NavigationTarget navigationTarget) {
+    if ("logout".equals(navigationTarget.getViewName())) {
+      // TODO ???
+      userSessionApi.removeCurrentSession();
+      UINavigationApiHeadless.uiToOpen.set(navigationTarget);
+      return;
+    }
     NavigableViewDescriptor desc = getViewDescriptorByNavigationTarget(navigationTarget);
     if (desc == null) {
       throw new IllegalArgumentException(

@@ -22,4 +22,16 @@ public interface UserSessionApi {
     // "UserSessionApi session hadling not implemented in " + this.getClass().getName() + "!");
   }
 
+  default void storeCurrentSession(String token) {
+    // NOP
+  }
+
+  default Session getSessionByToken(String token) {
+    // NOP
+    return null;
+  }
+
+  default void removeCurrentSession() {
+    // NOP
+  }
 }
