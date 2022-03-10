@@ -80,7 +80,7 @@ public class MapBasedObject implements DomainObjectRef {
    * @param path The path includes in order the name of the parent objects containing this object.
    */
   private MapBasedObject(String path) {
-    this.path = path;
+    this.path = path.toUpperCase();
   }
 
   /**
