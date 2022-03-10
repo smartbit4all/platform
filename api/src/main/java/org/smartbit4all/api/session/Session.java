@@ -175,7 +175,7 @@ public class Session {
   }
 
   public void setAvailableLocales(List<String> locale) {
-    setParameter(CURRENT_LOCALE, locale);
+    setParameter(AVAILABLE_LOCALES, locale);
   }
 
   @SuppressWarnings("unchecked")
