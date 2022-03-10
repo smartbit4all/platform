@@ -472,7 +472,7 @@ public class ApiObjectsTest {
     assertEquals("data", dataChanged.get(0).getName());
     List<ReferenceChange> personChanged = dataChanged.get(0).getChangedReference().getReferences();
     assertEquals(1, personChanged.size());
-    assertEquals("person", personChanged.get(0).getName());
+    assertEquals("person".toUpperCase(), personChanged.get(0).getName());
     List<PropertyChange> nameChange = personChanged.get(0).getChangedReference().getProperties();
     assertEquals(1, nameChange.size());
     assertEquals("Test User", nameChange.get(0).getOldValue());
