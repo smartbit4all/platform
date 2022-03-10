@@ -418,4 +418,11 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
     return uri;
   }
 
+  protected String getStringParameter(Object[] params, int idx) {
+    if (params[idx] instanceof String) {
+      return (String) params[idx];
+    }
+    throw new RuntimeException("String parameter not found");
+  }
+
 }
