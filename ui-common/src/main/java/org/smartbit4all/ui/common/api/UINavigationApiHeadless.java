@@ -29,7 +29,8 @@ public class UINavigationApiHeadless extends UINavigationApiCommon {
   protected void navigateToInternal(NavigationTarget navigationTarget) {
     if ("logout".equals(navigationTarget.getViewName())) {
       // TODO ???
-      userSessionApi.removeCurrentSession();
+      clearAndRemoveSession();
+
       UINavigationApiHeadless.uiToOpen.set(navigationTarget);
       return;
     }
@@ -40,7 +41,7 @@ public class UINavigationApiHeadless extends UINavigationApiCommon {
     }
     try {
       Class<?> viewModelClass = Class.forName(desc.getViewClassName());
-      ViewModel viewModel = viewModelsByUuid.get(navigationTarget.getUuid());
+      ViewModel viewModel = getViewModelByUuidInternal(navigationTarget.getUuid());
       if (viewModel != null) {
         viewModel = ReflectionUtility.getProxyTarget(viewModel);
         if (!viewModelClass.isAssignableFrom(viewModel.getClass())) {
@@ -60,7 +61,7 @@ public class UINavigationApiHeadless extends UINavigationApiCommon {
           ObjectEditing.currentNavigationTarget.set(navigationTarget);
           viewModel = (ViewModel) context.getBean(viewModelClass);
           viewModel.initByNavigationTarget(navigationTarget);
-          viewModelsByUuid.put(navigationTarget.getUuid(), viewModel);
+          putViewModelByUuidInternal(navigationTarget.getUuid(), viewModel);
           UINavigationApiHeadless.uiToOpen.set(navigationTarget);
         } finally {
           ObjectEditing.currentNavigationTarget.set(oldTarget);
@@ -109,7 +110,7 @@ public class UINavigationApiHeadless extends UINavigationApiCommon {
       Class<T> clazz) {
     T viewModel = super.createAndAddChildViewModel(parent, path, clazz);
     // TODO fix this hack
-    viewModelsByUuid.put(viewModel.getViewModelData().getUuid(), viewModel);
+    putViewModelByUuidInternal(viewModel.getViewModelData().getUuid(), viewModel);
     return viewModel;
   }
 }

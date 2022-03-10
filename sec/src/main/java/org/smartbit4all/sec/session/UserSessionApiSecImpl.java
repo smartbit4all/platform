@@ -94,7 +94,7 @@ public class UserSessionApiSecImpl implements UserSessionApi {
 
   @Override
   public Session startSession(User user) {
-    return new Session(new ObjectChangePublisherSpringSecAware<String>()).user(user);
+    return new Session(new ObjectChangePublisherSpringSecAware<>()).user(user);
   }
 
   @Override
@@ -103,8 +103,9 @@ public class UserSessionApiSecImpl implements UserSessionApi {
     if (currentSession != null) {
       if (savedSessions.containsKey(token)) {
         String originalToken = (String) currentSession.getParameter(SESSION_TOKEN);
-        log.warn("storeCurrentSession will override an existing Session with token " + token +
-            ". Original token: " + originalToken);
+        log.warn(
+            "storeCurrentSession will override an existing Session with token {} Original token: {}",
+            token, originalToken);
       }
       currentSession.setParameter(SESSION_TOKEN, token);
       savedSessions.put(token, currentSession);
@@ -128,7 +129,7 @@ public class UserSessionApiSecImpl implements UserSessionApi {
           savedSessions.remove(token);
         } else {
           log.warn(
-              "removeCurrentSession called but current session is not stored. token: " + token);
+              "removeCurrentSession called but current session is not stored. token: {}", token);
         }
       } else {
         log.warn("removeCurrentSession called but current session doesnt have a token");

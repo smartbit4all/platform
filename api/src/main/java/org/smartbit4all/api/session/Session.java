@@ -111,5 +111,57 @@ public class Session {
     return o.toString().replace("\n", "\n    ");
   }
 
+  /**
+   * Puts a key/value pair into a map in this session, specified by parameterName. If map doesn't
+   * exists yet, it will be created (new HashMap).
+   * 
+   * @param <K>
+   * @param <V>
+   * @param key
+   * @param value
+   * @param parameterName
+   */
+  public <K, V> void putValueToMap(K key, V value, String parameterName) {
+    @SuppressWarnings("unchecked")
+    Map<K, V> map = (Map<K, V>) getParameter(parameterName);
+    if (map == null) {
+      map = new HashMap<>();
+      setParameter(parameterName, map);
+    }
+    map.put(key, value);
+  }
+
+  /**
+   * Returns value from a map specified by parameterName. If map is not present, returns null.
+   * 
+   * @param <K>
+   * @param <V>
+   * @param key
+   * @param parameterName
+   * @return
+   */
+  public <K, V> V getValueFromMap(K key, String parameterName) {
+    @SuppressWarnings("unchecked")
+    Map<K, V> map = (Map<K, V>) getParameter(parameterName);
+    if (map != null) {
+      return map.get(key);
+    }
+    return null;
+  }
+
+  /**
+   * Clears and removes a map from this session specified by parameterName. If map doesn't exists,
+   * it does nothing.
+   * 
+   * @param parameterName
+   */
+  public void clearMap(String parameterName) {
+    Map<?, ?> map = (Map<?, ?>) getParameter(parameterName);
+    if (map != null) {
+      map.clear();
+      clearParameter(parameterName);
+    }
+  }
+
 }
 

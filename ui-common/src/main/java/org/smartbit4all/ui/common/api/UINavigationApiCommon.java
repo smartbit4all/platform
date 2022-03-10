@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.org.SecurityGroup;
 import org.smartbit4all.api.session.Session;
 import org.smartbit4all.api.session.UserSessionApi;
@@ -27,22 +29,38 @@ import io.reactivex.rxjava3.disposables.Disposable;
 
 public class UINavigationApiCommon implements UINavigationApi {
 
+
+  private static final Logger log = LoggerFactory.getLogger(UINavigationApiCommon.class);
+
   protected UserSessionApi userSessionApi;
 
-  protected Map<UUID, NavigationTarget> navigationTargetsByUUID;
+  /**
+   * Don't use directly, use get/putNavigationTargetByUuidInternal
+   */
+  private Map<UUID, NavigationTarget> navigationTargetsByUUID;
 
   protected Map<String, NavigableViewDescriptor> navigableViews;
   protected Map<NavigationTargetType, Map<String, NavigableViewDescriptor>> navigableViewsByType;
 
   protected Map<String, List<SecurityGroup>> securityGroupByView;
 
-  protected Map<UUID, ViewModel> viewModelsByUuid;
+  /**
+   * Don't use directly, use get/putViewModelByUuidInternal
+   */
+  private Map<UUID, ViewModel> viewModelsByUuid;
+
 
   public static final String UINAVIGATION_CURRENT_NAV_TARGET =
       "UINavigationApi.currentNavigationTarget";
 
   protected static final String UINAVIGATION_UUID =
       "UINavigationApi.UUID";
+
+  public static final String UINAVIGATION_NAV_TARGETS =
+      "UINavigationApi.navigationTargets";
+
+  public static final String UINAVIGATION_VIEW_MODELS =
+      "UINavigationApi.viewModels";
 
   protected UUID uuid;
 
@@ -62,8 +80,9 @@ public class UINavigationApiCommon implements UINavigationApi {
   }
 
   protected void initSessionParameterListener() {
-    if (userSessionApi != null && userSessionApi.currentSession() != null) {
-      subscription = userSessionApi.currentSession().subscribeForParameterChange(
+    Session session = getCurrentSession();
+    if (session != null) {
+      subscription = session.subscribeForParameterChange(
           UINAVIGATION_CURRENT_NAV_TARGET,
           this::sessionParameterChange);
     }
@@ -71,8 +90,13 @@ public class UINavigationApiCommon implements UINavigationApi {
 
   private void sessionParameterChange(String paramKey) {
     if (UINAVIGATION_CURRENT_NAV_TARGET.equals(paramKey)) {
-      Session session = userSessionApi.currentSession();
-      navigateToInternal((NavigationTarget) session.getParameter(UINAVIGATION_CURRENT_NAV_TARGET));
+      Session session = getCurrentSession();
+      if (session != null) {
+        navigateToInternal(
+            (NavigationTarget) session.getParameter(UINAVIGATION_CURRENT_NAV_TARGET));
+      } else {
+        log.error("sessionParameterChange when no session present!");
+      }
     }
   }
 
@@ -93,7 +117,7 @@ public class UINavigationApiCommon implements UINavigationApi {
       navigationTarget.setUuid(UUID.randomUUID());
     }
     navigationTarget.putParametersItem(UINAVIGATION_UUID, uuid);
-    navigationTargetsByUUID.put(navigationTarget.getUuid(), navigationTarget);
+    putNavigationTargetByUuidInternal(navigationTarget);;
     if (subscription != null &&
         userSessionApi != null && userSessionApi.currentSession() != null) {
       userSessionApi.currentSession().setParameter(UINAVIGATION_CURRENT_NAV_TARGET,
@@ -137,11 +161,6 @@ public class UINavigationApiCommon implements UINavigationApi {
       }
     }
     return navigableViews.get(navigationTarget.getViewName());
-  }
-
-  @Override
-  public NavigationTarget getNavigationTargetByUuid(UUID navigationTargetUuid) {
-    return navigationTargetsByUUID.get(navigationTargetUuid);
   }
 
   @Override
@@ -246,9 +265,63 @@ public class UINavigationApiCommon implements UINavigationApi {
   }
 
   @Override
+  public NavigationTarget getNavigationTargetByUuid(UUID navigationTargetUuid) {
+    return getNavigationTargetByUuidInternal(navigationTargetUuid);
+  }
+
+  protected void putNavigationTargetByUuidInternal(NavigationTarget navigationTarget) {
+    putValueToSessionMap(navigationTarget.getUuid(), navigationTarget,
+        UINAVIGATION_NAV_TARGETS, navigationTargetsByUUID);
+  }
+
+  protected NavigationTarget getNavigationTargetByUuidInternal(UUID navigationTargetUuid) {
+    return getValueFromSessionMap(navigationTargetUuid, UINAVIGATION_NAV_TARGETS,
+        navigationTargetsByUUID);
+  }
+
+  @Override
   public ViewModel getViewModelByUuid(UUID navigationTargetUuid) {
-    ViewModel vm = viewModelsByUuid.get(navigationTargetUuid);
+    ViewModel vm = getViewModelByUuidInternal(navigationTargetUuid);
     return ReflectionUtility.getProxyTarget(vm);
   }
 
+  protected void putViewModelByUuidInternal(UUID uuid, ViewModel viewModel) {
+    putValueToSessionMap(uuid, viewModel, UINAVIGATION_VIEW_MODELS, viewModelsByUuid);
+  }
+
+  protected ViewModel getViewModelByUuidInternal(UUID navigationTargetUuid) {
+    return getValueFromSessionMap(navigationTargetUuid, UINAVIGATION_VIEW_MODELS,
+        viewModelsByUuid);
+  }
+
+  private <T> void putValueToSessionMap(UUID uuid, T value, String parameterName,
+      Map<UUID, T> globalMap) {
+    Session session = getCurrentSession();
+    if (session != null) {
+      session.putValueToMap(uuid, value, parameterName);
+    } else {
+      globalMap.put(uuid, value);
+    }
+  }
+
+  private <T> T getValueFromSessionMap(UUID uuid, String parameterName, Map<UUID, T> globalMap) {
+    Session session = getCurrentSession();
+    if (session != null) {
+      return session.getValueFromMap(uuid, parameterName);
+    }
+    return globalMap.get(uuid);
+  }
+
+  protected void clearAndRemoveSession() {
+    Session session = getCurrentSession();
+    if (session != null) {
+      session.clearMap(UINAVIGATION_NAV_TARGETS);
+      session.clearMap(UINAVIGATION_VIEW_MODELS);
+      userSessionApi.removeCurrentSession();
+    }
+  }
+
+  private Session getCurrentSession() {
+    return userSessionApi == null ? null : userSessionApi.currentSession();
+  }
 }

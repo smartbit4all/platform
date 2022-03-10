@@ -231,7 +231,7 @@ public class UINavigationVaadinTabbed extends UINavigationVaadinCommon {
       if (dialogsByUUID.containsKey(navigationTargetUuid)) {
         closeDialog(navigationTargetUuid);
       } else {
-        NavigationTarget target = navigationTargetsByUUID.get(navigationTargetUuid);
+        NavigationTarget target = getNavigationTargetByUuid(navigationTargetUuid);
         Tab tab = tabsByViewObjectId.get(getViewObjectId(target));
         closeTab(tab);
       }
