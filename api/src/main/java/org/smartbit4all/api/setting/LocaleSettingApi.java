@@ -5,8 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.session.UserSessionApi;
 import org.smartbit4all.core.utility.ListBasedMap;
 import org.smartbit4all.core.utility.ReflectionUtility;
 import org.smartbit4all.domain.data.storage.Storage;
@@ -28,14 +30,14 @@ public final class LocaleSettingApi implements InitializingBean {
   /**
    * The translations for the default string for the locale. The defaults are loaded into a
    */
-  private final Map<Locale, Map<String, String>> localeSpecificTranslations =
+  private final Map<String, Map<String, String>> localeSpecificTranslations =
       new ListBasedMap<>();
 
   /**
    * The translations for the keys. If we have a hit here then we must use this translation. In any
    * other case we can use the translation of the default language string.
    */
-  private final Map<Locale, Map<String, String>> localeSpecificKeyBasedTranslations =
+  private final Map<String, Map<String, String>> localeSpecificKeyBasedTranslations =
       new ListBasedMap<>();
 
   /**
@@ -51,6 +53,9 @@ public final class LocaleSettingApi implements InitializingBean {
 
   @Autowired
   private StorageApi storageApi;
+
+  @Autowired(required = false)
+  private UserSessionApi userSessionApi;
 
   /**
    * The default locale for the locale specific Strings.
@@ -103,13 +108,14 @@ public final class LocaleSettingApi implements InitializingBean {
 
   public void setKeyTranslation(String key, Locale locale, String targetValue) {
     Map<String, String> keyTranslation =
-        localeSpecificKeyBasedTranslations.computeIfAbsent(locale, (l) -> new HashMap<>());
+        localeSpecificKeyBasedTranslations.computeIfAbsent(getLocalCode(locale),
+            (l) -> new HashMap<>());
     keyTranslation.put(key, targetValue);
   }
 
   public void setTranslation(String defaultValue, Locale locale, String targetValue) {
     Map<String, String> translations =
-        localeSpecificTranslations.computeIfAbsent(locale, l -> new HashMap<>());
+        localeSpecificTranslations.computeIfAbsent(getLocalCode(locale), l -> new HashMap<>());
     translations.put(defaultValue, targetValue);
   }
 
@@ -122,6 +128,9 @@ public final class LocaleSettingApi implements InitializingBean {
   }
 
   public final String get(String key) {
+    if (userSessionApi != null && userSessionApi.currentSession() != null) {
+      return get(userSessionApi.currentSession().getCurrentLocale(), key);
+    }
     return get(defaultLocale, key);
   }
 
@@ -130,7 +139,8 @@ public final class LocaleSettingApi implements InitializingBean {
       String sourceLiteral = sourceLiterals.get(key);
       return sourceLiteral != null ? sourceLiteral : key;
     }
-    Map<String, String> keyBasedTranslations = localeSpecificKeyBasedTranslations.get(locale);
+    Map<String, String> keyBasedTranslations =
+        localeSpecificKeyBasedTranslations.get(getLocalCode(locale));
     if (keyBasedTranslations != null) {
       String keyBasedValue = keyBasedTranslations.get(key);
       if (keyBasedValue != null) {
@@ -140,7 +150,7 @@ public final class LocaleSettingApi implements InitializingBean {
     // We get the default String and the translations based on this.
     String sourceLiteral = sourceLiterals.get(key);
     if (sourceLiteral != null) {
-      Map<String, String> translations = localeSpecificTranslations.get(locale);
+      Map<String, String> translations = localeSpecificTranslations.get(getLocalCode(locale));
       if (translations != null) {
         String translation = translations.get(sourceLiteral);
         if (translation != null) {
@@ -197,4 +207,17 @@ public final class LocaleSettingApi implements InitializingBean {
     initLocalOptions();
   }
 
+  private String getLocalCode(Locale locale) {
+    String result = locale.getLanguage();
+    String country = locale.getCountry();
+    if (!Strings.isEmpty(country)) {
+      result += "-" + country;
+    }
+    String variant = locale.getVariant();
+    if (!Strings.isEmpty(variant)) {
+      result += "-" + variant;
+    }
+    return result;
+
+  }
 }

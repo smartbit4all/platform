@@ -2,10 +2,13 @@ package org.smartbit4all.api.session;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Consumer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.core.reactive.ObjectChangePublisher;
 import io.reactivex.rxjava3.disposables.Disposable;
@@ -14,6 +17,9 @@ import io.reactivex.rxjava3.disposables.Disposable;
  * Session
  */
 public class Session {
+
+
+  private static final Logger log = LoggerFactory.getLogger(Session.class);
 
   public static final String CURRENT_LOCALE = "Session.currentLocale";
   public static final String AVAILABLE_LOCALES = "Session.availableLocales";
@@ -25,10 +31,12 @@ public class Session {
   private final Map<String, Object> parameters = new HashMap<>();
 
   private ObjectChangePublisher<String> publisher;
+  private Locale locale;
 
   public Session(ObjectChangePublisher<String> publisher) {
     this.publisher = publisher;
     uuid = UUID.randomUUID();
+    locale = Locale.getDefault();
   }
 
   public Disposable subscribeForParameterChange(String key, Consumer<String> observer) {
@@ -167,11 +175,32 @@ public class Session {
   }
 
   public void setCurrentLocale(String locale) {
-    setParameter(CURRENT_LOCALE, locale);
+    String currentLocale = (String) getParameter(CURRENT_LOCALE);
+    if (!Objects.equals(locale, currentLocale)) {
+      if (locale != null) {
+        try {
+          String[] parts = locale.split("-");
+          if (parts.length == 1) {
+            this.locale = new Locale(parts[0]);
+          } else if (parts.length == 2) {
+            this.locale = new Locale(parts[0], parts[1]);
+          } else {
+            this.locale = Locale.getDefault();
+            log.warn("Unable to set Locale, invalid locale parameter: {}", locale);
+          }
+        } catch (Exception e) {
+          this.locale = Locale.getDefault();
+          log.error("Unable to set Locale, invalid locale parameter: " + locale, e);
+        }
+      } else {
+        this.locale = Locale.getDefault();
+      }
+      setParameter(CURRENT_LOCALE, locale);
+    }
   }
 
-  public String getCurrentLocale() {
-    return (String) getParameter(CURRENT_LOCALE);
+  public Locale getCurrentLocale() {
+    return locale;
   }
 
   public void setAvailableLocales(List<String> locale) {

@@ -1,18 +1,16 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
  * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 package org.smartbit4all.core.utility;
 
@@ -21,6 +19,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -83,7 +82,7 @@ public class ListBasedMap<K, V> implements Map<K, V> {
   @Override
   public boolean containsKey(Object key) {
     for (Entry<K, V> entry : entries) {
-      if (entry.getKey() == key) {
+      if (Objects.equals(entry.getKey(), key)) {
         return true;
       }
     }
@@ -93,7 +92,7 @@ public class ListBasedMap<K, V> implements Map<K, V> {
   @Override
   public boolean containsValue(Object value) {
     for (Entry<K, V> entry : entries) {
-      if (entry.getValue() == value) {
+      if (Objects.equals(entry.getValue(), value)) {
         return true;
       }
     }
@@ -103,7 +102,7 @@ public class ListBasedMap<K, V> implements Map<K, V> {
   @Override
   public V get(Object key) {
     for (Entry<K, V> entry : entries) {
-      if (entry.getKey() == key) {
+      if (Objects.equals(entry.getKey(), key)) {
         return entry.getValue();
       }
     }
@@ -113,7 +112,7 @@ public class ListBasedMap<K, V> implements Map<K, V> {
   @Override
   public V put(K key, V value) {
     for (Entry<K, V> entry : entries) {
-      if (entry.getKey() == key) {
+      if (Objects.equals(entry.getKey(), key)) {
         V previousValue = entry.getValue();
         entry.setValue(value);
         return previousValue;
@@ -129,7 +128,7 @@ public class ListBasedMap<K, V> implements Map<K, V> {
     V previousValue = null;
     boolean remove = false;
     for (Entry<K, V> entry : entries) {
-      if (entry.getKey() == key) {
+      if (Objects.equals(entry.getKey(), key)) {
         previousValue = entry.getValue();
         remove = true;
         break;
