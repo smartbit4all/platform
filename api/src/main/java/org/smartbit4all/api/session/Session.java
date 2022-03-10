@@ -1,6 +1,7 @@
 package org.smartbit4all.api.session;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -14,6 +15,8 @@ import io.reactivex.rxjava3.disposables.Disposable;
  */
 public class Session {
 
+  public static final String CURRENT_LOCALE = "Session.currentLocale";
+  public static final String AVAILABLE_LOCALES = "Session.availableLocales";
 
   private final UUID uuid;
 
@@ -161,6 +164,23 @@ public class Session {
       map.clear();
       clearParameter(parameterName);
     }
+  }
+
+  public void setCurrentLocale(String locale) {
+    setParameter(CURRENT_LOCALE, locale);
+  }
+
+  public String getCurrentLocale() {
+    return (String) getParameter(CURRENT_LOCALE);
+  }
+
+  public void setAvailableLocales(List<String> locale) {
+    setParameter(CURRENT_LOCALE, locale);
+  }
+
+  @SuppressWarnings("unchecked")
+  public List<String> getAvailableLocales() {
+    return (List<String>) getParameter(AVAILABLE_LOCALES);
   }
 
 }
