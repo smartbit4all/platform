@@ -1,7 +1,9 @@
 package org.smartbit4all.core.object;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -16,6 +18,7 @@ import org.smartbit4all.api.mapbasedobject.bean.StringValueList;
 import org.smartbit4all.core.object.utility.MapBasedObjectUtil;
 import org.smartbit4all.core.utility.PathUtility;
 import org.smartbit4all.core.utility.StringConstant;
+import com.google.common.base.Strings;
 
 /**
  * Object used for merging all the maps from {@link MapBasedObjectData} to ensure the uniqueness of
@@ -46,7 +49,6 @@ public class MapBasedObject implements DomainObjectRef {
    * {@link StringValueList}), {@link MapBasedObject} or list of {@link MapBasedObject}s.
    */
   private final Map<String, Object> propertyMap = new HashMap<>();
-  private final Map<String, Object> propertyMapUpper = new HashMap<>();
 
   /**
    * The stored state of the object immediately after the last renderAndCleanChanges() was done.
@@ -109,18 +111,7 @@ public class MapBasedObject implements DomainObjectRef {
   }
 
   private static void setData(MapBasedObjectData data, String path, MapBasedObject result) {
-    setValuesByDataMap(result, data.getStringPropertyMap(), String.class);
-    setValuesByDataMap(result, data.getStringListMap(), String.class);
-    setValuesByDataMap(result, data.getIntegerPropertyMap(), Integer.class);
-    setValuesByDataMap(result, data.getIntegerListMap(), Integer.class);
-    setValuesByDataMap(result, data.getLongPropertyMap(), Long.class);
-    setValuesByDataMap(result, data.getLongListMap(), Long.class);
-    setValuesByDataMap(result, data.getBooleanPropertyMap(), Boolean.class);
-    setValuesByDataMap(result, data.getBooleanListMap(), Boolean.class);
-    setValuesByDataMap(result, data.getUriPropertyMap(), URI.class);
-    setValuesByDataMap(result, data.getUriListMap(), URI.class);
-    setValuesByDataMap(result, data.getLocalDateTimePropertyMap(), LocalDateTime.class);
-    setValuesByDataMap(result, data.getLocalDateTimeListMap(), LocalDateTime.class);
+    setValuesByData(result, data);
 
     Map<String, ObjectValue> objectPropertyMap = data.getObjectPropertyMap();
     if (objectPropertyMap != null) {
@@ -137,21 +128,25 @@ public class MapBasedObject implements DomainObjectRef {
     }
   }
 
-  private static String getObjectPath(String parentPath, String key) {
-    return parentPath.isEmpty() ? key : parentPath + "/" + key;
-  }
-
-  private void addProperty(String key, Object value) {
-    propertyMap.put(key, value);
-    propertyMapUpper.put(key == null ? key : key.toUpperCase(), value);
-  }
-
-  private Object getProperty(String key) {
-    Object object = propertyMap.get(key);
-    if (object == null) {
-      object = propertyMapUpper.get(key == null ? key : key.toUpperCase());
-    }
-    return object;
+  private static void setValuesByData(MapBasedObject result, MapBasedObjectData data) {
+    setValuesByDataMap(result, data.getStringPropertyMap(), String.class);
+    setValuesByDataMap(result, data.getStringListMap(), String.class);
+    setValuesByDataMap(result, data.getIntegerPropertyMap(), Integer.class);
+    setValuesByDataMap(result, data.getIntegerListMap(), Integer.class);
+    setValuesByDataMap(result, data.getLongPropertyMap(), Long.class);
+    setValuesByDataMap(result, data.getLongListMap(), Long.class);
+    setValuesByDataMap(result, data.getDoublePropertyMap(), Double.class);
+    setValuesByDataMap(result, data.getDoubleListMap(), Double.class);
+    setValuesByDataMap(result, data.getBooleanPropertyMap(), Boolean.class);
+    setValuesByDataMap(result, data.getBooleanListMap(), Boolean.class);
+    setValuesByDataMap(result, data.getUriPropertyMap(), URI.class);
+    setValuesByDataMap(result, data.getUriListMap(), URI.class);
+    setValuesByDataMap(result, data.getLocalDatePropertyMap(), LocalDate.class);
+    setValuesByDataMap(result, data.getLocalDateListMap(), LocalDate.class);
+    setValuesByDataMap(result, data.getLocalTimePropertyMap(), LocalTime.class);
+    setValuesByDataMap(result, data.getLocalTimeListMap(), LocalTime.class);
+    setValuesByDataMap(result, data.getLocalDateTimePropertyMap(), LocalDateTime.class);
+    setValuesByDataMap(result, data.getLocalDateTimeListMap(), LocalDateTime.class);
   }
 
   private static void setValuesByDataMap(MapBasedObject object, Map<String, ?> dataMap,
@@ -161,6 +156,18 @@ public class MapBasedObject implements DomainObjectRef {
         object.setValueByPath(key, MapBasedObjectUtil.getActualValue(value), clazz);
       });
     }
+  }
+
+  private static String getObjectPath(String parentPath, String key) {
+    return parentPath.isEmpty() ? key : parentPath + "/" + key;
+  }
+
+  private void addProperty(String key, Object value) {
+    propertyMap.put(key == null ? key : key.toUpperCase(), value);
+  }
+
+  private Object getProperty(String key) {
+    return propertyMap.get(key);
   }
 
   /**
@@ -219,11 +226,11 @@ public class MapBasedObject implements DomainObjectRef {
       Object value = entry.getValue();
 
       Object actualValue = MapBasedObjectUtil.getActualValue(value);
-      if (actualValue instanceof MapBasedObject) {
-        result = renderReferenceChange(result, changeState, key, actualValue);
+      if (value instanceof MapBasedObject) {
+        result = renderReferenceChange(result, changeState, key, value, actualValue);
 
-      } else if (actualValue instanceof List && !MapBasedObjectUtil.isValueList(value)) {
-        result = renderCollectionChange(result, changeState, key, actualValue);
+      } else if (value instanceof List && !MapBasedObjectUtil.isValueList(value)) {
+        result = renderCollectionChange(result, changeState, key, value);
 
       } else if (value == null) {
         result = renderDeletedReferenceChange(result, changeState, key);
@@ -242,8 +249,8 @@ public class MapBasedObject implements DomainObjectRef {
   }
 
   private ObjectChange renderReferenceChange(ObjectChange result, ChangeState changeState,
-      String key, Object actualValue) {
-    MapBasedObject embeddedObj = (MapBasedObject) actualValue;
+      String key, Object value, Object actualValue) {
+    MapBasedObject embeddedObj = (MapBasedObject) value;
     Optional<ObjectChange> refChangeOpt = embeddedObj.renderAndCleanChanges();
     if (refChangeOpt.isPresent()) {
       if (result == null) {
@@ -258,8 +265,8 @@ public class MapBasedObject implements DomainObjectRef {
   }
 
   private ObjectChange renderCollectionChange(ObjectChange result, ChangeState changeState,
-      String key, Object actualValue) {
-    List<?> list = (List<?>) actualValue;
+      String key, Object value) {
+    List<?> list = (List<?>) value;
     if (list.isEmpty()) {
       result = renderDeletedCollectionChange(result, changeState, key);
 
@@ -386,9 +393,10 @@ public class MapBasedObject implements DomainObjectRef {
         String key = entry.getKey();
 
         if (!propertyMap.containsKey(key)) {
-          Object actualValue = MapBasedObjectUtil.getActualValue(entry.getValue());
+          Object value = entry.getValue();
+          Object actualValue = MapBasedObjectUtil.getActualValue(value);
 
-          if (actualValue instanceof MapBasedObject) {
+          if (value instanceof MapBasedObject) {
             ObjectChange change = new ObjectChange(key, ChangeState.DELETED);
             if (result == null) {
               result = new ObjectChange(path, ChangeState.MODIFIED);
@@ -396,9 +404,9 @@ public class MapBasedObject implements DomainObjectRef {
             result.getReferences().add(new ReferenceChange(path, key, change));
             result.getReferencedObjects()
                 .add(new ReferencedObjectChange(path, key, new ObjectChangeSimple(
-                    path + StringConstant.SLASH + key, ChangeState.DELETED, null)));
+                    path + StringConstant.SLASH + key, ChangeState.DELETED, actualValue)));
 
-          } else if (actualValue instanceof List) {
+          } else if (value instanceof List) {
             List<?> list = (List<?>) actualValue;
             if (!list.isEmpty()) {
               CollectionChange collectionChange = new CollectionChange(path, key);
@@ -450,23 +458,26 @@ public class MapBasedObject implements DomainObjectRef {
    */
   @Override
   public Object getValueByPath(String path) {
-    String rootPath = PathUtility.getRootPath(path);
+    String upperPath = path.toUpperCase();
+    String rootPath = PathUtility.getRootPath(upperPath);
 
-    Object value = MapBasedObjectUtil.getActualValue(getProperty(rootPath));
+    Object propertyValue = getProperty(rootPath);
+    Object value = MapBasedObjectUtil.getActualValue(propertyValue);
 
-    if (value instanceof MapBasedObject) {
-      if (PathUtility.getPathSize(path) > 1) {
-        value = ((MapBasedObject) value).getValueByPath(PathUtility.nextFullPath(path));
+    if (propertyValue instanceof MapBasedObject) {
+      if (PathUtility.getPathSize(upperPath) > 1) {
+        value =
+            ((MapBasedObject) propertyValue).getValueByPath(PathUtility.nextFullPath(upperPath));
       }
-    } else if (value instanceof List<?> &&
-        !((List<?>) value).isEmpty() &&
-        ((List<?>) value).get(0) instanceof MapBasedObject) {
+    } else if (propertyValue instanceof List<?> &&
+        !((List<?>) propertyValue).isEmpty() &&
+        ((List<?>) propertyValue).get(0) instanceof MapBasedObject) {
 
-      if (PathUtility.getPathSize(path) > 1) {
-        String nextPath = PathUtility.nextFullPath(path);
+      if (PathUtility.getPathSize(upperPath) > 1) {
+        String nextPath = PathUtility.nextFullPath(upperPath);
         try {
           int index = Integer.parseInt(PathUtility.getRootPath(nextPath));
-          List<MapBasedObject> list = (List<MapBasedObject>) value;
+          List<MapBasedObject> list = (List<MapBasedObject>) propertyValue;
           value = PathUtility.getPathSize(nextPath) == 1
               ? list.get(index)
               : list.get(index).getValueByPath(PathUtility.nextFullPath(nextPath));
@@ -477,9 +488,9 @@ public class MapBasedObject implements DomainObjectRef {
       }
     } else if (value instanceof List<?> &&
         !((List<?>) value).isEmpty() &&
-        PathUtility.getPathSize(path) == 2) {
+        PathUtility.getPathSize(upperPath) == 2) {
       try {
-        int index = Integer.parseInt(PathUtility.getLastPath(path));
+        int index = Integer.parseInt(PathUtility.getLastPath(upperPath));
         List<?> list = (List<?>) value;
         value = list.get(index);
       } catch (NumberFormatException e) {
@@ -487,7 +498,7 @@ public class MapBasedObject implements DomainObjectRef {
             "Item index not found after value list property name, path: " + path);
       }
     } else {
-      if (PathUtility.getPathSize(path) > 1) {
+      if (PathUtility.getPathSize(upperPath) > 1) {
         throw new IllegalArgumentException(
             "Not embedded MapBasedObject or list found in the middle of the path, class: " +
                 (value == null ? "null" : value.getClass().getName()));
@@ -517,11 +528,13 @@ public class MapBasedObject implements DomainObjectRef {
    *        null or empty list.
    */
   public void setValueByPath(String path, Object value, Class<?> clazz) {
-    String lastPath = PathUtility.getLastPath(path);
-    MapBasedObject parentObject = getParentObject(path);
+    String upperPath = path.toUpperCase();
+    String lastPath = PathUtility.getLastPath(upperPath);
+    MapBasedObject parentObject = getParentObject(upperPath);
+
     if (isItemIndex(lastPath)) {
-      int pathSize = PathUtility.getPathSize(path);
-      String key = PathUtility.subpath(path, pathSize - 2, pathSize - 1);
+      int pathSize = PathUtility.getPathSize(upperPath);
+      String key = PathUtility.subpath(upperPath, pathSize - 2, pathSize - 1);
       Object currentValue = parentObject.getProperty(key);
       setValueListItem(currentValue, Integer.valueOf(lastPath), value);
 
@@ -624,14 +637,15 @@ public class MapBasedObject implements DomainObjectRef {
    */
   @Override
   public MapBasedObject addValueByPath(String path, Object value) {
-    String key = PathUtility.getLastPath(path);
+    String upperPath = path.toUpperCase();
+    String key = PathUtility.getLastPath(upperPath);
 
     if (isItemIndex(key)) {
       throw new IllegalArgumentException(
           "Value cannot be added into a list item, path: " + path);
     }
 
-    MapBasedObject parentObject = getParentObject(path);
+    MapBasedObject parentObject = getParentObject(upperPath);
     Object mapValueList = parentObject.getProperty(key);
 
     if (mapValueList == null) {
@@ -639,8 +653,13 @@ public class MapBasedObject implements DomainObjectRef {
     }
 
     if (MapBasedObjectUtil.canBeAdded(mapValueList, value)) {
-      Object collectionValue = parentObject.getValueByPath(key);
+      Object collectionValue;
       Object toAdd = MapBasedObjectUtil.convertToValidValue(value);
+      if (toAdd instanceof MapBasedObject) {
+        collectionValue = parentObject.getProperty(key);
+      } else {
+        collectionValue = parentObject.getValueByPath(key);
+      }
       ((Collection) collectionValue).add(toAdd);
     }
 
@@ -658,18 +677,19 @@ public class MapBasedObject implements DomainObjectRef {
    */
   @Override
   public void removeValueByPath(String path) {
-    if (PathUtility.getPathSize(path) < 2) {
+    String upperPath = path.toUpperCase();
+    if (PathUtility.getPathSize(upperPath) < 2) {
       throw new IllegalArgumentException(
           "Path must contain at least one property name and element index, path: "
               + (path == null ? "null" : path));
     }
 
-    Object foundValue = getValueByPath(PathUtility.getParentPath(path));
+    Object foundValue = getValueByPath(PathUtility.getParentPath(upperPath));
 
     if (foundValue instanceof Collection) {
       Collection collection = (Collection) foundValue;
       try {
-        int index = Integer.parseInt(PathUtility.getLastPath(path));
+        int index = Integer.parseInt(PathUtility.getLastPath(upperPath));
         if (index >= collection.size()) {
           throw new IndexOutOfBoundsException(
               "Collection size: " + collection.size() + ", Given index: " + index);
@@ -720,7 +740,7 @@ public class MapBasedObject implements DomainObjectRef {
 
     if (value == null) {
       value = new MapBasedObject();
-      propertyMap.put(rootPath, value);
+      addProperty(rootPath, value);
     }
 
     if (value instanceof MapBasedObject) {
@@ -762,31 +782,70 @@ public class MapBasedObject implements DomainObjectRef {
 
   @Override
   public DomainObjectRef getValueRefByPath(String path) {
-    return getParentObject(path);
+    if (Strings.isNullOrEmpty(path) || "/".equals(path)) {
+      return this;
+    }
+
+    DomainObjectRef foundRef = null;
+
+    String upperPath = path.toUpperCase();
+    String rootPath = PathUtility.getRootPath(upperPath);
+    Object propertyValue = getProperty(rootPath);
+
+    if (propertyValue instanceof MapBasedObject) {
+      foundRef = (MapBasedObject) propertyValue;
+      if (PathUtility.getPathSize(upperPath) > 1) {
+        foundRef = foundRef.getValueRefByPath(PathUtility.nextFullPath(upperPath));
+      }
+    } else if (propertyValue instanceof List<?> &&
+        !((List<?>) propertyValue).isEmpty() &&
+        ((List<?>) propertyValue).get(0) instanceof MapBasedObject) {
+
+      if (PathUtility.getPathSize(upperPath) > 1) {
+        String nextPath = PathUtility.nextFullPath(upperPath);
+        try {
+          int index = Integer.parseInt(PathUtility.getRootPath(nextPath));
+          List<MapBasedObject> list = (List<MapBasedObject>) propertyValue;
+          foundRef = PathUtility.getPathSize(nextPath) == 1
+              ? list.get(index)
+              : list.get(index).getValueRefByPath(PathUtility.nextFullPath(nextPath));
+        } catch (NumberFormatException e) {
+          throw new IllegalArgumentException(
+              "Item index not found after MapBasedObject list property name, path: " + path);
+        }
+      }
+    } else {
+      throw new IllegalArgumentException(
+          "Not embedded MapBasedObject or list found in the middle of the path, class: " +
+              (propertyValue == null ? "null" : propertyValue.getClass().getName()));
+    }
+    return foundRef;
   }
 
   @Override
   public void reevaluateChanges() {
-    // TODO is it necessary here?
+    previousState = null;
   }
 
   @Override
   public void setObject(Object loadedObject) {
     MapBasedObjectData newObject = (MapBasedObjectData) loadedObject;
-    // Clear all and set new object data.
-    // TODO Previous state - changes? clear...
+    propertyMap.clear();
+    deletedObjectItems.clear();
     setData(newObject, getPath(), this);
   }
 
   @Override
   public Object getObject() {
-    // TODO It should be a wrapper class...
     return toData(this);
   }
 
   @Override
   public <T> T getWrapper(Class<T> clazz) {
-    return (T) this;
+    if (clazz.equals(MapBasedObject.class)) {
+      return (T) this;
+    }
+    throw new IllegalArgumentException("MapBasedObject's wrapper can only be MapBasedObject.");
   }
 
   @Override

@@ -53,6 +53,14 @@ components:
           type: object
           additionalProperties: 
             $ref: '#/components/schemas/LongValueList'
+        doublePropertyMap:
+          type: object
+          additionalProperties: 
+            $ref: '#/components/schemas/DoubleValue'
+        doubleListMap:
+          type: object
+          additionalProperties: 
+            $ref: '#/components/schemas/DoubleValueList'
         booleanPropertyMap:
           type: object
           additionalProperties: 
@@ -69,6 +77,22 @@ components:
           type: object
           additionalProperties: 
             $ref: '#/components/schemas/UriValueList'
+        localDatePropertyMap:
+          type: object
+          additionalProperties: 
+            $ref: '#/components/schemas/LocalDateValue'
+        localDateListMap:
+          type: object
+          additionalProperties: 
+            $ref: '#/components/schemas/LocalDateValueList'
+        localTimePropertyMap:
+          type: object
+          additionalProperties: 
+            $ref: '#/components/schemas/LocalTimeValue'
+        localTimeListMap:
+          type: object
+          additionalProperties: 
+            $ref: '#/components/schemas/LocalTimeValueList'
         localDateTimePropertyMap:
           type: object
           additionalProperties: 
@@ -141,6 +165,26 @@ components:
           items:
             type: integer
             format: int64
+    DoubleValue:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+        value:
+          type: number
+          format: double
+    DoubleValueList:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+        values:
+          type: array
+          items:
+            type: number
+            format: double
     BooleanValue:
       type: object
       required: [name]
@@ -179,6 +223,42 @@ components:
           items:
             type: string
             format: uri
+    LocalDateValue:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+        value:
+          type: LocalDate
+    LocalDateValueList:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+        values:
+          type: array
+          items:
+            type: LocalDate
+    LocalTimeValue:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+        value:
+          type: LocalTime
+    LocalTimeValueList:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+        values:
+          type: array
+          items:
+            type: LocalTime
     LocalDateTimeValue:
       type: object
       required: [name]

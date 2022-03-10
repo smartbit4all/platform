@@ -10,8 +10,10 @@ import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.binarydata.BinaryData;
+import org.smartbit4all.api.mapbasedobject.bean.MapBasedObjectData;
 import org.smartbit4all.core.object.ApiBeanDescriptor;
 import org.smartbit4all.core.object.ApiObjectRef;
+import org.smartbit4all.core.object.MapBasedObject;
 import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.core.object.ObservableObjectImpl;
 import org.smartbit4all.core.object.ObservablePublisherWrapper;
@@ -118,9 +120,13 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
     }
     T loadedObject = load(navigationTarget);
     this.path = "";
-    ref = new ApiObjectRef(null,
-        loadedObject,
-        apiBeanDescriptors);
+    if (loadedObject instanceof MapBasedObjectData) {
+      ref = MapBasedObject.of((MapBasedObjectData) loadedObject);
+    } else {
+      ref = new ApiObjectRef(null,
+          loadedObject,
+          apiBeanDescriptors);
+    }
     initCommon();
   }
 

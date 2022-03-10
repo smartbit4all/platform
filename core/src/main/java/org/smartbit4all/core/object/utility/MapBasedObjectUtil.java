@@ -1,16 +1,24 @@
 package org.smartbit4all.core.object.utility;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.smartbit4all.api.mapbasedobject.bean.BooleanValue;
 import org.smartbit4all.api.mapbasedobject.bean.BooleanValueList;
+import org.smartbit4all.api.mapbasedobject.bean.DoubleValue;
+import org.smartbit4all.api.mapbasedobject.bean.DoubleValueList;
 import org.smartbit4all.api.mapbasedobject.bean.IntegerValue;
 import org.smartbit4all.api.mapbasedobject.bean.IntegerValueList;
 import org.smartbit4all.api.mapbasedobject.bean.LocalDateTimeValue;
 import org.smartbit4all.api.mapbasedobject.bean.LocalDateTimeValueList;
+import org.smartbit4all.api.mapbasedobject.bean.LocalDateValue;
+import org.smartbit4all.api.mapbasedobject.bean.LocalDateValueList;
+import org.smartbit4all.api.mapbasedobject.bean.LocalTimeValue;
+import org.smartbit4all.api.mapbasedobject.bean.LocalTimeValueList;
 import org.smartbit4all.api.mapbasedobject.bean.LongValue;
 import org.smartbit4all.api.mapbasedobject.bean.LongValueList;
 import org.smartbit4all.api.mapbasedobject.bean.MapBasedObjectData;
@@ -58,6 +66,12 @@ public class MapBasedObjectUtil {
     } else if (value instanceof LongValueList) {
       data.putLongListMapItem(key, (LongValueList) value);
 
+    } else if (value instanceof DoubleValue) {
+      data.putDoublePropertyMapItem(key, (DoubleValue) value);
+
+    } else if (value instanceof DoubleValueList) {
+      data.putDoubleListMapItem(key, (DoubleValueList) value);
+
     } else if (value instanceof BooleanValue) {
       data.putBooleanPropertyMapItem(key, (BooleanValue) value);
 
@@ -69,6 +83,18 @@ public class MapBasedObjectUtil {
 
     } else if (value instanceof UriValueList) {
       data.putUriListMapItem(key, (UriValueList) value);
+
+    } else if (value instanceof LocalDateValue) {
+      data.putLocalDatePropertyMapItem(key, (LocalDateValue) value);
+
+    } else if (value instanceof LocalDateValueList) {
+      data.putLocalDateListMapItem(key, (LocalDateValueList) value);
+
+    } else if (value instanceof LocalTimeValue) {
+      data.putLocalTimePropertyMapItem(key, (LocalTimeValue) value);
+
+    } else if (value instanceof LocalTimeValueList) {
+      data.putLocalTimeListMapItem(key, (LocalTimeValueList) value);
 
     } else if (value instanceof LocalDateTimeValue) {
       data.putLocalDateTimePropertyMapItem(key, (LocalDateTimeValue) value);
@@ -129,6 +155,15 @@ public class MapBasedObjectUtil {
       return new LongValueList().name(copiedValue.getName())
           .values(new ArrayList<>(copiedValue.getValues()));
 
+    } else if (propertyValue instanceof DoubleValue) {
+      DoubleValue copiedValue = (DoubleValue) propertyValue;
+      return new DoubleValue().name(copiedValue.getName()).value(copiedValue.getValue());
+
+    } else if (propertyValue instanceof DoubleValueList) {
+      DoubleValueList copiedValue = (DoubleValueList) propertyValue;
+      return new DoubleValueList().name(copiedValue.getName())
+          .values(new ArrayList<>(copiedValue.getValues()));
+
     } else if (propertyValue instanceof BooleanValue) {
       BooleanValue copiedValue = (BooleanValue) propertyValue;
       return new BooleanValue().name(copiedValue.getName()).value(copiedValue.getValue());
@@ -145,6 +180,24 @@ public class MapBasedObjectUtil {
     } else if (propertyValue instanceof UriValueList) {
       UriValueList copiedValue = (UriValueList) propertyValue;
       return new UriValueList().name(copiedValue.getName())
+          .values(new ArrayList<>(copiedValue.getValues()));
+
+    } else if (propertyValue instanceof LocalDateValue) {
+      LocalDateValue copiedValue = (LocalDateValue) propertyValue;
+      return new LocalDateValue().name(copiedValue.getName()).value(copiedValue.getValue());
+
+    } else if (propertyValue instanceof LocalDateValueList) {
+      LocalDateValueList copiedValue = (LocalDateValueList) propertyValue;
+      return new LocalDateValueList().name(copiedValue.getName())
+          .values(new ArrayList<>(copiedValue.getValues()));
+
+    } else if (propertyValue instanceof LocalTimeValue) {
+      LocalTimeValue copiedValue = (LocalTimeValue) propertyValue;
+      return new LocalTimeValue().name(copiedValue.getName()).value(copiedValue.getValue());
+
+    } else if (propertyValue instanceof LocalTimeValueList) {
+      LocalTimeValueList copiedValue = (LocalTimeValueList) propertyValue;
+      return new LocalTimeValueList().name(copiedValue.getName())
           .values(new ArrayList<>(copiedValue.getValues()));
 
     } else if (propertyValue instanceof LocalDateTimeValue) {
@@ -201,6 +254,12 @@ public class MapBasedObjectUtil {
     } else if (propertyValue instanceof LongValueList) {
       return ((LongValueList) propertyValue).getValues();
 
+    } else if (propertyValue instanceof DoubleValue) {
+      return ((DoubleValue) propertyValue).getValue();
+
+    } else if (propertyValue instanceof DoubleValueList) {
+      return ((DoubleValueList) propertyValue).getValues();
+
     } else if (propertyValue instanceof BooleanValue) {
       return ((BooleanValue) propertyValue).getValue();
 
@@ -213,6 +272,18 @@ public class MapBasedObjectUtil {
     } else if (propertyValue instanceof UriValueList) {
       return ((UriValueList) propertyValue).getValues();
 
+    } else if (propertyValue instanceof LocalDateValue) {
+      return ((LocalDateValue) propertyValue).getValue();
+
+    } else if (propertyValue instanceof LocalDateValueList) {
+      return ((LocalDateValueList) propertyValue).getValues();
+
+    } else if (propertyValue instanceof LocalTimeValue) {
+      return ((LocalTimeValue) propertyValue).getValue();
+
+    } else if (propertyValue instanceof LocalTimeValueList) {
+      return ((LocalTimeValueList) propertyValue).getValues();
+
     } else if (propertyValue instanceof LocalDateTimeValue) {
       return ((LocalDateTimeValue) propertyValue).getValue();
 
@@ -220,12 +291,16 @@ public class MapBasedObjectUtil {
       return ((LocalDateTimeValueList) propertyValue).getValues();
 
     } else if (propertyValue instanceof MapBasedObject) {
-      return propertyValue;
+      return MapBasedObject.toData((MapBasedObject) propertyValue);
 
     } else if (propertyValue instanceof List<?>) {
       List<?> list = (List<?>) propertyValue;
       if (list.isEmpty() || list.get(0) instanceof MapBasedObject) {
-        return propertyValue;
+        List<MapBasedObjectData> data = new ArrayList<>();
+        for (Object object : list) {
+          data.add(MapBasedObject.toData((MapBasedObject) object));
+        }
+        return data;
       }
     }
     throw new IllegalArgumentException(
@@ -260,11 +335,20 @@ public class MapBasedObjectUtil {
     } else if (value instanceof Long) {
       return new LongValue().name(key).value((Long) value);
 
+    } else if (value instanceof Double) {
+      return new DoubleValue().name(key).value((Double) value);
+
     } else if (value instanceof Boolean) {
       return new BooleanValue().name(key).value((Boolean) value);
 
     } else if (value instanceof URI) {
       return new UriValue().name(key).value((URI) value);
+
+    } else if (value instanceof LocalDate) {
+      return new LocalDateValue().name(key).value((LocalDate) value);
+
+    } else if (value instanceof LocalTime) {
+      return new LocalTimeValue().name(key).value((LocalTime) value);
 
     } else if (value instanceof LocalDateTime) {
       return new LocalDateTimeValue().name(key).value((LocalDateTime) value);
@@ -301,6 +385,11 @@ public class MapBasedObjectUtil {
               list.stream().map(e -> (Long) e).collect(Collectors.toList());
           return new LongValueList().name(key).values(values);
 
+        } else if (item instanceof Double) {
+          List<Double> values =
+              list.stream().map(e -> (Double) e).collect(Collectors.toList());
+          return new DoubleValueList().name(key).values(values);
+
         } else if (item instanceof Boolean) {
           List<Boolean> values =
               list.stream().map(e -> (Boolean) e).collect(Collectors.toList());
@@ -310,6 +399,16 @@ public class MapBasedObjectUtil {
           List<URI> values =
               list.stream().map(e -> (URI) e).collect(Collectors.toList());
           return new UriValueList().name(key).values(values);
+
+        } else if (item instanceof LocalDate) {
+          List<LocalDate> values =
+              list.stream().map(e -> (LocalDate) e).collect(Collectors.toList());
+          return new LocalDateValueList().name(key).values(values);
+
+        } else if (item instanceof LocalTime) {
+          List<LocalTime> values =
+              list.stream().map(e -> (LocalTime) e).collect(Collectors.toList());
+          return new LocalTimeValueList().name(key).values(values);
 
         } else if (item instanceof LocalDateTime) {
           List<LocalDateTime> values =
@@ -351,6 +450,12 @@ public class MapBasedObjectUtil {
     } else if (prevValue instanceof LongValueList) {
       return new LongValueList().name(key).values(null);
 
+    } else if (prevValue instanceof DoubleValue) {
+      return new DoubleValue().name(key).value(null);
+
+    } else if (prevValue instanceof DoubleValueList) {
+      return new DoubleValueList().name(key).values(null);
+
     } else if (prevValue instanceof BooleanValue) {
       return new BooleanValue().name(key).value(null);
 
@@ -362,6 +467,18 @@ public class MapBasedObjectUtil {
 
     } else if (prevValue instanceof UriValueList) {
       return new UriValueList().name(key).values(null);
+
+    } else if (prevValue instanceof LocalDateValue) {
+      return new LocalDateValue().name(key).value(null);
+
+    } else if (prevValue instanceof LocalDateValueList) {
+      return new LocalDateValueList().name(key).values(null);
+
+    } else if (prevValue instanceof LocalTimeValue) {
+      return new LocalTimeValue().name(key).value(null);
+
+    } else if (prevValue instanceof LocalTimeValueList) {
+      return new LocalTimeValueList().name(key).values(null);
 
     } else if (prevValue instanceof LocalDateTimeValue) {
       return new LocalDateTimeValue().name(key).value(null);
@@ -391,11 +508,20 @@ public class MapBasedObjectUtil {
     } else if (clazz.equals(Long.class)) {
       return new LongValue().name(key).value(null);
 
+    } else if (clazz.equals(Double.class)) {
+      return new DoubleValue().name(key).value(null);
+
     } else if (clazz.equals(Boolean.class)) {
       return new BooleanValue().name(key).value(null);
 
     } else if (clazz.equals(URI.class)) {
       return new UriValue().name(key).value(null);
+
+    } else if (clazz.equals(LocalDate.class)) {
+      return new LocalDateValue().name(key).value(null);
+
+    } else if (clazz.equals(LocalTime.class)) {
+      return new LocalTimeValue().name(key).value(null);
 
     } else if (clazz.equals(LocalDateTime.class)) {
       return new LocalDateTimeValue().name(key).value(null);
@@ -416,11 +542,20 @@ public class MapBasedObjectUtil {
     } else if (clazz.equals(Long.class)) {
       return new LongValueList().name(key).values(new ArrayList<>());
 
+    } else if (clazz.equals(Double.class)) {
+      return new DoubleValueList().name(key).values(new ArrayList<>());
+
     } else if (clazz.equals(Boolean.class)) {
       return new BooleanValueList().name(key).values(new ArrayList<>());
 
     } else if (clazz.equals(URI.class)) {
       return new UriValueList().name(key).values(new ArrayList<>());
+
+    } else if (clazz.equals(LocalDate.class)) {
+      return new LocalDateValueList().name(key).values(new ArrayList<>());
+
+    } else if (clazz.equals(LocalTime.class)) {
+      return new LocalTimeValueList().name(key).values(new ArrayList<>());
 
     } else if (clazz.equals(LocalDateTime.class)) {
       return new LocalDateTimeValueList().name(key).values(new ArrayList<>());
@@ -462,6 +597,12 @@ public class MapBasedObjectUtil {
       }
       expectedValueClass = Long.class.getName();
 
+    } else if (mapValueList instanceof DoubleValueList) {
+      if (value == null || value instanceof Double) {
+        return true;
+      }
+      expectedValueClass = Double.class.getName();
+
     } else if (mapValueList instanceof BooleanValueList) {
       if (value == null || value instanceof Boolean) {
         return true;
@@ -473,6 +614,18 @@ public class MapBasedObjectUtil {
         return true;
       }
       expectedValueClass = URI.class.getName();
+
+    } else if (mapValueList instanceof LocalDateValueList) {
+      if (value == null || value instanceof LocalDate) {
+        return true;
+      }
+      expectedValueClass = LocalDate.class.getName();
+
+    } else if (mapValueList instanceof LocalTimeValueList) {
+      if (value == null || value instanceof LocalTime) {
+        return true;
+      }
+      expectedValueClass = LocalTime.class.getName();
 
     } else if (mapValueList instanceof LocalDateTimeValueList) {
       if (value == null || value instanceof LocalDateTime) {
@@ -517,11 +670,22 @@ public class MapBasedObjectUtil {
     } else if (value instanceof Long) {
       data.putLongPropertyMapItem(key, new LongValue().name(key).value((Long) value));
 
+    } else if (value instanceof Double) {
+      data.putDoublePropertyMapItem(key, new DoubleValue().name(key).value((Double) value));
+
     } else if (value instanceof Boolean) {
       data.putBooleanPropertyMapItem(key, new BooleanValue().name(key).value((Boolean) value));
 
     } else if (value instanceof URI) {
       data.putUriPropertyMapItem(key, new UriValue().name(key).value((URI) value));
+
+    } else if (value instanceof LocalDate) {
+      data.putLocalDatePropertyMapItem(key,
+          new LocalDateValue().name(key).value((LocalDate) value));
+
+    } else if (value instanceof LocalTime) {
+      data.putLocalTimePropertyMapItem(key,
+          new LocalTimeValue().name(key).value((LocalTime) value));
 
     } else if (value instanceof LocalDateTime) {
       data.putLocalDateTimePropertyMapItem(key,
@@ -555,6 +719,11 @@ public class MapBasedObjectUtil {
               list.stream().map(e -> (Long) e).collect(Collectors.toList());
           data.putLongListMapItem(key, new LongValueList().name(key).values(values));
 
+        } else if (item instanceof Double) {
+          List<Double> values =
+              list.stream().map(e -> (Double) e).collect(Collectors.toList());
+          data.putDoubleListMapItem(key, new DoubleValueList().name(key).values(values));
+
         } else if (item instanceof Boolean) {
           List<Boolean> values =
               list.stream().map(e -> (Boolean) e).collect(Collectors.toList());
@@ -564,6 +733,18 @@ public class MapBasedObjectUtil {
           List<URI> values =
               list.stream().map(e -> (URI) e).collect(Collectors.toList());
           data.putUriListMapItem(key, new UriValueList().name(key).values(values));
+
+        } else if (item instanceof LocalDate) {
+          List<LocalDate> values =
+              list.stream().map(e -> (LocalDate) e).collect(Collectors.toList());
+          data.putLocalDateListMapItem(key,
+              new LocalDateValueList().name(key).values(values));
+
+        } else if (item instanceof LocalTime) {
+          List<LocalTime> values =
+              list.stream().map(e -> (LocalTime) e).collect(Collectors.toList());
+          data.putLocalTimeListMapItem(key,
+              new LocalTimeValueList().name(key).values(values));
 
         } else if (item instanceof LocalDateTime) {
           List<LocalDateTime> values =
@@ -603,11 +784,22 @@ public class MapBasedObjectUtil {
       } else if (value instanceof Long) {
         addOrSetListItem(((LongValueList) valueList).getValues(), index, (Long) value);
 
+      } else if (value instanceof Double) {
+        addOrSetListItem(((DoubleValueList) valueList).getValues(), index, (Double) value);
+
       } else if (value instanceof Boolean) {
         addOrSetListItem(((BooleanValueList) valueList).getValues(), index, (Boolean) value);
 
       } else if (value instanceof URI) {
         addOrSetListItem(((UriValueList) valueList).getValues(), index, (URI) value);
+
+      } else if (value instanceof LocalDate) {
+        addOrSetListItem(((LocalDateValueList) valueList).getValues(), index,
+            (LocalDate) value);
+
+      } else if (value instanceof LocalTime) {
+        addOrSetListItem(((LocalTimeValueList) valueList).getValues(), index,
+            (LocalTime) value);
 
       } else if (value instanceof LocalDateTime) {
         addOrSetListItem(((LocalDateTimeValueList) valueList).getValues(), index,
@@ -620,7 +812,6 @@ public class MapBasedObjectUtil {
       } else if (value instanceof MapBasedObject) {
         addOrSetListItem((List<MapBasedObject>) valueList, index, (MapBasedObject) value);
       }
-
     }
   }
 
@@ -647,13 +838,16 @@ public class MapBasedObjectUtil {
     return value instanceof StringValueList ||
         value instanceof IntegerValueList ||
         value instanceof LongValueList ||
+        value instanceof DoubleValueList ||
         value instanceof BooleanValueList ||
         value instanceof UriValueList ||
+        value instanceof LocalDateValueList ||
+        value instanceof LocalTimeValueList ||
         value instanceof LocalDateTimeValueList;
   }
 
   /**
-   * Converts the given value if it is neccesary to be able to be stored by {@link MapBasedObject}.
+   * Converts the given value if it is necessary to be able to be stored by {@link MapBasedObject}.
    * 
    * @param value
    * @return
