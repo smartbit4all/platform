@@ -12,8 +12,6 @@ import java.util.UUID;
 import java.util.concurrent.locks.Lock;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.storage.bean.ObjectMap;
 import org.smartbit4all.api.storage.bean.ObjectMapRequest;
 import org.smartbit4all.api.storage.bean.ObjectReference;
@@ -46,8 +44,6 @@ public final class Storage {
    * The name of the storage transaction manager.
    */
   public static final String STORAGETX = "storageTX";
-
-  private static final Logger log = LoggerFactory.getLogger(Storage.class);
 
   /**
    * This is the physical storage that is responsible for save and load of the objects.
@@ -123,6 +119,19 @@ public final class Storage {
    *         can subscribe for it's events.
    */
   public <T> StorageObject<T> instanceOf(Class<T> clazz) {
+    return instanceOf(clazz, null);
+  }
+
+  /**
+   * Constructs a new instance of the given {@link Class}.
+   * 
+   * @param <T>
+   * @param clazz The class that represents a domain object.
+   * @return A new Instance of the {@link StorageObject} that already has an URI! If we save this
+   *         without {@link StorageObject#setObject(Object)} then it will be an empty object but we
+   *         can subscribe for it's events.
+   */
+  public <T> StorageObject<T> instanceOf(Class<T> clazz, String setName) {
     ObjectDefinition<T> objectDefinition = objectApi.definition(clazz);
     if (!objectDefinition.hasUri()) {
       throw new IllegalArgumentException(
@@ -135,7 +144,7 @@ public final class Storage {
     UUID uuid = UUID.randomUUID();
     storageObject.setUuid(uuid);
     if (!objectDefinition.isExplicitUri()) {
-      storageObject.setUri(constructUri(objectDefinition, uuid));
+      storageObject.setUri(constructUri(objectDefinition, uuid, setName));
     }
     return storageObject;
   }
@@ -167,6 +176,25 @@ public final class Storage {
     }
     @SuppressWarnings("unchecked")
     StorageObject<T> storageObject = (StorageObject<T>) instanceOf(object.getClass());
+    storageObject.setObject(object);
+    return save(storageObject);
+  }
+
+  /**
+   * Save the given object as new into the storage. If we save a new instance then there is no need
+   * to use the {@link StorageObject} because there will no concurrent issue or any other problem.
+   * 
+   * @param <T>
+   * @param object The object to save. The URI will be generated so there is no need and no
+   *        influence of the previously set URI! Don't set any URI or be aware of skipping this.
+   * @return The URI of the newly created object.
+   */
+  public <T> URI saveAsNew(T object, String setName) {
+    if (object == null) {
+      return null;
+    }
+    @SuppressWarnings("unchecked")
+    StorageObject<T> storageObject = (StorageObject<T>) instanceOf(object.getClass(), setName);
     storageObject.setObject(object);
     return save(storageObject);
   }
@@ -267,6 +295,10 @@ public final class Storage {
    */
   public <T> T read(URI uri, Class<T> clazz) {
     return objectStorage.read(this, uri, clazz);
+  }
+
+  public <T> List<T> readAll(String setName, Class<T> clazz) {
+    return objectStorage.readAll(this, setName, clazz);
   }
 
   public boolean exists(URI uri) {
@@ -385,10 +417,11 @@ public final class Storage {
    * year/month/day/hour/min format. The final item is a UUID that should be unique individually
    * also. In a running application this URI always identifies a given object.
    */
-  private final URI constructUri(ObjectDefinition<?> objectDefinition, UUID uuid) {
+  private final URI constructUri(ObjectDefinition<?> objectDefinition, UUID uuid, String setName) {
     LocalDateTime now = LocalDateTime.now();
     URI uri = URI.create(scheme + StringConstant.COLON + StringConstant.SLASH
         + objectDefinition.getAlias() + StringConstant.SLASH
+        + (setName == null ? StringConstant.EMPTY : setName + StringConstant.SLASH)
         + now.getYear() + StringConstant.SLASH + now.getMonthValue() + StringConstant.SLASH
         + now.getDayOfMonth() + StringConstant.SLASH + now.getHour() + StringConstant.SLASH
         + StringConstant.SLASH + now.getMinute() + StringConstant.SLASH

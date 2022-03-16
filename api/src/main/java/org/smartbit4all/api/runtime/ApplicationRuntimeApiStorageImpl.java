@@ -3,13 +3,13 @@ package org.smartbit4all.api.runtime;
 import java.net.InetAddress;
 import java.net.URI;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.apache.logging.log4j.util.Strings;
 import org.smartbit4all.api.invocation.bean.ApplicationRuntimeData;
-import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageObject.VersionPolicy;
@@ -96,7 +96,7 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
       // Save the self and set as self. From that time the runtime is officially registered.
       ApplicationRuntimeData runtimeData = dataOf(myRuntime);
       runtimeData.setLastTouchTime(currentTimeMillis);
-      runtimeUri = storageCluster.saveAsNew(runtimeData);
+      runtimeUri = storageCluster.saveAsNew(runtimeData, "active");
       self = myRuntime;
     } else {
       // The application runtime is already exists and must be updated in the storage.
@@ -105,6 +105,12 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
       });
     }
     // If we successfully saved ourself then read all the active runtime we have in this register.
+    List<ApplicationRuntimeData> activeRuntimes =
+        storageCluster.readAll("active", ApplicationRuntimeData.class);
+    // Manage the invalid runtimes, move them into the archive set.
+    for (ApplicationRuntimeData applicationRuntimeData : activeRuntimes) {
+      System.out.println("Runtime: " + applicationRuntimeData.toString());
+    }
   }
 
   @Override
@@ -136,11 +142,7 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
    */
   public static final ApplicationRuntimeData dataOf(ApplicationRuntime runtime) {
     return new ApplicationRuntimeData().uuid(runtime.getUuid()).ipAddress(runtime.getIp())
-        .serverPort(runtime.getPort()).timeOffset(runtime.getTimeOffset())
-        .uri(URI.create(CLUSTER + StringConstant.COLON + StringConstant.SLASH
-            + ApplicationRuntimeData.class.getName().replace('.', '/') + StringConstant.SLASH
-            + "active"
-            + StringConstant.SLASH + runtime.getUuid()));
+        .serverPort(runtime.getPort()).timeOffset(runtime.getTimeOffset());
   }
 
 }

@@ -3,7 +3,13 @@ package org.smartbit4all.storage.fs;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +27,7 @@ import org.smartbit4all.core.io.utility.FileIO;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.utility.StringConstant;
+import org.smartbit4all.core.utility.UriUtils;
 import org.smartbit4all.domain.data.storage.ObjectHistoryIterator;
 import org.smartbit4all.domain.data.storage.ObjectModificationException;
 import org.smartbit4all.domain.data.storage.ObjectNotFoundException;
@@ -462,7 +469,8 @@ public class StorageFS extends ObjectStorageImpl {
     if (uri == null) {
       return false;
     }
-    File storageObjectDataFile = getDataFileByUri(uri, storedObjectFileExtension);
+    File storageObjectDataFile =
+        getDataFileByUri(getUriWithoutVersion(uri), storedObjectFileExtension);
     if (!storageObjectDataFile.exists()) {
       return false;
     }
@@ -474,7 +482,8 @@ public class StorageFS extends ObjectStorageImpl {
     if (uri == null) {
       return null;
     }
-    File storageObjectDataFile = getDataFileByUri(uri, storedObjectFileExtension);
+    File storageObjectDataFile =
+        getDataFileByUri(getUriWithoutVersion(uri), storedObjectFileExtension);
     if (!storageObjectDataFile.exists()) {
       return null;
     }
@@ -536,6 +545,58 @@ public class StorageFS extends ObjectStorageImpl {
     }
 
     return storageObject;
+  }
+
+  @Override
+  public <T> List<T> readAll(Storage storage, String setName, Class<T> clazz) {
+    // Check if the given directory exists or not.
+    ObjectDefinition<T> objectDefinition = objectApi.definition(clazz);
+
+    String storageScheme = getStorageScheme(storage);
+    String setPath = StringConstant.SLASH + objectDefinition.getAlias()
+        + StringConstant.SLASH
+        + setName;
+    File setFolder =
+        new File(rootFolder,
+            storageScheme + setPath);
+    Path setFolderPath = setFolder.toPath();
+
+    if (setFolder.exists()) {
+      // The depth of the walk is defined by the depth of the uri path. It's about 6-7 so we use 8
+      // as maximum depth.
+      List<T> objects = new ArrayList<>();
+      try {
+        Files.walkFileTree(setFolderPath, Collections.emptySet(), 8,
+            new StorageSetFSVisitor() {
+
+              @Override
+              public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
+                  throws IOException {
+                String fileName = file.getFileName().toString();
+                if (fileName.endsWith(storedObjectFileExtension)) {
+                  // We read the object with the standard operation by creating a valid URI from the
+                  // path.
+                  String path = setPath + StringConstant.SLASH
+                      + setFolderPath.relativize(file.getParent()).toString().replace('\\', '/')
+                      + StringConstant.SLASH
+                      + fileName.substring(0,
+                          fileName.length() - storedObjectFileExtension.length());
+                  objects.add(read(storage,
+                      UriUtils.createUri(storageScheme, null,
+                          path,
+                          null),
+                      clazz));
+                }
+                return FileVisitResult.CONTINUE;
+              }
+            });
+      } catch (IOException e) {
+        log.debug("Unable to read all the objects from the set.", e);
+      }
+      return objects;
+    }
+
+    return Collections.emptyList();
   }
 
   private <T> StorageObject<T> readObjectSingleVersion(Storage storage, URI uri, Class<T> clazz,
@@ -671,7 +732,8 @@ public class StorageFS extends ObjectStorageImpl {
       return null;
     }
 
-    File storageObjectDataFile = getDataFileByUri(uri, storedObjectFileExtension);
+    File storageObjectDataFile =
+        getDataFileByUri(getUriWithoutVersion(uri), storedObjectFileExtension);
     if (!storageObjectDataFile.exists()) {
       return null;
     }
@@ -722,7 +784,8 @@ public class StorageFS extends ObjectStorageImpl {
       return null;
     }
 
-    File storageObjectDataFile = getDataFileByUri(uri, storedObjectFileExtension);
+    File storageObjectDataFile =
+        getDataFileByUri(getUriWithoutVersion(uri), storedObjectFileExtension);
     if (!storageObjectDataFile.exists()) {
       return null;
     }

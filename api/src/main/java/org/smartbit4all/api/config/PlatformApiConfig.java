@@ -10,7 +10,6 @@ import org.smartbit4all.api.invocation.InvocationExecutionApi;
 import org.smartbit4all.api.invocation.InvocationExecutionApiLocal;
 import org.smartbit4all.api.invocation.bean.ApiData;
 import org.smartbit4all.api.invocation.bean.ApiRegistryData;
-import org.smartbit4all.api.invocation.bean.ApplicationRuntimeData;
 import org.smartbit4all.api.invocation.registration.ApiRegister;
 import org.smartbit4all.api.invocation.registration.ApiRegisterImpl;
 import org.smartbit4all.api.invocation.registration.LocalApiInstantiator;
@@ -108,14 +107,6 @@ public class PlatformApiConfig {
   public ObjectDefinition<ApiRegistryData> apiRegistryDataDefinition() {
     ObjectDefinition<ApiRegistryData> result =
         ObjectApiImpl.constructDefinitionBase(ApiRegistryData.class);
-    result.setExplicitUri(true);
-    return result;
-  }
-
-  @Bean
-  public ObjectDefinition<ApplicationRuntimeData> applicationRuntimeData() {
-    ObjectDefinition<ApplicationRuntimeData> result =
-        ObjectApiImpl.constructDefinitionBase(ApplicationRuntimeData.class);
     result.setExplicitUri(true);
     return result;
   }

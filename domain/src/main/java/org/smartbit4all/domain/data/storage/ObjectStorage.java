@@ -23,6 +23,16 @@ import org.smartbit4all.core.object.ObjectDefinition;
  * associated with instances. The channel can be associated to one instance or can be managed by all
  * instances. The execution model can be sequential or parallel.
  * 
+ * The {@link ObjectStorage} can manage set of objects also. It is defined in the URI as a sub path
+ * inside the alias of the class. Looks like this:
+ * 
+ * <p>
+ * storagescheme:/org_smartbit4all_module_MyClass<b>/active</b>/2022...
+ * </p>
+ * 
+ * The object storage can read all the objects in from a set with the
+ * {@link #readAll(Storage, String, Class)} operation.
+ * 
  * @author Zoltan Szegedi
  *
  */
@@ -39,6 +49,7 @@ public interface ObjectStorage {
   /**
    * Load the object with the given URI.
    * 
+   * @param storage The logical storage of the given operation.
    * @param uri The Unified Resource Identifier of the object we are looking for. It must be
    *        situated in the current physical storage. This routing relies on the registry of the
    *        {@link StorageApi} and based on the scheme of the URI.
@@ -53,6 +64,7 @@ public interface ObjectStorage {
   /**
    * Load the object with the given URI.
    * 
+   * @param storage The logical storage of the given operation.
    * @param uri The Unified Resource Identifier of the object we are looking for. It must be
    *        situated in the current physical storage. This routing relies on the registry of the
    *        {@link StorageApi} and based on the scheme of the URI.
@@ -64,6 +76,7 @@ public interface ObjectStorage {
   /**
    * Load the objects with the given URI.
    * 
+   * @param storage The logical storage of the given operation.
    * @param uris The Unified Resource Identifier of the object we are looking for. It must be
    *        situated in the current physical storage. This routing relies on the registry of the
    *        {@link StorageApi} and based on the scheme of the URI.
@@ -78,6 +91,7 @@ public interface ObjectStorage {
    * Read the given object identified by the URI. We can not initiate a transaction with the result
    * of the read! Use the load instead.
    * 
+   * @param storage The logical storage of the given operation.
    * @param uri The Unified Resource Identifier of the object we are looking for. It must be
    *        situated in the current physical storage. This routing relies on the registry of the
    *        {@link StorageApi} and based on the scheme of the URI.
@@ -90,6 +104,7 @@ public interface ObjectStorage {
    * Read the given object identified by the URI. We can not initiate a transaction with the result
    * of the read! Use the load instead.
    * 
+   * @param storage The logical storage of the given operation.
    * @param uri The Unified Resource Identifier of the object we are looking for. It must be
    *        situated in the current physical storage. This routing relies on the registry of the
    *        {@link StorageApi} and based on the scheme of the URI.
@@ -101,6 +116,7 @@ public interface ObjectStorage {
    * Read the given objects identified by the URI. We can not initiate a transaction with the result
    * of the read! Use the load instead.
    * 
+   * @param storage The logical storage of the given operation.
    * @param uris The Unified Resource Identifier of the object we are looking for. It must be
    *        situated in the current physical storage. This routing relies on the registry of the
    *        {@link StorageApi} and based on the scheme of the URI.
@@ -108,6 +124,29 @@ public interface ObjectStorage {
    *        {@link ObjectDefinition} responsible for this type of objects.
    */
   <T> List<T> read(Storage storage, List<URI> uris, Class<T> clazz);
+
+  /**
+   * Read the given objects identified by the URI. We can not initiate a transaction with the result
+   * of the read! Use the load instead.
+   * 
+   * @param storage The logical storage of the given operation.
+   * @param setName The name of the set that the given call is looking for. If there is no item in
+   *        the set or the set itself doesn't exist an empty list is going to be returned.
+   * @param clazz The class of the object to load. Based on this class we can easily identify the
+   *        {@link ObjectDefinition} responsible for this type of objects.
+   */
+  <T> List<T> readAll(Storage storage, String setName, Class<T> clazz);
+
+  /**
+   * Move the source URI into the target set.
+   * 
+   * @param sourceUri
+   * @param targetstorage The target storage that is the logical storage to save the given object
+   *        to.
+   * @param targetSet The target set.
+   * @return
+   */
+  URI move(URI sourceUri, Storage targetstorage, String targetSet);
 
   /**
    * @return Return true if the given {@link ObjectStorage} is the default one by the configuration.

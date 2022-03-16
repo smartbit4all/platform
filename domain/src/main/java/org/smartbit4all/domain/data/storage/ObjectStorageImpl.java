@@ -33,8 +33,6 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public abstract class ObjectStorageImpl implements ObjectStorage {
 
-  private static final String STORAGEMGMT = "storagemgmt";
-
   private static final Logger log = LoggerFactory.getLogger(ObjectStorageImpl.class);
 
   /**
@@ -173,6 +171,10 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
     return objectDefinition;
   }
 
+  protected String getStorageScheme(Storage storage) {
+    return storage.getScheme();
+  }
+
   @Override
   public <T> T read(Storage storage, URI uri, Class<T> clazz) {
     return load(storage, uri, clazz).getObject();
@@ -188,6 +190,18 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
     List<StorageObject<T>> load = load(storage, uris, clazz);
     return load.stream().map(s -> s.getObject()).filter(o -> o != null)
         .collect(Collectors.toList());
+  }
+
+  @Override
+  public <T> List<T> readAll(Storage storage, String setName, Class<T> clazz) {
+    // By default it won't return anything. The management of the set is an extra functionality.
+    return null;
+  }
+
+  @Override
+  public URI move(URI sourceUri, Storage targetstorage, String targetSet) {
+    // By default it won't return anything. The management of the set is an extra functionality.
+    return null;
   }
 
   /**
