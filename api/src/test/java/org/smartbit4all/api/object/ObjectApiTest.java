@@ -1,6 +1,6 @@
 package org.smartbit4all.api.object;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.io.IOException;
 import java.net.URI;
 import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
@@ -12,6 +12,7 @@ import org.smartbit4all.core.object.ObjectDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(classes = {ObjectApiTestConfig.class})
 public class ObjectApiTest {
@@ -20,7 +21,7 @@ public class ObjectApiTest {
   private ObjectApi objectApi;
 
   @Test
-  public void testPredefinedDefinition() {
+  public void testPredefinedDefinition() throws IOException {
     ObjectDefinition<DomainObjectTestBean> definition =
         objectApi.definition(DomainObjectTestBean.class);
     assertEquals(DomainObjectTestBean.class.getName().replace('.', '-'), definition.getAlias());
@@ -48,7 +49,7 @@ public class ObjectApiTest {
   }
 
   @Test
-  public void testUndefinedBeanDefinition() {
+  public void testUndefinedBeanDefinition() throws IOException {
     ObjectDefinition<BinaryContent> definition = objectApi.definition(BinaryContent.class);
     assertEquals(BinaryContent.class.getName().replace('.', '_'),
         definition.getAlias());
