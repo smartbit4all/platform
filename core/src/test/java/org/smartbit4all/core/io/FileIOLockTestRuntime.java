@@ -39,7 +39,7 @@ public class FileIOLockTestRuntime {
     for (int i = 0; i < 1000; i++) {
 
       // Check if the object file contains something else.
-      byte[] currentBytes = FileIO.readFile(fileo, is -> {
+      byte[] currentBytes = FileIO.readFileAtomic(fileo, is -> {
         try {
           return ByteStreams.toByteArray(is);
         } catch (IOException e) {
@@ -53,7 +53,7 @@ public class FileIOLockTestRuntime {
           int wait = rnd.nextInt(20);
           waitTime += wait;
           Thread.sleep(wait);
-          currentBytes = FileIO.readFile(fileo, is -> {
+          currentBytes = FileIO.readFileAtomic(fileo, is -> {
             try {
               return ByteStreams.toByteArray(is);
             } catch (IOException e) {

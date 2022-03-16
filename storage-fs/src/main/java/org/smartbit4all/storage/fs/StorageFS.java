@@ -3,12 +3,12 @@ package org.smartbit4all.storage.fs;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.time.OffsetDateTime;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
+import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import org.slf4j.Logger;
@@ -68,15 +68,6 @@ public class StorageFS extends ObjectStorageImpl {
   private static final String storedObjectFileExtension = ".o";
 
   /**
-   * The file extension (*.extension) of the serialized object files. This file contains the stored
-   * object directly so the changes are saved immediately regardless of the active transactions.
-   * These objects are used to have an up to date state information about anything.
-   * 
-   * If set, the loadAll method only look for files with the given extension.
-   */
-  private static final String mutableStoredObjectFileExtension = ".m";
-
-  /**
    * The relation contents are stored in a file with this extension.
    */
   private static final String storedObjectRelationFileExtension = ".r";
@@ -85,6 +76,12 @@ public class StorageFS extends ObjectStorageImpl {
    * The lock file postfix.
    */
   private static final String storedObjectLockFileExtension = ".l";
+
+  /**
+   * The transaction file extension. The transaction file always contains the pending content of the
+   * object if there is a writing transaction in progress.
+   */
+  private static final String transactionFileExtension = ".t";
 
   /**
    * The {@link ObjectDefinition} of the {@link StorageObjectData} that is basic api object of the
@@ -108,6 +105,8 @@ public class StorageFS extends ObjectStorageImpl {
   @Autowired(required = false)
   private StorageTransactionManagerFS transactionManager;
 
+  private static Random rnd = new Random();
+
   /**
    * @param rootFolder The root folder, in which the storage place the files.
    */
@@ -118,24 +117,60 @@ public class StorageFS extends ObjectStorageImpl {
     this.storageObjectRelationDataDef = objectApi.definition(StorageObjectRelationData.class);
   }
 
-  private final File getObjectDataFile(URI objectUri, Storage storage) {
-    return getDataFileByUri(objectUri,
-        storage.getVersionPolicy() == VersionPolicy.SINGLEVERSION
-            ? mutableStoredObjectFileExtension
-            : storedObjectFileExtension);
-  }
-
-  private final File getObjectVersionBasePath(StorageObject<?> object) {
-    return getDataFileByUri(object.getUri(), StringConstant.EMPTY);
-  }
-
+  /**
+   * The key function that constructs the {@link File} related to an URI based on the
+   * {@link #rootFolder} and the structure of the URI.
+   * 
+   * @param objectUri The object URI
+   * @param extension The extension of the file
+   * @return The {@link File}.
+   */
   private final File getDataFileByUri(URI objectUri, String extension) {
     return new File(rootFolder, objectUri.getScheme() + StringConstant.SLASH + objectUri.getPath()
         + extension);
   }
 
-  private File getObjectLockFile(StorageObject<?> object) {
-    return getDataFileByUri(object.getUri(), storedObjectLockFileExtension);
+  /**
+   * Constructs the object file for the URI.
+   * 
+   * @param objectUri The object URI.
+   * @return We get an object file with extension {@link #storedObjectFileExtension}.
+   */
+  private final File getObjectDataFile(URI objectUri) {
+    return getDataFileByUri(objectUri, storedObjectFileExtension);
+  }
+
+  /**
+   * Constructs the base path of the version folder.
+   * 
+   * @param objectUri The object uri.
+   * @return The folder that is the at the path of the URI. The folder itself is the {@link UUID}
+   *         that is the last segment of the path.
+   */
+  private final File getObjectVersionBasePath(URI objectUri) {
+    return getDataFileByUri(objectUri, StringConstant.EMPTY);
+  }
+
+  /**
+   * The transaction file for the object uri.
+   * 
+   * @param objectUri The object URI.
+   * @return The transaction file that is the same like the object file itself but with
+   *         {@link #transactionFileExtension}.
+   */
+  private File getObjectTransactionFile(URI objectUri) {
+    return getDataFileByUri(objectUri, transactionFileExtension);
+  }
+
+  /**
+   * The lock file for the object uri.
+   * 
+   * @param objectUri The object URI.
+   * @return The lock file that is the same like the object file itself but with
+   *         {@link #storedObjectLockFileExtension}.
+   */
+  private File getObjectLockFile(URI objectUri) {
+    return getDataFileByUri(objectUri, storedObjectLockFileExtension);
   }
 
   /**
@@ -221,7 +256,7 @@ public class StorageFS extends ObjectStorageImpl {
    *         locking in the {@link #save(StorageObject)}.
    */
   private final void saveSingleVersionObject(StorageObject<?> object) throws IOException {
-    File objectDataFile = getObjectDataFile(object.getUri(), object.getStorage());
+    File objectDataFile = getObjectDataFile(object.getUri());
     StorageObjectData storageObjectData = new StorageObjectData().uri(object.getUri())
         .className(object.definition().getClazz().getName());
     saveObjectDataInline(object, objectDataFile, storageObjectData);
@@ -236,8 +271,8 @@ public class StorageFS extends ObjectStorageImpl {
    */
   private final void saveVersionedObject(StorageObject<?> object) throws IOException {
     // Load the StorageObjectData that is the api object of the storage itself.
-    File objectDataFile = getObjectDataFile(object.getUri(), object.getStorage());
-    File objectVersionBasePath = getObjectVersionBasePath(object);
+    File objectDataFile = getObjectDataFile(object.getUri());
+    File objectVersionBasePath = getObjectVersionBasePath(object.getUri());
     // The temporary file of the StorageObjectData will be identified by the transaction id as
     // extension.
     StorageObjectData storageObjectData;
@@ -245,10 +280,7 @@ public class StorageFS extends ObjectStorageImpl {
     ObjectVersion currentVersion = null;
     if (objectDataFile.exists()) {
       // This is an existing data file.
-      BinaryData dataFile = new BinaryData(objectDataFile);
-      Optional<StorageObjectData> optStorageObject = storageObjectDataDef.deserialize(dataFile);
-      // Extract the current version and create the new one based on this.
-      storageObjectData = optStorageObject.get();
+      storageObjectData = readObjectData(objectDataFile);
       currentVersion = storageObjectData.getCurrentVersion();
       // We should check if the current version is the same.
       if (object.getVersion() != null
@@ -397,28 +429,32 @@ public class StorageFS extends ObjectStorageImpl {
   private final void saveObjectData(StorageObject<?> object, File objectDataFile,
       StorageObjectData storageObjectData) throws IOException {
     // Write the data temporary file
-    File objectDataFileTemp =
-        new File(objectDataFile.getPath() + StringConstant.DOT + object.getTransactionId());
+    File objectDataFileTemp = getObjectTransactionFile(object.getUri());
     FileIO.write(objectDataFileTemp,
         storageObjectDataDef.serialize(storageObjectData));
     // Atomic move of the temp file.
     // TODO The move must be executed by the transaction manager at the end of the transaction.
-    Files.move(objectDataFileTemp.toPath(), objectDataFile.toPath(),
-        StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+    try {
+      FileIO.finalizeWrite(objectDataFileTemp, objectDataFile);
+    } catch (InterruptedException e) {
+      throw new IOException("Unable to finalize the " + object + " write.", e);
+    }
   }
 
   private final void saveObjectDataInline(StorageObject<?> object, File objectDataFile,
       StorageObjectData storageObjectData)
       throws IOException {
     // Write the data temporary file
-    File objectDataFileTemp =
-        new File(objectDataFile.getPath() + StringConstant.DOT + object.getTransactionId());
+    File objectDataFileTemp = getObjectTransactionFile(object.getUri());
     FileIO.writeMultipart(objectDataFileTemp, storageObjectDataDef.serialize(storageObjectData),
         object.serialize());
     // Atomic move of the temp file.
     // TODO The move must be executed by the transaction manager at the end of the transaction.
-    Files.move(objectDataFileTemp.toPath(), objectDataFile.toPath(),
-        StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+    try {
+      FileIO.finalizeWrite(objectDataFileTemp, objectDataFile);
+    } catch (InterruptedException e) {
+      throw new IOException("Unable to finalize the " + object + " write.", e);
+    }
   }
 
   @Override
@@ -448,38 +484,22 @@ public class StorageFS extends ObjectStorageImpl {
   @Override
   public <T> StorageObject<T> load(Storage storage, URI uri, Class<T> clazz,
       StorageLoadOption... options) {
-    // The normal load is not locking anything. There is an optimistic lock implemented by default.
-    // Identify the class from the URI. The first part of the path in the URI is standing for the
-    // object type (the class).
-    File storageObjectDataFile = getObjectDataFile(uri, storage);
+    URI uriWithoutVersion = getUriWithoutVersion(uri);
+    File storageObjectDataFile = getObjectDataFile(uriWithoutVersion);
     if (!storageObjectDataFile.exists()) {
       throw new ObjectNotFoundException(uri, clazz, "Object data file not found.");
+    }
+    if (uriWithoutVersion.getPath().endsWith(Storage.singleVersionURIPostfix)
+        && storage.getVersionPolicy() != VersionPolicy.SINGLEVERSION) {
+      throw new IllegalArgumentException("Unable to load single version object with .");
     }
 
     if (storage.getVersionPolicy() == VersionPolicy.SINGLEVERSION) {
       // Load the single version from file.
-      List<BinaryData> dataParts = FileIO.readMultipart(storageObjectDataFile);
-      Optional<StorageObjectData> optObject =
-          storageObjectDataDef.deserialize(dataParts.get(0));
-      if (!optObject.isPresent()) {
-        throw new ObjectNotFoundException(uri, clazz, "Unable to load object data file.");
-      }
-      @SuppressWarnings("unchecked")
-      ObjectDefinition<T> definition =
-          (ObjectDefinition<T>) getObjectDefinition(uri, optObject.get(), clazz);
-      @SuppressWarnings("unchecked")
-      T obj = definition.deserialize(dataParts.get(1)).orElse(null);
-      return instanceOf(storage, definition, obj, optObject.get());
+      return readObjectSingleVersion(storage, uriWithoutVersion, clazz, storageObjectDataFile);
     }
 
-    File storageObjectVersionBasePath = getDataFileByUri(uri, StringConstant.EMPTY);
-    BinaryData storageObjectBinaryData = new BinaryData(storageObjectDataFile);
-    Optional<StorageObjectData> optObject =
-        storageObjectDataDef.deserialize(storageObjectBinaryData);
-    if (!optObject.isPresent()) {
-      throw new ObjectNotFoundException(uri, clazz, "Unable to load object data file.");
-    }
-    StorageObjectData storageObjectData = optObject.get();
+    StorageObjectData storageObjectData = readObjectData(storageObjectDataFile);
     @SuppressWarnings("unchecked")
     ObjectDefinition<T> definition =
         (ObjectDefinition<T>) getObjectDefinition(uri, storageObjectData, clazz);
@@ -487,6 +507,7 @@ public class StorageFS extends ObjectStorageImpl {
     ObjectVersion objectVersion = storageObjectData.getCurrentVersion();
     Long versionDataSerialNo = getVersionByUri(uri, storageObjectData);
     boolean skipData = StorageLoadOption.checkSkipData(options);
+    File storageObjectVersionBasePath = getObjectVersionBasePath(uriWithoutVersion);
     if (versionDataSerialNo != null && !skipData) {
 
       StorageObjectHistoryEntry<T> loadObjectVersion =
@@ -496,12 +517,12 @@ public class StorageFS extends ObjectStorageImpl {
       objectVersion = loadObjectVersion.getVersion();
 
       if (object != null) {
-        setObjectUriVersioByOptions(uri, definition, object, versionDataSerialNo, options);
+        setObjectUriVersionByOptions(uri, definition, object, versionDataSerialNo, options);
       }
 
       storageObject = instanceOf(storage, definition, object, storageObjectData);
     } else {
-      storageObject = instanceOf(storage, definition, uri, storageObjectData);
+      storageObject = instanceOf(storage, definition, uriWithoutVersion, storageObjectData);
     }
 
     if (objectVersion != null && objectVersion.getSerialNoRelation() != null) {
@@ -517,7 +538,66 @@ public class StorageFS extends ObjectStorageImpl {
     return storageObject;
   }
 
-  private <T> void setObjectUriVersioByOptions(URI uri, ObjectDefinition<T> definition, T object,
+  private <T> StorageObject<T> readObjectSingleVersion(Storage storage, URI uri, Class<T> clazz,
+      File storageObjectDataFile) {
+    long waitTime = 10;
+    while (true) {
+      if (storageObjectDataFile == null || !storageObjectDataFile.exists()
+          || !storageObjectDataFile.isFile()) {
+        throw new ObjectNotFoundException(uri, clazz, "Unable to load object data file.");
+      }
+      try {
+        List<BinaryData> dataParts = FileIO.readMultipart(storageObjectDataFile);
+        Optional<StorageObjectData> optObject =
+            storageObjectDataDef.deserialize(dataParts.get(0));
+        if (!optObject.isPresent()) {
+          throw new ObjectNotFoundException(uri, clazz, "Unable to load object data file.");
+        }
+        @SuppressWarnings("unchecked")
+        ObjectDefinition<T> definition =
+            (ObjectDefinition<T>) getObjectDefinition(uri, optObject.get(), clazz);
+        T obj = definition.deserialize(dataParts.get(1)).orElse(null);
+        return instanceOf(storage, definition, obj, optObject.get());
+      } catch (IOException e) {
+        // We must try again.
+        log.debug("Unable to read " + storageObjectDataFile);
+        waitTime = waitTime * rnd.nextInt(4);
+      }
+      try {
+        Thread.sleep(waitTime);
+      } catch (InterruptedException e) {
+        throw new RuntimeException("The reading was interrupted.", e);
+      }
+    }
+  }
+
+  private final StorageObjectData readObjectData(File objectDataFile) {
+    long waitTime = 10;
+    while (true) {
+      if (objectDataFile == null || !objectDataFile.exists() || !objectDataFile.isFile()) {
+        return null;
+      }
+      try {
+        StorageObjectData storageObjectData;
+        BinaryData dataFile = new BinaryData(objectDataFile);
+        Optional<StorageObjectData> optStorageObject = storageObjectDataDef.deserialize(dataFile);
+        // Extract the current version and create the new one based on this.
+        storageObjectData = optStorageObject.get();
+        return storageObjectData;
+      } catch (Exception e) {
+        // We must try again.
+        log.debug("Unable to read " + objectDataFile);
+        waitTime = waitTime * rnd.nextInt(4);
+      }
+      try {
+        Thread.sleep(waitTime);
+      } catch (InterruptedException e) {
+        throw new RuntimeException("The reading was interrupted.", e);
+      }
+    }
+  }
+
+  private <T> void setObjectUriVersionByOptions(URI uri, ObjectDefinition<T> definition, T object,
       Long versionDataSerialNo,
       StorageLoadOption[] options) {
     if (!StorageLoadOption.checkUriWithVersionOption(options)) {
@@ -525,15 +605,16 @@ public class StorageFS extends ObjectStorageImpl {
       // This can ensure that the uri will be the exact uri used for the load.
       definition.setUri(object, uri);
     } else {
-      String uriTxt = uri.toString();
-      boolean uriHasVersion = uriTxt.contains(StringConstant.HASH);
+      Long uriVersion = getUriVersion(uri);
       boolean uriNeedsVersion = StorageLoadOption.checkUriWithVersionValue(options);
 
       URI uriToSet = null;
-      if (!uriHasVersion && uriNeedsVersion) {
-        uriToSet = URI.create(uriTxt + StringConstant.HASH + versionDataSerialNo);
-      } else if (uriHasVersion && !uriNeedsVersion) {
-        uriToSet = URI.create(uriTxt.substring(0, uriTxt.indexOf(StringConstant.HASH)));
+      // TODO manage the path itself.
+      if (uriVersion == null && uriNeedsVersion) {
+        uriToSet = URI.create(uri.toString() + versionPostfix + versionDataSerialNo);
+      } else if (uriVersion != null && !uriNeedsVersion) {
+        String uriTxt = uri.toString();
+        uriToSet = URI.create(uriTxt.substring(0, uriTxt.lastIndexOf(versionPostfix)));
       } else {
         // (has and need) OR (has not and dont need)
         uriToSet = uri;
@@ -549,8 +630,13 @@ public class StorageFS extends ObjectStorageImpl {
     List<BinaryData> multipart = FileIO.readMultipart(relationVersionFile);
     BinaryData versionBinaryData = multipart.get(1);
 
-    StorageObjectRelationData relationData =
-        storageObjectRelationDataDef.deserialize(versionBinaryData).orElse(null);
+    StorageObjectRelationData relationData;
+    try {
+      relationData = storageObjectRelationDataDef.deserialize(versionBinaryData).orElse(null);
+    } catch (IOException e) {
+      log.error("Unable to read relation data", e);
+      relationData = null;
+    }
     return relationData;
   }
 
@@ -566,9 +652,16 @@ public class StorageFS extends ObjectStorageImpl {
     BinaryData versionObjectBinaryData = multipart.get(0);
     BinaryData versionBinaryData = multipart.get(1);
 
-    ObjectVersion objectVersion = objectApi.getDefaultSerializer()
-        .deserialize(versionObjectBinaryData, ObjectVersion.class).get();
-    T object = definition.deserialize(versionBinaryData).orElse(null);
+    ObjectVersion objectVersion;
+    T object;
+    try {
+      objectVersion = objectApi.getDefaultSerializer()
+          .deserialize(versionObjectBinaryData, ObjectVersion.class).get();
+      object = definition.deserialize(versionBinaryData).orElse(null);
+    } catch (IOException e) {
+      log.error("Unable to read version data", e);
+      return null;
+    }
     return new StorageObjectHistoryEntry<>(objectVersion, object);
   }
 
@@ -584,8 +677,12 @@ public class StorageFS extends ObjectStorageImpl {
     }
 
     BinaryData storageObjectBinaryData = new BinaryData(storageObjectDataFile);
-    Optional<StorageObjectData> optObject =
-        storageObjectDataDef.deserialize(storageObjectBinaryData);
+    Optional<StorageObjectData> optObject;
+    try {
+      optObject = storageObjectDataDef.deserialize(storageObjectBinaryData);
+    } catch (IOException e) {
+      throw new ObjectNotFoundException(uri, null, "Unable to load object data file.");
+    }
     if (!optObject.isPresent()) {
       throw new ObjectNotFoundException(uri, null, "Unable to load object data file.");
     }
@@ -610,7 +707,7 @@ public class StorageFS extends ObjectStorageImpl {
 
           @Override
           public StorageObjectHistoryEntry<?> next() {
-            return loadObjectVersion(definition, getDataFileByUri(uri, StringConstant.EMPTY), ++i);
+            return loadObjectVersion(definition, getObjectVersionBasePath(uri), ++i);
           }
 
         };
@@ -631,8 +728,12 @@ public class StorageFS extends ObjectStorageImpl {
     }
 
     BinaryData storageObjectBinaryData = new BinaryData(storageObjectDataFile);
-    Optional<StorageObjectData> optObject =
-        storageObjectDataDef.deserialize(storageObjectBinaryData);
+    Optional<StorageObjectData> optObject;
+    try {
+      optObject = storageObjectDataDef.deserialize(storageObjectBinaryData);
+    } catch (IOException e) {
+      throw new ObjectNotFoundException(uri, null, "Unable to load object data file.");
+    }
     if (!optObject.isPresent()) {
       throw new ObjectNotFoundException(uri, null, "Unable to load object data file.");
     }
@@ -659,7 +760,7 @@ public class StorageFS extends ObjectStorageImpl {
 
           @Override
           public StorageObjectHistoryEntry<?> next() {
-            return loadObjectVersion(definition, getDataFileByUri(uri, StringConstant.EMPTY), --i);
+            return loadObjectVersion(definition, getObjectVersionBasePath(uri), --i);
           }
 
         };

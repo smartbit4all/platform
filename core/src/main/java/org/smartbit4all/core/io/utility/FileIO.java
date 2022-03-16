@@ -421,7 +421,7 @@ public class FileIO {
    * @param file The object file to read.
    * @throws InterruptedException
    */
-  public static final <T> T readFile(File file, Function<InputStream, T> reader)
+  public static final <T> T readFileAtomic(File file, Function<InputStream, T> reader)
       throws InterruptedException {
     long waitTime = 10;
     while (true) {

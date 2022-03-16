@@ -16,7 +16,6 @@ import org.smartbit4all.api.storage.bean.ObjectReference;
 import org.smartbit4all.api.storage.bean.ObjectVersion;
 import org.smartbit4all.api.storage.bean.StorageObjectData;
 import org.smartbit4all.core.object.ObjectDefinition;
-import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.core.utility.UriUtils;
 
 /**
@@ -402,8 +401,9 @@ public final class StorageObject<T> {
    * @return Returns the version uri of the given object
    */
   public final URI getVersionUri() {
-    return version != null && uri.getFragment() == null
-        ? URI.create(uri.toString() + StringConstant.HASH + version.getSerialNoData())
+    Long uriVersion = ObjectStorageImpl.getUriVersion(uri);
+    return version != null && uriVersion == null
+        ? URI.create(uri.toString() + ObjectStorageImpl.versionPostfix + version.getSerialNoData())
         : uri;
   }
 

@@ -22,6 +22,7 @@ import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.utility.PathUtility;
 import org.smartbit4all.core.utility.StringConstant;
+import org.smartbit4all.core.utility.UriUtils;
 import org.smartbit4all.domain.data.storage.StorageObject.StorageObjectOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -35,6 +36,11 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
   private static final String STORAGEMGMT = "storagemgmt";
 
   private static final Logger log = LoggerFactory.getLogger(ObjectStorageImpl.class);
+
+  /**
+   * The postfix of the URI in case of version reference followed by a serial number of the version.
+   */
+  public static final String versionPostfix = ".v";
 
   /**
    * These locks are the in memory locks holding the file system level lock. We need this to avoid
@@ -347,15 +353,31 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
    * @return The related {@link ObjectVersion} from the storage object.
    */
   protected final Long getVersionByUri(URI uri, StorageObjectData storageObjData) {
-    String versionSerialNoString = uri.getFragment();
-    if (versionSerialNoString != null) {
+    Long uriVersion = getUriVersion(uri);
+    return uriVersion == null ? storageObjData.getCurrentVersion().getSerialNoData() : uriVersion;
+  }
+
+  public static final Long getUriVersion(URI uri) {
+    String path = uri.getPath();
+    int idxVersionPostfix = path.lastIndexOf(versionPostfix);
+    if (idxVersionPostfix >= 0) {
+      String version = path.substring(idxVersionPostfix + versionPostfix.length());
       try {
-        return Long.valueOf(versionSerialNoString);
+        return Long.valueOf(version);
       } catch (NumberFormatException e) {
         throw new IllegalArgumentException("Bad version format in " + uri + " object uri.", e);
       }
     }
-    return storageObjData.getCurrentVersion().getSerialNoData();
+    return null;
+  }
+
+  public static final URI getUriWithoutVersion(URI uri) {
+    String path = uri.getPath();
+    int idxVersionPostfix = path.lastIndexOf(versionPostfix);
+    if (idxVersionPostfix >= 0) {
+      return UriUtils.createUri(uri.getScheme(), null, path.substring(0, idxVersionPostfix), null);
+    }
+    return uri;
   }
 
   protected void invokeOnSucceedFunctions(StorageObject<?> object,

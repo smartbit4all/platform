@@ -488,7 +488,7 @@ class StorageTest {
     storageObject.setObject(new FSTestBean("SucceedTest"));
 
     URI simpleUri = storage.save(storageObject);
-    URI version0Uri = URI.create(simpleUri.toString() + "#0");
+    URI version0Uri = URI.create(simpleUri.toString() + ".v0");
 
     StorageObject<FSTestBean> beanSo = storage.load(simpleUri, FSTestBean.class);
     assertEquals(simpleUri, beanSo.getObject().getUri());
@@ -517,7 +517,7 @@ class StorageTest {
     beanSo.getObject().setTitle("SucceedTest_MODIFIED");
     URI modifiedUri = storage.save(storageObject);
     assertEquals(simpleUri, modifiedUri);
-    URI version1Uri = URI.create(simpleUri.toString() + "#1");
+    URI version1Uri = URI.create(simpleUri.toString() + ".v1");
 
     StorageObject<FSTestBean> beanSo6 = storage.load(simpleUri, FSTestBean.class);
     assertEquals(simpleUri, beanSo6.getObject().getUri());

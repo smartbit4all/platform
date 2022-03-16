@@ -85,7 +85,7 @@ public class ObjectSerializerByObjectMapper implements ObjectSerializer {
   }
 
   @Override
-  public <T> Optional<T> deserialize(BinaryData data, Class<T> clazz) {
+  public <T> Optional<T> deserialize(BinaryData data, Class<T> clazz) throws IOException {
     if (data == null || data.length() == 0) {
       return null;
     }
@@ -94,6 +94,8 @@ public class ObjectSerializerByObjectMapper implements ObjectSerializer {
     isr = new InputStreamReader(data.inputStream(), StandardCharsets.UTF_8);
     try {
       return Optional.of(objectMapper.readValue(isr, clazz));
+    } catch (IOException e) {
+      throw e;
     } catch (Exception e) {
       throw new IllegalArgumentException("Unable to load object.", e);
     } finally {

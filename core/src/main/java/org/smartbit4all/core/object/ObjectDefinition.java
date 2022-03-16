@@ -1,5 +1,6 @@
 package org.smartbit4all.core.object;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
@@ -157,7 +158,7 @@ public final class ObjectDefinition<T> {
     return defaultSerializer.serialize(o, getClazz());
   }
 
-  public final Optional<T> deserialize(BinaryData data) {
+  public final Optional<T> deserialize(BinaryData data) throws IOException {
     return defaultSerializer.deserialize(data, clazz);
   }
 

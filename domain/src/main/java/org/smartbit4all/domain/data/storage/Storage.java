@@ -79,6 +79,14 @@ public final class Storage {
   private VersionPolicy versionPolicy = VersionPolicy.ALLVERSION;
 
   /**
+   * The UUID part of the URI ends with this post fix if the given object is a single version
+   * object. These objects have only one actual value and can have one value in case of
+   * modification. These are typically technical records used for administrating the application
+   * mechanisms.
+   */
+  public static final String singleVersionURIPostfix = "-s";
+
+  /**
    * Construct a new storage that is a logical schema for the storage system.
    * 
    * @param scheme
@@ -383,7 +391,9 @@ public final class Storage {
         + objectDefinition.getAlias() + StringConstant.SLASH
         + now.getYear() + StringConstant.SLASH + now.getMonthValue() + StringConstant.SLASH
         + now.getDayOfMonth() + StringConstant.SLASH + now.getHour() + StringConstant.SLASH
-        + uuid);
+        + StringConstant.SLASH + now.getMinute() + StringConstant.SLASH
+        + uuid + (versionPolicy == VersionPolicy.SINGLEVERSION ? singleVersionURIPostfix
+            : StringConstant.EMPTY));
     return uri;
   }
 
