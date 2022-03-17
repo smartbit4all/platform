@@ -200,7 +200,9 @@ public final class Storage {
   }
 
   /**
-   * This function is locking and loading the object identified by the object uri
+   * This function is locking and loading the object identified by the object uri. If the update
+   * function produce null as the result of the {@link Function#apply(Object)} function then it will
+   * skip the update.
    * 
    * @param <T>
    * @param objectUri
@@ -213,8 +215,11 @@ public final class Storage {
     try {
       StorageObject<T> so =
           load(objectUri, clazz);
-      so.setObject(update.apply(so.getObject()));
-      save(so);
+      T object = update.apply(so.getObject());
+      if (object != null) {
+        so.setObject(object);
+        save(so);
+      }
     } finally {
       lock.unlock();
     }
@@ -424,7 +429,7 @@ public final class Storage {
         + (setName == null ? StringConstant.EMPTY : setName + StringConstant.SLASH)
         + now.getYear() + StringConstant.SLASH + now.getMonthValue() + StringConstant.SLASH
         + now.getDayOfMonth() + StringConstant.SLASH + now.getHour() + StringConstant.SLASH
-        + StringConstant.SLASH + now.getMinute() + StringConstant.SLASH
+        + now.getMinute() + StringConstant.SLASH
         + uuid + (versionPolicy == VersionPolicy.SINGLEVERSION ? singleVersionURIPostfix
             : StringConstant.EMPTY));
     return uri;
