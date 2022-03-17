@@ -138,15 +138,15 @@ public interface ObjectStorage {
   <T> List<T> readAll(Storage storage, String setName, Class<T> clazz);
 
   /**
-   * Move the source URI into the target set.
+   * Mive the given object inside the object storage.
    * 
-   * @param sourceUri
-   * @param targetstorage The target storage that is the logical storage to save the given object
-   *        to.
-   * @param targetSet The target set.
-   * @return
+   * @param srcStorage The source storage.
+   * @param uri The uri of the object.
+   * @param targetStorage The archive storage as the target of the move operation.
+   * @param targetUri The archive uri of the object.
+   * @return true if the move was successful.
    */
-  URI move(URI sourceUri, Storage targetstorage, String targetSet);
+  boolean move(Storage srcStorage, URI uri, Storage targetStorage, URI targetUri);
 
   /**
    * @return Return true if the given {@link ObjectStorage} is the default one by the configuration.

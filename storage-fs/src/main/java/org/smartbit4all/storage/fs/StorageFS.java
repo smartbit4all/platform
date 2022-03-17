@@ -8,8 +8,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.OffsetDateTime;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -547,6 +549,19 @@ public class StorageFS extends ObjectStorageImpl {
     return storageObject;
   }
 
+  private static class DirFileCounter {
+
+    Path dir;
+
+    int fileCount = 0;
+
+    DirFileCounter(Path dir) {
+      super();
+      this.dir = dir;
+    }
+
+  }
+
   @Override
   public <T> List<T> readAll(Storage storage, String setName, Class<T> clazz) {
     // Check if the given directory exists or not.
@@ -565,6 +580,9 @@ public class StorageFS extends ObjectStorageImpl {
       // The depth of the walk is defined by the depth of the uri path. It's about 6-7 so we use 8
       // as maximum depth.
       List<T> objects = new ArrayList<>();
+      // TODO Cleanup the empty directories.
+      Deque<DirFileCounter> stack = new ArrayDeque<>();
+      List<Path> emptyDirOrderedList = new ArrayList<>();
       try {
         Files.walkFileTree(setFolderPath, Collections.emptySet(), 8,
             new StorageSetFSVisitor() {
@@ -586,17 +604,66 @@ public class StorageFS extends ObjectStorageImpl {
                           path,
                           null),
                       clazz));
+                  stack.peek().fileCount++;
                 }
                 return FileVisitResult.CONTINUE;
               }
+
+              @Override
+              public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
+                  throws IOException {
+                // Add a new node to the stack before we enter the directory.
+                stack.push(new DirFileCounter(dir));
+                return super.preVisitDirectory(dir, attrs);
+              }
+
+              @Override
+              public FileVisitResult postVisitDirectory(Path dir, IOException exc)
+                  throws IOException {
+                DirFileCounter dirFileCounter = stack.pop();
+                if (dirFileCounter.fileCount == 0) {
+                  // It was empty let's add this to the empty list
+                  emptyDirOrderedList.add(dir);
+                } else {
+                  // Increase the number of the file count in the parent.
+                  if (stack.peek() != null) {
+                    stack.peek().fileCount += dirFileCounter.fileCount;
+                  }
+                }
+                return super.postVisitDirectory(dir, exc);
+              }
+
             });
       } catch (IOException e) {
         log.debug("Unable to read all the objects from the set.", e);
+      }
+      for (Path path : emptyDirOrderedList) {
+        try {
+          Files.deleteIfExists(path);
+        } catch (IOException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
       }
       return objects;
     }
 
     return Collections.emptyList();
+  }
+
+  @Override
+  public boolean move(Storage srcStorage, URI uri, Storage targetStorage,
+      URI targetUri) {
+    // TODO For the first time we implement only the single version.
+    File sourceObjectFile = getObjectDataFile(uri);
+    File targetObjectFile = getObjectDataFile(targetUri);
+    try {
+      FileIO.move(sourceObjectFile, targetObjectFile);
+      return true;
+    } catch (InterruptedException e) {
+      log.warn("Unable to move {} --> {}", sourceObjectFile, targetObjectFile);
+    }
+    return false;
   }
 
   private <T> StorageObject<T> readObjectSingleVersion(Storage storage, URI uri, Class<T> clazz,

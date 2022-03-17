@@ -19,6 +19,7 @@ import org.smartbit4all.api.storage.bean.StorageSettings;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.utility.StringConstant;
+import org.smartbit4all.core.utility.UriUtils;
 import org.smartbit4all.domain.data.storage.StorageObject.VersionPolicy;
 
 /**
@@ -346,6 +347,24 @@ public final class Storage {
   }
 
   /**
+   * The archive is an atomic function that moves the given object all together into the default
+   * archive set of this storage. Normally it is the storagescheme:/archive... URI. With this
+   * operation the object won't exist any more so we have to save the archived URI if it is
+   * necessary.
+   * 
+   * @param uri
+   * @return The URI of the archived object. If it's null then the move was not successful.
+   */
+  public URI archive(URI uri) {
+    if (uri != null && exists(uri)) {
+      URI constructArchiveUri = constructArchiveUri(uri);
+      return objectStorage.move(this, uri, this, constructArchiveUri) ? constructArchiveUri
+          : null;
+    }
+    return null;
+  }
+
+  /**
    * Creates an {@link ObjectHistoryIterator} that can iterate through the
    * {@link StorageObjectHistoryEntry}s of the object found with the given uri, making available to
    * investigate the full history of that object. In order from the oldest to the most recent.
@@ -433,6 +452,10 @@ public final class Storage {
         + uuid + (versionPolicy == VersionPolicy.SINGLEVERSION ? singleVersionURIPostfix
             : StringConstant.EMPTY));
     return uri;
+  }
+
+  private final URI constructArchiveUri(URI uri) {
+    return UriUtils.createUri(uri.getScheme(), null, "/archive" + uri.getPath(), null);
   }
 
   /**

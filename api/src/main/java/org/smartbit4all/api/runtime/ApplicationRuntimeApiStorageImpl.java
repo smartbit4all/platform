@@ -2,6 +2,7 @@ package org.smartbit4all.api.runtime;
 
 import java.net.InetAddress;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,7 +50,7 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
   /**
    * The runtime instances known in the cluster. This map is always updated by the maintenance.
    */
-  private final Map<UUID, ApplicationRuntime> runtimes = new HashMap<>();
+  private Map<UUID, ApplicationRuntime> runtimes = new HashMap<>();
 
   /**
    * The read write lock ensures that the maintenance will modify the map in a Thread safe way.
@@ -71,6 +72,11 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
   @Value("${server.port:-1}")
   private int port;
 
+  @Value("${applicationruntime.maintain.fixeddelay:5000}")
+  private String schedulePeriodString;
+
+  private Long schedulePeriod;
+
   @Autowired
   private Environment environment;
 
@@ -89,8 +95,16 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
     }
   }
 
+  private final long getSchedulePeriod() {
+    if (schedulePeriod == null) {
+      schedulePeriod = Long.valueOf(schedulePeriodString);
+    }
+    return schedulePeriod.longValue();
+  }
+
   @Scheduled(fixedDelayString = "${applicationruntime.maintain.fixeddelay:5000}")
   public void maintain() {
+    // TODO sync the times!
     long currentTimeMillis = System.currentTimeMillis();
     if (self == null) {
       // Save the self and set as self. From that time the runtime is officially registered.
@@ -108,8 +122,22 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
     List<ApplicationRuntimeData> activeRuntimes =
         storageCluster.readAll("active", ApplicationRuntimeData.class);
     // Manage the invalid runtimes, move them into the archive set.
-    for (ApplicationRuntimeData applicationRuntimeData : activeRuntimes) {
-      System.out.println("Runtime: " + applicationRuntimeData.toString());
+    List<ApplicationRuntimeData> invalidRuntimes = new ArrayList<>();
+    Map<UUID, ApplicationRuntime> activeRuntimesMap = new HashMap<>();
+    for (ApplicationRuntimeData runtimeData : activeRuntimes) {
+      if (runtimeData.getLastTouchTime() < (currentTimeMillis - getSchedulePeriod() * 3)) {
+        // This is an invalid runtime. Remove it from the list and from the set.
+        invalidRuntimes.add(runtimeData);
+      } else {
+        activeRuntimesMap.put(runtimeData.getUuid(), runtimeOf(runtimeData));
+      }
+      System.out.println("Runtime: " + runtimeData.toString());
+    }
+    // Set the new runtimes. This is an atomic operation there is no need to lock.
+    runtimes = activeRuntimesMap;
+    // Remove the invalid runtimes from the set.
+    for (ApplicationRuntimeData invalidRuntime : invalidRuntimes) {
+      storageCluster.archive(invalidRuntime.getUri());
     }
   }
 
@@ -143,6 +171,21 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
   public static final ApplicationRuntimeData dataOf(ApplicationRuntime runtime) {
     return new ApplicationRuntimeData().uuid(runtime.getUuid()).ipAddress(runtime.getIp())
         .serverPort(runtime.getPort()).timeOffset(runtime.getTimeOffset());
+  }
+
+  /**
+   * Constructs the {@link ApplicationRuntimeData} for the storage. The URI is calculated to store
+   * the runtime into the active set. The URI is hierarchical so it can define a set.
+   * 
+   * @return The application runtime data
+   */
+  public static final ApplicationRuntime runtimeOf(ApplicationRuntimeData runtime) {
+    ApplicationRuntime result = new ApplicationRuntime();
+    result.setIp(runtime.getIpAddress());
+    result.setPort(runtime.getServerPort());
+    // result.setStartupTime(runtime.get);
+    result.setTimeOffset(0);
+    return result;
   }
 
 }
