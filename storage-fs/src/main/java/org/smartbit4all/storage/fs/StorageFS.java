@@ -637,18 +637,28 @@ public class StorageFS extends ObjectStorageImpl {
       } catch (IOException e) {
         log.debug("Unable to read all the objects from the set.", e);
       }
-      for (Path path : emptyDirOrderedList) {
-        try {
-          Files.deleteIfExists(path);
-        } catch (IOException e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
-        }
-      }
+      cleanupEmptyDirs(emptyDirOrderedList);
       return objects;
     }
 
     return Collections.emptyList();
+  }
+
+  /**
+   * TODO Should be async by definition! We need to use an FS storage management api for this
+   * purpose.
+   * 
+   * @param emptyDirOrderedList
+   */
+  private final void cleanupEmptyDirs(List<Path> emptyDirOrderedList) {
+    for (Path path : emptyDirOrderedList) {
+      try {
+        Files.deleteIfExists(path);
+      } catch (IOException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+    }
   }
 
   @Override

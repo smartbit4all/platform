@@ -108,15 +108,17 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
     long currentTimeMillis = System.currentTimeMillis();
     if (self == null) {
       // Save the self and set as self. From that time the runtime is officially registered.
-      ApplicationRuntimeData runtimeData = dataOf(myRuntime);
+      ApplicationRuntimeData runtimeData = myRuntime.getData();
       runtimeData.setLastTouchTime(currentTimeMillis);
       runtimeUri = storageCluster.saveAsNew(runtimeData, "active");
+      myRuntime.getData().setUri(runtimeUri);
       self = myRuntime;
     } else {
       // The application runtime is already exists and must be updated in the storage.
       storageCluster.update(runtimeUri, ApplicationRuntimeData.class, r -> {
         return r.lastTouchTime(currentTimeMillis);
       });
+      self.getData().setLastTouchTime(currentTimeMillis);
     }
     // If we successfully saved ourself then read all the active runtime we have in this register.
     List<ApplicationRuntimeData> activeRuntimes =
@@ -145,11 +147,10 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
   public void afterPropertiesSet() throws Exception {
     storageCluster = storageApi.get(CLUSTER);
     storageCluster.setVersionPolicy(VersionPolicy.SINGLEVERSION);
-    myRuntime = new ApplicationRuntime();
-    myRuntime.setIp(InetAddress.getLocalHost().getHostAddress());
-    myRuntime.setPort(getPort());
-    myRuntime.setUuid(UUID.randomUUID());
-    myRuntime.setStartupTime(System.currentTimeMillis());
+    ApplicationRuntimeData runtimeData = new ApplicationRuntimeData()
+        .ipAddress(InetAddress.getLocalHost().getHostAddress()).serverPort(getPort())
+        .uuid(UUID.randomUUID()).startupTime(System.currentTimeMillis());
+    myRuntime = new ApplicationRuntime(runtimeData);
   }
 
   private final int getPort() {
@@ -168,22 +169,9 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
    * 
    * @return The application runtime data
    */
-  public static final ApplicationRuntimeData dataOf(ApplicationRuntime runtime) {
-    return new ApplicationRuntimeData().uuid(runtime.getUuid()).ipAddress(runtime.getIp())
-        .serverPort(runtime.getPort()).timeOffset(runtime.getTimeOffset());
-  }
-
-  /**
-   * Constructs the {@link ApplicationRuntimeData} for the storage. The URI is calculated to store
-   * the runtime into the active set. The URI is hierarchical so it can define a set.
-   * 
-   * @return The application runtime data
-   */
-  public static final ApplicationRuntime runtimeOf(ApplicationRuntimeData runtime) {
-    ApplicationRuntime result = new ApplicationRuntime();
-    result.setIp(runtime.getIpAddress());
-    result.setPort(runtime.getServerPort());
-    // result.setStartupTime(runtime.get);
+  public static final ApplicationRuntime runtimeOf(ApplicationRuntimeData runtimeData) {
+    ApplicationRuntime result = new ApplicationRuntime(runtimeData);
+    // TODO Figure out how to setup a standard time!
     result.setTimeOffset(0);
     return result;
   }

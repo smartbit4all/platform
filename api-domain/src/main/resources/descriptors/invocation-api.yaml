@@ -146,7 +146,7 @@ components:
           description: The fully qualified name of the parameter data.
     ApplicationRuntimeData:
       type: object
-      required: [uri,module,interfaceName,name,methods]
+      required: [uri,uuid,ipAddress,startupTime,lastTouchTime]
       description: |
         The application runtime can be saved into the storage in this object.
       properties:
@@ -165,6 +165,14 @@ components:
           type: integer
           format: int32
           description: The server port of the runtime.
+        startupTime:
+          type: integer
+          format: int64
+          description: The startup time of the given runtime.
+        stopTime:
+          type: integer
+          format: int64
+          description: The stop time of the given runtime.
         timeOffset:
           type: integer
           format: int64

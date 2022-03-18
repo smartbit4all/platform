@@ -38,6 +38,8 @@ import javax.validation.Valid;
   ApplicationRuntimeData.UUID,
   ApplicationRuntimeData.IP_ADDRESS,
   ApplicationRuntimeData.SERVER_PORT,
+  ApplicationRuntimeData.STARTUP_TIME,
+  ApplicationRuntimeData.STOP_TIME,
   ApplicationRuntimeData.TIME_OFFSET,
   ApplicationRuntimeData.LAST_TOUCH_TIME
 })
@@ -55,6 +57,12 @@ public class ApplicationRuntimeData {
 
   public static final String SERVER_PORT = "serverPort";
   private Integer serverPort;
+
+  public static final String STARTUP_TIME = "startupTime";
+  private Long startupTime;
+
+  public static final String STOP_TIME = "stopTime";
+  private Long stopTime;
 
   public static final String TIME_OFFSET = "timeOffset";
   private Long timeOffset;
@@ -102,11 +110,12 @@ public class ApplicationRuntimeData {
    * The unique identifier of the runtime instance.
    * @return uuid
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "The unique identifier of the runtime instance.")
+  @ApiModelProperty(required = true, value = "The unique identifier of the runtime instance.")
   @JsonProperty(UUID)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public UUID getUuid() {
     return uuid;
@@ -114,7 +123,7 @@ public class ApplicationRuntimeData {
 
 
   @JsonProperty(UUID)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setUuid(UUID uuid) {
     this.uuid = uuid;
   }
@@ -130,10 +139,11 @@ public class ApplicationRuntimeData {
    * The ip address of the runtime.
    * @return ipAddress
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "The ip address of the runtime.")
+  @javax.annotation.Nonnull
+  @NotNull
+  @ApiModelProperty(required = true, value = "The ip address of the runtime.")
   @JsonProperty(IP_ADDRESS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public String getIpAddress() {
     return ipAddress;
@@ -141,7 +151,7 @@ public class ApplicationRuntimeData {
 
 
   @JsonProperty(IP_ADDRESS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setIpAddress(String ipAddress) {
     this.ipAddress = ipAddress;
   }
@@ -171,6 +181,61 @@ public class ApplicationRuntimeData {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setServerPort(Integer serverPort) {
     this.serverPort = serverPort;
+  }
+
+
+  public ApplicationRuntimeData startupTime(Long startupTime) {
+    
+    this.startupTime = startupTime;
+    return this;
+  }
+
+   /**
+   * The startup time of the given runtime.
+   * @return startupTime
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @ApiModelProperty(required = true, value = "The startup time of the given runtime.")
+  @JsonProperty(STARTUP_TIME)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Long getStartupTime() {
+    return startupTime;
+  }
+
+
+  @JsonProperty(STARTUP_TIME)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setStartupTime(Long startupTime) {
+    this.startupTime = startupTime;
+  }
+
+
+  public ApplicationRuntimeData stopTime(Long stopTime) {
+    
+    this.stopTime = stopTime;
+    return this;
+  }
+
+   /**
+   * The stop time of the given runtime.
+   * @return stopTime
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The stop time of the given runtime.")
+  @JsonProperty(STOP_TIME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Long getStopTime() {
+    return stopTime;
+  }
+
+
+  @JsonProperty(STOP_TIME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setStopTime(Long stopTime) {
+    this.stopTime = stopTime;
   }
 
 
@@ -211,10 +276,11 @@ public class ApplicationRuntimeData {
    * The last time when the given runtime updated the entry in the storage.
    * @return lastTouchTime
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "The last time when the given runtime updated the entry in the storage.")
+  @javax.annotation.Nonnull
+  @NotNull
+  @ApiModelProperty(required = true, value = "The last time when the given runtime updated the entry in the storage.")
   @JsonProperty(LAST_TOUCH_TIME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public Long getLastTouchTime() {
     return lastTouchTime;
@@ -222,7 +288,7 @@ public class ApplicationRuntimeData {
 
 
   @JsonProperty(LAST_TOUCH_TIME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setLastTouchTime(Long lastTouchTime) {
     this.lastTouchTime = lastTouchTime;
   }
@@ -241,13 +307,15 @@ public class ApplicationRuntimeData {
         Objects.equals(this.uuid, applicationRuntimeData.uuid) &&
         Objects.equals(this.ipAddress, applicationRuntimeData.ipAddress) &&
         Objects.equals(this.serverPort, applicationRuntimeData.serverPort) &&
+        Objects.equals(this.startupTime, applicationRuntimeData.startupTime) &&
+        Objects.equals(this.stopTime, applicationRuntimeData.stopTime) &&
         Objects.equals(this.timeOffset, applicationRuntimeData.timeOffset) &&
         Objects.equals(this.lastTouchTime, applicationRuntimeData.lastTouchTime);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, uuid, ipAddress, serverPort, timeOffset, lastTouchTime);
+    return Objects.hash(uri, uuid, ipAddress, serverPort, startupTime, stopTime, timeOffset, lastTouchTime);
   }
 
   @Override
@@ -258,6 +326,8 @@ public class ApplicationRuntimeData {
     sb.append("    uuid: ").append(toIndentedString(uuid)).append("\n");
     sb.append("    ipAddress: ").append(toIndentedString(ipAddress)).append("\n");
     sb.append("    serverPort: ").append(toIndentedString(serverPort)).append("\n");
+    sb.append("    startupTime: ").append(toIndentedString(startupTime)).append("\n");
+    sb.append("    stopTime: ").append(toIndentedString(stopTime)).append("\n");
     sb.append("    timeOffset: ").append(toIndentedString(timeOffset)).append("\n");
     sb.append("    lastTouchTime: ").append(toIndentedString(lastTouchTime)).append("\n");
     sb.append("}");

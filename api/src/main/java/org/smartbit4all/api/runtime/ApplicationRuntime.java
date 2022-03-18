@@ -1,6 +1,7 @@
 package org.smartbit4all.api.runtime;
 
 import java.util.UUID;
+import org.smartbit4all.api.invocation.bean.ApplicationRuntimeData;
 
 /**
  * An application runtime is running on a machine with an ip address and serving the incoming
@@ -10,20 +11,17 @@ import java.util.UUID;
  */
 public class ApplicationRuntime {
 
-  /**
-   * The unique identifier of the application instance.
-   */
-  private UUID uuid;
+  private ApplicationRuntimeData data;
 
   /**
-   * The ip address of the given application instance.
+   * Constructs a runtime instance based on the data.
+   * 
+   * @param data
    */
-  private String ip;
-
-  /**
-   * The port for the incoming service requests.
-   */
-  private int port;
+  public ApplicationRuntime(ApplicationRuntimeData data) {
+    super();
+    this.data = data;
+  }
 
   /**
    * To have a synchronized time management the implementation must identify the offset of the given
@@ -34,39 +32,24 @@ public class ApplicationRuntime {
   private long timeOffset;
 
   /**
-   * The startup GMT time of the runtime.
-   */
-  private long startupTime;
-
-  /**
-   * The stop GMT time of the runtime.
-   */
-  private long stopTime;
-
-  /**
-   * The last touch time of the runtime moved to our System time by the offset.
-   */
-  private long lastTouchTime;
-
-  /**
    * @return The unique identifier of the application instance.
    */
   public final UUID getUuid() {
-    return uuid;
+    return data.getUuid();
   }
 
   /**
    * @return The ip address of the given application instance.
    */
-  public final String getIp() {
-    return ip;
+  public final String getIpAddress() {
+    return data.getIpAddress();
   }
 
   /**
    * @return The port for the incoming service requests.
    */
-  public final int getPort() {
-    return port;
+  public final int getServerPort() {
+    return data.getServerPort();
   }
 
   /**
@@ -77,36 +60,24 @@ public class ApplicationRuntime {
     return timeOffset;
   }
 
-  final void setUuid(UUID uuid) {
-    this.uuid = uuid;
-  }
-
-  final void setIp(String ip) {
-    this.ip = ip;
-  }
-
-  final void setPort(int port) {
-    this.port = port;
-  }
-
   final void setTimeOffset(long timeOffset) {
     this.timeOffset = timeOffset;
   }
 
   public final long getStartupTime() {
-    return startupTime;
-  }
-
-  final void setStartupTime(long startupTime) {
-    this.startupTime = startupTime;
+    return data.getStartupTime();
   }
 
   public final long getStopTime() {
-    return stopTime;
+    return data.getStopTime();
   }
 
-  final void setStopTime(long stopTime) {
-    this.stopTime = stopTime;
+  public final long getLastTouchTime() {
+    return data.getLastTouchTime();
+  }
+
+  final ApplicationRuntimeData getData() {
+    return data;
   }
 
 }
