@@ -68,6 +68,11 @@ public class MapBasedObject implements DomainObjectRef {
   private final List<MapBasedObject> deletedObjectItems = new ArrayList<>();
 
   /**
+   * Stores the URI of the {@link MapBasedObjectData} which this object was created from.
+   */
+  private URI dataUri;
+
+  /**
    * Constructor for root object.
    */
   public MapBasedObject() {
@@ -111,6 +116,8 @@ public class MapBasedObject implements DomainObjectRef {
   }
 
   private static void setData(MapBasedObjectData data, String path, MapBasedObject result) {
+    result.dataUri = data.getUri();
+
     setValuesByData(result, data);
 
     Map<String, ObjectValue> objectPropertyMap = data.getObjectPropertyMap();
@@ -199,6 +206,7 @@ public class MapBasedObject implements DomainObjectRef {
    */
   public static final MapBasedObjectData toData(MapBasedObject object) {
     MapBasedObjectData result = new MapBasedObjectData();
+    result.setUri(object.dataUri);
     object.propertyMap.forEach((key, value) -> {
       MapBasedObjectUtil.addObjectPropertyToData(result, key, value);
     });
@@ -445,6 +453,7 @@ public class MapBasedObject implements DomainObjectRef {
    */
   public MapBasedObject deepCopy() {
     MapBasedObject result = new MapBasedObject(path);
+    result.dataUri = dataUri;
     result.deletedObjectItems.addAll(deletedObjectItems);
     propertyMap.forEach((key, value) -> {
       result.addProperty(key, MapBasedObjectUtil.deepCopyPropertyValue(value));
