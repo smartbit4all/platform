@@ -1,8 +1,9 @@
 package org.smartbit4all.storage.fs;
 
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +13,7 @@ import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageObject;
 import org.smartbit4all.domain.data.storage.StorageSaveEvent;
+import org.smartbit4all.domain.data.storage.StorageTransaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
@@ -62,12 +64,7 @@ public class StorageTransactionManagerFS extends AbstractPlatformTransactionMana
   /**
    * The transaction attached to the current {@link Thread}.
    */
-  ThreadLocal<TransactionData> transactionData = new ThreadLocal<>();
-
-  /**
-   * The ordered list of on succeed event handlers to call at the end of the transaction.
-   */
-  ThreadLocal<List<OnSucceed>> onSucceeds = new ThreadLocal<>();
+  ThreadLocal<StorageTransaction> storageTransactionObject = new ThreadLocal<>();
 
   public StorageTransactionManagerFS(StorageFS storageFS) {
     super();
@@ -75,36 +72,27 @@ public class StorageTransactionManagerFS extends AbstractPlatformTransactionMana
   }
 
   /**
-   * @author Horváth Tibor
-   */
-  public static class OnSucceed {
-
-    StorageObject<?> object;
-
-    StorageSaveEvent event;
-
-    public OnSucceed(StorageObject<?> object, StorageSaveEvent event) {
-      super();
-      this.object = object;
-      this.event = event;
-    }
-
-  }
-
-  /**
    * @return true of the current thread has an active transaction.
    */
   public boolean isInTransaction() {
-    return transactionData.get() != null;
+    return storageTransactionObject.get() != null;
   }
 
+  /**
+   * Adds an on succeed event to the actual transaction. Or creates a new transaction if it's not
+   * exists.
+   * 
+   * @param object
+   * @param event
+   */
   public void addOnSucceed(StorageObject<?> object, StorageSaveEvent event) {
-    List<OnSucceed> list = onSucceeds.get();
-    if (list == null) {
-      list = new ArrayList<>();
-      onSucceeds.set(list);
+
+    StorageTransaction storageTransaction = storageTransactionObject.get();
+    if (storageTransaction == null) {
+      storageTransaction = new StorageTransaction(null);
+      storageTransactionObject.set(storageTransaction);
     }
-    list.add(new OnSucceed(object, event));
+    storageTransaction.addSaveEventItem(object, event);
   }
 
   @Override
@@ -112,37 +100,37 @@ public class StorageTransactionManagerFS extends AbstractPlatformTransactionMana
     OffsetDateTime now = OffsetDateTime.now();
     TransactionData data =
         new TransactionData().startTime(now).lastTouch(now).state(TransactionState.EXEC);
-    return data;
+    StorageTransaction storageTransaction = new StorageTransaction(data);
+    return storageTransaction;
   }
 
   @Override
   protected void doBegin(Object transaction, TransactionDefinition definition)
       throws TransactionException {
-    if (transaction instanceof TransactionData) {
-      TransactionData transactionDataObject = (TransactionData) transaction;
-      storage.get().saveAsNew(transactionDataObject);
-      onSucceeds.remove();
-      transactionData.set(transactionDataObject);
-      log.debug("Begin the {1} transaction", transactionDataObject);
+    if (transaction instanceof StorageTransaction) {
+      StorageTransaction storageTransaction = (StorageTransaction) transaction;
+      // TODO privileged save for off transaction save.
+      storage.get().saveAsNew(storageTransaction.getData());
+      storageTransactionObject.set(storageTransaction);
+      log.debug("Begin the {1} transaction", storageTransaction);
     }
   }
 
   @Override
   protected void doCommit(DefaultTransactionStatus status) throws TransactionException {
-    if (status.getTransaction() instanceof TransactionData) {
-      TransactionData transactionDataObject = (TransactionData) status.getTransaction();
-      StorageObject<TransactionData> so = storage.get().load(transactionDataObject.getUri(),
-          TransactionData.class);
-      if (so.getObject().getState() == TransactionState.EXEC) {
-        // If we are the currently executing transaction then we can commit this.
-        OffsetDateTime now = OffsetDateTime.now();
-        so.getObject().finishTime(now).state(TransactionState.SUCC);
-        storage.get().save(so);
-        transactionData.remove();
-        List<OnSucceed> list = onSucceeds.get();
-        if (list != null) {
-          for (OnSucceed onSucceed : list) {
-            storageFS.invokeOnSucceedFunctions(onSucceed.object, onSucceed.event);
+    if (status.getTransaction() instanceof StorageTransaction) {
+      finishTransaction((StorageTransaction) status.getTransaction(), TransactionState.SUCC);
+      // Call the events.
+      Map<StorageObject<?>, List<StorageSaveEvent>> events =
+          ((StorageTransaction) status.getTransaction()).getSaveEvents();
+      if (events != null) {
+        for (Entry<StorageObject<?>, List<StorageSaveEvent>> entry : events.entrySet()) {
+          if (entry.getValue() != null) {
+            for (StorageSaveEvent event : entry.getValue()) {
+              if (event != null) {
+                storageFS.invokeOnSucceedFunctions(entry.getKey(), event);
+              }
+            }
           }
         }
       }
@@ -151,17 +139,23 @@ public class StorageTransactionManagerFS extends AbstractPlatformTransactionMana
 
   @Override
   protected void doRollback(DefaultTransactionStatus status) throws TransactionException {
-    if (status.getTransaction() instanceof TransactionData) {
-      TransactionData transactionDataObject = (TransactionData) status.getTransaction();
-      StorageObject<TransactionData> so = storage.get().load(transactionDataObject.getUri(),
-          TransactionData.class);
-      if (so.getObject().getState() == TransactionState.EXEC) {
-        // If we are the currently executing transaction then we can set it failed.
+    if (status.getTransaction() instanceof StorageTransaction) {
+      finishTransaction((StorageTransaction) status.getTransaction(), TransactionState.FAIL);
+    }
+  }
+
+  private final void finishTransaction(StorageTransaction storageTransaction,
+      TransactionState state) {
+    try {
+      if (storageTransaction.getData().getState() == TransactionState.EXEC) {
+        // If we are the currently executing transaction then we can commit this.
         OffsetDateTime now = OffsetDateTime.now();
-        so.getObject().finishTime(now).state(TransactionState.FAIL);
-        storage.get().save(so);
+        // TODO privileged save for off transaction save.
+        storage.get().update(storageTransaction.getData().getUri(), TransactionData.class,
+            t -> t.finishTime(now).state(state));
       }
-      transactionData.remove();
+    } finally {
+      storageTransactionObject.remove();
     }
   }
 

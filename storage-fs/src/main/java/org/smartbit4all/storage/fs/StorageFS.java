@@ -264,7 +264,7 @@ public class StorageFS extends ObjectStorageImpl {
    * @throws IOException If Exception occurred then it will be thrown to be able to manage the
    *         locking in the {@link #save(StorageObject)}.
    */
-  private final void saveSingleVersionObject(StorageObject<?> object) throws IOException {
+  final void saveSingleVersionObject(StorageObject<?> object) throws IOException {
     File objectDataFile = getObjectDataFile(object.getUri());
     StorageObjectData storageObjectData = new StorageObjectData().uri(object.getUri())
         .className(object.definition().getClazz().getName());
