@@ -180,6 +180,23 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CommandResult'
+  /close/{uuid}:
+    post:
+      tags:
+      - view-model
+      summary: ''
+      operationId: 'close'
+      parameters: 
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: 'ViewModel UUID which has closed.'
+      responses:
+        '200':
+          description: 'OK'
 components:
   schemas:
     AppState:

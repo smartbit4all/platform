@@ -24,6 +24,18 @@ public interface ViewModelApiDelegate {
     }
 
     /**
+     * POST /close/{uuid}
+     *
+     * @param uuid ViewModel UUID which has closed. (required)
+     * @return OK (status code 200)
+     * @see ViewModelApi#close
+     */
+    default ResponseEntity<Void> close(UUID uuid) throws Exception {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+
+    }
+
+    /**
      * POST /createViewModel
      *
      * @param orgSmartbit4allUiApiNavigationModelNavigationTarget  (required)

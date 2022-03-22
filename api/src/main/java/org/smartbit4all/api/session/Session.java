@@ -161,6 +161,22 @@ public class Session {
   }
 
   /**
+   * Removes a value from a map specified by parameterName. If map or key is not present, nothing
+   * happens.
+   * 
+   * @param <K>
+   * @param key
+   * @param parameterName
+   */
+  public <K> void removeEntryFromMap(K key, String parameterName) {
+    @SuppressWarnings("unchecked")
+    Map<K, ?> map = (Map<K, ?>) getParameter(parameterName);
+    if (map != null) {
+      map.remove(key);
+    }
+  }
+
+  /**
    * Clears and removes a map from this session specified by parameterName. If map doesn't exists,
    * it does nothing.
    * 

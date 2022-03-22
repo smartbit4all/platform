@@ -181,4 +181,15 @@ public class ViewModelApiDelegateImpl implements ViewModelApiDelegate {
     }
     return ResponseEntity.ok(createCommandResult(vm));
   }
+
+  @Override
+  public ResponseEntity<Void> close(UUID uuid) throws Exception {
+    ViewModel vm = uiNavigationApi.getViewModelByUuid(uuid);
+    if (vm == null) {
+      return ResponseEntity.notFound().build();
+    }
+    uiNavigationApi.close(uuid);
+    return ResponseEntity.ok().build();
+  }
+
 }

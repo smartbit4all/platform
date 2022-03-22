@@ -26,6 +26,24 @@ public interface ViewModelApi {
     }
 
     /**
+     * POST /close/{uuid}
+     *
+     * @param uuid ViewModel UUID which has closed. (required)
+     * @return OK (status code 200)
+     */
+    @ApiOperation(value = "", nickname = "close", notes = "", tags={ "view-model", })
+    @ApiResponses(value = { 
+        @ApiResponse(code = 200, message = "OK") })
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/close/{uuid}"
+    )
+    default ResponseEntity<Void> close(@ApiParam(value = "ViewModel UUID which has closed.", required = true) @PathVariable("uuid") UUID uuid) throws Exception {
+        return getDelegate().close(uuid);
+    }
+
+
+    /**
      * POST /createViewModel
      *
      * @param orgSmartbit4allUiApiNavigationModelNavigationTarget  (required)

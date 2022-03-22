@@ -143,8 +143,9 @@ public class UINavigationApiCommon implements UINavigationApi {
 
   @Override
   public void close(UUID navigationTargetUuid) {
-    navigationTargetsByUUID.remove(navigationTargetUuid);
-    viewModelsByUuid.remove(navigationTargetUuid);
+    removeValueFromSessionMap(navigationTargetUuid, UINAVIGATION_CURRENT_NAV_TARGET,
+        navigationTargetsByUUID);
+    removeValueFromSessionMap(navigationTargetUuid, UINAVIGATION_VIEW_MODELS, viewModelsByUuid);
   }
 
   protected NavigableViewDescriptor getViewDescriptorByNavigationTarget(
@@ -310,6 +311,15 @@ public class UINavigationApiCommon implements UINavigationApi {
       return session.getValueFromMap(uuid, parameterName);
     }
     return globalMap.get(uuid);
+  }
+
+  private void removeValueFromSessionMap(UUID uuid, String parameterName, Map<UUID, ?> globalMap) {
+    Session session = getCurrentSession();
+    if (session != null) {
+      session.removeEntryFromMap(uuid, parameterName);
+    } else {
+      globalMap.remove(uuid);
+    }
   }
 
   protected void clearAndRemoveSession() {

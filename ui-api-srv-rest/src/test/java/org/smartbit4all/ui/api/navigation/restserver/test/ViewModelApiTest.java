@@ -276,6 +276,23 @@ public class ViewModelApiTest {
 
   }
 
+  @Test
+  @Order(2000)
+  void testClose() {
+    TestModel model = getTestModel();
+    assertNotNull(model);
+
+    // restTemplate.exchange(getViewModelUrl("createViewModel", null), HttpMethod.POST, httpEntity,
+    // ViewModelData.class)
+    restTemplate
+        .postForObject(getUrl("close", viewModelUUID), null, Void.class);
+
+    HttpClientErrorException ex = assertThrows(HttpClientErrorException.class,
+        () -> getTestModel());
+    assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
+
+  }
+
   private TestModel getTestModel() {
     return objectMapper.convertValue(getViewModelData().getModel(), TestModel.class);
   }

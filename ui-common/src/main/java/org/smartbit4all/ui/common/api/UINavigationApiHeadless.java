@@ -1,5 +1,6 @@
 package org.smartbit4all.ui.common.api;
 
+import java.util.UUID;
 import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -109,8 +110,17 @@ public class UINavigationApiHeadless extends UINavigationApiCommon {
   public <T extends ViewModel> T createAndAddChildViewModel(ViewModel parent, String path,
       Class<T> clazz) {
     T viewModel = super.createAndAddChildViewModel(parent, path, clazz);
-    // TODO fix this hack
+    // TODO fix this hack, viewModel uuid may be available without generating viewModelData
     putViewModelByUuidInternal(viewModel.getViewModelData().getUuid(), viewModel);
     return viewModel;
+  }
+
+  @Override
+  public void close(UUID navigationTargetUuid) {
+    ViewModel viewModel = getViewModelByUuidInternal(navigationTargetUuid);
+    if (viewModel != null) {
+      viewModel.onCloseWindow();
+    }
+    super.close(navigationTargetUuid);
   }
 }
