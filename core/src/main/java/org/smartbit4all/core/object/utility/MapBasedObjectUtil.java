@@ -4,8 +4,12 @@ import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.smartbit4all.api.mapbasedobject.bean.BooleanValue;
 import org.smartbit4all.api.mapbasedobject.bean.BooleanValueList;
@@ -39,6 +43,161 @@ import org.smartbit4all.core.utility.StringConstant;
  *
  */
 public class MapBasedObjectUtil {
+
+  public static Map<String, String> getPropertiesInString(MapBasedObjectData data) {
+    return getPropertiesInString(data, new HashMap<>());
+  }
+
+  private static Map<String, String> getPropertiesInString(MapBasedObjectData from,
+      Map<String, String> to) {
+
+    getPropertiesInString(
+        from.getStringPropertyMap(),
+        v -> v.getValue(),
+        to);
+
+    getPropertiesInString(
+        from.getStringListMap(),
+        v -> String.join(", ", v.getValues()),
+        to);
+
+    getPropertiesInString(
+        from.getIntegerPropertyMap(),
+        v -> String.valueOf(v.getValue()),
+        to);
+
+    getPropertiesInString(
+        from.getIntegerListMap(),
+        v -> String.join(", ", String.valueOf(v.getValues())),
+        to);
+
+    getPropertiesInString(
+        from.getLongPropertyMap(),
+        v -> String.valueOf(v.getValue()),
+        to);
+
+    getPropertiesInString(
+        from.getLongListMap(),
+        v -> String.join(", ", String.valueOf(v.getValues())),
+        to);
+
+    getPropertiesInString(
+        from.getDoublePropertyMap(),
+        v -> String.valueOf(v.getValue()),
+        to);
+
+    getPropertiesInString(
+        from.getDoubleListMap(),
+        v -> String.join(", ", String.valueOf(v.getValues())),
+        to);
+
+    getPropertiesInString(
+        from.getBooleanPropertyMap(),
+        v -> String.valueOf(v.getValue()),
+        to);
+
+    getPropertiesInString(
+        from.getBooleanListMap(),
+        v -> String.join(", ", String.valueOf(v.getValues())),
+        to);
+
+    getPropertiesInString(
+        from.getUriPropertyMap(),
+        v -> String.valueOf(v.getValue()),
+        to);
+
+    getPropertiesInString(
+        from.getUriListMap(),
+        v -> String.join(", ", String.valueOf(v.getValues())),
+        to);
+
+    getPropertiesInString(
+        from.getLocalDatePropertyMap(),
+        v -> v.getValue() == null
+            ? ""
+            : v.getValue().format(DateTimeFormatter.ofPattern("yyyy.MM.dd.")),
+        to);
+
+    getPropertiesInString(
+        from.getLocalDateListMap(),
+        v -> {
+          String s = "";
+          if (v.getValues() != null) {
+            for (LocalDate date : v.getValues()) {
+              s += date.format(DateTimeFormatter.ofPattern("yyyy.MM.dd."));
+            }
+          }
+          return s;
+        },
+        to);
+
+    getPropertiesInString(
+        from.getLocalTimePropertyMap(),
+        v -> v.getValue() == null
+            ? ""
+            : v.getValue().format(DateTimeFormatter.ofPattern("HH:mm")),
+        to);
+
+    getPropertiesInString(
+        from.getLocalTimeListMap(),
+        v -> {
+          String s = "";
+          if (v.getValues() != null) {
+            for (LocalTime time : v.getValues()) {
+              s += time.format(DateTimeFormatter.ofPattern("HH:mm"));
+            }
+          }
+          return s;
+        },
+        to);
+
+    getPropertiesInString(
+        from.getLocalDateTimePropertyMap(),
+        v -> v.getValue() == null
+            ? "null"
+            : v.getValue().format(DateTimeFormatter.ofPattern("yyyy.MM.dd. HH:mm")),
+        to);
+
+    getPropertiesInString(
+        from.getLocalDateTimeListMap(),
+        v -> {
+          String s = "";
+          if (v.getValues() != null) {
+            for (LocalDateTime dateTime : v.getValues()) {
+              s += dateTime.format(DateTimeFormatter.ofPattern("yyyy.MM.dd. HH:mm"));
+            }
+          }
+          return s;
+        },
+        to);
+
+    Map<String, ObjectValue> objectPropertyMap = from.getObjectPropertyMap();
+    if (objectPropertyMap != null) {
+      for (Map.Entry<String, ObjectValue> entry : objectPropertyMap.entrySet()) {
+        to = getPropertiesInString(entry.getValue().getValue(), to);
+      }
+    }
+
+    Map<String, ObjectValueList> objectListMap = from.getObjectListMap();
+    if (objectListMap != null) {
+      for (Map.Entry<String, ObjectValueList> entry : objectListMap.entrySet()) {
+        for (MapBasedObjectData embeddedData : entry.getValue().getValues()) {
+          to = getPropertiesInString(embeddedData, to);
+        }
+      }
+    }
+
+    return to;
+  }
+
+  private static <T> void getPropertiesInString(Map<String, T> dataMap,
+      Function<T, String> toString, Map<String, String> to) {
+    if (dataMap != null) {
+      dataMap.forEach((key, value) -> {
+        to.put(key, toString.apply(value));
+      });
+    }
+  }
 
   /**
    * Adds property with the given key and value got from a {@link MapBasedObject}.
