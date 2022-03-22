@@ -713,7 +713,7 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
         getAllUsers().stream().anyMatch(u -> u.getUsername().equals(user.getUsername()));
     if (anyMatch) {
       throw new IllegalStateException(
-          "User with username " + user.getUsername() + "already exists!");
+          "User with username [" + user.getUsername() + "] already exists!");
     }
 
     StorageObject<User> userStorageObj = storage.get().instanceOf(User.class);

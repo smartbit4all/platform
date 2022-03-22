@@ -12,6 +12,7 @@ import java.util.List;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.org.bean.User;
@@ -290,6 +291,36 @@ class OrgApiTest {
         orgApi.getGroupByName("Group2").getChildren().contains(group3.getUri()));
 
     orgApi.removeSubGroup(group1.getUri(), group2.getUri());
+    assertFalse(
+        orgApi.getGroupByName("Group1").getChildren().contains(group2.getUri()));
+  }
+
+  @Test
+  @Disabled // TODO fix OrgApiStorageImpl to turn this test green!
+  void removeChildGroupTest() {
+    orgApi.saveGroup(new Group().name("Group1"));
+    orgApi.saveGroup(new Group().name("Group2"));
+    orgApi.saveGroup(new Group().name("Group3"));
+    orgApi.saveGroup(new Group().name("Group4"));
+
+    Group group1 = orgApi.getGroupByName("Group1");
+    Group group2 = orgApi.getGroupByName("Group2");
+    Group group3 = orgApi.getGroupByName("Group3");
+    Group group4 = orgApi.getGroupByName("Group4");
+
+    orgApi.addChildGroup(group1, group2);
+    orgApi.addChildGroup(group2, group3);
+
+    assertTrue(group1.getChildren().contains(group2.getUri()));
+    assertTrue(group2.getChildren().contains(group3.getUri()));
+
+    orgApi.removeGroup(group4.getUri());
+
+    orgApi.removeGroup(group3.getUri());
+    assertFalse(
+        orgApi.getGroupByName("Group2").getChildren().contains(group3.getUri()));
+
+    orgApi.removeGroup(group2.getUri());
     assertFalse(
         orgApi.getGroupByName("Group1").getChildren().contains(group2.getUri()));
   }
