@@ -349,6 +349,13 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
     return storage.get().read(getAllSubgroups(groupUri), Group.class);
   }
 
+  @Override
+  public List<Group> getConnectingSubGroups(URI groupUri) {
+    Group group = storage.get().read(groupUri, Group.class);
+    List<URI> children = group.getChildren();
+    return storage.get().read(children, Group.class);
+  }
+
   /**
    * Összegyűjti egy csoport összes alcsoportját.
    * 
@@ -554,6 +561,7 @@ public class OrgApiStorageImpl implements OrgApi, InitializingBean {
   public void removeGroup(URI groupUri) {
     // remove from storage
     setObjectToDeleted(groupUri, Group.class);
+
 
     // remove from setting USER_LIST_REFERENCE
     removeGroupFromGroupListReference(groupUri);

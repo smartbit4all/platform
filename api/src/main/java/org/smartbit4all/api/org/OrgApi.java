@@ -115,9 +115,14 @@ public interface OrgApi {
   void addChildGroup(Group parentGroup, Group childGroup);
 
   /**
-   * Return list of groups contained by group.
+   * Return list of groups contained by the specified group and it's subgroups.
    */
   List<Group> getSubGroups(URI groupUri);
+
+  /**
+   * Return list of groups directly containd by the specified group. (No recursion.)
+   */
+  List<Group> getConnectingSubGroups(URI groupUri);
 
   /**
    * Get all information of a group.
