@@ -192,6 +192,10 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
       subscription.dispose();
       subscription = null;
     }
+    for (ViewModel child : childrenByPath.values()) {
+      child.onCloseWindow();
+    }
+    childrenByPath.clear();
     if (ref != null) {
       ref = null;
       data.setRef(null);
