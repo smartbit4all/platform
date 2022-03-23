@@ -1,4 +1,4 @@
-package org.smartbit4all.api.runtime;
+package org.smartbit4all.domain.application;
 
 import java.net.InetAddress;
 import java.net.URI;

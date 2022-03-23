@@ -1,7 +1,7 @@
-package org.smartbit4all.api.config;
+package org.smartbit4all.domain.config;
 
-import org.smartbit4all.api.runtime.ApplicationRuntimeApi;
-import org.smartbit4all.api.runtime.ApplicationRuntimeApiStorageImpl;
+import org.smartbit4all.domain.application.ApplicationRuntimeApi;
+import org.smartbit4all.domain.application.ApplicationRuntimeApiStorageImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;

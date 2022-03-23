@@ -92,7 +92,7 @@ public class FileIOLockTestRuntime {
       }
       // Finalize the transaction file like the StorageFS do.
       FileIO.finalizeWrite(filet, fileo);
-      FileIO.unlockObjectFile(fld, file, -1);
+      FileIO.unlockObjectFile(file, -1);
     }
     long end = System.currentTimeMillis();
     System.out.println("Running time: " + (end - start - waitTime));

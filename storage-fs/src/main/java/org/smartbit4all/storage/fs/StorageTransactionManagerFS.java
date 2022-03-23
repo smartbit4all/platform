@@ -79,6 +79,14 @@ public class StorageTransactionManagerFS extends AbstractPlatformTransactionMana
   }
 
   /**
+   * @return The value object of the current transaction if any. If there is no active transaction
+   *         on this thread then we get back null.
+   */
+  public StorageTransaction getCurrentTransaction() {
+    return storageTransactionObject.get();
+  }
+
+  /**
    * Adds an on succeed event to the actual transaction. Or creates a new transaction if it's not
    * exists.
    * 

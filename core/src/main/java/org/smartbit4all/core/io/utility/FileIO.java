@@ -266,6 +266,12 @@ public class FileIO {
     long start = System.currentTimeMillis();
     while (true) {
       try {
+        if (!lockFile.getParentFile().exists()) {
+          lockFile.getParentFile().mkdirs();
+        }
+        if (!lockFile.exists()) {
+          lockFile.createNewFile();
+        }
         RandomAccessFile randomAccessFile = new RandomAccessFile(lockFile, "rw");
         FileChannel fileChannel = randomAccessFile.getChannel();
         FileLock fileLock = fileChannel.lock();
@@ -306,15 +312,13 @@ public class FileIO {
    * then we retry until we successfully read the content of the lock file. If we could read it then
    * we check the validity. In case of a valid lock we have to wait and try again.
    * 
-   * @param myLockData The lock data we would like to commit for the object.
    * @param lockFile The lock file.
    * @param waitUntil Defines the waiting policy. -1 means wait forever, 0 means try only once, an
    *        exact number means the waiting for this millisecond.
    * @throws InterruptedException If the Thread is interrupted.
    * @throws FileLocked If the waiting for the lock is finished.
    */
-  public static final void unlockObjectFile(FileLockData myLockData, File lockFile,
-      long waitUntil)
+  public static final void unlockObjectFile(File lockFile, long waitUntil)
       throws InterruptedException, FileLocked {
     long start = System.currentTimeMillis();
     while (true) {

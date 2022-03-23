@@ -19,6 +19,7 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.binarydata.BinaryData;
@@ -26,10 +27,12 @@ import org.smartbit4all.api.storage.bean.ObjectVersion;
 import org.smartbit4all.api.storage.bean.StorageObjectData;
 import org.smartbit4all.api.storage.bean.StorageObjectRelationData;
 import org.smartbit4all.core.io.utility.FileIO;
+import org.smartbit4all.core.io.utility.FileLockData;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.core.utility.UriUtils;
+import org.smartbit4all.domain.application.ApplicationRuntimeApi;
 import org.smartbit4all.domain.data.storage.ObjectHistoryIterator;
 import org.smartbit4all.domain.data.storage.ObjectModificationException;
 import org.smartbit4all.domain.data.storage.ObjectNotFoundException;
@@ -45,9 +48,13 @@ import org.smartbit4all.domain.data.storage.StorageObjectHistoryEntry;
 import org.smartbit4all.domain.data.storage.StorageObjectLock;
 import org.smartbit4all.domain.data.storage.StorageObjectPhysicalLock;
 import org.smartbit4all.domain.data.storage.StorageSaveEvent;
+import org.smartbit4all.domain.data.storage.StorageTransaction;
 import org.smartbit4all.domain.data.storage.StorageUtil;
 import org.smartbit4all.domain.data.storage.TransactionalStorage;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 /**
  * The file system based implementation of the {@link ObjectStorage} interface. This is responsible
@@ -62,7 +69,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * 
  * @author Peter Boros
  */
-public class StorageFS extends ObjectStorageImpl {
+public class StorageFS extends ObjectStorageImpl implements ApplicationContextAware {
 
   private static final Logger log = LoggerFactory.getLogger(StorageFS.class);
 
@@ -113,6 +120,19 @@ public class StorageFS extends ObjectStorageImpl {
    */
   @Autowired(required = false)
   private StorageTransactionManagerFS transactionManager;
+
+  /**
+   * The runtime api is responsible for registering the objects.
+   */
+  private ApplicationRuntimeApi myRuntimeApi;
+
+  /**
+   * False if we hasn't try to get the {@link ApplicationRuntimeApi} bean and set the
+   * {@link #myRuntimeApi}.
+   */
+  boolean runtimeWasSet = false;
+
+  private ApplicationContext applicationContext;
 
   private static Random rnd = new Random();
 
@@ -209,26 +229,39 @@ public class StorageFS extends ObjectStorageImpl {
   }
 
   @Override
-  protected Supplier<StorageObjectPhysicalLock> physicalLockSupplier() {
-    // TODO Implement the locking of the files to have cluster safe physical lock fro the objects.
-    // // Lock the original object file if exists.
-    // File objectLockFile = getObjectLockFile(object);
-    // if (objectLockFile.exists()) {
-    // try (RandomAccessFile raf = new RandomAccessFile(objectLockFile, "rw");
-    // FileLock lock = raf.getChannel().lock()) {
-    // // write to the channel
-    // } catch (Exception e) {
-    // throw new IllegalStateException("The storage object " + object + " save failed.", e);
-    // }
-    // } else {
-    // // The given object doesn't exist so we can write the temp file and move it at the end.
-    // }
-    return super.physicalLockSupplier();
+  protected Supplier<StorageObjectPhysicalLock> physicalLockSupplier(URI objectUri) {
+    if (runtimeApi() == null || runtimeApi().self() == null) {
+      return super.physicalLockSupplier(objectUri);
+    }
+    return () -> {
+      StorageTransaction transaction =
+          transactionManager != null ? transactionManager.getCurrentTransaction() : null;
+      FileLockData fld = new FileLockData(runtimeApi().self().getUuid().toString(),
+          transaction != null ? transaction.getData().getUri().toString() : null);
+      try {
+        FileIO.lockObjectFile(fld, getObjectLockFile(objectUri), -1, l -> l != null
+            && (!Strings.isEmpty(l.getRuntimeId()) || !Strings.isEmpty(l.getTransactionId())));
+      } catch (Exception e) {
+        throw new IllegalStateException("Unable to lock object " + objectUri, e);
+      }
+      return new StorageObjectPhysicalLock(objectUri);
+    };
   }
 
   @Override
   protected Consumer<StorageObjectPhysicalLock> physicalLockReleaser() {
-    return super.physicalLockReleaser();
+    if (runtimeApi() == null || runtimeApi().self() == null || transactionManager == null) {
+      return super.physicalLockReleaser();
+    }
+    return l -> {
+      if (l != null) {
+        try {
+          FileIO.unlockObjectFile(getObjectLockFile(l.getObjectUri()), -1);
+        } catch (Exception e) {
+          throw new IllegalStateException("Unable to lock object " + l.getObjectUri(), e);
+        }
+      }
+    };
   }
 
   @Override
@@ -928,6 +961,30 @@ public class StorageFS extends ObjectStorageImpl {
 
   public final File getRootFolder() {
     return rootFolder;
+  }
+
+  @Override
+  public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    this.applicationContext = applicationContext;
+  }
+
+  /**
+   * The runtime api is an optional Api responsible for registering the actual
+   * 
+   * @return
+   */
+  ApplicationRuntimeApi runtimeApi() {
+    if (!runtimeWasSet) {
+      try {
+        myRuntimeApi =
+            applicationContext != null ? applicationContext.getBean(ApplicationRuntimeApi.class)
+                : null;
+      } catch (BeansException e) {
+        log.debug("The application doen't have ApplicationRuntimeApi registered.", e);
+      }
+      runtimeWasSet = true;
+    }
+    return myRuntimeApi;
   }
 
 }

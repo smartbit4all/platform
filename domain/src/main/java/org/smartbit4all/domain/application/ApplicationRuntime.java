@@ -1,4 +1,4 @@
-package org.smartbit4all.api.runtime;
+package org.smartbit4all.domain.application;
 
 import java.util.UUID;
 import org.smartbit4all.api.invocation.bean.ApplicationRuntimeData;

@@ -56,9 +56,11 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
    * The extension point for the given {@link ObjectStorage} implementation to add a supplier
    * function for getting lock.
    * 
+   * @param objectUri
+   * 
    * @return The supplier
    */
-  protected Supplier<StorageObjectPhysicalLock> physicalLockSupplier() {
+  protected Supplier<StorageObjectPhysicalLock> physicalLockSupplier(URI objectUri) {
     return null;
   }
 
@@ -96,7 +98,8 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
       StorageObjectLockEntry entry = locks.get(objectUri);
       if (entry == null) {
         final StorageObjectLockEntry newEntry =
-            new StorageObjectLockEntry(objectUri, physicalLockSupplier(), physicalLockReleaser());
+            new StorageObjectLockEntry(objectUri, physicalLockSupplier(objectUri),
+                physicalLockReleaser());
         // TODO implement rather a complete object to hold object locks!
         newEntry.setLockRemover(uri -> {
           lockMutex.lock();
