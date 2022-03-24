@@ -371,10 +371,6 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
     return (V) childrenByPath.get(path);
   }
 
-  public T getModel() {
-    return model;
-  }
-
   @Override
   public ViewModelData getViewModelData() {
     ViewModelData result = new ViewModelData()
