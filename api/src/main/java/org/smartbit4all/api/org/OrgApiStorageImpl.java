@@ -39,7 +39,7 @@ import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageObject;
 import org.smartbit4all.domain.data.storage.StorageObjectReferenceEntry;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.event.EventListener;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -170,7 +170,7 @@ public class OrgApiStorageImpl implements OrgApi {
     return null;
   }
 
-  @EventListener(ApplicationReadyEvent.class)
+  @EventListener(ApplicationStartedEvent.class)
   public void initSecurityOptions() throws Exception {
     if (securityOptions != null) {
       Map<SecurityGroup, Group> allNewGroups = new HashMap<>();
