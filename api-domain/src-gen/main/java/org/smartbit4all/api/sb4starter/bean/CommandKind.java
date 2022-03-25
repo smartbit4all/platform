@@ -16,6 +16,7 @@ package org.smartbit4all.api.sb4starter.bean;
 import java.util.Objects;
 import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 
@@ -30,6 +31,8 @@ public enum CommandKind {
   CONTENTACCESSDOWNLOAD("ContentAccessDownload"),
   
   WORDEDIT("WordEdit"),
+  
+  EXCELEDIT("ExcelEdit"),
   
   EXECUTECOMMAND("ExecuteCommand"),
   
