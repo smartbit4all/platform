@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -20,6 +22,8 @@ class FutureValueTest {
 
   List<String> sequence = new ArrayList<>();
 
+  Lock lock = new ReentrantLock(true);
+
   FutureValue<String> futureValue1 = new FutureValue<>();
 
   FutureValue<String> futureValue2 = new FutureValue<>();
@@ -30,6 +34,10 @@ class FutureValueTest {
   @AfterAll
   static void tearDownAfterClass() throws Exception {}
 
+  // private final synchronized void addSequenceValue(String string) {
+  // sequence.add(string);
+  // }
+
   @Test
   void test() throws InterruptedException, ExecutionException {
     // 5 more thread waiting for execution.
@@ -37,10 +45,16 @@ class FutureValueTest {
       executor.execute(() -> {
         try {
           String string = futureValue1.get();
-          sequence.add(string);
-          if (sequence.size() == 10) {
-            futureValue2.setValue("2");
+          lock.lock();
+          try {
+            sequence.add(string);
+            if (sequence.size() == 10) {
+              futureValue2.setValue("2");
+            }
+          } finally {
+            lock.unlock();
           }
+          // addSequenceValue(string);
         } catch (Exception e) {
           log.error("Error", e);
         }
