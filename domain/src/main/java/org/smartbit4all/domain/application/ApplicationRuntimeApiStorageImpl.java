@@ -40,6 +40,8 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
    */
   private FutureValue<ApplicationRuntime> self = new FutureValue<>();
 
+  private ThreadLocal<Boolean> maintaining = new ThreadLocal<>();
+
   /**
    * The uri of the saved runtime.
    */
@@ -86,7 +88,8 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
   @Override
   public ApplicationRuntime self() {
     try {
-      return self.get();
+      Boolean maintain = maintaining.get();
+      return Boolean.TRUE.equals(maintain) ? (self.isDone() ? self.get() : null) : self.get();
     } catch (Exception e) {
       throw new IllegalStateException("Unable to get the registered runtime instance.", e);
     }
@@ -117,7 +120,12 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
       // Save the self and set as self. From that time the runtime is officially registered.
       ApplicationRuntimeData runtimeData = myRuntime.getData();
       runtimeData.setLastTouchTime(currentTimeMillis);
-      runtimeUri = storageCluster.saveAsNew(runtimeData, "active");
+      maintaining.set(Boolean.TRUE);
+      try {
+        runtimeUri = storageCluster.saveAsNew(runtimeData, "active");
+      } finally {
+        maintaining.remove();
+      }
       myRuntime.getData().setUri(runtimeUri);
       self.setValue(myRuntime);
     } else {

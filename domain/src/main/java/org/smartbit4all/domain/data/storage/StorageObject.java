@@ -153,6 +153,8 @@ public final class StorageObject<T> {
    */
   private List<Consumer<StorageSaveEvent>> onSucceedFunctionList = null;
 
+  private boolean skipLock = false;
+
   /**
    * The Storage cann't be created directly! Use the Storage that would manage this object to have a
    * new one by {@link Storage#instanceOf(Class)} or load one by
@@ -458,6 +460,14 @@ public final class StorageObject<T> {
    */
   public final BinaryData serialize() {
     return definition.serialize(object);
+  }
+
+  public final boolean isSkipLock() {
+    return skipLock;
+  }
+
+  final void setSkipLock(boolean skipLock) {
+    this.skipLock = skipLock;
   }
 
 }

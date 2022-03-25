@@ -178,6 +178,7 @@ public final class Storage {
     @SuppressWarnings("unchecked")
     StorageObject<T> storageObject = (StorageObject<T>) instanceOf(object.getClass());
     storageObject.setObject(object);
+    storageObject.setSkipLock(true);
     return save(storageObject);
   }
 
@@ -197,6 +198,7 @@ public final class Storage {
     @SuppressWarnings("unchecked")
     StorageObject<T> storageObject = (StorageObject<T>) instanceOf(object.getClass(), setName);
     storageObject.setObject(object);
+    storageObject.setSkipLock(true);
     return save(storageObject);
   }
 

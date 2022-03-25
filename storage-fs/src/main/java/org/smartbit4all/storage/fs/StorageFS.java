@@ -267,8 +267,11 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
   @Override
   public URI save(StorageObject<?> object) {
 
-    StorageObjectLock storageObjectLock = getLock(object.getUri());
-    storageObjectLock.lock();
+    StorageObjectLock storageObjectLock = !object.isSkipLock() ? getLock(object.getUri()) : null;
+
+    if (storageObjectLock != null) {
+      storageObjectLock.lock();
+    }
     try {
 
       if (object.getStorage().getVersionPolicy() == VersionPolicy.SINGLEVERSION) {
@@ -280,7 +283,9 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
     } catch (IOException e) {
       throw new IllegalArgumentException("Unable to finalize the transaction on " + object, e);
     } finally {
-      storageObjectLock.unlockAndRelease();
+      if (storageObjectLock != null) {
+        storageObjectLock.unlockAndRelease();
+      }
     }
     return object.getUri();
   }
