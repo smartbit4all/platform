@@ -250,7 +250,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
 
   @Override
   protected Consumer<StorageObjectPhysicalLock> physicalLockReleaser() {
-    if (runtimeApi() == null || runtimeApi().self() == null || transactionManager == null) {
+    if (runtimeApi() == null || runtimeApi().self() == null) {
       return super.physicalLockReleaser();
     }
     return l -> {

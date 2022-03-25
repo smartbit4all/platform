@@ -16,11 +16,12 @@ import org.smartbit4all.core.object.ObjectApiImpl;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 
-public class InvocationRegisterApiIml implements InvocationRegisterApi, InitializingBean {
+public class InvocationRegisterApiIml implements InvocationRegisterApi {
 
   private static final Logger log = LoggerFactory.getLogger(InvocationRegisterApiIml.class);
 
@@ -75,8 +76,9 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Initiali
       URI.create(Invocations.APIREGISTRATION_SCHEME + StringConstant.COLON + StringConstant.SLASH
           + ObjectApiImpl.getDefaultAlias(ApiRegistryData.class));
 
-  @Override
-  public void afterPropertiesSet() throws Exception {
+
+  @EventListener(ApplicationReadyEvent.class)
+  public void maintainRegistry() throws Exception {
     if (storage.get() == null) {
       return;
     }

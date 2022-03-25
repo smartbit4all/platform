@@ -7,10 +7,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.apache.logging.log4j.util.Strings;
 import org.smartbit4all.api.invocation.bean.ApplicationRuntimeData;
+import org.smartbit4all.core.utility.concurrent.FutureValue;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageObject.VersionPolicy;
@@ -33,9 +35,10 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
   private static final String CLUSTER = "cluster";
 
   /**
-   * The self bean of this application instance. It can be used after property set time.
+   * The self bean of this application instance. It can be used after property set time. This is
+   * future to stop the executions
    */
-  private ApplicationRuntime self;
+  private FutureValue<ApplicationRuntime> self = new FutureValue<>();
 
   /**
    * The uri of the saved runtime.
@@ -82,7 +85,11 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
 
   @Override
   public ApplicationRuntime self() {
-    return self;
+    try {
+      return self.get();
+    } catch (Exception e) {
+      throw new IllegalStateException("Unable to get the registered runtime instance.", e);
+    }
   }
 
   @Override
@@ -103,22 +110,22 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
   }
 
   @Scheduled(fixedDelayString = "${applicationruntime.maintain.fixeddelay:5000}")
-  public void maintain() {
+  public void maintain() throws InterruptedException, ExecutionException {
     // TODO sync the times!
     long currentTimeMillis = System.currentTimeMillis();
-    if (self == null) {
+    if (!self.isDone()) {
       // Save the self and set as self. From that time the runtime is officially registered.
       ApplicationRuntimeData runtimeData = myRuntime.getData();
       runtimeData.setLastTouchTime(currentTimeMillis);
       runtimeUri = storageCluster.saveAsNew(runtimeData, "active");
       myRuntime.getData().setUri(runtimeUri);
-      self = myRuntime;
+      self.setValue(myRuntime);
     } else {
       // The application runtime is already exists and must be updated in the storage.
       storageCluster.update(runtimeUri, ApplicationRuntimeData.class, r -> {
         return r.lastTouchTime(currentTimeMillis);
       });
-      self.getData().setLastTouchTime(currentTimeMillis);
+      self.get().getData().setLastTouchTime(currentTimeMillis);
     }
     // If we successfully saved ourself then read all the active runtime we have in this register.
     List<ApplicationRuntimeData> activeRuntimes =
