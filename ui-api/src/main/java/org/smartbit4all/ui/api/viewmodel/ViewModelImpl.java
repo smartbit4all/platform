@@ -390,15 +390,26 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
   }
 
   protected void registerDownloadData(String identifier, Supplier<BinaryData> supplier) {
-    registeredDownloadDatas.put(identifier, supplier);
+    if (parent != null) {
+      parent.registerDownloadData(identifier, supplier);
+    } else {
+      registeredDownloadDatas.put(identifier, supplier);
+    }
   }
 
   protected void unregisterDownload(String identifier) {
-    registeredDownloadDatas.remove(identifier);
+    if (parent != null) {
+      parent.unregisterDownload(identifier);
+    } else {
+      registeredDownloadDatas.remove(identifier);
+    }
   }
 
   @Override
   public BinaryData getDownloadData(String identifier) {
+    if (parent != null) {
+      return parent.getDownloadData(identifier);
+    }
     Supplier<BinaryData> supplier = registeredDownloadDatas.get(identifier);
     if (supplier == null) {
       return null;
