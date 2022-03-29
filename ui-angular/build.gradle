@@ -1,0 +1,11 @@
+plugins {
+    id 'org.siouan.frontend-jdk8' version '6.0.0'
+}
+
+frontend {
+    nodeDistributionProvided = true
+    nodeVersion = '16.13.1'
+    // See 'scripts' section in your 'package.json file'
+    // The assemblePackage command builds the packages and then creates the tgz files
+    assembleScript = 'run assemblePackage'
+}

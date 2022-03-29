@@ -1,0 +1,27 @@
+<div *ngFor="let treeNode of rootNodes">
+    <div (click)="onRowClick(treeNode)" *ngIf="isVisible(treeNode)" class="row"
+        [ngClass]="treeNode.selected ? 'selected' : getLevel(level, treeNode.expanded)">
+        <div class="treeNode" [ngStyle]="{'margin-left': (level * 30) + 'px'}">
+            <div class="treeNodeCaption" [ngStyle]="{'width': 'calc(100% - ' + (level * 30) + 'px)'}">
+                <div>
+                    <vaadin-icon class="typeIcon" icon="vaadin:{{treeNode.icon}}"></vaadin-icon>
+                    <label [ngClass]="treeNode.styles!">
+                        {{treeNode.caption}}
+                    </label>
+                    <span *ngIf="treeNode.hasChildren" (click)="handleOpen(treeNode, $event)">
+                        <vaadin-icon class="toggle" *ngIf="!treeNode.expanded" icon="vaadin:angle-down"></vaadin-icon>
+                        <vaadin-icon class="toggle" *ngIf="treeNode.expanded" icon="vaadin:angle-up"></vaadin-icon>
+                    </span>
+                </div>
+                <div *ngIf="isNodeHasAttachment(treeNode)">
+                    <vaadin-icon icon="vaadin:paperclip" class="attachment"></vaadin-icon>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <smartbit4all-tree-node *ngIf="treeNode.expanded" [uuid]="uuid" [treeNodes]="treeNode.childrenNodes"
+        [level]="level + 1" [isEditMode]="isEditMode" [viewModel]="viewModel">
+    </smartbit4all-tree-node>
+</div>

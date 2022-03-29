@@ -1,0 +1,82 @@
+openapi: 3.0.1
+info:
+  title: Tree domain objects
+  description: Tree domain objects
+  termsOfService: ''
+  contact:
+    email: info@it4all.hu
+  version: 1.0.0
+tags:
+  - name: tree
+    description: tree
+paths:
+  /nope:
+    post:
+      summary: Placeholder for generation
+      responses:
+        '200':
+          description: nope
+components:
+  schemas:
+    TreeModel:
+      type: object
+      required:
+        - rootNodes
+      properties:
+        rootNodes:
+          type: array
+          items:
+            $ref: '#/components/schemas/TreeNode'
+        selectedNodeIdentifier:
+          type: string
+    TreeNode:
+      type: object
+      required:
+        - childrenNodes
+      properties:
+        kind:
+          $ref: '#/components/schemas/TreeNodeKind'
+        identifier:
+          type: string
+        objectUri:
+          type: string
+          format: uri
+        caption:
+          type: string
+        shortDescription:
+          type: string
+        icon:
+          type: string
+        actions:
+          type: array
+          items:
+            type: string
+            format: uri
+        styles:
+          type: array
+          items:
+            type: string
+        childrenNodes:
+          type: array
+          items:
+            $ref: '#/components/schemas/TreeNode'
+        hasChildren:
+          type: boolean
+          default: false
+        expanded:
+          type: boolean
+          default: false
+        selected:
+          type: boolean
+          default: false
+        childrenNodesLoaded:
+          type: boolean
+          default: false
+        navigationTarget:
+          type: 'NavigationTargetRef'
+        level:
+          type: integer
+          format: int32
+    TreeNodeKind:
+      type: string
+      enum: [entry, association, reference]

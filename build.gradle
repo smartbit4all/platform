@@ -12,46 +12,46 @@ sonarqube {
 }
 
 subprojects {
+	if (it.name != 'ui-angular') {	
+	    apply plugin: 'org.smartbit4all.platform.gradle.java'
+	    apply plugin: 'maven-publish'
+	    group "org.smartbit4all.platform"
+	    version "1.0.3-SNAPSHOT"
 	
-    apply plugin: 'org.smartbit4all.platform.gradle.java'
-    apply plugin: 'maven-publish'
-    group "org.smartbit4all.platform"
-    version "1.0.3-SNAPSHOT"
-
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
-
-    dependencies {
-        api 'com.google.guava:guava:31.0.1-jre'
-    }
-
-	java {
-		withSourcesJar()
-	}
-
-	sourcesJar {
-		duplicatesStrategy = 'exclude'
-	}
-
-    publishing {
-        publications {
-            maven(MavenPublication) {
-                from components.java
-            }
-        }
-
-	    repositories {
-			maven {
-	            name = "GitHubPackages"
-	            url = uri("https://maven.pkg.github.com/it4all-hungary/p001")
-	            credentials {
-	                username = project.findProperty("gpr.user") ?: System.getenv("GitHub_Username_it4all")
-	                password = project.findProperty("gpr.key") ?: System.getenv("GitHub_Token_it4all_package")
-	            }
-        	}
+	    sourceCompatibility = JavaVersion.VERSION_1_8
+	    targetCompatibility = JavaVersion.VERSION_1_8
+	
+	    dependencies {
+	        api 'com.google.guava:guava:31.0.1-jre'
 	    }
-    }
-
+	
+		java {
+			withSourcesJar()
+		}
+	
+		sourcesJar {
+			duplicatesStrategy = 'exclude'
+		}
+	
+	    publishing {
+	        publications {
+	            maven(MavenPublication) {
+	                from components.java
+	            }
+	        }
+	
+		    repositories {
+				maven {
+		            name = "GitHubPackages"
+		            url = uri("https://maven.pkg.github.com/it4all-hungary/p001")
+		            credentials {
+		                username = project.findProperty("gpr.user") ?: System.getenv("GitHub_Username_it4all")
+		                password = project.findProperty("gpr.key") ?: System.getenv("GitHub_Token_it4all_package")
+		            }
+	        	}
+		    }
+	    }
+	}
 
 }
 
