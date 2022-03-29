@@ -103,7 +103,7 @@ public abstract class UINavigationVaadinCommon extends UINavigationApiCommon {
           .getInstantiator()
           .createComponent(getViewClassByNavigationTarget(navigationTarget));
       if (view instanceof Container) {
-        putContainerByUuidInternal(uuid, (Container) view);
+        putContainerByUuidInternal(navigationTarget.getUuid(), (Container) view);
       }
       return view;
     } finally {
@@ -226,7 +226,7 @@ public abstract class UINavigationVaadinCommon extends UINavigationApiCommon {
           "No containerUuid specified when navigating to embedded target!");
     }
     Container container = getContainerByUuidInternal(containerUuid);
-    if (container != null) {
+    if (container == null) {
       throw new IllegalArgumentException(
           "Component specified by containerUuid is not registered!");
     }
