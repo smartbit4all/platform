@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -424,16 +425,28 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
     } else if (params[0] instanceof URI) {
       uri = (URI) params[idx];
     } else {
-      throw new RuntimeException("URI parameter not found");
+      throw new IllegalArgumentException("URI parameter not found");
     }
     return uri;
+  }
+
+  protected UUID getUuidParameter(Object[] params, int idx) {
+    UUID uuid;
+    if (params[idx] instanceof String) {
+      uuid = UUID.fromString((String) params[idx]);
+    } else if (params[0] instanceof UUID) {
+      uuid = (UUID) params[idx];
+    } else {
+      throw new IllegalArgumentException("UUID parameter not found");
+    }
+    return uuid;
   }
 
   protected String getStringParameter(Object[] params, int idx) {
     if (params[idx] instanceof String) {
       return (String) params[idx];
     }
-    throw new RuntimeException("String parameter not found");
+    throw new IllegalArgumentException("String parameter not found");
   }
 
 }
