@@ -131,6 +131,8 @@ public class UINavigationVaadinRouting extends UINavigationVaadinCommon {
   public void close(UUID navigationTargetUuid) {
     if (dialogsByUUID.containsKey(navigationTargetUuid)) {
       closeDialog(navigationTargetUuid);
+    } else if (embeddedViewsByUUID.containsKey(navigationTargetUuid)) {
+      closeEmbedded(navigationTargetUuid);
     } else {
       // TODO what does close mean in this case? navigate back?
     }

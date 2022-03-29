@@ -44,6 +44,7 @@ public abstract class UINavigationVaadinCommon extends UINavigationApiCommon {
   protected Map<UUID, Dialog> dialogsByUUID;
   protected Map<UUID, Label> dialogLabelsByUUID;
   protected Map<UUID, Component> dialogViewsByUUID;
+  protected Map<UUID, Component> embeddedViewsByUUID;
 
   private static final String PARAM = "param";
 
@@ -56,6 +57,7 @@ public abstract class UINavigationVaadinCommon extends UINavigationApiCommon {
     dialogsByUUID = new HashMap<>();
     dialogViewsByUUID = new HashMap<>();
     dialogLabelsByUUID = new HashMap<>();
+    embeddedViewsByUUID = new HashMap<>();
   }
 
   @Override
@@ -215,7 +217,12 @@ public abstract class UINavigationVaadinCommon extends UINavigationApiCommon {
 
   protected Component navigateToEmbedded(NavigationTarget navigationTarget) {
     Container container = findContainer(navigationTarget.getContainerUuid());
-    Component embeddedView = createView(navigationTarget);
+    UUID embeddedUUID = navigationTarget.getUuid();
+    Component embeddedView = embeddedViewsByUUID.get(embeddedUUID);
+    if (embeddedView == null) {
+      embeddedView = createView(navigationTarget);
+      embeddedViewsByUUID.put(embeddedUUID, embeddedView);
+    }
     container.showEmbeddedTarget(embeddedView, navigationTarget);
     return embeddedView;
   }
@@ -231,6 +238,35 @@ public abstract class UINavigationVaadinCommon extends UINavigationApiCommon {
           "Component specified by containerUuid is not registered!");
     }
     return container;
+  }
+
+  /**
+   * Call findContainer, but catches all exceptions, returns null instead.
+   * 
+   * @param containerUuid
+   * @return
+   */
+  protected Container findContainerIfExists(UUID containerUuid) {
+    try {
+      return findContainer(containerUuid);
+    } catch (Exception e) {
+      return null;
+    }
+  }
+
+  protected void closeEmbedded(UUID embeddedUuid) {
+    // close
+    Component embeddedView = embeddedViewsByUUID.get(embeddedUuid);
+    if (embeddedView != null) {
+      callBeforeLeave(embeddedView);
+    }
+    embeddedViewsByUUID.remove(embeddedUuid);
+    // remove from container, if present
+    NavigationTarget embeddedNavTarget = getNavigationTargetByUuid(embeddedUuid);
+    Container container = findContainer(embeddedNavTarget.getContainerUuid());
+    if (container != null) {
+      container.removeEmbeddedTarget(embeddedView, embeddedNavTarget);
+    }
   }
 
   protected void callHasUrlImplementation(NavigationTarget navigationTarget, Component view) {

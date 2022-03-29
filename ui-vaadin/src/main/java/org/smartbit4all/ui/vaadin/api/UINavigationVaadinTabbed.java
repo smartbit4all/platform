@@ -232,6 +232,8 @@ public class UINavigationVaadinTabbed extends UINavigationVaadinCommon {
     ui.access(() -> {
       if (dialogsByUUID.containsKey(navigationTargetUuid)) {
         closeDialog(navigationTargetUuid);
+      } else if (embeddedViewsByUUID.containsKey(navigationTargetUuid)) {
+        closeEmbedded(navigationTargetUuid);
       } else {
         NavigationTarget target = getNavigationTargetByUuid(navigationTargetUuid);
         Tab tab = tabsByViewObjectId.get(getViewObjectId(target));

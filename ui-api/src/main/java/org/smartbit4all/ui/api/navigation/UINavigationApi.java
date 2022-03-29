@@ -14,6 +14,10 @@ public interface UINavigationApi {
 
   public interface Container {
     void showEmbeddedTarget(Object view, NavigationTarget navigationTarget);
+
+    default void removeEmbeddedTarget(Object view, NavigationTarget navigationTarget) {
+      // if not implemented, removal will happen only on logical level
+    };
   }
 
   void registerView(NavigableViewDescriptor viewDescriptor);

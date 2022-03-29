@@ -153,7 +153,7 @@ public class UINavigationApiCommon implements UINavigationApi {
 
   @Override
   public void close(UUID navigationTargetUuid) {
-    removeValueFromSessionMap(navigationTargetUuid, UINAVIGATION_CURRENT_NAV_TARGET,
+    removeValueFromSessionMap(navigationTargetUuid, UINAVIGATION_NAV_TARGETS,
         navigationTargetsByUUID);
     removeValueFromSessionMap(navigationTargetUuid, UINAVIGATION_VIEW_MODELS, viewModelsByUuid);
     removeValueFromSessionMap(navigationTargetUuid, UINAVIGATION_CONTAINERS, containersByUUID);
