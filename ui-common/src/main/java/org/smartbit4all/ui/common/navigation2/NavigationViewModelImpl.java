@@ -35,6 +35,20 @@ import io.reactivex.rxjava3.disposables.Disposable;
 public class NavigationViewModelImpl extends ViewModelImpl<TreeModel>
     implements NavigationViewModel {
 
+  /**
+   * Implementation of this interface will be called when a NavigationNode is selected and a UI
+   * navigation will occur. Implementing this interface gives you the ability to override / enhance
+   * navigationTarget used to open the view for the selected navigation node.
+   * 
+   * @author matea
+   *
+   */
+  public interface ViewTargetEnhancer {
+
+    NavigationTarget enhance(NavigationTarget original, Navigation navigation,
+        TreeNode selectedNode);
+  }
+
   private Navigation navigationState;
 
   private TreeNode selectedNode;
@@ -51,6 +65,8 @@ public class NavigationViewModelImpl extends ViewModelImpl<TreeModel>
   private UserSessionApi userSessionApi;
 
   private URI objecUriToSelect;
+
+  private ViewTargetEnhancer navigationTargetEnhancer;
 
   public NavigationViewModelImpl(
       ObservablePublisherWrapper publisherWrapper,
@@ -517,13 +533,14 @@ public class NavigationViewModelImpl extends ViewModelImpl<TreeModel>
 
 
   private NavigationTarget getViewCommand(TreeNode node) {
+    NavigationTarget navigationTarget = null;
+
     if (node.getKind() == TreeNodeKind.ENTRY) {
 
       NavigationNode navigationNode = navigationState.getNode(node.getIdentifier());
       if (hasNavigationView(navigationNode)) {
-        NavigationTarget command = createNavigationTarget(navigationNode);
-        addRootNodeParameter(navigationNode, command);
-        return command;
+        navigationTarget = createNavigationTarget(navigationNode);
+        addRootNodeParameter(navigationNode, navigationTarget);
       }
 
     } else if (node.getKind() == TreeNodeKind.ASSOCIATION) {
@@ -534,16 +551,17 @@ public class NavigationViewModelImpl extends ViewModelImpl<TreeModel>
       // NavigationNode naviNode = assoc.getNode();
       if (naviNode != null) {
         if (hasNavigationView(naviNode)) {
-          NavigationTarget command = createNavigationTarget(naviNode);
-          command.putParametersItem(Navigation.ASSOC_URI_VIEW_PARAM_KEY, assoc.getMetaUri());
-
-          return command;
+          navigationTarget = createNavigationTarget(naviNode);
+          navigationTarget.putParametersItem(Navigation.ASSOC_URI_VIEW_PARAM_KEY,
+              assoc.getMetaUri());
         }
       }
 
     }
-
-    return null;
+    if (navigationTarget != null && navigationTargetEnhancer != null) {
+      navigationTarget = navigationTargetEnhancer.enhance(navigationTarget, navigationState, node);
+    }
+    return navigationTarget;
   }
 
   private void addRootNodeParameter(NavigationNode navigationNode, NavigationTarget command) {
@@ -702,20 +720,27 @@ public class NavigationViewModelImpl extends ViewModelImpl<TreeModel>
    * @param parent
    * @param path
    * @param uiNavigationApi
+   * @param enhancer
    * @return
    */
   public static NavigationViewModel createAsChild(ViewModel parent, String path,
-      UINavigationApi uiNavigationApi, Navigation navigation) {
+      UINavigationApi uiNavigationApi, Navigation navigation, ViewTargetEnhancer enhancer) {
     NavigationViewModel result =
         uiNavigationApi.createAndAddChildViewModel(parent, path, NavigationViewModel.class);
     Object impl = ReflectionUtility.getProxyTarget(result);
     if (impl instanceof NavigationViewModelImpl) {
-      ((NavigationViewModelImpl) impl).setNavigation(navigation);
+      NavigationViewModelImpl viewModelImpl = (NavigationViewModelImpl) impl;
+      viewModelImpl.setNavigation(navigation);
+      viewModelImpl.setViewTargetEnhancer(enhancer);
     } else {
       throw new IllegalArgumentException(
           "Unknown implementation of NavigationViewModel: " + impl.getClass().getName());
     }
     return result;
+  }
+
+  protected void setViewTargetEnhancer(ViewTargetEnhancer navigationTargetEnhancer) {
+    this.navigationTargetEnhancer = navigationTargetEnhancer;
   }
 
 }
