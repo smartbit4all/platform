@@ -82,6 +82,15 @@ public class OrgApiStorageImpl implements OrgApi {
   @Autowired
   private UserSessionApi userSessionApi;
 
+  public OrgApiStorageImpl() {}
+
+  public OrgApiStorageImpl(StorageApi storageApi, List<SecurityOption> securityOptions)
+      throws Exception {
+    this.storageApi = storageApi;
+    this.securityOptions = securityOptions;
+    initSecurityOptions();
+  }
+
   /**
    * The cache for the groups of user.
    */
