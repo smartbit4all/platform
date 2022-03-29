@@ -98,6 +98,8 @@ public class UINavigationVaadinTabbed extends UINavigationVaadinCommon {
           Component view;
           if (navigationTarget.getType() == NavigationTargetType.DIALOG) {
             view = navigateToDialog(navigationTarget);
+          } else if (navigationTarget.getType() == NavigationTargetType.EMBEDDED) {
+            view = navigateToEmbedded(navigationTarget);
           } else {
             view = navigateToTab(navigationTarget);
           }

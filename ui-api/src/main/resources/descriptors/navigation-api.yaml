@@ -296,6 +296,9 @@ components:
           type: string
         icon:
           type: string
+        containerUuid:
+          type: string
+          format: uuid
     NavigationTargetState:
       type: string
       enum:
@@ -311,6 +314,7 @@ components:
       enum:
         - normal
         - dialog
+        - embedded
       default: normal
     Message:
       type: object

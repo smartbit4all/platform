@@ -39,6 +39,9 @@ public class UINavigationVaadinRouting extends UINavigationVaadinCommon {
             if (navigationTarget.getType() == NavigationTargetType.DIALOG) {
               Component view = navigateToDialog(navigationTarget);
               callHasUrlImplementation(navigationTarget, view);
+            } else if (navigationTarget.getType() == NavigationTargetType.EMBEDDED) {
+              Component view = navigateToEmbedded(navigationTarget);
+              callHasUrlImplementation(navigationTarget, view);
             } else {
               ui.navigate(navigationTarget.getViewName(), createQueryParameters(navigationTarget));
             }

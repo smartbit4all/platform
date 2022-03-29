@@ -12,6 +12,10 @@ import org.smartbit4all.ui.api.viewmodel.ViewModel;
 
 public interface UINavigationApi {
 
+  public interface Container {
+    void showEmbeddedTarget(Object view, NavigationTarget navigationTarget);
+  }
+
   void registerView(NavigableViewDescriptor viewDescriptor);
 
   void registerView(NavigableViewDescriptor viewDescriptor, NavigationTargetType type);
@@ -34,12 +38,10 @@ public interface UINavigationApi {
 
   NavigationTarget getNavigationTargetByUuid(UUID navigationTargetUuid);
 
-  <T extends ViewModel> T createViewModel(NavigationTarget navigationTarget, Class<T> clazz);
-
   <T extends ViewModel> T createAndAddChildViewModel(ViewModel parent, String path, Class<T> clazz);
 
-  <T> T createView(NavigationTarget navigationTarget, Class<T> clazz);
-
   ViewModel getViewModelByUuid(UUID navigationTargetUuid);
+
+  void registerContainer(UUID navigationTargetUuid, Container view);
 
 }

@@ -39,10 +39,16 @@ public class UINavigationApiCommon implements UINavigationApi {
    */
   private Map<UUID, NavigationTarget> navigationTargetsByUUID;
 
+  /**
+   * Don't use directly, use get/putContainerByUuidInternal
+   */
+  private Map<UUID, Container> containersByUUID;
+
   protected Map<String, NavigableViewDescriptor> navigableViews;
   protected Map<NavigationTargetType, Map<String, NavigableViewDescriptor>> navigableViewsByType;
 
   protected Map<String, List<SecurityGroup>> securityGroupByView;
+
 
   /**
    * Don't use directly, use get/putViewModelByUuidInternal
@@ -62,6 +68,9 @@ public class UINavigationApiCommon implements UINavigationApi {
   public static final String UINAVIGATION_VIEW_MODELS =
       "UINavigationApi.viewModels";
 
+  public static final String UINAVIGATION_CONTAINERS =
+      "UINavigationApi.containers";
+
   protected UUID uuid;
 
   @Autowired
@@ -73,6 +82,7 @@ public class UINavigationApiCommon implements UINavigationApi {
     this.userSessionApi = userSessionApi;
     this.uuid = UUID.randomUUID();
     navigationTargetsByUUID = new HashMap<>();
+    containersByUUID = new HashMap<>();
     navigableViews = new HashMap<>();
     navigableViewsByType = new HashMap<>();
     securityGroupByView = new HashMap<>();
@@ -146,6 +156,7 @@ public class UINavigationApiCommon implements UINavigationApi {
     removeValueFromSessionMap(navigationTargetUuid, UINAVIGATION_CURRENT_NAV_TARGET,
         navigationTargetsByUUID);
     removeValueFromSessionMap(navigationTargetUuid, UINAVIGATION_VIEW_MODELS, viewModelsByUuid);
+    removeValueFromSessionMap(navigationTargetUuid, UINAVIGATION_CONTAINERS, containersByUUID);
   }
 
   protected NavigableViewDescriptor getViewDescriptorByNavigationTarget(
@@ -228,8 +239,7 @@ public class UINavigationApiCommon implements UINavigationApi {
     return navigationTarget.getIcon();
   }
 
-  @Override
-  public <T extends ViewModel> T createViewModel(NavigationTarget navigationTarget,
+  protected <T extends ViewModel> T createAndInitViewModel(NavigationTarget navigationTarget,
       Class<T> clazz) {
     NavigationTarget oldTarget = ObjectEditing.currentNavigationTarget.get();
     T viewModel;
@@ -261,11 +271,6 @@ public class UINavigationApiCommon implements UINavigationApi {
   }
 
   @Override
-  public <T> T createView(NavigationTarget navigationTarget, Class<T> clazz) {
-    throw new UnsupportedOperationException("CreateView unsupported in ui-common");
-  }
-
-  @Override
   public NavigationTarget getNavigationTargetByUuid(UUID navigationTargetUuid) {
     return getNavigationTargetByUuidInternal(navigationTargetUuid);
   }
@@ -293,6 +298,15 @@ public class UINavigationApiCommon implements UINavigationApi {
   protected ViewModel getViewModelByUuidInternal(UUID navigationTargetUuid) {
     return getValueFromSessionMap(navigationTargetUuid, UINAVIGATION_VIEW_MODELS,
         viewModelsByUuid);
+  }
+
+  protected void putContainerByUuidInternal(UUID uuid, Container container) {
+    putValueToSessionMap(uuid, container, UINAVIGATION_CONTAINERS, containersByUUID);
+  }
+
+  protected Container getContainerByUuidInternal(UUID navigationTargetUuid) {
+    return getValueFromSessionMap(navigationTargetUuid, UINAVIGATION_CONTAINERS,
+        containersByUUID);
   }
 
   private <T> void putValueToSessionMap(UUID uuid, T value, String parameterName,
@@ -327,11 +341,17 @@ public class UINavigationApiCommon implements UINavigationApi {
     if (session != null) {
       session.clearMap(UINAVIGATION_NAV_TARGETS);
       session.clearMap(UINAVIGATION_VIEW_MODELS);
+      session.clearMap(UINAVIGATION_CONTAINERS);
       userSessionApi.removeCurrentSession();
     }
   }
 
   private Session getCurrentSession() {
     return userSessionApi == null ? null : userSessionApi.currentSession();
+  }
+
+  @Override
+  public void registerContainer(UUID navigationTargetUuid, Container view) {
+    putContainerByUuidInternal(navigationTargetUuid, view);
   }
 }

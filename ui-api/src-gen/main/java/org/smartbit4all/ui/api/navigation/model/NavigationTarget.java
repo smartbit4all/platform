@@ -46,7 +46,8 @@ import javax.validation.Valid;
   NavigationTarget.TYPE,
   NavigationTarget.FULL_SIZE,
   NavigationTarget.TITLE,
-  NavigationTarget.ICON
+  NavigationTarget.ICON,
+  NavigationTarget.CONTAINER_UUID
 })
 @JsonTypeName("NavigationTarget")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -77,6 +78,9 @@ public class NavigationTarget {
 
   public static final String ICON = "icon";
   private String icon;
+
+  public static final String CONTAINER_UUID = "containerUuid";
+  private UUID containerUuid;
 
 
   public NavigationTarget uuid(UUID uuid) {
@@ -336,6 +340,34 @@ public class NavigationTarget {
   }
 
 
+  public NavigationTarget containerUuid(UUID containerUuid) {
+    
+    this.containerUuid = containerUuid;
+    return this;
+  }
+
+   /**
+   * Get containerUuid
+   * @return containerUuid
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(CONTAINER_UUID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public UUID getContainerUuid() {
+    return containerUuid;
+  }
+
+
+  @JsonProperty(CONTAINER_UUID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setContainerUuid(UUID containerUuid) {
+    this.containerUuid = containerUuid;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -353,12 +385,13 @@ public class NavigationTarget {
         Objects.equals(this.type, navigationTarget.type) &&
         Objects.equals(this.fullSize, navigationTarget.fullSize) &&
         Objects.equals(this.title, navigationTarget.title) &&
-        Objects.equals(this.icon, navigationTarget.icon);
+        Objects.equals(this.icon, navigationTarget.icon) &&
+        Objects.equals(this.containerUuid, navigationTarget.containerUuid);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uuid, viewName, objectUri, parameters, state, type, fullSize, title, icon);
+    return Objects.hash(uuid, viewName, objectUri, parameters, state, type, fullSize, title, icon, containerUuid);
   }
 
   @Override
@@ -374,6 +407,7 @@ public class NavigationTarget {
     sb.append("    fullSize: ").append(toIndentedString(fullSize)).append("\n");
     sb.append("    title: ").append(toIndentedString(title)).append("\n");
     sb.append("    icon: ").append(toIndentedString(icon)).append("\n");
+    sb.append("    containerUuid: ").append(toIndentedString(containerUuid)).append("\n");
     sb.append("}");
     return sb.toString();
   }

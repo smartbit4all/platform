@@ -30,7 +30,9 @@ public enum NavigationTargetType {
   
   NORMAL("normal"),
   
-  DIALOG("dialog");
+  DIALOG("dialog"),
+  
+  EMBEDDED("embedded");
 
   private String value;
 

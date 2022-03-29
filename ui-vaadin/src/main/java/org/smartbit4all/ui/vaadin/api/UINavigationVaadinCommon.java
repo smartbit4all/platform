@@ -99,27 +99,16 @@ public abstract class UINavigationVaadinCommon extends UINavigationApiCommon {
     NavigationTarget oldTarget = ObjectEditing.currentNavigationTarget.get();
     try {
       ObjectEditing.currentNavigationTarget.set(navigationTarget);
-      return VaadinService.getCurrent()
+      Component view = VaadinService.getCurrent()
           .getInstantiator()
           .createComponent(getViewClassByNavigationTarget(navigationTarget));
+      if (view instanceof Container) {
+        putContainerByUuidInternal(uuid, (Container) view);
+      }
+      return view;
     } finally {
       ObjectEditing.currentNavigationTarget.set(oldTarget);
     }
-  }
-
-  @Override
-  public <T> T createView(NavigationTarget navigationTarget, Class<T> clazz) {
-    NavigationTarget oldTarget = ObjectEditing.currentNavigationTarget.get();
-    T viewModel;
-    try {
-      ObjectEditing.currentNavigationTarget.set(navigationTarget);
-      // viewModel = context.getAutowireCapableBeanFactory().createBean(clazz);
-      viewModel = context.getBean(clazz);
-      callHasUrlImplementation(navigationTarget, (Component) viewModel);
-    } finally {
-      ObjectEditing.currentNavigationTarget.set(oldTarget);
-    }
-    return viewModel;
   }
 
   protected Class<? extends Component> getViewClassByNavigationTarget(
@@ -222,6 +211,26 @@ public abstract class UINavigationVaadinCommon extends UINavigationApiCommon {
       dialogsByUUID.remove(dialogUUID);
       dialogLabelsByUUID.remove(dialogUUID);
     }
+  }
+
+  protected Component navigateToEmbedded(NavigationTarget navigationTarget) {
+    Container container = findContainer(navigationTarget.getContainerUuid());
+    Component embeddedView = createView(navigationTarget);
+    container.showEmbeddedTarget(embeddedView, navigationTarget);
+    return embeddedView;
+  }
+
+  protected Container findContainer(UUID containerUuid) {
+    if (containerUuid == null) {
+      throw new IllegalArgumentException(
+          "No containerUuid specified when navigating to embedded target!");
+    }
+    Container container = getContainerByUuidInternal(containerUuid);
+    if (container != null) {
+      throw new IllegalArgumentException(
+          "Component specified by containerUuid is not registered!");
+    }
+    return container;
   }
 
   protected void callHasUrlImplementation(NavigationTarget navigationTarget, Component view) {

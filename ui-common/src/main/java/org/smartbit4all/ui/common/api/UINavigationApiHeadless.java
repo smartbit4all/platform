@@ -10,7 +10,6 @@ import org.smartbit4all.ui.api.navigation.model.Message;
 import org.smartbit4all.ui.api.navigation.model.MessageResult;
 import org.smartbit4all.ui.api.navigation.model.NavigableViewDescriptor;
 import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
-import org.smartbit4all.ui.api.viewmodel.ObjectEditing;
 import org.smartbit4all.ui.api.viewmodel.ViewModel;
 
 public class UINavigationApiHeadless extends UINavigationApiCommon {
@@ -51,23 +50,17 @@ public class UINavigationApiHeadless extends UINavigationApiCommon {
                   + ") is not assignable from specified viewModelClass (" + viewModelClass.getName()
                   + ") for view " + navigationTarget.getViewName());
         }
-        UINavigationApiHeadless.uiToOpen.set(navigationTarget);
+
       } else {
         if (!ViewModel.class.isAssignableFrom(viewModelClass)) {
           throw new IllegalArgumentException(
               "ViewClass is not ViewModel for view" + navigationTarget.getViewName());
         }
-        NavigationTarget oldTarget = ObjectEditing.currentNavigationTarget.get();
-        try {
-          ObjectEditing.currentNavigationTarget.set(navigationTarget);
-          viewModel = (ViewModel) context.getBean(viewModelClass);
-          viewModel.initByNavigationTarget(navigationTarget);
-          putViewModelByUuidInternal(navigationTarget.getUuid(), viewModel);
-          UINavigationApiHeadless.uiToOpen.set(navigationTarget);
-        } finally {
-          ObjectEditing.currentNavigationTarget.set(oldTarget);
-        }
+        viewModel =
+            createAndInitViewModel(navigationTarget, (Class<? extends ViewModel>) viewModelClass);
+        putViewModelByUuidInternal(navigationTarget.getUuid(), viewModel);
       }
+      UINavigationApiHeadless.uiToOpen.set(navigationTarget);
     } catch (ClassNotFoundException e) {
       throw new IllegalArgumentException(
           "ViewClass not found for view" + navigationTarget.getViewName());
@@ -110,8 +103,7 @@ public class UINavigationApiHeadless extends UINavigationApiCommon {
   public <T extends ViewModel> T createAndAddChildViewModel(ViewModel parent, String path,
       Class<T> clazz) {
     T viewModel = super.createAndAddChildViewModel(parent, path, clazz);
-    // TODO fix this hack, viewModel uuid may be available without generating viewModelData
-    putViewModelByUuidInternal(viewModel.getViewModelData().getUuid(), viewModel);
+    putViewModelByUuidInternal(viewModel.getUuid(), viewModel);
     return viewModel;
   }
 

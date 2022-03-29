@@ -449,4 +449,9 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
     throw new IllegalArgumentException("String parameter not found");
   }
 
+  @Override
+  public UUID getUuid() {
+    return navigationTargetUUID;
+  }
+
 }
