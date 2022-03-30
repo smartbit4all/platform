@@ -25,9 +25,9 @@ import org.springframework.util.StringUtils;
 
 public class FilterOperationMultiSelectView extends FilterOperationView {
 
-  private MultiSelectPopUpList<Value> popUp;
-  private VaadinHasItemsBinder<Value> popupBinder;
-  VaadinHasValueBinder<List<Value>, List<Value>> selectionBinder;
+  protected MultiSelectPopUpList<Value> popUp;
+  protected VaadinHasItemsBinder<Value> popupBinder;
+  protected VaadinHasValueBinder<List<Value>, List<Value>> selectionBinder;
 
   public FilterOperationMultiSelectView(ObservableObject filterField, String path) {
     super(filterField, path);
