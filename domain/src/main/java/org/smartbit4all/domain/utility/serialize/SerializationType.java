@@ -2,6 +2,8 @@ package org.smartbit4all.domain.utility.serialize;
 
 import java.net.URI;
 import java.nio.charset.Charset;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -35,11 +37,12 @@ public class SerializationType<T> {
   public static final SerializationType<Long> LONG = new SerializationType<>(0x15, Long.class, l -> Longs.toByteArray(l), b -> Longs.fromByteArray(b));
   public static final SerializationType<Double> DOUBLE = new SerializationType<>(0x16, Double.class, SerializationType::serializeDouble, SerializationType::deserializeDouble);
 //  BIGDECIMAL    (0x17, BigDecimal.class, bd -> bd.unscaledValue().toByteArray())),
-//  LOCALDATE     (0x18),
-//  LOCALDATETIME (0x19),
+  public static final SerializationType<LocalDate> LOCALDATE = new SerializationType<>(0x18, LocalDate.class, SerializationType::serializeLocalDate, SerializationType::deserializeLocalDate);
+  public static final SerializationType<LocalDateTime> LOCALDATETIME = new SerializationType<>(0x19, LocalDateTime.class, SerializationType::serializeLocalDateTime, SerializationType::deserializeLocalDateTime);
 //  OFFSETDATE    (0x1a),
 //  OFFSETDATETIME(0x1b),
   public static final SerializationType<URI> URITYPE = new SerializationType<>(0x1c, URI.class, SerializationType::serializeUri, SerializationType::deserializeUri);
+  public static final SerializationType<Boolean> BOOLEAN = new SerializationType<>(0x1d, Boolean.class, SerializationType::serializeBoolean, SerializationType::deserializeBoolean);
   public static final SerializationType<Void> OTHER = new SerializationType<>(0x40, Void.class, null, b -> null);
   // @formatter:on
 
@@ -118,6 +121,30 @@ public class SerializationType<T> {
 
   private static URI deserializeUri(byte[] b) {
     return URI.create(new String(b, UTF8_CHARSET));
+  }
+
+  private static byte[] serializeLocalDate(LocalDate localDate) {
+    return localDate.toString().getBytes(UTF8_CHARSET);
+  }
+
+  private static LocalDate deserializeLocalDate(byte[] b) {
+    return LocalDate.parse(new String(b, UTF8_CHARSET));
+  }
+
+  private static byte[] serializeLocalDateTime(LocalDateTime localDateTime) {
+    return localDateTime.toString().getBytes(UTF8_CHARSET);
+  }
+
+  private static LocalDateTime deserializeLocalDateTime(byte[] b) {
+    return LocalDateTime.parse(new String(b, UTF8_CHARSET));
+  }
+
+  private static byte[] serializeBoolean(Boolean value) {
+    return value ? new byte[] {0} : new byte[] {1};
+  }
+
+  private static Boolean deserializeBoolean(byte[] b) {
+    return b[0] == 1;
   }
 
 }
