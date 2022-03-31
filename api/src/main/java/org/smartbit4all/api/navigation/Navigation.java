@@ -460,6 +460,17 @@ public class Navigation {
     return node;
   }
 
+  public void removeRootNode(URI entryMetaUri, URI objectUri) {
+    NavigationNode nodeToRemove = roots.stream()
+        .filter(r -> r.getEntry().getMetaUri().equals(entryMetaUri) &&
+            r.getEntry().getObjectUri().equals(objectUri))
+        .findFirst().orElse(null);
+    if (nodeToRemove != null) {
+      roots.remove(nodeToRemove);
+      rootNodeRemovedPublisher.onNext(nodeToRemove);
+    }
+  }
+
   /**
    * Merge the reference list of the given association with the reference list from the parameter.
    * 
@@ -552,7 +563,7 @@ public class Navigation {
       List<WeakReference<NavigationNode>> parentNodes =
           parentNodesByNode.computeIfAbsent(node.getId(), n -> new ArrayList<>());
       parentNodes.removeIf(ref -> ref.get() == null);
-      parentNodes.add(new WeakReference<NavigationNode>(parentNode));
+      parentNodes.add(new WeakReference<>(parentNode));
     }
 
     // We can add the association to the cache because they are constants by the configuration.
