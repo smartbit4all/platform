@@ -115,7 +115,9 @@ public class ViewModelApiDelegateImpl implements ViewModelApiDelegate {
     Message message = UINavigationApiHeadless.getMessageToOpen();
     result.setMessageToOpen(message);
     if (result.getMessageToOpen() != null) {
-      message.setViewModelUuid(vm.getUuid());
+      if (vm != null) {
+        message.setViewModelUuid(vm.getUuid());
+      }
       messagesByUuid.put(message.getUuid(), message);
       messageHandlersByUuid.put(message.getUuid(),
           UINavigationApiHeadless.getMessageToOpenHandler());
