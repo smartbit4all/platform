@@ -1,5 +1,6 @@
 package org.smartbit4all.sql.service.dataset;
 
+import java.net.URI;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -61,7 +62,8 @@ public class DataSetApiSql implements DataSetApi, InitializingBean {
     }
     String tableName;
     SQLDBParameter db = sqlConfig.db(SQLDBParameterBase.DEFAULT);
-    if (property.type().isAssignableFrom(String.class)) {
+    if (property.type().isAssignableFrom(String.class)
+        || property.type().isAssignableFrom(URI.class)) {
       tableName = db.getStringDataSetTableName();
     } else if (property.type().isAssignableFrom(Long.class)
         || property.type().isAssignableFrom(Integer.class)) {
@@ -114,6 +116,8 @@ public class DataSetApiSql implements DataSetApi, InitializingBean {
               ps.setInt(2, (Integer) oValue);
             } else if (oValue instanceof String) {
               ps.setString(2, (String) oValue);
+            } else if (oValue instanceof URI) {
+              ps.setString(2, ((URI) oValue).toString());
             } else if (oValue != null) {
               throw new IllegalArgumentException(
                   "Unable to bind the " + oValue + " (" + sql
