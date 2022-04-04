@@ -1,4 +1,4 @@
-import { Observable } from "rxjs";
+import { Observable, Subject } from "rxjs";
 import { ViewModelService, ViewModelDataSimple, ViewModelData, Message, CommandData, CommandResult, BinaryContent } from "./core/api/policy";
 import { NavigationService } from "./navigation.interface.service";
 import { ViewModel } from "./viewmodel.interface";
@@ -10,6 +10,7 @@ export class ViewModelImpl<T extends object> implements ViewModel<T> {
     children?: Map<string, ViewModelImpl<any>>;
     path?: string;
     model!: T;
+    onModelChanged: Subject<T> = new Subject();
 
     constructor(
         protected service: ViewModelService,
@@ -74,6 +75,7 @@ export class ViewModelImpl<T extends object> implements ViewModel<T> {
         this.children!.forEach((value, key) => {
             value.setModel(properties.get(key));
         });
+        this.onModelChanged.next(this.model);
     }
 
     handleCallback(viewModelData: ViewModelData | Message) {
