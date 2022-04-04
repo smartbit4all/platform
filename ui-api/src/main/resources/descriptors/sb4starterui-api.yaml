@@ -11,19 +11,20 @@ tags:
 paths: {}
 components:
   schemas:
-    SB4StarterWordFormModel:
+    SB4StarterModel:
       type: object
       properties:
         state:
-          $ref: '#/components/schemas/SB4StarterWordState'
+          $ref: '#/components/schemas/SB4StarterState'
         startContent:
           type: BinaryContent
         resultContent:
           type: BinaryContent
         SB4StarterUrl:
           type: string
-    
-    SB4StarterWordState:
+        editCommandKind:
+          type: CommandKind
+    SB4StarterState:
       type: string
       enum:
       - Letöltés folyamatban

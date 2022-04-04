@@ -24,9 +24,9 @@ import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageObject;
 import org.smartbit4all.ui.api.navigation.UINavigationApi;
 import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
-import org.smartbit4all.ui.api.sb4starter.SB4StarterWordViewModel;
-import org.smartbit4all.ui.api.sb4starterui.model.SB4StarterWordFormModel;
-import org.smartbit4all.ui.api.sb4starterui.model.SB4StarterWordState;
+import org.smartbit4all.ui.api.sb4starter.SB4StarterViewModel;
+import org.smartbit4all.ui.api.sb4starterui.model.SB4StarterModel;
+import org.smartbit4all.ui.api.sb4starterui.model.SB4StarterState;
 import org.smartbit4all.ui.api.viewmodel.ViewModelImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,8 +37,8 @@ import io.reactivex.rxjava3.disposables.Disposable;
 
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class SB4StarterWordViewModelImpl extends ViewModelImpl<SB4StarterWordFormModel>
-    implements SB4StarterWordViewModel {
+public class SB4StarterViewModelImpl extends ViewModelImpl<SB4StarterModel>
+    implements SB4StarterViewModel {
 
   @Value("${openapi.contentAccess.base-path}")
   private String contentAccessBasePath;
@@ -63,24 +63,25 @@ public class SB4StarterWordViewModelImpl extends ViewModelImpl<SB4StarterWordFor
 
   private String baseUrl;
 
-  protected SB4StarterWordViewModelImpl(ObservablePublisherWrapper publisherWrapper) {
-    super(publisherWrapper, SB4StarterViewModelUtility.WORD_FORM_DESCRIPTOR,
-        SB4StarterWordFormModel.class);
+  protected SB4StarterViewModelImpl(ObservablePublisherWrapper publisherWrapper) {
+    super(publisherWrapper, SB4StarterViewModelUtility.SB4_STARTER_DESCRIPTOR,
+        SB4StarterModel.class);
   }
 
   @Override
   protected void initCommands() {
     registerCommand(ACCEPT, this::accept);
     registerCommand(DECLINE, this::close);
+    registerCommand(DOWNLOAD, this::download);
   }
 
   @Override
-  protected SB4StarterWordFormModel load(NavigationTarget navigationTarget) {
+  protected SB4StarterModel load(NavigationTarget navigationTarget) {
     Map<String, Object> parameters = navigationTarget.getParameters();
     this.baseUrl = (String) parameters.get(PARAM_BASELOCATION) + getContentAccesBasePath();
     this.acceptHandler =
         (BiConsumer<BinaryContent, BinaryContent>) parameters.get(PARAM_ACCEPTHANDLER);
-    SB4StarterWordFormModel formModel = (SB4StarterWordFormModel) parameters.get(PARAM_FORMMODEL);
+    SB4StarterModel formModel = (SB4StarterModel) parameters.get(PARAM_FORMMODEL);
 
     try {
       createSB4Starter(formModel);
@@ -96,7 +97,7 @@ public class SB4StarterWordViewModelImpl extends ViewModelImpl<SB4StarterWordFor
     return contentAccessBasePath;
   }
 
-  private void createSB4Starter(SB4StarterWordFormModel formModel) throws Exception {
+  private void createSB4Starter(SB4StarterModel formModel) throws Exception {
 
     UUID startWordId = contentAccessApi.share(formModel.getStartContent());
     subscribeToDownloadContent(startWordId);
@@ -105,7 +106,8 @@ public class SB4StarterWordViewModelImpl extends ViewModelImpl<SB4StarterWordFor
     subscribeToUploadContent(resultWordId);
 
     String wordFileName = formModel.getStartContent().getFileName();
-    BinaryData sb4Starter = createSB4Starter(startWordId, wordFileName, resultWordId);
+    BinaryData sb4Starter =
+        createSB4Starter(startWordId, wordFileName, resultWordId, formModel.getEditCommandKind());
 
     StorageObject<BinaryDataObject> sb4StarterObjectSo =
         getStorage().instanceOf(BinaryDataObject.class);
@@ -129,7 +131,7 @@ public class SB4StarterWordViewModelImpl extends ViewModelImpl<SB4StarterWordFor
   private void subscribeToUploadContent(UUID resultWordId) throws Exception {
     Disposable uploadListener = contentAccessApi.subscribeToContentAccessEvent(resultWordId,
         contentAccess -> {
-          model.setState(SB4StarterWordState.UPLOADED);
+          model.setState(SB4StarterState.UPLOADED);
           model.setResultContent(contentAccess.getBinaryContent());
           notifyAllListeners();
         });
@@ -139,13 +141,14 @@ public class SB4StarterWordViewModelImpl extends ViewModelImpl<SB4StarterWordFor
   private void subscribeToDownloadContent(UUID wordToEditId) {
     Disposable downloadListener = contentAccessApi.subscribeToContentAccessEvent(wordToEditId,
         contentAccess -> {
-          model.setState(SB4StarterWordState.EDITING);
+          model.setState(SB4StarterState.EDITING);
           notifyAllListeners();
         });
     eventListeners.add(downloadListener);
   }
 
-  private BinaryData createSB4Starter(UUID startWordId, String wordFileName, UUID resultWordId)
+  private BinaryData createSB4Starter(UUID startWordId, String wordFileName, UUID resultWordId,
+      CommandKind editCommandKind)
       throws IOException, Exception {
     SB4File startFile = new SB4File().filename(wordFileName).id(startWordId);
     SB4File resultFile = new SB4File().filename(wordFileName).id(resultWordId);
@@ -156,14 +159,15 @@ public class SB4StarterWordViewModelImpl extends ViewModelImpl<SB4StarterWordFor
         createaDefaultSB4Command(CommandKind.CONTENTACCESSDOWNLOAD, uri, startFile);
 
     SB4Command wordEditCommand =
-        createaDefaultSB4Command(CommandKind.WORDEDIT, uri, startFile);
+        createaDefaultSB4Command(editCommandKind, uri, startFile);
 
     SB4Command uploadCommand =
         createaDefaultSB4Command(CommandKind.CONTENTACCESSUPLOAD, uri, resultFile);
 
     SB4Starter starter = new SB4Starter()
         .id(UUID.randomUUID())
-        .commands(Arrays.asList(downloadCommand, wordEditCommand, uploadCommand));
+        .commands(Arrays.asList(downloadCommand, wordEditCommand, uploadCommand))
+        .keepWorkingDirectory(true);
 
     ObjectDefinition<SB4Starter> sb4StarterDefinition = objectApi.definition(SB4Starter.class);
     return sb4StarterDefinition.serialize(starter);
@@ -188,6 +192,10 @@ public class SB4StarterWordViewModelImpl extends ViewModelImpl<SB4StarterWordFor
   private void close() {
     eventListeners.forEach(listener -> listener.dispose());
     uiNavigationApi.close(navigationTargetUUID);
+  }
+
+  private void download() {
+
   }
 
   private Storage getStorage() {

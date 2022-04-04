@@ -22,26 +22,27 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import org.smartbit4all.ui.api.sb4starterui.model.SB4StarterWordState;
+import org.smartbit4all.ui.api.sb4starterui.model.SB4StarterState;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 
 /**
- * SB4StarterWordFormModel
+ * SB4StarterModel
  */
 @JsonPropertyOrder({
-  SB4StarterWordFormModel.STATE,
-  SB4StarterWordFormModel.START_CONTENT,
-  SB4StarterWordFormModel.RESULT_CONTENT,
-  SB4StarterWordFormModel.SB4_STARTER_URL
+  SB4StarterModel.STATE,
+  SB4StarterModel.START_CONTENT,
+  SB4StarterModel.RESULT_CONTENT,
+  SB4StarterModel.SB4_STARTER_URL,
+  SB4StarterModel.EDIT_COMMAND_KIND
 })
-@JsonTypeName("SB4StarterWordFormModel")
+@JsonTypeName("SB4StarterModel")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
-public class SB4StarterWordFormModel {
+public class SB4StarterModel {
   public static final String STATE = "state";
-  private SB4StarterWordState state;
+  private SB4StarterState state;
 
   public static final String START_CONTENT = "startContent";
   private org.smartbit4all.api.binarydata.BinaryContent startContent = null;
@@ -52,8 +53,11 @@ public class SB4StarterWordFormModel {
   public static final String SB4_STARTER_URL = "SB4StarterUrl";
   private String sb4StarterUrl;
 
+  public static final String EDIT_COMMAND_KIND = "editCommandKind";
+  private org.smartbit4all.api.sb4starter.bean.CommandKind editCommandKind = null;
 
-  public SB4StarterWordFormModel state(SB4StarterWordState state) {
+
+  public SB4StarterModel state(SB4StarterState state) {
     
     this.state = state;
     return this;
@@ -69,19 +73,19 @@ public class SB4StarterWordFormModel {
   @JsonProperty(STATE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public SB4StarterWordState getState() {
+  public SB4StarterState getState() {
     return state;
   }
 
 
   @JsonProperty(STATE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setState(SB4StarterWordState state) {
+  public void setState(SB4StarterState state) {
     this.state = state;
   }
 
 
-  public SB4StarterWordFormModel startContent(org.smartbit4all.api.binarydata.BinaryContent startContent) {
+  public SB4StarterModel startContent(org.smartbit4all.api.binarydata.BinaryContent startContent) {
     
     this.startContent = startContent;
     return this;
@@ -109,7 +113,7 @@ public class SB4StarterWordFormModel {
   }
 
 
-  public SB4StarterWordFormModel resultContent(org.smartbit4all.api.binarydata.BinaryContent resultContent) {
+  public SB4StarterModel resultContent(org.smartbit4all.api.binarydata.BinaryContent resultContent) {
     
     this.resultContent = resultContent;
     return this;
@@ -137,7 +141,7 @@ public class SB4StarterWordFormModel {
   }
 
 
-  public SB4StarterWordFormModel sb4StarterUrl(String sb4StarterUrl) {
+  public SB4StarterModel sb4StarterUrl(String sb4StarterUrl) {
     
     this.sb4StarterUrl = sb4StarterUrl;
     return this;
@@ -164,6 +168,34 @@ public class SB4StarterWordFormModel {
   }
 
 
+  public SB4StarterModel editCommandKind(org.smartbit4all.api.sb4starter.bean.CommandKind editCommandKind) {
+    
+    this.editCommandKind = editCommandKind;
+    return this;
+  }
+
+   /**
+   * Get editCommandKind
+   * @return editCommandKind
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(EDIT_COMMAND_KIND)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public org.smartbit4all.api.sb4starter.bean.CommandKind getEditCommandKind() {
+    return editCommandKind;
+  }
+
+
+  @JsonProperty(EDIT_COMMAND_KIND)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setEditCommandKind(org.smartbit4all.api.sb4starter.bean.CommandKind editCommandKind) {
+    this.editCommandKind = editCommandKind;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -172,26 +204,28 @@ public class SB4StarterWordFormModel {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    SB4StarterWordFormModel sb4StarterWordFormModel = (SB4StarterWordFormModel) o;
-    return Objects.equals(this.state, sb4StarterWordFormModel.state) &&
-        Objects.equals(this.startContent, sb4StarterWordFormModel.startContent) &&
-        Objects.equals(this.resultContent, sb4StarterWordFormModel.resultContent) &&
-        Objects.equals(this.sb4StarterUrl, sb4StarterWordFormModel.sb4StarterUrl);
+    SB4StarterModel sb4StarterModel = (SB4StarterModel) o;
+    return Objects.equals(this.state, sb4StarterModel.state) &&
+        Objects.equals(this.startContent, sb4StarterModel.startContent) &&
+        Objects.equals(this.resultContent, sb4StarterModel.resultContent) &&
+        Objects.equals(this.sb4StarterUrl, sb4StarterModel.sb4StarterUrl) &&
+        Objects.equals(this.editCommandKind, sb4StarterModel.editCommandKind);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(state, startContent, resultContent, sb4StarterUrl);
+    return Objects.hash(state, startContent, resultContent, sb4StarterUrl, editCommandKind);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class SB4StarterWordFormModel {\n");
+    sb.append("class SB4StarterModel {\n");
     sb.append("    state: ").append(toIndentedString(state)).append("\n");
     sb.append("    startContent: ").append(toIndentedString(startContent)).append("\n");
     sb.append("    resultContent: ").append(toIndentedString(resultContent)).append("\n");
     sb.append("    sb4StarterUrl: ").append(toIndentedString(sb4StarterUrl)).append("\n");
+    sb.append("    editCommandKind: ").append(toIndentedString(editCommandKind)).append("\n");
     sb.append("}");
     return sb.toString();
   }

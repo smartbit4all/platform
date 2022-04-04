@@ -24,9 +24,9 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
- * Gets or Sets SB4StarterWordState
+ * Gets or Sets SB4StarterState
  */
-public enum SB4StarterWordState {
+public enum SB4StarterState {
   
   DOWNLOADING("Letöltés folyamatban"),
   
@@ -36,7 +36,7 @@ public enum SB4StarterWordState {
 
   private String value;
 
-  SB4StarterWordState(String value) {
+  SB4StarterState(String value) {
     this.value = value;
   }
 
@@ -51,8 +51,8 @@ public enum SB4StarterWordState {
   }
 
   @JsonCreator
-  public static SB4StarterWordState fromValue(String value) {
-    for (SB4StarterWordState b : SB4StarterWordState.values()) {
+  public static SB4StarterState fromValue(String value) {
+    for (SB4StarterState b : SB4StarterState.values()) {
       if (b.value.equals(value)) {
         return b;
       }
