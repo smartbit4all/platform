@@ -26,6 +26,8 @@ public class MimeTypeApi implements InitializingBean {
   public static final String JPEG_MIMETYPE = MediaType.JPEG.toString();
   public static final String GIF_MIMETYPE = MediaType.GIF.toString();
 
+  public static final String XLSX_MIMETYPE = MediaType.OOXML_SHEET.toString();
+
   /**
    * Includes the mimeTypes that can be recognized by the {@link MimetypesFileTypeMap}.
    */
@@ -42,7 +44,6 @@ public class MimeTypeApi implements InitializingBean {
    * therefore initializing a map is required here.
    */
   private Map<String, String> extensionsByMimeType = new HashMap<>();
-
 
   @Override
   public void afterPropertiesSet() throws Exception {
@@ -65,6 +66,8 @@ public class MimeTypeApi implements InitializingBean {
     extensionsByMimeType.put(PNG_MIMETYPE, "png");
     extensionsByMimeType.put(JPEG_MIMETYPE, "jpeg");
     extensionsByMimeType.put(GIF_MIMETYPE, "gif");
+
+    extensionsByMimeType.put(XLSX_MIMETYPE, "xlsx");
   }
 
   public String getMimeType(String filename) {
