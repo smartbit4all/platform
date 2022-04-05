@@ -256,9 +256,9 @@ public class SQLExistsTests {
   public void expreessionInMultipleProperties() throws Exception {
 
     Set<CompositeValue> inValues = new HashSet<>();
-    inValues.add(new CompositeValue("Ügy 100", Long.valueOf(1)));
-    inValues.add(new CompositeValue("Ügy 401", Long.valueOf(1)));
-    inValues.add(new CompositeValue("Ügy 401", Long.valueOf(2)));
+    inValues.add(new CompositeValue("Case 100", Long.valueOf(1)));
+    inValues.add(new CompositeValue("Case 401", Long.valueOf(1)));
+    inValues.add(new CompositeValue("Case 401", Long.valueOf(2)));
 
     TableData<TicketDef> tickets = Crud.read(ticketDef).selectAllProperties()
         .where(new ExpressionIn<>(new OperandComposite(new OperandProperty(ticketDef.title()),
