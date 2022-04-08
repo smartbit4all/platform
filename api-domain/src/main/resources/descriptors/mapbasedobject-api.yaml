@@ -109,6 +109,31 @@ components:
           type: object
           additionalProperties: 
             $ref: '#/components/schemas/ObjectValueList'
+    DataType:
+      description: |
+        Describes a data type that can be contained in one of the MapBasedObjectData's map.
+      type: string
+      enum:
+        - String
+        - Integer
+        - Long
+        - Double
+        - Boolean
+        - Uri
+        - LocalDate
+        - LocalTime
+        - LocalDateTime
+        - Object
+        - StringList
+        - IntegerList
+        - LongList
+        - DoubleList
+        - BooleanList
+        - UriList
+        - LocalDateList
+        - LocalTimeList
+        - LocalDateTimeList
+        - ObjectList
     StringValue:
       type: object
       required: [name]

@@ -13,6 +13,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.smartbit4all.api.mapbasedobject.bean.BooleanValue;
 import org.smartbit4all.api.mapbasedobject.bean.BooleanValueList;
+import org.smartbit4all.api.mapbasedobject.bean.DataType;
 import org.smartbit4all.api.mapbasedobject.bean.DoubleValue;
 import org.smartbit4all.api.mapbasedobject.bean.DoubleValueList;
 import org.smartbit4all.api.mapbasedobject.bean.IntegerValue;
@@ -812,6 +813,81 @@ public class MapBasedObjectUtil {
           "Collection and added value classes are not matching:" + StringConstant.NEW_LINE +
               "Expected class: " + expectedValueClass + StringConstant.NEW_LINE +
               "Given class: " + (value == null ? "null" : value.getClass().getName()));
+    }
+  }
+
+  /**
+   * According to the given {@link DataType}, creates a fitting property value with null value and
+   * adds to the given {@link MapBasedObjectData}.
+   * 
+   * @param data
+   * @param key
+   * @param dataType
+   */
+  public static void addNewPropertyToData(MapBasedObjectData data, String key, DataType dataType) {
+    switch (dataType) {
+      case STRING:
+        data.putStringPropertyMapItem(key, new StringValue().name(key));
+        break;
+      case INTEGER:
+        data.putIntegerPropertyMapItem(key, new IntegerValue().name(key));
+        break;
+      case LONG:
+        data.putLongPropertyMapItem(key, new LongValue().name(key));
+        break;
+      case DOUBLE:
+        data.putDoublePropertyMapItem(key, new DoubleValue().name(key));
+        break;
+      case BOOLEAN:
+        data.putBooleanPropertyMapItem(key, new BooleanValue().name(key));
+        break;
+      case URI:
+        data.putUriPropertyMapItem(key, new UriValue().name(key));
+        break;
+      case LOCALDATE:
+        data.putLocalDatePropertyMapItem(key, new LocalDateValue().name(key));
+        break;
+      case LOCALTIME:
+        data.putLocalTimePropertyMapItem(key, new LocalTimeValue().name(key));
+        break;
+      case LOCALDATETIME:
+        data.putLocalDateTimePropertyMapItem(key, new LocalDateTimeValue().name(key));
+        break;
+      case OBJECT:
+        data.putObjectPropertyMapItem(key, new ObjectValue().name(key));
+        break;
+      case STRINGLIST:
+        data.putStringListMapItem(key, new StringValueList().name(key));
+        break;
+      case INTEGERLIST:
+        data.putIntegerListMapItem(key, new IntegerValueList().name(key));
+        break;
+      case LONGLIST:
+        data.putLongListMapItem(key, new LongValueList().name(key));
+        break;
+      case DOUBLELIST:
+        data.putDoubleListMapItem(key, new DoubleValueList().name(key));
+        break;
+      case BOOLEANLIST:
+        data.putBooleanListMapItem(key, new BooleanValueList().name(key));
+        break;
+      case URILIST:
+        data.putUriListMapItem(key, new UriValueList().name(key));
+        break;
+      case LOCALDATELIST:
+        data.putLocalDateListMapItem(key, new LocalDateValueList().name(key));
+        break;
+      case LOCALTIMELIST:
+        data.putLocalTimeListMapItem(key, new LocalTimeValueList().name(key));
+        break;
+      case LOCALDATETIMELIST:
+        data.putLocalDateTimeListMapItem(key, new LocalDateTimeValueList().name(key));
+        break;
+      case OBJECTLIST:
+        data.putObjectListMapItem(key, new ObjectValueList().name(key));
+        break;
+      default:
+        break;
     }
   }
 
