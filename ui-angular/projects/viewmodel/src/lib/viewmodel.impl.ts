@@ -109,7 +109,7 @@ export class ViewModelImpl<T extends object> implements ViewModel<T> {
         if (!commandPath) {
             return commandPath = this.path!;
         }
-        return commandPath = this.path! + '/' + commandPath;
+        return commandPath = this.path! + '/' + commandPath ?? "";
     }
 
     async executeCommand(command: string, commandPath?: string, params?: Object[]): Promise<ViewModelData> {
@@ -149,15 +149,16 @@ export class ViewModelImpl<T extends object> implements ViewModel<T> {
         return this.service.download(this.uuid!, dataIdentifier);
     }
 
-    async upload(uploadCommand: string, params: Array<object>, content: Blob): Promise<ViewModelData> {
+    async upload(uploadCommand: string, params: Array<object>, content: Blob, commandPath?: string): Promise<ViewModelData> {
 
-        const folderVm = this.children?.get("folder");
-
-        const path = folderVm?.getCommandPath();
+        if (this.parent) {
+            commandPath = this.getCommandPath(commandPath);
+            return await this.parent.upload(uploadCommand, params, content, commandPath);
+        }
 
         const commandData: CommandData = {
             model: undefined,
-            commandPath: path,
+            commandPath: commandPath,
             commandCode: uploadCommand,
             params: params
         }
@@ -180,7 +181,13 @@ export class ViewModelImpl<T extends object> implements ViewModel<T> {
         return await this.service.download(vmUuid, dataIdentifier).toPromise();
     }
 
-    async getFileLink(vmUuid: string, dataIdentifier: string): Promise<string | undefined> {
+    async getFileLink(vmUuid: string, dataIdentifier: string, commandPath?: string): Promise<string | undefined> {
+
+        if (this.parent) {
+            commandPath = this.getCommandPath(commandPath);
+            return await this.parent.getFileLink(vmUuid, dataIdentifier, commandPath);
+        }
+
         var link;
         await this.downloadFile(vmUuid, dataIdentifier).then(res => {
             if (!res) {
@@ -194,10 +201,7 @@ export class ViewModelImpl<T extends object> implements ViewModel<T> {
     }
 
     download(dataIdentifier: string, binaryContent: BinaryContent) {
-
-        let vmUuid = this.children?.get("folder")?.uuid!;
-
-        this.getFileLink(vmUuid, dataIdentifier).then(res => {
+        this.getFileLink(this.uuid!, dataIdentifier).then(res => {
             if (!res) {
                 return;
             }

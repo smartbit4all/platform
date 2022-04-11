@@ -14,4 +14,6 @@ export interface ViewModel<T> {
     onCloseWindow(): void;
     getDownloadData(dataIdentifier: string): Observable<Blob>;
     getChild(path: string): ViewModel<any>;
+    upload(uploadCommand: string, params: Array<object>, content: Blob, commandPath?: string): Promise<ViewModelData>;
+    getFileLink(vmUuid: string, dataIdentifier: string, commandPath?: string): Promise<string | undefined>;
 }
