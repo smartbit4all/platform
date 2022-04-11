@@ -1,5 +1,7 @@
 package org.smartbit4all.core.io;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -18,8 +20,6 @@ import org.smartbit4all.core.io.utility.FileIO;
 import org.smartbit4all.core.utility.PathUtility;
 import org.smartbit4all.core.utility.StringConstant;
 import com.google.common.io.ByteStreams;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class FileIOTest {
 
@@ -179,6 +179,19 @@ public class FileIOTest {
         Assertions.assertEquals(i, list.get(i));
       }
     }
+  }
+
+  @Test
+  void fileNameValidationTest() {
+    String validFilename = "validFile.txt";
+    String invalidFilename1 = "valid/File.txt";
+    String invalidFilename2 = new String(new byte[] {(byte) 0x7F}) + "valid/File.txt";
+
+    assertEquals(true, FileIO.checkfileName(validFilename));
+    assertEquals(false, FileIO.checkfileName(invalidFilename1));
+    assertEquals(false, FileIO.checkfileName(invalidFilename2));
+
+
   }
 
   private List<BinaryData> readAllFiles(String testFolder) throws IOException {

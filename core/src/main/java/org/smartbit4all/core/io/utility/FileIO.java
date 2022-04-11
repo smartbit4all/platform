@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.core.utility.StringConstant;
+import com.google.common.base.Strings;
 import com.google.common.io.ByteSource;
 import com.google.common.primitives.Longs;
 
@@ -505,6 +506,18 @@ public class FileIO {
         }
       }
     }
+  }
+
+  public static Boolean checkfileName(String name) {
+    if (Strings.isNullOrEmpty(name)) {
+      return false;
+    }
+    for (String character : StringConstant.INVALID_FILE_CHARS) {
+      if (name.contains(character)) {
+        return false;
+      }
+    }
+    return true;
   }
 
 }
