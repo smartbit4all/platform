@@ -19,7 +19,8 @@ public class VaadinMapBasedObjectSelectionBinder<C extends Component>
 
   @Override
   protected MapBasedObjectSelection getChangeObject(ObjectChangeSimple change) {
-    String value = (String) ((MapBasedObject) change.getObject()).getValueByPath("stringValue");
+    String value = (String) ((MapBasedObject) change.getObject())
+        .getValueByPath(MapBasedObjectSelection.STRING_VALUE);
     return new MapBasedObjectSelection().stringValue(value);
   }
 }
