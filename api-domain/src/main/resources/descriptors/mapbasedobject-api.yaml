@@ -134,6 +134,11 @@ components:
         - LocalTimeList
         - LocalDateTimeList
         - ObjectList
+    MapBasedObjectSelection:
+      type: object 
+      properties:
+        stringValue:
+          type: string
     StringValue:
       type: object
       required: [name]

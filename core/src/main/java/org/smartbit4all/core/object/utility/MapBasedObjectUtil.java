@@ -27,6 +27,7 @@ import org.smartbit4all.api.mapbasedobject.bean.LocalTimeValueList;
 import org.smartbit4all.api.mapbasedobject.bean.LongValue;
 import org.smartbit4all.api.mapbasedobject.bean.LongValueList;
 import org.smartbit4all.api.mapbasedobject.bean.MapBasedObjectData;
+import org.smartbit4all.api.mapbasedobject.bean.MapBasedObjectSelection;
 import org.smartbit4all.api.mapbasedobject.bean.ObjectValue;
 import org.smartbit4all.api.mapbasedobject.bean.ObjectValueList;
 import org.smartbit4all.api.mapbasedobject.bean.StringValue;
@@ -374,7 +375,7 @@ public class MapBasedObjectUtil {
 
     } else if (propertyValue instanceof List<?>) {
       List<?> list = (List<?>) propertyValue;
-      if (!list.isEmpty() && list.get(0) instanceof MapBasedObject) {
+      if (list.isEmpty() || list.get(0) instanceof MapBasedObject) {
         List<MapBasedObject> objects = new ArrayList<>();
         for (Object object : list) {
           objects.add(((MapBasedObject) object).deepCopy());
@@ -393,6 +394,19 @@ public class MapBasedObjectUtil {
    * @return
    */
   public static Object getActualValue(Object propertyValue) {
+    return getActualValue(propertyValue, true);
+  }
+
+  /**
+   * Returns the actual value from the given {@link MapBasedObject} property value. (Exceptions:
+   * {@link MapBasedObject}s, if {@code getData} is true.)
+   * 
+   * @param propertyValue
+   * @param getData In case of embedded {@link MapBasedObject}s, decides whether in form of
+   *        {@link MapBasedObject} or {@link MapBasedObjectData} the result will be returned.
+   * @return
+   */
+  public static Object getActualValue(Object propertyValue, boolean getData) {
     if (propertyValue == null) {
       return propertyValue;
 
@@ -451,11 +465,16 @@ public class MapBasedObjectUtil {
       return ((LocalDateTimeValueList) propertyValue).getValues();
 
     } else if (propertyValue instanceof MapBasedObject) {
-      return MapBasedObject.toData((MapBasedObject) propertyValue);
+      return getData
+          ? MapBasedObject.toData((MapBasedObject) propertyValue)
+          : propertyValue;
 
     } else if (propertyValue instanceof List<?>) {
       List<?> list = (List<?>) propertyValue;
       if (list.isEmpty() || list.get(0) instanceof MapBasedObject) {
+        if (!getData) {
+          return propertyValue;
+        }
         List<MapBasedObjectData> data = new ArrayList<>();
         for (Object object : list) {
           data.add(MapBasedObject.toData((MapBasedObject) object));
@@ -479,7 +498,7 @@ public class MapBasedObjectUtil {
    * @return
    */
   public static Object createPropertyValue(String key, Object value, Object prevValue,
-      Class<?> clazz) {
+      Class<?> clazz, String parentPath) {
     if (value == null) {
       return createNullPropertyValue(key, prevValue, clazz);
 
@@ -514,7 +533,7 @@ public class MapBasedObjectUtil {
       return new LocalDateTimeValue().name(key).value((LocalDateTime) value);
 
     } else if (value instanceof MapBasedObjectData) {
-      return MapBasedObject.of((MapBasedObjectData) value);
+      return MapBasedObject.of((MapBasedObjectData) value, parentPath);
 
     } else if (value instanceof MapBasedObject) {
       return value;
@@ -577,11 +596,25 @@ public class MapBasedObjectUtil {
 
         } else if (item instanceof MapBasedObjectData) {
           List<MapBasedObject> valueList = list.stream()
-              .map(e -> MapBasedObject.of((MapBasedObjectData) e)).collect(Collectors.toList());
+              .map(e -> MapBasedObject.of((MapBasedObjectData) e, parentPath))
+              .collect(Collectors.toList());
           return valueList;
 
         } else if (item instanceof MapBasedObject) {
           return value;
+
+        } else if (item instanceof MapBasedObjectSelection) {
+          List<MapBasedObject> valueList = new ArrayList<>();
+          for (Object e : list) {
+            MapBasedObjectSelection selection = (MapBasedObjectSelection) e;
+            MapBasedObjectData data = new MapBasedObjectData();
+            data.putStringPropertyMapItem(MapBasedObjectSelection.STRING_VALUE,
+                new StringValue()
+                    .name(MapBasedObjectSelection.STRING_VALUE)
+                    .value(selection.getStringValue()));
+            valueList.add(MapBasedObject.of(data, parentPath));
+          }
+          return valueList;
         }
       }
     }
@@ -857,34 +890,37 @@ public class MapBasedObjectUtil {
         data.putObjectPropertyMapItem(key, new ObjectValue().name(key));
         break;
       case STRINGLIST:
-        data.putStringListMapItem(key, new StringValueList().name(key));
+        data.putStringListMapItem(key, new StringValueList().name(key).values(new ArrayList<>()));
         break;
       case INTEGERLIST:
-        data.putIntegerListMapItem(key, new IntegerValueList().name(key));
+        data.putIntegerListMapItem(key, new IntegerValueList().name(key).values(new ArrayList<>()));
         break;
       case LONGLIST:
-        data.putLongListMapItem(key, new LongValueList().name(key));
+        data.putLongListMapItem(key, new LongValueList().name(key).values(new ArrayList<>()));
         break;
       case DOUBLELIST:
-        data.putDoubleListMapItem(key, new DoubleValueList().name(key));
+        data.putDoubleListMapItem(key, new DoubleValueList().name(key).values(new ArrayList<>()));
         break;
       case BOOLEANLIST:
-        data.putBooleanListMapItem(key, new BooleanValueList().name(key));
+        data.putBooleanListMapItem(key, new BooleanValueList().name(key).values(new ArrayList<>()));
         break;
       case URILIST:
-        data.putUriListMapItem(key, new UriValueList().name(key));
+        data.putUriListMapItem(key, new UriValueList().name(key).values(new ArrayList<>()));
         break;
       case LOCALDATELIST:
-        data.putLocalDateListMapItem(key, new LocalDateValueList().name(key));
+        data.putLocalDateListMapItem(key,
+            new LocalDateValueList().name(key).values(new ArrayList<>()));
         break;
       case LOCALTIMELIST:
-        data.putLocalTimeListMapItem(key, new LocalTimeValueList().name(key));
+        data.putLocalTimeListMapItem(key,
+            new LocalTimeValueList().name(key).values(new ArrayList<>()));
         break;
       case LOCALDATETIMELIST:
-        data.putLocalDateTimeListMapItem(key, new LocalDateTimeValueList().name(key));
+        data.putLocalDateTimeListMapItem(key,
+            new LocalDateTimeValueList().name(key).values(new ArrayList<>()));
         break;
       case OBJECTLIST:
-        data.putObjectListMapItem(key, new ObjectValueList().name(key));
+        data.putObjectListMapItem(key, new ObjectValueList().name(key).values(new ArrayList<>()));
         break;
       default:
         break;
@@ -1087,9 +1123,9 @@ public class MapBasedObjectUtil {
    * @param value
    * @return
    */
-  public static Object convertToValidValue(Object value) {
+  public static Object convertToValidValue(Object value, String parentPath) {
     if (value instanceof MapBasedObjectData) {
-      return MapBasedObject.of((MapBasedObjectData) value);
+      return MapBasedObject.of((MapBasedObjectData) value, parentPath);
 
     } else if (value instanceof Enum) {
       return ((Enum<?>) value).toString();
