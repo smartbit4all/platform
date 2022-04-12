@@ -41,7 +41,7 @@ public abstract class CollectionBinder<T> extends AbstractBinder {
       T item = null;
       if (change.getOperation().equals(ChangeState.NEW) ||
           change.getOperation().equals(ChangeState.MODIFIED)) {
-        item = (T) change.getObject();
+        item = getChangeObject(change);
         int idx = itemPaths.indexOf(itemPath);
         if (idx < 0) {
           // NEW
@@ -51,9 +51,13 @@ public abstract class CollectionBinder<T> extends AbstractBinder {
           modifyItem(idx, item);
         }
       } else if (change.getOperation().equals(ChangeState.DELETED)) {
-        item = deleteItem(itemPath);
+        deleteItem(itemPath);
       }
     }
+  }
+
+  protected T getChangeObject(ObjectChangeSimple change) {
+    return (T) change.getObject();
   }
 
   protected void addItem(String itemPath, T item) {

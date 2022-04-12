@@ -198,7 +198,17 @@ public class MapBasedObject implements DomainObjectRef {
     return listOf(datas, "");
   }
 
-  private static List<MapBasedObject> listOf(List<MapBasedObjectData> datas, String path) {
+  /**
+   * Merges all the maps from given data list into property maps managed by the newly created list
+   * of {@link MapBasedObject}s. Use the method only for creating embedded {@link MapBasedObject}s,
+   * otherwise use the one parameter method!
+   * 
+   * @param datas
+   * @param path The property name of the parent {@link MapBasedObject}s in order separated by
+   *        slashes.
+   * @return The new list of {@link MapBasedObject}s including the given data properties.
+   */
+  public static List<MapBasedObject> listOf(List<MapBasedObjectData> datas, String path) {
     List<MapBasedObject> result = new ArrayList<>();
     int ind = 0;
     for (MapBasedObjectData data : datas) {
@@ -611,11 +621,12 @@ public class MapBasedObject implements DomainObjectRef {
     if (value instanceof MapBasedObject || value instanceof MapBasedObjectData) {
       if (valueList instanceof List<?>) {
         List<MapBasedObject> list = (List<MapBasedObject>) valueList;
+        int size = list.size();
+
         MapBasedObject newObj = value instanceof MapBasedObject
             ? (MapBasedObject) value
-            : of((MapBasedObjectData) value, parentPath);
+            : of((MapBasedObjectData) value, parentPath + "/" + index);
 
-        int size = list.size();
         if (size > index) {
           transferAttributes(list.get(index), newObj);
           list.set(index, newObj);
