@@ -1,18 +1,16 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
  * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 package org.smartbit4all.domain.meta;
 
@@ -26,7 +24,6 @@ import java.util.Map;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.smartbit4all.core.SB4Context;
 import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.MutableGraph;
 
@@ -60,7 +57,17 @@ public abstract class ComputationFrameworkImpl implements ComputationFramework {
 
   @Override
   public void install(EntityDefinition entityDef, Class<? extends ComputationLogic> logicClass) {
-    ComputationLogic logic = SB4Context.get().get(logicClass);
+    // TODO Define how to get the proper implementation of the logic instead of
+    // SB4Context.get().get(logicClass);
+    ComputationLogic logic = new ComputationLogicImpl(entityDef) {
+
+      @Override
+      public void execute() throws Exception {
+        // TODO Auto-generated method stub
+
+      }
+    };
+    //
     // Set the dependents, install all the necessary data. Can be recursive because it installs all
     // the dependencies.
     if (logic != null) {
@@ -165,7 +172,8 @@ public abstract class ComputationFrameworkImpl implements ComputationFramework {
    * @param logics
    * @return
    */
-  private final Collection<List<ComputationLogic>> constructExecutionOrder(List<ComputationLogic> logics) {
+  private final Collection<List<ComputationLogic>> constructExecutionOrder(
+      List<ComputationLogic> logics) {
     Set<ComputationLogic> unprocessedLogics = new HashSet<>(logics);
     Map<ComputationLogic, List<ComputationLogic>> processedLogics = new HashMap<>();
     // Traverser<EventHandler> traverser = Traverser.forGraph(dependencyGraph);
@@ -184,7 +192,8 @@ public abstract class ComputationFrameworkImpl implements ComputationFramework {
   }
 
   private final void traverseLogic(List<ComputationLogic> myOrderedList, ComputationLogic logic,
-      Map<ComputationLogic, List<ComputationLogic>> processedLogics, Set<ComputationLogic> unprocessedLogics) {
+      Map<ComputationLogic, List<ComputationLogic>> processedLogics,
+      Set<ComputationLogic> unprocessedLogics) {
     // Let's look at the consumers to see if they are newcomers in this situation.
     for (ComputationLogic consumer : logic.parameter().outputConsumers) {
       List<ComputationLogic> list = processedLogics.get(consumer);

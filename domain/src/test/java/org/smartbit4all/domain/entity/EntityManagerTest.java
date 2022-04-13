@@ -14,14 +14,11 @@
  ******************************************************************************/
 package org.smartbit4all.domain.entity;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.fail;
 import java.net.URI;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.smartbit4all.core.object.MapBasedObject;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.MetaConfiguration;
 import org.smartbit4all.domain.meta.Property;
@@ -31,6 +28,10 @@ import org.smartbit4all.domain.service.entity.EntityManager;
 import org.smartbit4all.domain.service.entity.EntityManagerImpl;
 import org.smartbit4all.domain.service.entity.EntityUris;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class EntityManagerTest {
 
@@ -159,6 +160,23 @@ public class EntityManagerTest {
     assertEquals(propertyName, name);
     assertNotNull(userAccountDef.getProperty(propertyName),
         propertyName + " should be defined at this point!");
+  }
+
+  /**
+   * We know a data structure by having a {@link MapBasedObject} for example.
+   */
+  @Test
+  void testGenericEntityDefinition() {
+    // String propertyName = "primaryAddressRef.dontRefThisByRef";
+    // UserAccountDef userAccountDef = ctx.getBean(UserAccountDef.class);
+    //
+    // assertNull(userAccountDef.getProperty(propertyName),
+    // propertyName + " should NOT be defined at this point!");
+    // String name = userAccountDef.primaryAddress().dontRefThisByRef().getName();
+    //
+    // assertEquals(propertyName, name);
+    // assertNotNull(userAccountDef.getProperty(propertyName),
+    // propertyName + " should be defined at this point!");
   }
 
 }
