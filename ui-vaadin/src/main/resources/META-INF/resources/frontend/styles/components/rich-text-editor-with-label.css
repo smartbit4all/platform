@@ -1,0 +1,24 @@
+.rich-text-editor-with-label {
+	display: flex;
+    flex-direction: column;
+	padding: var(--lumo-space-xs) 0;
+	padding-top: var(--lumo-space-m);
+}
+
+.rich-text-editor-with-label > label {
+	align-self: flex-start;
+	color: var(--lumo-secondary-text-color);
+    font-weight: 500;
+    font-size: var(--lumo-font-size-s);
+    padding-bottom: 0.5em;
+    margin-left: calc(var(--lumo-border-radius-m)/4);
+    line-height: 1;
+}
+
+.rich-text-editor-with-label > vaadin-rich-text-editor {
+	max-height: 10em;
+}
+
+.rich-text-editor-with-label:hover > label {
+  color: var(--lumo-body-text-color);
+}
