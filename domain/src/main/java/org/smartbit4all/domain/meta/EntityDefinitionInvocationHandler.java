@@ -18,11 +18,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
-import java.net.URI;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,34 +37,23 @@ import org.smartbit4all.domain.annotation.property.SqlProperty;
 import org.smartbit4all.domain.annotation.property.Table;
 import org.smartbit4all.domain.annotation.property.ValueComparator;
 import org.smartbit4all.domain.meta.jdbc.JDBCDataConverterHelper;
-import org.smartbit4all.domain.service.entity.EntityUris;
-import org.smartbit4all.domain.service.query.QueryApi;
 import org.smartbit4all.domain.utility.SupportedDatabase;
 import org.springframework.beans.BeansException;
-import org.springframework.cglib.proxy.Enhancer;
-import org.springframework.cglib.proxy.MethodInterceptor;
-import org.springframework.cglib.proxy.MethodProxy;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.jmx.access.InvalidInvocationException;
 
 public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
-    implements InvocationHandler, EntityDefinition, EntitySetup, ApplicationContextAware {
+    extends EntityDefinitionInstance
+    implements InvocationHandler, EntitySetup, ApplicationContextAware {
 
   private static final Logger log =
       LoggerFactory.getLogger(EntityDefinitionInvocationHandler.class);
 
-  protected AnnotationConfigApplicationContext ctx;
+  protected ApplicationContext ctx;
 
   static Class<?>[] mutuallyExclusiveAnnotations = {OwnProperty.class, ReferenceProperty.class,
       ComputedProperty.class, SqlProperty.class, ReferenceEntity.class, Ref.class};
-
-  private Map<String, Property<?>> propertiesByName;
-  private Map<String, Property<?>> referredPropertiesByPath;
-  private Map<String, Reference<?, ?>> referencesByName;
-  private Map<String, EntityDefinition> referencedEntitiesByReferenceName;
-  private PropertyFunctionMapper propertyFunctionMapper;
 
   /**
    * The dynamic method handlers by the original method as key.
@@ -75,28 +61,6 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
   private Map<Method, EntityDefinitionMethod> methodMap = new HashMap<>();
 
   private Class<T> entityDefClazz;
-
-  /**
-   * The count property.
-   */
-  private Property<Long> countProperty;
-
-  private final PropertySet primaryKeySet = new PropertySet();
-
-  /**
-   * If this entity is stored in a database, then it is stored in this table.
-   */
-  private TableDefinition tableDefinition;
-
-  private EntityService<?> entityService;
-
-  private String entityDefinitionName;
-
-  private JDBCDataConverterHelper dataConverterHelper;
-
-  private boolean isInitialized = false;
-
-  private PropertySet allProperties;
 
   private EntityDefinitionInvocationHandler(Class<T> clazz) {
     this.entityDefClazz = clazz;
@@ -109,14 +73,6 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
       entityDefinitionName = entityDefClazz.getName();
     }
     tableDefinition = createTableDefinition();
-
-    this.ctx = new AnnotationConfigApplicationContext();
-    propertiesByName = new HashMap<>();
-    referredPropertiesByPath = new HashMap<>();
-    referencesByName = new HashMap<>();
-    referencedEntitiesByReferenceName = new HashMap<>();
-    allProperties = new PropertySet();
-    propertyFunctionMapper = new PropertyFunctionMapper();
   }
 
   static <T extends EntityDefinition> EntityDefinitionInvocationHandler<T> create(Class<T> def) {
@@ -125,7 +81,7 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
 
   @Override
   public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-    ctx.setParent(applicationContext);
+    ctx = applicationContext;
   }
 
   @Override
@@ -138,11 +94,7 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
       return method.invoke(this, args);
     }
     if (method.getDeclaringClass().isAssignableFrom(EntitySetup.class)) {
-      // TODO Remove this with meta extension!
-      if (method.getName().equals("getQueryApi")) {
-        return method.invoke(this, args);
-      }
-      if (!isInitialized) {
+      if (!isInitialized()) {
         return method.invoke(this, args);
       } else {
         log.debug("Entity setup method called when entity is already initialized! ({}.{})",
@@ -158,13 +110,8 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
   }
 
   @Override
-  public void initContext() {
-    ctx.refresh();
-  }
-
-  @Override
   public void setupProperties() {
-    dataConverterHelper = ctx.getBean(JDBCDataConverterHelper.class);
+    setDataConverterHelper(ctx.getBean(JDBCDataConverterHelper.class));
 
     // countProperty = new PropertyComputed<>(Count.PROPERTTYNAME, Long.class,
     // dataConverterHelper.from(Long.class), Count.class);
@@ -211,8 +158,7 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
 
   private void registerProperty(Method method, Property<?> property) {
     if (property != null) {
-      property.setEntityDef(this);
-      propertiesByName.put(property.getName(), property);
+      registerProperty(property);
       if (method.isAnnotationPresent(Id.class)) {
         primaryKeySet.add(property);
       }
@@ -415,154 +361,6 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
     }
   }
 
-  private PropertyRef<?> createRefPropertyByPath(String propertyName, String referredPropertyName,
-      String[] path) {
-    List<Reference<?, ?>> joinPath = new ArrayList<>();
-    // TODO getBean by name?
-    EntityDefinition currentEntity = ctx.getBean(entityDefClazz);
-    for (int i = 0; i < path.length; i++) {
-      String referenceName = path[i];
-      Reference<?, ?> reference = currentEntity.getReference(referenceName);
-      joinPath.add(reference);
-      currentEntity = reference.getTarget();
-    }
-    Property<?> referredProperty = currentEntity.getProperty(referredPropertyName);
-    PropertyRef<?> property = createRefProperty(propertyName, joinPath, referredProperty);
-    return property;
-  }
-
-
-  @Override
-  public Property<?> findOrCreateReferredProperty(List<Reference<?, ?>> joinPath,
-      Property<?> referredProperty) {
-    String refPath = PropertyRef.constructName(joinPath, referredProperty);
-    Property<?> property = referredPropertiesByPath.get(refPath);
-    if (property == null) {
-      property = createRefProperty(null, joinPath, referredProperty, refPath);
-    }
-    return property;
-  }
-
-  @Override
-  public Property<?> findOrCreateReferredProperty(String[] joinPath, String referredPropertyName) {
-    String refPath = PropertyRef.constructName(joinPath, referredPropertyName);
-    Property<?> property = referredPropertiesByPath.get(refPath);
-    if (property == null) {
-      property = createRefPropertyByPath(null, referredPropertyName, joinPath);
-    }
-    return property;
-  }
-
-  private PropertyRef<?> createRefProperty(String propertyName, List<Reference<?, ?>> joinPath,
-      Property<?> referredProperty) {
-    String refPath = PropertyRef.constructName(joinPath, referredProperty);
-    return createRefProperty(propertyName, joinPath, referredProperty, refPath);
-  }
-
-  private PropertyRef<?> createRefProperty(String propertyName, List<Reference<?, ?>> joinPath,
-      Property<?> referredProperty,
-      String refPath) {
-    PropertyRef<?> property = new PropertyRef<>(propertyName, joinPath, referredProperty);
-
-    PropertyRef<?> propertyProxy = createPropertyProxy(property, PropertyRef.class);
-    referredPropertiesByPath.put(refPath, propertyProxy);
-    propertyProxy.setEntityDef(this);
-    return propertyProxy;
-  }
-
-  @SuppressWarnings("unchecked")
-  private <P extends Property<?>> P createPropertyProxy(P property, Class<P> propClazz) {
-    Enhancer e = new Enhancer();
-    e.setClassLoader(propClazz.getClassLoader());
-    e.setSuperclass(propClazz);
-    e.setCallback(new MethodInterceptor() {
-
-      @Override
-      public Object intercept(Object obj, Method method, Object[] args,
-          MethodProxy proxy)
-          throws Throwable {
-        String methodName = method.getName();
-
-        if ("function".equals(methodName)) {
-          if (args.length != 1 || !(args[0] instanceof PropertyFunction)) {
-            throw new RuntimeException(
-                "function method can only be invoked with one PropertyFunction typed parameter!");
-          }
-          PropertyFunction functionParam = (PropertyFunction) args[0];
-          return propertyFunctionMapper.getFunctionProperty(property, functionParam);
-        }
-
-        PropertyFunction basicFunction = PropertyFunction.basicFunctionsByName.get(methodName);
-        if (basicFunction != null) {
-          return propertyFunctionMapper.getFunctionProperty(property, basicFunction);
-        }
-
-        return method.invoke(property, args);
-      }
-    });
-    if (property instanceof PropertyOwned) {
-      // String name, Class<T> type, String defaultDbExpression, JDBCDataConverter<T, ?> typeHandler
-      PropertyOwned<?> p = (PropertyOwned<?>) property;
-      return (P) e.create(
-          new Class<?>[] {String.class, Class.class, String.class, JDBCDataConverter.class},
-          new Object[] {p.getName(), p.type(), p.getDbExpression().get(null), p.jdbcConverter()});
-    } else if (property instanceof PropertyRef) {
-      // String name, List<Reference<?, ?>> joinPath, Property<T> referredProperty
-      PropertyRef<?> p = (PropertyRef<?>) property;
-      return (P) e.create(
-          new Class<?>[] {String.class, List.class, Property.class},
-          new Object[] {p.getName(), p.getJoinReferences(), p.getReferredProperty()});
-    }
-    throw new RuntimeException("Can not create proxy for property subtype: " + propClazz.getName());
-  }
-
-  @Override
-  public void finishSetup() {
-    allProperties.addAll(propertiesByName.values());
-    allProperties.addAll(referredPropertiesByPath.values());
-    allProperties.remove(countProperty);
-    isInitialized = true;
-  }
-
-  @Override
-  public final Property<?> getProperty(String propertyName) {
-    Property<?> property = propertiesByName.get(propertyName);
-    if (property == null) {
-      property = referredPropertiesByPath.get(propertyName);
-    }
-    return property;
-  }
-
-  @Override
-  public Reference<?, ?> getReference(String referenceName) {
-    return referencesByName.get(referenceName);
-  }
-
-  @Override
-  public PropertySet PRIMARYKEYDEF() {
-    return primaryKeySet;
-  }
-
-  @Override
-  public TableDefinition tableDefinition() {
-    return tableDefinition;
-  }
-
-  @Override
-  public Property<Long> count() {
-    return countProperty;
-  }
-
-  @Override
-  public String entityDefName() {
-    return entityDefinitionName;
-  }
-
-  @Override
-  public EntityService<?> services() {
-    return entityService;
-  }
-
   private void initEntityService(Method method) {
     if (entityService == null) {
       Class<?> serviceClass = method.getReturnType();
@@ -575,81 +373,12 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
     }
   }
 
-  @Override
-  public PropertySet allProperties() {
-    return new PropertySet(allProperties);
-  }
-
-  @Override
-  public List<Reference<?, ?>> allReferences() {
-    return new ArrayList<>(referencesByName.values());
-  }
-
+  /**
+   * The interface based implementation use the name of parent package.
+   */
   @Override
   public String getDomain() {
     return entityDefClazz.getPackage().getName();
-  }
-
-  @Override
-  public URI getUri() {
-    return EntityUris.createEntityUri(getDomain(), entityDefName());
-  }
-
-  @Override
-  public Expression exists(JoinPath masterJoin, Expression expression) {
-    // In this case we have a reference for the root entity directly
-    return new ExpressionExists(this, masterJoin.first().getSource(), expression,
-        JoinPath.EMPTY, masterJoin);
-  }
-
-  @Override
-  public Expression exists(Expression expression) {
-    // Normally the expression is related to the current entity definition so it's the same
-    // expression.
-    return expression;
-  }
-
-  @Override
-  public QueryApi getQueryApi() {
-    return ctx.getBean(QueryApi.class);
-  }
-
-  @Override
-  public JoinPath join() {
-    return JoinPath.EMPTY;
-  }
-
-  static class PropertyFunctionMapper {
-
-    private Map<Property<?>, List<Property<?>>> functionPropertiesByBasePropery = new HashMap<>();
-
-    public Property<?> getFunctionProperty(Property<?> baseProp, PropertyFunction propFunction) {
-      String functionName = propFunction.getName();
-      List<Property<?>> funcProps = functionPropertiesByBasePropery.get(baseProp);
-      if (funcProps == null) {
-        funcProps = new ArrayList<>();
-        functionPropertiesByBasePropery.put(baseProp, funcProps);
-      }
-      Property<?> funcProp = funcProps.stream()
-          .filter(fp -> functionName.equals(fp.getPropertyFunction().getName()))
-          .findFirst().orElse(null);
-      if (funcProp == null) {
-        if (baseProp instanceof PropertyOwned) {
-          funcProp =
-              PropertyOwned.createFunctionProperty(((PropertyOwned<?>) baseProp), propFunction);
-          funcProps.add(funcProp);
-        } else if (baseProp instanceof PropertyRef) {
-          funcProp =
-              PropertyRef.createFunctionProperty(((PropertyRef<?>) baseProp), propFunction);
-          funcProps.add(funcProp);
-        } else {
-          funcProps.add(baseProp);
-        }
-
-      }
-      return funcProp;
-    }
-
   }
 
 }
