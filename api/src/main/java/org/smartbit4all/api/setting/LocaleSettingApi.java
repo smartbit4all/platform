@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.session.UserSessionApi;
@@ -15,6 +14,7 @@ import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import com.google.common.base.Strings;
 
 /**
  * This is the main holder for the locale settings. All the keys are available at the fully
@@ -210,11 +210,11 @@ public final class LocaleSettingApi implements InitializingBean {
   private String getLocalCode(Locale locale) {
     String result = locale.getLanguage();
     String country = locale.getCountry();
-    if (!Strings.isEmpty(country)) {
+    if (!Strings.isNullOrEmpty(country)) {
       result += "-" + country;
     }
     String variant = locale.getVariant();
-    if (!Strings.isEmpty(variant)) {
+    if (!Strings.isNullOrEmpty(variant)) {
       result += "-" + variant;
     }
     return result;
