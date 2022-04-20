@@ -6,6 +6,8 @@ dependencies {
 	api 'com.vaadin:flow-server'
 	api 'com.vaadin:vaadin-board-flow'
 	api 'com.vaadin:vaadin-confirm-dialog-flow'
+	api 'com.vaadin:vaadin-rich-text-editor-flow'
+	
 
 	api project(':ui-common')
 	

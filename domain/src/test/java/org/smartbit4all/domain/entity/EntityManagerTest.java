@@ -14,15 +14,19 @@
  ******************************************************************************/
 package org.smartbit4all.domain.entity;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.fail;
 import java.net.URI;
+import java.util.List;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.smartbit4all.core.object.MapBasedObject;
+import org.smartbit4all.domain.data.DataRow;
+import org.smartbit4all.domain.data.TableData;
+import org.smartbit4all.domain.data.TableDatas;
+import org.smartbit4all.domain.data.filtering.ExpressionEvaluationPlan;
 import org.smartbit4all.domain.meta.EntityDefinition;
+import org.smartbit4all.domain.meta.EntityDefinitionBuilder;
 import org.smartbit4all.domain.meta.MetaConfiguration;
 import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.domain.security.SecurityEntityConfiguration;
@@ -30,7 +34,13 @@ import org.smartbit4all.domain.security.UserAccountDef;
 import org.smartbit4all.domain.service.entity.EntityManager;
 import org.smartbit4all.domain.service.entity.EntityManagerImpl;
 import org.smartbit4all.domain.service.entity.EntityUris;
+import org.smartbit4all.domain.service.query.QueryInput;
+import org.smartbit4all.domain.utility.crud.Crud;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class EntityManagerTest {
 
@@ -159,6 +169,46 @@ public class EntityManagerTest {
     assertEquals(propertyName, name);
     assertNotNull(userAccountDef.getProperty(propertyName),
         propertyName + " should be defined at this point!");
+  }
+
+  /**
+   * We know a data structure by having a {@link MapBasedObject} for example.
+   */
+  @SuppressWarnings("unchecked")
+  @Test
+  void testGenericEntityDefinition() {
+    EntityDefinition myDef1 =
+        EntityDefinitionBuilder.of(ctx).name("MyDef1").domain("org.smartbit4all.domain.security")
+            .ownedProperty("prop1", String.class).entityDefinition();
+    Property<String> property = (Property<String>) myDef1.getProperty("prop1");
+    QueryInput queryInput = Crud.read(myDef1).selectAllProperties()
+        .where(property.eq("apple")).getQuery();
+
+
+    TableData<EntityDefinition> tableData = TableDatas.builder(myDef1, myDef1.allProperties())
+        .addRow().set(property, "apple")
+        .addRow().set(property, "peach")
+        .addRow().set(property, "pear").build();
+
+    ExpressionEvaluationPlan evaluationPlan =
+        ExpressionEvaluationPlan.of(tableData, null, queryInput.where());
+
+    List<DataRow> result = evaluationPlan.execute();
+
+    Assertions.assertEquals(1, result.size());
+    Assertions.assertEquals("apple", result.get(0).get(property));
+
+    System.out.println(queryInput);
+    // String propertyName = "primaryAddressRef.dontRefThisByRef";
+    // UserAccountDef userAccountDef = ctx.getBean(UserAccountDef.class);
+    //
+    // assertNull(userAccountDef.getProperty(propertyName),
+    // propertyName + " should NOT be defined at this point!");
+    // String name = userAccountDef.primaryAddress().dontRefThisByRef().getName();
+    //
+    // assertEquals(propertyName, name);
+    // assertNotNull(userAccountDef.getProperty(propertyName),
+    // propertyName + " should be defined at this point!");
   }
 
 }

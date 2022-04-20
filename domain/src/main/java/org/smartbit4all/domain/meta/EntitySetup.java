@@ -14,14 +14,12 @@
  ******************************************************************************/
 package org.smartbit4all.domain.meta;
 
-import org.smartbit4all.domain.service.query.QueryApi;
 import org.springframework.context.ApplicationContextAware;
 
 /**
  * This interface is used to setup all entities. After creating all entities, the setup be like
  * this:
  * <ul>
- * <li>{@link #initContext()} for all entities
  * <li>{@link #setupProperties()} for all entities
  * <li>{@link #setupReferences()} for all entities
  * <li>{@link #setupReferredProperties()} for all entities
@@ -33,11 +31,6 @@ import org.springframework.context.ApplicationContextAware;
  *
  */
 public interface EntitySetup extends ApplicationContextAware {
-
-  /**
-   * Initialize context with appropriate entity customizations.
-   */
-  void initContext();
 
   /**
    * Setup all owned properties.
@@ -61,12 +54,5 @@ public interface EntitySetup extends ApplicationContextAware {
    * Finish setup. All properties propertySet will be initialized here.
    */
   void finishSetup();
-
-  /**
-   * TODO Remove this and create meta infos for the query API.
-   * 
-   * @return
-   */
-  QueryApi getQueryApi();
 
 }

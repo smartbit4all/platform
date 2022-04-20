@@ -182,7 +182,8 @@ public class ExpressionEvaluationPlan {
     }
     List<DataRow> result = null;
     for (EvaluationStep step : steps) {
-      List<DataRow> matchingRows = step.execute(tableData, getNextStepBaseRows(initialRows, result));
+      List<DataRow> matchingRows =
+          step.execute(tableData, getNextStepBaseRows(initialRows, result));
       if (matchingRows != null) {
         result = matchingRows;
       }
@@ -191,12 +192,29 @@ public class ExpressionEvaluationPlan {
   }
 
   /**
-   * If the result is NULL, it is the first step.
-   * - If there is any initial rows, use them as base.
+   * Execute the evaluation plan in a sequential order. The {@link EvaluationConcurrent} steps will
+   * define embedded execution plans. In a "normal" expression where we don't have any OR and we
+   * don't have any index on the properties. In this case there is only one single step in the plan.
+   * One loop to test the expression row by row. If we have one or more indexed column then these
+   * indexed evaluation steps will be the first steps (rule based, because we always use the index
+   * to filter) and then the loop again with the matching rows.
+   * 
+   * If we have an OR (with or without a bracket) among the ANDs then it means a concurrent
+   * evaluation plan. Both operand of the OR will be evaluated and the parts will be unified at the
+   * end.
+   * 
+   * @return The matching rows after execution also in a sorted list.
+   */
+  public List<DataRow> execute() {
+    return execute(tableData.rows());
+  }
+
+  /**
+   * If the result is NULL, it is the first step. - If there is any initial rows, use them as base.
    * - Else NULL is passed, to create a new base from the first step execution.
    */
   private List<DataRow> getNextStepBaseRows(List<DataRow> initialRows, List<DataRow> result) {
-    if(result == null && initialRows != null && !initialRows.isEmpty()) {
+    if (result == null && initialRows != null && !initialRows.isEmpty()) {
       return initialRows;
     }
     return result;

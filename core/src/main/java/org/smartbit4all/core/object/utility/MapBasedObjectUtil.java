@@ -541,10 +541,6 @@ public class MapBasedObjectUtil {
     } else if (value instanceof List<?>) {
       List<?> list = (List<?>) value;
       if (list.isEmpty()) {
-        if (clazz == null) {
-          throw new IllegalArgumentException(
-              "Newly added property's value cannot be set to empty list, key: " + key);
-        }
         return createEmptyListPropertyValue(key, prevValue, clazz);
 
       } else {
@@ -595,26 +591,23 @@ public class MapBasedObjectUtil {
           return new LocalDateTimeValueList().name(key).values(values);
 
         } else if (item instanceof MapBasedObjectData) {
-          List<MapBasedObject> valueList = list.stream()
-              .map(e -> MapBasedObject.of((MapBasedObjectData) e, parentPath))
-              .collect(Collectors.toList());
-          return valueList;
+          return MapBasedObject.listOf((List<MapBasedObjectData>) list, parentPath);
 
         } else if (item instanceof MapBasedObject) {
           return value;
 
         } else if (item instanceof MapBasedObjectSelection) {
-          List<MapBasedObject> valueList = new ArrayList<>();
-          for (Object e : list) {
-            MapBasedObjectSelection selection = (MapBasedObjectSelection) e;
+          List<MapBasedObjectData> dataList = new ArrayList<>();
+          for (Object object : list) {
+            MapBasedObjectSelection selection = (MapBasedObjectSelection) object;
             MapBasedObjectData data = new MapBasedObjectData();
             data.putStringPropertyMapItem(MapBasedObjectSelection.STRING_VALUE,
                 new StringValue()
                     .name(MapBasedObjectSelection.STRING_VALUE)
                     .value(selection.getStringValue()));
-            valueList.add(MapBasedObject.of(data, parentPath));
+            dataList.add(data);
           }
-          return valueList;
+          return MapBasedObject.listOf(dataList, parentPath);
         }
       }
     }
@@ -726,6 +719,58 @@ public class MapBasedObjectUtil {
   }
 
   private static Object createEmptyListPropertyValue(String key, Object prevValue, Class<?> clazz) {
+    if (prevValue == null && clazz == null) {
+      throw new IllegalArgumentException(
+          "Newly added property's value cannot be set to empty list, key: " + key);
+    }
+
+    if (prevValue == null) {
+      return createEmptyListPropertyValue(key, clazz);
+
+    } else {
+      List<?> list = (List<?>) prevValue;
+      Object item = list.get(0);
+      if (item instanceof String) {
+        return new StringValueList().name(key).values(new ArrayList<>());
+
+      } else if (item instanceof Integer) {
+        return new IntegerValueList().name(key).values(new ArrayList<>());
+
+      } else if (item instanceof Long) {
+        return new LongValueList().name(key).values(new ArrayList<>());
+
+      } else if (item instanceof Double) {
+        return new DoubleValueList().name(key).values(new ArrayList<>());
+
+      } else if (item instanceof Boolean) {
+        return new BooleanValueList().name(key).values(new ArrayList<>());
+
+      } else if (item instanceof URI) {
+        return new UriValueList().name(key).values(new ArrayList<>());
+
+      } else if (item instanceof LocalDate) {
+        return new LocalDateValueList().name(key).values(new ArrayList<>());
+
+      } else if (item instanceof LocalTime) {
+        return new LocalTimeValueList().name(key).values(new ArrayList<>());
+
+      } else if (item instanceof LocalDateTime) {
+        return new LocalDateTimeValueList().name(key).values(new ArrayList<>());
+
+      } else if (item instanceof MapBasedObjectData) {
+        return new ArrayList<MapBasedObject>();
+
+      } else if (item instanceof MapBasedObject) {
+        return new ArrayList<MapBasedObject>();
+
+      } else if (item instanceof MapBasedObjectSelection) {
+        return new ArrayList<MapBasedObject>();
+      }
+    }
+    throw new IllegalArgumentException("Unknown value class: " + prevValue.getClass().getName());
+  }
+
+  private static Object createEmptyListPropertyValue(String key, Class<?> clazz) {
     if (clazz.equals(String.class)) {
       return new StringValueList().name(key).values(new ArrayList<>());
 
@@ -1121,11 +1166,12 @@ public class MapBasedObjectUtil {
    * Converts the given value if it is necessary to be able to be stored by {@link MapBasedObject}.
    * 
    * @param value
+   * @param path
    * @return
    */
-  public static Object convertToValidValue(Object value, String parentPath) {
+  public static Object convertToValidValue(Object value, String path) {
     if (value instanceof MapBasedObjectData) {
-      return MapBasedObject.of((MapBasedObjectData) value, parentPath);
+      return MapBasedObject.of((MapBasedObjectData) value, path);
 
     } else if (value instanceof Enum) {
       return ((Enum<?>) value).toString();
