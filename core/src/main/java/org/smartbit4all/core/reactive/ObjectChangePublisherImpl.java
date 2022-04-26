@@ -8,7 +8,6 @@ import io.reactivex.rxjava3.subjects.PublishSubject;
 
 public class ObjectChangePublisherImpl<T> implements ObjectChangePublisher<T> {
 
-
   private static final Logger log = LoggerFactory.getLogger(ObjectChangePublisherImpl.class);
 
   private PublishSubject<T> publisher;
@@ -23,11 +22,11 @@ public class ObjectChangePublisherImpl<T> implements ObjectChangePublisher<T> {
       try {
         if (object == null) {
           return publisher
-              .subscribe(u -> publishTo(observer, u));
+              .subscribe(u -> publishTo(observer, u), this::onError);
         }
         return publisher
             .filter(changedObject -> changedObject.equals(object))
-            .subscribe(u -> publishTo(observer, u));
+            .subscribe(u -> publishTo(observer, u), this::onError);
       } catch (Exception e) {
         log.error("Unable to subscribe for object (" + object + ")", e);
       }
@@ -42,6 +41,10 @@ public class ObjectChangePublisherImpl<T> implements ObjectChangePublisher<T> {
 
   protected void publishTo(Consumer<T> observer, T object) {
     observer.accept(object);
+  }
+
+  protected void onError(Throwable tr) {
+    log.debug("Error when handling onNext", tr);
   }
 
 }
