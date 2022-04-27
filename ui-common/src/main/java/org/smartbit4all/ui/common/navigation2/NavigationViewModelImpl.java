@@ -706,8 +706,30 @@ public class NavigationViewModelImpl extends ViewModelImpl<TreeModel>
       ObservablePublisherWrapper publisherWrapper,
       UINavigationApi uiNavigationApi,
       UserSessionApi userSessionApi) {
+    return createForUI(navigation, publisherWrapper, uiNavigationApi, userSessionApi, null);
+  }
+
+  /**
+   * Creates a NavigationViewModel instance, sets the navigationState and initializes it. Typically
+   * used when creating the viewModel in UI.
+   * 
+   * NOTE: this is not the recommended way to use NavigationViewModel, you should use it as a child
+   * model.
+   * 
+   * @param navigation
+   * @param publisherWrapper
+   * @param uiNavigationApi
+   * @param userSessionApi
+   * @return
+   */
+  public static NavigationViewModel createForUI(Navigation navigation,
+      ObservablePublisherWrapper publisherWrapper,
+      UINavigationApi uiNavigationApi,
+      UserSessionApi userSessionApi,
+      ViewTargetEnhancer enhancer) {
     NavigationViewModelImpl result =
         new NavigationViewModelImpl(publisherWrapper, uiNavigationApi, userSessionApi);
+    result.setViewTargetEnhancer(enhancer);
     result.initByNavigationTarget(null);
     result.setNavigation(navigation);
     return result;
