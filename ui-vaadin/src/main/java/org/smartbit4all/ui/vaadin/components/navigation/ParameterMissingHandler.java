@@ -18,7 +18,7 @@ public class ParameterMissingHandler extends Component
   @Override
   public int setErrorParameter(BeforeEnterEvent event,
       ErrorParameter<ParameterMissingException> parameter) {
-    log.error("Unhandled ParameterMissingException!", parameter.getCaughtException());
+    log.debug("Unhandled ParameterMissingException!", parameter.getCaughtException());
     event.forwardTo("");
     return 200;
   }
