@@ -27,21 +27,24 @@ import org.smartbit4all.domain.data.TableDatas;
 import org.smartbit4all.domain.data.filtering.ExpressionEvaluationPlan;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.EntityDefinitionBuilder;
-import org.smartbit4all.domain.meta.MetaConfiguration;
 import org.smartbit4all.domain.meta.Property;
-import org.smartbit4all.domain.security.SecurityEntityConfiguration;
 import org.smartbit4all.domain.security.UserAccountDef;
+import org.smartbit4all.domain.service.dataset.TableDataApi;
 import org.smartbit4all.domain.service.entity.EntityManager;
-import org.smartbit4all.domain.service.entity.EntityManagerImpl;
 import org.smartbit4all.domain.service.entity.EntityUris;
+import org.smartbit4all.domain.service.query.QueryApi;
 import org.smartbit4all.domain.service.query.QueryInput;
+import org.smartbit4all.domain.service.query.QueryOutput;
 import org.smartbit4all.domain.utility.crud.Crud;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationContext;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
+@SpringBootTest(classes = {EntityManagerTestConfig.class})
 public class EntityManagerTest {
 
   private static final String EXPECTED_USERACCDEF_URI =
@@ -57,28 +60,34 @@ public class EntityManagerTest {
   private static final String EXPECTED_PROPERTY_CREATED_BY_URI =
       "entity://org.smartbit4all.domain.security/userAccountDef#primaryAddressRef.dontRefThisByUri";
 
-  protected static AnnotationConfigApplicationContext ctx;
+  // protected static AnnotationConfigApplicationContext ctx;
 
   @BeforeAll
   static void setup() {
-    ctx = new AnnotationConfigApplicationContext();
-    ctx.register(MetaConfiguration.class);
-    ctx.register(SecurityEntityConfiguration.class);
-    // ctx.register(EntityManagerTestConfig.class);
-    ctx.register(EntityManagerImpl.class);
-    ctx.refresh();
+    // ctx = new AnnotationConfigApplicationContext();
+    // ctx.register(MetaConfiguration.class);
+    // ctx.register(SecurityEntityConfiguration.class);
+    // // ctx.register(EntityManagerTestConfig.class);
+    // ctx.register(EntityManagerImpl.class);
+    // ctx.refresh();
   }
 
   @AfterAll
   static void tearDown() {
-    ctx.close();
+    // ctx.close();
   }
+
+  @Autowired
+  private EntityManager entityManager;
+
+  @Autowired
+  private UserAccountDef userAccountDef;
+
+  @Autowired
+  private ApplicationContext ctx;
 
   @Test
   void testEntityManagerDefinitionGetter() {
-    EntityManager entityManager = ctx.getBean(EntityManager.class);
-
-    UserAccountDef userAccountDef = ctx.getBean(UserAccountDef.class);
 
     URI userAccountUri =
         EntityUris.createEntityUri(EntityManagerTestConfig.ENTITY_SOURCE_SEC, "userAccountDef");
@@ -93,9 +102,6 @@ public class EntityManagerTest {
 
   @Test
   void testEntityManagerPropertyGetter() {
-    EntityManager entityManager = ctx.getBean(EntityManager.class);
-
-    UserAccountDef userAccountDef = ctx.getBean(UserAccountDef.class);
     Property<String> expectedProperty = userAccountDef.firstname();
 
     URI propertyUri = EntityUris.createPropertyUri(EntityManagerTestConfig.ENTITY_SOURCE_SEC,
@@ -108,9 +114,6 @@ public class EntityManagerTest {
 
   @Test
   void testEntityManagerReferencedPropertyGetter() {
-    EntityManager entityManager = ctx.getBean(EntityManager.class);
-
-    UserAccountDef userAccountDef = ctx.getBean(UserAccountDef.class);
     Property<String> expectedProperty = userAccountDef.primaryZipcode();
 
     URI propertyUri = EntityUris.createPropertyUri(EntityManagerTestConfig.ENTITY_SOURCE_SEC,
@@ -136,31 +139,27 @@ public class EntityManagerTest {
     assertEquals(expectedProperty.hashCode(), actualProperty.hashCode());
   }
 
-  @Test
-  void testPropertyRefrenceCreationByUri() {
-
-    String propertyName = "primaryAddressRef.dontRefThisByUri";
-    UserAccountDef userAccountDef = ctx.getBean(UserAccountDef.class);
-    assertNull(userAccountDef.getProperty(propertyName),
-        propertyName + " should NOT be defined at this point!");
-
-    EntityManager entityManager = ctx.getBean(EntityManager.class);
-
-    URI propertyUri = EntityUris.createPropertyUri(EntityManagerTestConfig.ENTITY_SOURCE_SEC,
-        "userAccountDef", "primaryAddressRef", "dontRefThisByUri");
-    assertEquals(EXPECTED_PROPERTY_CREATED_BY_URI, propertyUri.toString());
-    String name = entityManager.property(propertyUri).getName();
-
-    assertEquals(propertyName, name);
-    assertNotNull(userAccountDef.getProperty(propertyName),
-        propertyName + " should be defined at this point!");
-
-  }
+  // @Test
+  // void testPropertyRefrenceCreationByUri() {
+  //
+  // String propertyName = "primaryAddressRef.dontRefThisByUri";
+  // assertNull(userAccountDef.getProperty(propertyName),
+  // propertyName + " should NOT be defined at this point!");
+  //
+  // URI propertyUri = EntityUris.createPropertyUri(EntityManagerTestConfig.ENTITY_SOURCE_SEC,
+  // "userAccountDef", "primaryAddressRef", "dontRefThisByUri");
+  // assertEquals(EXPECTED_PROPERTY_CREATED_BY_URI, propertyUri.toString());
+  // String name = entityManager.property(propertyUri).getName();
+  //
+  // assertEquals(propertyName, name);
+  // assertNotNull(userAccountDef.getProperty(propertyName),
+  // propertyName + " should be defined at this point!");
+  //
+  // }
 
   @Test
   void testPropertyRefrenceCreationByRef() {
     String propertyName = "primaryAddressRef.dontRefThisByRef";
-    UserAccountDef userAccountDef = ctx.getBean(UserAccountDef.class);
 
     assertNull(userAccountDef.getProperty(propertyName),
         propertyName + " should NOT be defined at this point!");
@@ -173,23 +172,27 @@ public class EntityManagerTest {
 
   /**
    * We know a data structure by having a {@link MapBasedObject} for example.
+   * 
+   * @throws Exception
    */
   @SuppressWarnings("unchecked")
   @Test
-  void testGenericEntityDefinition() {
+  void testGenericEntityDefinition() throws Exception {
     EntityDefinition myDef1 =
         EntityDefinitionBuilder.of(ctx).name("MyDef1").domain("org.smartbit4all.domain.security")
             .ownedProperty("prop1", String.class).build();
     Property<String> property = (Property<String>) myDef1.getProperty("prop1");
-    QueryInput queryInput = Crud.read(myDef1).selectAllProperties()
-        .where(property.eq("apple")).getQuery();
 
 
     TableData<EntityDefinition> tableData = TableDatas.builder(myDef1, myDef1.allProperties())
         .addRow().set(property, "apple")
         .addRow().set(property, "peach")
         .addRow().set(property, "pear").build();
+    TableDataApi tableDataApi = ctx.getBean(TableDataApi.class);
+    URI tdUri = tableDataApi.save(tableData);
 
+    QueryInput queryInput = Crud.read(myDef1).selectAllProperties()
+        .where(property.eq("apple")).fromTableData(tdUri).getQuery();
     ExpressionEvaluationPlan evaluationPlan =
         ExpressionEvaluationPlan.of(tableData, null, queryInput.where());
 
@@ -199,6 +202,14 @@ public class EntityManagerTest {
     Assertions.assertEquals("apple", result.get(0).get(property));
 
     System.out.println(queryInput);
+
+    QueryApi queryApi = ctx.getBean(QueryApi.class);
+
+    QueryOutput queryOutput = queryApi.execute(queryInput);
+
+    Assertions.assertEquals(1, queryOutput.getTableData().size());
+    Assertions.assertEquals("apple", queryOutput.getTableData().rows().get(0).get(property));
+
     // String propertyName = "primaryAddressRef.dontRefThisByRef";
     // UserAccountDef userAccountDef = ctx.getBean(UserAccountDef.class);Ezt én
     //

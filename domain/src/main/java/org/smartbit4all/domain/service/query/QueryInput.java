@@ -217,11 +217,11 @@ public class QueryInput {
     this.isResultSerialized = isResultSerialized;
   }
 
-  protected final URI getTableDataUri() {
+  public final URI getTableDataUri() {
     return tableDataUri;
   }
 
-  protected final void setTableDataUri(URI tableDataUri) {
+  public final void setTableDataUri(URI tableDataUri) {
     this.tableDataUri = tableDataUri;
   }
 

@@ -14,6 +14,7 @@
  ******************************************************************************/
 package org.smartbit4all.domain.utility.crud;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -496,6 +497,19 @@ public class CrudRead<E extends EntityDefinition> {
    */
   public CrudRead<E> from(E entityDef) {
     queryInput.from(entityDef);
+    return this;
+  }
+
+  /**
+   * The from sets the {@link EntityDefinition} that is the root for the query. All the related
+   * entities must be attached with {@link Reference} as we add {@link PropertyRef} properties to
+   * the query.
+   * 
+   * @param tableDataUri The table data the query is executed against.
+   * @return
+   */
+  public CrudRead<E> fromTableData(URI tableDataUri) {
+    queryInput.setTableDataUri(tableDataUri);
     return this;
   }
 
