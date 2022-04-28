@@ -34,6 +34,8 @@ import org.smartbit4all.domain.application.TimeManagementServiceImpl;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageApiImpl;
 import org.smartbit4all.domain.meta.EntityDefinition;
+import org.smartbit4all.domain.service.dataset.TableDataApi;
+import org.smartbit4all.domain.service.dataset.TableDataApiImpl;
 import org.smartbit4all.domain.service.entity.EntityManager;
 import org.smartbit4all.domain.service.entity.EntityManagerImpl;
 import org.smartbit4all.domain.service.modify.applychange.ApplyChangeObjectConfig;
@@ -199,6 +201,11 @@ public class DomainServiceConfig extends SB4Configuration {
   @Bean
   public EntityManager entitManager(List<EntityDefinition> entityDefs) {
     return new EntityManagerImpl(entityDefs);
+  }
+
+  @Bean
+  public TableDataApi tableDataApi() {
+    return new TableDataApiImpl();
   }
 
 }

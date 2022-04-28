@@ -10,7 +10,10 @@ import java.util.Optional;
 import org.smartbit4all.core.SB4CompositeFunction;
 import org.smartbit4all.core.SB4CompositeFunctionImpl;
 import org.smartbit4all.core.SB4Function;
+import org.smartbit4all.domain.data.DataRow;
+import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.data.TableDatas;
+import org.smartbit4all.domain.data.filtering.ExpressionEvaluationPlan;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Expression;
 import org.smartbit4all.domain.meta.ExpressionExists;
@@ -23,6 +26,7 @@ import org.smartbit4all.domain.meta.PropertyRef;
 import org.smartbit4all.domain.meta.Reference;
 import org.smartbit4all.domain.service.dataset.DataSetApi;
 import org.smartbit4all.domain.service.dataset.SaveInValues;
+import org.smartbit4all.domain.service.dataset.TableDataApi;
 import org.smartbit4all.domain.utility.crud.Crud;
 import org.smartbit4all.domain.utility.crud.CrudRead;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,13 +45,16 @@ public class QueryApiImpl implements QueryApi {
   private Map<String, QueryExecutionApi> executionApisByName;
   private QueryExecutorConfig config;
   protected DataSetApi dataSetApi;
+  private TableDataApi tableDataApi;
 
   public QueryApiImpl(ApplicationContext appContext,
       @Autowired(required = false) QueryExecutorConfig config,
-      @Autowired(required = false) DataSetApi dataSetApi) {
+      @Autowired(required = false) DataSetApi dataSetApi,
+      @Autowired(required = false) TableDataApi tableDataApi) {
     this.executionApisByName = appContext.getBeansOfType(QueryExecutionApi.class);
     this.config = config;
     this.dataSetApi = dataSetApi;
+    this.tableDataApi = tableDataApi;
   }
 
   @Override
@@ -201,8 +208,35 @@ public class QueryApiImpl implements QueryApi {
     return output;
   }
 
+  /**
+   * This is the inner execution point where the {@link QueryApi} decides which
+   * {@link QueryExecutionApi} to use for the execution.
+   * 
+   * @param queryInput The query input to execute. If it defines a TableData by URI then it will be
+   *        mapped to the named {@link QueryExecutionApi}.
+   * @return
+   * @throws Exception
+   */
   private QueryOutput executeWithoutPrepare(QueryInput queryInput) throws Exception {
+    if (queryInput.getTableDataUri() != null && tableDataApi != null) {
+      return executeQueryOnTableData(queryInput);
+    }
     return getExecutionApiForEntityDef(queryInput.entityDef).execute(queryInput);
+  }
+
+  private final QueryOutput executeQueryOnTableData(QueryInput queryInput) throws Exception {
+    TableData<?> tableData = tableDataApi.read(queryInput.getTableDataUri());
+
+    ExpressionEvaluationPlan evaluationPlan =
+        ExpressionEvaluationPlan.of(tableData, null, queryInput.where());
+
+    List<DataRow> result = evaluationPlan.execute();
+
+    QueryOutput out = new QueryOutput(queryInput.getName(), queryInput.entityDef());
+    out.setTableData(TableDatas.copyRows(tableData, result));
+
+    return out;
+
   }
 
   private QueryExecutionApi getExecutionApiForEntityDef(EntityDefinition entityDef) {

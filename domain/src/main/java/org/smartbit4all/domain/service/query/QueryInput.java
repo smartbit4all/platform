@@ -14,6 +14,7 @@
  ******************************************************************************/
 package org.smartbit4all.domain.service.query;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,6 +28,7 @@ import org.smartbit4all.domain.meta.PropertyRef;
 import org.smartbit4all.domain.meta.PropertySet;
 import org.smartbit4all.domain.meta.Reference;
 import org.smartbit4all.domain.meta.SortOrderProperty;
+import org.smartbit4all.domain.service.dataset.TableDataApi;
 import org.springframework.util.StringUtils;
 
 public class QueryInput {
@@ -82,6 +84,11 @@ public class QueryInput {
    * The result is stored in memory or is serialized based on thid flag.
    */
   private boolean isResultSerialized;
+
+  /**
+   * If the query is running on a table data managed by the {@link TableDataApi}.
+   */
+  private URI tableDataUri;
 
   public QueryInput() {
     this(UUID.randomUUID().toString());
@@ -208,6 +215,14 @@ public class QueryInput {
 
   public void setResultSerialized(boolean isResultSerialized) {
     this.isResultSerialized = isResultSerialized;
+  }
+
+  protected final URI getTableDataUri() {
+    return tableDataUri;
+  }
+
+  protected final void setTableDataUri(URI tableDataUri) {
+    this.tableDataUri = tableDataUri;
   }
 
 }

@@ -310,8 +310,18 @@ public final class TableDatas {
    * Returns a new copy instance of the given {@link TableData}
    */
   public static <E extends EntityDefinition> TableData<E> copy(TableData<E> sourceTableData) {
+    return copyRows(sourceTableData, sourceTableData.rows());
+  }
+
+  /**
+   * Returns a new copy instance of the given {@link TableData} with the given rows.
+   * 
+   * @param rows The rows to copy.
+   */
+  public static <E extends EntityDefinition> TableData<E> copyRows(TableData<E> sourceTableData,
+      List<DataRow> rows) {
     TableData<E> copy = copyMeta(sourceTableData);
-    for (DataRow row : sourceTableData.rows()) {
+    for (DataRow row : rows) {
       DataRow newRow = copy.addRow();
       for (Property<?> prop : sourceTableData.properties()) {
         newRow.setObject(prop, row.get(prop));

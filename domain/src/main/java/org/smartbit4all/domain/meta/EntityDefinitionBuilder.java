@@ -60,7 +60,7 @@ public class EntityDefinitionBuilder {
    * 
    * @return The result of the build.
    */
-  public EntityDefinition entityDefinition() {
+  public EntityDefinition build() {
     instance.finishSetup();
     return instance;
   }

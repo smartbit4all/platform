@@ -179,7 +179,7 @@ public class EntityManagerTest {
   void testGenericEntityDefinition() {
     EntityDefinition myDef1 =
         EntityDefinitionBuilder.of(ctx).name("MyDef1").domain("org.smartbit4all.domain.security")
-            .ownedProperty("prop1", String.class).entityDefinition();
+            .ownedProperty("prop1", String.class).build();
     Property<String> property = (Property<String>) myDef1.getProperty("prop1");
     QueryInput queryInput = Crud.read(myDef1).selectAllProperties()
         .where(property.eq("apple")).getQuery();
@@ -200,7 +200,7 @@ public class EntityManagerTest {
 
     System.out.println(queryInput);
     // String propertyName = "primaryAddressRef.dontRefThisByRef";
-    // UserAccountDef userAccountDef = ctx.getBean(UserAccountDef.class);
+    // UserAccountDef userAccountDef = ctx.getBean(UserAccountDef.class);Ezt én
     //
     // assertNull(userAccountDef.getProperty(propertyName),
     // propertyName + " should NOT be defined at this point!");
