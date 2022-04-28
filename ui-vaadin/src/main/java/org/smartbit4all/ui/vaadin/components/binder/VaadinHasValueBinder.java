@@ -127,7 +127,9 @@ public class VaadinHasValueBinder<WIDGET, DATA> extends AbstractBinder {
       }
       field.setValue(field.getEmptyValue());
     } else {
-      field.setValue(newValue);
+      if (!newValue.equals(field.getValue())) {
+        field.setValue(newValue);
+      }
     }
   }
 
