@@ -88,6 +88,25 @@ public class DomainServiceConfig extends SB4Configuration {
   }
 
   @Bean
+  public Converter<String, Double> string2DoubleConverter() {
+    return new ConverterImpl<>(Double.class, Double::valueOf, String.class,
+        (Double d) -> d.toString());
+  }
+
+  @Bean
+  public Converter<Double, String> double2StringConverter() {
+    return new ConverterImpl<>(String.class,
+        (Double d) -> d.toString(), Double.class,
+        (String s) -> s == null ? null : Double.valueOf(s));
+  }
+
+  @Bean
+  public Converter<String, Integer> string2IntegerConverter() {
+    return new ConverterImpl<>(Integer.class, Integer::valueOf, String.class,
+        (Integer i) -> i.toString());
+  }
+
+  @Bean
   public Converter<Integer, String> integer2StringConverter() {
     return new ConverterImpl<>(String.class,
         (Integer l) -> l.toString(), Integer.class,

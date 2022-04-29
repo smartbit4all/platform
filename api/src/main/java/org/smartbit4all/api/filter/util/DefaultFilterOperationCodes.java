@@ -9,6 +9,7 @@ public interface DefaultFilterOperationCodes {
   String OPERATION_DATE_TIME_INTERVAL_CB = "date.time.interval.cb";
   String OPERATION_DATE_TIME_EQ = "date.time.eq";
   String OPERATION_NUMBER_EQ = "number.eq";
+  String OPERATION_DOUBLE_EQ = "double.eq";
   String OPERATION_TXT_EQ = "txt.eq";
   String OPERATION_TXT_LIKE = "txt.like";
   String OPERATION_MULTI_SEL = "multi.eq";

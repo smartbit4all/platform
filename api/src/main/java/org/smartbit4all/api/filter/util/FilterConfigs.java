@@ -256,9 +256,14 @@ public abstract class FilterConfigs {
       String operationCodeValue = DefaultFilterOperationCodes.OPERATION_TXT_LIKE;
       return addOperationSimple(property, operationCodeValue);
     }
-    
+
     public ConfigFieldBuilder addOperationNumberEquals(Property<?> property) {
       String operationCodeValue = DefaultFilterOperationCodes.OPERATION_NUMBER_EQ;
+      return addOperationSimple(property, operationCodeValue);
+    }
+
+    public ConfigFieldBuilder addOperationDoubleEquals(Property<?> property) {
+      String operationCodeValue = DefaultFilterOperationCodes.OPERATION_DOUBLE_EQ;
       return addOperationSimple(property, operationCodeValue);
     }
 
@@ -273,13 +278,13 @@ public abstract class FilterConfigs {
       String operationCodeValue = DefaultFilterOperationCodes.OPERATION_DET_TXT_LIKE;
       return addOperationDetail(propertyOfFilter, masterEntity, fkProperty, operationCodeValue);
     }
-   
+
     public ConfigFieldBuilder addOperationDetailTextEquals(Property<?> propertyOfFilter,
         EntityDefinition masterEntity, Property<?> fkProperty) {
       String operationCodeValue = DefaultFilterOperationCodes.OPERATION_DET_TXT_EQ;
       return addOperationDetail(propertyOfFilter, masterEntity, fkProperty, operationCodeValue);
     }
-    
+
     private ConfigOperationBuilder createOperationBuilder(String operationCodeValue,
         Property<?> property, String possibleValueCode) {
       ConfigOperationBuilder configOperationBuilder = new ConfigOperationBuilder(
@@ -300,7 +305,7 @@ public abstract class FilterConfigs {
         String possibleValueCode) {
       ConfigOperationBuilder operationBuilder = new ConfigOperationBuilder(
           UUID.randomUUID().toString(), operationCodeValue, this);
-    
+
       String operationCodeWithoutDet = getDetailOperationCode(operationCodeValue);
       if (possibleValueCode != null) {
         URI possibleValuesUri = ValueUris.createPossibleValueUri(possibleValueCode, null);
@@ -308,14 +313,14 @@ public abstract class FilterConfigs {
       }
       operationBuilder.filterView(FILTEROP_PREFIX + operationCodeWithoutDet);
       operationBuilder.labelCode(operationCodeWithoutDet);
-    
+
       URI propertyUri1 = propertyOfFilter == null ? null : propertyOfFilter.getUri();
       URI propertyUri2 = masterEntity == null ? null : masterEntity.getUri();
       URI propertyUri3 = fkEntity == null ? null : fkEntity.getUri();
       operationBuilder.propertyUri1(propertyUri1);
       operationBuilder.propertyUri2(propertyUri2);
       operationBuilder.propertyUri3(propertyUri3);
-    
+
       return operationBuilder;
     }
 
@@ -369,7 +374,7 @@ public abstract class FilterConfigs {
     }
 
     public ConfigOperationBuilder filterView(String filterView) {
-      if(filterView != null && !filterView.startsWith(FILTEROP_PREFIX)) {
+      if (filterView != null && !filterView.startsWith(FILTEROP_PREFIX)) {
         filterView = FILTEROP_PREFIX + filterView;
       }
       this.filterView = filterView;

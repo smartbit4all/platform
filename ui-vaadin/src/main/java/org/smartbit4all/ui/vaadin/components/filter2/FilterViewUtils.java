@@ -20,6 +20,7 @@ import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.textfield.IntegerField;
+import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.shared.Registration;
 
 class FilterViewUtils {
@@ -79,6 +80,14 @@ class FilterViewUtils {
       ObservableObject filterField, String path, int number) {
     VaadinHasValueBinder<Integer, String> binder = VaadinBinders.bindValue(integerField,
         filterField, String.class, new Integer2StringConverter(), path, "value" + number);
+    return binder;
+  }
+
+  public static VaadinHasValueBinder<Double, String> bindNumber(
+      NumberField numberField,
+      ObservableObject filterField, String path, int number) {
+    VaadinHasValueBinder<Double, String> binder = VaadinBinders.bindValue(numberField,
+        filterField, String.class, new Double2StringConverter(), path, "value" + number);
     return binder;
   }
 

@@ -76,6 +76,8 @@ public class FilterService {
         this::createDateTimeEqClause);
     expressionFactoryByOperatationCodes.put(DefaultFilterOperationCodes.OPERATION_NUMBER_EQ,
         this::createTxtEqClause);
+    expressionFactoryByOperatationCodes.put(DefaultFilterOperationCodes.OPERATION_DOUBLE_EQ,
+        this::createTxtEqClause);
     expressionFactoryByOperatationCodes.put(DefaultFilterOperationCodes.OPERATION_TXT_EQ,
         this::createTxtEqClause);
     expressionFactoryByOperatationCodes.put(DefaultFilterOperationCodes.OPERATION_TXT_LIKE,

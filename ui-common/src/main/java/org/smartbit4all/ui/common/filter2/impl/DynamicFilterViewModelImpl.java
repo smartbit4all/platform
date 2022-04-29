@@ -422,6 +422,12 @@ public class DynamicFilterViewModelImpl extends ObjectEditingImpl
       result = checkType(DateConverter.PREFIX_DATETIME, value);
     }
     if (result == null) {
+      result = checkType("java.lang.Integer;", value);
+    }
+    if (result == null) {
+      result = checkType("java.lang.Double;", value);
+    }
+    if (result == null) {
       result = new FilterOperandValue()
           .type(String.class.getName())
           .value(value);

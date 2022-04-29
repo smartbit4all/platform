@@ -16,6 +16,7 @@ public class FilterOperationFactory {
     operationViewFactoriesByCode.put("filterop.txt.eq", FilterOperationTxtEqualsView::new);
     operationViewFactoriesByCode.put("filterop.txt.like", FilterOperationTxtLikeView::new);
     operationViewFactoriesByCode.put("filterop.number.eq", FilterOperationNumberEqualsView::new);
+    operationViewFactoriesByCode.put("filterop.double.eq", FilterOperationDoubleEqualsView::new);
     operationViewFactoriesByCode.put("filterop.multi.eq", FilterOperationMultiSelectView::new);
     operationViewFactoriesByCode.put("filterop.combo.eq", FilterOperationComboBoxView::new);
     operationViewFactoriesByCode.put(
