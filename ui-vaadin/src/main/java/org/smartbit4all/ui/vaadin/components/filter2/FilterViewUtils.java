@@ -8,8 +8,8 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import org.smartbit4all.api.filter.DateConverter;
 import org.smartbit4all.api.filter.TimeFilterOption;
+import org.smartbit4all.api.filter.util.FilterConfigs;
 import org.smartbit4all.core.object.ObservableObject;
 import org.smartbit4all.core.utility.PathUtility;
 import org.smartbit4all.ui.vaadin.components.binder.VaadinBinders;
@@ -172,20 +172,20 @@ class FilterViewUtils {
       if (isDateTime) {
         if (startDate != null) {
           String start = LocalDateTime.of(startDate, startTime).toString();
-          filterField.setValue(valuePath + "1", DateConverter.PREFIX_DATETIME + start);
+          filterField.setValue(valuePath + "1", FilterConfigs.PREFIX_DATETIME + start);
         }
         if (endDate != null) {
           String end = LocalDateTime.of(endDate, endTime).toString();
-          filterField.setValue(valuePath + "2", DateConverter.PREFIX_DATETIME + end);
+          filterField.setValue(valuePath + "2", FilterConfigs.PREFIX_DATETIME + end);
         }
       } else {
         if (startDate != null) {
           String start = startDate.toString();
-          filterField.setValue(valuePath + "1", DateConverter.PREFIX_DATE + start);
+          filterField.setValue(valuePath + "1", FilterConfigs.PREFIX_DATE + start);
         }
         if (endDate != null) {
           String end = endDate.toString();
-          filterField.setValue(valuePath + "2", DateConverter.PREFIX_DATE + end);
+          filterField.setValue(valuePath + "2", FilterConfigs.PREFIX_DATE + end);
         }
       }
     });

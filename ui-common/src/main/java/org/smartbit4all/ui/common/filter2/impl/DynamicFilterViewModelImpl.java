@@ -1,13 +1,11 @@
 package org.smartbit4all.ui.common.filter2.impl;
 
-import static org.smartbit4all.api.filter.DateConverter.PREFIX_STRING;
 import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import org.smartbit4all.api.filter.DateConverter;
 import org.smartbit4all.api.filter.FilterApi;
 import org.smartbit4all.api.filter.bean.FilterConfig;
 import org.smartbit4all.api.filter.bean.FilterConfigMode;
@@ -18,6 +16,7 @@ import org.smartbit4all.api.filter.bean.FilterGroupMeta;
 import org.smartbit4all.api.filter.bean.FilterGroupType;
 import org.smartbit4all.api.filter.bean.FilterOperandValue;
 import org.smartbit4all.api.filter.bean.FilterOperation;
+import org.smartbit4all.api.filter.util.FilterConfigs;
 import org.smartbit4all.api.value.ValueApi;
 import org.smartbit4all.api.value.bean.Value;
 import org.smartbit4all.core.object.ApiObjectRef;
@@ -414,18 +413,18 @@ public class DynamicFilterViewModelImpl extends ObjectEditingImpl
     if (Strings.isNullOrEmpty(value)) {
       return null;
     }
-    FilterOperandValue result = checkType(PREFIX_STRING, value);
+    FilterOperandValue result = checkType(FilterConfigs.PREFIX_STRING, value);
     if (result == null) {
-      result = checkType(DateConverter.PREFIX_DATE, value);
+      result = checkType(FilterConfigs.PREFIX_DATE, value);
     }
     if (result == null) {
-      result = checkType(DateConverter.PREFIX_DATETIME, value);
+      result = checkType(FilterConfigs.PREFIX_DATETIME, value);
     }
     if (result == null) {
-      result = checkType("java.lang.Integer;", value);
+      result = checkType(FilterConfigs.PREFIX_INTEGER, value);
     }
     if (result == null) {
-      result = checkType("java.lang.Double;", value);
+      result = checkType(FilterConfigs.PREFIX_DOUBLE, value);
     }
     if (result == null) {
       result = new FilterOperandValue()

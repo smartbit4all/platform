@@ -15,6 +15,12 @@ import org.smartbit4all.domain.meta.Property;
 
 public abstract class FilterConfigs {
 
+  public static final String PREFIX_STRING = "java.lang.String;";
+  public static final String PREFIX_DATE = "java.time.LocalDate;";
+  public static final String PREFIX_DATETIME = "java.time.LocalDateTime;";
+  public static final String PREFIX_INTEGER = "java.lang.Integer;";
+  public static final String PREFIX_DOUBLE = "java.lang.Double;";
+
   private static final String FILTEROP_PREFIX = "filterop.";
 
   private FilterConfigs() {
