@@ -405,38 +405,88 @@ public class OrgApiStorageImpl implements OrgApi {
   @Override
   public void addUserToGroup(URI userUri, URI groupUri) {
 
-    UsersOfGroup usersOfGroup = getUsersOfGroupObject(groupUri);
-    usersOfGroup.setUri(generateUri());
-    usersOfGroup.setGroupUri(groupUri);
-
-    List<URI> users = usersOfGroup.getUsers();
-    if (!users.contains(userUri)) {
-      users.add(userUri);
+    boolean anyChange1 = addToUsersOfGroupCollection(userUri, groupUri);
+    boolean anyChange2 = addToGroupsOfUserCollection(userUri, groupUri);
+    if (anyChange1 || anyChange2) {
+      invalidateCache();
     }
+  }
 
-    StorageObject<UsersOfGroupCollection> usersOfGroupCollectionStorage =
+  /**
+   * Creates or update a UsersOfGroup entry in the globally save UsersOfGroupCollection object,
+   * indicating that user is part of the group.
+   * 
+   * @param userUri
+   * @param groupUri
+   * @return any change happened
+   */
+  private boolean addToUsersOfGroupCollection(URI userUri, URI groupUri) {
+    StorageObject<UsersOfGroupCollection> usersOfGRoupCollectionSO =
         loadSettingsReference(USERS_OF_GROUP_LIST_REFERENCE, UsersOfGroupCollection.class);
-    UsersOfGroupCollection usersOfGroupCollection = usersOfGroupCollectionStorage.getObject();
+    UsersOfGroupCollection usersOfGroupCollection = usersOfGRoupCollectionSO.getObject();
 
-    usersOfGroupCollection.getUsersOfGroupCollection().add(usersOfGroup);
-    storage.get().save(usersOfGroupCollectionStorage);
+    List<UsersOfGroup> usersOfGroupList = usersOfGroupCollection.getUsersOfGroupCollection();
+    UsersOfGroup usersOfGroup = usersOfGroupList.stream()
+        .filter(u -> u.getGroupUri().equals(groupUri))
+        .findFirst()
+        .orElse(null);
 
-    GroupsOfUser groupsOfUser = getGroupsOfUserObject(userUri);
-    groupsOfUser.setUri(generateUri());
-    groupsOfUser.setUserUri(userUri);
-
-    List<URI> groups = groupsOfUser.getGroups();
-    if (!groups.contains(groupUri)) {
-      groups.add(groupUri);
+    boolean anyChange = false;
+    if (usersOfGroup == null) {
+      // group wasn't in collection, create and save new entry
+      usersOfGroup = new UsersOfGroup()
+          .uri(generateUri())
+          .groupUri(groupUri)
+          .addUsersItem(userUri);
+      usersOfGroupCollection.addUsersOfGroupCollectionItem(usersOfGroup);
+      anyChange = true;
+    } else if (!usersOfGroup.getUsers().contains(userUri)) {
+      // user wasn't in group's list, update and save entry
+      usersOfGroup.addUsersItem(userUri);
+      anyChange = true;
     }
+    if (anyChange) {
+      storage.get().save(usersOfGRoupCollectionSO);
+    }
+    return anyChange;
+  }
 
-    StorageObject<GroupsOfUserCollection> groupsOfUserCollectionStorage =
+  /**
+   * Creates or update a GroupsOfUser entry in the globally save GroupsOfUserCollection object,
+   * indicating that user is part of the group.
+   * 
+   * @param userUri
+   * @param groupUri
+   * @return any change happened
+   */
+  private boolean addToGroupsOfUserCollection(URI userUri, URI groupUri) {
+    StorageObject<GroupsOfUserCollection> groupsOfUserCollectionSO =
         loadSettingsReference(GROUPS_OF_USER_LIST_REFERENCE, GroupsOfUserCollection.class);
-    GroupsOfUserCollection groupsOfUserCollection = groupsOfUserCollectionStorage.getObject();
-    groupsOfUserCollection.getGroupsOfUserCollection().add(groupsOfUser);
-    storage.get().save(groupsOfUserCollectionStorage);
+    GroupsOfUserCollection groupsOfUserCollection = groupsOfUserCollectionSO.getObject();
+    List<GroupsOfUser> groupsOfUserList = groupsOfUserCollection.getGroupsOfUserCollection();
+    GroupsOfUser groupsOfUser = groupsOfUserList.stream()
+        .filter(u -> u.getUserUri().equals(userUri))
+        .findFirst()
+        .orElse(null);
 
-    invalidateCache();
+    boolean anyChange = false;
+    if (groupsOfUser == null) {
+      // user wasn't in collection, create and save new entry
+      groupsOfUser = new GroupsOfUser()
+          .uri(generateUri())
+          .userUri(userUri)
+          .addGroupsItem(groupUri);
+      groupsOfUserCollection.addGroupsOfUserCollectionItem(groupsOfUser);
+      anyChange = true;
+    } else if (!groupsOfUser.getGroups().contains(groupUri)) {
+      // group wasn't in user's list, update and save entry
+      groupsOfUser.addGroupsItem(groupUri);
+      anyChange = true;
+    }
+    if (anyChange) {
+      storage.get().save(groupsOfUserCollectionSO);
+    }
+    return anyChange;
   }
 
   private GroupsOfUser getGroupsOfUserObject(URI userUri) {
