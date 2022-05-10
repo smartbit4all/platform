@@ -98,17 +98,27 @@ public class UserSessionApiSecImpl implements UserSessionApi {
   }
 
   @Override
+  public Session startSession(User user, String token) {
+    Session session = startSession(user);
+    storeSession(token, session);
+    return session;
+  }
+
+  @Override
   public void storeCurrentSession(String token) {
-    Session currentSession = currentSession();
-    if (currentSession != null) {
+    storeSession(token, currentSession());
+  }
+
+  private void storeSession(String token, Session session) {
+    if (session != null) {
       if (savedSessions.containsKey(token)) {
-        String originalToken = (String) currentSession.getParameter(SESSION_TOKEN);
+        String originalToken = (String) session.getParameter(SESSION_TOKEN);
         log.warn(
             "storeCurrentSession will override an existing Session with token {} Original token: {}",
             token, originalToken);
       }
-      currentSession.setParameter(SESSION_TOKEN, token);
-      savedSessions.put(token, currentSession);
+      session.setParameter(SESSION_TOKEN, token);
+      savedSessions.put(token, session);
     } else {
       log.warn("storeCurrentSession called when session is not present");
     }

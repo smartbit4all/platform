@@ -15,6 +15,10 @@ public interface UserSessionApi {
     // "UserSessionApi session hadling not implemented in " + this.getClass().getName() + "!");
   }
 
+  default Session startSession(User user, String token) {
+    return startSession(user);
+  }
+
   default Session currentSession() {
     // TODO quick fix
     return null;
