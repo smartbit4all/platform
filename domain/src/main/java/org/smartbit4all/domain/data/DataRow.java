@@ -43,7 +43,7 @@ import org.smartbit4all.domain.meta.Property;
  * @author Peter Boros
  *
  */
-public final class DataRow {
+public class DataRow {
 
   /**
    * Compare the two row by their position in ascending order.
@@ -99,6 +99,11 @@ public final class DataRow {
    * of this range then the given row is currently invalid.
    */
   private int position;
+
+  /**
+   * This constructor is only for cglib enhancer.
+   */
+  public DataRow() {}
 
   /**
    * Creates a new data row at the given position with the data index.
