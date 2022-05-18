@@ -19,6 +19,11 @@ public class RichTextEditorWithLabel extends FlexLayout {
     this.label.setText(text);
   }
 
+  public void setReadOnly(boolean readonly) {
+    this.editor.setReadOnly(true);
+    this.getElement().setAttribute("readonly", readonly);
+  }
+
   public RichTextEditorWithLabel(String text) {
     this();
     label.setText(text);

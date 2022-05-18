@@ -19,6 +19,7 @@
 	max-height: 10em;
 }
 
-.rich-text-editor-with-label:hover > label {
+.rich-text-editor-with-label[readonly="false"]:hover > label,
+.rich-text-editor-with-label:not([readonly]):hover > label {
   color: var(--lumo-body-text-color);
 }
