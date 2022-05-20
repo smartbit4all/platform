@@ -76,7 +76,7 @@
 
 .sb4-tree-node-item {
 	display: flex;
-	width: 100%;
+	width: max-content;
 	border-bottom-width: 1px;
     border-bottom-style: solid;
 	border-color: var(--lumo-contrast-10pct);
