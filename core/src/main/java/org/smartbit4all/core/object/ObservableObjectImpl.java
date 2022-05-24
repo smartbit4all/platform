@@ -129,7 +129,7 @@ public final class ObservableObjectImpl implements ObservableObject {
     ObjectPropertyPath path = ObservableObjectHelper.processPathParameter(propertyPath);
     Disposable disposable = propertyChangePublisher
         .filter(change -> ObservableObjectHelper.pathEquals(change, path))
-        .subscribe(onPropertyChange);
+        .subscribe(onPropertyChange, this::onError);
     if (ref != null) {
       DomainObjectRef pathRef = ref.getValueRefByPath(path.path);
       if (pathRef != null) {
@@ -158,7 +158,7 @@ public final class ObservableObjectImpl implements ObservableObject {
     ObjectPropertyPath path = ObservableObjectHelper.processPathParameter(referencePath);
     return referenceChangePublisher
         .filter(change -> ObservableObjectHelper.pathEquals(change, path))
-        .subscribe(onReferenceChange);
+        .subscribe(onReferenceChange, this::onError);
   }
 
   @Override
@@ -175,7 +175,7 @@ public final class ObservableObjectImpl implements ObservableObject {
     ObjectPropertyPath path = ObservableObjectHelper.processPathParameter(referencePath);
     Disposable disposable = referencedObjectChangePublisher
         .filter(change -> ObservableObjectHelper.pathEquals(change, path))
-        .subscribe(onReferencedObjectChange);
+        .subscribe(onReferencedObjectChange, this::onError);
     if (ref != null) {
       DomainObjectRef pathRef = ref.getValueRefByPath(path.path);
       if (pathRef != null) {
@@ -212,7 +212,7 @@ public final class ObservableObjectImpl implements ObservableObject {
     ObjectPropertyPath path = ObservableObjectHelper.processPathParameter(collectionPath);
     return collectionChangePublisher
         .filter(change -> ObservableObjectHelper.pathEquals(change, path))
-        .subscribe(onCollectionChange);
+        .subscribe(onCollectionChange, this::onError);
   }
 
   @Override
@@ -229,7 +229,7 @@ public final class ObservableObjectImpl implements ObservableObject {
     ObjectPropertyPath path = ObservableObjectHelper.processPathParameter(collectionPath);
     Disposable disposable = collectionObjectChangePublisher
         .filter(change -> ObservableObjectHelper.pathEquals(change, path))
-        .subscribe(onCollectionObjectChange);
+        .subscribe(onCollectionObjectChange, this::onError);
     if (ref != null) {
       DomainObjectRef pathRef = ref.getValueRefByPath(path.path);
       if (pathRef != null) {
@@ -295,6 +295,10 @@ public final class ObservableObjectImpl implements ObservableObject {
     }
     this.parent = parent;
     this.parentPath = path;
+  }
+
+  private void onError(Throwable tr) {
+    log.debug("Error when handling onNext", tr);
   }
 
 }
