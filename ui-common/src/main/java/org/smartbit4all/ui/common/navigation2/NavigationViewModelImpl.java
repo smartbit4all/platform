@@ -748,7 +748,7 @@ public class NavigationViewModelImpl extends ViewModelImpl<TreeModel>
   public static NavigationViewModel createAsChild(ViewModel parent, String path,
       UINavigationApi uiNavigationApi, Navigation navigation, ViewTargetEnhancer enhancer) {
     NavigationViewModel result =
-        uiNavigationApi.createAndAddChildViewModel(parent, path, NavigationViewModel.class);
+        uiNavigationApi.createAndAddChildViewModel(parent, path, NavigationViewModel.class, null);
     Object impl = ReflectionUtility.getProxyTarget(result);
     if (impl instanceof NavigationViewModelImpl) {
       NavigationViewModelImpl viewModelImpl = (NavigationViewModelImpl) impl;

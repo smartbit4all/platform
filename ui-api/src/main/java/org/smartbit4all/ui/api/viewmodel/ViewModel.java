@@ -27,7 +27,7 @@ public interface ViewModel extends ObjectEditing {
 
   void onCloseWindow();
 
-  void addChild(ViewModel child, String path);
+  void addChild(ViewModel child, String path, NavigationTarget navigationTarget);
 
   <V extends ViewModel> V getChild(String path);
 

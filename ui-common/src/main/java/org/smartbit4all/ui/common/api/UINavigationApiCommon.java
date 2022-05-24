@@ -255,15 +255,18 @@ public class UINavigationApiCommon implements UINavigationApi {
 
   @Override
   public <T extends ViewModel> T createAndAddChildViewModel(ViewModel parent, String path,
-      Class<T> clazz) {
+      Class<T> clazz, NavigationTarget navigationTarget) {
     NavigationTarget oldTarget = ObjectEditing.currentNavigationTarget.get();
     T viewModel;
     try {
-      NavigationTarget navigationTarget = new NavigationTarget()
-          .uuid(UUID.randomUUID());
-      ObjectEditing.currentNavigationTarget.set(navigationTarget);
+      if (navigationTarget != null && navigationTarget.getUuid() == null) {
+        navigationTarget.setUuid(UUID.randomUUID());
+      }
+      NavigationTarget t = navigationTarget != null ? navigationTarget
+          : new NavigationTarget().uuid(UUID.randomUUID());
+      ObjectEditing.currentNavigationTarget.set(t);
       viewModel = context.getBean(clazz);
-      parent.addChild(viewModel, path);
+      parent.addChild(viewModel, path, navigationTarget);
     } finally {
       ObjectEditing.currentNavigationTarget.set(oldTarget);
     }

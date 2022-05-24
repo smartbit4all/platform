@@ -101,8 +101,8 @@ public class UINavigationApiHeadless extends UINavigationApiCommon {
 
   @Override
   public <T extends ViewModel> T createAndAddChildViewModel(ViewModel parent, String path,
-      Class<T> clazz) {
-    T viewModel = super.createAndAddChildViewModel(parent, path, clazz);
+      Class<T> clazz, NavigationTarget navigationTarget) {
+    T viewModel = super.createAndAddChildViewModel(parent, path, clazz, navigationTarget);
     putViewModelByUuidInternal(viewModel.getUuid(), viewModel);
     return viewModel;
   }

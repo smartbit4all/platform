@@ -42,7 +42,8 @@ public interface UINavigationApi {
 
   NavigationTarget getNavigationTargetByUuid(UUID navigationTargetUuid);
 
-  <T extends ViewModel> T createAndAddChildViewModel(ViewModel parent, String path, Class<T> clazz);
+  <T extends ViewModel> T createAndAddChildViewModel(ViewModel parent, String path, Class<T> clazz,
+      NavigationTarget navigationTarget);
 
   ViewModel getViewModelByUuid(UUID navigationTargetUuid);
 

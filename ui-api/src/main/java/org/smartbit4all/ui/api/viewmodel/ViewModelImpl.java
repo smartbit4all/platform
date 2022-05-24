@@ -38,6 +38,8 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
 
   protected final ObservableObject data;
 
+  protected boolean initializedByNavigationTarget;
+
   protected T model;
 
   private final Class<T> modelClazz;
@@ -67,12 +69,12 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
   }
 
   @Override
-  public void addChild(ViewModel child, String path) {
+  public void addChild(ViewModel child, String path, NavigationTarget navigationTarget) {
     // ???
     child = ReflectionUtility.getProxyTarget(child);
     if (child instanceof ViewModelImpl) {
       ViewModelImpl<?> childVM = (ViewModelImpl<?>) child;
-      childVM.initByParentRef(this, path);
+      childVM.initByParentRef(this, path, navigationTarget);
       childrenByPath.put(path, childVM);
     }
   }
@@ -112,15 +114,17 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
 
   @Override
   public void initByNavigationTarget(NavigationTarget navigationTarget) {
+    this.path = "";
+    this.parent = null;
     this.navigationTarget = navigationTarget;
     this.navigationTargetUUID = navigationTarget == null ? null : navigationTarget.getUuid();
+    initializedByNavigationTarget = true;
     if (ref != null) {
       onCloseWindow();
       // throw new IllegalArgumentException("ref already initialized in ViewModel when
       // initByUUID!");
     }
     T loadedObject = load(navigationTarget);
-    this.path = "";
     if (loadedObject instanceof MapBasedObjectData) {
       ref = MapBasedObject.of((MapBasedObjectData) loadedObject);
     } else {
@@ -134,14 +138,24 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
   /**
    * Used when a child view model is created.
    */
-  protected void initByParentRef(ViewModelImpl<?> parent, String path) {
+  protected void initByParentRef(ViewModelImpl<?> parent, String path,
+      NavigationTarget navigationTarget) {
     if (ref != null) {
       throw new IllegalArgumentException("ref already initialized in ViewModel when initByRef!");
     }
     this.path = path;
     this.parent = parent;
     ref = parent.ref.getValueRefByPath(path);
-    ref.reevaluateChanges();
+    if (navigationTarget != null) {
+      this.navigationTarget = navigationTarget;
+      this.navigationTargetUUID = navigationTarget == null ? null : navigationTarget.getUuid();
+      initializedByNavigationTarget = true;
+      T loadedObject = load(navigationTarget);
+      ref.setObject(loadedObject);
+    } else {
+      initializedByNavigationTarget = false;
+      ref.reevaluateChanges();
+    }
     initCommon();
   }
 
@@ -177,12 +191,14 @@ public abstract class ViewModelImpl<T> extends ObjectEditingImpl implements View
       throw new IllegalArgumentException("ref not initialized in ViewModel when updating!");
     }
     if (Objects.equals(getUri(), updatedObjectUri)) {
-      if (parent != null && parent.getUri() != null) {
-        parent.updateModel(parent.getUri());
-      } else {
+      if (initializedByNavigationTarget) {
         T loadedObject = load(navigationTarget);
         ref.setObject(loadedObject);
         notifyAllListeners();
+      } else if (parent != null && parent.getUri() != null) {
+        parent.updateModel(parent.getUri());
+      } else {
+        log.error("No update performed: neither navigationTarget nor parent with uri present.");
       }
     }
   }
