@@ -57,13 +57,13 @@ public class SB4StarterUI extends View<SB4StarterViewModel> {
     Label lblState = new Label();
     VaadinBinders.bindLabel(lblState, viewModel.data(), SB4StarterModel.STATE);
 
-    btnAccept = createButton("Elfogad", SB4StarterViewModel.ACCEPT);
+    btnAccept = createButton("Módosítás elfogadása", SB4StarterViewModel.ACCEPT);
     btnAccept.setEnabled(false);
 
-    Button btnClose = createButton("Elvet", SB4StarterViewModel.DECLINE);
+    Button btnClose = createButton("Módosítás elvetése", SB4StarterViewModel.DECLINE);
 
     downloadAnchor = new Anchor();
-    Button btnDownload = createButton("Letölt", SB4StarterViewModel.DOWNLOAD);
+    Button btnDownload = createButton("Dokumentum letöltése", SB4StarterViewModel.DOWNLOAD);
     btnDownload.addClickListener(e -> btnDownload.setEnabled(false));
     downloadAnchor.add(btnDownload);
 
