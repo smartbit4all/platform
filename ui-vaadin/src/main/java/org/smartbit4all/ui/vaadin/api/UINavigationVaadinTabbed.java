@@ -154,21 +154,23 @@ public class UINavigationVaadinTabbed extends UINavigationVaadinCommon {
     String iconKey = calculateIcon(navigationTarget);
     Icon icon = ObjectUtils.isEmpty(iconKey) ? null : new Icon(iconKey);
 
-    Tab tab = createTab(title, icon);
+    Tab tab = createTab(title, icon, navigationTarget.getHideCloseButton());
 
     return tab;
   }
 
-  protected Tab createTab(String title, Icon icon) {
+  protected Tab createTab(String title, Icon icon, Boolean hideCloseButton) {
     Tab tab = new Tab(title);
 
     if (icon != null) {
       tab.add(icon);
     }
 
-    Button closeButton = new Button(VaadinIcon.CLOSE_SMALL.create(), event -> closeTab(tab));
-    closeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
-    tab.add(closeButton);
+    if (!hideCloseButton) {
+      Button closeButton = new Button(VaadinIcon.CLOSE_SMALL.create(), event -> closeTab(tab));
+      closeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
+      tab.add(closeButton);
+    }
     return tab;
   }
 

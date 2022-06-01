@@ -292,6 +292,9 @@ components:
         fullSize:
           type: boolean
           default: false
+        hideCloseButton:
+          type: boolean
+          default: false
         title:
           type: string
         icon:
