@@ -9,7 +9,7 @@ trigger:
 schedules:
 - cron: "0 2 * * *"
   displayName: Daily midnight build
-  always: true
+  always: 'true'
   branches:
     include:
       - develop

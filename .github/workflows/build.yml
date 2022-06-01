@@ -37,4 +37,4 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           cd platform
-          ./gradlew build sonarqube --info
+          ./gradlew clean test sonarqube --info
