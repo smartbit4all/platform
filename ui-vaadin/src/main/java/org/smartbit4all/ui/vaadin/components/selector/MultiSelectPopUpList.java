@@ -576,4 +576,8 @@ public class MultiSelectPopUpList<T> extends CustomField<List<T>> implements Has
   public void setSimpleSelectAllPropertiesText(boolean simpleSelectAllPropertiesText) {
     this.simpleSelectAllPropertiesText = simpleSelectAllPropertiesText;
   }
+
+  public void setDialogMinWidth(String ertek) {
+    dialog.setMinWidth(ertek);
+  }
 }
