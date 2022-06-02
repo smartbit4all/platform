@@ -71,6 +71,7 @@ public class SQLCreateExecution<E extends EntityDefinition> {
 
   public SQLCreateExecution(JdbcTemplate jdbcTemplate, CreateInput<E> input) {
     this.jdbcTemplate = jdbcTemplate;
+    this.input = input;
   }
 
   // private final class PreparedStatementSetter
