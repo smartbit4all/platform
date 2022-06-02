@@ -76,14 +76,6 @@ class EntityDefinitionInstance implements EntityDefinition {
   protected String domain;
 
   /**
-   * The {@link EntityService} related to the given {@link EntityDefinition}.
-   * 
-   * TODO It must be removed when the QueryApi will replce the current create, update, delete
-   * functionality.
-   */
-  protected EntityService<?> entityService;
-
-  /**
    * If this entity is stored in a database, then it is stored in this table.
    */
   protected TableDefinition tableDefinition;
@@ -276,11 +268,6 @@ class EntityDefinitionInstance implements EntityDefinition {
     return JoinPath.EMPTY;
   }
 
-  @Override
-  public EntityService<?> services() {
-    return entityService;
-  }
-
   static class PropertyFunctionMapper {
 
     private Map<Property<?>, List<Property<?>>> functionPropertiesByBasePropery = new HashMap<>();
@@ -317,10 +304,6 @@ class EntityDefinitionInstance implements EntityDefinition {
   @Override
   public TableDefinition tableDefinition() {
     return tableDefinition;
-  }
-
-  final void setEntityService(EntityService<?> entityService) {
-    this.entityService = entityService;
   }
 
   void registerProperty(Property<?> property) {

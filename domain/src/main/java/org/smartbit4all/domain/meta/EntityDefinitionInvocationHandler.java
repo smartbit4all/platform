@@ -86,10 +86,6 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
 
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-    if ("services".equals(method.getName())) {
-      initEntityService(method);
-      return services();
-    }
     if (method.getDeclaringClass().isAssignableFrom(EntityDefinition.class)) {
       return method.invoke(this, args);
     }
@@ -357,18 +353,6 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
         String regerredPropertyName = annot.property();
         PropertyRef<?> property = createRefPropertyByPath(propertyName, regerredPropertyName, path);
         registerProperty(method, property);
-      }
-    }
-  }
-
-  private void initEntityService(Method method) {
-    if (entityService == null) {
-      Class<?> serviceClass = method.getReturnType();
-      if (serviceClass.equals(EntityService.class)) {
-        // default implementation
-        entityService = (EntityService<?>) ctx.getBean("defaultEntityService", this);
-      } else {
-        entityService = (EntityService<?>) ctx.getBean(serviceClass);
       }
     }
   }

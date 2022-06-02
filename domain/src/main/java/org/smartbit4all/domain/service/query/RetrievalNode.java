@@ -62,27 +62,27 @@ public class RetrievalNode {
    */
   private int queryCount = 0;
 
-  final TableData<?> getResult() {
+  public final TableData<?> getResult() {
     return result;
   }
 
-  final void setResult(TableData<?> result) {
+  public final void setResult(TableData<?> result) {
     this.result = result;
   }
 
-  final RetrievalRequestNode getRequestNode() {
+  public final RetrievalRequestNode getRequestNode() {
     return requestNode;
   }
 
-  final void setRequestNode(RetrievalRequestNode requestNode) {
+  public final void setRequestNode(RetrievalRequestNode requestNode) {
     this.requestNode = requestNode;
   }
 
-  final int getQueryCount() {
+  public final int getQueryCount() {
     return queryCount;
   }
 
-  final void incrementQueryCount() {
+  public final void incrementQueryCount() {
     this.queryCount++;
   }
 
@@ -92,15 +92,15 @@ public class RetrievalNode {
    * @return True if there was no query on the node but we have a not empty
    *         {@link RetrievalRequestNode#getStartCondition()}. The result is also true
    */
-  final boolean readyForNextRound() {
+  public final boolean readyForNextRound() {
     return (queryCount == 0 && requestNode.getStartCondition() != null) || !newRows.isEmpty();
   }
 
-  final List<RetrievalEdge> getNavigableEdges() {
+  public final List<RetrievalEdge> getNavigableEdges() {
     return navigableEdges;
   }
 
-  final List<DataRow> getNewRows() {
+  public final List<DataRow> getNewRows() {
     return newRows;
   }
 

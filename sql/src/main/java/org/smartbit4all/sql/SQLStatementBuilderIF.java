@@ -22,7 +22,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.smartbit4all.core.SB4Service;
 import org.smartbit4all.core.utility.EnumSpecificValue;
 import org.smartbit4all.domain.meta.BooleanOperator;
 import org.smartbit4all.domain.meta.Expression2Operand;
@@ -42,7 +41,7 @@ import org.smartbit4all.domain.meta.PropertySqlComputed;
 import org.smartbit4all.domain.utility.SupportedDatabase;
 
 
-public interface SQLStatementBuilderIF extends SB4Service {
+public interface SQLStatementBuilderIF {
 
   /**
    * If we don't know the value of a non negative index then we can use this value instead to see

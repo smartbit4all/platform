@@ -14,12 +14,14 @@
  ******************************************************************************/
 package org.smartbit4all.domain.service.query;
 
+import org.smartbit4all.domain.service.CrudApi;
+
 /**
  * The retrieval edge is responsible for the relation between two {@link RetrievalNode}. It's used
  * as a register to manage and store the references among between the rows of the two related node.
  * The retrieval is started at the root nodes identified by the root conditions. But after the first
  * round the navigation is calculated by the navigable edges of the already fetched nodes. In every
- * round the {@link QueryApi} identifies the nodes to query. The input of the navigation is the
+ * round the {@link CrudApi} identifies the nodes to query. The input of the navigation is the
  * newly queried rows of the nodes. If a node has new rows then the navigable outgoing edges are
  * evaluated and defines the queries of the next round.
  * 

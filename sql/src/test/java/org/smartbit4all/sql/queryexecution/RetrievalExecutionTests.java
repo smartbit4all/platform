@@ -1,7 +1,7 @@
 package org.smartbit4all.sql.queryexecution;
 
 import org.junit.jupiter.api.Test;
-import org.smartbit4all.domain.service.query.QueryApi;
+import org.smartbit4all.domain.service.CrudApi;
 import org.smartbit4all.domain.service.query.Retrieval;
 import org.smartbit4all.domain.service.query.RetrievalRequest;
 import org.smartbit4all.domain.service.query.RetrievalRequestNode;
@@ -32,7 +32,7 @@ public class RetrievalExecutionTests {
   private TicketDef ticketDef;
 
   @Autowired
-  private QueryApi queryApi;
+  private CrudApi queryApi;
 
   @Test
   public void twoQueriesFromDifferentDb() throws Exception {
@@ -46,8 +46,8 @@ public class RetrievalExecutionTests {
     addressNode.edge(addressDef.getReference("person").association().getReferred(),
         personNode);
 
-    Retrieval retrieval = queryApi.prepare(retrievalRequest);
-    queryApi.execute(retrieval);
+    Retrieval retrieval = queryApi.prepareRetrieval(retrievalRequest);
+    queryApi.executeRetrieval(retrieval);
   }
 
 }

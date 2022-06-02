@@ -22,14 +22,6 @@ public class UpdateOutput extends GenericModifyOutput {
   public static final UpdateOutput EMPTY = new UpdateOutput(0);
 
   public UpdateOutput(int updateCount) {
-    super();
-    this.updateCount = updateCount;
+    super(updateCount);
   }
-
-  private int updateCount = 0;
-
-  public final int getUpdateCount() {
-    return updateCount;
-  }
-
 }

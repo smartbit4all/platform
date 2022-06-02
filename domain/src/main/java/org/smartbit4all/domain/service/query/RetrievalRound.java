@@ -25,11 +25,15 @@ import java.util.Map;
  * @author Peter Boros
  *
  */
-class RetrievalRound {
+public class RetrievalRound {
 
   /**
    * The queries to execute in the given round.
    */
   final Map<RetrievalNode, QueryInput> queries = new HashMap<>();
+
+  public final Map<RetrievalNode, QueryInput> getQueries() {
+    return queries;
+  }
 
 }

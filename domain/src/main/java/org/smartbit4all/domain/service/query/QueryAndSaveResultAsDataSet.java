@@ -11,6 +11,7 @@ import org.smartbit4all.domain.meta.ExpressionExists;
 import org.smartbit4all.domain.meta.ExpressionInDataSet;
 import org.smartbit4all.domain.meta.ExpressionReplacer;
 import org.smartbit4all.domain.meta.OperandProperty;
+import org.smartbit4all.domain.service.CrudApis;
 import org.smartbit4all.domain.service.dataset.DataSetApi;
 import org.smartbit4all.domain.service.dataset.DataSetEntry;
 
@@ -45,7 +46,7 @@ public final class QueryAndSaveResultAsDataSet extends SB4FunctionImpl<QueryInpu
   public void execute() throws Exception {
     if (dataSetApi != null) {
       // First we execute the query.
-      QueryOutput queryOutput = Queries.execute(input());
+      QueryOutput queryOutput = CrudApis.getCrudApi().executeQuery(input());
       if (queryOutput.isResultSerialized()) {
         throw new IllegalStateException(
             "QueryOutput can not contain serialized result for saving it as a DataSet!");

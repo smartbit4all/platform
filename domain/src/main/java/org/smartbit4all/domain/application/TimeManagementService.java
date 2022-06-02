@@ -16,7 +16,6 @@ package org.smartbit4all.domain.application;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
-import org.smartbit4all.core.SB4Service;
 
 /**
  * The time management is responsible for managing the timing of the application and can access the
@@ -24,7 +23,7 @@ import org.smartbit4all.core.SB4Service;
  * 
  * @author Peter Boros
  */
-public interface TimeManagementService extends SB4Service {
+public interface TimeManagementService {
 
   /**
    * Returns the system time synchronized with the database.

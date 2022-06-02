@@ -2,11 +2,11 @@ package org.smartbit4all.domain.service.dataset;
 
 import java.net.URI;
 import org.smartbit4all.domain.data.TableData;
-import org.smartbit4all.domain.service.query.QueryApi;
+import org.smartbit4all.domain.service.CrudApi;
 
 /**
  * The {@link TableDataApi} is responsible for storing and retrieving the {@link TableData}s as a
- * set of record. The {@link QueryApi} use this to manage the temporary record sets during the query
+ * set of record. The {@link CrudApi} use this to manage the temporary record sets during the query
  * process and there can be record sets with longer storage period.
  * 
  * @author Peter Boros

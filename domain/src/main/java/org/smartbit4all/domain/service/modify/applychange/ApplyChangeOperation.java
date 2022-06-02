@@ -9,14 +9,11 @@ import org.smartbit4all.domain.data.DataColumn;
 import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.meta.PropertySet;
-import org.smartbit4all.domain.service.modify.Create;
-import org.smartbit4all.domain.service.modify.Delete;
-import org.smartbit4all.domain.service.modify.Update;
 import org.smartbit4all.domain.service.modify.UpdateOutput;
 import org.smartbit4all.domain.utility.crud.Crud;
 
 /**
- * An operation could be {@link Create}, {@link Update} or {@link Delete}. One operation is
+ * An operation could be Create, Update or Delete.
  * 
  * @author Peter Boros
  */

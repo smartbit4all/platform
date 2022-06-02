@@ -1,42 +1,56 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
  * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 package org.smartbit4all.sql.service.modify;
 
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.EntityDefinition.TableDefinition;
 import org.smartbit4all.domain.meta.PropertyOwned;
-import org.smartbit4all.domain.service.modify.CreateImpl;
-import org.smartbit4all.domain.service.query.Queries;
+import org.smartbit4all.domain.service.CrudApis;
+import org.smartbit4all.domain.service.modify.CreateInput;
+import org.smartbit4all.domain.service.modify.CreateOutput;
 import org.smartbit4all.domain.utility.SupportedDatabase;
 import org.smartbit4all.sql.SQLBindValue;
 import org.smartbit4all.sql.SQLInsertStatement;
 import org.smartbit4all.sql.SQLStatementBuilder;
 import org.smartbit4all.sql.SQLStatementBuilderIF;
 import org.smartbit4all.sql.SQLTableNode;
-import org.springframework.jdbc.core.InterruptibleBatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 
-public class SQLCreate<E extends EntityDefinition> extends CreateImpl<E> {
+/**
+ * The create execution is an object containing all the data and objects for the execution.
+ * 
+ * @author Peter Boros
+ *
+ * @param <E>
+ */
+public class SQLCreateExecution<E extends EntityDefinition> {
+
+  /**
+   * The input object.
+   */
+  private CreateInput<E> input;
+
+  /**
+   * The output of the execution.
+   */
+  private CreateOutput output;
 
   /**
    * The JDBC connection accessor.
@@ -55,66 +69,63 @@ public class SQLCreate<E extends EntityDefinition> extends CreateImpl<E> {
    */
   int batchExecutionSize = 1;
 
-  public SQLCreate(JdbcTemplate jdbcTemplate, E entityDef) {
+  public SQLCreateExecution(JdbcTemplate jdbcTemplate, CreateInput<E> input) {
     this.jdbcTemplate = jdbcTemplate;
-    this.entityDef = entityDef;
   }
 
-  private final class PreparedStatementSetter
-      implements InterruptibleBatchPreparedStatementSetter {
+  // private final class PreparedStatementSetter
+  // implements InterruptibleBatchPreparedStatementSetter {
+  //
+  // List<SQLBindValue> values;
+  //
+  // List<SQLBindValue> identifiers;
+  //
+  // SQLStatementBuilderIF builder;
+  //
+  // boolean hasNext;
+  //
+  // public PreparedStatementSetter(SQLStatementBuilderIF builder, List<SQLBindValue> values,
+  // List<SQLBindValue> identifiers) {
+  // super();
+  // this.builder = builder;
+  // this.values = values;
+  // this.identifiers = identifiers;
+  // // Start reading the source.
+  // input.start();
+  // hasNext = input.next();
+  // }
+  //
+  // @Override
+  // public void setValues(PreparedStatement ps, int idx) throws SQLException {
+  // for (int i = 0; i < values.size(); i++) {
+  // SQLBindValue bindValue = values.get(i);
+  // bindValue.setValue(input.get(i));
+  // }
+  // for (int i = 0; i < identifiers.size(); i++) {
+  // SQLBindValue bindValue = identifiers.get(i);
+  // bindValue.setValue(input.getIdentifier(i));
+  // }
+  // insert.bind(builder, ps);
+  // hasNext = input.next();
+  // }
+  //
+  // @Override
+  // public int getBatchSize() {
+  // return batchExecutionSize;
+  // }
+  //
+  // @Override
+  // public boolean isBatchExhausted(int i) {
+  // return !hasNext;
+  // }
+  //
+  // }
 
-    List<SQLBindValue> values;
+  public CreateOutput execute() {
+    String schema = CrudApis.getCrudApi().getSchema(input.getEntityDefinition());
 
-    List<SQLBindValue> identifiers;
-
-    SQLStatementBuilderIF builder;
-
-    boolean hasNext;
-
-    public PreparedStatementSetter(SQLStatementBuilderIF builder, List<SQLBindValue> values,
-        List<SQLBindValue> identifiers) {
-      super();
-      this.builder = builder;
-      this.values = values;
-      this.identifiers = identifiers;
-      // Start reading the source.
-      input.start();
-      hasNext = input.next();
-    }
-
-    @Override
-    public void setValues(PreparedStatement ps, int idx) throws SQLException {
-      for (int i = 0; i < values.size(); i++) {
-        SQLBindValue bindValue = values.get(i);
-        bindValue.setValue(input.get(i));
-      }
-      for (int i = 0; i < identifiers.size(); i++) {
-        SQLBindValue bindValue = identifiers.get(i);
-        bindValue.setValue(input.getIdentifier(i));
-      }
-      insert.bind(builder, ps);
-      hasNext = input.next();
-    }
-
-    @Override
-    public int getBatchSize() {
-      return batchExecutionSize;
-    }
-
-    @Override
-    public boolean isBatchExhausted(int i) {
-      return !hasNext;
-    }
-
-  }
-
-  @Override
-  public void execute() throws Exception {
-    String schema = Queries.getQueryApi().getSchema(this.entityDef);
-    
-    // SQLStatementBuilderIF builder = entityDef.context().get(SQLStatementBuilderIF.class);
     SQLStatementBuilderIF builder = new SQLStatementBuilder(SupportedDatabase.ORACLE);
-    TableDefinition table = entityDef.tableDefinition();
+    TableDefinition table = input.getEntityDefinition().tableDefinition();
     SQLTableNode tableNode = new SQLTableNode(schema, table.getName());
     insert = new SQLInsertStatement(tableNode);
     List<SQLBindValue> values = new ArrayList<>();
@@ -150,6 +161,7 @@ public class SQLCreate<E extends EntityDefinition> extends CreateImpl<E> {
     input.start();
 
 
+    int count = 0;
     while (input.next()) {
       PreparedStatementCreator psc = new SQLPreparedStatementCreator(builder, insert);
 
@@ -163,8 +175,11 @@ public class SQLCreate<E extends EntityDefinition> extends CreateImpl<E> {
       }
 
       jdbcTemplate.update(psc);
+      count++;
 
     }
+
+    return new CreateOutput(count);
 
 
     // try (Connection connection = jdbcTemplate.getDataSource().getConnection()) {
@@ -205,6 +220,10 @@ public class SQLCreate<E extends EntityDefinition> extends CreateImpl<E> {
     // executedCount += SQLModifyUtility.executeBatch(stmt);
     // }
     // }
+  }
+
+  protected final CreateOutput getOutput() {
+    return output;
   }
 
 }

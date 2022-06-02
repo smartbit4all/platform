@@ -225,4 +225,8 @@ public class QueryInput {
     this.tableDataUri = tableDataUri;
   }
 
+  public final EntityDefinition getEntityDef() {
+    return entityDef;
+  }
+
 }

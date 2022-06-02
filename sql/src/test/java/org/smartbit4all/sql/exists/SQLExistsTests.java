@@ -1,8 +1,5 @@
 package org.smartbit4all.sql.exists;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -13,7 +10,7 @@ import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.meta.ExpressionIn;
 import org.smartbit4all.domain.meta.OperandComposite;
 import org.smartbit4all.domain.meta.OperandProperty;
-import org.smartbit4all.domain.service.query.QueryApi;
+import org.smartbit4all.domain.service.CrudApi;
 import org.smartbit4all.domain.service.query.QueryExecutionPlan;
 import org.smartbit4all.domain.service.query.QueryInput;
 import org.smartbit4all.domain.service.query.QueryOutput;
@@ -29,6 +26,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.jdbc.Sql;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 @SpringBootTest(
     classes = {
@@ -52,7 +52,7 @@ public class SQLExistsTests {
   private TicketDef ticketDef;
 
   @Autowired
-  private QueryApi queryApi;
+  private CrudApi queryApi;
 
   @Test
   public void initDbTest() throws Exception {
@@ -155,16 +155,16 @@ public class SQLExistsTests {
       inValues.add(i);
     }
 
-    QueryInput query = personDef.services().crud().read()
+    QueryInput query = Crud.read(personDef)
         .select(personDef.id(), personDef.name())
         .where(personDef.id().in(inValues).AND(personDef.name().in(Arrays.asList("Tas", "Huba"))))
         .getQuery();
 
-    QueryExecutionPlan executionPlan = queryApi.prepare(query);
+    QueryExecutionPlan executionPlan = queryApi.prepareQueries(query);
 
     System.out.println(executionPlan);
 
-    QueryResult queryResult = queryApi.execute(executionPlan);
+    QueryResult queryResult = queryApi.executeQueryPlan(executionPlan);
 
     for (QueryOutput qry : queryResult.getResults()) {
       TableData<?> resultData = qry.getTableData();
@@ -204,16 +204,16 @@ public class SQLExistsTests {
       inValues.add("Value" + i);
     }
 
-    QueryInput query = personDef.services().crud().read()
+    QueryInput query = Crud.read(personDef)
         .select(personDef.id(), personDef.name())
         .where(personDef.name().in(inValues).AND(personDef.id().in(Arrays.asList(5l, 6l))))
         .getQuery();
 
-    QueryExecutionPlan executionPlan = queryApi.prepare(query);
+    QueryExecutionPlan executionPlan = queryApi.prepareQueries(query);
 
     System.out.println(executionPlan);
 
-    QueryResult queryResult = queryApi.execute(executionPlan);
+    QueryResult queryResult = queryApi.executeQueryPlan(executionPlan);
 
     for (QueryOutput qry : queryResult.getResults()) {
       TableData<?> resultData = qry.getTableData();

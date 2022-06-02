@@ -10,59 +10,11 @@ import org.smartbit4all.core.SB4FunctionImpl;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Reference;
 import org.smartbit4all.domain.meta.SortOrderProperty;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.stereotype.Service;
 
-/**
- * The utility functions for the {@link QueryApi} and its implementations.
- */
-@Service
-public class Queries implements InitializingBean {
+public class Queries {
 
-  private static Queries instance;
-
-  private QueryApi queryApi;
-
-  /**
-   * To avoid on demand instantiation.
-   */
-  public Queries(QueryApi queryApi) {
-    this.queryApi = queryApi;
-  }
-
-  @Override
-  public void afterPropertiesSet() throws Exception {
-    instance = this;
-  }
-
-  public static final QueryApi getQueryApi() {
-    if (instance == null) {
-      throw new IllegalStateException(
-          "There is no QueryApi implementation registered in the Spring Context!");
-    }
-    return instance.queryApi;
-  }
-
-  public static final QueryOutput execute(QueryInput queryInput) throws Exception {
-    return getQueryApi().execute(queryInput);
-  }
-
-  public static final SB4Function<QueryInput, QueryOutput> asFunction(QueryInput queryInput) {
-    return new QueryFunction(queryInput, Queries::execute);
-  }
-
-  public static final SB4Function<QueryInput, QueryOutput> asFunction(QueryInput queryInput,
-      QueryExecution execution) {
-    return new QueryFunction(queryInput, execution);
-  }
-
-  public static final URI constructQueryURI(String categoryPath) {
-    try {
-      return new URI("query", null, "/" + categoryPath, UUID.randomUUID().toString());
-    } catch (URISyntaxException e) {
-      throw new RuntimeException(
-          "Unable to construct the URI for the " + categoryPath + " query path", e);
-    }
+  private Queries() {
+    super();
   }
 
   public static final QueryInput copy(QueryInput inputToCopy) {
@@ -79,6 +31,20 @@ public class Queries implements InitializingBean {
     result.distinct = inputToCopy.distinct;
     result.entityDef = inputToCopy.entityDef;
     return result;
+  }
+
+  public static final SB4Function<QueryInput, QueryOutput> asFunction(QueryInput queryInput,
+      QueryExecution execution) {
+    return new QueryFunction(queryInput, execution);
+  }
+
+  public static final URI constructQueryURI(String categoryPath) {
+    try {
+      return new URI("query", null, "/" + categoryPath, UUID.randomUUID().toString());
+    } catch (URISyntaxException e) {
+      throw new RuntimeException(
+          "Unable to construct the URI for the " + categoryPath + " query path", e);
+    }
   }
 
   public static final QueryInput copyTranslated(QueryInput inputToCopy,

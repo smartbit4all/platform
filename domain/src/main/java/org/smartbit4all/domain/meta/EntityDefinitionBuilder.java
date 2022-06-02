@@ -31,8 +31,6 @@ public class EntityDefinitionBuilder {
   public static final EntityDefinitionBuilder of(ApplicationContext ctx) {
     EntityDefinitionBuilder builder = new EntityDefinitionBuilder();
     builder.instance
-        .setEntityService((EntityService<?>) ctx.getBean("defaultEntityService", builder.instance));
-    builder.instance
         .setDataConverterHelper(ctx.getBean(JDBCDataConverterHelper.class));
     return builder;
   }

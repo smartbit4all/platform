@@ -27,13 +27,14 @@ import java.util.function.Supplier;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-import org.smartbit4all.core.SB4Configuration;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.domain.application.TimeManagementService;
 import org.smartbit4all.domain.application.TimeManagementServiceImpl;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageApiImpl;
 import org.smartbit4all.domain.meta.EntityDefinition;
+import org.smartbit4all.domain.service.CrudApiImpl;
+import org.smartbit4all.domain.service.CrudApis;
 import org.smartbit4all.domain.service.dataset.TableDataApi;
 import org.smartbit4all.domain.service.dataset.TableDataApiImpl;
 import org.smartbit4all.domain.service.entity.EntityManager;
@@ -41,8 +42,6 @@ import org.smartbit4all.domain.service.entity.EntityManagerImpl;
 import org.smartbit4all.domain.service.modify.applychange.ApplyChangeObjectConfig;
 import org.smartbit4all.domain.service.modify.applychange.ApplyChangeService;
 import org.smartbit4all.domain.service.modify.applychange.ApplyChangeServiceImpl;
-import org.smartbit4all.domain.service.query.Queries;
-import org.smartbit4all.domain.service.query.QueryApiImpl;
 import org.smartbit4all.domain.service.transfer.TransferService;
 import org.smartbit4all.domain.service.transfer.TransferServiceImpl;
 import org.smartbit4all.domain.service.transfer.convert.Converter;
@@ -59,10 +58,10 @@ import org.springframework.context.annotation.Primary;
  */
 @Configuration
 @Import({
-    QueryApiImpl.class,
-    Queries.class
+    CrudApiImpl.class,
+    CrudApis.class
 })
-public class DomainServiceConfig extends SB4Configuration {
+public class DomainServiceConfig {
 
   @Bean
   @Primary

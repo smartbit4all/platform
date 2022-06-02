@@ -14,8 +14,6 @@
  ******************************************************************************/
 package org.smartbit4all.domain.meta;
 
-import org.smartbit4all.core.SB4Service;
-
 /**
  * For a collaboration this is the basic service to install and run the related logics. The logics
  * are triggered by different events. They all can modify the data itself but at the same time they
@@ -39,7 +37,7 @@ import org.smartbit4all.core.SB4Service;
  * @author Peter Boros
  * 
  */
-public interface ComputationFramework extends SB4Service {
+public interface ComputationFramework {
 
   /**
    * Retrieve the instance of the logic for the current framework. If it's not found then it will be

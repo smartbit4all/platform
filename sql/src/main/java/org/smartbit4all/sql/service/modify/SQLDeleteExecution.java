@@ -22,20 +22,28 @@ import org.smartbit4all.domain.meta.EntityDefinition.TableDefinition;
 import org.smartbit4all.domain.meta.Expression;
 import org.smartbit4all.domain.meta.Expression2Operand;
 import org.smartbit4all.domain.meta.PropertyOwned;
-import org.smartbit4all.domain.service.modify.UpdateImpl;
-import org.smartbit4all.domain.service.modify.UpdateOutput;
-import org.smartbit4all.domain.service.query.Queries;
+import org.smartbit4all.domain.service.CrudApis;
+import org.smartbit4all.domain.service.modify.DeleteInput;
+import org.smartbit4all.domain.service.modify.DeleteOutput;
 import org.smartbit4all.domain.utility.SupportedDatabase;
-import org.smartbit4all.sql.SQLBindValue;
+import org.smartbit4all.sql.SQLDeleteStatement;
 import org.smartbit4all.sql.SQLStatementBuilder;
 import org.smartbit4all.sql.SQLStatementBuilderIF;
 import org.smartbit4all.sql.SQLTableNode;
-import org.smartbit4all.sql.SQLUpdateStatement;
 import org.smartbit4all.sql.SQLWhere;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 
-public class SQLUpdate<E extends EntityDefinition> extends UpdateImpl<E> {
+/**
+ * The create execution is an object containing all the data and objects for the execution.
+ * 
+ * @author Peter Boros
+ *
+ * @param <E>
+ */
+public class SQLDeleteExecution<E extends EntityDefinition> {
+
+  DeleteInput<E> input;
 
   /**
    * The JDBC connection accessor.
@@ -43,9 +51,9 @@ public class SQLUpdate<E extends EntityDefinition> extends UpdateImpl<E> {
   JdbcTemplate jdbcTemplate;
 
   /**
-   * The update statement.
+   * The delete statement.
    */
-  SQLUpdateStatement update;
+  SQLDeleteStatement delete;
 
   /**
    * This is the number of records that are executed at the same time using the
@@ -54,66 +62,57 @@ public class SQLUpdate<E extends EntityDefinition> extends UpdateImpl<E> {
    */
   int batchExecutionSize = 1;
 
-  public SQLUpdate(JdbcTemplate jdbcTemplate, E entityDef) {
+  public SQLDeleteExecution(JdbcTemplate jdbcTemplate, DeleteInput<E> input) {
     this.jdbcTemplate = jdbcTemplate;
-    this.entityDef = entityDef;
+    this.input = input;
   }
 
-  @Override
-  public void execute() throws Exception {
-    String schema = Queries.getQueryApi().getSchema(this.entityDef);
+  public DeleteOutput execute() {
+    String schema = CrudApis.getCrudApi().getSchema(input.getEntityDefinition());
 
-    // SQLStatementBuilderIF builder = entityDef.context().get(SQLStatementBuilderIF.class);
     SQLStatementBuilderIF builder = new SQLStatementBuilder(SupportedDatabase.ORACLE);
-    TableDefinition table = entityDef.tableDefinition();
+    TableDefinition table = input.getEntityDefinition().tableDefinition();
     SQLTableNode tableNode = new SQLTableNode(schema, table.getName());
-    update = new SQLUpdateStatement(tableNode);
-    // First add the values and set the where to have the criterion for the update.
-    Expression updateCriterion = null;
-    List<SQLBindValue> values = new ArrayList<>();
-    for (PropertyOwned<?> property : input.properties()) {
-      values.add(update.addColumn(property));
-    }
+    delete = new SQLDeleteStatement(tableNode);
+    // Set the where to have the criterion for the update.
+    Expression deleteCriterion = null;
 
     List<PropertyOwned<?>> identifiedBy = input.identifiedBy();
     List<Expression> identifierExpressions = new ArrayList<>(2);
     for (PropertyOwned<?> property : identifiedBy) {
       Expression exp = property.eq(null);
       identifierExpressions.add(exp);
-      if (updateCriterion == null) {
-        updateCriterion = exp;
+      if (deleteCriterion == null) {
+        deleteCriterion = exp;
       } else {
-        updateCriterion.AND(exp);
+        deleteCriterion.AND(exp);
       }
     }
 
     // Add the where to the update statement.
-    SQLWhere where = new SQLWhere(updateCriterion);
-    update.setWhere(where);
-    update.render(builder);
-
+    SQLWhere where = new SQLWhere(deleteCriterion);
+    delete.setWhere(where);
+    delete.render(builder);
 
     input.start();
 
-    int updateCount = 0;
 
+    int count = 0;
     while (input.next()) {
-      PreparedStatementCreator psc = new SQLPreparedStatementCreator(builder, update);
+      PreparedStatementCreator psc = new SQLPreparedStatementCreator(builder, delete);
 
-      for (int i = 0; i < values.size(); i++) {
-        SQLBindValue bindValue = values.get(i);
-        bindValue.setValue(input.get(i));
-      }
       for (int i = 0; i < identifierExpressions.size(); i++) {
         Expression2Operand<?> exp = (Expression2Operand<?>) identifierExpressions.get(i);
         exp.getLiteral().setValueUnchecked(input.getIdentifier(i));
       }
 
-      updateCount += jdbcTemplate.update(psc);
+      jdbcTemplate.update(psc);
+      count++;
 
     }
 
-    setOutput(new UpdateOutput(updateCount));
+    return new DeleteOutput(count);
+
 
     // TODO use jdbcTemplate methods instead of connection!
     // try (Connection connection = jdbcTemplate.getDataSource().getConnection()) {
@@ -122,16 +121,12 @@ public class SQLUpdate<E extends EntityDefinition> extends UpdateImpl<E> {
     // int batchCount = 0;
     // while (input.next()) {
     //
-    // for (int i = 0; i < values.size(); i++) {
-    // SQLBindValue bindValue = values.get(i);
-    // bindValue.setValue(input.get(i));
-    // }
     // for (int i = 0; i < identifierExpressions.size(); i++) {
     // Expression2Operand<?> exp = (Expression2Operand<?>) identifierExpressions.get(i);
     // exp.getLiteral().setValueUnchecked(input.getIdentifier(i));
     // }
     //
-    // update.bind(builder, stmt);
+    // delete.bind(builder, stmt);
     //
     // if (batchExecutionSize > 1) {
     // stmt.addBatch();
@@ -154,6 +149,7 @@ public class SQLUpdate<E extends EntityDefinition> extends UpdateImpl<E> {
     // executedCount += SQLModifyUtility.executeBatch(stmt);
     // }
     // }
+
   }
 
 }

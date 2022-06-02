@@ -29,10 +29,10 @@ import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.EntityDefinitionBuilder;
 import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.domain.security.UserAccountDef;
+import org.smartbit4all.domain.service.CrudApi;
 import org.smartbit4all.domain.service.dataset.TableDataApi;
 import org.smartbit4all.domain.service.entity.EntityManager;
 import org.smartbit4all.domain.service.entity.EntityUris;
-import org.smartbit4all.domain.service.query.QueryApi;
 import org.smartbit4all.domain.service.query.QueryInput;
 import org.smartbit4all.domain.service.query.QueryOutput;
 import org.smartbit4all.domain.utility.crud.Crud;
@@ -203,9 +203,9 @@ public class EntityManagerTest {
 
     System.out.println(queryInput);
 
-    QueryApi queryApi = ctx.getBean(QueryApi.class);
+    CrudApi queryApi = ctx.getBean(CrudApi.class);
 
-    QueryOutput queryOutput = queryApi.execute(queryInput);
+    QueryOutput queryOutput = queryApi.executeQuery(queryInput);
 
     Assertions.assertEquals(1, queryOutput.getTableData().size());
     Assertions.assertEquals("apple", queryOutput.getTableData().rows().get(0).get(property));

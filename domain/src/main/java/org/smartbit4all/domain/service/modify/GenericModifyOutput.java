@@ -16,6 +16,14 @@ package org.smartbit4all.domain.service.modify;
 
 public abstract class GenericModifyOutput {
 
-  // TODO
+  protected GenericModifyOutput(int updateCount) {
+    this.updateCount = updateCount;
+  }
+
+  private int updateCount = 0;
+
+  public final int getUpdateCount() {
+    return updateCount;
+  }
 
 }

@@ -16,4 +16,13 @@ package org.smartbit4all.domain.service.modify;
 
 public class DeleteOutput extends GenericModifyOutput {
 
+  /**
+   * The instance for the null execution.
+   */
+  public static final DeleteOutput EMPTY = new DeleteOutput(0);
+
+  public DeleteOutput(int updateCount) {
+    super(updateCount);
+  }
+
 }

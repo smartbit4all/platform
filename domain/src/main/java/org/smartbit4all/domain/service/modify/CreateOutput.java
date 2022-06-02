@@ -16,4 +16,13 @@ package org.smartbit4all.domain.service.modify;
 
 public class CreateOutput extends GenericModifyOutput {
 
+  /**
+   * The instance for the null execution.
+   */
+  public static final CreateOutput EMPTY = new CreateOutput(0);
+
+  public CreateOutput(int updateCount) {
+    super(updateCount);
+  }
+
 }

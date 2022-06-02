@@ -3,13 +3,13 @@ package org.smartbit4all.sql.query;
 import java.net.URI;
 import javax.sql.DataSource;
 import org.smartbit4all.domain.meta.jdbc.JDBCDataConverterConfig;
-import org.smartbit4all.domain.service.query.QueryApiImpl.QueryExecutorConfig;
+import org.smartbit4all.domain.service.CrudApiImpl.QueryExecutorConfig;
 import org.smartbit4all.sql.config.SQLConfig;
 import org.smartbit4all.sql.config.SQLDBParameter;
 import org.smartbit4all.sql.config.SQLDBParameterBase;
 import org.smartbit4all.sql.config.SQLDBParameterH2;
 import org.smartbit4all.sql.service.identifier.SQLIdentifierService;
-import org.smartbit4all.sql.service.query.SQLQueryExecutionApi;
+import org.smartbit4all.sql.service.query.SQLCrudExecutionApi;
 import org.smartbit4all.sql.testmodel.TestmodelEntityConfig;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -81,20 +81,20 @@ public class QuerySeparatedSchemaTestConfig {
   }
 
   @Bean
-  public SQLQueryExecutionApi queryExecutionApi1(
+  public SQLCrudExecutionApi queryExecutionApi1(
       @Qualifier("dataConnection1") JdbcTemplate jdbcTemplate) {
     
-    SQLQueryExecutionApi sqlQueryExecutionApi = new SQLQueryExecutionApi(jdbcTemplate);
+    SQLCrudExecutionApi sqlQueryExecutionApi = new SQLCrudExecutionApi(jdbcTemplate);
     sqlQueryExecutionApi.setSchema("test1");
     
     return sqlQueryExecutionApi;
   }
 
   @Bean
-  public SQLQueryExecutionApi queryExecutionApi2(
+  public SQLCrudExecutionApi queryExecutionApi2(
       @Qualifier("dataConnection1") JdbcTemplate jdbcTemplate) {
     
-    SQLQueryExecutionApi sqlQueryExecutionApi = new SQLQueryExecutionApi(jdbcTemplate);
+    SQLCrudExecutionApi sqlQueryExecutionApi = new SQLCrudExecutionApi(jdbcTemplate);
     sqlQueryExecutionApi.setSchema("test2");
     
     return sqlQueryExecutionApi;

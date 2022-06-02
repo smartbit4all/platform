@@ -1,4 +1,4 @@
-package org.smartbit4all.domain.service.query;
+package org.smartbit4all.domain.service;
 
 import java.net.URI;
 import java.security.InvalidParameterException;
@@ -27,6 +27,24 @@ import org.smartbit4all.domain.meta.Reference;
 import org.smartbit4all.domain.service.dataset.DataSetApi;
 import org.smartbit4all.domain.service.dataset.SaveInValues;
 import org.smartbit4all.domain.service.dataset.TableDataApi;
+import org.smartbit4all.domain.service.identifier.IdentifierService;
+import org.smartbit4all.domain.service.identifier.NextIdentifier;
+import org.smartbit4all.domain.service.modify.CreateInput;
+import org.smartbit4all.domain.service.modify.CreateOutput;
+import org.smartbit4all.domain.service.modify.DeleteInput;
+import org.smartbit4all.domain.service.modify.DeleteOutput;
+import org.smartbit4all.domain.service.modify.UpdateInput;
+import org.smartbit4all.domain.service.modify.UpdateOutput;
+import org.smartbit4all.domain.service.query.CrudExecutionApi;
+import org.smartbit4all.domain.service.query.Queries;
+import org.smartbit4all.domain.service.query.QueryAndSaveResultAsDataSet;
+import org.smartbit4all.domain.service.query.QueryExecutionPlan;
+import org.smartbit4all.domain.service.query.QueryInput;
+import org.smartbit4all.domain.service.query.QueryOutput;
+import org.smartbit4all.domain.service.query.QueryResult;
+import org.smartbit4all.domain.service.query.Retrieval;
+import org.smartbit4all.domain.service.query.RetrievalRequest;
+import org.smartbit4all.domain.service.query.RetrievalRound;
 import org.smartbit4all.domain.utility.crud.Crud;
 import org.smartbit4all.domain.utility.crud.CrudRead;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,31 +52,34 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 /**
- * The {@link QueryApi} implementation. It analyzes the incoming query requests to produce a
+ * The {@link CrudApi} implementation. It analyzes the incoming query requests to produce a
  * {@link QueryExecutionPlan}. This plan can be executed later on by the
- * {@link #execute(QueryExecutionPlan)} function.
+ * {@link #executeQueryPlan(QueryExecutionPlan)} function.
  * 
  */
 @Service
-public class QueryApiImpl implements QueryApi {
+public class CrudApiImpl implements CrudApi {
 
-  private Map<String, QueryExecutionApi> executionApisByName;
+  private Map<String, CrudExecutionApi> executionApisByName;
   private QueryExecutorConfig config;
   protected DataSetApi dataSetApi;
   private TableDataApi tableDataApi;
+  private IdentifierService identifierService;
 
-  public QueryApiImpl(ApplicationContext appContext,
+  public CrudApiImpl(ApplicationContext appContext,
       @Autowired(required = false) QueryExecutorConfig config,
       @Autowired(required = false) DataSetApi dataSetApi,
-      @Autowired(required = false) TableDataApi tableDataApi) {
-    this.executionApisByName = appContext.getBeansOfType(QueryExecutionApi.class);
+      @Autowired(required = false) TableDataApi tableDataApi,
+      @Autowired(required = false) IdentifierService identifierService) {
+    this.executionApisByName = appContext.getBeansOfType(CrudExecutionApi.class);
     this.config = config;
     this.dataSetApi = dataSetApi;
     this.tableDataApi = tableDataApi;
+    this.identifierService = identifierService;
   }
 
   @Override
-  public QueryExecutionPlan prepare(QueryInput... queries) {
+  public QueryExecutionPlan prepareQueries(QueryInput... queries) {
     if (queries == null || queries.length == 0) {
       return QueryExecutionPlan.EMPTY;
     }
@@ -157,7 +178,7 @@ public class QueryApiImpl implements QueryApi {
   }
 
   @Override
-  public QueryResult execute(QueryExecutionPlan execPlan) {
+  public QueryResult executeQueryPlan(QueryExecutionPlan execPlan) {
     QueryResult result = new QueryResult();
     for (SB4CompositeFunction<?, ?> node : execPlan.getStartingNodes()) {
       try {
@@ -177,18 +198,18 @@ public class QueryApiImpl implements QueryApi {
   }
 
   @Override
-  public Retrieval prepare(RetrievalRequest request) {
+  public Retrieval prepareRetrieval(RetrievalRequest request) {
     Retrieval retrieval = new Retrieval(request);
     return retrieval;
   }
 
   @Override
-  public QueryOutput execute(QueryInput queryInput) throws Exception {
-    QueryExecutionPlan executionPlan = prepare(queryInput);
-    QueryResult queryResult = execute(executionPlan);
+  public QueryOutput executeQuery(QueryInput queryInput) {
+    QueryExecutionPlan executionPlan = prepareQueries(queryInput);
+    QueryResult queryResult = executeQueryPlan(executionPlan);
     List<QueryOutput> results = queryResult.getResults();
     if (results == null || results.isEmpty()) {
-      throw new Exception(
+      throw new IllegalStateException(
           "The query execution for the given QueryInput finished with no QueryResult!");
     }
 
@@ -198,22 +219,38 @@ public class QueryApiImpl implements QueryApi {
         .orElse(null);
 
     if (output == null) {
-      throw new Exception(
+      throw new IllegalStateException(
           "There is no matching QueryOutput for the input with name: " + queryInput.getName());
     }
     if (!output.hasResult()) {
-      throw new Exception("The query execution for the given QueryInput finished with no result!");
+      throw new IllegalStateException(
+          "The query execution for the given QueryInput finished with no result!");
     }
 
     return output;
   }
 
+  @Override
+  public <E extends EntityDefinition> CreateOutput executeCreate(CreateInput<E> input) {
+    return getExecutionApiForEntityDef(input.getEntityDefinition()).executeCreate(input);
+  }
+
+  @Override
+  public <E extends EntityDefinition> UpdateOutput executeUpdate(UpdateInput<E> input) {
+    return getExecutionApiForEntityDef(input.getEntityDefinition()).executeUpdate(input);
+  }
+
+  @Override
+  public <E extends EntityDefinition> DeleteOutput executeDelete(DeleteInput<E> input) {
+    return getExecutionApiForEntityDef(input.getEntityDefinition()).executeDelete(input);
+  }
+
   /**
-   * This is the inner execution point where the {@link QueryApi} decides which
-   * {@link QueryExecutionApi} to use for the execution.
+   * This is the inner execution point where the {@link CrudApi} decides which
+   * {@link CrudExecutionApi} to use for the execution.
    * 
    * @param queryInput The query input to execute. If it defines a TableData by URI then it will be
-   *        mapped to the named {@link QueryExecutionApi}.
+   *        mapped to the named {@link CrudExecutionApi}.
    * @return
    * @throws Exception
    */
@@ -221,7 +258,7 @@ public class QueryApiImpl implements QueryApi {
     if (queryInput.getTableDataUri() != null && tableDataApi != null) {
       return executeQueryOnTableData(queryInput);
     }
-    return getExecutionApiForEntityDef(queryInput.entityDef).execute(queryInput);
+    return getExecutionApiForEntityDef(queryInput.getEntityDef()).executeQuery(queryInput);
   }
 
   private final QueryOutput executeQueryOnTableData(QueryInput queryInput) throws Exception {
@@ -239,7 +276,7 @@ public class QueryApiImpl implements QueryApi {
 
   }
 
-  private QueryExecutionApi getExecutionApiForEntityDef(EntityDefinition entityDef) {
+  private CrudExecutionApi getExecutionApiForEntityDef(EntityDefinition entityDef) {
     if (config == null) {
       if (executionApisByName.size() != 1) {
         throw new IllegalStateException(
@@ -249,7 +286,7 @@ public class QueryApiImpl implements QueryApi {
       return executionApisByName.values().iterator().next();
     }
 
-    QueryExecutionApi execApi = fromConfigExecApisByDomain(entityDef)
+    CrudExecutionApi execApi = fromConfigExecApisByDomain(entityDef)
         .orElseGet(() -> fromConfigExecApiNamesByDomain(entityDef)
             .orElseGet(() -> fromConfigExecApisByEntityUri(entityDef)
                 .orElseGet(() -> fromConfigExecApiNamesByEntityUri(entityDef)
@@ -264,14 +301,14 @@ public class QueryApiImpl implements QueryApi {
     return execApi;
   }
 
-  private Optional<QueryExecutionApi> fromConfigExecApiNamesByDomain(EntityDefinition entityDef) {
+  private Optional<CrudExecutionApi> fromConfigExecApiNamesByDomain(EntityDefinition entityDef) {
     return config.execApiNamesByDomain.entrySet().stream()
         .filter(es -> es.getKey().equals(entityDef.getDomain()))
         .findAny()
         .map(es -> executionApisByName.get(es.getValue()));
   }
 
-  private Optional<QueryExecutionApi> fromConfigExecApiNamesByEntityUri(
+  private Optional<CrudExecutionApi> fromConfigExecApiNamesByEntityUri(
       EntityDefinition entityDef) {
     return config.execApiNamesByEntityUri.entrySet().stream()
         .filter(es -> es.getKey().equals(entityDef.getUri()))
@@ -279,14 +316,14 @@ public class QueryApiImpl implements QueryApi {
         .map(es -> executionApisByName.get(es.getValue()));
   }
 
-  private Optional<QueryExecutionApi> fromConfigExecApisByEntityUri(EntityDefinition entityDef) {
+  private Optional<CrudExecutionApi> fromConfigExecApisByEntityUri(EntityDefinition entityDef) {
     return config.execApisByEntityUri.entrySet().stream()
         .filter(es -> es.getKey().equals(entityDef.getUri()))
         .findAny()
         .map(es -> es.getValue());
   }
 
-  private Optional<QueryExecutionApi> fromConfigExecApisByDomain(EntityDefinition entityDef) {
+  private Optional<CrudExecutionApi> fromConfigExecApisByDomain(EntityDefinition entityDef) {
     return config.execApisByDomain.entrySet().stream()
         .filter(es -> es.getKey().equals(entityDef.getDomain()))
         .findAny()
@@ -301,8 +338,8 @@ public class QueryApiImpl implements QueryApi {
      * For now these 4 maps are just first attempts to create a config for the
      * EntityDef-QueryExecutionApi meta informations
      */
-    Map<URI, QueryExecutionApi> execApisByEntityUri;
-    Map<String, QueryExecutionApi> execApisByDomain;
+    Map<URI, CrudExecutionApi> execApisByEntityUri;
+    Map<String, CrudExecutionApi> execApisByDomain;
     Map<URI, String> execApiNamesByEntityUri;
     Map<String, String> execApiNamesByDomain;
 
@@ -318,13 +355,13 @@ public class QueryApiImpl implements QueryApi {
     }
 
     public QueryExecutorConfig addExecutionApiForEntityUri(URI entityUri,
-        QueryExecutionApi executionApi) {
+        CrudExecutionApi executionApi) {
       execApisByEntityUri.put(entityUri, executionApi);
       return this;
     }
 
     public QueryExecutorConfig addExecutionApiForDomain(String domainName,
-        QueryExecutionApi executionApi) {
+        CrudExecutionApi executionApi) {
       execApisByDomain.put(domainName, executionApi);
       return this;
     }
@@ -343,12 +380,12 @@ public class QueryApiImpl implements QueryApi {
   }
 
   @Override
-  public Retrieval execute(Retrieval retrieval) throws Exception {
+  public Retrieval executeRetrieval(Retrieval retrieval) throws Exception {
     RetrievalRound round = retrieval.next();
-    while (!round.queries.isEmpty()) {
-      round.queries.entrySet().parallelStream().forEach(e -> {
+    while (!round.getQueries().isEmpty()) {
+      round.getQueries().entrySet().parallelStream().forEach(e -> {
         try {
-          QueryOutput queryOutput = execute(e.getValue());
+          QueryOutput queryOutput = executeQuery(e.getValue());
           if (queryOutput.isResultSerialized()) {
             // TODO this case should be also handled during a retrieval process!
             throw new IllegalStateException(
@@ -374,7 +411,53 @@ public class QueryApiImpl implements QueryApi {
 
   @Override
   public String getSchema(EntityDefinition entityDef) {
-    QueryExecutionApi executionApiForEntityDef = getExecutionApiForEntityDef(entityDef);
+    CrudExecutionApi executionApiForEntityDef = getExecutionApiForEntityDef(entityDef);
     return executionApiForEntityDef.getSchema();
   }
+
+  @Override
+  public <E extends EntityDefinition, T> TableData<E> lockOrCreateAndLock(E entityDef,
+      Property<T> uniqueProperty, T uniqueValue, String sequenceName,
+      Map<Property<?>, Object> extraValues) throws Exception {
+    // We try to lock the records by querying with lock. We must collect the values of the unique
+    // columns.
+    TableData<E> result = Crud.read(entityDef)
+        .selectAllProperties()
+        .where(uniqueProperty.eq(uniqueValue))
+        .lock()
+        .listData();
+    if (result.isEmpty()) {
+      // The record is missing from the database so we try to insert it
+      NextIdentifier next = identifierService.next();
+      next.setInput(sequenceName);
+      next.execute();
+      TableData<E> td = TableDatas.of(entityDef, entityDef.allProperties());
+      DataRow row = td.addRow();
+      row.set(uniqueProperty, uniqueValue);
+      // TODO We don't have the correct interface for the multiple primary key!
+      for (Property<?> primaryProperty : entityDef.PRIMARYKEYDEF()) {
+        row.setObject(primaryProperty, next.output());
+      }
+      if (extraValues != null) {
+        for (Entry<Property<?>, Object> entry : extraValues.entrySet()) {
+          row.setObject(entry.getKey(), entry.getValue());
+        }
+      }
+      try {
+        Crud.create(td);
+        // In this case we managed to insert the record. Therefore it's already locked until the end
+        // of the transaction.
+        return td;
+      } catch (Exception e) {
+        // We failed to insert the record. Someone else could insert it. We can call ourselves
+        // recursively to query.
+        // TODO Check if it's the unique index violation exception from the database. We need to
+        // catch the DuplicateKeyException but it's tx module!
+        return lockOrCreateAndLock(entityDef, uniqueProperty, uniqueValue, sequenceName,
+            extraValues);
+      }
+    }
+    return result;
+  }
+
 }

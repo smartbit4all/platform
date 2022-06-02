@@ -22,9 +22,10 @@ import java.util.Map;
 import org.smartbit4all.core.SB4CompositeFunction;
 import org.smartbit4all.core.SB4Function;
 import org.smartbit4all.core.utility.StringConstant;
+import org.smartbit4all.domain.service.CrudApi;
 
 /**
- * This is the main API object of the {@link QueryApi}. It manages the execution graph of the given
+ * This is the main API object of the {@link CrudApi}. It manages the execution graph of the given
  * request. It consists of different {@link SB4Function}s that represents series of action to be
  * done. The functions can be:
  * <ul>

@@ -124,9 +124,8 @@ final class SQLQueryExecution {
    * This execute constructs the {@link SQLSelectStatement} and execute it. It uses the
    * {@link #queryOutput} to fetch into.
    * 
-   * @throws Exception
    */
-  public void execute() throws Exception {
+  public void execute() {
     // That time the entity is based on a table.
     TableDefinition table = queryInput.entityDef().tableDefinition();
     SQLTableNode tableNode = new SQLTableNode(schema, table.getName());

@@ -33,8 +33,8 @@ import org.smartbit4all.domain.meta.PropertyRef;
 import org.smartbit4all.domain.meta.PropertySet;
 import org.smartbit4all.domain.meta.Reference;
 import org.smartbit4all.domain.meta.SortOrderProperty;
+import org.smartbit4all.domain.service.CrudApis;
 import org.smartbit4all.domain.service.entity.EntityManager;
-import org.smartbit4all.domain.service.query.Queries;
 import org.smartbit4all.domain.service.query.QueryInput;
 import org.smartbit4all.domain.service.query.QueryOutput;
 import org.smartbit4all.domain.service.transfer.BeanEntityBinding;
@@ -99,7 +99,7 @@ public class CrudRead<E extends EntityDefinition> {
   public void execute() throws Exception {
     Objects.requireNonNull(queryInput, "Can not execute query with null value QueryInput!");
 
-    QueryOutput output = Queries.execute(queryInput);
+    QueryOutput output = CrudApis.getCrudApi().executeQuery(queryInput);
 
     if (this.queryOutput == null || !this.queryOutput.hasResult()) {
       this.queryOutput = output;

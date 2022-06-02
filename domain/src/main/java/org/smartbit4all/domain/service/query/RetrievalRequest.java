@@ -19,17 +19,18 @@ import java.util.Map;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Expression;
 import org.smartbit4all.domain.meta.Reference;
+import org.smartbit4all.domain.service.CrudApi;
 
 /**
  * The retrieval is an Api object responsible for describing a set of related queries. The
- * {@link QueryApi} can process simple queries but also {@link RetrievalRequest}s. A Retrieval
+ * {@link CrudApi} can process simple queries but also {@link RetrievalRequest}s. A Retrieval
  * Request is a set of queries with meta information to connect them. The {@link RetrievalRequest}
- * is analyzed by the {@link QueryApi} and an execution plan is produced. This
+ * is analyzed by the {@link CrudApi} and an execution plan is produced. This
  * {@link QueryExecutionPlan} can be executed.
  * 
  * To provide meta information we can use the {@link EntityDefinition}s but even without any
  * {@link Reference} we can connect the queries by providing the meta for the joins. The queries and
- * the navigations will be used by the {@link QueryApi} to produce {@link QueryExecutionPlan}s.
+ * the navigations will be used by the {@link CrudApi} to produce {@link QueryExecutionPlan}s.
  * After executing this plan the result will be analyzed to produce the next round of queries.
  * Because there is a given optimal order in the directed graph to produce all the query results we
  * need.

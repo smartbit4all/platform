@@ -24,11 +24,12 @@ import org.smartbit4all.domain.meta.AssociationRole;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Expression;
 import org.smartbit4all.domain.meta.Reference;
+import org.smartbit4all.domain.service.CrudApi;
 import org.springframework.util.Assert;
 
 /**
  * This object instantiated for the execution of the {@link RetrievalRequest} by the
- * {@link QueryApi}. It analyze the Queries we have and define the final structure of the retrieval.
+ * {@link CrudApi}. It analyze the Queries we have and define the final structure of the retrieval.
  * It contains the input information and the meta to define the rounds and analyze their result. The
  * starting nodes for the first round of the {@link Retrieval} is identified by
  * {@link RetrievalRequestNode#getStartCondition()}. If it's not empty then we can start the
@@ -76,7 +77,7 @@ public final class Retrieval {
    * 
    * @return
    */
-  RetrievalRound next() {
+  public RetrievalRound next() {
     List<RetrievalNode> startingNodes = nodes.values().stream()
         .filter(RetrievalNode::readyForNextRound).collect(Collectors.toList());
     RetrievalRound nextRound = new RetrievalRound();

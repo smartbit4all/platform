@@ -16,7 +16,6 @@ package org.smartbit4all.domain.meta;
 
 import java.net.URI;
 import java.util.List;
-import org.smartbit4all.core.SB4Service;
 import org.smartbit4all.core.utility.StringConstant;
 
 /**
@@ -34,7 +33,7 @@ import org.smartbit4all.core.utility.StringConstant;
  * @author Peter Boros
  *
  */
-public interface EntityDefinition extends SB4Service {
+public interface EntityDefinition {
 
   public static final String PROPERTY_COUNT_NAME = "countRows";
 
@@ -119,8 +118,6 @@ public interface EntityDefinition extends SB4Service {
   Property<Long> count();
 
   String entityDefName();
-
-  EntityService<?> services();
 
   PropertySet allProperties();
 
