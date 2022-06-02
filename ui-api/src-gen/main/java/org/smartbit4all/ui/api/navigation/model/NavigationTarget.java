@@ -45,6 +45,7 @@ import javax.validation.Valid;
   NavigationTarget.STATE,
   NavigationTarget.TYPE,
   NavigationTarget.FULL_SIZE,
+  NavigationTarget.HIDE_CLOSE_BUTTON,
   NavigationTarget.TITLE,
   NavigationTarget.ICON,
   NavigationTarget.CONTAINER_UUID
@@ -72,6 +73,9 @@ public class NavigationTarget {
 
   public static final String FULL_SIZE = "fullSize";
   private Boolean fullSize = false;
+
+  public static final String HIDE_CLOSE_BUTTON = "hideCloseButton";
+  private Boolean hideCloseButton = false;
 
   public static final String TITLE = "title";
   private String title;
@@ -286,6 +290,33 @@ public class NavigationTarget {
   }
 
 
+  public NavigationTarget hideCloseButton(Boolean hideCloseButton) {
+    
+    this.hideCloseButton = hideCloseButton;
+    return this;
+  }
+
+   /**
+   * Get hideCloseButton
+   * @return hideCloseButton
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(HIDE_CLOSE_BUTTON)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getHideCloseButton() {
+    return hideCloseButton;
+  }
+
+
+  @JsonProperty(HIDE_CLOSE_BUTTON)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setHideCloseButton(Boolean hideCloseButton) {
+    this.hideCloseButton = hideCloseButton;
+  }
+
+
   public NavigationTarget title(String title) {
     
     this.title = title;
@@ -384,6 +415,7 @@ public class NavigationTarget {
         Objects.equals(this.state, navigationTarget.state) &&
         Objects.equals(this.type, navigationTarget.type) &&
         Objects.equals(this.fullSize, navigationTarget.fullSize) &&
+        Objects.equals(this.hideCloseButton, navigationTarget.hideCloseButton) &&
         Objects.equals(this.title, navigationTarget.title) &&
         Objects.equals(this.icon, navigationTarget.icon) &&
         Objects.equals(this.containerUuid, navigationTarget.containerUuid);
@@ -391,7 +423,7 @@ public class NavigationTarget {
 
   @Override
   public int hashCode() {
-    return Objects.hash(uuid, viewName, objectUri, parameters, state, type, fullSize, title, icon, containerUuid);
+    return Objects.hash(uuid, viewName, objectUri, parameters, state, type, fullSize, hideCloseButton, title, icon, containerUuid);
   }
 
   @Override
@@ -405,6 +437,7 @@ public class NavigationTarget {
     sb.append("    state: ").append(toIndentedString(state)).append("\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("    fullSize: ").append(toIndentedString(fullSize)).append("\n");
+    sb.append("    hideCloseButton: ").append(toIndentedString(hideCloseButton)).append("\n");
     sb.append("    title: ").append(toIndentedString(title)).append("\n");
     sb.append("    icon: ").append(toIndentedString(icon)).append("\n");
     sb.append("    containerUuid: ").append(toIndentedString(containerUuid)).append("\n");

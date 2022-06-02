@@ -171,15 +171,17 @@ public abstract class UINavigationVaadinCommon extends UINavigationApiCommon {
     // TODO create DialogHeader composite, store it and use it for setTitle, setIcon?
     dialogLabelsByUUID.put(dialogUUID, title);
 
-    Icon closeIcon = new Icon(VaadinIcon.CLOSE_SMALL);
-    closeIcon.addClassName("sb4-dialog1-close-icon");
-    closeIcon.addClickListener(e -> dialog.close());
-
     FlexLayout header;
     if (titleIcon == null) {
-      header = new FlexLayout(title, closeIcon);
+      header = new FlexLayout(title);
     } else {
-      header = new FlexLayout(titleIcon, title, closeIcon);
+      header = new FlexLayout(titleIcon, title);
+    }
+    if (!navigationTarget.getHideCloseButton()) {
+      Icon closeIcon = new Icon(VaadinIcon.CLOSE_SMALL);
+      closeIcon.addClassName("sb4-dialog1-close-icon");
+      closeIcon.addClickListener(e -> dialog.close());
+      header.add(closeIcon);
     }
     header.addClassName("sb4-dialog1-header");
 
