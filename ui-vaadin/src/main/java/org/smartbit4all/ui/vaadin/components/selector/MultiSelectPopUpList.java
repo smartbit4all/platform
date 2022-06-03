@@ -426,7 +426,7 @@ public class MultiSelectPopUpList<T> extends CustomField<List<T>> implements Has
 
   public void addColumn(ValueProvider<T, ?> columnValueProvider, String columnName) {
     Objects.requireNonNull(columnValueProvider);
-    grid.addColumn(item -> columnValueProvider.apply(item)).setHeader(columnName);
+    grid.addColumn(item -> columnValueProvider.apply(item)).setHeader(columnName).setAutoWidth(true).setResizable(true);
   }
 
   public SerializableBiPredicate<T, Object> getFilter() {
@@ -580,4 +580,13 @@ public class MultiSelectPopUpList<T> extends CustomField<List<T>> implements Has
   public void setDialogMinWidth(String ertek) {
     dialog.setMinWidth(ertek);
   }
+  
+  public void setHeight(String ertek) {
+    dialog.setHeight(ertek);
+  }
+  
+  public void setWidth(String ertek) {
+    dialog.setWidth(ertek);
+  }
+
 }
