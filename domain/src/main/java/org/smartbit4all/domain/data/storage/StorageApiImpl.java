@@ -139,7 +139,7 @@ public final class StorageApiImpl implements StorageApi, InitializingBean {
       throw new ObjectNotFoundException(uri, null, "Bad uri format");
     }
     String scheme = uri.getScheme();
-    Storage storage = storagesByScheme.get(scheme);
+    Storage storage = get(scheme);
     if (storage == null) {
       throw new ObjectNotFoundException(uri, null,
           "Unable to find storage scheme by uri. Might be a missing configuration.");
