@@ -20,6 +20,19 @@ public class ImageUtils {
     super();
   }
 
+  /**
+   * Resize the image with the specified width and height.
+   * 
+   * If either width or height is a negative number then a value is substituted to maintain the
+   * aspect ratio of the original image dimensions. If both width and height are negative, then the
+   * original image dimensions are used.
+   * 
+   * @param image
+   * @param width
+   * @param height
+   * @return
+   * @throws IOException
+   */
   public static BinaryData resizeImage(BinaryData image, int width, int height) throws IOException {
     BufferedImage bi = ImageIO.read(image.inputStream());
     Image resizedImage = bi.getScaledInstance(width, height, Image.SCALE_SMOOTH);
@@ -39,5 +52,12 @@ public class ImageUtils {
     return bdos.data();
   }
 
+  public static BinaryData resizeImageForWidth(BinaryData image, int width) throws IOException {
+    return resizeImage(image, width, -1);
+  }
+
+  public static BinaryData resizeImageForHeight(BinaryData image, int height) throws IOException {
+    return resizeImage(image, -1, height);
+  }
 
 }

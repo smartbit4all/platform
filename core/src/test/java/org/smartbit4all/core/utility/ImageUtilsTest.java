@@ -29,4 +29,26 @@ class ImageUtilsTest {
 
   }
 
+
+  @Test
+  void testResizeWithOneParameter() throws IOException {
+    BinaryData resizeForWidth = ImageUtils.resizeImageForWidth(
+        BinaryData.of(
+            new FileInputStream("src/test/resources/utility/original.png")),
+        64);
+
+    BinaryData resizeForHeight = ImageUtils.resizeImageForHeight(
+        BinaryData.of(
+            new FileInputStream("src/test/resources/utility/original.png")),
+        64);
+
+    BinaryData expected =
+        BinaryData.of(new FileInputStream("src/test/resources/utility/resize.png"));
+
+    Assertions.assertEquals(expected.length(), resizeForWidth.length());
+    Assertions.assertEquals(expected.length(), resizeForHeight.length());
+
+  }
+
+
 }
