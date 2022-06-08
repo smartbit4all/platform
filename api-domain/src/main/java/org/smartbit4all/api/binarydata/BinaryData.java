@@ -163,6 +163,7 @@ public class BinaryData {
 
   @Override
   protected void finalize() throws Throwable {
+    super.finalize();
     if (deleteDataFile) {
       dataFilesPurgeQueue.add(dataFile);
     }
