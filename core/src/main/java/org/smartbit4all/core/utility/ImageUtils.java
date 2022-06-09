@@ -35,6 +35,11 @@ public class ImageUtils {
    */
   public static BinaryData resizeImage(BinaryData image, int width, int height) throws IOException {
     BufferedImage bi = ImageIO.read(image.inputStream());
+    return resizeImageInternal(width, height, bi);
+  }
+
+  private static BinaryData resizeImageInternal(int width, int height, BufferedImage bi)
+      throws IOException {
     Image resizedImage = bi.getScaledInstance(width, height, Image.SCALE_SMOOTH);
 
     BufferedImage resizedBufferedImage = new BufferedImage(resizedImage.getWidth(null),
@@ -58,6 +63,15 @@ public class ImageUtils {
 
   public static BinaryData resizeImageForHeight(BinaryData image, int height) throws IOException {
     return resizeImage(image, -1, height);
+  }
+
+  public static BinaryData shrink(BinaryData image, int width) throws IOException {
+    BufferedImage bi = ImageIO.read(image.inputStream());
+    int originalWidth = bi.getWidth();
+    if (originalWidth > width) {
+      return resizeImageInternal(width, -1, bi);
+    }
+    return null;
   }
 
 }
