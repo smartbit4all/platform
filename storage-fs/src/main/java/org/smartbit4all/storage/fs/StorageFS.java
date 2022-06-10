@@ -591,11 +591,13 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
 
     Path dir;
 
-    int fileCount = 0;
+    int fileCount;
 
     DirFileCounter(Path dir) {
       super();
       this.dir = dir;
+      this.fileCount = dir.toFile().list().length;
+
     }
 
   }
