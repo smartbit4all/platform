@@ -75,7 +75,7 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
   }
 
   /**
-   * The object api gives access to the meta data of the objects.
+   * The object API gives access to the meta data of the objects.
    */
   protected final ObjectApi objectApi;
 
@@ -86,7 +86,7 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
   @Autowired(required = false)
   private List<ObjectStorageSaveSucceedListener> onSucceedListeners;
 
-  public ObjectStorageImpl(ObjectApi objectApi) {
+  protected ObjectStorageImpl(ObjectApi objectApi) {
     super();
     this.objectApi = objectApi;
   }
@@ -100,7 +100,6 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
         final StorageObjectLockEntry newEntry =
             new StorageObjectLockEntry(objectUri, physicalLockSupplier(objectUri),
                 physicalLockReleaser());
-        // TODO implement rather a complete object to hold object locks!
         newEntry.setLockRemover(uri -> {
           lockMutex.lock();
           try {

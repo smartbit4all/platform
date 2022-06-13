@@ -57,6 +57,12 @@ final class StorageObjectLockEntry {
   private final Map<Long, InstanceEntry> instanceRegister = new ListBasedMap<>();
 
   /**
+   * This is a supplier for the physical lock. Can be used to acquire the physical lock when the
+   * first {@link StorageObjectLock} is activated via an operation.
+   */
+  private Supplier<StorageObjectPhysicalLock> acquirePhysicalLock;
+
+  /**
    * If the given {@link ObjectStorage} implementation supports then this object holds the physical.
    */
   private StorageObjectPhysicalLock physicalLock;
@@ -96,7 +102,7 @@ final class StorageObjectLockEntry {
             "Unable to initate the StorageObjectLock, the the physical lock release method is missing.");
       }
       this.releaser = releaser;
-      physicalLock = acquire.get();
+      acquirePhysicalLock = acquire;
     }
   }
 
@@ -113,6 +119,23 @@ final class StorageObjectLockEntry {
       StorageObjectLock result = new StorageObjectLock(this, id);
       instanceRegister.put(id, new InstanceEntry(result));
       return result;
+    } finally {
+      mutexInstanceRegister.unlock();
+    }
+  }
+
+  /**
+   * This function is lately ensure that we own the physical lock for an object.
+   */
+  void ensurePhysicalLock() {
+    if (acquirePhysicalLock == null) {
+      return;
+    }
+    mutexInstanceRegister.lock();
+    try {
+      if (physicalLock == null) {
+        physicalLock = acquirePhysicalLock.get();
+      }
     } finally {
       mutexInstanceRegister.unlock();
     }

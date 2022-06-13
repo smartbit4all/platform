@@ -81,6 +81,7 @@ public final class StorageObjectLock implements Lock {
     if (entry == null) {
       throw new IllegalStateException("The lock has been released already.");
     }
+    entry.ensurePhysicalLock();
   }
 
   @Override

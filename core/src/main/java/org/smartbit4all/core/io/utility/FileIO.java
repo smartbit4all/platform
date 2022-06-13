@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.binarydata.BinaryData;
@@ -258,12 +259,11 @@ public class FileIO {
    *        and again. If it's 0 then after the first try it fails and if we set a given time it
    *        will try to get the lock until this wait time.
    * @return The lock file itself with a content that refers to this runtime at least.
-   * @throws InterruptedException If the wait for the lock is interrupted.
    */
   public static final FileLockData lockObjectFile(FileLockData newLockData, File lockFile,
       long waitUntil,
-      Function<FileLockData, Boolean> transactionValidator)
-      throws InterruptedException, FileLocked {
+      Predicate<FileLockData> lockValidator)
+      throws FileLocked {
     long start = System.currentTimeMillis();
     while (true) {
       try {
@@ -281,7 +281,7 @@ public class FileIO {
           // Check the validity of the lock. If it's valid then initiate wait. If it's invalid or
           // null
           // then we try to initiate the lock file with locking the file itself.
-          if (lockData != null && transactionValidator.apply(lockData)) {
+          if (lockData != null && lockValidator.test(lockData)) {
             // We have a valid lock so we have to decide whether to wait or return without locking.
             long currentTimeMillis = System.currentTimeMillis();
             if (waitUntil != -1 && (currentTimeMillis - start) > waitUntil) {
@@ -316,11 +316,10 @@ public class FileIO {
    * @param lockFile The lock file.
    * @param waitUntil Defines the waiting policy. -1 means wait forever, 0 means try only once, an
    *        exact number means the waiting for this millisecond.
-   * @throws InterruptedException If the Thread is interrupted.
    * @throws FileLocked If the waiting for the lock is finished.
    */
   public static final void unlockObjectFile(File lockFile, long waitUntil)
-      throws InterruptedException, FileLocked {
+      throws FileLocked {
     long start = System.currentTimeMillis();
     while (true) {
       try {
@@ -333,7 +332,7 @@ public class FileIO {
           // null
           // then we try to initiate the lock file with locking the file itself.
           // if (Objects.deepEquals(myLockData, lockData)) {
-          // We are the locking no so we can truncate the lock file.
+          // We are the locking node so we can truncate the lock file.
           fileChannel.truncate(0);
           // }
           return;

@@ -233,19 +233,41 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
     if (runtimeApi() == null || runtimeApi().self() == null) {
       return super.physicalLockSupplier(objectUri);
     }
+
     return () -> {
       StorageTransaction transaction =
           transactionManager != null ? transactionManager.getCurrentTransaction() : null;
       FileLockData fld = new FileLockData(runtimeApi().self().getUuid().toString(),
           transaction != null ? transaction.getData().getUri().toString() : null);
       try {
-        FileIO.lockObjectFile(fld, getObjectLockFile(objectUri), -1, l -> l != null
-            && (!Strings.isEmpty(l.getRuntimeId()) || !Strings.isEmpty(l.getTransactionId())));
+        FileIO.lockObjectFile(fld, getObjectLockFile(objectUri), -1, this::isValidLock);
       } catch (Exception e) {
         throw new IllegalStateException("Unable to lock object " + objectUri, e);
       }
       return new StorageObjectPhysicalLock(objectUri);
     };
+  }
+
+  /**
+   * Validate a lock based on the lock data.
+   * 
+   * @param l
+   * @return true if we have a valid (still running) runtime.
+   */
+  private final boolean isValidLock(FileLockData l) {
+    // If the lock data is null then it's invalid.
+    if (l == null) {
+      return false;
+    }
+    UUID lockRuntime = null;
+    if (!Strings.isEmpty(l.getRuntimeId())) {
+      try {
+        lockRuntime = UUID.fromString(l.getRuntimeId());
+      } catch (IllegalArgumentException e) {
+        lockRuntime = null;
+      }
+    }
+    return lockRuntime != null && runtimeApi().get(lockRuntime) != null;
   }
 
   @Override
