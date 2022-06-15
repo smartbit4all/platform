@@ -68,7 +68,7 @@ components:
             format: uri
     ApiData:
       type: object
-      required: [uri,module,interfaceName,name,methods]
+      required: [uri,interfaceName,name,methods]
       description: |
         An api is a programming interface consists of methods to call. An api can be provided by many deployment units at the
         same time. When a deployment unit starts it collects all the apis and methods it has and register it into the storage.
@@ -80,11 +80,6 @@ components:
         uri:
           type: string
           format: uri
-        module:
-          type: string
-          description: |
-            The name of the module that is responsible for the given api. It is mandatory to be able to identify exactly the
-            given api.
         interfaceName:
           type: string
           description: |

@@ -42,7 +42,7 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi {
   @Autowired(required = false)
   private StorageApi storageApi;
 
-  @Autowired
+  @Autowired(required = false)
   private ApplicationRuntimeApi applicationRuntimeApi;
 
   /**
@@ -124,10 +124,8 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi {
     storage.get().update(REGISTER_URI, ApiRegistryData.class, r -> {
       // We save all the provided apis into the invocation store.
       if (providedApis != null) {
-        ApplicationRuntime applicationRuntime = applicationRuntimeApi.self();
         for (ProviderApiInvocationHandler<?> apiHandler : providedApis) {
           ApiData apiData = apiHandler.getData();
-          apiData.setModule(applicationRuntime.getUuid().toString());
           if (!storage.get().exists(apiData.getUri())) {
             storage.get().saveAsNew(apiData);
             if (!r.getApis().contains(apiData.getUri())) {
@@ -143,7 +141,9 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi {
     });
 
     // update runtime with our provided apis
-    applicationRuntimeApi.setApis(new ArrayList<>(apis));
+    if (applicationRuntimeApi != null) {
+      applicationRuntimeApi.setApis(new ArrayList<>(apis));
+    }
 
     // refresh primary api map
     fillPrimaryApiMap();
@@ -152,6 +152,10 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi {
   @Override
   @Scheduled(fixedDelayString = "${invocationregistry.refresh.fixeddelay:5000}")
   public void refreshRegistry() {
+    if (applicationRuntimeApi == null) {
+      // if there is ApplicationRuntimeApi, then we can't refresh the apis
+      return;
+    }
     // Get apis from all active runtimes
     List<ApplicationRuntime> activeRuntimes = applicationRuntimeApi.getActiveRuntimes();
 

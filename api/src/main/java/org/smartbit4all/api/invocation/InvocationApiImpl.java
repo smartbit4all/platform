@@ -6,7 +6,6 @@ import java.util.UUID;
 import org.smartbit4all.api.invocation.bean.ApiData;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
-import org.smartbit4all.domain.application.ApplicationRuntime;
 import org.smartbit4all.domain.application.ApplicationRuntimeApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -25,7 +24,7 @@ public final class InvocationApiImpl implements InvocationApi {
   @Autowired
   private InvocationRegisterApi invocationRegisterApi;
 
-  @Autowired
+  @Autowired(required = false)
   private ApplicationRuntimeApi applicationRuntimeApi;
 
   /**
@@ -57,8 +56,9 @@ public final class InvocationApiImpl implements InvocationApi {
       throw new ApiNotFoundException(apiData);
     }
 
-    ApplicationRuntime self = applicationRuntimeApi.self();
-    if (runtimes.contains(self.getUuid())) {
+    // If the applicationRuntimeApi is null, then we can only invoke the api call in our own runtime
+    if (applicationRuntimeApi == null
+        || runtimes.contains(applicationRuntimeApi.self().getUuid())) {
       Object apiInstance = invocationRegisterApi.getApiInstance(apiData.getUri());
       Method method = Invocations.getMethodToCall(apiInstance, request);
       return Invocations.invokeMethod(request, apiInstance, method);

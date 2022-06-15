@@ -37,7 +37,6 @@ import javax.validation.Valid;
 @ApiModel(description = "An api is a programming interface consists of methods to call. An api can be provided by many deployment units at the same time. When a deployment unit starts it collects all the apis and methods it has and register it into the storage. If another deployment unit has a registration for this api as a remote proxy then this proxy is going to be initiated and will be able to call the newly started node. If we have a primary api that collects the available secondary apis of an interface then the primary api local instances will be notified about the availability of the given interface instance. The remote registration is not saved here to avoid circular references. ")
 @JsonPropertyOrder({
   ApiData.URI,
-  ApiData.MODULE,
   ApiData.INTERFACE_NAME,
   ApiData.NAME,
   ApiData.METHODS
@@ -47,9 +46,6 @@ import javax.validation.Valid;
 public class ApiData {
   public static final String URI = "uri";
   private URI uri;
-
-  public static final String MODULE = "module";
-  private String module;
 
   public static final String INTERFACE_NAME = "interfaceName";
   private String interfaceName;
@@ -87,34 +83,6 @@ public class ApiData {
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setUri(URI uri) {
     this.uri = uri;
-  }
-
-
-  public ApiData module(String module) {
-    
-    this.module = module;
-    return this;
-  }
-
-   /**
-   * The name of the module that is responsible for the given api. It is mandatory to be able to identify exactly the given api. 
-   * @return module
-  **/
-  @javax.annotation.Nonnull
-  @NotNull
-  @ApiModelProperty(required = true, value = "The name of the module that is responsible for the given api. It is mandatory to be able to identify exactly the given api. ")
-  @JsonProperty(MODULE)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-
-  public String getModule() {
-    return module;
-  }
-
-
-  @JsonProperty(MODULE)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setModule(String module) {
-    this.module = module;
   }
 
 
@@ -218,7 +186,6 @@ public class ApiData {
     }
     ApiData apiData = (ApiData) o;
     return Objects.equals(this.uri, apiData.uri) &&
-        Objects.equals(this.module, apiData.module) &&
         Objects.equals(this.interfaceName, apiData.interfaceName) &&
         Objects.equals(this.name, apiData.name) &&
         Objects.equals(this.methods, apiData.methods);
@@ -226,7 +193,7 @@ public class ApiData {
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, module, interfaceName, name, methods);
+    return Objects.hash(uri, interfaceName, name, methods);
   }
 
   @Override
@@ -234,7 +201,6 @@ public class ApiData {
     StringBuilder sb = new StringBuilder();
     sb.append("class ApiData {\n");
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
-    sb.append("    module: ").append(toIndentedString(module)).append("\n");
     sb.append("    interfaceName: ").append(toIndentedString(interfaceName)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    methods: ").append(toIndentedString(methods)).append("\n");
