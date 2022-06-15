@@ -10,6 +10,7 @@ import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.stream.Collectors;
 import org.apache.logging.log4j.util.Strings;
 import org.smartbit4all.api.invocation.bean.ApplicationRuntimeData;
 import org.smartbit4all.core.utility.concurrent.FutureValue;
@@ -21,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.util.CollectionUtils;
 
 /**
  * The application runtime api implementation via {@link StorageApi}.
@@ -32,7 +34,7 @@ import org.springframework.scheduling.annotation.Scheduled;
  */
 public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, InitializingBean {
 
-  private static final String CLUSTER = "cluster";
+  public static final String CLUSTER = "cluster";
 
   /**
    * The self bean of this application instance. It can be used after property set time. This is
@@ -77,6 +79,9 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
   @Value("${server.port:-1}")
   private int port;
 
+  @Value("${application.module.name:-1}")
+  private String moduleName;
+
   @Value("${applicationruntime.maintain.fixeddelay:5000}")
   private String schedulePeriodString;
 
@@ -89,7 +94,7 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
   public ApplicationRuntime self() {
     try {
       Boolean maintain = maintaining.get();
-      return Boolean.TRUE.equals(maintain) ? (self.isDone() ? self.get() : null) : self.get();
+      return self.isDone() ? self.get() : null;
     } catch (Exception e) {
       throw new IllegalStateException("Unable to get the registered runtime instance.", e);
     }
@@ -141,14 +146,24 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
     // Manage the invalid runtimes, move them into the archive set.
     List<ApplicationRuntimeData> invalidRuntimes = new ArrayList<>();
     Map<UUID, ApplicationRuntime> activeRuntimesMap = new HashMap<>();
+    Map<URI, List<UUID>> activeRuntimesByApisMap = new HashMap<>();
     for (ApplicationRuntimeData runtimeData : activeRuntimes) {
       if (runtimeData.getLastTouchTime() < (currentTimeMillis - getSchedulePeriod() * 3)) {
         // This is an invalid runtime. Remove it from the list and from the set.
         invalidRuntimes.add(runtimeData);
       } else {
-        activeRuntimesMap.put(runtimeData.getUuid(), runtimeOf(runtimeData));
+        ApplicationRuntime runtime = runtimeOf(runtimeData);
+        activeRuntimesMap.put(runtimeData.getUuid(), runtime);
+        if (!CollectionUtils.isEmpty(runtime.getData().getApis())) {
+          for (URI api : runtime.getData().getApis()) {
+            List<UUID> runtimes =
+                activeRuntimesByApisMap.computeIfAbsent(api, r -> new ArrayList<>());
+            runtimes.add(runtime.getUuid());
+          }
+
+        }
       }
-      System.out.println("Runtime: " + runtimeData.toString());
+      // System.out.println("Runtime: " + runtimeData.toString());
     }
     // Set the new runtimes. This is an atomic operation there is no need to lock.
     runtimes = activeRuntimesMap;
@@ -190,5 +205,24 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
     result.setTimeOffset(0);
     return result;
   }
+
+  @Override
+  public void setApis(List<URI> apiDataUris) {
+    storageCluster.update(runtimeUri, ApplicationRuntimeData.class, r -> {
+      return r.apis(apiDataUris);
+    });
+
+  }
+
+  @Override
+  public List<ApplicationRuntime> getActiveRuntimes() {
+    return runtimes.values().stream().collect(Collectors.toList());
+  }
+
+  @Override
+  public List<URI> getApis(UUID uuid) {
+    return runtimes.get(uuid).getData().getApis();
+  }
+
 
 }

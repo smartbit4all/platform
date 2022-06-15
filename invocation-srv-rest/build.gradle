@@ -27,8 +27,8 @@ smartbit4all {
         invokerPackagePostfix = "restserver.util"
 		genApiRestServer = true
 		importMappings = [
-			"InvocationRequestData" : "org.smartbit4all.api.invocation.model.InvocationRequestData",
-			"InvocationParameterData" : "org.smartbit4all.api.invocation.model.InvocationParameterData"
+			"InvocationRequest" : "org.smartbit4all.api.invocation.bean.InvocationRequest",
+			"InvocationParameter" : "org.smartbit4all.api.invocation.bean.InvocationParameter"
 		]
     }
 }

@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.smartbit4all.api.setting.bean.LocaleValue;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 
@@ -60,6 +61,7 @@ public class LocaleSettingForLanguage {
    * The locale code like en or hu. The key of the settings list.
    * @return code
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @ApiModelProperty(required = true, value = "The locale code like en or hu. The key of the settings list.")
   @JsonProperty(CODE)
@@ -92,6 +94,7 @@ public class LocaleSettingForLanguage {
    * The locale specific values.
    * @return valuesByKey
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @Valid
   @ApiModelProperty(required = true, value = "The locale specific values.")

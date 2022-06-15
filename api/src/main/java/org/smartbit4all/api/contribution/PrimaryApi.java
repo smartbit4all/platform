@@ -1,7 +1,7 @@
 package org.smartbit4all.api.contribution;
 
 import org.smartbit4all.api.invocation.InvocationApi;
-import org.smartbit4all.api.invocation.InvocationRequest;
+import org.smartbit4all.api.invocation.bean.InvocationRequest;
 
 /**
  * The primary API collects a kind Apis to serve as a switch selecting the appropriate Api for a
@@ -21,6 +21,10 @@ public interface PrimaryApi<A extends ContributionApi> {
    */
   A findApiByName(String apiName);
 
-  Class<A> getInnerApiClass();
+  Class<A> getContributionApiClass();
+
+  void registerApi(A api, String name);
+
+  void unregisterApi(String apiName);
 
 }

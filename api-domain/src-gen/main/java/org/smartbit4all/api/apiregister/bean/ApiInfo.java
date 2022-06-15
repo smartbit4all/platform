@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 
@@ -64,6 +65,7 @@ public class ApiInfo {
    * The fully qualified name of the interface.
    * @return interfaceQualifiedName
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @ApiModelProperty(required = true, value = "The fully qualified name of the interface.")
   @JsonProperty(INTERFACE_QUALIFIED_NAME)
@@ -91,6 +93,7 @@ public class ApiInfo {
    * The unique name of the api to be registered.
    * @return apiIdentifier
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @ApiModelProperty(required = true, value = "The unique name of the api to be registered.")
   @JsonProperty(API_IDENTIFIER)
@@ -118,6 +121,7 @@ public class ApiInfo {
    * The protocol which can be used to reach the registered api.
    * @return protocol
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @ApiModelProperty(required = true, value = "The protocol which can be used to reach the registered api.")
   @JsonProperty(PROTOCOL)

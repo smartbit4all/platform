@@ -18,43 +18,36 @@ paths:
                 
 components:
   schemas:
-    InvocationRequestTemplate:
+    InvocationRequest:
       type: object
-      required: [parameters, apiClass, methodName]
+      required: [parameters, interfaceClass, methodName]
       properties:
         uri:
           type: string
           format: uri
-        executionApi:
+        interfaceClass: 
           type: string
-          description: 'The name of the execution api. If it is empty then we use the local by default'
-        apiClass: 
+          description: 'The fully qualified name of the interface.'
+        name: 
           type: string
-          description: 'The fully qualified name of the api. In case of java it is the name of the class.'
-        apiInstanceId:
-          type: string
-          format: uuid
-          description: The unique identifier for the api instance. If it is set then the execution will be routed to the given instance.
-        innerApi:
-          type: string
-          description: 'If we have a contributed api collecting other apis then it is the identifier of the contributed api.'
+          description: 'The fully qualified name of the interface.'
         methodName:
           type: string
           description: 'The name of the method to call'
         parameters:
           type: array
           items:
-            $ref: '#/components/schemas/InvocationParameterTemplate'
-    InvocationParameterTemplate:
+            $ref: '#/components/schemas/InvocationParameter'
+    InvocationParameter:
       type: object
       required: [name, typeClass]
       properties:
         name:
           type: string
           description: The symbolic name of the parameter. Must be set and unique inside an invocation request template.
-        defaultValueString:
-          type: string
-          description: The default value for the given parameter.
+        value:
+          type: object
+          description: The value of the object.
         typeClass:
           type: string
           description: The fully qualified type class name of the parameter.
@@ -68,10 +61,9 @@ components:
           type: string
           format: uri
         apis:
-          type: string
-          description: |
-            The available apis of a tenant.
-          additionalProperties:
+          type: array
+          description: The available apis of a tenant.
+          items:
             type: string
             format: uri
     ApiData:
@@ -144,6 +136,15 @@ components:
         typeName:
           type: string
           description: The fully qualified name of the parameter data.
+        kind:
+          description: The type of the invocation parameter.
+          $ref: '#/components/schemas/InvocationParameterKind'
+          default: BYVALUE
+    InvocationParameterKind:
+      type: string
+      enum: [
+          BYVALUE, BYREFERENCE
+        ]
     ApplicationRuntimeData:
       type: object
       required: [uri,uuid,ipAddress,startupTime,lastTouchTime]
@@ -181,3 +182,9 @@ components:
           type: integer
           format: int64
           description: The last time when the given runtime updated the entry in the storage.
+        apis:
+          type: array
+          description: The available apis of the runtime.
+          items:
+            type: string
+            format: uri

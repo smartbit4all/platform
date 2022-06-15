@@ -23,9 +23,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -46,7 +45,7 @@ public class ApiRegistryData {
   private URI uri;
 
   public static final String APIS = "apis";
-  private Map<String, URI> apis = new HashMap<>();
+  private List<URI> apis = new ArrayList<>();
 
 
   public ApiRegistryData uri(URI uri) {
@@ -78,36 +77,36 @@ public class ApiRegistryData {
   }
 
 
-  public ApiRegistryData apis(Map<String, URI> apis) {
+  public ApiRegistryData apis(List<URI> apis) {
     
     this.apis = apis;
     return this;
   }
 
-  public ApiRegistryData putApisItem(String key, URI apisItem) {
-    this.apis.put(key, apisItem);
+  public ApiRegistryData addApisItem(URI apisItem) {
+    this.apis.add(apisItem);
     return this;
   }
 
    /**
-   * The available apis of a tenant. 
+   * The available apis of a tenant.
    * @return apis
   **/
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The available apis of a tenant. ")
+  @ApiModelProperty(required = true, value = "The available apis of a tenant.")
   @JsonProperty(APIS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public Map<String, URI> getApis() {
+  public List<URI> getApis() {
     return apis;
   }
 
 
   @JsonProperty(APIS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setApis(Map<String, URI> apis) {
+  public void setApis(List<URI> apis) {
     this.apis = apis;
   }
 

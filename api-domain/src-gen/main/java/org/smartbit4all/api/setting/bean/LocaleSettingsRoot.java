@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.smartbit4all.api.setting.bean.LocaleSettingForLanguage;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 
@@ -58,6 +59,7 @@ public class LocaleSettingsRoot {
    * The uri of the locale setting
    * @return uri
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @Valid
   @ApiModelProperty(required = true, value = "The uri of the locale setting")
@@ -91,6 +93,7 @@ public class LocaleSettingsRoot {
    * Locale specific settings.
    * @return settings
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @Valid
   @ApiModelProperty(required = true, value = "Locale specific settings.")

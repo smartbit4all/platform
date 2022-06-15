@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.smartbit4all.api.invocation.bean.InvocationParameterKind;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -33,7 +34,8 @@ import javax.validation.Valid;
 @ApiModel(description = "The parameter of a given method. ")
 @JsonPropertyOrder({
   ParameterData.NAME,
-  ParameterData.TYPE_NAME
+  ParameterData.TYPE_NAME,
+  ParameterData.KIND
 })
 @JsonTypeName("ParameterData")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -43,6 +45,9 @@ public class ParameterData {
 
   public static final String TYPE_NAME = "typeName";
   private String typeName;
+
+  public static final String KIND = "kind";
+  private InvocationParameterKind kind;
 
 
   public ParameterData name(String name) {
@@ -101,6 +106,34 @@ public class ParameterData {
   }
 
 
+  public ParameterData kind(InvocationParameterKind kind) {
+    
+    this.kind = kind;
+    return this;
+  }
+
+   /**
+   * Get kind
+   * @return kind
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(KIND)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public InvocationParameterKind getKind() {
+    return kind;
+  }
+
+
+  @JsonProperty(KIND)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setKind(InvocationParameterKind kind) {
+    this.kind = kind;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -111,12 +144,13 @@ public class ParameterData {
     }
     ParameterData parameterData = (ParameterData) o;
     return Objects.equals(this.name, parameterData.name) &&
-        Objects.equals(this.typeName, parameterData.typeName);
+        Objects.equals(this.typeName, parameterData.typeName) &&
+        Objects.equals(this.kind, parameterData.kind);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, typeName);
+    return Objects.hash(name, typeName, kind);
   }
 
   @Override
@@ -125,6 +159,7 @@ public class ParameterData {
     sb.append("class ParameterData {\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    typeName: ").append(toIndentedString(typeName)).append("\n");
+    sb.append("    kind: ").append(toIndentedString(kind)).append("\n");
     sb.append("}");
     return sb.toString();
   }

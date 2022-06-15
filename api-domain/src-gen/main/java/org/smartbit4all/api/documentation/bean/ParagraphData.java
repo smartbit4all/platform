@@ -38,6 +38,7 @@ import javax.validation.Valid;
   ParagraphData.ORDER_NO,
   ParagraphData.KIND,
   ParagraphData.CONTENT_URI,
+  ParagraphData.FRAGMENT_ID,
   ParagraphData.TEXT
 })
 @JsonTypeName("ParagraphData")
@@ -54,6 +55,9 @@ public class ParagraphData {
 
   public static final String CONTENT_URI = "contentUri";
   private URI contentUri;
+
+  public static final String FRAGMENT_ID = "fragmentId";
+  private String fragmentId;
 
   public static final String TEXT = "text";
   private String text;
@@ -171,6 +175,33 @@ public class ParagraphData {
   }
 
 
+  public ParagraphData fragmentId(String fragmentId) {
+    
+    this.fragmentId = fragmentId;
+    return this;
+  }
+
+   /**
+   * The fragment is used to identify an element inside the given .
+   * @return fragmentId
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The fragment is used to identify an element inside the given .")
+  @JsonProperty(FRAGMENT_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getFragmentId() {
+    return fragmentId;
+  }
+
+
+  @JsonProperty(FRAGMENT_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setFragmentId(String fragmentId) {
+    this.fragmentId = fragmentId;
+  }
+
+
   public ParagraphData text(String text) {
     
     this.text = text;
@@ -211,12 +242,13 @@ public class ParagraphData {
         Objects.equals(this.orderNo, paragraphData.orderNo) &&
         Objects.equals(this.kind, paragraphData.kind) &&
         Objects.equals(this.contentUri, paragraphData.contentUri) &&
+        Objects.equals(this.fragmentId, paragraphData.fragmentId) &&
         Objects.equals(this.text, paragraphData.text);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, orderNo, kind, contentUri, text);
+    return Objects.hash(id, orderNo, kind, contentUri, fragmentId, text);
   }
 
   @Override
@@ -227,6 +259,7 @@ public class ParagraphData {
     sb.append("    orderNo: ").append(toIndentedString(orderNo)).append("\n");
     sb.append("    kind: ").append(toIndentedString(kind)).append("\n");
     sb.append("    contentUri: ").append(toIndentedString(contentUri)).append("\n");
+    sb.append("    fragmentId: ").append(toIndentedString(fragmentId)).append("\n");
     sb.append("    text: ").append(toIndentedString(text)).append("\n");
     sb.append("}");
     return sb.toString();

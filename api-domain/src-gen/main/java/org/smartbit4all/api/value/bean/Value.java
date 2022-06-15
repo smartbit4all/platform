@@ -24,6 +24,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 
@@ -58,6 +59,7 @@ public class Value {
    * The uri the object of the value can be accessed.
    * @return objectUri
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @Valid
   @ApiModelProperty(required = true, value = "The uri the object of the value can be accessed.")
@@ -86,6 +88,7 @@ public class Value {
    * The string value that can be shown on ui. It might be a label code or the exact label.
    * @return displayValue
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @ApiModelProperty(required = true, value = "The string value that can be shown on ui. It might be a label code or the exact label.")
   @JsonProperty(DISPLAY_VALUE)

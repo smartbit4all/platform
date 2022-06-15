@@ -1,7 +1,8 @@
 package org.smartbit4all.api.invocation;
 
-import org.smartbit4all.api.invocation.bean.InvocationParameterTemplate;
-import org.smartbit4all.api.invocation.bean.InvocationRequestTemplate;
+import org.smartbit4all.api.invocation.bean.InvocationParameter;
+import org.smartbit4all.api.invocation.bean.InvocationRequest;
+import org.smartbit4all.api.invocation.bean.TestDataBean;
 
 public interface TestApi {
 
@@ -9,9 +10,16 @@ public interface TestApi {
 
   String echoMethod(String p1);
 
-  static InvocationRequestTemplate echoMethodTemplate =
-      new InvocationRequestTemplate().apiClass(TestApi.class.getName()).methodName("echoMethod")
-          .addParametersItem(
-              new InvocationParameterTemplate().name("p1").typeClass(String.class.getName()));
+  TestDataBean modifyData(TestDataBean databean);
 
+  static InvocationRequest echoMethodTemplate(String value) {
+    return Invocations.invoke(TestApi.class)
+        .methodName("echoMethod")
+        .interfaceClass(TestApi.class.getName())
+        .name(TestApiImpl.NAME).addParametersItem(
+            new InvocationParameter()
+                .name("p1")
+                .typeClass(String.class.getName())
+                .value(value));
+  }
 }

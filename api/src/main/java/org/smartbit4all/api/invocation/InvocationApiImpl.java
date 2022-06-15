@@ -1,20 +1,17 @@
 package org.smartbit4all.api.invocation;
 
-import java.net.URI;
-import java.util.HashMap;
+import java.lang.reflect.Method;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
-import org.smartbit4all.api.invocation.bean.InvocationRequestTemplate;
-import org.smartbit4all.api.invocation.registration.ApiRegister;
-import org.smartbit4all.api.invocation.registration.ApiRegistrationListenerImpl;
-import org.smartbit4all.domain.data.storage.Storage;
-import org.smartbit4all.domain.data.storage.StorageApi;
-import org.smartbit4all.domain.data.storage.StorageObject;
-import org.springframework.beans.factory.InitializingBean;
+import org.smartbit4all.api.invocation.bean.ApiData;
+import org.smartbit4all.api.invocation.bean.InvocationParameter;
+import org.smartbit4all.api.invocation.bean.InvocationRequest;
+import org.smartbit4all.domain.application.ApplicationRuntime;
+import org.smartbit4all.domain.application.ApplicationRuntimeApi;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
+import org.springframework.util.CollectionUtils;
 
 /**
  * The implementation of the {@link InvocationApi}. It collects all the
@@ -23,123 +20,62 @@ import org.springframework.beans.factory.annotation.Autowired;
  * 
  * @author Peter Boros
  */
-public final class InvocationApiImpl implements InvocationApi, InitializingBean {
+public final class InvocationApiImpl implements InvocationApi {
 
-  @Autowired(required = false)
-  StorageApi storageApi;
+  @Autowired
+  private InvocationRegisterApi invocationRegisterApi;
 
-  /**
-   * The list of {@link InvocationExecutionApi} from the Spring context.
-   */
-  @Autowired(required = false)
-  List<InvocationExecutionApi> apis;
-
-  @Autowired(required = false)
-  ApiRegister apiRegister;
-
-  Map<String, InvocationExecutionApi> apiByName = new HashMap<>();
+  @Autowired
+  private ApplicationRuntimeApi applicationRuntimeApi;
 
   /**
-   * The {@link #register(Object)} function puts here the instances by a generated UUID.
+   * The {@link InvocationExecutionApi} is for handling remote calls.
    */
-  // TODO WeakReference!
-  Map<UUID, Object> instancesByUUID = new ConcurrentHashMap<>();
+  @Autowired(required = false)
+  private InvocationExecutionApi executionApi;
+
 
   @Override
-  public InvocationParameter invoke(InvocationRequest request) throws Exception {
-    InvocationExecutionApi api = getApi(request.getExecutionApi());
-    if (api != null) {
-      return api.invoke(request);
+  public InvocationParameter invoke(InvocationRequest request) throws ApiNotFoundException {
+    ApiDescriptor apiDescriptor =
+        invocationRegisterApi.getApi(request.getInterfaceClass(), request.getName());
+
+    if (apiDescriptor == null) {
+      throw new ApiNotFoundException(request);
+    }
+
+    return invoke(apiDescriptor, request);
+  }
+
+  private InvocationParameter invoke(ApiDescriptor apiDescriptor, InvocationRequest request)
+      throws ApiNotFoundException {
+
+    ApiData apiData = apiDescriptor.getApiData();
+    List<UUID> runtimes = invocationRegisterApi.getRuntimesForApi(apiData.getUri());
+
+    if (CollectionUtils.isEmpty(runtimes)) {
+      throw new ApiNotFoundException(apiData);
+    }
+
+    ApplicationRuntime self = applicationRuntimeApi.self();
+    if (runtimes.contains(self.getUuid())) {
+      Object apiInstance = invocationRegisterApi.getApiInstance(apiData.getUri());
+      Method method = Invocations.getMethodToCall(apiInstance, request);
+      return Invocations.invokeMethod(request, apiInstance, method);
     } else {
-      throw new IllegalArgumentException(
-          request.getExecutionApi() + " execution api is not available for the " + request);
+      UUID runtimeToRun = getRuntimeToRun(runtimes);
+
+      return executionApi.invoke(runtimeToRun, request);
     }
   }
 
-  public InvocationExecutionApi getApi(String name) {
-    return apiByName.get(name);
+  @EventListener(ApplicationReadyEvent.class)
+  public void init() {
+    invocationRegisterApi.setInvocationApi(this);
   }
 
-  private void addApi(String name, InvocationExecutionApi api) {
-    apiByName.put(name, api);
+  private UUID getRuntimeToRun(List<UUID> runtimes) {
+    // TODO decide which runtime to use
+    return runtimes.get(0);
   }
-
-  @Override
-  public void afterPropertiesSet() throws Exception {
-    // The local implementation is always set plus the apis from the SpringContext.
-    if (apis != null) {
-      for (InvocationExecutionApi executionApi : apis) {
-        apiByName.put(executionApi.getName(), executionApi);
-        if (executionApi instanceof InvocationExecutionApiImpl) {
-          ((InvocationExecutionApiImpl) executionApi).setInvocationApi(this);
-        }
-      }
-    }
-    if (apiRegister != null) {
-      apiRegister.addRegistrationListener(
-          new ApiRegistrationListenerImpl<InvocationExecutionApi>(InvocationExecutionApi.class,
-              (executionApi, apiInfo) -> {
-                addApi(executionApi.getName(), executionApi);
-              }));
-    }
-  }
-
-  @Override
-  public URI save(InvocationRequestTemplate requestTemplate) {
-    Storage storage = getStorage();
-    URI result = null;
-    try {
-      StorageObject<InvocationRequestTemplate> storageObject =
-          storage.instanceOf(InvocationRequestTemplate.class);
-      storageObject.setObject(requestTemplate);
-      result = storage.save(storageObject);
-    } catch (Exception e) {
-      new RuntimeException("Unable to save " + requestTemplate, e);
-    }
-    return result;
-  }
-
-  private Storage getStorage() {
-    Storage storage =
-        storageApi == null ? null : storageApi.get(Invocations.INVOCATION_SCHEME);
-    if (storage == null) {
-      throw new UnsupportedOperationException(
-          "Unable to save the invocation request template without " + Invocations.INVOCATION_SCHEME
-              + " Storage scheme.");
-    }
-    return storage;
-  }
-
-  @Override
-  public InvocationRequestTemplate load(URI templateUri) {
-    return (InvocationRequestTemplate) getStorage().read(templateUri);
-  }
-
-  private void purge() {
-    List<UUID> toRemove = instancesByUUID.entrySet().stream().filter(e -> {
-      return e.getValue() == null;
-    }).map(e -> e.getKey()).collect(Collectors.toList());
-    if (toRemove != null) {
-      toRemove.forEach(uuid -> instancesByUUID.remove(uuid));
-    }
-  }
-
-  @Override
-  public UUID register(Object apiInstance) {
-    if (apiInstance == null) {
-      return null;
-    }
-    UUID result = UUID.randomUUID();
-    instancesByUUID.put(result, apiInstance);
-    purge();
-    return result;
-  }
-
-  @Override
-  public Object find(UUID instanceId) {
-    purge();
-    Object ref = instancesByUUID.get(instanceId);
-    return ref;
-  }
-
 }

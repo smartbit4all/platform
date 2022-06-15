@@ -1,6 +1,10 @@
 package org.smartbit4all.api.invocation;
 
+import org.smartbit4all.api.invocation.bean.TestDataBean;
+
 public class TestApiImpl implements TestApi {
+
+  public static final String NAME = TestApiImpl.class.getName();
 
   public static String lastDo;
 
@@ -13,6 +17,11 @@ public class TestApiImpl implements TestApi {
   @Override
   public String echoMethod(String p1) {
     return p1;
+  }
+
+  @Override
+  public TestDataBean modifyData(TestDataBean databean) {
+    return databean;
   }
 
 }

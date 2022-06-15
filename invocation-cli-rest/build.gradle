@@ -13,8 +13,9 @@ dependencies {
 	
 	
 	testImplementation 'org.mock-server:mockserver-spring-test-listener:5.11.2'
+	testImplementation project(':storage-fs')
 }
-
+	
 smartbit4all {
     openApi {
         apiDescriptorMapping = [
@@ -26,8 +27,8 @@ smartbit4all {
         invokerPackagePostfix = "restclientgen.util"
 		genApiRestClient = true
 		importMappings = [
-			"InvocationRequestData" : "org.smartbit4all.api.invocation.model.InvocationRequestData",
-			"InvocationParameterData" : "org.smartbit4all.api.invocation.model.InvocationParameterData"
+			"InvocationRequest" : "org.smartbit4all.api.invocation.bean.InvocationRequest",
+			"InvocationParameter" : "org.smartbit4all.api.invocation.bean.InvocationParameter"
 		]
     }
 }

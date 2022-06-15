@@ -1,5 +1,7 @@
 package org.smartbit4all.domain.application;
 
+import java.net.URI;
+import java.util.List;
 import java.util.UUID;
 import org.smartbit4all.domain.data.storage.StorageApi;
 
@@ -27,5 +29,11 @@ public interface ApplicationRuntimeApi {
    * @return If the application instance exists then we get it back els it will be null.
    */
   ApplicationRuntime get(UUID uuid);
+
+  List<ApplicationRuntime> getActiveRuntimes();
+
+  List<URI> getApis(UUID uuid);
+
+  void setApis(List<URI> apiDataUris);
 
 }

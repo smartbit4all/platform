@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 
@@ -53,6 +54,7 @@ public class LocaleValue {
    * The code of the locale value. It can be a qualified name and a literal also.
    * @return code
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @ApiModelProperty(required = true, value = "The code of the locale value. It can be a qualified name and a literal also.")
   @JsonProperty(CODE)
@@ -80,6 +82,7 @@ public class LocaleValue {
    * The locale specific value belongs to the code.
    * @return value
   **/
+  @javax.annotation.Nonnull
   @NotNull
   @ApiModelProperty(required = true, value = "The locale specific value belongs to the code.")
   @JsonProperty(VALUE)

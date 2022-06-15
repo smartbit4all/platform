@@ -20,14 +20,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/InvocationRequestData'
+              $ref: 'InvocationRequest'
       responses:
         '200':
           description: ''
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/InvocationParameterData'
+                $ref: 'InvocationParameter'
 
                 
 components:

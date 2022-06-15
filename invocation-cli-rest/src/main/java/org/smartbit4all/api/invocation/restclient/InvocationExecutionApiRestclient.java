@@ -1,51 +1,49 @@
 package org.smartbit4all.api.invocation.restclient;
 
-import org.smartbit4all.api.invocation.InvocationExecutionApiImpl;
-import org.smartbit4all.api.invocation.InvocationParameter;
-import org.smartbit4all.api.invocation.InvocationRequest;
-import org.smartbit4all.api.invocation.model.InvocationParameterData;
-import org.smartbit4all.api.invocation.model.InvocationRequestData;
-import org.smartbit4all.api.invocation.restclientgen.InvocationApi;
-import org.smartbit4all.api.invocation.restclientgen.util.ApiClient;
+import java.util.UUID;
+import org.smartbit4all.api.invocation.InvocationExecutionApi;
+import org.smartbit4all.api.invocation.Invocations;
+import org.smartbit4all.api.invocation.bean.InvocationParameter;
+import org.smartbit4all.api.invocation.bean.InvocationRequest;
+import org.smartbit4all.domain.application.ApplicationRuntime;
+import org.smartbit4all.domain.application.ApplicationRuntimeApi;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * The generic rest api call for other server.
  * 
  * @author Peter Boros
  */
-public class InvocationExecutionApiRestclient extends InvocationExecutionApiImpl {
+public class InvocationExecutionApiRestclient implements InvocationExecutionApi {
 
-  private InvocationApi invocationApi;
+  @Autowired
+  private RestTemplate restTemplate;
 
-  private InvocationExecutionApiRestclient(String name, InvocationApi invocationApi) {
-    super(name);
-    this.invocationApi = invocationApi;
-  }
+  @Autowired
+  private ApplicationRuntimeApi applicationRuntimeApi;
+
+  @Autowired
+  private ObjectMapper objectMapper;
 
   @Override
-  public InvocationParameter invoke(InvocationRequest request) throws ClassNotFoundException {
-    
-    InvocationRequestData invocationRequestData =
-        InvocationRestSerializer.invocationRequest2Data(request);
-    
-    InvocationParameterData result = invocationApi.invokeApi(invocationRequestData);
-    
-    return InvocationRestSerializer.invocationParameterData2Parameter(result);
-  }
+  public InvocationParameter invoke(UUID runtime, InvocationRequest request) {
 
-  /**
-   * Creates an instance with a preset rest {@link InvocationApi}.</br>
-   * This factory method can be useful when instantiating the class during configuration time.  
-   */
-  public static InvocationExecutionApiRestclient create(String name, InvocationApi invocationApi) {
-    return new InvocationExecutionApiRestclient(name, invocationApi);
+    ApplicationRuntime applicationRuntime = applicationRuntimeApi.get(runtime);
+    String ipAddress = applicationRuntime.getIpAddress();
+    int serverPort = applicationRuntime.getServerPort();
+
+    // TODO url összeállítása
+    String url = "http://" + ipAddress + ":" + serverPort;
+
+    ResponseEntity<InvocationParameter> resp = restTemplate
+        .postForEntity(url + "/invokeApi", request, InvocationParameter.class);
+
+    InvocationParameter respParam = resp.getBody();
+
+    Invocations.resolveParam(objectMapper, respParam);
+    return respParam;
   }
-  
-  public static InvocationExecutionApiRestclient create(String apiIdentifier,
-      ApiClient apiClient) {
-    InvocationApi restApi = new InvocationApi(apiClient);
-    return new InvocationExecutionApiRestclient(apiIdentifier, restApi);
-  }
-  
-  
 }

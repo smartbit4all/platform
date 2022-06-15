@@ -9,10 +9,9 @@ import org.smartbit4all.domain.data.storage.StorageApi;
  * If an api is provided by an application instance then a Proxy with this invocation handler should
  * be registered into the configuration. At the end of the configuration setup, the
  * {@link InvocationRegisterApi} will register the provided apis into the storage. The storage will
- * contains the updated information about apis and the other application instances will ber
- * refreshed to make the {@link RemoteApiInvocationHandler}s work. The invocation is served via an
- * invocation call notification. This is generic call that refers to the already saved invocation
- * structure.
+ * contains the updated information about apis and the other application instances will be refreshed
+ * to make the {@link ApiInvocationHandler}s work. The invocation is served via an invocation call
+ * notification. This is generic call that refers to the already saved invocation structure.
  * 
  * The naming of the apis is the following: <code>module:org.package.InterfaceClass(name)</code>
  * 
@@ -24,11 +23,6 @@ public class ProviderApiInvocationHandler<T> {
    * The name of the registered api.
    */
   private final String name;
-
-  /**
-   * The name of the module.
-   */
-  private final String module;
 
   /**
    * The interface class of the proxy.
@@ -54,34 +48,32 @@ public class ProviderApiInvocationHandler<T> {
    * Constructs a new provider proxy invocation handler. This handler is responsible for sharing the
    * api data via the storage with other application instances.
    * 
-   * @param module The name of the module that provides the given api.
    * @param name
    */
-  ProviderApiInvocationHandler(Class<T> interfaceClass, String module, String name,
-      T apiInstance) {
+  ProviderApiInvocationHandler(Class<T> interfaceClass, String name, T apiInstance) {
     super();
-    this.module = module;
     this.name = name;
     this.interfaceClass = interfaceClass;
     this.apiInstance = apiInstance;
-    uri =
-        URI.create(Invocations.APIREGISTRATION_SCHEME + StringConstant.COLON + StringConstant.SLASH
-            + interfaceClass.getName().replace(StringConstant.DOT, StringConstant.SLASH));
+    uri = uriOf(interfaceClass, name);
   }
 
-  static final <T> ProviderApiInvocationHandler<T> providerOf(Class<T> interfaceClass,
-      String module, String name,
+  public static <T> URI uriOf(Class<T> interfaceClass, String name) {
+    return URI
+        .create(Invocations.APIREGISTRATION_SCHEME + StringConstant.COLON + StringConstant.SLASH
+            + interfaceClass.getName().replace(StringConstant.DOT, StringConstant.SLASH)
+            + StringConstant.SLASH + name);
+  }
+
+  static final <T> ProviderApiInvocationHandler<T> providerOf(Class<T> interfaceClass, String name,
       T apiInstance) {
-    return new ProviderApiInvocationHandler<>(interfaceClass, module, name, apiInstance);
+    return new ProviderApiInvocationHandler<>(interfaceClass, name, apiInstance);
   }
 
   public final String getName() {
     return name;
   }
 
-  public final String getModule() {
-    return module;
-  }
 
   public final Class<?> getInterfaceClass() {
     return interfaceClass;
@@ -92,8 +84,7 @@ public class ProviderApiInvocationHandler<T> {
   }
 
   ApiData getData() {
-    return new ApiData().module(module).interfaceName(interfaceClass.getName()).name(name)
-        .uri(uri);
+    return new ApiData().interfaceName(interfaceClass.getName()).name(name).uri(uri);
   }
 
 }

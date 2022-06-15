@@ -2,122 +2,53 @@ package org.smartbit4all.api.invocation;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.lang.reflect.Proxy;
-import org.smartbit4all.api.contribution.ContributionApi;
+import javax.validation.constraints.NotNull;
+import org.smartbit4all.api.invocation.bean.InvocationParameter;
+import org.smartbit4all.api.invocation.bean.InvocationRequest;
 
-/**
- * This {@link InvocationHandler} implementation is responsible for constructing the
+/***
+ * This{@link InvocationHandler} implementation is responsible for constructing the
  * {@link InvocationRequest} from the method call and pass it to the {@link InvocationApi}.
- * 
+ *
  * @author Peter Boros
  *
  * @param <A>
  */
-public class ApiInvocationHandler<A, I extends ContributionApi> implements InvocationHandler {
-
-  private final Class<? extends A> primaryApiClass;
-
-  private final A primaryApi;
-
-  private final Class<? extends I> innerApiClass;
-
-  private final I innerApi;
+public class ApiInvocationHandler<A> implements InvocationHandler {
 
   private final InvocationApi invocationApi;
 
-  private String executionApi;
+  private Class<? extends A> apiClass;
 
-  private ApiInvocationProxy invocationProxy = new ApiInvocationProxy() {
+  private String name;
 
-    @Override
-    public Object getOriginalApi() {
-      return getApi();
-    }
-
-    @Override
-    public ApiInvocationHandler<?, ?> getInvocationHandler() {
-      return ApiInvocationHandler.this;
-    }
-  };
-
-  public ApiInvocationHandler(Class<? extends A> primaryApiClass, A primaryApi,
-      Class<? extends I> innerApiClass, I innerApi, InvocationApi invocationApi,
-      String executionApi) {
+  public ApiInvocationHandler(Class<? extends A> primaryApiClass, String name,
+      InvocationApi invocationApi) {
     super();
-    this.primaryApiClass = primaryApiClass;
-    this.primaryApi = primaryApi;
-    this.innerApiClass = innerApiClass;
-    this.innerApi = innerApi;
+    this.apiClass = primaryApiClass;
     this.invocationApi = invocationApi;
-    this.executionApi = executionApi;
-  }
-
-  @SuppressWarnings("unchecked")
-  public static final <A, I extends ContributionApi> I createProxyInner(
-      Class<? extends A> primaryApiClass, A primaryApi,
-      Class<? extends I> innerApiClass, I innerApi, InvocationApi invocationApi,
-      String executionApi) {
-    if(innerApi != null && innerApi instanceof ApiInvocationProxy) {
-      // if its already an apiInvocationProxy just return it
-      return innerApi;
-    }
-    ApiInvocationHandler<A, I> invocationHandler =
-        new ApiInvocationHandler<>(primaryApiClass, primaryApi, innerApiClass, innerApi,
-            invocationApi, executionApi);
-    I apiProxy = (I) Proxy.newProxyInstance(innerApiClass.getClassLoader(),
-        new Class[] {innerApiClass, ApiInvocationProxy.class}, invocationHandler);
-    return apiProxy;
+    this.name = name;
   }
 
   @SuppressWarnings("unchecked")
   public static final <A> A createProxy(
-      Class<? extends A> primaryApiClass, A primaryApi,
-      InvocationApi invocationApi,
-      String executionApi) {
-    ApiInvocationHandler<A, ?> invocationHandler =
-        new ApiInvocationHandler<>(primaryApiClass, primaryApi, null, null,
-            invocationApi, executionApi);
-    A apiProxy = (A) Proxy.newProxyInstance(primaryApiClass.getClassLoader(),
-        new Class[] {primaryApiClass, ApiInvocationProxy.class}, invocationHandler);
+      Class<? extends A> class1, @NotNull String name,
+      InvocationApi invocationApi) {
+    ApiInvocationHandler<A> invocationHandler =
+        new ApiInvocationHandler<>(class1, name, invocationApi);
+    A apiProxy = (A) Proxy.newProxyInstance(class1.getClassLoader(),
+        new Class[] {class1}, invocationHandler);
     return apiProxy;
-  }
-
-  private final boolean isInner() {
-    return innerApi != null;
   }
 
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-    if (method.getDeclaringClass().equals(ApiInvocationProxy.class)) {
-      return method.invoke(invocationProxy, args);
-    }
-    if (method.getDeclaringClass().equals(InvocationExecutionApi.class)
-        && InvocationExecutionApi.class.isAssignableFrom(primaryApiClass)) {
-      return method.invoke(primaryApi, args);
-    }
-    InvocationRequest invocation = Invocations.invoke(primaryApiClass)
-        .method(method.getName())
-        .exec(executionApi)
-        .innerApi(isInner() ? innerApi.getApiName() : null);
-    
-    Parameter[] parameters = method.getParameters();
-    if(args != null) {
-      for (int i = 0; i < args.length; i++) {
-        Parameter parameter = parameters[i];
-        Object parameterValue = args[i];
-        // TODO For the conversion to string must be implemented with TransferService!
-        invocation.addParameter(parameter.getName(), InvocationParameter.Kind.BYVALUE,
-            parameterValue,
-            parameter.getType().getName());
-      }
-    }
+
+    InvocationRequest invocation =
+        Invocations.createInvocationRequest(method, args, apiClass, name);
     InvocationParameter result = invocationApi.invoke(invocation);
     return result != null ? result.getValue() : null;
-  }
-
-  final Object getApi() {
-    return innerApi != null ? innerApi : primaryApi;
   }
 
 }

@@ -1,19 +1,13 @@
 package org.smartbit4all.api.invocation;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-import java.net.URI;
-import java.util.UUID;
-import java.util.function.Consumer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.smartbit4all.api.contribution.PrimaryApi;
-import org.smartbit4all.api.invocation.bean.InvocationParameterTemplate;
-import org.smartbit4all.api.invocation.bean.InvocationRequestTemplate;
-import org.smartbit4all.api.storage.bean.ObjectReference;
-import org.smartbit4all.domain.data.storage.Storage;
-import org.smartbit4all.domain.data.storage.StorageObject;
-import org.smartbit4all.domain.data.storage.StorageObjectReferenceEntry;
+import java.lang.reflect.Parameter;
+import java.util.ArrayList;
+import java.util.List;
+import org.smartbit4all.api.invocation.bean.InvocationParameter;
+import org.smartbit4all.api.invocation.bean.InvocationRequest;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * The developer api for the invocation.
@@ -25,15 +19,42 @@ public class Invocations {
   public static final String INVOCATION_SCHEME = "invocation";
   public static final String APIREGISTRATION_SCHEME = "apis";
 
-  public static final String PARAMETER1 = "parameter1";
-  public static final String LOCAL = "local";
-  public static final String REST_GEN = "rest-gen";
-  public static final String EXECUTION = "execution-invocation";
-
-  private static final Logger log = LoggerFactory.getLogger(Invocations.class);
-
   private Invocations() {
     super();
+  }
+
+  /**
+   * Creates an InvocationRequest from the method and the parameters.
+   * 
+   * @param method
+   * @param args
+   * @param interfaceClass
+   * @param qualifiedName
+   * @return
+   */
+  public static InvocationRequest createInvocationRequest(Method method, Object[] args,
+      Class<?> interfaceClass, String qualifiedName) {
+    Parameter[] methodParamters = method.getParameters();
+    List<InvocationParameter> params = new ArrayList<>();
+
+    if (args != null) {
+      for (int i = 0; i < args.length; ++i) {
+        Parameter methodParam = methodParamters[i];
+        Object arg = args[i];
+
+        InvocationParameter invocationParam = new InvocationParameter()
+            .name(methodParam.getName())
+            .value(arg)
+            .typeClass(methodParam.getType().getName());
+        params.add(invocationParam);
+      }
+
+    }
+    return new InvocationRequest()
+        .interfaceClass(interfaceClass.getName())
+        .name(qualifiedName)
+        .methodName(method.getName())
+        .parameters(params);
   }
 
   /**
@@ -90,156 +111,59 @@ public class Invocations {
     }
   }
 
+  public static List<Object> getParameterObjects(InvocationRequest request, Method method) {
+    // Transfer the parameters for the call. Convert the primitives and the objects by the
+    List<Object> parameterObjects = new ArrayList<>();
+    // int i = 0;
+    for (InvocationParameter parameter : request.getParameters()) {
+      parameterObjects.add(parameter.getValue());
+      // switch (parameter.getKind()) {
+      // case BYVALUE:
+      // // In case of primitive
+      // parameterObjects.add(parameter.getValue());
+      // break;
+      // case BYREFERENCE:
+      // // In this case we have a direct URI to an object.
+      // Storage storage = storageApi.get(Invocations.INVOCATION_SCHEME);
+      // try {
+      // parameterObjects.add(storage.read(URI.create(parameter.getStringValue())));
+      // } catch (Exception e) {
+      // throw new IllegalArgumentException(
+      // "Invalid URI parameter " + parameter.getValue() + " in the request: " + request, e);
+      // }
+      //
+      // default:
+      // break;
+      // }
+      // i++;
+    }
+    return parameterObjects;
+  }
+
   /**
-   * @param clazz
-   * @param apiInstance
+   * 
+   * 
    * @param request
+   * @param api
+   * @param method
    * @return
-   * @throws ClassNotFoundException
    */
-  public static Object getApiToCall(Class<?> clazz, Object apiInstance, InvocationRequest request)
-      throws ClassNotFoundException {
-    if (apiInstance == null) {
-      throw new IllegalArgumentException(
-          "The " + request.getApiClass() + " was not found for the " + request + " request.");
-    }
-    Object api = apiInstance;
-    if (request.getInnerApi() != null) {
-      if (!(PrimaryApi.class.isAssignableFrom(clazz))) {
-        throw new IllegalArgumentException(
-            "The " + request.getApiClass() + " is not primary class, the " + request.getInnerApi()
-                + " inner api can not be accessed for the " + request + " request.");
+  public static InvocationParameter invokeMethod(InvocationRequest request, Object api,
+      Method method) {
+    List<Object> parameterObjects = getParameterObjects(request, method);
+    try {
+      Object result = method.invoke(api, parameterObjects.toArray());
+      InvocationParameter invocationResult = new InvocationParameter();
+      invocationResult.setValue(result);
+      // invocationResult.setKind(Kind.BYVALUE);
+      if (result != null) {
+        invocationResult.setTypeClass(result.getClass().getName());
+        // invocationResult.setStringValue(result.toString());
       }
-      api = ((PrimaryApi<?>) apiInstance).findApiByName(request.getInnerApi());
-      if (api == null) {
-        throw new IllegalArgumentException(
-            "The " + request.getApiClass() + "." + request.getInnerApi()
-                + " inner api was not found for the " + request + " request.");
-      }
+      return invocationResult;
+    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+      throw new RuntimeException("Unable to call the method for the " + request, e);
     }
-    return api;
-  }
-
-  public static InvocationRequest getModifiedRequestToCallInnerApi(InvocationRequest request,
-      Object apiInstance,
-      String executionApi) {
-
-    if (apiInstance == null) {
-      throw new IllegalArgumentException(
-          "The " + request.getApiClass() + " was not found for the " + request + " request.");
-    }
-    if (request.getInnerApi() != null) {
-      if (!(PrimaryApi.class.isAssignableFrom(apiInstance.getClass()))) {
-        throw new IllegalArgumentException(
-            "The " + request.getApiClass() + " is not primary class, the " + request.getInnerApi()
-                + " inner api can not be accessed for the " + request + " request.");
-      }
-      Class<?> innerApiClass = ((PrimaryApi<?>) apiInstance).getInnerApiClass();
-      InvocationRequest modifiedRequest = request.copy();
-      modifiedRequest.setApiClass(innerApiClass);
-      modifiedRequest.setExecutionApi(executionApi);
-      modifiedRequest.setInnerApi(null);
-
-      return modifiedRequest;
-    }
-    return request;
-  }
-
-  public static final InvocationRequest invoke(Class<?> apiClass) {
-    return new InvocationRequest(apiClass);
-  }
-
-  public static final InvocationRequest invoke(UUID apiInstanceId) {
-    return new InvocationRequest(apiInstanceId);
-  }
-
-  public static final String SUBSCRIBED_CONSUMERS_PREFIX = "subscription.";
-
-  /**
-   * This operation will prepare the {@link StorageObject}, save the related
-   * {@link InvocationRequestTemplate} and add it to the {@link #SUBSCRIBED_CONSUMERS_PREFIX} + name
-   * collection.
-   * 
-   * @param object The storage object that is preparing for save.
-   * @param listener The Consumer to save. It will be registered into the
-   *        {@link InvocationApi#register(Object)} to be able to access as an object in case of
-   *        local call.
-   * @param consumerName The name of the consumer because when we try to retrieve them we need to
-   *        separate.
-   * @param invocationApi The invocation Api to be able to register the Consumer.
-   * @throws Exception
-   */
-  public static final void saveConsumer(StorageObject<?> object, Consumer<URI> listener,
-      String consumerName, InvocationApi invocationApi)
-      throws Exception {
-    InvocationRequestTemplate invocationTemplate =
-        new InvocationRequestTemplate().apiInstanceId(invocationApi.register(listener))
-            .innerApi(consumerName).methodName("accept")
-            .addParametersItem(new InvocationParameterTemplate().name(PARAMETER1));
-
-    Storage storage = object.getStorage();
-    StorageObject<InvocationRequestTemplate> soInvocationRequest =
-        storage.instanceOf(InvocationRequestTemplate.class);
-    soInvocationRequest.setObject(invocationTemplate);
-    URI callbackUri = storage.save(soInvocationRequest);
-
-    object.addCollectionEntry(
-        constructConsumerName(consumerName),
-        new ObjectReference().uri(callbackUri));
-  }
-
-  /**
-   * This operation tries to call the consumers and if it's failed that remove the given consumer
-   * from the collection.
-   * 
-   * @param object
-   * @param consumerName
-   * @param invocationApi
-   */
-  public static final void callConsumers(
-      StorageObject<?> object,
-      String consumerName,
-      InvocationApi invocationApi) {
-
-    if (consumerName == null) {
-      return;
-    }
-
-    Storage storage = object.getStorage();
-    for (StorageObjectReferenceEntry refEntry : object
-        .getCollection(constructConsumerName(consumerName))) {
-
-      if (refEntry.getReferenceData() != null) {
-        try {
-          InvocationRequestTemplate requestTemplate = storage
-              .read(refEntry.getReferenceData().getUri(), InvocationRequestTemplate.class);
-          if (requestTemplate.getParameters().size() == 1) {
-            InvocationRequest request =
-                InvocationRequest.of(requestTemplate).setParameters(object.getUri());
-            try {
-              invocationApi.invoke(request);
-            } catch (Exception e) {
-              log.debug("Unable to call the registered consumers for {} storage object {}",
-                  object.getUri(), request,
-                  e);
-              refEntry.setDelete(true);
-            }
-          }
-        } catch (Exception e) {
-          log.debug("Unable to find the registered consumers for {} storage object {}",
-              refEntry.getReferenceData().getUri(), object.getUri(),
-              e);
-        }
-      }
-    }
-
-    // TODO Should be saved here, or create two versions, where the object can be saved eg. in the
-    // APIs? This may cause multiple versions of the object just because of the invocation save.
-    storage.save(object);
-  }
-
-  private static String constructConsumerName(String consumerName) {
-    return SUBSCRIBED_CONSUMERS_PREFIX + consumerName;
   }
 
   /**
@@ -247,20 +171,33 @@ public class Invocations {
    * based configurations when constructing the instances.
    * 
    * @param <T> The type of the interface
-   * @param module The name of the module that provides the given api.
    * @param name The name of the api if it means anything. For singleton apis it influences nothing.
    * @param apiInstance The api instance that will serve the requests at the end.
    */
-  public static <T> ProviderApiInvocationHandler<T> asProvider(Class<T> interfaceClass,
-      String module, String name,
+  public static <T> ProviderApiInvocationHandler<T> asProvider(Class<T> interfaceClass, String name,
       T apiInstance) {
-    return ProviderApiInvocationHandler.providerOf(interfaceClass, module, name, apiInstance);
+    return ProviderApiInvocationHandler.providerOf(interfaceClass, name, apiInstance);
   }
 
-  @SuppressWarnings("unchecked")
-  public static <T> T asRemote(Class<T> interfaceClass, String module, String name) {
-    return (T) Proxy.newProxyInstance(interfaceClass.getClassLoader(), new Class[] {interfaceClass},
-        new RemoteApiInvocationHandler(module, interfaceClass, name));
+  public static InvocationRequest invoke(Class<?> class1) {
+    return new InvocationRequest().interfaceClass(class1.getName());
+  }
+
+  /**
+   * Converts the parameter to its original type
+   * 
+   * @param objectMapper
+   * @param parameter
+   */
+  public static void resolveParam(ObjectMapper objectMapper, InvocationParameter parameter) {
+    try {
+      Class<?> typeClass = Class.forName(parameter.getTypeClass());
+      Object data = objectMapper.convertValue(parameter.getValue(), typeClass);
+      parameter.setValue(data);
+    } catch (ClassNotFoundException | IllegalArgumentException e) {
+      throw new IllegalArgumentException("Error while resolving invocation parameter!" + parameter,
+          e);
+    }
   }
 
 }

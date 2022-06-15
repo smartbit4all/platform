@@ -23,6 +23,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -41,7 +43,8 @@ import javax.validation.Valid;
   ApplicationRuntimeData.STARTUP_TIME,
   ApplicationRuntimeData.STOP_TIME,
   ApplicationRuntimeData.TIME_OFFSET,
-  ApplicationRuntimeData.LAST_TOUCH_TIME
+  ApplicationRuntimeData.LAST_TOUCH_TIME,
+  ApplicationRuntimeData.APIS
 })
 @JsonTypeName("ApplicationRuntimeData")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -69,6 +72,9 @@ public class ApplicationRuntimeData {
 
   public static final String LAST_TOUCH_TIME = "lastTouchTime";
   private Long lastTouchTime;
+
+  public static final String APIS = "apis";
+  private List<URI> apis = null;
 
 
   public ApplicationRuntimeData uri(URI uri) {
@@ -294,6 +300,42 @@ public class ApplicationRuntimeData {
   }
 
 
+  public ApplicationRuntimeData apis(List<URI> apis) {
+    
+    this.apis = apis;
+    return this;
+  }
+
+  public ApplicationRuntimeData addApisItem(URI apisItem) {
+    if (this.apis == null) {
+      this.apis = new ArrayList<>();
+    }
+    this.apis.add(apisItem);
+    return this;
+  }
+
+   /**
+   * The available apis of the runtime.
+   * @return apis
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "The available apis of the runtime.")
+  @JsonProperty(APIS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<URI> getApis() {
+    return apis;
+  }
+
+
+  @JsonProperty(APIS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setApis(List<URI> apis) {
+    this.apis = apis;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -310,12 +352,13 @@ public class ApplicationRuntimeData {
         Objects.equals(this.startupTime, applicationRuntimeData.startupTime) &&
         Objects.equals(this.stopTime, applicationRuntimeData.stopTime) &&
         Objects.equals(this.timeOffset, applicationRuntimeData.timeOffset) &&
-        Objects.equals(this.lastTouchTime, applicationRuntimeData.lastTouchTime);
+        Objects.equals(this.lastTouchTime, applicationRuntimeData.lastTouchTime) &&
+        Objects.equals(this.apis, applicationRuntimeData.apis);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, uuid, ipAddress, serverPort, startupTime, stopTime, timeOffset, lastTouchTime);
+    return Objects.hash(uri, uuid, ipAddress, serverPort, startupTime, stopTime, timeOffset, lastTouchTime, apis);
   }
 
   @Override
@@ -330,6 +373,7 @@ public class ApplicationRuntimeData {
     sb.append("    stopTime: ").append(toIndentedString(stopTime)).append("\n");
     sb.append("    timeOffset: ").append(toIndentedString(timeOffset)).append("\n");
     sb.append("    lastTouchTime: ").append(toIndentedString(lastTouchTime)).append("\n");
+    sb.append("    apis: ").append(toIndentedString(apis)).append("\n");
     sb.append("}");
     return sb.toString();
   }
