@@ -20,6 +20,8 @@ import org.smartbit4all.domain.data.storage.StorageObject.VersionPolicy;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.event.ApplicationStartedEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.util.CollectionUtils;
@@ -117,9 +119,8 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
     return schedulePeriod.longValue();
   }
 
-  @Scheduled(fixedDelayString = "${applicationruntime.maintain.fixeddelay:5000}")
-  public void maintain() throws InterruptedException, ExecutionException {
-    // TODO sync the times!
+  @EventListener(ApplicationStartedEvent.class)
+  public void initRuntime() {
     long currentTimeMillis = System.currentTimeMillis();
     if (!self.isDone()) {
       // Save the self and set as self. From that time the runtime is officially registered.
@@ -133,7 +134,14 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
       }
       myRuntime.getData().setUri(runtimeUri);
       self.setValue(myRuntime);
-    } else {
+    }
+  }
+
+  @Scheduled(fixedDelayString = "${applicationruntime.maintain.fixeddelay:5000}")
+  public void maintain() throws InterruptedException, ExecutionException {
+    // TODO sync the times!
+    long currentTimeMillis = System.currentTimeMillis();
+    if (self.isDone()) {
       // The application runtime is already exists and must be updated in the storage.
       storageCluster.update(runtimeUri, ApplicationRuntimeData.class, r -> {
         return r.lastTouchTime(currentTimeMillis);

@@ -24,6 +24,7 @@ import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.util.CollectionUtils;
@@ -108,7 +109,7 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi {
     }
   };
 
-  @EventListener(ApplicationReadyEvent.class)
+  @EventListener(ApplicationStartedEvent.class)
   public void maintainRegistry() throws Exception {
     if (storage.get() == null) {
       return;
@@ -140,13 +141,16 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi {
       return r;
     });
 
+    // refresh primary api map
+    fillPrimaryApiMap();
+  }
+
+  @EventListener(ApplicationReadyEvent.class)
+  private void updateRuntimeApis() {
     // update runtime with our provided apis
     if (applicationRuntimeApi != null) {
       applicationRuntimeApi.setApis(new ArrayList<>(apis));
     }
-
-    // refresh primary api map
-    fillPrimaryApiMap();
   }
 
   @Override
