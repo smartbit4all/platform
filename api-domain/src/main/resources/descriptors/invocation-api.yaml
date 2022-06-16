@@ -53,7 +53,7 @@ components:
           description: The fully qualified type class name of the parameter.
     ApiRegistryData:
       type: object
-      required: [uri,apis]
+      required: [uri,apiList]
       description: |
         The common registry entry for the invocation system. It has a special URI to be able to identify it globally.
       properties:

@@ -45,7 +45,7 @@ public class ApiRegistryData {
   private URI uri;
 
   public static final String API_LIST = "apiList";
-  private List<URI> apiList = null;
+  private List<URI> apiList = new ArrayList<>();
 
 
   public ApiRegistryData uri(URI uri) {
@@ -84,9 +84,6 @@ public class ApiRegistryData {
   }
 
   public ApiRegistryData addApiListItem(URI apiListItem) {
-    if (this.apiList == null) {
-      this.apiList = new ArrayList<>();
-    }
     this.apiList.add(apiListItem);
     return this;
   }
@@ -95,11 +92,12 @@ public class ApiRegistryData {
    * The available apis of a tenant.
    * @return apiList
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "The available apis of a tenant.")
+  @ApiModelProperty(required = true, value = "The available apis of a tenant.")
   @JsonProperty(API_LIST)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public List<URI> getApiList() {
     return apiList;
@@ -107,7 +105,7 @@ public class ApiRegistryData {
 
 
   @JsonProperty(API_LIST)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setApiList(List<URI> apiList) {
     this.apiList = apiList;
   }
