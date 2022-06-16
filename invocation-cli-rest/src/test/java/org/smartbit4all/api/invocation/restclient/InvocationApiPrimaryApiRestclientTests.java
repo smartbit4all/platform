@@ -68,7 +68,7 @@ public class InvocationApiPrimaryApiRestclientTests {
     appRegistryStorage.saveAsNew(apiData);
 
     appRegistryStorage.update(InvocationRegisterApiIml.REGISTER_URI, ApiRegistryData.class, r -> {
-      r.addApisItem(apiData.getUri());
+      r.addApiListItem(apiData.getUri());
       return r;
     });
     waitForRefresh(maintainDelay);

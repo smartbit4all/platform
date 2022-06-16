@@ -60,7 +60,7 @@ components:
         uri:
           type: string
           format: uri
-        apis:
+        apiList:
           type: array
           description: The available apis of a tenant.
           items:

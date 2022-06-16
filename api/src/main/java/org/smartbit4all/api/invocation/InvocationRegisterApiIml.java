@@ -129,8 +129,8 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi {
           ApiData apiData = apiHandler.getData();
           if (!storage.get().exists(apiData.getUri())) {
             storage.get().saveAsNew(apiData);
-            if (!r.getApis().contains(apiData.getUri())) {
-              r.addApisItem(apiData.getUri());
+            if (!r.getApiList().contains(apiData.getUri())) {
+              r.addApiListItem(apiData.getUri());
             }
           }
           apis.add(apiData.getUri());

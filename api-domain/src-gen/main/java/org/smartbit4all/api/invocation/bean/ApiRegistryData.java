@@ -36,7 +36,7 @@ import javax.validation.Valid;
 @ApiModel(description = "The common registry entry for the invocation system. It has a special URI to be able to identify it globally. ")
 @JsonPropertyOrder({
   ApiRegistryData.URI,
-  ApiRegistryData.APIS
+  ApiRegistryData.API_LIST
 })
 @JsonTypeName("ApiRegistryData")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -44,8 +44,8 @@ public class ApiRegistryData {
   public static final String URI = "uri";
   private URI uri;
 
-  public static final String APIS = "apis";
-  private List<URI> apis = new ArrayList<>();
+  public static final String API_LIST = "apiList";
+  private List<URI> apiList = null;
 
 
   public ApiRegistryData uri(URI uri) {
@@ -77,37 +77,39 @@ public class ApiRegistryData {
   }
 
 
-  public ApiRegistryData apis(List<URI> apis) {
+  public ApiRegistryData apiList(List<URI> apiList) {
     
-    this.apis = apis;
+    this.apiList = apiList;
     return this;
   }
 
-  public ApiRegistryData addApisItem(URI apisItem) {
-    this.apis.add(apisItem);
+  public ApiRegistryData addApiListItem(URI apiListItem) {
+    if (this.apiList == null) {
+      this.apiList = new ArrayList<>();
+    }
+    this.apiList.add(apiListItem);
     return this;
   }
 
    /**
    * The available apis of a tenant.
-   * @return apis
+   * @return apiList
   **/
-  @javax.annotation.Nonnull
-  @NotNull
+  @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(required = true, value = "The available apis of a tenant.")
-  @JsonProperty(APIS)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  @ApiModelProperty(value = "The available apis of a tenant.")
+  @JsonProperty(API_LIST)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<URI> getApis() {
-    return apis;
+  public List<URI> getApiList() {
+    return apiList;
   }
 
 
-  @JsonProperty(APIS)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setApis(List<URI> apis) {
-    this.apis = apis;
+  @JsonProperty(API_LIST)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setApiList(List<URI> apiList) {
+    this.apiList = apiList;
   }
 
 
@@ -121,12 +123,12 @@ public class ApiRegistryData {
     }
     ApiRegistryData apiRegistryData = (ApiRegistryData) o;
     return Objects.equals(this.uri, apiRegistryData.uri) &&
-        Objects.equals(this.apis, apiRegistryData.apis);
+        Objects.equals(this.apiList, apiRegistryData.apiList);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, apis);
+    return Objects.hash(uri, apiList);
   }
 
   @Override
@@ -134,7 +136,7 @@ public class ApiRegistryData {
     StringBuilder sb = new StringBuilder();
     sb.append("class ApiRegistryData {\n");
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
-    sb.append("    apis: ").append(toIndentedString(apis)).append("\n");
+    sb.append("    apiList: ").append(toIndentedString(apiList)).append("\n");
     sb.append("}");
     return sb.toString();
   }
