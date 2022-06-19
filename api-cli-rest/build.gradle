@@ -1,0 +1,38 @@
+plugins {
+	id 'org.smartbit4all.platform.gradle.openapi'
+}
+
+dependencies {
+	api project(':api')
+	api project(':api-domain')
+	
+	api 'org.springframework:spring-web'
+	api 'org.springframework.boot:spring-boot-autoconfigure'
+	
+	api 'org.openapitools:jackson-databind-nullable:0.2.1' // should come from platform.gradle.openapi plugin
+	
+	
+	testImplementation 'org.mock-server:mockserver-spring-test-listener:5.11.2'
+	testImplementation project(':storage-fs')
+	
+    testImplementation testFixtures(project(':api'))
+    testImplementation testFixtures(project(':core'))
+    testImplementation testFixtures(project(':domain'))
+}
+	
+smartbit4all {
+    openApi {
+        apiDescriptorMapping = [
+        	"${rootDir}/api-domain/src/main/resources/descriptors/navigation-api.yaml" : "navigation"
+        ]
+        apiPackagePrefix = "org.smartbit4all.api"
+        apiPackagePostfix = "restclientgen"
+        invokerPackagePrefix = "org.smartbit4all.api"
+        invokerPackagePostfix = "restclientgen.util"
+		genApiRestClient = true
+		importMappings = [
+			"NavigationEntry" : "org.smartbit4all.api.navigation.bean.NavigationEntry",
+			"NavigationResponse" : "org.smartbit4all.api.navigation.bean.NavigationResponse"
+		]
+    }
+}
