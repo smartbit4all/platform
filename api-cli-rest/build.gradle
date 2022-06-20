@@ -3,7 +3,6 @@ plugins {
 }
 
 dependencies {
-	api project(':api')
 	api project(':api-domain')
 	
 	api 'org.springframework:spring-web'
@@ -13,11 +12,7 @@ dependencies {
 	
 	
 	testImplementation 'org.mock-server:mockserver-spring-test-listener:5.11.2'
-	testImplementation project(':storage-fs')
 	
-    testImplementation testFixtures(project(':api'))
-    testImplementation testFixtures(project(':core'))
-    testImplementation testFixtures(project(':domain'))
 }
 	
 smartbit4all {
