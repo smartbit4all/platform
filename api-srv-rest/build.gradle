@@ -5,7 +5,7 @@ plugins {
 dependencies {
 	api project(':api')
 	api project(':api-domain')
-	
+	api project(':sec')
 	
 	api 'org.springframework.boot:spring-boot-autoconfigure'
 
@@ -19,7 +19,8 @@ dependencies {
 smartbit4all {
     openApi {
         apiDescriptorMapping = [
-        	"${rootDir}/api-domain/src/main/resources/descriptors/navigation-api.yaml" : "navigation"
+        	"${rootDir}/api-domain/src/main/resources/descriptors/navigation-api.yaml" : "navigation",
+        	"${rootDir}/api-domain/src/main/resources/descriptors/session-api.yaml" : "session",
         ]
         apiPackagePrefix = "org.smartbit4all.api"
         apiPackagePostfix = "restserver"
@@ -28,7 +29,8 @@ smartbit4all {
 		genApiRestServer = true
 		importMappings = [
 			"NavigationEntry" : "org.smartbit4all.api.navigation.bean.NavigationEntry",
-			"NavigationResponse" : "org.smartbit4all.api.navigation.bean.NavigationResponse"
+			"NavigationResponse" : "org.smartbit4all.api.navigation.bean.NavigationResponse",
+			"StartSessionResult" : "org.smartbit4all.api.session.bean.StartSessionResult"
 		]
     }
 }

@@ -1,0 +1,35 @@
+openapi: 3.0.1
+info:
+  title: Session api
+  description: Session api...
+  termsOfService: ''
+  contact:
+    email: info@it4all.hu
+  version: 1.0.0
+tags:
+  - name: Session
+    description: Session
+paths:
+  /startSession:
+    post:
+      tags:
+      - session
+      summary: Starts the session
+      operationId: 'startSession'
+      responses:
+        '200':
+          description: 'The session has started'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StartSessionResult'
+components:
+  schemas:
+    StartSessionResult:
+      type: object
+      required: 
+      - "token"
+      properties:
+        token:
+          type: string
+    
