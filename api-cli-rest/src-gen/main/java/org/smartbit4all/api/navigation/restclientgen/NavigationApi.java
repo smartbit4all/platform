@@ -1,7 +1,9 @@
 package org.smartbit4all.api.navigation.restclientgen;
 
-import org.smartbit4all.api.navigation.restclientgen.util.ApiClient;
+import org.smartbit4all.api.navigation.service.util.ApiClient;
 
+import org.smartbit4all.api.navigation.bean.NavigationEntry;
+import org.smartbit4all.api.navigation.bean.NavigationResponse;
 import java.net.URI;
 
 import java.util.Collections;
@@ -53,10 +55,10 @@ public class NavigationApi {
      * <p><b>200</b> - The navigation entry if we found it or null if missing
      * @param entryMetaUri  (required)
      * @param objectUri  (required)
-     * @return org.smartbit4all.api.navigation.bean.NavigationEntry
+     * @return NavigationEntry
      * @throws RestClientException if an error occurs while attempting to invoke the API
      */
-    public org.smartbit4all.api.navigation.bean.NavigationEntry getEntry(URI entryMetaUri, URI objectUri) throws RestClientException {
+    public NavigationEntry getEntry(URI entryMetaUri, URI objectUri) throws RestClientException {
         return getEntryWithHttpInfo(entryMetaUri, objectUri).getBody();
     }
 
@@ -66,10 +68,10 @@ public class NavigationApi {
      * <p><b>200</b> - The navigation entry if we found it or null if missing
      * @param entryMetaUri  (required)
      * @param objectUri  (required)
-     * @return ResponseEntity&lt;org.smartbit4all.api.navigation.bean.NavigationEntry&gt;
+     * @return ResponseEntity&lt;NavigationEntry&gt;
      * @throws RestClientException if an error occurs while attempting to invoke the API
      */
-    public ResponseEntity<org.smartbit4all.api.navigation.bean.NavigationEntry> getEntryWithHttpInfo(URI entryMetaUri, URI objectUri) throws RestClientException {
+    public ResponseEntity<NavigationEntry> getEntryWithHttpInfo(URI entryMetaUri, URI objectUri) throws RestClientException {
         Object postBody = null;
         
         // verify the required parameter 'entryMetaUri' is set
@@ -104,7 +106,7 @@ public class NavigationApi {
 
         String[] authNames = new String[] {  };
 
-        ParameterizedTypeReference<org.smartbit4all.api.navigation.bean.NavigationEntry> returnType = new ParameterizedTypeReference<org.smartbit4all.api.navigation.bean.NavigationEntry>() {};
+        ParameterizedTypeReference<NavigationEntry> returnType = new ParameterizedTypeReference<NavigationEntry>() {};
         return apiClient.invokeAPI("/entry", HttpMethod.POST, Collections.<String, Object>emptyMap(), queryParams, postBody, headerParams, cookieParams, formParams, localVarAccept, localVarContentType, authNames, returnType);
     }
     /**
@@ -113,10 +115,10 @@ public class NavigationApi {
      * <p><b>200</b> - The map of the references by the URI of association meta we passed in the associations parameter.
      * @param objectUri The URI of the api object that is the starting point of the navigation. It must be a valid URI that can be the starting point of the associations we provided. (required)
      * @param associationMetaUris The list of associations to identify the direction we want to navigate. If we skip this parameter (null) then we will have all the associations defined in the meta (optional)
-     * @return List&lt;org.smartbit4all.api.navigation.bean.NavigationResponse&gt;
+     * @return List&lt;NavigationResponse&gt;
      * @throws RestClientException if an error occurs while attempting to invoke the API
      */
-    public List<org.smartbit4all.api.navigation.bean.NavigationResponse> navigate(URI objectUri, List<URI> associationMetaUris) throws RestClientException {
+    public List<NavigationResponse> navigate(URI objectUri, List<URI> associationMetaUris) throws RestClientException {
         return navigateWithHttpInfo(objectUri, associationMetaUris).getBody();
     }
 
@@ -126,10 +128,10 @@ public class NavigationApi {
      * <p><b>200</b> - The map of the references by the URI of association meta we passed in the associations parameter.
      * @param objectUri The URI of the api object that is the starting point of the navigation. It must be a valid URI that can be the starting point of the associations we provided. (required)
      * @param associationMetaUris The list of associations to identify the direction we want to navigate. If we skip this parameter (null) then we will have all the associations defined in the meta (optional)
-     * @return ResponseEntity&lt;List&lt;org.smartbit4all.api.navigation.bean.NavigationResponse&gt;&gt;
+     * @return ResponseEntity&lt;List&lt;NavigationResponse&gt;&gt;
      * @throws RestClientException if an error occurs while attempting to invoke the API
      */
-    public ResponseEntity<List<org.smartbit4all.api.navigation.bean.NavigationResponse>> navigateWithHttpInfo(URI objectUri, List<URI> associationMetaUris) throws RestClientException {
+    public ResponseEntity<List<NavigationResponse>> navigateWithHttpInfo(URI objectUri, List<URI> associationMetaUris) throws RestClientException {
         Object postBody = null;
         
         // verify the required parameter 'objectUri' is set
@@ -159,7 +161,7 @@ public class NavigationApi {
 
         String[] authNames = new String[] {  };
 
-        ParameterizedTypeReference<List<org.smartbit4all.api.navigation.bean.NavigationResponse>> returnType = new ParameterizedTypeReference<List<org.smartbit4all.api.navigation.bean.NavigationResponse>>() {};
+        ParameterizedTypeReference<List<NavigationResponse>> returnType = new ParameterizedTypeReference<List<NavigationResponse>>() {};
         return apiClient.invokeAPI("/navigate", HttpMethod.POST, Collections.<String, Object>emptyMap(), queryParams, postBody, headerParams, cookieParams, formParams, localVarAccept, localVarContentType, authNames, returnType);
     }
 }

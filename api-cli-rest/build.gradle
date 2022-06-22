@@ -3,8 +3,6 @@ plugins {
 }
 
 dependencies {
-	api project(':api-domain')
-	
 	api 'org.springframework:spring-web'
 	api 'org.springframework.boot:spring-boot-autoconfigure'
 	
@@ -22,12 +20,9 @@ smartbit4all {
         ]
         apiPackagePrefix = "org.smartbit4all.api"
         apiPackagePostfix = "restclientgen"
-        invokerPackagePrefix = "org.smartbit4all.api"
-        invokerPackagePostfix = "restclientgen.util"
+        modelPackagePrefix = "org.smartbit4all.api"
+  		modelPackagePostfix = "bean"        
 		genApiRestClient = true
-		importMappings = [
-			"NavigationEntry" : "org.smartbit4all.api.navigation.bean.NavigationEntry",
-			"NavigationResponse" : "org.smartbit4all.api.navigation.bean.NavigationResponse"
-		]
+		genModel = true		
     }
 }
