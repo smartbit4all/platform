@@ -25,6 +25,59 @@ public interface SessionApi {
     }
 
     /**
+     * POST /authenticate : Authenticates the user and connects it to the session
+     *
+     * @return The user has been authenticated (status code 200)
+     */
+    @ApiOperation(value = "Authenticates the user and connects it to the session", nickname = "authenticate", notes = "", response = org.smartbit4all.api.session.bean.StartSessionResult.class, tags={ "session", })
+    @ApiResponses(value = { 
+        @ApiResponse(code = 200, message = "The user has been authenticated", response = org.smartbit4all.api.session.bean.StartSessionResult.class) })
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/authenticate",
+        produces = { "application/json" }
+    )
+    default ResponseEntity<org.smartbit4all.api.session.bean.StartSessionResult> authenticate() throws Exception {
+        return getDelegate().authenticate();
+    }
+
+
+    /**
+     * GET /isAuthenticated : Returns if the current session is authenticated or not
+     *
+     * @return The authentication state of the current session (status code 200)
+     */
+    @ApiOperation(value = "Returns if the current session is authenticated or not", nickname = "getIsAuthenticated", notes = "", response = org.smartbit4all.api.session.bean.IsSessionAuthenticated.class, tags={ "session", })
+    @ApiResponses(value = { 
+        @ApiResponse(code = 200, message = "The authentication state of the current session", response = org.smartbit4all.api.session.bean.IsSessionAuthenticated.class) })
+    @RequestMapping(
+        method = RequestMethod.GET,
+        value = "/isAuthenticated",
+        produces = { "application/json" }
+    )
+    default ResponseEntity<org.smartbit4all.api.session.bean.IsSessionAuthenticated> getIsAuthenticated() throws Exception {
+        return getDelegate().getIsAuthenticated();
+    }
+
+
+    /**
+     * POST /logout : Ends the session and logout
+     *
+     * @return The session has ended (status code 200)
+     */
+    @ApiOperation(value = "Ends the session and logout", nickname = "logout", notes = "", tags={ "session", })
+    @ApiResponses(value = { 
+        @ApiResponse(code = 200, message = "The session has ended") })
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/logout"
+    )
+    default ResponseEntity<Void> logout() throws Exception {
+        return getDelegate().logout();
+    }
+
+
+    /**
      * POST /startSession : Starts the session
      *
      * @return The session has started (status code 200)

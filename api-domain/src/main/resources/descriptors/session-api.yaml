@@ -23,6 +23,41 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/StartSessionResult'
+  /authenticate:
+    post:
+      tags:
+      - session
+      summary: Authenticates the user and connects it to the session
+      operationId: 'authenticate'
+      responses:
+        '200':
+          description: 'The user has been authenticated'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StartSessionResult'
+  /isAuthenticated:
+    get:
+      tags:
+      - session
+      summary: Returns if the current session is authenticated or not
+      operationId: 'getIsAuthenticated'
+      responses:
+        '200':
+          description: 'The authentication state of the current session'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IsSessionAuthenticated'
+  /logout:
+    post:
+      tags:
+      - session
+      summary: Ends the session and logout
+      operationId: 'logout'
+      responses:
+        '200':
+          description: 'The session has ended'
 components:
   schemas:
     StartSessionResult:
@@ -32,4 +67,11 @@ components:
       properties:
         token:
           type: string
+    IsSessionAuthenticated:
+      type: object
+      required: 
+      - "isAuthenticated"
+      properties:
+        isAuthenticated:
+          type: boolean
     

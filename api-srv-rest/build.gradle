@@ -33,7 +33,8 @@ smartbit4all {
 		importMappings = [
 			"NavigationEntry" : "org.smartbit4all.api.navigation.bean.NavigationEntry",
 			"NavigationResponse" : "org.smartbit4all.api.navigation.bean.NavigationResponse",
-			"StartSessionResult" : "org.smartbit4all.api.session.bean.StartSessionResult"
+			"StartSessionResult" : "org.smartbit4all.api.session.bean.StartSessionResult",
+			"IsSessionAuthenticated" : "org.smartbit4all.api.session.bean.IsSessionAuthenticated"
 		]
     }
 }

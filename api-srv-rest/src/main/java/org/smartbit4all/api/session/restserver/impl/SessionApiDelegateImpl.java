@@ -3,6 +3,7 @@ package org.smartbit4all.api.session.restserver.impl;
 import java.util.Date;
 import org.smartbit4all.api.session.Session;
 import org.smartbit4all.api.session.UserSessionApi;
+import org.smartbit4all.api.session.bean.IsSessionAuthenticated;
 import org.smartbit4all.api.session.bean.StartSessionResult;
 import org.smartbit4all.api.session.restserver.SessionApiDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,26 @@ public class SessionApiDelegateImpl implements SessionApiDelegate {
     userSessionApi.storeCurrentSession(token);
     
     return ResponseEntity.ok(new StartSessionResult().token(token));
+  }
+  
+  @Override
+  public ResponseEntity<StartSessionResult> authenticate() throws Exception {
+    // TODO Auto-generated method stub
+    return SessionApiDelegate.super.authenticate();
+  }
+  
+  @Override
+  public ResponseEntity<IsSessionAuthenticated> getIsAuthenticated() throws Exception {
+    boolean isAuthenticated = userSessionApi.currentSession().getIsAuthenticated();
+    
+    return ResponseEntity.ok(new IsSessionAuthenticated().isAuthenticated(isAuthenticated));
+  }
+  
+  @Override
+  public ResponseEntity<Void> logout() throws Exception {
+    userSessionApi.removeCurrentSession();
+    
+    return ResponseEntity.ok(null);
   }
   
 }
