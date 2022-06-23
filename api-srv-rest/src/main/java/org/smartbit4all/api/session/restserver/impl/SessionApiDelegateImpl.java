@@ -35,8 +35,11 @@ public class SessionApiDelegateImpl implements SessionApiDelegate {
   
   @Override
   public ResponseEntity<StartSessionResult> startSession() throws Exception {
-    String token = createToken("anonymus");
-    Session session = userSessionApi.startSession(null, token);
+    Session session = userSessionApi.startSession(null);
+    session.setIsAuthenticated(false);
+    
+    String token = createToken(session.getUuid().toString());
+    userSessionApi.storeCurrentSession(token);
     
     return ResponseEntity.ok(new StartSessionResult().token(token));
   }
