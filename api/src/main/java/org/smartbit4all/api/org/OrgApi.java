@@ -159,4 +159,6 @@ public interface OrgApi {
    */
   void restoreDeletedUser(URI userUri);
 
+  default void updateUsername(User user, String username) {};
+
 }

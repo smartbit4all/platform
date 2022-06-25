@@ -875,4 +875,13 @@ public class OrgApiStorageImpl implements OrgApi {
     invalidateCache();
   }
 
+  @Override
+  public void updateUsername(User user, String username) {
+    removeFromObjectMap(USER_OBJECTMAP_REFERENCE, user.getUsername(), null);
+    storage.get().update(user.getUri(), User.class, u -> user.username(username));
+    addToObjectMap(USER_OBJECTMAP_REFERENCE, username, user.getUri());
+
+    invalidateCache();
+
+  }
 }
