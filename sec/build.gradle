@@ -3,6 +3,7 @@ dependencies {
 	api project(':api-domain')
 	api project(':api')
 
+    implementation 'io.jsonwebtoken:jjwt:0.9.1'
 
 	api 'org.springframework.security:spring-security-config'
 	api 'org.springframework.security:spring-security-web'
