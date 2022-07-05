@@ -162,6 +162,37 @@
           }
         }
       }
+    },
+    "tree-bff": {
+      "projectType": "library",
+      "root": "projects/tree-bff",
+      "sourceRoot": "projects/tree-bff/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "projects/tree-bff/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/tree-bff/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/tree-bff/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/tree-bff/src/test.ts",
+            "tsConfig": "projects/tree-bff/tsconfig.spec.json",
+            "karmaConfig": "projects/tree-bff/karma.conf.js"
+          }
+        }
+      }
     }
   },
   "defaultProject": "smartbit4all"
