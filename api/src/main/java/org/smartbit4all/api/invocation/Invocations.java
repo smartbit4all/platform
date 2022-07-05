@@ -57,6 +57,53 @@ public class Invocations {
         .parameters(params);
   }
 
+  // FacekomApi:FacekomApi.statusUpdate(processId=@@proc:/#processId@@, StatusOk=”false”Ö
+  // FacekomApi:hu.it4all.kh.FacekomApi.statusUpdate(processId=@@processId@@:java.lang.Long,StatusOk=”false”:java.lang.Boolean,
+  // status=@@root@@/lastFacekomCall#errorCode:java.net.URI)
+  // FacekomApi:hu.it4all.kh.FacekomApi.statusUpdate
+  // processId=@@processId@@:java.lang.Long,StatusOk=”false”:java.lang.Boolean,status=@/lastFacekomCall#errorCode:java.net.URI
+  public static InvocationRequest createInvocationRequest(String invocationRequestText) {
+    String[] invocationSplit = invocationRequestText.split("\\(");
+    String funcitonName = invocationSplit[0];
+    String[] funcitonNameSplit = funcitonName.split(":");
+    String interfaceName = null;
+    String methodName = null;
+    String name = null;
+    if (funcitonNameSplit.length == 1) {
+      String methodFullName = funcitonNameSplit[0];
+      int dotIndex = methodFullName.lastIndexOf(".");
+      interfaceName = methodFullName.substring(0, dotIndex);
+      methodName = methodFullName.substring(dotIndex + 1, methodFullName.length());
+      name = interfaceName;
+    } else {
+      String methodFullName = funcitonNameSplit[1];
+      int dotIndex = methodFullName.lastIndexOf(".");
+      interfaceName = methodFullName.substring(0, dotIndex);
+      methodName = methodFullName.substring(dotIndex + 1, methodFullName.length());
+      name = funcitonNameSplit[0];
+    }
+
+    String funcitonParamText = invocationSplit[1];
+    funcitonParamText = funcitonParamText.substring(0, funcitonParamText.length() - 1);
+    String[] funcitonParams = funcitonParamText.split(",");
+    List<InvocationParameter> params = new ArrayList<>();
+    for (String funcitonParam : funcitonParams) {
+      int equalsLetterIndex = funcitonParam.indexOf("=");
+      int éetterIndex = funcitonParam.indexOf(":");
+      String paramName = funcitonParam.substring(0, equalsLetterIndex);
+      String paramValue = funcitonParam.substring(equalsLetterIndex + 1, éetterIndex);
+      String paramType = funcitonParam.substring(éetterIndex + 1, funcitonParam.length());
+      params.add(new InvocationParameter().name(paramName).typeClass(paramType).value(paramValue));
+    }
+
+
+    return new InvocationRequest()
+        .interfaceClass(interfaceName)
+        .name(name)
+        .methodName(methodName)
+        .parameters(params);
+  }
+
   /**
    * Identify the method for the invocation.
    * 
