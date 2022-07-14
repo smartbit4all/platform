@@ -15,6 +15,7 @@ import java.util.function.Function;
 import org.smartbit4all.api.storage.bean.ObjectMap;
 import org.smartbit4all.api.storage.bean.ObjectMapRequest;
 import org.smartbit4all.api.storage.bean.ObjectReference;
+import org.smartbit4all.api.storage.bean.ObjectVersion;
 import org.smartbit4all.api.storage.bean.StorageSettings;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
@@ -213,11 +214,21 @@ public final class Storage {
    * @param update
    */
   public <T> void update(URI objectUri, Class<T> clazz, Function<T, T> update) {
+    update(objectUri, clazz, null, update);
+  }
+
+  public <T> void update(URI objectUri, Class<T> clazz, ObjectVersion version,
+      Function<T, T> update) {
     StorageObjectLock lock = getLock(objectUri);
     lock.lock();
     try {
       StorageObject<T> so =
           load(objectUri, clazz);
+      if (version != null &&
+          !version.getSerialNoData().equals(so.getVersion().getSerialNoData())) {
+        // TODO check whole version, but createdAt is buggy
+        throw new IllegalStateException("Object version mismatch, unable to save!");
+      }
       T object = update.apply(so.getObject());
       if (object != null) {
         so.setObject(object);
