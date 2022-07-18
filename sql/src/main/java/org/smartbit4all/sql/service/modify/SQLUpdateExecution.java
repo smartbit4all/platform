@@ -90,7 +90,7 @@ public class SQLUpdateExecution<E extends EntityDefinition> {
       if (updateCriterion == null) {
         updateCriterion = exp;
       } else {
-        updateCriterion.AND(exp);
+        updateCriterion = updateCriterion.AND(exp);
       }
     }
 
