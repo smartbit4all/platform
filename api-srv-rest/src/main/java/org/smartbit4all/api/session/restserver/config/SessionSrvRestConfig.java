@@ -6,6 +6,7 @@ import org.smartbit4all.api.session.restserver.SessionApiDelegate;
 import org.smartbit4all.api.session.restserver.impl.SessionApiDelegateImpl;
 import org.smartbit4all.sec.session.AuthenticationUserProviders;
 import org.smartbit4all.sec.session.UserSessionApiSecImpl;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -23,8 +24,9 @@ public class SessionSrvRestConfig {
   public SessionApiDelegate sessionApiDelegate() {
     return new SessionApiDelegateImpl();
   }
-  
+
   @Bean
+  @ConditionalOnMissingClass("org.smartbit4all.api.session.UserSessionApi")
   UserSessionApi userSessionApi() {
     return new UserSessionApiSecImpl(
         AuthenticationUserProviders.anonymousUserProvider(),
