@@ -23,6 +23,30 @@
       "dom"
     ],
     "paths": {
+      "dialog": [
+        "dist/dialog/dialog",
+        "dist/dialog"
+      ],
+      "smart-expandable-section": [
+        "dist/smart-expandable-section/smart-expandable-section",
+        "dist/smart-expandable-section"
+      ],
+      "smartdialog": [
+        "dist/smartdialog/smartdialog",
+        "dist/smartdialog"
+      ],
+      "smartform": [
+        "dist/smartform/smartform",
+        "dist/smartform"
+      ],
+      "smarttable": [
+        "dist/smarttable/smarttable",
+        "dist/smarttable"
+      ],
+      "smarttree": [
+        "dist/smarttree/smarttree",
+        "dist/smarttree"
+      ],
       "tree": [
         "dist/tree/tree",
         "dist/tree"

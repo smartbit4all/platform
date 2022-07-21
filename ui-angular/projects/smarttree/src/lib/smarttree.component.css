@@ -1,0 +1,37 @@
+.sm-tree-invisible {
+	display: none;
+}
+
+.sm-tree ul,
+.sm-tree li {
+	margin-top: 0;
+	margin-bottom: 0;
+	list-style-type: none;
+}
+.sm-tree div[role='group'] > .mat-tree-node {
+	padding-left: 40px;
+}
+
+.sm-tee-node {
+	padding-left: 40px;
+}
+
+.sm-tree-node-name {
+	padding-left: 15px;
+	padding-top: 15px;
+	display: flex;
+	flex-direction: column;
+}
+
+.sm-tee-node-id {
+	font-weight: lighter;
+}
+
+.mat-tree-node:hover {
+	cursor: pointer;
+}
+
+::ng-deep .mat-icon-rtl-mirror {
+	display: flex;
+	flex-direction: row;
+}

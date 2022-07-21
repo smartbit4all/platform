@@ -27,6 +27,7 @@
               "src/assets"
             ],
             "styles": [
+              "src/custom-theme.scss",
               "src/styles.css"
             ],
             "scripts": []
@@ -190,6 +191,192 @@
             "main": "projects/tree-bff/src/test.ts",
             "tsConfig": "projects/tree-bff/tsconfig.spec.json",
             "karmaConfig": "projects/tree-bff/karma.conf.js"
+          }
+        }
+      }
+    },
+    "dialog": {
+      "projectType": "library",
+      "root": "projects/dialog",
+      "sourceRoot": "projects/dialog/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "projects/dialog/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/dialog/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/dialog/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/dialog/src/test.ts",
+            "tsConfig": "projects/dialog/tsconfig.spec.json",
+            "karmaConfig": "projects/dialog/karma.conf.js"
+          }
+        }
+      }
+    },
+    "smartform": {
+      "projectType": "library",
+      "root": "projects/smartform",
+      "sourceRoot": "projects/smartform/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "projects/smartform/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/smartform/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/smartform/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/smartform/src/test.ts",
+            "tsConfig": "projects/smartform/tsconfig.spec.json",
+            "karmaConfig": "projects/smartform/karma.conf.js"
+          }
+        }
+      }
+    },
+    "smarttable": {
+      "projectType": "library",
+      "root": "projects/smarttable",
+      "sourceRoot": "projects/smarttable/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "projects/smarttable/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/smarttable/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/smarttable/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/smarttable/src/test.ts",
+            "tsConfig": "projects/smarttable/tsconfig.spec.json",
+            "karmaConfig": "projects/smarttable/karma.conf.js"
+          }
+        }
+      }
+    },
+    "smartdialog": {
+      "projectType": "library",
+      "root": "projects/smartdialog",
+      "sourceRoot": "projects/smartdialog/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "projects/smartdialog/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/smartdialog/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/smartdialog/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/smartdialog/src/test.ts",
+            "tsConfig": "projects/smartdialog/tsconfig.spec.json",
+            "karmaConfig": "projects/smartdialog/karma.conf.js"
+          }
+        }
+      }
+    },
+    "smarttree": {
+      "projectType": "library",
+      "root": "projects/smarttree",
+      "sourceRoot": "projects/smarttree/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "projects/smarttree/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/smarttree/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/smarttree/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/smarttree/src/test.ts",
+            "tsConfig": "projects/smarttree/tsconfig.spec.json",
+            "karmaConfig": "projects/smarttree/karma.conf.js"
+          }
+        }
+      }
+    },
+    "smart-expandable-section": {
+      "projectType": "library",
+      "root": "projects/smart-expandable-section",
+      "sourceRoot": "projects/smart-expandable-section/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "projects/smart-expandable-section/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/smart-expandable-section/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/smart-expandable-section/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/smart-expandable-section/src/test.ts",
+            "tsConfig": "projects/smart-expandable-section/tsconfig.spec.json",
+            "karmaConfig": "projects/smart-expandable-section/karma.conf.js"
           }
         }
       }

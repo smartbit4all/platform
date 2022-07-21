@@ -8,7 +8,11 @@
         "watch": "ng build --watch --configuration development",
         "test": "ng test",
         "assemblePackage": "ng build viewmodel && cd dist/viewmodel && npm pack && cd ../.. && ng build tree &&  cd dist/tree && npm pack",
-        "assembleTreeBff": "ng build tree-bff && cd dist/tree-bff && npm pack",
+        "assembleSmartDialog": "ng build smartdialog && cd npms/smartdialog && npm pack",
+        "assembleSmartForm": "ng build smartform && cd npms/smartform && npm pack",
+        "assembleSmartTable": "ng build smarttable && cd npms/smarttable && npm pack",
+        "assembleSmartTree": "ng build smarttree && cd npms/smarttree && npm pack",
+        "assembleSmartExpandableSection": "ng build smart-expandable-section && cd npms/smart-expandable-section && npm pack",
         "generate:navigation-api": "openapi-generator-cli generate -i ./navigation-api.yaml -g typescript-angular -o projects/viewmodel/src/lib/core/api/policy",
         "generate:tree-api": "openapi-generator-cli generate -i ./tree-api.yaml -g typescript-angular -o projects/tree/src/lib/core/api/tree",
         "generate:tree-bff-api": "openapi-generator-cli generate -i ./tree-api.yaml -g typescript-angular -o projects/tree-bff/src/lib/core/api/tree"
@@ -16,17 +20,19 @@
     "private": true,
     "dependencies": {
         "@angular/animations": "~13.2.0",
+        "@angular/cdk": "^13.3.9",
         "@angular/common": "~13.2.0",
         "@angular/compiler": "~13.2.0",
         "@angular/core": "~13.2.0",
         "@angular/forms": "~13.2.0",
+        "@angular/material": "^13.3.9",
         "@angular/platform-browser": "~13.2.0",
         "@angular/platform-browser-dynamic": "~13.2.0",
         "@angular/router": "~13.2.0",
         "rxjs": "~7.5.0",
+        "smartbit4all-viewmodel": "file:./dist/viewmodel/smartbit4all-viewmodel-0.0.1.tgz",
         "tslib": "^2.3.0",
-        "zone.js": "~0.11.4",
-        "smartbit4all-viewmodel": "file:./dist/viewmodel/smartbit4all-viewmodel-0.0.1.tgz"
+        "zone.js": "~0.11.4"
     },
     "devDependencies": {
         "@angular-devkit/build-angular": "~13.2.0",

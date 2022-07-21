@@ -1,0 +1,11 @@
+.section-container {
+	margin-bottom: 50px;
+}
+
+.mat-expansion-panel-header {
+	background: var(--primary-lighter-color) !important;
+}
+
+.mat-expansion-panel-header-title {
+	color: var(--primary-color);
+}

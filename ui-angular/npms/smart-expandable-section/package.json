@@ -1,0 +1,33 @@
+{
+  "name": "@smartbit4all/expandable-section",
+  "version": "0.0.2",
+  "peerDependencies": {
+    "@angular/common": "^13.2.0",
+    "@angular/core": "^13.2.0",
+    "@smartbit4all/form": "file:../../dist/smartform/smartbit4all-form-0.0.2.tgz",
+    "@smartbit4all/table": "file:../../dist/smarttable/smartbit4all-table-0.0.1.tgz"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "module": "fesm2015/smartbit4all-expandable-section.mjs",
+  "es2020": "fesm2020/smartbit4all-expandable-section.mjs",
+  "esm2020": "esm2020/smartbit4all-expandable-section.mjs",
+  "fesm2020": "fesm2020/smartbit4all-expandable-section.mjs",
+  "fesm2015": "fesm2015/smartbit4all-expandable-section.mjs",
+  "typings": "smartbit4all-expandable-section.d.ts",
+  "exports": {
+    "./package.json": {
+      "default": "./package.json"
+    },
+    ".": {
+      "types": "./smartbit4all-expandable-section.d.ts",
+      "esm2020": "./esm2020/smartbit4all-expandable-section.mjs",
+      "es2020": "./fesm2020/smartbit4all-expandable-section.mjs",
+      "es2015": "./fesm2015/smartbit4all-expandable-section.mjs",
+      "node": "./fesm2015/smartbit4all-expandable-section.mjs",
+      "default": "./fesm2020/smartbit4all-expandable-section.mjs"
+    }
+  },
+  "sideEffects": false
+}

@@ -1,0 +1,15 @@
+.gitignore
+.openapi-generator-ignore
+README.md
+api.module.ts
+api/api.ts
+api/default.service.ts
+configuration.ts
+encoder.ts
+git_push.sh
+index.ts
+model/models.ts
+model/treeModel.ts
+model/treeNode.ts
+model/treeNodeKind.ts
+variables.ts

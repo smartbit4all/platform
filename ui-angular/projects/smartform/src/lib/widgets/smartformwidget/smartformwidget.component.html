@@ -1,0 +1,156 @@
+<div class="container" [formGroup]="form">
+    <div [ngSwitch]="widgetInstance.type" class="container">
+        <mat-form-field
+            class="input textField"
+            [ngStyle]="{ width: widgetInstance.minWidth + 'px' }"
+            *ngSwitchCase="smartFormWidgetType.TEXT_FIELD"
+            appearance="outline"
+        >
+            <mat-label> {{ widgetInstance.label }} </mat-label>
+            <input
+                [formControlName]="widgetInstance.key"
+                [id]="widgetInstance.key"
+                [type]="'string'"
+                [value]="widgetInstance.value"
+                placeholder="{{ widgetInstance.placeholder }}"
+                matInput
+            />
+            <mat-icon *ngIf="widgetInstance.icon" matSuffix> {{ widgetInstance.icon }} </mat-icon>
+        </mat-form-field>
+
+        <mat-form-field
+            class="input"
+            [ngStyle]="{ width: widgetInstance.minWidth + 'px' }"
+            *ngSwitchCase="smartFormWidgetType.TEXT_FIELD_CHIPS"
+            appearance="outline"
+        >
+            <mat-label> {{ widgetInstance.label }} </mat-label>
+            <mat-chip-list #chipList aria-label="{{ widgetInstance.label }}">
+                <mat-chip *ngFor="let value of widgetInstance.valueList" (removed)="remove(value)">
+                    {{ value.label }}
+                    <button matChipRemove>
+                        <mat-icon>cancel</mat-icon>
+                    </button>
+                </mat-chip>
+                <input
+                    placeholder="{{ widgetInstance.placeholder }}"
+                    [matChipInputFor]="chipList"
+                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                    [matChipInputAddOnBlur]="addOnBlur"
+                    (matChipInputTokenEnd)="add($event)"
+                />
+            </mat-chip-list>
+        </mat-form-field>
+
+        <mat-form-field
+            class="input"
+            [ngStyle]="{ width: widgetInstance.minWidth + 'px' }"
+            *ngSwitchCase="smartFormWidgetType.TEXT_BOX"
+            appearance="outline"
+        >
+            <mat-label> {{ widgetInstance.label }} </mat-label>
+            <textarea
+                [formControlName]="widgetInstance.key"
+                [id]="widgetInstance.key"
+                [type]="'string'"
+                [value]="widgetInstance.value"
+                placeholder="{{ widgetInstance.placeholder }}"
+                matInput
+            ></textarea>
+        </mat-form-field>
+
+        <div
+            class="input checkbox"
+            [ngStyle]="{ width: widgetInstance.minWidth + 'px' }"
+            *ngSwitchCase="smartFormWidgetType.CHECK_BOX"
+            appearance="outline"
+        >
+            <mat-label> {{ widgetInstance.label }} </mat-label>
+            <section class="checkbox-section" [ngClass]="getDirection()">
+                <mat-checkbox
+                    *ngFor="let checkbox of widgetInstance.valueList"
+                    class="selecatbleObject"
+                    formControlName="{{ widgetInstance.key }}"
+                >
+                    {{ checkbox.label }}
+                </mat-checkbox>
+            </section>
+        </div>
+
+        <mat-radio-group
+            class="input radio-section"
+            [ngStyle]="{ width: widgetInstance.minWidth + 'px' }"
+            *ngSwitchCase="smartFormWidgetType.RADIO_BUTTON"
+            aria-label="{{ widgetInstance.label }}"
+            appearance="outline"
+            formControlName="{{ widgetInstance.key }}"
+        >
+            <mat-label class="radioLabel">
+                {{ widgetInstance.label }}
+            </mat-label>
+            <div [ngClass]="getDirection()">
+                <mat-radio-button
+                    class="selecatbleObject"
+                    *ngFor="let radio of widgetInstance.valueList"
+                    value="{{ radio.value }}"
+                    [ngClass]="getDirection()"
+                >
+                    {{ radio.label }}
+                </mat-radio-button>
+            </div>
+        </mat-radio-group>
+
+        <mat-form-field
+            class="input"
+            [ngStyle]="{ width: widgetInstance.minWidth + 'px' }"
+            *ngSwitchCase="smartFormWidgetType.DATE_PICKER"
+            appearance="outline"
+        >
+            <mat-label>
+                {{ widgetInstance.label }}
+            </mat-label>
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+            <input
+                [formControlName]="widgetInstance.key"
+                [id]="widgetInstance.key"
+                [value]="widgetInstance.value"
+                placeholder="{{ widgetInstance.placeholder }}"
+                matInput
+                [matDatepicker]="picker"
+            />
+            <mat-hint>MM/DD/YYYY</mat-hint>
+        </mat-form-field>
+
+        <mat-form-field
+            class="input"
+            [ngStyle]="{ width: widgetInstance.minWidth + 'px' }"
+            *ngSwitchCase="smartFormWidgetType.SELECT"
+            appearance="outline"
+        >
+            <mat-label>
+                {{ widgetInstance.label }}
+            </mat-label>
+            <mat-select [formControlName]="widgetInstance.key">
+                <mat-option *ngFor="let option of widgetInstance.valueList" [value]="option.key">{{
+                    option.value
+                }}</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <div
+            class="input"
+            [ngStyle]="{ width: widgetInstance.minWidth + 'px' }"
+            *ngSwitchCase="smartFormWidgetType.SELECT_MULTIPLE"
+            appearance="outline"
+        >
+            <mat-label>
+                {{ widgetInstance.label }}
+            </mat-label>
+            <mat-select [formControlName]="widgetInstance.key" multiple>
+                <mat-option *ngFor="let option of widgetInstance.valueList" [value]="option.key">{{
+                    option.value
+                }}</mat-option>
+            </mat-select>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,19 @@
+.grid-container {
+}
+
+.col {
+	display: flex;
+	flex-direction: column;
+	padding: 1em;
+}
+
+.row {
+	display: flex;
+	flex-wrap: wrap;
+	padding: 1em;
+}
+
+.grid-item {
+	padding: 0.25em;
+	text-align: left;
+}

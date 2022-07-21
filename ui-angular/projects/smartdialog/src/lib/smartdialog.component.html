@@ -1,0 +1,52 @@
+<div
+    class="dialog-container"
+    [ngClass]="data.size.fullScreen ? 'fullScreen' : ''"
+    [ngStyle]="{ width: data.size.width + 'px', height: data.size.height + 'px' }"
+>
+    <div class="dialog-title-container" mat-dialog-title>
+        <h1 class="dialog-title">
+            {{ data.content.title }}
+        </h1>
+        <button mat-icon-button [mat-dialog-close]="">
+            <mat-icon aria-hidden="false" aria-label="Example home icon">close</mat-icon>
+        </button>
+    </div>
+    <div *ngIf="!data.customComponent" mat-dialog-content class="content">
+        <p>
+            {{ data.content.description }}
+        </p>
+        <smartform *ngIf="data.form" [smartForm]="data.form!"></smartform>
+        <smarttable *ngIf="data.table" [smartTable]="data.table!"></smarttable>
+    </div>
+    <div *ngIf="!data.customComponent" class="action-container" mat-dialog-actions>
+        <button
+            class="action-button"
+            *ngIf="data.cancelCallback"
+            mat-button
+            (click)="(data.cancelCallback)"
+        >
+            Cancel
+        </button>
+        <button
+            class="action-button"
+            *ngIf="data.okCallback"
+            mat-button
+            (click)="(data.okCallback)"
+            cdkFocusInitial
+        >
+            Ok
+        </button>
+        <button
+            class="action-button"
+            *ngIf="data.actionCallback"
+            mat-raised-button
+            (click)="onActionClick()"
+        >
+            {{ data.actionLabel }}
+        </button>
+    </div>
+    <mat-dialog-content>
+        <ng-template #renderComponentHere></ng-template>
+    </mat-dialog-content>
+    <div *ngIf="data.customComponent"></div>
+</div>

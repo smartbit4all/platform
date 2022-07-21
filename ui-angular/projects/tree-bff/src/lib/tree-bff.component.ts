@@ -6,12 +6,10 @@ import { TreeModel } from "./core/api/tree";
     templateUrl: "./tree-bff.component.html",
     styleUrls: ["./tree-bff.component.css"],
 })
-export class TreeBffComponent implements OnInit {
+export class TreeBffComponent {
     @Input() treeModel!: TreeModel;
     @Input() isEditMode!: boolean;
     @Input() uuid!: string;
 
     constructor() {}
-
-    ngOnInit(): void {}
 }

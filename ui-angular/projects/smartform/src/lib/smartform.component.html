@@ -1,0 +1,13 @@
+<form [formGroup]="form" class="flex form">
+    <h2>
+        {{ smartForm.name }}
+    </h2>
+    <div [ngClass]="smartForm.direction === direction.ROW ? 'row' : 'col'">
+        <smartformwidget
+            *ngFor="let widget of smartForm.widgets"
+            [widgetInstance]="widget"
+            [form]="form"
+            class="grid-item"
+        ></smartformwidget>
+    </div>
+</form>

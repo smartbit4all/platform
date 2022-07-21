@@ -1,0 +1,40 @@
+import { Component, Input, ViewChild, ViewContainerRef, ViewEncapsulation, } from "@angular/core";
+import * as i0 from "@angular/core";
+import * as i1 from "@angular/material/expansion";
+export class ExpandableSectionComponent {
+    constructor(resolver) {
+        this.resolver = resolver;
+    }
+    ngOnInit() { }
+    ngAfterViewInit() {
+        const factory = this.resolver.resolveComponentFactory(this.data.customComponent);
+        const ref = this.vcRef.createComponent(factory);
+        if (this.smartTable)
+            this.loadTableData(ref);
+        if (this.smartForm)
+            this.loadFormData(ref);
+        ref.changeDetectorRef.detectChanges();
+    }
+    loadTableData(ref) {
+        ref.instance.smartTable = this.smartTable;
+    }
+    loadFormData(ref) {
+        ref.instance.smartForm = this.smartForm;
+    }
+}
+ExpandableSectionComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "13.2.7", ngImport: i0, type: ExpandableSectionComponent, deps: [{ token: i0.ComponentFactoryResolver }], target: i0.ɵɵFactoryTarget.Component });
+ExpandableSectionComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "13.2.7", type: ExpandableSectionComponent, selector: "smart-expandable-section", inputs: { data: "data", smartTable: "smartTable", smartForm: "smartForm" }, viewQueries: [{ propertyName: "vcRef", first: true, predicate: ["renderComponent"], descendants: true, read: ViewContainerRef }], ngImport: i0, template: "<div class=\"section-container\">\n    <mat-expansion-panel (opened)=\"(true)\" (closed)=\"(false)\">\n        <mat-expansion-panel-header>\n            <mat-panel-title> {{ data.title }} </mat-panel-title>\n        </mat-expansion-panel-header>\n        <ng-template #renderComponent></ng-template>\n    </mat-expansion-panel>\n</div>\n", styles: [".section-container{margin-bottom:50px}.mat-expansion-panel-header{background:var(--primary-lighter-color)!important}.mat-expansion-panel-header-title{color:var(--primary-color)}\n"], components: [{ type: i1.MatExpansionPanel, selector: "mat-expansion-panel", inputs: ["disabled", "expanded", "hideToggle", "togglePosition"], outputs: ["opened", "closed", "expandedChange", "afterExpand", "afterCollapse"], exportAs: ["matExpansionPanel"] }, { type: i1.MatExpansionPanelHeader, selector: "mat-expansion-panel-header", inputs: ["tabIndex", "expandedHeight", "collapsedHeight"] }], directives: [{ type: i1.MatExpansionPanelTitle, selector: "mat-panel-title" }], encapsulation: i0.ViewEncapsulation.None });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "13.2.7", ngImport: i0, type: ExpandableSectionComponent, decorators: [{
+            type: Component,
+            args: [{ selector: "smart-expandable-section", encapsulation: ViewEncapsulation.None, template: "<div class=\"section-container\">\n    <mat-expansion-panel (opened)=\"(true)\" (closed)=\"(false)\">\n        <mat-expansion-panel-header>\n            <mat-panel-title> {{ data.title }} </mat-panel-title>\n        </mat-expansion-panel-header>\n        <ng-template #renderComponent></ng-template>\n    </mat-expansion-panel>\n</div>\n", styles: [".section-container{margin-bottom:50px}.mat-expansion-panel-header{background:var(--primary-lighter-color)!important}.mat-expansion-panel-header-title{color:var(--primary-color)}\n"] }]
+        }], ctorParameters: function () { return [{ type: i0.ComponentFactoryResolver }]; }, propDecorators: { data: [{
+                type: Input
+            }], smartTable: [{
+                type: Input
+            }], smartForm: [{
+                type: Input
+            }], vcRef: [{
+                type: ViewChild,
+                args: ["renderComponent", { read: ViewContainerRef }]
+            }] } });
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZXhwYW5kYWJsZS1zZWN0aW9uLmNvbXBvbmVudC5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uL3Byb2plY3RzL3NtYXJ0LWV4cGFuZGFibGUtc2VjdGlvbi9zcmMvbGliL2V4cGFuZGFibGUtc2VjdGlvbi5jb21wb25lbnQudHMiLCIuLi8uLi8uLi8uLi9wcm9qZWN0cy9zbWFydC1leHBhbmRhYmxlLXNlY3Rpb24vc3JjL2xpYi9leHBhbmRhYmxlLXNlY3Rpb24uY29tcG9uZW50Lmh0bWwiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUEsT0FBTyxFQUNILFNBQVMsRUFHVCxLQUFLLEVBRUwsU0FBUyxFQUNULGdCQUFnQixFQUNoQixpQkFBaUIsR0FDcEIsTUFBTSxlQUFlLENBQUM7OztBQVd2QixNQUFNLE9BQU8sMEJBQTBCO0lBUW5DLFlBQW9CLFFBQWtDO1FBQWxDLGFBQVEsR0FBUixRQUFRLENBQTBCO0lBQUcsQ0FBQztJQUUxRCxRQUFRLEtBQVUsQ0FBQztJQUVuQixlQUFlO1FBQ1gsTUFBTSxPQUFPLEdBQUcsSUFBSSxDQUFDLFFBQVEsQ0FBQyx1QkFBdUIsQ0FBQyxJQUFJLENBQUMsSUFBSSxDQUFDLGVBQWUsQ0FBQyxDQUFDO1FBQ2pGLE1BQU0sR0FBRyxHQUFHLElBQUksQ0FBQyxLQUFNLENBQUMsZUFBZSxDQUFDLE9BQU8sQ0FBQyxDQUFDO1FBQ2pELElBQUksSUFBSSxDQUFDLFVBQVU7WUFBRSxJQUFJLENBQUMsYUFBYSxDQUFDLEdBQUcsQ0FBQyxDQUFDO1FBQzdDLElBQUksSUFBSSxDQUFDLFNBQVM7WUFBRSxJQUFJLENBQUMsWUFBWSxDQUFDLEdBQUcsQ0FBQyxDQUFDO1FBQzNDLEdBQUcsQ0FBQyxpQkFBaUIsQ0FBQyxhQUFhLEVBQUUsQ0FBQztJQUMxQyxDQUFDO0lBRUQsYUFBYSxDQUFDLEdBQXNCO1FBQ2hDLEdBQUcsQ0FBQyxRQUFRLENBQUMsVUFBVSxHQUFHLElBQUksQ0FBQyxVQUFVLENBQUM7SUFDOUMsQ0FBQztJQUVELFlBQVksQ0FBQyxHQUFzQjtRQUMvQixHQUFHLENBQUMsUUFBUSxDQUFDLFNBQVMsR0FBRyxJQUFJLENBQUMsU0FBUyxDQUFDO0lBQzVDLENBQUM7O3VIQTFCUSwwQkFBMEI7MkdBQTFCLDBCQUEwQixpT0FLRyxnQkFBZ0IsNkJDekIxRCxtVkFRQTsyRkRZYSwwQkFBMEI7a0JBTnRDLFNBQVM7K0JBQ0ksMEJBQTBCLGlCQUdyQixpQkFBaUIsQ0FBQyxJQUFJOytHQUc1QixJQUFJO3NCQUFaLEtBQUs7Z0JBQ0csVUFBVTtzQkFBbEIsS0FBSztnQkFDRyxTQUFTO3NCQUFqQixLQUFLO2dCQUdOLEtBQUs7c0JBREosU0FBUzt1QkFBQyxpQkFBaUIsRUFBRSxFQUFFLElBQUksRUFBRSxnQkFBZ0IsRUFBRSIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB7XG4gICAgQ29tcG9uZW50LFxuICAgIENvbXBvbmVudEZhY3RvcnlSZXNvbHZlcixcbiAgICBDb21wb25lbnRSZWYsXG4gICAgSW5wdXQsXG4gICAgT25Jbml0LFxuICAgIFZpZXdDaGlsZCxcbiAgICBWaWV3Q29udGFpbmVyUmVmLFxuICAgIFZpZXdFbmNhcHN1bGF0aW9uLFxufSBmcm9tIFwiQGFuZ3VsYXIvY29yZVwiO1xuaW1wb3J0IHsgU21hcnRGb3JtIH0gZnJvbSBcIkBzbWFydGJpdDRhbGwvZm9ybVwiO1xuaW1wb3J0IHsgU21hcnRUYWJsZSB9IGZyb20gXCJAc21hcnRiaXQ0YWxsL3RhYmxlXCI7XG5pbXBvcnQgeyBFeHBhbmRhYmxlU2VjdGlvbiB9IGZyb20gXCIuL2V4cGFuZGFibGUtc2VjdGlvbi5tb2RlbFwiO1xuXG5AQ29tcG9uZW50KHtcbiAgICBzZWxlY3RvcjogXCJzbWFydC1leHBhbmRhYmxlLXNlY3Rpb25cIixcbiAgICB0ZW1wbGF0ZVVybDogXCIuL2V4cGFuZGFibGUtc2VjdGlvbi5jb21wb25lbnQuaHRtbFwiLFxuICAgIHN0eWxlVXJsczogW1wiLi9leHBhbmRhYmxlLXNlY3Rpb24uY29tcG9uZW50LmNzc1wiXSxcbiAgICBlbmNhcHN1bGF0aW9uOiBWaWV3RW5jYXBzdWxhdGlvbi5Ob25lLFxufSlcbmV4cG9ydCBjbGFzcyBFeHBhbmRhYmxlU2VjdGlvbkNvbXBvbmVudCBpbXBsZW1lbnRzIE9uSW5pdCB7XG4gICAgQElucHV0KCkgZGF0YSE6IEV4cGFuZGFibGVTZWN0aW9uO1xuICAgIEBJbnB1dCgpIHNtYXJ0VGFibGU/OiBTbWFydFRhYmxlPGFueT47XG4gICAgQElucHV0KCkgc21hcnRGb3JtPzogU21hcnRGb3JtO1xuXG4gICAgQFZpZXdDaGlsZChcInJlbmRlckNvbXBvbmVudFwiLCB7IHJlYWQ6IFZpZXdDb250YWluZXJSZWYgfSlcbiAgICB2Y1JlZj86IFZpZXdDb250YWluZXJSZWY7XG5cbiAgICBjb25zdHJ1Y3Rvcihwcml2YXRlIHJlc29sdmVyOiBDb21wb25lbnRGYWN0b3J5UmVzb2x2ZXIpIHt9XG5cbiAgICBuZ09uSW5pdCgpOiB2b2lkIHt9XG5cbiAgICBuZ0FmdGVyVmlld0luaXQoKSB7XG4gICAgICAgIGNvbnN0IGZhY3RvcnkgPSB0aGlzLnJlc29sdmVyLnJlc29sdmVDb21wb25lbnRGYWN0b3J5KHRoaXMuZGF0YS5jdXN0b21Db21wb25lbnQpO1xuICAgICAgICBjb25zdCByZWYgPSB0aGlzLnZjUmVmIS5jcmVhdGVDb21wb25lbnQoZmFjdG9yeSk7XG4gICAgICAgIGlmICh0aGlzLnNtYXJ0VGFibGUpIHRoaXMubG9hZFRhYmxlRGF0YShyZWYpO1xuICAgICAgICBpZiAodGhpcy5zbWFydEZvcm0pIHRoaXMubG9hZEZvcm1EYXRhKHJlZik7XG4gICAgICAgIHJlZi5jaGFuZ2VEZXRlY3RvclJlZi5kZXRlY3RDaGFuZ2VzKCk7XG4gICAgfVxuXG4gICAgbG9hZFRhYmxlRGF0YShyZWY6IENvbXBvbmVudFJlZjxhbnk+KSB7XG4gICAgICAgIHJlZi5pbnN0YW5jZS5zbWFydFRhYmxlID0gdGhpcy5zbWFydFRhYmxlO1xuICAgIH1cblxuICAgIGxvYWRGb3JtRGF0YShyZWY6IENvbXBvbmVudFJlZjxhbnk+KSB7XG4gICAgICAgIHJlZi5pbnN0YW5jZS5zbWFydEZvcm0gPSB0aGlzLnNtYXJ0Rm9ybTtcbiAgICB9XG59XG4iLCI8ZGl2IGNsYXNzPVwic2VjdGlvbi1jb250YWluZXJcIj5cbiAgICA8bWF0LWV4cGFuc2lvbi1wYW5lbCAob3BlbmVkKT1cIih0cnVlKVwiIChjbG9zZWQpPVwiKGZhbHNlKVwiPlxuICAgICAgICA8bWF0LWV4cGFuc2lvbi1wYW5lbC1oZWFkZXI+XG4gICAgICAgICAgICA8bWF0LXBhbmVsLXRpdGxlPiB7eyBkYXRhLnRpdGxlIH19IDwvbWF0LXBhbmVsLXRpdGxlPlxuICAgICAgICA8L21hdC1leHBhbnNpb24tcGFuZWwtaGVhZGVyPlxuICAgICAgICA8bmctdGVtcGxhdGUgI3JlbmRlckNvbXBvbmVudD48L25nLXRlbXBsYXRlPlxuICAgIDwvbWF0LWV4cGFuc2lvbi1wYW5lbD5cbjwvZGl2PlxuIl19

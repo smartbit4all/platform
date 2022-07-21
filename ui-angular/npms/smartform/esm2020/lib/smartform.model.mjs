@@ -1,0 +1,32 @@
+/**
+ * This enum containes the available types of the form widgets.
+ *
+ * @author Roland Fényes
+ */
+export var SmartFormWidgetType;
+(function (SmartFormWidgetType) {
+    SmartFormWidgetType[SmartFormWidgetType["TEXT_FIELD"] = 0] = "TEXT_FIELD";
+    SmartFormWidgetType[SmartFormWidgetType["TEXT_FIELD_CHIPS"] = 1] = "TEXT_FIELD_CHIPS";
+    SmartFormWidgetType[SmartFormWidgetType["TEXT_BOX"] = 2] = "TEXT_BOX";
+    SmartFormWidgetType[SmartFormWidgetType["SELECT"] = 3] = "SELECT";
+    SmartFormWidgetType[SmartFormWidgetType["SELECT_MULTIPLE"] = 4] = "SELECT_MULTIPLE";
+    SmartFormWidgetType[SmartFormWidgetType["CHECK_BOX"] = 5] = "CHECK_BOX";
+    SmartFormWidgetType[SmartFormWidgetType["CHECK_BOX_TABLE"] = 6] = "CHECK_BOX_TABLE";
+    SmartFormWidgetType[SmartFormWidgetType["RADIO_BUTTON"] = 7] = "RADIO_BUTTON";
+    SmartFormWidgetType[SmartFormWidgetType["DATE_PICKER"] = 8] = "DATE_PICKER";
+    SmartFormWidgetType[SmartFormWidgetType["FILE_UPLOAD"] = 9] = "FILE_UPLOAD";
+    SmartFormWidgetType[SmartFormWidgetType["ITEM"] = 10] = "ITEM";
+})(SmartFormWidgetType || (SmartFormWidgetType = {}));
+export var SmartFormWidgetDirection;
+(function (SmartFormWidgetDirection) {
+    SmartFormWidgetDirection[SmartFormWidgetDirection["COL"] = 0] = "COL";
+    SmartFormWidgetDirection[SmartFormWidgetDirection["ROW"] = 1] = "ROW";
+})(SmartFormWidgetDirection || (SmartFormWidgetDirection = {}));
+export var SmartFormWidgetWidth;
+(function (SmartFormWidgetWidth) {
+    SmartFormWidgetWidth[SmartFormWidgetWidth["SMALL"] = 150] = "SMALL";
+    SmartFormWidgetWidth[SmartFormWidgetWidth["MEDIUM"] = 250] = "MEDIUM";
+    SmartFormWidgetWidth[SmartFormWidgetWidth["LARGE"] = 350] = "LARGE";
+    SmartFormWidgetWidth[SmartFormWidgetWidth["EXTRA_LARGE"] = 450] = "EXTRA_LARGE";
+})(SmartFormWidgetWidth || (SmartFormWidgetWidth = {}));
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic21hcnRmb3JtLm1vZGVsLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vLi4vLi4vcHJvamVjdHMvc21hcnRmb3JtL3NyYy9saWIvc21hcnRmb3JtLm1vZGVsLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBOzs7O0dBSUc7QUFDSCxNQUFNLENBQU4sSUFBWSxtQkFZWDtBQVpELFdBQVksbUJBQW1CO0lBQzlCLHlFQUFVLENBQUE7SUFDVixxRkFBZ0IsQ0FBQTtJQUNoQixxRUFBUSxDQUFBO0lBQ1IsaUVBQU0sQ0FBQTtJQUNOLG1GQUFlLENBQUE7SUFDZix1RUFBUyxDQUFBO0lBQ1QsbUZBQWUsQ0FBQTtJQUNmLDZFQUFZLENBQUE7SUFDWiwyRUFBVyxDQUFBO0lBQ1gsMkVBQVcsQ0FBQTtJQUNYLDhEQUFJLENBQUE7QUFDTCxDQUFDLEVBWlcsbUJBQW1CLEtBQW5CLG1CQUFtQixRQVk5QjtBQUVELE1BQU0sQ0FBTixJQUFZLHdCQUdYO0FBSEQsV0FBWSx3QkFBd0I7SUFDbkMscUVBQUcsQ0FBQTtJQUNILHFFQUFHLENBQUE7QUFDSixDQUFDLEVBSFcsd0JBQXdCLEtBQXhCLHdCQUF3QixRQUduQztBQUVELE1BQU0sQ0FBTixJQUFZLG9CQUtYO0FBTEQsV0FBWSxvQkFBb0I7SUFDL0IsbUVBQVcsQ0FBQTtJQUNYLHFFQUFZLENBQUE7SUFDWixtRUFBVyxDQUFBO0lBQ1gsK0VBQWlCLENBQUE7QUFDbEIsQ0FBQyxFQUxXLG9CQUFvQixLQUFwQixvQkFBb0IsUUFLL0IiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIFRoaXMgZW51bSBjb250YWluZXMgdGhlIGF2YWlsYWJsZSB0eXBlcyBvZiB0aGUgZm9ybSB3aWRnZXRzLlxuICpcbiAqIEBhdXRob3IgUm9sYW5kIEbDqW55ZXNcbiAqL1xuZXhwb3J0IGVudW0gU21hcnRGb3JtV2lkZ2V0VHlwZSB7XG5cdFRFWFRfRklFTEQsXG5cdFRFWFRfRklFTERfQ0hJUFMsXG5cdFRFWFRfQk9YLFxuXHRTRUxFQ1QsXG5cdFNFTEVDVF9NVUxUSVBMRSxcblx0Q0hFQ0tfQk9YLFxuXHRDSEVDS19CT1hfVEFCTEUsXG5cdFJBRElPX0JVVFRPTixcblx0REFURV9QSUNLRVIsXG5cdEZJTEVfVVBMT0FELFxuXHRJVEVNXG59XG5cbmV4cG9ydCBlbnVtIFNtYXJ0Rm9ybVdpZGdldERpcmVjdGlvbiB7XG5cdENPTCxcblx0Uk9XXG59XG5cbmV4cG9ydCBlbnVtIFNtYXJ0Rm9ybVdpZGdldFdpZHRoIHtcblx0U01BTEwgPSAxNTAsXG5cdE1FRElVTSA9IDI1MCxcblx0TEFSR0UgPSAzNTAsXG5cdEVYVFJBX0xBUkdFID0gNDUwXG59XG5cbi8qKlxuICogVGhpcyBpbnRlcmZhY2UgZGVzY3JpYmVzIGEgd2lkZ2V0IGluIGEgZm9ybS5cbiAqXG4gKiBAcGFyYW0ga2V5IE11c3QgYmUgdW5pcXVlXG4gKiBAcGFyYW0gbGFiZWwgVGhlIGxhYmVsIG9mIHRoZSB3aWRnZXRcbiAqIEBwYXJhbSB2YWx1ZSBEZWZhdWx0IHZhbHVlXG4gKiBAcGFyYW0gdHlwZSBUaGUgdHlwZSBvZiB0aGUgZm9ybSB3aWRnZXRcbiAqIEBwYXJhbSBjYWxsYmFjayBBY3Rpb24gY2FsbGJhY2tcbiAqIEBwYXJhbSB2YWx1ZUxpc3QgVXNlIHRoaXMgaWYgeW91IHdhbnQgdG8gZGVmaW5lIHNlbGVjdGFibGUgdmFsdWVzXG4gKiBAcGFyYW0gaXNSZXF1aXJlZFxuICogQHBhcmFtIGljb24gUGxlYXNlIHVzZSBBbmd1bGFyIE1hdGVyaWFsIGljb25zXG4gKlxuICogQGF1dGhvciBSb2xhbmQgRsOpbnllc1xuICovXG5leHBvcnQgaW50ZXJmYWNlIFNtYXJ0Rm9ybVdpZGdldDxUPiB7XG5cdGtleTogc3RyaW5nO1xuXHRsYWJlbDogc3RyaW5nO1xuXHR2YWx1ZTogVDtcblx0dHlwZTogU21hcnRGb3JtV2lkZ2V0VHlwZTtcblx0Y2FsbGJhY2s/OiAoYXJnczogYW55W10pID0+IGFueTtcblx0cGxhY2Vob2xkZXI/OiBzdHJpbmc7XG5cdG1pblZhbHVlcz86IG51bWJlcjtcblx0bWF4VmFsdWVzPzogbnVtYmVyO1xuXHRkaXJlY3Rpb24/OiBTbWFydEZvcm1XaWRnZXREaXJlY3Rpb247XG5cdHZhbHVlTGlzdD86IFNtYXJ0Rm9ybVdpZGdldDxUPltdO1xuXHRpc1JlcXVpcmVkPzogYm9vbGVhbjtcblx0aWNvbj86IHN0cmluZztcblx0bWluV2lkdGg/OiBTbWFydEZvcm1XaWRnZXRXaWR0aDtcbn1cblxuLyoqXG4gKiBEeW5hbWljIGZvcm1zIGNhbiBiZSBlYXNpbHkgZGVmaW5lZCB3aXRoIHRoaXMgaW50ZXJmYWNlLlxuICpcbiAqIEBwYXJhbSBuYW1lIFRoZSBuYW1lIG9mIHRoZSBmb3JtXG4gKiBAcGFyYW0gd2lkZ2V0cyBUaGUgd2lkZ2V0cyBwcmVzZW50ZWQgaW4gdGhlIGZvcm1cbiAqXG4gKiBAYXV0aG9yIFJvbGFuZCBGw6lueWVzXG4gKi9cbmV4cG9ydCBpbnRlcmZhY2UgU21hcnRGb3JtIHtcblx0bmFtZTogc3RyaW5nO1xuXHRkaXJlY3Rpb246IFNtYXJ0Rm9ybVdpZGdldERpcmVjdGlvbjtcblx0d2lkZ2V0czogU21hcnRGb3JtV2lkZ2V0PGFueT5bXTtcbn1cbiJdfQ==
