@@ -1,0 +1,32 @@
+.sm-tab-group-container {
+	margin: 50px;
+}
+
+.sm-tab-group ::ng-deep .mat-tab-label {
+	background-color: #F9FAFB;
+	margin-left: 10px;
+	border-radius: 10px;
+	opacity: 100 !important;
+}
+
+.mat-tab-body-content {
+	border-radius: 10px;
+}
+
+.mat-tab-nav-bar,
+.mat-tab-header {
+	border-bottom: 0;
+}
+
+.tab-content-container {
+	padding: 2em;
+	border: 1px solid #e6e6e6;
+	box-shadow: 0px 4px 8px -4px rgba(26, 26, 26, 0.2);
+	border-radius: 4px;
+	background-color: white;
+}
+
+.mat-tab-label-active {
+	background-color: #00A8DA !important;
+	opacity: 1 !important;
+}

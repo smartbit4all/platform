@@ -380,6 +380,37 @@
           }
         }
       }
+    },
+    "smart-tab-group": {
+      "projectType": "library",
+      "root": "projects/smart-tab-group",
+      "sourceRoot": "projects/smart-tab-group/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "projects/smart-tab-group/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/smart-tab-group/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/smart-tab-group/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/smart-tab-group/src/test.ts",
+            "tsConfig": "projects/smart-tab-group/tsconfig.spec.json",
+            "karmaConfig": "projects/smart-tab-group/karma.conf.js"
+          }
+        }
+      }
     }
   },
   "defaultProject": "smartbit4all"

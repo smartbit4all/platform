@@ -1,0 +1,18 @@
+<div class="sm-tab-group-container">
+	<mat-tab-group
+		class="sm-tab-group"
+		(selectedTabChange)="navigateTabContent($event)"
+		[(selectedIndex)]="selectedTabIndex"
+	>
+		<mat-tab
+			class="sm-tab"
+			appearance="outline"
+			*ngFor="let tabTile of tabTiles"
+			label="{{ tabTile.tileName }}"
+		>
+		</mat-tab>
+	</mat-tab-group>
+	<div class="sm-tab-content-container">
+		<ng-content></ng-content>
+	</div>
+</div>
