@@ -25,6 +25,6 @@ import { BrowserModule } from "@angular/platform-browser";
         MatMenuModule,
     ],
     exports: [SmarttableComponent],
-    schemas: [],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class SmarttableModule {}
