@@ -8,6 +8,7 @@ sonarqube {
     property "sonar.projectKey", "smartbit4all_platform"
     property "sonar.organization", "smartbit4all"
     property "sonar.host.url", "https://sonarcloud.io"
+    property "sonar.exclusions", "**/src-gen/**"
   }
 }
 
