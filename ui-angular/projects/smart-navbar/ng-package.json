@@ -1,0 +1,7 @@
+{
+    "$schema": "../../node_modules/ng-packagr/ng-package.schema.json",
+    "dest": "../../npms/smart-navbar",
+    "lib": {
+        "entryFile": "src/projects.ts"
+    }
+}

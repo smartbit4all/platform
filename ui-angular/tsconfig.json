@@ -31,6 +31,10 @@
         "dist/smart-expandable-section/smart-expandable-section",
         "dist/smart-expandable-section"
       ],
+      "smart-navbar": [
+        "dist/smart-navbar/smart-navbar",
+        "dist/smart-navbar"
+      ],
       "smart-tab-group": [
         "dist/smart-tab-group/smart-tab-group",
         "dist/smart-tab-group"

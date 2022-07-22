@@ -1,0 +1,38 @@
+<mat-toolbar class="navbarHeight">
+    <img *ngIf="smartNavbar.icon" src="{{ smartNavbar.icon }}" alt="" (click)="onIconClick()" />
+    <span class="spacer"></span>
+    <div *ngIf="smartNavbar.searchBar" class="input">
+        <input type="text" placeholder="{{ smartNavbar.searchBar.placeholder }}" />
+        <div
+            *ngIf="
+                smartNavbar.searchBar.quickFilterLabel && smartNavbar.searchBar.quickFilters.length
+            "
+            class="drop_down_btn"
+        >
+            <button mat-button>
+                {{ smartNavbar.searchBar.quickFilterLabel }}
+                <mat-icon>arrow_drop_down</mat-icon>
+            </button>
+            <mat-icon *ngIf="smartNavbar.searchBar.icon" class="search_icon">
+                {{ smartNavbar.searchBar.icon }}
+            </mat-icon>
+            <mat-icon *ngIf="!smartNavbar.searchBar.icon" class="search_icon">search</mat-icon>
+        </div>
+        <div class="filter-btn">
+            <button mat-raised-button color="primary" (click)="openFilters()">
+                <mat-icon>filter_list</mat-icon> {{ smartNavbar.filterButtonLabel }}
+            </button>
+        </div>
+    </div>
+    <span class="spacer"></span>
+    <div *ngIf="smartNavbar.userSettings" class="account-btn">
+        <button mat-button color="primary">
+            <mat-icon *ngIf="smartNavbar.userSettings.icon">
+                {{ smartNavbar.userSettings.icon }}
+            </mat-icon>
+            <mat-icon *ngIf="!smartNavbar.userSettings.icon"> person_outline </mat-icon>
+            {{ smartNavbar.userSettings.label }}
+            <mat-icon>arrow_drop_down</mat-icon>
+        </button>
+    </div>
+</mat-toolbar>

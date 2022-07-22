@@ -12,4 +12,3 @@ export * from './navigationTargetType';
 export * from './uIState';
 export * from './viewModelData';
 export * from './viewModelDataSimple';
-export * from './binaryContent';
