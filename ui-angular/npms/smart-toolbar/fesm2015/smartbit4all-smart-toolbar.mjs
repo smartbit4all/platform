@@ -105,5 +105,5 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "13.2.7", ngImpor
  * Generated bundle index. Do not edit.
  */
 
-export { SmartToolbarComponent, SmartToolbarModule, SmartToolbarService, ToolbarDirection };
+export { SmartToolbarButtonComponent, SmartToolbarComponent, SmartToolbarModule, SmartToolbarService, ToolbarDirection };
 //# sourceMappingURL=smartbit4all-smart-toolbar.mjs.map
