@@ -39,6 +39,10 @@
         "dist/smart-tab-group/smart-tab-group",
         "dist/smart-tab-group"
       ],
+      "smart-toolbar": [
+        "dist/smart-toolbar/smart-toolbar",
+        "dist/smart-toolbar"
+      ],
       "smartdialog": [
         "dist/smartdialog/smartdialog",
         "dist/smartdialog"
