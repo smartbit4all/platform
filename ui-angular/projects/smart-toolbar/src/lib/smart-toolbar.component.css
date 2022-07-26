@@ -1,3 +1,7 @@
+.button{
+	margin: 1em;
+}
+
 .col {
 	display: flex;
 	flex-direction: column;
@@ -8,4 +12,32 @@
 	display: flex;
 	flex-wrap: wrap;
 	padding: 1em;
+}
+
+.save {
+	color: white;
+	border-radius: 24px;
+	background-color: green;
+	margin: 1em;
+}
+
+.discard {
+	color: white;
+	border-radius: 24px;
+	background-color: red;
+	margin: 1em;
+}
+
+.back {
+	color: white;
+	border-radius: 24px;
+	background-color: blue;
+	margin: 1em;
+}
+
+.ok {
+	color: white;
+	border-radius: 24px;
+	background-color: blue;
+	margin: 1em;
 }

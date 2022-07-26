@@ -1,17 +1,14 @@
-import { ComponentFactoryResolver, OnInit, ViewContainerRef } from '@angular/core';
-import { SmartToolbarButton } from './smart-toolbar-button/smart-toolbar-button.model';
+import { ComponentFactoryResolver, OnInit } from '@angular/core';
+import { SmartToolbar } from './smart-toolbar.model';
 import * as i0 from "@angular/core";
 export declare class SmartToolbarComponent implements OnInit {
     private resolver;
-    buttons: SmartToolbarButton[];
-    direction?: ToolbarDirection;
+    toolbar: SmartToolbar;
     toolbarDirection: typeof ToolbarDirection;
-    vcRef?: ViewContainerRef;
     constructor(resolver: ComponentFactoryResolver);
     ngOnInit(): void;
-    ngAfterViewInit(): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<SmartToolbarComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<SmartToolbarComponent, "smart-toolbar", never, { "buttons": "buttons"; "direction": "direction"; }, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<SmartToolbarComponent, "smart-toolbar", never, { "toolbar": "toolbar"; }, {}, never, never>;
 }
 export declare enum ToolbarDirection {
     COL = 0,

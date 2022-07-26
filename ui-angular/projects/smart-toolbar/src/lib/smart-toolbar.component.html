@@ -1,3 +1,10 @@
-<div [ngClass]="direction === toolbarDirection.ROW ? 'row' : 'col'">
-	<ng-template #renderToolbar></ng-template>
+<div [ngClass]="toolbar.direction === toolbarDirection.ROW ? 'row' : 'col'">
+  <button
+    mat-raised-button
+    *ngFor="let button of toolbar.buttons"
+    (click)="button.btnAction()"
+    [ngClass]="button.btnStyle"
+  >
+    {{ button.label }} <mat-icon>{{ button.icon }}</mat-icon>
+  </button>
 </div>
