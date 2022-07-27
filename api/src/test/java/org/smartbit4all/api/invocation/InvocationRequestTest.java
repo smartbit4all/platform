@@ -11,7 +11,7 @@ class InvocationRequestTest {
   @Test
   void testInvocationWithString() throws Exception {
     String invocationCall =
-        "FacekomApi:hu.it4all.kh.FacekomApi.statusUpdate(processId=@@processId@@:java.lang.Long,StatusOk=false:java.lang.Boolean,status=@@root@@/lastFacekomCall#errorCode:java.net.URI)";
+        "FacekomApi:hu.it4all.kh.FacekomApi.statusUpdate(processId::@@processId@@::java.lang.Long,StatusOk::false::java.lang.Boolean,status::@@root@@/lastFacekomCall#errorCode::java.net.URI)";
     InvocationRequest expectedInvocationRequest = new InvocationRequest()
         .interfaceClass("hu.it4all.kh.FacekomApi")
         .name("FacekomApi")
@@ -36,7 +36,7 @@ class InvocationRequestTest {
   @Test
   void testInvocationWithStringWithoutName() throws Exception {
     String invocationCall =
-        "hu.it4all.kh.FacekomApi.statusUpdate(processId=@@processId@@:java.lang.Long,StatusOk=false:java.lang.Boolean,status=@@root@@/lastFacekomCall#errorCode:java.net.URI)";
+        "hu.it4all.kh.FacekomApi.statusUpdate(processId::@@processId@@::java.lang.Long,StatusOk::false::java.lang.Boolean,status::@@root@@/lastFacekomCall#errorCode::java.net.URI)";
     InvocationRequest expectedInvocationRequest = new InvocationRequest()
         .interfaceClass("hu.it4all.kh.FacekomApi")
         .name("hu.it4all.kh.FacekomApi")

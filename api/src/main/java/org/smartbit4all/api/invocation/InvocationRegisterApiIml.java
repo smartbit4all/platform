@@ -93,6 +93,11 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi {
   private List<ProviderApiInvocationHandler<?>> providedApis;
 
   /**
+   * 
+   */
+  private boolean initialized = false;
+
+  /**
    * This is the OrgApi scheme where we save the settings for the notify.
    */
   private Supplier<Storage> storage = new Supplier<Storage>() {
@@ -151,11 +156,15 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi {
     if (applicationRuntimeApi != null) {
       applicationRuntimeApi.setApis(new ArrayList<>(apis));
     }
+    initialized = true;
   }
 
   @Override
   @Scheduled(fixedDelayString = "${invocationregistry.refresh.fixeddelay:5000}")
   public void refreshRegistry() {
+    if (storage.get() == null || !storage.get().exists(REGISTER_URI) || !initialized) {
+      return;
+    }
     if (applicationRuntimeApi == null) {
       // if there is ApplicationRuntimeApi, then we can't refresh the apis
       return;

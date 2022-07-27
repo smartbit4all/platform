@@ -43,17 +43,6 @@ public class ContentAccessTest {
   }
 
   @Test
-  void shareTest() throws Exception {
-    UUID uuidWithNotAddedUri = contentAccessApi.share();
-    assertNotNull(uuidWithNotAddedUri);
-
-    BinaryContent content = new BinaryContent();
-    content.setUri(new URI("asd"));
-    UUID uuidWithAddedUri = contentAccessApi.share(content);
-    assertNotNull(uuidWithAddedUri);
-  }
-
-  @Test
   void downloadTest() throws Exception {
     BinaryContent content = new BinaryContent();
     content.setDataUri(new URI(ContentAccessApi.SCHEME, null, "/lorem-ipsum.pdf", null));
