@@ -23,6 +23,10 @@
       "dom"
     ],
     "paths": {
+      "component-factory-service": [
+        "dist/component-factory-service/component-factory-service",
+        "dist/component-factory-service"
+      ],
       "dialog": [
         "dist/dialog/dialog",
         "dist/dialog"
