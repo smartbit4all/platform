@@ -1,6 +1,7 @@
 package org.smartbit4all.api.invocation.restserver.config;
 
 import org.smartbit4all.api.config.PlatformApiConfig;
+import org.smartbit4all.api.invocation.restserver.InvocationApiController;
 import org.smartbit4all.api.invocation.restserver.InvocationApiDelegate;
 import org.smartbit4all.api.invocation.restserver.impl.InvocationApiDelegateImpl;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -21,6 +22,12 @@ public class InvocationSrvRestConfig {
   @Bean
   public InvocationApiDelegate invocationApiDelegate() {
     return new InvocationApiDelegateImpl();
+  }
+
+  @Bean
+  public InvocationApiController invocationApiController(
+      InvocationApiDelegate invocationApiDelegate) {
+    return new InvocationApiController(invocationApiDelegate);
   }
 
   @Bean
