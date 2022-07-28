@@ -10,7 +10,7 @@ export class SmartToolbarComponent implements OnInit {
   @Input() toolbar!: SmartToolbar;
   toolbarDirection = ToolbarDirection;
 
-  constructor(private resolver: ComponentFactoryResolver) { }
+  constructor() { }
 
   ngOnInit(): void {
   }

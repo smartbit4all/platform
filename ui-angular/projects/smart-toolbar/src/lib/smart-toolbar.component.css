@@ -1,5 +1,5 @@
-.button{
-	margin: 1em;
+.button-container{
+	background-color: transparent;
 }
 
 .col {
@@ -10,34 +10,28 @@
 
 .row {
 	display: flex;
-	flex-wrap: wrap;
+	flex-wrap: row;
 	padding: 1em;
 }
 
-.save {
+.tree-toolbar-btn {
 	color: white;
-	border-radius: 24px;
-	background-color: green;
+	border-radius: 6px;
+	background-color: #1B5498;
 	margin: 1em;
 }
 
-.discard {
+.document-details-dark-btn {
 	color: white;
-	border-radius: 24px;
-	background-color: red;
+	border-radius: 6px;
+	background-color: #0C2645;
 	margin: 1em;
 }
 
-.back {
-	color: white;
-	border-radius: 24px;
-	background-color: blue;
+.document-details-light-btn {
+	color: #0C2645;
+	border-radius: 6px;
+	background-color: #FFFFFF;
 	margin: 1em;
-}
-
-.ok {
-	color: white;
-	border-radius: 24px;
-	background-color: blue;
-	margin: 1em;
+	border: 1px solid #0C2645;
 }
