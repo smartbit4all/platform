@@ -46,6 +46,7 @@ export enum SmartFormWidgetWidth {
 export interface SmartFormWidget<T> {
 	key: string;
 	label: string;
+	showLabel?: boolean;
 	value: T;
 	type: SmartFormWidgetType;
 	callback?: (args: any[]) => any;
