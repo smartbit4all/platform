@@ -1,5 +1,5 @@
 plugins  {
-    id 'org.smartbit4all.platform.gradle.java' version '0.3.6' apply false
+    id 'org.smartbit4all.platform.gradle.java' version '0.3.7' apply false
 	id "org.sonarqube" version "3.0"
 }
 
@@ -33,7 +33,7 @@ subprojects {
 		sourcesJar {
 			duplicatesStrategy = 'exclude'
 		}
-	
+
 	    publishing {
 	        publications {
 	            maven(MavenPublication) {
@@ -79,3 +79,4 @@ task publishToMavenLocal {
 	dependsOn 'sourcesJar'
 	subprojects.each { dependsOn("${it.name}:publishToMavenLocal") }
 }
+
