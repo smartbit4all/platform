@@ -1,13 +1,9 @@
-// TODO: a felesleges importokat töröljük
 import {
     Component,
-    ComponentFactoryResolver,
     Input,
-    OnInit,
-    ViewChild,
-    ViewContainerRef,
+    OnInit
 } from "@angular/core";
-import { SmartToolbar, SmartToolbarButton } from "./smart-toolbar.model";
+import { SmartToolbar, ToolbarDirection } from "./smart-toolbar.model";
 
 @Component({
     selector: "smart-toolbar",
@@ -18,13 +14,7 @@ export class SmartToolbarComponent implements OnInit {
     @Input() toolbar!: SmartToolbar;
     toolbarDirection = ToolbarDirection;
 
-    constructor() {}
+    constructor() { }
 
-    ngOnInit(): void {}
-}
-
-// TODO: ezt kivehetjük a .model.ts-be is?
-export enum ToolbarDirection {
-    COL,
-    ROW,
+    ngOnInit(): void { }
 }

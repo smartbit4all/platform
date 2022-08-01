@@ -17,26 +17,16 @@
 .tree-toolbar-btn {
     color: white;
     border-radius: 6px;
-    /* TODO: material-ui css változóból kapja az értékét! */
-    background-color: #1b5498;
     margin: 1em;
 }
 
 .document-details-dark-btn {
     color: white;
     border-radius: 6px;
-    /* TODO: material-ui css változóból kapja az értékét! */
-    background-color: #0c2645;
     margin: 1em;
 }
 
 .document-details-light-btn {
-    /* TODO: material-ui css változóból kapja az értékét! */
-    color: #0c2645;
     border-radius: 6px;
-    /* TODO: material-ui css változóból kapja az értékét! */
-    background-color: #ffffff;
     margin: 1em;
-    /* TODO: material-ui css változóból kapja az értékét! */
-    border: 1px solid #0c2645;
 }

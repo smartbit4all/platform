@@ -1,5 +1,3 @@
-import { ToolbarDirection } from "./smart-toolbar.component";
-
 export interface SmartToolbarButton {
     label: string;
     icon?: string;
@@ -12,3 +10,7 @@ export interface SmartToolbar {
     buttons: SmartToolbarButton[];
 }
 
+export enum ToolbarDirection {
+    COL,
+    ROW,
+}
