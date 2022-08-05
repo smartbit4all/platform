@@ -28,6 +28,14 @@ public interface ObjectApi {
   ObjectDefinition<?> definition(URI objectUri);
 
   /**
+   * The object name tries to identify the {@link ObjectDefinition}.
+   * 
+   * @param className The object class name.
+   * @return The {@link ObjectDefinition} if it was identified or null if it was not found.
+   */
+  ObjectDefinition<?> definition(String className);
+
+  /**
    * The meta of the given bean.
    * 
    * @param apiClass

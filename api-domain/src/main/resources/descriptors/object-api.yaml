@@ -1,0 +1,71 @@
+openapi: 3.0.1
+info:
+  title: Object api
+  description: |
+    The object api responsible for the domain object meta information including the object definitions
+    and the relations among them. These objects are stored because the modules can contribute. The modules
+    have their own ObjectApi that manages the storage and ensure the up-to-date view of the current data.
+    The algorithms are running on the ObjectApi cache refreshed periodically.
+  termsOfService: ''
+  contact:
+    email: info@it4all.hu
+  version: 1.0.0
+tags:
+  - name: Object
+    description: Object
+paths: {}
+components:
+  schemas:
+    ReferenceDefinitionData:
+      type: object
+      description: |
+        The reference definition is a directed navigation between objects. Its name is unique inside the source object that can have only one
+        outgoing reference with the same name. In the target object the source object and the name is unique together but the name itself is not
+        enough to identify an incoming reference.
+      required: 
+      - "uri"
+      properties:
+        uri:
+          type: string
+          format: uri
+          description: |
+            The storage identifier of the given definition. It is calculated by the qualified name of the object and the name name of the
+            reference. For example object:/com/smartbit4all/mydomain/model/MyObject/firstReference could be a calculated URI for a given reference.
+            By deafult it could be a good idea to name the reference by the name of the property that contains the reference value.
+        backReference:
+          type: string
+          format: uri
+          description: If an association between two object is navigable into both dirction then this uri refers to the opposite reference.
+        source:
+          type: object
+          description: The descriptor of the source object.
+          $ref: '#/components/schemas/ObjectReferenceDefinitionData'
+        target:
+          type: object
+          description: The descriptor of the target object.
+          $ref: '#/components/schemas/ObjectReferenceDefinitionData'
+    ObjectReferenceDefinitionData:
+      type: object
+      description: |
+        The object reference is one end of the reference let it be source or target. It identifies the object and the propety. This object is 
+        contained by the ReferenceDefinitionData.
+      required: [objectName,propertyPath,propertyKind]
+      properties:
+        objectName:
+          description: The qualified name of the object like com.smartbit4all.domain.MyObject
+          type: string
+        propertyPath:
+          description:  |
+            The descriptor of a property in a domain object. If there is a simple property then we have only the path. The path is a navigation path to
+            identify the property in the object or in its contained objects. The path can be "parent" if the parent property is directly a property inside the
+            object. It can be myContained/parent if it is the propery of the myContained object. The property must be an uri or unique identifier to be able to 
+            access the object directly by its value.
+            If we have an array the the array path contains the path of the array property in the same way. The array must contains uri / identifier values.
+          type: string
+        propertyKind:
+          $ref: '#/components/schemas/PropertyKindEnum'
+    PropertyKindEnum:
+      type: string
+      enum: [
+          PROPERTY, LIST, MAP
+        ]

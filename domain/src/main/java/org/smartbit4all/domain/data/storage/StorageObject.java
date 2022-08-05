@@ -241,7 +241,7 @@ public final class StorageObject<T> {
    * @param object
    */
   @SuppressWarnings("unchecked")
-  final void setObjectObj(Object object) {
+  public final void setObjectObj(Object object) {
     this.object = (T) object;
     definition.setUri(this.object, uri);
   }

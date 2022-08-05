@@ -19,6 +19,13 @@ import org.smartbit4all.api.binarydata.BinaryData;
 public final class ObjectDefinition<T> {
 
   /**
+   * The qualified name is the globally unique name of the given object. The namespace and the name
+   * looks like a Java class name. If we need to change the format to use as a path or similar then
+   * we can have more then one accessor.
+   */
+  private String qualifiedName;
+
+  /**
    * The java class of the object.
    */
   private Class<T> clazz;
@@ -74,9 +81,21 @@ public final class ObjectDefinition<T> {
    */
   private boolean explicitUri = false;
 
+  /**
+   * The outgoing references of the given object mapped by the name of the referrer property.
+   */
+  private final Map<String, ReferenceDefinition> outgoingReferences = new HashMap<>();
+
+  /**
+   * The incoming references of the given object mapped by the name of the referrer object and
+   * inside there is a map based on the back reference property.
+   */
+  private final Map<String, Map<String, ReferenceDefinition>> incomingReferences = new HashMap<>();
+
   public ObjectDefinition(Class<T> clazz) {
     super();
     this.clazz = clazz;
+    this.qualifiedName = clazz.getName();
   }
 
   public final Class<T> getClazz() {
@@ -236,6 +255,32 @@ public final class ObjectDefinition<T> {
 
   public final void setExplicitUri(boolean explicitUri) {
     this.explicitUri = explicitUri;
+  }
+
+  /**
+   * The outgoing references of the given object mapped by the name of the referrer property.
+   */
+  public final Map<String, ReferenceDefinition> getOutgoingReferences() {
+    return outgoingReferences;
+  }
+
+  /**
+   * The incoming references of the given object mapped by the name of the referrer object and
+   * inside there is a map based on the back reference property.
+   */
+  public final Map<String, Map<String, ReferenceDefinition>> getIncomingReferences() {
+    return incomingReferences;
+  }
+
+  /**
+   * The qualified name is the globally unique name of the given object. The namespace and the name
+   * looks like a Java class name. If we need to change the format to use as a path or similar then
+   * we can have more then one accessor.
+   * 
+   * @return
+   */
+  public final String getQualifiedName() {
+    return qualifiedName;
   }
 
 }

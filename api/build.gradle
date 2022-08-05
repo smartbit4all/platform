@@ -10,5 +10,4 @@ dependencies {
     testImplementation testFixtures(project(':core'))
 	testFixturesImplementation project(':core')
     testFixturesImplementation testFixtures(project(':core'))
-    testImplementation project(':storage-fs')
 }

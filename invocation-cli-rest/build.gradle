@@ -13,7 +13,7 @@ dependencies {
 	
 	
 	testImplementation 'org.mock-server:mockserver-spring-test-listener:5.11.2'
-	testImplementation project(':storage-fs')
+	testImplementation project(':api')
 	
     testImplementation testFixtures(project(':api'))
     testImplementation testFixtures(project(':core'))
