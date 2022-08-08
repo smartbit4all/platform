@@ -42,6 +42,7 @@ import javax.validation.Valid;
   FilterField.VALUE1,
   FilterField.VALUE2,
   FilterField.VALUE3,
+  FilterField.VALUE4,
   FilterField.SELECTED_VALUES
 })
 @JsonTypeName("FilterField")
@@ -67,6 +68,9 @@ public class FilterField {
 
   public static final String VALUE3 = "value3";
   private FilterOperandValue value3;
+
+  public static final String VALUE4 = "value4";
+  private FilterOperandValue value4;
 
   public static final String SELECTED_VALUES = "selectedValues";
   private List<URI> selectedValues = null;
@@ -267,6 +271,34 @@ public class FilterField {
   }
 
 
+  public FilterField value4(FilterOperandValue value4) {
+    
+    this.value4 = value4;
+    return this;
+  }
+
+   /**
+   * Get value4
+   * @return value4
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(VALUE4)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public FilterOperandValue getValue4() {
+    return value4;
+  }
+
+
+  @JsonProperty(VALUE4)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setValue4(FilterOperandValue value4) {
+    this.value4 = value4;
+  }
+
+
   public FilterField selectedValues(List<URI> selectedValues) {
     
     this.selectedValues = selectedValues;
@@ -319,12 +351,13 @@ public class FilterField {
         Objects.equals(this.value1, filterField.value1) &&
         Objects.equals(this.value2, filterField.value2) &&
         Objects.equals(this.value3, filterField.value3) &&
+        Objects.equals(this.value4, filterField.value4) &&
         Objects.equals(this.selectedValues, filterField.selectedValues);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(propertyUri1, propertyUri2, propertyUri3, operationCode, value1, value2, value3, selectedValues);
+    return Objects.hash(propertyUri1, propertyUri2, propertyUri3, operationCode, value1, value2, value3, value4, selectedValues);
   }
 
   @Override
@@ -338,6 +371,7 @@ public class FilterField {
     sb.append("    value1: ").append(toIndentedString(value1)).append("\n");
     sb.append("    value2: ").append(toIndentedString(value2)).append("\n");
     sb.append("    value3: ").append(toIndentedString(value3)).append("\n");
+    sb.append("    value4: ").append(toIndentedString(value4)).append("\n");
     sb.append("    selectedValues: ").append(toIndentedString(selectedValues)).append("\n");
     sb.append("}");
     return sb.toString();

@@ -159,6 +159,8 @@ components:
           $ref: '#/components/schemas/FilterOperandValue'
         value3:
           $ref: '#/components/schemas/FilterOperandValue'
+        value4:
+          $ref: '#/components/schemas/FilterOperandValue'
         selectedValues:
           type: array
           items:

@@ -46,6 +46,7 @@ import javax.validation.Valid;
   FilterFieldModel.VALUE1,
   FilterFieldModel.VALUE2,
   FilterFieldModel.VALUE3,
+  FilterFieldModel.VALUE4,
   FilterFieldModel.ENABLED
 })
 @JsonTypeName("FilterFieldModel")
@@ -86,6 +87,9 @@ public class FilterFieldModel {
 
   public static final String VALUE3 = "value3";
   private String value3;
+
+  public static final String VALUE4 = "value4";
+  private String value4;
 
   public static final String ENABLED = "enabled";
   private Boolean enabled = true;
@@ -439,6 +443,33 @@ public class FilterFieldModel {
   }
 
 
+  public FilterFieldModel value4(String value4) {
+    
+    this.value4 = value4;
+    return this;
+  }
+
+   /**
+   * Get value4
+   * @return value4
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(VALUE4)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getValue4() {
+    return value4;
+  }
+
+
+  @JsonProperty(VALUE4)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setValue4(String value4) {
+    this.value4 = value4;
+  }
+
+
   public FilterFieldModel enabled(Boolean enabled) {
     
     this.enabled = enabled;
@@ -487,12 +518,13 @@ public class FilterFieldModel {
         Objects.equals(this.value1, filterFieldModel.value1) &&
         Objects.equals(this.value2, filterFieldModel.value2) &&
         Objects.equals(this.value3, filterFieldModel.value3) &&
+        Objects.equals(this.value4, filterFieldModel.value4) &&
         Objects.equals(this.enabled, filterFieldModel.enabled);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(selectorId, label, closeable, draggable, selectedOperation, operations, possibleValues, selectedValues, selectedValue, value1, value2, value3, enabled);
+    return Objects.hash(selectorId, label, closeable, draggable, selectedOperation, operations, possibleValues, selectedValues, selectedValue, value1, value2, value3, value4, enabled);
   }
 
   @Override
@@ -511,6 +543,7 @@ public class FilterFieldModel {
     sb.append("    value1: ").append(toIndentedString(value1)).append("\n");
     sb.append("    value2: ").append(toIndentedString(value2)).append("\n");
     sb.append("    value3: ").append(toIndentedString(value3)).append("\n");
+    sb.append("    value4: ").append(toIndentedString(value4)).append("\n");
     sb.append("    enabled: ").append(toIndentedString(enabled)).append("\n");
     sb.append("}");
     return sb.toString();
