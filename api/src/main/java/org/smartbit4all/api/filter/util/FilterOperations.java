@@ -39,11 +39,13 @@ public class FilterOperations {
   }
 
   public static FilterOperation dateTimeInterval(Property<?> property) {
-    return createOperation(property, DefaultFilterOperationCodes.OPERATION_DATE_TIME_INTERVAL, null);
+    return createOperation(property, DefaultFilterOperationCodes.OPERATION_DATE_TIME_INTERVAL,
+        null);
   }
 
   public static FilterOperation dateTimeIntervalCb(Property<?> property) {
-    return createOperation(property, DefaultFilterOperationCodes.OPERATION_DATE_TIME_INTERVAL_CB, null);
+    return createOperation(property, DefaultFilterOperationCodes.OPERATION_DATE_TIME_INTERVAL_CB,
+        null);
   }
 
   public static FilterOperation txtMulti(Property<?> property, String possibleValueCode) {
@@ -56,7 +58,7 @@ public class FilterOperations {
     return createOperation(property, DefaultFilterOperationCodes.OPERATION_COMBO_SEL, uri);
   }
 
-  private static FilterOperation createOperation(Property<?> property, String operationCode,
+  public static FilterOperation createOperation(Property<?> property, String operationCode,
       URI possibleValuesUri) {
     URI propUri1 = property == null ? null : property.getUri();
     return new FilterOperation()

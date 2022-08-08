@@ -23,7 +23,7 @@ import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.shared.Registration;
 
-class FilterViewUtils {
+public class FilterViewUtils {
 
   private FilterViewUtils() {}
 
