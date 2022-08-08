@@ -28,12 +28,12 @@ public final class BeanMetaUtil {
 
   private BeanMetaUtil() {}
 
-  public static BeanMeta meta(Class<?> apiClass) throws Exception {
+  public static BeanMeta meta(Class<?> apiClass) {
     return meta(apiClass, null);
   }
 
   public static BeanMeta meta(Class<?> apiClass,
-      Map<Class<?>, ApiBeanDescriptor> descriptors) throws Exception {
+      Map<Class<?>, ApiBeanDescriptor> descriptors) {
     BeanMeta meta = new BeanMeta(apiClass);
     ApiBeanDescriptor descriptor = descriptors == null ? null : descriptors.get(apiClass);
     Set<Method> allMethods = ReflectionUtility.allMethods(apiClass, null);
@@ -118,7 +118,7 @@ public final class BeanMetaUtil {
       // e.g. isValid for valid property
       propertyName = method.getName().substring(2);
     } else {
-      throw new RuntimeException(
+      throw new IllegalArgumentException(
           "Unknown getter method " + apiClass.getName() + "." + method.getName());
     }
     propertyName = propertyName.substring(0, 1).toLowerCase() + propertyName.substring(1);
@@ -130,7 +130,7 @@ public final class BeanMetaUtil {
       meta.getProperties().put(propertyKey, propertyMeta);
     } else {
       // possible for example with getName() and getNAME()
-      throw new RuntimeException(
+      throw new IllegalArgumentException(
           "Duplicate property name " + apiClass.getName() + "." + propertyName + "!");
     }
     propertyMeta.setGetter(method);
@@ -220,12 +220,10 @@ public final class BeanMetaUtil {
                   return (Class<?>) typeArg;
                 }
               }
-            } else if (type.isAssignableFrom(Map.class)) {
-              if (actualTypeArguments.length >= 2) {
-                Type typeArg = actualTypeArguments[1];
-                if (typeArg instanceof Class<?>) {
-                  return (Class<?>) typeArg;
-                }
+            } else if (type.isAssignableFrom(Map.class) && actualTypeArguments.length >= 2) {
+              Type typeArg = actualTypeArguments[1];
+              if (typeArg instanceof Class<?>) {
+                return (Class<?>) typeArg;
               }
             }
           }

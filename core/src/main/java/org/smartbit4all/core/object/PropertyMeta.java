@@ -175,7 +175,7 @@ public class PropertyMeta {
     sb.append(itemAdder == null ? StringConstant.MINUS_SIGN : itemAdder.getName());
   }
 
-  Object getValue(Object object) {
+  public Object getValue(Object object) {
     try {
       return getter.invoke(object);
     } catch (Exception e) {

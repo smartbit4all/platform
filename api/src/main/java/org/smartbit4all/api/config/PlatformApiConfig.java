@@ -11,6 +11,7 @@ import org.smartbit4all.api.navigation.NavigationApi;
 import org.smartbit4all.api.navigation.NavigationFeatureApi;
 import org.smartbit4all.api.navigation.NavigationFeatureApiImpl;
 import org.smartbit4all.api.navigation.NavigationPrimary;
+import org.smartbit4all.api.navigation.ObjectNavigation;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.setting.LocaleUsage;
 import org.smartbit4all.api.setting.LocaleUsageImpl;
@@ -55,6 +56,11 @@ public class PlatformApiConfig {
   @Primary
   public NavigationApi navigationApi() {
     return new NavigationPrimary();
+  }
+
+  @Bean
+  public NavigationApi objectNavigationApi() {
+    return new ObjectNavigation();
   }
 
   @Bean
