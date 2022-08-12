@@ -2,6 +2,7 @@ package org.smartbit4all.api.session.restserver.config;
 
 import org.smartbit4all.api.restserver.PlatformApiCommonSrvRestConfig;
 import org.smartbit4all.api.session.UserSessionApi;
+import org.smartbit4all.api.session.restserver.SessionApiController;
 import org.smartbit4all.api.session.restserver.SessionApiDelegate;
 import org.smartbit4all.api.session.restserver.impl.SessionApiDelegateImpl;
 import org.smartbit4all.sec.session.AuthenticationUserProviders;
@@ -23,6 +24,11 @@ public class SessionSrvRestConfig {
   @Bean
   public SessionApiDelegate sessionApiDelegate() {
     return new SessionApiDelegateImpl();
+  }
+
+  @Bean
+  public SessionApiController sessionApiController(SessionApiDelegate delegate) {
+    return new SessionApiController(delegate);
   }
 
   @Bean
