@@ -1,19 +1,14 @@
-import { ComponentFactoryResolver, ComponentRef, OnInit, ViewContainerRef } from "@angular/core";
-import { SmartForm } from "@smartbit4all/form";
-import { SmartTable } from "@smartbit4all/table";
+import { OnInit, ViewContainerRef } from "@angular/core";
+import { ComponentFactoryService } from "@smartbit4all/component-factory-service";
 import { ExpandableSection } from "./expandable-section.model";
 import * as i0 from "@angular/core";
 export declare class ExpandableSectionComponent implements OnInit {
-    private resolver;
-    data: ExpandableSection;
-    smartTable?: SmartTable<any>;
-    smartForm?: SmartForm;
+    private cfService;
+    data: ExpandableSection<any>;
     vcRef?: ViewContainerRef;
-    constructor(resolver: ComponentFactoryResolver);
+    constructor(cfService: ComponentFactoryService);
     ngOnInit(): void;
     ngAfterViewInit(): void;
-    loadTableData(ref: ComponentRef<any>): void;
-    loadFormData(ref: ComponentRef<any>): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<ExpandableSectionComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<ExpandableSectionComponent, "smart-expandable-section", never, { "data": "data"; "smartTable": "smartTable"; "smartForm": "smartForm"; }, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<ExpandableSectionComponent, "smart-expandable-section", never, { "data": "data"; }, {}, never, never>;
 }
