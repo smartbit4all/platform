@@ -14,9 +14,10 @@ import io.jsonwebtoken.SignatureAlgorithm;
 public class SessionApiDelegateImpl implements SessionApiDelegate {
 
   private String SECRET_KEY = "it's not a secret anymore";
-  
+
   @Autowired
   UserSessionApi userSessionApi;
+
   private String createToken(String subject) {
     /**
      * This method creates the JwtToken based on the followings: - claims (Map<String, Object>) -
@@ -33,36 +34,39 @@ public class SessionApiDelegateImpl implements SessionApiDelegate {
         .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
         .signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact();
   }
-  
+
   @Override
   public ResponseEntity<StartSessionResult> startSession() throws Exception {
     Session session = userSessionApi.startSession(null);
     session.setIsAuthenticated(false);
-    
+
     String token = createToken(session.getUuid().toString());
     userSessionApi.storeCurrentSession(token);
-    
+
     return ResponseEntity.ok(new StartSessionResult().token(token));
   }
-  
+
   @Override
   public ResponseEntity<StartSessionResult> authenticate() throws Exception {
     // TODO Auto-generated method stub
     return SessionApiDelegate.super.authenticate();
   }
-  
+
   @Override
   public ResponseEntity<IsSessionAuthenticated> getIsAuthenticated() throws Exception {
-    boolean isAuthenticated = userSessionApi.currentSession().getIsAuthenticated();
-    
+    boolean isAuthenticated = false;
+    if (userSessionApi != null && userSessionApi.currentSession() != null) {
+      isAuthenticated = userSessionApi.currentSession().getIsAuthenticated();
+    }
+
     return ResponseEntity.ok(new IsSessionAuthenticated().isAuthenticated(isAuthenticated));
   }
-  
+
   @Override
   public ResponseEntity<Void> logout() throws Exception {
     userSessionApi.removeCurrentSession();
-    
+
     return ResponseEntity.ok(null);
   }
-  
+
 }

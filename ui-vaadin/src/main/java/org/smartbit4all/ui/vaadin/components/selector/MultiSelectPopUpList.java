@@ -107,6 +107,8 @@ public class MultiSelectPopUpList<T> extends CustomField<List<T>> implements Has
 
   private List<Consumer<List<T>>> onSaveListeners = new ArrayList<>();
 
+  protected FlexLayout dialogLayout;
+
   public MultiSelectPopUpList() {
     super(Collections.emptyList());
     initOuterComponents();
@@ -158,7 +160,7 @@ public class MultiSelectPopUpList<T> extends CustomField<List<T>> implements Has
     filterField.setClearButtonVisible(true);
 
     dialog = new Dialog();
-    FlexLayout dialogLayout = new FlexLayout();
+    dialogLayout = new FlexLayout();
     dialogLayout.setSizeFull();
     dialogLayout.setFlexDirection(FlexDirection.COLUMN);
 
@@ -426,7 +428,8 @@ public class MultiSelectPopUpList<T> extends CustomField<List<T>> implements Has
 
   public void addColumn(ValueProvider<T, ?> columnValueProvider, String columnName) {
     Objects.requireNonNull(columnValueProvider);
-    grid.addColumn(item -> columnValueProvider.apply(item)).setHeader(columnName).setAutoWidth(true).setResizable(true);
+    grid.addColumn(item -> columnValueProvider.apply(item)).setHeader(columnName).setAutoWidth(true)
+        .setResizable(true);
   }
 
   public SerializableBiPredicate<T, Object> getFilter() {
@@ -580,11 +583,13 @@ public class MultiSelectPopUpList<T> extends CustomField<List<T>> implements Has
   public void setDialogMinWidth(String ertek) {
     dialog.setMinWidth(ertek);
   }
-  
+
+  @Override
   public void setHeight(String ertek) {
     dialog.setHeight(ertek);
   }
-  
+
+  @Override
   public void setWidth(String ertek) {
     dialog.setWidth(ertek);
   }
