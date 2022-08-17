@@ -6,6 +6,14 @@ These packages must be updated in case of a new version:
 
 -   There are no references yet
 
+## @smartbit4all/smarttree v0.0.7
+
+**Type: Bugfix**
+
+A bug has been fixed which caused routing problems while navigating with objectUri.
+
+The change itself: `this.router.navigate(['${navigationUrlByNodeType.navigationUrl}'], { queryParams: { uri: node.objectUri }});`
+
 ## @smartbit4all/smarttree v0.0.6
 
 **Type: Bugfix**
