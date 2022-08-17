@@ -1,4 +1,4 @@
-# Smart tree version log
+# Smart table version log
 
 ## @smartbit4all/smarttable v0.0.3
 
