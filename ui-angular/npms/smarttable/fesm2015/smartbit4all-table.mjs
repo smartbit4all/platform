@@ -35,10 +35,31 @@ var SmartTableType;
     SmartTableType[SmartTableType["CHECK_BOX"] = 1] = "CHECK_BOX";
 })(SmartTableType || (SmartTableType = {}));
 class SmartTable {
-    constructor(tableRows, tableType, customTableHeaders, title, hideCols, isMultiple, options) {
+    constructor(tableRows, tableType, customSmartTableHeaders, title, isMultiple, options) {
+        this.equalsIgnoreOrder = (a, b) => {
+            if (a.length !== b.length)
+                return false;
+            const uniqueValues = new Set([...a, ...b]);
+            for (const v of uniqueValues) {
+                const aCount = a.filter((e) => e === v).length;
+                const bCount = b.filter((e) => e === v).length;
+                if (aCount !== bCount)
+                    return false;
+            }
+            return true;
+        };
         this.tableHeaders = Object.getOwnPropertyNames(tableRows[0]);
-        if (customTableHeaders) {
-            this.customTableHeaders = customTableHeaders;
+        this.customSmartTableHeaders = customSmartTableHeaders;
+        this.customTableHeaders = [];
+        if (this.customSmartTableHeaders &&
+            this.equalsIgnoreOrder(this.tableHeaders, this.customSmartTableHeaders.map((tableHeader) => tableHeader.propertyName))) {
+            this.tableHeaders = [];
+            this.customSmartTableHeaders.forEach((tableHeader) => {
+                if (!tableHeader.isHidden) {
+                    this.tableHeaders.push(tableHeader.propertyName);
+                    this.customTableHeaders.push(tableHeader.label);
+                }
+            });
         }
         else {
             this.customTableHeaders = this.tableHeaders;
@@ -46,20 +67,19 @@ class SmartTable {
         this.tableRows = tableRows;
         this.tableType = tableType;
         this.title = title;
-        this.hideCols = hideCols;
         this.isMultiple = isMultiple;
         this.options = options;
         if (this.options && this.options.length) {
-            this.tableHeaders.push('options');
+            this.tableHeaders.push("options");
         }
-        if (this.hideCols !== undefined && this.hideCols.length > 0) {
-            this.hideCols.forEach((hideCol, index) => {
-                hideCol -= index;
-                this.tableHeaders.splice(hideCol, 1);
-            });
-        }
+        // if (this.hideCols !== undefined && this.hideCols.length > 0) {
+        //     this.hideCols.forEach((hideCol, index) => {
+        //         hideCol -= index;
+        //         this.tableHeaders.splice(hideCol, 1);
+        //     });
+        // }
         if (tableType !== SmartTableType.INHERITED) {
-            this.tableHeaders = ['select'].concat(this.tableHeaders);
+            this.tableHeaders = ["select"].concat(this.tableHeaders);
             this.selection = new SelectionModel(this.isMultiple, []);
         }
     }
