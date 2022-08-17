@@ -1,6 +1,12 @@
 # Smart table version log
 
-## @smartbit4all/smarttable v0.0.3
+## References
+
+These packages must be updated in case of a new version:
+
+-   @smartbit4all/dialog
+
+## @smartbit4all/table v0.0.3
 
 **Type: Feature**
 
@@ -10,7 +16,7 @@ In order to use this new ability, **the model**, _which is used in the SmartTabl
 
 **Do not forget to add** the 'img' to the `customTableHeaders` at the **proper** position.
 
-## @smartbit4all/smarttable v0.0.2
+## @smartbit4all/table v0.0.2
 
 **Type: Feature**
 

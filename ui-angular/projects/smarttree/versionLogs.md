@@ -1,5 +1,11 @@
 # Smart tree version log
 
+## References
+
+These packages must be updated in case of a new version:
+
+-   There are no references yet
+
 ## @smartbit4all/smarttree v0.0.6
 
 **Type: Bugfix**
