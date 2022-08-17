@@ -2,7 +2,7 @@ import { NestedTreeControl } from "@angular/cdk/tree";
 import { Component, Input, OnInit } from "@angular/core";
 import { MatTreeNestedDataSource } from "@angular/material/tree";
 import { Router } from "@angular/router";
-import { TreeModel, TreeNode } from "./core/api/tree";
+import { SmartTreeModel, SmartTreeNode } from "./smarttree.model";
 import { TreeStyle } from "./smarttree.node.model";
 
 @Component({
@@ -11,10 +11,10 @@ import { TreeStyle } from "./smarttree.node.model";
     styleUrls: ["./smarttree.component.css"],
 })
 export class SmartTreeComponent implements OnInit {
-    treeControl = new NestedTreeControl<TreeNode>((node) => node.childrenNodes);
-    dataSource = new MatTreeNestedDataSource<TreeNode>();
-    tempActiveNode?: TreeNode;
-    @Input() treeData!: TreeModel;
+    treeControl = new NestedTreeControl<SmartTreeNode>((node) => node.childrenNodes);
+    dataSource = new MatTreeNestedDataSource<SmartTreeNode>();
+    tempActiveNode?: SmartTreeNode;
+    @Input() treeData!: SmartTreeModel;
     @Input() treeStyle?: TreeStyle;
 
     constructor(private router: Router) {}
@@ -22,16 +22,32 @@ export class SmartTreeComponent implements OnInit {
         this.dataSource.data = this.treeData.rootNodes;
     }
 
-    onNodeClick(node: TreeNode) {
+    onNodeClick(node: SmartTreeNode) {
+        if (this.tempActiveNode === node) {
+            this.tempActiveNode.selected = false;
+            this.tempActiveNode = undefined;
+            node.selected = false;
+            return;
+        }
+
         if (this.tempActiveNode) this.tempActiveNode.selected = false;
         node.selected = true;
         this.tempActiveNode = node;
-        this.router.navigateByUrl(node.objectUri!);
+
+        let navigationUrlByNodeType = this.treeData.navigationUrlsByNodeType.find((nav) => {
+            return nav.nodeType === node.nodeType;
+        });
+
+        if (navigationUrlByNodeType) {
+            this.router.navigate([
+                `${navigationUrlByNodeType.navigationUrl}/${node.objectUri ?? ""}`,
+            ]);
+        }
     }
 
-    hasChild = (_: number, node: TreeNode) => node.hasChildren;
+    hasChild = (_: number, node: SmartTreeNode) => node.hasChildren;
 
-    getNodeStyle(node: TreeNode) {
+    getNodeStyle(node: SmartTreeNode) {
         if (this.treeStyle) {
             var style = node.selected
                 ? {
