@@ -19,7 +19,9 @@ export class TabGroupComponent implements OnInit {
     }
 
     navigateTabContent($event: any) {
-        this.router.navigateByUrl(this.actualPath + "/" + this.tabTiles[$event.index].url);
+        this.router.navigate([this.actualPath, this.tabTiles[$event.index].url], {
+            queryParamsHandling: "preserve",
+        });
     }
 
     getTabIndex() {
