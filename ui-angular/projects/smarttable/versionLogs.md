@@ -6,7 +6,7 @@ These packages must be updated in case of a new version:
 
 -   @smartbit4all/dialog
 
-## @smartbit4all/table v0.1.2
+## @smartbit4all/table v0.1.2 - v0.1.3
 
 **Type: Bugfix**
 
