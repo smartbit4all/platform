@@ -21,7 +21,6 @@ export interface SmartTableInterface<T> {
     tableRows: T[];
     tableType: SmartTableType;
     options?: SmartTableOption[];
-    equalsIgnoreOrder: (a: string[], b: string[]) => boolean;
 }
 export declare class SmartTable<T> implements SmartTableInterface<T> {
     title?: string | undefined;
@@ -33,6 +32,8 @@ export declare class SmartTable<T> implements SmartTableInterface<T> {
     selection?: SelectionModel<T>;
     isMultiple?: boolean;
     options?: SmartTableOption[];
-    equalsIgnoreOrder: (a: string[], b: string[]) => boolean;
     constructor(tableRows: T[], tableType: SmartTableType, customSmartTableHeaders?: SmartTableHeader[], title?: string, isMultiple?: boolean, options?: SmartTableOption[]);
+    setTableSelectionType(tableType: SmartTableType): void;
+    pushOptions(): void;
+    setTableHeaders(): void;
 }

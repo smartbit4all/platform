@@ -6,6 +6,39 @@ These packages must be updated in case of a new version:
 
 -   @smartbit4all/dialog
 
+## @smartbit4all/table v0.1.2
+
+**Type: Bugfix**
+
+The `SmartTableHeader` had a bug which may have caused serious issues in case of a model property change.
+
+A function described by the `SmartTableInterface<T>` **has been removed** due to its lack of usage in the new version.
+
+    equalsIgnoreOrder: (a: string[], b: string[]) => boolean;
+
+Instead of comparing all the properties to each other, property by property comparison has been introduced.
+
+**Old code snippet:**
+
+    if (
+            this.customSmartTableHeaders &&
+            this.equalsIgnoreOrder(
+                this.tableHeaders,
+                this.customSmartTableHeaders.map((tableHeader) => tableHeader.propertyName)
+            )
+        ) {
+            this.customSmartTableHeaders.forEach((tableHeader) => { ... }
+        }
+
+**New code snippet:**
+
+    if (this.customSmartTableHeaders && this.customSmartTableHeaders.length) {
+        ...
+        this.customSmartTableHeaders.forEach((tableHeader) => {
+            if (originalHeaders.includes(tableHeader.propertyName) && !tableHeader.isHidden) { ... }
+        }
+    }
+
 ## @smartbit4all/table v0.1.1
 
 **Type: Feature**
