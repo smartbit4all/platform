@@ -14,19 +14,6 @@
     padding: 1em;
 }
 
-.tree-toolbar-btn {
-    color: white;
-    border-radius: 6px;
-    margin: 1em;
-}
-
-.document-details-dark-btn {
-    color: white;
-    border-radius: 6px;
-    margin: 1em;
-}
-
-.document-details-light-btn {
-    border-radius: 6px;
+.button-container button {
     margin: 1em;
 }
