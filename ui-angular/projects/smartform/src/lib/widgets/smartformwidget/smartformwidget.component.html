@@ -28,6 +28,45 @@
                     placeholder="{{ widgetInstance.placeholder }}"
                     matInput
                 />
+                <span matPrefix>
+                    {{ widgetInstance.prefix }}
+                </span>
+                <span matSuffix>
+                    {{ widgetInstance.suffix }}
+                </span>
+                <mat-icon *ngIf="widgetInstance.icon" matSuffix>
+                    {{ widgetInstance.icon }}
+                </mat-icon>
+            </mat-form-field>
+        </div>
+
+        <div *ngSwitchCase="smartFormWidgetType.TEXT_FIELD_NUMBER">
+            <div *ngIf="widgetInstance.showLabel">
+                <h2>{{ widgetInstance.label }}</h2>
+            </div>
+            <mat-form-field
+                class="input textField"
+                [ngStyle]="{ width: widgetInstance.minWidth + 'px' }"
+                appearance="outline"
+            >
+                <mat-label *ngIf="!widgetInstance.showLabel">
+                    {{ widgetInstance.label }}
+                </mat-label>
+                <input
+                    [formControlName]="widgetInstance.key"
+                    [id]="widgetInstance.key"
+                    [value]="widgetInstance.value"
+                    type="number"
+                    placeholder="{{ widgetInstance.placeholder }}"
+                    min="10"
+                    matInput
+                />
+                <span matPrefix>
+                    {{ widgetInstance.prefix }}
+                </span>
+                <span matSuffix>
+                    {{ widgetInstance.suffix }}
+                </span>
                 <mat-icon *ngIf="widgetInstance.icon" matSuffix>
                     {{ widgetInstance.icon }}
                 </mat-icon>

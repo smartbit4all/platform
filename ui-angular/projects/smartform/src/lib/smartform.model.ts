@@ -5,6 +5,7 @@
  */
 export enum SmartFormWidgetType {
     TEXT_FIELD,
+    TEXT_FIELD_NUMBER,
     TEXT_FIELD_CHIPS,
     TEXT_BOX,
     SELECT,
@@ -60,6 +61,8 @@ export interface SmartFormWidget<T> {
     icon?: string;
     minWidth?: SmartFormWidgetWidth;
     isDisabled?: boolean;
+    prefix?: string;
+    suffix?: string;
 }
 
 /**
