@@ -80,9 +80,15 @@ public final class QueryAndSaveResultAsDataSet extends SB4FunctionImpl<QueryInpu
             .activate(column.getProperty(), valueSet);
       }
       if (entry != null) {
-        ExpressionReplacer.replace(fullExpression, originalExists,
+        ExpressionInDataSet expressionInDataSet =
             new ExpressionInDataSet(new OperandProperty(originalExists.getContextProperty()),
-                entry));
+                entry);
+
+        if (originalExists.isNegate()) {
+          expressionInDataSet.NOT();
+        }
+
+        ExpressionReplacer.replace(fullExpression, originalExists, expressionInDataSet);
       }
     }
   }
