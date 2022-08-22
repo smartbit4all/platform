@@ -1,5 +1,7 @@
 # Smart tab group version log
 
+[_@smartbit4all readme_](../../README.md)
+
 ## References
 
 These packages must be updated in case of a new version:
