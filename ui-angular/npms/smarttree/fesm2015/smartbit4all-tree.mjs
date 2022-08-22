@@ -37,11 +37,24 @@ class SmartTreeComponent {
         this.dataSource.data = this.treeData.rootNodes;
     }
     onNodeClick(node) {
+        if (this.tempActiveNode === node) {
+            this.tempActiveNode.selected = false;
+            this.tempActiveNode = undefined;
+            node.selected = false;
+            return;
+        }
         if (this.tempActiveNode)
             this.tempActiveNode.selected = false;
         node.selected = true;
         this.tempActiveNode = node;
-        this.router.navigateByUrl(node.objectUri);
+        let navigationUrlByNodeType = this.treeData.navigationUrlsByNodeType.find((nav) => {
+            return nav.nodeType === node.nodeType;
+        });
+        if (navigationUrlByNodeType) {
+            this.router.navigate([`${navigationUrlByNodeType.navigationUrl}`], {
+                queryParams: { uri: node.objectUri },
+            });
+        }
     }
     getNodeStyle(node) {
         var _a, _b;

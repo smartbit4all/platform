@@ -1,15 +1,12 @@
 import {
     Component,
-    ComponentFactoryResolver,
-    ComponentRef,
     Input,
     OnInit,
     ViewChild,
     ViewContainerRef,
     ViewEncapsulation,
 } from "@angular/core";
-import { SmartForm } from "@smartbit4all/form";
-import { SmartTable } from "@smartbit4all/table";
+import { ComponentFactoryService } from "@smartbit4all/component-factory-service";
 import { ExpandableSection } from "./expandable-section.model";
 
 @Component({
@@ -19,30 +16,20 @@ import { ExpandableSection } from "./expandable-section.model";
     encapsulation: ViewEncapsulation.None,
 })
 export class ExpandableSectionComponent implements OnInit {
-    @Input() data!: ExpandableSection;
-    @Input() smartTable?: SmartTable<any>;
-    @Input() smartForm?: SmartForm;
+    @Input() data!: ExpandableSection<any>;
 
     @ViewChild("renderComponent", { read: ViewContainerRef })
     vcRef?: ViewContainerRef;
 
-    constructor(private resolver: ComponentFactoryResolver) {}
+    constructor(private cfService: ComponentFactoryService) {}
 
     ngOnInit(): void {}
 
     ngAfterViewInit() {
-        const factory = this.resolver.resolveComponentFactory(this.data.customComponent);
-        const ref = this.vcRef!.createComponent(factory);
-        if (this.smartTable) this.loadTableData(ref);
-        if (this.smartForm) this.loadFormData(ref);
-        ref.changeDetectorRef.detectChanges();
-    }
-
-    loadTableData(ref: ComponentRef<any>) {
-        ref.instance.smartTable = this.smartTable;
-    }
-
-    loadFormData(ref: ComponentRef<any>) {
-        ref.instance.smartForm = this.smartForm;
+        this.cfService.createComponent(
+            this.vcRef!,
+            this.data.customComponent,
+            new Map<string, any>([[this.data.inputName ?? "", this.data.data]])
+        );
     }
 }

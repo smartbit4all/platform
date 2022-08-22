@@ -3,18 +3,11 @@ import { MatCommonModule } from "@angular/material/core";
 import { BrowserModule } from "@angular/platform-browser";
 import { ExpandableSectionComponent } from "./expandable-section.component";
 import { MatExpansionModule } from "@angular/material/expansion";
-import { SmarttableModule } from "@smartbit4all/table";
-import { SmartformModule } from "@smartbit4all/form";
+import { ComponentFactoryServiceModule } from "@smartbit4all/component-factory-service";
 
 @NgModule({
     declarations: [ExpandableSectionComponent],
-    imports: [
-        BrowserModule,
-        MatCommonModule,
-        MatExpansionModule,
-        SmarttableModule,
-        SmartformModule,
-    ],
+    imports: [BrowserModule, MatCommonModule, MatExpansionModule, ComponentFactoryServiceModule],
     exports: [ExpandableSectionComponent],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })

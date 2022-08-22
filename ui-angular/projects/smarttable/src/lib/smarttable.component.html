@@ -9,13 +9,19 @@
             matColumnDef="{{ header }}"
         >
             <th mat-header-cell *matHeaderCellDef>
-                <div *ngIf="header === 'icon' || header === 'options'"></div>
-                <div *ngIf="header !== 'icon' && header !== 'options'">
+                <div *ngIf="header === 'icon' || header === 'img' || header === 'options'"></div>
+                <div *ngIf="header !== 'icon' && header !== 'img' && header !== 'options'">
                     {{ smartTable.customTableHeaders[i] }}
                 </div>
             </th>
             <td mat-cell *matCellDef="let element">
                 <mat-icon *ngIf="header === 'icon'"> {{ element[header] }} </mat-icon>
+                <img
+                    *ngIf="header === 'img'"
+                    [src]="element[header]"
+                    alt=""
+                    class="smarttableImg"
+                />
                 <div *ngIf="header === 'options'">
                     <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="options">
                         <mat-icon>more_vert</mat-icon>
@@ -35,7 +41,7 @@
                         </button>
                     </mat-menu>
                 </div>
-                <div *ngIf="header !== 'icon'">
+                <div *ngIf="header !== 'icon' && header !== 'img'">
                     {{ element[header] }}
                 </div>
             </td>
@@ -68,12 +74,48 @@
         </ng-container>
 
         <!-- Column Descriptor -->
-        <div *ngFor="let header of smartTable.tableHeaders">
+        <div *ngFor="let header of smartTable.tableHeaders; let i = index">
             <ng-container *ngIf="header !== 'select'" matColumnDef="{{ header }}">
                 <th mat-header-cell *matHeaderCellDef>
-                    {{ header }}
+                    <div
+                        *ngIf="header === 'icon' || header === 'img' || header === 'options'"
+                    ></div>
+                    <div *ngIf="header !== 'icon' && header !== 'img' && header !== 'options'">
+                        {{ smartTable.customTableHeaders[i] }}
+                    </div>
                 </th>
-                <td mat-cell *matCellDef="let element">{{ element[header] }}</td>
+                <td mat-cell *matCellDef="let element">
+                    <mat-icon *ngIf="header === 'icon'"> {{ element[header] }} </mat-icon>
+                    <img
+                        *ngIf="header === 'img'"
+                        [src]="element[header]"
+                        alt=""
+                        class="smarttableImg"
+                    />
+                    <div *ngIf="header === 'options'">
+                        <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="options">
+                            <mat-icon>more_vert</mat-icon>
+                        </button>
+                        <mat-menu #menu="matMenu">
+                            <button
+                                *ngFor="let option of smartTable.options"
+                                mat-menu-item
+                                (click)="option.callback(element)"
+                            >
+                                <mat-icon *ngIf="option.icon">
+                                    {{ option.icon }}
+                                </mat-icon>
+                                <span>
+                                    {{ option.label }}
+                                </span>
+                            </button>
+                        </mat-menu>
+                    </div>
+                    <div *ngIf="header !== 'icon' && header !== 'img'">
+                        {{ element[header] }}
+                    </div>
+                </td>
+                <!-- <td mat-cell *matCellDef="let element">{{ element[header] }}</td> -->
             </ng-container>
         </div>
 
