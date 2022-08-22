@@ -4,29 +4,30 @@
  * @author Roland Fényes
  */
 export enum SmartFormWidgetType {
-	TEXT_FIELD,
-	TEXT_FIELD_CHIPS,
-	TEXT_BOX,
-	SELECT,
-	SELECT_MULTIPLE,
-	CHECK_BOX,
-	CHECK_BOX_TABLE,
-	RADIO_BUTTON,
-	DATE_PICKER,
-	FILE_UPLOAD,
-	ITEM
+    TEXT_FIELD,
+    TEXT_FIELD_CHIPS,
+    TEXT_BOX,
+    SELECT,
+    SELECT_MULTIPLE,
+    CHECK_BOX,
+    CHECK_BOX_TABLE,
+    RADIO_BUTTON,
+    DATE_PICKER,
+    FILE_UPLOAD,
+    ITEM,
+    CONTAINER,
 }
 
 export enum SmartFormWidgetDirection {
-	COL,
-	ROW
+    COL,
+    ROW,
 }
 
 export enum SmartFormWidgetWidth {
-	SMALL = 150,
-	MEDIUM = 250,
-	LARGE = 350,
-	EXTRA_LARGE = 450
+    SMALL = 150,
+    MEDIUM = 250,
+    LARGE = 350,
+    EXTRA_LARGE = 450,
 }
 
 /**
@@ -44,20 +45,21 @@ export enum SmartFormWidgetWidth {
  * @author Roland Fényes
  */
 export interface SmartFormWidget<T> {
-	key: string;
-	label: string;
-	showLabel?: boolean;
-	value: T;
-	type: SmartFormWidgetType;
-	callback?: (args: any[]) => any;
-	placeholder?: string;
-	minValues?: number;
-	maxValues?: number;
-	direction?: SmartFormWidgetDirection;
-	valueList?: SmartFormWidget<T>[];
-	isRequired?: boolean;
-	icon?: string;
-	minWidth?: SmartFormWidgetWidth;
+    key: string;
+    label: string;
+    showLabel?: boolean;
+    value: T;
+    type: SmartFormWidgetType;
+    callback?: (args: any[]) => any;
+    placeholder?: string;
+    minValues?: number;
+    maxValues?: number;
+    direction?: SmartFormWidgetDirection;
+    valueList?: SmartFormWidget<T>[];
+    isRequired?: boolean;
+    icon?: string;
+    minWidth?: SmartFormWidgetWidth;
+    isDisabled?: boolean;
 }
 
 /**
@@ -69,7 +71,7 @@ export interface SmartFormWidget<T> {
  * @author Roland Fényes
  */
 export interface SmartForm {
-	name: string;
-	direction: SmartFormWidgetDirection;
-	widgets: SmartFormWidget<any>[];
+    name: string;
+    direction: SmartFormWidgetDirection;
+    widgets: SmartFormWidget<any>[];
 }

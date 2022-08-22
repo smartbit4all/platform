@@ -1,51 +1,51 @@
 .checkbox-section,
 .radio-section {
-	display: flex;
-	flex-direction: column;
+    display: flex;
+    flex-direction: column;
 }
 
 .input {
-	width: 100%;
-	/* margin-bottom: 1em; */
+    width: 100%;
+    /* margin-bottom: 1em; */
 }
 
 .direction-col {
-	display: flex;
-	flex-direction: column;
+    display: flex;
+    flex-direction: column;
 }
 
 .direction-row {
-	display: flex;
-	flex-direction: row;
+    display: flex;
+    flex-direction: row;
 }
 
 .selecatbleObject {
-	margin: 0.5em;
+    margin: 0.5em;
 }
 
 .radioLabel {
-	color: var(--primary-color);
-	text-align: left !important;
+    color: var(--primary-color);
+    text-align: left !important;
 }
 
 .container {
-	height: 100%;
+    height: 100%;
 }
 
 .input {
-	height: 100%;
-	display: flex;
-	flex-direction: column;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 .checkbox {
-	flex-direction: column-reverse;
+    flex-direction: column;
 }
 
 .mat-form-field-wrapper {
-	padding-bottom: 0 !important;
+    padding-bottom: 0 !important;
 }
 
 .input .mat-standard-chip.mat-chip-with-trailing-icon {
-	padding-right: 12px;
+    padding-right: 12px;
 }

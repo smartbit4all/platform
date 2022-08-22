@@ -36,26 +36,36 @@ var SmartTableType;
 })(SmartTableType || (SmartTableType = {}));
 class SmartTable {
     constructor(tableRows, tableType, customSmartTableHeaders, title, isMultiple, options) {
-        this.equalsIgnoreOrder = (a, b) => {
-            if (a.length !== b.length)
-                return false;
-            const uniqueValues = new Set([...a, ...b]);
-            for (const v of uniqueValues) {
-                const aCount = a.filter((e) => e === v).length;
-                const bCount = b.filter((e) => e === v).length;
-                if (aCount !== bCount)
-                    return false;
-            }
-            return true;
-        };
         this.tableHeaders = Object.getOwnPropertyNames(tableRows[0]);
         this.customSmartTableHeaders = customSmartTableHeaders;
-        this.customTableHeaders = [];
-        if (this.customSmartTableHeaders &&
-            this.equalsIgnoreOrder(this.tableHeaders, this.customSmartTableHeaders.map((tableHeader) => tableHeader.propertyName))) {
+        this.setTableHeaders();
+        this.tableRows = tableRows;
+        this.tableType = tableType;
+        this.title = title;
+        this.isMultiple = isMultiple;
+        this.options = options;
+        this.pushOptions();
+        this.setTableSelectionType(tableType);
+    }
+    setTableSelectionType(tableType) {
+        if (tableType !== SmartTableType.INHERITED) {
+            this.tableHeaders = ["select"].concat(this.tableHeaders);
+            this.customTableHeaders = ["select"].concat(this.customTableHeaders);
+            this.selection = new SelectionModel(this.isMultiple, []);
+        }
+    }
+    pushOptions() {
+        if (this.options && this.options.length) {
+            this.tableHeaders.push("options");
+        }
+    }
+    setTableHeaders() {
+        if (this.customSmartTableHeaders && this.customSmartTableHeaders.length) {
+            let originalHeaders = this.tableHeaders;
             this.tableHeaders = [];
+            this.customTableHeaders = [];
             this.customSmartTableHeaders.forEach((tableHeader) => {
-                if (!tableHeader.isHidden) {
+                if (originalHeaders.includes(tableHeader.propertyName) && !tableHeader.isHidden) {
                     this.tableHeaders.push(tableHeader.propertyName);
                     this.customTableHeaders.push(tableHeader.label);
                 }
@@ -63,24 +73,6 @@ class SmartTable {
         }
         else {
             this.customTableHeaders = this.tableHeaders;
-        }
-        this.tableRows = tableRows;
-        this.tableType = tableType;
-        this.title = title;
-        this.isMultiple = isMultiple;
-        this.options = options;
-        if (this.options && this.options.length) {
-            this.tableHeaders.push("options");
-        }
-        // if (this.hideCols !== undefined && this.hideCols.length > 0) {
-        //     this.hideCols.forEach((hideCol, index) => {
-        //         hideCol -= index;
-        //         this.tableHeaders.splice(hideCol, 1);
-        //     });
-        // }
-        if (tableType !== SmartTableType.INHERITED) {
-            this.tableHeaders = ["select"].concat(this.tableHeaders);
-            this.selection = new SelectionModel(this.isMultiple, []);
         }
     }
 }
