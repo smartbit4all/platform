@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { SmartToolbarService } from './smart-toolbar.service';
 
 
 @NgModule({
@@ -19,6 +20,7 @@ import { MatIconModule } from '@angular/material/icon';
   exports: [
     SmartToolbarComponent
   ],
+  providers: [SmartToolbarService],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class SmartToolbarModule { }

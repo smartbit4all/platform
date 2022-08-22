@@ -1,13 +1,21 @@
 <div
-	class="button-container"
-	[ngClass]="toolbar.direction === toolbarDirection.ROW ? 'row' : 'col'"
+  class="button-container"
+  [ngClass]="toolbar.direction === toolbarDirection.ROW ? 'row' : 'col'"
 >
-	<button
-		mat-raised-button
-		*ngFor="let button of toolbar.buttons"
-		(click)="button.btnAction()"
-		[ngClass]="button.btnStyle"
-	>
-		{{ button.label }} <mat-icon>{{ button.icon }}</mat-icon>
-	</button>
+  <div *ngFor="let button of toolbar.buttons">
+    <button
+      *ngIf="button.btnStyle === ToolbarButtonStyle.MAT_RAISED_BUTTON"
+      mat-raised-button
+      (click)="executeCommand(button)"
+    >
+      {{ button.label }} <mat-icon>{{ button.icon }}</mat-icon>
+    </button>
+    <button
+      *ngIf="button.btnStyle === ToolbarButtonStyle.MAT_BUTTON"
+      mat-button
+      (click)="executeCommand(button)"
+    >
+      {{ button.label }} <mat-icon>{{ button.icon }}</mat-icon>
+    </button>
+  </div>
 </div>

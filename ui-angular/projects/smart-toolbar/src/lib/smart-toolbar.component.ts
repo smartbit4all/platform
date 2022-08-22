@@ -3,7 +3,8 @@ import {
     Input,
     OnInit
 } from "@angular/core";
-import { SmartToolbar, ToolbarDirection } from "./smart-toolbar.model";
+import { SmartToolbar, SmartToolbarButton, ToolbarButtonStyle, ToolbarDirection } from "./smart-toolbar.model";
+import { SmartToolbarService } from "./smart-toolbar.service";
 
 @Component({
     selector: "smart-toolbar",
@@ -13,8 +14,13 @@ import { SmartToolbar, ToolbarDirection } from "./smart-toolbar.model";
 export class SmartToolbarComponent implements OnInit {
     @Input() toolbar!: SmartToolbar;
     toolbarDirection = ToolbarDirection;
+    ToolbarButtonStyle = ToolbarButtonStyle;
 
-    constructor() { }
+    constructor(private service: SmartToolbarService) { }
 
     ngOnInit(): void { }
+
+    executeCommand(button: SmartToolbarButton) {
+        this.service.executeCommand(button);
+    }
 }
