@@ -8,6 +8,28 @@ These packages must be updated in case of a new version:
 
 -   @smartbit4all/dialog
 
+## @smartbit4all/form v0.1.2
+
+**Type: Feature**
+
+_Prefix_ and _Suffix_ have been added to `SmartFormWidget`. These two can be used with **TextFields**.
+
+**TEXT_FIELD_NUMBER** as a new `SmartFormWidgetType` can be used for numbers.
+
+**Example for prefix, suffix and TEXT_FIELD_NUMBER:**
+
+    {
+        key: 'money',
+        label: 'Money',
+        type: SmartFormWidgetType.TEXT_FIELD_NUMBER,
+        value: 10,
+        prefix: '€',
+        suffix: '.00',
+        ...
+    }
+
+**Output:** _€ 10.00_
+
 ## @smartbit4all/form v0.1.1
 
 **Type: Feature**

@@ -5,17 +5,18 @@
  */
 export declare enum SmartFormWidgetType {
     TEXT_FIELD = 0,
-    TEXT_FIELD_CHIPS = 1,
-    TEXT_BOX = 2,
-    SELECT = 3,
-    SELECT_MULTIPLE = 4,
-    CHECK_BOX = 5,
-    CHECK_BOX_TABLE = 6,
-    RADIO_BUTTON = 7,
-    DATE_PICKER = 8,
-    FILE_UPLOAD = 9,
-    ITEM = 10,
-    CONTAINER = 11
+    TEXT_FIELD_NUMBER = 1,
+    TEXT_FIELD_CHIPS = 2,
+    TEXT_BOX = 3,
+    SELECT = 4,
+    SELECT_MULTIPLE = 5,
+    CHECK_BOX = 6,
+    CHECK_BOX_TABLE = 7,
+    RADIO_BUTTON = 8,
+    DATE_PICKER = 9,
+    FILE_UPLOAD = 10,
+    ITEM = 11,
+    CONTAINER = 12
 }
 export declare enum SmartFormWidgetDirection {
     COL = 0,
@@ -57,6 +58,8 @@ export interface SmartFormWidget<T> {
     icon?: string;
     minWidth?: SmartFormWidgetWidth;
     isDisabled?: boolean;
+    prefix?: string;
+    suffix?: string;
 }
 /**
  * Dynamic forms can be easily defined with this interface.
