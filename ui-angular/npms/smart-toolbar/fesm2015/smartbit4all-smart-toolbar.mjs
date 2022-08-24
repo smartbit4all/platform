@@ -36,24 +36,25 @@ var ToolbarButtonColor;
 })(ToolbarButtonColor || (ToolbarButtonColor = {}));
 
 class SmartToolbarService {
-    constructor(router) {
+    constructor(router, route) {
         this.router = router;
+        this.route = route;
     }
     executeCommand(button) {
         if (button.btnAction.commandType === CommandType.NAVIGATION) {
-            let params = button.btnAction.objectUri ? { queryParams: { uri: button.btnAction.objectUri } } : {};
-            this.router.navigate([button.btnAction.url], params);
+            let params = button.btnAction.objectUri ? { uri: button.btnAction.objectUri } : {};
+            this.router.navigate([button.btnAction.url], { queryParams: params, relativeTo: this.route });
         }
     }
 }
-SmartToolbarService.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "13.2.7", ngImport: i0, type: SmartToolbarService, deps: [{ token: i1.Router }], target: i0.ɵɵFactoryTarget.Injectable });
+SmartToolbarService.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "13.2.7", ngImport: i0, type: SmartToolbarService, deps: [{ token: i1.Router }, { token: i1.ActivatedRoute }], target: i0.ɵɵFactoryTarget.Injectable });
 SmartToolbarService.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "13.2.7", ngImport: i0, type: SmartToolbarService, providedIn: 'root' });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "13.2.7", ngImport: i0, type: SmartToolbarService, decorators: [{
             type: Injectable,
             args: [{
                     providedIn: 'root'
                 }]
-        }], ctorParameters: function () { return [{ type: i1.Router }]; } });
+        }], ctorParameters: function () { return [{ type: i1.Router }, { type: i1.ActivatedRoute }]; } });
 
 class SmartToolbarComponent {
     constructor(service) {

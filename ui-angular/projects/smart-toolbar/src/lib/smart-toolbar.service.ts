@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CommandType, SmartToolbarButton } from './smart-toolbar.model';
 
 @Injectable({
@@ -7,12 +7,12 @@ import { CommandType, SmartToolbarButton } from './smart-toolbar.model';
 })
 export class SmartToolbarService {
 
-  constructor(private router: Router) { }
+  constructor(private router: Router, private route: ActivatedRoute) { }
 
   executeCommand(button: SmartToolbarButton) {
     if (button.btnAction.commandType === CommandType.NAVIGATION) {
-      let params = button.btnAction!.objectUri ? { queryParams: { uri: button.btnAction.objectUri } } : {};
-      this.router.navigate([button.btnAction.url], params);
+      let params = button.btnAction!.objectUri ? { uri: button.btnAction.objectUri } : {};
+      this.router.navigate([button.btnAction.url], { queryParams: params, relativeTo: this.route });
     }
   }
 }
