@@ -2,7 +2,9 @@ export interface SmartToolbarButton {
     label: string;
     icon?: string;
     btnAction: Command;
-    btnStyle?: ToolbarButtonStyle;
+    style: ToolbarButtonStyle;
+    color?: ToolbarButtonColor;
+    disabled: boolean;
 }
 
 export interface SmartToolbar {
@@ -27,5 +29,16 @@ export enum CommandType {
 
 export enum ToolbarButtonStyle {
     MAT_RAISED_BUTTON = "MAT_RAISED_BUTTON",
-    MAT_BUTTON = "MAT_BUTTON"
+    MAT_BUTTON = "MAT_BUTTON",
+    MAT_STROKED_BUTTON = "MAT_STROKED_BUTTON",
+    MAT_FLAT_BUTTON = "MAT_FLAT_BUTTON",
+    MAT_ICON_BUTTON = "MAT_ICON_BUTTON",
+    MAT_FAB = "MAT_FAB",
+    MAT_MINI_FAB = "MAT_MINI_FAB"
+}
+
+export enum ToolbarButtonColor {
+    PRIMARY = "primary",
+    ACCENT = "accent",
+    WARN = "warn",
 }

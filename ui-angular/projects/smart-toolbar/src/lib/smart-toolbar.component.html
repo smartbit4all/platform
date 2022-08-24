@@ -3,19 +3,80 @@
   [ngClass]="toolbar.direction === toolbarDirection.ROW ? 'row' : 'col'"
 >
   <div *ngFor="let button of toolbar.buttons">
+    <!-- MAT RAISED BUTTON -->
     <button
-      *ngIf="button.btnStyle === ToolbarButtonStyle.MAT_RAISED_BUTTON"
+      *ngIf="button.style === ToolbarButtonStyle.MAT_RAISED_BUTTON"
       mat-raised-button
+      color="{{ button.color }}"
+      [disabled]="button.disabled"
       (click)="executeCommand(button)"
     >
       {{ button.label }} <mat-icon>{{ button.icon }}</mat-icon>
     </button>
+    <!-- MAT BUTTON -->
     <button
-      *ngIf="button.btnStyle === ToolbarButtonStyle.MAT_BUTTON"
+      *ngIf="button.style === ToolbarButtonStyle.MAT_BUTTON"
       mat-button
+      color="{{ button.color }}"
+      [disabled]="button.disabled"
       (click)="executeCommand(button)"
     >
       {{ button.label }} <mat-icon>{{ button.icon }}</mat-icon>
+    </button>
+
+    <!-- MAT STROKED BUTTON -->
+    <button
+      *ngIf="button.style === ToolbarButtonStyle.MAT_STROKED_BUTTON"
+      mat-stroked-button
+      color="{{ button.color }}"
+      [disabled]="button.disabled"
+      (click)="executeCommand(button)"
+    >
+      {{ button.label }} <mat-icon>{{ button.icon }}</mat-icon>
+    </button>
+
+    <!-- MAT FLAT BUTTON -->
+    <button
+      *ngIf="button.style === ToolbarButtonStyle.MAT_FLAT_BUTTON"
+      mat-flat-button
+      color="{{ button.color }}"
+      [disabled]="button.disabled"
+      (click)="executeCommand(button)"
+    >
+      {{ button.label }} <mat-icon>{{ button.icon }}</mat-icon>
+    </button>
+
+    <!-- MAT ICON BUTTON -->
+    <button
+      *ngIf="button.style === ToolbarButtonStyle.MAT_ICON_BUTTON"
+      mat-icon-button
+      color="{{ button.color }}"
+      [disabled]="button.disabled"
+      (click)="executeCommand(button)"
+    >
+      <mat-icon>{{ button.icon }}</mat-icon>
+    </button>
+
+    <!-- MAT FAB -->
+    <button
+      *ngIf="button.style === ToolbarButtonStyle.MAT_FAB"
+      mat-fab
+      color="{{ button.color }}"
+      [disabled]="button.disabled"
+      (click)="executeCommand(button)"
+    >
+      <mat-icon>{{ button.icon }}</mat-icon>
+    </button>
+
+    <!-- MAT MINI FAB -->
+    <button
+      *ngIf="button.style === ToolbarButtonStyle.MAT_MINI_FAB"
+      mat-mini-fab
+      color="{{ button.color }}"
+      [disabled]="button.disabled"
+      (click)="executeCommand(button)"
+    >
+      <mat-icon>{{ button.icon }}</mat-icon>
     </button>
   </div>
 </div>

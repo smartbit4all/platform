@@ -8,6 +8,46 @@ These packages must be updated in case of a new version:
 
 - There are no references yet
 
+## @smartbit4all/smart-toolbar v0.1.1
+
+**Type: Feature**
+
+Add new feature:
+
+1.  Material Color Theme customizable in SmartToolbarButton color property:
+    primary, warn accent
+
+        export enum ToolbarButtonColor {
+            PRIMARY = "primary",
+            ACCENT = "accent",
+            WARN = "warn",
+        }
+
+2.  Material Button variants customizable in style property:
+
+        export enum ToolbarButtonStyle {
+            MAT_RAISED_BUTTON = "MAT_RAISED_BUTTON",
+            MAT_BUTTON = "MAT_BUTTON",
+            MAT_STROKED_BUTTON = "MAT_STROKED_BUTTON",
+            MAT_FLAT_BUTTON = "MAT_FLAT_BUTTON",
+            MAT_ICON_BUTTON = "MAT_ICON_BUTTON",
+            MAT_FAB = "MAT_FAB",
+            MAT_MINI_FAB = "MAT_MINI_FAB"
+        }
+
+3.  Add disabled property to SmartToolbarButton.
+
+New SmartToolbarButton interface:
+
+    export interface SmartToolbarButton {
+        label: string;
+        icon?: string;
+        btnAction: Command;
+        style: ToolbarButtonStyle;
+        color: ToolbarButtonColor;
+        disabled: boolean;
+    }
+
 ## @smartbit4all/smart-toolbar v0.1.0
 
 **Type: Feature**
