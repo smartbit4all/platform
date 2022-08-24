@@ -1,3 +1,4 @@
+import { ValidatorFn } from "@angular/forms";
 /**
  * This enum containes the available types of the form widgets.
  *
@@ -60,6 +61,8 @@ export interface SmartFormWidget<T> {
     isDisabled?: boolean;
     prefix?: string;
     suffix?: string;
+    validators?: ValidatorFn[];
+    errorMessage?: string;
 }
 /**
  * Dynamic forms can be easily defined with this interface.

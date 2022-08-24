@@ -28,6 +28,15 @@
                     placeholder="{{ widgetInstance.placeholder }}"
                     matInput
                 />
+                <span
+                    class="mat-error"
+                    *ngIf="
+                        !form.get(widgetInstance.key)?.valid &&
+                        form.get(widgetInstance.key)?.touched
+                    "
+                >
+                    {{ widgetInstance.errorMessage }}
+                </span>
                 <span matPrefix>
                     {{ widgetInstance.prefix }}
                 </span>
@@ -61,6 +70,15 @@
                     min="10"
                     matInput
                 />
+                <span
+                    class="mat-error"
+                    *ngIf="
+                        !form.get(widgetInstance.key)?.valid &&
+                        form.get(widgetInstance.key)?.touched
+                    "
+                >
+                    {{ widgetInstance.errorMessage }}
+                </span>
                 <span matPrefix>
                     {{ widgetInstance.prefix }}
                 </span>
@@ -102,6 +120,15 @@
                         [matChipInputAddOnBlur]="addOnBlur"
                         (matChipInputTokenEnd)="add($event)"
                     />
+                    <span
+                        class="mat-error"
+                        *ngIf="
+                            !form.get(widgetInstance.key)?.valid &&
+                            form.get(widgetInstance.key)?.touched
+                        "
+                    >
+                        {{ widgetInstance.errorMessage }}
+                    </span>
                 </mat-chip-list>
             </mat-form-field>
         </div>
@@ -126,6 +153,15 @@
                     placeholder="{{ widgetInstance.value }}"
                     matInput
                 ></textarea>
+                <span
+                    class="mat-error"
+                    *ngIf="
+                        !form.get(widgetInstance.key)?.valid &&
+                        form.get(widgetInstance.key)?.touched
+                    "
+                >
+                    {{ widgetInstance.errorMessage }}
+                </span>
             </mat-form-field>
         </div>
 
@@ -150,6 +186,15 @@
                         {{ checkbox.label }}
                     </mat-checkbox>
                 </section>
+                <span
+                    class="mat-error"
+                    *ngIf="
+                        !form.get(widgetInstance.key)?.valid &&
+                        form.get(widgetInstance.key)?.touched
+                    "
+                >
+                    {{ widgetInstance.errorMessage }}
+                </span>
             </div>
         </div>
 
@@ -178,6 +223,14 @@
                     </mat-radio-button>
                 </div>
             </mat-radio-group>
+            <span
+                class="mat-error"
+                *ngIf="
+                    !form.get(widgetInstance.key)?.valid && form.get(widgetInstance.key)?.touched
+                "
+            >
+                {{ widgetInstance.errorMessage }}
+            </span>
         </div>
 
         <div *ngSwitchCase="smartFormWidgetType.DATE_PICKER">
@@ -202,6 +255,15 @@
                     matInput
                     [matDatepicker]="picker"
                 />
+                <span
+                    class="mat-error"
+                    *ngIf="
+                        !form.get(widgetInstance.key)?.valid &&
+                        form.get(widgetInstance.key)?.touched
+                    "
+                >
+                    {{ widgetInstance.errorMessage }}
+                </span>
                 <mat-hint>MM/DD/YYYY</mat-hint>
             </mat-form-field>
         </div>
@@ -225,6 +287,15 @@
                         >{{ option.value }}</mat-option
                     >
                 </mat-select>
+                <span
+                    class="mat-error"
+                    *ngIf="
+                        !form.get(widgetInstance.key)?.valid &&
+                        form.get(widgetInstance.key)?.touched
+                    "
+                >
+                    {{ widgetInstance.errorMessage }}
+                </span>
             </mat-form-field>
         </div>
 
@@ -247,6 +318,15 @@
                         >{{ option.value }}</mat-option
                     >
                 </mat-select>
+                <span
+                    class="mat-error"
+                    *ngIf="
+                        !form.get(widgetInstance.key)?.valid &&
+                        form.get(widgetInstance.key)?.touched
+                    "
+                >
+                    {{ widgetInstance.errorMessage }}
+                </span>
             </div>
         </div>
     </div>

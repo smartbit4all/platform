@@ -8,6 +8,69 @@ These packages must be updated in case of a new version:
 
 -   @smartbit4all/dialog
 
+## @smartbit4all/form v0.1.4
+
+**Type: Feature**
+
+This version contains two major changes: a **submit function** and **custom validators** have been added to the `SmartForm`.
+
+---
+
+**Changes:**
+
+The **submitForm()** function is implemented in the `SmartformComponent`. The new values are translated back to the given `SmartForm` object if the status of the form is valid. If it is not, the function throws an error with the current state.
+
+    submitForm(): SmartForm {
+        if (this.form.status === "VALID") {
+            return this.service.toSmartForm(this.form, this.smartForm);
+        } else {
+            throw new Error(`The form status is ${this.form.status}.`);
+        }
+    }
+
+In order to use **multiple custom validators**, the `SmartFormWidget` got a validators property. A custom error message can be set with the **errorMessage** property.
+
+    export interface SmartFormWidget<T> {
+        ...
+        validators?: ValidatorFn[];
+        errorMessage?: string;
+    }
+
+---
+
+**How to use this version properly:**
+
+`example.component.html`
+
+    <smartform #exampleForm [smartForm]="form!"></smartform>
+
+`example.component.ts`
+
+    @ViewChild('exampleForm') child?: SmartformComponent;
+
+    smartForm: SmartForm;
+
+    constructor() {
+        this.smartForm = {
+    		name: '',
+    		direction: SmartFormWidgetDirection.COL,
+    		widgets: [
+    			{
+    				key: 'exampleEmail',
+    				label: 'Email',
+    				type: SmartFormWidgetType.TEXT_FIELD,
+    				value: '',
+    				validators: [Validators.required, Validators.email],
+    				errorMessage: 'It is not a valid email.'
+    			}
+    		]
+    	};
+    }
+
+    submit(): void {
+    	this.smartForm = this.child?.submitForm();
+    }
+
 ## @smartbit4all/form v0.1.2
 
 **Type: Feature**

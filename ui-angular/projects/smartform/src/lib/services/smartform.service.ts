@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { FormControl, FormGroup, Validators } from "@angular/forms";
+import { FormControl, FormGroup, ValidatorFn, Validators } from "@angular/forms";
 import { SmartForm, SmartFormWidget, SmartFormWidgetType } from "../smartform.model";
 
 @Injectable()
@@ -14,10 +14,17 @@ export class SmartFormService {
 
     createFormControls(widgets: SmartFormWidget<any>[]) {
         widgets.forEach((widget) => {
-            let formControl = new FormControl(
-                widget.value || "",
-                widget.isRequired ? Validators.required : undefined
-            );
+            if (
+                widget.validators &&
+                widget.isRequired &&
+                !this.isValidatorInList(Validators.required, widget.validators)
+            ) {
+                widget.validators.push(Validators.required);
+            } else if (!widget.validators && widget.isRequired) {
+                widget.validators = [Validators.required];
+            }
+
+            let formControl = new FormControl(widget.value || "", widget.validators);
 
             if (widget.isDisabled) {
                 formControl.disable();
@@ -28,5 +35,17 @@ export class SmartFormService {
                 this.createFormControls(widget.valueList);
             }
         });
+    }
+
+    isValidatorInList(validator: Validators, list?: ValidatorFn[]): boolean {
+        return list !== undefined && list.length > 0 && list.some((v) => v === validator);
+    }
+
+    toSmartForm(group: FormGroup, smartForm: SmartForm): SmartForm {
+        smartForm.widgets.forEach((widget) => {
+            widget.value = group.controls[widget.key].value;
+        });
+
+        return smartForm;
     }
 }

@@ -1,27 +1,36 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { FormGroup } from '@angular/forms';
-import { SmartFormService } from './services/smartform.service';
-import { SmartForm, SmartFormWidgetDirection } from './smartform.model';
+import { Component, Input, OnInit } from "@angular/core";
+import { FormGroup } from "@angular/forms";
+import { SmartFormService } from "./services/smartform.service";
+import { SmartForm, SmartFormWidgetDirection } from "./smartform.model";
 
 @Component({
-	selector: 'smartform',
-	templateUrl: './smartform.component.html',
-	styleUrls: ['./smartform.component.css'],
-	providers: [SmartFormService]
+    selector: "smartform",
+    templateUrl: "./smartform.component.html",
+    styleUrls: ["./smartform.component.css"],
+    providers: [SmartFormService],
 })
 export class SmartformComponent implements OnInit {
-	@Input() smartForm!: SmartForm;
-	form!: FormGroup;
+    @Input() smartForm!: SmartForm;
 
-	direction = SmartFormWidgetDirection;
+    form!: FormGroup;
 
-	constructor(private service: SmartFormService) {}
+    direction = SmartFormWidgetDirection;
 
-	ngOnInit(): void {
-		this.form = this.service.toFormGroup(this.smartForm);
-	}
+    constructor(private service: SmartFormService) {}
 
-	getForm(): FormGroup {
-		return this.form;
-	}
+    ngOnInit(): void {
+        this.form = this.service.toFormGroup(this.smartForm);
+    }
+
+    getForm(): FormGroup {
+        return this.form;
+    }
+
+    submitForm(): SmartForm {
+        if (this.form.status === "VALID") {
+            return this.service.toSmartForm(this.form, this.smartForm);
+        } else {
+            throw new Error(`The form status is ${this.form.status}.`);
+        }
+    }
 }
