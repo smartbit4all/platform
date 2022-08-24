@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from "@angular/core";
-import { Router } from "@angular/router";
+import { ActivatedRoute } from "@angular/router";
+import { SmartNavigationService } from "@smartbit4all/navigation";
 import { TabTile } from "./tabTile.model";
 
 @Component({
@@ -9,25 +10,37 @@ import { TabTile } from "./tabTile.model";
 })
 export class TabGroupComponent implements OnInit {
     @Input() tabTiles!: TabTile[];
-    @Input() actualPath!: string;
+    @Input() route!: ActivatedRoute;
     selectedTabIndex: number = 0;
 
-    constructor(private router: Router) {}
+    constructor(private navigationService: SmartNavigationService) {
+        this.navigationService.route = this.route;
+    }
 
     ngOnInit(): void {
         this.getTabIndex();
     }
 
     navigateTabContent($event: any) {
-        this.router.navigate([this.actualPath, this.tabTiles[$event.index].url], {
-            queryParamsHandling: "preserve",
-        });
+        if (!this.navigationService.route) {
+            this.navigationService.route = this.route;
+        }
+        this.navigationService.navigateTo(
+            [`${this.tabTiles[$event.index].url}`],
+            undefined,
+            "preserve",
+            true
+        );
     }
 
     getTabIndex() {
-        const url = this.router.url.split("?")[0];
+        const url = this.navigationService.getCurrentPath().split("?")[0];
         this.selectedTabIndex = this.tabTiles.findIndex((t) => {
-            return url.includes(t.url);
+            let tabUrl: string = t.url;
+            if (tabUrl.includes("../")) {
+                tabUrl = tabUrl.split("../")[1];
+            }
+            return url.includes(tabUrl);
         });
     }
 }

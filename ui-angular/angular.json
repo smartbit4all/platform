@@ -507,6 +507,37 @@
           }
         }
       }
+    },
+    "smart-navigation": {
+      "projectType": "library",
+      "root": "projects/smart-navigation",
+      "sourceRoot": "projects/smart-navigation/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "projects/smart-navigation/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/smart-navigation/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/smart-navigation/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/smart-navigation/src/test.ts",
+            "tsConfig": "projects/smart-navigation/tsconfig.spec.json",
+            "karmaConfig": "projects/smart-navigation/karma.conf.js"
+          }
+        }
+      }
     }
   },
   "defaultProject": "smartbit4all"

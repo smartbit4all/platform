@@ -39,6 +39,10 @@
         "dist/smart-navbar/smart-navbar",
         "dist/smart-navbar"
       ],
+      "smart-navigation": [
+        "dist/smart-navigation/smart-navigation",
+        "dist/smart-navigation"
+      ],
       "smart-tab-group": [
         "dist/smart-tab-group/smart-tab-group",
         "dist/smart-tab-group"
