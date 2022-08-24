@@ -92,10 +92,13 @@ public final class ObjectDefinition<T> {
    */
   private final Map<String, Map<String, ReferenceDefinition>> incomingReferences = new HashMap<>();
 
+  private final BeanMeta meta;
+
   public ObjectDefinition(Class<T> clazz) {
     super();
     this.clazz = clazz;
     this.qualifiedName = clazz.getName();
+    meta = BeanMetaUtil.meta(clazz);
   }
 
   public final Class<T> getClazz() {
@@ -281,6 +284,10 @@ public final class ObjectDefinition<T> {
    */
   public final String getQualifiedName() {
     return qualifiedName;
+  }
+
+  public final BeanMeta meta() {
+    return meta;
   }
 
 }

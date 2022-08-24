@@ -32,24 +32,27 @@ components:
             The storage identifier of the given definition. It is calculated by the qualified name of the object and the name name of the
             reference. For example object:/com/smartbit4all/mydomain/model/MyObject/firstReference could be a calculated URI for a given reference.
             By deafult it could be a good idea to name the reference by the name of the property that contains the reference value.
+        containment:
+          type: boolean
+          description: |
+            The containment means that the source contains the target object. The target object is accessible only from the source.
         backReference:
           type: string
           format: uri
-          description: If an association between two object is navigable into both dirction then this uri refers to the opposite reference.
+          description: If an association between two object is navigable into both direction then this uri refers to the opposite reference.
         source:
           type: object
           description: The descriptor of the source object.
           $ref: '#/components/schemas/ObjectReferenceDefinitionData'
-        target:
-          type: object
-          description: The descriptor of the target object.
-          $ref: '#/components/schemas/ObjectReferenceDefinitionData'
+        targetObjectName:
+          type: string
+          description: The name of the target object.
     ObjectReferenceDefinitionData:
       type: object
       description: |
         The object reference is one end of the reference let it be source or target. It identifies the object and the propety. This object is 
         contained by the ReferenceDefinitionData.
-      required: [objectName,propertyPath,propertyKind]
+      required: [objectName,propertyPath]
       properties:
         objectName:
           description: The qualified name of the object like com.smartbit4all.domain.MyObject
@@ -62,10 +65,3 @@ components:
             access the object directly by its value.
             If we have an array the the array path contains the path of the array property in the same way. The array must contains uri / identifier values.
           type: string
-        propertyKind:
-          $ref: '#/components/schemas/PropertyKindEnum'
-    PropertyKindEnum:
-      type: string
-      enum: [
-          PROPERTY, LIST, MAP
-        ]

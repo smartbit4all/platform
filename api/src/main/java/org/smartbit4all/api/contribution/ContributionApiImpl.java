@@ -19,7 +19,7 @@ public class ContributionApiImpl implements ContributionApi {
   /**
    * The reference for the {@link PrimaryApi} managing this contribution.
    */
-  WeakReference<PrimaryApi<?>> primaryApiRef;
+  WeakReference<PrimaryApi<ContributionApi>> primaryApiRef;
 
   protected ContributionApiImpl(String apiName) {
     this.apiName = apiName;
@@ -32,6 +32,15 @@ public class ContributionApiImpl implements ContributionApi {
 
   protected void setApiName(String apiName) {
     this.apiName = apiName;
+  }
+
+  @SuppressWarnings("rawtypes")
+  public PrimaryApi primaryApi() {
+    return primaryApiRef.get();
+  }
+
+  final void setPrimaryApi(PrimaryApi primaryApi) {
+    this.primaryApiRef = new WeakReference<>(primaryApi);
   }
 
 }

@@ -3,7 +3,6 @@ package org.smartbit4all.core.object;
 import java.util.ArrayList;
 import java.util.List;
 import org.smartbit4all.api.object.bean.ObjectReferenceDefinitionData;
-import org.smartbit4all.api.object.bean.PropertyKindEnum;
 import org.smartbit4all.api.object.bean.ReferenceDefinitionData;
 
 /**
@@ -37,18 +36,15 @@ public class ObjectReferenceConfigs {
    * 
    * @param sourceObjectName The name of the source object.
    * @param referPropertyPath The path of the property.
-   * @param kind The kind of the property.
    * @param targetObjectName The target object that is identified by its uri property by default.
-   * @param referredPropertyPath The path of the property in the target object. It is the URI of the
-   *        object in general.
    * @return This because it is a builder api.
    */
   public ObjectReferenceConfigs ref(String sourceObjectName, String referPropertyPath,
-      PropertyKindEnum kind, String targetObjectName, String referredPropertyPath) {
+      String targetObjectName, boolean contained) {
     configs.add(new ReferenceDefinitionData().source(new ObjectReferenceDefinitionData()
-        .objectName(sourceObjectName).propertyPath(referPropertyPath).propertyKind(kind))
-        .target(new ObjectReferenceDefinitionData().objectName(targetObjectName)
-            .propertyKind(PropertyKindEnum.PROPERTY).propertyPath(referredPropertyPath)));
+        .objectName(sourceObjectName).propertyPath(referPropertyPath))
+        .targetObjectName(targetObjectName)
+        .containment(contained));
     return this;
   }
 

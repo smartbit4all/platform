@@ -136,29 +136,32 @@ public final class BeanMetaUtil {
     propertyMeta.setGetter(method);
 
     // set property kind
-    // We can detect the references and the related collections by the allClasses set. If we have a
-    // property with the type of a bean class.
-    if (descriptor != null && descriptor.getAllApiBeanClass().contains(propertyType)) {
-      // In this case it's a direct reference to another api object.
-      propertyMeta.setKind(PropertyKind.REFERENCE);
-    }
+
     // We identifies the collection as list of references. In any other cases the list is just a
     // value that can be set as a list of value at once.
     if (propertyType.isAssignableFrom(List.class)) {
       // If we don't define the detail meta then try to identify the field for the bean property.
       Class<?> genericType = lookupFieldGenericType(apiClass, propertyName, List.class);
       if (genericType != null
-          && (descriptor != null && descriptor.getAllApiBeanClass().contains(genericType))) {
+          && ((descriptor != null && descriptor.isReferenceType(genericType))
+              || (descriptor == null && ApiBeanDescriptor.isReferenceByDefault(genericType)))) {
         propertyMeta.setKind(PropertyKind.COLLECTION);
       }
-    }
-    if (propertyType.isAssignableFrom(Map.class)) {
+    } else if (propertyType.isAssignableFrom(Map.class)) {
       // If we don't define the detail meta then try to identify the field for the bean property.
       Class<?> genericType = lookupFieldGenericType(apiClass, propertyName, Map.class);
       if (genericType != null
-          && (descriptor != null && descriptor.getAllApiBeanClass().contains(genericType))) {
+          && ((descriptor != null && descriptor.isReferenceType(genericType))
+              || (descriptor == null && ApiBeanDescriptor.isReferenceByDefault(genericType)))) {
         propertyMeta.setKind(PropertyKind.MAP);
       }
+    } else if ((descriptor != null && descriptor.isReferenceType(propertyType))
+        || (descriptor == null && ApiBeanDescriptor.isReferenceByDefault(propertyType))) {
+      // We can detect the references and the related collections by the allClasses set. If we have
+      // a
+      // property with the type of a bean class. // In this case it's a direct reference to another
+      // api object.
+      propertyMeta.setKind(PropertyKind.REFERENCE);
     }
   }
 
