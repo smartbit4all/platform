@@ -51,7 +51,7 @@ class SmartTreeComponent {
             return nav.nodeType === node.nodeType;
         });
         if (navigationUrlByNodeType) {
-            this.router.navigate([`${navigationUrlByNodeType.navigationUrl}`], {
+            this.router.navigate(navigationUrlByNodeType.navigationUrl, {
                 queryParams: { uri: node.objectUri },
             });
         }
