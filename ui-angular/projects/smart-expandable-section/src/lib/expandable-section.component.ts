@@ -7,7 +7,7 @@ import {
     ViewEncapsulation,
 } from "@angular/core";
 import { ComponentFactoryService } from "@smartbit4all/component-factory-service";
-import { ExpandableSection } from "./expandable-section.model";
+import { ExpandableSection, ExpandableSectionButton } from "./expandable-section.model";
 
 @Component({
     selector: "smart-expandable-section",
@@ -21,9 +21,9 @@ export class ExpandableSectionComponent implements OnInit {
     @ViewChild("renderComponent", { read: ViewContainerRef })
     vcRef?: ViewContainerRef;
 
-    constructor(private cfService: ComponentFactoryService) {}
+    constructor(private cfService: ComponentFactoryService) { }
 
-    ngOnInit(): void {}
+    ngOnInit(): void { }
 
     ngAfterViewInit() {
         this.cfService.createComponent(
@@ -31,5 +31,10 @@ export class ExpandableSectionComponent implements OnInit {
             this.data.customComponent,
             new Map<string, any>([[this.data.inputName ?? "", this.data.data]])
         );
+    }
+
+    action(button: ExpandableSectionButton, event: any) {
+        event.stopPropagation();
+        button.onClick();
     }
 }

@@ -12,4 +12,4 @@ import { MatCommonModule } from "@angular/material/core";
     exports: [SmartDialog],
     schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
 })
-export class SmartdialogModule {}
+export class SmartdialogModule { }
