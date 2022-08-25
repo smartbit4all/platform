@@ -8,7 +8,7 @@ These packages must be updated in case of a new version:
 
 -   There are no references yet
 
-## @smartbit4all/dialog v0.0.5
+## @smartbit4all/dialog v0.0.6
 
 **Type: Feature**
 

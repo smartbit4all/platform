@@ -6,10 +6,18 @@ import { SmartformModule } from "@smartbit4all/form";
 import { SmarttableModule } from "@smartbit4all/table";
 import { MatCommonModule } from "@angular/material/core";
 import { SmartdialogService } from "./smartdialog.service";
+import { BrowserModule } from "@angular/platform-browser";
 
 @NgModule({
     declarations: [SmartDialog],
-    imports: [MatDialogModule, MatCommonModule, MatIconModule, SmartformModule, SmarttableModule],
+    imports: [
+        BrowserModule,
+        MatDialogModule,
+        MatCommonModule,
+        MatIconModule,
+        SmartformModule,
+        SmarttableModule,
+    ],
     exports: [SmartDialog],
     schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
     providers: [SmartdialogService],
