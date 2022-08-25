@@ -18,7 +18,7 @@ With the `SmartdialogService` **creating** and **closing** a dialog has become e
 
 ---
 
-### How to use SmartDialog
+### How to use the SmartDialog package
 
 First things first, import the SmartdialogModule in the AppModule, and provide the SmartdialogService globally.
 
@@ -73,7 +73,7 @@ Thirdly, extend your service with the `SmartdialogService`. You can see an examp
 
 In case if you use **RouterOutlet** in your dialog, it should be used like this:
 
-`any.component.html:`
+`example-dialog.component.html:`
 
     <router-outlet name="exampleNamedOutlet"></router-outlet>
 
