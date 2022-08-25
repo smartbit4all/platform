@@ -35,9 +35,10 @@ import javax.validation.Valid;
 @ApiModel(description = "The reference definition is a directed navigation between objects. Its name is unique inside the source object that can have only one outgoing reference with the same name. In the target object the source object and the name is unique together but the name itself is not enough to identify an incoming reference. ")
 @JsonPropertyOrder({
   ReferenceDefinitionData.URI,
+  ReferenceDefinitionData.CONTAINMENT,
   ReferenceDefinitionData.BACK_REFERENCE,
   ReferenceDefinitionData.SOURCE,
-  ReferenceDefinitionData.TARGET
+  ReferenceDefinitionData.TARGET_OBJECT_NAME
 })
 @JsonTypeName("ReferenceDefinitionData")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -45,14 +46,17 @@ public class ReferenceDefinitionData {
   public static final String URI = "uri";
   private URI uri;
 
+  public static final String CONTAINMENT = "containment";
+  private Boolean containment;
+
   public static final String BACK_REFERENCE = "backReference";
   private URI backReference;
 
   public static final String SOURCE = "source";
   private ObjectReferenceDefinitionData source;
 
-  public static final String TARGET = "target";
-  private ObjectReferenceDefinitionData target;
+  public static final String TARGET_OBJECT_NAME = "targetObjectName";
+  private String targetObjectName;
 
 
   public ReferenceDefinitionData uri(URI uri) {
@@ -84,6 +88,33 @@ public class ReferenceDefinitionData {
   }
 
 
+  public ReferenceDefinitionData containment(Boolean containment) {
+    
+    this.containment = containment;
+    return this;
+  }
+
+   /**
+   * The containment means that the source contains the target object. The target object is accessible only from the source. 
+   * @return containment
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The containment means that the source contains the target object. The target object is accessible only from the source. ")
+  @JsonProperty(CONTAINMENT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getContainment() {
+    return containment;
+  }
+
+
+  @JsonProperty(CONTAINMENT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setContainment(Boolean containment) {
+    this.containment = containment;
+  }
+
+
   public ReferenceDefinitionData backReference(URI backReference) {
     
     this.backReference = backReference;
@@ -91,12 +122,12 @@ public class ReferenceDefinitionData {
   }
 
    /**
-   * If an association between two object is navigable into both dirction then this uri refers to the opposite reference.
+   * If an association between two object is navigable into both direction then this uri refers to the opposite reference.
    * @return backReference
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "If an association between two object is navigable into both dirction then this uri refers to the opposite reference.")
+  @ApiModelProperty(value = "If an association between two object is navigable into both direction then this uri refers to the opposite reference.")
   @JsonProperty(BACK_REFERENCE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -140,31 +171,30 @@ public class ReferenceDefinitionData {
   }
 
 
-  public ReferenceDefinitionData target(ObjectReferenceDefinitionData target) {
+  public ReferenceDefinitionData targetObjectName(String targetObjectName) {
     
-    this.target = target;
+    this.targetObjectName = targetObjectName;
     return this;
   }
 
    /**
-   * Get target
-   * @return target
+   * The name of the target object.
+   * @return targetObjectName
   **/
   @javax.annotation.Nullable
-  @Valid
-  @ApiModelProperty(value = "")
-  @JsonProperty(TARGET)
+  @ApiModelProperty(value = "The name of the target object.")
+  @JsonProperty(TARGET_OBJECT_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public ObjectReferenceDefinitionData getTarget() {
-    return target;
+  public String getTargetObjectName() {
+    return targetObjectName;
   }
 
 
-  @JsonProperty(TARGET)
+  @JsonProperty(TARGET_OBJECT_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setTarget(ObjectReferenceDefinitionData target) {
-    this.target = target;
+  public void setTargetObjectName(String targetObjectName) {
+    this.targetObjectName = targetObjectName;
   }
 
 
@@ -178,14 +208,15 @@ public class ReferenceDefinitionData {
     }
     ReferenceDefinitionData referenceDefinitionData = (ReferenceDefinitionData) o;
     return Objects.equals(this.uri, referenceDefinitionData.uri) &&
+        Objects.equals(this.containment, referenceDefinitionData.containment) &&
         Objects.equals(this.backReference, referenceDefinitionData.backReference) &&
         Objects.equals(this.source, referenceDefinitionData.source) &&
-        Objects.equals(this.target, referenceDefinitionData.target);
+        Objects.equals(this.targetObjectName, referenceDefinitionData.targetObjectName);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, backReference, source, target);
+    return Objects.hash(uri, containment, backReference, source, targetObjectName);
   }
 
   @Override
@@ -193,9 +224,10 @@ public class ReferenceDefinitionData {
     StringBuilder sb = new StringBuilder();
     sb.append("class ReferenceDefinitionData {\n");
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
+    sb.append("    containment: ").append(toIndentedString(containment)).append("\n");
     sb.append("    backReference: ").append(toIndentedString(backReference)).append("\n");
     sb.append("    source: ").append(toIndentedString(source)).append("\n");
-    sb.append("    target: ").append(toIndentedString(target)).append("\n");
+    sb.append("    targetObjectName: ").append(toIndentedString(targetObjectName)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -14,6 +14,9 @@ public final class BeanMeta {
 
   private final Class<?> clazz;
 
+  /**
+   * Be careful, the key is upper case!
+   */
   private final Map<String, PropertyMeta> properties = new HashMap<>();
 
   BeanMeta(Class<?> clazz) {

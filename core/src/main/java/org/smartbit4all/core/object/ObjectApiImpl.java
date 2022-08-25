@@ -134,7 +134,7 @@ public class ObjectApiImpl implements ObjectApi, InitializingBean {
           ObjectDefinition<?> source =
               definition(referenceDefinitionData.getSource().getObjectName());
           ObjectDefinition<?> target =
-              definition(referenceDefinitionData.getTarget().getObjectName());
+              definition(referenceDefinitionData.getTargetObjectName());
           ReferenceDefinition referenceDefinition =
               new ReferenceDefinition(referenceDefinitionData);
           referenceDefinition.setSource(source);

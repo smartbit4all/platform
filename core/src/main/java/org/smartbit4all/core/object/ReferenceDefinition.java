@@ -1,7 +1,12 @@
 package org.smartbit4all.core.object;
 
-import org.smartbit4all.api.object.bean.PropertyKindEnum;
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
+import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.object.bean.ReferenceDefinitionData;
+import org.smartbit4all.core.object.PropertyMeta.PropertyKind;
 
 /**
  * The {@link ObjectApi} construct this meta object for every {@link ReferenceDefinitionData}. This
@@ -11,6 +16,8 @@ import org.smartbit4all.api.object.bean.ReferenceDefinitionData;
  * @author Peter Boros
  */
 public class ReferenceDefinition {
+
+  private static final Logger log = LoggerFactory.getLogger(ReferenceDefinition.class);
 
   /**
    * The stored data of the reference
@@ -22,7 +29,15 @@ public class ReferenceDefinition {
     this.data = data;
   }
 
+  /**
+   * The source object definition.
+   */
   private ObjectDefinition<?> source;
+
+  /**
+   * The source object property that contains the reference to the target.
+   */
+  private PropertyMeta sourcePropertyMeta;
 
   private ObjectDefinition<?> target;
 
@@ -32,14 +47,64 @@ public class ReferenceDefinition {
 
   final void setSource(ObjectDefinition<?> source) {
     this.source = source;
+    // TODO manage the path that is not just a simple property!
+    sourcePropertyMeta = source.meta().getProperties().get(getSourcePropertyPath().toUpperCase());
+  }
+
+  public Object getSourceValue(Object object) {
+    if (object == null) {
+      return null;
+    }
+    if (sourcePropertyMeta == null) {
+      log.warn("Unable to access the {} property in the {} object.",
+          getSourcePropertyPath(),
+          source.getQualifiedName());
+      return null;
+    }
+    try {
+      return sourcePropertyMeta.getGetter().invoke(object);
+    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+      log.error("Unable to access the {} property in the {} object. ({})",
+          getSourcePropertyPath(),
+          source.getQualifiedName(), e);
+      return null;
+    }
+  }
+
+  public void setSourceValue(Object object, Object value) {
+    if (object == null) {
+      return;
+    }
+    if (sourcePropertyMeta == null) {
+      log.warn("Unable to set the {} property in the {} object.",
+          getSourcePropertyPath(),
+          source.getQualifiedName());
+      return;
+    }
+    try {
+      sourcePropertyMeta.getSetter().invoke(object, value);
+    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+      log.error("Unable to set the {} property in the {} object. ({})",
+          getSourcePropertyPath(),
+          source.getQualifiedName(), e);
+    }
+  }
+
+  public PropertyKind getSourceKind() {
+    if (sourcePropertyMeta == null) {
+      return PropertyKind.VALUE;
+    }
+    if (sourcePropertyMeta.getType().isAssignableFrom(List.class)) {
+      return PropertyKind.COLLECTION;
+    }
+    if (sourcePropertyMeta.getType().isAssignableFrom(Map.class)) {
+      return PropertyKind.COLLECTION;
+    }
+    return PropertyKind.VALUE;
   }
 
   public final String getSourcePropertyPath() {
     return data.getSource().getPropertyPath();
-  }
-
-  public final PropertyKindEnum getSourcePropertyKind() {
-    return data.getSource().getPropertyKind();
   }
 
   public final ObjectDefinition<?> getTarget() {
@@ -50,12 +115,8 @@ public class ReferenceDefinition {
     this.target = target;
   }
 
-  public final String getTargetPropertyPath() {
-    return data.getTarget().getPropertyPath();
-  }
-
-  public final PropertyKindEnum getTargetPropertyKind() {
-    return data.getTarget().getPropertyKind();
+  public boolean isContainment() {
+    return data.getContainment();
   }
 
 }
