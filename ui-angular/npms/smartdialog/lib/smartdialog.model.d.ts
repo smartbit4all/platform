@@ -1,5 +1,5 @@
 import { SmartForm } from "@smartbit4all/form/lib/smartform.model";
-import { SmartTableInterface } from "@smartbit4all/table/lib/smarttable.model";
+import { SmartTable } from "@smartbit4all/table/lib/smarttable.model";
 /**
  * This interface defines the size of a dialog.
  *
@@ -52,15 +52,16 @@ export interface SmartContent {
  */
 export interface SmartDialogData {
     size: SmartDialogSize;
-    actionType: SmartActionType;
     content: SmartContent;
     customComponent?: any;
     customComponentInputs?: any;
+    actionType?: SmartActionType;
     form?: SmartForm;
-    table?: SmartTableInterface<any>;
+    table?: SmartTable<any>;
     okCallback?: () => void;
     cancelCallback?: (args: any[]) => void;
     closeCallback?: (args: any[]) => void;
-    actionCallback: (args: any[]) => void;
-    actionLabel: string;
+    actionCallback?: (args: any[]) => void;
+    actionLabel?: string;
+    outlets?: any;
 }

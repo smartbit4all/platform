@@ -49,7 +49,9 @@ export class SmartDialog implements AfterViewInit {
             }
         }
 
-        this.data.actionCallback([this.data]);
+        if (this.data.actionCallback) {
+            this.data.actionCallback([this.data]);
+        }
     }
 
     onNoClick(): void {
