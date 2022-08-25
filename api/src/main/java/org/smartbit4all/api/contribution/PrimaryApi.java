@@ -19,7 +19,7 @@ public interface PrimaryApi<A extends ContributionApi> {
    * @param apiName
    * @return The api if it's available.
    */
-  A findApiByName(String apiName);
+  A getContributionApi(String apiName);
 
   Class<A> getContributionApiClass();
 

@@ -20,7 +20,7 @@ public final class TestPrimaryApiImpl extends PrimaryApiImpl<TestContributionApi
 
   @Override
   public String echoMethod(String apiName, String p1) {
-    return findApiByName(apiName).echoMethod(p1);
+    return getContributionApi(apiName).echoMethod(p1);
   }
 
 }

@@ -12,6 +12,14 @@ import org.smartbit4all.api.navigation.NavigationFeatureApi;
 import org.smartbit4all.api.navigation.NavigationFeatureApiImpl;
 import org.smartbit4all.api.navigation.NavigationPrimary;
 import org.smartbit4all.api.navigation.ObjectNavigation;
+import org.smartbit4all.api.object.CompareApi;
+import org.smartbit4all.api.object.CompareApiImpl;
+import org.smartbit4all.api.object.CompareContributionApi;
+import org.smartbit4all.api.object.CompareContributionApiStorageImpl;
+import org.smartbit4all.api.object.CopyApi;
+import org.smartbit4all.api.object.CopyApiImpl;
+import org.smartbit4all.api.object.CopyContributionApi;
+import org.smartbit4all.api.object.CopyContributionApiStorageImpl;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.setting.LocaleUsage;
 import org.smartbit4all.api.setting.LocaleUsageImpl;
@@ -92,6 +100,26 @@ public class PlatformApiConfig {
         ObjectApiImpl.constructDefinitionBase(ApiRegistryData.class);
     result.setExplicitUri(true);
     return result;
+  }
+
+  @Bean
+  public CopyApi copyApi() {
+    return new CopyApiImpl(CopyContributionApi.class);
+  }
+
+  @Bean
+  public CopyContributionApiStorageImpl copyApiStorageImpl() {
+    return new CopyContributionApiStorageImpl();
+  }
+
+  @Bean
+  public CompareApi compareApi() {
+    return new CompareApiImpl(CompareContributionApi.class);
+  }
+
+  @Bean
+  public CompareContributionApiStorageImpl compareApiStorageImpl() {
+    return new CompareContributionApiStorageImpl();
   }
 
 }

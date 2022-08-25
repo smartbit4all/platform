@@ -22,7 +22,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import org.smartbit4all.api.object.bean.PropertyKindEnum;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -34,8 +33,7 @@ import javax.validation.Valid;
 @ApiModel(description = "The object reference is one end of the reference let it be source or target. It identifies the object and the propety. This object is  contained by the ReferenceDefinitionData. ")
 @JsonPropertyOrder({
   ObjectReferenceDefinitionData.OBJECT_NAME,
-  ObjectReferenceDefinitionData.PROPERTY_PATH,
-  ObjectReferenceDefinitionData.PROPERTY_KIND
+  ObjectReferenceDefinitionData.PROPERTY_PATH
 })
 @JsonTypeName("ObjectReferenceDefinitionData")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -45,9 +43,6 @@ public class ObjectReferenceDefinitionData {
 
   public static final String PROPERTY_PATH = "propertyPath";
   private String propertyPath;
-
-  public static final String PROPERTY_KIND = "propertyKind";
-  private PropertyKindEnum propertyKind;
 
 
   public ObjectReferenceDefinitionData objectName(String objectName) {
@@ -106,35 +101,6 @@ public class ObjectReferenceDefinitionData {
   }
 
 
-  public ObjectReferenceDefinitionData propertyKind(PropertyKindEnum propertyKind) {
-    
-    this.propertyKind = propertyKind;
-    return this;
-  }
-
-   /**
-   * Get propertyKind
-   * @return propertyKind
-  **/
-  @javax.annotation.Nonnull
-  @NotNull
-  @Valid
-  @ApiModelProperty(required = true, value = "")
-  @JsonProperty(PROPERTY_KIND)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-
-  public PropertyKindEnum getPropertyKind() {
-    return propertyKind;
-  }
-
-
-  @JsonProperty(PROPERTY_KIND)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setPropertyKind(PropertyKindEnum propertyKind) {
-    this.propertyKind = propertyKind;
-  }
-
-
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -145,13 +111,12 @@ public class ObjectReferenceDefinitionData {
     }
     ObjectReferenceDefinitionData objectReferenceDefinitionData = (ObjectReferenceDefinitionData) o;
     return Objects.equals(this.objectName, objectReferenceDefinitionData.objectName) &&
-        Objects.equals(this.propertyPath, objectReferenceDefinitionData.propertyPath) &&
-        Objects.equals(this.propertyKind, objectReferenceDefinitionData.propertyKind);
+        Objects.equals(this.propertyPath, objectReferenceDefinitionData.propertyPath);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(objectName, propertyPath, propertyKind);
+    return Objects.hash(objectName, propertyPath);
   }
 
   @Override
@@ -160,7 +125,6 @@ public class ObjectReferenceDefinitionData {
     sb.append("class ObjectReferenceDefinitionData {\n");
     sb.append("    objectName: ").append(toIndentedString(objectName)).append("\n");
     sb.append("    propertyPath: ").append(toIndentedString(propertyPath)).append("\n");
-    sb.append("    propertyKind: ").append(toIndentedString(propertyKind)).append("\n");
     sb.append("}");
     return sb.toString();
   }

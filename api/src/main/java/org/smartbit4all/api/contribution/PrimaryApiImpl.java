@@ -36,7 +36,7 @@ public class PrimaryApiImpl<A extends ContributionApi> implements PrimaryApi<A>,
   }
 
   @Override
-  public A findApiByName(String apiName) {
+  public A getContributionApi(String apiName) {
     return apiByName.get(apiName);
   }
 
@@ -61,6 +61,9 @@ public class PrimaryApiImpl<A extends ContributionApi> implements PrimaryApi<A>,
 
   private void addContributionApi(A api, String apiName) {
     apiByName.put(apiName, api);
+    if (api instanceof ContributionApiImpl) {
+      ((ContributionApiImpl) api).setPrimaryApi(this);
+    }
   }
 
   @Override
