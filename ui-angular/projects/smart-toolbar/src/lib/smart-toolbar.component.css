@@ -17,3 +17,7 @@
 .button-container button {
     margin: 1em;
 }
+
+.btn-round {
+    border-radius: 25px;
+}

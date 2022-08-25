@@ -5,6 +5,7 @@ export interface SmartToolbarButton {
     style: ToolbarButtonStyle;
     color?: ToolbarButtonColor;
     disabled: boolean;
+    rounded?: boolean;
 }
 export interface SmartToolbar {
     direction?: ToolbarDirection;
