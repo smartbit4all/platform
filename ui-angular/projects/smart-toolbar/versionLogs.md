@@ -8,6 +8,24 @@ These packages must be updated in case of a new version:
 
 - There are no references yet
 
+## @smartbit4all/smart-toolbar v0.1.3
+
+**Type: Feature**
+
+This version contain one styling update: Material buttons border setting.
+
+Rounded property set the Material buttons border-radious to 25px.
+
+        export interface SmartToolbarButton {
+            label: string;
+            icon?: string;
+            btnAction: Command;
+            style: ToolbarButtonStyle;
+            color?: ToolbarButtonColor;
+            disabled: boolean;
+            rounded?: boolean;
+        }
+
 ## @smartbit4all/smart-toolbar v0.1.1
 
 **Type: Feature**
