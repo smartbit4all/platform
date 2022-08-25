@@ -39,7 +39,7 @@ export class SmartTreeComponent implements OnInit {
         });
 
         if (navigationUrlByNodeType) {
-            this.router.navigate([`${navigationUrlByNodeType.navigationUrl}`], {
+            this.router.navigate(navigationUrlByNodeType.navigationUrl, {
                 queryParams: { uri: node.objectUri },
             });
         }

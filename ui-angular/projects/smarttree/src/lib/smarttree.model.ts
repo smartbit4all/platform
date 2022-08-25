@@ -24,5 +24,5 @@ export interface SmartTreeNode {
 
 export interface SmartTreeNodeType {
     nodeType: string;
-    navigationUrl: string;
+    navigationUrl: any[];
 }

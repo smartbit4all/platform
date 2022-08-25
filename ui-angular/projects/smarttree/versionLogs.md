@@ -8,6 +8,46 @@ These packages must be updated in case of a new version:
 
 -   There are no references yet
 
+## @smartbit4all/smarttree v0.0.8
+
+**Type: Feature**
+
+This version contains a routing update, which allows you to navigate to a named outlet.
+
+**The change:**
+
+The `navigationUrl` property of the `SmartTreeNodeType` has changed from _string_ to _any[]_.
+
+    export interface SmartTreeNodeType {
+        nodeType: string;
+        navigationUrl: any[];
+    }
+
+**How to use:**
+
+`any.component.html:`
+
+    <router-outlet name="exampleNamedOutlet"></router-outlet>
+
+`app-routing.module.ts:`
+
+    ...
+    {
+    	path: 'example-url',
+    	component: ExampleComponent,
+    	outlet: 'exampleNamedOutlet'
+    }
+
+`example.component.ts:`
+
+    ...
+    navigationUrlsByNodeType: [
+        {
+            nodeType: 'example',
+            navigationUrl: ['', { outlets: { exampleNamedOutlet: ['example-url'] } }]
+        }
+    ]
+
 ## @smartbit4all/smarttree v0.0.7
 
 **Type: Bugfix**
