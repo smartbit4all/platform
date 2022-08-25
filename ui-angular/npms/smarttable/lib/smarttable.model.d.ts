@@ -13,6 +13,11 @@ export interface SmartTableHeader {
     label: string;
     isHidden?: boolean;
 }
+export interface SmartTableButton {
+    lable: string;
+    icon?: string;
+    onClick?: (args?: any[]) => void;
+}
 export interface SmartTableInterface<T> {
     title?: string;
     tableHeaders: string[];
