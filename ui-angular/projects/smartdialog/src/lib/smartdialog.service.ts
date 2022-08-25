@@ -11,7 +11,7 @@ export class SmartdialogService {
     dialogRef?: MatDialogRef<any, any>;
     dialogData?: SmartDialogData;
 
-    constructor(private dialog: MatDialog, private router: Router) {}
+    constructor(protected dialog: MatDialog, protected router: Router) {}
 
     createDialog(smartDialog: SmartDialogData, component: ComponentType<any>): void {
         this.dialogData = smartDialog;

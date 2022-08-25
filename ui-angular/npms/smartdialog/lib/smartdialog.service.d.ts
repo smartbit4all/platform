@@ -4,8 +4,8 @@ import { Router } from "@angular/router";
 import { SmartDialogData } from "./smartdialog.model";
 import * as i0 from "@angular/core";
 export declare class SmartdialogService {
-    private dialog;
-    private router;
+    protected dialog: MatDialog;
+    protected router: Router;
     dialogRef?: MatDialogRef<any, any>;
     dialogData?: SmartDialogData;
     constructor(dialog: MatDialog, router: Router);
