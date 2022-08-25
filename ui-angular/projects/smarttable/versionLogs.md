@@ -6,7 +6,28 @@
 
 These packages must be updated in case of a new version:
 
--   @smartbit4all/dialog
+- @smartbit4all/dialog
+
+## @smartbit4all/table v0.1.4 - v0.1.6
+
+**Type: Feature**
+
+The update contains a new feature to SmartTable.
+In this version the package is able to generate buttons into the table cell.
+
+Modifications:
+
+1.  SmartTableComponent html
+2.  New type represent a button:
+
+        export interface SmartTableButton {
+            lable: string;
+            icon?: string;
+            onClick?: (args?: any[]) => void;
+        }
+
+**Usage:**
+The elements of the tableRow array have to contain a button property which is a SmartTableButton.
 
 ## @smartbit4all/table v0.1.2 - v0.1.3
 
