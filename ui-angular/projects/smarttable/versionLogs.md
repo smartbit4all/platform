@@ -1,4 +1,4 @@
-# Smart table version log
+# Smart Table
 
 [_@smartbit4all readme_](../../README.md)
 
@@ -6,7 +6,185 @@
 
 These packages must be updated in case of a new version:
 
-- @smartbit4all/dialog
+-   [_@smartbit4all/dialog_](../smartdialog/versionLogs.md)
+
+---
+
+## How to use
+
+### Installation
+
+Go to your project, open the terminal and use the following command:
+
+    npm i ../../platform/ui-angular/npms/smarttable/smartbit4all-table-0.1.6.tgz
+
+Then import it in the AppModule:
+
+`app.module.ts:`
+
+    import { SmartformModule } from '@smartbit4all/form';
+    ...
+    @NgModule({
+        declarations: [...]
+        imports: [
+            ...
+            SmartformModule,
+        ]
+        ...
+    })
+
+### Usage
+
+`example.component.html:`
+
+    <smarttable [smartTable]="exampletable"></smarttable>
+
+`example.component.ts:`
+
+    export class SelectFolderContentComponent {
+        exampleTable: SmartTable<T>;
+
+        constructor() {
+            this.setUpTable();
+        }
+
+        setUpTable(): void {
+            let tableData: T[] =
+            [
+                {
+                    tableData1: 'Table Data 1',
+                    tableData2: 'Table Data 2',
+                    tableData3: 'Table Data 3'
+                },
+                ...
+            ];
+
+            // Simple table without tableData3
+            this.table = new SmartTable<T>(
+                tableData
+                SmartTableType.INHERITED,
+                [
+                    {
+                        label: 'Table Header 1',
+                        propertyName: 'tableData1'
+                    },
+                    {
+                        label: 'Table Header 2',
+                        propertyName: 'tableData2'
+                    },
+                    {
+                        label: '',
+                        propertyName: 'tableData3',
+                        isHidden: true
+                    },
+                ],
+            );
+
+            // Checkbox table without tableData3
+            this.table = new SmartTable<T>(
+                tableData
+                SmartTableType.CHECK_BOX,
+                [
+                    {
+                        label: 'Table Header 1',
+                        propertyName: 'tableData1'
+                    },
+                    {
+                        label: 'Table Header 2',
+                        propertyName: 'tableData2'
+                    },
+                    {
+                        label: '',
+                        propertyName: 'tableData3',
+                        isHidden: true
+                    },
+                ],
+            );
+
+            // Custom order
+            this.table = new SmartTable<T>(
+                tableData
+                SmartTableType.CHECK_BOX,
+                [
+                    {
+                        label: 'Table Header 3',
+                        propertyName: 'tableData3',
+                    },
+                    {
+                        label: 'Table Header 1',
+                        propertyName: 'tableData1'
+                    }
+                    {
+                        label: 'Table Header 2',
+                        propertyName: 'tableData2'
+                    },
+                ],
+            );
+
+            // Table with options
+            this.table = new SmartTable<T>(
+                tableData
+                SmartTableType.INHERITED,
+                [
+                    {
+                        label: 'Table Header 1',
+                        propertyName: 'tableData1'
+                    },
+                    {
+                        label: 'Table Header 2',
+                        propertyName: 'tableData2'
+                    }
+                ],
+    			undefined,
+    			undefined,
+    			[
+    				{
+    					label: 'Example option',
+    					callback: () => {},
+    					icon: 'remove'
+    				}
+    			]
+            );
+        }
+    }
+
+**Example output for Simple table without tableData3:**
+| Table Header 1 | Table Header 2 |
+| -------------- | -------------- |
+| Table Data 1 | Table Data 2 |
+|
+
+**Example output for Checkbox table without tableData3:**
+
+| [ ] | Table Header 1 | Table Header 2 |
+| --- | -------------- | -------------- |
+| [x] | Table Data 1   | Table Data 2   |
+
+|
+
+**Example output for Custom order:**
+| Table Header 3 | Table Header 1 | Table Header 2 |
+| -------------- | -------------- | -------------- |
+| Table Data 3 | Table Data 1 | Table Data 1 |
+|
+
+**Example output for table with Options:**
+| Table Header 1 | Table Header 2 | Options |
+| -------------- | -------------- | --------|
+| Table Data 1 | Table Data 2 | ... -> Example option
+|
+
+In order to **get the selected values** of a Checkbox Smart Table, you can simply use the SmartTable<T> property:
+
+`example.component.ts:`
+
+    getSelectedRows(): void {
+        let selectedRows: SelectionModel<T> = this.table.selection;
+    }
+
+---
+
+## Version logs
 
 ## @smartbit4all/table v0.1.4 - v0.1.6
 

@@ -1,4 +1,4 @@
-# Smart expandable section version log
+# Smart Expandable Section
 
 [_@smartbit4all readme_](../../README.md)
 
@@ -6,7 +6,65 @@
 
 These packages must be updated in case of a new version:
 
-- There are no references yet
+-   There are no references yet
+
+---
+
+## How to use
+
+### Installation
+
+Go to your project, open the terminal and use the following command:
+
+    npm i ../../platform/ui-angular/npms/smart-expandable-section/smartbit4all-expandable-section-0.0.4.tgz
+
+Then import it in the AppModule:
+
+`app.module.ts:`
+
+    import { SmartExpandableSectionModule } from '@smartbit4all/expandable-section';
+    ...
+    @NgModule({
+        declarations: [...]
+        imports: [
+            ...
+            SmartExpandableSectionModule
+        ],
+        ...
+    })
+
+### Usage
+
+`example-container.component.html:`
+
+    <smart-expandable-section
+        [data]="exampleData"
+    ></smart-expandable-section>
+
+`example-container.component.ts:`
+
+    export class CreateDocumentFormComponent {
+        exampleData: ExpandableSection<T>;
+        ...
+        setExpandableSection(): void {
+            this.exampleData = {
+    			title: 'Title',
+    			customComponent: ExampleComponent,
+    			data: { ... },
+    			inputName: 'inputName'
+    		};
+        }
+    }
+
+`example.component.ts:`
+
+    export class CreateDocumentFormComponent {
+        @Input() inputName: T;
+    }
+
+---
+
+## Version logs
 
 ## @smartbit4all/expandable-section v0.1.2
 

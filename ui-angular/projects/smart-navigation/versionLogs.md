@@ -1,4 +1,4 @@
-# Smart navigation version log
+# Smart Navigation
 
 [_@smartbit4all readme_](../../README.md)
 
@@ -6,45 +6,23 @@
 
 These packages must be updated in case of a new version:
 
--   @smartbit4all/tab-group
-
-## @smartbit4all/navigation v0.1.1
-
-**Type: Feature**
-
-This package was designed to manage the Angular routing as simple as it should be.
-
-**The `SmartNavigation` interface:**
-
-    export interface SmartNavigation {
-        // properties
-        urlSubscription?: Subscription;
-        querySubscription?: Subscription;
-
-        // functions
-        navigateTo(
-            urls: string[],
-            queryParams?: Params,
-            queryParamsHandling?: QueryParamsHandling,
-            relativeToThis?: boolean
-        ): void;
-        subscribeToUrlChange(callback: (url: string) => void): void;
-        subscribeToQueryChange(callback: (params: Params) => void): void;
-        unsubscribeFromQueryChanges(): void;
-        getCurrentPath(): string;
-    }
+-   [_@smartbit4all/tab-group_](../smart-tab-group/versionLogs.md)
 
 ---
 
-### How to use the **SmartNavigationService**
+## How to use
 
-**Initialize**
+### Installation
 
-First of all the `SmartNavigationModule` has to be imported in the **app.module**.
+Go to your project, open the terminal and use the following command:
 
-Secondly, there are two ways to use the `SmartNavigationService`. The first one is to use it as a global service and provide it in the **app.module**. The second one is to use it as a local service and provide it in the header of the component.
+    npm i ../../platform/ui-angular/npms/smart-navigation/smartbit4all-navigation-0.1.1.tgz
+
+There are two ways to use the `SmartNavigationService`. The first one is to use it as a global service and provide it in the **app.module**. The second one is to use it as a local service and provide it in the header of the component.
 
 Provide the `SmartNavigationService` as a **global service** in the app.module:
+
+`app.module.ts:`
 
     @NgModule({
         declarations: [...],
@@ -61,6 +39,8 @@ Provide the `SmartNavigationService` as a **global service** in the app.module:
 
 Provide the `SmartNavigationService` as a **local service** in the header of the component:
 
+`example.component.ts:`
+
     @Component({
         selector: 'app-example',
         templateUrl: './example.component.html',
@@ -70,6 +50,8 @@ Provide the `SmartNavigationService` as a **local service** in the header of the
     export class ExampleComponent implements OnInit { ... }
 
 In order to **use this service**, the `ActivatedRoute` must be provided in each component.
+
+`example.component.ts:`
 
     export class ExampleComponent {
 
@@ -81,9 +63,7 @@ In order to **use this service**, the `ActivatedRoute` must be provided in each 
         }
     }
 
----
-
-**Usage**
+### Usage
 
 From now on the **navigation between routes** is unified, handled by this service. The usage:
 
@@ -124,3 +104,33 @@ It is not necessary to unsubscribe manually, however, I highly recommend it.
     }
 
     handleUrlChange(url: string): void { ... }
+
+---
+
+## Version logs
+
+## @smartbit4all/navigation v0.1.1
+
+**Type: Feature**
+
+This package was designed to manage the Angular routing as simple as it should be.
+
+**The `SmartNavigation` interface:**
+
+    export interface SmartNavigation {
+        // properties
+        urlSubscription?: Subscription;
+        querySubscription?: Subscription;
+
+        // functions
+        navigateTo(
+            urls: string[],
+            queryParams?: Params,
+            queryParamsHandling?: QueryParamsHandling,
+            relativeToThis?: boolean
+        ): void;
+        subscribeToUrlChange(callback: (url: string) => void): void;
+        subscribeToQueryChange(callback: (params: Params) => void): void;
+        unsubscribeFromQueryChanges(): void;
+        getCurrentPath(): string;
+    }

@@ -1,4 +1,4 @@
-# Smart dialog version log
+# Smart Dialog
 
 [_@smartbit4all readme_](../../README.md)
 
@@ -8,39 +8,46 @@ These packages must be updated in case of a new version:
 
 -   There are no references yet
 
-## @smartbit4all/dialog v0.0.6
-
-**Type: Feature**
-
-In this update a new way to handle dialogs and its data has been introduced.
-
-With the `SmartdialogService` **creating** and **closing** a dialog has become easier and more unified. **This service should be used as a parent class of a workflow specific service.**
-
 ---
 
-### How to use the SmartDialog package
+## How to use
 
-First things first, import the SmartdialogModule in the AppModule, and provide the SmartdialogService globally.
+### Installation
+
+Go to your project, open the terminal and use the following command:
+
+    npm i ../../platform/ui-angular/npms/smartdialog/smartbit4all-dialog-0.0.6.tgz
+
+Then import it in the AppModule:
 
 `app.module.ts:`
 
+    import { SmartdialogModule, SmartdialogService } from '@smartbit4all/dialog';
     ...
-    imports: [
-    	SmartdialogModule,
-    ],
-    providers: [
-    	SmartdialogService
-    ],
+    @NgModule({
+        declarations: [...]
+        imports: [
+            ...
+            SmartdialogModule,
+        ],
+        providers: [
+            ...
+    	    SmartdialogService,
+        ]
+        ...
+    })
 
-Secondly, create a component for the content of the dialog. In the folder of the component create an Angular Service.
+### Usage
 
--   example-dialog/
+Create a component for the content of the dialog. In the folder of the component create an Angular Service.
+
+-   src/app/.../example-dialog/
     -   example-dialog.component.css
     -   example-dialog.component.html
     -   example-dialog.component.ts
     -   example-dialog.service.ts
 
-Thirdly, extend your service with the `SmartdialogService`. You can see an example for a specific service belove.
+Extend your service with the `SmartdialogService`. You can see an example for a specific service belove.
 
 `example-dialog.service.ts:`
 
@@ -94,6 +101,18 @@ In case if you use **RouterOutlet** in your dialog, it should be used like this:
             exampleNamedOutlet: null
         }
     };
+
+---
+
+## Version logs
+
+## @smartbit4all/dialog v0.0.6
+
+**Type: Feature**
+
+In this update a new way to handle dialogs and its data has been introduced.
+
+With the `SmartdialogService` **creating** and **closing** a dialog has become easier and more unified. **This service should be used as a parent class of a workflow specific service.**
 
 ## @smartbit4all/dialog v0.0.2
 

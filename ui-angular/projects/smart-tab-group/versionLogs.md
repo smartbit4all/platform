@@ -1,4 +1,4 @@
-# Smart tab group version log
+# Smart Tab Group
 
 [_@smartbit4all readme_](../../README.md)
 
@@ -7,6 +7,87 @@
 These packages must be updated in case of a new version:
 
 -   There are no references yet
+
+---
+
+## How to use
+
+### Installation
+
+Go to your project, open the terminal and use the following command:
+
+    npm i ../../platform/ui-angular/npms/smart-tab-group/smartbit4all-tab-group-0.1.1.tgz
+
+Then import it in the AppModule:
+
+`app.module.ts:`
+
+    import { SmartTabGroupModule } from '@smartbit4all/tab-group';
+    ...
+    @NgModule({
+        declarations: [...]
+        imports: [
+            ...
+            SmartTabGroupModule,
+        ],
+        ...
+    })
+
+### Usage
+
+`example.component.html:`
+
+    <smart-tab-group [tabTiles]="tabs!" [route]="route">
+        <router-outlet></router-outlet>
+    </smart-tab-group>
+
+`example.component.ts:`
+
+    export class ExampleComponent {
+        tabs?: TabTile[];
+
+        constructor(public route: ActivatedRoute) {
+            this.setTabs();
+        }
+
+        setTabs(): void {
+            this.tabs = [
+                {
+                    tileName: 'Tab 1',
+                    url: '../tab_1',
+                    uuid: ''
+                },
+                {
+                    tileName: 'Tab 2',
+                    url: '../tab_2',
+                    uuid: ''
+                }
+            ];
+        }
+    }
+
+`app-routing.module.ts:`
+
+    const routes: Routes = [
+        {
+            path: '',
+            component: ExampleComponent,
+            children: [
+                {
+                    path: 'tab_1',
+                    component: ExampleTab1Component
+                },
+                {
+                    path: 'tab_2',
+                    component: ExampleTab2Component
+                }
+            ]
+        },
+    ]
+
+---
+
+## Version logs
 
 ## @smartbit4all/tab-group v0.1.1
 

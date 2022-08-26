@@ -8,22 +8,32 @@ These packages must be updated in case of a new version:
 
 -   There are no references yet
 
-## @smartbit4all/smarttree v0.0.8
+---
 
-**Type: Feature**
+## How to use
 
-This version contains a routing update, which allows you to navigate to a named outlet.
+### Installation
 
-**The change:**
+Go to your project, open the terminal and use the following command:
 
-The `navigationUrl` property of the `SmartTreeNodeType` has changed from _string_ to _any[]_.
+    npm i ../../platform/ui-angular/npms/smarttree/smartbit4all-tree-0.0.8.tgz
 
-    export interface SmartTreeNodeType {
-        nodeType: string;
-        navigationUrl: any[];
-    }
+Then import it in the AppModule:
 
-**How to use:**
+`app.module.ts:`
+
+    import { SmarttreeModule } from '@smartbit4all/tree';
+    ...
+    @NgModule({
+        declarations: [...]
+        imports: [
+            ...
+            SmarttreeModule,
+        ]
+        ...
+    })
+
+### Usage
 
 `any.component.html:`
 
@@ -47,6 +57,25 @@ The `navigationUrl` property of the `SmartTreeNodeType` has changed from _string
             navigationUrl: ['', { outlets: { exampleNamedOutlet: ['example-url'] } }]
         }
     ]
+
+---
+
+## Version logs
+
+## @smartbit4all/smarttree v0.0.8
+
+**Type: Feature**
+
+This version contains a routing update, which allows you to navigate to a named outlet.
+
+**The change:**
+
+The `navigationUrl` property of the `SmartTreeNodeType` has changed from _string_ to _any[]_.
+
+    export interface SmartTreeNodeType {
+        nodeType: string;
+        navigationUrl: any[];
+    }
 
 ## @smartbit4all/smarttree v0.0.7
 

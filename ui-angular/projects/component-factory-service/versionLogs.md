@@ -1,4 +1,4 @@
-# Smart component factory service version log
+# Smart Component Factory Service
 
 [_@smartbit4all readme_](../../README.md)
 
@@ -6,17 +6,19 @@
 
 These packages must be updated in case of a new version:
 
--   @smartbit4all/expandable-section
-
-## @smartbit4all/component-factory-service v0.0.1
-
-**Type: Feature**
-
-The `ComponentFactoryService` helps to use **ng-template** in your code.
+-   [_@smartbit4all/expandable-section_](../smart-expandable-section/versionLogs.md)
 
 ---
 
-### How to use this package
+## How to use
+
+### Installation
+
+Go to your project, open the terminal and use the following command:
+
+    npm i ../../platform/ui-angular/npms/component-factory-service/smartbit4all-component-factory-service-0.0.1.tgz
+
+### Usage
 
 In this example there are two components, which are called `Example1Component` and `Example2Component`, these will be presented with the `ComponentFactoryService` in the `ParentComponent`.
 
@@ -79,3 +81,15 @@ In this example there are two components, which are called `Example1Component` a
 
         ...
     }
+
+---
+
+## Version logs
+
+## @smartbit4all/component-factory-service v0.0.1
+
+**Type: Feature**
+
+The npm package has been created.
+
+The `ComponentFactoryService` helps to use **ng-template** in your code.

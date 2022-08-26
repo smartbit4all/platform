@@ -1,4 +1,4 @@
-# Smart form version log
+# Smart Form
 
 [_@smartbit4all readme_](../../README.md)
 
@@ -6,39 +6,34 @@
 
 These packages must be updated in case of a new version:
 
--   @smartbit4all/dialog
-
-## @smartbit4all/form v0.1.4
-
-**Type: Feature**
-
-This version contains two major changes: a **submit function** and **custom validators** have been added to the `SmartForm`.
+-   [_@smartbit4all/dialog_](../smartdialog/versionLogs.md)
 
 ---
 
-**Changes:**
+## How to use
 
-The **submitForm()** function is implemented in the `SmartformComponent`. The new values are translated back to the given `SmartForm` object if the status of the form is valid. If it is not, the function throws an error with the current state.
+### Installation
 
-    submitForm(): SmartForm {
-        if (this.form.status === "VALID") {
-            return this.service.toSmartForm(this.form, this.smartForm);
-        } else {
-            throw new Error(`The form status is ${this.form.status}.`);
-        }
-    }
+Go to your project, open the terminal and use the following command:
 
-In order to use **multiple custom validators**, the `SmartFormWidget` got a validators property. A custom error message can be set with the **errorMessage** property.
+    npm i ../../platform/ui-angular/npms/smartform/smartbit4all-form-0.1.4.tgz
 
-    export interface SmartFormWidget<T> {
+Then import it in the AppModule:
+
+`app.module.ts:`
+
+    import { SmartformModule } from '@smartbit4all/form';
+    ...
+    @NgModule({
+        declarations: [...]
+        imports: [
+            ...
+            SmartformModule,
+        ]
         ...
-        validators?: ValidatorFn[];
-        errorMessage?: string;
-    }
+    })
 
----
-
-**How to use this version properly:**
+### Usage
 
 `example.component.html`
 
@@ -69,6 +64,38 @@ In order to use **multiple custom validators**, the `SmartFormWidget` got a vali
 
     submit(): void {
     	this.smartForm = this.child?.submitForm();
+    }
+
+---
+
+## Version logs
+
+## @smartbit4all/form v0.1.4
+
+**Type: Feature**
+
+This version contains two major changes: a **submit function** and **custom validators** have been added to the `SmartForm`.
+
+---
+
+**Changes:**
+
+The **submitForm()** function is implemented in the `SmartformComponent`. The new values are translated back to the given `SmartForm` object if the status of the form is valid. If it is not, the function throws an error with the current state.
+
+    submitForm(): SmartForm {
+        if (this.form.status === "VALID") {
+            return this.service.toSmartForm(this.form, this.smartForm);
+        } else {
+            throw new Error(`The form status is ${this.form.status}.`);
+        }
+    }
+
+In order to use **multiple custom validators**, the `SmartFormWidget` got a validators property. A custom error message can be set with the **errorMessage** property.
+
+    export interface SmartFormWidget<T> {
+        ...
+        validators?: ValidatorFn[];
+        errorMessage?: string;
     }
 
 ## @smartbit4all/form v0.1.2

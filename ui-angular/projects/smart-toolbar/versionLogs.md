@@ -1,4 +1,4 @@
-# Smart toolbar version log
+# Smart Toolbar
 
 [_@smartbit4all readme_](../../README.md)
 
@@ -6,7 +6,63 @@
 
 These packages must be updated in case of a new version:
 
-- There are no references yet
+-   There are no references yet
+
+---
+
+## How to use
+
+### Installation
+
+Go to your project, open the terminal and use the following command:
+
+    npm i ../../platform/ui-angular/npms/smart-toolbar/smartbit4all-smart-toolbar-0.0.3.tgz
+
+Then import it in the AppModule:
+
+`app.module.ts:`
+
+    import { SmartToolbarModule } from '@smartbit4all/smart-toolbar';
+    ...
+    @NgModule({
+        declarations: [...]
+        imports: [
+            ...
+            SmartToolbarModule,
+        ],
+        ...
+    })
+
+### Usage
+
+`example.component.html:`
+
+    <smart-toolbar [toolbar]="toolbar"></smart-toolbar>
+
+`example.component.ts:`
+
+    export class ExampleComponent {
+        toolbar!: SmartToolbar;
+
+        constructor() {
+            this.toolbar = {
+                direction: ToolbarDirection.ROW,
+                buttons: [
+                    {
+                        label: 'Button 1',
+                        icon: 'add',
+                        btnAction: this.buttonOneClicked.bind(this),
+                        btnStyle: 'tree-toolbar-btn'
+                    },
+                    ...
+                ]
+            };
+        }
+    }
+
+---
+
+## Version logs
 
 ## @smartbit4all/smart-toolbar v0.1.3
 
