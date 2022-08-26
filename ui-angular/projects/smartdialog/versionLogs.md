@@ -16,7 +16,7 @@ These packages must be updated in case of a new version:
 
 Go to your project, open the terminal and use the following command:
 
-    npm i ../../platform/ui-angular/npms/smartdialog/smartbit4all-dialog-0.0.6.tgz
+    npm i ../../platform/ui-angular/npms/smartdialog/smartbit4all-dialog-0.0.7.tgz
 
 Then import it in the AppModule:
 
@@ -106,7 +106,7 @@ In case if you use **RouterOutlet** in your dialog, it should be used like this:
 
 ## Version logs
 
-## @smartbit4all/dialog v0.0.6
+## @smartbit4all/dialog v0.0.7
 
 **Type: Feature**
 

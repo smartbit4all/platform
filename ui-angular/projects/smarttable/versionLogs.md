@@ -16,7 +16,7 @@ These packages must be updated in case of a new version:
 
 Go to your project, open the terminal and use the following command:
 
-    npm i ../../platform/ui-angular/npms/smarttable/smartbit4all-table-0.1.6.tgz
+    npm i ../../platform/ui-angular/npms/smarttable/smartbit4all-table-0.1.7.tgz
 
 Then import it in the AppModule:
 

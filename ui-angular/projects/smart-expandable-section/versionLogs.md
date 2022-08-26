@@ -16,7 +16,7 @@ These packages must be updated in case of a new version:
 
 Go to your project, open the terminal and use the following command:
 
-    npm i ../../platform/ui-angular/npms/smart-expandable-section/smartbit4all-expandable-section-0.0.4.tgz
+    npm i ../../platform/ui-angular/npms/smart-expandable-section/smartbit4all-expandable-section-0.1.2.tgz
 
 Then import it in the AppModule:
 

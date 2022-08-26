@@ -16,7 +16,7 @@ These packages must be updated in case of a new version:
 
 Go to your project, open the terminal and use the following command:
 
-    npm i ../../platform/ui-angular/npms/smart-toolbar/smartbit4all-smart-toolbar-0.0.3.tgz
+    npm i ../../platform/ui-angular/npms/smart-toolbar/smartbit4all-smart-toolbar-0.1.4.tgz
 
 Then import it in the AppModule:
 
@@ -49,10 +49,15 @@ Then import it in the AppModule:
                 direction: ToolbarDirection.ROW,
                 buttons: [
                     {
+                        btnAction: {
+                            execute: this.buttonOneClicked.bind(this),
+                            ...
+                        },
                         label: 'Button 1',
                         icon: 'add',
-                        btnAction: this.buttonOneClicked.bind(this),
-                        btnStyle: 'tree-toolbar-btn'
+                        style: ToolbarButtonStyle.MAT_RAISED_BUTTON,
+                        color: ToolbarButtonColor.PRIMARY,
+                        disabled: false
                     },
                     ...
                 ]
