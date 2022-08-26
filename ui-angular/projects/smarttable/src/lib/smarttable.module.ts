@@ -9,6 +9,7 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatIconModule } from "@angular/material/icon";
 import { MatMenuModule } from "@angular/material/menu";
 import { BrowserModule } from "@angular/platform-browser";
+import { SmartToolbarModule } from "@smartbit4all/smart-toolbar";
 
 @NgModule({
     declarations: [SmarttableComponent],
@@ -23,8 +24,9 @@ import { BrowserModule } from "@angular/platform-browser";
         MatTableModule,
         MatIconModule,
         MatMenuModule,
+        SmartToolbarModule
     ],
     exports: [SmarttableComponent],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class SmarttableModule {}
+export class SmarttableModule { }

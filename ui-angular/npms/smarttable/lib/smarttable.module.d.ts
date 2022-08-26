@@ -9,8 +9,9 @@ import * as i7 from "@angular/material/button";
 import * as i8 from "@angular/material/table";
 import * as i9 from "@angular/material/icon";
 import * as i10 from "@angular/material/menu";
+import * as i11 from "@smartbit4all/smart-toolbar";
 export declare class SmarttableModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<SmarttableModule, never>;
-    static ɵmod: i0.ɵɵNgModuleDeclaration<SmarttableModule, [typeof i1.SmarttableComponent], [typeof i2.BrowserModule, typeof i3.MatCommonModule, typeof i4.FormsModule, typeof i4.ReactiveFormsModule, typeof i5.MatFormFieldModule, typeof i6.MatCheckboxModule, typeof i7.MatButtonModule, typeof i8.MatTableModule, typeof i9.MatIconModule, typeof i10.MatMenuModule], [typeof i1.SmarttableComponent]>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<SmarttableModule, [typeof i1.SmarttableComponent], [typeof i2.BrowserModule, typeof i3.MatCommonModule, typeof i4.FormsModule, typeof i4.ReactiveFormsModule, typeof i5.MatFormFieldModule, typeof i6.MatCheckboxModule, typeof i7.MatButtonModule, typeof i8.MatTableModule, typeof i9.MatIconModule, typeof i10.MatMenuModule, typeof i11.SmartToolbarModule], [typeof i1.SmarttableComponent]>;
     static ɵinj: i0.ɵɵInjectorDeclaration<SmarttableModule>;
 }

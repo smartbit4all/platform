@@ -18,14 +18,14 @@ export enum ToolbarDirection {
     ROW,
 }
 
-export interface Command {
+export interface CommandParameter {
     objectUri?: string;
     url: string;
-    commandType: CommandType
 }
 
-export enum CommandType {
-    NAVIGATION = "NAVIGATION"
+export interface Command {
+    parameter?: CommandParameter;
+    execute: (args?: any[]) => void;
 }
 
 export enum ToolbarButtonStyle {
