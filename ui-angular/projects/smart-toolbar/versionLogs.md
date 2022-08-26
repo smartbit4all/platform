@@ -6,7 +6,31 @@
 
 These packages must be updated in case of a new version:
 
-- There are no references yet
+- @smartbit4all/table
+
+## @smartbit4all/smart-toolbar v0.1.4
+
+**Type: Feature**
+
+In this version the operation of the toolbar has been changed.
+
+Mayor changes:
+
+1.  Command inteface modification:
+
+            export interface CommandParameter {
+                objectUri?: string;
+                url: string;
+            }
+
+            export interface Command {
+                parameter?: CommandParameter;
+                execute: (args?: any[]) => void;
+            }
+
+    From this version executable calls have to be placed in the execute property. Paramteres for api calls is placed inside the CommandParamter.
+
+2.  SmartToolbarService has been removed, because it lost its functionality.
 
 ## @smartbit4all/smart-toolbar v0.1.3
 

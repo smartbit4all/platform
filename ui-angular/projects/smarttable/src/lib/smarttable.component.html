@@ -70,10 +70,7 @@
           {{ element[header] }}
         </div>
         <div *ngIf="header === 'button'">
-          <button (click)="element[header].onClick()" mat-raised-button>
-            {{ element[header].label }}
-            <mat-icon>{{ element[header].icon }}</mat-icon>
-          </button>
+          <smart-toolbar [toolbar]="element[header]"></smart-toolbar>
         </div>
       </td>
     </ng-container>

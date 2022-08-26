@@ -1,11 +1,11 @@
 {
   "name": "@smartbit4all/dialog",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "peerDependencies": {
     "@angular/common": "^13.2.0",
     "@angular/core": "^13.2.0",
     "@smartbit4all/form": "file:../../npms/smartform/smartbit4all-form-0.1.4.tgz",
-    "@smartbit4all/table": "file:../../npms/smarttable/smartbit4all-table-0.1.6.tgz"
+    "@smartbit4all/table": "file:../../npms/smarttable/smartbit4all-table-0.1.7.tgz"
   },
   "dependencies": {
     "tslib": "^2.3.0"

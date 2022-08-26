@@ -1,9 +1,10 @@
 {
   "name": "@smartbit4all/table",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "peerDependencies": {
     "@angular/common": "^13.2.0",
-    "@angular/core": "^13.2.0"
+    "@angular/core": "^13.2.0",
+    "@smartbit4all/smart-toolbar": "file:../../npms/smart-toolbar/smartbit4all-smart-toolbar-0.1.4.tgz"
   },
   "dependencies": {
     "tslib": "^2.3.0"

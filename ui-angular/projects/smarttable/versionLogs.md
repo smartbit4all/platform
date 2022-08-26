@@ -8,6 +8,26 @@ These packages must be updated in case of a new version:
 
 - @smartbit4all/dialog
 
+## @smartbit4all/table v0.1.7
+
+**Type: Feature**
+
+In this version the SmartTableComponent is able to use SmartToolbarComponent inside the table cells.
+
+**Modifications:**
+
+1.  SmartTableComponent html
+
+        <div *ngIf="header === 'button'">
+            <smart-toolbar [toolbar]="element[header]"></smart-toolbar>
+        </div>
+
+**Usage update:**
+
+To use this toolbar feature, the objects given in the tableRow array must have a SmartToolbar object inside a property named button.
+
+Checkout the usage of the SmartToolbar: [@smartbit4all/smart-toolbar](../smart-toolbar/versionLogs.md)
+
 ## @smartbit4all/table v0.1.4 - v0.1.6
 
 **Type: Feature**
