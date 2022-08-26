@@ -1,7 +1,5 @@
 package org.smartbit4all.core.object;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -16,6 +14,8 @@ import org.junit.jupiter.api.Test;
 import org.smartbit4all.api.mapbasedobject.bean.MapBasedObjectData;
 import org.smartbit4all.core.object.utility.MapBasedObjectUtil;
 import org.smartbit4all.core.utility.StringConstant;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ApiObjectsTest {
 
@@ -481,7 +481,7 @@ public class ApiObjectsTest {
     System.out.println(objectChange.get());
   }
 
-  private MasterBean constructBean() {
+  static MasterBean constructBean() {
     MasterBean bean1 = new MasterBean();
     bean1.setCounter(1);
     bean1.setName("name");
@@ -514,7 +514,7 @@ public class ApiObjectsTest {
     return bean1;
   }
 
-  private void constructBeanByRef(ApiObjectRef objRef) {
+  static void constructBeanByRef(ApiObjectRef objRef) {
     objRef.setValue("Counter", 1);
     objRef.setValue("Name", "name");
     objRef.setValue("StringList", Arrays.asList("first", "second"));

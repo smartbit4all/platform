@@ -127,6 +127,7 @@ public final class BeanMetaUtil {
     PropertyMeta propertyMeta = meta.getProperties().get(propertyKey);
     if (propertyMeta == null) {
       propertyMeta = new PropertyMeta(propertyName, propertyType, meta);
+      propertyMeta.setReferredType(propertyType);
       meta.getProperties().put(propertyKey, propertyMeta);
     } else {
       // possible for example with getName() and getNAME()
@@ -146,6 +147,7 @@ public final class BeanMetaUtil {
           && ((descriptor != null && descriptor.isReferenceType(genericType))
               || (descriptor == null && ApiBeanDescriptor.isReferenceByDefault(genericType)))) {
         propertyMeta.setKind(PropertyKind.COLLECTION);
+        propertyMeta.setReferredType(genericType);
       }
     } else if (propertyType.isAssignableFrom(Map.class)) {
       // If we don't define the detail meta then try to identify the field for the bean property.
@@ -154,6 +156,7 @@ public final class BeanMetaUtil {
           && ((descriptor != null && descriptor.isReferenceType(genericType))
               || (descriptor == null && ApiBeanDescriptor.isReferenceByDefault(genericType)))) {
         propertyMeta.setKind(PropertyKind.MAP);
+        propertyMeta.setReferredType(genericType);
       }
     } else if ((descriptor != null && descriptor.isReferenceType(propertyType))
         || (descriptor == null && ApiBeanDescriptor.isReferenceByDefault(propertyType))) {

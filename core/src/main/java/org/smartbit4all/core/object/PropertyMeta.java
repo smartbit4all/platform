@@ -61,6 +61,12 @@ public class PropertyMeta {
   private final Class<?> type;
 
   /**
+   * If the property is a reference then it contains the type class of the referred object. If we
+   * have a list of MyBean the it will be MyBean.class.
+   */
+  private Class<?> referredType;
+
+  /**
    * The kind is by default the {@link PropertyKind#VALUE}. Can be modified later on during the
    * discovering of the class.
    */
@@ -71,7 +77,7 @@ public class PropertyMeta {
    * 
    * @author Peter Boros
    */
-  public static enum PropertyKind {
+  public enum PropertyKind {
     /**
      * The value a property that holds a value that can be changed as is.
      */
@@ -213,6 +219,14 @@ public class PropertyMeta {
 
   public final void setItemPutter(Method itemPutter) {
     this.itemPutter = itemPutter;
+  }
+
+  public final Class<?> getReferredType() {
+    return referredType;
+  }
+
+  final void setReferredType(Class<?> referredType) {
+    this.referredType = referredType;
   }
 
 }

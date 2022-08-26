@@ -37,6 +37,7 @@ public class ObjectDeepCopyApiTestConfig {
     return new ObjectReferenceConfigs().ref(GroupsOfUser.class.getName(),
         GroupsOfUser.USER_URI, User.class.getName(), true)
         .ref(GroupsOfUser.class.getName(), GroupsOfUser.GROUPS, Group.class.getName(), true);
+    // .ref(GroupsOfUser.class.getName(), "primaryGroup", Group.class.getName(), true);
   }
 
 }
