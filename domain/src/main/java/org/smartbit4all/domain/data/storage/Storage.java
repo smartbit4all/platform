@@ -160,7 +160,21 @@ public final class Storage {
    * @return The URI of the saved object.
    */
   public <T> URI save(StorageObject<T> object) {
-    return objectStorage.save(object);
+    StorageObject<?> save = objectStorage.save(object);
+    return save != null ? save.getUri() : null;
+  }
+
+  /**
+   * Save the given {@link StorageObject}.
+   * 
+   * @param <T>
+   * @param object The storage object that must not be null otherwise a {@link NullPointerException}
+   *        runtime exception is going to be thrown..
+   * @return The versioned URI of the saved object.
+   */
+  public <T> URI saveVersion(StorageObject<T> object) {
+    StorageObject<?> save = objectStorage.save(object);
+    return save != null ? save.getVersionUri() : null;
   }
 
   /**
@@ -176,11 +190,8 @@ public final class Storage {
     if (object == null) {
       return null;
     }
-    @SuppressWarnings("unchecked")
-    StorageObject<T> storageObject = (StorageObject<T>) instanceOf(object.getClass());
-    storageObject.setObject(object);
-    storageObject.setSkipLock(true);
-    return save(storageObject);
+    StorageObject<T> newObject = saveAsNewObject(object, null);
+    return newObject != null ? newObject.getUri() : null;
   }
 
   /**
@@ -196,11 +207,42 @@ public final class Storage {
     if (object == null) {
       return null;
     }
-    @SuppressWarnings("unchecked")
+    StorageObject<T> newObject = saveAsNewObject(object, setName);
+    return newObject != null ? newObject.getUri() : null;
+  }
+
+  /**
+   * Save the given object as new into the storage. If we save a new instance then there is no need
+   * to use the {@link StorageObject} because there will no concurrent issue or any other problem.
+   * 
+   * @param <T>
+   * @param object The object to save. The URI will be generated so there is no need and no
+   *        influence of the previously set URI! Don't set any URI or be aware of skipping this.
+   * @return The newly created object.
+   */
+  @SuppressWarnings("unchecked")
+  public <T> StorageObject<T> saveAsNewObject(T object) {
+    return saveAsNewObject(object, null);
+  }
+
+  /**
+   * Save the given object as new into the storage. If we save a new instance then there is no need
+   * to use the {@link StorageObject} because there will no concurrent issue or any other problem.
+   * 
+   * @param <T>
+   * @param object The object to save. The URI will be generated so there is no need and no
+   *        influence of the previously set URI! Don't set any URI or be aware of skipping this.
+   * @return The URI of the newly created object.
+   */
+  @SuppressWarnings("unchecked")
+  public <T> StorageObject<T> saveAsNewObject(T object, String setName) {
+    if (object == null) {
+      return null;
+    }
     StorageObject<T> storageObject = (StorageObject<T>) instanceOf(object.getClass(), setName);
     storageObject.setObject(object);
     storageObject.setSkipLock(true);
-    return save(storageObject);
+    return (StorageObject<T>) objectStorage.save(storageObject);
   }
 
   /**
@@ -212,12 +254,13 @@ public final class Storage {
    * @param objectUri
    * @param clazz
    * @param update
+   * @return The URI of the new version.
    */
-  public <T> void update(URI objectUri, Class<T> clazz, Function<T, T> update) {
-    update(objectUri, clazz, null, update);
+  public <T> URI update(URI objectUri, Class<T> clazz, Function<T, T> update) {
+    return update(objectUri, clazz, null, update);
   }
 
-  public <T> void update(URI objectUri, Class<T> clazz, ObjectVersion version,
+  public <T> URI update(URI objectUri, Class<T> clazz, ObjectVersion version,
       Function<T, T> update) {
     StorageObjectLock lock = getLock(objectUri);
     lock.lock();
@@ -232,11 +275,12 @@ public final class Storage {
       T object = update.apply(so.getObject());
       if (object != null) {
         so.setObject(object);
-        save(so);
+        return saveVersion(so);
       }
     } finally {
       lock.unlock();
     }
+    return null;
   }
 
 
@@ -456,7 +500,7 @@ public final class Storage {
    */
   private final URI constructUri(ObjectDefinition<?> objectDefinition, UUID uuid, String setName) {
     LocalDateTime now = LocalDateTime.now();
-    URI uri = URI.create(scheme + StringConstant.COLON + StringConstant.SLASH
+    return URI.create(scheme + StringConstant.COLON + StringConstant.SLASH
         + objectDefinition.getAlias() + StringConstant.SLASH
         + (setName == null ? StringConstant.EMPTY : setName + StringConstant.SLASH)
         + now.getYear() + StringConstant.SLASH + now.getMonthValue() + StringConstant.SLASH
@@ -464,7 +508,6 @@ public final class Storage {
         + now.getMinute() + StringConstant.SLASH
         + uuid + (versionPolicy == VersionPolicy.SINGLEVERSION ? singleVersionURIPostfix
             : StringConstant.EMPTY));
-    return uri;
   }
 
   private final URI constructArchiveUri(URI uri) {

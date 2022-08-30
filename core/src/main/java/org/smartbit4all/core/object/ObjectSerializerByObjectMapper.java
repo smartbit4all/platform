@@ -46,6 +46,8 @@ public class ObjectSerializerByObjectMapper implements ObjectSerializer {
     objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     objectMapper.configure(DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE, false);
     objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    // We might use it to avoid writing null values.
+    // objectMapper.setSerializationInclusion(Include.NON_NULL);
   }
 
   @Override

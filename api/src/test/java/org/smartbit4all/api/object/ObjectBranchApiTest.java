@@ -15,17 +15,18 @@ import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.core.io.TestFileUtil;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
+import org.smartbit4all.domain.data.storage.StorageObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(classes = {ObjectOperationTestConfig.class})
-class ObjectDeepCopyApiTest {
+class ObjectBranchApiTest {
 
-  private static final Logger log = LoggerFactory.getLogger(ObjectDeepCopyApiTest.class);
+  private static final Logger log = LoggerFactory.getLogger(ObjectBranchApiTest.class);
 
   @Autowired
-  private CopyApi copyApi;
+  private BranchApi branchApi;
 
   @Autowired
   private CompareApi compareApi;
@@ -55,11 +56,11 @@ class ObjectDeepCopyApiTest {
   }
 
   @Test
-  void testDeepCopy() throws IOException {
+  void testBranch() throws IOException {
 
     // Save the object hierarchy.
     long p1 = System.currentTimeMillis();
-    URI rootUri;
+    StorageObject<GroupsOfUser> root;
     {
       User user = new User().name("User").email("user@company.hu");
       URI userUri = storage.get().saveAsNew(user);
@@ -68,14 +69,16 @@ class ObjectDeepCopyApiTest {
         groups
             .add(storage.get().saveAsNew(new Group().name("group " + i).description("Group " + i)));
       }
-      rootUri = storage.get().saveAsNew(new GroupsOfUser().userUri(userUri).groups(groups));
+      root = storage.get().saveAsNewObject(new GroupsOfUser().userUri(userUri).groups(groups));
     }
 
+    URI branch = branchApi.makeBranch("My first branch");
     long p2 = System.currentTimeMillis();
-    URI copyUri = copyApi.deepCopyByContainment(rootUri);
+
+    URI branchUri = branchApi.branchObject(root.getVersionUri(), branch);
 
     long p3 = System.currentTimeMillis();
-    assertEquals(true, compareApi.deepEquals(rootUri, copyUri));
+    assertEquals(true, compareApi.deepEquals(root.getVersionUri(), branchUri));
     long p4 = System.currentTimeMillis();
 
     log.info("create: {}, copy: {}, compare: {}", p2 - p1, p3 - p2, p4 - p3);

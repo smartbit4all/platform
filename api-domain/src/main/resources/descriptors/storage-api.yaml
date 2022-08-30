@@ -201,6 +201,109 @@ components:
         operation:
           type: string
           description: The Api and the operation that was created the given version of the object.
+        rebasedFromUri:
+          type: string
+          format: uri
+          description: |
+            The reference of the object version the version is based on. In case of branching this is the URI of the source 
+            object version if it is a new object on the branch.
+        commonAncestorUri:
+          type: string
+          format: uri
+          description: |
+            The reference of the object version the version is based on. In the result of a merge operation it is the URI
+            of the common ancestor.
+        mergedWithUri:
+          type: string
+          format: uri
+          description: |
+            The reference of the object version the version is based on. In case of branching this is the URI of the source 
+            object version.
+    BranchData:
+      type: object
+      description: |
+        The branch data is used to identify the changes of the objects in on a branch. The object can be constructed and 
+        saved without any operation. If the original object is saved on this branch then the operation is registered into 
+        this object and executed directly.
+      required: [uri, objects]
+      properties:
+        uri:
+          type: string
+          format: uri
+          description: The uri of the object.
+        caption:
+          type: string
+          description: |
+            The branch could be used as business domain object. If we collect the versions of an object then useng the
+            caption we can identify the intent of the modification.
+        createdAt:
+          type: string
+          format: date-time
+          description: The exact date time when the given version was created at.
+        createdByUri:
+          type: string
+          format: uri
+          description: The reference of the user or any other participant who created the given version.
+        createdBy:
+          type: string
+          description: The display name of the user or any other participant who created the given version.
+        objects:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ObjectBranchData'
+    ObjectBranchData:
+      type: object
+      description: |
+        The object branch data is used to hold all the operations about an object on a branch. This object is
+        constructed when the first opartion is executed with the given object.
+      required: [objectUri, rebases, merges]
+      properties:
+        objectUri:
+          type: string
+          format: uri
+        init:
+          type: object
+          description: The init operation that constructs the branch object from a version of the source object.
+          $ref: '#/components/schemas/BranchOperation'
+        rebases:
+          type: object
+          description: The rebase operations that construct new versions on the branch.
+          additionalProperties:
+            $ref: '#/components/schemas/BranchOperation'
+        merges:
+          type: object
+          description: The merge operations that construct new versions in the original object.
+          additionalProperties:
+            $ref: '#/components/schemas/BranchOperation'
+    BranchOperation:
+      type: object
+      description: |
+        The data of the operation in a branch.
+      required: [sourceUri, targetUri]
+      properties:
+        sourceUri:
+          type: string
+          format: uri
+        targetUri:
+          type: string
+          format: uri
+        operationType:
+          type: string
+          enum: [init, rebase, merge]
+        createdAt:
+          type: string
+          format: date-time
+          description: The exact date time when the given version was created at.
+        createdByUri:
+          type: string
+          format: uri
+          description: The reference of the user or any other participant who created the given version.
+        createdBy:
+          type: string
+          description: The display name of the user or any other participant who created the given version.
+        operation:
+          type: string
+          description: The Api and the operation that was created the given version of the object.
     ObjectList:
       type: object
       description: |

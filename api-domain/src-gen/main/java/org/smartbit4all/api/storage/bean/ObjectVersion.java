@@ -40,7 +40,10 @@ import javax.validation.Valid;
   ObjectVersion.CREATED_AT,
   ObjectVersion.CREATED_BY_URI,
   ObjectVersion.CREATED_BY,
-  ObjectVersion.OPERATION
+  ObjectVersion.OPERATION,
+  ObjectVersion.REBASED_FROM_URI,
+  ObjectVersion.COMMON_ANCESTOR_URI,
+  ObjectVersion.MERGED_WITH_URI
 })
 @JsonTypeName("ObjectVersion")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -65,6 +68,15 @@ public class ObjectVersion {
 
   public static final String OPERATION = "operation";
   private String operation;
+
+  public static final String REBASED_FROM_URI = "rebasedFromUri";
+  private URI rebasedFromUri;
+
+  public static final String COMMON_ANCESTOR_URI = "commonAncestorUri";
+  private URI commonAncestorUri;
+
+  public static final String MERGED_WITH_URI = "mergedWithUri";
+  private URI mergedWithUri;
 
 
   public ObjectVersion serialNoData(Long serialNoData) {
@@ -260,6 +272,90 @@ public class ObjectVersion {
   }
 
 
+  public ObjectVersion rebasedFromUri(URI rebasedFromUri) {
+    
+    this.rebasedFromUri = rebasedFromUri;
+    return this;
+  }
+
+   /**
+   * The reference of the object version the version is based on. In case of branching this is the URI of the source  object version if it is a new object on the branch. 
+   * @return rebasedFromUri
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "The reference of the object version the version is based on. In case of branching this is the URI of the source  object version if it is a new object on the branch. ")
+  @JsonProperty(REBASED_FROM_URI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public URI getRebasedFromUri() {
+    return rebasedFromUri;
+  }
+
+
+  @JsonProperty(REBASED_FROM_URI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setRebasedFromUri(URI rebasedFromUri) {
+    this.rebasedFromUri = rebasedFromUri;
+  }
+
+
+  public ObjectVersion commonAncestorUri(URI commonAncestorUri) {
+    
+    this.commonAncestorUri = commonAncestorUri;
+    return this;
+  }
+
+   /**
+   * The reference of the object version the version is based on. In the result of a merge operation it is the URI of the common ancestor. 
+   * @return commonAncestorUri
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "The reference of the object version the version is based on. In the result of a merge operation it is the URI of the common ancestor. ")
+  @JsonProperty(COMMON_ANCESTOR_URI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public URI getCommonAncestorUri() {
+    return commonAncestorUri;
+  }
+
+
+  @JsonProperty(COMMON_ANCESTOR_URI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setCommonAncestorUri(URI commonAncestorUri) {
+    this.commonAncestorUri = commonAncestorUri;
+  }
+
+
+  public ObjectVersion mergedWithUri(URI mergedWithUri) {
+    
+    this.mergedWithUri = mergedWithUri;
+    return this;
+  }
+
+   /**
+   * The reference of the object version the version is based on. In case of branching this is the URI of the source  object version. 
+   * @return mergedWithUri
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "The reference of the object version the version is based on. In case of branching this is the URI of the source  object version. ")
+  @JsonProperty(MERGED_WITH_URI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public URI getMergedWithUri() {
+    return mergedWithUri;
+  }
+
+
+  @JsonProperty(MERGED_WITH_URI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setMergedWithUri(URI mergedWithUri) {
+    this.mergedWithUri = mergedWithUri;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -275,12 +371,15 @@ public class ObjectVersion {
         Objects.equals(this.createdAt, objectVersion.createdAt) &&
         Objects.equals(this.createdByUri, objectVersion.createdByUri) &&
         Objects.equals(this.createdBy, objectVersion.createdBy) &&
-        Objects.equals(this.operation, objectVersion.operation);
+        Objects.equals(this.operation, objectVersion.operation) &&
+        Objects.equals(this.rebasedFromUri, objectVersion.rebasedFromUri) &&
+        Objects.equals(this.commonAncestorUri, objectVersion.commonAncestorUri) &&
+        Objects.equals(this.mergedWithUri, objectVersion.mergedWithUri);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(serialNoData, serialNoRelation, transactionId, createdAt, createdByUri, createdBy, operation);
+    return Objects.hash(serialNoData, serialNoRelation, transactionId, createdAt, createdByUri, createdBy, operation, rebasedFromUri, commonAncestorUri, mergedWithUri);
   }
 
   @Override
@@ -294,6 +393,9 @@ public class ObjectVersion {
     sb.append("    createdByUri: ").append(toIndentedString(createdByUri)).append("\n");
     sb.append("    createdBy: ").append(toIndentedString(createdBy)).append("\n");
     sb.append("    operation: ").append(toIndentedString(operation)).append("\n");
+    sb.append("    rebasedFromUri: ").append(toIndentedString(rebasedFromUri)).append("\n");
+    sb.append("    commonAncestorUri: ").append(toIndentedString(commonAncestorUri)).append("\n");
+    sb.append("    mergedWithUri: ").append(toIndentedString(mergedWithUri)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -44,7 +44,7 @@ public interface ObjectStorage {
    * object then it results a version where the content is empty. We can call this deleted but it's
    * not really the deletion."
    */
-  URI save(StorageObject<?> object);
+  StorageObject<?> save(StorageObject<?> object);
 
   /**
    * Load the object with the given URI.

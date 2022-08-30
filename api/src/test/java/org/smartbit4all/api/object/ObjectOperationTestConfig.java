@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @Import({PlatformApiConfig.class})
 @EnableTransactionManagement
-public class ObjectDeepCopyApiTestConfig {
+public class ObjectOperationTestConfig {
 
   @Bean
   public StorageFS defaultStorage(ObjectApi objectApi) {

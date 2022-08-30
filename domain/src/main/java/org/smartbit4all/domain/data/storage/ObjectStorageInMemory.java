@@ -34,7 +34,7 @@ public class ObjectStorageInMemory extends ObjectStorageImpl {
   }
 
   @Override
-  public URI save(StorageObject<?> storageObject) {
+  public StorageObject<?> save(StorageObject<?> storageObject) {
     if (storageObject == null) {
       return null;
     }
@@ -58,7 +58,7 @@ public class ObjectStorageInMemory extends ObjectStorageImpl {
               copy.getVersionUri(),
               ApiObjectRef.unwrapObject(copy.getObject()),
               storageObject.definition().getClazz()));
-      return copy.getUri();
+      return copy;
     } finally {
       objectLock.unlockAndRelease();
     }

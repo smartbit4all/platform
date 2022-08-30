@@ -81,23 +81,23 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
    * 
    * If set, the loadAll method only look for files with the given extension.
    */
-  private static final String storedObjectFileExtension = ".o";
+  private static final String SO_FILEEXTENSION = ".o";
 
   /**
    * The relation contents are stored in a file with this extension.
    */
-  private static final String storedObjectRelationFileExtension = ".r";
+  private static final String SO_RELATIONFILEEXTENSION = ".r";
 
   /**
    * The lock file postfix.
    */
-  private static final String storedObjectLockFileExtension = ".l";
+  private static final String SO_LOCKFILEEXTENSION = ".l";
 
   /**
    * The transaction file extension. The transaction file always contains the pending content of the
    * object if there is a writing transaction in progress.
    */
-  private static final String transactionFileExtension = ".t";
+  private static final String SO_TRANSACTIONFILEEXTENSION = ".t";
 
   /**
    * The {@link ObjectDefinition} of the {@link StorageObjectData} that is basic api object of the
@@ -163,10 +163,10 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
    * Constructs the object file for the URI.
    * 
    * @param objectUri The object URI.
-   * @return We get an object file with extension {@link #storedObjectFileExtension}.
+   * @return We get an object file with extension {@link #SO_FILEEXTENSION}.
    */
   private final File getObjectDataFile(URI objectUri) {
-    return getDataFileByUri(objectUri, storedObjectFileExtension);
+    return getDataFileByUri(objectUri, SO_FILEEXTENSION);
   }
 
   /**
@@ -185,10 +185,10 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
    * 
    * @param objectUri The object URI.
    * @return The transaction file that is the same like the object file itself but with
-   *         {@link #transactionFileExtension}.
+   *         {@link #SO_TRANSACTIONFILEEXTENSION}.
    */
   private File getObjectTransactionFile(URI objectUri) {
-    return getDataFileByUri(objectUri, transactionFileExtension);
+    return getDataFileByUri(objectUri, SO_TRANSACTIONFILEEXTENSION);
   }
 
   /**
@@ -196,10 +196,10 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
    * 
    * @param objectUri The object URI.
    * @return The lock file that is the same like the object file itself but with
-   *         {@link #storedObjectLockFileExtension}.
+   *         {@link #SO_LOCKFILEEXTENSION}.
    */
   private File getObjectLockFile(URI objectUri) {
-    return getDataFileByUri(objectUri, storedObjectLockFileExtension);
+    return getDataFileByUri(objectUri, SO_LOCKFILEEXTENSION);
   }
 
   /**
@@ -225,7 +225,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
     return new File(
         objectHistoryBasePath.getPath() +
             FileIO.constructObjectPathByIndexWithHexaStructure(serialNo)
-            + storedObjectRelationFileExtension);
+            + SO_RELATIONFILEEXTENSION);
   }
 
   @Override
@@ -287,7 +287,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
   }
 
   @Override
-  public URI save(StorageObject<?> object) {
+  public StorageObject<?> save(StorageObject<?> object) {
 
     StorageObjectLock storageObjectLock = !object.isSkipLock() ? getLock(object.getUri()) : null;
 
@@ -309,7 +309,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
         storageObjectLock.unlockAndRelease();
       }
     }
-    return object.getUri();
+    return object;
   }
 
   /**
@@ -335,10 +335,11 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
    * This save the object to have every modification as version of the object.
    * 
    * @param object The object.
+   * @return The URI of the saved version.
    * @throws IOException If Exception occurred then it will be thrown to be able to manage the
    *         locking in the {@link #save(StorageObject)}.
    */
-  private final void saveVersionedObject(StorageObject<?> object) throws IOException {
+  private final URI saveVersionedObject(StorageObject<?> object) throws IOException {
     // Load the StorageObjectData that is the api object of the storage itself.
     File objectDataFile = getObjectDataFile(object.getUri());
     File objectVersionBasePath = getObjectVersionBasePath(object.getUri());
@@ -449,6 +450,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
     URI newVersionUri = object.getVersionUri();
     invokeOnSucceedFunctions(object, oldVersion, oldVersionUri, newVersionUri,
         objectVersionBasePath);
+    return newVersionUri;
   }
 
   /**
@@ -532,7 +534,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
       return false;
     }
     File storageObjectDataFile =
-        getDataFileByUri(getUriWithoutVersion(uri), storedObjectFileExtension);
+        getDataFileByUri(getUriWithoutVersion(uri), SO_FILEEXTENSION);
     if (!storageObjectDataFile.exists()) {
       return false;
     }
@@ -545,7 +547,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
       return null;
     }
     File storageObjectDataFile =
-        getDataFileByUri(getUriWithoutVersion(uri), storedObjectFileExtension);
+        getDataFileByUri(getUriWithoutVersion(uri), SO_FILEEXTENSION);
     if (!storageObjectDataFile.exists()) {
       return null;
     }
@@ -611,13 +613,10 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
 
   private static class DirFileCounter {
 
-    Path dir;
-
     int fileCount;
 
     DirFileCounter(Path dir) {
       super();
-      this.dir = dir;
       this.fileCount = dir.toFile().list().length;
 
     }
@@ -653,14 +652,14 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
               public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
                   throws IOException {
                 String fileName = file.getFileName().toString();
-                if (fileName.endsWith(storedObjectFileExtension)) {
+                if (fileName.endsWith(SO_FILEEXTENSION)) {
                   // We read the object with the standard operation by creating a valid URI from the
                   // path.
                   String path = setPath + StringConstant.SLASH
                       + setFolderPath.relativize(file.getParent()).toString().replace('\\', '/')
                       + StringConstant.SLASH
                       + fileName.substring(0,
-                          fileName.length() - storedObjectFileExtension.length());
+                          fileName.length() - SO_FILEEXTENSION.length());
                   objects.add(read(storage,
                       UriUtils.createUri(storageScheme, null,
                           path,
@@ -786,7 +785,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
         return storageObjectData;
       } catch (Exception e) {
         // We must try again.
-        log.debug("Unable to read " + objectDataFile);
+        log.debug("Unable to read {}", objectDataFile);
         waitTime = waitTime * rnd.nextInt(4);
       }
       try {
@@ -872,7 +871,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
     }
 
     File storageObjectDataFile =
-        getDataFileByUri(getUriWithoutVersion(uri), storedObjectFileExtension);
+        getDataFileByUri(getUriWithoutVersion(uri), SO_FILEEXTENSION);
     if (!storageObjectDataFile.exists()) {
       return null;
     }
@@ -924,7 +923,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
     }
 
     File storageObjectDataFile =
-        getDataFileByUri(getUriWithoutVersion(uri), storedObjectFileExtension);
+        getDataFileByUri(getUriWithoutVersion(uri), SO_FILEEXTENSION);
     if (!storageObjectDataFile.exists()) {
       return null;
     }
@@ -985,7 +984,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
   // }
 
   public String getStoredObjectFileExtension() {
-    return storedObjectFileExtension;
+    return SO_FILEEXTENSION;
   }
 
   public final File getRootFolder() {

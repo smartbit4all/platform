@@ -51,7 +51,7 @@ public class StorageSQL extends ObjectStorageImpl {
   }
 
   @Override
-  public URI save(StorageObject<?> object) {
+  public StorageObject<?> save(StorageObject<?> object) {
     StorageObjectLock storageObjectLock = getLock(object.getUri());
     try {
       // Load the StorageObjectData that is the api object of the storage itself.
@@ -101,7 +101,7 @@ public class StorageSQL extends ObjectStorageImpl {
     } finally {
       storageObjectLock.release();
     }
-    return object.getUri();
+    return object;
   }
 
   @Override

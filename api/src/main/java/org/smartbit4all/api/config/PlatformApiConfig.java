@@ -12,6 +12,10 @@ import org.smartbit4all.api.navigation.NavigationFeatureApi;
 import org.smartbit4all.api.navigation.NavigationFeatureApiImpl;
 import org.smartbit4all.api.navigation.NavigationPrimary;
 import org.smartbit4all.api.navigation.ObjectNavigation;
+import org.smartbit4all.api.object.BranchApi;
+import org.smartbit4all.api.object.BranchApiImpl;
+import org.smartbit4all.api.object.BranchContributionApi;
+import org.smartbit4all.api.object.BranchContributionApiStorageImpl;
 import org.smartbit4all.api.object.CompareApi;
 import org.smartbit4all.api.object.CompareApiImpl;
 import org.smartbit4all.api.object.CompareContributionApi;
@@ -120,6 +124,16 @@ public class PlatformApiConfig {
   @Bean
   public CompareContributionApiStorageImpl compareApiStorageImpl() {
     return new CompareContributionApiStorageImpl();
+  }
+
+  @Bean
+  public BranchApi branchApi() {
+    return new BranchApiImpl(BranchContributionApi.class);
+  }
+
+  @Bean
+  public BranchContributionApiStorageImpl branchApiStorageImpl() {
+    return new BranchContributionApiStorageImpl();
   }
 
 }
