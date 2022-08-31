@@ -2,9 +2,9 @@ package org.smartbit4all.api.org;
 
 import java.net.URI;
 import java.util.List;
+import java.util.function.Supplier;
 import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.org.bean.User;
-import org.smartbit4all.api.session.UserSessionApi;
 
 public class OrgUtils {
 
@@ -42,13 +42,13 @@ public class OrgUtils {
     return null;
   }
 
-  public static Boolean securityPredicate(OrgApi orgApi, UserSessionApi userSessionApi,
+  public static Boolean securityPredicate(OrgApi orgApi, Supplier<User> currentUserProvider,
       SecurityGroup securityGroup, URI userUri) {
     if (userUri == null) {
-      if (userSessionApi == null || userSessionApi.currentUser() == null) {
+      if (currentUserProvider == null || currentUserProvider.get() == null) {
         return false;
       }
-      userUri = userSessionApi.currentUser().getUri();
+      userUri = currentUserProvider.get().getUri();
     }
     List<Group> groupsOfUser = orgApi.getGroupsOfUser(userUri);
     if (groupsOfUser == null) {

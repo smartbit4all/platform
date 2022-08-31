@@ -25,72 +25,69 @@ public interface SessionApi {
     }
 
     /**
-     * POST /authenticate : Authenticates the user and connects it to the session
+     * GET /authenticationProviders : Returns the available authentication providers
      *
-     * @return The user has been authenticated (status code 200)
+     * @return Returns the available authentication providers (status code 200)
+     *         or Missing JWT token (status code 400)
+     *         or The session does not exists with the given token (status code 404)
+     *         or Error occured while fetching the session data (status code 500)
      */
-    @ApiOperation(value = "Authenticates the user and connects it to the session", nickname = "authenticate", notes = "", response = org.smartbit4all.api.session.bean.StartSessionResult.class, tags={ "session", })
+    @ApiOperation(value = "Returns the available authentication providers", nickname = "getAuthenticationProviders", notes = "", response = org.smartbit4all.api.session.bean.GetAuthenticationProvidersResponse.class, tags={ "Session", })
     @ApiResponses(value = { 
-        @ApiResponse(code = 200, message = "The user has been authenticated", response = org.smartbit4all.api.session.bean.StartSessionResult.class) })
-    @RequestMapping(
-        method = RequestMethod.POST,
-        value = "/authenticate",
-        produces = { "application/json" }
-    )
-    default ResponseEntity<org.smartbit4all.api.session.bean.StartSessionResult> authenticate() throws Exception {
-        return getDelegate().authenticate();
-    }
-
-
-    /**
-     * GET /isAuthenticated : Returns if the current session is authenticated or not
-     *
-     * @return The authentication state of the current session (status code 200)
-     */
-    @ApiOperation(value = "Returns if the current session is authenticated or not", nickname = "getIsAuthenticated", notes = "", response = org.smartbit4all.api.session.bean.IsSessionAuthenticated.class, tags={ "session", })
-    @ApiResponses(value = { 
-        @ApiResponse(code = 200, message = "The authentication state of the current session", response = org.smartbit4all.api.session.bean.IsSessionAuthenticated.class) })
+        @ApiResponse(code = 200, message = "Returns the available authentication providers", response = org.smartbit4all.api.session.bean.GetAuthenticationProvidersResponse.class),
+        @ApiResponse(code = 400, message = "Missing JWT token"),
+        @ApiResponse(code = 404, message = "The session does not exists with the given token"),
+        @ApiResponse(code = 500, message = "Error occured while fetching the session data") })
     @RequestMapping(
         method = RequestMethod.GET,
-        value = "/isAuthenticated",
+        value = "/authenticationProviders",
         produces = { "application/json" }
     )
-    default ResponseEntity<org.smartbit4all.api.session.bean.IsSessionAuthenticated> getIsAuthenticated() throws Exception {
-        return getDelegate().getIsAuthenticated();
+    default ResponseEntity<org.smartbit4all.api.session.bean.GetAuthenticationProvidersResponse> getAuthenticationProviders() throws Exception {
+        return getDelegate().getAuthenticationProviders();
     }
 
 
     /**
-     * POST /logout : Ends the session and logout
+     * GET /session : Returns the existing session info
      *
-     * @return The session has ended (status code 200)
+     * @return Returns the existing session info (status code 200)
+     *         or Missing JWT token (status code 400)
+     *         or The session does not exists with the given token (status code 404)
+     *         or Error occured while fetching the session data (status code 500)
      */
-    @ApiOperation(value = "Ends the session and logout", nickname = "logout", notes = "", tags={ "session", })
+    @ApiOperation(value = "Returns the existing session info", nickname = "getSession", notes = "", response = org.smartbit4all.api.session.bean.SessionInfoData.class, tags={ "Session", })
     @ApiResponses(value = { 
-        @ApiResponse(code = 200, message = "The session has ended") })
+        @ApiResponse(code = 200, message = "Returns the existing session info", response = org.smartbit4all.api.session.bean.SessionInfoData.class),
+        @ApiResponse(code = 400, message = "Missing JWT token"),
+        @ApiResponse(code = 404, message = "The session does not exists with the given token"),
+        @ApiResponse(code = 500, message = "Error occured while fetching the session data") })
     @RequestMapping(
-        method = RequestMethod.POST,
-        value = "/logout"
+        method = RequestMethod.GET,
+        value = "/session",
+        produces = { "application/json" }
     )
-    default ResponseEntity<Void> logout() throws Exception {
-        return getDelegate().logout();
+    default ResponseEntity<org.smartbit4all.api.session.bean.SessionInfoData> getSession() throws Exception {
+        return getDelegate().getSession();
     }
 
 
     /**
-     * POST /startSession : Starts the session
+     * PUT /session : Creates a new session
      *
      * @return The session has started (status code 200)
+     *         or Error during session creation (status code 500)
      */
-    @ApiOperation(value = "Starts the session", nickname = "startSession", notes = "", response = org.smartbit4all.api.session.bean.StartSessionResult.class, tags={ "session", })
+    @ApiOperation(value = "Creates a new session", nickname = "startSession", notes = "", response = org.smartbit4all.api.session.bean.SessionInfoData.class, tags={ "Session", })
     @ApiResponses(value = { 
-        @ApiResponse(code = 200, message = "The session has started", response = org.smartbit4all.api.session.bean.StartSessionResult.class) })
+        @ApiResponse(code = 200, message = "The session has started", response = org.smartbit4all.api.session.bean.SessionInfoData.class),
+        @ApiResponse(code = 500, message = "Error during session creation") })
     @RequestMapping(
-        method = RequestMethod.POST,
-        value = "/startSession",
+        method = RequestMethod.PUT,
+        value = "/session",
         produces = { "application/json" }
     )
-    default ResponseEntity<org.smartbit4all.api.session.bean.StartSessionResult> startSession() throws Exception {
+    default ResponseEntity<org.smartbit4all.api.session.bean.SessionInfoData> startSession() throws Exception {
         return getDelegate().startSession();
     }
 

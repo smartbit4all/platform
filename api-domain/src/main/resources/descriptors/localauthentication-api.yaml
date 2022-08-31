@@ -1,0 +1,53 @@
+openapi: 3.0.1
+info:
+  title: Local authentication api
+  description: Supports simple user-password authentication
+  termsOfService: ''
+  contact:
+    email: info@it4all.hu
+  version: 1.0.0
+tags:
+  - name: LocalAuthentication
+paths:
+  /login:
+    post:
+      tags:
+      - LocalAuthentication
+      summary: Logs in the user with the credentails given.
+      operationId: 'login'
+      requestBody:
+        required: true
+        content:
+          application/json:
+              schema:
+                $ref: '#/components/schemas/LocalAuthenticationLoginRequest'
+      responses:
+        '200':
+          description: 'User successfully logged in'
+        '400':
+          description: 'Unable to log in user with the given credentials'
+        '500':
+          description: 'Error during login process'
+  /logout:
+    post:
+      tags:
+      - LocalAuthentication
+      summary: Logs out the currently logged in user
+      operationId: 'logout'
+      responses:
+        '200':
+          description: 'User successfully logged out'
+        '400':
+          description: 'The user is not logged in'
+        '500':
+          description: 'Error during logout process'
+components:
+  schemas:
+    LocalAuthenticationLoginRequest:
+      type: object
+      required: [username, password]
+      properties:
+        username:
+          type: string
+        password:
+          type: string

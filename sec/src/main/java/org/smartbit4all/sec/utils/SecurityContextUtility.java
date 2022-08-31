@@ -12,6 +12,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 public class SecurityContextUtility {
 
+  private SecurityContextUtility() {}
+
   public static SecurityContext createSecurityContext(UserSessionApi userSessionApi,
       TechnicalUserProvider technicalUserProvider) {
     SecurityContext createEmptyContext = SecurityContextHolder.createEmptyContext();

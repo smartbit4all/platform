@@ -3,7 +3,6 @@ package org.smartbit4all.sec.jwt;
 import java.io.IOException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
@@ -13,7 +12,6 @@ import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.session.Session;
 import org.smartbit4all.api.session.UserSessionApi;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -33,9 +31,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
   @Autowired
   private JwtUtil jwtUtil;
 
-  @Value("${jwt.cookie}")
-  private String jwtCookie;
-
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
       FilterChain filterChain)
@@ -46,26 +41,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
      * continues to execution. However, if the JwtToken is not valid, it throws an exception and the
      * call would not be executed.
      */
-    final String authorizationHeader = request.getHeader("Authorization");
-
-    String username = null;
-    String jwt = null;
-
-    if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-      jwt = authorizationHeader.substring(7);
-      username = jwtUtil.extractUsername(jwt);
-    } else {
-      Cookie[] cookies = request.getCookies();
-      if (cookies != null) {
-        for (int i = 0; i < cookies.length; i++) {
-          Cookie cookie = cookies[i];
-          if (cookie != null && jwtCookie.equals(cookie.getName())) {
-            jwt = cookie.getValue();
-            username = jwtUtil.extractUsername(jwt);
-          }
-        }
-      }
-    }
+    String jwt = jwtUtil.getJwtTokenFromRequest(request);
+    String username = jwtUtil.extractSubject(jwt);
 
     if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
       User user = this.orgApi.getUserByUsername(username);

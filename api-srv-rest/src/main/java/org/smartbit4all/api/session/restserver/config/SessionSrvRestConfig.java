@@ -1,12 +1,11 @@
 package org.smartbit4all.api.session.restserver.config;
 
 import org.smartbit4all.api.restserver.PlatformApiCommonSrvRestConfig;
-import org.smartbit4all.api.session.UserSessionApi;
+import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.restserver.SessionApiController;
 import org.smartbit4all.api.session.restserver.SessionApiDelegate;
 import org.smartbit4all.api.session.restserver.impl.SessionApiDelegateImpl;
-import org.smartbit4all.sec.session.AuthenticationUserProviders;
-import org.smartbit4all.sec.session.UserSessionApiSecImpl;
+import org.smartbit4all.sec.session.SessionApiImpl;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,11 +31,9 @@ public class SessionSrvRestConfig {
   }
 
   @Bean
-  @ConditionalOnMissingClass("org.smartbit4all.api.session.UserSessionApi")
-  UserSessionApi userSessionApi() {
-    return new UserSessionApiSecImpl(
-        AuthenticationUserProviders.anonymousUserProvider(),
-        AuthenticationUserProviders.sessionBasedUserProvider());
+  @ConditionalOnMissingClass("org.smartbit4all.api.session.SessionApi")
+  public SessionApi sessionApi() {
+    return new SessionApiImpl();
   }
 
 }

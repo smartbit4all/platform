@@ -23,16 +23,19 @@ public interface SessionApiDelegate {
     }
 
     /**
-     * POST /authenticate : Authenticates the user and connects it to the session
+     * GET /authenticationProviders : Returns the available authentication providers
      *
-     * @return The user has been authenticated (status code 200)
-     * @see SessionApi#authenticate
+     * @return Returns the available authentication providers (status code 200)
+     *         or Missing JWT token (status code 400)
+     *         or The session does not exists with the given token (status code 404)
+     *         or Error occured while fetching the session data (status code 500)
+     * @see SessionApi#getAuthenticationProviders
      */
-    default ResponseEntity<org.smartbit4all.api.session.bean.StartSessionResult> authenticate() throws Exception {
+    default ResponseEntity<org.smartbit4all.api.session.bean.GetAuthenticationProvidersResponse> getAuthenticationProviders() throws Exception {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"token\" : \"token\" }";
+                    String exampleString = "{ \"authenticationProviders\" : [ { \"kind\" : \"kind\", \"parameters\" : { \"key\" : \"parameters\" } }, { \"kind\" : \"kind\", \"parameters\" : { \"key\" : \"parameters\" } } ] }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
@@ -43,16 +46,19 @@ public interface SessionApiDelegate {
     }
 
     /**
-     * GET /isAuthenticated : Returns if the current session is authenticated or not
+     * GET /session : Returns the existing session info
      *
-     * @return The authentication state of the current session (status code 200)
-     * @see SessionApi#getIsAuthenticated
+     * @return Returns the existing session info (status code 200)
+     *         or Missing JWT token (status code 400)
+     *         or The session does not exists with the given token (status code 404)
+     *         or Error occured while fetching the session data (status code 500)
+     * @see SessionApi#getSession
      */
-    default ResponseEntity<org.smartbit4all.api.session.bean.IsSessionAuthenticated> getIsAuthenticated() throws Exception {
+    default ResponseEntity<org.smartbit4all.api.session.bean.SessionInfoData> getSession() throws Exception {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"isAuthenticated\" : true }";
+                    String exampleString = "{ \"expiration\" : \"2000-01-23T04:56:07.000+00:00\", \"locale\" : \"locale\", \"sid\" : \"sid\", \"authentications\" : [ { \"imageContent\" : \"imageContent\", \"imageFormat\" : \"imageFormat\", \"kind\" : \"kind\", \"displayName\" : \"displayName\", \"roles\" : [ \"roles\", \"roles\" ], \"userName\" : \"userName\", \"parameters\" : { \"key\" : \"parameters\" } }, { \"imageContent\" : \"imageContent\", \"imageFormat\" : \"imageFormat\", \"kind\" : \"kind\", \"displayName\" : \"displayName\", \"roles\" : [ \"roles\", \"roles\" ], \"userName\" : \"userName\", \"parameters\" : { \"key\" : \"parameters\" } } ] }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
@@ -63,27 +69,17 @@ public interface SessionApiDelegate {
     }
 
     /**
-     * POST /logout : Ends the session and logout
-     *
-     * @return The session has ended (status code 200)
-     * @see SessionApi#logout
-     */
-    default ResponseEntity<Void> logout() throws Exception {
-        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-
-    }
-
-    /**
-     * POST /startSession : Starts the session
+     * PUT /session : Creates a new session
      *
      * @return The session has started (status code 200)
+     *         or Error during session creation (status code 500)
      * @see SessionApi#startSession
      */
-    default ResponseEntity<org.smartbit4all.api.session.bean.StartSessionResult> startSession() throws Exception {
+    default ResponseEntity<org.smartbit4all.api.session.bean.SessionInfoData> startSession() throws Exception {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"token\" : \"token\" }";
+                    String exampleString = "{ \"expiration\" : \"2000-01-23T04:56:07.000+00:00\", \"locale\" : \"locale\", \"sid\" : \"sid\", \"authentications\" : [ { \"imageContent\" : \"imageContent\", \"imageFormat\" : \"imageFormat\", \"kind\" : \"kind\", \"displayName\" : \"displayName\", \"roles\" : [ \"roles\", \"roles\" ], \"userName\" : \"userName\", \"parameters\" : { \"key\" : \"parameters\" } }, { \"imageContent\" : \"imageContent\", \"imageFormat\" : \"imageFormat\", \"kind\" : \"kind\", \"displayName\" : \"displayName\", \"roles\" : [ \"roles\", \"roles\" ], \"userName\" : \"userName\", \"parameters\" : { \"key\" : \"parameters\" } } ] }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }

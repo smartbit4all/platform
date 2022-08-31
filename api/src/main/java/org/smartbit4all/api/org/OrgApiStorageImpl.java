@@ -26,8 +26,8 @@ import org.smartbit4all.api.org.bean.GroupsOfUserCollection;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.org.bean.UsersOfGroup;
 import org.smartbit4all.api.org.bean.UsersOfGroupCollection;
+import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.UserSessionApi;
-import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.setting.LocaleString;
 import org.smartbit4all.api.storage.bean.ObjectMap;
 import org.smartbit4all.api.storage.bean.ObjectMapRequest;
@@ -46,7 +46,7 @@ import com.google.common.cache.CacheBuilder;
 
 public class OrgApiStorageImpl implements OrgApi {
 
-  private static final Logger log = LoggerFactory.getLogger(LocaleSettingApi.class);
+  private static final Logger log = LoggerFactory.getLogger(OrgApiStorageImpl.class);
 
   public static final String ORG_SCHEME = "org";
 
@@ -79,8 +79,11 @@ public class OrgApiStorageImpl implements OrgApi {
   @Autowired
   private OrgApi self;
 
-  @Autowired
+  @Autowired(required = false)
   private UserSessionApi userSessionApi;
+
+  @Autowired(required = false)
+  private SessionApi sessionApi;
 
   public OrgApiStorageImpl() {}
 
@@ -137,7 +140,7 @@ public class OrgApiStorageImpl implements OrgApi {
           SecurityGroup securityGroup = (SecurityGroup) field.get(option);
           if (securityGroup != null) {
             securityGroup.setSecurityPredicate(
-                (sg, uri) -> OrgUtils.securityPredicate(self, userSessionApi, sg, uri));
+                (sg, uri) -> OrgUtils.securityPredicate(self, getCurrentUserProvider(), sg, uri));
             // securityGroup.setOrgApi(this);
             // securityGroup.setUserSessionApi(userSessionApi);
             String key = ReflectionUtility.getQualifiedName(field);
@@ -158,6 +161,17 @@ public class OrgApiStorageImpl implements OrgApi {
       }
     }
     return result;
+  }
+
+  private Supplier<User> getCurrentUserProvider() {
+    if (userSessionApi != null) {
+      return () -> userSessionApi.currentUser();
+    }
+    if (sessionApi != null) {
+      return () -> sessionApi.currentUser();
+    }
+    throw new IllegalStateException(
+        "There is no UserSessionApi nor SessionApi registered in the Spring context!");
   }
 
   /**

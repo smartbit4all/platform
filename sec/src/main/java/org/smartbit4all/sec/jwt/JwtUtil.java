@@ -1,7 +1,11 @@
 package org.smartbit4all.sec.jwt;
 
+import java.time.OffsetDateTime;
 import java.util.Date;
+import java.util.Objects;
 import java.util.function.Function;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.org.bean.User;
@@ -23,7 +27,10 @@ public class JwtUtil {
   @Value("${jwt.timeout:10}")
   private int timeout;
 
-  public String extractUsername(String token) {
+  @Value("${jwt.cookie}")
+  private String jwtCookie;
+
+  public String extractSubject(String token) {
     return extractClaim(token, Claims::getSubject);
   }
 
@@ -45,7 +52,7 @@ public class JwtUtil {
     return null;
   }
 
-  private boolean isTokenExpired(String token) {
+  public boolean isTokenExpired(String token) {
     Date expiration = extractExpiration(token);
     return expiration != null ? expiration.before(new Date()) : true;
   }
@@ -54,7 +61,13 @@ public class JwtUtil {
     return createToken(user.getUsername());
   }
 
-  private String createToken(String subject) {
+  public String createToken(String subject) {
+    Objects.requireNonNull(subject, "Subject can not be null!");
+    return createToken(subject, null);
+  }
+
+  public String createToken(String subject, OffsetDateTime expiration) {
+
     /**
      * This method creates the JwtToken based on the followings: - claims (Map<String, Object>) -
      * subject (username)
@@ -64,18 +77,43 @@ public class JwtUtil {
      *
      * @Return String - JwtToken
      */
+
+    if (expiration == null) {
+      expiration = OffsetDateTime.now().plusHours(timeout);
+    }
     return Jwts.builder()
         .setSubject(subject)
         .setIssuedAt(new Date(System.currentTimeMillis()))
-        .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * timeout))
-        .signWith(SignatureAlgorithm.HS256, secretKey).compact();
+        .setExpiration(new Date(expiration.toInstant().toEpochMilli()))
+        .signWith(SignatureAlgorithm.HS256, secretKey)
+        .compact();
   }
 
   public boolean validateToken(String token, User user) {
-    final String username = extractUsername(token);
-    return username != null && user != null &&
-        username.equals(user.getUsername()) &&
-        !isTokenExpired(token);
+    final String username = extractSubject(token);
+    return username != null && user != null && username.equals(user.getUsername())
+        && !isTokenExpired(token);
+  }
+
+  public String getJwtTokenFromRequest(HttpServletRequest request) {
+    String jwt = null;
+
+    final String authorizationHeader = request.getHeader("Authorization");
+    if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+      jwt = authorizationHeader.substring(7);
+    } else {
+      Cookie[] cookies = request.getCookies();
+      if (cookies != null) {
+        for (int i = 0; i < cookies.length; i++) {
+          Cookie cookie = cookies[i];
+          if (cookie != null && jwtCookie.equals(cookie.getName())) {
+            jwt = cookie.getValue();
+            break;
+          }
+        }
+      }
+    }
+    return jwt;
   }
 
 }

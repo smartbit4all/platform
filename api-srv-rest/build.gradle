@@ -24,17 +24,25 @@ smartbit4all {
         apiDescriptorMapping = [
         	"${rootDir}/api-domain/src/main/resources/descriptors/navigation-api.yaml" : "navigation",
         	"${rootDir}/api-domain/src/main/resources/descriptors/session-api.yaml" : "session",
+        	"${rootDir}/api-domain/src/main/resources/descriptors/localauthentication-api.yaml" : "localauthentication",
         ]
         apiPackagePrefix = "org.smartbit4all.api"
         apiPackagePostfix = "restserver"
         invokerPackagePrefix = "org.smartbit4all.api"
         invokerPackagePostfix = "restserver.util"
 		genApiRestServer = true
+		// add mappings for beans to reuse them from the api-domain project instead of generating them again
 		importMappings = [
+			// navigation beans
 			"NavigationEntry" : "org.smartbit4all.api.navigation.bean.NavigationEntry",
 			"NavigationResponse" : "org.smartbit4all.api.navigation.bean.NavigationResponse",
-			"StartSessionResult" : "org.smartbit4all.api.session.bean.StartSessionResult",
-			"IsSessionAuthenticated" : "org.smartbit4all.api.session.bean.IsSessionAuthenticated"
+			// session beans
+			"AuthenticationProviderData" : "org.smartbit4all.api.session.bean.AuthenticationProviderData",
+			"GetAuthenticationProvidersResponse" : "org.smartbit4all.api.session.bean.GetAuthenticationProvidersResponse",
+			"SessionInfoData" : "org.smartbit4all.api.session.bean.SessionInfoData",
+			"UserInfo" : "org.smartbit4all.api.session.bean.UserInfo",
+			// localauthentication
+			"LocalAuthenticationLoginRequest" : "org.smartbit4all.api.localauthentication.bean.LocalAuthenticationLoginRequest",
 		]
     }
 }

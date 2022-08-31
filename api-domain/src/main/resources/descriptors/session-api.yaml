@@ -8,13 +8,12 @@ info:
   version: 1.0.0
 tags:
   - name: Session
-    description: Session
 paths:
-  /startSession:
-    post:
+  /session:
+    put:
       tags:
-      - session
-      summary: Starts the session
+      - Session
+      summary: Creates a new session
       operationId: 'startSession'
       responses:
         '200':
@@ -22,56 +21,123 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/StartSessionResult'
-  /authenticate:
-    post:
-      tags:
-      - session
-      summary: Authenticates the user and connects it to the session
-      operationId: 'authenticate'
-      responses:
-        '200':
-          description: 'The user has been authenticated'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/StartSessionResult'
-  /isAuthenticated:
+                $ref: '#/components/schemas/SessionInfoData'
+        '500':
+          description: 'Error during session creation'
     get:
       tags:
-      - session
-      summary: Returns if the current session is authenticated or not
-      operationId: 'getIsAuthenticated'
+      - Session
+      summary: Returns the existing session info
+      operationId: 'getSession'
       responses:
         '200':
-          description: 'The authentication state of the current session'
+          description: 'Returns the existing session info'
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IsSessionAuthenticated'
-  /logout:
-    post:
+                $ref: '#/components/schemas/SessionInfoData'
+        '400':
+          description: 'Missing JWT token'
+        '404':
+          description: 'The session does not exists with the given token'
+        '500':
+          description: 'Error occured while fetching the session data'
+  /authenticationProviders:
+    get:
       tags:
-      - session
-      summary: Ends the session and logout
-      operationId: 'logout'
+      - Session
+      summary: Returns the available authentication providers
+      operationId: 'getAuthenticationProviders'
       responses:
         '200':
-          description: 'The session has ended'
+          description: 'Returns the available authentication providers'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAuthenticationProvidersResponse'
+        '400':
+          description: 'Missing JWT token'
+        '404':
+          description: 'The session does not exists with the given token'
+        '500':
+          description: 'Error occured while fetching the session data'
 components:
   schemas:
-    StartSessionResult:
+    Session:
       type: object
-      required: 
-      - "token"
       properties:
-        token:
+        uri:
           type: string
-    IsSessionAuthenticated:
+          format: uri
+        expiration:
+          type: string
+          format: date-time
+        locale:
+          type: string
+        authentications:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountInfo'
+        user:
+          type: string
+          format: uri
+        parameters:
+          type: object
+          additionalProperties:
+            type: string
+    SessionInfoData:
       type: object
-      required: 
-      - "isAuthenticated"
+      required: [sid]
       properties:
-        isAuthenticated:
-          type: boolean
-    
+        sid:
+          type: string
+        expiration:
+          type: string
+          format: date-time
+        locale:
+          type: string
+        authentications:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountInfo'
+    AccountInfo:
+      type: object
+      required: [kind, userName, displayName]
+      properties:
+        kind:
+          type: string
+        userName:
+          type: string
+        displayName:
+          type: string
+        imageContent:
+          type: string
+          format: byte # or binary?
+        imageFormat:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+        parameters:
+          type: object
+          additionalProperties:
+            type: string
+    GetAuthenticationProvidersResponse:
+      type: object
+      required: [authenticationProviders]
+      properties:
+        authenticationProviders:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuthenticationProviderData'
+    AuthenticationProviderData:
+      type: object
+      required: [kind]
+      properties:
+        kind:
+          type: string
+        parameters:
+          type: object
+          additionalProperties:
+            type: string

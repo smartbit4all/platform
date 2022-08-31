@@ -2,6 +2,10 @@ package org.smartbit4all.api.session;
 
 import org.smartbit4all.api.org.bean.User;
 
+/**
+ * @deprecated use {@link SessionApi} instead!
+ */
+@Deprecated
 public interface UserSessionApi {
 
   static final String SCHEME = "usersession";

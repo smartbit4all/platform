@@ -9,10 +9,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.org.bean.User;
+import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.UserSessionApi;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.setting.LocaleString;
@@ -45,8 +47,11 @@ public abstract class OrgApiImpl implements OrgApi, InitializingBean {
   @Autowired
   private OrgApi self;
 
-  @Autowired
+  @Autowired(required = false)
   private UserSessionApi userSessionApi;
+
+  @Autowired(required = false)
+  private SessionApi sessionApi;
 
   public OrgApiImpl(Environment env) {
 
@@ -87,8 +92,11 @@ public abstract class OrgApiImpl implements OrgApi, InitializingBean {
         try {
           SecurityGroup securityGroup = (SecurityGroup) field.get(option);
           if (securityGroup != null) {
+
+
+
             securityGroup.setSecurityPredicate(
-                (sg, uri) -> OrgUtils.securityPredicate(self, userSessionApi, sg, uri));
+                (sg, uri) -> OrgUtils.securityPredicate(self, getCurrentUserProvider(), sg, uri));
             String key = ReflectionUtility.getQualifiedName(field);
             securityGroup.setName(key);
             String name = securityGroup.getTitle();
@@ -101,6 +109,17 @@ public abstract class OrgApiImpl implements OrgApi, InitializingBean {
         }
       }
     }
+  }
+
+  private Supplier<User> getCurrentUserProvider() {
+    if (userSessionApi != null) {
+      return () -> userSessionApi.currentUser();
+    }
+    if (sessionApi != null) {
+      return () -> sessionApi.currentUser();
+    }
+    throw new IllegalStateException(
+        "There is no UserSessionApi nor SessionApi registered in the Spring context!");
   }
 
   @Override
