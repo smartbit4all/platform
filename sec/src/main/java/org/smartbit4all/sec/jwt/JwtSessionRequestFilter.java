@@ -95,26 +95,27 @@ public class JwtSessionRequestFilter extends OncePerRequestFilter {
       log.debug("Session found to set in security context: {}", session);
       log.debug("Looking for a SessionBasedAuthTokenProvider matching the session.");
 
-      AbstractAuthenticationToken authentication = authTokenProviders.stream()
+      SessionBasedAuthTokenProvider tokenProvider = authTokenProviders.stream()
           .filter(p -> p.supports(session))
           .findFirst()
-          .orElse(null)
-          .getToken(session);
+          .orElse(null);
 
-      if (authentication == null) {
+      AbstractAuthenticationToken authentication = null;
+      if (tokenProvider == null) {
         log.debug(
             "There is no SessionBasedAuthTokenProvider for the given session. Setting anonymous token! session:\n{}",
             session);
         authentication = anonymousAuthTokenProvider.apply(session);
-        Objects.requireNonNull(authentication,
-            "anonymousAuthTokenProvider provided a null anonymous token!");
+      } else {
+        authentication = tokenProvider.getToken(session);
       }
+
+      Objects.requireNonNull(authentication,
+          "The provided authentication token can not be null!");
 
       log.debug("AuthenticationToken has been created for the session with type [{}]",
           authentication.getClass().getName());
 
-      Objects.requireNonNull(authentication,
-          "The provided authentication token can not be null!");
       authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
       SecurityContextHolder.getContext().setAuthentication(authentication);
     }
