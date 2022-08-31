@@ -5,6 +5,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -13,10 +14,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.bean.Session;
+import org.smartbit4all.sec.authprincipal.SessionAuthPrincipal;
 import org.smartbit4all.sec.token.SessionBasedAuthTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.util.ObjectUtils;
@@ -42,6 +46,8 @@ public class JwtSessionRequestFilter extends OncePerRequestFilter {
   private JwtUtil jwtUtil;
 
   private List<SessionBasedAuthTokenProvider> authTokenProviders = new ArrayList<>();
+  private Function<Session, AbstractAuthenticationToken> anonymousAuthTokenProvider =
+      session -> createAnonymousAuthToken(session.getUri());
 
   public JwtSessionRequestFilter() {}
 
@@ -92,9 +98,17 @@ public class JwtSessionRequestFilter extends OncePerRequestFilter {
       AbstractAuthenticationToken authentication = authTokenProviders.stream()
           .filter(p -> p.supports(session))
           .findFirst()
-          .orElseThrow(() -> new IllegalStateException(
-              "There is no SessionBasedAuthTokenProvider for the given session!"))
+          .orElse(null)
           .getToken(session);
+
+      if (authentication == null) {
+        log.debug(
+            "There is no SessionBasedAuthTokenProvider for the given session. Setting anonymous token! session:\n{}",
+            session);
+        authentication = anonymousAuthTokenProvider.apply(session);
+        Objects.requireNonNull(authentication,
+            "anonymousAuthTokenProvider provided a null anonymous token!");
+      }
 
       log.debug("AuthenticationToken has been created for the session with type [{}]",
           authentication.getClass().getName());
@@ -112,6 +126,19 @@ public class JwtSessionRequestFilter extends OncePerRequestFilter {
   public void addSessionBasedAuthTokenProvider(SessionBasedAuthTokenProvider authProvider) {
     Objects.requireNonNull(authProvider, "authProvider can not be null!");
     authTokenProviders.add(authProvider);
+  }
+
+  public void setAnonymousAuthTokenProvider(
+      Function<Session, AbstractAuthenticationToken> anonymousAuthTokenProvider) {
+    Objects.requireNonNull(anonymousAuthTokenProvider,
+        "anonymousAuthTokenProvider can not be null!");
+    this.anonymousAuthTokenProvider = anonymousAuthTokenProvider;
+  }
+
+  private AbstractAuthenticationToken createAnonymousAuthToken(URI sessionUri) {
+    SessionAuthPrincipal sessionPrincipal = SessionAuthPrincipal.of(sessionUri);
+    return new AnonymousAuthenticationToken(
+        "anonymous", sessionPrincipal, AuthorityUtils.createAuthorityList("ROLE_ANONYMOUS"));
   }
 
 }
