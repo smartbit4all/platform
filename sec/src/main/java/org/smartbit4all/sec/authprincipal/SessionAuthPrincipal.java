@@ -9,6 +9,7 @@ public class SessionAuthPrincipal implements Sb4AuthPrincipal {
 
   private SessionAuthPrincipal(URI sessionUri) {
     Objects.requireNonNull(sessionUri, "SessionUri can not be null!");
+    this.sessionUri = sessionUri;
   }
 
   public URI getSessionUri() {

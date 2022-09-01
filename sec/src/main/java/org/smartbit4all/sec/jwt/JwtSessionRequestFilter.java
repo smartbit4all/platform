@@ -71,7 +71,7 @@ public class JwtSessionRequestFilter extends OncePerRequestFilter {
 
     String jwt = jwtUtil.getJwtTokenFromRequest(request);
     if (ObjectUtils.isEmpty(jwt)) {
-      log.warn("The incoming request does not contain a jwt token!");
+      log.debug("The incoming request does not contain a jwt token!");
     } else {
       if (jwtUtil.isTokenExpired(jwt)) {
         log.warn(

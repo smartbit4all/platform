@@ -1,5 +1,6 @@
 package org.smartbit4all.api.localauthentication.restserver.config;
 
+import org.smartbit4all.api.localauthentication.restserver.LocalAuthenticationApiController;
 import org.smartbit4all.api.localauthentication.restserver.LocalAuthenticationApiDelegate;
 import org.smartbit4all.api.localauthentication.restserver.impl.LocalAuthenticationApiDelegateImpl;
 import org.smartbit4all.api.restserver.PlatformApiCommonSrvRestConfig;
@@ -14,6 +15,12 @@ public class LocalAuthenticationSrvRestConfig {
   @Bean
   public LocalAuthenticationApiDelegate authenticationApiDelegate() {
     return new LocalAuthenticationApiDelegateImpl();
+  }
+
+  @Bean
+  public LocalAuthenticationApiController localAuthenticationApiController(
+      LocalAuthenticationApiDelegate delegate) {
+    return new LocalAuthenticationApiController(delegate);
   }
 
 }

@@ -2,6 +2,7 @@ package org.smartbit4all.sec.authentication;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import org.smartbit4all.api.session.bean.AccountInfo;
 import org.smartbit4all.api.session.bean.Session;
 import org.smartbit4all.sec.authprincipal.SessionAuthPrincipal;
@@ -55,8 +56,12 @@ public class LocalAuthTokenProvider implements SessionBasedAuthTokenProvider {
 
     public static LocalAuthenticationToken create(SessionAuthPrincipal principal,
         AccountInfo accountInfo) {
-      List<GrantedAuthority> authorityList =
-          AuthorityUtils.createAuthorityList(accountInfo.getRoles().toArray(new String[0]));
+      Objects.requireNonNull(principal);
+      Objects.requireNonNull(accountInfo);
+
+      List<GrantedAuthority> authorityList = ObjectUtils.isEmpty(accountInfo.getRoles())
+          ? AuthorityUtils.createAuthorityList("ROLE_NONE")
+          : AuthorityUtils.createAuthorityList(accountInfo.getRoles().toArray(new String[0]));
       LocalAuthenticationToken token = new LocalAuthenticationToken(authorityList);
       token.principal = principal;
       token.setDetails(accountInfo);
@@ -72,12 +77,6 @@ public class LocalAuthTokenProvider implements SessionBasedAuthTokenProvider {
     @Override
     public Object getPrincipal() {
       return principal;
-    }
-
-    @Override
-    public void setAuthenticated(boolean authenticated) {
-      // NOPE - disable setting it from outside!
-      throw new RuntimeException("Authenticated can not be set on LocalAuthenticationToken!");
     }
 
   }

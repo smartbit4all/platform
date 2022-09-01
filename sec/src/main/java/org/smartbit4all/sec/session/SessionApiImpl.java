@@ -2,13 +2,10 @@ package org.smartbit4all.sec.session;
 
 import java.net.URI;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import org.slf4j.Logger;
@@ -21,7 +18,6 @@ import org.smartbit4all.api.session.bean.Session;
 import org.smartbit4all.api.session.bean.SessionInfoData;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
-import org.smartbit4all.domain.data.storage.StorageObject;
 import org.smartbit4all.sec.authprincipal.SessionAuthPrincipal;
 import org.smartbit4all.sec.token.SessionTokenHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,6 +78,8 @@ public class SessionApiImpl implements SessionApi {
     registerSpringSecAuthToken(sessionUri);
 
     String sid = tokenHandler.createToken(sessionUri.toString(), session.getExpiration());
+    storage.get().update(session.getUri(), Session.class, s -> s.putParametersItem("sid", sid));
+
     log.debug("Session sid created: {}", sid);
     return new SessionInfoData()
         .sid(sid)
@@ -141,11 +139,10 @@ public class SessionApiImpl implements SessionApi {
   @Override
   public User currentUser() {
     Session session = getStoredSessionFromCurrentAuthentication();
-    URI userUri = session.getUser();
-    if (userUri == null) {
+    if (session == null || session.getUser() == null) {
       return null;
     }
-    return orgApi.getUser(userUri);
+    return orgApi.getUser(session.getUser());
   }
 
   @Override
@@ -155,6 +152,9 @@ public class SessionApiImpl implements SessionApi {
 
   private Session getStoredSessionFromCurrentAuthentication() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication == null) {
+      throw new IllegalStateException("There is no current Session available!");
+    }
     Object principal = authentication.getPrincipal();
     if (principal instanceof SessionAuthPrincipal) {
       URI sessionUri = ((SessionAuthPrincipal) principal).getSessionUri();
@@ -164,8 +164,10 @@ public class SessionApiImpl implements SessionApi {
       }
       return session;
     }
-    throw new IllegalStateException(
+    log.debug(
         "The authentication of the security context does not contain a Sb4SessionAuthPrincipal!");
+    // FIXME: throw exception?
+    return null;
   }
 
   @Override
@@ -175,83 +177,56 @@ public class SessionApiImpl implements SessionApi {
 
   @Override
   public void setSessionParameter(URI sessionUri, String key, String value) {
-    updateSession(sessionUri, s -> {
-      Map<String, String> parameters = s.getParameters();
-      if (parameters == null) {
-        parameters = new HashMap<>();
-        s.setParameters(parameters);
-      }
-      parameters.put(key, value);
-    });
+    storage.get().update(sessionUri, Session.class, s -> s.putParametersItem(key, value));
   }
 
   @Override
   public void removeSessionParameter(URI sessionUri, String key) {
-    updateSession(sessionUri, s -> {
+    storage.get().update(sessionUri, Session.class, s -> {
       Map<String, String> parameters = s.getParameters();
       if (parameters == null) {
-        parameters = new HashMap<>();
-        s.setParameters(parameters);
+        return s;
       }
       parameters.remove(key);
+      return s;
     });
 
   }
 
   @Override
   public void setSessionLocale(URI sessionUri, String locale) {
-    updateSession(sessionUri, s -> s.setLocale(locale));
+    storage.get().update(sessionUri, Session.class, s -> s.locale(locale));
   }
 
   @Override
   public void setSessionExpiration(URI sessionUri, OffsetDateTime expiration) {
-    updateSession(sessionUri, s -> s.setExpiration(expiration));
+    storage.get().update(sessionUri, Session.class, s -> s.expiration(expiration));
   }
 
   @Override
   public void addSessionAuthentication(URI sessionUri, AccountInfo accountInfo) {
-    updateSession(sessionUri, s -> {
-      List<AccountInfo> authentications = s.getAuthentications();
-      if (authentications == null) {
-        authentications = new ArrayList<>();
-        s.setAuthentications(authentications);
-      }
-      authentications.add(accountInfo);
-    });
+    storage.get().update(sessionUri, Session.class, s -> s.addAuthenticationsItem(accountInfo));
   }
 
   @Override
   public void removeSessionAuthentication(URI sessionUri, String kind) {
-    updateSession(sessionUri, s -> {
+    storage.get().update(sessionUri, Session.class, s -> {
       List<AccountInfo> authentications = s.getAuthentications();
       if (authentications == null) {
-        authentications = new ArrayList<>();
-        s.setAuthentications(authentications);
+        return s;
       }
-      AccountInfo foundInfo = authentications.stream()
-          .filter(a -> kind.equals(a.getKind()))
-          .findFirst().orElse(null);
-      if (foundInfo != null) {
-        authentications.remove(foundInfo);
+      authentications.removeIf(a -> kind.equals(a.getKind()));
+      if (authentications.isEmpty()) {
+        s.setUser(null);
       }
+
+      return s;
     });
-    // TODO remove user uri from session when authentications list gets empty
   }
 
   @Override
   public void setSessionUser(URI sessionUri, URI userUri) {
-    updateSession(sessionUri, s -> s.setUser(userUri));
-  }
-
-  private void updateSession(URI sessionUri, Consumer<Session> update) {
-    // TODO change to update:
-    // storage.get().update(sessionUri, Session.class, null);
-    StorageObject<Session> sessionObj = storage.get().load(sessionUri, Session.class);
-    Session session = sessionObj.getObject();
-
-    update.accept(session);
-
-    storage.get().save(sessionObj);
+    storage.get().update(sessionUri, Session.class, s -> s.user(userUri));
   }
 
   /**

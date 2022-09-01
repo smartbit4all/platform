@@ -14,6 +14,7 @@ import org.smartbit4all.api.session.restserver.SessionApiDelegate;
 import org.smartbit4all.sec.authentication.AuthenticationDataProvider;
 import org.smartbit4all.sec.token.SessionTokenHandler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.ObjectUtils;
 
@@ -43,7 +44,15 @@ public class SessionApiDelegateImpl implements SessionApiDelegate {
 
   @Override
   public ResponseEntity<SessionInfoData> getSession() throws Exception {
+    String token = tokenHandler.getTokenFromRequest(request);
+    if (ObjectUtils.isEmpty(token) || "null".equals(token)) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+
     Session currentSession = sessionApi.currentSession();
+    if (currentSession == null) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
 
     String sid = tokenHandler.getTokenFromRequest(request);
 
@@ -57,8 +66,16 @@ public class SessionApiDelegateImpl implements SessionApiDelegate {
   @Override
   public ResponseEntity<GetAuthenticationProvidersResponse> getAuthenticationProviders()
       throws Exception {
+    String token = tokenHandler.getTokenFromRequest(request);
+    if (ObjectUtils.isEmpty(token) || "null".equals(token)) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
 
     Session session = sessionApi.currentSession();
+
+    if (session == null) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
 
     List<AuthenticationProviderData> poviderData = authenticationDataProviders.stream()
         .filter(p -> p.supports(session))

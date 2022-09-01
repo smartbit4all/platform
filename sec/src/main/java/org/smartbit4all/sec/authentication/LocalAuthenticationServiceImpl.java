@@ -55,9 +55,9 @@ public class LocalAuthenticationServiceImpl implements LocalAuthenticationServic
 
 
     User user = orgApi.getUserByUsername(username);
-    if (user == null
-        || ObjectUtils.isEmpty(password)
-        || !passwordEncoder.matches(password, user.getPassword())) {
+
+    if (isUserWithPasswordInvalid(user, password)) {
+
       String reason = "Unknown user or invalid password!";
       if (onLoginFailed != null) {
         onLoginFailed.accept(reason);
@@ -74,6 +74,14 @@ public class LocalAuthenticationServiceImpl implements LocalAuthenticationServic
     if (onLoginSucceeded != null) {
       onLoginSucceeded.accept(user);
     }
+
+    // FIXME store in security context?
+  }
+
+  protected boolean isUserWithPasswordInvalid(User user, String password) {
+    return user == null
+        || ObjectUtils.isEmpty(password)
+        || !passwordEncoder.matches(password, user.getPassword());
   }
 
   @Override

@@ -4,7 +4,9 @@ import org.smartbit4all.api.localauthentication.bean.LocalAuthenticationLoginReq
 import org.smartbit4all.api.localauthentication.restserver.LocalAuthenticationApiDelegate;
 import org.smartbit4all.sec.authentication.LocalAuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.ObjectUtils;
 
 public class LocalAuthenticationApiDelegateImpl implements LocalAuthenticationApiDelegate {
 
@@ -17,6 +19,11 @@ public class LocalAuthenticationApiDelegateImpl implements LocalAuthenticationAp
 
     String username = request.getUsername();
     String password = request.getPassword();
+
+    if (ObjectUtils.isEmpty(username) || ObjectUtils.isEmpty(password)) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+
     localAuthentication.login(username, password);
 
     return ResponseEntity.ok().build();
