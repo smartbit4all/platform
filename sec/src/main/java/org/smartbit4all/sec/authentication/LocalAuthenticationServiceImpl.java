@@ -2,6 +2,7 @@ package org.smartbit4all.sec.authentication;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import org.slf4j.Logger;
@@ -41,6 +42,8 @@ public class LocalAuthenticationServiceImpl implements LocalAuthenticationServic
 
   @Override
   public void login(String username, String password) throws Exception {
+    Objects.requireNonNull(username, "username can not be null!");
+    Objects.requireNonNull(password, "password can not be null!");
     Session session = sessionApi.currentSession();
     if (session == null) {
       String reason = "There is no session available while trying to login!";
@@ -53,6 +56,9 @@ public class LocalAuthenticationServiceImpl implements LocalAuthenticationServic
         "Trying to log in with user [{}] and authentication kind [{}] for the following session:\n{}",
         username, KIND, session);
 
+    if (checkIfAlreadyLoggedIn(session, username)) {
+      return;
+    }
 
     User user = orgApi.getUserByUsername(username);
 
@@ -77,6 +83,34 @@ public class LocalAuthenticationServiceImpl implements LocalAuthenticationServic
     }
 
     // FIXME store in security context?
+  }
+
+  /**
+   * Checks if the session already contains an authenticated user. It may check the AccountInfo or
+   * if the already logged in username matched the one from the request.<br/>
+   * In case of a conflict the overridden methods can throw different exceptions or return true if
+   * the login must return immediately without exceptions.
+   * 
+   * @return if login has to return immediately
+   */
+  protected boolean checkIfAlreadyLoggedIn(Session session, String username) {
+    Objects.requireNonNull(username);
+    List<AccountInfo> authentications = session.getAuthentications();
+    if (!ObjectUtils.isEmpty(authentications)) {
+      AccountInfo foundAccount =
+          authentications.stream().filter(a -> KIND.equals(a.getKind())).findAny().orElse(null);
+      if (foundAccount != null) {
+        log.warn("There is already an authenticated user in this session with kind [{}]!", KIND);
+        if (!username.equals(foundAccount.getUserName())) {
+          String errorMsg =
+              "Trying to log in with the same kind of authentication but with different users!";
+          log.error(errorMsg);
+          throw new IllegalStateException(errorMsg);
+        }
+        return true;
+      }
+    }
+    return false;
   }
 
   protected boolean isUserWithPasswordInvalid(User user, String password) {

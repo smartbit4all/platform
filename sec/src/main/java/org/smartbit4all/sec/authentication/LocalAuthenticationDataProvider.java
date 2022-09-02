@@ -33,7 +33,7 @@ public class LocalAuthenticationDataProvider implements AuthenticationDataProvid
   @Override
   public AuthenticationProviderData getProviderData(Session session) {
     Map<String, String> parameters = new HashMap<>();
-    parameters.put("authenticationPath", authenticationPath + "login");
+    parameters.put("authenticationPath", authenticationPath + "/login");
 
     return new AuthenticationProviderData()
         .kind(LocalAuthenticationService.KIND)
