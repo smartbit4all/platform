@@ -62,6 +62,7 @@ public class LocalAuthenticationServiceImpl implements LocalAuthenticationServic
       if (onLoginFailed != null) {
         onLoginFailed.accept(reason);
       }
+      log.debug("Login attempt has failed because of bad credentials with user [{}]", username);
       throw new BadCredentialsException(reason);
     }
 
