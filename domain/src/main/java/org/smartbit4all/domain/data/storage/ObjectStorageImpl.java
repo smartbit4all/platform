@@ -218,9 +218,9 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
    * @return
    */
   protected <T> StorageObject<T> instanceOf(Storage storage, ObjectDefinition<T> objectDefinition,
-      T object, StorageObjectData data) {
+      Map<String, Object> object, StorageObjectData data) {
     StorageObject<T> storageObject = new StorageObject<>(objectDefinition, storage);
-    storageObject.setObjectInner(object);
+    storageObject.setObjectAsMapInner(object);
     storageObject.setVersion(data.getCurrentVersion());
     return storageObject;
   }

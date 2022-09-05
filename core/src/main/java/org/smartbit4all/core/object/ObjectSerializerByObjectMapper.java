@@ -6,6 +6,7 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
+import java.util.Map;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,7 +90,7 @@ public class ObjectSerializerByObjectMapper implements ObjectSerializer {
   @Override
   public <T> Optional<T> deserialize(BinaryData data, Class<T> clazz) throws IOException {
     if (data == null || data.length() == 0) {
-      return null;
+      return Optional.empty();
     }
     InputStreamReader isr = null;
     // We write and read in UTF-8 to enable international characters.
@@ -107,6 +108,17 @@ public class ObjectSerializerByObjectMapper implements ObjectSerializer {
         // NOP - We've tried at least.
       }
     }
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public Map<String, Object> toMap(Object object) {
+    return objectMapper.convertValue(object, Map.class);
+  }
+
+  @Override
+  public <T> T fromMap(Map<String, Object> map, Class<T> clazz) {
+    return objectMapper.convertValue(map, clazz);
   }
 
 }
