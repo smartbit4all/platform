@@ -1,17 +1,21 @@
 package org.smartbit4all.domain.data.storage;
 
+import java.util.Map;
 import org.smartbit4all.api.storage.bean.ObjectVersion;
+import org.smartbit4all.core.object.ObjectDefinition;
 
-public class StorageObjectHistoryEntry<T> {
+public class StorageObjectHistoryEntry {
 
   private ObjectVersion version;
 
-  private T object;
+  private Object object;
 
-  public StorageObjectHistoryEntry(ObjectVersion version, T object) {
+  private Map<String, Object> objectAsMap;
+
+  public StorageObjectHistoryEntry(ObjectVersion version, Map<String, Object> objectAsMap) {
     super();
     this.version = version;
-    this.object = object;
+    this.objectAsMap = objectAsMap;
   }
 
   public final ObjectVersion getVersion() {
@@ -22,12 +26,20 @@ public class StorageObjectHistoryEntry<T> {
     this.version = version;
   }
 
-  public final T getObject() {
+  public final Object getObject(ObjectDefinition<?> definition) {
+    if (object == null) {
+      object = definition.fromMap(objectAsMap);
+    }
     return object;
   }
 
-  public final void setObject(T object) {
-    this.object = object;
+  public final Map<String, Object> getObjectAsMap() {
+    return objectAsMap;
+  }
+
+  public final StorageObjectHistoryEntry setObjectAsMap(Map<String, Object> objectAsMap) {
+    this.objectAsMap = objectAsMap;
+    return this;
   }
 
 }

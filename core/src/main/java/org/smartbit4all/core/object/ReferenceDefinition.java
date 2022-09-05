@@ -71,6 +71,13 @@ public class ReferenceDefinition {
     }
   }
 
+  public Object getSourceValue(Map<String, Object> object) {
+    if (object == null) {
+      return null;
+    }
+    return object.get(getSourcePropertyPath());
+  }
+
   public void setSourceValue(Object object, Object value) {
     if (object == null) {
       return;
@@ -88,6 +95,13 @@ public class ReferenceDefinition {
           getSourcePropertyPath(),
           source.getQualifiedName(), e);
     }
+  }
+
+  public void setSourceValue(Map<String, Object> object, Object value) {
+    if (object == null) {
+      return;
+    }
+    object.put(getSourcePropertyPath(), value);
   }
 
   public PropertyKind getSourceKind() {

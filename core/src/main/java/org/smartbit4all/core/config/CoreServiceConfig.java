@@ -14,6 +14,9 @@
  ******************************************************************************/
 package org.smartbit4all.core.config;
 
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.binarydata.BinaryDataObject;
@@ -58,7 +61,8 @@ public class CoreServiceConfig {
 
       @Override
       public BinaryData serialize(Object obj, Class<?> clazz) {
-        return ((BinaryDataObject) obj).getBinaryData();
+        return obj instanceof Map ? (BinaryData) ((Map<String, Object>) obj).get("binaryData")
+            : ((BinaryDataObject) obj).getBinaryData();
       }
 
       @Override
@@ -69,9 +73,31 @@ public class CoreServiceConfig {
       @SuppressWarnings("unchecked")
       @Override
       public <T> Optional<T> deserialize(BinaryData data, Class<T> clazz) {
-        return clazz.isAssignableFrom(BinaryDataObject.class)
-            ? (Optional<T>) Optional.of(new BinaryDataObject(data))
-            : Optional.empty();
+        Optional<T> result = Optional.empty();
+        if (clazz.isAssignableFrom(BinaryDataObject.class)) {
+          result = (Optional<T>) Optional.of(new BinaryDataObject(data));
+        } else if (clazz.isAssignableFrom(Map.class)) {
+          Map<String, Object> map = new HashMap<>();
+          map.put("binaryData", data);
+          result = (Optional<T>) Optional.of(map);
+        }
+        return result;
+      }
+
+      @Override
+      public Map<String, Object> toMap(Object object) {
+        BinaryDataObject obj = (BinaryDataObject) object;
+        Map<String, Object> result = new HashMap<>();
+        result.put("uri", obj.getUri());
+        result.put("binaryData", obj.getBinaryData());
+        return result;
+      }
+
+      @Override
+      public <T> T fromMap(Map<String, Object> map, Class<T> clazz) {
+        BinaryDataObject obj = new BinaryDataObject((BinaryData) map.get("binaryData"));
+        obj.setUri((URI) map.get("uri"));
+        return (T) obj;
       }
     };
   }

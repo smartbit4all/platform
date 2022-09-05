@@ -23,7 +23,7 @@ public class CopyContributionApiStorageImpl extends ContributionApiImpl
   @Override
   public URI deepCopy(URI rootObject) {
     // Naive implementation without any care about the multiple occurrences in the directed graph.
-    return copyRec(storageApi.load(rootObject)).getUri();
+    return copyRec(storageApi.load(rootObject).asMap()).getUri();
   }
 
   public CopyApi copyApi() {
@@ -38,26 +38,31 @@ public class CopyContributionApiStorageImpl extends ContributionApiImpl
     Class<?> sourceClass = storageObject.definition().getClazz();
     StorageObject<?> newInstance =
         storage.instanceOf(sourceClass);
-    newInstance.setObjectObj(storageObject.getObject());
+    newInstance.asMap().setObjectAsMap(storageObject.getObjectAsMap());
 
     // Follow the outgoing references and copy them.
     for (ReferenceDefinition ref : storageObject.definition()
         .getOutgoingReferences().values()) {
       if (ref.isContainment()) {
-        Object target = ref.getSourceValue(storageObject.getObject());
+        Object target = ref.getSourceValue(storageObject.getObjectAsMap());
         switch (ref.getSourceKind()) {
           case VALUE:
             // This property that must contains the uri of the target object.
-            URI uri = (URI) target;
-            ref.setSourceValue(storageObject.getObject(),
-                copyApi().deepCopyByContainment(uri));
+            if (target != null) {
+              URI uri = target instanceof URI ? (URI) target : URI.create((String) target);
+              ref.setSourceValue(storageObject.getObjectAsMap(),
+                  copyApi().deepCopyByContainment(uri));
+            }
             break;
           case COLLECTION:
             // This property that must contains the list of uris point to target objects.
-            List<URI> targetUris = (List<URI>) target;
+            List<Object> targetUris = (List<Object>) target;
             List<URI> copiedTargetList =
                 targetUris.stream()
-                    .map(u -> copyApi().deepCopyByContainment(u))
+                    .map(o -> {
+                      URI u = o instanceof URI ? (URI) o : URI.create((String) o);
+                      return copyApi().deepCopyByContainment(u);
+                    })
                     .collect(Collectors.toList());
             ref.setSourceValue(storageObject.getObject(), copiedTargetList);
             break;
