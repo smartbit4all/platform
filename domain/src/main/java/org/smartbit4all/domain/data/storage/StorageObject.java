@@ -296,8 +296,12 @@ public final class StorageObject<T> {
 
   StorageObject<T> copy() {
     StorageObject<T> result = new StorageObject<>(definition, storageRef.get());
-    result.setObject(object);
-    result.setObjectAsMap(objectAsMap);
+    if (mode == OperationMode.AS_MAP) {
+      result.setObjectAsMap(objectAsMap);
+    } else {
+      result.setObject(object);
+    }
+    result.mode = mode;
     result.setUri(uri);
     result.setUuid(uuid);
     result.setVersion(version);
