@@ -8,6 +8,7 @@
         *ngFor="let widget of widgetInstance.valueList"
         [form]="form"
         [widgetInstance]="widget"
+        class="container-item"
       ></smartformwidget>
     </div>
 
@@ -345,6 +346,29 @@
         </h4>
         <p>{{ widgetInstance.widgetDescription }}</p>
       </div>
+    </div>
+
+    <div *ngSwitchCase="smartFormWidgetType.TIME">
+      <div *ngIf="widgetInstance.showLabel">
+        <h4>{{ widgetInstance.label }}</h4>
+      </div>
+      <mat-form-field
+        class="input"
+        [ngStyle]="{ width: widgetInstance.minWidth + 'px' }"
+        appearance="outline"
+      >
+        <mat-label *ngIf="!widgetInstance.showLabel">
+          {{ widgetInstance.label }}
+        </mat-label>
+        <input
+          [formControlName]="widgetInstance.key"
+          [id]="widgetInstance.key"
+          [type]="'time'"
+          [value]="widgetInstance.value"
+          placeholder="{{ widgetInstance.placeholder }}"
+          matInput
+        />
+      </mat-form-field>
     </div>
   </div>
 </div>

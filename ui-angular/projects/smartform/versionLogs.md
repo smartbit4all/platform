@@ -70,6 +70,15 @@ Then import it in the AppModule:
 
 ## Version logs
 
+## @smartbit4all/form v0.1.6
+
+**Type: Feature**
+
+This version contains one mayor change: **TIME** picker component have been added.
+Small layout change: 1em margin have been added to **CONTAINER** typed widgets.
+
+**Usage have not changed**.
+
 ## @smartbit4all/form v0.1.5
 
 **Type: Feature**

@@ -19,6 +19,10 @@
     flex-direction: row;
 }
 
+.container-item {
+    margin: 1em;
+}
+
 .selecatbleObject {
     margin: 0.5em;
 }
@@ -48,4 +52,17 @@
 
 .input .mat-standard-chip.mat-chip-with-trailing-icon {
     padding-right: 12px;
+}
+
+.time-picker {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    border: solid 2px lightgrey;
+    padding: 1em;
+    border-radius: 4px;
+}
+
+.time-picker:hover {
+    border-color:black;
 }

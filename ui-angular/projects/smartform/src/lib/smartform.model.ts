@@ -19,7 +19,8 @@ export enum SmartFormWidgetType {
     FILE_UPLOAD,
     ITEM,
     CONTAINER,
-    LABEL
+    LABEL,
+    TIME,
 }
 
 export enum SmartFormWidgetDirection {

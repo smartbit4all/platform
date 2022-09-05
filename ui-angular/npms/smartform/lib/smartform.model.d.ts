@@ -18,7 +18,8 @@ export declare enum SmartFormWidgetType {
     FILE_UPLOAD = 10,
     ITEM = 11,
     CONTAINER = 12,
-    LABEL = 13
+    LABEL = 13,
+    TIME = 14
 }
 export declare enum SmartFormWidgetDirection {
     COL = 0,
