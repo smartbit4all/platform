@@ -17,7 +17,8 @@ export declare enum SmartFormWidgetType {
     DATE_PICKER = 9,
     FILE_UPLOAD = 10,
     ITEM = 11,
-    CONTAINER = 12
+    CONTAINER = 12,
+    LABEL = 13
 }
 export declare enum SmartFormWidgetDirection {
     COL = 0,
@@ -48,6 +49,7 @@ export interface SmartFormWidget<T> {
     label: string;
     showLabel?: boolean;
     value: T;
+    widgetDescription?: string;
     type: SmartFormWidgetType;
     callback?: (args: any[]) => any;
     placeholder?: string;

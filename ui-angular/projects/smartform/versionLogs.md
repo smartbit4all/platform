@@ -6,7 +6,7 @@
 
 These packages must be updated in case of a new version:
 
--   [_@smartbit4all/dialog_](../smartdialog/versionLogs.md)
+- [_@smartbit4all/dialog_](../smartdialog/versionLogs.md)
 
 ---
 
@@ -69,6 +69,19 @@ Then import it in the AppModule:
 ---
 
 ## Version logs
+
+## @smartbit4all/form v0.1.5
+
+**Type: Feature**
+
+This version contains two changes: **LABEL** type to the SmartFormWidgetType enum
+and
+**widgetDescription** to the SmartFormWidget have been added.
+
+**Changes:**
+
+The LABEL type widget can be used as separated label for the input field.
+Description can be added to the label if you'd like to.
 
 ## @smartbit4all/form v0.1.4
 

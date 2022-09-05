@@ -19,6 +19,7 @@ export enum SmartFormWidgetType {
     FILE_UPLOAD,
     ITEM,
     CONTAINER,
+    LABEL
 }
 
 export enum SmartFormWidgetDirection {
@@ -52,6 +53,7 @@ export interface SmartFormWidget<T> {
     label: string;
     showLabel?: boolean;
     value: T;
+    widgetDescription?: string;
     type: SmartFormWidgetType;
     callback?: (args: any[]) => any;
     placeholder?: string;
