@@ -184,6 +184,19 @@ public final class ObjectDefinition<T> {
     return defaultSerializer.deserialize(data, clazz);
   }
 
+  @SuppressWarnings("unchecked")
+  public final Map<String, Object> deserializeAsMap(BinaryData data) throws IOException {
+    return defaultSerializer.deserialize(data, Map.class).orElseGet(() -> new HashMap<>());
+  }
+
+  public final Map<String, Object> toMap(Object o) {
+    return defaultSerializer.toMap(o);
+  }
+
+  public final T fromMap(Map<String, Object> map) {
+    return defaultSerializer.fromMap(map, clazz);
+  }
+
   public final BiConsumer<T, String> getIdSetter() {
     return idSetter;
   }

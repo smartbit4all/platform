@@ -61,11 +61,31 @@ public final class StorageObject<T> {
    */
   private final UUID transactionId = UUID.randomUUID();
 
+  public enum OperationMode {
+    AS_OBJECT, AS_MAP
+  }
+
+  /**
+   * The storage object has two different operation mode depending on the priority of the data
+   * representations. The {@link OperationMode#AS_OBJECT} means that the primary data representation
+   * is the {@link #object} variable. So before the persisting the object then we have to update the
+   * map.
+   */
+  private OperationMode mode = OperationMode.AS_OBJECT;
+
   /**
    * The object reference. Can be null because if we creates a new object without existing domain
    * object then this represents the existence only.
    */
   private T object;
+
+  /**
+   * The storage object use this map as the basic data. The {@link #object} is constructed on demand
+   * when someone call the {@link #getObject()} function. If we change the {@link #objectAsMap} the
+   * we delete the {@link #object} to reconstruct it during the subsequent {@link #getObject()}
+   * call.
+   */
+  private Map<String, Object> objectAsMap;
 
   /**
    * The reference for the storage that is the logical schema for this object. All the related
@@ -81,9 +101,8 @@ public final class StorageObject<T> {
   private ObjectVersion version;
 
   /**
-   * The lock belongs to this {@link StorageObject}. TODO: clarify! It's set when we load the object
-   * with StorageLoadOption#lock() option. Otherwise a lock is managed by the save operation and not
-   * saved directly here in advance.
+   * The lock belongs to this {@link StorageObject}.
+   * 
    */
   private StorageObjectLock lock;
 
@@ -204,6 +223,9 @@ public final class StorageObject<T> {
   }
 
   public final T getObject() {
+    if (object == null) {
+      object = definition().fromMap(objectAsMap);
+    }
     return object;
   }
 
@@ -231,7 +253,25 @@ public final class StorageObject<T> {
     } else {
       definition.setUri(object, uri);
     }
+    // We must update the map to contain the actual values if the mode is AS_MAP.
+    if (mode == OperationMode.AS_MAP) {
+      updateObjectMap(object);
+    }
     return this;
+  }
+
+  private Map<String, Object> updateObjectMap(Object object) {
+    if (object == null) {
+      return objectAsMap;
+    }
+    Map<String, Object> map = definition.toMap(object);
+    if (objectAsMap != null) {
+      // TODO Recursive putall for the contained object.
+      objectAsMap.putAll(map);
+    } else {
+      objectAsMap = map;
+    }
+    return objectAsMap;
   }
 
   /**
@@ -244,18 +284,24 @@ public final class StorageObject<T> {
   public final void setObjectObj(Object object) {
     this.object = (T) object;
     definition.setUri(this.object, uri);
+    updateObjectMap(object);
   }
 
   /**
    * @return If the object exists or not.
    */
   public boolean isPresent() {
-    return object == null ? false : true;
+    return objectAsMap == null ? false : true;
   }
 
   StorageObject<T> copy() {
     StorageObject<T> result = new StorageObject<>(definition, storageRef.get());
-    result.setObject(object);
+    if (mode == OperationMode.AS_MAP) {
+      result.setObjectAsMap(objectAsMap);
+    } else {
+      result.setObject(object);
+    }
+    result.mode = mode;
     result.setUri(uri);
     result.setUuid(uuid);
     result.setVersion(version);
@@ -468,6 +514,66 @@ public final class StorageObject<T> {
 
   final void setSkipLock(boolean skipLock) {
     this.skipLock = skipLock;
+  }
+
+  /**
+   * @return The object map that contains all the properties of the given object.
+   */
+  public final Map<String, Object> getObjectAsMap() {
+    return mode == OperationMode.AS_OBJECT ? updateObjectMap(object) : objectAsMap;
+  }
+
+  public final void setObjectAsMap(Map<String, Object> objectAsMap) {
+    this.objectAsMap = objectAsMap;
+    if (definition.isExplicitUri()) {
+      Object objUri = objectAsMap.get("uri");
+      if (objUri instanceof String) {
+        objUri = URI.create((String) objUri);
+        objectAsMap.put("uri", objUri);
+      }
+      uri = (URI) objUri;
+    } else {
+      objectAsMap.put("uri", uri);
+    }
+  }
+
+  /**
+   * Used for the load to use the uri of the object itself. Remove the history (fragment) part of
+   * the URI.
+   * 
+   */
+  final void setObjectAsMapInner(Map<String, Object> objectAsMap) {
+    this.objectAsMap = objectAsMap;
+    Object objUri = objectAsMap.get("uri");
+    if (objUri instanceof String) {
+      objUri = URI.create((String) objUri);
+      objectAsMap.put("uri", objUri);
+    }
+    uri = UriUtils.removeFragment((URI) objUri);
+  }
+
+  /**
+   * @see #mode
+   * @return
+   */
+  public final OperationMode getMode() {
+    return mode;
+  }
+
+  /**
+   * @see #mode
+   */
+  public final StorageObject<T> asObject() {
+    this.mode = OperationMode.AS_OBJECT;
+    return this;
+  }
+
+  /**
+   * @see #mode
+   */
+  public final StorageObject<T> asMap() {
+    this.mode = OperationMode.AS_MAP;
+    return this;
   }
 
 }

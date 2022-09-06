@@ -1,6 +1,6 @@
 {
     "name": "@smartbit4all/form",
-    "version": "0.1.4",
+    "version": "0.1.6",
     "peerDependencies": {
         "@angular/common": "^13.2.0",
         "@angular/core": "^13.2.0"

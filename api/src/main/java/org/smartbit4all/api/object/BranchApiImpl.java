@@ -108,7 +108,7 @@ public class BranchApiImpl extends PrimaryApiImpl<BranchContributionApi>
       return b;
     });
     try {
-      return newVersionUri.get();
+      return newVersionUri.isDone() ? newVersionUri.get() : null;
     } catch (InterruptedException | ExecutionException e) {
       log.error("Unable to initiate the {} branch for the {} object", branchUri, versionUri);
       return null;

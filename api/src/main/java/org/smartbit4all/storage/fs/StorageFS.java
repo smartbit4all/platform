@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
@@ -474,8 +475,9 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
         },
         () -> {
           if (oldVersion != null) {
-            Object o = loadObjectVersion(object.definition(), objectVersionBasePath,
-                oldVersion.getSerialNoData()).getObject();
+            Object o = object.definition()
+                .fromMap(loadObjectVersion(object.definition(), objectVersionBasePath,
+                    oldVersion.getSerialNoData()).getObjectAsMap());
 
             return o;
           }
@@ -583,17 +585,18 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
     File storageObjectVersionBasePath = getObjectVersionBasePath(uriWithoutVersion);
     if (versionDataSerialNo != null && !skipData) {
 
-      StorageObjectHistoryEntry<T> loadObjectVersion =
+      StorageObjectHistoryEntry loadObjectVersion =
           loadObjectVersion(definition, storageObjectVersionBasePath,
               versionDataSerialNo);
-      T object = loadObjectVersion.getObject();
+
+      // if (loadObjectVersion != null) {
       objectVersion = loadObjectVersion.getVersion();
+      setObjectUriVersionByOptions(uri, definition, loadObjectVersion.getObjectAsMap(),
+          versionDataSerialNo, options);
+      storageObject =
+          instanceOf(storage, definition, loadObjectVersion.getObjectAsMap(), storageObjectData);
+      // }
 
-      if (object != null) {
-        setObjectUriVersionByOptions(uri, definition, object, versionDataSerialNo, options);
-      }
-
-      storageObject = instanceOf(storage, definition, object, storageObjectData);
     } else {
       storageObject = instanceOf(storage, definition, uriWithoutVersion, storageObjectData);
     }
@@ -755,7 +758,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
         @SuppressWarnings("unchecked")
         ObjectDefinition<T> definition =
             (ObjectDefinition<T>) getObjectDefinition(uri, optObject.get(), clazz);
-        T obj = definition.deserialize(dataParts.get(1)).orElse(null);
+        Map<String, Object> obj = definition.deserializeAsMap(dataParts.get(1));
         return instanceOf(storage, definition, obj, optObject.get());
       } catch (IOException e) {
         // We must try again.
@@ -796,13 +799,15 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
     }
   }
 
-  private <T> void setObjectUriVersionByOptions(URI uri, ObjectDefinition<T> definition, T object,
+  private <T> void setObjectUriVersionByOptions(URI uri, ObjectDefinition<T> definition,
+      Map<String, Object> object,
       Long versionDataSerialNo,
       StorageLoadOption[] options) {
     if (!StorageLoadOption.checkUriWithVersionOption(options)) {
       // If no options specified the default behavior is to return the with the requested uri
       // This can ensure that the uri will be the exact uri used for the load.
-      definition.setUri(object, uri);
+      object.put("uri", uri);
+      // definition.setUri(object, uri);
     } else {
       Long uriVersion = getUriVersion(uri);
       boolean uriNeedsVersion = StorageLoadOption.checkUriWithVersionValue(options);
@@ -818,7 +823,8 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
         // (has and need) OR (has not and dont need)
         uriToSet = uri;
       }
-      definition.setUri(object, uriToSet);
+      object.put("uri", uriToSet);
+      // definition.setUri(object, uriToSet);
     }
   }
 
@@ -839,7 +845,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
     return relationData;
   }
 
-  private <T> StorageObjectHistoryEntry<T> loadObjectVersion(ObjectDefinition<T> definition,
+  private <T> StorageObjectHistoryEntry loadObjectVersion(ObjectDefinition<T> definition,
       File historyBasePath,
       long version) {
     File objectVersionFile = getObjectVersionFile(
@@ -853,15 +859,16 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
 
     ObjectVersion objectVersion;
     T object;
+    Map<String, Object> objectAsMap;
     try {
       objectVersion = objectApi.getDefaultSerializer()
           .deserialize(versionObjectBinaryData, ObjectVersion.class).get();
-      object = definition.deserialize(versionBinaryData).orElse(null);
+      objectAsMap = definition.deserializeAsMap(versionBinaryData);
     } catch (IOException e) {
       log.error("Unable to read version data", e);
       return null;
     }
-    return new StorageObjectHistoryEntry<>(objectVersion, object);
+    return new StorageObjectHistoryEntry(objectVersion, objectAsMap);
   }
 
   @Override
@@ -897,8 +904,8 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
     return new ObjectHistoryIterator() {
 
       @Override
-      public Iterator<StorageObjectHistoryEntry<?>> iterator() {
-        return new Iterator<StorageObjectHistoryEntry<?>>() {
+      public Iterator<StorageObjectHistoryEntry> iterator() {
+        return new Iterator<StorageObjectHistoryEntry>() {
 
           @Override
           public boolean hasNext() {
@@ -906,7 +913,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
           }
 
           @Override
-          public StorageObjectHistoryEntry<?> next() {
+          public StorageObjectHistoryEntry next() {
             return loadObjectVersion(definition, getObjectVersionBasePath(uri), ++i);
           }
 
@@ -951,8 +958,8 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
       private long i = serialNoDataMax + 1;
 
       @Override
-      public Iterator<StorageObjectHistoryEntry<?>> iterator() {
-        return new Iterator<StorageObjectHistoryEntry<?>>() {
+      public Iterator<StorageObjectHistoryEntry> iterator() {
+        return new Iterator<StorageObjectHistoryEntry>() {
 
           @Override
           public boolean hasNext() {
@@ -960,7 +967,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
           }
 
           @Override
-          public StorageObjectHistoryEntry<?> next() {
+          public StorageObjectHistoryEntry next() {
             return loadObjectVersion(definition, getObjectVersionBasePath(uri), --i);
           }
 

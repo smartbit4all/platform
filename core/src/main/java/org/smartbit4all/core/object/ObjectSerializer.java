@@ -1,6 +1,7 @@
 package org.smartbit4all.core.object;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Optional;
 import org.smartbit4all.api.binarydata.BinaryData;
 
@@ -37,5 +38,23 @@ public interface ObjectSerializer {
    *         have {@link IOException} then we can retry the serialization.
    */
   <T> Optional<T> deserialize(BinaryData data, Class<T> clazz) throws IOException;
+
+  /**
+   * Transform the object to a Map.
+   * 
+   * @param object The object to transform.
+   * @return The map as the result of the object values. (Typical JSON like mapping) Returns empty
+   *         map if the object is null.
+   */
+  Map<String, Object> toMap(Object object);
+
+  /**
+   * Constructs the object from the values of map.
+   * 
+   * @param <T>
+   * @param map The map with the values
+   * @return The object as a result. Returns null if the map is null.
+   */
+  <T> T fromMap(Map<String, Object> map, Class<T> clazz);
 
 }
