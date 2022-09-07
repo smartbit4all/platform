@@ -6,7 +6,7 @@
 
 These packages must be updated in case of a new version:
 
-- [_@smartbit4all/dialog_](../smartdialog/versionLogs.md)
+-   [_@smartbit4all/dialog_](../smartdialog/versionLogs.md)
 
 ---
 
@@ -16,7 +16,7 @@ These packages must be updated in case of a new version:
 
 Go to your project, open the terminal and use the following command:
 
-    npm i ../../platform/ui-angular/npms/smartform/smartbit4all-form-0.1.4.tgz
+    npm i ../../platform/ui-angular/npms/smartform/smartbit4all-form-0.1.7.tgz
 
 Then import it in the AppModule:
 
@@ -70,11 +70,42 @@ Then import it in the AppModule:
 
 ## Version logs
 
+## @smartbit4all/form v0.1.7
+
+**Type: Bugfix**
+
+A major bug has been fixed which made _getting the value of a container_ impossible.
+
+In the previous version the **SmartFormService** only had the **toSmartForm()** function, which was not able to recreate the smartForm in depth.
+
+**The bugfix:**
+
+    toSmartForm(group: FormGroup, smartForm: SmartForm): SmartForm {
+        smartForm = this.toSmartFormDeeply(smartForm.widgets, group, smartForm);
+
+        return smartForm;
+    }
+
+    toSmartFormDeeply(
+        widgets: SmartFormWidget<any>[],
+        group: FormGroup,
+        smartForm: SmartForm
+    ): SmartForm {
+        widgets.forEach((widget) => {
+            if (widget.type === SmartFormWidgetType.CONTAINER && widget.valueList?.length) {
+                smartForm = this.toSmartFormDeeply(widget.valueList, group, smartForm);
+            } else {
+                widget.value = group.controls[widget.key].value;
+            }
+        });
+        return smartForm;
+    }
+
 ## @smartbit4all/form v0.1.6
 
 **Type: Feature**
 
-This version contains one mayor change: **TIME** picker component have been added.
+This version contains one major change: **TIME** picker component have been added.
 Small layout change: 1em margin have been added to **CONTAINER** typed widgets.
 
 **Usage have not changed**.

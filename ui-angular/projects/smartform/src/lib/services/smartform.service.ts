@@ -41,10 +41,23 @@ export class SmartFormService {
         return list !== undefined && list.length > 0 && list.some((v) => v === validator);
     }
 
-    toSmartForm(group: FormGroup, smartForm: SmartForm): SmartForm {
-        smartForm.widgets.forEach((widget) => {
-            widget.value = group.controls[widget.key].value;
+    toSmartFormDeeply(
+        widgets: SmartFormWidget<any>[],
+        group: FormGroup,
+        smartForm: SmartForm
+    ): SmartForm {
+        widgets.forEach((widget) => {
+            if (widget.type === SmartFormWidgetType.CONTAINER && widget.valueList?.length) {
+                smartForm = this.toSmartFormDeeply(widget.valueList, group, smartForm);
+            } else {
+                widget.value = group.controls[widget.key].value;
+            }
         });
+        return smartForm;
+    }
+
+    toSmartForm(group: FormGroup, smartForm: SmartForm): SmartForm {
+        smartForm = this.toSmartFormDeeply(smartForm.widgets, group, smartForm);
 
         return smartForm;
     }
