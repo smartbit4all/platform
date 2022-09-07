@@ -54,9 +54,6 @@ input[type='text'] {
 	height: var(--navbar-height);
 }
 
-.spacer {
-	width: 75px;
-}
 
 ::ng-deep .navbar-form .mat-form-field-appearance-outline .mat-form-field-outline,
 ::ng-deep
@@ -67,4 +64,20 @@ input[type='text'] {
 ::ng-deep .navbar-form .mat-form-field-appearance-outline.mat-focused .mat-form-field-outline {
 	opacity: 0.75 !important;
 	color: white;
+}
+
+.account-content {
+	margin-left: 75px;
+}
+
+.title {
+	margin-right: 75px;
+}
+
+.account-content > * {
+	margin-left: 30px;
+}
+
+.account-content > *:first-child {
+	margin-left: 0;
 }

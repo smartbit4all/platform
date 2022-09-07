@@ -27,4 +27,10 @@ export class SmartNavbarComponent implements OnInit {
 			this.smartNavbar.filterButtonCallback();
 		}
 	}
+
+	onNotificationClick() {
+		if (this.smartNavbar?.notification?.notificationCallBack) {
+			this.smartNavbar?.notification?.notificationCallBack();
+		}
+	}
 }

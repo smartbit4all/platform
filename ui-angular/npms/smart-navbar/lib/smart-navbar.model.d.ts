@@ -1,3 +1,5 @@
+import { ThemePalette } from "@angular/material/core";
+import { MatBadgePosition } from "@angular/material/badge";
 export interface SmartUserSetting {
     label: string;
     callback: () => void;
@@ -19,6 +21,14 @@ export interface SmartSearchBar {
     quickFilters: string[];
     searchCallback: (request: SmartSearchRequest) => void;
 }
+export interface SmartNotification {
+    icon: string;
+    iconColor?: string;
+    notificationCallBack?: () => void;
+    notificationCount?: number;
+    counterColor?: ThemePalette;
+    position?: MatBadgePosition;
+}
 export interface SmartNavbar {
     icon?: string;
     iconCallback?: () => void;
@@ -26,4 +36,5 @@ export interface SmartNavbar {
     filterButtonLabel?: string;
     filterButtonCallback?: () => void;
     userSettings?: SmartUserSettings;
+    notification?: SmartNotification;
 }

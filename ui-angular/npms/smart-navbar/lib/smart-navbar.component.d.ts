@@ -7,6 +7,7 @@ export declare class SmartNavbarComponent implements OnInit {
     ngOnInit(): void;
     onIconClick(): void;
     openFilters(): void;
+    onNotificationClick(): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<SmartNavbarComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<SmartNavbarComponent, "smart-navbar", never, { "smartNavbar": "smartNavbar"; }, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<SmartNavbarComponent, "smart-navbar", never, { "smartNavbar": "smartNavbar"; }, {}, never, ["[titleComponent]"]>;
 }

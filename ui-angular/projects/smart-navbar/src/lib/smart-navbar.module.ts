@@ -6,13 +6,17 @@ import { MatToolbarModule } from "@angular/material/toolbar";
 import { MatButtonModule } from "@angular/material/button";
 import { MatInputModule } from "@angular/material/input";
 import { MatIconModule } from "@angular/material/icon";
-import { FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { MatBadgeModule } from "@angular/material/badge";
 import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatCommonModule } from "@angular/material/core";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
+
 
 @NgModule({
     declarations: [SmartNavbarComponent],
     imports: [
         BrowserModule,
+        MatCommonModule,
         MatButtonModule,
         MatToolbarModule,
         MatInputModule,
@@ -20,6 +24,7 @@ import { MatFormFieldModule } from "@angular/material/form-field";
         FormsModule,
         ReactiveFormsModule,
         MatFormFieldModule,
+        MatBadgeModule
     ],
     exports: [SmartNavbarComponent],
 })
