@@ -51,7 +51,7 @@ public class SessionApiDelegateImpl implements SessionApiDelegate {
 
     Session currentSession = sessionApi.currentSession();
     if (currentSession == null) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
     String sid = tokenHandler.getTokenFromRequest(request);
@@ -74,7 +74,7 @@ public class SessionApiDelegateImpl implements SessionApiDelegate {
     Session session = sessionApi.currentSession();
 
     if (session == null) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
     List<AuthenticationProviderData> poviderData = authenticationDataProviders.stream()

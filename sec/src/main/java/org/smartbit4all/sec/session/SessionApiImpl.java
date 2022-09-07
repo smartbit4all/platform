@@ -34,6 +34,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
  */
 public class SessionApiImpl implements SessionApi {
 
+  private static final String EXPMSG_MISSING_SESSIONURI = "sessionUri can not be null!";
+
   private static final Logger log = LoggerFactory.getLogger(SessionApiImpl.class);
 
   @Autowired
@@ -172,16 +174,21 @@ public class SessionApiImpl implements SessionApi {
 
   @Override
   public Session readSession(URI sessionUri) {
+    Objects.requireNonNull(sessionUri, EXPMSG_MISSING_SESSIONURI);
     return storage.get().read(sessionUri, Session.class);
   }
 
   @Override
   public void setSessionParameter(URI sessionUri, String key, String value) {
+    Objects.requireNonNull(sessionUri, EXPMSG_MISSING_SESSIONURI);
+    Objects.requireNonNull(key, "key can not be null!");
     storage.get().update(sessionUri, Session.class, s -> s.putParametersItem(key, value));
   }
 
   @Override
   public void removeSessionParameter(URI sessionUri, String key) {
+    Objects.requireNonNull(sessionUri, EXPMSG_MISSING_SESSIONURI);
+    Objects.requireNonNull(key, "key can not be null!");
     storage.get().update(sessionUri, Session.class, s -> {
       Map<String, String> parameters = s.getParameters();
       if (parameters == null) {
@@ -195,21 +202,28 @@ public class SessionApiImpl implements SessionApi {
 
   @Override
   public void setSessionLocale(URI sessionUri, String locale) {
+    Objects.requireNonNull(sessionUri, EXPMSG_MISSING_SESSIONURI);
     storage.get().update(sessionUri, Session.class, s -> s.locale(locale));
   }
 
   @Override
   public void setSessionExpiration(URI sessionUri, OffsetDateTime expiration) {
+    Objects.requireNonNull(sessionUri, EXPMSG_MISSING_SESSIONURI);
+    Objects.requireNonNull(expiration, "expiration can not be null!");
     storage.get().update(sessionUri, Session.class, s -> s.expiration(expiration));
   }
 
   @Override
   public void addSessionAuthentication(URI sessionUri, AccountInfo accountInfo) {
+    Objects.requireNonNull(sessionUri, EXPMSG_MISSING_SESSIONURI);
+    Objects.requireNonNull(accountInfo, "accountInfo can not be null!");
     storage.get().update(sessionUri, Session.class, s -> s.addAuthenticationsItem(accountInfo));
   }
 
   @Override
   public void removeSessionAuthentication(URI sessionUri, String kind) {
+    Objects.requireNonNull(sessionUri, EXPMSG_MISSING_SESSIONURI);
+    Objects.requireNonNull(kind, "kind can not be null!");
     storage.get().update(sessionUri, Session.class, s -> {
       List<AccountInfo> authentications = s.getAuthentications();
       if (authentications == null) {
@@ -226,6 +240,7 @@ public class SessionApiImpl implements SessionApi {
 
   @Override
   public void setSessionUser(URI sessionUri, URI userUri) {
+    Objects.requireNonNull(sessionUri, EXPMSG_MISSING_SESSIONURI);
     storage.get().update(sessionUri, Session.class, s -> s.user(userUri));
   }
 
