@@ -25,7 +25,6 @@ include 'invocation-domain-rest'
 include 'invocation-cli-rest'
 include 'invocation-srv-rest'
 include 'content-access-srv-rest'
-include 'ui-angular'
 
 def localSettings = file("local.settings.gradle")
 if (localSettings.exists()) {

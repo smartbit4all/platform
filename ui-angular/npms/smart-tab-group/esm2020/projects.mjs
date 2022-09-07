@@ -1,7 +1,0 @@
-/*
- * Public API Surface of smart-tab-group
- */
-export * from './lib/smart-tab-group.service';
-export * from './lib/smart-tab-group.component';
-export * from './lib/smart-tab-group.module';
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicHJvamVjdHMuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi9wcm9qZWN0cy9zbWFydC10YWItZ3JvdXAvc3JjL3Byb2plY3RzLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBOztHQUVHO0FBRUgsY0FBYywrQkFBK0IsQ0FBQztBQUM5QyxjQUFjLGlDQUFpQyxDQUFDO0FBQ2hELGNBQWMsOEJBQThCLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyIvKlxyXG4gKiBQdWJsaWMgQVBJIFN1cmZhY2Ugb2Ygc21hcnQtdGFiLWdyb3VwXHJcbiAqL1xyXG5cclxuZXhwb3J0ICogZnJvbSAnLi9saWIvc21hcnQtdGFiLWdyb3VwLnNlcnZpY2UnO1xyXG5leHBvcnQgKiBmcm9tICcuL2xpYi9zbWFydC10YWItZ3JvdXAuY29tcG9uZW50JztcclxuZXhwb3J0ICogZnJvbSAnLi9saWIvc21hcnQtdGFiLWdyb3VwLm1vZHVsZSc7XHJcbiJdfQ==

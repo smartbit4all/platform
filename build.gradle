@@ -13,8 +13,7 @@ sonarqube {
 }
 
 subprojects {
-	if (it.name != 'ui-angular') {	
-	    apply plugin: 'org.smartbit4all.platform.gradle.java'
+	apply plugin: 'org.smartbit4all.platform.gradle.java'
 	    apply plugin: 'maven-publish'
 	    group "org.smartbit4all.platform"
 	    version "1.0.3-SNAPSHOT"
@@ -52,7 +51,6 @@ subprojects {
 	        	}
 		    }
 	    }
-	}
 
 }
 
