@@ -79,6 +79,8 @@ public final class BeanMeta {
                 Map<Object, Object> newList =
                     new HashMap<>((Map<Object, Object>) value);
                 propertyMeta.setValue(newInstance, newList);
+              } else {
+                propertyMeta.setValue(newInstance, value);
               }
               break;
 
