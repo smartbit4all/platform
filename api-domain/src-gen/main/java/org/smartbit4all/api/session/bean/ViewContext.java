@@ -1,6 +1,6 @@
 /*
- * Navigation API
- * Navigation API
+ * Session api
+ * Session api...
  *
  * The version of the OpenAPI document: 1.0.0
  * Contact: info@it4all.hu
@@ -11,7 +11,7 @@
  */
 
 
-package org.smartbit4all.ui.api.navigation.model;
+package org.smartbit4all.api.session.bean;
 
 import java.util.Objects;
 import java.util.Arrays;
@@ -25,40 +25,36 @@ import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import org.smartbit4all.ui.api.navigation.model.Message;
-import org.smartbit4all.ui.api.navigation.model.NavigationTarget;
-import org.smartbit4all.ui.api.navigation.model.ViewModelData;
+import org.smartbit4all.api.session.bean.MessageData;
+import org.smartbit4all.api.session.bean.ViewData;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 
 /**
- * UIState
+ * The same session can be valid / used in multiple UIs, this object represents a UI.
  */
+@ApiModel(description = "The same session can be valid / used in multiple UIs, this object represents a UI.")
 @JsonPropertyOrder({
-  UIState.UUID,
-  UIState.UI_TO_OPEN,
-  UIState.MESSAGE_TO_OPEN,
-  UIState.VIEWS
+  ViewContext.UUID,
+  ViewContext.VIEWS,
+  ViewContext.MESSAGES
 })
-@JsonTypeName("UIState")
+@JsonTypeName("ViewContext")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
-public class UIState {
+public class ViewContext {
   public static final String UUID = "uuid";
   private UUID uuid;
 
-  public static final String UI_TO_OPEN = "uiToOpen";
-  private NavigationTarget uiToOpen;
-
-  public static final String MESSAGE_TO_OPEN = "messageToOpen";
-  private Message messageToOpen;
-
   public static final String VIEWS = "views";
-  private List<ViewModelData> views = new ArrayList<>();
+  private List<ViewData> views = new ArrayList<>();
+
+  public static final String MESSAGES = "messages";
+  private List<MessageData> messages = new ArrayList<>();
 
 
-  public UIState uuid(UUID uuid) {
+  public ViewContext uuid(UUID uuid) {
     
     this.uuid = uuid;
     return this;
@@ -87,69 +83,13 @@ public class UIState {
   }
 
 
-  public UIState uiToOpen(NavigationTarget uiToOpen) {
-    
-    this.uiToOpen = uiToOpen;
-    return this;
-  }
-
-   /**
-   * Get uiToOpen
-   * @return uiToOpen
-  **/
-  @javax.annotation.Nullable
-  @Valid
-  @ApiModelProperty(value = "")
-  @JsonProperty(UI_TO_OPEN)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public NavigationTarget getUiToOpen() {
-    return uiToOpen;
-  }
-
-
-  @JsonProperty(UI_TO_OPEN)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setUiToOpen(NavigationTarget uiToOpen) {
-    this.uiToOpen = uiToOpen;
-  }
-
-
-  public UIState messageToOpen(Message messageToOpen) {
-    
-    this.messageToOpen = messageToOpen;
-    return this;
-  }
-
-   /**
-   * Get messageToOpen
-   * @return messageToOpen
-  **/
-  @javax.annotation.Nullable
-  @Valid
-  @ApiModelProperty(value = "")
-  @JsonProperty(MESSAGE_TO_OPEN)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Message getMessageToOpen() {
-    return messageToOpen;
-  }
-
-
-  @JsonProperty(MESSAGE_TO_OPEN)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setMessageToOpen(Message messageToOpen) {
-    this.messageToOpen = messageToOpen;
-  }
-
-
-  public UIState views(List<ViewModelData> views) {
+  public ViewContext views(List<ViewData> views) {
     
     this.views = views;
     return this;
   }
 
-  public UIState addViewsItem(ViewModelData viewsItem) {
+  public ViewContext addViewsItem(ViewData viewsItem) {
     this.views.add(viewsItem);
     return this;
   }
@@ -165,15 +105,49 @@ public class UIState {
   @JsonProperty(VIEWS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<ViewModelData> getViews() {
+  public List<ViewData> getViews() {
     return views;
   }
 
 
   @JsonProperty(VIEWS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setViews(List<ViewModelData> views) {
+  public void setViews(List<ViewData> views) {
     this.views = views;
+  }
+
+
+  public ViewContext messages(List<MessageData> messages) {
+    
+    this.messages = messages;
+    return this;
+  }
+
+  public ViewContext addMessagesItem(MessageData messagesItem) {
+    this.messages.add(messagesItem);
+    return this;
+  }
+
+   /**
+   * Get messages
+   * @return messages
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @Valid
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(MESSAGES)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public List<MessageData> getMessages() {
+    return messages;
+  }
+
+
+  @JsonProperty(MESSAGES)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setMessages(List<MessageData> messages) {
+    this.messages = messages;
   }
 
 
@@ -185,26 +159,24 @@ public class UIState {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    UIState uiState = (UIState) o;
-    return Objects.equals(this.uuid, uiState.uuid) &&
-        Objects.equals(this.uiToOpen, uiState.uiToOpen) &&
-        Objects.equals(this.messageToOpen, uiState.messageToOpen) &&
-        Objects.equals(this.views, uiState.views);
+    ViewContext viewContext = (ViewContext) o;
+    return Objects.equals(this.uuid, viewContext.uuid) &&
+        Objects.equals(this.views, viewContext.views) &&
+        Objects.equals(this.messages, viewContext.messages);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uuid, uiToOpen, messageToOpen, views);
+    return Objects.hash(uuid, views, messages);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class UIState {\n");
+    sb.append("class ViewContext {\n");
     sb.append("    uuid: ").append(toIndentedString(uuid)).append("\n");
-    sb.append("    uiToOpen: ").append(toIndentedString(uiToOpen)).append("\n");
-    sb.append("    messageToOpen: ").append(toIndentedString(messageToOpen)).append("\n");
     sb.append("    views: ").append(toIndentedString(views)).append("\n");
+    sb.append("    messages: ").append(toIndentedString(messages)).append("\n");
     sb.append("}");
     return sb.toString();
   }

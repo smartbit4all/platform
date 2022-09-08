@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.smartbit4all.api.session.bean.AccountInfo;
+import org.smartbit4all.api.session.bean.ViewContext;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -43,7 +44,8 @@ import javax.validation.Valid;
   Session.LOCALE,
   Session.AUTHENTICATIONS,
   Session.USER,
-  Session.PARAMETERS
+  Session.PARAMETERS,
+  Session.VIEW_CONTEXTS
 })
 @JsonTypeName("Session")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -58,13 +60,16 @@ public class Session {
   private String locale;
 
   public static final String AUTHENTICATIONS = "authentications";
-  private List<AccountInfo> authentications = null;
+  private List<AccountInfo> authentications = new ArrayList<>();
 
   public static final String USER = "user";
   private URI user;
 
   public static final String PARAMETERS = "parameters";
   private Map<String, String> parameters = null;
+
+  public static final String VIEW_CONTEXTS = "viewContexts";
+  private List<ViewContext> viewContexts = new ArrayList<>();
 
 
   public Session uri(URI uri) {
@@ -157,9 +162,6 @@ public class Session {
   }
 
   public Session addAuthenticationsItem(AccountInfo authenticationsItem) {
-    if (this.authentications == null) {
-      this.authentications = new ArrayList<>();
-    }
     this.authentications.add(authenticationsItem);
     return this;
   }
@@ -168,11 +170,12 @@ public class Session {
    * Get authentications
    * @return authentications
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(AUTHENTICATIONS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public List<AccountInfo> getAuthentications() {
     return authentications;
@@ -180,7 +183,7 @@ public class Session {
 
 
   @JsonProperty(AUTHENTICATIONS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setAuthentications(List<AccountInfo> authentications) {
     this.authentications = authentications;
   }
@@ -249,6 +252,40 @@ public class Session {
   }
 
 
+  public Session viewContexts(List<ViewContext> viewContexts) {
+    
+    this.viewContexts = viewContexts;
+    return this;
+  }
+
+  public Session addViewContextsItem(ViewContext viewContextsItem) {
+    this.viewContexts.add(viewContextsItem);
+    return this;
+  }
+
+   /**
+   * Get viewContexts
+   * @return viewContexts
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @Valid
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(VIEW_CONTEXTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public List<ViewContext> getViewContexts() {
+    return viewContexts;
+  }
+
+
+  @JsonProperty(VIEW_CONTEXTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setViewContexts(List<ViewContext> viewContexts) {
+    this.viewContexts = viewContexts;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -263,12 +300,13 @@ public class Session {
         Objects.equals(this.locale, session.locale) &&
         Objects.equals(this.authentications, session.authentications) &&
         Objects.equals(this.user, session.user) &&
-        Objects.equals(this.parameters, session.parameters);
+        Objects.equals(this.parameters, session.parameters) &&
+        Objects.equals(this.viewContexts, session.viewContexts);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, expiration, locale, authentications, user, parameters);
+    return Objects.hash(uri, expiration, locale, authentications, user, parameters, viewContexts);
   }
 
   @Override
@@ -281,6 +319,7 @@ public class Session {
     sb.append("    authentications: ").append(toIndentedString(authentications)).append("\n");
     sb.append("    user: ").append(toIndentedString(user)).append("\n");
     sb.append("    parameters: ").append(toIndentedString(parameters)).append("\n");
+    sb.append("    viewContexts: ").append(toIndentedString(viewContexts)).append("\n");
     sb.append("}");
     return sb.toString();
   }
