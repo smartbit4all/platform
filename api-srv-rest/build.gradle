@@ -24,6 +24,7 @@ smartbit4all {
         apiDescriptorMapping = [
         	"${rootDir}/api-domain/src/main/resources/descriptors/navigation-api.yaml" : "navigation",
         	"${rootDir}/api-domain/src/main/resources/descriptors/session-api.yaml" : "session",
+        	"${rootDir}/api-domain/src/main/resources/descriptors/view-api.yaml" : "view",
         	"${rootDir}/api-domain/src/main/resources/descriptors/localauthentication-api.yaml" : "localauthentication",
         ]
         apiPackagePrefix = "org.smartbit4all.api"
@@ -41,6 +42,8 @@ smartbit4all {
 			"GetAuthenticationProvidersResponse" : "org.smartbit4all.api.session.bean.GetAuthenticationProvidersResponse",
 			"SessionInfoData" : "org.smartbit4all.api.session.bean.SessionInfoData",
 			"UserInfo" : "org.smartbit4all.api.session.bean.UserInfo",
+			// view
+			"ViewContext" : "org.smartbit4all.api.view.bean.ViewContext",
 			// localauthentication
 			"LocalAuthenticationLoginRequest" : "org.smartbit4all.api.localauthentication.bean.LocalAuthenticationLoginRequest",
 		]
