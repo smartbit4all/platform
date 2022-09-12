@@ -171,6 +171,7 @@ components:
         - reject
         - cancel
     ViewResponse:
+      description: Wrapper class for a result object and a ViewContext object.
       type: object
       properties:
         result:

@@ -5,6 +5,7 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -299,5 +300,12 @@ public class SessionApiImpl implements SessionApi {
   public void setAuthenticationTokenProvider(
       Function<URI, Authentication> authenticationTokenProvider) {
     this.authenticationTokenProvider = authenticationTokenProvider;
+  }
+
+  @Override
+  public void addViewContext(UUID viewContextUuid, URI viewContextUri) {
+    storage.get().update(currentSession().getUri(), Session.class,
+        s -> s.putViewContextsItem(viewContextUuid.toString(), viewContextUri));
+
   }
 }

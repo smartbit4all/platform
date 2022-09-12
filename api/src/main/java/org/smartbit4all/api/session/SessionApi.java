@@ -2,6 +2,7 @@ package org.smartbit4all.api.session;
 
 import java.net.URI;
 import java.time.OffsetDateTime;
+import java.util.UUID;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.session.bean.AccountInfo;
 import org.smartbit4all.api.session.bean.Session;
@@ -35,5 +36,8 @@ public interface SessionApi {
   void removeSessionAuthentication(URI sessionUri, String kind);
 
   void setSessionUser(URI sessionUri, URI userUri);
+
+  // this is very preliminary
+  void addViewContext(UUID viewContextUuid, URI viewContextUri);
 
 }

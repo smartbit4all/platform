@@ -29,8 +29,9 @@ import javax.validation.constraints.*;
 import javax.validation.Valid;
 
 /**
- * ViewResponse
+ * Wrapper class for a result object and a ViewContext object.
  */
+@ApiModel(description = "Wrapper class for a result object and a ViewContext object.")
 @JsonPropertyOrder({
   ViewResponse.RESULT,
   ViewResponse.VIEW_CONTEXT
