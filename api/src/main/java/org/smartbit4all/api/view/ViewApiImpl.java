@@ -23,6 +23,17 @@ public class ViewApiImpl implements ViewApi {
   public UUID showView(ViewData view) {
     Objects.requireNonNull(view, "View must be not null");
     view.setUuid(UUID.randomUUID());
+    return showViewInternal(view);
+  }
+
+  /**
+   * Same as showView but doesn't modify UUID, expects it to be non null.
+   * 
+   * @param view
+   * @return
+   */
+  private UUID showViewInternal(ViewData view) {
+    Objects.requireNonNull(view.getUuid(), "View.uuid must be not null");
     view.setState(ViewState.TO_OPEN);
     viewContextService.updateCurrentViewContext(c -> c.addViewsItem(view));
     return view.getUuid();
@@ -50,7 +61,10 @@ public class ViewApiImpl implements ViewApi {
 
   @Override
   public UUID showMessage(MessageData message) {
-    return showView(new ViewData()
+    Objects.requireNonNull(message, "View must be not null");
+    message.setUuid(UUID.randomUUID());
+    return showViewInternal(new ViewData()
+        .uuid(message.getUuid())
         .viewName(messageViewName)
         .type(ViewType.DIALOG)
         .putParametersItem(MESSAGE_DATA, message));
