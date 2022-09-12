@@ -1,6 +1,6 @@
 /*
- * Session api
- * Session api...
+ * View API
+ * View API
  *
  * The version of the OpenAPI document: 1.0.0
  * Contact: info@it4all.hu
@@ -11,7 +11,7 @@
  */
 
 
-package org.smartbit4all.api.session.bean;
+package org.smartbit4all.api.view.bean;
 
 import java.util.Objects;
 import java.util.Arrays;
@@ -24,8 +24,9 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
-import org.smartbit4all.api.session.bean.MessageResult;
-import org.smartbit4all.api.session.bean.MessageType;
+import java.util.UUID;
+import org.smartbit4all.api.view.bean.MessageResult;
+import org.smartbit4all.api.view.bean.MessageType;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -36,16 +37,24 @@ import javax.validation.Valid;
  */
 @JsonPropertyOrder({
   MessageData.UUID,
+  MessageData.VIEW_UUID,
+  MessageData.TYPE,
   MessageData.HEADER,
   MessageData.TEXT,
   MessageData.POSSIBLE_RESULTS,
-  MessageData.SELECT_RESULT
+  MessageData.CALLBACK_API
 })
 @JsonTypeName("MessageData")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class MessageData {
   public static final String UUID = "uuid";
-  private MessageType uuid;
+  private UUID uuid;
+
+  public static final String VIEW_UUID = "viewUuid";
+  private UUID viewUuid;
+
+  public static final String TYPE = "type";
+  private MessageType type;
 
   public static final String HEADER = "header";
   private String header;
@@ -56,36 +65,93 @@ public class MessageData {
   public static final String POSSIBLE_RESULTS = "possibleResults";
   private List<MessageResult> possibleResults = new ArrayList<>();
 
-  public static final String SELECT_RESULT = "selectResult";
-  private MessageResult selectResult;
+  public static final String CALLBACK_API = "callbackApi";
+  private String callbackApi;
 
 
-  public MessageData uuid(MessageType uuid) {
+  public MessageData uuid(UUID uuid) {
     
     this.uuid = uuid;
     return this;
   }
 
    /**
-   * Get uuid
+   * Unique identifier of the Message.
    * @return uuid
   **/
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+  @ApiModelProperty(required = true, value = "Unique identifier of the Message.")
   @JsonProperty(UUID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public MessageType getUuid() {
+  public UUID getUuid() {
     return uuid;
   }
 
 
   @JsonProperty(UUID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setUuid(MessageType uuid) {
+  public void setUuid(UUID uuid) {
     this.uuid = uuid;
+  }
+
+
+  public MessageData viewUuid(UUID viewUuid) {
+    
+    this.viewUuid = viewUuid;
+    return this;
+  }
+
+   /**
+   * UUID of the View, showing this message. May be null.
+   * @return viewUuid
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "UUID of the View, showing this message. May be null.")
+  @JsonProperty(VIEW_UUID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public UUID getViewUuid() {
+    return viewUuid;
+  }
+
+
+  @JsonProperty(VIEW_UUID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setViewUuid(UUID viewUuid) {
+    this.viewUuid = viewUuid;
+  }
+
+
+  public MessageData type(MessageType type) {
+    
+    this.type = type;
+    return this;
+  }
+
+   /**
+   * Get type
+   * @return type
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @Valid
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(TYPE)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public MessageType getType() {
+    return type;
+  }
+
+
+  @JsonProperty(TYPE)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setType(MessageType type) {
+    this.type = type;
   }
 
 
@@ -177,31 +243,30 @@ public class MessageData {
   }
 
 
-  public MessageData selectResult(MessageResult selectResult) {
+  public MessageData callbackApi(String callbackApi) {
     
-    this.selectResult = selectResult;
+    this.callbackApi = callbackApi;
     return this;
   }
 
    /**
-   * Get selectResult
-   * @return selectResult
+   * Get callbackApi
+   * @return callbackApi
   **/
   @javax.annotation.Nullable
-  @Valid
   @ApiModelProperty(value = "")
-  @JsonProperty(SELECT_RESULT)
+  @JsonProperty(CALLBACK_API)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public MessageResult getSelectResult() {
-    return selectResult;
+  public String getCallbackApi() {
+    return callbackApi;
   }
 
 
-  @JsonProperty(SELECT_RESULT)
+  @JsonProperty(CALLBACK_API)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setSelectResult(MessageResult selectResult) {
-    this.selectResult = selectResult;
+  public void setCallbackApi(String callbackApi) {
+    this.callbackApi = callbackApi;
   }
 
 
@@ -215,15 +280,17 @@ public class MessageData {
     }
     MessageData messageData = (MessageData) o;
     return Objects.equals(this.uuid, messageData.uuid) &&
+        Objects.equals(this.viewUuid, messageData.viewUuid) &&
+        Objects.equals(this.type, messageData.type) &&
         Objects.equals(this.header, messageData.header) &&
         Objects.equals(this.text, messageData.text) &&
         Objects.equals(this.possibleResults, messageData.possibleResults) &&
-        Objects.equals(this.selectResult, messageData.selectResult);
+        Objects.equals(this.callbackApi, messageData.callbackApi);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uuid, header, text, possibleResults, selectResult);
+    return Objects.hash(uuid, viewUuid, type, header, text, possibleResults, callbackApi);
   }
 
   @Override
@@ -231,10 +298,12 @@ public class MessageData {
     StringBuilder sb = new StringBuilder();
     sb.append("class MessageData {\n");
     sb.append("    uuid: ").append(toIndentedString(uuid)).append("\n");
+    sb.append("    viewUuid: ").append(toIndentedString(viewUuid)).append("\n");
+    sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("    header: ").append(toIndentedString(header)).append("\n");
     sb.append("    text: ").append(toIndentedString(text)).append("\n");
     sb.append("    possibleResults: ").append(toIndentedString(possibleResults)).append("\n");
-    sb.append("    selectResult: ").append(toIndentedString(selectResult)).append("\n");
+    sb.append("    callbackApi: ").append(toIndentedString(callbackApi)).append("\n");
     sb.append("}");
     return sb.toString();
   }

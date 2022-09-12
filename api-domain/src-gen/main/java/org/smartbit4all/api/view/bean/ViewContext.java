@@ -1,6 +1,6 @@
 /*
- * Session api
- * Session api...
+ * View API
+ * View API
  *
  * The version of the OpenAPI document: 1.0.0
  * Contact: info@it4all.hu
@@ -11,7 +11,7 @@
  */
 
 
-package org.smartbit4all.api.session.bean;
+package org.smartbit4all.api.view.bean;
 
 import java.util.Objects;
 import java.util.Arrays;
@@ -22,11 +22,11 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import org.smartbit4all.api.session.bean.MessageData;
-import org.smartbit4all.api.session.bean.ViewData;
+import org.smartbit4all.api.view.bean.ViewData;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -37,21 +37,50 @@ import javax.validation.Valid;
  */
 @ApiModel(description = "The same session can be valid / used in multiple UIs, this object represents a UI.")
 @JsonPropertyOrder({
+  ViewContext.URI,
   ViewContext.UUID,
-  ViewContext.VIEWS,
-  ViewContext.MESSAGES
+  ViewContext.VIEWS
 })
 @JsonTypeName("ViewContext")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class ViewContext {
+  public static final String URI = "uri";
+  private URI uri;
+
   public static final String UUID = "uuid";
   private UUID uuid;
 
   public static final String VIEWS = "views";
   private List<ViewData> views = new ArrayList<>();
 
-  public static final String MESSAGES = "messages";
-  private List<MessageData> messages = new ArrayList<>();
+
+  public ViewContext uri(URI uri) {
+    
+    this.uri = uri;
+    return this;
+  }
+
+   /**
+   * Get uri
+   * @return uri
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @Valid
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(URI)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public URI getUri() {
+    return uri;
+  }
+
+
+  @JsonProperty(URI)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setUri(URI uri) {
+    this.uri = uri;
+  }
 
 
   public ViewContext uuid(UUID uuid) {
@@ -64,12 +93,11 @@ public class ViewContext {
    * Get uuid
    * @return uuid
   **/
-  @javax.annotation.Nonnull
-  @NotNull
+  @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(required = true, value = "")
+  @ApiModelProperty(value = "")
   @JsonProperty(UUID)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
   public UUID getUuid() {
     return uuid;
@@ -77,7 +105,7 @@ public class ViewContext {
 
 
   @JsonProperty(UUID)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setUuid(UUID uuid) {
     this.uuid = uuid;
   }
@@ -117,40 +145,6 @@ public class ViewContext {
   }
 
 
-  public ViewContext messages(List<MessageData> messages) {
-    
-    this.messages = messages;
-    return this;
-  }
-
-  public ViewContext addMessagesItem(MessageData messagesItem) {
-    this.messages.add(messagesItem);
-    return this;
-  }
-
-   /**
-   * Get messages
-   * @return messages
-  **/
-  @javax.annotation.Nonnull
-  @NotNull
-  @Valid
-  @ApiModelProperty(required = true, value = "")
-  @JsonProperty(MESSAGES)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-
-  public List<MessageData> getMessages() {
-    return messages;
-  }
-
-
-  @JsonProperty(MESSAGES)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setMessages(List<MessageData> messages) {
-    this.messages = messages;
-  }
-
-
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -160,23 +154,23 @@ public class ViewContext {
       return false;
     }
     ViewContext viewContext = (ViewContext) o;
-    return Objects.equals(this.uuid, viewContext.uuid) &&
-        Objects.equals(this.views, viewContext.views) &&
-        Objects.equals(this.messages, viewContext.messages);
+    return Objects.equals(this.uri, viewContext.uri) &&
+        Objects.equals(this.uuid, viewContext.uuid) &&
+        Objects.equals(this.views, viewContext.views);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uuid, views, messages);
+    return Objects.hash(uri, uuid, views);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class ViewContext {\n");
+    sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    uuid: ").append(toIndentedString(uuid)).append("\n");
     sb.append("    views: ").append(toIndentedString(views)).append("\n");
-    sb.append("    messages: ").append(toIndentedString(messages)).append("\n");
     sb.append("}");
     return sb.toString();
   }

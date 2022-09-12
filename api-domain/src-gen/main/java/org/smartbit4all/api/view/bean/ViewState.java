@@ -1,6 +1,6 @@
 /*
- * Session api
- * Session api...
+ * View API
+ * View API
  *
  * The version of the OpenAPI document: 1.0.0
  * Contact: info@it4all.hu
@@ -11,7 +11,7 @@
  */
 
 
-package org.smartbit4all.api.session.bean;
+package org.smartbit4all.api.view.bean;
 
 import java.util.Objects;
 import java.util.Arrays;
@@ -24,19 +24,21 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
- * Gets or Sets ViewType
+ * Gets or Sets ViewState
  */
-public enum ViewType {
+public enum ViewState {
   
-  NORMAL("normal"),
+  TO_OPEN("to_open"),
   
-  DIALOG("dialog"),
+  OPENED("opened"),
   
-  EMBEDDED("embedded");
+  TO_CLOSE("to_close"),
+  
+  CLOSED("closed");
 
   private String value;
 
-  ViewType(String value) {
+  ViewState(String value) {
     this.value = value;
   }
 
@@ -51,8 +53,8 @@ public enum ViewType {
   }
 
   @JsonCreator
-  public static ViewType fromValue(String value) {
-    for (ViewType b : ViewType.values()) {
+  public static ViewState fromValue(String value) {
+    for (ViewState b : ViewState.values()) {
       if (b.value.equals(value)) {
         return b;
       }

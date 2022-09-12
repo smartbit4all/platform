@@ -29,7 +29,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.smartbit4all.api.session.bean.AccountInfo;
-import org.smartbit4all.api.session.bean.ViewContext;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -69,7 +68,7 @@ public class Session {
   private Map<String, String> parameters = null;
 
   public static final String VIEW_CONTEXTS = "viewContexts";
-  private List<ViewContext> viewContexts = new ArrayList<>();
+  private Map<String, URI> viewContexts = new HashMap<>();
 
 
   public Session uri(URI uri) {
@@ -252,36 +251,36 @@ public class Session {
   }
 
 
-  public Session viewContexts(List<ViewContext> viewContexts) {
+  public Session viewContexts(Map<String, URI> viewContexts) {
     
     this.viewContexts = viewContexts;
     return this;
   }
 
-  public Session addViewContextsItem(ViewContext viewContextsItem) {
-    this.viewContexts.add(viewContextsItem);
+  public Session putViewContextsItem(String key, URI viewContextsItem) {
+    this.viewContexts.put(key, viewContextsItem);
     return this;
   }
 
    /**
-   * Get viewContexts
+   * ViewContexts in this session, URIs by UUID.
    * @return viewContexts
   **/
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+  @ApiModelProperty(required = true, value = "ViewContexts in this session, URIs by UUID.")
   @JsonProperty(VIEW_CONTEXTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<ViewContext> getViewContexts() {
+  public Map<String, URI> getViewContexts() {
     return viewContexts;
   }
 
 
   @JsonProperty(VIEW_CONTEXTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setViewContexts(List<ViewContext> viewContexts) {
+  public void setViewContexts(Map<String, URI> viewContexts) {
     this.viewContexts = viewContexts;
   }
 

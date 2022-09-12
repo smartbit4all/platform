@@ -87,9 +87,11 @@ components:
           additionalProperties:
             type: string
         viewContexts:
-          type: array
-          items:
-            $ref: '#/components/schemas/ViewContext'
+          description: ViewContexts in this session, URIs by UUID.
+          type: object
+          additionalProperties:
+            type: string
+            format: uri
     SessionInfoData:
       type: object
       required: [sid]
@@ -146,103 +148,3 @@ components:
           type: object
           additionalProperties:
             type: string
-    ViewContext:
-      type: object
-      description: The same session can be valid / used in multiple UIs, this object represents a UI.
-      required: [uuid,views,messages]
-      properties:
-        uuid:
-          type: string
-          format: uuid
-        views:
-          type: array
-          items:
-            $ref: '#/components/schemas/ViewData'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageData'
-    ViewData:
-      type: object
-      required: [uuid,viewName,state,type,parameters]
-      properties:
-        uuid:
-          type: string
-          format: uuid
-          description: Unique identifier of the View.
-        viewName:
-          type: string
-        objectUri:
-          type: string
-          format: uri
-        branchUri:
-          type: string
-          format: uri
-        parameters:
-          type: object
-          additionalProperties: true
-        state:
-          $ref: '#/components/schemas/ViewState'
-        type:
-          $ref: '#/components/schemas/ViewType'
-        containerUuid:
-          type: string
-          format: uuid
-    ViewState:
-      type: string
-      enum:
-        - to_open
-        - opened
-        - to_close
-        - closed
-      default: to_open
-    ViewType:
-      type: string
-      enum:
-        - normal
-        - dialog
-        - embedded
-      default: normal
-    MessageData:
-      type: object
-      required: [uuid,type,possibleResults]
-      properties:
-        uuid:
-          type: string
-          format: uuid
-          description: Unique identifier of the Message.
-          $ref: '#/components/schemas/MessageType'
-        header:
-          type: string
-        text:
-          type: string
-        possibleResults:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageResult'
-        selectResult:
-          $ref: '#/components/schemas/MessageResult'
-    MessageType:
-      type: string
-      enum:
-        - info
-        - question
-        - warning
-        - error
-    MessageResult:
-      type: object
-      properties:
-        code:
-          type: string
-        label:
-          type: string
-        icon:
-          type: string
-        type:
-          $ref: '#/components/schemas/MessageResultType'
-    MessageResultType:
-      type: string
-      enum:
-        - confirm
-        - reject
-        - cancel

@@ -1,6 +1,6 @@
 /*
- * Session api
- * Session api...
+ * View API
+ * View API
  *
  * The version of the OpenAPI document: 1.0.0
  * Contact: info@it4all.hu
@@ -11,7 +11,7 @@
  */
 
 
-package org.smartbit4all.api.session.bean;
+package org.smartbit4all.api.view.bean;
 
 import java.util.Objects;
 import java.util.Arrays;
@@ -27,8 +27,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import org.smartbit4all.api.session.bean.ViewState;
-import org.smartbit4all.api.session.bean.ViewType;
+import org.smartbit4all.api.view.bean.ViewState;
+import org.smartbit4all.api.view.bean.ViewType;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;

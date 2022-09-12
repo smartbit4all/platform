@@ -1,0 +1,179 @@
+openapi: 3.0.1
+info:
+  title: View API
+  description: View API
+  termsOfService: ''
+  contact:
+    email: info@it4all.hu
+  version: 1.0.0
+tags:
+  - name: View
+paths:
+  /context:
+    post:
+      tags:
+      - View
+      summary: Updates an existing view context
+      operationId: 'updateViewContext'
+      parameters: 
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: ViewContext's unique identifier.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ViewContext'
+      responses:
+        '200':
+          description: 'Context updated'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ViewContext'
+        '404':
+          description: 'The context does not exists with the given uuid'
+        '500':
+          description: 'Error during context update'
+    get:
+      tags:
+      - View
+      summary: Returns the existing session info
+      operationId: 'getViewContext'
+      parameters: 
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: ViewContext's unique identifier.
+      responses:
+        '200':
+          description: 'Returns ViewContext by unique identifier'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ViewContext'
+        '404':
+          description: 'The context does not exists with the given uuid'
+        '500':
+          description: 'Error occured while fetching the session data'
+components:
+  schemas:
+    ViewContext:
+      type: object
+      description: The same session can be valid / used in multiple UIs, this object represents a UI.
+      required: [uri,views,messages]
+      properties:
+        uri:
+          type: string
+          format: uri
+        uuid:
+          type: string
+          format: uuid
+        views:
+          type: array
+          items:
+            $ref: '#/components/schemas/ViewData'
+    ViewData:
+      type: object
+      required: [uuid,viewName,state,type,parameters]
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          description: Unique identifier of the View.
+        viewName:
+          type: string
+        objectUri:
+          type: string
+          format: uri
+        branchUri:
+          type: string
+          format: uri
+        parameters:
+          type: object
+          additionalProperties: true
+        state:
+          $ref: '#/components/schemas/ViewState'
+        type:
+          $ref: '#/components/schemas/ViewType'
+        containerUuid:
+          type: string
+          format: uuid
+    ViewState:
+      type: string
+      enum:
+        - to_open
+        - opened
+        - to_close
+        - closed
+      default: to_open
+    ViewType:
+      type: string
+      enum:
+        - normal
+        - dialog
+        - embedded
+      default: normal
+    MessageData:
+      type: object
+      required: [uuid,type,possibleResults]
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          description: Unique identifier of the Message.
+        viewUuid:
+          type: string
+          format: uuid
+          description: UUID of the View, showing this message. May be null.
+        type:
+          $ref: '#/components/schemas/MessageType'
+        header:
+          type: string
+        text:
+          type: string
+        possibleResults:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageResult'
+        callbackApi:
+          type: string
+    MessageType:
+      type: string
+      enum:
+        - info
+        - question
+        - warning
+        - error
+    MessageResult:
+      type: object
+      properties:
+        code:
+          type: string
+        label:
+          type: string
+        icon:
+          type: string
+        type:
+          $ref: '#/components/schemas/MessageResultType'
+    MessageResultType:
+      type: string
+      enum:
+        - confirm
+        - reject
+        - cancel
+    ViewResponse:
+      type: object
+      properties:
+        result:
+          type: object
+        viewContext:
+          $ref: '#/components/schemas/ViewContext'
