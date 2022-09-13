@@ -5,6 +5,7 @@
  */
 package org.smartbit4all.api.localauthentication.restserver;
 
+import org.smartbit4all.api.localauthentication.bean.LocalAuthenticationLoginRequest;
 import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -27,7 +28,7 @@ public interface LocalAuthenticationApi {
     /**
      * POST /login : Logs in the user with the credentails given.
      *
-     * @param orgSmartbit4allApiLocalauthenticationBeanLocalAuthenticationLoginRequest  (required)
+     * @param localAuthenticationLoginRequest  (required)
      * @return User successfully logged in (status code 200)
      *         or Unable to log in user with the given credentials (status code 400)
      *         or Error during login process (status code 500)
@@ -42,8 +43,8 @@ public interface LocalAuthenticationApi {
         value = "/login",
         consumes = { "application/json" }
     )
-    default ResponseEntity<Void> login(@ApiParam(value = "", required = true) @Valid @RequestBody org.smartbit4all.api.localauthentication.bean.LocalAuthenticationLoginRequest orgSmartbit4allApiLocalauthenticationBeanLocalAuthenticationLoginRequest) throws Exception {
-        return getDelegate().login(orgSmartbit4allApiLocalauthenticationBeanLocalAuthenticationLoginRequest);
+    default ResponseEntity<Void> login(@ApiParam(value = "", required = true) @Valid @RequestBody LocalAuthenticationLoginRequest localAuthenticationLoginRequest) throws Exception {
+        return getDelegate().login(localAuthenticationLoginRequest);
     }
 
 

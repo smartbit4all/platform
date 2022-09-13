@@ -1,5 +1,7 @@
 package org.smartbit4all.api.session.restserver;
 
+import org.smartbit4all.api.session.bean.GetAuthenticationProvidersResponse;
+import org.smartbit4all.api.session.bean.SessionInfoData;
 import io.swagger.annotations.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -31,7 +33,7 @@ public interface SessionApiDelegate {
      *         or Error occured while fetching the session data (status code 500)
      * @see SessionApi#getAuthenticationProviders
      */
-    default ResponseEntity<org.smartbit4all.api.session.bean.GetAuthenticationProvidersResponse> getAuthenticationProviders() throws Exception {
+    default ResponseEntity<GetAuthenticationProvidersResponse> getAuthenticationProviders() throws Exception {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
@@ -54,7 +56,7 @@ public interface SessionApiDelegate {
      *         or Error occured while fetching the session data (status code 500)
      * @see SessionApi#getSession
      */
-    default ResponseEntity<org.smartbit4all.api.session.bean.SessionInfoData> getSession() throws Exception {
+    default ResponseEntity<SessionInfoData> getSession() throws Exception {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
@@ -75,7 +77,7 @@ public interface SessionApiDelegate {
      *         or Error during session creation (status code 500)
      * @see SessionApi#startSession
      */
-    default ResponseEntity<org.smartbit4all.api.session.bean.SessionInfoData> startSession() throws Exception {
+    default ResponseEntity<SessionInfoData> startSession() throws Exception {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {

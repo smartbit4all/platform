@@ -1,5 +1,7 @@
 package org.smartbit4all.api.navigation.restserver;
 
+import org.smartbit4all.api.navigation.bean.NavigationEntry;
+import org.smartbit4all.api.navigation.bean.NavigationResponse;
 import java.net.URI;
 import io.swagger.annotations.*;
 import org.springframework.http.HttpStatus;
@@ -31,7 +33,7 @@ public interface NavigationApiDelegate {
      * @return The navigation entry if we found it or null if missing (status code 200)
      * @see NavigationApi#getEntry
      */
-    default ResponseEntity<org.smartbit4all.api.navigation.bean.NavigationEntry> getEntry(URI entryMetaUri,
+    default ResponseEntity<NavigationEntry> getEntry(URI entryMetaUri,
         URI objectUri) throws Exception {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
@@ -54,7 +56,7 @@ public interface NavigationApiDelegate {
      * @return The map of the references by the URI of association meta we passed in the associations parameter. (status code 200)
      * @see NavigationApi#navigate
      */
-    default ResponseEntity<List<org.smartbit4all.api.navigation.bean.NavigationResponse>> navigate(URI objectUri,
+    default ResponseEntity<List<NavigationResponse>> navigate(URI objectUri,
         List<URI> associationMetaUris) throws Exception {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {

@@ -5,6 +5,8 @@
  */
 package org.smartbit4all.api.navigation.restserver;
 
+import org.smartbit4all.api.navigation.bean.NavigationEntry;
+import org.smartbit4all.api.navigation.bean.NavigationResponse;
 import java.net.URI;
 import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
@@ -32,16 +34,16 @@ public interface NavigationApi {
      * @param objectUri  (required)
      * @return The navigation entry if we found it or null if missing (status code 200)
      */
-    @ApiOperation(value = "Retrieve the entries from the navigations.", nickname = "getEntry", notes = "", response = org.smartbit4all.api.navigation.bean.NavigationEntry.class, tags={ "Navigation", })
+    @ApiOperation(value = "Retrieve the entries from the navigations.", nickname = "getEntry", notes = "", response = NavigationEntry.class, tags={ "Navigation", })
     @ApiResponses(value = { 
-        @ApiResponse(code = 200, message = "The navigation entry if we found it or null if missing", response = org.smartbit4all.api.navigation.bean.NavigationEntry.class) })
+        @ApiResponse(code = 200, message = "The navigation entry if we found it or null if missing", response = NavigationEntry.class) })
     @RequestMapping(
         method = RequestMethod.POST,
         value = "/entry",
         produces = { "application/json" },
         consumes = { "application/x-www-form-urlencoded" }
     )
-    default ResponseEntity<org.smartbit4all.api.navigation.bean.NavigationEntry> getEntry(@ApiParam(value = "", required = true) @Valid @RequestPart(value = "entryMetaUri", required = true) URI entryMetaUri,@ApiParam(value = "", required = true) @Valid @RequestPart(value = "objectUri", required = true) URI objectUri) throws Exception {
+    default ResponseEntity<NavigationEntry> getEntry(@ApiParam(value = "", required = true) @Valid @RequestPart(value = "entryMetaUri", required = true) URI entryMetaUri,@ApiParam(value = "", required = true) @Valid @RequestPart(value = "objectUri", required = true) URI objectUri) throws Exception {
         return getDelegate().getEntry(entryMetaUri, objectUri);
     }
 
@@ -53,16 +55,16 @@ public interface NavigationApi {
      * @param associationMetaUris The list of associations to identify the direction we want to navigate. If we skip this parameter (null) then we will have all the associations defined in the meta (optional)
      * @return The map of the references by the URI of association meta we passed in the associations parameter. (status code 200)
      */
-    @ApiOperation(value = "Queries all data sources to populate the associations starting from the given entry.", nickname = "navigate", notes = "", response = org.smartbit4all.api.navigation.bean.NavigationResponse.class, responseContainer = "List", tags={ "Navigation", })
+    @ApiOperation(value = "Queries all data sources to populate the associations starting from the given entry.", nickname = "navigate", notes = "", response = NavigationResponse.class, responseContainer = "List", tags={ "Navigation", })
     @ApiResponses(value = { 
-        @ApiResponse(code = 200, message = "The map of the references by the URI of association meta we passed in the associations parameter.", response = org.smartbit4all.api.navigation.bean.NavigationResponse.class, responseContainer = "List") })
+        @ApiResponse(code = 200, message = "The map of the references by the URI of association meta we passed in the associations parameter.", response = NavigationResponse.class, responseContainer = "List") })
     @RequestMapping(
         method = RequestMethod.POST,
         value = "/navigate",
         produces = { "application/json" },
         consumes = { "application/x-www-form-urlencoded" }
     )
-    default ResponseEntity<List<org.smartbit4all.api.navigation.bean.NavigationResponse>> navigate(@ApiParam(value = "The URI of the api object that is the starting point of the navigation. It must be a valid URI that can be the starting point of the associations we provided.", required = true) @Valid @RequestPart(value = "objectUri", required = true) URI objectUri,@ApiParam(value = "The list of associations to identify the direction we want to navigate. If we skip this parameter (null) then we will have all the associations defined in the meta") @Valid @RequestPart(value = "associationMetaUris", required = false) List<URI> associationMetaUris) throws Exception {
+    default ResponseEntity<List<NavigationResponse>> navigate(@ApiParam(value = "The URI of the api object that is the starting point of the navigation. It must be a valid URI that can be the starting point of the associations we provided.", required = true) @Valid @RequestPart(value = "objectUri", required = true) URI objectUri,@ApiParam(value = "The list of associations to identify the direction we want to navigate. If we skip this parameter (null) then we will have all the associations defined in the meta") @Valid @RequestPart(value = "associationMetaUris", required = false) List<URI> associationMetaUris) throws Exception {
         return getDelegate().navigate(objectUri, associationMetaUris);
     }
 
