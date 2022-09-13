@@ -10,6 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.view.bean.ViewContext;
+import org.smartbit4all.api.view.bean.ViewContextUpdate;
+import org.smartbit4all.api.view.bean.ViewStateUpdate;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,8 +91,18 @@ public class ViewContextServiceImpl implements ViewContextService {
   }
 
   @Override
-  public void updateViewContext(UUID uuid, UnaryOperator<ViewContext> update) {
-    storage.get().update(getViewContextUri(uuid), ViewContext.class, update);
+  public void updateViewContext(ViewContextUpdate updates) {
+    storage.get().update(getViewContextUri(updates.getUuid()), ViewContext.class,
+        c -> {
+          updates.getUpdates().forEach(u -> updateViewState(c, u));
+          return c;
+        });
   }
 
+  private void updateViewState(ViewContext context, ViewStateUpdate update) {
+    context.getViews().stream()
+        .filter(v -> update.getUuid().equals(v.getUuid()))
+        .findFirst()
+        .ifPresent(view -> view.setState(update.getState()));
+  }
 }

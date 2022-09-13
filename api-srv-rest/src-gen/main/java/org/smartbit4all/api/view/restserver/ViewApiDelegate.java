@@ -1,6 +1,8 @@
 package org.smartbit4all.api.view.restserver;
 
 import java.util.UUID;
+import org.smartbit4all.api.view.bean.ViewContext;
+import org.smartbit4all.api.view.bean.ViewContextUpdate;
 import io.swagger.annotations.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -32,7 +34,7 @@ public interface ViewApiDelegate {
      *         or Error occured while fetching the session data (status code 500)
      * @see ViewApi#getViewContext
      */
-    default ResponseEntity<org.smartbit4all.api.view.bean.ViewContext> getViewContext(UUID uuid) throws Exception {
+    default ResponseEntity<ViewContext> getViewContext(UUID uuid) throws Exception {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
@@ -49,15 +51,13 @@ public interface ViewApiDelegate {
     /**
      * POST /context : Updates an existing view context
      *
-     * @param uuid ViewContext&#39;s unique identifier. (required)
-     * @param orgSmartbit4allApiViewBeanViewContext  (required)
+     * @param viewContextUpdate  (required)
      * @return Context updated (status code 200)
      *         or The context does not exists with the given uuid (status code 404)
      *         or Error during context update (status code 500)
      * @see ViewApi#updateViewContext
      */
-    default ResponseEntity<org.smartbit4all.api.view.bean.ViewContext> updateViewContext(UUID uuid,
-        org.smartbit4all.api.view.bean.ViewContext orgSmartbit4allApiViewBeanViewContext) throws Exception {
+    default ResponseEntity<ViewContext> updateViewContext(ViewContextUpdate viewContextUpdate) throws Exception {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {

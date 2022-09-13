@@ -3,6 +3,7 @@ package org.smartbit4all.api.view;
 import java.util.UUID;
 import java.util.function.UnaryOperator;
 import org.smartbit4all.api.view.bean.ViewContext;
+import org.smartbit4all.api.view.bean.ViewContextUpdate;
 
 public interface ViewContextService {
 
@@ -22,6 +23,6 @@ public interface ViewContextService {
 
   void updateCurrentViewContext(UnaryOperator<ViewContext> update);
 
-  void updateViewContext(UUID uuid, UnaryOperator<ViewContext> update);
+  void updateViewContext(ViewContextUpdate viewContextUpdate);
 
 }

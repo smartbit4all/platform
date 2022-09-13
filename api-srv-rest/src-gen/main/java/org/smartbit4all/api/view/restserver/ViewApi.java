@@ -6,6 +6,8 @@
 package org.smartbit4all.api.view.restserver;
 
 import java.util.UUID;
+import org.smartbit4all.api.view.bean.ViewContext;
+import org.smartbit4all.api.view.bean.ViewContextUpdate;
 import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -33,9 +35,9 @@ public interface ViewApi {
      *         or The context does not exists with the given uuid (status code 404)
      *         or Error occured while fetching the session data (status code 500)
      */
-    @ApiOperation(value = "Returns the existing session info", nickname = "getViewContext", notes = "", response = org.smartbit4all.api.view.bean.ViewContext.class, tags={ "View", })
+    @ApiOperation(value = "Returns the existing session info", nickname = "getViewContext", notes = "", response = ViewContext.class, tags={ "View", })
     @ApiResponses(value = { 
-        @ApiResponse(code = 200, message = "Returns ViewContext by unique identifier", response = org.smartbit4all.api.view.bean.ViewContext.class),
+        @ApiResponse(code = 200, message = "Returns ViewContext by unique identifier", response = ViewContext.class),
         @ApiResponse(code = 404, message = "The context does not exists with the given uuid"),
         @ApiResponse(code = 500, message = "Error occured while fetching the session data") })
     @RequestMapping(
@@ -43,7 +45,7 @@ public interface ViewApi {
         value = "/context",
         produces = { "application/json" }
     )
-    default ResponseEntity<org.smartbit4all.api.view.bean.ViewContext> getViewContext(@ApiParam(value = "ViewContext's unique identifier.", required = true) @PathVariable("uuid") UUID uuid) throws Exception {
+    default ResponseEntity<ViewContext> getViewContext(@ApiParam(value = "ViewContext's unique identifier.", required = true) @PathVariable("uuid") UUID uuid) throws Exception {
         return getDelegate().getViewContext(uuid);
     }
 
@@ -51,15 +53,14 @@ public interface ViewApi {
     /**
      * POST /context : Updates an existing view context
      *
-     * @param uuid ViewContext&#39;s unique identifier. (required)
-     * @param orgSmartbit4allApiViewBeanViewContext  (required)
+     * @param viewContextUpdate  (required)
      * @return Context updated (status code 200)
      *         or The context does not exists with the given uuid (status code 404)
      *         or Error during context update (status code 500)
      */
-    @ApiOperation(value = "Updates an existing view context", nickname = "updateViewContext", notes = "", response = org.smartbit4all.api.view.bean.ViewContext.class, tags={ "View", })
+    @ApiOperation(value = "Updates an existing view context", nickname = "updateViewContext", notes = "", response = ViewContext.class, tags={ "View", })
     @ApiResponses(value = { 
-        @ApiResponse(code = 200, message = "Context updated", response = org.smartbit4all.api.view.bean.ViewContext.class),
+        @ApiResponse(code = 200, message = "Context updated", response = ViewContext.class),
         @ApiResponse(code = 404, message = "The context does not exists with the given uuid"),
         @ApiResponse(code = 500, message = "Error during context update") })
     @RequestMapping(
@@ -68,8 +69,8 @@ public interface ViewApi {
         produces = { "application/json" },
         consumes = { "application/json" }
     )
-    default ResponseEntity<org.smartbit4all.api.view.bean.ViewContext> updateViewContext(@ApiParam(value = "ViewContext's unique identifier.", required = true) @PathVariable("uuid") UUID uuid,@ApiParam(value = "", required = true) @Valid @RequestBody org.smartbit4all.api.view.bean.ViewContext orgSmartbit4allApiViewBeanViewContext) throws Exception {
-        return getDelegate().updateViewContext(uuid, orgSmartbit4allApiViewBeanViewContext);
+    default ResponseEntity<ViewContext> updateViewContext(@ApiParam(value = "", required = true) @Valid @RequestBody ViewContextUpdate viewContextUpdate) throws Exception {
+        return getDelegate().updateViewContext(viewContextUpdate);
     }
 
 }

@@ -15,20 +15,12 @@ paths:
       - View
       summary: Updates an existing view context
       operationId: 'updateViewContext'
-      parameters: 
-        - in: path
-          name: uuid
-          schema:
-            type: string
-            format: uuid
-          required: true
-          description: ViewContext's unique identifier.
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ViewContext'
+              $ref: '#/components/schemas/ViewContextUpdate'
       responses:
         '200':
           description: 'Context updated'
@@ -170,6 +162,29 @@ components:
         - confirm
         - reject
         - cancel
+    ViewStateUpdate:
+      description: State update of a view.
+      type: object
+      properties:
+        uuid:
+          description: ViewContext's unique identifier.
+          type: string
+          format: uuid
+        state:
+          description: Updated state of View.
+          $ref: '#/components/schemas/ViewState'
+    ViewContextUpdate:
+      description: State update of a ViewContext.
+      type: object
+      properties:
+        uuid:
+          description: ViewContext's unique identifier.
+          type: string
+          format: uuid
+        updates:
+          type: array
+          items:
+            $ref: '#/components/schemas/ViewStateUpdate'
     ViewResponse:
       description: Wrapper class for a result object and a ViewContext object.
       type: object
