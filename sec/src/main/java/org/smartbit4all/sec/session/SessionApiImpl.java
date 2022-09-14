@@ -2,6 +2,7 @@ package org.smartbit4all.sec.session;
 
 import java.net.URI;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -218,7 +219,16 @@ public class SessionApiImpl implements SessionApi {
   public void addSessionAuthentication(URI sessionUri, AccountInfo accountInfo) {
     Objects.requireNonNull(sessionUri, EXPMSG_MISSING_SESSIONURI);
     Objects.requireNonNull(accountInfo, "accountInfo can not be null!");
-    storage.get().update(sessionUri, Session.class, s -> s.addAuthenticationsItem(accountInfo));
+    storage.get().update(sessionUri, Session.class, s -> {
+      List<AccountInfo> authentications = s.getAuthentications();
+      if (authentications == null) {
+        authentications = new ArrayList<>();
+        s.setAuthentications(authentications);
+      }
+      authentications.removeIf(a -> accountInfo.getKind().equals(a.getKind()));
+      authentications.add(accountInfo);
+      return s;
+    });
   }
 
   @Override

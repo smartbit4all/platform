@@ -2,7 +2,7 @@ package org.smartbit4all.api.localauthentication.restserver.impl;
 
 import org.smartbit4all.api.localauthentication.bean.LocalAuthenticationLoginRequest;
 import org.smartbit4all.api.localauthentication.restserver.LocalAuthenticationApiDelegate;
-import org.smartbit4all.sec.authentication.LocalAuthenticationService;
+import org.smartbit4all.sec.localauth.LocalAuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -19,4 +19,9 @@ public class SessionAuthPrincipal implements Sb4AuthPrincipal {
   public static SessionAuthPrincipal of(URI sessionUri) {
     return new SessionAuthPrincipal(sessionUri);
   }
+
+  @Override
+  public String getName() {
+    return sessionUri.toString();
+  }
 }

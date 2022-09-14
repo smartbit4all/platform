@@ -1,4 +1,4 @@
-package org.smartbit4all.sec.authentication;
+package org.smartbit4all.sec.localauth;
 
 import java.util.HashMap;
 import java.util.List;
@@ -6,6 +6,7 @@ import java.util.Map;
 import org.smartbit4all.api.session.bean.AccountInfo;
 import org.smartbit4all.api.session.bean.AuthenticationProviderData;
 import org.smartbit4all.api.session.bean.Session;
+import org.smartbit4all.sec.authentication.AuthenticationDataProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.ObjectUtils;
 
