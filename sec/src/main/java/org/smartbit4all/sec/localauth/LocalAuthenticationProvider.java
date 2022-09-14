@@ -1,4 +1,4 @@
-package org.smartbit4all.sec.authentication;
+package org.smartbit4all.sec.localauth;
 
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.bean.Session;

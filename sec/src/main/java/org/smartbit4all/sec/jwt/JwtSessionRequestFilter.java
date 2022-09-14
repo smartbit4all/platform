@@ -3,6 +3,7 @@ package org.smartbit4all.sec.jwt;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
@@ -16,13 +17,13 @@ import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.bean.Session;
 import org.smartbit4all.sec.authprincipal.SessionAuthPrincipal;
 import org.smartbit4all.sec.token.SessionBasedAuthTokenProvider;
+import org.smartbit4all.sec.utils.SecurityContextUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -51,11 +52,11 @@ public class JwtSessionRequestFilter extends OncePerRequestFilter {
 
   public JwtSessionRequestFilter() {}
 
-  public JwtSessionRequestFilter(List<SessionBasedAuthTokenProvider> authTokenProviders) {
+  public JwtSessionRequestFilter(SessionBasedAuthTokenProvider... authTokenProviders) {
     if (ObjectUtils.isEmpty(authTokenProviders)) {
       throw new IllegalArgumentException("authTokenProviders can not be null nor empty!");
     }
-    this.authTokenProviders = authTokenProviders;
+    this.authTokenProviders = Arrays.asList(authTokenProviders);
   }
 
   @Override
@@ -89,37 +90,12 @@ public class JwtSessionRequestFilter extends OncePerRequestFilter {
   }
 
   private void setAuthToken(HttpServletRequest request, String sessionUriTxt) {
-    Session session =
-        sessionApi.readSession(URI.create(sessionUriTxt));
-    if (session != null) {
-      log.debug("Session found to set in security context: {}", session);
-      log.debug("Looking for a SessionBasedAuthTokenProvider matching the session.");
-
-      SessionBasedAuthTokenProvider tokenProvider = authTokenProviders.stream()
-          .filter(p -> p.supports(session))
-          .findFirst()
-          .orElse(null);
-
-      AbstractAuthenticationToken authentication = null;
-      if (tokenProvider == null) {
-        log.debug(
-            "There is no SessionBasedAuthTokenProvider for the given session. Setting anonymous token! session:\n{}",
-            session);
-        authentication = anonymousAuthTokenProvider.apply(session);
-      } else {
-        authentication = tokenProvider.getToken(session);
-      }
-
-      Objects.requireNonNull(authentication,
-          "The provided authentication token can not be null!");
-
-      log.debug("AuthenticationToken has been created for the session with type [{}]",
-          authentication.getClass().getName());
-
-      authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-      SecurityContextHolder.getContext().setAuthentication(authentication);
-    }
+    SecurityContextUtility.setSessionAuthenticationTokenInContext(request, sessionUriTxt,
+        authTokenProviders,
+        anonymousAuthTokenProvider, sessionApi, log);
   }
+
+
 
   /**
    * Registers a {@link SessionBasedAuthTokenProvider} to the filter.

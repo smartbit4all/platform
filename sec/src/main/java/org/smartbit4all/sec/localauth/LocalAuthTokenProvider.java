@@ -1,4 +1,4 @@
-package org.smartbit4all.sec.authentication;
+package org.smartbit4all.sec.localauth;
 
 import java.util.Collection;
 import java.util.List;
