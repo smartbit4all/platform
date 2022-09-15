@@ -6,8 +6,6 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.view.bean.ViewContext;
 import org.smartbit4all.api.view.bean.ViewContextUpdate;
@@ -18,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class ViewContextServiceImpl implements ViewContextService {
 
-  private static final Logger log = LoggerFactory.getLogger(ViewContextServiceImpl.class);
+  private static final ThreadLocal<UUID> currentViewContextUuid = new ThreadLocal<>();
 
   private static final String SCHEMA = "viewcontext";
 
@@ -42,8 +40,26 @@ public class ViewContextServiceImpl implements ViewContextService {
   };
 
   @Override
+  public ViewContext createViewContext() {
+    UUID uuid = UUID.randomUUID();
+    URI uri = storage.get().saveAsNew(
+        new ViewContext()
+            .uuid(uuid));
+    sessionApi.addViewContext(uuid, uri);
+    return readViewContext(uri);
+  }
+
+  @Override
+  public void setCurrentViewContext(UUID uuid) {
+    if (uuid == null) {
+      currentViewContextUuid.remove();
+    }
+    currentViewContextUuid.set(uuid);
+  }
+
+  @Override
   public ViewContext getCurrentViewContext() {
-    return readViewContext(getCurrentViewContextUri());
+    return readViewContext(getViewContextUri(currentViewContextUuid.get()));
   }
 
   @Override
@@ -58,23 +74,6 @@ public class ViewContextServiceImpl implements ViewContextService {
     return storage.get().read(uri, ViewContext.class);
   }
 
-  private URI getCurrentViewContextUri() {
-    Map<String, URI> viewContexts = sessionApi.currentSession().getViewContexts();
-    if (viewContexts.isEmpty()) {
-      // TODO this is not the best here, preliminary lazy stuff
-      UUID uuid = UUID.randomUUID();
-      URI uri = storage.get().saveAsNew(
-          new ViewContext()
-              .uuid(uuid));
-      sessionApi.addViewContext(uuid, uri);
-      return uri;
-    }
-    if (viewContexts.size() > 1) {
-      log.error("More than 1 viewContext is not handled currently!");
-    }
-    return viewContexts.values().iterator().next();
-  }
-
   private URI getViewContextUri(UUID uuid) {
     Objects.requireNonNull(uuid, "ViewContext UUID must be not null");
     Map<String, URI> viewContexts = sessionApi.currentSession().getViewContexts();
@@ -87,7 +86,8 @@ public class ViewContextServiceImpl implements ViewContextService {
 
   @Override
   public void updateCurrentViewContext(UnaryOperator<ViewContext> update) {
-    storage.get().update(getCurrentViewContextUri(), ViewContext.class, update);
+    storage.get().update(getViewContextUri(currentViewContextUuid.get()), ViewContext.class,
+        update);
   }
 
   @Override

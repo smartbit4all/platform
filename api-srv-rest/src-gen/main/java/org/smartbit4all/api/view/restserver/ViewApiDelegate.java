@@ -26,6 +26,26 @@ public interface ViewApiDelegate {
     }
 
     /**
+     * POST /context : Creates a new ViewContext
+     *
+     * @return Context created (status code 200)
+     * @see ViewApi#createViewContext
+     */
+    default ResponseEntity<ViewContext> createViewContext() throws Exception {
+        getRequest().ifPresent(request -> {
+            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"uri\" : \"https://openapi-generator.tech\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"views\" : [ { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"branchUri\" : \"https://openapi-generator.tech\", \"objectUri\" : \"https://openapi-generator.tech\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" } }, { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"branchUri\" : \"https://openapi-generator.tech\", \"objectUri\" : \"https://openapi-generator.tech\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" } } ] }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+            }
+        });
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+
+    }
+
+    /**
      * GET /context : Returns the existing session info
      *
      * @param uuid ViewContext&#39;s unique identifier. (required)
@@ -49,7 +69,7 @@ public interface ViewApiDelegate {
     }
 
     /**
-     * POST /context : Updates an existing view context
+     * PUT /context : Updates an existing ViewContext
      *
      * @param viewContextUpdate  (required)
      * @return Context updated (status code 200)

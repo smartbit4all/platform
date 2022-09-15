@@ -8,11 +8,25 @@ import org.smartbit4all.api.view.bean.ViewContextUpdate;
 public interface ViewContextService {
 
   /**
+   * Creates a new viewContext and registers it in the Session.
+   * 
+   * @return
+   */
+  ViewContext createViewContext();
+
+  /**
    * Returns current ViewContext.
    * 
    * @return
    */
   ViewContext getCurrentViewContext();
+
+  /**
+   * Sets current viewContext (by uuid).
+   * 
+   * @param uuid
+   */
+  void setCurrentViewContext(UUID uuid);
 
   /**
    * Returns ViewContext by URI.
