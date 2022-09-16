@@ -46,7 +46,7 @@ public interface ViewApi {
 
 
     /**
-     * GET /context : Returns the existing session info
+     * GET /context/{uuid} : Returns the existing session info
      *
      * @param uuid ViewContext&#39;s unique identifier. (required)
      * @return Returns ViewContext by unique identifier (status code 200)
@@ -60,7 +60,7 @@ public interface ViewApi {
         @ApiResponse(code = 500, message = "Error occured while fetching the session data") })
     @RequestMapping(
         method = RequestMethod.GET,
-        value = "/context",
+        value = "/context/{uuid}",
         produces = { "application/json" }
     )
     default ResponseEntity<ViewContext> getViewContext(@ApiParam(value = "ViewContext's unique identifier.", required = true) @PathVariable("uuid") UUID uuid) throws Exception {

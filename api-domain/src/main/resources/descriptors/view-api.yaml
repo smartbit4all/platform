@@ -44,6 +44,7 @@ paths:
           description: 'The context does not exists with the given uuid'
         '500':
           description: 'Error during context update'
+  /context/{uuid}:
     get:
       tags:
       - View

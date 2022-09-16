@@ -46,7 +46,7 @@ public interface ViewApiDelegate {
     }
 
     /**
-     * GET /context : Returns the existing session info
+     * GET /context/{uuid} : Returns the existing session info
      *
      * @param uuid ViewContext&#39;s unique identifier. (required)
      * @return Returns ViewContext by unique identifier (status code 200)
