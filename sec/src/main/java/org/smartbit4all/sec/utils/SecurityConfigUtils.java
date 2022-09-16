@@ -55,7 +55,7 @@ public class SecurityConfigUtils {
     resolver.setAuthorizationRequestCustomizer(builder -> {
       URI sessionUri = URI.create("no_session");
       try {
-        sessionUri = sessionApi.currentSession().getUri();
+        sessionUri = sessionApi.getSessionUri();
       } catch (Exception e) {
         // TODO: add proper validation
       }

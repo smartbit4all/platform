@@ -65,7 +65,7 @@ public class Session {
   private URI user;
 
   public static final String PARAMETERS = "parameters";
-  private Map<String, String> parameters = null;
+  private Map<String, String> parameters = new HashMap<>();
 
   public static final String VIEW_CONTEXTS = "viewContexts";
   private Map<String, URI> viewContexts = new HashMap<>();
@@ -223,9 +223,6 @@ public class Session {
   }
 
   public Session putParametersItem(String key, String parametersItem) {
-    if (this.parameters == null) {
-      this.parameters = new HashMap<>();
-    }
     this.parameters.put(key, parametersItem);
     return this;
   }
@@ -234,10 +231,11 @@ public class Session {
    * Get parameters
    * @return parameters
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+  @javax.annotation.Nonnull
+  @NotNull
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(PARAMETERS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public Map<String, String> getParameters() {
     return parameters;
@@ -245,7 +243,7 @@ public class Session {
 
 
   @JsonProperty(PARAMETERS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setParameters(Map<String, String> parameters) {
     this.parameters = parameters;
   }

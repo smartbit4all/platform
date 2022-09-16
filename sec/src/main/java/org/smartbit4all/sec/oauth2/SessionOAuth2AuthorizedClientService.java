@@ -8,7 +8,7 @@ import java.net.URI;
 import java.util.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.smartbit4all.api.session.SessionApi;
+import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.api.session.bean.Session;
 import org.smartbit4all.sec.authprincipal.SessionAuthPrincipal;
 import org.smartbit4all.sec.authprincipal.SessionAuthToken;
@@ -21,6 +21,10 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import io.jsonwebtoken.lang.Assert;
 
+/**
+ * Handles the {@link OAuth2AuthorizedClient}s, storing them in the {@link Session}. When a session
+ * is not available, it uses the default {@link InMemoryOAuth2AuthorizedClientService}.
+ */
 public class SessionOAuth2AuthorizedClientService implements OAuth2AuthorizedClientService {
 
   private static final Logger log =
@@ -29,7 +33,7 @@ public class SessionOAuth2AuthorizedClientService implements OAuth2AuthorizedCli
   private static final String AUTHORIZED_CLIENT_KEY = "OAuth2AuthorizedClient-";
 
   @Autowired
-  private SessionApi sessionApi;
+  private SessionManagementApi sessionManagementApi;
 
   private final ClientRegistrationRepository clientRegistrationRepository;
   private final InMemoryOAuth2AuthorizedClientService inMemoryClientService;
@@ -75,9 +79,8 @@ public class SessionOAuth2AuthorizedClientService implements OAuth2AuthorizedCli
     Assert.notNull(principal, "principal cannot be null");
     if (principal instanceof SessionAuthToken) {
       SessionAuthPrincipal sessionPrincipal = ((SessionAuthToken) principal).getPrincipal();
-      Session session = sessionApi.readSession(sessionPrincipal.getSessionUri());
       String clientRegistrationId = authorizedClient.getClientRegistration().getRegistrationId();
-      sessionApi.setSessionParameter(session.getUri(),
+      sessionManagementApi.setSessionParameter(sessionPrincipal.getSessionUri(),
           getAuthorizedClientParameterKey(clientRegistrationId),
           serializeClient(authorizedClient));
     } else {
@@ -95,7 +98,7 @@ public class SessionOAuth2AuthorizedClientService implements OAuth2AuthorizedCli
           principalName);
       inMemoryClientService.removeAuthorizedClient(clientRegistrationId, principalName);
     }
-    sessionApi.removeSessionParameter(session.getUri(),
+    sessionManagementApi.removeSessionParameter(session.getUri(),
         getAuthorizedClientParameterKey(clientRegistrationId));
   }
 
@@ -103,13 +106,14 @@ public class SessionOAuth2AuthorizedClientService implements OAuth2AuthorizedCli
     URI sessionUri = null;
     try {
       sessionUri = URI.create(principalName);
-      return sessionApi.readSession(sessionUri);
+      return sessionManagementApi.readSession(sessionUri);
     } catch (Exception e) {
       // do nothing here when the principalName does not represent a session
       return null;
     }
   }
 
+  @SuppressWarnings("unchecked")
   private <T extends OAuth2AuthorizedClient> T deserializeClient(String clientTxt) {
     if (clientTxt == null) {
       return null;

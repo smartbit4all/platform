@@ -65,7 +65,7 @@ components:
   schemas:
     Session:
       type: object
-      required: [authentications,viewContexts]
+      required: [authentications, parameters, viewContexts]
       properties:
         uri:
           type: string

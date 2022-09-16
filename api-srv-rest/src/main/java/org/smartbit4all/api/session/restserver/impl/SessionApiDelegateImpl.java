@@ -1,11 +1,14 @@
 package org.smartbit4all.api.session.restserver.impl;
 
+import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.session.SessionApi;
+import org.smartbit4all.api.session.SessionApi.NoCurrentSessionException;
+import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.api.session.bean.AuthenticationProviderData;
 import org.smartbit4all.api.session.bean.GetAuthenticationProvidersResponse;
 import org.smartbit4all.api.session.bean.Session;
@@ -23,6 +26,9 @@ public class SessionApiDelegateImpl implements SessionApiDelegate {
   private static final Logger log = LoggerFactory.getLogger(SessionApiDelegateImpl.class);
 
   @Autowired(required = false) // TODO remove 'required=false'
+  private SessionManagementApi sessionManagementApi;
+
+  @Autowired(required = false) // TODO remove 'required=false'
   private SessionApi sessionApi;
 
   @Autowired(required = false) // TODO remove 'required=false'
@@ -37,7 +43,7 @@ public class SessionApiDelegateImpl implements SessionApiDelegate {
   @Override
   public ResponseEntity<SessionInfoData> startSession() throws Exception {
 
-    SessionInfoData sessionInfoData = sessionApi.startSession();
+    SessionInfoData sessionInfoData = sessionManagementApi.startSession();
 
     return ResponseEntity.ok(sessionInfoData);
   }
@@ -49,7 +55,14 @@ public class SessionApiDelegateImpl implements SessionApiDelegate {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
-    Session currentSession = sessionApi.currentSession();
+    URI sessionUri = null;
+    try {
+      sessionUri = sessionApi.getSessionUri();
+    } catch (NoCurrentSessionException e) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+
+    Session currentSession = sessionManagementApi.readSession(sessionUri);
     if (currentSession == null) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
@@ -71,15 +84,21 @@ public class SessionApiDelegateImpl implements SessionApiDelegate {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
-    Session session = sessionApi.currentSession();
+    URI sessionUri = null;
+    try {
+      sessionUri = sessionApi.getSessionUri();
+    } catch (NoCurrentSessionException e) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
 
-    if (session == null) {
+    Session currentSession = sessionManagementApi.readSession(sessionUri);
+    if (currentSession == null) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
     List<AuthenticationProviderData> poviderData = authenticationDataProviders.stream()
-        .filter(p -> p.supports(session))
-        .map(p -> p.getProviderData(session))
+        .filter(p -> p.supports(currentSession))
+        .map(p -> p.getProviderData(currentSession))
         .collect(Collectors.toList());
 
     if (ObjectUtils.isEmpty(poviderData)) {

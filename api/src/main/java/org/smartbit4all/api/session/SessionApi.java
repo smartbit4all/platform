@@ -2,42 +2,79 @@ package org.smartbit4all.api.session;
 
 import java.net.URI;
 import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.session.bean.AccountInfo;
-import org.smartbit4all.api.session.bean.Session;
-import org.smartbit4all.api.session.bean.SessionInfoData;
 
+/**
+ *
+ * This interface provides methods to access information from the current session. <br/>
+ * In case there is no session initialized or it is not reachable {@link NoCurrentSessionException}
+ * is thrown!
+ * 
+ */
 public interface SessionApi {
 
-  static final String SCHEMA = "usersession";
+  User getUser();
 
-  /**
-   * Starts a session creating a unique sid.
-   */
-  SessionInfoData startSession();
+  URI getUserUri();
 
-  User currentUser();
+  URI getSessionUri();
 
-  Session currentSession();
+  OffsetDateTime getExpiration();
 
-  Session readSession(URI sessionUri);
+  String getLocale();
 
-  void setSessionParameter(URI sessionUri, String key, String value);
+  List<AccountInfo> getAuthentications();
 
-  void removeSessionParameter(URI sessionUri, String key);
+  AccountInfo getAuthentication(String kind);
 
-  void setSessionLocale(URI sessionUri, String locale);
+  String getParameter(String key);
 
-  void setSessionExpiration(URI sessionUri, OffsetDateTime expiration);
+  void setParameter(String key, String value);
 
-  void addSessionAuthentication(URI sessionUri, AccountInfo accountInfo);
+  String removeParameter(String key);
 
-  void removeSessionAuthentication(URI sessionUri, String kind);
+  <T> T getParameterObject(String key, Class<T> clazz);
 
-  void setSessionUser(URI sessionUri, URI userUri);
+  <T> void setParameterObject(String key, T value);
+
+  Map<String, URI> getViewContexts();
 
   // this is very preliminary
   void addViewContext(UUID viewContextUuid, URI viewContextUri);
+
+  /**
+   * Dedicated exception to handle missing current sessions using the {@link SessionApi}
+   */
+  public static class NoCurrentSessionException extends RuntimeException {
+
+    private static final long serialVersionUID = -608220389455960075L;
+
+    public NoCurrentSessionException(String msg) {
+      super(msg);
+    }
+
+    public NoCurrentSessionException() {
+      super();
+    }
+
+    public NoCurrentSessionException(String message, Throwable cause, boolean enableSuppression,
+        boolean writableStackTrace) {
+      super(message, cause, enableSuppression, writableStackTrace);
+    }
+
+    public NoCurrentSessionException(String message, Throwable cause) {
+      super(message, cause);
+    }
+
+    public NoCurrentSessionException(Throwable cause) {
+      super(cause);
+    }
+
+
+  }
 
 }

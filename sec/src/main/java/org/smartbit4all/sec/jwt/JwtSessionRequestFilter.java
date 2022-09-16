@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.smartbit4all.api.session.SessionApi;
+import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.api.session.bean.Session;
 import org.smartbit4all.sec.authprincipal.SessionAuthPrincipal;
 import org.smartbit4all.sec.token.SessionBasedAuthTokenProvider;
@@ -41,7 +41,7 @@ public class JwtSessionRequestFilter extends OncePerRequestFilter {
   private static final Logger log = LoggerFactory.getLogger(JwtSessionRequestFilter.class);
 
   @Autowired
-  private SessionApi sessionApi;
+  private SessionManagementApi sessionManagementApi;
 
   @Autowired
   private JwtUtil jwtUtil;
@@ -92,7 +92,7 @@ public class JwtSessionRequestFilter extends OncePerRequestFilter {
   private void setAuthToken(HttpServletRequest request, String sessionUriTxt) {
     SecurityContextUtility.setSessionAuthenticationTokenInContext(request, sessionUriTxt,
         authTokenProviders,
-        anonymousAuthTokenProvider, sessionApi, log);
+        anonymousAuthTokenProvider, sessionManagementApi, log);
   }
 
 

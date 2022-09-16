@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.org.OrgApi;
 import org.smartbit4all.api.org.bean.User;
-import org.smartbit4all.api.session.SessionApi;
+import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.api.session.bean.AccountInfo;
 import org.smartbit4all.api.session.bean.Session;
 import org.smartbit4all.sec.authentication.DefaultAuthTokenProvider;
@@ -30,12 +30,22 @@ import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepo
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.util.Assert;
 
+/**
+ * On OAuth2 Authorization success:
+ * <ul>
+ * <li>an {@link AccountInfo} is set to the session.</li>
+ * <li>a user uri is set in the session if it was not already</li>
+ * <li>custom Authentication token is set to the security context (replacing the one set by the
+ * spring oath2 handling)</li>
+ * <li>OAuth2AuthorizedClient is saved with the new authentication token</li>
+ * </ul>
+ */
 public class OAuth2SessionAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
   private static final Logger log = LoggerFactory.getLogger(OAuth2SessionAuthSuccessHandler.class);
 
   @Autowired
-  private SessionApi sessionApi;
+  private SessionManagementApi sessionManagementApi;
 
   @Autowired
   private OAuth2AuthorizedClientRepository authorizedClientRepository;
@@ -79,14 +89,14 @@ public class OAuth2SessionAuthSuccessHandler extends SimpleUrlAuthenticationSucc
             authorizedClientRepository.loadAuthorizedClient(registrationId, oauthToken, request);
 
         AccountInfo accountInfo = createDefaultAccountInfo(authorizedClient, oauthToken);
-        sessionApi.addSessionAuthentication(sessionURI, accountInfo);
+        sessionManagementApi.addSessionAuthentication(sessionURI, accountInfo);
 
         setSessionUser(sessionURI, oauthToken);
 
         AbstractAuthenticationToken sessionAuthToken =
             SecurityContextUtility.setSessionAuthenticationTokenInContext(request, sessionUriTxt,
                 authTokenProviders,
-                null, sessionApi, log);
+                null, sessionManagementApi, log);
         authorizedClientRepository.saveAuthorizedClient(authorizedClient, sessionAuthToken, request,
             response);
       }
@@ -100,7 +110,7 @@ public class OAuth2SessionAuthSuccessHandler extends SimpleUrlAuthenticationSucc
 
   private void setSessionUser(URI sessionURI, OAuth2AuthenticationToken oauthToken) {
     String name = oauthToken.getName();
-    Session session = sessionApi.readSession(sessionURI);
+    Session session = sessionManagementApi.readSession(sessionURI);
     if (session.getUser() == null) {
       User user = orgApi.getUserByUsername(name);
       URI userUri = null;
@@ -116,7 +126,7 @@ public class OAuth2SessionAuthSuccessHandler extends SimpleUrlAuthenticationSucc
       } else {
         userUri = user.getUri();
       }
-      sessionApi.setSessionUser(sessionURI, userUri);
+      sessionManagementApi.setSessionUser(sessionURI, userUri);
     }
   }
 

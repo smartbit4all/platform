@@ -1,321 +1,230 @@
 package org.smartbit4all.sec.session;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.net.URI;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.org.OrgApi;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.session.SessionApi;
+import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.api.session.bean.AccountInfo;
 import org.smartbit4all.api.session.bean.Session;
-import org.smartbit4all.api.session.bean.SessionInfoData;
-import org.smartbit4all.domain.data.storage.Storage;
-import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.sec.authprincipal.SessionAuthPrincipal;
-import org.smartbit4all.sec.token.SessionTokenHandler;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.Assert;
+import org.springframework.util.ObjectUtils;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-/**
- * This SessionApi implementation manages sessions with the {@link StorageApi} storing the sessions
- * in a persistent way. The user info is gathered by the {@link OrgApi}. <br/>
- * The SID generated on sessionStart contains the URI of the session used when storing the object.
- */
 public class SessionApiImpl implements SessionApi {
-
-  private static final String EXPMSG_MISSING_SESSIONURI = "sessionUri can not be null!";
 
   private static final Logger log = LoggerFactory.getLogger(SessionApiImpl.class);
 
-  @Autowired
-  private SessionTokenHandler tokenHandler;
+  private static final String ERR_NULLKEY = "key cannot be null";
+  private static final String ERR_NULLVALUE = "value cannot be null";
 
   @Autowired
-  private StorageApi storageApi;
+  private SessionManagementApi sessionManagementApi;
 
   @Autowired
   private OrgApi orgApi;
 
-  @Value("${session.timeout-min:60}")
-  private int timeoutMins;
-
-  private Supplier<URI> defaultUserProvider;
-  private Supplier<Map<String, String>> defaultParametersProvider;
-  private Supplier<String> defaultLocaleProvider;
-  private Supplier<List<AccountInfo>> defaultAccountInfoListProvider;
-
-  private Function<URI, Authentication> authenticationTokenProvider;
-
-  private Supplier<Storage> storage = new Supplier<Storage>() {
-
-    private Storage storageInstance;
-
-    @Override
-    public Storage get() {
-      if (storageInstance == null) {
-        storageInstance = storageApi.get(SCHEMA);
-      }
-      return storageInstance;
-    }
-  };
+  @Autowired
+  private ObjectMapper objectMapper;
 
   @Override
-  public SessionInfoData startSession() {
-
-    Session session = createSession();
-    URI sessionUri = storage.get().saveAsNew(session);
-    log.debug("Session saved!\n{}", session);
-
-    registerSpringSecAuthToken(sessionUri);
-
-    String sid = tokenHandler.createToken(sessionUri.toString(), session.getExpiration());
-    storage.get().update(session.getUri(), Session.class, s -> s.putParametersItem("sid", sid));
-
-    log.debug("Session sid created: {}", sid);
-    return new SessionInfoData()
-        .sid(sid)
-        .expiration(session.getExpiration())
-        .locale(session.getLocale())
-        .authentications(session.getAuthentications());
-  }
-
-  private void registerSpringSecAuthToken(URI sessionUri) {
-    Authentication authenticationToken = null;
-    if (authenticationTokenProvider != null) {
-      authenticationToken = authenticationTokenProvider.apply(sessionUri);
-      Objects.requireNonNull(authenticationToken, "authenticationTokenProvider has returned null!");
-      log.debug(
-          "Atuhentication token has been created by the configured authenticationTokenProvider!");
-    } else {
-      authenticationToken = createAnonymousAuthToken(sessionUri);
-      log.debug("Anonymous atuhentication token has been created!");
-    }
-
-    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-  }
-
-  private Authentication createAnonymousAuthToken(URI sessionUri) {
-    Authentication authenticationToken;
-    SessionAuthPrincipal sessionPrincipal = SessionAuthPrincipal.of(sessionUri);
-    authenticationToken = new AnonymousAuthenticationToken(
-        "anonymous", sessionPrincipal, AuthorityUtils.createAuthorityList("ROLE_ANONYMOUS"));
-    return authenticationToken;
-  }
-
-  private Session createSession() {
-    Session session = new Session();
-
-    OffsetDateTime expiration = OffsetDateTime.now().plusMinutes(timeoutMins);
-    session.setExpiration(expiration);
-
-    setDefault(session, defaultUserProvider, Session::setUser);
-    setDefault(session, defaultParametersProvider, Session::setParameters);
-    setDefault(session, defaultLocaleProvider, Session::setLocale);
-    setDefault(session, defaultAccountInfoListProvider, Session::setAuthentications);
-
-    log.debug("Session created!\n{}", session);
-
-    return session;
-  }
-
-  private <T> void setDefault(Session session, Supplier<T> provider,
-      BiConsumer<Session, T> setter) {
-    Objects.requireNonNull(session);
-    Objects.requireNonNull(setter);
-    if (provider != null) {
-      setter.accept(session, provider.get());
-    }
+  public User getUser() {
+    Session session = currentSession();
+    return session.getUser() == null ? null : orgApi.getUser(session.getUser());
   }
 
   @Override
-  public User currentUser() {
-    Session session = getStoredSessionFromCurrentAuthentication();
-    if (session == null || session.getUser() == null) {
+  public URI getUserUri() {
+    return currentSession().getUser();
+  }
+
+  @Override
+  public URI getSessionUri() {
+    return currentSession().getUri();
+  }
+
+  @Override
+  public OffsetDateTime getExpiration() {
+    return currentSession().getExpiration();
+  }
+
+  @Override
+  public String getLocale() {
+    return currentSession().getLocale();
+  }
+
+  @Override
+  public List<AccountInfo> getAuthentications() {
+    return currentSession().getAuthentications();
+  }
+
+  @Override
+  public AccountInfo getAuthentication(String kind) {
+    Assert.notNull(kind, "kind cannot be null");
+    return getAuthentications().stream()
+        .filter(ai -> kind.equals(ai.getKind()))
+        .findFirst()
+        .orElse(null);
+  }
+
+  @Override
+  public String getParameter(String key) {
+    Assert.notNull(key, ERR_NULLKEY);
+    return currentSession().getParameters().get(key);
+  }
+
+  @Override
+  public void setParameter(String key, String value) {
+    Assert.notNull(key, ERR_NULLKEY);
+    Assert.notNull(value, ERR_NULLVALUE);
+    sessionManagementApi.setSessionParameter(getSessionUri(), key, value);
+  }
+
+  @Override
+  public String removeParameter(String key) {
+    Assert.notNull(key, ERR_NULLKEY);
+    return sessionManagementApi.removeSessionParameter(getSessionUri(), key);
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public <T> T getParameterObject(String key, Class<T> clazz) {
+    String valueTxt = getParameter(key);
+    if (String.class.isAssignableFrom(clazz)) {
+      return (T) valueTxt;
+    }
+
+    if (ObjectUtils.isEmpty(valueTxt)) {
       return null;
     }
-    return orgApi.getUser(session.getUser());
-  }
-
-  @Override
-  public Session currentSession() {
-    return getStoredSessionFromCurrentAuthentication();
-  }
-
-  private Session getStoredSessionFromCurrentAuthentication() {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    if (authentication == null) {
-      throw new IllegalStateException("There is no current Session available!");
+    if (objectMapper.canDeserialize(objectMapper.constructType(clazz))) {
+      try {
+        return objectMapper.readValue(valueTxt, clazz);
+      } catch (JsonProcessingException e) {
+        log.warn(
+            "Parameter can not be deserialized from session with ObjectMapper. Key: [{}], class: [{}]",
+            key,
+            clazz.getName(), e);
+      }
     }
-    Object principal = authentication.getPrincipal();
-    if (principal instanceof SessionAuthPrincipal) {
-      URI sessionUri = ((SessionAuthPrincipal) principal).getSessionUri();
-      Session session = storage.get().read(sessionUri, Session.class);
-      if (session == null) {
-        throw new IllegalStateException("There is no current Session available!");
+    if (Serializable.class.isAssignableFrom(clazz)) {
+      try {
+        return deserializeSerializable(valueTxt);
+      } catch (Exception e) {
+        log.warn(
+            "Parameter can not be deserialized from session as Serializable. Key: [{}], class: [{}]",
+            key,
+            clazz.getName(), e);
       }
-      return session;
     }
-    log.debug(
-        "The authentication of the security context does not contain a Sb4SessionAuthPrincipal!");
-    // FIXME: throw exception?
-    return null;
+    throw new IllegalArgumentException(
+        "The requested parameter can not be deserialized as class " + clazz.getName());
   }
 
   @Override
-  public Session readSession(URI sessionUri) {
-    Objects.requireNonNull(sessionUri, EXPMSG_MISSING_SESSIONURI);
-    return storage.get().read(sessionUri, Session.class);
-  }
+  public <T> void setParameterObject(String key, T value) {
+    Assert.notNull(key, ERR_NULLKEY);
+    Assert.notNull(value, ERR_NULLVALUE);
 
-  @Override
-  public void setSessionParameter(URI sessionUri, String key, String value) {
-    Objects.requireNonNull(sessionUri, EXPMSG_MISSING_SESSIONURI);
-    Objects.requireNonNull(key, "key can not be null!");
-    storage.get().update(sessionUri, Session.class, s -> s.putParametersItem(key, value));
-  }
+    Class<? extends Object> clazz = value.getClass();
+    if (String.class.isAssignableFrom(clazz)) {
+      sessionManagementApi.setSessionParameter(getSessionUri(), key, (String) value);
+      return;
+    }
 
-  @Override
-  public void removeSessionParameter(URI sessionUri, String key) {
-    Objects.requireNonNull(sessionUri, EXPMSG_MISSING_SESSIONURI);
-    Objects.requireNonNull(key, "key can not be null!");
-    storage.get().update(sessionUri, Session.class, s -> {
-      Map<String, String> parameters = s.getParameters();
-      if (parameters == null) {
-        return s;
+    String valueTxt = null;
+
+    if (objectMapper.canSerialize(clazz)) {
+      try {
+        valueTxt = objectMapper.writeValueAsString(value);
+      } catch (JsonProcessingException e) {
+        log.warn(
+            "Parameter can not be serialized from session with ObjectMapper. Key: [{}], class: [{}]",
+            key,
+            clazz.getName(), e);
       }
-      parameters.remove(key);
-      return s;
-    });
+    }
 
-  }
-
-  @Override
-  public void setSessionLocale(URI sessionUri, String locale) {
-    Objects.requireNonNull(sessionUri, EXPMSG_MISSING_SESSIONURI);
-    storage.get().update(sessionUri, Session.class, s -> s.locale(locale));
-  }
-
-  @Override
-  public void setSessionExpiration(URI sessionUri, OffsetDateTime expiration) {
-    Objects.requireNonNull(sessionUri, EXPMSG_MISSING_SESSIONURI);
-    Objects.requireNonNull(expiration, "expiration can not be null!");
-    storage.get().update(sessionUri, Session.class, s -> s.expiration(expiration));
-  }
-
-  @Override
-  public void addSessionAuthentication(URI sessionUri, AccountInfo accountInfo) {
-    Objects.requireNonNull(sessionUri, EXPMSG_MISSING_SESSIONURI);
-    Objects.requireNonNull(accountInfo, "accountInfo can not be null!");
-    storage.get().update(sessionUri, Session.class, s -> {
-      List<AccountInfo> authentications = s.getAuthentications();
-      if (authentications == null) {
-        authentications = new ArrayList<>();
-        s.setAuthentications(authentications);
+    if (valueTxt == null && Serializable.class.isAssignableFrom(clazz)) {
+      try {
+        valueTxt = serializeSerializable((Serializable) value);
+      } catch (Exception e) {
+        log.warn(
+            "Parameter can not be deserialized from session as Serializable. Key: [{}], class: [{}]",
+            key,
+            clazz.getName(), e);
       }
-      authentications.removeIf(a -> accountInfo.getKind().equals(a.getKind()));
-      authentications.add(accountInfo);
-      return s;
-    });
+    }
+    if (valueTxt != null) {
+      sessionManagementApi.setSessionParameter(getSessionUri(), key, valueTxt);
+    } else {
+      throw new IllegalArgumentException(
+          "The the given value of class [" + clazz.getName()
+              + "] can not be serilalized and set as session parameter!");
+    }
   }
 
   @Override
-  public void removeSessionAuthentication(URI sessionUri, String kind) {
-    Objects.requireNonNull(sessionUri, EXPMSG_MISSING_SESSIONURI);
-    Objects.requireNonNull(kind, "kind can not be null!");
-    storage.get().update(sessionUri, Session.class, s -> {
-      List<AccountInfo> authentications = s.getAuthentications();
-      if (authentications == null) {
-        return s;
-      }
-      authentications.removeIf(a -> kind.equals(a.getKind()));
-      if (authentications.isEmpty()) {
-        s.setUser(null);
-      }
-
-      return s;
-    });
-  }
-
-  @Override
-  public void setSessionUser(URI sessionUri, URI userUri) {
-    Objects.requireNonNull(sessionUri, EXPMSG_MISSING_SESSIONURI);
-    storage.get().update(sessionUri, Session.class, s -> s.user(userUri));
-  }
-
-  /**
-   * Registers a supplier that can provide a {@link User} uri which will be set to every session as
-   * default on session start.
-   * 
-   * @param defaultUserProvider The User uri supplier method
-   */
-  public void setDefaultUserProvider(Supplier<URI> defaultUserProvider) {
-    this.defaultUserProvider = defaultUserProvider;
-  }
-
-  /**
-   * Registers a supplier that provides a default parameter map that will be set to every session on
-   * session start.
-   * 
-   * @param defaultParametersProvider The default parameter supplier method.
-   */
-  public void setDefaultParametersProvider(
-      Supplier<Map<String, String>> defaultParametersProvider) {
-    this.defaultParametersProvider = defaultParametersProvider;
-  }
-
-  /**
-   * Registers a supplier that provides a default Locale string that will be set to every session on
-   * session start.
-   * 
-   * @param defaultLocaleProvider The default locale string supplier method.
-   */
-  public void setDefaultLocaleProvider(Supplier<String> defaultLocaleProvider) {
-    this.defaultLocaleProvider = defaultLocaleProvider;
-  }
-
-  /**
-   * Registers a supplier that provides a default {@link AccountInfo} list that will be set to every
-   * session on session start.
-   * 
-   * @param defaultAuthenticationInfoListProvider The default account info list supplier method.
-   */
-  public void setDefaultAccountInfoListProvider(
-      Supplier<List<AccountInfo>> defaultAuthenticationInfoListProvider) {
-    this.defaultAccountInfoListProvider = defaultAuthenticationInfoListProvider;
-  }
-
-  /**
-   * On session start an {@link Authentication} token is registered in the spring security context.
-   * By default it is an {@link AnonymousAuthenticationToken}, but with this method it can be
-   * configured dynamically.
-   * 
-   * The Principal of the provided Authentication Token must be a {@link SessionAuthPrincipal}!
-   * 
-   * @param authenticationTokenProvider The authentication token provider that can use the session
-   *        uri to create the token.
-   */
-  public void setAuthenticationTokenProvider(
-      Function<URI, Authentication> authenticationTokenProvider) {
-    this.authenticationTokenProvider = authenticationTokenProvider;
+  public Map<String, URI> getViewContexts() {
+    return currentSession().getViewContexts();
   }
 
   @Override
   public void addViewContext(UUID viewContextUuid, URI viewContextUri) {
-    storage.get().update(currentSession().getUri(), Session.class,
-        s -> s.putViewContextsItem(viewContextUuid.toString(), viewContextUri));
-
+    sessionManagementApi.addViewContext(getSessionUri(), viewContextUuid, viewContextUri);
   }
+
+  private Session currentSession() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication == null) {
+      throw new NoCurrentSessionException(
+          "There is no Authentication available in the security context!");
+    }
+    Object principal = authentication.getPrincipal();
+    if (principal instanceof SessionAuthPrincipal) {
+      URI sessionUri = ((SessionAuthPrincipal) principal).getSessionUri();
+      Session session = sessionManagementApi.readSession(sessionUri);
+      if (session == null) {
+        throw new NoCurrentSessionException(
+            "The SessionAuthPrincipal holds an invalid session uri!");
+      }
+      return session;
+    }
+    throw new NoCurrentSessionException(
+        "The security context does not contain a Sb4SessionAuthPrincipal - session may not have been initilized!");
+  }
+
+  private <T> T deserializeSerializable(String valueTxt) throws Exception {
+    byte[] data = Base64.getDecoder().decode(valueTxt);
+    ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data));
+    Object o = ois.readObject();
+    ois.close();
+    return (T) o;
+  }
+
+  private String serializeSerializable(Serializable object) throws Exception {
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    ObjectOutputStream oos = new ObjectOutputStream(baos);
+    oos.writeObject(object);
+    oos.close();
+    return Base64.getEncoder().encodeToString(baos.toByteArray());
+  }
+
 }

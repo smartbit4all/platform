@@ -59,7 +59,7 @@ public class ViewContextServiceImpl implements ViewContextService {
   }
 
   private URI getCurrentViewContextUri() {
-    Map<String, URI> viewContexts = sessionApi.currentSession().getViewContexts();
+    Map<String, URI> viewContexts = sessionApi.getViewContexts();
     if (viewContexts.isEmpty()) {
       // TODO this is not the best here, preliminary lazy stuff
       UUID uuid = UUID.randomUUID();
@@ -77,7 +77,7 @@ public class ViewContextServiceImpl implements ViewContextService {
 
   private URI getViewContextUri(UUID uuid) {
     Objects.requireNonNull(uuid, "ViewContext UUID must be not null");
-    Map<String, URI> viewContexts = sessionApi.currentSession().getViewContexts();
+    Map<String, URI> viewContexts = sessionApi.getViewContexts();
     URI uri = viewContexts.get(uuid.toString());
     if (uri == null) {
       throw new IllegalArgumentException("ViewContext not found by UUID");

@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.org.bean.User;
-import org.smartbit4all.api.session.SessionApi;
+import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.api.session.UserSessionApi;
 import org.smartbit4all.api.session.bean.Session;
 import org.smartbit4all.sec.scheduling.SecurityContextScheduling.TechnicalUserProvider;
@@ -40,7 +40,7 @@ public class SecurityContextUtility {
       HttpServletRequest request, String sessionUriTxt,
       List<SessionBasedAuthTokenProvider> tokenProviders,
       Function<Session, AbstractAuthenticationToken> anonymousAuthTokenProvider,
-      SessionApi sessionApi,
+      SessionManagementApi sessionManagementApi,
       Logger log) {
 
     Assert.notNull(request, "request cannot be null");
@@ -53,7 +53,7 @@ public class SecurityContextUtility {
       log = LoggerFactory.getLogger(SecurityContextUtility.class);
     }
 
-    Session session = sessionApi.readSession(URI.create(sessionUriTxt));
+    Session session = sessionManagementApi.readSession(URI.create(sessionUriTxt));
     if (session != null) {
       log.debug("Session found to set in security context: {}", session);
       log.debug("Looking for a SessionBasedAuthTokenProvider matching the session.");

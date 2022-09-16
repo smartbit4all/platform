@@ -1,6 +1,7 @@
 package org.smartbit4all.sec.localauth;
 
 import org.smartbit4all.api.session.SessionApi;
+import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.api.session.bean.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -9,6 +10,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 
+/**
+ * Authenticates username-password credentials and creates a LocalAuthentication token.
+ */
 public class LocalAuthenticationProvider implements AuthenticationProvider {
 
   @Autowired
@@ -16,6 +20,9 @@ public class LocalAuthenticationProvider implements AuthenticationProvider {
 
   @Autowired
   private SessionApi sessionApi;
+
+  @Autowired
+  private SessionManagementApi sessionManagementApi;
 
   @Override
   public Authentication authenticate(Authentication authentication) throws AuthenticationException {
@@ -27,7 +34,7 @@ public class LocalAuthenticationProvider implements AuthenticationProvider {
     } catch (Exception e) {
       throw new BadCredentialsException("Login has failed", e);
     }
-    Session session = sessionApi.currentSession();
+    Session session = sessionManagementApi.readSession(sessionApi.getSessionUri());
     return new LocalAuthTokenProvider().getToken(session);
   }
 

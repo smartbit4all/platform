@@ -116,7 +116,7 @@ public abstract class OrgApiImpl implements OrgApi, InitializingBean {
       return () -> userSessionApi.currentUser();
     }
     if (sessionApi != null) {
-      return () -> sessionApi.currentUser();
+      return () -> sessionApi.getUser();
     }
     throw new IllegalStateException(
         "There is no UserSessionApi nor SessionApi registered in the Spring context!");
