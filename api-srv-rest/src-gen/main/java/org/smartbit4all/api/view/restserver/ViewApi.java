@@ -28,6 +28,24 @@ public interface ViewApi {
     }
 
     /**
+     * POST /context : Creates a new ViewContext
+     *
+     * @return Context created (status code 200)
+     */
+    @ApiOperation(value = "Creates a new ViewContext", nickname = "createViewContext", notes = "", response = ViewContext.class, tags={ "View", })
+    @ApiResponses(value = { 
+        @ApiResponse(code = 200, message = "Context created", response = ViewContext.class) })
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/context",
+        produces = { "application/json" }
+    )
+    default ResponseEntity<ViewContext> createViewContext() throws Exception {
+        return getDelegate().createViewContext();
+    }
+
+
+    /**
      * GET /context : Returns the existing session info
      *
      * @param uuid ViewContext&#39;s unique identifier. (required)
@@ -51,20 +69,20 @@ public interface ViewApi {
 
 
     /**
-     * POST /context : Updates an existing view context
+     * PUT /context : Updates an existing ViewContext
      *
      * @param viewContextUpdate  (required)
      * @return Context updated (status code 200)
      *         or The context does not exists with the given uuid (status code 404)
      *         or Error during context update (status code 500)
      */
-    @ApiOperation(value = "Updates an existing view context", nickname = "updateViewContext", notes = "", response = ViewContext.class, tags={ "View", })
+    @ApiOperation(value = "Updates an existing ViewContext", nickname = "updateViewContext", notes = "", response = ViewContext.class, tags={ "View", })
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "Context updated", response = ViewContext.class),
         @ApiResponse(code = 404, message = "The context does not exists with the given uuid"),
         @ApiResponse(code = 500, message = "Error during context update") })
     @RequestMapping(
-        method = RequestMethod.POST,
+        method = RequestMethod.PUT,
         value = "/context",
         produces = { "application/json" },
         consumes = { "application/json" }

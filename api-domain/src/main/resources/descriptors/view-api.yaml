@@ -13,7 +13,19 @@ paths:
     post:
       tags:
       - View
-      summary: Updates an existing view context
+      summary: Creates a new ViewContext
+      operationId: 'createViewContext'
+      responses:
+        '200':
+          description: 'Context created'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ViewContext'
+    put:
+      tags:
+      - View
+      summary: Updates an existing ViewContext
       operationId: 'updateViewContext'
       requestBody:
         required: true

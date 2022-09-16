@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.function.Function;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -15,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.api.session.bean.Session;
+import org.smartbit4all.api.view.ViewContextService;
 import org.smartbit4all.sec.authprincipal.SessionAuthPrincipal;
 import org.smartbit4all.sec.token.SessionBasedAuthTokenProvider;
 import org.smartbit4all.sec.utils.SecurityContextUtility;
@@ -42,6 +44,9 @@ public class JwtSessionRequestFilter extends OncePerRequestFilter {
 
   @Autowired
   private SessionManagementApi sessionManagementApi;
+
+  @Autowired(required = false)
+  private ViewContextService viewContextService;
 
   @Autowired
   private JwtUtil jwtUtil;
@@ -83,6 +88,14 @@ public class JwtSessionRequestFilter extends OncePerRequestFilter {
             && SecurityContextHolder.getContext().getAuthentication() == null) {
           setAuthToken(request, sessionUriTxt);
         }
+      }
+    }
+    if (viewContextService != null) {
+      final String uuid = request.getHeader("viewContextUuid");
+      if (uuid != null) {
+        viewContextService.setCurrentViewContext(UUID.fromString(uuid));
+      } else {
+        viewContextService.setCurrentViewContext(null);
       }
     }
 

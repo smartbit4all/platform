@@ -14,8 +14,8 @@ public class ViewApiDelegateImpl implements ViewApiDelegate {
   private ViewContextService viewContextService;
 
   @Override
-  public ResponseEntity<ViewContext> getViewContext(UUID uuid) throws Exception {
-    return ResponseEntity.ok(viewContextService.getViewContext(uuid));
+  public ResponseEntity<ViewContext> createViewContext() throws Exception {
+    return ResponseEntity.ok(viewContextService.createViewContext());
   }
 
   @Override
@@ -23,6 +23,11 @@ public class ViewApiDelegateImpl implements ViewApiDelegate {
       throws Exception {
     viewContextService.updateViewContext(viewContextUpdate);
     return getViewContext(viewContextUpdate.getUuid());
+  }
+
+  @Override
+  public ResponseEntity<ViewContext> getViewContext(UUID uuid) throws Exception {
+    return ResponseEntity.ok(viewContextService.getViewContext(uuid));
   }
 
 }
