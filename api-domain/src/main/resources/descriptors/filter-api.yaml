@@ -57,6 +57,10 @@ components:
         id:
           type: string
           description: 'Identifier of the filter group metadata. Not mandatory, specify only if in use.'
+        filterGroupMetas:
+          type: array
+          items:
+            $ref: '#/components/schemas/FilterGroupMeta'
         filterFieldMetas:
           type: array
           items:
@@ -166,3 +170,31 @@ components:
           items:
             type: string
             format: uri
+    FilterExpression:
+      type: object
+      description: Specifies an abstract expression with a collection of expression part. 
+      properties:
+        filterExpressionParts:
+          type: array
+          items:
+            $ref: '#/components/schemas/FilterExpressionPart'
+    FilterExpressionPart:
+      type: object
+      description: An abstract expression part.
+      properties:
+        partKind:
+          $ref: '#/components/schemas/FilterExpressionPartKind'
+        filterField:
+          description: Has value only if the partKind is FILTERFIELD.
+          $ref: '#/components/schemas/FilterField'
+        filterFieldMeta:
+          description: Has value only if the partKind is FILTERFIELD.
+          $ref: '#/components/schemas/FilterFieldMeta'
+    FilterExpressionPartKind:
+      type: string
+      enum:
+      - BRACKET_OPEN
+      - BRACKET_CLOSE
+      - AND
+      - OR
+      - FILTERFIELD
