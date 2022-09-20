@@ -1,15 +1,17 @@
 package org.smartbit4all.sec.authprincipal;
 
+import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
+import org.smartbit4all.api.session.bean.AccountInfo;
 import org.smartbit4all.api.session.bean.Session;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
 public class SessionAuthToken extends AbstractAuthenticationToken {
@@ -22,14 +24,21 @@ public class SessionAuthToken extends AbstractAuthenticationToken {
     super(authorities);
   }
 
-  public static SessionAuthToken create(SessionAuthPrincipal principal,
-      Session session) {
-    Objects.requireNonNull(principal);
-    Objects.requireNonNull(session);
+  public static SessionAuthToken create(Session session) {
+    Assert.notNull(session, "session cannot be null");
+    return create(session.getUri(), session.getAuthentications());
+  }
 
-    List<GrantedAuthority> authorityList = ObjectUtils.isEmpty(session.getAuthentications())
+  public static SessionAuthToken create(URI sessionUri,
+      Collection<AccountInfo> accounts) {
+    Assert.notNull(sessionUri, "sessionUri cannot be null");
+    Assert.notNull(accounts, "accounts cannot be null");
+
+    SessionAuthPrincipal principal = SessionAuthPrincipal.of(sessionUri);
+
+    List<GrantedAuthority> authorityList = ObjectUtils.isEmpty(accounts)
         ? AuthorityUtils.createAuthorityList("ROLE_user")
-        : session.getAuthentications().stream()
+        : accounts.stream()
             .flatMap(
                 ai -> ObjectUtils.isEmpty(ai.getRoles())
                     ? Collections.<String>emptyList().stream()
