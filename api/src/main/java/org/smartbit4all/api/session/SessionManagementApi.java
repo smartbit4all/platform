@@ -34,4 +34,6 @@ public interface SessionManagementApi {
 
   void addViewContext(URI sessionUri, UUID viewContextUuid, URI viewContextUri);
 
+  void startTechnicalSession(URI technicalUserUri);
+
 }
