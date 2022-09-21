@@ -25,9 +25,11 @@ import org.smartbit4all.sec.token.SessionTokenHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.Assert;
 
 /**
  * This SessionApi implementation manages sessions with the {@link StorageApi} storing the sessions
@@ -226,6 +228,33 @@ public class SessionManagementApiImpl implements SessionManagementApi {
   public void setSessionUser(URI sessionUri, URI userUri) {
     Objects.requireNonNull(sessionUri, EXPMSG_MISSING_SESSIONURI);
     storage.get().update(sessionUri, Session.class, s -> s.user(userUri));
+  }
+
+  @Override
+  public void startTechnicalSession(URI technicalUserUri) {
+    Assert.notNull(technicalUserUri, "technicalUserUri cannot be null");
+
+    if (SecurityContextHolder.getContext().getAuthentication() != null) {
+      throw new IllegalStateException(
+          "Cannot start a technical session if an authentication was already present in the security context!");
+    }
+
+    User technicalUser = orgApi.getUser(technicalUserUri);
+    if (technicalUser == null) {
+      throw new IllegalArgumentException("The given technical user does not exist!");
+    }
+
+    Session session = new Session();
+    session.putParametersItem("sessionKind", "technical");
+    session.setUser(technicalUserUri);
+    URI sessionUri = storage.get().saveAsNew(session);
+    log.debug("Technical session saved!\n{}", session);
+
+    SessionAuthPrincipal principal = SessionAuthPrincipal.of(sessionUri);
+    Authentication authenticationToken = new UsernamePasswordAuthenticationToken(principal, "nope",
+        AuthorityUtils.createAuthorityList("ROLE_technical"));
+    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+
   }
 
   /**

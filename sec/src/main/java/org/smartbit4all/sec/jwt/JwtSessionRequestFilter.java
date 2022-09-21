@@ -2,7 +2,6 @@ package org.smartbit4all.sec.jwt;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -17,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.api.session.bean.Session;
 import org.smartbit4all.api.view.ViewContextService;
+import org.smartbit4all.sec.authentication.DefaultAuthTokenProvider;
 import org.smartbit4all.sec.authprincipal.SessionAuthPrincipal;
 import org.smartbit4all.sec.token.SessionBasedAuthTokenProvider;
 import org.smartbit4all.sec.utils.SecurityContextUtility;
@@ -51,7 +51,8 @@ public class JwtSessionRequestFilter extends OncePerRequestFilter {
   @Autowired
   private JwtUtil jwtUtil;
 
-  private List<SessionBasedAuthTokenProvider> authTokenProviders = new ArrayList<>();
+  private List<SessionBasedAuthTokenProvider> authTokenProviders =
+      Arrays.asList(new DefaultAuthTokenProvider());
   private Function<Session, AbstractAuthenticationToken> anonymousAuthTokenProvider =
       session -> createAnonymousAuthToken(session.getUri());
 
