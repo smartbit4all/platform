@@ -12,4 +12,9 @@ public class MasterDetailBean {
     this.detailName = detailName;
   }
 
+  @Override
+  public String toString() {
+    return "(detailName: " + detailName + ")";
+  }
+
 }

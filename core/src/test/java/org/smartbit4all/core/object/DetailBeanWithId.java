@@ -42,4 +42,9 @@ public class DetailBeanWithId {
     this.title = title;
   }
 
+  @Override
+  public String toString() {
+    return String.format("(id: %s, title: %s)", id, title);
+  }
+
 }

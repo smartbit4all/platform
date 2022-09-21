@@ -741,23 +741,31 @@ public class ApiObjectRef implements DomainObjectRef {
           }
           break;
         case COLLECTION:
-          Optional<CollectionChanges> changes = entry.getCollection().renderAndCleanChanges();
+          ApiObjectCollection collection = entry.getCollection();
+          Optional<CollectionChanges> changes = collection.renderAndCleanChanges();
           if (changes.isPresent()) {
             if (result == null) {
               result = new ObjectChange(path, ChangeState.MODIFIED);
             }
             result.getCollections().add(changes.get().collectionChanges);
             result.getCollectionObjects().add(changes.get().collectionObjectChanges);
+            PropertyChange listChangeAsValue = new PropertyChange(collection.getPath(),
+                collection.getName(), null, collection);
+            result.getProperties().add(listChangeAsValue);
           }
           break;
         case MAP:
-          Optional<CollectionChanges> changesMap = entry.getMap().renderAndCleanChanges();
+          ApiObjectMap map = entry.getMap();
+          Optional<CollectionChanges> changesMap = map.renderAndCleanChanges();
           if (changesMap.isPresent()) {
             if (result == null) {
               result = new ObjectChange(path, ChangeState.MODIFIED);
             }
             result.getCollections().add(changesMap.get().collectionChanges);
             result.getCollectionObjects().add(changesMap.get().collectionObjectChanges);
+            PropertyChange mapChangeAsValue = new PropertyChange(map.getPath(),
+                map.getName(), null, map);
+            result.getProperties().add(mapChangeAsValue);
           }
           break;
         case REFERENCE:
@@ -890,6 +898,11 @@ public class ApiObjectRef implements DomainObjectRef {
     Object obj = object;
     object = null;
     setObjectInternal(obj, ChangeState.NEW);
+  }
+
+  @Override
+  public String toString() {
+    return object.toString();
   }
 
 }

@@ -1,5 +1,7 @@
 package org.smartbit4all.core.object;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -14,8 +16,6 @@ import org.junit.jupiter.api.Test;
 import org.smartbit4all.api.mapbasedobject.bean.MapBasedObjectData;
 import org.smartbit4all.core.object.utility.MapBasedObjectUtil;
 import org.smartbit4all.core.utility.StringConstant;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ApiObjectsTest {
 
@@ -135,11 +135,13 @@ public class ApiObjectsTest {
 
     String expected = "NEW" + br +
         "counter: (null->1)" + br +
+        "details: (null->[(detailName: detailName1), (detailName: detailName2)])" + br +
         "name: (null->name)" + br +
         "stringList: (null->[first, second])" + br +
         "valid: (null->false)" + br +
         "referred: {" + br +
         "NEW" + br +
+        "details: (null->[(refDetailName: refDetailName1), (refDetailName: refDetailName2)])" + br +
         "name: (null->refname)" + br +
         "details.collection:" + br +
         "details.item - {" + br +
@@ -236,6 +238,8 @@ public class ApiObjectsTest {
         "valid: (null->true)" + br +
         "referred: {" + br +
         "NEW" + br +
+        "details: (null->[(refDetailName: referredDetailBean - name 1), (refDetailName: referredDetailBean - name 2), (refDetailName: referredDetailBean - name 3)])"
+        + br +
         "name: (null->referred name by wrapper)" + br +
         "details.collection:" + br +
         "details.item - {" + br +
@@ -285,6 +289,7 @@ public class ApiObjectsTest {
         + "name: (name by wrapper->bean2 name)" + br
         + "referred: {" + br
         + "MODIFIED" + br
+        + "details: (null->[(refDetailName: new item 1), (refDetailName: new item 2)])" + br
         + "name: (referred name by wrapper->bean2 referred by wrapper)" + br
         + "details.collection:" + br
         + "details.item - {" + br
@@ -324,6 +329,8 @@ public class ApiObjectsTest {
         + "name: (bean2 name->name by wrapper)" + br
         + "referred: {" + br
         + "MODIFIED" + br
+        + "details: (null->[(refDetailName: referredDetailBean - name 1), (refDetailName: referredDetailBean - name 2), (refDetailName: referredDetailBean - name 3)])"
+        + br
         + "name: (bean2 referred by wrapper->referred name by wrapper)" + br
         + "details.collection:" + br
         + "details.item - {" + br
@@ -389,6 +396,8 @@ public class ApiObjectsTest {
         "valid: (null->true)" + br +
         "referred: {" + br +
         "NEW" + br +
+        "detailsById: (null->{key1=(id: key1, title: Key 1 - modified), key2=(id: key2, title: Key 2 - modified), key3=(id: key3, title: Key 3 - modified)})"
+        + br +
         "name: (null->referred name by wrapper)" + br +
         "detailsById.collection:" + br
         + "detailsById.item - {" + br

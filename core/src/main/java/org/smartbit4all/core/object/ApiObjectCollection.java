@@ -485,4 +485,17 @@ public final class ApiObjectCollection implements List<ApiObjectRef> {
       this.collectionObjectChanges = collectionObjectChanges;
     }
   }
+
+  public String getPath() {
+    return objectRef.getPath();
+  }
+
+  public String getName() {
+    return property.getName();
+  }
+
+  @Override
+  public String toString() {
+    return items.toString();
+  }
 }

@@ -16,4 +16,9 @@ public class ReferredDetailBean {
     this.name = name;
     return this;
   }
+
+  @Override
+  public String toString() {
+    return "(refDetailName: " + name + ")";
+  }
 }

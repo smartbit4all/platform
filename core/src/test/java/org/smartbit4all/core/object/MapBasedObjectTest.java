@@ -675,7 +675,8 @@ class MapBasedObjectTest {
 
     // compare the changes from the two sources
 
-    assertEquals(refChanges.getProperties().size(), objChanges.getProperties().size());
+    // refChanges contains the map itself
+    assertEquals(refChanges.getProperties().size() - 1, objChanges.getProperties().size());
     assertEquals(refChanges.getReferences().size(), objChanges.getReferences().size());
     assertEquals(refChanges.getCollections().size(), objChanges.getCollections().size());
     assertEquals(refChanges.getReferencedObjects().size(),

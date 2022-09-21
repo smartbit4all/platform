@@ -246,6 +246,14 @@ public final class ApiObjectMap implements Map<String, ApiObjectRef> {
     return proxy;
   }
 
+  public String getPath() {
+    return objectRef.getPath();
+  }
+
+  public String getName() {
+    return property.getName();
+  }
+
   final Optional<CollectionChanges> renderAndCleanChanges() {
     CollectionChange collectionChange = null;
     CollectionObjectChange collectionObjectChange = null;
@@ -281,4 +289,8 @@ public final class ApiObjectMap implements Map<String, ApiObjectRef> {
     return Optional.ofNullable(result);
   }
 
+  @Override
+  public String toString() {
+    return items.toString();
+  }
 }
