@@ -1,6 +1,7 @@
 package org.smartbit4all.sec.localauth;
 
 import org.smartbit4all.sec.authentication.AuthenticationDataProvider;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -25,6 +26,7 @@ public class DefaultLocalAuthenticationConfig {
   }
 
   @Bean
+  @ConditionalOnMissingBean
   public PasswordEncoder encoder() {
     return new BCryptPasswordEncoder();
   }
