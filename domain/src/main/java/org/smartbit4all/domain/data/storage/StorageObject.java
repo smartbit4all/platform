@@ -505,7 +505,7 @@ public final class StorageObject<T> {
    * @return The serialized form of the object by the {@link ObjectDefinition} defined.
    */
   public final BinaryData serialize() {
-    return definition.serialize(object);
+    return definition.serialize(getObject());
   }
 
   public final boolean isSkipLock() {
