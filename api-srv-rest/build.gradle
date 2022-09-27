@@ -26,6 +26,7 @@ smartbit4all {
         	"${rootDir}/api-domain/src/main/resources/descriptors/session-api.yaml" : "session",
         	"${rootDir}/api-domain/src/main/resources/descriptors/view-api.yaml" : "view",
         	"${rootDir}/api-domain/src/main/resources/descriptors/localauthentication-api.yaml" : "localauthentication",
+        	"${rootDir}/api-domain/src/main/resources/descriptors/kerberosauthentication-api.yaml" : "kerberosauthentication",
         ]
         apiPackagePrefix = "org.smartbit4all.api"
         apiPackagePostfix = "restserver"

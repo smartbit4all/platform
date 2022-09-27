@@ -3,9 +3,10 @@ package org.smartbit4all.sec.authentication;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.org.bean.User;
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.util.Assert;
 
 public abstract class SessionHandlerAuthenticationProvider implements AuthenticationProvider {
@@ -31,7 +33,8 @@ public abstract class SessionHandlerAuthenticationProvider implements Authentica
   @Autowired
   private SessionManagementApi sessionManagementApi;
 
-  private Function<User, AccountInfo> accountInfoProvider = u -> new AccountInfo();
+  private BiFunction<User, Authentication, AccountInfo> accountInfoProvider =
+      defaultAccountInfoProvider();
 
   private final AuthenticationProvider wrappedAuthenticationProvider;
 
@@ -86,8 +89,12 @@ public abstract class SessionHandlerAuthenticationProvider implements Authentica
     }
 
     User user = getUserFromAuthentication(originalAuthentication);
+    if (user == null) {
+      throw new IllegalStateException(
+          "User could not obtained from the original authentication token!");
+    }
 
-    AccountInfo accountInfo = accountInfoProvider.apply(user);
+    AccountInfo accountInfo = accountInfoProvider.apply(user, originalAuthentication);
     accountInfo.setKind(accountKind);
 
     if (foundMatchingAccount != null
@@ -111,7 +118,9 @@ public abstract class SessionHandlerAuthenticationProvider implements Authentica
   protected SessionAuthToken createSessionAuthentication(
       Authentication originalAuthentication, User user, URI sessionUri,
       Collection<AccountInfo> accountInfos) {
-    return SessionAuthToken.create(sessionUri, accountInfos);
+    SessionAuthToken sessionAuthToken = SessionAuthToken.create(sessionUri, accountInfos);
+    sessionAuthToken.setOrigin(originalAuthentication);
+    return sessionAuthToken;
   }
 
   protected abstract User getUserFromAuthentication(Authentication originalAuthentication);
@@ -145,8 +154,28 @@ public abstract class SessionHandlerAuthenticationProvider implements Authentica
     this.isAccountOverrideForbidden = isAccountOverrideForbidden;
   }
 
-  public void setAccountInfoProvider(Function<User, AccountInfo> accountInfoProvider) {
+  public void setAccountInfoProvider(
+      BiFunction<User, Authentication, AccountInfo> accountInfoProvider) {
     this.accountInfoProvider = accountInfoProvider;
+  }
+
+  protected final SessionApi sessionApi() {
+    return sessionApi;
+  }
+
+  protected final SessionManagementApi sessionManagementApi() {
+    return sessionManagementApi;
+  }
+
+  private BiFunction<User, Authentication, AccountInfo> defaultAccountInfoProvider() {
+    return (user, originalAuthToken) -> new AccountInfo()
+        .userName(user.getUsername())
+        .displayName(user.getName())
+        .roles(originalAuthToken.getAuthorities().stream()
+            .map(GrantedAuthority::getAuthority)
+            .collect(Collectors.toList()))
+        .parameters(user.getAttributes());
+
   }
 
 }

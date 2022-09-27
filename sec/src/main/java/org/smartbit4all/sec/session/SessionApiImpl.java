@@ -211,6 +211,8 @@ public class SessionApiImpl implements SessionApi {
         "The security context does not contain a Sb4SessionAuthPrincipal - session may not have been initilized!");
   }
 
+  // TODO serilaize and deserialize paramaters should be moved to SessionManagementApiImpl...
+
   private <T> T deserializeSerializable(String valueTxt) throws Exception {
     byte[] data = Base64.getDecoder().decode(valueTxt);
     ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data));

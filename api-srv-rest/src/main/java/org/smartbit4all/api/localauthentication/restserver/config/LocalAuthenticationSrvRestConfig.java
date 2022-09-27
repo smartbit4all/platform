@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Import;
 public class LocalAuthenticationSrvRestConfig {
 
   @Bean
-  public LocalAuthenticationApiDelegate authenticationApiDelegate() {
+  public LocalAuthenticationApiDelegate localAuthenticationApiDelegate() {
     return new LocalAuthenticationApiDelegateImpl();
   }
 

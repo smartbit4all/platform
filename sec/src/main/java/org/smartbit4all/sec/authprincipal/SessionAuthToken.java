@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.smartbit4all.api.session.bean.AccountInfo;
 import org.smartbit4all.api.session.bean.Session;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -19,6 +20,12 @@ public class SessionAuthToken extends AbstractAuthenticationToken {
   private static final long serialVersionUID = 7102074569421989869L;
 
   private SessionAuthPrincipal principal;
+
+  /**
+   * Holds the original Authentication token in case the {@link SessionAuthToken} was created after
+   * an other authentication method resulting in a token.
+   */
+  private Authentication origin;
 
   private SessionAuthToken(Collection<? extends GrantedAuthority> authorities) {
     super(authorities);
@@ -60,6 +67,14 @@ public class SessionAuthToken extends AbstractAuthenticationToken {
   @Override
   public SessionAuthPrincipal getPrincipal() {
     return principal;
+  }
+
+  public Authentication getOrigin() {
+    return origin;
+  }
+
+  public void setOrigin(Authentication origin) {
+    this.origin = origin;
   }
 
 }
