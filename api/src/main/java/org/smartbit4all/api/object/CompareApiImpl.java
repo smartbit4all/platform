@@ -9,8 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class CompareApiImpl extends PrimaryApiImpl<CompareContributionApi>
     implements CompareApi {
 
-  public CompareApiImpl(Class<CompareContributionApi> innerApiClass) {
-    super(innerApiClass);
+  public CompareApiImpl() {
+    super(CompareContributionApi.class);
   }
 
   @Autowired

@@ -1,0 +1,102 @@
+openapi: 3.0.1
+info:
+  title: The sample domain
+  description: Contains object for testing purposes.
+  termsOfService: ''
+  contact:
+    email: info@it4all.hu
+  version: 1.0.0
+tags:
+- name: Storage
+paths:
+  /nope:
+    post:
+      summary: Placeholder for generation
+      responses:
+        '200':
+          description: nope
+                
+components:
+  schemas:
+    SampleCategory:
+      type: object
+      description: |
+        A recursive category holder for other categories and different items.
+      required: [uri, subCategories, containerItems]
+      properties:
+        uri:
+          type: string
+          format: uri
+        name:
+          type: string
+        subCategories:
+          type: array
+          items:
+            type: string
+            format: uri
+        containerItems:
+          type: array
+          items:
+            type: string
+            format: uri
+    SampleContainerItem:
+      type: object
+      description: |
+        A container object to represent complex container hierarchy.
+      required: [uri, name]
+      properties:
+        uri:
+          type: string
+          format: uri
+        name:
+          type: string
+        userUri:
+          type: string
+          format: uri
+          description: The reference that is not contained pointing to the user.
+        inlineObject:
+          description: |
+            The inline contained object
+          $ref: '#/components/schemas/SampleInlineObject'
+        datasheet:
+          type: string
+          format: uri
+          description: |
+            The data sheet contained.
+        mainDocument:
+          type: string
+          format: uri
+          description: |
+            The main document reference that is contained.
+        attachments:
+          type: array
+          description: |
+            The attachment list with document references that are contained.
+          items:
+            type: string
+            format: uri
+    SampleInlineObject:
+      type: object
+      properties:
+        name:
+          type: string
+    SampleDataSheet:
+      type: object
+      properties:
+        uri:
+          type: string
+          format: uri
+        name:
+          type: string
+    SampleAttachement:
+      type: object
+      properties:
+        uri:
+          type: string
+          format: uri
+        name:
+          type: string
+        content:
+          type: string
+          description: The content URI that is the uri of a BinaryContent. It is not contained but referred.
+          format: uri

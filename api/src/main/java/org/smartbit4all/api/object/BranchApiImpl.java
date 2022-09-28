@@ -33,8 +33,8 @@ public class BranchApiImpl extends PrimaryApiImpl<BranchContributionApi>
 
   private static final Logger log = LoggerFactory.getLogger(BranchApiImpl.class);
 
-  public BranchApiImpl(Class<BranchContributionApi> innerApiClass) {
-    super(innerApiClass);
+  public BranchApiImpl() {
+    super(BranchContributionApi.class);
   }
 
   @Autowired

@@ -1,5 +1,7 @@
 package org.smartbit4all.api.config;
 
+import org.smartbit4all.api.applychange.ApplyChangeApi;
+import org.smartbit4all.api.applychange.ApplyChangeApiImpl;
 import org.smartbit4all.api.documentation.DocumentationApi;
 import org.smartbit4all.api.documentation.DocumentationApiImpl;
 import org.smartbit4all.api.filter.util.FilterService;
@@ -14,16 +16,16 @@ import org.smartbit4all.api.navigation.NavigationPrimary;
 import org.smartbit4all.api.navigation.ObjectNavigation;
 import org.smartbit4all.api.object.BranchApi;
 import org.smartbit4all.api.object.BranchApiImpl;
-import org.smartbit4all.api.object.BranchContributionApi;
 import org.smartbit4all.api.object.BranchContributionApiStorageImpl;
 import org.smartbit4all.api.object.CompareApi;
 import org.smartbit4all.api.object.CompareApiImpl;
-import org.smartbit4all.api.object.CompareContributionApi;
 import org.smartbit4all.api.object.CompareContributionApiStorageImpl;
 import org.smartbit4all.api.object.CopyApi;
 import org.smartbit4all.api.object.CopyApiImpl;
-import org.smartbit4all.api.object.CopyContributionApi;
 import org.smartbit4all.api.object.CopyContributionApiStorageImpl;
+import org.smartbit4all.api.object.ModifyApi;
+import org.smartbit4all.api.object.ModifyApiImpl;
+import org.smartbit4all.api.object.ModifyContributionApiStorageImpl;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.setting.LocaleUsage;
 import org.smartbit4all.api.setting.LocaleUsageImpl;
@@ -108,7 +110,7 @@ public class PlatformApiConfig {
 
   @Bean
   public CopyApi copyApi() {
-    return new CopyApiImpl(CopyContributionApi.class);
+    return new CopyApiImpl();
   }
 
   @Bean
@@ -118,7 +120,7 @@ public class PlatformApiConfig {
 
   @Bean
   public CompareApi compareApi() {
-    return new CompareApiImpl(CompareContributionApi.class);
+    return new CompareApiImpl();
   }
 
   @Bean
@@ -128,12 +130,27 @@ public class PlatformApiConfig {
 
   @Bean
   public BranchApi branchApi() {
-    return new BranchApiImpl(BranchContributionApi.class);
+    return new BranchApiImpl();
   }
 
   @Bean
   public BranchContributionApiStorageImpl branchApiStorageImpl() {
     return new BranchContributionApiStorageImpl();
+  }
+
+  @Bean
+  public ModifyApi modifyApi() {
+    return new ModifyApiImpl();
+  }
+
+  @Bean
+  public ModifyContributionApiStorageImpl modifyApiStorageImpl() {
+    return new ModifyContributionApiStorageImpl();
+  }
+
+  @Bean
+  public ApplyChangeApi applyChangeApi() {
+    return new ApplyChangeApiImpl();
   }
 
 }

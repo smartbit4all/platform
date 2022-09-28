@@ -72,6 +72,8 @@ import org.springframework.context.ApplicationContextAware;
  */
 public class StorageFS extends ObjectStorageImpl implements ApplicationContextAware {
 
+  private static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
+
   private static final Logger log = LoggerFactory.getLogger(StorageFS.class);
 
   private File rootFolder;
@@ -519,7 +521,11 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
       throws IOException {
     // Write the data temporary file
     File objectDataFileTemp = getObjectTransactionFile(object.getUri());
-    FileIO.writeMultipart(objectDataFileTemp, storageObjectDataDef.serialize(storageObjectData),
+    BinaryData binaryData = storageObjectDataDef.serialize(storageObjectData);
+    if (binaryData == null) {
+      binaryData = new BinaryData(EMPTY_BYTE_ARRAY);
+    }
+    FileIO.writeMultipart(objectDataFileTemp, binaryData,
         object.serialize());
     // Atomic move of the temp file.
     // TODO The move must be executed by the transaction manager at the end of the transaction.
@@ -750,16 +756,26 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
       }
       try {
         List<BinaryData> dataParts = FileIO.readMultipart(storageObjectDataFile);
-        Optional<StorageObjectData> optObject =
-            storageObjectDataDef.deserialize(dataParts.get(0));
-        if (!optObject.isPresent()) {
-          throw new ObjectNotFoundException(uri, clazz, "Unable to load object data file.");
+        StorageObjectData dataObject;
+        if (dataParts.get(0).length() != 0) {
+          Optional<StorageObjectData> optObject =
+              storageObjectDataDef.deserialize(dataParts.get(0));
+          if (!optObject.isPresent()) {
+            throw new ObjectNotFoundException(uri, clazz, "Unable to load object data file.");
+          }
+          dataObject = optObject.get();
+        } else {
+          dataObject = null;
         }
         @SuppressWarnings("unchecked")
         ObjectDefinition<T> definition =
-            (ObjectDefinition<T>) getObjectDefinition(uri, optObject.get(), clazz);
-        Map<String, Object> obj = definition.deserializeAsMap(dataParts.get(1));
-        return instanceOf(storage, definition, obj, optObject.get());
+            (ObjectDefinition<T>) getObjectDefinition(uri, dataObject, clazz);
+
+        Map<String, Object> obj = null;
+        if (dataParts.get(1).length() != 0) {
+          obj = definition.deserializeAsMap(dataParts.get(1));
+        }
+        return instanceOf(storage, definition, obj, dataObject);
       } catch (IOException e) {
         // We must try again.
         log.debug("Unable to read " + storageObjectDataFile);

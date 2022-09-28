@@ -1,5 +1,7 @@
 package org.smartbit4all.api.applychange;
 
+import java.net.URI;
+import java.util.Map;
 import org.smartbit4all.core.object.ReferenceDefinition;
 
 /**
@@ -10,11 +12,15 @@ import org.smartbit4all.core.object.ReferenceDefinition;
  */
 public abstract class ReferenceChangeRequest {
 
-  private ReferenceDefinition definition;
+  protected ReferenceDefinition definition;
 
-  public ReferenceChangeRequest(ReferenceDefinition definition) {
+  protected ReferenceChangeRequest(ReferenceDefinition definition) {
     super();
     this.definition = definition;
   }
+
+  public abstract Iterable<ObjectChangeRequest> changes();
+
+  public abstract void apply(ObjectChangeRequest object, Map<ObjectChangeRequest, URI> uris);
 
 }

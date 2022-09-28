@@ -15,8 +15,8 @@ public class CopyApiImpl extends PrimaryApiImpl<CopyContributionApi>
   @Autowired
   ObjectApi objectApi;
 
-  public CopyApiImpl(Class<CopyContributionApi> innerApiClass) {
-    super(innerApiClass);
+  public CopyApiImpl() {
+    super(CopyContributionApi.class);
   }
 
   private CopyContributionApi getContributionApi(URI uri) {
