@@ -2,6 +2,7 @@ package org.smartbit4all.sec.jwt;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -15,17 +16,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.api.session.bean.Session;
+import org.smartbit4all.api.session.exception.ExpiredSessionException;
 import org.smartbit4all.api.view.ViewContextService;
 import org.smartbit4all.sec.authentication.DefaultAuthTokenProvider;
 import org.smartbit4all.sec.authprincipal.SessionAuthPrincipal;
 import org.smartbit4all.sec.token.SessionBasedAuthTokenProvider;
 import org.smartbit4all.sec.utils.SecurityContextUtility;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -38,7 +44,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
  * {@link SessionBasedAuthTokenProvider}</u></b> with the
  * {@link #addSessionBasedAuthTokenProvider(SessionBasedAuthTokenProvider)} method!
  */
-public class JwtSessionRequestFilter extends OncePerRequestFilter {
+public class JwtSessionRequestFilter extends OncePerRequestFilter implements InitializingBean {
 
   private static final Logger log = LoggerFactory.getLogger(JwtSessionRequestFilter.class);
 
@@ -51,14 +57,20 @@ public class JwtSessionRequestFilter extends OncePerRequestFilter {
   @Autowired
   private JwtUtil jwtUtil;
 
+  @Value("${openapi.session.base-path:}")
+  private String sessionPath;
+
   private List<SessionBasedAuthTokenProvider> authTokenProviders =
       Arrays.asList(new DefaultAuthTokenProvider());
   private Function<Session, AbstractAuthenticationToken> anonymousAuthTokenProvider =
       session -> createAnonymousAuthToken(session.getUri());
 
+  private final List<SkippableCall> skippableCalls = new ArrayList<>();
+
   public JwtSessionRequestFilter() {}
 
   public JwtSessionRequestFilter(SessionBasedAuthTokenProvider... authTokenProviders) {
+    this();
     if (ObjectUtils.isEmpty(authTokenProviders)) {
       throw new IllegalArgumentException("authTokenProviders can not be null nor empty!");
     }
@@ -66,23 +78,38 @@ public class JwtSessionRequestFilter extends OncePerRequestFilter {
   }
 
   @Override
+  public void afterPropertiesSet() throws ServletException {
+    super.afterPropertiesSet();
+    skippableCalls.add(new SkippableCall(HttpMethod.POST, sessionPath + "/refresh"));
+    skippableCalls.add(new SkippableCall(HttpMethod.PUT, sessionPath + "/session"));
+  }
+
+  @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
       FilterChain filterChain)
       throws ServletException, IOException {
-    /**
+    /*
      * This method filters the incoming REST API calls by the authentication in the header. If the
      * header contains a valid JwtToken (it is not expired and a session uri can be decrypted) the
      * call continues to execution. However, if the JwtToken is not valid, it throws an exception
      * and the call would not be executed.
      */
 
+    if (callWithoutSessionToken(request)) {
+      // let through the specified requests without jwt validation
+      filterChain.doFilter(request, response);
+      return;
+    }
+
     String jwt = jwtUtil.getJwtTokenFromRequest(request);
+
     if (ObjectUtils.isEmpty(jwt)) {
       log.debug("The incoming request does not contain a jwt token!");
     } else {
       if (jwtUtil.isTokenExpired(jwt)) {
-        log.warn(
+        log.debug(
             "The jwt token has expired! The authentication token can not be set to the security context!");
+        throw new ExpiredSessionException();
       } else {
         String sessionUriTxt = jwtUtil.extractSubject(jwt);
         if (sessionUriTxt != null
@@ -91,6 +118,23 @@ public class JwtSessionRequestFilter extends OncePerRequestFilter {
         }
       }
     }
+
+    handleViewContext(request);
+
+    filterChain.doFilter(request, response);
+  }
+
+  private boolean callWithoutSessionToken(HttpServletRequest request) {
+    String requestURI = request.getRequestURI();
+    String method = request.getMethod();
+    return skippableCalls.stream().anyMatch(
+        sc -> {
+          return requestURI.contains(sc.path)
+              && sc.method.matches(method);
+        });
+  }
+
+  private void handleViewContext(HttpServletRequest request) {
     if (viewContextService != null) {
       final String uuid = request.getHeader("viewContextUuid");
       if (uuid != null) {
@@ -99,8 +143,6 @@ public class JwtSessionRequestFilter extends OncePerRequestFilter {
         viewContextService.setCurrentViewContext(null);
       }
     }
-
-    filterChain.doFilter(request, response);
   }
 
   private void setAuthToken(HttpServletRequest request, String sessionUriTxt) {
@@ -130,6 +172,24 @@ public class JwtSessionRequestFilter extends OncePerRequestFilter {
     SessionAuthPrincipal sessionPrincipal = SessionAuthPrincipal.of(sessionUri);
     return new AnonymousAuthenticationToken(
         "anonymous", sessionPrincipal, AuthorityUtils.createAuthorityList("ROLE_ANONYMOUS"));
+  }
+
+  public void addSkippableCall(HttpMethod method, String path) {
+    skippableCalls.add(new SkippableCall(method, path));
+  }
+
+  private static class SkippableCall {
+
+    private HttpMethod method;
+    private String path;
+
+    public SkippableCall(HttpMethod method, String path) {
+      Assert.notNull(method, "method cannot be null");
+      Assert.notNull(path, "path cannot be null");
+      this.method = method;
+      this.path = path;
+    }
+
   }
 
 }

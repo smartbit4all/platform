@@ -1,6 +1,8 @@
 package org.smartbit4all.api.session.restserver;
 
+import org.smartbit4all.api.session.bean.ApiError;
 import org.smartbit4all.api.session.bean.GetAuthenticationProvidersResponse;
+import org.smartbit4all.api.session.bean.RefreshSessionRequest;
 import org.smartbit4all.api.session.bean.SessionInfoData;
 import io.swagger.annotations.*;
 import org.springframework.http.HttpStatus;
@@ -28,9 +30,9 @@ public interface SessionApiDelegate {
      * GET /authenticationProviders : Returns the available authentication providers
      *
      * @return Returns the available authentication providers (status code 200)
-     *         or Missing JWT token (status code 400)
+     *         or Missing or expired JWT token (status code 400)
      *         or The session does not exists with the given token (status code 404)
-     *         or Error occured while fetching the session data (status code 500)
+     *         or Error occurred while fetching the session data (status code 500)
      * @see SessionApi#getAuthenticationProviders
      */
     default ResponseEntity<GetAuthenticationProvidersResponse> getAuthenticationProviders() throws Exception {
@@ -51,16 +53,39 @@ public interface SessionApiDelegate {
      * GET /session : Returns the existing session info
      *
      * @return Returns the existing session info (status code 200)
-     *         or Missing JWT token (status code 400)
+     *         or Missing or expired JWT token (status code 400)
      *         or The session does not exists with the given token (status code 404)
-     *         or Error occured while fetching the session data (status code 500)
+     *         or Error occurred while fetching the session data (status code 500)
      * @see SessionApi#getSession
      */
     default ResponseEntity<SessionInfoData> getSession() throws Exception {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"expiration\" : \"2000-01-23T04:56:07.000+00:00\", \"locale\" : \"locale\", \"sid\" : \"sid\", \"authentications\" : [ { \"imageContent\" : \"imageContent\", \"imageFormat\" : \"imageFormat\", \"kind\" : \"kind\", \"displayName\" : \"displayName\", \"roles\" : [ \"roles\", \"roles\" ], \"userName\" : \"userName\", \"parameters\" : { \"key\" : \"parameters\" } }, { \"imageContent\" : \"imageContent\", \"imageFormat\" : \"imageFormat\", \"kind\" : \"kind\", \"displayName\" : \"displayName\", \"roles\" : [ \"roles\", \"roles\" ], \"userName\" : \"userName\", \"parameters\" : { \"key\" : \"parameters\" } } ] }";
+                    String exampleString = "{ \"expiration\" : \"2000-01-23T04:56:07.000+00:00\", \"locale\" : \"locale\", \"sid\" : \"sid\", \"refreshToken\" : \"refreshToken\", \"authentications\" : [ { \"imageContent\" : \"imageContent\", \"imageFormat\" : \"imageFormat\", \"kind\" : \"kind\", \"displayName\" : \"displayName\", \"roles\" : [ \"roles\", \"roles\" ], \"userName\" : \"userName\", \"parameters\" : { \"key\" : \"parameters\" } }, { \"imageContent\" : \"imageContent\", \"imageFormat\" : \"imageFormat\", \"kind\" : \"kind\", \"displayName\" : \"displayName\", \"roles\" : [ \"roles\", \"roles\" ], \"userName\" : \"userName\", \"parameters\" : { \"key\" : \"parameters\" } } ] }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+            }
+        });
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+
+    }
+
+    /**
+     * POST /refresh : Refreshes the session
+     *
+     * @param refreshSessionRequest  (required)
+     * @return Refreshes the expired session with the refresh token (status code 200)
+     *         or Missing or expired JWT token (status code 400)
+     *         or Error occurred while fetching the session data (status code 500)
+     * @see SessionApi#refreshSession
+     */
+    default ResponseEntity<SessionInfoData> refreshSession(RefreshSessionRequest refreshSessionRequest) throws Exception {
+        getRequest().ifPresent(request -> {
+            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"expiration\" : \"2000-01-23T04:56:07.000+00:00\", \"locale\" : \"locale\", \"sid\" : \"sid\", \"refreshToken\" : \"refreshToken\", \"authentications\" : [ { \"imageContent\" : \"imageContent\", \"imageFormat\" : \"imageFormat\", \"kind\" : \"kind\", \"displayName\" : \"displayName\", \"roles\" : [ \"roles\", \"roles\" ], \"userName\" : \"userName\", \"parameters\" : { \"key\" : \"parameters\" } }, { \"imageContent\" : \"imageContent\", \"imageFormat\" : \"imageFormat\", \"kind\" : \"kind\", \"displayName\" : \"displayName\", \"roles\" : [ \"roles\", \"roles\" ], \"userName\" : \"userName\", \"parameters\" : { \"key\" : \"parameters\" } } ] }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
@@ -74,14 +99,14 @@ public interface SessionApiDelegate {
      * PUT /session : Creates a new session
      *
      * @return The session has started (status code 200)
-     *         or Error during session creation (status code 500)
+     *         or Error occurred while fetching the session data (status code 500)
      * @see SessionApi#startSession
      */
     default ResponseEntity<SessionInfoData> startSession() throws Exception {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"expiration\" : \"2000-01-23T04:56:07.000+00:00\", \"locale\" : \"locale\", \"sid\" : \"sid\", \"authentications\" : [ { \"imageContent\" : \"imageContent\", \"imageFormat\" : \"imageFormat\", \"kind\" : \"kind\", \"displayName\" : \"displayName\", \"roles\" : [ \"roles\", \"roles\" ], \"userName\" : \"userName\", \"parameters\" : { \"key\" : \"parameters\" } }, { \"imageContent\" : \"imageContent\", \"imageFormat\" : \"imageFormat\", \"kind\" : \"kind\", \"displayName\" : \"displayName\", \"roles\" : [ \"roles\", \"roles\" ], \"userName\" : \"userName\", \"parameters\" : { \"key\" : \"parameters\" } } ] }";
+                    String exampleString = "{ \"expiration\" : \"2000-01-23T04:56:07.000+00:00\", \"locale\" : \"locale\", \"sid\" : \"sid\", \"refreshToken\" : \"refreshToken\", \"authentications\" : [ { \"imageContent\" : \"imageContent\", \"imageFormat\" : \"imageFormat\", \"kind\" : \"kind\", \"displayName\" : \"displayName\", \"roles\" : [ \"roles\", \"roles\" ], \"userName\" : \"userName\", \"parameters\" : { \"key\" : \"parameters\" } }, { \"imageContent\" : \"imageContent\", \"imageFormat\" : \"imageFormat\", \"kind\" : \"kind\", \"displayName\" : \"displayName\", \"roles\" : [ \"roles\", \"roles\" ], \"userName\" : \"userName\", \"parameters\" : { \"key\" : \"parameters\" } } ] }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }

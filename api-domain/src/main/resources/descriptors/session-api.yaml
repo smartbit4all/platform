@@ -23,7 +23,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/SessionInfoData'
         '500':
-          description: 'Error during session creation'
+          $ref: '#/components/responses/SessionError'
     get:
       tags:
       - Session
@@ -37,11 +37,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/SessionInfoData'
         '400':
-          description: 'Missing JWT token'
+          $ref: '#/components/responses/JwtTokenError'
         '404':
-          description: 'The session does not exists with the given token'
+          $ref: '#/components/responses/NotExistingSessionError'
         '500':
-          description: 'Error occured while fetching the session data'
+          $ref: '#/components/responses/SessionError'
   /authenticationProviders:
     get:
       tags:
@@ -56,11 +56,34 @@ paths:
               schema:
                 $ref: '#/components/schemas/GetAuthenticationProvidersResponse'
         '400':
-          description: 'Missing JWT token'
+          $ref: '#/components/responses/JwtTokenError'
         '404':
-          description: 'The session does not exists with the given token'
+          $ref: '#/components/responses/NotExistingSessionError'
         '500':
-          description: 'Error occured while fetching the session data'
+          $ref: '#/components/responses/SessionError'
+  /refresh:
+    post:
+      tags:
+      - Session
+      summary: Refreshes the session
+      operationId: 'refreshSession'
+      requestBody:
+        required: true
+        content:
+          application/json:
+              schema:
+                $ref: '#/components/schemas/RefreshSessionRequest'
+      responses:
+        '200':
+          description: 'Refreshes the expired session with the refresh token'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionInfoData'
+        '400':
+          $ref: '#/components/responses/JwtTokenError'
+        '500':
+          $ref: '#/components/responses/SessionError'
 components:
   schemas:
     Session:
@@ -97,6 +120,8 @@ components:
       required: [sid]
       properties:
         sid:
+          type: string
+        refreshToken:
           type: string
         expiration:
           type: string
@@ -148,3 +173,36 @@ components:
           type: object
           additionalProperties:
             type: string
+    RefreshSessionRequest:
+      type: object
+      required: [refreshToken]
+      properties:
+        refreshToken:
+          type: string
+    ApiError:
+      type: object
+      required: [message]
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+  responses:
+    JwtTokenError:
+      description: 'Missing or expired JWT token'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+    NotExistingSessionError:
+      description: 'The session does not exists with the given token'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+    SessionError:
+      description: 'Error occurred while fetching the session data'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'

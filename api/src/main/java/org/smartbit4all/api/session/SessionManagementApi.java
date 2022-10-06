@@ -16,6 +16,11 @@ public interface SessionManagementApi {
    */
   SessionInfoData startSession();
 
+  /**
+   * Refreshes the session by the given refreshToken
+   */
+  SessionInfoData refreshSession(String refreshToken);
+
   Session readSession(URI sessionUri);
 
   void setSessionParameter(URI sessionUri, String key, String value);

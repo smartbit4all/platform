@@ -3,6 +3,7 @@ package org.smartbit4all.sec.jwt;
 import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.function.Function;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -11,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.org.bean.User;
 import org.springframework.beans.factory.annotation.Value;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
@@ -46,6 +48,8 @@ public class JwtUtil {
   private Claims extractAllClaims(String token) {
     try {
       return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
+    } catch (ExpiredJwtException e) {
+      log.debug("The JWT token has expired!", e);
     } catch (Exception e) {
       log.debug("Error when parsing JWT token", e);
     }
@@ -62,11 +66,11 @@ public class JwtUtil {
   }
 
   public String createToken(String subject) {
-    Objects.requireNonNull(subject, "Subject can not be null!");
     return createToken(subject, null);
   }
 
   public String createToken(String subject, OffsetDateTime expiration) {
+    Objects.requireNonNull(subject, "Subject can not be null!");
 
     /**
      * This method creates the JwtToken based on the followings: - claims (Map<String, Object>) -
@@ -85,6 +89,7 @@ public class JwtUtil {
         .setSubject(subject)
         .setIssuedAt(new Date(System.currentTimeMillis()))
         .setExpiration(new Date(expiration.toInstant().toEpochMilli()))
+        .setHeaderParam("uuid", UUID.randomUUID()) // make every created token identical
         .signWith(SignatureAlgorithm.HS256, secretKey)
         .compact();
   }

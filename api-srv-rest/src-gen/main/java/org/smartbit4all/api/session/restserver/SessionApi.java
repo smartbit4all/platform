@@ -5,7 +5,9 @@
  */
 package org.smartbit4all.api.session.restserver;
 
+import org.smartbit4all.api.session.bean.ApiError;
 import org.smartbit4all.api.session.bean.GetAuthenticationProvidersResponse;
+import org.smartbit4all.api.session.bean.RefreshSessionRequest;
 import org.smartbit4all.api.session.bean.SessionInfoData;
 import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
@@ -30,16 +32,16 @@ public interface SessionApi {
      * GET /authenticationProviders : Returns the available authentication providers
      *
      * @return Returns the available authentication providers (status code 200)
-     *         or Missing JWT token (status code 400)
+     *         or Missing or expired JWT token (status code 400)
      *         or The session does not exists with the given token (status code 404)
-     *         or Error occured while fetching the session data (status code 500)
+     *         or Error occurred while fetching the session data (status code 500)
      */
     @ApiOperation(value = "Returns the available authentication providers", nickname = "getAuthenticationProviders", notes = "", response = GetAuthenticationProvidersResponse.class, tags={ "Session", })
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "Returns the available authentication providers", response = GetAuthenticationProvidersResponse.class),
-        @ApiResponse(code = 400, message = "Missing JWT token"),
-        @ApiResponse(code = 404, message = "The session does not exists with the given token"),
-        @ApiResponse(code = 500, message = "Error occured while fetching the session data") })
+        @ApiResponse(code = 400, message = "Missing or expired JWT token", response = ApiError.class),
+        @ApiResponse(code = 404, message = "The session does not exists with the given token", response = ApiError.class),
+        @ApiResponse(code = 500, message = "Error occurred while fetching the session data", response = ApiError.class) })
     @RequestMapping(
         method = RequestMethod.GET,
         value = "/authenticationProviders",
@@ -54,16 +56,16 @@ public interface SessionApi {
      * GET /session : Returns the existing session info
      *
      * @return Returns the existing session info (status code 200)
-     *         or Missing JWT token (status code 400)
+     *         or Missing or expired JWT token (status code 400)
      *         or The session does not exists with the given token (status code 404)
-     *         or Error occured while fetching the session data (status code 500)
+     *         or Error occurred while fetching the session data (status code 500)
      */
     @ApiOperation(value = "Returns the existing session info", nickname = "getSession", notes = "", response = SessionInfoData.class, tags={ "Session", })
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "Returns the existing session info", response = SessionInfoData.class),
-        @ApiResponse(code = 400, message = "Missing JWT token"),
-        @ApiResponse(code = 404, message = "The session does not exists with the given token"),
-        @ApiResponse(code = 500, message = "Error occured while fetching the session data") })
+        @ApiResponse(code = 400, message = "Missing or expired JWT token", response = ApiError.class),
+        @ApiResponse(code = 404, message = "The session does not exists with the given token", response = ApiError.class),
+        @ApiResponse(code = 500, message = "Error occurred while fetching the session data", response = ApiError.class) })
     @RequestMapping(
         method = RequestMethod.GET,
         value = "/session",
@@ -75,15 +77,39 @@ public interface SessionApi {
 
 
     /**
+     * POST /refresh : Refreshes the session
+     *
+     * @param refreshSessionRequest  (required)
+     * @return Refreshes the expired session with the refresh token (status code 200)
+     *         or Missing or expired JWT token (status code 400)
+     *         or Error occurred while fetching the session data (status code 500)
+     */
+    @ApiOperation(value = "Refreshes the session", nickname = "refreshSession", notes = "", response = SessionInfoData.class, tags={ "Session", })
+    @ApiResponses(value = { 
+        @ApiResponse(code = 200, message = "Refreshes the expired session with the refresh token", response = SessionInfoData.class),
+        @ApiResponse(code = 400, message = "Missing or expired JWT token", response = ApiError.class),
+        @ApiResponse(code = 500, message = "Error occurred while fetching the session data", response = ApiError.class) })
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/refresh",
+        produces = { "application/json" },
+        consumes = { "application/json" }
+    )
+    default ResponseEntity<SessionInfoData> refreshSession(@ApiParam(value = "", required = true) @Valid @RequestBody RefreshSessionRequest refreshSessionRequest) throws Exception {
+        return getDelegate().refreshSession(refreshSessionRequest);
+    }
+
+
+    /**
      * PUT /session : Creates a new session
      *
      * @return The session has started (status code 200)
-     *         or Error during session creation (status code 500)
+     *         or Error occurred while fetching the session data (status code 500)
      */
     @ApiOperation(value = "Creates a new session", nickname = "startSession", notes = "", response = SessionInfoData.class, tags={ "Session", })
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "The session has started", response = SessionInfoData.class),
-        @ApiResponse(code = 500, message = "Error during session creation") })
+        @ApiResponse(code = 500, message = "Error occurred while fetching the session data", response = ApiError.class) })
     @RequestMapping(
         method = RequestMethod.PUT,
         value = "/session",
