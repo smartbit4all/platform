@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.UUID;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.session.bean.AccountInfo;
+import org.smartbit4all.api.session.exception.NoCurrentSessionException;
 
 /**
  *
@@ -45,36 +46,5 @@ public interface SessionApi {
 
   // this is very preliminary
   void addViewContext(UUID viewContextUuid, URI viewContextUri);
-
-  /**
-   * Dedicated exception to handle missing current sessions using the {@link SessionApi}
-   */
-  public static class NoCurrentSessionException extends RuntimeException {
-
-    private static final long serialVersionUID = -608220389455960075L;
-
-    public NoCurrentSessionException(String msg) {
-      super(msg);
-    }
-
-    public NoCurrentSessionException() {
-      super();
-    }
-
-    public NoCurrentSessionException(String message, Throwable cause, boolean enableSuppression,
-        boolean writableStackTrace) {
-      super(message, cause, enableSuppression, writableStackTrace);
-    }
-
-    public NoCurrentSessionException(String message, Throwable cause) {
-      super(message, cause);
-    }
-
-    public NoCurrentSessionException(Throwable cause) {
-      super(cause);
-    }
-
-
-  }
 
 }

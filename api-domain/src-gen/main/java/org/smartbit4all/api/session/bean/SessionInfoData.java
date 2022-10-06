@@ -36,6 +36,7 @@ import javax.validation.Valid;
  */
 @JsonPropertyOrder({
   SessionInfoData.SID,
+  SessionInfoData.REFRESH_TOKEN,
   SessionInfoData.EXPIRATION,
   SessionInfoData.LOCALE,
   SessionInfoData.AUTHENTICATIONS
@@ -45,6 +46,9 @@ import javax.validation.Valid;
 public class SessionInfoData {
   public static final String SID = "sid";
   private String sid;
+
+  public static final String REFRESH_TOKEN = "refreshToken";
+  private String refreshToken;
 
   public static final String EXPIRATION = "expiration";
   private OffsetDateTime expiration;
@@ -83,6 +87,33 @@ public class SessionInfoData {
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setSid(String sid) {
     this.sid = sid;
+  }
+
+
+  public SessionInfoData refreshToken(String refreshToken) {
+    
+    this.refreshToken = refreshToken;
+    return this;
+  }
+
+   /**
+   * Get refreshToken
+   * @return refreshToken
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(REFRESH_TOKEN)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getRefreshToken() {
+    return refreshToken;
+  }
+
+
+  @JsonProperty(REFRESH_TOKEN)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setRefreshToken(String refreshToken) {
+    this.refreshToken = refreshToken;
   }
 
 
@@ -187,6 +218,7 @@ public class SessionInfoData {
     }
     SessionInfoData sessionInfoData = (SessionInfoData) o;
     return Objects.equals(this.sid, sessionInfoData.sid) &&
+        Objects.equals(this.refreshToken, sessionInfoData.refreshToken) &&
         Objects.equals(this.expiration, sessionInfoData.expiration) &&
         Objects.equals(this.locale, sessionInfoData.locale) &&
         Objects.equals(this.authentications, sessionInfoData.authentications);
@@ -194,7 +226,7 @@ public class SessionInfoData {
 
   @Override
   public int hashCode() {
-    return Objects.hash(sid, expiration, locale, authentications);
+    return Objects.hash(sid, refreshToken, expiration, locale, authentications);
   }
 
   @Override
@@ -202,6 +234,7 @@ public class SessionInfoData {
     StringBuilder sb = new StringBuilder();
     sb.append("class SessionInfoData {\n");
     sb.append("    sid: ").append(toIndentedString(sid)).append("\n");
+    sb.append("    refreshToken: ").append(toIndentedString(refreshToken)).append("\n");
     sb.append("    expiration: ").append(toIndentedString(expiration)).append("\n");
     sb.append("    locale: ").append(toIndentedString(locale)).append("\n");
     sb.append("    authentications: ").append(toIndentedString(authentications)).append("\n");

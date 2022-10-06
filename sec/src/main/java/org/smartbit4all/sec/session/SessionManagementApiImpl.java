@@ -19,6 +19,7 @@ import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.api.session.bean.AccountInfo;
 import org.smartbit4all.api.session.bean.Session;
 import org.smartbit4all.api.session.bean.SessionInfoData;
+import org.smartbit4all.api.session.exception.InvalidRefreshTokenException;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.sec.authprincipal.SessionAuthPrincipal;
@@ -39,6 +40,8 @@ import org.springframework.util.Assert;
  */
 public class SessionManagementApiImpl implements SessionManagementApi {
 
+  private static final String REFRESHTOKEN_PREFIX = "REFRESHTOKEN_";
+
   private static final Logger log = LoggerFactory.getLogger(SessionManagementApiImpl.class);
 
   private static final String EXPMSG_MISSING_SESSIONURI = "sessionUri can not be null!";
@@ -56,6 +59,9 @@ public class SessionManagementApiImpl implements SessionManagementApi {
 
   @Value("${session.timeout-min:60}")
   private int timeoutMins;
+
+  @Value("${session.refresh-timeout-min:120}")
+  private int refreshTimeoutMins;
 
   private Supplier<URI> defaultUserProvider;
   private Supplier<Map<String, String>> defaultParametersProvider;
@@ -86,15 +92,56 @@ public class SessionManagementApiImpl implements SessionManagementApi {
 
     registerSpringSecAuthToken(sessionUri);
 
-    String sid = tokenHandler.createToken(sessionUri.toString(), session.getExpiration());
-    updateSession(sessionUri, s -> s.putParametersItem("sid", sid));
+    String refreshToken = createRefreshToken(sessionUri);
+    String sid = createSid(sessionUri, session.getExpiration());
+    storage.get().update(session.getUri(), Session.class,
+        s -> s.putParametersItem(SessionInfoData.SID, sid)
+            .putParametersItem(SessionInfoData.REFRESH_TOKEN, refreshToken));
 
     log.debug("Session sid created: {}", sid);
     return new SessionInfoData()
         .sid(sid)
         .expiration(session.getExpiration())
         .locale(session.getLocale())
-        .authentications(session.getAuthentications());
+        .authentications(session.getAuthentications())
+        .refreshToken(refreshToken);
+  }
+
+  @Override
+  public SessionInfoData refreshSession(String refreshToken) {
+    if (!tokenHandler.isTokenValid(refreshToken)
+        || !tokenHandler.getSubject(refreshToken).startsWith(REFRESHTOKEN_PREFIX)) {
+      throw new InvalidRefreshTokenException();
+    }
+    String sessionUriTxt =
+        tokenHandler.getSubject(refreshToken).substring(REFRESHTOKEN_PREFIX.length());
+
+    Session session = readSession(URI.create(sessionUriTxt));
+    if (session == null) {
+      throw new InvalidRefreshTokenException();
+    }
+
+    OffsetDateTime expiration = OffsetDateTime.now().plusMinutes(timeoutMins);
+    setSessionExpiration(session.getUri(), expiration);
+
+    String newSid = createSid(session.getUri(), expiration);
+    String newRefreshToken = createRefreshToken(session.getUri());
+
+    return new SessionInfoData()
+        .sid(newSid)
+        .expiration(session.getExpiration())
+        .locale(session.getLocale())
+        .authentications(session.getAuthentications())
+        .refreshToken(newRefreshToken);
+  }
+
+  private String createSid(URI sessionUri, OffsetDateTime expiration) {
+    return tokenHandler.createToken(sessionUri.toString(), expiration);
+  }
+
+  private String createRefreshToken(URI sessionUri) {
+    OffsetDateTime refreshExpiration = OffsetDateTime.now().plusMinutes(refreshTimeoutMins);
+    return tokenHandler.createToken(REFRESHTOKEN_PREFIX + sessionUri.toString(), refreshExpiration);
   }
 
   private void registerSpringSecAuthToken(URI sessionUri) {

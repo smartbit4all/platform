@@ -12,6 +12,8 @@ public interface SessionTokenHandler {
 
   Date getExpiration(String token);
 
+  boolean isTokenValid(String token);
+
   String getTokenFromRequest(HttpServletRequest request);
 
 }

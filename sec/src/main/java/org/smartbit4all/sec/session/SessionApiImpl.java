@@ -19,6 +19,7 @@ import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.api.session.bean.AccountInfo;
 import org.smartbit4all.api.session.bean.Session;
+import org.smartbit4all.api.session.exception.NoCurrentSessionException;
 import org.smartbit4all.sec.authprincipal.SessionAuthPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -194,7 +195,7 @@ public class SessionApiImpl implements SessionApi {
   private Session currentSession() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     if (authentication == null) {
-      throw new NoCurrentSessionException(
+      throw new NoCurrentSessionException("session.security.nocontext",
           "There is no Authentication available in the security context!");
     }
     Object principal = authentication.getPrincipal();
@@ -202,12 +203,12 @@ public class SessionApiImpl implements SessionApi {
       URI sessionUri = ((SessionAuthPrincipal) principal).getSessionUri();
       Session session = sessionManagementApi.readSession(sessionUri);
       if (session == null) {
-        throw new NoCurrentSessionException(
+        throw new NoCurrentSessionException("session.invalidsessionuri",
             "The SessionAuthPrincipal holds an invalid session uri!");
       }
       return session;
     }
-    throw new NoCurrentSessionException(
+    throw new NoCurrentSessionException("session.notinitialized",
         "The security context does not contain a Sb4SessionAuthPrincipal - session may not have been initilized!");
   }
 

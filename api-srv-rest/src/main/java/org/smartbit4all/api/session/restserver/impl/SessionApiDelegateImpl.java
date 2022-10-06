@@ -7,12 +7,13 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.session.SessionApi;
-import org.smartbit4all.api.session.SessionApi.NoCurrentSessionException;
 import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.api.session.bean.AuthenticationProviderData;
 import org.smartbit4all.api.session.bean.GetAuthenticationProvidersResponse;
+import org.smartbit4all.api.session.bean.RefreshSessionRequest;
 import org.smartbit4all.api.session.bean.Session;
 import org.smartbit4all.api.session.bean.SessionInfoData;
+import org.smartbit4all.api.session.exception.NoCurrentSessionException;
 import org.smartbit4all.api.session.restserver.SessionApiDelegate;
 import org.smartbit4all.sec.authentication.AuthenticationDataProvider;
 import org.smartbit4all.sec.token.SessionTokenHandler;
@@ -20,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.ObjectUtils;
+import io.jsonwebtoken.lang.Assert;
 
 public class SessionApiDelegateImpl implements SessionApiDelegate {
 
@@ -107,6 +109,16 @@ public class SessionApiDelegateImpl implements SessionApiDelegate {
 
     return ResponseEntity.ok(new GetAuthenticationProvidersResponse()
         .authenticationProviders(poviderData));
+  }
+
+  @Override
+  public ResponseEntity<SessionInfoData> refreshSession(RefreshSessionRequest refreshSessionRequest)
+      throws Exception {
+    Assert.notNull(refreshSessionRequest, "refreshSessionRequest can not be null");
+    SessionInfoData sessionInfoData =
+        sessionManagementApi.refreshSession(refreshSessionRequest.getRefreshToken());
+
+    return ResponseEntity.ok(sessionInfoData);
   }
 
 

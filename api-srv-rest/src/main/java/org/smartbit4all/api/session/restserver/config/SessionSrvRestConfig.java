@@ -33,6 +33,16 @@ public class SessionSrvRestConfig {
   }
 
   @Bean
+  public SessionExceptionRestHandler sessionExceptionHandler() {
+    return new SessionExceptionRestHandler();
+  }
+
+  @Bean
+  public FilterChainExceptionHandler filterChainExceptionHandler() {
+    return new FilterChainExceptionHandler();
+  }
+
+  @Bean
   @ConditionalOnMissingClass("org.smartbit4all.api.session.SessionManagementApi")
   public SessionManagementApi sessionManagementApi() {
     return new SessionManagementApiImpl();
