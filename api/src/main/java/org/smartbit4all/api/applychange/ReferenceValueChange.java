@@ -6,6 +6,12 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import org.smartbit4all.core.object.ReferenceDefinition;
 
+/**
+ * This object contains the information about the change of a reference to an other object.
+ * 
+ * @author Peter Boros
+ *
+ */
 public class ReferenceValueChange extends ReferenceChangeRequest {
 
   /**
@@ -18,17 +24,9 @@ public class ReferenceValueChange extends ReferenceChangeRequest {
    */
   private URI versionUri;
 
-  /**
-   * The operation for the reference value.
-   */
-  private ReferenceValueOperation operation;
-
-  public ReferenceValueChange(ReferenceDefinition definition) {
-    super(definition);
-  }
-
-  public enum ReferenceValueOperation {
-    SET, REMOVE, UPDATE
+  public ReferenceValueChange(ApplyChangeRequest request, ObjectChangeRequest objectChangeRequest,
+      ReferenceDefinition definition) {
+    super(request, objectChangeRequest, definition);
   }
 
   public final ObjectChangeRequest getValue() {
@@ -40,11 +38,7 @@ public class ReferenceValueChange extends ReferenceChangeRequest {
     return this;
   }
 
-  public final ReferenceValueOperation getOperation() {
-    return operation;
-  }
-
-  public final ReferenceValueChange operation(ReferenceValueOperation operation) {
+  public final ReferenceValueChange operation(ReferenceOperation operation) {
     this.operation = operation;
     return this;
   }

@@ -43,6 +43,7 @@ import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageLoadOption;
 import org.smartbit4all.domain.data.storage.StorageObject;
+import org.smartbit4all.domain.data.storage.StorageObject.OperationMode;
 import org.smartbit4all.domain.data.storage.StorageObject.StorageObjectOperation;
 import org.smartbit4all.domain.data.storage.StorageObject.VersionPolicy;
 import org.smartbit4all.domain.data.storage.StorageObjectHistoryEntry;
@@ -433,7 +434,9 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
         // Write the data version file
         FileIO.writeMultipart(objectVersionFile,
             binaryDataVersion,
-            object.definition().serialize(object.getObject()));
+            object.definition()
+                .serialize(object.getMode() == OperationMode.AS_MAP ? object.getObjectAsMap()
+                    : object.getObject()));
       }
       if (objectRelationVersionFile != null) {
         // Write the version file first

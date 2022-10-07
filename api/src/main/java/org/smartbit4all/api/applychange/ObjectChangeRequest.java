@@ -74,9 +74,24 @@ public class ObjectChangeRequest {
    */
   private final Map<ReferenceDefinition, ReferenceChangeRequest> referenceChanges = new HashMap<>();
 
-  public ReferenceValueChange referenceValue(ReferenceDefinition definition) {
-    return (ReferenceValueChange) referenceChanges.computeIfAbsent(definition,
-        d -> new ReferenceValueChange(definition));
+  /**
+   * We can construct a new reference value change for the outgoing reference.
+   * 
+   * @param outgoingReferenceName The name of the outgoing reference.
+   * @return
+   */
+  public ReferenceValueChange referenceValue(String outgoingReferenceName) {
+    ReferenceDefinition referenceDefinition =
+        definition.getOutgoingReferences().get(outgoingReferenceName);
+    return (ReferenceValueChange) referenceChanges.computeIfAbsent(referenceDefinition,
+        d -> new ReferenceValueChange(request(), this, referenceDefinition));
+  }
+
+  public ReferenceListChange referenceList(String outgoingReferenceName) {
+    ReferenceDefinition referenceDefinition =
+        definition.getOutgoingReferences().get(outgoingReferenceName);
+    return (ReferenceListChange) referenceChanges.computeIfAbsent(referenceDefinition,
+        d -> new ReferenceListChange(request(), this, referenceDefinition));
   }
 
   public final URI getUri() {

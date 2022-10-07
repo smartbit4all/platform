@@ -24,7 +24,7 @@ public class ModifyContributionApiStorageImpl extends ContributionApiImpl
       Map<String, Object> objectAsMap) {
     Storage storage = storageApi.get(storageScheme);
     StorageObject<?> storageObject = storage.instanceOf(objectDefinition.getClazz());
-    storageObject.setObjectAsMap(objectAsMap);
+    storageObject.asMap().setObjectAsMap(objectAsMap);
     storage.save(storageObject);
     return storageObject.getVersionUri();
   }

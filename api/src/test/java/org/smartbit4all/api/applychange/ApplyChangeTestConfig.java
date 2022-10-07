@@ -22,6 +22,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 public class ApplyChangeTestConfig {
 
+  public static final String SHADOW_ITEMS = "shadowItems";
+
   @Bean
   public StorageFS defaultStorage(ObjectApi objectApi) {
     return new StorageFS(
@@ -39,7 +41,9 @@ public class ApplyChangeTestConfig {
     return new ObjectReferenceConfigs().ref(SampleCategory.class.getName(),
         SampleCategory.SUB_CATEGORIES, SampleCategory.class.getName(), false)
         .ref(SampleCategory.class.getName(),
-            SampleCategory.CONTAINER_ITEMS, SampleContainerItem.class.getName(), true)
+            SampleCategory.CONTAINER_ITEMS, SampleContainerItem.class.getName(), false)
+        .ref(SampleCategory.class.getName(),
+            SHADOW_ITEMS, SampleContainerItem.class.getName(), false)
         .ref(SampleContainerItem.class.getName(),
             SampleContainerItem.USER_URI, User.class.getName(), false)
         .ref(SampleContainerItem.class.getName(),
