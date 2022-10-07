@@ -147,7 +147,12 @@ public class SessionManagementApiImpl implements SessionManagementApi {
   @Override
   public Session readSession(URI sessionUri) {
     Objects.requireNonNull(sessionUri, EXPMSG_MISSING_SESSIONURI);
-    return storage.get().read(sessionUri, Session.class);
+    try {
+      return storage.get().read(sessionUri, Session.class);
+    } catch (Exception e) {
+      log.error("Error reading session by uri", e);
+      return null;
+    }
   }
 
   @Override
