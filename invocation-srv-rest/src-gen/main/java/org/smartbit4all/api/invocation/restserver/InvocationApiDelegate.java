@@ -1,5 +1,7 @@
 package org.smartbit4all.api.invocation.restserver;
 
+import org.smartbit4all.api.invocation.bean.InvocationParameter;
+import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import io.swagger.annotations.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -25,16 +27,16 @@ public interface InvocationApiDelegate {
     /**
      * POST /invokeApi
      *
-     * @param body  (required)
+     * @param invocationRequest  (required)
      * @return  (status code 200)
      * @see InvocationApi#invokeApi
      */
-    default ResponseEntity<org.smartbit4all.api.invocation.bean.InvocationParameter> invokeApi(org.smartbit4all.api.invocation.bean.InvocationRequest body) throws Exception {
+    default ResponseEntity<InvocationParameter> invokeApi(InvocationRequest invocationRequest) throws Exception {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
-                if (mediaType.isCompatibleWith(MediaType.valueOf(""))) {
-                    String exampleString = "";
-                    ApiUtil.setExampleResponse(request, "", exampleString);
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"name\" : \"name\", \"typeClass\" : \"typeClass\", \"value\" : \"{}\" }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
             }

@@ -9,13 +9,25 @@ info:
 tags:
 - name: Invocation
 paths:
-  /nope:
+  /invokeApi:
     post:
-      summary: Placeholder for generation
+      tags:
+      - Invocation
+      summary: ''
+      operationId: 'invokeApi'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvocationRequest'
       responses:
         '200':
-          description: nope
-                
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvocationParameter'
 components:
   schemas:
     InvocationRequest:

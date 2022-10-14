@@ -36,6 +36,7 @@ import javax.validation.Valid;
  */
 @JsonPropertyOrder({
   FilterGroupMeta.ID,
+  FilterGroupMeta.FILTER_GROUP_METAS,
   FilterGroupMeta.FILTER_FIELD_METAS,
   FilterGroupMeta.LABEL_CODE,
   FilterGroupMeta.ICON_CODE,
@@ -47,6 +48,9 @@ import javax.validation.Valid;
 public class FilterGroupMeta {
   public static final String ID = "id";
   private String id;
+
+  public static final String FILTER_GROUP_METAS = "filterGroupMetas";
+  private List<FilterGroupMeta> filterGroupMetas = null;
 
   public static final String FILTER_FIELD_METAS = "filterFieldMetas";
   private List<FilterFieldMeta> filterFieldMetas = null;
@@ -88,6 +92,42 @@ public class FilterGroupMeta {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setId(String id) {
     this.id = id;
+  }
+
+
+  public FilterGroupMeta filterGroupMetas(List<FilterGroupMeta> filterGroupMetas) {
+    
+    this.filterGroupMetas = filterGroupMetas;
+    return this;
+  }
+
+  public FilterGroupMeta addFilterGroupMetasItem(FilterGroupMeta filterGroupMetasItem) {
+    if (this.filterGroupMetas == null) {
+      this.filterGroupMetas = new ArrayList<>();
+    }
+    this.filterGroupMetas.add(filterGroupMetasItem);
+    return this;
+  }
+
+   /**
+   * Get filterGroupMetas
+   * @return filterGroupMetas
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(FILTER_GROUP_METAS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<FilterGroupMeta> getFilterGroupMetas() {
+    return filterGroupMetas;
+  }
+
+
+  @JsonProperty(FILTER_GROUP_METAS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setFilterGroupMetas(List<FilterGroupMeta> filterGroupMetas) {
+    this.filterGroupMetas = filterGroupMetas;
   }
 
 
@@ -246,6 +286,7 @@ public class FilterGroupMeta {
     }
     FilterGroupMeta filterGroupMeta = (FilterGroupMeta) o;
     return Objects.equals(this.id, filterGroupMeta.id) &&
+        Objects.equals(this.filterGroupMetas, filterGroupMeta.filterGroupMetas) &&
         Objects.equals(this.filterFieldMetas, filterGroupMeta.filterFieldMetas) &&
         Objects.equals(this.labelCode, filterGroupMeta.labelCode) &&
         Objects.equals(this.iconCode, filterGroupMeta.iconCode) &&
@@ -255,7 +296,7 @@ public class FilterGroupMeta {
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, filterFieldMetas, labelCode, iconCode, style, type);
+    return Objects.hash(id, filterGroupMetas, filterFieldMetas, labelCode, iconCode, style, type);
   }
 
   @Override
@@ -263,6 +304,7 @@ public class FilterGroupMeta {
     StringBuilder sb = new StringBuilder();
     sb.append("class FilterGroupMeta {\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    filterGroupMetas: ").append(toIndentedString(filterGroupMetas)).append("\n");
     sb.append("    filterFieldMetas: ").append(toIndentedString(filterFieldMetas)).append("\n");
     sb.append("    labelCode: ").append(toIndentedString(labelCode)).append("\n");
     sb.append("    iconCode: ").append(toIndentedString(iconCode)).append("\n");

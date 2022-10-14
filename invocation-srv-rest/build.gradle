@@ -4,7 +4,6 @@ plugins {
 
 dependencies {
 	api project(':api')
-	api project(':invocation-domain-rest')
 	
 	
 	api 'org.springframework.boot:spring-boot-autoconfigure'
@@ -19,17 +18,15 @@ dependencies {
 smartbit4all {
     openApi {
         apiDescriptorMapping = [
-        	"${rootDir}/invocation-domain-rest/src/main/resources/descriptors/invocation-api.yaml" : "invocation"
+        	"${rootDir}/api-domain/src/main/resources/descriptors/invocation-api.yaml" : "invocation"
         ]
         apiPackagePrefix = "org.smartbit4all.api"
         apiPackagePostfix = "restserver"
         invokerPackagePrefix = "org.smartbit4all.api"
         invokerPackagePostfix = "restserver.util"
+        modelPackagePrefix = "org.smartbit4all.api"
+        modelPackagePostfix = "bean"
 		genApiRestServer = true
-		importMappings = [
-			"InvocationRequest" : "org.smartbit4all.api.invocation.bean.InvocationRequest",
-			"InvocationParameter" : "org.smartbit4all.api.invocation.bean.InvocationParameter"
-		]
     }
 }
 
