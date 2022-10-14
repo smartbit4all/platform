@@ -206,3 +206,14 @@ components:
           type: object
         viewContext:
           $ref: '#/components/schemas/ViewContext'
+    ViewRegistryEntry:
+      description: Descriptor of a possible view.
+      type: object
+      required: [viewName, path]
+      properties:
+        viewName:
+          type: string
+          description: Name of the view. Must be unique.
+        parentView:
+          type: string
+          description: Name of parentView, may be null.
