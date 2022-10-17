@@ -26,6 +26,8 @@ import org.smartbit4all.api.object.CopyContributionApiStorageImpl;
 import org.smartbit4all.api.object.ModifyApi;
 import org.smartbit4all.api.object.ModifyApiImpl;
 import org.smartbit4all.api.object.ModifyContributionApiStorageImpl;
+import org.smartbit4all.api.retrieval.RetrievalApi;
+import org.smartbit4all.api.retrieval.RetrievalApiImpl;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.setting.LocaleUsage;
 import org.smartbit4all.api.setting.LocaleUsageImpl;
@@ -151,6 +153,11 @@ public class PlatformApiConfig {
   @Bean
   public ApplyChangeApi applyChangeApi() {
     return new ApplyChangeApiImpl();
+  }
+
+  @Bean
+  public RetrievalApi retrievalApi() {
+    return new RetrievalApiImpl();
   }
 
 }

@@ -447,7 +447,7 @@ public final class Storage {
     return objectStorage.objectHistoryReverse(uri, definition);
   }
 
-  protected final String getScheme() {
+  public final String getScheme() {
     return scheme;
   }
 

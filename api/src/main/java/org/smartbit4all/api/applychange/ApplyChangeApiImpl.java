@@ -29,12 +29,12 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
         request.getObjectChangeRequests().stream().map(r -> preProcessObjectRequest(r))
             .collect(Collectors.toList());
 
-    HashMap<ObjectChangeRequest, URI> processedRequests = new HashMap<>();
+    Map<ObjectChangeRequest, URI> processedRequests = new HashMap<>();
     for (ObjectChangeRequest objectChangeRequest : finalList) {
       execute(objectChangeRequest, request.getBranchUri(), processedRequests);
     }
 
-    return null;
+    return new ApplyChangeResult(processedRequests);
   }
 
   /**
