@@ -9,6 +9,8 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ReferenceDefinition;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageObject;
@@ -24,79 +26,72 @@ public class RetrievalApiImpl implements RetrievalApi {
   @Autowired
   private StorageApi storageApi;
 
-  @Override
-  public ObjectModel load(RetrievalRequest request) {
-    ObjectModel result = new ObjectModel();
+  @Autowired
+  private ObjectApi objectApi;
 
-    result.objects
-        .putAll(
-            request.startWithObjects.parallelStream().map(o -> readAll(o, o.getUriList(), result))
-                .flatMap(List::stream)
-                .collect(Collectors.toMap(ObjectNode::getUri, n -> n)));
+  private final Stream<ObjectNode> load(ObjectRetrievalRequest request, Stream<URI> uriStream) {
 
-    return result;
+    return uriStream.parallel().map(u -> readAll(request, u)).flatMap(List::stream);
+
   }
 
-  private final List<ObjectNode> readAll(ObjectRetrievalRequest objRequest, List<URI> uris,
-      ObjectModel model) {
+  private final List<ObjectNode> readAll(ObjectRetrievalRequest objRequest, URI uri) {
     List<ObjectNode> result = null;
-    for (URI uri : uris) {
-      // TODO Load latest version from the object.
-      // if(objRequest.isLoadLatestVersion()) {
-      // }
-      StorageObject<?> storageObject = storageApi.load(uri);
-      ObjectNode objectNode =
-          new ObjectNode(model, objRequest.getDefinition(), storageObject.getStorage().getScheme());
-      objectNode.setObjectAsMap(storageObject.getObjectAsMap());
-      if (result == null) {
-        result = new ArrayList<>();
-      }
-      result.add(objectNode);
+    // TODO Load latest version from the object.
+    // if(objRequest.isLoadLatestVersion()) {
+    // }
+    StorageObject<?> storageObject = storageApi.load(uri);
+    ObjectNode objectNode =
+        new ObjectNode(objRequest.getDefinition(), storageObject.getStorage().getScheme());
+    objectNode.setObjectAsMap(storageObject.getObjectAsMap());
+    if (result == null) {
+      result = new ArrayList<>();
+    }
+    result.add(objectNode);
 
-      // Recursive read of all referred objects.
-      for (Entry<ReferenceDefinition, ObjectRetrievalRequest> entry : objRequest.getReferences()
-          .entrySet()) {
-        Object sourceValue = entry.getKey().getSourceValue(objectNode.getObjectAsMap());
-        if (sourceValue != null) {
-          if (sourceValue instanceof URI) {
-            ListIterator<ObjectNode> valueObjectIterator =
-                readAll(objRequest, Collections.singletonList((URI) sourceValue), model)
-                    .listIterator();
-            if (valueObjectIterator.hasNext()) {
-              objectNode.getReferenceValues().put(entry.getKey(), valueObjectIterator.next());
-            }
-          } else if (sourceValue instanceof List) {
-            @SuppressWarnings("unchecked")
-            List<URI> refUriList = ((List<Object>) sourceValue).stream()
-                .map(o -> (URI) (o instanceof URI ? o : URI.create((String) o)))
-                .collect(Collectors.toList());
-            List<ObjectNode> readAllRef = readAll(objRequest, refUriList, model);
-            objectNode.getReferenceListValues().put(entry.getKey(), readAllRef);
-          } else if (sourceValue instanceof Map) {
-            @SuppressWarnings("unchecked")
-            Map<String, URI> refUriMap = ((Map<String, Object>) sourceValue).entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, e -> {
-                  if (e.getValue() instanceof URI) {
-                    return (URI) e.getValue();
-                  } else {
-                    return URI.create((String) e.getValue());
-                  }
-                }));
-            List<String> keys = new ArrayList<>();
-            List<URI> uriList = new ArrayList<>();
-            for (Entry<String, URI> refEntry : refUriMap.entrySet()) {
-              keys.add(refEntry.getKey());
-              uriList.add(refEntry.getValue());
-            }
-            List<ObjectNode> readAllRef =
-                readAll(objRequest, uriList, model);
-            Map<String, ObjectNode> refObjectMap = new HashMap<>();
-            ListIterator<String> iterKeys = keys.listIterator();
-            for (ObjectNode refObjectNode : readAllRef) {
-              refObjectMap.put(iterKeys.next(), refObjectNode);
-            }
-            objectNode.getReferenceMapValues().put(entry.getKey(), refObjectMap);
+    // Recursive read of all referred objects.
+    for (Entry<ReferenceDefinition, ObjectRetrievalRequest> entry : objRequest.getReferences()
+        .entrySet()) {
+      Object sourceValue = entry.getKey().getSourceValue(objectNode.getObjectAsMap());
+      if (sourceValue != null) {
+        if (sourceValue instanceof URI) {
+          ListIterator<ObjectNode> valueObjectIterator =
+              readAll(objRequest, (URI) sourceValue)
+                  .listIterator();
+          if (valueObjectIterator.hasNext()) {
+            objectNode.getReferenceValues().put(entry.getKey(), valueObjectIterator.next());
           }
+        } else if (sourceValue instanceof List) {
+          @SuppressWarnings("unchecked")
+          List<ObjectNode> readAllRef = ((List<Object>) sourceValue).stream()
+              .map(o -> (URI) (o instanceof URI ? o : URI.create((String) o)))
+              .map(u -> readAll(objRequest, u)).flatMap(List::stream)
+              .collect(Collectors.toList());
+          objectNode.getReferenceListValues().put(entry.getKey(), readAllRef);
+        } else if (sourceValue instanceof Map) {
+          @SuppressWarnings("unchecked")
+          Map<String, URI> refUriMap = ((Map<String, Object>) sourceValue).entrySet().stream()
+              .collect(Collectors.toMap(Entry::getKey, e -> {
+                if (e.getValue() instanceof URI) {
+                  return (URI) e.getValue();
+                } else {
+                  return URI.create((String) e.getValue());
+                }
+              }));
+          List<String> keys = new ArrayList<>();
+          List<URI> uriList = new ArrayList<>();
+          for (Entry<String, URI> refEntry : refUriMap.entrySet()) {
+            keys.add(refEntry.getKey());
+            uriList.add(refEntry.getValue());
+          }
+          List<ObjectNode> readAllRef = uriList.stream().map(u -> readAll(objRequest, u))
+              .flatMap(List::stream).collect(Collectors.toList());
+          Map<String, ObjectNode> refObjectMap = new HashMap<>();
+          ListIterator<String> iterKeys = keys.listIterator();
+          for (ObjectNode refObjectNode : readAllRef) {
+            refObjectMap.put(iterKeys.next(), refObjectNode);
+          }
+          objectNode.getReferenceMapValues().put(entry.getKey(), refObjectMap);
         }
       }
     }
@@ -105,8 +100,28 @@ public class RetrievalApiImpl implements RetrievalApi {
   }
 
   @Override
-  public RetrievalRequest request() {
-    return new RetrievalRequest(this);
+  public <T> ObjectRetrievalRequest request(Class<T> clazz) {
+    return new ObjectRetrievalRequest(objectApi.definition(clazz));
+  }
+
+  @Override
+  public ObjectNode load(ObjectRetrievalRequest request, URI uri) {
+    return load(request, Stream.of(uri)).findFirst().orElse(null);
+  }
+
+  @Override
+  public List<ObjectNode> load(ObjectRetrievalRequest request, URI... uris) {
+    return load(request, Stream.of(uris)).collect(Collectors.toList());
+  }
+
+  @Override
+  public List<ObjectNode> load(ObjectRetrievalRequest request, List<URI> uris) {
+    return load(request, uris.stream()).collect(Collectors.toList());
+  }
+
+  @Override
+  public <T> ObjectNode newObject(Class<T> clazz, String storageScheme) {
+    return new ObjectNode(objectApi.definition(clazz), storageScheme);
   }
 
 }

@@ -5,10 +5,9 @@ import java.net.URI;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.smartbit4all.api.retrieval.ObjectModel;
+import org.smartbit4all.api.retrieval.ObjectNode;
 import org.smartbit4all.api.retrieval.ObjectRetrievalRequest;
 import org.smartbit4all.api.retrieval.RetrievalApi;
-import org.smartbit4all.api.retrieval.RetrievalRequest;
 import org.smartbit4all.api.sample.bean.SampleCategory;
 import org.smartbit4all.api.sample.bean.SampleContainerItem;
 import org.smartbit4all.core.io.TestFileUtil;
@@ -40,13 +39,11 @@ class ApplyChangeTest {
     result.getProcessedRequests().entrySet().stream()
         .filter(e -> e.getKey().getDefinition().getClazz().equals(SampleCategory.class)).findFirst()
         .ifPresent(e -> {
-          RetrievalRequest request = retrievalApi.request();
-          ObjectRetrievalRequest startWith =
-              request.startWith(e.getKey().getDefinition(), e.getValue());
-          startWith
-              .loadBy(e.getKey().getDefinition().getOutgoingReferences().get(referenceToItems));
-          ObjectModel objectModel = request.load();
-          Assertions.assertEquals(result.getProcessedRequests().size(), objectModel.size());
+          ObjectRetrievalRequest request = retrievalApi.request(SampleCategory.class);
+          request.loadBy(e.getKey().getDefinition().getOutgoingReferences().get(referenceToItems));
+          ObjectNode objectNode = retrievalApi.load(request, e.getValue());
+          Assertions.assertEquals(result.getProcessedRequests().size(),
+              objectNode.allNodes().count());
         });
 
   }

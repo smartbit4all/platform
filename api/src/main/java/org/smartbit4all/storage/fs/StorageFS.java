@@ -573,7 +573,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
     if (!storageObjectDataFile.exists()) {
       throw new ObjectNotFoundException(uri, clazz, "Object data file not found.");
     }
-    if (uriWithoutVersion.getPath().endsWith(Storage.singleVersionURIPostfix)
+    if (uriWithoutVersion.getPath().endsWith(Storage.SINGLE_VERSION_URI_POSTFIX)
         && storage.getVersionPolicy() != VersionPolicy.SINGLEVERSION) {
       throw new IllegalArgumentException("Unable to load single version object with .");
     }

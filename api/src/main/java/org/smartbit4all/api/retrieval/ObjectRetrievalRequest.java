@@ -1,12 +1,10 @@
 package org.smartbit4all.api.retrieval;
 
-import java.net.URI;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ReferenceDefinition;
+import org.smartbit4all.domain.service.query.RetrievalRequest;
 
 /**
  * The object retrieval request that defines the object node of the request.
@@ -14,12 +12,6 @@ import org.smartbit4all.core.object.ReferenceDefinition;
  * @author Peter Boros
  */
 public final class ObjectRetrievalRequest {
-
-  /**
-   * The URI of the objects to load by default. It filters the given object and limits the result to
-   * this list.
-   */
-  private final List<URI> uriList = new ArrayList<>();
 
   /**
    * Defined if we need the latest version of the given object. By default we load the referred
@@ -38,7 +30,7 @@ public final class ObjectRetrievalRequest {
   private final Map<ReferenceDefinition, ObjectRetrievalRequest> references = new HashMap<>();
 
   /**
-   * The object request is constructed by itself and the {@link RetrievalRequest}.
+   * The object request is constructed by the {@link RetrievalApi}.
    * 
    * @param definition
    */
@@ -46,6 +38,15 @@ public final class ObjectRetrievalRequest {
     super();
     this.definition = definition;
     this.loadLatestVersion = loadLatestVersion;
+  }
+
+  /**
+   * The object request is constructed by itself and the {@link RetrievalRequest}.
+   * 
+   * @param definition
+   */
+  ObjectRetrievalRequest(ObjectDefinition<?> definition) {
+    this(definition, false);
   }
 
   /**
@@ -61,14 +62,6 @@ public final class ObjectRetrievalRequest {
    */
   public final Map<ReferenceDefinition, ObjectRetrievalRequest> getReferences() {
     return references;
-  }
-
-  /**
-   * @return The list of URI that are the filters of the given object node. These are the possible
-   *         object that can be retrieved in the result {@link ObjectModel}.
-   */
-  public final List<URI> getUriList() {
-    return uriList;
   }
 
   /**

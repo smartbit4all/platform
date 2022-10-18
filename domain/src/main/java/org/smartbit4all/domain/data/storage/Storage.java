@@ -12,6 +12,7 @@ import java.util.UUID;
 import java.util.concurrent.locks.Lock;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 import org.smartbit4all.api.storage.bean.ObjectMap;
 import org.smartbit4all.api.storage.bean.ObjectMapRequest;
 import org.smartbit4all.api.storage.bean.ObjectReference;
@@ -82,7 +83,7 @@ public final class Storage {
    * modification. These are typically technical records used for administrating the application
    * mechanisms.
    */
-  public static final String singleVersionURIPostfix = "-s";
+  public static final String SINGLE_VERSION_URI_POSTFIX = "-s";
 
   /**
    * Construct a new storage that is a logical schema for the storage system.
@@ -256,12 +257,12 @@ public final class Storage {
    * @param update
    * @return The URI of the new version.
    */
-  public <T> URI update(URI objectUri, Class<T> clazz, Function<T, T> update) {
+  public <T> URI update(URI objectUri, Class<T> clazz, UnaryOperator<T> update) {
     return update(objectUri, clazz, null, update);
   }
 
   public <T> URI update(URI objectUri, Class<T> clazz, ObjectVersion version,
-      Function<T, T> update) {
+      UnaryOperator<T> update) {
     StorageObjectLock lock = getLock(objectUri);
     lock.lock();
     try {
@@ -506,7 +507,7 @@ public final class Storage {
         + now.getYear() + StringConstant.SLASH + now.getMonthValue() + StringConstant.SLASH
         + now.getDayOfMonth() + StringConstant.SLASH + now.getHour() + StringConstant.SLASH
         + now.getMinute() + StringConstant.SLASH
-        + uuid + (versionPolicy == VersionPolicy.SINGLEVERSION ? singleVersionURIPostfix
+        + uuid + (versionPolicy == VersionPolicy.SINGLEVERSION ? SINGLE_VERSION_URI_POSTFIX
             : StringConstant.EMPTY));
   }
 

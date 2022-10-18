@@ -1,5 +1,7 @@
 package org.smartbit4all.api.retrieval;
 
+import java.net.URI;
+import java.util.List;
 import org.smartbit4all.core.object.ReferenceDefinition;
 
 /**
@@ -12,17 +14,45 @@ import org.smartbit4all.core.object.ReferenceDefinition;
 public interface RetrievalApi {
 
   /**
-   * Executes the request and retrieve the objects.
+   * Executes the request and retrieve the object.
    * 
    * @param request The request object that defines the root objects and the references to load.
-   * @return The result is an object model that contains every object that is retrieved by the
-   *         request.
+   * @param uri The uri of the object to load.
+   * @return The result of the object retrieve as an {@link ObjectNode}.
    */
-  ObjectModel load(RetrievalRequest request);
+  ObjectNode load(ObjectRetrievalRequest request, URI uri);
 
   /**
-   * @return Initiate a new request.
+   * Executes the request and retrieve the object.
+   * 
+   * @param request The request object that defines the root objects and the references to load.
+   * @param uris The uris of the objects to load.
+   * @return The result of the object retrieve as an {@link ObjectNode}.
    */
-  RetrievalRequest request();
+  List<ObjectNode> load(ObjectRetrievalRequest request, URI... uris);
+
+  /**
+   * Executes the request and retrieve the object.
+   * 
+   * @param request The request object that defines the root objects and the references to load.
+   * @param uris The uri list of the objects to load.
+   * @return The result of the object retrieve as an {@link ObjectNode}.
+   */
+  List<ObjectNode> load(ObjectRetrievalRequest request, List<URI> uris);
+
+  /**
+   * @return Initiate a new {@link ObjectRetrievalRequest}.
+   */
+  <T> ObjectRetrievalRequest request(Class<T> clazz);
+
+  /**
+   * Constructs a new {@link ObjectNode} for the
+   * 
+   * @param <T>
+   * @param clazz
+   * @param storageScheme
+   * @return
+   */
+  <T> ObjectNode newObject(Class<T> clazz, String storageScheme);
 
 }
