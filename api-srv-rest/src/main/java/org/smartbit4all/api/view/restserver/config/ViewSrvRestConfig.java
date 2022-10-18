@@ -10,7 +10,7 @@ import org.smartbit4all.api.view.ViewRegistryApiImpl;
 import org.smartbit4all.api.view.restserver.ViewApiController;
 import org.smartbit4all.api.view.restserver.ViewApiDelegate;
 import org.smartbit4all.api.view.restserver.impl.ViewApiDelegateImpl;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -30,19 +30,19 @@ public class ViewSrvRestConfig {
   }
 
   @Bean
-  @ConditionalOnMissingBean
+  @ConditionalOnMissingClass("org.smartbit4all.api.view.ViewApi")
   public ViewApi viewApi() {
     return new ViewApiImpl();
   }
 
   @Bean
-  @ConditionalOnMissingBean
+  @ConditionalOnMissingClass("org.smartbit4all.api.view.ViewRegistryApi")
   public ViewRegistryApi viewRegistryApi() {
     return new ViewRegistryApiImpl();
   }
 
   @Bean
-  @ConditionalOnMissingBean
+  @ConditionalOnMissingClass("org.smartbit4all.api.view.ViewContextService")
   public ViewContextService viewContextService() {
     return new ViewContextServiceImpl();
   }
