@@ -92,6 +92,10 @@ public final class ObjectDefinition<T> {
    */
   private final Map<String, Map<String, ReferenceDefinition>> incomingReferences = new HashMap<>();
 
+  /**
+   * The Bean meta of the given object definition. The bean meta is related to the {@link #clazz}
+   * but the object can be retrieved as other Class also.
+   */
   private final BeanMeta meta;
 
   public ObjectDefinition(Class<T> clazz) {
@@ -278,6 +282,13 @@ public final class ObjectDefinition<T> {
    */
   public final Map<String, ReferenceDefinition> getOutgoingReferences() {
     return outgoingReferences;
+  }
+
+  /**
+   * The outgoing reference of the given object by the name of the referrer property.
+   */
+  public final ReferenceDefinition getOutgoingReference(String referenceName) {
+    return outgoingReferences.get(referenceName);
   }
 
   /**
