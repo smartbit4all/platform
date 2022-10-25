@@ -181,7 +181,7 @@ components:
           type: string
     ApiError:
       type: object
-      required: [message]
+      required: [code, message]
       properties:
         code:
           type: string

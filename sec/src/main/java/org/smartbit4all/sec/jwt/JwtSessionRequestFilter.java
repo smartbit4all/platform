@@ -65,7 +65,9 @@ public class JwtSessionRequestFilter extends OncePerRequestFilter implements Ini
   private Function<Session, AbstractAuthenticationToken> anonymousAuthTokenProvider =
       session -> createAnonymousAuthToken(session.getUri());
 
-  private final List<SkippableCall> skippableCalls = new ArrayList<>();
+  private final List<CallDefinition> skippableCalls = new ArrayList<>();
+
+  private final List<CallDefinition> notSkippableCalls = new ArrayList<>();
 
   public JwtSessionRequestFilter() {}
 
@@ -80,8 +82,8 @@ public class JwtSessionRequestFilter extends OncePerRequestFilter implements Ini
   @Override
   public void afterPropertiesSet() throws ServletException {
     super.afterPropertiesSet();
-    skippableCalls.add(new SkippableCall(HttpMethod.POST, sessionPath + "/refresh"));
-    skippableCalls.add(new SkippableCall(HttpMethod.PUT, sessionPath + "/session"));
+    skippableCalls.add(new CallDefinition(HttpMethod.POST, sessionPath + "/refresh"));
+    skippableCalls.add(new CallDefinition(HttpMethod.PUT, sessionPath + "/session"));
   }
 
   @Override
@@ -127,11 +129,19 @@ public class JwtSessionRequestFilter extends OncePerRequestFilter implements Ini
   private boolean callWithoutSessionToken(HttpServletRequest request) {
     String requestURI = request.getRequestURI();
     String method = request.getMethod();
-    return skippableCalls.stream().anyMatch(
+    boolean isSkippable = skippableCalls.stream().anyMatch(
         sc -> {
           return requestURI.contains(sc.path)
               && sc.method.matches(method);
         });
+
+    boolean notSkippable = notSkippableCalls.stream().anyMatch(
+        sc -> {
+          return requestURI.contains(sc.path)
+              && sc.method.matches(method);
+        });
+
+    return isSkippable || !notSkippable;
   }
 
   private void handleViewContext(HttpServletRequest request) {
@@ -175,15 +185,19 @@ public class JwtSessionRequestFilter extends OncePerRequestFilter implements Ini
   }
 
   public void addSkippableCall(HttpMethod method, String path) {
-    skippableCalls.add(new SkippableCall(method, path));
+    skippableCalls.add(new CallDefinition(method, path));
   }
 
-  private static class SkippableCall {
+  public void addNotSkippableCall(HttpMethod method, String path) {
+    notSkippableCalls.add(new CallDefinition(method, path));
+  }
+
+  private static class CallDefinition {
 
     private HttpMethod method;
     private String path;
 
-    public SkippableCall(HttpMethod method, String path) {
+    public CallDefinition(HttpMethod method, String path) {
       Assert.notNull(method, "method cannot be null");
       Assert.notNull(path, "path cannot be null");
       this.method = method;
