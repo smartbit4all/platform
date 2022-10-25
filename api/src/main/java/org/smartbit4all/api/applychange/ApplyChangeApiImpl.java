@@ -1,8 +1,9 @@
 package org.smartbit4all.api.applychange;
 
 import java.net.URI;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import org.smartbit4all.api.object.BranchApi;
@@ -28,11 +29,12 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
         request.getObjectChangeRequests().stream().map(r -> preProcessObjectRequest(r))
             .collect(Collectors.toList());
 
+    Map<ObjectChangeRequest, URI> processedRequests = new HashMap<>();
     for (ObjectChangeRequest objectChangeRequest : finalList) {
-      execute(objectChangeRequest, request.getBranchUri());
+      execute(objectChangeRequest, request.getBranchUri(), processedRequests);
     }
 
-    return null;
+    return new ApplyChangeResult(processedRequests);
   }
 
   /**
@@ -44,15 +46,24 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
    * 
    * @param objectChangeRequest
    */
-  private URI execute(ObjectChangeRequest objectChangeRequest, URI branchUri) {
+  private URI execute(ObjectChangeRequest objectChangeRequest, URI branchUri,
+      Map<ObjectChangeRequest, URI> processedRequests) {
+
+    // If this object request was already processed then return the URI without processing again.
+    URI uri = processedRequests.get(objectChangeRequest);
+    if (uri != null) {
+      return uri;
+    }
 
     for (Entry<ReferenceDefinition, ReferenceChangeRequest> entry : objectChangeRequest
         .getReferenceChanges().entrySet()) {
+      Map<ObjectChangeRequest, URI> changes = new HashMap<>();
       for (ObjectChangeRequest refObjRequest : entry.getValue().changes()) {
-        URI refUri = execute(refObjRequest, branchUri);
-        entry.getValue().apply(objectChangeRequest,
-            Collections.singletonMap(refObjRequest, refUri));
+        URI refUri = execute(refObjRequest, branchUri, processedRequests);
+        changes.put(refObjRequest, refUri);
       }
+      entry.getValue().apply(objectChangeRequest,
+          changes);
     }
 
     URI result = null;
@@ -85,6 +96,8 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
         break;
     }
 
+    // Add it to the already processed map.
+    processedRequests.put(objectChangeRequest, result);
     return result;
   }
 

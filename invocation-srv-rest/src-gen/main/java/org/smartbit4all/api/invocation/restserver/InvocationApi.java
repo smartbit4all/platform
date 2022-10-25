@@ -5,6 +5,8 @@
  */
 package org.smartbit4all.api.invocation.restserver;
 
+import org.smartbit4all.api.invocation.bean.InvocationParameter;
+import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -27,20 +29,20 @@ public interface InvocationApi {
     /**
      * POST /invokeApi
      *
-     * @param body  (required)
+     * @param invocationRequest  (required)
      * @return  (status code 200)
      */
-    @ApiOperation(value = "", nickname = "invokeApi", notes = "", response = org.smartbit4all.api.invocation.bean.InvocationParameter.class, tags={ "Invocation", })
+    @ApiOperation(value = "", nickname = "invokeApi", notes = "", response = InvocationParameter.class, tags={ "Invocation", })
     @ApiResponses(value = { 
-        @ApiResponse(code = 200, message = "", response = org.smartbit4all.api.invocation.bean.InvocationParameter.class) })
+        @ApiResponse(code = 200, message = "", response = InvocationParameter.class) })
     @RequestMapping(
         method = RequestMethod.POST,
         value = "/invokeApi",
         produces = { "application/json" },
         consumes = { "application/json" }
     )
-    default ResponseEntity<org.smartbit4all.api.invocation.bean.InvocationParameter> invokeApi(@ApiParam(value = "", required = true) @Valid @RequestBody org.smartbit4all.api.invocation.bean.InvocationRequest body) throws Exception {
-        return getDelegate().invokeApi(body);
+    default ResponseEntity<InvocationParameter> invokeApi(@ApiParam(value = "", required = true) @Valid @RequestBody InvocationRequest invocationRequest) throws Exception {
+        return getDelegate().invokeApi(invocationRequest);
     }
 
 }

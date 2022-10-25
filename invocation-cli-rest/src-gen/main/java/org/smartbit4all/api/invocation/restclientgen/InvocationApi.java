@@ -2,6 +2,8 @@ package org.smartbit4all.api.invocation.restclientgen;
 
 import org.smartbit4all.api.invocation.restclientgen.util.ApiClient;
 
+import org.smartbit4all.api.invocation.bean.InvocationParameter;
+import org.smartbit4all.api.invocation.bean.InvocationRequest;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -50,28 +52,28 @@ public class InvocationApi {
      * 
      * 
      * <p><b>200</b>
-     * @param body  (required)
-     * @return org.smartbit4all.api.invocation.bean.InvocationParameter
+     * @param invocationRequest  (required)
+     * @return InvocationParameter
      * @throws RestClientException if an error occurs while attempting to invoke the API
      */
-    public org.smartbit4all.api.invocation.bean.InvocationParameter invokeApi(org.smartbit4all.api.invocation.bean.InvocationRequest body) throws RestClientException {
-        return invokeApiWithHttpInfo(body).getBody();
+    public InvocationParameter invokeApi(InvocationRequest invocationRequest) throws RestClientException {
+        return invokeApiWithHttpInfo(invocationRequest).getBody();
     }
 
     /**
      * 
      * 
      * <p><b>200</b>
-     * @param body  (required)
-     * @return ResponseEntity&lt;org.smartbit4all.api.invocation.bean.InvocationParameter&gt;
+     * @param invocationRequest  (required)
+     * @return ResponseEntity&lt;InvocationParameter&gt;
      * @throws RestClientException if an error occurs while attempting to invoke the API
      */
-    public ResponseEntity<org.smartbit4all.api.invocation.bean.InvocationParameter> invokeApiWithHttpInfo(org.smartbit4all.api.invocation.bean.InvocationRequest body) throws RestClientException {
-        Object postBody = body;
+    public ResponseEntity<InvocationParameter> invokeApiWithHttpInfo(InvocationRequest invocationRequest) throws RestClientException {
+        Object postBody = invocationRequest;
         
-        // verify the required parameter 'body' is set
-        if (body == null) {
-            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Missing the required parameter 'body' when calling invokeApi");
+        // verify the required parameter 'invocationRequest' is set
+        if (invocationRequest == null) {
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Missing the required parameter 'invocationRequest' when calling invokeApi");
         }
         
 
@@ -91,7 +93,7 @@ public class InvocationApi {
 
         String[] authNames = new String[] {  };
 
-        ParameterizedTypeReference<org.smartbit4all.api.invocation.bean.InvocationParameter> returnType = new ParameterizedTypeReference<org.smartbit4all.api.invocation.bean.InvocationParameter>() {};
+        ParameterizedTypeReference<InvocationParameter> returnType = new ParameterizedTypeReference<InvocationParameter>() {};
         return apiClient.invokeAPI("/invokeApi", HttpMethod.POST, Collections.<String, Object>emptyMap(), queryParams, postBody, headerParams, cookieParams, formParams, localVarAccept, localVarContentType, authNames, returnType);
     }
 }

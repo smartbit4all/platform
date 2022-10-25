@@ -1,5 +1,6 @@
 package org.smartbit4all.core.utility;
 
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -72,6 +73,20 @@ public class ImageUtils {
       return resizeImageInternal(width, -1, bi);
     }
     return null;
+  }
+
+  /**
+   * Returns the width and height of the specified image.
+   * 
+   * @param image a {@code BinaryData} image to be examined, not null
+   * @return a {@link Dimension} containing the width and height of the image
+   * @throws IOException if the image file does not exist, cannot be opened or otherwise
+   *         unavailable, or its format is not recognised by the standard Java ImageReader
+   *         implementations
+   */
+  public static Dimension getDimension(BinaryData image) throws IOException {
+    BufferedImage bi = ImageIO.read(image.inputStream());
+    return new Dimension(bi.getWidth(), bi.getHeight());
   }
 
 }
