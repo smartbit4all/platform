@@ -26,6 +26,9 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.google.common.hash.Funnels;
+import com.google.common.hash.Hasher;
+import com.google.common.hash.Hashing;
 import com.google.common.io.ByteSource;
 import com.google.common.io.ByteStreams;
 
@@ -332,7 +335,13 @@ public class BinaryData {
    * 
    * @return The hash if available. Else we get null!
    */
-  public String hash() {
+  public synchronized String hash() throws IOException {
+    // temporary solution
+    if (hash == null) {
+      Hasher hasher = Hashing.sha256().newHasher();
+      ByteStreams.copy(inputStream(), Funnels.asOutputStream(hasher));
+      hash = hasher.hash().toString();
+    }
     return hash;
   }
 
