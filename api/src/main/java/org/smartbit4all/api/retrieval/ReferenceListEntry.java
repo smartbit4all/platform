@@ -2,7 +2,7 @@ package org.smartbit4all.api.retrieval;
 
 import java.util.List;
 
-public class ReferenceListEntry {
+class ReferenceListEntry {
   public ObjectNodeList publicNodeList;
   public List<ObjectNode> nodeList;
 
