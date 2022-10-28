@@ -45,14 +45,4 @@ public interface RetrievalApi {
    */
   <T> ObjectRetrievalRequest request(Class<T> clazz);
 
-  /**
-   * Constructs a new {@link ObjectNode} for the
-   * 
-   * @param <T>
-   * @param clazz
-   * @param storageScheme
-   * @return
-   */
-  <T> ObjectNode newObject(Class<T> clazz, String storageScheme);
-
 }

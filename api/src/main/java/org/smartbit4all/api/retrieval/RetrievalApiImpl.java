@@ -67,7 +67,8 @@ public class RetrievalApiImpl implements RetrievalApi {
               .map(o -> (URI) (o instanceof URI ? o : URI.create((String) o)))
               .map(u -> readAll(objRequest, u)).flatMap(List::stream)
               .collect(Collectors.toList());
-          objectNode.getReferenceListValues().put(entry.getKey(), readAllRef);
+          objectNode.getReferenceListValues().put(entry.getKey(),
+              new ReferenceListEntry(readAllRef));
         } else if (sourceValue instanceof Map) {
           @SuppressWarnings("unchecked")
           Map<String, URI> refUriMap = ((Map<String, Object>) sourceValue).entrySet().stream()
@@ -117,11 +118,6 @@ public class RetrievalApiImpl implements RetrievalApi {
   @Override
   public List<ObjectNode> load(ObjectRetrievalRequest request, List<URI> uris) {
     return load(request, uris.stream()).collect(Collectors.toList());
-  }
-
-  @Override
-  public <T> ObjectNode newObject(Class<T> clazz, String storageScheme) {
-    return new ObjectNode(objectApi.definition(clazz), storageScheme);
   }
 
 }
