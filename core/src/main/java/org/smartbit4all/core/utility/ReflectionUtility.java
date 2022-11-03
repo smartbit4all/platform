@@ -15,6 +15,7 @@
 package org.smartbit4all.core.utility;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashSet;
@@ -23,6 +24,11 @@ import java.util.function.Predicate;
 import org.springframework.aop.TargetSource;
 import org.springframework.aop.framework.Advised;
 import org.springframework.aop.support.AopUtils;
+import org.springframework.core.annotation.MergedAnnotation;
+import org.springframework.core.annotation.MergedAnnotationCollectors;
+import org.springframework.core.annotation.MergedAnnotationPredicates;
+import org.springframework.core.annotation.MergedAnnotations;
+import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 
 /**
  * This class is a collection of useful utility functions to discover java types. This class is
@@ -233,5 +239,14 @@ public class ReflectionUtility {
     } catch (Exception e) {
       throw new IllegalStateException(e);
     }
+  }
+
+  public static <A extends Annotation> Set<A> getAnnotationsByType(
+      AnnotatedElement annotatedElement, Class<A> annotationType) {
+    return MergedAnnotations.from(annotatedElement, SearchStrategy.TYPE_HIERARCHY)
+        .stream(annotationType)
+        .filter(MergedAnnotationPredicates.firstRunOf(MergedAnnotation::getAggregateIndex))
+        .map(MergedAnnotation::withNonMergedAttributes)
+        .collect(MergedAnnotationCollectors.toAnnotationSet());
   }
 }
