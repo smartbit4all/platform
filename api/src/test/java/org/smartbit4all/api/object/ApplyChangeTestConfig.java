@@ -1,4 +1,4 @@
-package org.smartbit4all.api.applychange;
+package org.smartbit4all.api.object;
 
 import org.smartbit4all.api.binarydata.BinaryContent;
 import org.smartbit4all.api.config.PlatformApiConfig;

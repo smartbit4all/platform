@@ -1,4 +1,4 @@
-package org.smartbit4all.api.applychange;
+package org.smartbit4all.api.object;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
-import org.smartbit4all.api.object.BranchApi;
-import org.smartbit4all.api.object.ModifyApi;
+import org.smartbit4all.api.object.ObjectChangeRequest.ObjectChangeOperation;
+import org.smartbit4all.api.object.ObjectNode.ObjectNodeState;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ReferenceDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,7 +66,8 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
           changes);
     }
 
-    URI result = null;
+    // By default we return the original uri.
+    URI result = objectChangeRequest.getUri();
 
     switch (objectChangeRequest.getOperation()) {
       case NEW:
@@ -81,7 +82,8 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
         // First of all we have to compare the new object with the current version. If there is
         // change then we have to know if we are already on the right branch. If no then we have to
         // branch the given object version. At the end we have to update if there was any change.
-        result = modifyApi.updateObject(objectChangeRequest.getUri(),
+        result = modifyApi.updateObject(objectChangeRequest.getDefinition(),
+            objectChangeRequest.getUri(),
             objectChangeRequest.getOrCreateObjectAsMap(),
             branchUri);
         break;
@@ -122,6 +124,70 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
   @Override
   public ApplyChangeRequest request(URI branchUri) {
     return new ApplyChangeRequest(branchUri, objectApi);
+  }
+
+  @Override
+  public ApplyChangeResult applyChanges(ObjectNode rootNode, URI branchUri) {
+    ApplyChangeRequest request = constructRequest(rootNode, branchUri);
+    return save(request);
+  }
+
+  private ApplyChangeRequest constructRequest(ObjectNode rootNode, URI branchUri) {
+    ApplyChangeRequest request = request(branchUri);
+    // Now we assume that the root container is the object that is set here. So we add modification
+    // to this object if it is necessary.
+    ObjectChangeRequest objectChangeRequest = constructRequest(rootNode, request);
+    if (objectChangeRequest.getOperation() == ObjectChangeOperation.NEW
+        || objectChangeRequest.getOperation() == ObjectChangeOperation.UPDATE) {
+      request.getObjectChangeRequests().add(objectChangeRequest);
+    }
+    return request;
+  }
+
+  private ObjectChangeRequest constructRequest(ObjectNode node, ApplyChangeRequest request) {
+    boolean containmentChanged = false;
+
+    // Constructs the result with NOP operation code.
+    ObjectChangeRequest result = new ObjectChangeRequest(request, node.getDefinition(),
+        node.getStorageScheme(), ObjectChangeOperation.NOP);
+    result.setUri(node.getUri());
+    if (node.getState() == ObjectNodeState.NEW) {
+      result.setOperation(ObjectChangeOperation.NEW);
+      result.setObjectAsMap(node.getObjectAsMap());
+    } else if (node.getState() == ObjectNodeState.MODIFIED) {
+      result.setOperation(ObjectChangeOperation.UPDATE);
+      result.setObjectAsMap(node.getObjectAsMap());
+    }
+
+    // Recurse on the values.
+    for (Entry<ReferenceDefinition, ObjectNode> entry : node.getReferenceValues().entrySet()) {
+      ObjectChangeRequest changeRequest = constructRequest(entry.getValue(), request);
+      if (changeRequest.getOperation() != ObjectChangeOperation.NOP) {
+        containmentChanged = true;
+        result.referenceValue(entry.getKey()).value(changeRequest);
+      }
+    }
+
+    // Recurse on the lists
+    for (Entry<ReferenceDefinition, ReferenceListEntry> entry : node.getReferenceListValues()
+        .entrySet()) {
+      for (ObjectNode objectNode : entry.getValue().getNodeList()) {
+        if (objectNode.getState() != ObjectNodeState.REMOVED) {
+          ObjectChangeRequest changeRequest = constructRequest(objectNode, request);
+          if (changeRequest.getOperation() != ObjectChangeOperation.NOP) {
+            containmentChanged = true;
+          }
+          result.referenceList(entry.getKey()).add(changeRequest);
+        }
+      }
+    }
+
+    if (containmentChanged && node.getState() == ObjectNodeState.NOP) {
+      result.setOperation(ObjectChangeOperation.UPDATE);
+    }
+
+    return result;
+
   }
 
 }

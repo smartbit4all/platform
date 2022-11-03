@@ -1,7 +1,5 @@
 package org.smartbit4all.api.config;
 
-import org.smartbit4all.api.applychange.ApplyChangeApi;
-import org.smartbit4all.api.applychange.ApplyChangeApiImpl;
 import org.smartbit4all.api.documentation.DocumentationApi;
 import org.smartbit4all.api.documentation.DocumentationApiImpl;
 import org.smartbit4all.api.filter.util.FilterService;
@@ -14,6 +12,8 @@ import org.smartbit4all.api.navigation.NavigationFeatureApi;
 import org.smartbit4all.api.navigation.NavigationFeatureApiImpl;
 import org.smartbit4all.api.navigation.NavigationPrimary;
 import org.smartbit4all.api.navigation.ObjectNavigation;
+import org.smartbit4all.api.object.ApplyChangeApi;
+import org.smartbit4all.api.object.ApplyChangeApiImpl;
 import org.smartbit4all.api.object.BranchApi;
 import org.smartbit4all.api.object.BranchApiImpl;
 import org.smartbit4all.api.object.BranchContributionApiStorageImpl;
@@ -26,8 +26,8 @@ import org.smartbit4all.api.object.CopyContributionApiStorageImpl;
 import org.smartbit4all.api.object.ModifyApi;
 import org.smartbit4all.api.object.ModifyApiImpl;
 import org.smartbit4all.api.object.ModifyContributionApiStorageImpl;
-import org.smartbit4all.api.retrieval.RetrievalApi;
-import org.smartbit4all.api.retrieval.RetrievalApiImpl;
+import org.smartbit4all.api.object.RetrievalApi;
+import org.smartbit4all.api.object.RetrievalApiImpl;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.setting.LocaleUsage;
 import org.smartbit4all.api.setting.LocaleUsageImpl;

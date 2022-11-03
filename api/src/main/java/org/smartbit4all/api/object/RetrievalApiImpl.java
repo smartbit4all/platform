@@ -1,4 +1,4 @@
-package org.smartbit4all.api.retrieval;
+package org.smartbit4all.api.object;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -43,6 +43,7 @@ public class RetrievalApiImpl implements RetrievalApi {
     StorageObject<?> storageObject = storageApi.load(uri);
     ObjectNode objectNode =
         new ObjectNode(objRequest.getDefinition(), storageObject.getStorage().getScheme());
+    objectNode.setUri(uri);
     objectNode.setObjectAsMap(storageObject.getObjectAsMap());
     if (result == null) {
       result = new ArrayList<>();
@@ -92,7 +93,8 @@ public class RetrievalApiImpl implements RetrievalApi {
           for (ObjectNode refObjectNode : readAllRef) {
             refObjectMap.put(iterKeys.next(), refObjectNode);
           }
-          objectNode.getReferenceMapValues().put(entry.getKey(), refObjectMap);
+          objectNode.getReferenceMapValues().put(entry.getKey(),
+              new ReferenceMapEntry(refObjectMap));
         }
       }
     }

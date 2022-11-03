@@ -1,10 +1,10 @@
-package org.smartbit4all.api.retrieval;
+package org.smartbit4all.api.object;
 
 import java.util.List;
 
 class ReferenceListEntry {
-  public ObjectNodeList publicNodeList;
-  public List<ObjectNode> nodeList;
+  ObjectNodeList publicNodeList;
+  List<ObjectNode> nodeList;
 
   public ReferenceListEntry(List<ObjectNode> nodeList) {
     super();
@@ -17,4 +17,9 @@ class ReferenceListEntry {
     }
     return publicNodeList;
   }
+
+  final List<ObjectNode> getNodeList() {
+    return nodeList;
+  }
+
 }

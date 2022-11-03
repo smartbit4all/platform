@@ -1,13 +1,13 @@
-package org.smartbit4all.api.retrieval;
+package org.smartbit4all.api.object;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.smartbit4all.api.retrieval.ObjectNode.ObjectNodeState;
+import org.smartbit4all.api.object.ObjectNode.ObjectNodeState;
 
-public class ObjectNodeMap implements Map<String, ObjectNode> {
+class ObjectNodeMap implements Map<String, ObjectNode> {
 
   private final Map<String, ObjectNode> originalMap;
 

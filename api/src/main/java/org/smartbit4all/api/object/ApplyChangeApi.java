@@ -1,4 +1,4 @@
-package org.smartbit4all.api.applychange;
+package org.smartbit4all.api.object;
 
 import java.net.URI;
 import org.smartbit4all.core.object.ObjectDefinition;
@@ -36,5 +36,14 @@ public interface ApplyChangeApi {
    * @return The new request instance.
    */
   ApplyChangeRequest request(URI branchUri);
+
+  /**
+   * Constructs the {@link ApplyChangeRequest} based on the modification of the {@link ObjectNode}.
+   * 
+   * @param rootNode The root node of the modified {@link ObjectNode}.
+   * @param branchUri The branch URI to save into. If null then no branch is used.
+   * @return The {@link ApplyChangeResult} that is result.
+   */
+  ApplyChangeResult applyChanges(ObjectNode rootNode, URI branchUri);
 
 }

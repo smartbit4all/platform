@@ -1,4 +1,4 @@
-package org.smartbit4all.api.applychange;
+package org.smartbit4all.api.object;
 
 import java.lang.ref.WeakReference;
 import java.net.URI;

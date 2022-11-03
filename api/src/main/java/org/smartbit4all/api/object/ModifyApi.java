@@ -16,6 +16,7 @@ public interface ModifyApi extends PrimaryApi<ModifyContributionApi> {
       Map<String, Object> objMap,
       URI branchUri);
 
-  URI updateObject(URI objVersionUri, Map<String, Object> objMap, URI branchUri);
+  URI updateObject(ObjectDefinition<?> objectDefinition, URI objVersionUri,
+      Map<String, Object> objMap, URI branchUri);
 
 }

@@ -15,4 +15,6 @@ public interface ModifyContributionApi extends ContributionApi {
   URI saveAsNew(ObjectDefinition<?> objectDefinition, String storageScheme,
       Map<String, Object> objectAsMap);
 
+  URI update(URI versionUri, Map<String, Object> objectAsMap);
+
 }

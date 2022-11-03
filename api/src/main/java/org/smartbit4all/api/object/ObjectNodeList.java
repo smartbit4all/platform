@@ -1,11 +1,11 @@
-package org.smartbit4all.api.retrieval;
+package org.smartbit4all.api.object;
 
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.stream.Collectors;
-import org.smartbit4all.api.retrieval.ObjectNode.ObjectNodeState;
+import org.smartbit4all.api.object.ObjectNode.ObjectNodeState;
 
 final class ObjectNodeList implements List<ObjectNode> {
 
@@ -19,7 +19,7 @@ final class ObjectNodeList implements List<ObjectNode> {
   ObjectNodeList(List<ObjectNode> originalList) {
     super();
     this.originalList = originalList;
-    list = originalList.stream().filter(ObjectNode::isRemoved).collect(Collectors.toList());
+    list = originalList.stream().filter(ObjectNode::notRemoved).collect(Collectors.toList());
   }
 
   @Override

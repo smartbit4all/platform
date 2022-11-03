@@ -1,8 +1,7 @@
-package org.smartbit4all.api.applychange;
+package org.smartbit4all.api.object;
 
 import java.lang.ref.WeakReference;
 import java.net.URI;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import org.smartbit4all.core.object.ObjectDefinition;
@@ -34,7 +33,7 @@ public class ObjectChangeRequest {
   /**
    * 
    */
-  private final ObjectChangeOperation operation;
+  private ObjectChangeOperation operation;
 
   /**
    * For better destruction.
@@ -77,21 +76,17 @@ public class ObjectChangeRequest {
   /**
    * We can construct a new reference value change for the outgoing reference.
    * 
-   * @param outgoingReferenceName The name of the outgoing reference.
+   * @param outgoingReference The outgoing reference.
    * @return
    */
-  public ReferenceValueChange referenceValue(String outgoingReferenceName) {
-    ReferenceDefinition referenceDefinition =
-        definition.getOutgoingReferences().get(outgoingReferenceName);
-    return (ReferenceValueChange) referenceChanges.computeIfAbsent(referenceDefinition,
-        d -> new ReferenceValueChange(request(), this, referenceDefinition));
+  public ReferenceValueChange referenceValue(ReferenceDefinition outgoingReference) {
+    return (ReferenceValueChange) referenceChanges.computeIfAbsent(outgoingReference,
+        d -> new ReferenceValueChange(request(), this, outgoingReference));
   }
 
-  public ReferenceListChange referenceList(String outgoingReferenceName) {
-    ReferenceDefinition referenceDefinition =
-        definition.getOutgoingReferences().get(outgoingReferenceName);
-    return (ReferenceListChange) referenceChanges.computeIfAbsent(referenceDefinition,
-        d -> new ReferenceListChange(request(), this, referenceDefinition));
+  public ReferenceListChange referenceList(ReferenceDefinition outgoingReference) {
+    return (ReferenceListChange) referenceChanges.computeIfAbsent(outgoingReference,
+        d -> new ReferenceListChange(request(), this, outgoingReference));
   }
 
   public final URI getUri() {
@@ -112,10 +107,14 @@ public class ObjectChangeRequest {
   }
 
   public final Map<String, Object> getOrCreateObjectAsMap() {
-    if (objectAsMap == null && definition != null && object != null) {
-      objectAsMap = definition.toMap(object);
+    if (objectAsMap == null) {
+      if (definition != null && object != null) {
+        objectAsMap = definition.toMap(object);
+      } else {
+        objectAsMap = new HashMap<>();
+      }
     }
-    return objectAsMap == null ? Collections.emptyMap() : objectAsMap;
+    return objectAsMap;
   }
 
   public final void setObjectAsMap(Map<String, Object> objectAsMap) {
@@ -158,6 +157,10 @@ public class ObjectChangeRequest {
 
   public final String getStorageScheme() {
     return storageScheme;
+  }
+
+  final void setOperation(ObjectChangeOperation operation) {
+    this.operation = operation;
   }
 
 }

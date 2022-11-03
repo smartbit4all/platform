@@ -603,7 +603,8 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
       setObjectUriVersionByOptions(uri, definition, loadObjectVersion.getObjectAsMap(),
           versionDataSerialNo, options);
       storageObject =
-          instanceOf(storage, definition, loadObjectVersion.getObjectAsMap(), storageObjectData);
+          instanceOf(storage, definition, loadObjectVersion.getObjectAsMap(),
+              storageObjectData);
       // }
 
     } else {

@@ -1,4 +1,4 @@
-package org.smartbit4all.api.retrieval;
+package org.smartbit4all.api.object;
 
 import java.net.URI;
 import java.util.Collections;
@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
-import org.smartbit4all.api.applychange.ApplyChangeApi;
-import org.smartbit4all.api.applychange.ApplyChangeRequest;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ReferenceDefinition;
 
@@ -50,6 +48,13 @@ public class ObjectNode {
     this.storageScheme = storageScheme;
   }
 
+  public ObjectNode(ObjectDefinition<?> definition, String storageScheme, Object o) {
+    super();
+    this.definition = definition;
+    this.storageScheme = storageScheme;
+    setObject(o);
+  }
+
   /**
    * The version uri of the object.
    */
@@ -78,7 +83,7 @@ public class ObjectNode {
   /**
    * The referred object maps.
    */
-  private final Map<ReferenceDefinition, Map<String, ObjectNode>> referenceMapValues =
+  private final Map<ReferenceDefinition, ReferenceMapEntry> referenceMapValues =
       new HashMap<>();
 
   /**
@@ -95,7 +100,13 @@ public class ObjectNode {
     return definition;
   }
 
+  /**
+   * Return the object as map.
+   * 
+   * @return
+   */
   public final Map<String, Object> getObjectAsMap() {
+    initObjectMap();
     return objectAsMap;
   }
 
@@ -119,6 +130,10 @@ public class ObjectNode {
     return definition.fromMap(objectAsMap);
   }
 
+  private final Map<String, Object> getObjectAsMapInner() {
+    return objectAsMap == null ? Collections.emptyMap() : objectAsMap;
+  }
+
   /**
    * @param objectDefinition The object definition of the required object.
    * @return A copy from the current {@link #objectAsMap}.
@@ -135,7 +150,7 @@ public class ObjectNode {
     return referenceListValues;
   }
 
-  final Map<ReferenceDefinition, Map<String, ObjectNode>> getReferenceMapValues() {
+  final Map<ReferenceDefinition, ReferenceMapEntry> getReferenceMapValues() {
     return referenceMapValues;
   }
 
@@ -151,7 +166,8 @@ public class ObjectNode {
         getReferenceValues().values().stream().flatMap(ObjectNode::allNodes),
         getReferenceListValues().values().stream().flatMap(e -> e.nodeList.stream())
             .flatMap(ObjectNode::allNodes),
-        getReferenceMapValues().values().stream().flatMap(m -> m.values().stream())
+        getReferenceMapValues().values().stream().map(ReferenceMapEntry::getPublicNodeMap)
+            .flatMap(n -> n.values().stream())
             .flatMap(ObjectNode::allNodes))
         .flatMap(s -> s);
   }
@@ -186,8 +202,15 @@ public class ObjectNode {
    * @param values The map of values.
    */
   public void setValues(Map<String, Object> values) {
+    initObjectMap();
     objectAsMap.putAll(values);
     setModified();
+  }
+
+  private void initObjectMap() {
+    if (objectAsMap == null) {
+      objectAsMap = new HashMap<>();
+    }
   }
 
   /**
@@ -197,6 +220,7 @@ public class ObjectNode {
    * @param value The value object.
    */
   public void setValue(String key, Object value) {
+    initObjectMap();
     objectAsMap.put(key, value);
     setModified();
   }
@@ -211,6 +235,10 @@ public class ObjectNode {
 
   final boolean isRemoved() {
     return state == ObjectNodeState.REMOVED;
+  }
+
+  final boolean notRemoved() {
+    return state != ObjectNodeState.REMOVED;
   }
 
   /**
@@ -330,6 +358,29 @@ public class ObjectNode {
       return referenceListEntry.getPublicNodeList();
     }
     return Collections.emptyList();
+  }
+
+  /**
+   * This retrieves the currently available nodes belong to the given reference.
+   * 
+   * @param reference The reference.
+   * @return Returns a map that contains all the currently available nodes. It can be modified in
+   *         the following ways: Adding a new Node will create a new node in the map. We can use the
+   *         node directly. Remove a node from the list map set the {@link ObjectNode#state} to
+   *         {@link ObjectNodeState#REMOVED} and the given node will disappear from the list. In any
+   *         other case we can use the {@link ObjectNode} directly to modify the object if
+   *         necessary.
+   */
+  public Map<String, ObjectNode> referenceNodeMap(ReferenceDefinition reference) {
+    ReferenceMapEntry referenceMapEntry = referenceMapValues.get(reference);
+    if (referenceMapEntry != null) {
+      return referenceMapEntry.getPublicNodeMap();
+    }
+    return Collections.emptyMap();
+  }
+
+  final void setUri(URI uri) {
+    this.uri = uri;
   }
 
 }

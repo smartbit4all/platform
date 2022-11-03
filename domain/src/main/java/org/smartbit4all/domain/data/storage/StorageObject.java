@@ -549,7 +549,7 @@ public final class StorageObject<T> {
       objUri = URI.create((String) objUri);
       objectAsMap.put("uri", objUri);
     }
-    uri = UriUtils.removeFragment((URI) objUri);
+    uri = ObjectStorageImpl.getUriWithoutVersion((URI) objUri);
   }
 
   /**

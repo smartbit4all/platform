@@ -29,5 +29,12 @@ public class ModifyContributionApiStorageImpl extends ContributionApiImpl
     return storageObject.getVersionUri();
   }
 
+  @Override
+  public URI update(URI versionUri, Map<String, Object> objectAsMap) {
+    // We always update the latest version.
+    StorageObject<?> storageObject = storageApi.load(versionUri);
+    storageObject.setObjectAsMap(objectAsMap);
+    return storageObject.getStorage().saveVersion(storageObject);
+  }
 
 }

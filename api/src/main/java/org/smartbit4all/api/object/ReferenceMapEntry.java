@@ -1,11 +1,11 @@
-package org.smartbit4all.api.retrieval;
+package org.smartbit4all.api.object;
 
 import java.util.Map;
 
 class ReferenceMapEntry {
 
-  public ObjectNodeMap publicNodeMap;
-  public Map<String, ObjectNode> nodeMap;
+  ObjectNodeMap publicNodeMap;
+  Map<String, ObjectNode> nodeMap;
 
   public ReferenceMapEntry(Map<String, ObjectNode> nodeMap) {
     super();
@@ -19,5 +19,8 @@ class ReferenceMapEntry {
     return publicNodeMap;
   }
 
+  final Map<String, ObjectNode> getNodeMap() {
+    return nodeMap;
+  }
 
 }

@@ -1,4 +1,4 @@
-package org.smartbit4all.api.retrieval;
+package org.smartbit4all.api.object;
 
 import java.util.HashMap;
 import java.util.Map;

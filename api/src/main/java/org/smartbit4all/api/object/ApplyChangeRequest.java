@@ -1,10 +1,10 @@
-package org.smartbit4all.api.applychange;
+package org.smartbit4all.api.object;
 
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.smartbit4all.api.applychange.ObjectChangeRequest.ObjectChangeOperation;
+import org.smartbit4all.api.object.ObjectChangeRequest.ObjectChangeOperation;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import com.google.common.base.Strings;

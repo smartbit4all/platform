@@ -39,9 +39,10 @@ public class ModifyApiImpl extends PrimaryApiImpl<ModifyContributionApi>
   }
 
   @Override
-  public URI updateObject(URI objVersionUri, Map<String, Object> objMap, URI branchUri) {
-    // TODO Auto-generated method stub
-    return null;
+  public URI updateObject(ObjectDefinition<?> objectDefinition, URI objVersionUri,
+      Map<String, Object> objMap, URI branchUri) {
+    ModifyContributionApi contributionApi = getContributionApi(objectDefinition);
+    return contributionApi.update(objVersionUri, objMap);
   }
 
 
