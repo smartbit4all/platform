@@ -1,7 +1,9 @@
 package org.smartbit4all.api.view;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
@@ -11,8 +13,12 @@ import org.smartbit4all.api.view.bean.ViewContext;
 import org.smartbit4all.api.view.bean.ViewData;
 import org.smartbit4all.api.view.bean.ViewState;
 import org.smartbit4all.api.view.bean.ViewType;
+import org.smartbit4all.core.utility.ReflectionUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.event.ApplicationStartedEvent;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.event.EventListener;
 import com.google.common.base.Strings;
 
 public class ViewApiImpl implements ViewApi {
@@ -26,6 +32,9 @@ public class ViewApiImpl implements ViewApi {
 
   @Autowired
   private ViewRegistryApi registryApi;
+
+  @Autowired
+  private ApplicationContext context;
 
   @Value("${view.messageViewName:message-dialog}")
   private String messageViewName;
@@ -128,6 +137,23 @@ public class ViewApiImpl implements ViewApi {
   @Override
   public void closeMessage(UUID messageUuid) {
     closeView(messageUuid);
+  }
+
+  @EventListener(ApplicationStartedEvent.class)
+  private void initViews(ApplicationStartedEvent applicationPreparedEvent) {
+    Map<String, Object> viewApis = context.getBeansWithAnnotation(View.class);
+    viewApis.values().stream()
+        .map(api -> ReflectionUtility.getAnnotationsByType(
+            api.getClass(),
+            View.class))
+        .flatMap(Set::stream)
+        .forEach(this::registerView);
+  }
+
+  private void registerView(View view) {
+    String viewName = view.value();
+    String parentView = view.parent();
+    registryApi.add(viewName, parentView);
   }
 
 }
