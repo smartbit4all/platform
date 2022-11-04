@@ -2,6 +2,7 @@ package org.smartbit4all.api.object;
 
 import java.net.URI;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -57,7 +58,8 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
 
     for (Entry<ReferenceDefinition, ReferenceChangeRequest> entry : objectChangeRequest
         .getReferenceChanges().entrySet()) {
-      Map<ObjectChangeRequest, URI> changes = new HashMap<>();
+      // We need a linked hash map to reserve the order in the containers.
+      Map<ObjectChangeRequest, URI> changes = new LinkedHashMap<>();
       for (ObjectChangeRequest refObjRequest : entry.getValue().changes()) {
         URI refUri = execute(refObjRequest, branchUri, processedRequests);
         changes.put(refObjRequest, refUri);

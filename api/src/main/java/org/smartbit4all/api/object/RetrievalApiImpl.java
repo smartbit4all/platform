@@ -55,10 +55,11 @@ public class RetrievalApiImpl implements RetrievalApi {
         .entrySet()) {
       Object sourceValue = entry.getKey().getSourceValue(objectNode.getObjectAsMap());
       if (sourceValue != null) {
-        if (sourceValue instanceof URI) {
+        if (sourceValue instanceof URI || sourceValue instanceof String) {
           ListIterator<ObjectNode> valueObjectIterator =
-              readAll(objRequest, (URI) sourceValue)
-                  .listIterator();
+              readAll(objRequest,
+                  sourceValue instanceof URI ? (URI) sourceValue : URI.create((String) sourceValue))
+                      .listIterator();
           if (valueObjectIterator.hasNext()) {
             objectNode.getReferenceValues().put(entry.getKey(), valueObjectIterator.next());
           }

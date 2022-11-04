@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.api.sample.bean.SampleCategory;
 import org.smartbit4all.api.sample.bean.SampleContainerItem;
+import org.smartbit4all.api.sample.bean.SampleDataSheet;
 import org.smartbit4all.core.io.TestFileUtil;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
@@ -38,6 +39,8 @@ class ApplyChangeTest {
 
     String referenceToItems = SampleCategory.CONTAINER_ITEMS;
     ObjectDefinition<SampleCategory> definition = objectApi.definition(SampleCategory.class);
+    ObjectDefinition<SampleContainerItem> definitionItem =
+        objectApi.definition(SampleContainerItem.class);
     SampleCategoryResult categoryResult = constructSampleCategory(referenceToItems);
 
     ApplyChangeResult result = categoryResult.result;
@@ -45,6 +48,7 @@ class ApplyChangeTest {
     ObjectRetrievalRequest request = retrievalApi.request(SampleCategory.class);
     request.loadBy(definition.getOutgoingReferences().get(referenceToItems));
     request.loadBy(definition.getOutgoingReference(SampleCategory.SUB_CATEGORIES));
+    request.loadBy(definitionItem.getOutgoingReference(SampleContainerItem.DATASHEET));
     ObjectNode objectNode = retrievalApi.load(request, categoryResult.uri);
     Assertions.assertEquals(result.getProcessedRequests().size(),
         objectNode.allNodes().count());
@@ -54,9 +58,16 @@ class ApplyChangeTest {
     List<ObjectNode> containerItemNodes = objectNode
         .referenceNodeList(definition.getOutgoingReference(referenceToItems));
 
+    int i = 0;
     for (ObjectNode containerItemNode : containerItemNodes) {
       containerItemNode.setValue(SampleContainerItem.NAME,
           containerItemNode.getObjectAsMap().get(SampleContainerItem.NAME) + "-modified");
+      if (i % 2 == 0) {
+        ObjectNode datasheetNode = containerItemNode
+            .referenceNode(definitionItem.getOutgoingReference(SampleContainerItem.DATASHEET));
+        datasheetNode.setValue(SampleDataSheet.NAME, "modified");
+      }
+      i++;
     }
     containerItemNodes.remove(containerItemNodes.size() - 1);
     containerItemNodes.add(new ObjectNode(objectApi.definition(SampleContainerItem.class),
@@ -103,6 +114,15 @@ class ApplyChangeTest {
     for (int i = 0; i < itemCounter; i++) {
       SampleContainerItem item = new SampleContainerItem().name("item " + i);
       ObjectChangeRequest ocrItem = applyChangeRequest.createAsNew(MY_SCHEME, item);
+
+      ObjectChangeRequest ocrDatasheet =
+          applyChangeRequest.createAsNew(MY_SCHEME, new SampleDataSheet().name("datasheet " + i));
+      ReferenceValueChange referenceValue =
+          ocrItem
+              .referenceValue(
+                  ocrItem.getDefinition().getOutgoingReference(SampleContainerItem.DATASHEET))
+              .value(ocrDatasheet);
+
       rlcItems.add(ocrItem);
     }
 
@@ -120,7 +140,7 @@ class ApplyChangeTest {
         applyChangeApi
             .save(applyChangeRequest);
 
-    Assertions.assertEquals(itemCounter + 4, result.getProcessedRequests().size());
+    Assertions.assertEquals(itemCounter * 2 + 4, result.getProcessedRequests().size());
 
     URI uri = result.getProcessedRequests().get(ocrContainer);
 

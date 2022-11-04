@@ -6,6 +6,7 @@ import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.sample.bean.SampleAttachement;
 import org.smartbit4all.api.sample.bean.SampleCategory;
 import org.smartbit4all.api.sample.bean.SampleContainerItem;
+import org.smartbit4all.api.sample.bean.SampleDataSheet;
 import org.smartbit4all.core.io.TestFileUtil;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectReferenceConfigs;
@@ -51,7 +52,7 @@ public class ApplyChangeTestConfig {
         .ref(SampleContainerItem.class.getName(),
             SampleContainerItem.MAIN_DOCUMENT, SampleAttachement.class.getName(), true)
         .ref(SampleContainerItem.class.getName(),
-            SampleContainerItem.DATASHEET, SampleAttachement.class.getName(), true)
+            SampleContainerItem.DATASHEET, SampleDataSheet.class.getName(), true)
         .ref(SampleAttachement.class.getName(),
             SampleAttachement.CONTENT, BinaryContent.class.getName(), false);
   }

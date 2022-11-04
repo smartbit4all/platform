@@ -69,7 +69,7 @@ public class ReferenceValueChange extends ReferenceChangeRequest {
   public void apply(ObjectChangeRequest refererObj, Map<ObjectChangeRequest, URI> uris) {
     URI uri = uris.get(value);
     if (uri != null) {
-      refererObj.getObjectAsMap().put(definition.getSourcePropertyPath(), uri);
+      refererObj.getOrCreateObjectAsMap().put(definition.getSourcePropertyPath(), uri);
     }
   }
 
