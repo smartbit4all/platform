@@ -156,4 +156,8 @@ public class ViewApiImpl implements ViewApi {
     registryApi.add(viewName, parentView);
   }
 
+  @Override
+  public UUID currentViewContextUuid() {
+    return viewContextService.getCurrentViewContext().getUuid();
+  }
 }

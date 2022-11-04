@@ -55,4 +55,10 @@ public interface ViewApi {
    */
   void closeMessage(UUID messageUuid);
 
+  /**
+   * 
+   * @return
+   */
+  UUID currentViewContextUuid();
+
 }
