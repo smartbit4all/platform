@@ -5,6 +5,7 @@
  */
 package org.smartbit4all.api.view.restserver;
 
+import org.smartbit4all.api.view.bean.MessageResult;
 import java.util.UUID;
 import org.smartbit4all.api.view.bean.ViewContext;
 import org.smartbit4all.api.view.bean.ViewContextUpdate;
@@ -65,6 +66,27 @@ public interface ViewApi {
     )
     default ResponseEntity<ViewContext> getViewContext(@ApiParam(value = "ViewContext's unique identifier.", required = true) @PathVariable("uuid") UUID uuid) throws Exception {
         return getDelegate().getViewContext(uuid);
+    }
+
+
+    /**
+     * POST /message/{viewUuid}/{messageUuid}
+     *
+     * @param viewUuid View UUID. (required)
+     * @param messageUuid Message UUID. (required)
+     * @param messageResult  (required)
+     * @return  (status code 200)
+     */
+    @ApiOperation(value = "", nickname = "message", notes = "", tags={ "View", })
+    @ApiResponses(value = { 
+        @ApiResponse(code = 200, message = "") })
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/message/{viewUuid}/{messageUuid}",
+        consumes = { "application/json" }
+    )
+    default ResponseEntity<Void> message(@ApiParam(value = "View UUID.", required = true) @PathVariable("viewUuid") UUID viewUuid,@ApiParam(value = "Message UUID.", required = true) @PathVariable("messageUuid") UUID messageUuid,@ApiParam(value = "", required = true) @Valid @RequestBody MessageResult messageResult) throws Exception {
+        return getDelegate().message(viewUuid, messageUuid, messageResult);
     }
 
 

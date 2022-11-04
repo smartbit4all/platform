@@ -2,6 +2,7 @@ package org.smartbit4all.api.view.restserver.impl;
 
 import java.util.UUID;
 import org.smartbit4all.api.view.ViewContextService;
+import org.smartbit4all.api.view.bean.MessageResult;
 import org.smartbit4all.api.view.bean.ViewContext;
 import org.smartbit4all.api.view.bean.ViewContextUpdate;
 import org.smartbit4all.api.view.restserver.ViewApiDelegate;
@@ -30,4 +31,10 @@ public class ViewApiDelegateImpl implements ViewApiDelegate {
     return ResponseEntity.ok(viewContextService.getViewContext(uuid));
   }
 
+  @Override
+  public ResponseEntity<Void> message(UUID viewUuid, UUID messageUuid, MessageResult messageResult)
+      throws Exception {
+    viewContextService.handleMessage(viewUuid, messageUuid, messageResult);
+    return ResponseEntity.ok().build();
+  }
 }

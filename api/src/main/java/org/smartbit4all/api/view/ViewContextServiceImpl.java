@@ -1,30 +1,55 @@
 package org.smartbit4all.api.view;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URI;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.session.SessionApi;
+import org.smartbit4all.api.view.bean.MessageResult;
 import org.smartbit4all.api.view.bean.ViewContext;
 import org.smartbit4all.api.view.bean.ViewContextUpdate;
+import org.smartbit4all.api.view.bean.ViewData;
 import org.smartbit4all.api.view.bean.ViewStateUpdate;
+import org.smartbit4all.core.utility.ReflectionUtility;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.event.ApplicationStartedEvent;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.event.EventListener;
+import org.springframework.core.annotation.AnnotationUtils;
 
 public class ViewContextServiceImpl implements ViewContextService {
+
+  private static final Logger log = LoggerFactory.getLogger(ViewContextServiceImpl.class);
 
   private static final ThreadLocal<UUID> currentViewContextUuid = new ThreadLocal<>();
 
   private static final String SCHEMA = "viewcontext";
+
+  private Map<String, String> parentViewByViewName = new HashMap<>();
+
+  private Map<String, Object> apiByViewName = new HashMap<>();
+
+  private Map<String, Map<String, Method>> messageMethodsMap = new HashMap<>();
 
   @Autowired
   private StorageApi storageApi;
 
   @Autowired
   private SessionApi sessionApi;
+
+  @Autowired
+  private ApplicationContext context;
 
   private Supplier<Storage> storage = new Supplier<Storage>() {
 
@@ -104,5 +129,118 @@ public class ViewContextServiceImpl implements ViewContextService {
         .filter(v -> update.getUuid().equals(v.getUuid()))
         .findFirst()
         .ifPresent(view -> view.setState(update.getState()));
+  }
+
+  @Override
+  public String getParentViewName(String viewName) {
+    String result = parentViewByViewName.get(viewName);
+    return result == null ? "" : result;
+  }
+
+  @Override
+  public ViewData getViewFromViewContext(UUID viewContextUuid, UUID viewUuid) {
+    ViewContext viewContext;
+    if (viewContextUuid == null) {
+      viewContext = getCurrentViewContext();
+    } else {
+      viewContext = getViewContext(viewContextUuid);
+    }
+    Objects.requireNonNull(viewContext, "ViewContext must be not null!");
+    return viewContext.getViews().stream()
+        .filter(v -> viewUuid.equals(v.getUuid()))
+        .findFirst()
+        .orElseThrow(() -> new IllegalArgumentException("View not found by UUID: " + viewUuid));
+  }
+
+  @Override
+  public void handleMessage(UUID viewUuid, UUID messageUuid, MessageResult messageResult) {
+    Objects.requireNonNull(messageResult, "MessageResult must be specified");
+    Objects.requireNonNull(messageResult.getSelectedOption(),
+        "MessageResult.selectedOption must be specified");
+    Objects.requireNonNull(messageResult.getSelectedOption().getCode(),
+        "MessageResult.selectedOption.code must be specified");
+
+    ViewData view = getViewFromViewContext(null, viewUuid);
+    Object api = apiByViewName.get(view.getViewName());
+    Objects.requireNonNull(api, "API not found for view " + view.getViewName());
+    Map<String, Method> messageMethods = messageMethodsMap.get(view.getViewName());
+    if (messageMethods == null) {
+      return;
+    }
+
+    String code = messageResult.getSelectedOption().getCode();
+    Method messageHandlerMethod = messageMethods.get(code);
+    if (messageHandlerMethod == null) {
+      // wildcard handler
+      messageHandlerMethod = messageMethods.get("");
+    }
+    if (messageHandlerMethod != null) {
+      try {
+        messageHandlerMethod.invoke(api, viewUuid, messageUuid, messageResult);
+      } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+    }
+  }
+
+  @EventListener(ApplicationStartedEvent.class)
+  private void initViews(ApplicationStartedEvent applicationPreparedEvent) {
+    context.getBeansWithAnnotation(View.class).values()
+        .forEach(this::setupScreenApi);
+  }
+
+  private void setupScreenApi(Object api) {
+    ReflectionUtility.getAnnotationsByType(
+        api.getClass(),
+        View.class)
+        .forEach(view -> registerView(view, api));
+  }
+
+  private void registerView(View view, Object api) {
+    String viewName = view.value();
+    if (apiByViewName.containsKey(viewName)) {
+      throw new IllegalStateException("View already registered! " + viewName);
+    }
+    apiByViewName.put(viewName, api);
+    parentViewByViewName.put(viewName, view.parent());
+    registerViewMessageMethods(viewName, api);
+  }
+
+  /**
+   * Register all message handling methods of api for given view.
+   * 
+   * @param viewName
+   * @param api
+   */
+  private void registerViewMessageMethods(String viewName, Object api) {
+    Map<String, Method> messageMethods = new HashMap<>();
+    ReflectionUtility.allMethods(
+        api.getClass(),
+        method -> method.isAnnotationPresent(MessageResponse.class))
+        .forEach(method -> collectMessageMethod(viewName, method, messageMethods));
+
+    messageMethodsMap.put(viewName, messageMethods);
+  }
+
+  /**
+   * Process method's {@link MessageResponse} annotation values: for each value, put an entry to
+   * messageMethods with value as key and method as value.
+   * 
+   * @param method
+   * @param messageMethods
+   */
+  private void collectMessageMethod(String viewName, Method method,
+      Map<String, Method> messageMethods) {
+    MessageResponse annotation = AnnotationUtils.findAnnotation(method, MessageResponse.class);
+    if (annotation != null) {
+      List<String> messages = Arrays.asList(annotation.value());
+      for (String message : messages) {
+        if (messageMethods.containsKey(message)) {
+          throw new IllegalStateException("MessageHandler duplicated! " + viewName + "." + message);
+        }
+        messageMethods.put(message, method);
+      }
+    }
   }
 }

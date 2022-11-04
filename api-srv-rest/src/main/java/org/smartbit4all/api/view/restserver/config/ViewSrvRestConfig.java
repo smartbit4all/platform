@@ -5,8 +5,6 @@ import org.smartbit4all.api.view.ViewApi;
 import org.smartbit4all.api.view.ViewApiImpl;
 import org.smartbit4all.api.view.ViewContextService;
 import org.smartbit4all.api.view.ViewContextServiceImpl;
-import org.smartbit4all.api.view.ViewRegistryApi;
-import org.smartbit4all.api.view.ViewRegistryApiImpl;
 import org.smartbit4all.api.view.restserver.ViewApiController;
 import org.smartbit4all.api.view.restserver.ViewApiDelegate;
 import org.smartbit4all.api.view.restserver.impl.ViewApiDelegateImpl;
@@ -33,12 +31,6 @@ public class ViewSrvRestConfig {
   @ConditionalOnMissingBean
   public ViewApi viewApi() {
     return new ViewApiImpl();
-  }
-
-  @Bean
-  @ConditionalOnMissingBean
-  public ViewRegistryApi viewRegistryApi() {
-    return new ViewRegistryApiImpl();
   }
 
   @Bean

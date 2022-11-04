@@ -1,9 +1,7 @@
 package org.smartbit4all.api.view;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
@@ -13,12 +11,8 @@ import org.smartbit4all.api.view.bean.ViewContext;
 import org.smartbit4all.api.view.bean.ViewData;
 import org.smartbit4all.api.view.bean.ViewState;
 import org.smartbit4all.api.view.bean.ViewType;
-import org.smartbit4all.core.utility.ReflectionUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.event.ApplicationStartedEvent;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.event.EventListener;
 import com.google.common.base.Strings;
 
 public class ViewApiImpl implements ViewApi {
@@ -29,12 +23,6 @@ public class ViewApiImpl implements ViewApi {
 
   @Autowired
   private ViewContextService viewContextService;
-
-  @Autowired
-  private ViewRegistryApi registryApi;
-
-  @Autowired
-  private ApplicationContext context;
 
   @Value("${view.messageViewName:message-dialog}")
   private String messageViewName;
@@ -68,7 +56,7 @@ public class ViewApiImpl implements ViewApi {
 
   private ViewContext addViewToViewContext(ViewContext context, ViewData view) {
     if (view.getType() == ViewType.NORMAL) {
-      String parentViewName = registryApi.getParentViewName(view.getViewName());
+      String parentViewName = viewContextService.getParentViewName(view.getViewName());
       closeChildrenOfView(context, parentViewName);
     }
     context.addViewsItem(view);
@@ -117,18 +105,17 @@ public class ViewApiImpl implements ViewApi {
 
   @Override
   public ViewData getView(UUID viewUuid) {
-    return viewContextService.getCurrentViewContext().getViews().stream()
-        .filter(v -> viewUuid.equals(v.getUuid()))
-        .findFirst()
-        .orElse(null);
+    return viewContextService.getViewFromViewContext(null, viewUuid);
   }
 
   @Override
   public UUID showMessage(MessageData message) {
-    Objects.requireNonNull(message, "View must be not null");
+    Objects.requireNonNull(message, "Message must be not null");
+    Objects.requireNonNull(message.getViewUuid(), "Message.viewUuid must be not null");
     message.setUuid(UUID.randomUUID());
     return showViewInternal(new ViewData()
         .uuid(message.getUuid())
+        .containerUuid(message.getViewUuid())
         .viewName(messageViewName)
         .type(ViewType.DIALOG)
         .putParametersItem(MESSAGE_DATA, message));
@@ -137,23 +124,6 @@ public class ViewApiImpl implements ViewApi {
   @Override
   public void closeMessage(UUID messageUuid) {
     closeView(messageUuid);
-  }
-
-  @EventListener(ApplicationStartedEvent.class)
-  private void initViews(ApplicationStartedEvent applicationPreparedEvent) {
-    Map<String, Object> viewApis = context.getBeansWithAnnotation(View.class);
-    viewApis.values().stream()
-        .map(api -> ReflectionUtility.getAnnotationsByType(
-            api.getClass(),
-            View.class))
-        .flatMap(Set::stream)
-        .forEach(this::registerView);
-  }
-
-  private void registerView(View view) {
-    String viewName = view.value();
-    String parentView = view.parent();
-    registryApi.add(viewName, parentView);
   }
 
   @Override

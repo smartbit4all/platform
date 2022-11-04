@@ -24,9 +24,9 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
- * Gets or Sets MessageResultType
+ * Gets or Sets MessageOptionType
  */
-public enum MessageResultType {
+public enum MessageOptionType {
   
   CONFIRM("confirm"),
   
@@ -36,7 +36,7 @@ public enum MessageResultType {
 
   private String value;
 
-  MessageResultType(String value) {
+  MessageOptionType(String value) {
     this.value = value;
   }
 
@@ -51,8 +51,8 @@ public enum MessageResultType {
   }
 
   @JsonCreator
-  public static MessageResultType fromValue(String value) {
-    for (MessageResultType b : MessageResultType.values()) {
+  public static MessageOptionType fromValue(String value) {
+    for (MessageOptionType b : MessageOptionType.values()) {
       if (b.value.equals(value)) {
         return b;
       }

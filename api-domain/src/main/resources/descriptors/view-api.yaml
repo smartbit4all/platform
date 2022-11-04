@@ -69,6 +69,36 @@ paths:
           description: 'The context does not exists with the given uuid'
         '500':
           description: 'Error occured while fetching the session data'
+  /message/{viewUuid}/{messageUuid}:
+    post:
+      tags:
+      - View
+      summary: ''
+      operationId: 'message'
+      parameters: 
+        - in: path
+          name: viewUuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: 'View UUID.'
+        - in: path
+          name: messageUuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: 'Message UUID.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MessageResult'
+      responses:
+        '200':
+          description: ''
 components:
   schemas:
     ViewContext:
@@ -145,12 +175,10 @@ components:
           type: string
         text:
           type: string
-        possibleResults:
+        options:
           type: array
           items:
-            $ref: '#/components/schemas/MessageResult'
-        callbackApi:
-          type: string
+            $ref: '#/components/schemas/MessageOption'
     MessageType:
       type: string
       enum:
@@ -158,8 +186,9 @@ components:
         - question
         - warning
         - error
-    MessageResult:
+    MessageOption:
       type: object
+      required: [code, label]
       properties:
         code:
           type: string
@@ -168,13 +197,21 @@ components:
         icon:
           type: string
         type:
-          $ref: '#/components/schemas/MessageResultType'
-    MessageResultType:
+          $ref: '#/components/schemas/MessageOptionType'
+    MessageOptionType:
       type: string
       enum:
         - confirm
         - reject
         - cancel
+    MessageResult:
+      type: object
+      required: [selectedOption]
+      properties:
+        selectedOption:
+          $ref: '#/components/schemas/MessageOption'
+        additionalData:
+          type: object
     ViewStateUpdate:
       description: State update of a view.
       type: object

@@ -1,5 +1,6 @@
 package org.smartbit4all.api.view.restserver;
 
+import org.smartbit4all.api.view.bean.MessageResult;
 import java.util.UUID;
 import org.smartbit4all.api.view.bean.ViewContext;
 import org.smartbit4all.api.view.bean.ViewContextUpdate;
@@ -64,6 +65,22 @@ public interface ViewApiDelegate {
                 }
             }
         });
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+
+    }
+
+    /**
+     * POST /message/{viewUuid}/{messageUuid}
+     *
+     * @param viewUuid View UUID. (required)
+     * @param messageUuid Message UUID. (required)
+     * @param messageResult  (required)
+     * @return  (status code 200)
+     * @see ViewApi#message
+     */
+    default ResponseEntity<Void> message(UUID viewUuid,
+        UUID messageUuid,
+        MessageResult messageResult) throws Exception {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 
     }

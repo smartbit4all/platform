@@ -25,7 +25,7 @@ import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import org.smartbit4all.api.view.bean.MessageResult;
+import org.smartbit4all.api.view.bean.MessageOption;
 import org.smartbit4all.api.view.bean.MessageType;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -41,8 +41,7 @@ import javax.validation.Valid;
   MessageData.TYPE,
   MessageData.HEADER,
   MessageData.TEXT,
-  MessageData.POSSIBLE_RESULTS,
-  MessageData.CALLBACK_API
+  MessageData.OPTIONS
 })
 @JsonTypeName("MessageData")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -62,11 +61,8 @@ public class MessageData {
   public static final String TEXT = "text";
   private String text;
 
-  public static final String POSSIBLE_RESULTS = "possibleResults";
-  private List<MessageResult> possibleResults = new ArrayList<>();
-
-  public static final String CALLBACK_API = "callbackApi";
-  private String callbackApi;
+  public static final String OPTIONS = "options";
+  private List<MessageOption> options = null;
 
 
   public MessageData uuid(UUID uuid) {
@@ -209,64 +205,39 @@ public class MessageData {
   }
 
 
-  public MessageData possibleResults(List<MessageResult> possibleResults) {
+  public MessageData options(List<MessageOption> options) {
     
-    this.possibleResults = possibleResults;
+    this.options = options;
     return this;
   }
 
-  public MessageData addPossibleResultsItem(MessageResult possibleResultsItem) {
-    this.possibleResults.add(possibleResultsItem);
+  public MessageData addOptionsItem(MessageOption optionsItem) {
+    if (this.options == null) {
+      this.options = new ArrayList<>();
+    }
+    this.options.add(optionsItem);
     return this;
   }
 
    /**
-   * Get possibleResults
-   * @return possibleResults
-  **/
-  @javax.annotation.Nonnull
-  @NotNull
-  @Valid
-  @ApiModelProperty(required = true, value = "")
-  @JsonProperty(POSSIBLE_RESULTS)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-
-  public List<MessageResult> getPossibleResults() {
-    return possibleResults;
-  }
-
-
-  @JsonProperty(POSSIBLE_RESULTS)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setPossibleResults(List<MessageResult> possibleResults) {
-    this.possibleResults = possibleResults;
-  }
-
-
-  public MessageData callbackApi(String callbackApi) {
-    
-    this.callbackApi = callbackApi;
-    return this;
-  }
-
-   /**
-   * Get callbackApi
-   * @return callbackApi
+   * Get options
+   * @return options
   **/
   @javax.annotation.Nullable
+  @Valid
   @ApiModelProperty(value = "")
-  @JsonProperty(CALLBACK_API)
+  @JsonProperty(OPTIONS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public String getCallbackApi() {
-    return callbackApi;
+  public List<MessageOption> getOptions() {
+    return options;
   }
 
 
-  @JsonProperty(CALLBACK_API)
+  @JsonProperty(OPTIONS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setCallbackApi(String callbackApi) {
-    this.callbackApi = callbackApi;
+  public void setOptions(List<MessageOption> options) {
+    this.options = options;
   }
 
 
@@ -284,13 +255,12 @@ public class MessageData {
         Objects.equals(this.type, messageData.type) &&
         Objects.equals(this.header, messageData.header) &&
         Objects.equals(this.text, messageData.text) &&
-        Objects.equals(this.possibleResults, messageData.possibleResults) &&
-        Objects.equals(this.callbackApi, messageData.callbackApi);
+        Objects.equals(this.options, messageData.options);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uuid, viewUuid, type, header, text, possibleResults, callbackApi);
+    return Objects.hash(uuid, viewUuid, type, header, text, options);
   }
 
   @Override
@@ -302,8 +272,7 @@ public class MessageData {
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("    header: ").append(toIndentedString(header)).append("\n");
     sb.append("    text: ").append(toIndentedString(text)).append("\n");
-    sb.append("    possibleResults: ").append(toIndentedString(possibleResults)).append("\n");
-    sb.append("    callbackApi: ").append(toIndentedString(callbackApi)).append("\n");
+    sb.append("    options: ").append(toIndentedString(options)).append("\n");
     sb.append("}");
     return sb.toString();
   }

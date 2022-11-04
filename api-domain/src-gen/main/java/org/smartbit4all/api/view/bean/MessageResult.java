@@ -22,7 +22,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import org.smartbit4all.api.view.bean.MessageResultType;
+import org.smartbit4all.api.view.bean.MessageOption;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -32,133 +32,72 @@ import javax.validation.Valid;
  * MessageResult
  */
 @JsonPropertyOrder({
-  MessageResult.CODE,
-  MessageResult.LABEL,
-  MessageResult.ICON,
-  MessageResult.TYPE
+  MessageResult.SELECTED_OPTION,
+  MessageResult.ADDITIONAL_DATA
 })
 @JsonTypeName("MessageResult")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class MessageResult {
-  public static final String CODE = "code";
-  private String code;
+  public static final String SELECTED_OPTION = "selectedOption";
+  private MessageOption selectedOption;
 
-  public static final String LABEL = "label";
-  private String label;
-
-  public static final String ICON = "icon";
-  private String icon;
-
-  public static final String TYPE = "type";
-  private MessageResultType type;
+  public static final String ADDITIONAL_DATA = "additionalData";
+  private Object additionalData;
 
 
-  public MessageResult code(String code) {
+  public MessageResult selectedOption(MessageOption selectedOption) {
     
-    this.code = code;
+    this.selectedOption = selectedOption;
     return this;
   }
 
    /**
-   * Get code
-   * @return code
+   * Get selectedOption
+   * @return selectedOption
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
-  @JsonProperty(CODE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public String getCode() {
-    return code;
-  }
-
-
-  @JsonProperty(CODE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setCode(String code) {
-    this.code = code;
-  }
-
-
-  public MessageResult label(String label) {
-    
-    this.label = label;
-    return this;
-  }
-
-   /**
-   * Get label
-   * @return label
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
-  @JsonProperty(LABEL)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public String getLabel() {
-    return label;
-  }
-
-
-  @JsonProperty(LABEL)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setLabel(String label) {
-    this.label = label;
-  }
-
-
-  public MessageResult icon(String icon) {
-    
-    this.icon = icon;
-    return this;
-  }
-
-   /**
-   * Get icon
-   * @return icon
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
-  @JsonProperty(ICON)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public String getIcon() {
-    return icon;
-  }
-
-
-  @JsonProperty(ICON)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setIcon(String icon) {
-    this.icon = icon;
-  }
-
-
-  public MessageResult type(MessageResultType type) {
-    
-    this.type = type;
-    return this;
-  }
-
-   /**
-   * Get type
-   * @return type
-  **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "")
-  @JsonProperty(TYPE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(SELECTED_OPTION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public MessageResultType getType() {
-    return type;
+  public MessageOption getSelectedOption() {
+    return selectedOption;
   }
 
 
-  @JsonProperty(TYPE)
+  @JsonProperty(SELECTED_OPTION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setSelectedOption(MessageOption selectedOption) {
+    this.selectedOption = selectedOption;
+  }
+
+
+  public MessageResult additionalData(Object additionalData) {
+    
+    this.additionalData = additionalData;
+    return this;
+  }
+
+   /**
+   * Get additionalData
+   * @return additionalData
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(ADDITIONAL_DATA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setType(MessageResultType type) {
-    this.type = type;
+
+  public Object getAdditionalData() {
+    return additionalData;
+  }
+
+
+  @JsonProperty(ADDITIONAL_DATA)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setAdditionalData(Object additionalData) {
+    this.additionalData = additionalData;
   }
 
 
@@ -171,25 +110,21 @@ public class MessageResult {
       return false;
     }
     MessageResult messageResult = (MessageResult) o;
-    return Objects.equals(this.code, messageResult.code) &&
-        Objects.equals(this.label, messageResult.label) &&
-        Objects.equals(this.icon, messageResult.icon) &&
-        Objects.equals(this.type, messageResult.type);
+    return Objects.equals(this.selectedOption, messageResult.selectedOption) &&
+        Objects.equals(this.additionalData, messageResult.additionalData);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(code, label, icon, type);
+    return Objects.hash(selectedOption, additionalData);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class MessageResult {\n");
-    sb.append("    code: ").append(toIndentedString(code)).append("\n");
-    sb.append("    label: ").append(toIndentedString(label)).append("\n");
-    sb.append("    icon: ").append(toIndentedString(icon)).append("\n");
-    sb.append("    type: ").append(toIndentedString(type)).append("\n");
+    sb.append("    selectedOption: ").append(toIndentedString(selectedOption)).append("\n");
+    sb.append("    additionalData: ").append(toIndentedString(additionalData)).append("\n");
     sb.append("}");
     return sb.toString();
   }
