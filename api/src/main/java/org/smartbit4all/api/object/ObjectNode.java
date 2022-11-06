@@ -3,6 +3,7 @@ package org.smartbit4all.api.object;
 import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -61,6 +62,12 @@ public class ObjectNode {
   private URI uri;
 
   /**
+   * The version number of the given node. It is filled by the retrieve so if we create a new node
+   * then it is 0 by default.
+   */
+  private long versionNr = 0;
+
+  /**
    * The state of the {@link ObjectNode}.
    */
   private ObjectNodeState state = ObjectNodeState.NOP;
@@ -73,18 +80,19 @@ public class ObjectNode {
   /**
    * The referred objects.
    */
-  private final Map<ReferenceDefinition, ObjectNode> referenceValues = new HashMap<>();
+  private final Map<ReferenceDefinition, ObjectNode> referenceValues = new LinkedHashMap<>();
 
   /**
    * The referred object lists.
    */
-  private final Map<ReferenceDefinition, ReferenceListEntry> referenceListValues = new HashMap<>();
+  private final Map<ReferenceDefinition, ReferenceListEntry> referenceListValues =
+      new LinkedHashMap<>();
 
   /**
    * The referred object maps.
    */
   private final Map<ReferenceDefinition, ReferenceMapEntry> referenceMapValues =
-      new HashMap<>();
+      new LinkedHashMap<>();
 
   /**
    * @return The version URI of the object when it was retrieved.
@@ -381,6 +389,14 @@ public class ObjectNode {
 
   final void setUri(URI uri) {
     this.uri = uri;
+  }
+
+  final long getVersionNr() {
+    return versionNr;
+  }
+
+  final void setVersionNr(long versionNr) {
+    this.versionNr = versionNr;
   }
 
 }

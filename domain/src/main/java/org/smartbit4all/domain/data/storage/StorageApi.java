@@ -22,6 +22,15 @@ public interface StorageApi {
   Storage get(String scheme);
 
   /**
+   * Retrieves the {@link Storage} instance responsible for persisting in the given scheme.
+   * Typically every module has a scheme used by the apis in the module.
+   * 
+   * @param uri The uri that defines the scheme to find the proper {@link Storage}.
+   * @return The storage if it exists or else null.
+   */
+  Storage getStorage(URI uri);
+
+  /**
    * This function can be used to load any object managed by the StorageApi. It identifies the given
    * {@link Storage} by the clazz and the URI. The uri can define the exact physical location of the
    * object and can define the {@link Storage} responsible for.

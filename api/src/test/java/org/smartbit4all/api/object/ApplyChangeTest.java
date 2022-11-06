@@ -50,10 +50,25 @@ class ApplyChangeTest {
     request.loadBy(definition.getOutgoingReference(SampleCategory.SUB_CATEGORIES));
     request.loadBy(definitionItem.getOutgoingReference(SampleContainerItem.DATASHEET));
     ObjectNode objectNode = retrievalApi.load(request, categoryResult.uri);
+
+    ObjectProperties objectProperties =
+        new ObjectProperties().property(SampleCategory.class, SampleCategory.NAME)
+            .property(SampleContainerItem.class, SampleContainerItem.NAME)
+            .property(SampleDataSheet.class, SampleDataSheet.NAME);
+
+    System.out.println(ObjectNodes.versionTree(objectNode,
+        objectProperties));
+
     Assertions.assertEquals(result.getProcessedRequests().size(),
         objectNode.allNodes().count());
 
     // Now we make some modification on the ObjectNode.
+
+    List<ObjectNode> subCategoryNodes = objectNode
+        .referenceNodeList(definition.getOutgoingReference(SampleCategory.SUB_CATEGORIES));
+
+    subCategoryNodes.get(0).setValue(SampleCategory.NAME, "modified sub category");
+
 
     List<ObjectNode> containerItemNodes = objectNode
         .referenceNodeList(definition.getOutgoingReference(referenceToItems));
@@ -73,7 +88,12 @@ class ApplyChangeTest {
     containerItemNodes.add(new ObjectNode(objectApi.definition(SampleContainerItem.class),
         MY_SCHEME, new SampleContainerItem().name("new item")));
 
-    applyChangeApi.applyChanges(objectNode, null);
+    URI changedUri = applyChangeApi.applyChanges(objectNode, null);
+
+    ObjectNode objectNodeAfterSave = retrievalApi.load(request, changedUri);
+
+    System.out.println(ObjectNodes.versionTree(objectNodeAfterSave,
+        objectProperties));
 
   }
 

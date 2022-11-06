@@ -42,8 +42,9 @@ public class RetrievalApiImpl implements RetrievalApi {
     // }
     StorageObject<?> storageObject = storageApi.load(uri);
     ObjectNode objectNode =
-        new ObjectNode(objRequest.getDefinition(), storageObject.getStorage().getScheme());
+        new ObjectNode(storageObject.definition(), storageObject.getStorage().getScheme());
     objectNode.setUri(uri);
+    objectNode.setVersionNr(storageObject.getVersion().getSerialNoData());
     objectNode.setObjectAsMap(storageObject.getObjectAsMap());
     if (result == null) {
       result = new ArrayList<>();

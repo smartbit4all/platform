@@ -604,7 +604,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
           versionDataSerialNo, options);
       storageObject =
           instanceOf(storage, definition, loadObjectVersion.getObjectAsMap(),
-              storageObjectData);
+              storageObjectData, objectVersion);
       // }
 
     } else {
@@ -779,7 +779,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
         if (dataParts.get(1).length() != 0) {
           obj = definition.deserializeAsMap(dataParts.get(1));
         }
-        return instanceOf(storage, definition, obj, dataObject);
+        return instanceOf(storage, definition, obj, dataObject, dataObject.getCurrentVersion());
       } catch (IOException e) {
         // We must try again.
         log.debug("Unable to read " + storageObjectDataFile);

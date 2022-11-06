@@ -129,12 +129,13 @@ public final class StorageApiImpl implements StorageApi, InitializingBean {
 
   @Override
   public StorageObject<?> load(URI uri) {
-    Storage storage = getStorageByUri(uri);
+    Storage storage = getStorage(uri);
 
     return storage.load(uri);
   }
 
-  private final Storage getStorageByUri(URI uri) {
+  @Override
+  public Storage getStorage(URI uri) {
     if (uri == null || uri.getScheme() == null || uri.getScheme().isEmpty()) {
       throw new ObjectNotFoundException(uri, null, "Bad uri format");
     }
@@ -170,7 +171,7 @@ public final class StorageApiImpl implements StorageApi, InitializingBean {
    */
   @Override
   public ObjectHistoryIterator objectHistory(URI uri) {
-    Storage storage = getStorageByUri(uri);
+    Storage storage = getStorage(uri);
     return storage.objectHistory(uri);
   }
 
@@ -186,7 +187,7 @@ public final class StorageApiImpl implements StorageApi, InitializingBean {
    */
   @Override
   public ObjectHistoryIterator objectHistoryReverse(URI uri) {
-    Storage storage = getStorageByUri(uri);
+    Storage storage = getStorage(uri);
     return storage.objectHistoryReverse(uri);
   }
 

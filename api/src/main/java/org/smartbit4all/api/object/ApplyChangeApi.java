@@ -44,6 +44,6 @@ public interface ApplyChangeApi {
    * @param branchUri The branch URI to save into. If null then no branch is used.
    * @return The {@link ApplyChangeResult} that is result.
    */
-  ApplyChangeResult applyChanges(ObjectNode rootNode, URI branchUri);
+  URI applyChanges(ObjectNode rootNode, URI branchUri);
 
 }

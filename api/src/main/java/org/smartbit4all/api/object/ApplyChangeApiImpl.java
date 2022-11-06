@@ -129,12 +129,11 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
   }
 
   @Override
-  public ApplyChangeResult applyChanges(ObjectNode rootNode, URI branchUri) {
-    ApplyChangeRequest request = constructRequest(rootNode, branchUri);
-    return save(request);
+  public URI applyChanges(ObjectNode rootNode, URI branchUri) {
+    return constructRequestAndSave(rootNode, branchUri);
   }
 
-  private ApplyChangeRequest constructRequest(ObjectNode rootNode, URI branchUri) {
+  private URI constructRequestAndSave(ObjectNode rootNode, URI branchUri) {
     ApplyChangeRequest request = request(branchUri);
     // Now we assume that the root container is the object that is set here. So we add modification
     // to this object if it is necessary.
@@ -143,7 +142,8 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
         || objectChangeRequest.getOperation() == ObjectChangeOperation.UPDATE) {
       request.getObjectChangeRequests().add(objectChangeRequest);
     }
-    return request;
+    ApplyChangeResult result = save(request);
+    return result.getProcessedRequests().get(objectChangeRequest);
   }
 
   private ObjectChangeRequest constructRequest(ObjectNode node, ApplyChangeRequest request) {
@@ -153,6 +153,7 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
     ObjectChangeRequest result = new ObjectChangeRequest(request, node.getDefinition(),
         node.getStorageScheme(), ObjectChangeOperation.NOP);
     result.setUri(node.getUri());
+    result.setObjectAsMap(node.getObjectAsMap());
     if (node.getState() == ObjectNodeState.NEW) {
       result.setOperation(ObjectChangeOperation.NEW);
       result.setObjectAsMap(node.getObjectAsMap());
