@@ -10,6 +10,7 @@ import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.org.OrgApi;
@@ -42,6 +43,7 @@ public class SessionManagementApiImpl implements SessionManagementApi {
 
   private static final String EXPMSG_MISSING_SESSIONURI = "sessionUri can not be null!";
 
+  private static final ThreadLocal<Session> currentSession = new ThreadLocal<>();
 
   @Autowired
   private SessionTokenHandler tokenHandler;
@@ -85,7 +87,7 @@ public class SessionManagementApiImpl implements SessionManagementApi {
     registerSpringSecAuthToken(sessionUri);
 
     String sid = tokenHandler.createToken(sessionUri.toString(), session.getExpiration());
-    storage.get().update(session.getUri(), Session.class, s -> s.putParametersItem("sid", sid));
+    updateSession(sessionUri, s -> s.putParametersItem("sid", sid));
 
     log.debug("Session sid created: {}", sid);
     return new SessionInfoData()
@@ -147,19 +149,38 @@ public class SessionManagementApiImpl implements SessionManagementApi {
   @Override
   public Session readSession(URI sessionUri) {
     Objects.requireNonNull(sessionUri, EXPMSG_MISSING_SESSIONURI);
+    Session session = currentSession.get();
+    if (session != null && sessionUri.equals(session.getUri())) {
+      return session;
+    }
     try {
-      return storage.get().read(sessionUri, Session.class);
+      session = storage.get().read(sessionUri, Session.class);
+      currentSession.set(session);
+      return session;
     } catch (Exception e) {
       log.error("Error reading session by uri", e);
+      currentSession.remove();
       return null;
     }
+  }
+
+  private URI updateSession(URI sessionUri, UnaryOperator<Session> update) {
+    URI uri = storage.get().update(sessionUri, Session.class, update);
+    currentSession.remove();
+    return uri;
+  }
+
+  @Override
+  public Session initCurrentSession(URI sessionUri) {
+    currentSession.remove();
+    return readSession(sessionUri);
   }
 
   @Override
   public void setSessionParameter(URI sessionUri, String key, String value) {
     Objects.requireNonNull(sessionUri, EXPMSG_MISSING_SESSIONURI);
     Objects.requireNonNull(key, "key can not be null!");
-    storage.get().update(sessionUri, Session.class, s -> s.putParametersItem(key, value));
+    updateSession(sessionUri, s -> s.putParametersItem(key, value));
   }
 
   @Override
@@ -167,10 +188,10 @@ public class SessionManagementApiImpl implements SessionManagementApi {
     Objects.requireNonNull(sessionUri, EXPMSG_MISSING_SESSIONURI);
     Objects.requireNonNull(key, "key can not be null!");
 
-    String value = storage.get().read(sessionUri, Session.class).getParameters().get(key);
+    String value = readSession(sessionUri).getParameters().get(key);
 
     if (value != null) {
-      storage.get().update(sessionUri, Session.class, s -> {
+      updateSession(sessionUri, s -> {
         Map<String, String> parameters = s.getParameters();
         if (parameters == null) {
           return s;
@@ -185,21 +206,21 @@ public class SessionManagementApiImpl implements SessionManagementApi {
   @Override
   public void setSessionLocale(URI sessionUri, String locale) {
     Objects.requireNonNull(sessionUri, EXPMSG_MISSING_SESSIONURI);
-    storage.get().update(sessionUri, Session.class, s -> s.locale(locale));
+    updateSession(sessionUri, s -> s.locale(locale));
   }
 
   @Override
   public void setSessionExpiration(URI sessionUri, OffsetDateTime expiration) {
     Objects.requireNonNull(sessionUri, EXPMSG_MISSING_SESSIONURI);
     Objects.requireNonNull(expiration, "expiration can not be null!");
-    storage.get().update(sessionUri, Session.class, s -> s.expiration(expiration));
+    updateSession(sessionUri, s -> s.expiration(expiration));
   }
 
   @Override
   public void addSessionAuthentication(URI sessionUri, AccountInfo accountInfo) {
     Objects.requireNonNull(sessionUri, EXPMSG_MISSING_SESSIONURI);
     Objects.requireNonNull(accountInfo, "accountInfo can not be null!");
-    storage.get().update(sessionUri, Session.class, s -> {
+    updateSession(sessionUri, s -> {
       List<AccountInfo> authentications = s.getAuthentications();
       if (authentications == null) {
         authentications = new ArrayList<>();
@@ -215,7 +236,7 @@ public class SessionManagementApiImpl implements SessionManagementApi {
   public void removeSessionAuthentication(URI sessionUri, String kind) {
     Objects.requireNonNull(sessionUri, EXPMSG_MISSING_SESSIONURI);
     Objects.requireNonNull(kind, "kind can not be null!");
-    storage.get().update(sessionUri, Session.class, s -> {
+    updateSession(sessionUri, s -> {
       List<AccountInfo> authentications = s.getAuthentications();
       if (authentications == null) {
         return s;
@@ -232,7 +253,7 @@ public class SessionManagementApiImpl implements SessionManagementApi {
   @Override
   public void setSessionUser(URI sessionUri, URI userUri) {
     Objects.requireNonNull(sessionUri, EXPMSG_MISSING_SESSIONURI);
-    storage.get().update(sessionUri, Session.class, s -> s.user(userUri));
+    updateSession(sessionUri, s -> s.user(userUri));
   }
 
   @Override

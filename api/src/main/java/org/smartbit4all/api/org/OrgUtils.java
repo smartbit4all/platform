@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.function.Supplier;
 import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.org.bean.User;
+import org.smartbit4all.api.session.SessionApi;
+import org.smartbit4all.api.session.bean.AccountInfo;
 
 public class OrgUtils {
 
@@ -43,7 +45,10 @@ public class OrgUtils {
   }
 
   public static Boolean securityPredicate(OrgApi orgApi, Supplier<User> currentUserProvider,
-      SecurityGroup securityGroup, URI userUri) {
+      SessionApi sessionApi, SecurityGroup securityGroup, URI userUri) {
+    if (sessionApi != null) {
+      return securityPredicate(sessionApi, securityGroup);
+    }
     if (userUri == null) {
       if (currentUserProvider == null || currentUserProvider.get() == null) {
         return false;
@@ -58,4 +63,11 @@ public class OrgUtils {
         g -> securityGroup.getName().equals(g.getName()));
   }
 
+  public static Boolean securityPredicate(SessionApi sessionApi, SecurityGroup securityGroup) {
+    return sessionApi.getAuthentications().stream()
+        .map(AccountInfo::getRoles)
+        .flatMap(List::stream)
+        .anyMatch(
+            g -> securityGroup.getName().equals(g));
+  }
 }

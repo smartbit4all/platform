@@ -9,6 +9,8 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.org.OrgApi;
+import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.SessionApi.NoCurrentSessionException;
@@ -19,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.util.Assert;
 
 public abstract class SessionHandlerAuthenticationProvider implements AuthenticationProvider {
@@ -32,6 +33,9 @@ public abstract class SessionHandlerAuthenticationProvider implements Authentica
 
   @Autowired
   private SessionManagementApi sessionManagementApi;
+
+  @Autowired
+  private OrgApi orgApi;
 
   private BiFunction<User, Authentication, AccountInfo> accountInfoProvider =
       defaultAccountInfoProvider();
@@ -171,8 +175,8 @@ public abstract class SessionHandlerAuthenticationProvider implements Authentica
     return (user, originalAuthToken) -> new AccountInfo()
         .userName(user.getUsername())
         .displayName(user.getName())
-        .roles(originalAuthToken.getAuthorities().stream()
-            .map(GrantedAuthority::getAuthority)
+        .roles(orgApi.getGroupsOfUser(user.getUri()).stream()
+            .map(Group::getName)
             .collect(Collectors.toList()))
         .parameters(user.getAttributes());
 

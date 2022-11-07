@@ -52,8 +52,7 @@ public class SecurityContextUtility {
     if (log == null) {
       log = LoggerFactory.getLogger(SecurityContextUtility.class);
     }
-
-    Session session = sessionManagementApi.readSession(URI.create(sessionUriTxt));
+    Session session = sessionManagementApi.initCurrentSession(URI.create(sessionUriTxt));
     if (session != null) {
       log.debug("Session found to set in security context: {}", session);
       log.debug("Looking for a SessionBasedAuthTokenProvider matching the session.");

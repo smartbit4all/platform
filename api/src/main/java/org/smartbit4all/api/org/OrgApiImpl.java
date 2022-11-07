@@ -96,7 +96,8 @@ public abstract class OrgApiImpl implements OrgApi, InitializingBean {
 
 
             securityGroup.setSecurityPredicate(
-                (sg, uri) -> OrgUtils.securityPredicate(self, getCurrentUserProvider(), sg, uri));
+                (sg, uri) -> OrgUtils.securityPredicate(self, getCurrentUserProvider(), null, sg,
+                    uri));
             String key = ReflectionUtility.getQualifiedName(field);
             securityGroup.setName(key);
             String name = securityGroup.getTitle();
