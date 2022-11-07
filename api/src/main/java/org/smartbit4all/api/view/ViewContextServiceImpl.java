@@ -217,14 +217,14 @@ public class ViewContextServiceImpl implements ViewContextService {
     Map<String, Method> messageMethods = new HashMap<>();
     ReflectionUtility.allMethods(
         api.getClass(),
-        method -> method.isAnnotationPresent(MessageResponse.class))
+        method -> method.isAnnotationPresent(MessageHandler.class))
         .forEach(method -> collectMessageMethod(viewName, method, messageMethods));
 
     messageMethodsMap.put(viewName, messageMethods);
   }
 
   /**
-   * Process method's {@link MessageResponse} annotation values: for each value, put an entry to
+   * Process method's {@link MessageHandler} annotation values: for each value, put an entry to
    * messageMethods with value as key and method as value.
    * 
    * @param method
@@ -232,7 +232,7 @@ public class ViewContextServiceImpl implements ViewContextService {
    */
   private void collectMessageMethod(String viewName, Method method,
       Map<String, Method> messageMethods) {
-    MessageResponse annotation = AnnotationUtils.findAnnotation(method, MessageResponse.class);
+    MessageHandler annotation = AnnotationUtils.findAnnotation(method, MessageHandler.class);
     if (annotation != null) {
       List<String> messages = Arrays.asList(annotation.value());
       for (String message : messages) {

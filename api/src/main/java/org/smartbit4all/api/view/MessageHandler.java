@@ -7,10 +7,10 @@ import java.lang.annotation.Target;
 
 @Retention(RUNTIME)
 @Target(METHOD)
-public @interface MessageResponse {
+public @interface MessageHandler {
 
   /**
-   * Name of the response code, which annotated method handles. Empty string means all code.
+   * Name of message codes, which annotated method handles. Empty string means all codes.
    * 
    * @return
    */
