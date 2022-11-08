@@ -70,12 +70,14 @@ public class ViewContextServiceImpl implements ViewContextService {
     URI uri = storage.get().saveAsNew(
         new ViewContext()
             .uuid(uuid));
+    log.debug("Viewcontext created: uuid={}, uri={}", uuid, uri);
     sessionApi.addViewContext(uuid, uri);
     return readViewContext(uri);
   }
 
   @Override
   public void setCurrentViewContext(UUID uuid) {
+    log.debug("Setting currentViewContextUuid: {}", uuid);
     if (uuid == null) {
       currentViewContextUuid.remove();
     }

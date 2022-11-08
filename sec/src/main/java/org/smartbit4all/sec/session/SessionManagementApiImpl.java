@@ -342,6 +342,7 @@ public class SessionManagementApiImpl implements SessionManagementApi {
 
   @Override
   public void addViewContext(URI sessionUri, UUID viewContextUuid, URI viewContextUri) {
+    log.debug("Adding viewContext (uuid={}) to session (uri={})", viewContextUuid, sessionUri);
     storage.get().update(sessionUri, Session.class,
         s -> s.putViewContextsItem(viewContextUuid.toString(), viewContextUri));
 
