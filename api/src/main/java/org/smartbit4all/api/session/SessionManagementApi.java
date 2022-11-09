@@ -18,6 +18,8 @@ public interface SessionManagementApi {
 
   Session readSession(URI sessionUri);
 
+  Session initCurrentSession(URI sessionUri);
+
   void setSessionParameter(URI sessionUri, String key, String value);
 
   String removeSessionParameter(URI sessionUri, String key);

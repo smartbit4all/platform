@@ -10,9 +10,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
+import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
@@ -140,7 +140,11 @@ public class OrgApiStorageImpl implements OrgApi {
           SecurityGroup securityGroup = (SecurityGroup) field.get(option);
           if (securityGroup != null) {
             securityGroup.setSecurityPredicate(
-                (sg, uri) -> OrgUtils.securityPredicate(self, getCurrentUserProvider(), sg, uri));
+                (sg, uri) -> OrgUtils.securityPredicate(
+                    self,
+                    getCurrentUserProvider(),
+                    sessionApi,
+                    sg, uri));
             // securityGroup.setOrgApi(this);
             // securityGroup.setUserSessionApi(userSessionApi);
             String key = ReflectionUtility.getQualifiedName(field);
