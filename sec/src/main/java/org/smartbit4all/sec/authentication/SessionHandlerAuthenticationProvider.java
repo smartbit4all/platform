@@ -42,6 +42,9 @@ public abstract class SessionHandlerAuthenticationProvider implements Authentica
 
   private boolean isAccountOverrideForbidden = false;
 
+  private AdditionalSessionAuthenticationChecker additionalAuthenticationCheck =
+      (u, ai, oa) -> {};
+
   private Predicate<Class<?>> additionalSupportCheck = a -> true;
 
   private Consumer<String> onLoginFailed = msg -> {
@@ -97,6 +100,14 @@ public abstract class SessionHandlerAuthenticationProvider implements Authentica
     AccountInfo accountInfo = accountInfoProvider.apply(user, originalAuthentication);
     accountInfo.setKind(accountKind);
 
+    try {
+      additionalAuthenticationCheck.check(user, accountInfo, originalAuthentication);
+    } catch (AuthenticationException e) {
+      log.debug("Login attempt has failed on additional authentication checks!", e);
+      onLoginFailed.accept(e.getMessage());
+      throw e;
+    }
+
     if (foundMatchingAccount != null
         && !Objects.equals(foundMatchingAccount.getUserName(), accountInfo.getUserName())) {
       String errorMsg =
@@ -134,6 +145,12 @@ public abstract class SessionHandlerAuthenticationProvider implements Authentica
   public void setAdditionalSupportCheck(Predicate<Class<?>> additionalSupportCheck) {
     Assert.notNull(additionalSupportCheck, "additionalSupportCheck cannot be null");
     this.additionalSupportCheck = additionalSupportCheck;
+  }
+
+  public void setAdditionalAuthenticationCheck(
+      AdditionalSessionAuthenticationChecker additionalAuthenticationCheck) {
+    Assert.notNull(additionalAuthenticationCheck, "additionalAuthenticationCheck cannot be null");
+    this.additionalAuthenticationCheck = additionalAuthenticationCheck;
   }
 
   public void onLoginFailed(Consumer<String> onLoginFailed) {
@@ -176,6 +193,11 @@ public abstract class SessionHandlerAuthenticationProvider implements Authentica
             .collect(Collectors.toList()))
         .parameters(user.getAttributes());
 
+  }
+
+  public static interface AdditionalSessionAuthenticationChecker {
+    void check(User user, AccountInfo accountInfo, Authentication originalAuthentication)
+        throws AuthenticationException;
   }
 
 }
