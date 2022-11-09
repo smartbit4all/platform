@@ -18,6 +18,7 @@ import org.smartbit4all.api.view.bean.MessageResult;
 import org.smartbit4all.api.view.bean.ViewContext;
 import org.smartbit4all.api.view.bean.ViewContextUpdate;
 import org.smartbit4all.api.view.bean.ViewData;
+import org.smartbit4all.api.view.bean.ViewState;
 import org.smartbit4all.api.view.bean.ViewStateUpdate;
 import org.smartbit4all.core.utility.ReflectionUtility;
 import org.smartbit4all.domain.data.storage.Storage;
@@ -162,6 +163,8 @@ public class ViewContextServiceImpl implements ViewContextService {
     Objects.requireNonNull(messageResult.getSelectedOption().getCode(),
         "MessageResult.selectedOption.code must be specified");
 
+    ViewData message = getViewFromViewContext(null, messageUuid);
+    Objects.requireNonNull(message, "Message not found!");
     ViewData view = getViewFromViewContext(null, viewUuid);
     Object api = apiByViewName.get(view.getViewName());
     Objects.requireNonNull(api, "API not found for view " + view.getViewName());
@@ -184,6 +187,14 @@ public class ViewContextServiceImpl implements ViewContextService {
         e.printStackTrace();
       }
     }
+    // TODO common close logic here, unify with ViewApi.closeMessage()
+    updateCurrentViewContext(c -> {
+      c.getViews().stream()
+          .filter(v -> messageUuid.equals(v.getUuid()))
+          .findFirst()
+          .ifPresent(m -> m.setState(ViewState.TO_CLOSE));
+      return c;
+    });
   }
 
   @EventListener(ApplicationStartedEvent.class)
