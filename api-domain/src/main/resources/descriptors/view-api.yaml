@@ -254,3 +254,11 @@ components:
         parentView:
           type: string
           description: Name of parentView, may be null.
+    ViewApiError:
+      type: object
+      description: Generic API error object.
+      properties:
+        code:
+          type: string
+        message:
+          type: string
