@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import org.smartbit4all.api.navigation.bean.NavigationAssociationMeta;
@@ -14,7 +15,9 @@ import org.smartbit4all.api.navigation.bean.NavigationReferenceEntry;
 import org.smartbit4all.api.navigation.bean.NavigationView;
 import org.smartbit4all.core.object.BeanMeta;
 import org.smartbit4all.core.object.BeanMetaUtil;
+import org.smartbit4all.core.object.DomainObjectRef;
 import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.core.object.ObjectChange;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.PropertyMeta;
 import org.smartbit4all.core.object.ReferenceDefinition;
@@ -171,6 +174,97 @@ public class ObjectNavigation extends NavigationImpl {
   public NavigationEntry getEntry(URI entryMetaUri, URI objectUri) {
     // TODO Auto-generated method stub
     return null;
+  }
+
+  @Override
+  public Optional<DomainObjectRef> loadObject(URI entryMetaUri, URI objectUri) {
+    StorageObject<?> targetObject = storageApi.load(objectUri);
+    return Optional.of(new DomainObjectRef() {
+
+      @Override
+      public void setValueByPath(String path, Object value) {
+        // TODO Auto-generated method stub
+      }
+
+      @Override
+      public void setObject(Object loadedObject) {
+        // TODO Auto-generated method stub
+      }
+
+      @Override
+      public Optional<ObjectChange> renderAndCleanChanges() {
+        // TODO Auto-generated method stub
+        return Optional.empty();
+      }
+
+      @Override
+      public void removeValueByPath(String path) {
+        // TODO Auto-generated method stub
+      }
+
+      @Override
+      public void reevaluateChanges() {
+        // TODO Auto-generated method stub
+      }
+
+      @Override
+      public <T> T getWrapper(Class<T> beanClass) {
+        // TODO Auto-generated method stub
+        return null;
+      }
+
+      @Override
+      public DomainObjectRef getValueRefByPath(String path) {
+        // TODO Auto-generated method stub
+        return null;
+      }
+
+      @Override
+      public Object getValueByPath(String path) {
+        if (path != null) {
+          String[] pathElements = path.split(StringConstant.SLASH);
+          Map<String, Object> currentObjectMap = targetObject.getObjectAsMap();
+          for (int i = 0; i < pathElements.length; i++) {
+            String element = pathElements[i];
+            if (i != pathElements.length - 1) {
+              Object object = currentObjectMap.get(element);
+              if (object instanceof Map) {
+                currentObjectMap = (Map<String, Object>) object;
+              } else {
+                return null;
+              }
+            } else {
+              return currentObjectMap.get(element);
+            }
+          }
+        }
+        return null;
+      }
+
+      @Override
+      public Object getValue(String propertyName) {
+        // TODO Auto-generated method stub
+        return null;
+      }
+
+      @Override
+      public String getPath() {
+        // TODO Auto-generated method stub
+        return null;
+      }
+
+      @Override
+      public Object getObject() {
+        // TODO Auto-generated method stub
+        return null;
+      }
+
+      @Override
+      public DomainObjectRef addValueByPath(String path, Object value) {
+        // TODO Auto-generated method stub
+        return null;
+      }
+    });
   }
 
 }
