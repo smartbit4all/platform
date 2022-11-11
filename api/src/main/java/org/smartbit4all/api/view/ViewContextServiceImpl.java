@@ -123,6 +123,7 @@ public class ViewContextServiceImpl implements ViewContextService {
     storage.get().update(getViewContextUri(updates.getUuid()), ViewContext.class,
         c -> {
           updates.getUpdates().forEach(u -> updateViewState(c, u));
+          c.getViews().removeIf(v -> ViewState.CLOSED == v.getState());
           return c;
         });
   }
