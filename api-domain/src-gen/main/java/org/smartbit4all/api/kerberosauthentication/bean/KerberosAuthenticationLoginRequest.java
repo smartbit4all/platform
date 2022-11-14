@@ -43,6 +43,8 @@ public class KerberosAuthenticationLoginRequest {
   public static final String PASSWORD = "password";
   private String password;
 
+  public KerberosAuthenticationLoginRequest() { 
+  }
 
   public KerberosAuthenticationLoginRequest username(String username) {
     

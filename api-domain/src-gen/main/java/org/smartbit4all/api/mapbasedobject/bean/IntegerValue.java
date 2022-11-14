@@ -43,6 +43,8 @@ public class IntegerValue {
   public static final String VALUE = "value";
   private Integer value;
 
+  public IntegerValue() { 
+  }
 
   public IntegerValue name(String name) {
     

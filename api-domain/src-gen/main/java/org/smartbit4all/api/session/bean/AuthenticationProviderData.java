@@ -46,6 +46,8 @@ public class AuthenticationProviderData {
   public static final String PARAMETERS = "parameters";
   private Map<String, String> parameters = null;
 
+  public AuthenticationProviderData() { 
+  }
 
   public AuthenticationProviderData kind(String kind) {
     

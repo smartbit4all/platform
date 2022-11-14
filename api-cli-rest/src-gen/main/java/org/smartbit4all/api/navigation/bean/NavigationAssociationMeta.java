@@ -56,6 +56,8 @@ public class NavigationAssociationMeta {
   public static final String ASSOCIATION_ENTRY = "associationEntry";
   private NavigationEntryMeta associationEntry;
 
+  public NavigationAssociationMeta() { 
+  }
 
   public NavigationAssociationMeta uri(URI uri) {
     

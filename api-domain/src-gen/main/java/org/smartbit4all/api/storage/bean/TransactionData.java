@@ -63,6 +63,8 @@ public class TransactionData {
   public static final String STATE = "state";
   private TransactionState state;
 
+  public TransactionData() { 
+  }
 
   public TransactionData uri(URI uri) {
     

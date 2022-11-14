@@ -83,6 +83,8 @@ public class UserSelector {
   public static final String DISPLAY_NAME = "displayName";
   private String displayName;
 
+  public UserSelector() { 
+  }
 
   public UserSelector kind(KindEnum kind) {
     

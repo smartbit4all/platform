@@ -55,6 +55,8 @@ public class SessionInfoData {
   public static final String AUTHENTICATIONS = "authentications";
   private List<AccountInfo> authentications = null;
 
+  public SessionInfoData() { 
+  }
 
   public SessionInfoData sid(String sid) {
     

@@ -47,6 +47,8 @@ public class ObjectList {
   public static final String URIS = "uris";
   private List<URI> uris = new ArrayList<>();
 
+  public ObjectList() { 
+  }
 
   public ObjectList uri(URI uri) {
     

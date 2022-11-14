@@ -46,6 +46,8 @@ public class UserSingleSelector {
   public static final String SELECTED = "selected";
   private UserSelector selected;
 
+  public UserSingleSelector() { 
+  }
 
   public UserSingleSelector selectors(List<UserSelector> selectors) {
     

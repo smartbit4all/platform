@@ -47,6 +47,8 @@ public class ObjectHistory {
   public static final String SELECTED_VERSION_URI = "selectedVersionUri";
   private URI selectedVersionUri;
 
+  public ObjectHistory() { 
+  }
 
   public ObjectHistory objectHistoryEntries(List<ObjectHistoryEntry> objectHistoryEntries) {
     

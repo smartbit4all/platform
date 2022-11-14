@@ -39,6 +39,8 @@ public class MapBasedObjectSelection {
   public static final String STRING_VALUE = "stringValue";
   private String stringValue;
 
+  public MapBasedObjectSelection() { 
+  }
 
   public MapBasedObjectSelection stringValue(String stringValue) {
     

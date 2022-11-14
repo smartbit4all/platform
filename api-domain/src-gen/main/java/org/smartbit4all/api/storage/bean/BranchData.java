@@ -66,6 +66,8 @@ public class BranchData {
   public static final String OBJECTS = "objects";
   private Map<String, ObjectBranchData> objects = new HashMap<>();
 
+  public BranchData() { 
+  }
 
   public BranchData uri(URI uri) {
     

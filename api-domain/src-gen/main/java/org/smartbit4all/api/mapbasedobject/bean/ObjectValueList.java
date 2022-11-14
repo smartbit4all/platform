@@ -46,6 +46,8 @@ public class ObjectValueList {
   public static final String VALUES = "values";
   private List<MapBasedObjectData> values = null;
 
+  public ObjectValueList() { 
+  }
 
   public ObjectValueList name(String name) {
     

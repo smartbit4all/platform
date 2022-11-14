@@ -67,6 +67,8 @@ public class FilterGroupMeta {
   public static final String TYPE = "type";
   private FilterGroupType type;
 
+  public FilterGroupMeta() { 
+  }
 
   public FilterGroupMeta id(String id) {
     

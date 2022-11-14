@@ -75,6 +75,8 @@ public class FilterField {
   public static final String SELECTED_VALUES = "selectedValues";
   private List<URI> selectedValues = null;
 
+  public FilterField() { 
+  }
 
   public FilterField propertyUri1(URI propertyUri1) {
     

@@ -45,6 +45,8 @@ public class IntegerValueList {
   public static final String VALUES = "values";
   private List<Integer> values = null;
 
+  public IntegerValueList() { 
+  }
 
   public IntegerValueList name(String name) {
     

@@ -56,6 +56,8 @@ public class ObjectMapRequest {
   public static final String URIS_TO_ADD = "urisToAdd";
   private Map<String, URI> urisToAdd = null;
 
+  public ObjectMapRequest() { 
+  }
 
   public ObjectMapRequest mapUri(URI mapUri) {
     

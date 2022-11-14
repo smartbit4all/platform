@@ -43,6 +43,8 @@ public class BooleanValue {
   public static final String VALUE = "value";
   private Boolean value;
 
+  public BooleanValue() { 
+  }
 
   public BooleanValue name(String name) {
     

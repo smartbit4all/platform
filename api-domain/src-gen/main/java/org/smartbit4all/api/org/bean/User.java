@@ -67,6 +67,8 @@ public class User {
   public static final String ATTRIBUTES = "attributes";
   private Map<String, String> attributes = new HashMap<>();
 
+  public User() { 
+  }
 
   public User uri(URI uri) {
     

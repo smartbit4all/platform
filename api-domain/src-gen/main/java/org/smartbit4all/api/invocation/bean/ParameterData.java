@@ -49,6 +49,8 @@ public class ParameterData {
   public static final String KIND = "kind";
   private InvocationParameterKind kind;
 
+  public ParameterData() { 
+  }
 
   public ParameterData name(String name) {
     

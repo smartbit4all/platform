@@ -52,6 +52,8 @@ public class MessageOption {
   public static final String TYPE = "type";
   private MessageOptionType type;
 
+  public MessageOption() { 
+  }
 
   public MessageOption code(String code) {
     

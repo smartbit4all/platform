@@ -43,6 +43,8 @@ public class LocalAuthenticationLoginRequest {
   public static final String PASSWORD = "password";
   private String password;
 
+  public LocalAuthenticationLoginRequest() { 
+  }
 
   public LocalAuthenticationLoginRequest username(String username) {
     

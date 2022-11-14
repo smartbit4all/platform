@@ -54,6 +54,8 @@ public class StorageObjectRelationData {
   public static final String COLLECTIONS = "collections";
   private Map<String, ObjectReferenceList> collections = null;
 
+  public StorageObjectRelationData() { 
+  }
 
   public StorageObjectRelationData uri(URI uri) {
     

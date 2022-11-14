@@ -53,6 +53,8 @@ public class ViewContext {
   public static final String VIEWS = "views";
   private List<ViewData> views = new ArrayList<>();
 
+  public ViewContext() { 
+  }
 
   public ViewContext uri(URI uri) {
     

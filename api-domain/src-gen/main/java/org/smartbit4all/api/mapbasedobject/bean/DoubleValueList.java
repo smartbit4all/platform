@@ -45,6 +45,8 @@ public class DoubleValueList {
   public static final String VALUES = "values";
   private List<Double> values = null;
 
+  public DoubleValueList() { 
+  }
 
   public DoubleValueList name(String name) {
     

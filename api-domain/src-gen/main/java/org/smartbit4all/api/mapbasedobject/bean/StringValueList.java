@@ -45,6 +45,8 @@ public class StringValueList {
   public static final String VALUES = "values";
   private List<String> values = null;
 
+  public StringValueList() { 
+  }
 
   public StringValueList name(String name) {
     

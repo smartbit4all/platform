@@ -44,6 +44,8 @@ public class NavigationView {
   public static final String PARAMETERS = "parameters";
   private Map<String, Object> parameters = null;
 
+  public NavigationView() { 
+  }
 
   public NavigationView name(String name) {
     

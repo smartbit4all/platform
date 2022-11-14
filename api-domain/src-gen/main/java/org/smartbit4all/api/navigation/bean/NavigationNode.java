@@ -52,6 +52,8 @@ public class NavigationNode {
   public static final String ASSOCIATIONS = "associations";
   private List<NavigationAssociation> associations = null;
 
+  public NavigationNode() { 
+  }
 
   public NavigationNode id(String id) {
     

@@ -44,6 +44,8 @@ public class ObjectValue {
   public static final String VALUE = "value";
   private MapBasedObjectData value;
 
+  public ObjectValue() { 
+  }
 
   public ObjectValue name(String name) {
     

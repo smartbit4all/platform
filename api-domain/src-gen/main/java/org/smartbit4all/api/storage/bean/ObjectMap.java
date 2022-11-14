@@ -52,6 +52,8 @@ public class ObjectMap {
   public static final String URIS = "uris";
   private Map<String, URI> uris = new HashMap<>();
 
+  public ObjectMap() { 
+  }
 
   public ObjectMap uri(URI uri) {
     

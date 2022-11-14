@@ -43,6 +43,8 @@ public class FilterExpression {
   public static final String FILTER_EXPRESSION_PARTS = "filterExpressionParts";
   private List<FilterExpressionPart> filterExpressionParts = null;
 
+  public FilterExpression() { 
+  }
 
   public FilterExpression filterExpressionParts(List<FilterExpressionPart> filterExpressionParts) {
     

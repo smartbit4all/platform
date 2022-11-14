@@ -59,6 +59,8 @@ public class InvocationRequest {
   public static final String PARAMETERS = "parameters";
   private List<InvocationParameter> parameters = new ArrayList<>();
 
+  public InvocationRequest() { 
+  }
 
   public InvocationRequest uri(URI uri) {
     

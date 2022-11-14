@@ -70,6 +70,8 @@ public class NavigationAssociation {
   public static final String REFERENCES = "references";
   private List<NavigationReference> references = null;
 
+  public NavigationAssociation() { 
+  }
 
   public NavigationAssociation id(String id) {
     

@@ -44,6 +44,8 @@ public class SampleDataSheet {
   public static final String NAME = "name";
   private String name;
 
+  public SampleDataSheet() { 
+  }
 
   public SampleDataSheet uri(URI uri) {
     

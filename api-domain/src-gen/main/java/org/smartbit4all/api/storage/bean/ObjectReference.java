@@ -50,6 +50,8 @@ public class ObjectReference {
   public static final String EXPIRATION_TIME = "expirationTime";
   private OffsetDateTime expirationTime;
 
+  public ObjectReference() { 
+  }
 
   public ObjectReference uri(URI uri) {
     

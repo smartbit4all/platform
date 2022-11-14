@@ -67,6 +67,8 @@ public class AccountInfo {
   public static final String PARAMETERS = "parameters";
   private Map<String, String> parameters = null;
 
+  public AccountInfo() { 
+  }
 
   public AccountInfo kind(String kind) {
     

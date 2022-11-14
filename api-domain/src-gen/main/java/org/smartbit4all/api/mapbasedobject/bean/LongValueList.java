@@ -45,6 +45,8 @@ public class LongValueList {
   public static final String VALUES = "values";
   private List<Long> values = null;
 
+  public LongValueList() { 
+  }
 
   public LongValueList name(String name) {
     

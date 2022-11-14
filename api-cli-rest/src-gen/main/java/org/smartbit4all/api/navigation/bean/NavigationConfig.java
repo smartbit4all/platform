@@ -46,6 +46,8 @@ public class NavigationConfig {
   public static final String ASSOCIATIONS = "associations";
   private List<NavigationAssociationMeta> associations = null;
 
+  public NavigationConfig() { 
+  }
 
   public NavigationConfig entries(List<NavigationEntryMeta> entries) {
     

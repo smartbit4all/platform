@@ -45,6 +45,8 @@ public class BooleanValueList {
   public static final String VALUES = "values";
   private List<Boolean> values = null;
 
+  public BooleanValueList() { 
+  }
 
   public BooleanValueList name(String name) {
     

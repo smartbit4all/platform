@@ -51,6 +51,8 @@ public class SB4Starter {
   public static final String KEEP_WORKING_DIRECTORY = "keepWorkingDirectory";
   private Boolean keepWorkingDirectory = false;
 
+  public SB4Starter() { 
+  }
 
   public SB4Starter id(UUID id) {
     

@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.smartbit4all.api.binarydata.BinaryData;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -39,7 +40,7 @@ import javax.validation.Valid;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class ImageWithAlt {
   public static final String IMAGE = "image";
-  private org.smartbit4all.api.binarydata.BinaryData image = null;
+  private BinaryData image = null;
 
   public static final String ALT = "alt";
   private String alt;
@@ -47,8 +48,10 @@ public class ImageWithAlt {
   public static final String FILE_NAME = "fileName";
   private String fileName;
 
+  public ImageWithAlt() { 
+  }
 
-  public ImageWithAlt image(org.smartbit4all.api.binarydata.BinaryData image) {
+  public ImageWithAlt image(BinaryData image) {
     
     this.image = image;
     return this;
@@ -64,14 +67,14 @@ public class ImageWithAlt {
   @JsonProperty(IMAGE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public org.smartbit4all.api.binarydata.BinaryData getImage() {
+  public BinaryData getImage() {
     return image;
   }
 
 
   @JsonProperty(IMAGE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setImage(org.smartbit4all.api.binarydata.BinaryData image) {
+  public void setImage(BinaryData image) {
     this.image = image;
   }
 

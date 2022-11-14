@@ -44,6 +44,8 @@ public class ViewApiError {
   public static final String MESSAGE = "message";
   private String message;
 
+  public ViewApiError() { 
+  }
 
   public ViewApiError code(String code) {
     

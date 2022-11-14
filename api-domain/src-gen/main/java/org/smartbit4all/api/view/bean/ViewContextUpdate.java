@@ -48,6 +48,8 @@ public class ViewContextUpdate {
   public static final String UPDATES = "updates";
   private List<ViewStateUpdate> updates = null;
 
+  public ViewContextUpdate() { 
+  }
 
   public ViewContextUpdate uuid(UUID uuid) {
     

@@ -56,6 +56,8 @@ public class ApiData {
   public static final String METHODS = "methods";
   private List<MethodData> methods = new ArrayList<>();
 
+  public ApiData() { 
+  }
 
   public ApiData uri(URI uri) {
     

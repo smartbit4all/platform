@@ -47,6 +47,8 @@ public class ApiRegistryData {
   public static final String API_LIST = "apiList";
   private List<URI> apiList = new ArrayList<>();
 
+  public ApiRegistryData() { 
+  }
 
   public ApiRegistryData uri(URI uri) {
     

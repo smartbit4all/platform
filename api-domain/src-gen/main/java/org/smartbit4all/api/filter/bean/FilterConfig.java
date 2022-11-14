@@ -50,6 +50,8 @@ public class FilterConfig {
   public static final String DEFAULT_FILTER_GROUP_STYLE = "defaultFilterGroupStyle";
   private String defaultFilterGroupStyle;
 
+  public FilterConfig() { 
+  }
 
   public FilterConfig filterGroupMetas(List<FilterGroupMeta> filterGroupMetas) {
     

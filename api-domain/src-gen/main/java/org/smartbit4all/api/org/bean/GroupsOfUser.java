@@ -50,6 +50,8 @@ public class GroupsOfUser {
   public static final String GROUPS = "groups";
   private List<URI> groups = new ArrayList<>();
 
+  public GroupsOfUser() { 
+  }
 
   public GroupsOfUser uri(URI uri) {
     

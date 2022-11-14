@@ -47,6 +47,8 @@ public class InvocationParameter {
   public static final String TYPE_CLASS = "typeClass";
   private String typeClass;
 
+  public InvocationParameter() { 
+  }
 
   public InvocationParameter name(String name) {
     

@@ -45,6 +45,8 @@ public class StorageSettings {
   public static final String SCHEME_NAME = "schemeName";
   private String schemeName;
 
+  public StorageSettings() { 
+  }
 
   public StorageSettings uri(URI uri) {
     

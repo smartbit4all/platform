@@ -59,6 +59,8 @@ public class FilterFieldMeta {
   public static final String OPERATIONS = "operations";
   private List<FilterOperation> operations = null;
 
+  public FilterFieldMeta() { 
+  }
 
   public FilterFieldMeta id(String id) {
     

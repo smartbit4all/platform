@@ -47,6 +47,8 @@ public class ObjectReferenceList {
   public static final String REFERENCES = "references";
   private List<ObjectReference> references = new ArrayList<>();
 
+  public ObjectReferenceList() { 
+  }
 
   public ObjectReferenceList referenceTypeClass(String referenceTypeClass) {
     

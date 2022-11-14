@@ -43,6 +43,8 @@ public class DoubleValue {
   public static final String VALUE = "value";
   private Double value;
 
+  public DoubleValue() { 
+  }
 
   public DoubleValue name(String name) {
     

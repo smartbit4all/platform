@@ -49,6 +49,8 @@ public class NavigationReference {
   public static final String ASSOCIATION_NODE = "associationNode";
   private NavigationNode associationNode;
 
+  public NavigationReference() { 
+  }
 
   public NavigationReference id(String id) {
     

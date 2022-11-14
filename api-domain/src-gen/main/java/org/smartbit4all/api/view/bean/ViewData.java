@@ -74,6 +74,8 @@ public class ViewData {
   public static final String CONTAINER_UUID = "containerUuid";
   private UUID containerUuid;
 
+  public ViewData() { 
+  }
 
   public ViewData uuid(UUID uuid) {
     

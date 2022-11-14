@@ -73,6 +73,8 @@ public class FilterOperation {
   public static final String ICON_CODE = "iconCode";
   private String iconCode;
 
+  public FilterOperation() { 
+  }
 
   public FilterOperation id(String id) {
     

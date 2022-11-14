@@ -57,6 +57,8 @@ public class ObjectBranchData {
   public static final String MERGES = "merges";
   private Map<String, BranchOperation> merges = new HashMap<>();
 
+  public ObjectBranchData() { 
+  }
 
   public ObjectBranchData objectUri(URI objectUri) {
     

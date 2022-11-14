@@ -58,6 +58,8 @@ public class StorageObjectData {
   public static final String DELETED = "deleted";
   private Boolean deleted = false;
 
+  public StorageObjectData() { 
+  }
 
   public StorageObjectData uri(URI uri) {
     

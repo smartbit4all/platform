@@ -103,6 +103,8 @@ public class BranchOperation {
   public static final String OPERATION = "operation";
   private String operation;
 
+  public BranchOperation() { 
+  }
 
   public BranchOperation sourceUri(URI sourceUri) {
     

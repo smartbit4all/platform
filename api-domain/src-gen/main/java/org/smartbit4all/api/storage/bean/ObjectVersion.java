@@ -78,6 +78,8 @@ public class ObjectVersion {
   public static final String MERGED_WITH_URI = "mergedWithUri";
   private URI mergedWithUri;
 
+  public ObjectVersion() { 
+  }
 
   public ObjectVersion serialNoData(Long serialNoData) {
     

@@ -83,6 +83,8 @@ public class DocumentViewProcess {
   public static final String THUMBNAILS = "thumbnails";
   private List<ImageWithAlt> thumbnails = null;
 
+  public DocumentViewProcess() { 
+  }
 
   public DocumentViewProcess displayMode(DisplayMode displayMode) {
     

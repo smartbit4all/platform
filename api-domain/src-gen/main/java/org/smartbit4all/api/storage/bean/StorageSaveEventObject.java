@@ -53,6 +53,8 @@ public class StorageSaveEventObject {
   public static final String NEXT_EVENT = "nextEvent";
   private URI nextEvent;
 
+  public StorageSaveEventObject() { 
+  }
 
   public StorageSaveEventObject uri(URI uri) {
     

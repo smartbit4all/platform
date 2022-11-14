@@ -44,6 +44,8 @@ public class ViewRegistryEntry {
   public static final String PARENT_VIEW = "parentView";
   private String parentView;
 
+  public ViewRegistryEntry() { 
+  }
 
   public ViewRegistryEntry viewName(String viewName) {
     

@@ -45,6 +45,8 @@ public class ViewResponse {
   public static final String VIEW_CONTEXT = "viewContext";
   private ViewContext viewContext;
 
+  public ViewResponse() { 
+  }
 
   public ViewResponse result(Object result) {
     

@@ -70,6 +70,8 @@ public class Group {
   public static final String CHILDREN = "children";
   private List<URI> children = new ArrayList<>();
 
+  public Group() { 
+  }
 
   public Group uri(URI uri) {
     

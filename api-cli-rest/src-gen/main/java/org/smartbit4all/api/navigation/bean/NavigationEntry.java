@@ -73,6 +73,8 @@ public class NavigationEntry {
   public static final String ACTIONS = "actions";
   private List<URI> actions = null;
 
+  public NavigationEntry() { 
+  }
 
   public NavigationEntry objectUri(URI objectUri) {
     

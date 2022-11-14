@@ -44,6 +44,8 @@ public class SB4File {
   public static final String FILENAME = "filename";
   private String filename;
 
+  public SB4File() { 
+  }
 
   public SB4File id(UUID id) {
     

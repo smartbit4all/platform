@@ -58,6 +58,8 @@ public class ObjectHistoryEntry {
   public static final String VERSION = "version";
   private ObjectVersion version;
 
+  public ObjectHistoryEntry() { 
+  }
 
   public ObjectHistoryEntry summary(String summary) {
     

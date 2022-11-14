@@ -47,6 +47,8 @@ public class NavigationPath {
   public static final String SEGMENTS = "segments";
   private List<String> segments = null;
 
+  public NavigationPath() { 
+  }
 
   public NavigationPath uri(URI uri) {
     

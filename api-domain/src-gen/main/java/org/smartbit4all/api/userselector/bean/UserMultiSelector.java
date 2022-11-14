@@ -50,6 +50,8 @@ public class UserMultiSelector {
   public static final String IS_SAVING = "isSaving";
   private Boolean isSaving;
 
+  public UserMultiSelector() { 
+  }
 
   public UserMultiSelector selectors(List<UserSelector> selectors) {
     

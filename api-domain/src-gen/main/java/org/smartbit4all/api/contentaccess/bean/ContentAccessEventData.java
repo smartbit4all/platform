@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.UUID;
+import org.smartbit4all.api.binarydata.BinaryContent;
 import org.smartbit4all.api.contentaccess.bean.Direction;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -44,11 +45,13 @@ public class ContentAccessEventData {
   private UUID uuid;
 
   public static final String BINARY_CONTENT = "binaryContent";
-  private org.smartbit4all.api.binarydata.BinaryContent binaryContent = null;
+  private BinaryContent binaryContent = null;
 
   public static final String DIRECTION = "direction";
   private Direction direction;
 
+  public ContentAccessEventData() { 
+  }
 
   public ContentAccessEventData uuid(UUID uuid) {
     
@@ -78,7 +81,7 @@ public class ContentAccessEventData {
   }
 
 
-  public ContentAccessEventData binaryContent(org.smartbit4all.api.binarydata.BinaryContent binaryContent) {
+  public ContentAccessEventData binaryContent(BinaryContent binaryContent) {
     
     this.binaryContent = binaryContent;
     return this;
@@ -94,14 +97,14 @@ public class ContentAccessEventData {
   @JsonProperty(BINARY_CONTENT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public org.smartbit4all.api.binarydata.BinaryContent getBinaryContent() {
+  public BinaryContent getBinaryContent() {
     return binaryContent;
   }
 
 
   @JsonProperty(BINARY_CONTENT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setBinaryContent(org.smartbit4all.api.binarydata.BinaryContent binaryContent) {
+  public void setBinaryContent(BinaryContent binaryContent) {
     this.binaryContent = binaryContent;
   }
 

@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.time.LocalTime;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -41,8 +42,10 @@ public class LocalTimeValue {
   private String name;
 
   public static final String VALUE = "value";
-  private java.time.LocalTime value = null;
+  private LocalTime value = null;
 
+  public LocalTimeValue() { 
+  }
 
   public LocalTimeValue name(String name) {
     
@@ -72,7 +75,7 @@ public class LocalTimeValue {
   }
 
 
-  public LocalTimeValue value(java.time.LocalTime value) {
+  public LocalTimeValue value(LocalTime value) {
     
     this.value = value;
     return this;
@@ -88,14 +91,14 @@ public class LocalTimeValue {
   @JsonProperty(VALUE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public java.time.LocalTime getValue() {
+  public LocalTime getValue() {
     return value;
   }
 
 
   @JsonProperty(VALUE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setValue(java.time.LocalTime value) {
+  public void setValue(LocalTime value) {
     this.value = value;
   }
 

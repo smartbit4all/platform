@@ -56,6 +56,8 @@ public class DocumentationData {
   public static final String PARAGRAPHS = "paragraphs";
   private List<ParagraphData> paragraphs = new ArrayList<>();
 
+  public DocumentationData() { 
+  }
 
   public DocumentationData uri(URI uri) {
     

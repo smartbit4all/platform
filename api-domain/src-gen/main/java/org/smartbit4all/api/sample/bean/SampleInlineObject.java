@@ -39,6 +39,8 @@ public class SampleInlineObject {
   public static final String NAME = "name";
   private String name;
 
+  public SampleInlineObject() { 
+  }
 
   public SampleInlineObject name(String name) {
     

@@ -48,6 +48,8 @@ public class Value {
   public static final String ICON_CODE = "iconCode";
   private String iconCode;
 
+  public Value() { 
+  }
 
   public Value objectUri(URI objectUri) {
     

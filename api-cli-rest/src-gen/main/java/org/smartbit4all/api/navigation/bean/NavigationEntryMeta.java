@@ -50,6 +50,8 @@ public class NavigationEntryMeta {
   public static final String ASSOCIATIONS = "associations";
   private List<NavigationAssociationMeta> associations = null;
 
+  public NavigationEntryMeta() { 
+  }
 
   public NavigationEntryMeta uri(URI uri) {
     

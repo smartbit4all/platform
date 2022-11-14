@@ -144,6 +144,8 @@ public class MapBasedObjectData {
   public static final String OBJECT_LIST_MAP = "objectListMap";
   private Map<String, ObjectValueList> objectListMap = null;
 
+  public MapBasedObjectData() { 
+  }
 
   public MapBasedObjectData uri(URI uri) {
     

@@ -47,6 +47,8 @@ public class GroupsOfUserCollection {
   public static final String GROUPS_OF_USER_COLLECTION = "groupsOfUserCollection";
   private List<GroupsOfUser> groupsOfUserCollection = new ArrayList<>();
 
+  public GroupsOfUserCollection() { 
+  }
 
   public GroupsOfUserCollection uri(URI uri) {
     

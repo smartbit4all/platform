@@ -69,6 +69,8 @@ public class SB4Command {
   public static final String ON_ERROR_COMMANDS = "onErrorCommands";
   private List<SB4Command> onErrorCommands = new ArrayList<>();
 
+  public SB4Command() { 
+  }
 
   public SB4Command id(UUID id) {
     

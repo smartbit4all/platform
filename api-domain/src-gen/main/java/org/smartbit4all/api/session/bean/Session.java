@@ -70,6 +70,8 @@ public class Session {
   public static final String VIEW_CONTEXTS = "viewContexts";
   private Map<String, URI> viewContexts = new HashMap<>();
 
+  public Session() { 
+  }
 
   public Session uri(URI uri) {
     

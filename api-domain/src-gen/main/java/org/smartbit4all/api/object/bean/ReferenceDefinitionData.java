@@ -58,6 +58,8 @@ public class ReferenceDefinitionData {
   public static final String TARGET_OBJECT_NAME = "targetObjectName";
   private String targetObjectName;
 
+  public ReferenceDefinitionData() { 
+  }
 
   public ReferenceDefinitionData uri(URI uri) {
     

@@ -60,6 +60,8 @@ public class FilterGroup {
   public static final String IS_NEGATED = "isNegated";
   private Boolean isNegated;
 
+  public FilterGroup() { 
+  }
 
   public FilterGroup name(String name) {
     

@@ -46,6 +46,8 @@ public class UriValueList {
   public static final String VALUES = "values";
   private List<URI> values = null;
 
+  public UriValueList() { 
+  }
 
   public UriValueList name(String name) {
     

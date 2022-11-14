@@ -51,6 +51,8 @@ public class FilterExpressionPart {
   public static final String FILTER_FIELD_META = "filterFieldMeta";
   private FilterFieldMeta filterFieldMeta;
 
+  public FilterExpressionPart() { 
+  }
 
   public FilterExpressionPart partKind(FilterExpressionPartKind partKind) {
     

@@ -48,6 +48,8 @@ public class SampleAttachement {
   public static final String CONTENT = "content";
   private URI content;
 
+  public SampleAttachement() { 
+  }
 
   public SampleAttachement uri(URI uri) {
     

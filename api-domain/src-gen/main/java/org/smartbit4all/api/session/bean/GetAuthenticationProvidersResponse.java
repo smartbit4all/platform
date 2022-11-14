@@ -42,6 +42,8 @@ public class GetAuthenticationProvidersResponse {
   public static final String AUTHENTICATION_PROVIDERS = "authenticationProviders";
   private List<AuthenticationProviderData> authenticationProviders = new ArrayList<>();
 
+  public GetAuthenticationProvidersResponse() { 
+  }
 
   public GetAuthenticationProvidersResponse authenticationProviders(List<AuthenticationProviderData> authenticationProviders) {
     

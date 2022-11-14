@@ -68,6 +68,8 @@ public class SampleContainerItem {
   public static final String ATTACHMENTS = "attachments";
   private List<URI> attachments = null;
 
+  public SampleContainerItem() { 
+  }
 
   public SampleContainerItem uri(URI uri) {
     

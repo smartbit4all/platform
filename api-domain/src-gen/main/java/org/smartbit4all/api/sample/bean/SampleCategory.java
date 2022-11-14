@@ -55,6 +55,8 @@ public class SampleCategory {
   public static final String CONTAINER_ITEMS = "containerItems";
   private List<URI> containerItems = new ArrayList<>();
 
+  public SampleCategory() { 
+  }
 
   public SampleCategory uri(URI uri) {
     

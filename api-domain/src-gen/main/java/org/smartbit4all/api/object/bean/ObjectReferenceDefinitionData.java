@@ -44,6 +44,8 @@ public class ObjectReferenceDefinitionData {
   public static final String PROPERTY_PATH = "propertyPath";
   private String propertyPath;
 
+  public ObjectReferenceDefinitionData() { 
+  }
 
   public ObjectReferenceDefinitionData objectName(String objectName) {
     

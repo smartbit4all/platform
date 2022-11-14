@@ -56,6 +56,8 @@ public class MethodData {
   public static final String PARAMETERS = "parameters";
   private List<ParameterData> parameters = new ArrayList<>();
 
+  public MethodData() { 
+  }
 
   public MethodData uri(URI uri) {
     

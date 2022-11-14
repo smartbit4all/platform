@@ -44,6 +44,8 @@ public class MessageResult {
   public static final String ADDITIONAL_DATA = "additionalData";
   private Object additionalData;
 
+  public MessageResult() { 
+  }
 
   public MessageResult selectedOption(MessageOption selectedOption) {
     

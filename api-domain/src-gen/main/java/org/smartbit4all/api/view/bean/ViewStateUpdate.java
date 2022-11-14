@@ -46,6 +46,8 @@ public class ViewStateUpdate {
   public static final String STATE = "state";
   private ViewState state = ViewState.TO_OPEN;
 
+  public ViewStateUpdate() { 
+  }
 
   public ViewStateUpdate uuid(UUID uuid) {
     

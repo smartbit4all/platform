@@ -62,6 +62,8 @@ public class ParagraphData {
   public static final String TEXT = "text";
   private String text;
 
+  public ParagraphData() { 
+  }
 
   public ParagraphData id(Integer id) {
     

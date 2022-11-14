@@ -43,6 +43,8 @@ public class FilterOperandValue {
   public static final String VALUE = "value";
   private String value;
 
+  public FilterOperandValue() { 
+  }
 
   public FilterOperandValue type(String type) {
     

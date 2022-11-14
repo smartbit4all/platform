@@ -47,6 +47,8 @@ public class NavigationResponse {
   public static final String REFERENCE_ENTRIES = "referenceEntries";
   private List<NavigationReferenceEntry> referenceEntries = null;
 
+  public NavigationResponse() { 
+  }
 
   public NavigationResponse associationMetaUri(URI associationMetaUri) {
     

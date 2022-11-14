@@ -43,6 +43,8 @@ public class StringValue {
   public static final String VALUE = "value";
   private String value;
 
+  public StringValue() { 
+  }
 
   public StringValue name(String name) {
     

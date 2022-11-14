@@ -43,6 +43,8 @@ public class LongValue {
   public static final String VALUE = "value";
   private Long value;
 
+  public LongValue() { 
+  }
 
   public LongValue name(String name) {
     

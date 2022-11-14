@@ -47,6 +47,8 @@ public class AthenticationResult {
   public static final String TOKEN = "token";
   private String token;
 
+  public AthenticationResult() { 
+  }
 
   public AthenticationResult fullname(String fullname) {
     

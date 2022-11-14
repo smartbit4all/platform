@@ -64,6 +64,8 @@ public class MessageData {
   public static final String OPTIONS = "options";
   private List<MessageOption> options = null;
 
+  public MessageData() { 
+  }
 
   public MessageData uuid(UUID uuid) {
     

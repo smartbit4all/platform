@@ -76,6 +76,8 @@ public class ApplicationRuntimeData {
   public static final String APIS = "apis";
   private List<URI> apis = null;
 
+  public ApplicationRuntimeData() { 
+  }
 
   public ApplicationRuntimeData uri(URI uri) {
     

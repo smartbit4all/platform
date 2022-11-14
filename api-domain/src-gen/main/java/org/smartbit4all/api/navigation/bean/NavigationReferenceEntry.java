@@ -54,6 +54,8 @@ public class NavigationReferenceEntry {
   public static final String ASSOCIATION_ENTRY = "associationEntry";
   private NavigationEntry associationEntry;
 
+  public NavigationReferenceEntry() { 
+  }
 
   public NavigationReferenceEntry id(String id) {
     

@@ -44,6 +44,8 @@ public class UriValue {
   public static final String VALUE = "value";
   private URI value;
 
+  public UriValue() { 
+  }
 
   public UriValue name(String name) {
     

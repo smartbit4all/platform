@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -43,8 +44,10 @@ public class LocalDateTimeValueList {
   private String name;
 
   public static final String VALUES = "values";
-  private List<java.time.LocalDateTime> values = null;
+  private List<LocalDateTime> values = null;
 
+  public LocalDateTimeValueList() { 
+  }
 
   public LocalDateTimeValueList name(String name) {
     
@@ -74,13 +77,13 @@ public class LocalDateTimeValueList {
   }
 
 
-  public LocalDateTimeValueList values(List<java.time.LocalDateTime> values) {
+  public LocalDateTimeValueList values(List<LocalDateTime> values) {
     
     this.values = values;
     return this;
   }
 
-  public LocalDateTimeValueList addValuesItem(java.time.LocalDateTime valuesItem) {
+  public LocalDateTimeValueList addValuesItem(LocalDateTime valuesItem) {
     if (this.values == null) {
       this.values = new ArrayList<>();
     }
@@ -98,14 +101,14 @@ public class LocalDateTimeValueList {
   @JsonProperty(VALUES)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<java.time.LocalDateTime> getValues() {
+  public List<LocalDateTime> getValues() {
     return values;
   }
 
 
   @JsonProperty(VALUES)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setValues(List<java.time.LocalDateTime> values) {
+  public void setValues(List<LocalDateTime> values) {
     this.values = values;
   }
 
