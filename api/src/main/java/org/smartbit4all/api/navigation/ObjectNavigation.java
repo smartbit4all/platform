@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import org.smartbit4all.api.navigation.bean.NavigationAssociationMeta;
@@ -43,7 +44,7 @@ public class ObjectNavigation extends NavigationImpl {
   @Autowired
   StorageApi storageApi;
 
-  private static final String OBJECT_NAVIGATION = "object";
+  public static final String OBJECT_NAVIGATION = "object";
 
   public ObjectNavigation() {
     super(OBJECT_NAVIGATION);
@@ -76,9 +77,7 @@ public class ObjectNavigation extends NavigationImpl {
     }
     NavigationEntryMeta sourceMeta =
         entryMetas.computeIfAbsent(objectDefinition.getQualifiedName(), name -> {
-          return new NavigationEntryMeta().uri(URI.create(OBJECT_NAVIGATION + StringConstant.COLON
-              + StringConstant.SLASH + name.replace(StringConstant.DOT, StringConstant.SLASH)))
-              .name(name);
+          return createNavigationEntryMeta(name);
         });
     return associationMetaUris.parallelStream().map(uri -> {
       ObjectNavigationReference objectNavigationReference =
@@ -96,6 +95,24 @@ public class ObjectNavigation extends NavigationImpl {
           navigateWithStorageApi(objectUri, objectNavigationReference);
       return new NavigationAssocResult(uri, result);
     }).collect(Collectors.toMap(r -> r.uri, r -> r.list));
+  }
+
+  /**
+   * Creates a navigation entry meta based on the definition of the object denoted by the specified
+   * URI.
+   * 
+   * @param objectUri an {@code URI}
+   * @return a {@code NavigationEntryMeta} with its URI based on the provided object URI.
+   */
+  public NavigationEntryMeta createNavigationEntryMeta(URI objectUri) {
+    ObjectDefinition<?> definition = objectApi.definition(objectUri);
+    return createNavigationEntryMeta(definition.getQualifiedName());
+  }
+
+  private NavigationEntryMeta createNavigationEntryMeta(String name) {
+    return new NavigationEntryMeta().uri(URI.create(OBJECT_NAVIGATION + StringConstant.COLON
+        + StringConstant.SLASH + name.replace(StringConstant.DOT, StringConstant.SLASH)))
+        .name(name);
   }
 
   /**
@@ -172,13 +189,18 @@ public class ObjectNavigation extends NavigationImpl {
 
   @Override
   public NavigationEntry getEntry(URI entryMetaUri, URI objectUri) {
-    // TODO Auto-generated method stub
-    return null;
+    NavigationEntryMeta meta = createNavigationEntryMeta(objectUri);
+    return Navigation.entry(
+        meta,
+        objectUri,
+        meta.getName(),
+        null);
   }
 
   @Override
   public Optional<DomainObjectRef> loadObject(URI entryMetaUri, URI objectUri) {
     StorageObject<?> targetObject = storageApi.load(objectUri);
+    Map<String, Object> map = convertMapToTreeMap(targetObject.getObjectAsMap());
     return Optional.of(new DomainObjectRef() {
 
       @Override
@@ -223,13 +245,13 @@ public class ObjectNavigation extends NavigationImpl {
       public Object getValueByPath(String path) {
         if (path != null) {
           String[] pathElements = path.split(StringConstant.SLASH);
-          Map<String, Object> currentObjectMap = targetObject.getObjectAsMap();
+          Map<String, Object> currentObjectMap = map;
           for (int i = 0; i < pathElements.length; i++) {
             String element = pathElements[i];
             if (i != pathElements.length - 1) {
-              Object object = currentObjectMap.get(element);
+              Object object = map.get(element);
               if (object instanceof Map) {
-                currentObjectMap = (Map<String, Object>) object;
+                currentObjectMap = convertMapToTreeMap((Map<String, Object>) object);
               } else {
                 return null;
               }
@@ -238,6 +260,7 @@ public class ObjectNavigation extends NavigationImpl {
             }
           }
         }
+
         return null;
       }
 
@@ -267,4 +290,9 @@ public class ObjectNavigation extends NavigationImpl {
     });
   }
 
+  private Map<String, Object> convertMapToTreeMap(Map<String, Object> source) {
+    Map<String, Object> map = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+    map.putAll(source);
+    return map;
+  }
 }

@@ -116,7 +116,22 @@ public final class NavigationPrimary extends NavigationImpl implements Initializ
    * @return
    */
   private NavigationApi api(URI uri) {
-    return apiByName.get(uri.getScheme());
+    return getApiByScheme(uri.getScheme());
+  }
+
+  /**
+   * Returns the {@code NavigationApi} implementation denoted by the specified scheme.
+   * 
+   * <p>
+   * Useful for acquiring a reference to the {@code ObjectNavigation} managed by this instance.
+   * 
+   * @param scheme the {@code String} scheme denoting the requested navigation API.
+   * @return the {@code NavigationApi} implementation denoted by the given scheme
+   * @see ObjectNavigation
+   * @See {@link ObjectNavigation#OBJECT_NAVIGATION}
+   */
+  public NavigationApi getApiByScheme(String scheme) {
+    return apiByName.get(scheme);
   }
 
   @Override
