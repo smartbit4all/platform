@@ -32,6 +32,8 @@ public enum CommandKind {
   
   WORDEDIT("WordEdit"),
   
+  WORDCOMPARE("WordCompare"),
+  
   EXCELEDIT("ExcelEdit"),
   
   EXECUTECOMMAND("ExecuteCommand"),
