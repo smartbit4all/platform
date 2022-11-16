@@ -266,8 +266,7 @@ public class ObjectNavigation extends NavigationImpl {
 
       @Override
       public Object getValue(String propertyName) {
-        // TODO Auto-generated method stub
-        return null;
+        return getValueByPath(propertyName);
       }
 
       @Override
