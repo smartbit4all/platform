@@ -2,6 +2,7 @@ package org.smartbit4all.api.object;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ReferenceDefinition;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageObject;
@@ -42,10 +44,10 @@ public class RetrievalApiImpl implements RetrievalApi {
     // }
     StorageObject<?> storageObject = storageApi.load(uri);
     ObjectNode objectNode =
-        new ObjectNode(storageObject.definition(), storageObject.getStorage().getScheme());
+        new ObjectNode(storageObject.definition(), storageObject.getStorage().getScheme(),
+            storageObject.getObjectAsMap());
     objectNode.setUri(uri);
     objectNode.setVersionNr(storageObject.getVersion().getSerialNoData());
-    objectNode.setObjectAsMap(storageObject.getObjectAsMap());
     if (result == null) {
       result = new ArrayList<>();
     }
@@ -124,4 +126,25 @@ public class RetrievalApiImpl implements RetrievalApi {
     return load(request, uris.stream()).collect(Collectors.toList());
   }
 
+  @Override
+  public ObjectRetrievalRequest request(URI objectUri, String... paths) {
+    ObjectDefinition<?> definition = objectApi.definition(objectUri);
+    return request(definition, paths);
+  }
+
+  private ObjectRetrievalRequest request(ObjectDefinition<?> definition, String... paths) {
+    ObjectRetrievalRequest request = new ObjectRetrievalRequest(definition);
+    if (paths != null && paths.length > 0) {
+      String path = paths[0];
+      ReferenceDefinition reference = definition.getOutgoingReference(path);
+      if (reference == null) {
+        throw new IllegalArgumentException(
+            "Reference " + path + " not found in " + definition.getAlias() + " objectDefinition.");
+      }
+      String[] subPaths = Arrays.copyOfRange(paths, 1, paths.length);
+      ObjectRetrievalRequest subRequest = request(reference.getTarget(), subPaths);
+      request.getReferences().put(reference, subRequest);
+    }
+    return request;
+  }
 }

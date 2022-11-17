@@ -45,4 +45,6 @@ public interface RetrievalApi {
    */
   <T> ObjectRetrievalRequest request(Class<T> clazz);
 
+  ObjectRetrievalRequest request(URI objectUri, String... path);
+
 }

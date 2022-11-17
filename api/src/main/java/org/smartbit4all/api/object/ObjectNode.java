@@ -1,14 +1,18 @@
 package org.smartbit4all.api.object;
 
 import java.net.URI;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.stream.Stream;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ReferenceDefinition;
+import com.google.common.base.Strings;
 
 /**
  * The object node contains an object returned by the {@link RetrievalApi}. It can manage the state
@@ -43,16 +47,19 @@ public class ObjectNode {
     NEW, MODIFIED, NOP, REMOVED
   }
 
-  ObjectNode(ObjectDefinition<?> definition, String storageScheme) {
+  ObjectNode(ObjectDefinition<?> definition, String storageScheme,
+      Map<String, Object> objectAsMap) {
     super();
     this.definition = definition;
     this.storageScheme = storageScheme;
+    this.objectAsMap = objectAsMap;
   }
 
   public ObjectNode(ObjectDefinition<?> definition, String storageScheme, Object o) {
     super();
     this.definition = definition;
     this.storageScheme = storageScheme;
+    this.objectAsMap = new HashMap<>();
     setObject(o);
   }
 
@@ -75,7 +82,7 @@ public class ObjectNode {
   /**
    * The values of the object by the property names as key.
    */
-  private Map<String, Object> objectAsMap;
+  private final Map<String, Object> objectAsMap;
 
   /**
    * The referred objects.
@@ -114,17 +121,7 @@ public class ObjectNode {
    * @return
    */
   public final Map<String, Object> getObjectAsMap() {
-    initObjectMap();
     return objectAsMap;
-  }
-
-  /**
-   * The read can initiate the {@link #objectAsMap}.
-   * 
-   * @param objectAsMap
-   */
-  final void setObjectAsMap(Map<String, Object> objectAsMap) {
-    this.objectAsMap = objectAsMap;
   }
 
   public final String getStorageScheme() {
@@ -210,15 +207,8 @@ public class ObjectNode {
    * @param values The map of values.
    */
   public void setValues(Map<String, Object> values) {
-    initObjectMap();
     objectAsMap.putAll(values);
     setModified();
-  }
-
-  private void initObjectMap() {
-    if (objectAsMap == null) {
-      objectAsMap = new HashMap<>();
-    }
   }
 
   /**
@@ -228,7 +218,6 @@ public class ObjectNode {
    * @param value The value object.
    */
   public void setValue(String key, Object value) {
-    initObjectMap();
     objectAsMap.put(key, value);
     setModified();
   }
@@ -290,9 +279,10 @@ public class ObjectNode {
    * @return The {@link ObjectNode} belong to the given reference. If the reference is not loaded
    *         then we get null.
    */
-  public ObjectNode referenceNodeInitIfAbsent(ReferenceDefinition reference, String storageScheme) {
+  public ObjectNode referenceNodeInitIfAbsent(ReferenceDefinition reference, String storageScheme,
+      Object o) {
     return referenceValues.computeIfAbsent(reference,
-        r -> new ObjectNode(r.getTarget(), storageScheme));
+        r -> new ObjectNode(r.getTarget(), storageScheme, o));
   }
 
   /**
@@ -332,8 +322,7 @@ public class ObjectNode {
    * @param storageScheme The storage schema for the object to set.
    */
   public <T> void setReference(ReferenceDefinition reference, Object o, String storageScheme) {
-    ObjectNode objectNode = referenceNodeInitIfAbsent(reference, storageScheme);
-    objectNode.setObject(o);
+    ObjectNode objectNode = referenceNodeInitIfAbsent(reference, storageScheme, o);
   }
 
   /**
@@ -399,4 +388,83 @@ public class ObjectNode {
     this.versionNr = versionNr;
   }
 
+  public Object getValue(String... paths) {
+    if (paths != null && paths.length > 0) {
+      String path = paths[0];
+      if (Strings.isNullOrEmpty(path)) {
+        throw new IllegalArgumentException("Path part cannot be null or empty");
+      }
+      Optional<ObjectNode> nodeOnPath = referenceValues.entrySet().stream()
+          .filter(e -> e.getKey().getSourcePropertyPath().equals(path))
+          .map(Entry::getValue)
+          .findAny();
+      if (nodeOnPath.isPresent()) {
+        String[] subPaths = Arrays.copyOfRange(paths, 1, paths.length);
+        return nodeOnPath.get().getValue(subPaths);
+      }
+      Optional<ReferenceListEntry> listOnPath = referenceListValues.entrySet().stream()
+          .filter(e -> e.getKey().getSourcePropertyPath().equals(path))
+          .map(Entry::getValue)
+          .findAny();
+      if (listOnPath.isPresent()) {
+        List<ObjectNode> nodeList = listOnPath.get().getPublicNodeList();
+        if (paths.length == 1) {
+          return nodeList;
+        }
+        String idxString = paths[1];
+        try {
+          Integer idx = Integer.valueOf(idxString);
+          String[] subPaths = Arrays.copyOfRange(paths, 2, paths.length);
+          return nodeList.get(idx).getValue(subPaths);
+        } catch (NumberFormatException ex1) {
+          throw new IllegalArgumentException("List index is not a number: "
+              + path + "(" + idxString + ")");
+        } catch (IndexOutOfBoundsException ex2) {
+          throw new IllegalArgumentException("List item not found by index: "
+              + path + "(" + idxString + ")");
+        }
+      }
+      Optional<ReferenceMapEntry> mapOnPath = referenceMapValues.entrySet().stream()
+          .filter(e -> e.getKey().getSourcePropertyPath().equals(path))
+          .map(Entry::getValue)
+          .findAny();
+      if (mapOnPath.isPresent()) {
+        Map<String, ObjectNode> nodeMap = mapOnPath.get().getPublicNodeMap();
+        if (paths.length == 1) {
+          return nodeMap;
+        }
+        String key = paths[1];
+        if (nodeMap.containsKey(key)) {
+          String[] subPaths = Arrays.copyOfRange(paths, 2, paths.length);
+          return nodeMap.get(key).getValue(subPaths);
+        }
+        throw new IllegalArgumentException(
+            "Map item not found by index: " + path + "(" + key + ")");
+      }
+      return getValueFromObjectMap(objectAsMap, paths);
+    }
+    return this;
+  }
+
+  // public Object getValueFromObjectMap(String... paths) {
+  // return getValueFromObjectMap(objectAsMap, paths);
+  // }
+
+  private Object getValueFromObjectMap(Map<String, Object> map, String... paths) {
+    if (paths != null && paths.length > 0) {
+      String path = paths[0];
+      Object value = map.get(path);
+      if (paths.length == 1) {
+        return value;
+      }
+      if (value != null && value instanceof Map) {
+        @SuppressWarnings("unchecked")
+        Map<String, Object> subMap = (Map<String, Object>) value;
+        String[] subPaths = Arrays.copyOfRange(paths, 2, paths.length);
+        return getValueFromObjectMap(subMap, subPaths);
+      }
+      return null;
+    }
+    return map;
+  }
 }
