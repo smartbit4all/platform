@@ -8,11 +8,9 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.springframework.util.StreamUtils;
 
 public class TestFileUtil {
@@ -47,21 +45,19 @@ public class TestFileUtil {
     testFsRootFolder().delete();
   }
 
-  private static Set<String> gitFilesToKeep =
-      Stream.of(".keep", ".gitignore")
-          .collect(Collectors.toCollection(HashSet::new));
+  private static Collection<String> gitFilesToKeep = Arrays.asList(".keep", ".gitignore");
 
   public static void clearGitDir(File dir) throws IOException {
     clearDir(dir, gitFilesToKeep);
   }
 
-  public static void clearDir(File dir, Set<String> filesToKeep) throws IOException {
+  public static void clearDir(File dir, Collection<String> filesToKeep) throws IOException {
     if (dir == null || !dir.exists()) {
       return;
     }
 
     for (File file : dir.listFiles()) {
-      if (!gitFilesToKeep.contains(file.getName())) {
+      if (!filesToKeep.contains(file.getName())) {
         Files.walk(file.toPath())
             .sorted(Comparator.reverseOrder())
             .map(Path::toFile)
