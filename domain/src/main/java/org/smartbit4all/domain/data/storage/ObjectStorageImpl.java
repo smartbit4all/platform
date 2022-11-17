@@ -1,6 +1,7 @@
 package org.smartbit4all.domain.data.storage;
 
 import java.net.URI;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -197,7 +198,7 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
   @Override
   public <T> List<T> readAll(Storage storage, String setName, Class<T> clazz) {
     // By default it won't return anything. The management of the set is an extra functionality.
-    return null;
+    return Collections.emptyList();
   }
 
   @Override

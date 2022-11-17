@@ -10,9 +10,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
-import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
@@ -117,7 +117,7 @@ public class OrgApiStorageImpl implements OrgApi {
   /**
    * Invalidate the cache after modification.
    */
-  private final void invalidateCache() {
+  private final synchronized void invalidateCache() {
     groupsOfUserCache.invalidateAll();
     usersOfGroupCache.invalidateAll();
     groupByNameCache.invalidateAll();
@@ -164,6 +164,7 @@ public class OrgApiStorageImpl implements OrgApi {
         }
       }
     }
+
     return result;
   }
 

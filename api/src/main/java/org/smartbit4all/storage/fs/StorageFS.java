@@ -571,6 +571,8 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
     URI uriWithoutVersion = getUriWithoutVersion(uri);
     File storageObjectDataFile = getObjectDataFile(uriWithoutVersion);
     if (!storageObjectDataFile.exists()) {
+      // System.out.println("Object data file not found:" + storageObjectDataFile.getPath() + " ("
+      // + uriWithoutVersion + ")");
       throw new ObjectNotFoundException(uri, clazz, "Object data file not found.");
     }
     if (uriWithoutVersion.getPath().endsWith(Storage.SINGLE_VERSION_URI_POSTFIX)
@@ -643,8 +645,9 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
 
     String storageScheme = getStorageScheme(storage);
     String setPath = StringConstant.SLASH + objectDefinition.getAlias()
-        + StringConstant.SLASH
-        + setName;
+        + (Strings.isBlank(setName) ? StringConstant.EMPTY
+            : StringConstant.SLASH
+                + setName);
     File setFolder =
         new File(rootFolder,
             storageScheme + setPath);
