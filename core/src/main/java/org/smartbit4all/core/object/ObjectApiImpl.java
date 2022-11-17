@@ -208,6 +208,7 @@ public class ObjectApiImpl implements ObjectApi, InitializingBean {
     ObjectDefinition<T> objectDefinition = (ObjectDefinition<T>) definitionsByClass.get(clazz);
     if (objectDefinition == null) {
       objectDefinition = constructDefinition(clazz);
+      definitionsByClass.put(clazz, objectDefinition);
       definitionsByAlias.put(objectDefinition.getAlias(), objectDefinition);
     }
 
