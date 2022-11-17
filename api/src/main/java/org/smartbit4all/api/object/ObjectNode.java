@@ -2,6 +2,7 @@ package org.smartbit4all.api.object;
 
 import java.net.URI;
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -350,11 +351,9 @@ public class ObjectNode {
    *         necessary.
    */
   public List<ObjectNode> referenceNodeList(ReferenceDefinition reference) {
-    ReferenceListEntry referenceListEntry = referenceListValues.get(reference);
-    if (referenceListEntry != null) {
-      return referenceListEntry.getPublicNodeList();
-    }
-    return Collections.emptyList();
+    ReferenceListEntry referenceListEntry = referenceListValues.computeIfAbsent(reference,
+        r -> new ReferenceListEntry(new ArrayList<>()));
+    return referenceListEntry.getPublicNodeList();
   }
 
   /**

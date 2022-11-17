@@ -365,6 +365,17 @@ public final class Storage {
     return objectStorage.readAll(this, setName, clazz);
   }
 
+  /**
+   * Use it carefully it will read all the objects with the given class.
+   * 
+   * @param <T>
+   * @param clazz The data bean we are looking for.
+   * @return All the objects from the storage.
+   */
+  public <T> List<T> readAll(Class<T> clazz) {
+    return objectStorage.readAll(this, null, clazz);
+  }
+
   public boolean exists(URI uri) {
     return objectStorage.exists(uri);
   }
