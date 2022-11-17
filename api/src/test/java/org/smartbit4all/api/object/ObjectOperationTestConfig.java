@@ -1,6 +1,8 @@
 package org.smartbit4all.api.object;
 
 import org.smartbit4all.api.config.PlatformApiConfig;
+import org.smartbit4all.api.object.bean.AggregationKind;
+import org.smartbit4all.api.object.bean.ReferencePropertyKind;
 import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.org.bean.GroupsOfUser;
 import org.smartbit4all.api.org.bean.User;
@@ -34,10 +36,12 @@ public class ObjectOperationTestConfig {
 
   @Bean
   public ObjectReferenceConfigs refDefs() {
-    return new ObjectReferenceConfigs().ref(GroupsOfUser.class.getName(),
-        GroupsOfUser.USER_URI, User.class.getName(), true)
-        .ref(GroupsOfUser.class.getName(), GroupsOfUser.GROUPS, Group.class.getName(), true);
-    // .ref(GroupsOfUser.class.getName(), "primaryGroup", Group.class.getName(), true);
+    return new ObjectReferenceConfigs()
+        .ref(GroupsOfUser.class, GroupsOfUser.USER_URI, User.class,
+            ReferencePropertyKind.REFERENCE, AggregationKind.COMPOSITE)
+        .ref(GroupsOfUser.class, GroupsOfUser.GROUPS, Group.class,
+            ReferencePropertyKind.LIST, AggregationKind.COMPOSITE);
+    // .ref(GroupsOfUser.class, "primaryGroup", Group.class, true);
   }
 
 }

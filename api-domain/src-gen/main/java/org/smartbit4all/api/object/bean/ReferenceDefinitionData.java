@@ -23,7 +23,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
-import org.smartbit4all.api.object.bean.ObjectReferenceDefinitionData;
+import org.smartbit4all.api.object.bean.AggregationKind;
+import org.smartbit4all.api.object.bean.ReferencePropertyKind;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -35,10 +36,12 @@ import javax.validation.Valid;
 @ApiModel(description = "The reference definition is a directed navigation between objects. Its name is unique inside the source object that can have only one outgoing reference with the same name. In the target object the source object and the name is unique together but the name itself is not enough to identify an incoming reference. ")
 @JsonPropertyOrder({
   ReferenceDefinitionData.URI,
-  ReferenceDefinitionData.CONTAINMENT,
   ReferenceDefinitionData.BACK_REFERENCE,
-  ReferenceDefinitionData.SOURCE,
-  ReferenceDefinitionData.TARGET_OBJECT_NAME
+  ReferenceDefinitionData.SOURCE_OBJECT_NAME,
+  ReferenceDefinitionData.PROPERTY_PATH,
+  ReferenceDefinitionData.TARGET_OBJECT_NAME,
+  ReferenceDefinitionData.AGGREGATION,
+  ReferenceDefinitionData.PROPERTY_KIND
 })
 @JsonTypeName("ReferenceDefinitionData")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -46,17 +49,23 @@ public class ReferenceDefinitionData {
   public static final String URI = "uri";
   private URI uri;
 
-  public static final String CONTAINMENT = "containment";
-  private Boolean containment;
-
   public static final String BACK_REFERENCE = "backReference";
   private URI backReference;
 
-  public static final String SOURCE = "source";
-  private ObjectReferenceDefinitionData source;
+  public static final String SOURCE_OBJECT_NAME = "sourceObjectName";
+  private String sourceObjectName;
+
+  public static final String PROPERTY_PATH = "propertyPath";
+  private String propertyPath;
 
   public static final String TARGET_OBJECT_NAME = "targetObjectName";
   private String targetObjectName;
+
+  public static final String AGGREGATION = "aggregation";
+  private AggregationKind aggregation = AggregationKind.NONE;
+
+  public static final String PROPERTY_KIND = "propertyKind";
+  private ReferencePropertyKind propertyKind;
 
   public ReferenceDefinitionData() { 
   }
@@ -90,33 +99,6 @@ public class ReferenceDefinitionData {
   }
 
 
-  public ReferenceDefinitionData containment(Boolean containment) {
-    
-    this.containment = containment;
-    return this;
-  }
-
-   /**
-   * The containment means that the source contains the target object. The target object is accessible only from the source. 
-   * @return containment
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "The containment means that the source contains the target object. The target object is accessible only from the source. ")
-  @JsonProperty(CONTAINMENT)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Boolean getContainment() {
-    return containment;
-  }
-
-
-  @JsonProperty(CONTAINMENT)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setContainment(Boolean containment) {
-    this.containment = containment;
-  }
-
-
   public ReferenceDefinitionData backReference(URI backReference) {
     
     this.backReference = backReference;
@@ -145,31 +127,59 @@ public class ReferenceDefinitionData {
   }
 
 
-  public ReferenceDefinitionData source(ObjectReferenceDefinitionData source) {
+  public ReferenceDefinitionData sourceObjectName(String sourceObjectName) {
     
-    this.source = source;
+    this.sourceObjectName = sourceObjectName;
     return this;
   }
 
    /**
-   * Get source
-   * @return source
+   * The name of the target object.
+   * @return sourceObjectName
   **/
-  @javax.annotation.Nullable
-  @Valid
-  @ApiModelProperty(value = "")
-  @JsonProperty(SOURCE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @javax.annotation.Nonnull
+  @NotNull
+  @ApiModelProperty(required = true, value = "The name of the target object.")
+  @JsonProperty(SOURCE_OBJECT_NAME)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public ObjectReferenceDefinitionData getSource() {
-    return source;
+  public String getSourceObjectName() {
+    return sourceObjectName;
   }
 
 
-  @JsonProperty(SOURCE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setSource(ObjectReferenceDefinitionData source) {
-    this.source = source;
+  @JsonProperty(SOURCE_OBJECT_NAME)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setSourceObjectName(String sourceObjectName) {
+    this.sourceObjectName = sourceObjectName;
+  }
+
+
+  public ReferenceDefinitionData propertyPath(String propertyPath) {
+    
+    this.propertyPath = propertyPath;
+    return this;
+  }
+
+   /**
+   * The descriptor of a property in a domain object. If there is a simple property then we have only the path. The path is a navigation path to identify the property in the object or in its contained objects. The path can be \&quot;parent\&quot; if the parent property is directly a property inside the object. It can be myContained/parent if it is the propery of the myContained object. The property must be an uri or unique identifier to be able to  access the object directly by its value. If we have an array the the array path contains the path of the array property in the same way. The array must contains uri / identifier values. 
+   * @return propertyPath
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @ApiModelProperty(required = true, value = "The descriptor of a property in a domain object. If there is a simple property then we have only the path. The path is a navigation path to identify the property in the object or in its contained objects. The path can be \"parent\" if the parent property is directly a property inside the object. It can be myContained/parent if it is the propery of the myContained object. The property must be an uri or unique identifier to be able to  access the object directly by its value. If we have an array the the array path contains the path of the array property in the same way. The array must contains uri / identifier values. ")
+  @JsonProperty(PROPERTY_PATH)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public String getPropertyPath() {
+    return propertyPath;
+  }
+
+
+  @JsonProperty(PROPERTY_PATH)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setPropertyPath(String propertyPath) {
+    this.propertyPath = propertyPath;
   }
 
 
@@ -183,10 +193,11 @@ public class ReferenceDefinitionData {
    * The name of the target object.
    * @return targetObjectName
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "The name of the target object.")
+  @javax.annotation.Nonnull
+  @NotNull
+  @ApiModelProperty(required = true, value = "The name of the target object.")
   @JsonProperty(TARGET_OBJECT_NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public String getTargetObjectName() {
     return targetObjectName;
@@ -194,9 +205,66 @@ public class ReferenceDefinitionData {
 
 
   @JsonProperty(TARGET_OBJECT_NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setTargetObjectName(String targetObjectName) {
     this.targetObjectName = targetObjectName;
+  }
+
+
+  public ReferenceDefinitionData aggregation(AggregationKind aggregation) {
+    
+    this.aggregation = aggregation;
+    return this;
+  }
+
+   /**
+   * Get aggregation
+   * @return aggregation
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @Valid
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(AGGREGATION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public AggregationKind getAggregation() {
+    return aggregation;
+  }
+
+
+  @JsonProperty(AGGREGATION)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setAggregation(AggregationKind aggregation) {
+    this.aggregation = aggregation;
+  }
+
+
+  public ReferenceDefinitionData propertyKind(ReferencePropertyKind propertyKind) {
+    
+    this.propertyKind = propertyKind;
+    return this;
+  }
+
+   /**
+   * Get propertyKind
+   * @return propertyKind
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(PROPERTY_KIND)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public ReferencePropertyKind getPropertyKind() {
+    return propertyKind;
+  }
+
+
+  @JsonProperty(PROPERTY_KIND)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setPropertyKind(ReferencePropertyKind propertyKind) {
+    this.propertyKind = propertyKind;
   }
 
 
@@ -210,15 +278,17 @@ public class ReferenceDefinitionData {
     }
     ReferenceDefinitionData referenceDefinitionData = (ReferenceDefinitionData) o;
     return Objects.equals(this.uri, referenceDefinitionData.uri) &&
-        Objects.equals(this.containment, referenceDefinitionData.containment) &&
         Objects.equals(this.backReference, referenceDefinitionData.backReference) &&
-        Objects.equals(this.source, referenceDefinitionData.source) &&
-        Objects.equals(this.targetObjectName, referenceDefinitionData.targetObjectName);
+        Objects.equals(this.sourceObjectName, referenceDefinitionData.sourceObjectName) &&
+        Objects.equals(this.propertyPath, referenceDefinitionData.propertyPath) &&
+        Objects.equals(this.targetObjectName, referenceDefinitionData.targetObjectName) &&
+        Objects.equals(this.aggregation, referenceDefinitionData.aggregation) &&
+        Objects.equals(this.propertyKind, referenceDefinitionData.propertyKind);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, containment, backReference, source, targetObjectName);
+    return Objects.hash(uri, backReference, sourceObjectName, propertyPath, targetObjectName, aggregation, propertyKind);
   }
 
   @Override
@@ -226,10 +296,12 @@ public class ReferenceDefinitionData {
     StringBuilder sb = new StringBuilder();
     sb.append("class ReferenceDefinitionData {\n");
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
-    sb.append("    containment: ").append(toIndentedString(containment)).append("\n");
     sb.append("    backReference: ").append(toIndentedString(backReference)).append("\n");
-    sb.append("    source: ").append(toIndentedString(source)).append("\n");
+    sb.append("    sourceObjectName: ").append(toIndentedString(sourceObjectName)).append("\n");
+    sb.append("    propertyPath: ").append(toIndentedString(propertyPath)).append("\n");
     sb.append("    targetObjectName: ").append(toIndentedString(targetObjectName)).append("\n");
+    sb.append("    aggregation: ").append(toIndentedString(aggregation)).append("\n");
+    sb.append("    propertyKind: ").append(toIndentedString(propertyKind)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -30,8 +30,6 @@ public final class ObjectDefinition<T> {
    */
   private Class<T> clazz;
 
-  private boolean newlyCreated = true;
-
   /**
    * The URI property of the object. The URI is the unique identifier and storage locator of the
    * given object. It's mandatory if we would like to use it as storage root object.
@@ -259,14 +257,6 @@ public final class ObjectDefinition<T> {
   public final ObjectSummarySupplier<T> getSummarySupplier(String name) {
     ObjectSummarySupplier<T> supplier = summariesByName.get(name);
     return supplier == null ? summariesByName.get(ObjectSummarySupplier.DEFAULT) : supplier;
-  }
-
-  final boolean isNewlyCreated() {
-    return newlyCreated;
-  }
-
-  final void setNewlyCreated(boolean newlyCreated) {
-    this.newlyCreated = newlyCreated;
   }
 
   public final boolean isExplicitUri() {

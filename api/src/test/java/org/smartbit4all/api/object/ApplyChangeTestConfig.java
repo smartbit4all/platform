@@ -2,6 +2,8 @@ package org.smartbit4all.api.object;
 
 import org.smartbit4all.api.binarydata.BinaryContent;
 import org.smartbit4all.api.config.PlatformApiConfig;
+import org.smartbit4all.api.object.bean.AggregationKind;
+import org.smartbit4all.api.object.bean.ReferencePropertyKind;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.sample.bean.SampleAttachement;
 import org.smartbit4all.api.sample.bean.SampleCategory;
@@ -39,22 +41,42 @@ public class ApplyChangeTestConfig {
 
   @Bean
   public ObjectReferenceConfigs refDefs() {
-    return new ObjectReferenceConfigs().ref(SampleCategory.class.getName(),
-        SampleCategory.SUB_CATEGORIES, SampleCategory.class.getName(), false)
-        .ref(SampleCategory.class.getName(),
-            SampleCategory.CONTAINER_ITEMS, SampleContainerItem.class.getName(), false)
-        .ref(SampleCategory.class.getName(),
-            SHADOW_ITEMS, SampleContainerItem.class.getName(), false)
-        .ref(SampleContainerItem.class.getName(),
-            SampleContainerItem.USER_URI, User.class.getName(), false)
-        .ref(SampleContainerItem.class.getName(),
-            SampleContainerItem.ATTACHMENTS, SampleAttachement.class.getName(), true)
-        .ref(SampleContainerItem.class.getName(),
-            SampleContainerItem.MAIN_DOCUMENT, SampleAttachement.class.getName(), true)
-        .ref(SampleContainerItem.class.getName(),
-            SampleContainerItem.DATASHEET, SampleDataSheet.class.getName(), true)
-        .ref(SampleAttachement.class.getName(),
-            SampleAttachement.CONTENT, BinaryContent.class.getName(), false);
+    return new ObjectReferenceConfigs()
+        .ref(SampleCategory.class,
+            SampleCategory.SUB_CATEGORIES,
+            SampleCategory.class,
+            ReferencePropertyKind.LIST)
+        .ref(SampleCategory.class,
+            SampleCategory.CONTAINER_ITEMS,
+            SampleContainerItem.class,
+            ReferencePropertyKind.LIST)
+        .ref(SampleCategory.class,
+            SHADOW_ITEMS,
+            SampleContainerItem.class,
+            ReferencePropertyKind.LIST)
+        .ref(SampleContainerItem.class,
+            SampleContainerItem.USER_URI,
+            User.class,
+            ReferencePropertyKind.REFERENCE)
+        .ref(SampleContainerItem.class,
+            SampleContainerItem.ATTACHMENTS,
+            SampleAttachement.class,
+            ReferencePropertyKind.LIST,
+            AggregationKind.COMPOSITE)
+        .ref(SampleContainerItem.class,
+            SampleContainerItem.MAIN_DOCUMENT,
+            SampleAttachement.class,
+            ReferencePropertyKind.REFERENCE,
+            AggregationKind.COMPOSITE)
+        .ref(SampleContainerItem.class,
+            SampleContainerItem.DATASHEET,
+            SampleDataSheet.class,
+            ReferencePropertyKind.REFERENCE,
+            AggregationKind.COMPOSITE)
+        .ref(SampleAttachement.class,
+            SampleAttachement.CONTENT,
+            BinaryContent.class,
+            ReferencePropertyKind.REFERENCE);
   }
 
 }

@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.smartbit4all.api.contribution.ContributionApiImpl;
+import org.smartbit4all.api.object.bean.AggregationKind;
 import org.smartbit4all.core.object.ReferenceDefinition;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
@@ -43,7 +44,7 @@ public class CopyContributionApiStorageImpl extends ContributionApiImpl
     // Follow the outgoing references and copy them.
     for (ReferenceDefinition ref : storageObject.definition()
         .getOutgoingReferences().values()) {
-      if (ref.isContainment()) {
+      if (ref.getAggregation() == AggregationKind.COMPOSITE) {
         Object target = ref.getSourceValue(storageObject.getObjectAsMap());
         switch (ref.getSourceKind()) {
           case VALUE:

@@ -2,8 +2,9 @@ package org.smartbit4all.core.object;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.smartbit4all.api.object.bean.ObjectReferenceDefinitionData;
+import org.smartbit4all.api.object.bean.AggregationKind;
 import org.smartbit4all.api.object.bean.ReferenceDefinitionData;
+import org.smartbit4all.api.object.bean.ReferencePropertyKind;
 
 /**
  * The object reference configuration is a bean to be used to define the references via
@@ -30,21 +31,28 @@ public class ObjectReferenceConfigs {
     return configs;
   }
 
+  public ObjectReferenceConfigs ref(Class<?> source, String propertyPath, Class<?> target,
+      ReferencePropertyKind propertyKind) {
+    return ref(source, propertyPath, target, propertyKind, AggregationKind.NONE);
+  }
+
   /**
    * Adds a new reference to the configuration. To understand the configuration see
    * {@link ReferenceDefinitionData} and its belongings.
    * 
-   * @param sourceObjectName The name of the source object.
-   * @param referPropertyPath The path of the property.
-   * @param targetObjectName The target object that is identified by its uri property by default.
-   * @return This because it is a builder api.
+   * @param source Class of the source object.
+   * @param propertyPath The path of the property.
+   * @param target Class of the target object that is identified by its uri property by default.
+   * @return this for fluent use.
    */
-  public ObjectReferenceConfigs ref(String sourceObjectName, String referPropertyPath,
-      String targetObjectName, boolean contained) {
-    configs.add(new ReferenceDefinitionData().source(new ObjectReferenceDefinitionData()
-        .objectName(sourceObjectName).propertyPath(referPropertyPath))
-        .targetObjectName(targetObjectName)
-        .containment(contained));
+  public ObjectReferenceConfigs ref(Class<?> source, String propertyPath, Class<?> target,
+      ReferencePropertyKind propertyKind, AggregationKind aggregation) {
+    configs.add(new ReferenceDefinitionData()
+        .sourceObjectName(source.getName())
+        .propertyPath(propertyPath)
+        .propertyKind(propertyKind)
+        .targetObjectName(target.getName())
+        .aggregation(aggregation));
     return this;
   }
 

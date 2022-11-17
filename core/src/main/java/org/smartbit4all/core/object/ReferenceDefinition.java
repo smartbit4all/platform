@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.object.bean.AggregationKind;
 import org.smartbit4all.api.object.bean.ReferenceDefinitionData;
 import org.smartbit4all.core.object.PropertyMeta.PropertyKind;
 
@@ -118,7 +119,7 @@ public class ReferenceDefinition {
   }
 
   public final String getSourcePropertyPath() {
-    return data.getSource().getPropertyPath();
+    return data.getPropertyPath();
   }
 
   public final ObjectDefinition<?> getTarget() {
@@ -129,8 +130,8 @@ public class ReferenceDefinition {
     this.target = target;
   }
 
-  public boolean isContainment() {
-    return data.getContainment();
+  public AggregationKind getAggregation() {
+    return data.getAggregation();
   }
 
 }

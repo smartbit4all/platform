@@ -114,79 +114,71 @@ public class ObjectApiImpl implements ObjectApi, InitializingBean {
 
   @Override
   public void afterPropertiesSet() throws Exception {
-    // Pre process the serializers.
-    preProcessSerializers();
-    // Pre process the summary suppliers.
-    preProcessSummaries();
-
+    initSerializers();
+    initSummarySuppliers();
     defaultSerializer = serializersByName.get(defaultSerializerName);
-
-    preProcessDefinitions();
-
-    // Manage the references.
-    preProcessReferences();
+    initObjectDefinitions();
+    initObjectReferences();
   }
 
-  private void preProcessReferences() {
+  private void initObjectReferences() {
     if (referenceConfigsList != null) {
       for (ObjectReferenceConfigs referenceConfigs : referenceConfigsList) {
-        for (ReferenceDefinitionData referenceDefinitionData : referenceConfigs.getConfigs()) {
-          ObjectDefinition<?> source =
-              definition(referenceDefinitionData.getSource().getObjectName());
-          ObjectDefinition<?> target =
-              definition(referenceDefinitionData.getTargetObjectName());
-          ReferenceDefinition referenceDefinition =
-              new ReferenceDefinition(referenceDefinitionData);
+        for (ReferenceDefinitionData refData : referenceConfigs.getConfigs()) {
+          ObjectDefinition<?> source = definition(refData.getSourceObjectName());
+          ObjectDefinition<?> target = definition(refData.getTargetObjectName());
+          ReferenceDefinition referenceDefinition = new ReferenceDefinition(refData);
           referenceDefinition.setSource(source);
           referenceDefinition.setTarget(target);
-          source.getOutgoingReferences().put(referenceDefinitionData.getSource().getPropertyPath(),
+          source.getOutgoingReferences().put(refData.getPropertyPath(),
               referenceDefinition);
           Map<String, ReferenceDefinition> incomingFromThisSource = target.getIncomingReferences()
-              .computeIfAbsent(referenceDefinitionData.getSource().getObjectName(),
+              .computeIfAbsent(refData.getSourceObjectName(),
                   s -> new HashMap<>());
-          incomingFromThisSource.put(referenceDefinitionData.getSource().getPropertyPath(),
+          incomingFromThisSource.put(refData.getPropertyPath(),
               referenceDefinition);
         }
       }
     }
   }
 
-  private final void preProcessDefinitions() {
+  private final void initObjectDefinitions() {
     if (definitions != null) {
       for (ObjectDefinition<?> objectDefinition : definitions) {
-        if (objectDefinition.getDefaultSerializer() == null) {
-          if (objectDefinition.getPreferredSerializerName() != null) {
-            // Try to retrieve the preferred serializer.
-            ObjectSerializer objectSerializer =
-                serializersByName.get(objectDefinition.getPreferredSerializerName());
-            objectDefinition.setDefaultSerializer(objectSerializer);
-          }
-          // If it's still empty then use the global default
-          if (objectDefinition.getDefaultSerializer() == null) {
-            objectDefinition.setDefaultSerializer(defaultSerializer);
-          }
-        }
-        if (objectDefinition.getUriGetter() == null || objectDefinition.getUriSetter() == null) {
-          setupUri(objectDefinition);
-        }
-        if (objectDefinition.getIdGetter() == null || objectDefinition.getIdSetter() == null) {
-          setupId(objectDefinition);
-        }
-        if (objectDefinition.getAlias() == null) {
-          objectDefinition.setAlias(getDefaultAlias(objectDefinition.getClazz()));
-        }
-        objectDefinition
-            .setupSummariesByName(summarySuppliersByClass.get(objectDefinition.getClazz()));
-
+        initObjectDefinition(objectDefinition);
         definitionsByClass.put(objectDefinition.getClazz(), objectDefinition);
         definitionsByAlias.put(objectDefinition.getAlias(), objectDefinition);
-
-        objectDefinition.setNewlyCreated(false);
       }
     }
   }
 
-  private void preProcessSummaries() {
+  private void initObjectDefinition(ObjectDefinition<?> objectDefinition) {
+    if (objectDefinition.getDefaultSerializer() == null) {
+      if (objectDefinition.getPreferredSerializerName() != null) {
+        // Try to retrieve the preferred serializer.
+        ObjectSerializer objectSerializer =
+            serializersByName.get(objectDefinition.getPreferredSerializerName());
+        objectDefinition.setDefaultSerializer(objectSerializer);
+      }
+      // If it's still empty then use the global default
+      if (objectDefinition.getDefaultSerializer() == null) {
+        objectDefinition.setDefaultSerializer(defaultSerializer);
+      }
+    }
+    if (objectDefinition.getUriGetter() == null || objectDefinition.getUriSetter() == null) {
+      setupUri(objectDefinition);
+    }
+    if (objectDefinition.getIdGetter() == null || objectDefinition.getIdSetter() == null) {
+      setupId(objectDefinition);
+    }
+    if (objectDefinition.getAlias() == null) {
+      objectDefinition.setAlias(getDefaultAlias(objectDefinition.getClazz()));
+    }
+    objectDefinition
+        .setupSummariesByName(summarySuppliersByClass.get(objectDefinition.getClazz()));
+  }
+
+  private void initSummarySuppliers() {
     if (summarySuppliers != null) {
       for (ObjectSummarySupplier<?> summarySupplier : summarySuppliers) {
         Map<String, ObjectSummarySupplier<?>> suppliers = summarySuppliersByClass
@@ -202,7 +194,7 @@ public class ObjectApiImpl implements ObjectApi, InitializingBean {
     }
   }
 
-  private final void preProcessSerializers() {
+  private final void initSerializers() {
     if (serializers != null) {
       for (ObjectSerializer objectSerializer : serializers) {
         serializersByName.put(objectSerializer.getName(), objectSerializer);
@@ -213,12 +205,10 @@ public class ObjectApiImpl implements ObjectApi, InitializingBean {
   @SuppressWarnings("unchecked")
   @Override
   public <T> ObjectDefinition<T> definition(Class<T> clazz) {
-    ObjectDefinition<T> objectDefinition =
-        (ObjectDefinition<T>) definitionsByClass.computeIfAbsent(clazz,
-            this::constructDefinition);
-    if (objectDefinition.isNewlyCreated()) {
+    ObjectDefinition<T> objectDefinition = (ObjectDefinition<T>) definitionsByClass.get(clazz);
+    if (objectDefinition == null) {
+      objectDefinition = constructDefinition(clazz);
       definitionsByAlias.put(objectDefinition.getAlias(), objectDefinition);
-      objectDefinition.setNewlyCreated(false);
     }
 
     return objectDefinition;
