@@ -62,6 +62,7 @@ public class ObjectNode {
         .qualifiedName(definition.getQualifiedName()) // TODO Alias?
         .storageSchema(storageScheme)
         .objectAsMap(definition.toMap(o))
+        .state(ObjectNodeState.NEW)
         .versionNr(null);
     // TODO Auto-generated constructor stub
     initNodeMaps();

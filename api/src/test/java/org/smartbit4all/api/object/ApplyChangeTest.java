@@ -1,6 +1,7 @@
 package org.smartbit4all.api.object;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
@@ -38,18 +39,16 @@ class ApplyChangeTest {
   @Test
   void testApplyChange() {
 
-    String referenceToItems = SampleCategory.CONTAINER_ITEMS;
     ObjectDefinition<SampleCategory> definition = objectApi.definition(SampleCategory.class);
-    ObjectDefinition<SampleContainerItem> definitionItem =
-        objectApi.definition(SampleContainerItem.class);
-    SampleCategoryResult categoryResult = constructSampleCategory(referenceToItems);
+    SampleCategoryResult categoryResult = constructSampleCategory(SampleCategory.CONTAINER_ITEMS);
 
     ApplyChangeResult result = categoryResult.result;
 
-    ObjectRetrievalRequest request = retrievalApi.request(SampleCategory.class);
-    request.loadBy(definition.getOutgoingReferences().get(referenceToItems));
+    ObjectRetrievalRequest request = retrievalApi.request(
+        categoryResult.uri, SampleCategory.CONTAINER_ITEMS, SampleContainerItem.DATASHEET);
+    // request.loadBy(definition.getOutgoingReferences().get(referenceToItems));
     request.loadBy(definition.getOutgoingReference(SampleCategory.SUB_CATEGORIES));
-    request.loadBy(definitionItem.getOutgoingReference(SampleContainerItem.DATASHEET));
+    // request.loadBy(definitionItem.getOutgoingReference(SampleContainerItem.DATASHEET));
     ObjectNode objectNode = retrievalApi.load(request, categoryResult.uri);
 
     ObjectProperties objectProperties =
@@ -67,10 +66,18 @@ class ApplyChangeTest {
 
     List<ObjectNode> subCategoryNodes = objectNode.referenceNodeList(SampleCategory.SUB_CATEGORIES);
 
-    subCategoryNodes.get(0).setValue(SampleCategory.NAME, "modified sub category");
+    ObjectNode subCatNode = subCategoryNodes.get(0);
+    subCatNode.setValue(SampleCategory.NAME, "modified sub category");
+    SampleCategory modifiedSubCategory = (SampleCategory) subCatNode.getObject();
+    assertEquals("modified sub category", modifiedSubCategory.getName());
 
+    modifiedSubCategory.setName("even more modification");
+    assertNotEquals("even more modification", subCatNode.getValue(SampleCategory.NAME));
+    subCatNode.setObject(modifiedSubCategory);
+    assertEquals("even more modification", subCatNode.getValue(SampleCategory.NAME));
 
-    List<ObjectNode> containerItemNodes = objectNode.referenceNodeList(referenceToItems);
+    List<ObjectNode> containerItemNodes =
+        objectNode.referenceNodeList(SampleCategory.CONTAINER_ITEMS);
 
     int i = 0;
     for (ObjectNode containerItemNode : containerItemNodes) {

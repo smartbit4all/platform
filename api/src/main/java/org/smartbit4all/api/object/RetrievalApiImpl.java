@@ -59,14 +59,14 @@ public class RetrievalApiImpl implements RetrievalApi {
       Object sourceValue = ref.getSourceValue(data.getObjectAsMap());
       if (sourceValue != null) {
         if (sourceValue instanceof URI || sourceValue instanceof String) {
-          ObjectNodeData value = readData(objRequest, asUri(sourceValue));
+          ObjectNodeData value = readData(entry.getValue(), asUri(sourceValue));
           // TODO refName!!
           data.putReferenceValuesItem(ref.getSourcePropertyPath(), value);
         } else if (sourceValue instanceof List) {
           @SuppressWarnings("unchecked")
           List<ObjectNodeData> readAllRef = ((List<Object>) sourceValue).stream()
               .map(this::asUri)
-              .map(u -> readData(objRequest, u))
+              .map(u -> readData(entry.getValue(), u))
               .collect(Collectors.toList());
           // TODO refName!!
           data.putReferenceListValuesItem(ref.getSourcePropertyPath(), readAllRef);
@@ -81,7 +81,7 @@ public class RetrievalApiImpl implements RetrievalApi {
             uriList.add(refEntry.getValue());
           }
           List<ObjectNodeData> readAllRef = uriList.stream()
-              .map(u -> readData(objRequest, u))
+              .map(u -> readData(entry.getValue(), u))
               .collect(Collectors.toList());
           Map<String, ObjectNodeData> refObjectMap = new HashMap<>();
           ListIterator<String> iterKeys = keys.listIterator();
@@ -110,7 +110,7 @@ public class RetrievalApiImpl implements RetrievalApi {
 
   @Override
   public <T> ObjectRetrievalRequest request(Class<T> clazz) {
-    return new ObjectRetrievalRequest(objectApi.definition(clazz));
+    return new ObjectRetrievalRequest();
   }
 
   @Override
@@ -135,7 +135,7 @@ public class RetrievalApiImpl implements RetrievalApi {
   }
 
   private ObjectRetrievalRequest request(ObjectDefinition<?> definition, String... paths) {
-    ObjectRetrievalRequest request = new ObjectRetrievalRequest(definition);
+    ObjectRetrievalRequest request = new ObjectRetrievalRequest();
     if (paths != null && paths.length > 0) {
       String path = paths[0];
       ReferenceDefinition reference = definition.getOutgoingReference(path);

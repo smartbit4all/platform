@@ -18,17 +18,12 @@ final class ObjectNodeList implements List<ObjectNode> {
    */
   private final List<ObjectNodeData> originalList;
 
-  // private final List<ObjectNodeData> dataList;
-
   private final List<ObjectNode> list;
 
   ObjectNodeList(ObjectApi objectApi, List<ObjectNodeData> originalList) {
     super();
     this.objectApi = objectApi;
     this.originalList = originalList;
-    // dataList = originalList.stream()
-    // .filter(n -> n.getState() != ObjectNodeState.REMOVED)
-    // .collect(Collectors.toList());
     list = originalList.stream()
         .filter(n -> n.getState() != ObjectNodeState.REMOVED)
         .map(data -> ObjectNodes.of(objectApi, data))

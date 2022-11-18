@@ -2,7 +2,6 @@ package org.smartbit4all.api.object;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ReferenceDefinition;
 import org.smartbit4all.domain.service.query.RetrievalRequest;
 
@@ -20,11 +19,6 @@ public final class ObjectRetrievalRequest {
   private boolean loadLatestVersion = false;
 
   /**
-   * The object definition of the given object.
-   */
-  private ObjectDefinition<?> definition;
-
-  /**
    * The objects to load trough the references. The {@link ReferenceDefinition} is the key.
    */
   private final Map<ReferenceDefinition, ObjectRetrievalRequest> references = new HashMap<>();
@@ -32,28 +26,18 @@ public final class ObjectRetrievalRequest {
   /**
    * The object request is constructed by the {@link RetrievalApi}.
    * 
-   * @param definition
    */
-  ObjectRetrievalRequest(ObjectDefinition<?> definition, boolean loadLatestVersion) {
+  ObjectRetrievalRequest(boolean loadLatestVersion) {
     super();
-    this.definition = definition;
     this.loadLatestVersion = loadLatestVersion;
   }
 
   /**
    * The object request is constructed by itself and the {@link RetrievalRequest}.
    * 
-   * @param definition
    */
-  ObjectRetrievalRequest(ObjectDefinition<?> definition) {
-    this(definition, false);
-  }
-
-  /**
-   * @return The object definition of the given object.
-   */
-  public final ObjectDefinition<?> getDefinition() {
-    return definition;
+  ObjectRetrievalRequest() {
+    this(false);
   }
 
   /**
@@ -77,7 +61,7 @@ public final class ObjectRetrievalRequest {
       return null;
     }
     return references.computeIfAbsent(referenceDefinition,
-        r -> new ObjectRetrievalRequest(r.getTarget(), loadLatestVersion));
+        r -> new ObjectRetrievalRequest(loadLatestVersion));
   }
 
   /**
