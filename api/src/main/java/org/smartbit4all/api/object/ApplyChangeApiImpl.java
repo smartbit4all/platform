@@ -8,9 +8,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import org.smartbit4all.api.object.ObjectChangeRequest.ObjectChangeOperation;
-import org.smartbit4all.api.object.ObjectNode.ObjectNodeState;
+import org.smartbit4all.api.object.bean.ObjectNodeState;
 import org.smartbit4all.core.object.ObjectApi;
-import org.smartbit4all.core.object.ReferenceDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class ApplyChangeApiImpl implements ApplyChangeApi {
@@ -56,7 +55,7 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
       return uri;
     }
 
-    for (Entry<ReferenceDefinition, ReferenceChangeRequest> entry : objectChangeRequest
+    for (Entry<String, ReferenceChangeRequest> entry : objectChangeRequest
         .getReferenceChanges().entrySet()) {
       // We need a linked hash map to reserve the order in the containers.
       Map<ObjectChangeRequest, URI> changes = new LinkedHashMap<>();
@@ -152,7 +151,7 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
     // Constructs the result with NOP operation code.
     ObjectChangeRequest result = new ObjectChangeRequest(request, node.getDefinition(),
         node.getStorageScheme(), ObjectChangeOperation.NOP);
-    result.setUri(node.getUri());
+    result.setUri(node.getObjectUri());
     result.setObjectAsMap(node.getObjectAsMap());
     if (node.getState() == ObjectNodeState.NEW) {
       result.setOperation(ObjectChangeOperation.NEW);
@@ -163,7 +162,7 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
     }
 
     // Recurse on the values.
-    for (Entry<ReferenceDefinition, ObjectNode> entry : node.getReferenceValues().entrySet()) {
+    for (Entry<String, ObjectNode> entry : node.getReferenceValues().entrySet()) {
       ObjectChangeRequest changeRequest = constructRequest(entry.getValue(), request);
       if (changeRequest.getOperation() != ObjectChangeOperation.NOP) {
         containmentChanged = true;
@@ -172,9 +171,9 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
     }
 
     // Recurse on the lists
-    for (Entry<ReferenceDefinition, ReferenceListEntry> entry : node.getReferenceListValues()
+    for (Entry<String, ObjectNodeList> entry : node.getReferenceListValues()
         .entrySet()) {
-      for (ObjectNode objectNode : entry.getValue().getNodeList()) {
+      for (ObjectNode objectNode : entry.getValue()) {
         if (objectNode.getState() != ObjectNodeState.REMOVED) {
           ObjectChangeRequest changeRequest = constructRequest(objectNode, request);
           if (changeRequest.getOperation() != ObjectChangeOperation.NOP) {

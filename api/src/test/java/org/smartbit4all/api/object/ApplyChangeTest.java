@@ -1,5 +1,6 @@
 package org.smartbit4all.api.object;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
@@ -64,29 +65,34 @@ class ApplyChangeTest {
 
     // Now we make some modification on the ObjectNode.
 
-    List<ObjectNode> subCategoryNodes = objectNode
-        .referenceNodeList(definition.getOutgoingReference(SampleCategory.SUB_CATEGORIES));
+    List<ObjectNode> subCategoryNodes = objectNode.referenceNodeList(SampleCategory.SUB_CATEGORIES);
 
     subCategoryNodes.get(0).setValue(SampleCategory.NAME, "modified sub category");
 
 
-    List<ObjectNode> containerItemNodes = objectNode
-        .referenceNodeList(definition.getOutgoingReference(referenceToItems));
+    List<ObjectNode> containerItemNodes = objectNode.referenceNodeList(referenceToItems);
 
     int i = 0;
     for (ObjectNode containerItemNode : containerItemNodes) {
       containerItemNode.setValue(SampleContainerItem.NAME,
           containerItemNode.getObjectAsMap().get(SampleContainerItem.NAME) + "-modified");
       if (i % 2 == 0) {
-        ObjectNode datasheetNode = containerItemNode
-            .referenceNode(definitionItem.getOutgoingReference(SampleContainerItem.DATASHEET));
+        ObjectNode datasheetNode = containerItemNode.referenceNode(SampleContainerItem.DATASHEET);
         datasheetNode.setValue(SampleDataSheet.NAME, "modified");
+
+        Object dataSheetValue = containerItemNode.getValue(SampleContainerItem.DATASHEET);
+        Object dataSheetName =
+            containerItemNode.getValue(SampleContainerItem.DATASHEET, SampleDataSheet.NAME);
+        assertEquals(datasheetNode, dataSheetValue);
+        assertEquals("modified", dataSheetName);
       }
       i++;
     }
     containerItemNodes.remove(containerItemNodes.size() - 1);
-    containerItemNodes.add(new ObjectNode(objectApi.definition(SampleContainerItem.class),
-        MY_SCHEME, new SampleContainerItem().name("new item")));
+    containerItemNodes.add(new ObjectNode(
+        objectApi,
+        MY_SCHEME,
+        new SampleContainerItem().name("new item")));
 
     URI changedUri = applyChangeApi.applyChanges(objectNode, null);
 
@@ -123,12 +129,9 @@ class ApplyChangeTest {
 
     SampleCategory rootContainer = new SampleCategory().name("root");
 
-    ObjectDefinition<SampleCategory> definition = objectApi.definition(SampleCategory.class);
-
     ApplyChangeRequest applyChangeRequest = applyChangeApi.request(branchUri);
     ObjectChangeRequest ocrContainer = applyChangeRequest.createAsNew(MY_SCHEME, rootContainer);
-    ReferenceListChange rlcItems =
-        ocrContainer.referenceList(definition.getOutgoingReference(referenceToItems));
+    ReferenceListChange rlcItems = ocrContainer.referenceList(referenceToItems);
 
     int itemCounter = 5;
     for (int i = 0; i < itemCounter; i++) {
@@ -139,15 +142,14 @@ class ApplyChangeTest {
           applyChangeRequest.createAsNew(MY_SCHEME, new SampleDataSheet().name("datasheet " + i));
       ReferenceValueChange referenceValue =
           ocrItem
-              .referenceValue(
-                  ocrItem.getDefinition().getOutgoingReference(SampleContainerItem.DATASHEET))
+              .referenceValue(SampleContainerItem.DATASHEET)
               .value(ocrDatasheet);
 
       rlcItems.add(ocrItem);
     }
 
     ReferenceListChange rlcSubCategories =
-        ocrContainer.referenceList(definition.getOutgoingReference(SampleCategory.SUB_CATEGORIES));
+        ocrContainer.referenceList(SampleCategory.SUB_CATEGORIES);
     int subCategoryCounter = 3;
     for (int i = 0; i < subCategoryCounter; i++) {
       SampleCategory subCategory = new SampleCategory().name("sub category " + i);

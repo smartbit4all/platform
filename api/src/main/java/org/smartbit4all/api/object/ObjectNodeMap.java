@@ -5,19 +5,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.smartbit4all.api.object.ObjectNode.ObjectNodeState;
+import org.smartbit4all.api.object.bean.ObjectNodeData;
+import org.smartbit4all.api.object.bean.ObjectNodeState;
+import org.smartbit4all.core.object.ObjectApi;
 
 class ObjectNodeMap implements Map<String, ObjectNode> {
 
-  private final Map<String, ObjectNode> originalMap;
+  private final Map<String, ObjectNodeData> originalMap;
 
   private final Map<String, ObjectNode> map;
 
-  public ObjectNodeMap(Map<String, ObjectNode> originalMap) {
+  public ObjectNodeMap(ObjectApi objectApi, Map<String, ObjectNodeData> originalMap) {
     super();
     this.originalMap = originalMap;
-    map = originalMap.entrySet().stream().filter(e -> e.getValue().isRemoved())
-        .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+    map = originalMap.entrySet().stream()
+        .filter(e -> e.getValue().getState() != ObjectNodeState.REMOVED)
+        .collect(Collectors.toMap(
+            Entry<String, ObjectNodeData>::getKey,
+            e -> ObjectNodes.of(objectApi, e.getValue())));
   }
 
   @Override
@@ -57,18 +62,18 @@ class ObjectNodeMap implements Map<String, ObjectNode> {
       if (objectNode != value && objectNode.getState() != ObjectNodeState.NEW) {
         // It must be a modification depending on the equivalence of the object node. If they are
         // not the same then we remove the current one and put the new one.
-        ObjectNode originalNode = originalMap.get(key);
-        if (originalNode == objectNode) {
+        ObjectNodeData originalNode = originalMap.get(key);
+        if (originalNode == objectNode.getData()) { // TODO ref. check or value check?
           // The new node now execute a removal on the original one.
           originalNode.setState(ObjectNodeState.REMOVED);
         }
       }
     } else {
-      ObjectNode originalNode = originalMap.get(key);
+      ObjectNodeData originalNode = originalMap.get(key);
       if (originalNode != null) {
-        if (originalNode.getState() == ObjectNodeState.REMOVED && originalNode == value) {
+        if (originalNode.getState() == ObjectNodeState.REMOVED && originalNode == value.getData()) {
           // This restores the given node.
-          originalNode.setModified();
+          originalNode.setState(ObjectNodeState.MODIFIED);
         }
       }
     }

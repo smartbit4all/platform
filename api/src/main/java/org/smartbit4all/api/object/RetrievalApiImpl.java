@@ -3,7 +3,6 @@ package org.smartbit4all.api.object;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
@@ -11,6 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.smartbit4all.api.object.bean.ObjectNodeData;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ReferenceDefinition;
@@ -33,77 +33,79 @@ public class RetrievalApiImpl implements RetrievalApi {
 
   private final Stream<ObjectNode> load(ObjectRetrievalRequest request, Stream<URI> uriStream) {
 
-    return uriStream.parallel().map(u -> readAll(request, u)).flatMap(List::stream);
+    return uriStream.parallel()
+        .map(u -> readData(request, u))
+        .map(n -> new ObjectNode(objectApi, n));
 
   }
 
-  private final List<ObjectNode> readAll(ObjectRetrievalRequest objRequest, URI uri) {
-    List<ObjectNode> result = null;
+  private final ObjectNodeData readData(ObjectRetrievalRequest objRequest, URI uri) {
     // TODO Load latest version from the object.
     // if(objRequest.isLoadLatestVersion()) {
     // }
     StorageObject<?> storageObject = storageApi.load(uri);
-    ObjectNode objectNode =
-        new ObjectNode(storageObject.definition(), storageObject.getStorage().getScheme(),
-            storageObject.getObjectAsMap());
-    objectNode.setUri(uri);
-    objectNode.setVersionNr(storageObject.getVersion().getSerialNoData());
-    if (result == null) {
-      result = new ArrayList<>();
-    }
-    result.add(objectNode);
+    ObjectNodeData data = new ObjectNodeData()
+        .objectUri(uri)
+        .qualifiedName(storageObject.definition().getQualifiedName()) // TODO Alias?
+        .storageSchema(storageObject.getStorage().getScheme())
+        .objectAsMap(storageObject.getObjectAsMap())
+        .versionNr(storageObject.getVersion().getSerialNoData());
 
     // Recursive read of all referred objects.
     for (Entry<ReferenceDefinition, ObjectRetrievalRequest> entry : objRequest.getReferences()
         .entrySet()) {
-      Object sourceValue = entry.getKey().getSourceValue(objectNode.getObjectAsMap());
+      ReferenceDefinition ref = entry.getKey();
+
+      Object sourceValue = ref.getSourceValue(data.getObjectAsMap());
       if (sourceValue != null) {
         if (sourceValue instanceof URI || sourceValue instanceof String) {
-          ListIterator<ObjectNode> valueObjectIterator =
-              readAll(objRequest,
-                  sourceValue instanceof URI ? (URI) sourceValue : URI.create((String) sourceValue))
-                      .listIterator();
-          if (valueObjectIterator.hasNext()) {
-            objectNode.getReferenceValues().put(entry.getKey(), valueObjectIterator.next());
-          }
+          ObjectNodeData value = readData(objRequest, asUri(sourceValue));
+          // TODO refName!!
+          data.putReferenceValuesItem(ref.getSourcePropertyPath(), value);
         } else if (sourceValue instanceof List) {
           @SuppressWarnings("unchecked")
-          List<ObjectNode> readAllRef = ((List<Object>) sourceValue).stream()
-              .map(o -> (URI) (o instanceof URI ? o : URI.create((String) o)))
-              .map(u -> readAll(objRequest, u)).flatMap(List::stream)
+          List<ObjectNodeData> readAllRef = ((List<Object>) sourceValue).stream()
+              .map(this::asUri)
+              .map(u -> readData(objRequest, u))
               .collect(Collectors.toList());
-          objectNode.getReferenceListValues().put(entry.getKey(),
-              new ReferenceListEntry(readAllRef));
+          // TODO refName!!
+          data.putReferenceListValuesItem(ref.getSourcePropertyPath(), readAllRef);
         } else if (sourceValue instanceof Map) {
           @SuppressWarnings("unchecked")
           Map<String, URI> refUriMap = ((Map<String, Object>) sourceValue).entrySet().stream()
-              .collect(Collectors.toMap(Entry::getKey, e -> {
-                if (e.getValue() instanceof URI) {
-                  return (URI) e.getValue();
-                } else {
-                  return URI.create((String) e.getValue());
-                }
-              }));
+              .collect(Collectors.toMap(Entry::getKey, e -> asUri(e.getValue())));
           List<String> keys = new ArrayList<>();
           List<URI> uriList = new ArrayList<>();
           for (Entry<String, URI> refEntry : refUriMap.entrySet()) {
             keys.add(refEntry.getKey());
             uriList.add(refEntry.getValue());
           }
-          List<ObjectNode> readAllRef = uriList.stream().map(u -> readAll(objRequest, u))
-              .flatMap(List::stream).collect(Collectors.toList());
-          Map<String, ObjectNode> refObjectMap = new HashMap<>();
+          List<ObjectNodeData> readAllRef = uriList.stream()
+              .map(u -> readData(objRequest, u))
+              .collect(Collectors.toList());
+          Map<String, ObjectNodeData> refObjectMap = new HashMap<>();
           ListIterator<String> iterKeys = keys.listIterator();
-          for (ObjectNode refObjectNode : readAllRef) {
+          for (ObjectNodeData refObjectNode : readAllRef) {
             refObjectMap.put(iterKeys.next(), refObjectNode);
           }
-          objectNode.getReferenceMapValues().put(entry.getKey(),
-              new ReferenceMapEntry(refObjectMap));
+          // TODO refName!!
+          data.putReferenceMapValuesItem(ref.getSourcePropertyPath(), refObjectMap);
         }
       }
     }
 
-    return result == null ? Collections.emptyList() : result;
+    return data;
+  }
+
+  private URI asUri(Object o) {
+    if (o instanceof URI) {
+      return (URI) o;
+    }
+    if (o instanceof String) {
+      return URI.create((String) o);
+    }
+    // TODO log / throw ?
+    return null;
   }
 
   @Override

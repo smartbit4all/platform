@@ -2,15 +2,15 @@ package org.smartbit4all.api.object;
 
 import java.net.URI;
 import java.util.Arrays;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.stream.Stream;
+import org.smartbit4all.api.object.bean.ObjectNodeData;
+import org.smartbit4all.api.object.bean.ObjectNodeState;
+import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ReferenceDefinition;
 import com.google.common.base.Strings;
@@ -26,87 +26,66 @@ import com.google.common.base.Strings;
 public class ObjectNode {
 
   /**
+   * This bean contains all serializable information about this ObjectNode.
+   */
+  private final ObjectNodeData data;
+
+  /**
    * The object definition to access the meta of the given object.
    */
   private final ObjectDefinition<?> definition;
 
   /**
-   * The logical storage scheme if it is used in the given storage implementation.
+   * ObjectApi is used for creating other ObjectNodes
    */
-  private final String storageScheme;
+  private final ObjectApi objectApi;
 
-  /**
-   * The state of the object node. The retrieved node has {@link ObjectNodeState#NOP} state by
-   * default. The newly added ones are {@link ObjectNodeState#NEW} of course and if we have a
-   * retrieved node then it will be {@link ObjectNodeState#MODIFIED} after an update operation. The
-   * {@link #REMOVED} state is responsible for removing from a container. It doesn't mean that we
-   * delete the given object we just remove it from the given container.
-   * 
-   * @author Peter Boros
-   */
-  public enum ObjectNodeState {
-    NEW, MODIFIED, NOP, REMOVED
-  }
+  private final Map<String, ObjectNode> referenceValues = new HashMap<>();
+  private final Map<String, ObjectNodeList> referenceListValues = new HashMap<>();
+  private final Map<String, ObjectNodeMap> referenceMapValues = new HashMap<>();
 
-  ObjectNode(ObjectDefinition<?> definition, String storageScheme,
-      Map<String, Object> objectAsMap) {
+
+  ObjectNode(ObjectApi objectApi, ObjectNodeData data) {
     super();
-    this.definition = definition;
-    this.storageScheme = storageScheme;
-    this.objectAsMap = objectAsMap;
+    this.objectApi = objectApi;
+    this.definition = objectApi.definition(data.getQualifiedName());
+    this.data = data;
+    initNodeMaps();
   }
 
-  public ObjectNode(ObjectDefinition<?> definition, String storageScheme, Object o) {
+  public ObjectNode(ObjectApi objectApi, String storageScheme, Object o) {
     super();
-    this.definition = definition;
-    this.storageScheme = storageScheme;
-    this.objectAsMap = new HashMap<>();
-    setObject(o);
+    this.objectApi = objectApi;
+    this.definition = this.objectApi.definition(o.getClass());
+    this.data = new ObjectNodeData()
+        .objectUri(null)
+        .qualifiedName(definition.getQualifiedName()) // TODO Alias?
+        .storageSchema(storageScheme)
+        .objectAsMap(definition.toMap(o))
+        .versionNr(null);
+    // TODO Auto-generated constructor stub
+    initNodeMaps();
   }
 
-  /**
-   * The version uri of the object.
-   */
-  private URI uri;
+  private void initNodeMaps() {
+    for (Entry<String, ObjectNodeData> entry : data.getReferenceValues().entrySet()) {
+      referenceValues.put(entry.getKey(), new ObjectNode(objectApi, entry.getValue()));
+    }
+    for (Entry<String, List<ObjectNodeData>> entry : data.getReferenceListValues().entrySet()) {
+      referenceListValues.put(entry.getKey(), new ObjectNodeList(objectApi, entry.getValue()));
+    }
+    for (Entry<String, Map<String, ObjectNodeData>> entry : data.getReferenceMapValues()
+        .entrySet()) {
+      referenceMapValues.put(entry.getKey(), new ObjectNodeMap(objectApi, entry.getValue()));
+    }
+  }
 
-  /**
-   * The version number of the given node. It is filled by the retrieve so if we create a new node
-   * then it is 0 by default.
-   */
-  private long versionNr = 0;
+  ObjectNodeData getData() {
+    return data;
+  }
 
-  /**
-   * The state of the {@link ObjectNode}.
-   */
-  private ObjectNodeState state = ObjectNodeState.NOP;
-
-  /**
-   * The values of the object by the property names as key.
-   */
-  private final Map<String, Object> objectAsMap;
-
-  /**
-   * The referred objects.
-   */
-  private final Map<ReferenceDefinition, ObjectNode> referenceValues = new LinkedHashMap<>();
-
-  /**
-   * The referred object lists.
-   */
-  private final Map<ReferenceDefinition, ReferenceListEntry> referenceListValues =
-      new LinkedHashMap<>();
-
-  /**
-   * The referred object maps.
-   */
-  private final Map<ReferenceDefinition, ReferenceMapEntry> referenceMapValues =
-      new LinkedHashMap<>();
-
-  /**
-   * @return The version URI of the object when it was retrieved.
-   */
-  public final URI getUri() {
-    return uri;
+  public final URI getObjectUri() {
+    return data.getObjectUri();
   }
 
   /**
@@ -122,41 +101,37 @@ public class ObjectNode {
    * @return
    */
   public final Map<String, Object> getObjectAsMap() {
-    return objectAsMap;
+    return data.getObjectAsMap();
   }
 
   public final String getStorageScheme() {
-    return storageScheme;
+    return data.getStorageSchema();
   }
 
   /**
-   * @return A copy from the current {@link #objectAsMap}.
+   * @return A copy from the current data.
    */
   public final Object getObject() {
-    return definition.fromMap(objectAsMap);
-  }
-
-  private final Map<String, Object> getObjectAsMapInner() {
-    return objectAsMap == null ? Collections.emptyMap() : objectAsMap;
+    return definition.fromMap(getObjectAsMap());
   }
 
   /**
    * @param objectDefinition The object definition of the required object.
-   * @return A copy from the current {@link #objectAsMap}.
+   * @return A copy from the current data.
    */
   public final <T> T getObject(ObjectDefinition<T> objectDefinition) {
-    return objectDefinition.fromMap(objectAsMap);
+    return objectDefinition.fromMap(getObjectAsMap());
   }
 
-  final Map<ReferenceDefinition, ObjectNode> getReferenceValues() {
+  final Map<String, ObjectNode> getReferenceValues() {
     return referenceValues;
   }
 
-  final Map<ReferenceDefinition, ReferenceListEntry> getReferenceListValues() {
+  final Map<String, ObjectNodeList> getReferenceListValues() {
     return referenceListValues;
   }
 
-  final Map<ReferenceDefinition, ReferenceMapEntry> getReferenceMapValues() {
+  final Map<String, ObjectNodeMap> getReferenceMapValues() {
     return referenceMapValues;
   }
 
@@ -170,9 +145,9 @@ public class ObjectNode {
     return Stream.of(
         Stream.of(this),
         getReferenceValues().values().stream().flatMap(ObjectNode::allNodes),
-        getReferenceListValues().values().stream().flatMap(e -> e.nodeList.stream())
+        getReferenceListValues().values().stream().flatMap(List::stream)
             .flatMap(ObjectNode::allNodes),
-        getReferenceMapValues().values().stream().map(ReferenceMapEntry::getPublicNodeMap)
+        getReferenceMapValues().values().stream()
             .flatMap(n -> n.values().stream())
             .flatMap(ObjectNode::allNodes))
         .flatMap(s -> s);
@@ -187,12 +162,11 @@ public class ObjectNode {
    * {@link RetrievalApi} and the {@link ApplyChangeApi}.
    * 
    * @param <T> The type class of the bean. If we already have the object then it will be passed to
-   *        the updateFunction. Else the function read the given object from the
-   *        {@link #objectAsMap}.
+   *        the updateFunction. Else the function read the given object from the data.
    * @param object The object that contains the values to set. This object is going to be serialized
-   *        and the the values are set into the {@link #objectAsMap} that is the single point of
-   *        truth. If we pass null then nothing will happen with the values. The null is assumed as
-   *        an empty map to set.
+   *        and the the values are set into the data that is the single point of truth. If we pass
+   *        null then nothing will happen with the values. The null is assumed as an empty map to
+   *        set.
    */
   public <T> void setObject(T object) {
     if (object == null) {
@@ -203,23 +177,23 @@ public class ObjectNode {
   }
 
   /**
-   * Set the values directly into the {@link #objectAsMap}.
+   * Set the values directly into the data.
    * 
    * @param values The map of values.
    */
   public void setValues(Map<String, Object> values) {
-    objectAsMap.putAll(values);
+    data.getObjectAsMap().putAll(values);
     setModified();
   }
 
   /**
-   * Set the value directly into the {@link #objectAsMap}.
+   * Set the value directly into the data.
    * 
    * @param key The key of the value, the name of the property.
    * @param value The value object.
    */
   public void setValue(String key, Object value) {
-    objectAsMap.put(key, value);
+    data.getObjectAsMap().put(key, value);
     setModified();
   }
 
@@ -228,15 +202,15 @@ public class ObjectNode {
    * @see ObjectNodeState
    */
   public final ObjectNodeState getState() {
-    return state;
+    return data.getState();
   }
 
   final boolean isRemoved() {
-    return state == ObjectNodeState.REMOVED;
+    return getState() == ObjectNodeState.REMOVED;
   }
 
   final boolean notRemoved() {
-    return state != ObjectNodeState.REMOVED;
+    return getState() != ObjectNodeState.REMOVED;
   }
 
   /**
@@ -246,7 +220,7 @@ public class ObjectNode {
    * @param state
    */
   final void setState(ObjectNodeState state) {
-    this.state = state;
+    this.data.setState(state);
   }
 
   /**
@@ -254,8 +228,8 @@ public class ObjectNode {
    * the same.
    */
   final void setModified() {
-    if (state == ObjectNodeState.NOP) {
-      state = ObjectNodeState.MODIFIED;
+    if (getState() == ObjectNodeState.NOP) {
+      data.setState(ObjectNodeState.MODIFIED);
     }
   }
 
@@ -267,7 +241,7 @@ public class ObjectNode {
    * @return The {@link ObjectNode} belong to the given reference. If the reference is not loaded
    *         then we get null.
    */
-  public ObjectNode referenceNode(ReferenceDefinition reference) {
+  public ObjectNode referenceNode(String reference) {
     return referenceValues.get(reference);
   }
 
@@ -280,10 +254,10 @@ public class ObjectNode {
    * @return The {@link ObjectNode} belong to the given reference. If the reference is not loaded
    *         then we get null.
    */
-  public ObjectNode referenceNodeInitIfAbsent(ReferenceDefinition reference, String storageScheme,
+  public ObjectNode referenceNodeInitIfAbsent(String reference, String storageScheme,
       Object o) {
     return referenceValues.computeIfAbsent(reference,
-        r -> new ObjectNode(r.getTarget(), storageScheme, o));
+        r -> new ObjectNode(objectApi, storageScheme, o));
   }
 
   /**
@@ -294,7 +268,7 @@ public class ObjectNode {
    * @param reference An outgoing reference of the given object.
    * @return The copy of the current value.
    */
-  public <T> T reference(ReferenceDefinition reference, ObjectDefinition<T> objectDefinition) {
+  public <T> T reference(String reference, ObjectDefinition<T> objectDefinition) {
     ObjectNode referenceNode = referenceNode(reference);
     if (referenceNode != null) {
       return referenceNode.getObject(objectDefinition);
@@ -307,7 +281,7 @@ public class ObjectNode {
    * @return If the given reference is empty, doesn't have any object set then we get back an empty
    *         map.
    */
-  public Map<String, Object> reference(ReferenceDefinition reference) {
+  public Map<String, Object> reference(String reference) {
     ObjectNode referenceNode = referenceNode(reference);
     if (referenceNode != null) {
       return referenceNode.getObjectAsMap();
@@ -322,8 +296,9 @@ public class ObjectNode {
    *        of the referred object definition. We can use any object that has relevant values.
    * @param storageScheme The storage schema for the object to set.
    */
-  public <T> void setReference(ReferenceDefinition reference, Object o, String storageScheme) {
+  public <T> void setReference(String reference, Object o, String storageScheme) {
     ObjectNode objectNode = referenceNodeInitIfAbsent(reference, storageScheme, o);
+    objectNode.setObject(o);
   }
 
   /**
@@ -332,7 +307,7 @@ public class ObjectNode {
    * 
    * @param reference
    */
-  public void clearReference(ReferenceDefinition reference) {
+  public void clearReference(String reference) {
     ObjectNode objectNode = referenceNode(reference);
     if (objectNode != null) {
       objectNode.setState(ObjectNodeState.REMOVED);
@@ -345,46 +320,14 @@ public class ObjectNode {
    * @param reference The reference.
    * @return Returns a list that contains all the currently available nodes. It can be modified in
    *         the following ways: Adding a new Node will create a new node in the list. We can use
-   *         the node directly. Remove a node from the list will set the {@link ObjectNode#state} to
-   *         {@link ObjectNodeState#REMOVED} and the given node will disappear from the list. In any
-   *         other case we can use the {@link ObjectNode} directly to modify the object if
+   *         the node directly. Remove a node from the list will set the {@link ObjectNode#data} to
+   *         {@link ObjectNodeState#REMOVED} state and the given node will disappear from the list.
+   *         In any other case we can use the {@link ObjectNode} directly to modify the object if
    *         necessary.
    */
-  public List<ObjectNode> referenceNodeList(ReferenceDefinition reference) {
-    ReferenceListEntry referenceListEntry = referenceListValues.computeIfAbsent(reference,
-        r -> new ReferenceListEntry(new ArrayList<>()));
-    return referenceListEntry.getPublicNodeList();
-  }
-
-  /**
-   * This retrieves the currently available nodes belong to the given reference.
-   * 
-   * @param reference The reference.
-   * @return Returns a map that contains all the currently available nodes. It can be modified in
-   *         the following ways: Adding a new Node will create a new node in the map. We can use the
-   *         node directly. Remove a node from the list map set the {@link ObjectNode#state} to
-   *         {@link ObjectNodeState#REMOVED} and the given node will disappear from the list. In any
-   *         other case we can use the {@link ObjectNode} directly to modify the object if
-   *         necessary.
-   */
-  public Map<String, ObjectNode> referenceNodeMap(ReferenceDefinition reference) {
-    ReferenceMapEntry referenceMapEntry = referenceMapValues.get(reference);
-    if (referenceMapEntry != null) {
-      return referenceMapEntry.getPublicNodeMap();
-    }
-    return Collections.emptyMap();
-  }
-
-  final void setUri(URI uri) {
-    this.uri = uri;
-  }
-
-  final long getVersionNr() {
-    return versionNr;
-  }
-
-  final void setVersionNr(long versionNr) {
-    this.versionNr = versionNr;
+  public List<ObjectNode> referenceNodeList(String reference) {
+    return referenceListValues.computeIfAbsent(reference,
+        r -> new ObjectNodeList(objectApi, null));
   }
 
   public Object getValue(String... paths) {
@@ -393,28 +336,21 @@ public class ObjectNode {
       if (Strings.isNullOrEmpty(path)) {
         throw new IllegalArgumentException("Path part cannot be null or empty");
       }
-      Optional<ObjectNode> nodeOnPath = referenceValues.entrySet().stream()
-          .filter(e -> e.getKey().getSourcePropertyPath().equals(path))
-          .map(Entry::getValue)
-          .findAny();
-      if (nodeOnPath.isPresent()) {
+      ObjectNode nodeOnPath = referenceValues.get(path);
+      if (nodeOnPath != null) {
         String[] subPaths = Arrays.copyOfRange(paths, 1, paths.length);
-        return nodeOnPath.get().getValue(subPaths);
+        return nodeOnPath.getValue(subPaths);
       }
-      Optional<ReferenceListEntry> listOnPath = referenceListValues.entrySet().stream()
-          .filter(e -> e.getKey().getSourcePropertyPath().equals(path))
-          .map(Entry::getValue)
-          .findAny();
-      if (listOnPath.isPresent()) {
-        List<ObjectNode> nodeList = listOnPath.get().getPublicNodeList();
+      ObjectNodeList listOnPath = referenceListValues.get(path);
+      if (listOnPath != null && !listOnPath.isEmpty()) {
         if (paths.length == 1) {
-          return nodeList;
+          return listOnPath;
         }
         String idxString = paths[1];
         try {
           Integer idx = Integer.valueOf(idxString);
           String[] subPaths = Arrays.copyOfRange(paths, 2, paths.length);
-          return nodeList.get(idx).getValue(subPaths);
+          return listOnPath.get(idx).getValue(subPaths);
         } catch (NumberFormatException ex1) {
           throw new IllegalArgumentException("List index is not a number: "
               + path + "(" + idxString + ")");
@@ -423,31 +359,23 @@ public class ObjectNode {
               + path + "(" + idxString + ")");
         }
       }
-      Optional<ReferenceMapEntry> mapOnPath = referenceMapValues.entrySet().stream()
-          .filter(e -> e.getKey().getSourcePropertyPath().equals(path))
-          .map(Entry::getValue)
-          .findAny();
-      if (mapOnPath.isPresent()) {
-        Map<String, ObjectNode> nodeMap = mapOnPath.get().getPublicNodeMap();
+      ObjectNodeMap mapOnPath = referenceMapValues.get(path);
+      if (mapOnPath != null && !mapOnPath.isEmpty()) {
         if (paths.length == 1) {
-          return nodeMap;
+          return mapOnPath;
         }
         String key = paths[1];
-        if (nodeMap.containsKey(key)) {
+        if (mapOnPath.containsKey(key)) {
           String[] subPaths = Arrays.copyOfRange(paths, 2, paths.length);
-          return nodeMap.get(key).getValue(subPaths);
+          return mapOnPath.get(key).getValue(subPaths);
         }
         throw new IllegalArgumentException(
             "Map item not found by index: " + path + "(" + key + ")");
       }
-      return getValueFromObjectMap(objectAsMap, paths);
+      return getValueFromObjectMap(getObjectAsMap(), paths);
     }
     return this;
   }
-
-  // public Object getValueFromObjectMap(String... paths) {
-  // return getValueFromObjectMap(objectAsMap, paths);
-  // }
 
   private Object getValueFromObjectMap(Map<String, Object> map, String... paths) {
     if (paths != null && paths.length > 0) {
@@ -466,4 +394,9 @@ public class ObjectNode {
     }
     return map;
   }
+
+  public Object getVersionNr() {
+    return data.getVersionNr();
+  }
+
 }

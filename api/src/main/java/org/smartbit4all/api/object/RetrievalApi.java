@@ -2,6 +2,7 @@ package org.smartbit4all.api.object;
 
 import java.net.URI;
 import java.util.List;
+import org.smartbit4all.api.object.bean.ObjectNodeData;
 import org.smartbit4all.core.object.ReferenceDefinition;
 
 /**
@@ -36,7 +37,7 @@ public interface RetrievalApi {
    * 
    * @param request The request object that defines the root objects and the references to load.
    * @param uris The uri list of the objects to load.
-   * @return The result of the object retrieve as an {@link ObjectNode}.
+   * @return The result of the object retrieve as an {@link ObjectNodeData}.
    */
   List<ObjectNode> load(ObjectRetrievalRequest request, List<URI> uris);
 

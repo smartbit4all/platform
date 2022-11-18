@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.smartbit4all.api.object.bean.ObjectNodeData;
+import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ReferenceDefinition;
 import org.smartbit4all.core.utility.StringConstant;
 import com.google.common.base.Strings;
@@ -49,24 +51,53 @@ public class ObjectNodes {
         .append(StringConstant.NEW_LINE);
     // Traverse the referred nodes also.
     String subIndent = indent + INDENT_INCREMENT;
-    for (Entry<ReferenceDefinition, ObjectNode> entry : objectNode.getReferenceValues()
+    for (Entry<String, ObjectNode> entry : objectNode.getReferenceValues()
         .entrySet()) {
-      sb.append(subIndent).append(entry.getKey().getSourcePropertyPath())
+      sb.append(subIndent).append(entry.getKey())
           .append(StringConstant.ARROW).append(StringConstant.NEW_LINE);
       traverseNodeVersionTree(entry.getValue(), sb, subIndent + INDENT_INCREMENT, propertyMap);
     }
-    for (Entry<ReferenceDefinition, ReferenceListEntry> entry : objectNode.getReferenceListValues()
+    for (Entry<String, ObjectNodeList> entry : objectNode.getReferenceListValues()
         .entrySet()) {
-      if (!entry.getValue().getPublicNodeList().isEmpty()) {
-        sb.append(subIndent).append(entry.getKey().getSourcePropertyPath())
+      if (!entry.getValue().isEmpty()) {
+        sb.append(subIndent).append(entry.getKey())
             .append(StringConstant.COLON).append(StringConstant.NEW_LINE);
-        for (ObjectNode node : entry.getValue().getPublicNodeList()) {
+        for (ObjectNode node : entry.getValue()) {
           traverseNodeVersionTree(node, sb, subIndent + INDENT_INCREMENT, propertyMap);
         }
       }
     }
   }
 
+  /**
+   * A recursive function to collect all nodes inclusively itself into a {@link Stream} for further
+   * processing.
+   * 
+   * @return The nodes {@link Stream}.
+   */
+  public static Stream<ObjectNodeData> allNodes(ObjectNodeData data) {
+    return Stream.of(
+        Stream.of(data),
+        data.getReferenceValues().values().stream().flatMap(ObjectNodes::allNodes),
+        data.getReferenceListValues().values().stream().flatMap(List::stream)
+            .flatMap(ObjectNodes::allNodes),
+        data.getReferenceMapValues().values().stream()
+            .flatMap(n -> n.values().stream())
+            .flatMap(ObjectNodes::allNodes))
+        .flatMap(s -> s);
+  }
+
+  public static ObjectNode of(ObjectApi objectApi, ObjectNodeData data) {
+    return new ObjectNode(objectApi, data);
+  }
+
+  /**
+   * TODO add more specifiec gets, Object is too general
+   * 
+   * @param data
+   * @param paths
+   * @return
+   */
   public static Object getValue(ObjectNodeData data, String... paths) {
     if (paths == null || paths.length == 0) {
       return data;

@@ -5,7 +5,6 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import org.smartbit4all.core.object.ObjectDefinition;
-import org.smartbit4all.core.object.ReferenceDefinition;
 
 /**
  * The change request for one object with a required operation. The object itself can be directly a
@@ -71,22 +70,23 @@ public class ObjectChangeRequest {
   /**
    * The reference changes for the object.
    */
-  private final Map<ReferenceDefinition, ReferenceChangeRequest> referenceChanges = new HashMap<>();
+  private final Map<String, ReferenceChangeRequest> referenceChanges = new HashMap<>();
 
   /**
    * We can construct a new reference value change for the outgoing reference.
    * 
-   * @param outgoingReference The outgoing reference.
+   * @param reference The outgoing reference.
    * @return
    */
-  public ReferenceValueChange referenceValue(ReferenceDefinition outgoingReference) {
-    return (ReferenceValueChange) referenceChanges.computeIfAbsent(outgoingReference,
-        d -> new ReferenceValueChange(request(), this, outgoingReference));
+  public ReferenceValueChange referenceValue(String reference) {
+    return (ReferenceValueChange) referenceChanges.computeIfAbsent(reference,
+        d -> new ReferenceValueChange(request(), this, definition.getOutgoingReference(reference)));
   }
 
-  public ReferenceListChange referenceList(ReferenceDefinition outgoingReference) {
-    return (ReferenceListChange) referenceChanges.computeIfAbsent(outgoingReference,
-        d -> new ReferenceListChange(request(), this, outgoingReference));
+  public ReferenceListChange referenceList(String reference) {
+
+    return (ReferenceListChange) referenceChanges.computeIfAbsent(reference,
+        d -> new ReferenceListChange(request(), this, definition.getOutgoingReference(reference)));
   }
 
   public final URI getUri() {
@@ -147,7 +147,7 @@ public class ObjectChangeRequest {
     return operation;
   }
 
-  public final Map<ReferenceDefinition, ReferenceChangeRequest> getReferenceChanges() {
+  public final Map<String, ReferenceChangeRequest> getReferenceChanges() {
     return referenceChanges;
   }
 

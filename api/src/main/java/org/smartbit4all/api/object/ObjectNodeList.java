@@ -5,21 +5,34 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.stream.Collectors;
-import org.smartbit4all.api.object.ObjectNode.ObjectNodeState;
+import org.smartbit4all.api.object.bean.ObjectNodeData;
+import org.smartbit4all.api.object.bean.ObjectNodeState;
+import org.smartbit4all.core.object.ObjectApi;
 
 final class ObjectNodeList implements List<ObjectNode> {
+
+  final ObjectApi objectApi;
 
   /**
    * The original List stored in the {@link ObjectNode} that owns the given reference list.
    */
-  private final List<ObjectNode> originalList;
+  private final List<ObjectNodeData> originalList;
+
+  // private final List<ObjectNodeData> dataList;
 
   private final List<ObjectNode> list;
 
-  ObjectNodeList(List<ObjectNode> originalList) {
+  ObjectNodeList(ObjectApi objectApi, List<ObjectNodeData> originalList) {
     super();
+    this.objectApi = objectApi;
     this.originalList = originalList;
-    list = originalList.stream().filter(ObjectNode::notRemoved).collect(Collectors.toList());
+    // dataList = originalList.stream()
+    // .filter(n -> n.getState() != ObjectNodeState.REMOVED)
+    // .collect(Collectors.toList());
+    list = originalList.stream()
+        .filter(n -> n.getState() != ObjectNodeState.REMOVED)
+        .map(data -> ObjectNodes.of(objectApi, data))
+        .collect(Collectors.toList());
   }
 
   @Override
@@ -56,7 +69,7 @@ final class ObjectNodeList implements List<ObjectNode> {
   public boolean add(ObjectNode e) {
     if (list.add(e)) {
       e.setState(ObjectNodeState.NEW);
-      originalList.add(e);
+      originalList.add(e.getData());
       return true;
     }
     return false;
@@ -132,7 +145,7 @@ final class ObjectNodeList implements List<ObjectNode> {
   public void add(int index, ObjectNode element) {
     list.add(index, element);
     element.setState(ObjectNodeState.NEW);
-    originalList.add(element);
+    originalList.add(element.getData());
   }
 
   @Override
