@@ -1,7 +1,5 @@
 package org.smartbit4all.api.object;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
@@ -13,9 +11,10 @@ import org.smartbit4all.api.sample.bean.SampleContainerItem;
 import org.smartbit4all.api.sample.bean.SampleDataSheet;
 import org.smartbit4all.core.io.TestFileUtil;
 import org.smartbit4all.core.object.ObjectApi;
-import org.smartbit4all.core.object.ObjectDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 @SpringBootTest(classes = {ApplyChangeTestConfig.class})
 class ApplyChangeTest {
@@ -39,17 +38,16 @@ class ApplyChangeTest {
   @Test
   void testApplyChange() {
 
-    ObjectDefinition<SampleCategory> definition = objectApi.definition(SampleCategory.class);
-    SampleCategoryResult categoryResult = constructSampleCategory(SampleCategory.CONTAINER_ITEMS);
+    String referenceToItems = SampleCategory.CONTAINER_ITEMS;
+    SampleCategoryResult categoryResult = constructSampleCategory(referenceToItems);
 
     ApplyChangeResult result = categoryResult.result;
 
-    ObjectRetrievalRequest request = retrievalApi.request(
-        categoryResult.uri, SampleCategory.CONTAINER_ITEMS, SampleContainerItem.DATASHEET);
-    // request.loadBy(definition.getOutgoingReferences().get(referenceToItems));
-    request.loadBy(definition.getOutgoingReference(SampleCategory.SUB_CATEGORIES));
-    // request.loadBy(definitionItem.getOutgoingReference(SampleContainerItem.DATASHEET));
-    ObjectNode objectNode = retrievalApi.load(request, categoryResult.uri);
+    ObjectRetrievalRequest request = retrievalApi.request(SampleCategory.class)
+        .append(SampleCategory.SUB_CATEGORIES).pre().append(SampleCategory.CONTAINER_ITEMS)
+        .append(SampleContainerItem.DATASHEET);
+
+    ObjectNode objectNode = request.load(categoryResult.uri);
 
     ObjectProperties objectProperties =
         new ObjectProperties().property(SampleCategory.class, SampleCategory.NAME)
@@ -103,7 +101,7 @@ class ApplyChangeTest {
 
     URI changedUri = applyChangeApi.applyChanges(objectNode, null);
 
-    ObjectNode objectNodeAfterSave = retrievalApi.load(request, changedUri);
+    ObjectNode objectNodeAfterSave = request.root().load(changedUri);
 
     System.out.println(ObjectNodes.versionTree(objectNodeAfterSave,
         objectProperties));

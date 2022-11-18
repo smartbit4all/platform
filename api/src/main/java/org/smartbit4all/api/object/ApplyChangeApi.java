@@ -46,4 +46,15 @@ public interface ApplyChangeApi {
    */
   URI applyChanges(ObjectNode rootNode, URI branchUri);
 
+  /**
+   * Constructs the {@link ApplyChangeRequest} based on the modification of the {@link ObjectNode}.
+   * With no branch it will save the result in the current object state.
+   * 
+   * @param rootNode The root node of the modified {@link ObjectNode}.
+   * @return The {@link ApplyChangeResult} that is result.
+   */
+  default URI applyChanges(ObjectNode rootNode) {
+    return applyChanges(rootNode, null);
+  }
+
 }

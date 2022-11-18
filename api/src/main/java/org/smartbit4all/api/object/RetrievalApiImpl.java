@@ -23,7 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * 
  * @author Peter Boros
  */
-public class RetrievalApiImpl implements RetrievalApi {
+public final class RetrievalApiImpl implements RetrievalApi {
 
   @Autowired
   private StorageApi storageApi;
@@ -110,7 +110,7 @@ public class RetrievalApiImpl implements RetrievalApi {
 
   @Override
   public <T> ObjectRetrievalRequest request(Class<T> clazz) {
-    return new ObjectRetrievalRequest();
+    return new ObjectRetrievalRequest(this, objectApi.definition(clazz));
   }
 
   @Override
@@ -135,7 +135,7 @@ public class RetrievalApiImpl implements RetrievalApi {
   }
 
   private ObjectRetrievalRequest request(ObjectDefinition<?> definition, String... paths) {
-    ObjectRetrievalRequest request = new ObjectRetrievalRequest();
+    ObjectRetrievalRequest request = new ObjectRetrievalRequest(this, definition);
     if (paths != null && paths.length > 0) {
       String path = paths[0];
       ReferenceDefinition reference = definition.getOutgoingReference(path);
