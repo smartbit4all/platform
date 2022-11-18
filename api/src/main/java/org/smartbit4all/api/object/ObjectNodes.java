@@ -1,11 +1,14 @@
 package org.smartbit4all.api.object;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+import org.smartbit4all.api.object.bean.ObjectNodeData;
 import org.smartbit4all.core.object.ReferenceDefinition;
 import org.smartbit4all.core.utility.StringConstant;
+import com.google.common.base.Strings;
 
 public class ObjectNodes {
 
@@ -62,6 +65,100 @@ public class ObjectNodes {
         }
       }
     }
+  }
+
+  public static Object getValue(ObjectNodeData data, String... paths) {
+    if (paths == null || paths.length == 0) {
+      return data;
+    }
+    String path = paths[0];
+    if (Strings.isNullOrEmpty(path)) {
+      throw new IllegalArgumentException("Path part cannot be null or empty");
+    }
+    Object result = getValueFromReference(data, paths);
+    if (result != null) {
+      return result;
+    }
+    result = getValueFromReferenceList(data, paths);
+    if (result != null) {
+      return result;
+    }
+    result = getValueFromReferenceMap(data, paths);
+    if (result != null) {
+      return result;
+    }
+    return getValueFromObjectMap(data.getObjectAsMap(), paths);
+  }
+
+  private static Object getValueFromReference(ObjectNodeData data, String[] paths) {
+    String path = paths[0];
+    ObjectNodeData nodeOnPath = data.getReferenceValues().get(path);
+    if (nodeOnPath != null) {
+      String[] subPaths = Arrays.copyOfRange(paths, 1, paths.length);
+      return getValue(nodeOnPath, subPaths);
+    }
+    return null;
+  }
+
+  private static Object getValueFromReferenceList(ObjectNodeData data, String[] paths) {
+    String path = paths[0];
+    List<ObjectNodeData> listOnPath = data.getReferenceListValues().get(path);
+    if (listOnPath != null) {
+      if (paths.length == 1) {
+        // TODO wrap into ObjectNodeList
+        return listOnPath;
+      }
+      String idxString = paths[1];
+      try {
+        Integer idx = Integer.valueOf(idxString);
+        String[] subPaths = Arrays.copyOfRange(paths, 2, paths.length);
+        return getValue(listOnPath.get(idx), subPaths);
+      } catch (NumberFormatException ex1) {
+        throw new IllegalArgumentException("List index is not a number: "
+            + path + "(" + idxString + ")");
+      } catch (IndexOutOfBoundsException ex2) {
+        throw new IllegalArgumentException("List item not found by index: "
+            + path + "(" + idxString + ")");
+      }
+    }
+    return null;
+  }
+
+  private static Object getValueFromReferenceMap(ObjectNodeData data, String[] paths) {
+    String path = paths[0];
+    Map<String, ObjectNodeData> mapOnPath = data.getReferenceMapValues().get(path);
+    if (mapOnPath != null) {
+      if (paths.length == 1) {
+        // TODO Wrap into ObjectNodeMap
+        return mapOnPath;
+      }
+      String key = paths[1];
+      if (mapOnPath.containsKey(key)) {
+        String[] subPaths = Arrays.copyOfRange(paths, 2, paths.length);
+        return getValue(mapOnPath.get(key), subPaths);
+      }
+      throw new IllegalArgumentException(
+          "Map item not found by index: " + path + "(" + key + ")");
+    }
+    return null;
+  }
+
+  private static Object getValueFromObjectMap(Map<String, Object> map, String... paths) {
+    if (paths != null && paths.length > 0) {
+      String path = paths[0];
+      Object value = map.get(path);
+      if (paths.length == 1) {
+        return value;
+      }
+      if (value instanceof Map) {
+        @SuppressWarnings("unchecked")
+        Map<String, Object> subMap = (Map<String, Object>) value;
+        String[] subPaths = Arrays.copyOfRange(paths, 2, paths.length);
+        return getValueFromObjectMap(subMap, subPaths);
+      }
+      return null;
+    }
+    return map;
   }
 
 }
