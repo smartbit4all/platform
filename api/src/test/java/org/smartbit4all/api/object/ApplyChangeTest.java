@@ -1,5 +1,7 @@
 package org.smartbit4all.api.object;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
@@ -13,8 +15,6 @@ import org.smartbit4all.core.io.TestFileUtil;
 import org.smartbit4all.core.object.ObjectApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 @SpringBootTest(classes = {ApplyChangeTestConfig.class})
 class ApplyChangeTest {
@@ -44,10 +44,30 @@ class ApplyChangeTest {
     ApplyChangeResult result = categoryResult.result;
 
     ObjectRetrievalRequest request = retrievalApi.request(SampleCategory.class)
-        .append(SampleCategory.SUB_CATEGORIES).pre().append(SampleCategory.CONTAINER_ITEMS)
-        .append(SampleContainerItem.DATASHEET);
+        .add(SampleCategory.SUB_CATEGORIES)
+        .add(SampleCategory.CONTAINER_ITEMS, SampleContainerItem.DATASHEET);
+
+    Assertions.assertEquals(4, request.all().count());
+
+    request.get(SampleCategory.SUB_CATEGORIES)
+        .add(SampleCategory.CONTAINER_ITEMS, SampleContainerItem.DATASHEET);
+
+    Assertions.assertEquals(6, request.all().count());
 
     ObjectNode objectNode = request.load(categoryResult.uri);
+
+    request.get(SampleCategory.SUB_CATEGORIES)
+        .add(SampleCategory.CONTAINER_ITEMS, SampleContainerItem.DATASHEET);
+
+    Assertions.assertEquals(6, request.all().count());
+
+    ObjectRetrievalRequest req2 = retrievalApi.request(SampleCategory.class)
+        .add(SampleCategory.SUB_CATEGORIES);
+    req2.all()
+        .filter(r -> r.getDefinition().getClazz() == SampleCategory.class)
+        .forEach(r -> r.add(
+            SampleCategory.CONTAINER_ITEMS, SampleContainerItem.DATASHEET));
+    Assertions.assertEquals(6, request.all().count());
 
     ObjectProperties objectProperties =
         new ObjectProperties().property(SampleCategory.class, SampleCategory.NAME)
