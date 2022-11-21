@@ -106,6 +106,31 @@ class StorageTest {
   protected URI collectionsTestUri;
 
   @Test
+  void setTest() throws Exception {
+    Storage storage = storageApi.get(StorageTestConfig.TESTSCHEME);
+
+    URI uri;
+    {
+      StorageObject<FSTestBean> storageObject = storage.instanceOf(FSTestBean.class);
+
+      storageObject.setObject(new FSTestBean("SucceedTest"));
+
+      uri = storage.save(storageObject);
+    }
+
+    Storage storageSingle = storageApi.get(StorageTestConfig.TESTSCHEMESINGLE);
+
+    storageSingle.addToSet(MY_MAP, uri);
+
+    List<FSTestBean> collect = storageSingle.readAllReferenceFromSet(MY_MAP, FSTestBean.class);
+
+    assertEquals(1, collect.size());
+
+    assertEquals(uri, collect.get(0).getUri());
+
+  }
+
+  @Test
   void saveLoadDeleteTest() throws Exception {
     Storage storage = storageApi.get(StorageTestConfig.TESTSCHEME);
 

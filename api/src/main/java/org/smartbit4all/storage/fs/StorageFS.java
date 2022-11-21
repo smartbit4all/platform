@@ -580,7 +580,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
       throw new IllegalArgumentException("Unable to load single version object with .");
     }
 
-    if (storage.getVersionPolicy() == VersionPolicy.SINGLEVERSION) {
+    if (uriWithoutVersion.getPath().endsWith(Storage.SINGLE_VERSION_URI_POSTFIX)) {
       // Load the single version from file.
       return readObjectSingleVersion(storage, uriWithoutVersion, clazz, storageObjectDataFile);
     }
@@ -739,8 +739,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
   }
 
   @Override
-  public boolean move(Storage srcStorage, URI uri, Storage targetStorage,
-      URI targetUri) {
+  public boolean move(URI uri, URI targetUri) {
     // TODO For the first time we implement only the single version.
     File sourceObjectFile = getObjectDataFile(uri);
     File targetObjectFile = getObjectDataFile(targetUri);
@@ -749,6 +748,18 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
       return true;
     } catch (InterruptedException e) {
       log.warn("Unable to move {} --> {}", sourceObjectFile, targetObjectFile);
+    }
+    return false;
+  }
+
+  @Override
+  public boolean delete(URI uri) {
+    File sourceObjectFile = getObjectDataFile(uri);
+    try {
+      FileIO.delete(sourceObjectFile);
+      return true;
+    } catch (InterruptedException e) {
+      log.warn("Unable to delete {}", sourceObjectFile);
     }
     return false;
   }

@@ -202,7 +202,13 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
   }
 
   @Override
-  public boolean move(Storage srcStorage, URI uri, Storage targetStorage, URI targetUri) {
+  public boolean move(URI uri, URI targetUri) {
+    // By default it won't return anything. The management of the set is an extra functionality.
+    return false;
+  }
+
+  @Override
+  public boolean delete(URI uri) {
     // By default it won't return anything. The management of the set is an extra functionality.
     return false;
   }

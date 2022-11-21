@@ -507,6 +507,27 @@ public class FileIO {
     }
   }
 
+  public static void delete(File file)
+      throws InterruptedException {
+    if (file != null && file.exists()) {
+      long waitTime = 10;
+      while (true) {
+        if (!file.exists()) {
+          return;
+        }
+        try {
+          Files.delete(file.toPath());
+          return;
+        } catch (IOException e) {
+          // We must try again.
+          log.debug("Unable to delete {}", file);
+          waitTime = waitTime * rnd.nextInt(4);
+          Thread.sleep(waitTime);
+        }
+      }
+    }
+  }
+
   public static Boolean checkfileName(String name) {
     if (Strings.isNullOrEmpty(name)) {
       return false;

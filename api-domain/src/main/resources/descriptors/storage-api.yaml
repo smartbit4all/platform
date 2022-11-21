@@ -426,3 +426,21 @@ components:
             The uri of the next save event.
           type: string
           format: uri
+    StorageObjectReference:
+      type: object
+      description: |
+        This is the generic reference to another storage object. This object has no data but the object URI itself. So there is no need to have history at all.
+        This object is used only by the storage itself to form a special link to an object. It is included into the storage set container and can be used to
+        iterate through the referred objects. Of course this results a two phase read but this is the trade off for the flexibility.
+      required: [uri, objectUri]
+      properties:
+        uri:
+          type: string
+          format: uri
+          description: |
+            The identifier of the StorageObjectReference object.  
+        objectUri:
+          type: string
+          format: uri
+          description: |
+            The uri of the original object refrred by the reference object.  

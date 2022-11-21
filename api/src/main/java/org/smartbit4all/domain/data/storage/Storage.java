@@ -17,6 +17,7 @@ import org.smartbit4all.api.storage.bean.ObjectMap;
 import org.smartbit4all.api.storage.bean.ObjectMapRequest;
 import org.smartbit4all.api.storage.bean.ObjectReference;
 import org.smartbit4all.api.storage.bean.ObjectVersion;
+import org.smartbit4all.api.storage.bean.StorageObjectReference;
 import org.smartbit4all.api.storage.bean.StorageSettings;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
@@ -247,6 +248,27 @@ public final class Storage {
   }
 
   /**
+   * The add to set constructs a new {@link StorageObjectReference} and set its objectUri to the
+   * given object URI. This new object is saved into the set we give.
+   * 
+   * @param setName The name of the set.
+   * @param objectUri The object URI to save as reference.
+   * @return The URI of the newly created reference.
+   */
+  public URI addToSet(String setName, URI objectUri) {
+    return saveAsNew(new StorageObjectReference().objectUri(objectUri), setName);
+  }
+
+  public URI moveToSet(URI uri, String setName) {
+    if (uri != null && exists(uri)) {
+      URI movedUri = constructUriForSet(uri, setName);
+      return objectStorage.move(uri, movedUri) ? movedUri
+          : null;
+    }
+    return null;
+  }
+
+  /**
    * This function is locking and loading the object identified by the object uri. If the update
    * function produce null as the result of the {@link Function#apply(Object)} function then it will
    * skip the update.
@@ -376,6 +398,24 @@ public final class Storage {
     return objectStorage.readAll(this, null, clazz);
   }
 
+  /**
+   * This will read all the references from the storage set.
+   * 
+   * @param <T>
+   * @param setName
+   * @param clazz
+   * @return
+   */
+  public <T> List<T> readAllReferenceFromSet(String setName, Class<T> clazz) {
+    List<StorageObjectReference> allReferences =
+        objectStorage.readAll(this, setName, StorageObjectReference.class);
+    List<T> result = new ArrayList<>();
+    for (StorageObjectReference storageObjectReference : allReferences) {
+      result.add(read(storageObjectReference.getObjectUri(), clazz));
+    }
+    return result;
+  }
+
   public boolean exists(URI uri) {
     return objectStorage.exists(uri);
   }
@@ -426,8 +466,8 @@ public final class Storage {
    */
   public URI archive(URI uri) {
     if (uri != null && exists(uri)) {
-      URI constructArchiveUri = constructArchiveUri(uri);
-      return objectStorage.move(this, uri, this, constructArchiveUri) ? constructArchiveUri
+      URI constructArchiveUri = constructUriForSet(uri, "archive");
+      return objectStorage.move(uri, constructArchiveUri) ? constructArchiveUri
           : null;
     }
     return null;
@@ -522,8 +562,9 @@ public final class Storage {
             : StringConstant.EMPTY));
   }
 
-  private final URI constructArchiveUri(URI uri) {
-    return UriUtils.createUri(uri.getScheme(), null, "/archive" + uri.getPath(), null);
+  private final URI constructUriForSet(URI uri, String setName) {
+    return UriUtils.createUri(uri.getScheme(), null, StringConstant.SLASH + setName + uri.getPath(),
+        null);
   }
 
   /**
