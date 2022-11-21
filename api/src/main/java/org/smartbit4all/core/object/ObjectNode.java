@@ -36,7 +36,7 @@ public class ObjectNode {
    */
   private final ObjectApi objectApi;
 
-  private final Map<String, ObjectNode> referenceNodes = new HashMap<>();
+  private final Map<String, ObjectNodeReference> referenceNodes = new HashMap<>();
   private final Map<String, List<ObjectNode>> referenceLists = new HashMap<>();
   private final Map<String, Map<String, ObjectNode>> referenceMaps = new HashMap<>();
 
@@ -64,7 +64,8 @@ public class ObjectNode {
 
   private void initReferences() {
     for (Entry<String, ObjectNodeData> entry : data.getReferenceValues().entrySet()) {
-      referenceNodes.put(entry.getKey(), new ObjectNode(objectApi, entry.getValue()));
+      ObjectNode node = new ObjectNode(objectApi, entry.getValue());
+      referenceNodes.put(entry.getKey(), new ObjectNodeReference(node));
     }
     for (Entry<String, List<ObjectNodeData>> entry : data.getReferenceListValues().entrySet()) {
       referenceLists.put(entry.getKey(), new ObjectNodeList(objectApi, entry.getValue()));
@@ -118,7 +119,7 @@ public class ObjectNode {
     return objectDefinition.fromMap(getObjectAsMap());
   }
 
-  public final Map<String, ObjectNode> getReferenceNodes() {
+  public final Map<String, ObjectNodeReference> getReferenceNodes() {
     return referenceNodes;
   }
 
@@ -139,7 +140,8 @@ public class ObjectNode {
   public Stream<ObjectNode> allNodes() {
     return Stream.of(
         Stream.of(this),
-        getReferenceNodes().values().stream().flatMap(ObjectNode::allNodes),
+        getReferenceNodes().values().stream().map(ObjectNodeReference::get)
+            .flatMap(ObjectNode::allNodes),
         getReferenceLists().values().stream().flatMap(List::stream)
             .flatMap(ObjectNode::allNodes),
         getReferenceMaps().values().stream()
@@ -219,70 +221,15 @@ public class ObjectNode {
   }
 
   /**
-   * The reference value is returned by the {@link ReferenceDefinition} that is one outgoing
-   * reference of the current {@link ObjectDefinition}.
-   * 
-   * @param reference An outgoing reference of the given object.
-   * @return The {@link ObjectNode} belong to the given reference. If the reference is not loaded
-   *         then we get null.
-   */
-  public ObjectNode referenceNode(String reference) {
-    return referenceNodes.get(reference);
-  }
-
-  /**
-   * The reference value is returned by the {@link ReferenceDefinition} that is one outgoing
-   * reference of the current {@link ObjectDefinition}.
-   * 
-   * @param reference An outgoing reference of the given object.
-   * @param storageScheme The schema of the newly created referred object.
-   * @return The {@link ObjectNode} belong to the given reference. If the reference is not loaded
-   *         then we get null.
-   */
-  public ObjectNode referenceNodeInitIfAbsent(String reference, String storageScheme,
-      Object o) {
-    return referenceNodes.computeIfAbsent(reference,
-        r -> new ObjectNode(objectApi, storageScheme, o));
-  }
-
-  /**
-   * The reference value is returned by the {@link ReferenceDefinition} that is one outgoing
-   * reference of the current {@link ObjectDefinition}.
-   * 
-   * @param <T>
-   * @param reference An outgoing reference of the given object.
-   * @return The copy of the current value.
-   */
-  public <T> T reference(String reference, ObjectDefinition<T> objectDefinition) {
-    ObjectNode referenceNode = referenceNode(reference);
-    if (referenceNode != null) {
-      return referenceNode.getObject(objectDefinition);
-    }
-    return null;
-  }
-
-  /**
-   * @param <T>
-   * @param reference
-   * @param o The object value for the reference. This object is not necessarily comes from the kind
-   *        of the referred object definition. We can use any object that has relevant values.
-   * @param storageScheme The storage schema for the object to set.
-   */
-  public <T> void setReference(String reference, Object o, String storageScheme) {
-    ObjectNode objectNode = referenceNodeInitIfAbsent(reference, storageScheme, o);
-    objectNode.setObject(o);
-  }
-
-  /**
    * Set the referred object node to deletion if it exists. If it doesn't exist then nothing
    * happens.
    * 
    * @param reference
    */
   public void clearReference(String reference) {
-    ObjectNode objectNode = referenceNode(reference);
-    if (objectNode != null) {
-      objectNode.setState(ObjectNodeState.REMOVED);
+    ObjectNodeReference ref = referenceNodes.get(reference);
+    if (ref != null && ref.isPresent()) {
+      ref.clear();
     }
   }
 
@@ -304,6 +251,14 @@ public class ObjectNode {
 
   public ObjectNode getRef(String... paths) {
     return getValueAs(ObjectNode.class, paths);
+  }
+
+  public void setRef(String path, Object o) {
+    ObjectNodeReference ref = referenceNodes.get(path);
+    if (ref == null) {
+      ObjectNode node = objectApi.node(getStorageScheme(), o);
+      ref = new ObjectNodeReference(node);
+    }
   }
 
   @SuppressWarnings("unchecked")
@@ -351,10 +306,10 @@ public class ObjectNode {
       if (Strings.isNullOrEmpty(path)) {
         throw new IllegalArgumentException("Path part cannot be null or empty");
       }
-      ObjectNode nodeOnPath = referenceNodes.get(path);
-      if (nodeOnPath != null) {
+      ObjectNodeReference nodeOnPath = referenceNodes.get(path);
+      if (nodeOnPath != null && nodeOnPath.isPresent()) {
         String[] subPaths = Arrays.copyOfRange(paths, 1, paths.length);
-        return nodeOnPath.getValue(subPaths);
+        return nodeOnPath.get().getValue(subPaths);
       }
       List<ObjectNode> listOnPath = referenceLists.get(path);
       if (listOnPath != null) {

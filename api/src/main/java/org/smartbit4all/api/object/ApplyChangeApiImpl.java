@@ -11,6 +11,7 @@ import org.smartbit4all.api.object.ObjectChangeRequest.ObjectChangeOperation;
 import org.smartbit4all.api.object.bean.ObjectNodeState;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
+import org.smartbit4all.core.object.ObjectNodeReference;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class ApplyChangeApiImpl implements ApplyChangeApi {
@@ -163,8 +164,8 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
     }
 
     // Recurse on the values.
-    for (Entry<String, ObjectNode> entry : node.getReferenceNodes().entrySet()) {
-      ObjectChangeRequest changeRequest = constructRequest(entry.getValue(), request);
+    for (Entry<String, ObjectNodeReference> entry : node.getReferenceNodes().entrySet()) {
+      ObjectChangeRequest changeRequest = constructRequest(entry.getValue().get(), request);
       if (changeRequest.getOperation() != ObjectChangeOperation.NOP) {
         containmentChanged = true;
         result.referenceValue(entry.getKey()).value(changeRequest);

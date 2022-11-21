@@ -49,11 +49,12 @@ public class ObjectNodes {
         .append(StringConstant.NEW_LINE);
     // Traverse the referred nodes also.
     String subIndent = indent + INDENT_INCREMENT;
-    for (Entry<String, ObjectNode> entry : objectNode.getReferenceNodes()
+    for (Entry<String, ObjectNodeReference> entry : objectNode.getReferenceNodes()
         .entrySet()) {
       sb.append(subIndent).append(entry.getKey())
           .append(StringConstant.ARROW).append(StringConstant.NEW_LINE);
-      traverseNodeVersionTree(entry.getValue(), sb, subIndent + INDENT_INCREMENT, propertyMap);
+      traverseNodeVersionTree(entry.getValue().get(), sb, subIndent + INDENT_INCREMENT,
+          propertyMap);
     }
     for (Entry<String, List<ObjectNode>> entry : objectNode.getReferenceLists()
         .entrySet()) {

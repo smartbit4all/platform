@@ -104,7 +104,7 @@ class ApplyChangeTest {
       containerItemNode.setValue(SampleContainerItem.NAME,
           containerItemNode.getObjectAsMap().get(SampleContainerItem.NAME) + "-modified");
       if (i % 2 == 0) {
-        ObjectNode datasheetNode = containerItemNode.referenceNode(SampleContainerItem.DATASHEET);
+        ObjectNode datasheetNode = containerItemNode.getRef(SampleContainerItem.DATASHEET);
         datasheetNode.setValue(SampleDataSheet.NAME, "modified");
 
         Object dataSheetValue = containerItemNode.getValue(SampleContainerItem.DATASHEET);
