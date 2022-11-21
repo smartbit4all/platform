@@ -44,13 +44,13 @@ public class ApiBeanDescriptor {
     defaultAsValueContainedClasses.add(UUID.class);
   }
 
-  protected ApiBeanDescriptor(Class<?> clazz, Set<Class<?>> allApiBeanClass) {
+  public ApiBeanDescriptor(Class<?> clazz, Set<Class<?>> allApiBeanClass) {
     super();
     this.clazz = clazz;
     this.allApiBeanClass = allApiBeanClass;
   }
 
-  final Set<Class<?>> getAllApiBeanClass() {
+  public final Set<Class<?>> getAllApiBeanClass() {
     return allApiBeanClass;
   }
 
