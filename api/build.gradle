@@ -4,10 +4,13 @@ plugins {
 
 dependencies {
 	api project(':api-domain')
-	api project(':domain')
 	api 'javax.activation:activation:1.1.1'
 	
-    testImplementation testFixtures(project(':core'))
-	testFixturesImplementation project(':core')
-    testFixturesImplementation testFixtures(project(':core'))
+    api 'org.springframework.boot:spring-boot-starter'
+    api 'org.springframework:spring-tx'
+    api "io.reactivex.rxjava3:rxjava:3.0.12"
+
+    api 'org.openapitools:jackson-databind-nullable:0.2.1'
+    api 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+	
 }

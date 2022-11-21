@@ -15,8 +15,6 @@ dependencies {
 	testImplementation project(':api')
 	
     testImplementation testFixtures(project(':api'))
-    testImplementation testFixtures(project(':core'))
-    testImplementation testFixtures(project(':domain'))
 }
 	
 smartbit4all {
