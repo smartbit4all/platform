@@ -357,7 +357,7 @@ public class ObjectNode {
         return nodeOnPath.getValue(subPaths);
       }
       List<ObjectNode> listOnPath = referenceLists.get(path);
-      if (listOnPath != null && !listOnPath.isEmpty()) {
+      if (listOnPath != null) {
         if (paths.length == 1) {
           return listOnPath;
         }
@@ -375,7 +375,7 @@ public class ObjectNode {
         }
       }
       Map<String, ObjectNode> mapOnPath = referenceMaps.get(path);
-      if (mapOnPath != null && !mapOnPath.isEmpty()) {
+      if (mapOnPath != null) {
         if (paths.length == 1) {
           return mapOnPath;
         }
