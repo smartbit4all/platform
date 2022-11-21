@@ -109,24 +109,23 @@ class StorageTest {
   void setTest() throws Exception {
     Storage storage = storageApi.get(StorageTestConfig.TESTSCHEME);
 
-    URI uri;
-    {
-      StorageObject<FSTestBean> storageObject = storage.instanceOf(FSTestBean.class);
-
-      storageObject.setObject(new FSTestBean("SucceedTest"));
-
-      uri = storage.save(storageObject);
-    }
+    URI uri = storage.saveAsNew(new FSTestBean("SucceedTest"));
 
     Storage storageSingle = storageApi.get(StorageTestConfig.TESTSCHEMESINGLE);
 
-    storageSingle.addToSet(MY_MAP, uri);
+    URI refUri = storageSingle.addToSet(MY_MAP, uri);
 
     List<FSTestBean> collect = storageSingle.readAllReferenceFromSet(MY_MAP, FSTestBean.class);
 
     assertEquals(1, collect.size());
 
     assertEquals(uri, collect.get(0).getUri());
+
+    storageSingle.moveToSet(refUri, "archive");
+
+    collect = storageSingle.readAllReferenceFromSet(MY_MAP, FSTestBean.class);
+
+    assertEquals(0, collect.size());
 
   }
 
