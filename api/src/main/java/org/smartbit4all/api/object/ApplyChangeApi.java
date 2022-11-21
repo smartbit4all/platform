@@ -2,6 +2,7 @@ package org.smartbit4all.api.object;
 
 import java.net.URI;
 import org.smartbit4all.core.object.ObjectDefinition;
+import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ReferenceDefinition;
 
 /**

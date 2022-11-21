@@ -1,4 +1,4 @@
-package org.smartbit4all.api.object;
+package org.smartbit4all.core.object;
 
 import java.util.Arrays;
 import java.util.List;
@@ -7,8 +7,6 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.smartbit4all.api.object.bean.ObjectNodeData;
-import org.smartbit4all.core.object.ObjectApi;
-import org.smartbit4all.core.object.ReferenceDefinition;
 import org.smartbit4all.core.utility.StringConstant;
 import com.google.common.base.Strings;
 
@@ -51,13 +49,13 @@ public class ObjectNodes {
         .append(StringConstant.NEW_LINE);
     // Traverse the referred nodes also.
     String subIndent = indent + INDENT_INCREMENT;
-    for (Entry<String, ObjectNode> entry : objectNode.getReferenceValues()
+    for (Entry<String, ObjectNode> entry : objectNode.getReferenceNodes()
         .entrySet()) {
       sb.append(subIndent).append(entry.getKey())
           .append(StringConstant.ARROW).append(StringConstant.NEW_LINE);
       traverseNodeVersionTree(entry.getValue(), sb, subIndent + INDENT_INCREMENT, propertyMap);
     }
-    for (Entry<String, ObjectNodeList> entry : objectNode.getReferenceListValues()
+    for (Entry<String, List<ObjectNode>> entry : objectNode.getReferenceLists()
         .entrySet()) {
       if (!entry.getValue().isEmpty()) {
         sb.append(subIndent).append(entry.getKey())
@@ -67,6 +65,7 @@ public class ObjectNodes {
         }
       }
     }
+    // TODO maps!
   }
 
   /**

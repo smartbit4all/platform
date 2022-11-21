@@ -1,6 +1,7 @@
 package org.smartbit4all.core.object;
 
 import java.net.URI;
+import org.smartbit4all.api.object.bean.ObjectNodeData;
 
 /**
  * Collects the object definitions for the api objects.
@@ -47,5 +48,9 @@ public interface ObjectApi {
    * @return The default serializer for the objects.
    */
   ObjectSerializer getDefaultSerializer();
+
+  ObjectNode node(ObjectNodeData data);
+
+  ObjectNode node(String storageScheme, Object object);
 
 }

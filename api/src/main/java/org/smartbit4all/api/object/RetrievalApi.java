@@ -3,6 +3,7 @@ package org.smartbit4all.api.object;
 import java.net.URI;
 import java.util.List;
 import org.smartbit4all.api.object.bean.ObjectNodeData;
+import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ReferenceDefinition;
 
 /**

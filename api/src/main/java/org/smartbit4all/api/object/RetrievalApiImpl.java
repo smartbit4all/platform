@@ -13,6 +13,7 @@ import java.util.stream.Stream;
 import org.smartbit4all.api.object.bean.ObjectNodeData;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
+import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ReferenceDefinition;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageObject;
@@ -35,7 +36,7 @@ public final class RetrievalApiImpl implements RetrievalApi {
 
     return uriStream.parallel()
         .map(u -> readData(request, u))
-        .map(n -> new ObjectNode(objectApi, n));
+        .map(objectApi::node);
 
   }
 

@@ -1,4 +1,4 @@
-package org.smartbit4all.api.object;
+package org.smartbit4all.core.object;
 
 import java.util.Collection;
 import java.util.List;
@@ -7,7 +7,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.smartbit4all.api.object.bean.ObjectNodeData;
 import org.smartbit4all.api.object.bean.ObjectNodeState;
-import org.smartbit4all.core.object.ObjectApi;
 
 class ObjectNodeMap implements Map<String, ObjectNode> {
 

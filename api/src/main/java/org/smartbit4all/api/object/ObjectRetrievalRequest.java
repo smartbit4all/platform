@@ -7,8 +7,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 import org.smartbit4all.core.object.ObjectDefinition;
+import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ReferenceDefinition;
-import org.smartbit4all.domain.service.query.RetrievalRequest;
 import com.google.common.base.Strings;
 
 /**
@@ -61,7 +61,7 @@ public final class ObjectRetrievalRequest {
   }
 
   /**
-   * The object request is constructed by itself and the {@link RetrievalRequest}.
+   * The object request is constructed by itself and the RetrievalRequest.
    * 
    */
   ObjectRetrievalRequest(RetrievalApi retrievalApi, ObjectDefinition<?> definition) {

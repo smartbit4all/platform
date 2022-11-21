@@ -1,4 +1,4 @@
-package org.smartbit4all.api.object;
+package org.smartbit4all.core.object;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -7,7 +7,6 @@ import java.util.ListIterator;
 import java.util.stream.Collectors;
 import org.smartbit4all.api.object.bean.ObjectNodeData;
 import org.smartbit4all.api.object.bean.ObjectNodeState;
-import org.smartbit4all.core.object.ObjectApi;
 
 final class ObjectNodeList implements List<ObjectNode> {
 

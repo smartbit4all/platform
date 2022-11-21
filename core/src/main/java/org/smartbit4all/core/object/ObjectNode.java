@@ -1,8 +1,7 @@
-package org.smartbit4all.api.object;
+package org.smartbit4all.core.object;
 
 import java.net.URI;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,15 +9,12 @@ import java.util.Map.Entry;
 import java.util.stream.Stream;
 import org.smartbit4all.api.object.bean.ObjectNodeData;
 import org.smartbit4all.api.object.bean.ObjectNodeState;
-import org.smartbit4all.core.object.ObjectApi;
-import org.smartbit4all.core.object.ObjectDefinition;
-import org.smartbit4all.core.object.ReferenceDefinition;
 import com.google.common.base.Strings;
 
 /**
- * The object node contains an object returned by the {@link RetrievalApi}. It can manage the state
- * of the object and we can use it to produce {@link ApplyChangeRequest} at the end of the
- * modification.
+ * The object node contains an object returned by the <code>RetrievalApi</code>. It can manage the
+ * state of the object and we can use it to produce <code>ApplyChangeRequest</code> at the end of
+ * the modification.
  * 
  * @author Peter Boros
  *
@@ -40,20 +36,19 @@ public class ObjectNode {
    */
   private final ObjectApi objectApi;
 
-  private final Map<String, ObjectNode> referenceValues = new HashMap<>();
-  private final Map<String, ObjectNodeList> referenceListValues = new HashMap<>();
-  private final Map<String, ObjectNodeMap> referenceMapValues = new HashMap<>();
-
+  private final Map<String, ObjectNode> referenceNodes = new HashMap<>();
+  private final Map<String, List<ObjectNode>> referenceLists = new HashMap<>();
+  private final Map<String, Map<String, ObjectNode>> referenceMaps = new HashMap<>();
 
   ObjectNode(ObjectApi objectApi, ObjectNodeData data) {
     super();
     this.objectApi = objectApi;
     this.definition = objectApi.definition(data.getQualifiedName());
     this.data = data;
-    initNodeMaps();
+    initReferences();
   }
 
-  public ObjectNode(ObjectApi objectApi, String storageScheme, Object o) {
+  ObjectNode(ObjectApi objectApi, String storageScheme, Object o) {
     super();
     this.objectApi = objectApi;
     this.definition = this.objectApi.definition(o.getClass());
@@ -64,20 +59,19 @@ public class ObjectNode {
         .objectAsMap(definition.toMap(o))
         .state(ObjectNodeState.NEW)
         .versionNr(null);
-    // TODO Auto-generated constructor stub
-    initNodeMaps();
+    initReferences();
   }
 
-  private void initNodeMaps() {
+  private void initReferences() {
     for (Entry<String, ObjectNodeData> entry : data.getReferenceValues().entrySet()) {
-      referenceValues.put(entry.getKey(), new ObjectNode(objectApi, entry.getValue()));
+      referenceNodes.put(entry.getKey(), new ObjectNode(objectApi, entry.getValue()));
     }
     for (Entry<String, List<ObjectNodeData>> entry : data.getReferenceListValues().entrySet()) {
-      referenceListValues.put(entry.getKey(), new ObjectNodeList(objectApi, entry.getValue()));
+      referenceLists.put(entry.getKey(), new ObjectNodeList(objectApi, entry.getValue()));
     }
     for (Entry<String, Map<String, ObjectNodeData>> entry : data.getReferenceMapValues()
         .entrySet()) {
-      referenceMapValues.put(entry.getKey(), new ObjectNodeMap(objectApi, entry.getValue()));
+      referenceMaps.put(entry.getKey(), new ObjectNodeMap(objectApi, entry.getValue()));
     }
   }
 
@@ -124,16 +118,16 @@ public class ObjectNode {
     return objectDefinition.fromMap(getObjectAsMap());
   }
 
-  final Map<String, ObjectNode> getReferenceValues() {
-    return referenceValues;
+  public final Map<String, ObjectNode> getReferenceNodes() {
+    return referenceNodes;
   }
 
-  final Map<String, ObjectNodeList> getReferenceListValues() {
-    return referenceListValues;
+  public final Map<String, List<ObjectNode>> getReferenceLists() {
+    return referenceLists;
   }
 
-  final Map<String, ObjectNodeMap> getReferenceMapValues() {
-    return referenceMapValues;
+  public final Map<String, Map<String, ObjectNode>> getReferenceMaps() {
+    return referenceMaps;
   }
 
   /**
@@ -145,22 +139,20 @@ public class ObjectNode {
   public Stream<ObjectNode> allNodes() {
     return Stream.of(
         Stream.of(this),
-        getReferenceValues().values().stream().flatMap(ObjectNode::allNodes),
-        getReferenceListValues().values().stream().flatMap(List::stream)
+        getReferenceNodes().values().stream().flatMap(ObjectNode::allNodes),
+        getReferenceLists().values().stream().flatMap(List::stream)
             .flatMap(ObjectNode::allNodes),
-        getReferenceMapValues().values().stream()
+        getReferenceMaps().values().stream()
             .flatMap(n -> n.values().stream())
             .flatMap(ObjectNode::allNodes))
         .flatMap(s -> s);
   }
 
-
-
   /**
    * Update the given {@link ObjectNode} as java object. It retrieves the current value of the bean
    * and can return another bean or the same with modified values. We don't have to care about
    * setting the proper URIs for the references because they will be managed by the
-   * {@link RetrievalApi} and the {@link ApplyChangeApi}.
+   * <code>RetrievalApi</code> and the <code>ApplyChangeApi</code>.
    * 
    * @param <T> The type class of the bean. If we already have the object then it will be passed to
    *        the updateFunction. Else the function read the given object from the data.
@@ -206,17 +198,9 @@ public class ObjectNode {
     return data.getState();
   }
 
-  final boolean isRemoved() {
-    return getState() == ObjectNodeState.REMOVED;
-  }
-
-  final boolean notRemoved() {
-    return getState() != ObjectNodeState.REMOVED;
-  }
-
   /**
    * Modify the state of the node. It's not public so it can be called inside the
-   * {@link RetrievalApi} and the {@link ApplyChangeApi} implementations.
+   * <code>RetrievalApi</code> and the <code>ApplyChangeApi</code> implementations.
    * 
    * @param state
    */
@@ -243,7 +227,7 @@ public class ObjectNode {
    *         then we get null.
    */
   public ObjectNode referenceNode(String reference) {
-    return referenceValues.get(reference);
+    return referenceNodes.get(reference);
   }
 
   /**
@@ -257,7 +241,7 @@ public class ObjectNode {
    */
   public ObjectNode referenceNodeInitIfAbsent(String reference, String storageScheme,
       Object o) {
-    return referenceValues.computeIfAbsent(reference,
+    return referenceNodes.computeIfAbsent(reference,
         r -> new ObjectNode(objectApi, storageScheme, o));
   }
 
@@ -275,19 +259,6 @@ public class ObjectNode {
       return referenceNode.getObject(objectDefinition);
     }
     return null;
-  }
-
-  /**
-   * @param reference
-   * @return If the given reference is empty, doesn't have any object set then we get back an empty
-   *         map.
-   */
-  public Map<String, Object> reference(String reference) {
-    ObjectNode referenceNode = referenceNode(reference);
-    if (referenceNode != null) {
-      return referenceNode.getObjectAsMap();
-    }
-    return Collections.emptyMap();
   }
 
   /**
@@ -327,8 +298,51 @@ public class ObjectNode {
    *         necessary.
    */
   public List<ObjectNode> referenceNodeList(String reference) {
-    return referenceListValues.computeIfAbsent(reference,
+    return referenceLists.computeIfAbsent(reference,
         r -> new ObjectNodeList(objectApi, null));
+  }
+
+  public ObjectNode getRef(String... paths) {
+    return getValueAs(ObjectNode.class, paths);
+  }
+
+  @SuppressWarnings("unchecked")
+  public List<ObjectNode> getList(String... paths) {
+    List<ObjectNode> result = getValueAs(List.class, paths);
+    // if (result == null) {
+    // result = new ArrayList<>();
+    // }
+    return result;
+  }
+
+  @SuppressWarnings("unchecked")
+  public Map<String, ObjectNode> getMap(String... paths) {
+    return getValueAs(Map.class, paths);
+  }
+
+  public <T> T getValue(Class<T> clazz, String... paths) {
+    Object value = getValue(paths);
+    if (value instanceof ObjectNode) {
+      return ((ObjectNode) value).getObject(objectApi.definition(clazz));
+    }
+    // TODO string, uri, uuid, number, boolean, etc.? Objectmapper?
+    return (T) value;
+  }
+
+  @SuppressWarnings("unchecked")
+  private <T> T getValueAs(Class<T> clazz, String... paths) {
+    Object value = getValue(paths);
+    if (value == null) {
+      // TODO is it right, possible??
+      return null;
+    }
+    if (clazz.isAssignableFrom(value.getClass())) {
+      return (T) value;
+    }
+    String path = paths == null ? "empty path" : String.join(",", paths);
+    throw new IllegalArgumentException(
+        "Value on path is not " + clazz.getSimpleName() + "!" + path);
+
   }
 
   public Object getValue(String... paths) {
@@ -337,12 +351,12 @@ public class ObjectNode {
       if (Strings.isNullOrEmpty(path)) {
         throw new IllegalArgumentException("Path part cannot be null or empty");
       }
-      ObjectNode nodeOnPath = referenceValues.get(path);
+      ObjectNode nodeOnPath = referenceNodes.get(path);
       if (nodeOnPath != null) {
         String[] subPaths = Arrays.copyOfRange(paths, 1, paths.length);
         return nodeOnPath.getValue(subPaths);
       }
-      ObjectNodeList listOnPath = referenceListValues.get(path);
+      List<ObjectNode> listOnPath = referenceLists.get(path);
       if (listOnPath != null && !listOnPath.isEmpty()) {
         if (paths.length == 1) {
           return listOnPath;
@@ -360,7 +374,7 @@ public class ObjectNode {
               + path + "(" + idxString + ")");
         }
       }
-      ObjectNodeMap mapOnPath = referenceMapValues.get(path);
+      Map<String, ObjectNode> mapOnPath = referenceMaps.get(path);
       if (mapOnPath != null && !mapOnPath.isEmpty()) {
         if (paths.length == 1) {
           return mapOnPath;

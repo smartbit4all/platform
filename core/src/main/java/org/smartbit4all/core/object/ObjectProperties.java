@@ -1,4 +1,4 @@
-package org.smartbit4all.api.object;
+package org.smartbit4all.core.object;
 
 import java.util.ArrayList;
 import java.util.HashMap;

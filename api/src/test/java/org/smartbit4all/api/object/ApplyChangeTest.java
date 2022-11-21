@@ -13,6 +13,9 @@ import org.smartbit4all.api.sample.bean.SampleContainerItem;
 import org.smartbit4all.api.sample.bean.SampleDataSheet;
 import org.smartbit4all.core.io.TestFileUtil;
 import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.core.object.ObjectNode;
+import org.smartbit4all.core.object.ObjectNodes;
+import org.smartbit4all.core.object.ObjectProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -82,7 +85,7 @@ class ApplyChangeTest {
 
     // Now we make some modification on the ObjectNode.
 
-    List<ObjectNode> subCategoryNodes = objectNode.referenceNodeList(SampleCategory.SUB_CATEGORIES);
+    List<ObjectNode> subCategoryNodes = objectNode.getList(SampleCategory.SUB_CATEGORIES);
 
     ObjectNode subCatNode = subCategoryNodes.get(0);
     subCatNode.setValue(SampleCategory.NAME, "modified sub category");
@@ -94,8 +97,7 @@ class ApplyChangeTest {
     subCatNode.setObject(modifiedSubCategory);
     assertEquals("even more modification", subCatNode.getValue(SampleCategory.NAME));
 
-    List<ObjectNode> containerItemNodes =
-        objectNode.referenceNodeList(SampleCategory.CONTAINER_ITEMS);
+    List<ObjectNode> containerItemNodes = objectNode.getList(SampleCategory.CONTAINER_ITEMS);
 
     int i = 0;
     for (ObjectNode containerItemNode : containerItemNodes) {
@@ -114,8 +116,7 @@ class ApplyChangeTest {
       i++;
     }
     containerItemNodes.remove(containerItemNodes.size() - 1);
-    containerItemNodes.add(new ObjectNode(
-        objectApi,
+    containerItemNodes.add(objectApi.node(
         MY_SCHEME,
         new SampleContainerItem().name("new item")));
 

@@ -11,6 +11,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.object.bean.ObjectNodeData;
 import org.smartbit4all.api.object.bean.ReferenceDefinitionData;
 import org.smartbit4all.core.utility.PathUtility;
 import org.springframework.beans.factory.InitializingBean;
@@ -334,6 +335,16 @@ public class ObjectApiImpl implements ObjectApi, InitializingBean {
   @Override
   public final ObjectSerializer getDefaultSerializer() {
     return defaultSerializer;
+  }
+
+  @Override
+  public ObjectNode node(ObjectNodeData data) {
+    return new ObjectNode(this, data);
+  }
+
+  @Override
+  public ObjectNode node(String storageScheme, Object object) {
+    return new ObjectNode(this, storageScheme, object);
   }
 
 }
