@@ -547,4 +547,35 @@ public class MultiSelectPopUp<T> extends CustomField<Set<T>> implements HasDataP
     this.simpleSelectAllPropertiesText = simpleSelectAllPropertiesText;
   }
 
+  public void setGridValues(Set<T> selectedItems) {
+    grid.asMultiSelect().setValue(selectedItems);
+  }
+
+  public Set<T> getGridValues() {
+    return grid.asMultiSelect().getSelectedItems();
+  }
+
+  /**
+   * Subscribe to the value change event of the selector grid.
+   * 
+   * @param listener
+   * @return
+   */
+  public Registration addGridSelectionChangeListener(
+      ValueChangeListener<? super ComponentValueChangeEvent<Grid<T>, Set<T>>> listener) {
+    return grid.asMultiSelect().addValueChangeListener(listener);
+  }
+
+  /**
+   * If the itemDisableCalculator setted iterates on the items and calculates again whether items
+   * are disabled.
+   */
+  public void recalculateDisabledItems() {
+    if (itemDisableCalculator != null) {
+      grid.getDataProvider().fetch(new Query<>())
+          .forEach(item -> grid.getClassNameGenerator().apply(item));
+      grid.getDataProvider().refreshAll();
+    }
+  }
+
 }
