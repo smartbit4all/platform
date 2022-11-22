@@ -45,10 +45,11 @@ public class ObjectNodeReference {
     }
   }
 
-  public void setNewObject(Object object) {
+  public ObjectNode setNewObject(Object object) {
     ObjectNode newNode = referrerNode.objectApi.node(referrerNode.getStorageScheme(), object);
     newNode.setState(ObjectNodeState.NEW);
     set(newNode);
+    return newNode;
   }
 
   public void set(ObjectNode node) {

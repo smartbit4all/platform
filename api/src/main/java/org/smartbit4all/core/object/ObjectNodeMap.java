@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import org.smartbit4all.api.object.bean.ObjectNodeData;
+import org.smartbit4all.api.object.bean.ObjectNodeState;
 
 public final class ObjectNodeMap {
 
@@ -62,6 +63,13 @@ public final class ObjectNodeMap {
 
   public ObjectNodeReference get(Object key) {
     return map.get(key);
+  }
+
+  public ObjectNode putNewObject(String key, Object object) {
+    ObjectNode newNode = referrerNode.objectApi.node(referrerNode.getStorageScheme(), object);
+    newNode.setState(ObjectNodeState.NEW);
+    put(key, newNode);
+    return newNode;
   }
 
   public ObjectNodeReference put(String key, ObjectNode node) {

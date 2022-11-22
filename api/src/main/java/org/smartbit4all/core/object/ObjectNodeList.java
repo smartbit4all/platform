@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import org.smartbit4all.api.object.bean.ObjectNodeData;
+import org.smartbit4all.api.object.bean.ObjectNodeState;
 
 public final class ObjectNodeList {
 
@@ -54,6 +55,13 @@ public final class ObjectNodeList {
 
   public ObjectNodeReference get(int index) {
     return list.get(index);
+  }
+
+  public ObjectNode addNewObject(Object object) {
+    ObjectNode newNode = referrerNode.objectApi.node(referrerNode.getStorageScheme(), object);
+    newNode.setState(ObjectNodeState.NEW);
+    add(newNode);
+    return newNode;
   }
 
   public boolean add(ObjectNode node) {

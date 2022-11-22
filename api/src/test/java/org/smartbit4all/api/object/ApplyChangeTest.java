@@ -43,9 +43,7 @@ class ApplyChangeTest {
   @Test
   void testApplyChange() {
 
-    SampleCategoryResult categoryResult = constructSampleCategory(SampleCategory.CONTAINER_ITEMS);
-
-    ApplyChangeResult result = categoryResult.result;
+    URI categoryUri = constructSampleCategory(SampleCategory.CONTAINER_ITEMS);
 
     ObjectRetrievalRequest request = retrievalApi.request(SampleCategory.class)
         .add(SampleCategory.SUB_CATEGORIES)
@@ -58,7 +56,7 @@ class ApplyChangeTest {
 
     Assertions.assertEquals(6, request.all().count());
 
-    ObjectNode objectNode = request.load(categoryResult.uri);
+    ObjectNode objectNode = request.load(categoryUri);
 
     request.get(SampleCategory.SUB_CATEGORIES)
         .add(SampleCategory.CONTAINER_ITEMS, SampleContainerItem.DATASHEET);
@@ -141,25 +139,41 @@ class ApplyChangeTest {
   @Test
   void testApplyChangeWithShadowList() {
 
-    SampleCategoryResult result = constructSampleCategory(ApplyChangeTestConfig.SHADOW_ITEMS);
+    constructSampleCategory(ApplyChangeTestConfig.SHADOW_ITEMS);
 
   }
 
-  private class SampleCategoryResult {
+  @Test
+  void testObjectNodeOnly() {
+    SampleCategory rootContainer = new SampleCategory().name("root kiskacsa");
 
-    ApplyChangeResult result;
-
-    URI uri;
-
-    public SampleCategoryResult(ApplyChangeResult result, URI uri) {
-      super();
-      this.result = result;
-      this.uri = uri;
+    ObjectNode rootNode = objectApi.node(MY_SCHEME, rootContainer);
+    ObjectNodeList items = rootNode.list(SampleCategory.CONTAINER_ITEMS);
+    int itemCounter = 5;
+    for (int i = 0; i < itemCounter; i++) {
+      ObjectNode itemNode = items.addNewObject(new SampleContainerItem().name("item " + i));
+      itemNode
+          .ref(SampleContainerItem.DATASHEET)
+          .setNewObject(new SampleDataSheet().name("datasheet " + i));
     }
+    URI rootCategoryUri = applyChangeApi.applyChanges(rootNode);
+
+
+    ObjectRetrievalRequest request = retrievalApi.request(SampleCategory.class)
+        .add(SampleCategory.CONTAINER_ITEMS, SampleContainerItem.DATASHEET);
+
+    ObjectNode objectNodeAfterSave = request.load(rootCategoryUri);
+
+    ObjectProperties objectProperties =
+        new ObjectProperties().property(SampleCategory.class, SampleCategory.NAME)
+            .property(SampleContainerItem.class, SampleContainerItem.NAME)
+            .property(SampleDataSheet.class, SampleDataSheet.NAME);
+    System.out.println(ObjectNodes.versionTree(objectNodeAfterSave,
+        objectProperties));
 
   }
 
-  private SampleCategoryResult constructSampleCategory(String referenceToItems) {
+  private URI constructSampleCategory(String referenceToItems) {
     URI branchUri = null;
 
     SampleCategory rootContainer = new SampleCategory().name("root");
@@ -199,9 +213,7 @@ class ApplyChangeTest {
 
     Assertions.assertEquals(itemCounter * 2 + 4, result.getProcessedRequests().size());
 
-    URI uri = result.getProcessedRequests().get(ocrContainer);
-
-    return new SampleCategoryResult(result, uri);
+    return result.getProcessedRequests().get(ocrContainer);
   }
 
 }

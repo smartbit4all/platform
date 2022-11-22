@@ -12,6 +12,7 @@ import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.object.bean.ObjectNodeData;
+import org.smartbit4all.api.object.bean.ObjectNodeState;
 import org.smartbit4all.api.object.bean.ReferenceDefinitionData;
 import org.smartbit4all.core.utility.PathUtility;
 import org.springframework.beans.factory.InitializingBean;
@@ -355,6 +356,7 @@ public class ObjectApiImpl implements ObjectApi, InitializingBean {
         .qualifiedName(definition.getQualifiedName())
         .storageSchema(storageScheme)
         .objectAsMap(definition.toMap(object))
+        .state(ObjectNodeState.NEW)
         .versionNr(null); // TODO extract version
 
     return new ObjectNode(this, definition, data);
