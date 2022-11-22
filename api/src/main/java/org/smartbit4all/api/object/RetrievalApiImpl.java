@@ -1,5 +1,6 @@
 package org.smartbit4all.api.object;
 
+import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,6 +16,7 @@ import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ReferenceDefinition;
+import org.smartbit4all.core.utility.UriUtils;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +49,7 @@ public final class RetrievalApiImpl implements RetrievalApi {
     StorageObject<?> storageObject = storageApi.load(uri);
     ObjectNodeData data = new ObjectNodeData()
         .objectUri(uri)
-        .qualifiedName(storageObject.definition().getQualifiedName()) // TODO Alias?
+        .qualifiedName(storageObject.definition().getQualifiedName())
         .storageSchema(storageObject.getStorage().getScheme())
         .objectAsMap(storageObject.getObjectAsMap())
         .versionNr(storageObject.getVersion().getSerialNoData());
@@ -60,13 +62,13 @@ public final class RetrievalApiImpl implements RetrievalApi {
       Object sourceValue = ref.getSourceValue(data.getObjectAsMap());
       if (sourceValue != null) {
         if (sourceValue instanceof URI || sourceValue instanceof String) {
-          ObjectNodeData value = readData(entry.getValue(), asUri(sourceValue));
+          ObjectNodeData value = readData(entry.getValue(), UriUtils.asUri(sourceValue));
           // TODO refName!!
           data.putReferenceValuesItem(ref.getSourcePropertyPath(), value);
         } else if (sourceValue instanceof List) {
           @SuppressWarnings("unchecked")
           List<ObjectNodeData> readAllRef = ((List<Object>) sourceValue).stream()
-              .map(this::asUri)
+              .map(UriUtils::asUri)
               .map(u -> readData(entry.getValue(), u))
               .collect(Collectors.toList());
           // TODO refName!!
@@ -74,7 +76,7 @@ public final class RetrievalApiImpl implements RetrievalApi {
         } else if (sourceValue instanceof Map) {
           @SuppressWarnings("unchecked")
           Map<String, URI> refUriMap = ((Map<String, Object>) sourceValue).entrySet().stream()
-              .collect(Collectors.toMap(Entry::getKey, e -> asUri(e.getValue())));
+              .collect(Collectors.toMap(Entry::getKey, e -> UriUtils.asUri(e.getValue())));
           List<String> keys = new ArrayList<>();
           List<URI> uriList = new ArrayList<>();
           for (Entry<String, URI> refEntry : refUriMap.entrySet()) {
@@ -96,17 +98,6 @@ public final class RetrievalApiImpl implements RetrievalApi {
     }
 
     return data;
-  }
-
-  private URI asUri(Object o) {
-    if (o instanceof URI) {
-      return (URI) o;
-    }
-    if (o instanceof String) {
-      return URI.create((String) o);
-    }
-    // TODO log / throw ?
-    return null;
   }
 
   @Override

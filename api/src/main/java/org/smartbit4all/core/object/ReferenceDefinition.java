@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.object.bean.AggregationKind;
 import org.smartbit4all.api.object.bean.ReferenceDefinitionData;
+import org.smartbit4all.api.object.bean.ReferencePropertyKind;
 import org.smartbit4all.core.object.PropertyMeta.PropertyKind;
 
 /**
@@ -116,6 +117,10 @@ public class ReferenceDefinition {
       return PropertyKind.COLLECTION;
     }
     return PropertyKind.VALUE;
+  }
+
+  public final ReferencePropertyKind getReferencePropertyKind() {
+    return data.getPropertyKind();
   }
 
   public final String getSourcePropertyPath() {

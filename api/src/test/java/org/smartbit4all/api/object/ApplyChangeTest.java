@@ -2,9 +2,9 @@ package org.smartbit4all.api.object;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.net.URI;
-import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -14,6 +14,8 @@ import org.smartbit4all.api.sample.bean.SampleDataSheet;
 import org.smartbit4all.core.io.TestFileUtil;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
+import org.smartbit4all.core.object.ObjectNodeList;
+import org.smartbit4all.core.object.ObjectNodeReference;
 import org.smartbit4all.core.object.ObjectNodes;
 import org.smartbit4all.core.object.ObjectProperties;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,8 +43,7 @@ class ApplyChangeTest {
   @Test
   void testApplyChange() {
 
-    String referenceToItems = SampleCategory.CONTAINER_ITEMS;
-    SampleCategoryResult categoryResult = constructSampleCategory(referenceToItems);
+    SampleCategoryResult categoryResult = constructSampleCategory(SampleCategory.CONTAINER_ITEMS);
 
     ApplyChangeResult result = categoryResult.result;
 
@@ -80,14 +81,16 @@ class ApplyChangeTest {
     System.out.println(ObjectNodes.versionTree(objectNode,
         objectProperties));
 
-    Assertions.assertEquals(result.getProcessedRequests().size(),
-        objectNode.allNodes().count());
+    // Assertions.assertEquals(result.getProcessedRequests().size(),
+    // objectNode.allNodes().count());
 
     // Now we make some modification on the ObjectNode.
 
-    List<ObjectNode> subCategoryNodes = objectNode.getList(SampleCategory.SUB_CATEGORIES);
+    ObjectNodeList subCategoryNodes = objectNode.list(SampleCategory.SUB_CATEGORIES);
 
-    ObjectNode subCatNode = subCategoryNodes.get(0);
+    ObjectNodeReference subCatNodeRef = subCategoryNodes.get(0);
+    assertTrue(subCatNodeRef.isLoaded());
+    ObjectNode subCatNode = subCatNodeRef.get();
     subCatNode.setValue(SampleCategory.NAME, "modified sub category");
     SampleCategory modifiedSubCategory = (SampleCategory) subCatNode.getObject();
     assertEquals("modified sub category", modifiedSubCategory.getName());
@@ -97,25 +100,31 @@ class ApplyChangeTest {
     subCatNode.setObject(modifiedSubCategory);
     assertEquals("even more modification", subCatNode.getValue(SampleCategory.NAME));
 
-    List<ObjectNode> containerItemNodes = objectNode.getList(SampleCategory.CONTAINER_ITEMS);
+    ObjectNodeList containerItemNodes = objectNode.list(SampleCategory.CONTAINER_ITEMS);
 
     int i = 0;
-    for (ObjectNode containerItemNode : containerItemNodes) {
+    for (ObjectNodeReference containerItemNodeRef : containerItemNodes.references()) {
+      assertTrue(containerItemNodeRef.isLoaded());
+      ObjectNode containerItemNode = containerItemNodeRef.get();
       containerItemNode.setValue(SampleContainerItem.NAME,
           containerItemNode.getObjectAsMap().get(SampleContainerItem.NAME) + "-modified");
       if (i % 2 == 0) {
-        ObjectNode datasheetNode = containerItemNode.getRef(SampleContainerItem.DATASHEET);
+        ObjectNodeReference datasheetNodeRef =
+            containerItemNode.ref(SampleContainerItem.DATASHEET);
+        assertTrue(datasheetNodeRef.isLoaded());
+        ObjectNode datasheetNode = datasheetNodeRef.get();
         datasheetNode.setValue(SampleDataSheet.NAME, "modified");
 
         Object dataSheetValue = containerItemNode.getValue(SampleContainerItem.DATASHEET);
+        assertTrue(dataSheetValue instanceof ObjectNodeReference);
         Object dataSheetName =
             containerItemNode.getValue(SampleContainerItem.DATASHEET, SampleDataSheet.NAME);
-        assertEquals(datasheetNode, dataSheetValue);
+        assertEquals(datasheetNode, ((ObjectNodeReference) dataSheetValue).get());
         assertEquals("modified", dataSheetName);
       }
       i++;
     }
-    containerItemNodes.remove(containerItemNodes.size() - 1);
+    containerItemNodes.get(containerItemNodes.size() - 1).clear();
     containerItemNodes.add(objectApi.node(
         MY_SCHEME,
         new SampleContainerItem().name("new item")));

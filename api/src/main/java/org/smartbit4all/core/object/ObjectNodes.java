@@ -49,20 +49,23 @@ public class ObjectNodes {
         .append(StringConstant.NEW_LINE);
     // Traverse the referred nodes also.
     String subIndent = indent + INDENT_INCREMENT;
-    for (Entry<String, ObjectNodeReference> entry : objectNode.getReferenceNodes()
-        .entrySet()) {
+    for (Entry<String, ObjectNodeReference> entry : objectNode.getReferenceNodes().entrySet()) {
       sb.append(subIndent).append(entry.getKey())
           .append(StringConstant.ARROW).append(StringConstant.NEW_LINE);
-      traverseNodeVersionTree(entry.getValue().get(), sb, subIndent + INDENT_INCREMENT,
-          propertyMap);
+      ObjectNodeReference ref = entry.getValue();
+      if (ref.isLoaded()) {
+        traverseNodeVersionTree(ref.get(), sb, subIndent + INDENT_INCREMENT,
+            propertyMap);
+      }
     }
-    for (Entry<String, List<ObjectNode>> entry : objectNode.getReferenceLists()
-        .entrySet()) {
+    for (Entry<String, ObjectNodeList> entry : objectNode.getReferenceLists().entrySet()) {
       if (!entry.getValue().isEmpty()) {
         sb.append(subIndent).append(entry.getKey())
             .append(StringConstant.COLON).append(StringConstant.NEW_LINE);
-        for (ObjectNode node : entry.getValue()) {
-          traverseNodeVersionTree(node, sb, subIndent + INDENT_INCREMENT, propertyMap);
+        for (ObjectNodeReference ref : entry.getValue().references()) {
+          if (ref.isLoaded()) {
+            traverseNodeVersionTree(ref.get(), sb, subIndent + INDENT_INCREMENT, propertyMap);
+          }
         }
       }
     }
@@ -85,10 +88,6 @@ public class ObjectNodes {
             .flatMap(n -> n.values().stream())
             .flatMap(ObjectNodes::allNodes))
         .flatMap(s -> s);
-  }
-
-  public static ObjectNode of(ObjectApi objectApi, ObjectNodeData data) {
-    return new ObjectNode(objectApi, data);
   }
 
   /**

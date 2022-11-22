@@ -344,7 +344,20 @@ public class ObjectApiImpl implements ObjectApi, InitializingBean {
 
   @Override
   public ObjectNode node(String storageScheme, Object object) {
-    return new ObjectNode(this, storageScheme, object);
+    return nodeInternal(storageScheme, object);
+  }
+
+  @SuppressWarnings("unchecked")
+  public <T> ObjectNode nodeInternal(String storageScheme, T object) {
+    ObjectDefinition<T> definition = (ObjectDefinition<T>) definition(object.getClass());
+    ObjectNodeData data = new ObjectNodeData()
+        .objectUri(definition.getUri(object))
+        .qualifiedName(definition.getQualifiedName())
+        .storageSchema(storageScheme)
+        .objectAsMap(definition.toMap(object))
+        .versionNr(null); // TODO extract version
+
+    return new ObjectNode(this, definition, data);
   }
 
 }

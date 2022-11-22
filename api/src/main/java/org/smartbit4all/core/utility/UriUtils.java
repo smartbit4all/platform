@@ -14,10 +14,13 @@
  ******************************************************************************/
 package org.smartbit4all.core.utility;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -113,5 +116,35 @@ public abstract class UriUtils {
     }
     return uri;
   }
+
+  /**
+   * Convert from Object to URI, handles only String and URI as input type.
+   * 
+   * @param o
+   * @return
+   */
+  public static URI asUri(Object o) {
+    if (o instanceof URI) {
+      return (URI) o;
+    }
+    if (o instanceof String) {
+      return URI.create((String) o);
+    }
+    return null;
+  }
+
+  public static List<URI> asUriList(List<?> list) {
+    return list.stream()
+        .map(UriUtils::asUri)
+        .collect(toList());
+  }
+
+  public static Map<String, URI> asUriMap(Map<?, ?> map) {
+    return map.entrySet().stream()
+        .collect(toMap(
+            e -> (String) e.getKey(),
+            e -> asUri(e.getValue())));
+  }
+
 
 }

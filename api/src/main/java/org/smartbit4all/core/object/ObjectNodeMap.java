@@ -1,118 +1,92 @@
 package org.smartbit4all.core.object;
 
+import static java.util.stream.Collectors.toMap;
+import java.net.URI;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.smartbit4all.api.object.bean.ObjectNodeData;
-import org.smartbit4all.api.object.bean.ObjectNodeState;
 
-class ObjectNodeMap implements Map<String, ObjectNode> {
+public final class ObjectNodeMap {
 
-  private final Map<String, ObjectNodeData> originalMap;
+  private final Map<String, ObjectNodeReference> map;
 
-  private final Map<String, ObjectNode> map;
+  private final ObjectNode referrerNode;
 
-  public ObjectNodeMap(ObjectApi objectApi, Map<String, ObjectNodeData> originalMap) {
+  public ObjectNodeMap(ObjectApi objectApi, ObjectNode referrerNode, Map<String, URI> originalUris,
+      Map<String, ObjectNodeData> originalMap) {
     super();
-    this.originalMap = originalMap;
-    map = originalMap.entrySet().stream()
-        .filter(e -> e.getValue().getState() != ObjectNodeState.REMOVED)
-        .collect(Collectors.toMap(
-            Entry<String, ObjectNodeData>::getKey,
-            e -> ObjectNodes.of(objectApi, e.getValue())));
+    Objects.requireNonNull(objectApi, "ObjectApi must not be null!");
+    Objects.requireNonNull(referrerNode, "ReferrerNode must not be null!");
+    Objects.requireNonNull(originalUris, "OriginalUris must not be null!");
+
+    this.referrerNode = referrerNode;
+    if (originalMap != null) {
+      // loaded
+      if (originalMap.size() != originalUris.size()) {
+        throw new IllegalArgumentException("originalMap and originalUris size doesn't match!");
+      }
+      map = originalMap.entrySet().stream()
+          .collect(toMap(
+              Entry::getKey,
+              e -> new ObjectNodeReference(
+                  referrerNode,
+                  originalUris.get(e.getKey()),
+                  objectApi.node(e.getValue()))));
+    } else {
+      // not loaded
+      map = originalUris.entrySet().stream()
+          .collect(toMap(
+              Entry::getKey,
+              e -> new ObjectNodeReference(
+                  referrerNode,
+                  originalUris.get(e.getKey()),
+                  null)));
+
+    }
   }
 
-  @Override
   public int size() {
     return map.size();
   }
 
-  @Override
   public boolean isEmpty() {
     return map.isEmpty();
   }
 
-  @Override
   public boolean containsKey(Object key) {
     return map.containsKey(key);
   }
 
-  @Override
-  public boolean containsValue(Object value) {
-    return map.containsValue(value);
-  }
-
-  @Override
-  public ObjectNode get(Object key) {
+  public ObjectNodeReference get(Object key) {
     return map.get(key);
   }
 
-  @Override
-  public ObjectNode put(String key, ObjectNode value) {
-    // The options are:
-    // - Brand new object --> clear we add this.
-    // - Existing node in the map --> It is an update with the content.
-    // - Existing node in the original map --> appears in the map and it's an update
-    ObjectNode objectNode = map.get(key);
-    if (objectNode != null) {
-      // We have the given node in the map.
-      if (objectNode != value && objectNode.getState() != ObjectNodeState.NEW) {
-        // It must be a modification depending on the equivalence of the object node. If they are
-        // not the same then we remove the current one and put the new one.
-        ObjectNodeData originalNode = originalMap.get(key);
-        if (originalNode == objectNode.getData()) { // TODO ref. check or value check?
-          // The new node now execute a removal on the original one.
-          originalNode.setState(ObjectNodeState.REMOVED);
-        }
-      }
-    } else {
-      ObjectNodeData originalNode = originalMap.get(key);
-      if (originalNode != null) {
-        if (originalNode.getState() == ObjectNodeState.REMOVED && originalNode == value.getData()) {
-          // This restores the given node.
-          originalNode.setState(ObjectNodeState.MODIFIED);
-        }
-      }
-    }
-    return map.put(key, value);
+  public ObjectNodeReference put(String key, ObjectNode node) {
+    ObjectNodeReference ref = map.computeIfAbsent(key,
+        k -> new ObjectNodeReference(referrerNode, null, null));
+    ref.set(node);
+    return ref;
   }
 
-  @Override
-  public ObjectNode remove(Object key) {
-    ObjectNode objectNode = map.remove(key);
-    if (objectNode != null && objectNode.getState() != ObjectNodeState.NEW) {
-      objectNode.setState(ObjectNodeState.REMOVED);
-    }
-    return objectNode;
+  public ObjectNodeReference put(String key, URI uri) {
+    ObjectNodeReference ref = map.computeIfAbsent(key,
+        k -> new ObjectNodeReference(referrerNode, null, null));
+    ref.set(uri);
+    return ref;
   }
 
-  @Override
-  public void putAll(Map<? extends String, ? extends ObjectNode> m) {
-    if (m != null) {
-      m.entrySet().stream().forEach(e -> put(e.getKey(), e.getValue()));
-    }
-  }
-
-  @Override
-  public void clear() {
-    List<String> collect = map.keySet().stream().collect(Collectors.toList());
-    collect.stream().forEach(k -> remove(k));
-  }
-
-  @Override
   public Set<String> keySet() {
     return map.keySet();
   }
 
-  @Override
-  public Collection<ObjectNode> values() {
+  public Collection<ObjectNodeReference> values() {
     return map.values();
   }
 
-  @Override
-  public Set<Entry<String, ObjectNode>> entrySet() {
+  public Set<Entry<String, ObjectNodeReference>> entrySet() {
     return map.entrySet();
   }
 

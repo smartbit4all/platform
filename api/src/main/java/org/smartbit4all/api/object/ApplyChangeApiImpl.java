@@ -11,6 +11,7 @@ import org.smartbit4all.api.object.ObjectChangeRequest.ObjectChangeOperation;
 import org.smartbit4all.api.object.bean.ObjectNodeState;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
+import org.smartbit4all.core.object.ObjectNodeList;
 import org.smartbit4all.core.object.ObjectNodeReference;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -165,23 +166,32 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
 
     // Recurse on the values.
     for (Entry<String, ObjectNodeReference> entry : node.getReferenceNodes().entrySet()) {
-      ObjectChangeRequest changeRequest = constructRequest(entry.getValue().get(), request);
-      if (changeRequest.getOperation() != ObjectChangeOperation.NOP) {
-        containmentChanged = true;
-        result.referenceValue(entry.getKey()).value(changeRequest);
+      ObjectNodeReference ref = entry.getValue();
+      if (ref.isLoaded()) {
+        ObjectChangeRequest changeRequest = constructRequest(ref.get(), request);
+        if (changeRequest.getOperation() != ObjectChangeOperation.NOP) {
+          containmentChanged = true;
+          result.referenceValue(entry.getKey()).value(changeRequest);
+        }
+      } else {
+        // TODO not loaded may change the URI!
       }
     }
 
     // Recurse on the lists
-    for (Entry<String, List<ObjectNode>> entry : node.getReferenceLists()
-        .entrySet()) {
-      for (ObjectNode objectNode : entry.getValue()) {
-        if (objectNode.getState() != ObjectNodeState.REMOVED) {
-          ObjectChangeRequest changeRequest = constructRequest(objectNode, request);
-          if (changeRequest.getOperation() != ObjectChangeOperation.NOP) {
-            containmentChanged = true;
+    for (Entry<String, ObjectNodeList> entry : node.getReferenceLists().entrySet()) {
+      for (ObjectNodeReference objectNodeRef : entry.getValue().references()) {
+        if (objectNodeRef.isLoaded()) {
+          ObjectNode objectNode = objectNodeRef.get();
+          if (objectNode.getState() != ObjectNodeState.REMOVED) {
+            ObjectChangeRequest changeRequest = constructRequest(objectNode, request);
+            if (changeRequest.getOperation() != ObjectChangeOperation.NOP) {
+              containmentChanged = true;
+            }
+            result.referenceList(entry.getKey()).add(changeRequest);
           }
-          result.referenceList(entry.getKey()).add(changeRequest);
+        } else {
+          // TODO not loaded may change the URI!
         }
       }
     }
