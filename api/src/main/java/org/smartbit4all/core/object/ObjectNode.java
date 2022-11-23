@@ -39,7 +39,7 @@ public class ObjectNode {
    */
   final ObjectApi objectApi;
 
-  private final Map<String, ObjectNodeReference> referenceNodes;
+  private final Map<String, ObjectNodeReference> references;
   private final Map<String, ObjectNodeList> referenceLists;
   private final Map<String, ObjectNodeMap> referenceMaps;
 
@@ -52,7 +52,7 @@ public class ObjectNode {
     this.objectApi = objectApi;
     this.definition = definition;
     this.data = data;
-    referenceNodes = initReferenceNodes();
+    references = initReferenceNodes();
     referenceLists = initReferenceLists();
     referenceMaps = initReferenceMaps();
   }
@@ -64,8 +64,8 @@ public class ObjectNode {
             Entry::getKey,
             e -> {
               ObjectNode node = null;
-              if (data.getReferenceValues().containsKey(e.getKey())) {
-                node = objectApi.node(data.getReferenceValues().get(e.getKey()));
+              if (data.getReferences().containsKey(e.getKey())) {
+                node = objectApi.node(data.getReferences().get(e.getKey()));
               }
               Object uri = data.getObjectAsMap().get(e.getValue().getSourcePropertyPath());
               return new ObjectNodeReference(this, UriUtils.asUri(uri), node);
@@ -79,8 +79,8 @@ public class ObjectNode {
             Entry::getKey,
             e -> {
               List<ObjectNodeData> list = null;
-              if (data.getReferenceListValues().containsKey(e.getKey())) {
-                list = data.getReferenceListValues().get(e.getKey());
+              if (data.getReferenceLists().containsKey(e.getKey())) {
+                list = data.getReferenceLists().get(e.getKey());
               }
               List<?> uris =
                   (List<?>) data.getObjectAsMap().get(e.getValue().getSourcePropertyPath());
@@ -99,8 +99,8 @@ public class ObjectNode {
             Entry::getKey,
             e -> {
               Map<String, ObjectNodeData> map = null;
-              if (data.getReferenceMapValues().containsKey(e.getKey())) {
-                map = data.getReferenceMapValues().get(e.getKey());
+              if (data.getReferenceMaps().containsKey(e.getKey())) {
+                map = data.getReferenceMaps().get(e.getKey());
               }
               Map<?, ?> uris =
                   (Map<?, ?>) data.getObjectAsMap().get(e.getValue().getSourcePropertyPath());
@@ -155,8 +155,8 @@ public class ObjectNode {
     return objectDefinition.fromMap(getObjectAsMap());
   }
 
-  public final Map<String, ObjectNodeReference> getReferenceNodes() {
-    return referenceNodes;
+  public final Map<String, ObjectNodeReference> getReferences() {
+    return references;
   }
 
   public final Map<String, ObjectNodeList> getReferenceLists() {
@@ -302,7 +302,7 @@ public class ObjectNode {
       if (Strings.isNullOrEmpty(path)) {
         throw new IllegalArgumentException("Path part cannot be null or empty");
       }
-      ObjectNodeReference refNode = referenceNodes.get(path);
+      ObjectNodeReference refNode = references.get(path);
       if (refNode != null) {
         if (paths.length == 1) {
           return refNode;

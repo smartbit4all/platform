@@ -1,17 +1,15 @@
 package org.smartbit4all.api.object;
 
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.smartbit4all.api.object.bean.ObjectNodeData;
+import org.smartbit4all.api.object.bean.ReferencePropertyKind;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
@@ -55,44 +53,32 @@ public final class RetrievalApiImpl implements RetrievalApi {
         .versionNr(storageObject.getVersion().getSerialNoData());
 
     // Recursive read of all referred objects.
-    for (Entry<ReferenceDefinition, ObjectRetrievalRequest> entry : objRequest.getReferences()
+    for (Entry<ReferenceDefinition, ObjectRetrievalRequest> refEntry : objRequest.getReferences()
         .entrySet()) {
-      ReferenceDefinition ref = entry.getKey();
-
+      ReferenceDefinition ref = refEntry.getKey();
       Object sourceValue = ref.getSourceValue(data.getObjectAsMap());
       if (sourceValue != null) {
-        if (sourceValue instanceof URI || sourceValue instanceof String) {
-          ObjectNodeData value = readData(entry.getValue(), UriUtils.asUri(sourceValue));
-          // TODO refName!!
-          data.putReferenceValuesItem(ref.getSourcePropertyPath(), value);
-        } else if (sourceValue instanceof List) {
-          @SuppressWarnings("unchecked")
-          List<ObjectNodeData> readAllRef = ((List<Object>) sourceValue).stream()
-              .map(UriUtils::asUri)
-              .map(u -> readData(entry.getValue(), u))
-              .collect(Collectors.toList());
-          // TODO refName!!
-          data.putReferenceListValuesItem(ref.getSourcePropertyPath(), readAllRef);
-        } else if (sourceValue instanceof Map) {
-          @SuppressWarnings("unchecked")
-          Map<String, URI> refUriMap = ((Map<String, Object>) sourceValue).entrySet().stream()
-              .collect(Collectors.toMap(Entry::getKey, e -> UriUtils.asUri(e.getValue())));
-          List<String> keys = new ArrayList<>();
-          List<URI> uriList = new ArrayList<>();
-          for (Entry<String, URI> refEntry : refUriMap.entrySet()) {
-            keys.add(refEntry.getKey());
-            uriList.add(refEntry.getValue());
-          }
-          List<ObjectNodeData> readAllRef = uriList.stream()
-              .map(u -> readData(entry.getValue(), u))
-              .collect(Collectors.toList());
-          Map<String, ObjectNodeData> refObjectMap = new HashMap<>();
-          ListIterator<String> iterKeys = keys.listIterator();
-          for (ObjectNodeData refObjectNode : readAllRef) {
-            refObjectMap.put(iterKeys.next(), refObjectNode);
-          }
-          // TODO refName!!
-          data.putReferenceMapValuesItem(ref.getSourcePropertyPath(), refObjectMap);
+        ReferencePropertyKind refKind = ref.getReferencePropertyKind();
+        // TODO refName instead of sourcePropertyPath!!
+        String referenceName = ref.getSourcePropertyPath();
+        ObjectRetrievalRequest refRequest = refEntry.getValue();
+        if (refKind == ReferencePropertyKind.REFERENCE) {
+          data.putReferencesItem(
+              referenceName,
+              readData(refRequest, UriUtils.asUri(sourceValue)));
+        } else if (refKind == ReferencePropertyKind.LIST) {
+          data.putReferenceListsItem(
+              referenceName,
+              UriUtils.asUriList((List<?>) sourceValue).stream()
+                  .map(u -> readData(refRequest, u))
+                  .collect(Collectors.toList()));
+        } else if (refKind == ReferencePropertyKind.MAP) {
+          data.putReferenceMapsItem(
+              referenceName,
+              UriUtils.asUriMap((Map<?, ?>) sourceValue).entrySet().stream()
+                  .collect(toMap(
+                      Entry::getKey,
+                      e -> readData(refRequest, e.getValue()))));
         }
       }
     }

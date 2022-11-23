@@ -49,7 +49,7 @@ public class ObjectNodes {
         .append(StringConstant.NEW_LINE);
     // Traverse the referred nodes also.
     String subIndent = indent + INDENT_INCREMENT;
-    for (Entry<String, ObjectNodeReference> entry : objectNode.getReferenceNodes().entrySet()) {
+    for (Entry<String, ObjectNodeReference> entry : objectNode.getReferences().entrySet()) {
       sb.append(subIndent).append(entry.getKey())
           .append(StringConstant.ARROW).append(StringConstant.NEW_LINE);
       ObjectNodeReference ref = entry.getValue();
@@ -81,10 +81,10 @@ public class ObjectNodes {
   public static Stream<ObjectNodeData> allNodes(ObjectNodeData data) {
     return Stream.of(
         Stream.of(data),
-        data.getReferenceValues().values().stream().flatMap(ObjectNodes::allNodes),
-        data.getReferenceListValues().values().stream().flatMap(List::stream)
+        data.getReferences().values().stream().flatMap(ObjectNodes::allNodes),
+        data.getReferenceLists().values().stream().flatMap(List::stream)
             .flatMap(ObjectNodes::allNodes),
-        data.getReferenceMapValues().values().stream()
+        data.getReferenceMaps().values().stream()
             .flatMap(n -> n.values().stream())
             .flatMap(ObjectNodes::allNodes))
         .flatMap(s -> s);
@@ -122,7 +122,7 @@ public class ObjectNodes {
 
   private static Object getValueFromReference(ObjectNodeData data, String[] paths) {
     String path = paths[0];
-    ObjectNodeData nodeOnPath = data.getReferenceValues().get(path);
+    ObjectNodeData nodeOnPath = data.getReferences().get(path);
     if (nodeOnPath != null) {
       String[] subPaths = Arrays.copyOfRange(paths, 1, paths.length);
       return getValue(nodeOnPath, subPaths);
@@ -132,7 +132,7 @@ public class ObjectNodes {
 
   private static Object getValueFromReferenceList(ObjectNodeData data, String[] paths) {
     String path = paths[0];
-    List<ObjectNodeData> listOnPath = data.getReferenceListValues().get(path);
+    List<ObjectNodeData> listOnPath = data.getReferenceLists().get(path);
     if (listOnPath != null) {
       if (paths.length == 1) {
         // TODO wrap into ObjectNodeList
@@ -156,7 +156,7 @@ public class ObjectNodes {
 
   private static Object getValueFromReferenceMap(ObjectNodeData data, String[] paths) {
     String path = paths[0];
-    Map<String, ObjectNodeData> mapOnPath = data.getReferenceMapValues().get(path);
+    Map<String, ObjectNodeData> mapOnPath = data.getReferenceMaps().get(path);
     if (mapOnPath != null) {
       if (paths.length == 1) {
         // TODO Wrap into ObjectNodeMap

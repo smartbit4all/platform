@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.smartbit4all.api.contribution.ContributionApiImpl;
 import org.smartbit4all.api.object.bean.AggregationKind;
 import org.smartbit4all.core.object.ReferenceDefinition;
+import org.smartbit4all.core.utility.UriUtils;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageObject;
@@ -50,9 +51,8 @@ public class CopyContributionApiStorageImpl extends ContributionApiImpl
           case VALUE:
             // This property that must contains the uri of the target object.
             if (target != null) {
-              URI uri = target instanceof URI ? (URI) target : URI.create((String) target);
               ref.setSourceValue(storageObject.getObjectAsMap(),
-                  copyApi().deepCopyByContainment(uri));
+                  copyApi().deepCopyByContainment(UriUtils.asUri(target)));
             }
             break;
           case COLLECTION:
@@ -60,10 +60,7 @@ public class CopyContributionApiStorageImpl extends ContributionApiImpl
             List<Object> targetUris = (List<Object>) target;
             List<URI> copiedTargetList =
                 targetUris.stream()
-                    .map(o -> {
-                      URI u = o instanceof URI ? (URI) o : URI.create((String) o);
-                      return copyApi().deepCopyByContainment(u);
-                    })
+                    .map(o -> copyApi().deepCopyByContainment(UriUtils.asUri(o)))
                     .collect(Collectors.toList());
             ref.setSourceValue(storageObject.getObject(), copiedTargetList);
             break;

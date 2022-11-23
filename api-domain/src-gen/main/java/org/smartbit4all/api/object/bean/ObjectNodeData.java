@@ -43,9 +43,9 @@ import javax.validation.Valid;
   ObjectNodeData.VERSION_NR,
   ObjectNodeData.STATE,
   ObjectNodeData.OBJECT_AS_MAP,
-  ObjectNodeData.REFERENCE_VALUES,
-  ObjectNodeData.REFERENCE_LIST_VALUES,
-  ObjectNodeData.REFERENCE_MAP_VALUES
+  ObjectNodeData.REFERENCES,
+  ObjectNodeData.REFERENCE_LISTS,
+  ObjectNodeData.REFERENCE_MAPS
 })
 @JsonTypeName("ObjectNodeData")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -68,14 +68,14 @@ public class ObjectNodeData {
   public static final String OBJECT_AS_MAP = "objectAsMap";
   private Map<String, Object> objectAsMap = new HashMap<>();
 
-  public static final String REFERENCE_VALUES = "referenceValues";
-  private Map<String, ObjectNodeData> referenceValues = new HashMap<>();
+  public static final String REFERENCES = "references";
+  private Map<String, ObjectNodeData> references = new HashMap<>();
 
-  public static final String REFERENCE_LIST_VALUES = "referenceListValues";
-  private Map<String, List<ObjectNodeData>> referenceListValues = new HashMap<>();
+  public static final String REFERENCE_LISTS = "referenceLists";
+  private Map<String, List<ObjectNodeData>> referenceLists = new HashMap<>();
 
-  public static final String REFERENCE_MAP_VALUES = "referenceMapValues";
-  private Map<String, Map<String, ObjectNodeData>> referenceMapValues = new HashMap<>();
+  public static final String REFERENCE_MAPS = "referenceMaps";
+  private Map<String, Map<String, ObjectNodeData>> referenceMaps = new HashMap<>();
 
   public ObjectNodeData() { 
   }
@@ -253,105 +253,105 @@ public class ObjectNodeData {
   }
 
 
-  public ObjectNodeData referenceValues(Map<String, ObjectNodeData> referenceValues) {
+  public ObjectNodeData references(Map<String, ObjectNodeData> references) {
     
-    this.referenceValues = referenceValues;
+    this.references = references;
     return this;
   }
 
-  public ObjectNodeData putReferenceValuesItem(String key, ObjectNodeData referenceValuesItem) {
-    this.referenceValues.put(key, referenceValuesItem);
+  public ObjectNodeData putReferencesItem(String key, ObjectNodeData referencesItem) {
+    this.references.put(key, referencesItem);
     return this;
   }
 
    /**
-   * Get referenceValues
-   * @return referenceValues
+   * Get references
+   * @return references
   **/
   @javax.annotation.Nonnull
   @NotNull
   @Valid
   @ApiModelProperty(required = true, value = "")
-  @JsonProperty(REFERENCE_VALUES)
+  @JsonProperty(REFERENCES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public Map<String, ObjectNodeData> getReferenceValues() {
-    return referenceValues;
+  public Map<String, ObjectNodeData> getReferences() {
+    return references;
   }
 
 
-  @JsonProperty(REFERENCE_VALUES)
+  @JsonProperty(REFERENCES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setReferenceValues(Map<String, ObjectNodeData> referenceValues) {
-    this.referenceValues = referenceValues;
+  public void setReferences(Map<String, ObjectNodeData> references) {
+    this.references = references;
   }
 
 
-  public ObjectNodeData referenceListValues(Map<String, List<ObjectNodeData>> referenceListValues) {
+  public ObjectNodeData referenceLists(Map<String, List<ObjectNodeData>> referenceLists) {
     
-    this.referenceListValues = referenceListValues;
+    this.referenceLists = referenceLists;
     return this;
   }
 
-  public ObjectNodeData putReferenceListValuesItem(String key, List<ObjectNodeData> referenceListValuesItem) {
-    this.referenceListValues.put(key, referenceListValuesItem);
+  public ObjectNodeData putReferenceListsItem(String key, List<ObjectNodeData> referenceListsItem) {
+    this.referenceLists.put(key, referenceListsItem);
     return this;
   }
 
    /**
-   * Get referenceListValues
-   * @return referenceListValues
+   * Get referenceLists
+   * @return referenceLists
   **/
   @javax.annotation.Nonnull
   @NotNull
   @Valid
   @ApiModelProperty(required = true, value = "")
-  @JsonProperty(REFERENCE_LIST_VALUES)
+  @JsonProperty(REFERENCE_LISTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public Map<String, List<ObjectNodeData>> getReferenceListValues() {
-    return referenceListValues;
+  public Map<String, List<ObjectNodeData>> getReferenceLists() {
+    return referenceLists;
   }
 
 
-  @JsonProperty(REFERENCE_LIST_VALUES)
+  @JsonProperty(REFERENCE_LISTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setReferenceListValues(Map<String, List<ObjectNodeData>> referenceListValues) {
-    this.referenceListValues = referenceListValues;
+  public void setReferenceLists(Map<String, List<ObjectNodeData>> referenceLists) {
+    this.referenceLists = referenceLists;
   }
 
 
-  public ObjectNodeData referenceMapValues(Map<String, Map<String, ObjectNodeData>> referenceMapValues) {
+  public ObjectNodeData referenceMaps(Map<String, Map<String, ObjectNodeData>> referenceMaps) {
     
-    this.referenceMapValues = referenceMapValues;
+    this.referenceMaps = referenceMaps;
     return this;
   }
 
-  public ObjectNodeData putReferenceMapValuesItem(String key, Map<String, ObjectNodeData> referenceMapValuesItem) {
-    this.referenceMapValues.put(key, referenceMapValuesItem);
+  public ObjectNodeData putReferenceMapsItem(String key, Map<String, ObjectNodeData> referenceMapsItem) {
+    this.referenceMaps.put(key, referenceMapsItem);
     return this;
   }
 
    /**
-   * Get referenceMapValues
-   * @return referenceMapValues
+   * Get referenceMaps
+   * @return referenceMaps
   **/
   @javax.annotation.Nonnull
   @NotNull
   @Valid
   @ApiModelProperty(required = true, value = "")
-  @JsonProperty(REFERENCE_MAP_VALUES)
+  @JsonProperty(REFERENCE_MAPS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public Map<String, Map<String, ObjectNodeData>> getReferenceMapValues() {
-    return referenceMapValues;
+  public Map<String, Map<String, ObjectNodeData>> getReferenceMaps() {
+    return referenceMaps;
   }
 
 
-  @JsonProperty(REFERENCE_MAP_VALUES)
+  @JsonProperty(REFERENCE_MAPS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setReferenceMapValues(Map<String, Map<String, ObjectNodeData>> referenceMapValues) {
-    this.referenceMapValues = referenceMapValues;
+  public void setReferenceMaps(Map<String, Map<String, ObjectNodeData>> referenceMaps) {
+    this.referenceMaps = referenceMaps;
   }
 
 
@@ -370,14 +370,14 @@ public class ObjectNodeData {
         Objects.equals(this.versionNr, objectNodeData.versionNr) &&
         Objects.equals(this.state, objectNodeData.state) &&
         Objects.equals(this.objectAsMap, objectNodeData.objectAsMap) &&
-        Objects.equals(this.referenceValues, objectNodeData.referenceValues) &&
-        Objects.equals(this.referenceListValues, objectNodeData.referenceListValues) &&
-        Objects.equals(this.referenceMapValues, objectNodeData.referenceMapValues);
+        Objects.equals(this.references, objectNodeData.references) &&
+        Objects.equals(this.referenceLists, objectNodeData.referenceLists) &&
+        Objects.equals(this.referenceMaps, objectNodeData.referenceMaps);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(objectUri, qualifiedName, storageSchema, versionNr, state, objectAsMap, referenceValues, referenceListValues, referenceMapValues);
+    return Objects.hash(objectUri, qualifiedName, storageSchema, versionNr, state, objectAsMap, references, referenceLists, referenceMaps);
   }
 
   @Override
@@ -390,9 +390,9 @@ public class ObjectNodeData {
     sb.append("    versionNr: ").append(toIndentedString(versionNr)).append("\n");
     sb.append("    state: ").append(toIndentedString(state)).append("\n");
     sb.append("    objectAsMap: ").append(toIndentedString(objectAsMap)).append("\n");
-    sb.append("    referenceValues: ").append(toIndentedString(referenceValues)).append("\n");
-    sb.append("    referenceListValues: ").append(toIndentedString(referenceListValues)).append("\n");
-    sb.append("    referenceMapValues: ").append(toIndentedString(referenceMapValues)).append("\n");
+    sb.append("    references: ").append(toIndentedString(references)).append("\n");
+    sb.append("    referenceLists: ").append(toIndentedString(referenceLists)).append("\n");
+    sb.append("    referenceMaps: ").append(toIndentedString(referenceMaps)).append("\n");
     sb.append("}");
     return sb.toString();
   }

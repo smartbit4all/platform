@@ -74,7 +74,7 @@ components:
       description: |
         This object contains an object instance as map. It can be used to separate the references and the business data in the API implementations. The object node contains 
         an object returned by the RetrievalApi. It can manage the state of the object and we can use it to produce ApplyChangeRequest at the end of the modification.
-      required: [qualifiedName, versionNr, state, objectAsMap, referenceValues, referenceListValues, referenceMapValues] 
+      required: [qualifiedName, versionNr, state, objectAsMap, references, referenceLists, referenceMaps] 
       properties:
         objectUri:
           type: string
@@ -101,17 +101,17 @@ components:
         objectAsMap:
           type: object
           additionalProperties: true
-        referenceValues:
+        references:
           type: ObjectNodeData
           additionalProperties:
             $ref: '#/components/schemas/ObjectNodeData'
-        referenceListValues:
+        referenceLists:
           type: ObjectNodeData
           additionalProperties:
             type: array
             items:
               $ref: '#/components/schemas/ObjectNodeData'
-        referenceMapValues:
+        referenceMaps:
           type: object
           additionalProperties:
             type: object

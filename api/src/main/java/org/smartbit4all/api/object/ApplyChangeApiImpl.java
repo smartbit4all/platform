@@ -165,7 +165,7 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
     }
 
     // Recurse on the values.
-    for (Entry<String, ObjectNodeReference> entry : node.getReferenceNodes().entrySet()) {
+    for (Entry<String, ObjectNodeReference> entry : node.getReferences().entrySet()) {
       ObjectNodeReference ref = entry.getValue();
       if (ref.isLoaded()) {
         ObjectChangeRequest changeRequest = constructRequest(ref.get(), request);
