@@ -375,6 +375,7 @@ public class NavigationViewModelImpl extends ViewModelImpl<TreeModel>
           .objectUri(objectUri)
           .caption(node.getEntry().getName())
           .icon(node.getEntry().getIcon())
+          .styles(node.getEntry().getStyles())
           .actions(node.getEntry().getActions())
           .level(level);
       treeNodesById.put(nodeId, treeNode);
