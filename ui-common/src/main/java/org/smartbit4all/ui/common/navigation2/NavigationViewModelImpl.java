@@ -434,7 +434,8 @@ public class NavigationViewModelImpl extends ViewModelImpl<TreeModel>
         .identifier(node.getId())
         .caption(node.getEntry().getName())
         .icon(node.getEntry().getIcon())
-        .actions(node.getEntry().getActions());
+        .actions(node.getEntry().getActions())
+        .styles(node.getEntry().getStyles());
   }
 
   private void updateTreeNodeAssoc(TreeNode treeNode, NavigationAssociation navigationAssociation) {
