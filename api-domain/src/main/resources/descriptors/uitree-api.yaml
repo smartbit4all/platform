@@ -1,0 +1,93 @@
+openapi: 3.0.1
+info:
+  title: UiTree domain objects
+  description: Tree domain objects
+  termsOfService: ''
+  contact:
+    email: info@it4all.hu
+  version: 1.0.0
+tags:
+  - name: tree
+    description: tree
+paths: {}
+components:
+  schemas:
+    SmartTreeModel:
+      type: object
+      properties:
+        identifier:
+          type: string
+        rootNodes:
+          type: array
+          items:
+            $ref: "#/components/schemas/SmartTreeNode"
+    SmartTreeNode:
+      type: object
+      properties:
+        identifier:
+          type: string
+        icon:
+          type: string
+        caption:
+          type: string
+        classes:
+          type: array
+          items:
+            type: string
+        hasChildren:
+          type: boolean
+        childrenNodes:
+          type: array
+          items:
+            $ref: "#/components/schemas/SmartTreeNode"
+        expanded:
+          type: boolean
+        selected:
+          type: boolean
+        level:
+          type: integer
+        shortDescription:
+          type: string
+        nodeType: 
+          type: string
+        actions:
+          type: array
+          items:
+            type: UiAction
+        
+    UiTreeState:
+      type: object
+      properties:
+        nodes:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/UiTreeNodeEntry"
+        rootNodes:
+          type: array
+          items:
+            type: string
+        expandedNodes:
+          type: array
+          items:
+            type: string
+        selectedNodes:
+          type: array
+          items:
+            type: string
+        
+    UiTreeNodeEntry:
+      type: object
+      properties:
+        uri:
+          type: string
+          format: uri
+        data:
+          $ref: "#/components/schemas/SmartTreeNode"
+        children:
+          type: array
+          items:
+            type: string
+      
+      
+      
+      

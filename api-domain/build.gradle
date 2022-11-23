@@ -15,7 +15,8 @@ smartbit4all {
   		"BinaryContent": "org.smartbit4all.api.binarydata.BinaryContent",
     	"LocalDateTime": "java.time.LocalDateTime",
     	"LocalDate": "java.time.LocalDate",
-    	"LocalTime": "java.time.LocalTime"
+    	"LocalTime": "java.time.LocalTime",
+    	"UiAction": "org.smartbit4all.api.uiaction.bean.UiAction"
   	]
   }
 }
