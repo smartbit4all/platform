@@ -1,7 +1,10 @@
 package org.smartbit4all.api.object;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.net.URI;
@@ -145,7 +148,7 @@ class ApplyChangeTest {
 
   @Test
   void testObjectNodeOnly() {
-    SampleCategory rootContainer = new SampleCategory().name("root kiskacsa");
+    SampleCategory rootContainer = new SampleCategory().name("root testObjectNodeOnly");
 
     ObjectNode rootNode = objectApi.node(MY_SCHEME, rootContainer);
     ObjectNodeList items = rootNode.list(SampleCategory.CONTAINER_ITEMS);
@@ -170,6 +173,63 @@ class ApplyChangeTest {
             .property(SampleDataSheet.class, SampleDataSheet.NAME);
     System.out.println(ObjectNodes.versionTree(objectNodeAfterSave,
         objectProperties));
+
+  }
+
+  @Test
+  void testReferenceChangeUri() {
+    SampleCategory root = new SampleCategory().name("root testChangeUriOnly");
+    SampleContainerItem item = new SampleContainerItem().name("container item");
+    SampleDataSheet dataSheet = new SampleDataSheet().name("data sheet testReferenceChangeUri");
+
+    ObjectNode rootNode = objectApi.node(MY_SCHEME, root);
+    rootNode.list(SampleCategory.CONTAINER_ITEMS).addNewObject(item);
+    URI rootUri = applyChangeApi.applyChanges(rootNode);
+
+    ObjectNode dataSheetNode = objectApi.node(MY_SCHEME, dataSheet);
+    URI dataSheetUri = applyChangeApi.applyChanges(dataSheetNode);
+
+    ObjectRetrievalRequest request = retrievalApi.request(SampleCategory.class)
+        .add(SampleCategory.CONTAINER_ITEMS);
+
+    rootNode = request.load(rootUri);
+    ObjectNodeList items = rootNode.list(SampleCategory.CONTAINER_ITEMS);
+    assertNotNull(items);
+    assertTrue(!items.isEmpty());
+    ObjectNodeReference firstItemRef = items.get(0);
+    assertNotNull(firstItemRef);
+    assertTrue(firstItemRef.isLoaded());
+    assertTrue(firstItemRef.isPresent());
+
+    ObjectNode firstItemNode = firstItemRef.get();
+    ObjectNodeReference dataSheetRef = firstItemNode.ref(SampleContainerItem.DATASHEET);
+    assertNotNull(dataSheetRef);
+    assertFalse(dataSheetRef.isLoaded());
+    assertFalse(dataSheetRef.isPresent());
+
+    dataSheetRef.set(dataSheetUri);
+    assertTrue(dataSheetRef.isPresent());
+    dataSheetRef.clear();
+    assertFalse(dataSheetRef.isPresent());
+    dataSheetRef.set(dataSheetUri);
+
+    URI rootUriAfterUpdate = applyChangeApi.applyChanges(rootNode);
+
+    request = retrievalApi.request(SampleCategory.class)
+        .add(SampleCategory.CONTAINER_ITEMS, SampleContainerItem.DATASHEET);
+
+    // previous version
+    rootNode = request.load(rootUri);
+    dataSheetNode = rootNode.list(SampleCategory.CONTAINER_ITEMS).get(0).get()
+        .ref(SampleContainerItem.DATASHEET).get();
+    assertNull(dataSheetNode, "DataSheet shouldn't exist in first version");
+
+    rootNode = request.load(rootUriAfterUpdate);
+    dataSheetNode = rootNode.list(SampleCategory.CONTAINER_ITEMS).get(0).get()
+        .ref(SampleContainerItem.DATASHEET).get();
+    assertNotNull(dataSheetNode, "DataSheet must exist in first version");
+    String dataSheetName = ((SampleDataSheet) dataSheetNode.getObject()).getName();
+    assertEquals("data sheet testReferenceChangeUri", dataSheetName);
 
   }
 

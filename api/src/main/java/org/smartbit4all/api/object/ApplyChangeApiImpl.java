@@ -13,6 +13,7 @@ import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ObjectNodeList;
 import org.smartbit4all.core.object.ObjectNodeReference;
+import org.smartbit4all.core.object.ReferenceDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class ApplyChangeApiImpl implements ApplyChangeApi {
@@ -158,31 +159,38 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
     result.setObjectAsMap(node.getObjectAsMap());
     if (node.getState() == ObjectNodeState.NEW) {
       result.setOperation(ObjectChangeOperation.NEW);
-      result.setObjectAsMap(node.getObjectAsMap());
     } else if (node.getState() == ObjectNodeState.MODIFIED) {
       result.setOperation(ObjectChangeOperation.UPDATE);
-      result.setObjectAsMap(node.getObjectAsMap());
     }
 
     // Recurse on the values.
     for (Entry<String, ObjectNodeReference> entry : node.getReferences().entrySet()) {
       ObjectNodeReference ref = entry.getValue();
+      String refName = entry.getKey();
       if (ref.isLoaded()) {
         ObjectChangeRequest changeRequest = constructRequest(ref.get(), request);
         if (changeRequest.getOperation() != ObjectChangeOperation.NOP) {
           containmentChanged = true;
-          result.referenceValue(entry.getKey()).value(changeRequest);
+          result.referenceValue(refName).value(changeRequest);
         }
       } else {
-        // TODO not loaded may change the URI!
+        if (ref.getState() != ObjectNodeState.NOP) {
+          // ref URI has changed
+          if (result.getOperation() == ObjectChangeOperation.NOP) {
+            result.setOperation(ObjectChangeOperation.UPDATE);
+          }
+          ReferenceDefinition refDefinition = node.getDefinition().getOutgoingReference(refName);
+          String refProperty = refDefinition.getSourcePropertyPath();
+          result.getObjectAsMap().put(refProperty, ref.getObjectUri());
+        }
       }
     }
 
     // Recurse on the lists
     for (Entry<String, ObjectNodeList> entry : node.getReferenceLists().entrySet()) {
-      for (ObjectNodeReference objectNodeRef : entry.getValue().references()) {
-        if (objectNodeRef.isLoaded()) {
-          ObjectNode objectNode = objectNodeRef.get();
+      for (ObjectNodeReference ref : entry.getValue().references()) {
+        if (ref.isLoaded()) {
+          ObjectNode objectNode = ref.get();
           if (objectNode.getState() != ObjectNodeState.REMOVED) {
             ObjectChangeRequest changeRequest = constructRequest(objectNode, request);
             if (changeRequest.getOperation() != ObjectChangeOperation.NOP) {
