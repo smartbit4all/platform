@@ -56,9 +56,10 @@ public interface ViewApi {
   void closeMessage(UUID messageUuid);
 
   /**
+   * Returns current ViewContext.
    * 
    * @return
    */
-  UUID currentViewContextUuid();
+  ViewContext currentViewContext();
 
 }

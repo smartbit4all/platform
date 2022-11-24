@@ -127,7 +127,7 @@ public class ViewApiImpl implements ViewApi {
   }
 
   @Override
-  public UUID currentViewContextUuid() {
-    return viewContextService.getCurrentViewContext().getUuid();
+  public ViewContext currentViewContext() {
+    return viewContextService.getCurrentViewContext();
   }
 }
