@@ -273,8 +273,10 @@ public class ObjectNode {
 
   public <T> T getValue(Class<T> clazz, String... paths) {
     Object value = getValue(paths);
-    if (value instanceof ObjectNode) {
-      return ((ObjectNode) value).getObject(objectApi.definition(clazz));
+    if (value instanceof ObjectNodeReference
+        && ((ObjectNodeReference) value).get() instanceof ObjectNode) {
+      ObjectNodeReference ref = (ObjectNodeReference) value;
+      return ((ObjectNodeReference) value).get().getObject(objectApi.definition(clazz));
     }
     // TODO string, uri, uuid, number, boolean, etc.? Objectmapper?
     return (T) value;
