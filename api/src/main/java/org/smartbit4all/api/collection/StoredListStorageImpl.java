@@ -1,6 +1,5 @@
 package org.smartbit4all.api.collection;
 
-import java.lang.ref.WeakReference;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
@@ -15,12 +14,6 @@ import org.smartbit4all.domain.data.storage.StorageObjectLock;
 
 public class StoredListStorageImpl extends AbstractStoredContainerStorageImpl
     implements StoredList {
-
-  private WeakReference<Storage> storageRef;
-
-  private URI uri;
-
-  private String name;
 
   public StoredListStorageImpl(Storage storage, URI uri, String name) {
     super(storage, uri, name);

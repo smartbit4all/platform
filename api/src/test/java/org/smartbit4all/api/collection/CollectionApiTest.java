@@ -5,15 +5,13 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.smartbit4all.api.object.ApplyChangeApi;
-import org.smartbit4all.api.object.ApplyChangeRequest;
-import org.smartbit4all.api.object.ObjectChangeRequest;
 import org.smartbit4all.api.sample.bean.SampleDataSheet;
 import org.smartbit4all.core.io.TestFileUtil;
+import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.core.object.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -24,13 +22,14 @@ class CollectionApiTest {
 
   private static final String FIRST = "first";
   private static final String MY_MAP = "myMap";
+  private static final String MY_LIST = "myList";
   private static final String SCHEMA = "collection";
 
   @Autowired
   private CollectionApi collectionApi;
 
   @Autowired
-  private ApplyChangeApi applyChangeApi;
+  private ObjectApi objectApi;
 
   @BeforeAll
   static void clearDirectory() throws IOException {
@@ -40,11 +39,9 @@ class CollectionApiTest {
   @Test
   void testMap() throws Exception {
 
-    ApplyChangeRequest applyChangeRequest = applyChangeApi.request();
-    ObjectChangeRequest ocrDatasheet1 =
-        applyChangeRequest.createAsNew("sample", new SampleDataSheet().name("datasheet " + 1));
-    URI datasheet1Uri =
-        applyChangeApi.save(applyChangeRequest).getProcessedRequests().get(ocrDatasheet1);
+    ObjectNode datasheet1 =
+        objectApi.create("sample", new SampleDataSheet().name("datasheet " + 1));
+    URI datasheet1Uri = objectApi.save(datasheet1);
 
     StoredMap map = collectionApi.map(SCHEMA, MY_MAP);
 
@@ -61,24 +58,17 @@ class CollectionApiTest {
   @Test
   void testObjectScopedMap() throws Exception {
 
-    ApplyChangeRequest applyChangeRequest = applyChangeApi.request();
-    ObjectChangeRequest ocrDatasheet =
-        applyChangeRequest.createAsNew("sample", new SampleDataSheet().name("datasheet"));
+    ObjectNode datasheet1 =
+        objectApi.create("sample", new SampleDataSheet().name("datasheet " + 1));
+    URI datasheetUri = objectApi.save(datasheet1);
 
+    List<URI> resultUris = new ArrayList<>();
 
-    List<ObjectChangeRequest> requests = new ArrayList<>();
     for (int i = 0; i < 10; i++) {
-      requests.add(
-          applyChangeRequest.createAsNew("sample", new SampleDataSheet().name("datasheet " + i)));
+      ObjectNode datasheet =
+          objectApi.create("sample", new SampleDataSheet().name("datasheet " + 1));
+      resultUris.add(objectApi.save(datasheet));
     }
-
-    Map<ObjectChangeRequest, URI> processedRequests =
-        applyChangeApi.save(applyChangeRequest).getProcessedRequests();
-
-    URI datasheetUri = processedRequests.get(ocrDatasheet);
-
-    List<URI> resultUris =
-        requests.stream().map(o -> processedRequests.get(o)).collect(Collectors.toList());
 
     StoredMap map = collectionApi.map(datasheetUri, SCHEMA, MY_MAP);
 
@@ -92,6 +82,55 @@ class CollectionApiTest {
 
     Assertions.assertEquals(
         resultUris.stream().filter(u -> uris.containsKey(u.toString())).count(), resultUris.size());
+
+  }
+
+  @Test
+  void testList() throws Exception {
+
+    ObjectNode datasheet1 =
+        objectApi.create("sample", new SampleDataSheet().name("datasheet " + 1));
+    URI datasheet1Uri = objectApi.save(datasheet1);
+
+    StoredList list = collectionApi.list(SCHEMA, MY_LIST);
+
+    Assertions.assertTrue(list.uris().isEmpty());
+
+    list.add(datasheet1Uri);
+
+    Assertions.assertEquals(list.uris().size(), 1);
+
+    Assertions.assertEquals(datasheet1Uri, list.uris().get(0));
+
+  }
+
+  @Test
+  void testObjectScopedList() throws Exception {
+
+    ObjectNode datasheet1 =
+        objectApi.create("sample", new SampleDataSheet().name("datasheet " + 1));
+    URI datasheetUri = objectApi.save(datasheet1);
+
+    List<URI> resultUris = new ArrayList<>();
+
+    for (int i = 0; i < 10; i++) {
+      ObjectNode datasheet =
+          objectApi.create("sample", new SampleDataSheet().name("datasheet " + 1));
+      resultUris.add(objectApi.save(datasheet));
+    }
+
+    StoredList list = collectionApi.list(datasheetUri, SCHEMA, MY_LIST);
+
+    Assertions.assertTrue(list.uris().isEmpty());
+
+    list.addAll(resultUris);
+
+    List<URI> uris = list.uris();
+
+    Assertions.assertEquals(uris.size(), resultUris.size());
+
+    Assertions.assertEquals(
+        resultUris.stream().filter(u -> uris.contains(u)).count(), resultUris.size());
 
   }
 
