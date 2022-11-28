@@ -148,11 +148,14 @@ public class ObjectNode {
   }
 
   /**
-   * @param objectDefinition The object definition of the required object.
+   * Returns the stored data as an object of class T. It is a copy, deserialized from map by
+   * ObjectDefinition<T>.
+   * 
+   * @param clazz The class of the required object.
    * @return A copy from the current data.
    */
-  public final <T> T getObject(ObjectDefinition<T> objectDefinition) {
-    return objectDefinition.fromMap(getObjectAsMap());
+  public final <T> T getObject(Class<T> clazz) {
+    return objectApi.definition(clazz).fromMap(getObjectAsMap());
   }
 
   public final Map<String, ObjectNodeReference> getReferences() {
@@ -276,7 +279,7 @@ public class ObjectNode {
     if (value instanceof ObjectNodeReference
         && ((ObjectNodeReference) value).get() instanceof ObjectNode) {
       ObjectNodeReference ref = (ObjectNodeReference) value;
-      return ((ObjectNodeReference) value).get().getObject(objectApi.definition(clazz));
+      return ((ObjectNodeReference) value).get().getObject(clazz);
     }
     // TODO string, uri, uuid, number, boolean, etc.? Objectmapper?
     return (T) value;
