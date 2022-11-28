@@ -1,5 +1,8 @@
 package org.smartbit4all.api.config;
 
+import org.smartbit4all.api.collection.CollectionApi;
+import org.smartbit4all.api.collection.CollectionApiStorageImpl;
+import org.smartbit4all.api.collection.bean.StoredMapData;
 import org.smartbit4all.api.documentation.DocumentationApi;
 import org.smartbit4all.api.documentation.DocumentationApiImpl;
 import org.smartbit4all.api.filter.util.FilterService;
@@ -160,5 +163,19 @@ public class PlatformApiConfig {
   public RetrievalApi retrievalApi() {
     return new RetrievalApiImpl();
   }
+
+  @Bean
+  public CollectionApi collectionApi() {
+    return new CollectionApiStorageImpl();
+  }
+
+  @Bean
+  public ObjectDefinition<StoredMapData> storedMapEntrySingleVersion() {
+    ObjectDefinition<StoredMapData> result =
+        ObjectApiImpl.constructDefinitionBase(StoredMapData.class);
+    result.setExplicitUri(true);
+    return result;
+  }
+
 
 }

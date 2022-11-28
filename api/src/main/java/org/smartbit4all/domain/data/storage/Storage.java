@@ -750,8 +750,9 @@ public final class Storage {
    * 
    * @param versionPolicy The {@link #versionPolicy}
    */
-  public final void setVersionPolicy(VersionPolicy versionPolicy) {
+  public final Storage setVersionPolicy(VersionPolicy versionPolicy) {
     this.versionPolicy = versionPolicy;
+    return this;
   }
 
 }

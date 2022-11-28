@@ -1,0 +1,52 @@
+openapi: 3.0.1
+info:
+  title: collection api
+  description: collection api for the stored colections.
+  termsOfService: ''
+  contact:
+    email: info@it4all.hu
+  version: 1.0.0
+tags:
+- name: CollectionApi
+paths:
+  /nope:
+    post:
+      summary: Placeholder for generation
+      responses:
+        '200':
+          description: nope
+                
+components:
+  schemas:
+    StoredMapData:
+      type: object
+      description: |
+        The contained storage object for the StoredMap that contains the data as a map of URI mapped by string.
+      required: [uri, name, objects]
+      properties:
+        uri:
+          type: string
+          format: uri
+        name:
+          type: string
+        uris:
+          type: object
+          additionalProperties:
+            type: string
+            format: uri
+    StoredListData:
+      type: object
+      description: |
+        The contained storage object for the StoredList that contains the data as an ordered sequence of URI.
+      required: [uri, name, objects]
+      properties:
+        uri:
+          type: string
+          format: uri
+        name:
+          type: string
+        uris:
+          type: array
+          items:
+            type: string
+            format: uri
