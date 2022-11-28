@@ -145,9 +145,9 @@ class ApplyChangeTest {
 
   @Test
   void testObjectNodeOnly() {
-    SampleCategory rootContainer = new SampleCategory().name("root testObjectNodeOnly");
-
-    ObjectNode rootNode = objectApi.create(MY_SCHEME, rootContainer);
+    ObjectNode rootNode = objectApi.create(
+        MY_SCHEME,
+        new SampleCategory().name("root testObjectNodeOnly"));
     ObjectNodeList items = rootNode.list(SampleCategory.CONTAINER_ITEMS);
     int itemCounter = 5;
     for (int i = 0; i < itemCounter; i++) {
@@ -159,10 +159,15 @@ class ApplyChangeTest {
     URI rootCategoryUri = objectApi.save(rootNode);
     assertNotNull(rootCategoryUri);
 
-    ObjectRetrievalRequest request = objectApi.request(SampleCategory.class)
-        .add(SampleCategory.CONTAINER_ITEMS, SampleContainerItem.DATASHEET);
+    ObjectNode rootNodeLoaded = objectApi.request(SampleCategory.class)
+        .add(SampleCategory.CONTAINER_ITEMS, SampleContainerItem.DATASHEET)
+        .load(rootCategoryUri);
 
-    ObjectNode rootNodeLoaded = request.load(rootCategoryUri);
+    Object item2datasheetName = rootNodeLoaded.getValue(
+        SampleCategory.CONTAINER_ITEMS, "2",
+        SampleContainerItem.DATASHEET,
+        SampleDataSheet.NAME);
+    assertEquals("datasheet 2", item2datasheetName);
 
     ObjectProperties objectProperties =
         new ObjectProperties().property(SampleCategory.class, SampleCategory.NAME)
@@ -170,6 +175,33 @@ class ApplyChangeTest {
             .property(SampleDataSheet.class, SampleDataSheet.NAME);
     System.out.println(ObjectNodes.versionTree(rootNodeLoaded,
         objectProperties));
+
+    ObjectNode rootNodeOnly = objectApi.load(rootCategoryUri);
+    // first nothing is loaded
+    assertFalse(rootNodeOnly.list(SampleCategory.CONTAINER_ITEMS).get(0).isLoaded());
+    assertFalse(rootNodeOnly.list(SampleCategory.CONTAINER_ITEMS).get(1).isLoaded());
+    // automatic navigation
+    Object item0datasheetName = rootNodeOnly.getValue(
+        SampleCategory.CONTAINER_ITEMS, "0",
+        SampleContainerItem.DATASHEET,
+        SampleDataSheet.NAME);
+    assertEquals("datasheet 0", item0datasheetName);
+    // after automatic navigation, first item is loaded, second is not
+    assertTrue(rootNodeOnly.list(SampleCategory.CONTAINER_ITEMS).get(0).isLoaded());
+    assertFalse(rootNodeOnly.list(SampleCategory.CONTAINER_ITEMS).get(1).isLoaded());
+
+    // TODO this won't work since the ObjectNodeList partial update doesn't work yet.
+    // ObjectNode item3datasheetNode =
+    // rootNodeOnly.list(SampleCategory.CONTAINER_ITEMS).get(3).get()
+    // .ref(SampleContainerItem.DATASHEET).get();
+    // item3datasheetNode.setValue(SampleDataSheet.NAME, "datasheet 3 modified");
+    // URI rootUriUpdated = objectApi.save(rootNodeOnly);
+    //
+    // Object item3datasheetName = objectApi.load(rootUriUpdated).getValue(
+    // SampleCategory.CONTAINER_ITEMS, "3",
+    // SampleContainerItem.DATASHEET,
+    // SampleDataSheet.NAME);
+    // assertEquals("datasheet 3 modified", item3datasheetName);
 
   }
 

@@ -71,6 +71,14 @@ public class ObjectNodeReference {
   }
 
   public ObjectNode get() {
+    if (isLoaded) {
+      return node;
+    }
+    if (objectUri != null) {
+      node = referrerNode.objectApi.load(objectUri);
+      isLoaded = true;
+      refreshNodeState();
+    }
     return node;
   }
 
@@ -103,6 +111,10 @@ public class ObjectNodeReference {
       return ObjectNodeState.REMOVED;
     }
     if (Objects.equals(originalObjectUri, objectUri)) {
+      // TODO do we need this??
+      // if (node != null && node.getState() == ObjectNodeState.MODIFIED) {
+      //   return ObjectNodeState.MODIFIED;
+      // }
       return ObjectNodeState.NOP;
     }
     return ObjectNodeState.MODIFIED;
