@@ -8,7 +8,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.smartbit4all.domain.config.DomainConfig;
+import org.smartbit4all.api.config.PlatformApiConfig;
 import org.smartbit4all.domain.security.SecurityEntityConfiguration;
 import org.smartbit4all.domain.service.transfer.TransferService;
 import org.smartbit4all.domain.service.transfer.convert.Converter;
@@ -21,7 +21,7 @@ class TransferServiceTest {
   @BeforeAll
   static void setup() {
     ctx = new AnnotationConfigApplicationContext();
-    ctx.register(DomainConfig.class);
+    ctx.register(PlatformApiConfig.class);
     ctx.register(SecurityEntityConfiguration.class);
     ctx.refresh();
   }

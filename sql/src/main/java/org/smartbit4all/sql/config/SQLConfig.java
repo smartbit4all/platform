@@ -17,7 +17,7 @@ package org.smartbit4all.sql.config;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.smartbit4all.domain.config.DomainConfig;
+import org.smartbit4all.api.config.PlatformApiConfig;
 import org.smartbit4all.sql.service.query.SQLCrudExecutionApi;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +26,7 @@ import org.springframework.context.annotation.Import;
 
 @Configuration
 @Import({
-    DomainConfig.class,
+    PlatformApiConfig.class,
     SQLServiceConfig.class,
     SQLCrudExecutionApi.class})
 public class SQLConfig implements InitializingBean {

@@ -1,7 +1,7 @@
 package org.smartbit4all.storage.fs;
 
+import org.smartbit4all.api.config.PlatformApiConfig;
 import org.smartbit4all.core.object.ObjectApi;
-import org.smartbit4all.domain.config.DomainConfig;
 import org.smartbit4all.domain.data.storage.ObjectStorage;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageObject.VersionPolicy;
@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
-@Import({DomainConfig.class})
+@Import({PlatformApiConfig.class})
 @EnableTransactionManagement
 public class StorageTestConfig {
 
