@@ -35,7 +35,7 @@ public final class ObjectNodeMap {
               e -> new ObjectNodeReference(
                   referrerNode,
                   originalUris.get(e.getKey()),
-                  objectApi.node(e.getValue()))));
+                  new ObjectNode(objectApi, e.getValue()))));
     } else {
       // not loaded
       map = originalUris.entrySet().stream()
@@ -66,7 +66,7 @@ public final class ObjectNodeMap {
   }
 
   public ObjectNode putNewObject(String key, Object object) {
-    ObjectNode newNode = referrerNode.objectApi.node(referrerNode.getStorageScheme(), object);
+    ObjectNode newNode = referrerNode.objectApi.create(referrerNode.getStorageScheme(), object);
     newNode.setState(ObjectNodeState.NEW);
     put(key, newNode);
     return newNode;

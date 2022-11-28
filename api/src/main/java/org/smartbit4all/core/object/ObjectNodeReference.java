@@ -46,7 +46,7 @@ public class ObjectNodeReference {
   }
 
   public ObjectNode setNewObject(Object object) {
-    ObjectNode newNode = referrerNode.objectApi.node(referrerNode.getStorageScheme(), object);
+    ObjectNode newNode = referrerNode.objectApi.create(referrerNode.getStorageScheme(), object);
     newNode.setState(ObjectNodeState.NEW);
     set(newNode);
     return newNode;

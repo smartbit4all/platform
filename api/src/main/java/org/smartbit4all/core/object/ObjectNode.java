@@ -65,7 +65,7 @@ public class ObjectNode {
             e -> {
               ObjectNode node = null;
               if (data.getReferences().containsKey(e.getKey())) {
-                node = objectApi.node(data.getReferences().get(e.getKey()));
+                node = new ObjectNode(objectApi, data.getReferences().get(e.getKey()));
               }
               Object uri = data.getObjectAsMap().get(e.getValue().getSourcePropertyPath());
               return new ObjectNodeReference(this, UriUtils.asUri(uri), node);

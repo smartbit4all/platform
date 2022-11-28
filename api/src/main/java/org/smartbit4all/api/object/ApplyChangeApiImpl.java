@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import org.smartbit4all.api.object.ObjectChangeRequest.ObjectChangeOperation;
 import org.smartbit4all.api.object.bean.ObjectNodeState;
-import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ObjectNodeList;
 import org.smartbit4all.core.object.ObjectNodeReference;
@@ -25,7 +25,7 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
   private ModifyApi modifyApi;
 
   @Autowired
-  private ObjectApi objectApi;
+  private ObjectDefinitionApi objectDefinitionApi;
 
   @Override
   public ApplyChangeResult save(ApplyChangeRequest request) {
@@ -128,7 +128,7 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
 
   @Override
   public ApplyChangeRequest request(URI branchUri) {
-    return new ApplyChangeRequest(branchUri, objectApi);
+    return new ApplyChangeRequest(branchUri, objectDefinitionApi);
   }
 
   @Override

@@ -2,7 +2,6 @@ package org.smartbit4all.api.object;
 
 import static java.util.stream.Collectors.toMap;
 import java.net.URI;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -10,9 +9,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.smartbit4all.api.object.bean.ObjectNodeData;
 import org.smartbit4all.api.object.bean.ReferencePropertyKind;
-import org.smartbit4all.core.object.ObjectApi;
-import org.smartbit4all.core.object.ObjectDefinition;
-import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ReferenceDefinition;
 import org.smartbit4all.core.utility.UriUtils;
 import org.smartbit4all.domain.data.storage.StorageApi;
@@ -29,14 +25,10 @@ public final class RetrievalApiImpl implements RetrievalApi {
   @Autowired
   private StorageApi storageApi;
 
-  @Autowired
-  private ObjectApi objectApi;
-
-  private final Stream<ObjectNode> load(ObjectRetrievalRequest request, Stream<URI> uriStream) {
+  private final Stream<ObjectNodeData> load(ObjectRetrievalRequest request, Stream<URI> uriStream) {
 
     return uriStream.parallel()
-        .map(u -> readData(request, u))
-        .map(objectApi::node);
+        .map(u -> readData(request, u));
 
   }
 
@@ -87,44 +79,18 @@ public final class RetrievalApiImpl implements RetrievalApi {
   }
 
   @Override
-  public <T> ObjectRetrievalRequest request(Class<T> clazz) {
-    return new ObjectRetrievalRequest(this, objectApi.definition(clazz));
-  }
-
-  @Override
-  public ObjectNode load(ObjectRetrievalRequest request, URI uri) {
+  public ObjectNodeData load(ObjectRetrievalRequest request, URI uri) {
     return load(request, Stream.of(uri)).findFirst().orElse(null);
   }
 
   @Override
-  public List<ObjectNode> load(ObjectRetrievalRequest request, URI... uris) {
+  public List<ObjectNodeData> load(ObjectRetrievalRequest request, URI... uris) {
     return load(request, Stream.of(uris)).collect(Collectors.toList());
   }
 
   @Override
-  public List<ObjectNode> load(ObjectRetrievalRequest request, List<URI> uris) {
+  public List<ObjectNodeData> load(ObjectRetrievalRequest request, List<URI> uris) {
     return load(request, uris.stream()).collect(Collectors.toList());
   }
 
-  @Override
-  public ObjectRetrievalRequest request(URI objectUri, String... paths) {
-    ObjectDefinition<?> definition = objectApi.definition(objectUri);
-    return request(definition, paths);
-  }
-
-  private ObjectRetrievalRequest request(ObjectDefinition<?> definition, String... paths) {
-    ObjectRetrievalRequest request = new ObjectRetrievalRequest(this, definition);
-    if (paths != null && paths.length > 0) {
-      String path = paths[0];
-      ReferenceDefinition reference = definition.getOutgoingReference(path);
-      if (reference == null) {
-        throw new IllegalArgumentException(
-            "Reference " + path + " not found in " + definition.getAlias() + " objectDefinition.");
-      }
-      String[] subPaths = Arrays.copyOfRange(paths, 1, paths.length);
-      ObjectRetrievalRequest subRequest = request(reference.getTarget(), subPaths);
-      request.getReferences().put(reference, subRequest);
-    }
-    return request;
-  }
 }

@@ -23,6 +23,8 @@ import org.smartbit4all.api.binarydata.BinaryDataObject;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectApiImpl;
 import org.smartbit4all.core.object.ObjectDefinition;
+import org.smartbit4all.core.object.ObjectDefinitionApi;
+import org.smartbit4all.core.object.ObjectDefinitionApiImpl;
 import org.smartbit4all.core.object.ObjectSerializer;
 import org.smartbit4all.core.object.ObjectSerializerByObjectMapper;
 import org.springframework.context.annotation.Bean;
@@ -43,6 +45,11 @@ public class CoreServiceConfig {
   }
 
   @Bean
+  public ObjectDefinitionApi objectDefinitionApi() {
+    return new ObjectDefinitionApiImpl();
+  }
+
+  @Bean
   public ObjectSerializer objectMapperSerializer() {
     return new ObjectSerializerByObjectMapper();
   }
@@ -50,7 +57,7 @@ public class CoreServiceConfig {
   @Bean
   public ObjectDefinition<BinaryDataObject> binaryDataDefinition() {
     ObjectDefinition<BinaryDataObject> result =
-        ObjectApiImpl.constructDefinitionBase(BinaryDataObject.class);
+        ObjectDefinitionApiImpl.constructDefinitionBase(BinaryDataObject.class);
     result.setPreferredSerializerName(BinaryDataObject.class.getName());
     return result;
   }

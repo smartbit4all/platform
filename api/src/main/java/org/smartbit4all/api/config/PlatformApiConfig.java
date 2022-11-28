@@ -31,8 +31,8 @@ import org.smartbit4all.api.object.RetrievalApiImpl;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.setting.LocaleUsage;
 import org.smartbit4all.api.setting.LocaleUsageImpl;
-import org.smartbit4all.core.object.ObjectApiImpl;
 import org.smartbit4all.core.object.ObjectDefinition;
+import org.smartbit4all.core.object.ObjectDefinitionApiImpl;
 import org.smartbit4all.domain.config.DomainConfig;
 import org.smartbit4all.domain.service.entity.EntityManager;
 import org.smartbit4all.domain.service.transfer.TransferService;
@@ -97,7 +97,8 @@ public class PlatformApiConfig {
 
   @Bean
   public ObjectDefinition<ApiData> apiDataObjectDefinition() {
-    ObjectDefinition<ApiData> result = ObjectApiImpl.constructDefinitionBase(ApiData.class);
+    ObjectDefinition<ApiData> result =
+        ObjectDefinitionApiImpl.constructDefinitionBase(ApiData.class);
     result.setExplicitUri(true);
     return result;
   }
@@ -105,7 +106,7 @@ public class PlatformApiConfig {
   @Bean
   public ObjectDefinition<ApiRegistryData> apiRegistryDataDefinition() {
     ObjectDefinition<ApiRegistryData> result =
-        ObjectApiImpl.constructDefinitionBase(ApiRegistryData.class);
+        ObjectDefinitionApiImpl.constructDefinitionBase(ApiRegistryData.class);
     result.setExplicitUri(true);
     return result;
   }

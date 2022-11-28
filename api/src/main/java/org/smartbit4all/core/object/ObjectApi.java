@@ -1,56 +1,109 @@
 package org.smartbit4all.core.object;
 
 import java.net.URI;
+import java.util.List;
+import org.smartbit4all.api.object.ApplyChangeApi;
+import org.smartbit4all.api.object.ObjectRetrievalRequest;
+import org.smartbit4all.api.object.RetrievalApi;
 import org.smartbit4all.api.object.bean.ObjectNodeData;
 
 /**
- * Collects the object definitions for the api objects.
+ * Provides a generic entry point into object handling. Allows creating, loading, retrieving and
+ * saving objects.
+ * 
+ * Soon to be deprecated functionality: collects the object definitions for the API objects, this
+ * has been moved to {@link ObjectDefinitionApi}, use that instead.
  * 
  * @author Peter Boros
  */
 public interface ObjectApi {
 
   /**
-   * Get the definition for the given Class.
-   * 
-   * @param <T> The type of the class
-   * @param clazz The class of the domain object (Java bean)
-   * @return The definition of the given class.
+   * See {@link ObjectDefinitionApi#definition(Class)}
    */
   <T> ObjectDefinition<T> definition(Class<T> clazz);
 
   /**
-   * The object api tries to identify the {@link ObjectDefinition} based on the standard format of
-   * the URI. The first part of the URI contains the alias of the {@link ObjectDefinition}.
-   * 
-   * @param objectUri The object URI that must match the standard.
-   * @return The {@link ObjectDefinition} if it was identified or null if it was not found.
+   * See {@link ObjectDefinitionApi#definition(URI)}
    */
   ObjectDefinition<?> definition(URI objectUri);
 
   /**
-   * The object name tries to identify the {@link ObjectDefinition}.
+   * See {@link ObjectDefinitionApi#definition(String)}
    * 
-   * @param className The object class name.
-   * @return The {@link ObjectDefinition} if it was identified or null if it was not found.
    */
   ObjectDefinition<?> definition(String className);
 
   /**
-   * The meta of the given bean.
-   * 
-   * @param apiClass
-   * @return
-   */
-  BeanMeta meta(Class<?> apiClass);
-
-  /**
-   * @return The default serializer for the objects.
+   * See {@link ObjectDefinitionApi#getDefaultSerializer()}
    */
   ObjectSerializer getDefaultSerializer();
 
-  ObjectNode node(ObjectNodeData data);
+  /**
+   * Creates a new {@link ObjectRetrievalRequest} based on the parameter clazz. This request can be
+   * further parameterized with various fluent API methods, and in the end,
+   * {@link ObjectRetrievalRequest#load(URI)} can be used to load the specified ObjectNode
+   * structure. This is the same as to call {@link ObjectApi#load(ObjectRetrievalRequest, URI)}
+   * 
+   * @param <T>
+   * @param clazz
+   * @return
+   */
+  <T> ObjectRetrievalRequest request(Class<T> clazz);
 
-  ObjectNode node(String storageScheme, Object object);
+  /**
+   * Creates a request based on the objectUri and retrieves it as an ObjectNode.
+   * 
+   * @param objectUri
+   * @return
+   */
+  ObjectNode load(URI objectUri);
+
+  /**
+   * Loads ObjectNode with structure specified in request, starting from objectUri. This method uses
+   * {@link RetrievalApi} for retrieving {@link ObjectNodeData} structure, and then converts them to
+   * ObjectNode.
+   * 
+   * @param request
+   * @param objectUri
+   * @return
+   */
+  ObjectNode load(ObjectRetrievalRequest request, URI objectUri);
+
+  /**
+   * Similar to {@link ObjectApi#load(ObjectRetrievalRequest, URI)}, but starts from multiple
+   * objectUris and returns list of ObjectNodes.
+   * 
+   * @param request
+   * @param objectUris
+   * @return
+   */
+  List<ObjectNode> load(ObjectRetrievalRequest request, List<URI> objectUris);
+
+  /**
+   * Create a new ObjectNode based on a new ObjectNodeData based on the Object parameter. This node
+   * will be created as a new object in storage when saved.
+   * 
+   * @param storageScheme logical scheme in which to create this new object
+   * @param object the object data
+   * @return
+   */
+  ObjectNode create(String storageScheme, Object object);
+
+  /**
+   * Save the ObjectNode structure to the specified branch. If brancUri is null, it will be saved on
+   * main branch. Saves only changes specified in {@link ObjectNode#getState()}. Uses
+   * {@link ApplyChangeApi#applyChanges(ObjectNode, URI)} under the hood.
+   * 
+   */
+  URI save(ObjectNode node, URI branchUri);
+
+  /**
+   * See {@link ApplyChangeApi#applyChanges(ObjectNode)}
+   * 
+   */
+  default URI save(ObjectNode node) {
+    return save(node, null);
+  }
 
 }

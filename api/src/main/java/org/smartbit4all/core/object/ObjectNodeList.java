@@ -31,7 +31,7 @@ public final class ObjectNodeList {
       Iterator<URI> uris = originalUris.iterator();
       for (ObjectNodeData data : originalList) {
         URI uri = uris.next();
-        list.add(new ObjectNodeReference(referrerNode, uri, objectApi.node(data)));
+        list.add(new ObjectNodeReference(referrerNode, uri, new ObjectNode(objectApi, data)));
       }
     } else {
       // not loaded
@@ -58,7 +58,7 @@ public final class ObjectNodeList {
   }
 
   public ObjectNode addNewObject(Object object) {
-    ObjectNode newNode = referrerNode.objectApi.node(referrerNode.getStorageScheme(), object);
+    ObjectNode newNode = referrerNode.objectApi.create(referrerNode.getStorageScheme(), object);
     newNode.setState(ObjectNodeState.NEW);
     add(newNode);
     return newNode;

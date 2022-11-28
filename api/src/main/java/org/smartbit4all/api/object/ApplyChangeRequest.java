@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.smartbit4all.api.object.ObjectChangeRequest.ObjectChangeOperation;
-import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
+import org.smartbit4all.core.object.ObjectDefinitionApi;
 import com.google.common.base.Strings;
 
 /**
@@ -24,12 +24,12 @@ public final class ApplyChangeRequest {
   /**
    * The object api to access the {@link ObjectDefinition}s for the objects.
    */
-  private final ObjectApi objectApi;
+  private final ObjectDefinitionApi objectDefinitionApi;
 
-  ApplyChangeRequest(URI branchUri, ObjectApi objectApi) {
+  ApplyChangeRequest(URI branchUri, ObjectDefinitionApi objectDefinitionApi) {
     super();
     this.branchUri = branchUri;
-    this.objectApi = objectApi;
+    this.objectDefinitionApi = objectDefinitionApi;
   }
 
   /**
@@ -61,8 +61,9 @@ public final class ApplyChangeRequest {
     if (object == null) {
       throw new IllegalArgumentException("The object to create must not be null");
     }
-    return addAndReturn(new ObjectChangeRequest(this, objectApi.definition(object.getClass()),
-        scheme, ObjectChangeOperation.NEW).object(object));
+    return addAndReturn(
+        new ObjectChangeRequest(this, objectDefinitionApi.definition(object.getClass()),
+            scheme, ObjectChangeOperation.NEW).object(object));
   }
 
   /**
@@ -85,8 +86,9 @@ public final class ApplyChangeRequest {
     if (object == null) {
       throw new IllegalArgumentException("The object to replace must not be null");
     }
-    return addAndReturn(new ObjectChangeRequest(this, objectApi.definition(object.getClass()),
-        uri.getScheme(), ObjectChangeOperation.UPDATE).object(object).uri(uri));
+    return addAndReturn(
+        new ObjectChangeRequest(this, objectDefinitionApi.definition(object.getClass()),
+            uri.getScheme(), ObjectChangeOperation.UPDATE).object(object).uri(uri));
   }
 
   /**

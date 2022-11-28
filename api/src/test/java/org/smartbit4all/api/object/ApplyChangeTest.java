@@ -33,9 +33,6 @@ class ApplyChangeTest {
   private ApplyChangeApi applyChangeApi;
 
   @Autowired
-  private RetrievalApi retrievalApi;
-
-  @Autowired
   private ObjectApi objectApi;
 
   @BeforeAll
@@ -48,7 +45,7 @@ class ApplyChangeTest {
 
     URI categoryUri = constructSampleCategory(SampleCategory.CONTAINER_ITEMS);
 
-    ObjectRetrievalRequest request = retrievalApi.request(SampleCategory.class)
+    ObjectRetrievalRequest request = objectApi.request(SampleCategory.class)
         .add(SampleCategory.SUB_CATEGORIES)
         .add(SampleCategory.CONTAINER_ITEMS, SampleContainerItem.DATASHEET);
 
@@ -66,7 +63,7 @@ class ApplyChangeTest {
 
     Assertions.assertEquals(6, request.all().count());
 
-    ObjectRetrievalRequest req2 = retrievalApi.request(SampleCategory.class)
+    ObjectRetrievalRequest req2 = objectApi.request(SampleCategory.class)
         .add(SampleCategory.SUB_CATEGORIES);
     req2.all()
         .filter(r -> r.getDefinition().getClazz() == SampleCategory.class)
@@ -126,11 +123,11 @@ class ApplyChangeTest {
       i++;
     }
     containerItemNodes.get(containerItemNodes.size() - 1).clear();
-    containerItemNodes.add(objectApi.node(
+    containerItemNodes.add(objectApi.create(
         MY_SCHEME,
         new SampleContainerItem().name("new item")));
 
-    URI changedUri = applyChangeApi.applyChanges(objectNode, null);
+    URI changedUri = objectApi.save(objectNode, null);
 
     ObjectNode objectNodeAfterSave = request.root().load(changedUri);
 
@@ -150,7 +147,7 @@ class ApplyChangeTest {
   void testObjectNodeOnly() {
     SampleCategory rootContainer = new SampleCategory().name("root testObjectNodeOnly");
 
-    ObjectNode rootNode = objectApi.node(MY_SCHEME, rootContainer);
+    ObjectNode rootNode = objectApi.create(MY_SCHEME, rootContainer);
     ObjectNodeList items = rootNode.list(SampleCategory.CONTAINER_ITEMS);
     int itemCounter = 5;
     for (int i = 0; i < itemCounter; i++) {
@@ -159,19 +156,19 @@ class ApplyChangeTest {
           .ref(SampleContainerItem.DATASHEET)
           .setNewObject(new SampleDataSheet().name("datasheet " + i));
     }
-    URI rootCategoryUri = applyChangeApi.applyChanges(rootNode);
+    URI rootCategoryUri = objectApi.save(rootNode);
+    assertNotNull(rootCategoryUri);
 
-
-    ObjectRetrievalRequest request = retrievalApi.request(SampleCategory.class)
+    ObjectRetrievalRequest request = objectApi.request(SampleCategory.class)
         .add(SampleCategory.CONTAINER_ITEMS, SampleContainerItem.DATASHEET);
 
-    ObjectNode objectNodeAfterSave = request.load(rootCategoryUri);
+    ObjectNode rootNodeLoaded = request.load(rootCategoryUri);
 
     ObjectProperties objectProperties =
         new ObjectProperties().property(SampleCategory.class, SampleCategory.NAME)
             .property(SampleContainerItem.class, SampleContainerItem.NAME)
             .property(SampleDataSheet.class, SampleDataSheet.NAME);
-    System.out.println(ObjectNodes.versionTree(objectNodeAfterSave,
+    System.out.println(ObjectNodes.versionTree(rootNodeLoaded,
         objectProperties));
 
   }
@@ -182,14 +179,14 @@ class ApplyChangeTest {
     SampleContainerItem item = new SampleContainerItem().name("container item");
     SampleDataSheet dataSheet = new SampleDataSheet().name("data sheet testReferenceChangeUri");
 
-    ObjectNode rootNode = objectApi.node(MY_SCHEME, root);
+    ObjectNode rootNode = objectApi.create(MY_SCHEME, root);
     rootNode.list(SampleCategory.CONTAINER_ITEMS).addNewObject(item);
-    URI rootUri = applyChangeApi.applyChanges(rootNode);
+    URI rootUri = objectApi.save(rootNode);
 
-    ObjectNode dataSheetNode = objectApi.node(MY_SCHEME, dataSheet);
-    URI dataSheetUri = applyChangeApi.applyChanges(dataSheetNode);
+    ObjectNode dataSheetNode = objectApi.create(MY_SCHEME, dataSheet);
+    URI dataSheetUri = objectApi.save(dataSheetNode);
 
-    ObjectRetrievalRequest request = retrievalApi.request(SampleCategory.class)
+    ObjectRetrievalRequest request = objectApi.request(SampleCategory.class)
         .add(SampleCategory.CONTAINER_ITEMS);
 
     rootNode = request.load(rootUri);
@@ -213,9 +210,9 @@ class ApplyChangeTest {
     assertFalse(dataSheetRef.isPresent());
     dataSheetRef.set(dataSheetUri);
 
-    URI rootUriAfterUpdate = applyChangeApi.applyChanges(rootNode);
+    URI rootUriAfterUpdate = objectApi.save(rootNode);
 
-    request = retrievalApi.request(SampleCategory.class)
+    request = objectApi.request(SampleCategory.class)
         .add(SampleCategory.CONTAINER_ITEMS, SampleContainerItem.DATASHEET);
 
     // previous version
@@ -265,7 +262,6 @@ class ApplyChangeTest {
       ObjectChangeRequest ocrSubCategory = applyChangeRequest.createAsNew(MY_SCHEME, subCategory);
       rlcSubCategories.add(ocrSubCategory);
     }
-
 
     ApplyChangeResult result =
         applyChangeApi

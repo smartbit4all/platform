@@ -4,8 +4,10 @@ import java.lang.ref.WeakReference;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
+import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ReferenceDefinition;
@@ -45,7 +47,7 @@ public final class ObjectRetrievalRequest {
    */
   private WeakReference<ObjectRetrievalRequest> lastSavePoint;
 
-  private WeakReference<RetrievalApi> retrievalApi;
+  private WeakReference<ObjectApi> objectApi;
 
   /**
    * The object request is constructed by the {@link RetrievalApi}.
@@ -57,19 +59,19 @@ public final class ObjectRetrievalRequest {
     this.predecessor = new WeakReference<>(predecessor);
     this.lastSavePoint = predecessor.lastSavePoint;
     this.loadHead = predecessor.loadHead;
-    this.retrievalApi = predecessor.retrievalApi;
+    this.objectApi = predecessor.objectApi;
   }
 
   /**
    * The object request is constructed by itself and the RetrievalRequest.
    * 
    */
-  ObjectRetrievalRequest(RetrievalApi retrievalApi, ObjectDefinition<?> definition) {
+  public ObjectRetrievalRequest(ObjectApi objectApi, ObjectDefinition<?> definition) {
     this.definition = definition;
     this.loadHead = false;
     predecessor = null;
     lastSavePoint = null;
-    this.retrievalApi = new WeakReference<>(retrievalApi);
+    this.objectApi = new WeakReference<>(objectApi);
   }
 
   /**
@@ -228,13 +230,23 @@ public final class ObjectRetrievalRequest {
   }
 
   /**
-   * Load the whole request from the root.
+   * Load the whole request from the root, with a specified objectUri.
    * 
-   * @param uri
+   * @param objectUri
    * @return
    */
-  public final ObjectNode load(URI uri) {
-    return retrievalApi.get().load(root(), uri);
+  public final ObjectNode load(URI objectUri) {
+    return objectApi.get().load(root(), objectUri);
+  }
+
+  /**
+   * Load the whole request from the root, with a specified objectUri.
+   * 
+   * @param objectUris
+   * @return
+   */
+  public List<ObjectNode> load(List<URI> objectUris) {
+    return objectApi.get().load(root(), objectUris);
   }
 
 }

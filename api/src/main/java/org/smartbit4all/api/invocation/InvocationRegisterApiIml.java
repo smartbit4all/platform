@@ -15,7 +15,7 @@ import org.smartbit4all.api.contribution.ContributionApi;
 import org.smartbit4all.api.contribution.PrimaryApi;
 import org.smartbit4all.api.invocation.bean.ApiData;
 import org.smartbit4all.api.invocation.bean.ApiRegistryData;
-import org.smartbit4all.core.object.ObjectApiImpl;
+import org.smartbit4all.core.object.ObjectDefinitionApiImpl;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.application.ApplicationRuntime;
 import org.smartbit4all.domain.application.ApplicationRuntimeApi;
@@ -38,7 +38,7 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi {
    */
   public static final URI REGISTER_URI =
       URI.create(Invocations.APIREGISTRATION_SCHEME + StringConstant.COLON + StringConstant.SLASH
-          + ObjectApiImpl.getDefaultAlias(ApiRegistryData.class));
+          + ObjectDefinitionApiImpl.getDefaultAlias(ApiRegistryData.class));
 
   @Autowired(required = false)
   private StorageApi storageApi;
