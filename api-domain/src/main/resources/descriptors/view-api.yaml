@@ -116,6 +116,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ViewData'
+        openPendingData:
+          $ref: '#/components/schemas/OpenPendingData'
     ViewData:
       type: object
       required: [uuid,viewName,state,type,parameters]
@@ -145,8 +147,11 @@ components:
     ViewState:
       type: string
       enum:
+        - open_pending
         - to_open
         - opened
+        - close_pending
+        - close_approved
         - to_close
         - closed
       default: to_open
@@ -262,3 +267,26 @@ components:
           type: string
         message:
           type: string
+    OpenPendingData:
+      type: object
+      description: All information regarding opening a view.
+      required: [results]
+      properties:
+        viewToOpen:
+          type: string
+          format: uuid
+        viewsToClose:
+          type: array
+          items:
+            type: string
+            format: uuid
+        results:
+          additionalProperties:
+            $ref: '#/components/schemas/CloseResult'
+    CloseResult:
+      type: string
+      default: pending
+      enum:
+        - approved
+        - pending
+        - rejected

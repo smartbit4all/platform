@@ -24,27 +24,19 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
- * Gets or Sets ViewState
+ * Gets or Sets CloseResult
  */
-public enum ViewState {
+public enum CloseResult {
   
-  OPEN_PENDING("open_pending"),
+  APPROVED("approved"),
   
-  TO_OPEN("to_open"),
+  PENDING("pending"),
   
-  OPENED("opened"),
-  
-  CLOSE_PENDING("close_pending"),
-  
-  CLOSE_APPROVED("close_approved"),
-  
-  TO_CLOSE("to_close"),
-  
-  CLOSED("closed");
+  REJECTED("rejected");
 
   private String value;
 
-  ViewState(String value) {
+  CloseResult(String value) {
     this.value = value;
   }
 
@@ -59,8 +51,8 @@ public enum ViewState {
   }
 
   @JsonCreator
-  public static ViewState fromValue(String value) {
-    for (ViewState b : ViewState.values()) {
+  public static CloseResult fromValue(String value) {
+    for (CloseResult b : CloseResult.values()) {
       if (b.value.equals(value)) {
         return b;
       }

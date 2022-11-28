@@ -2,10 +2,12 @@ package org.smartbit4all.api.view;
 
 import java.util.UUID;
 import java.util.function.UnaryOperator;
+import org.smartbit4all.api.view.bean.CloseResult;
 import org.smartbit4all.api.view.bean.MessageResult;
 import org.smartbit4all.api.view.bean.ViewContext;
 import org.smartbit4all.api.view.bean.ViewContextUpdate;
 import org.smartbit4all.api.view.bean.ViewData;
+import org.smartbit4all.api.view.bean.OpenPendingData;
 
 public interface ViewContextService {
 
@@ -62,5 +64,15 @@ public interface ViewContextService {
    * @param messageResult
    */
   void handleMessage(UUID viewUuid, UUID messageUuid, MessageResult messageResult);
+
+  /**
+   * If the API associated with view identified by viewToCloseUuid has a method with
+   * {@link BeforeClose} annotation, it will be called and it's return value will be returned,
+   * otherwise it will always return Approved.
+   * 
+   * @return
+   * 
+   */
+  CloseResult callBeforeClose(UUID viewToCloseUuid, OpenPendingData data);
 
 }

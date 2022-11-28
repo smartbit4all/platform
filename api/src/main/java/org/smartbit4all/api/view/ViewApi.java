@@ -1,6 +1,7 @@
 package org.smartbit4all.api.view;
 
 import java.util.UUID;
+import org.smartbit4all.api.view.bean.CloseResult;
 import org.smartbit4all.api.view.bean.MessageData;
 import org.smartbit4all.api.view.bean.ViewContext;
 import org.smartbit4all.api.view.bean.ViewData;
@@ -61,5 +62,13 @@ public interface ViewApi {
    * @return
    */
   ViewContext currentViewContext();
+
+  /**
+   * Set the closing result of a view, which should be closed because another view is opening.
+   * 
+   * @param viewToClose UUID of the view which sets the close result.
+   * @param result
+   */
+  void setClosePendingResult(UUID viewToClose, CloseResult result);
 
 }

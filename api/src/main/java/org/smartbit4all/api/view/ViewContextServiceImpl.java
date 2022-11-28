@@ -8,18 +8,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.session.SessionApi;
+import org.smartbit4all.api.view.bean.CloseResult;
 import org.smartbit4all.api.view.bean.MessageResult;
+import org.smartbit4all.api.view.bean.OpenPendingData;
 import org.smartbit4all.api.view.bean.ViewContext;
 import org.smartbit4all.api.view.bean.ViewContextUpdate;
 import org.smartbit4all.api.view.bean.ViewData;
 import org.smartbit4all.api.view.bean.ViewState;
-import org.smartbit4all.api.view.bean.ViewStateUpdate;
 import org.smartbit4all.core.utility.ReflectionUtility;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
@@ -41,7 +43,9 @@ public class ViewContextServiceImpl implements ViewContextService {
 
   private Map<String, Object> apiByViewName = new HashMap<>();
 
-  private Map<String, Map<String, Method>> messageMethodsMap = new HashMap<>();
+  private Map<String, Map<String, Method>> messageMethodsByView = new HashMap<>();
+
+  private Map<String, Method> beforeCloseMethodsByView = new HashMap<>();
 
   @Autowired
   private StorageApi storageApi;
@@ -120,19 +124,20 @@ public class ViewContextServiceImpl implements ViewContextService {
 
   @Override
   public void updateViewContext(ViewContextUpdate updates) {
-    storage.get().update(getViewContextUri(updates.getUuid()), ViewContext.class,
+    if (!Objects.equals(updates.getUuid(), currentViewContextUuid.get())) {
+      throw new IllegalArgumentException("currentViewContext doesn't match paramater");
+    }
+    if (!updates.getUpdates().stream().allMatch(
+        update -> update.getState() == ViewState.OPENED
+            || update.getState() == ViewState.CLOSED)) {
+      throw new IllegalArgumentException("Only OPENED and CLOSED updates allowed");
+    }
+    updateCurrentViewContext(
         c -> {
-          updates.getUpdates().forEach(u -> updateViewState(c, u));
+          updates.getUpdates().forEach(u -> ViewContexts.updateViewState(c, u));
           c.getViews().removeIf(v -> ViewState.CLOSED == v.getState());
           return c;
         });
-  }
-
-  private void updateViewState(ViewContext context, ViewStateUpdate update) {
-    context.getViews().stream()
-        .filter(v -> update.getUuid().equals(v.getUuid()))
-        .findFirst()
-        .ifPresent(view -> view.setState(update.getState()));
   }
 
   @Override
@@ -150,10 +155,7 @@ public class ViewContextServiceImpl implements ViewContextService {
       viewContext = getViewContext(viewContextUuid);
     }
     Objects.requireNonNull(viewContext, "ViewContext must be not null!");
-    return viewContext.getViews().stream()
-        .filter(v -> viewUuid.equals(v.getUuid()))
-        .findFirst()
-        .orElseThrow(() -> new IllegalArgumentException("View not found by UUID: " + viewUuid));
+    return ViewContexts.getView(viewContext, viewUuid);
   }
 
   @Override
@@ -169,33 +171,27 @@ public class ViewContextServiceImpl implements ViewContextService {
     ViewData view = getViewFromViewContext(null, viewUuid);
     Object api = apiByViewName.get(view.getViewName());
     Objects.requireNonNull(api, "API not found for view " + view.getViewName());
-    Map<String, Method> messageMethods = messageMethodsMap.get(view.getViewName());
+    Map<String, Method> messageMethods = messageMethodsByView.get(view.getViewName());
     if (messageMethods == null) {
       return;
     }
 
     String code = messageResult.getSelectedOption().getCode();
-    Method messageHandlerMethod = messageMethods.get(code);
-    if (messageHandlerMethod == null) {
+    Method method = messageMethods.get(code);
+    if (method == null) {
       // wildcard handler
-      messageHandlerMethod = messageMethods.get("");
+      method = messageMethods.get("");
     }
-    if (messageHandlerMethod != null) {
+    if (method != null) {
       try {
-        messageHandlerMethod.invoke(api, viewUuid, messageUuid, messageResult);
+        // TODO examine signature, try to support many variations
+        method.invoke(api, viewUuid, messageUuid, messageResult);
       } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        log.error("Error when calling MessageHandler method " + method.getName(), e);
       }
     }
-    // TODO common close logic here, unify with ViewApi.closeMessage()
-    updateCurrentViewContext(c -> {
-      c.getViews().stream()
-          .filter(v -> messageUuid.equals(v.getUuid()))
-          .findFirst()
-          .ifPresent(m -> m.setState(ViewState.TO_CLOSE));
-      return c;
-    });
+    updateCurrentViewContext(
+        c -> ViewContexts.updateViewState(c, messageUuid, ViewState.TO_CLOSE));
   }
 
   @EventListener(ApplicationStartedEvent.class)
@@ -218,23 +214,40 @@ public class ViewContextServiceImpl implements ViewContextService {
     }
     apiByViewName.put(viewName, api);
     parentViewByViewName.put(viewName, view.parent());
-    registerViewMessageMethods(viewName, api);
+    registerViewMethods(viewName, api);
   }
 
   /**
-   * Register all message handling methods of api for given view.
+   * Register all message and navigation handling methods of API class for given view.
    * 
    * @param viewName
    * @param api
    */
-  private void registerViewMessageMethods(String viewName, Object api) {
+  private void registerViewMethods(String viewName, Object api) {
+    registerMessageMethods(viewName, api);
+    registerBeforeCloseMethods(viewName, api);
+  }
+
+  private void registerMessageMethods(String viewName, Object api) {
     Map<String, Method> messageMethods = new HashMap<>();
     ReflectionUtility.allMethods(
         api.getClass(),
         method -> method.isAnnotationPresent(MessageHandler.class))
         .forEach(method -> collectMessageMethod(viewName, method, messageMethods));
 
-    messageMethodsMap.put(viewName, messageMethods);
+    messageMethodsByView.put(viewName, messageMethods);
+  }
+
+  private void registerBeforeCloseMethods(String viewName, Object api) {
+    Set<Method> methods = ReflectionUtility.allMethods(
+        api.getClass(),
+        method -> method.isAnnotationPresent(BeforeClose.class));
+    if (methods.size() > 1) {
+      throw new IllegalArgumentException("More than 1 @BeforeCloseEvent method in " + viewName);
+    }
+    if (methods.size() == 1) {
+      beforeCloseMethodsByView.put(viewName, methods.iterator().next());
+    }
   }
 
   /**
@@ -257,4 +270,24 @@ public class ViewContextServiceImpl implements ViewContextService {
       }
     }
   }
+
+  @Override
+  public CloseResult callBeforeClose(UUID viewToCloseUuid, OpenPendingData data) {
+    ViewData viewToClose = getViewFromViewContext(null, viewToCloseUuid);
+    Objects.requireNonNull(viewToClose, "View not found!");
+    String viewName = viewToClose.getViewName();
+    Object api = apiByViewName.get(viewName);
+    Objects.requireNonNull(api, "API not found for view " + viewName);
+    Method method = beforeCloseMethodsByView.get(viewName);
+    CloseResult result = CloseResult.APPROVED;
+    if (method != null) {
+      try {
+        result = (CloseResult) method.invoke(api, viewToCloseUuid, data);
+      } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+        log.error("Error when calling BeforeClose method" + method.getName(), e);
+      }
+    }
+    return result;
+  }
+
 }
