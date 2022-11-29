@@ -290,3 +290,12 @@ components:
         - approved
         - pending
         - rejected
+    UiAction:
+      type: object
+      properties:
+        code:
+          type: string
+        apiName:
+          type: string
+        apiFunction:
+          type: string

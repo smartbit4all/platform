@@ -16,7 +16,7 @@ smartbit4all {
     	"LocalDateTime": "java.time.LocalDateTime",
     	"LocalDate": "java.time.LocalDate",
     	"LocalTime": "java.time.LocalTime",
-    	"UiAction": "org.smartbit4all.api.uiaction.bean.UiAction"
+    	"UiAction": "org.smartbit4all.api.view.bean.UiAction"
   	]
   }
 }
