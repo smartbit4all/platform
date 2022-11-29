@@ -1,10 +1,17 @@
 package org.smartbit4all.api.object;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.net.URI;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.smartbit4all.api.object.bean.RetrievalMode;
 import org.smartbit4all.api.sample.bean.SampleCategory;
 import org.smartbit4all.api.sample.bean.SampleContainerItem;
 import org.smartbit4all.api.sample.bean.SampleDataSheet;
@@ -17,11 +24,6 @@ import org.smartbit4all.core.object.ObjectNodes;
 import org.smartbit4all.core.object.ObjectProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(classes = {ApplyChangeTestConfig.class})
 class ApplyChangeTest {
@@ -44,7 +46,7 @@ class ApplyChangeTest {
 
     URI categoryUri = constructSampleCategory(SampleCategory.CONTAINER_ITEMS);
 
-    ObjectRetrievalRequest request = objectApi.request(SampleCategory.class)
+    RetrievalRequest request = objectApi.request(SampleCategory.class)
         .add(SampleCategory.SUB_CATEGORIES)
         .add(SampleCategory.CONTAINER_ITEMS, SampleContainerItem.DATASHEET);
 
@@ -62,7 +64,7 @@ class ApplyChangeTest {
 
     Assertions.assertEquals(6, request.all().count());
 
-    ObjectRetrievalRequest req2 = objectApi.request(SampleCategory.class)
+    RetrievalRequest req2 = objectApi.request(SampleCategory.class)
         .add(SampleCategory.SUB_CATEGORIES);
     req2.all()
         .filter(r -> r.getDefinition().getClazz() == SampleCategory.class)
@@ -217,10 +219,10 @@ class ApplyChangeTest {
     ObjectNode dataSheetNode = objectApi.create(MY_SCHEME, dataSheet);
     URI dataSheetUri = objectApi.save(dataSheetNode);
 
-    ObjectRetrievalRequest request = objectApi.request(SampleCategory.class)
+    RetrievalRequest requestRootAndContainerItems = objectApi.request(SampleCategory.class)
         .add(SampleCategory.CONTAINER_ITEMS);
 
-    rootNode = request.load(rootUri);
+    rootNode = requestRootAndContainerItems.load(rootUri);
     ObjectNodeList items = rootNode.list(SampleCategory.CONTAINER_ITEMS);
     assertNotNull(items);
     assertTrue(!items.isEmpty());
@@ -246,16 +248,19 @@ class ApplyChangeTest {
 
     URI rootUriAfterUpdate = objectApi.save(rootNode);
 
-    request = objectApi.request(SampleCategory.class)
-        .add(SampleCategory.CONTAINER_ITEMS, SampleContainerItem.DATASHEET);
-
     // previous version
-    // rootNode = request.load(rootUri);
-    // dataSheetNode = rootNode.list(SampleCategory.CONTAINER_ITEMS).get(0).get()
-    // .ref(SampleContainerItem.DATASHEET).get();
-    // assertNull(dataSheetNode, "DataSheet shouldn't exist in first version");
+    RetrievalRequest requestExactVersion = objectApi
+        .request(SampleCategory.class, RetrievalMode.EXACT_VERSION)
+        .add(SampleCategory.CONTAINER_ITEMS, SampleContainerItem.DATASHEET);
+    rootNode = requestExactVersion.load(rootUri);
+    dataSheetNode = rootNode.list(SampleCategory.CONTAINER_ITEMS).get(0).get()
+        .ref(SampleContainerItem.DATASHEET).get();
+    assertNull(dataSheetNode, "DataSheet shouldn't exist in first version");
 
-    rootNode = request.load(rootUriAfterUpdate);
+    RetrievalRequest requestNormal = objectApi
+        .request(SampleCategory.class, RetrievalMode.NORMAL)
+        .add(SampleCategory.CONTAINER_ITEMS, SampleContainerItem.DATASHEET);
+    rootNode = requestNormal.load(rootUriAfterUpdate);
     dataSheetNode = rootNode.list(SampleCategory.CONTAINER_ITEMS).get(0).get()
         .ref(SampleContainerItem.DATASHEET).get();
     assertNotNull(dataSheetNode, "DataSheet must exist in first version");

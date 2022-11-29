@@ -121,3 +121,7 @@ components:
       type: string
       default: NOP
       enum: [NOP, NEW, MODIFIED, REMOVED]
+    RetrievalMode:
+      type: string
+      default: NORMAL
+      enum: [NORMAL, LATEST, EXACT_VERSION]

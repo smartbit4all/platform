@@ -6,10 +6,11 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.object.ApplyChangeApi;
-import org.smartbit4all.api.object.ObjectRetrievalRequest;
 import org.smartbit4all.api.object.RetrievalApi;
+import org.smartbit4all.api.object.RetrievalRequest;
 import org.smartbit4all.api.object.bean.ObjectNodeData;
 import org.smartbit4all.api.object.bean.ObjectNodeState;
+import org.smartbit4all.api.object.bean.RetrievalMode;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class ObjectApiImpl implements ObjectApi {
@@ -47,19 +48,22 @@ public class ObjectApiImpl implements ObjectApi {
   }
 
   @Override
-  public ObjectNode load(URI objectUri) {
-    ObjectRetrievalRequest request =
-        new ObjectRetrievalRequest(this, objectDefinitionApi.definition(objectUri));
+  public ObjectNode load(URI objectUri, RetrievalMode retrievalMode) {
+    RetrievalRequest request =
+        new RetrievalRequest(
+            this,
+            objectDefinitionApi.definition(objectUri),
+            retrievalMode);
     return load(request, objectUri);
   }
 
   @Override
-  public ObjectNode load(ObjectRetrievalRequest request, URI objectUri) {
+  public ObjectNode load(RetrievalRequest request, URI objectUri) {
     return node(retrievalApi.load(request, objectUri));
   }
 
   @Override
-  public List<ObjectNode> load(ObjectRetrievalRequest request, List<URI> objectUris) {
+  public List<ObjectNode> load(RetrievalRequest request, List<URI> objectUris) {
     return retrievalApi.load(request, objectUris).stream()
         .map(this::node)
         .collect(toList());
@@ -94,8 +98,8 @@ public class ObjectApiImpl implements ObjectApi {
   }
 
   @Override
-  public <T> ObjectRetrievalRequest request(Class<T> clazz) {
-    return new ObjectRetrievalRequest(this, objectDefinitionApi.definition(clazz));
+  public <T> RetrievalRequest request(Class<T> clazz, RetrievalMode retrievalMode) {
+    return new RetrievalRequest(this, objectDefinitionApi.definition(clazz), retrievalMode);
   }
 
   @Override

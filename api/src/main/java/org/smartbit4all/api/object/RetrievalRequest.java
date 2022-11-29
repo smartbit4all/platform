@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 import org.smartbit4all.api.object.bean.AggregationKind;
+import org.smartbit4all.api.object.bean.RetrievalMode;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
@@ -15,11 +16,11 @@ import org.smartbit4all.core.object.ReferenceDefinition;
 import com.google.common.base.Strings;
 
 /**
- * The object retrieval request that defines the object node of the request.
+ * The retrieval request that defines the object node of the request.
  * 
  * @author Peter Boros
  */
-public final class ObjectRetrievalRequest {
+public final class RetrievalRequest {
 
   /**
    * Defined if we need the latest version of the given object. By default we load the referred
@@ -35,42 +36,47 @@ public final class ObjectRetrievalRequest {
   /**
    * The objects to load trough the references. The name of the outgoing reference is the key.
    */
-  private final Map<ReferenceDefinition, ObjectRetrievalRequest> references = new HashMap<>();
+  private final Map<ReferenceDefinition, RetrievalRequest> references = new HashMap<>();
 
   /**
    * The predecessor that is the previous request node in the path. We use it during the build to
    * access the this request node and continue from there.
    */
-  private WeakReference<ObjectRetrievalRequest> predecessor;
+  private WeakReference<RetrievalRequest> predecessor;
 
   /**
    * If we want to remember a specific node it will be saved into this variable.
    */
-  private WeakReference<ObjectRetrievalRequest> lastSavePoint;
+  private WeakReference<RetrievalRequest> lastSavePoint;
 
   private WeakReference<ObjectApi> objectApi;
 
+  private final RetrievalMode retrievalMode;
+
   /**
-   * The object request is constructed by the {@link RetrievalApi}.
+   * The request is constructed by the {@link ObjectApi} with an {@link ObjectDefinition}.
    * 
    */
-  ObjectRetrievalRequest(ObjectDefinition<?> definition, ObjectRetrievalRequest predecessor) {
+  public RetrievalRequest(ObjectApi objectApi, ObjectDefinition<?> definition,
+      RetrievalMode retrievalMode) {
     this.definition = definition;
-    // It will be the predecessor and its last save point is copied.
-    this.predecessor = new WeakReference<>(predecessor);
-    this.lastSavePoint = predecessor.lastSavePoint;
-    this.objectApi = predecessor.objectApi;
+    predecessor = null;
+    lastSavePoint = null;
+    this.objectApi = new WeakReference<>(objectApi);
+    this.retrievalMode = retrievalMode;
   }
 
   /**
    * The object request is constructed by itself and the RetrievalRequest.
    * 
    */
-  public ObjectRetrievalRequest(ObjectApi objectApi, ObjectDefinition<?> definition) {
+  RetrievalRequest(ObjectDefinition<?> definition, RetrievalRequest predecessor) {
     this.definition = definition;
-    predecessor = null;
-    lastSavePoint = null;
-    this.objectApi = new WeakReference<>(objectApi);
+    // It will be the predecessor and its last save point is copied.
+    this.predecessor = new WeakReference<>(predecessor);
+    this.lastSavePoint = predecessor.lastSavePoint;
+    this.objectApi = predecessor.objectApi;
+    this.retrievalMode = predecessor.retrievalMode;
   }
 
   /**
@@ -81,10 +87,10 @@ public final class ObjectRetrievalRequest {
   }
 
   /**
-   * @return The Map of the referred {@link ObjectRetrievalRequest}. They are mapped by the name of
-   *         the outgoing reference we can access them through.
+   * @return The Map of the referred {@link RetrievalRequest}. They are mapped by the name of the
+   *         outgoing reference we can access them through.
    */
-  public final Map<ReferenceDefinition, ObjectRetrievalRequest> getReferences() {
+  public final Map<ReferenceDefinition, RetrievalRequest> getReferences() {
     return references;
   }
 
@@ -93,10 +99,10 @@ public final class ObjectRetrievalRequest {
    * 
    * @param paths The names of the outgoing references to follow when loading the referred objects.
    *        Without any modification it is the name of the property that contains the referrer URI.
-   * @return The {@link ObjectRetrievalRequest} of the last referred object. If paths is null or
-   *         empty, returns this.
+   * @return The {@link RetrievalRequest} of the last referred object. If paths is null or empty,
+   *         returns this.
    */
-  public final ObjectRetrievalRequest append(String... paths) {
+  public final RetrievalRequest append(String... paths) {
     return getOrCreate(true, paths);
   }
 
@@ -107,7 +113,7 @@ public final class ObjectRetrievalRequest {
    * @param paths
    * @return
    */
-  public final ObjectRetrievalRequest add(String... paths) {
+  public final RetrievalRequest add(String... paths) {
     append(paths);
     return this;
   }
@@ -118,7 +124,7 @@ public final class ObjectRetrievalRequest {
    * @param paths
    * @return
    */
-  public final ObjectRetrievalRequest get(String... paths) {
+  public final RetrievalRequest get(String... paths) {
     return getOrCreate(false, paths);
   }
 
@@ -129,7 +135,7 @@ public final class ObjectRetrievalRequest {
    * @param paths
    * @return
    */
-  private final ObjectRetrievalRequest getOrCreate(boolean create, String... paths) {
+  private final RetrievalRequest getOrCreate(boolean create, String... paths) {
     if (paths == null || paths.length == 0) {
       return this;
     }
@@ -143,15 +149,16 @@ public final class ObjectRetrievalRequest {
           "The " + path + " is not an existing outgoing reference in the "
               + definition.getQualifiedName() + " object.");
     }
-    ObjectRetrievalRequest next = references.get(ref);
+    RetrievalRequest next = references.get(ref);
     if (next == null && !create) {
       return null;
     }
     if (next == null) {
-      next = new ObjectRetrievalRequest(ref.getTarget(), this);
-      if (ref.getAggregation() == AggregationKind.NONE) {
-        next.loadLatest();
-      }
+      next = new RetrievalRequest(ref.getTarget(), this);
+      boolean nextLoadLatest = retrievalMode == RetrievalMode.LATEST
+          || (retrievalMode == RetrievalMode.NORMAL
+              && ref.getAggregation() == AggregationKind.NONE);
+      next.setLoadLatest(nextLoadLatest);
       references.put(ref, next);
     }
     String[] subPaths = Arrays.copyOfRange(paths, 1, paths.length);
@@ -164,10 +171,10 @@ public final class ObjectRetrievalRequest {
    * 
    * @return The nodes {@link Stream}.
    */
-  public Stream<ObjectRetrievalRequest> all() {
+  public Stream<RetrievalRequest> all() {
     return Stream.of(
         Stream.of(this),
-        references.values().stream().flatMap(ObjectRetrievalRequest::all))
+        references.values().stream().flatMap(RetrievalRequest::all))
         .flatMap(s -> s);
   }
 
@@ -175,14 +182,14 @@ public final class ObjectRetrievalRequest {
   /**
    * @return The predecessor to continue the request building from.
    */
-  public final ObjectRetrievalRequest pre() {
+  public final RetrievalRequest pre() {
     return predecessor.get();
   }
 
   /**
    * @return Set the current node to last saved node to remember this when coming {@link #back()}.
    */
-  public final ObjectRetrievalRequest set() {
+  public final RetrievalRequest set() {
     lastSavePoint = new WeakReference<>(this);
     return this;
   }
@@ -190,14 +197,14 @@ public final class ObjectRetrievalRequest {
   /**
    * @return Go back to the last {@link #set()} point to continue building the request.
    */
-  public final ObjectRetrievalRequest back() {
+  public final RetrievalRequest back() {
     return lastSavePoint.get();
   }
 
   /**
    * @return Go back to the root node.
    */
-  public final ObjectRetrievalRequest root() {
+  public final RetrievalRequest root() {
     return predecessor == null ? this : predecessor.get().root();
   }
 
@@ -216,28 +223,8 @@ public final class ObjectRetrievalRequest {
    * version directly.
    * 
    */
-  public final ObjectRetrievalRequest loadLatest() {
-    this.loadLatest = true;
-    return this;
-  }
-
-  /**
-   * Defined if we need the latest version of the given object. By default we load the referred
-   * version directly.
-   * 
-   */
-  public final ObjectRetrievalRequest setLoadLatest(boolean loadLatest) {
+  public final RetrievalRequest setLoadLatest(boolean loadLatest) {
     this.loadLatest = loadLatest;
-    return this;
-  }
-
-  /**
-   * Defined if we need the latest version of the given object. By default we load the referred
-   * version directly.
-   * 
-   */
-  public final ObjectRetrievalRequest version() {
-    this.loadLatest = false;
     return this;
   }
 

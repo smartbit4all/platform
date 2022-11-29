@@ -22,7 +22,7 @@ public interface RetrievalApi {
    * @param uri The uri of the object to load.
    * @return The result of the object retrieve as an {@link ObjectNode}.
    */
-  ObjectNodeData load(ObjectRetrievalRequest request, URI uri);
+  ObjectNodeData load(RetrievalRequest request, URI uri);
 
   /**
    * Executes the request and retrieve the object.
@@ -31,7 +31,7 @@ public interface RetrievalApi {
    * @param uris The uris of the objects to load.
    * @return The result of the object retrieve as an {@link ObjectNode}.
    */
-  List<ObjectNodeData> load(ObjectRetrievalRequest request, URI... uris);
+  List<ObjectNodeData> load(RetrievalRequest request, URI... uris);
 
   /**
    * Executes the request and retrieve the object.
@@ -40,6 +40,6 @@ public interface RetrievalApi {
    * @param uris The uri list of the objects to load.
    * @return The result of the object retrieve as an {@link ObjectNodeData}.
    */
-  List<ObjectNodeData> load(ObjectRetrievalRequest request, List<URI> uris);
+  List<ObjectNodeData> load(RetrievalRequest request, List<URI> uris);
 
 }

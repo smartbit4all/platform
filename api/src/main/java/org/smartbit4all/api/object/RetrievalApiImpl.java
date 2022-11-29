@@ -26,14 +26,14 @@ public final class RetrievalApiImpl implements RetrievalApi {
   @Autowired
   private StorageApi storageApi;
 
-  private final Stream<ObjectNodeData> load(ObjectRetrievalRequest request, Stream<URI> uriStream) {
+  private final Stream<ObjectNodeData> load(RetrievalRequest request, Stream<URI> uriStream) {
 
     return uriStream.parallel()
         .map(u -> readData(request, u));
 
   }
 
-  private final ObjectNodeData readData(ObjectRetrievalRequest objRequest, URI uri) {
+  private final ObjectNodeData readData(RetrievalRequest objRequest, URI uri) {
     URI readUri = objRequest.isLoadLatest() ? ObjectStorageImpl.getUriWithoutVersion(uri) : uri;
     StorageObject<?> storageObject = storageApi.load(readUri);
     ObjectNodeData data = new ObjectNodeData()
@@ -44,7 +44,7 @@ public final class RetrievalApiImpl implements RetrievalApi {
         .versionNr(storageObject.getVersion().getSerialNoData());
 
     // Recursive read of all referred objects.
-    for (Entry<ReferenceDefinition, ObjectRetrievalRequest> refEntry : objRequest.getReferences()
+    for (Entry<ReferenceDefinition, RetrievalRequest> refEntry : objRequest.getReferences()
         .entrySet()) {
       ReferenceDefinition ref = refEntry.getKey();
       Object sourceValue = ref.getSourceValue(data.getObjectAsMap());
@@ -52,7 +52,7 @@ public final class RetrievalApiImpl implements RetrievalApi {
         ReferencePropertyKind refKind = ref.getReferencePropertyKind();
         // TODO refName instead of sourcePropertyPath!!
         String referenceName = ref.getSourcePropertyPath();
-        ObjectRetrievalRequest refRequest = refEntry.getValue();
+        RetrievalRequest refRequest = refEntry.getValue();
         if (refKind == ReferencePropertyKind.REFERENCE) {
           data.putReferencesItem(
               referenceName,
@@ -78,17 +78,17 @@ public final class RetrievalApiImpl implements RetrievalApi {
   }
 
   @Override
-  public ObjectNodeData load(ObjectRetrievalRequest request, URI uri) {
+  public ObjectNodeData load(RetrievalRequest request, URI uri) {
     return load(request, Stream.of(uri)).findFirst().orElse(null);
   }
 
   @Override
-  public List<ObjectNodeData> load(ObjectRetrievalRequest request, URI... uris) {
+  public List<ObjectNodeData> load(RetrievalRequest request, URI... uris) {
     return load(request, Stream.of(uris)).collect(Collectors.toList());
   }
 
   @Override
-  public List<ObjectNodeData> load(ObjectRetrievalRequest request, List<URI> uris) {
+  public List<ObjectNodeData> load(RetrievalRequest request, List<URI> uris) {
     return load(request, uris.stream()).collect(Collectors.toList());
   }
 

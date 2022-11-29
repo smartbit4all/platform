@@ -3,9 +3,10 @@ package org.smartbit4all.core.object;
 import java.net.URI;
 import java.util.List;
 import org.smartbit4all.api.object.ApplyChangeApi;
-import org.smartbit4all.api.object.ObjectRetrievalRequest;
 import org.smartbit4all.api.object.RetrievalApi;
+import org.smartbit4all.api.object.RetrievalRequest;
 import org.smartbit4all.api.object.bean.ObjectNodeData;
+import org.smartbit4all.api.object.bean.RetrievalMode;
 import org.smartbit4all.domain.data.storage.StorageApi;
 
 /**
@@ -41,24 +42,47 @@ public interface ObjectApi {
   ObjectSerializer getDefaultSerializer();
 
   /**
-   * Creates a new {@link ObjectRetrievalRequest} based on the parameter clazz. This request can be
-   * further parameterized with various fluent API methods, and in the end,
-   * {@link ObjectRetrievalRequest#load(URI)} can be used to load the specified ObjectNode
-   * structure. This is the same as to call {@link ObjectApi#load(ObjectRetrievalRequest, URI)}
+   * Creates a new {@link RetrievalRequest} based on the parameter clazz and with the specified
+   * retrieval mode. This request can be further parameterized with various fluent API methods, and
+   * in the end, {@link RetrievalRequest#load(URI)} can be used to load the specified ObjectNode
+   * structure. This is the same as to call {@link ObjectApi#load(RetrievalRequest, URI)}
    * 
    * @param <T>
    * @param clazz
    * @return
    */
-  <T> ObjectRetrievalRequest request(Class<T> clazz);
+  <T> RetrievalRequest request(Class<T> clazz, RetrievalMode retrievalMode);
 
   /**
-   * Creates a request based on the objectUri and retrieves it as an ObjectNode.
+   * Default retrieval mode for {@link #request(Class, RetrievalMode)}
+   * 
+   * @param <T>
+   * @param clazz
+   * @return
+   */
+  default <T> RetrievalRequest request(Class<T> clazz) {
+    return request(clazz, RetrievalMode.NORMAL);
+  }
+
+
+  /**
+   * Creates a request based on the objectUri and retrieves it as an ObjectNode with the specified
+   * retrieval mode.
    * 
    * @param objectUri
    * @return
    */
-  ObjectNode load(URI objectUri);
+  ObjectNode load(URI objectUri, RetrievalMode retrievalMode);
+
+  /**
+   * Default retrieval mode for {@link #load(URI, RetrievalMode)}
+   * 
+   * @param objectUri
+   * @return
+   */
+  default ObjectNode load(URI objectUri) {
+    return load(objectUri, RetrievalMode.NORMAL);
+  }
 
   /**
    * Loads ObjectNode with structure specified in request, starting from objectUri. This method uses
@@ -69,17 +93,17 @@ public interface ObjectApi {
    * @param objectUri
    * @return
    */
-  ObjectNode load(ObjectRetrievalRequest request, URI objectUri);
+  ObjectNode load(RetrievalRequest request, URI objectUri);
 
   /**
-   * Similar to {@link ObjectApi#load(ObjectRetrievalRequest, URI)}, but starts from multiple
-   * objectUris and returns list of ObjectNodes.
+   * Similar to {@link ObjectApi#load(RetrievalRequest, URI)}, but starts from multiple objectUris
+   * and returns list of ObjectNodes.
    * 
    * @param request
    * @param objectUris
    * @return
    */
-  List<ObjectNode> load(ObjectRetrievalRequest request, List<URI> objectUris);
+  List<ObjectNode> load(RetrievalRequest request, List<URI> objectUris);
 
   /**
    * Read the given object identified by the URI. We can not initiate a transaction with the result
