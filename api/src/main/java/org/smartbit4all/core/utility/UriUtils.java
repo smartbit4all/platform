@@ -104,20 +104,6 @@ public abstract class UriUtils {
   }
 
   /**
-   * @param uri
-   * @param versionPostfix
-   * @return
-   */
-  public static final URI getUriWithoutVersion(URI uri, String versionPostfix) {
-    String path = uri.getPath();
-    int idxVersionPostfix = path.lastIndexOf(versionPostfix);
-    if (idxVersionPostfix >= 0) {
-      return UriUtils.createUri(uri.getScheme(), null, path.substring(0, idxVersionPostfix), null);
-    }
-    return uri;
-  }
-
-  /**
    * Convert from Object to URI, handles only String and URI as input type.
    * 
    * @param o

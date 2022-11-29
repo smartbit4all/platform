@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
+import org.smartbit4all.api.object.bean.AggregationKind;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
@@ -24,7 +25,7 @@ public final class ObjectRetrievalRequest {
    * Defined if we need the latest version of the given object. By default we load the referred
    * version directly.
    */
-  private boolean loadHead = false;
+  private boolean loadLatest = false;
 
   /**
    * The object definition of the given object.
@@ -58,7 +59,6 @@ public final class ObjectRetrievalRequest {
     // It will be the predecessor and its last save point is copied.
     this.predecessor = new WeakReference<>(predecessor);
     this.lastSavePoint = predecessor.lastSavePoint;
-    this.loadHead = predecessor.loadHead;
     this.objectApi = predecessor.objectApi;
   }
 
@@ -68,7 +68,6 @@ public final class ObjectRetrievalRequest {
    */
   public ObjectRetrievalRequest(ObjectApi objectApi, ObjectDefinition<?> definition) {
     this.definition = definition;
-    this.loadHead = false;
     predecessor = null;
     lastSavePoint = null;
     this.objectApi = new WeakReference<>(objectApi);
@@ -150,6 +149,9 @@ public final class ObjectRetrievalRequest {
     }
     if (next == null) {
       next = new ObjectRetrievalRequest(ref.getTarget(), this);
+      if (ref.getAggregation() == AggregationKind.NONE) {
+        next.loadLatest();
+      }
       references.put(ref, next);
     }
     String[] subPaths = Arrays.copyOfRange(paths, 1, paths.length);
@@ -205,8 +207,8 @@ public final class ObjectRetrievalRequest {
    * 
    * @return
    */
-  public final boolean isLoadHead() {
-    return loadHead;
+  public final boolean isLoadLatest() {
+    return loadLatest;
   }
 
   /**
@@ -214,8 +216,18 @@ public final class ObjectRetrievalRequest {
    * version directly.
    * 
    */
-  public final ObjectRetrievalRequest head() {
-    this.loadHead = true;
+  public final ObjectRetrievalRequest loadLatest() {
+    this.loadLatest = true;
+    return this;
+  }
+
+  /**
+   * Defined if we need the latest version of the given object. By default we load the referred
+   * version directly.
+   * 
+   */
+  public final ObjectRetrievalRequest setLoadLatest(boolean loadLatest) {
+    this.loadLatest = loadLatest;
     return this;
   }
 
@@ -225,7 +237,7 @@ public final class ObjectRetrievalRequest {
    * 
    */
   public final ObjectRetrievalRequest version() {
-    this.loadHead = false;
+    this.loadLatest = false;
     return this;
   }
 

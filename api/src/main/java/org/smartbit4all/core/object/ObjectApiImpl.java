@@ -65,6 +65,11 @@ public class ObjectApiImpl implements ObjectApi {
         .collect(toList());
   }
 
+  @Override
+  public <T> T read(URI uri, Class<T> clazz) {
+    return load(uri).getObject(clazz);
+  }
+
   public ObjectNode node(ObjectNodeData data) {
     return new ObjectNode(this, data);
   }

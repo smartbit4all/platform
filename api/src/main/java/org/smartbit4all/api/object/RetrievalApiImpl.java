@@ -11,6 +11,7 @@ import org.smartbit4all.api.object.bean.ObjectNodeData;
 import org.smartbit4all.api.object.bean.ReferencePropertyKind;
 import org.smartbit4all.core.object.ReferenceDefinition;
 import org.smartbit4all.core.utility.UriUtils;
+import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,10 +34,8 @@ public final class RetrievalApiImpl implements RetrievalApi {
   }
 
   private final ObjectNodeData readData(ObjectRetrievalRequest objRequest, URI uri) {
-    // TODO Load latest version from the object.
-    // if(objRequest.isLoadLatestVersion()) {
-    // }
-    StorageObject<?> storageObject = storageApi.load(uri);
+    URI readUri = objRequest.isLoadLatest() ? ObjectStorageImpl.getUriWithoutVersion(uri) : uri;
+    StorageObject<?> storageObject = storageApi.load(readUri);
     ObjectNodeData data = new ObjectNodeData()
         .objectUri(uri)
         .qualifiedName(storageObject.definition().getQualifiedName())

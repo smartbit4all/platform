@@ -6,6 +6,7 @@ import org.smartbit4all.api.object.ApplyChangeApi;
 import org.smartbit4all.api.object.ObjectRetrievalRequest;
 import org.smartbit4all.api.object.RetrievalApi;
 import org.smartbit4all.api.object.bean.ObjectNodeData;
+import org.smartbit4all.domain.data.storage.StorageApi;
 
 /**
  * Provides a generic entry point into object handling. Allows creating, loading, retrieving and
@@ -79,6 +80,18 @@ public interface ObjectApi {
    * @return
    */
   List<ObjectNode> load(ObjectRetrievalRequest request, List<URI> objectUris);
+
+  /**
+   * Read the given object identified by the URI. We can not initiate a transaction with the result
+   * of the read! Use the load instead.
+   * 
+   * @param uri The Unified Resource Identifier of the object we are looking for. It must be
+   *        situated in the current physical storage. This routing relies on the registry of the
+   *        {@link StorageApi} and based on the scheme of the URI.
+   * @param clazz The class of the object to load. Based on this class we can easily identify the
+   *        {@link ObjectDefinition} responsible for this type of objects.
+   */
+  <T> T read(URI uri, Class<T> clazz);
 
   /**
    * Create a new ObjectNode based on a new ObjectNodeData based on the Object parameter. This node
