@@ -110,6 +110,14 @@ public class ObjectSerializerByObjectMapper implements ObjectSerializer {
     }
   }
 
+  @Override
+  public <T> T fromString(String data, Class<T> clazz) throws IOException {
+    if (data == null && clazz == null) {
+      return null;
+    }
+    return objectMapper.readValue(data, clazz);
+  }
+
   @SuppressWarnings("unchecked")
   @Override
   public Map<String, Object> toMap(Object object) {
