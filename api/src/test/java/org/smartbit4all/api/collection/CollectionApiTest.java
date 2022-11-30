@@ -20,10 +20,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 })
 class CollectionApiTest {
 
+  private static final String SCHEMA = "sample";
   private static final String FIRST = "first";
   private static final String MY_MAP = "myMap";
   private static final String MY_LIST = "myList";
-  private static final String SCHEMA = "collection";
 
   @Autowired
   private CollectionApi collectionApi;
@@ -40,7 +40,7 @@ class CollectionApiTest {
   void testMap() throws Exception {
 
     ObjectNode datasheet1 =
-        objectApi.create("sample", new SampleDataSheet().name("datasheet " + 1));
+        objectApi.create(SCHEMA, new SampleDataSheet().name("datasheet " + 1));
     URI datasheet1Uri = objectApi.save(datasheet1);
 
     StoredMap map = collectionApi.map(SCHEMA, MY_MAP);
@@ -59,14 +59,14 @@ class CollectionApiTest {
   void testObjectScopedMap() throws Exception {
 
     ObjectNode datasheet1 =
-        objectApi.create("sample", new SampleDataSheet().name("datasheet " + 1));
+        objectApi.create(SCHEMA, new SampleDataSheet().name("datasheet " + 1));
     URI datasheetUri = objectApi.save(datasheet1);
 
     List<URI> resultUris = new ArrayList<>();
 
     for (int i = 0; i < 10; i++) {
       ObjectNode datasheet =
-          objectApi.create("sample", new SampleDataSheet().name("datasheet " + 1));
+          objectApi.create(SCHEMA, new SampleDataSheet().name("datasheet " + 1));
       resultUris.add(objectApi.save(datasheet));
     }
 
@@ -89,7 +89,7 @@ class CollectionApiTest {
   void testList() throws Exception {
 
     ObjectNode datasheet1 =
-        objectApi.create("sample", new SampleDataSheet().name("datasheet " + 1));
+        objectApi.create(SCHEMA, new SampleDataSheet().name("datasheet " + 1));
     URI datasheet1Uri = objectApi.save(datasheet1);
 
     StoredList list = collectionApi.list(SCHEMA, MY_LIST);
@@ -108,14 +108,14 @@ class CollectionApiTest {
   void testObjectScopedList() throws Exception {
 
     ObjectNode datasheet1 =
-        objectApi.create("sample", new SampleDataSheet().name("datasheet " + 1));
+        objectApi.create(SCHEMA, new SampleDataSheet().name("datasheet " + 1));
     URI datasheetUri = objectApi.save(datasheet1);
 
     List<URI> resultUris = new ArrayList<>();
 
     for (int i = 0; i < 10; i++) {
       ObjectNode datasheet =
-          objectApi.create("sample", new SampleDataSheet().name("datasheet " + 1));
+          objectApi.create(SCHEMA, new SampleDataSheet().name("datasheet " + 1));
       resultUris.add(objectApi.save(datasheet));
     }
 
