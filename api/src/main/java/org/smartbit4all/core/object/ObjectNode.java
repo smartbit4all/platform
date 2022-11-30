@@ -358,10 +358,10 @@ public class ObjectNode {
       if (paths.length == 1) {
         return value;
       }
-      if (value != null && value instanceof Map) {
+      if (value instanceof Map) {
         @SuppressWarnings("unchecked")
         Map<String, Object> subMap = (Map<String, Object>) value;
-        String[] subPaths = Arrays.copyOfRange(paths, 2, paths.length);
+        String[] subPaths = Arrays.copyOfRange(paths, 1, paths.length);
         return getValueFromObjectMap(subMap, subPaths);
       }
       return null;

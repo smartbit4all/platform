@@ -38,7 +38,8 @@ public class ObjectNodes {
     List<String> propertyList = propertyMap.get(objectNode.getDefinition().getClazz());
     String objectLabel =
         propertyList != null
-            ? propertyList.stream().map(p -> ((String) objectNode.getObjectAsMap().get(p)))
+            ? propertyList.stream()
+                .map(p -> ((String) objectNode.getValue(p.split(StringConstant.SLASH))))
                 .collect(Collectors.joining(StringConstant.COMMA_SPACE))
             : null;
     sb.append(indent).append(objectNode.getDefinition().getClazz().getSimpleName())
