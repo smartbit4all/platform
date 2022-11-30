@@ -4,6 +4,7 @@ import static java.util.stream.Collectors.toList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -204,6 +205,12 @@ public class ViewApiImpl implements ViewApi {
           return c;
         });
     handleOpenPending();
+  }
+
+  @Override
+  public void updateView(UUID viewUuid, UnaryOperator<ViewData> update) {
+    viewContextService.updateCurrentViewContext(
+        c -> ViewContexts.updateViewData(c, viewUuid, update));
   }
 
 }

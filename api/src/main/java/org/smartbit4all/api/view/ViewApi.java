@@ -1,6 +1,7 @@
 package org.smartbit4all.api.view;
 
 import java.util.UUID;
+import java.util.function.UnaryOperator;
 import org.smartbit4all.api.view.bean.CloseResult;
 import org.smartbit4all.api.view.bean.MessageData;
 import org.smartbit4all.api.view.bean.ViewContext;
@@ -70,5 +71,13 @@ public interface ViewApi {
    * @param result
    */
   void setClosePendingResult(UUID viewToClose, CloseResult result);
+
+  /**
+   * Updates the given viewData.
+   * 
+   * @param viewUuid
+   * @param update
+   */
+  void updateView(UUID viewUuid, UnaryOperator<ViewData> update);
 
 }

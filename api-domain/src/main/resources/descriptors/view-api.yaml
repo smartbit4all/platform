@@ -299,3 +299,24 @@ components:
           type: string
         apiFunction:
           type: string
+        identifier:
+          type: string
+    UiActionSource:
+      type: object
+      description: apiFunction specified in UiAction will receive this object as parameter.
+      required: [viewUuid]
+      properties:
+        viewUuid:
+          description: Identifier of View where action is performed.
+          type: string
+          format: uuid
+        component:
+          description: |
+            Identifier of component where action is performed (for example tree's / list's name,
+             etc.). Optional.
+          type: string
+        element:
+          description: |
+            Identifier of UI element, where action is performed (for example treeNode's / 
+            listItem's identifier, etc.). Optional.
+          type: string

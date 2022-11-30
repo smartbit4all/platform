@@ -33,7 +33,8 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   UiAction.CODE,
   UiAction.API_NAME,
-  UiAction.API_FUNCTION
+  UiAction.API_FUNCTION,
+  UiAction.IDENTIFIER
 })
 @JsonTypeName("UiAction")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -46,6 +47,9 @@ public class UiAction {
 
   public static final String API_FUNCTION = "apiFunction";
   private String apiFunction;
+
+  public static final String IDENTIFIER = "identifier";
+  private String identifier;
 
   public UiAction() { 
   }
@@ -131,6 +135,33 @@ public class UiAction {
   }
 
 
+  public UiAction identifier(String identifier) {
+    
+    this.identifier = identifier;
+    return this;
+  }
+
+   /**
+   * Get identifier
+   * @return identifier
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(IDENTIFIER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getIdentifier() {
+    return identifier;
+  }
+
+
+  @JsonProperty(IDENTIFIER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setIdentifier(String identifier) {
+    this.identifier = identifier;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -142,12 +173,13 @@ public class UiAction {
     UiAction uiAction = (UiAction) o;
     return Objects.equals(this.code, uiAction.code) &&
         Objects.equals(this.apiName, uiAction.apiName) &&
-        Objects.equals(this.apiFunction, uiAction.apiFunction);
+        Objects.equals(this.apiFunction, uiAction.apiFunction) &&
+        Objects.equals(this.identifier, uiAction.identifier);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(code, apiName, apiFunction);
+    return Objects.hash(code, apiName, apiFunction, identifier);
   }
 
   @Override
@@ -157,6 +189,7 @@ public class UiAction {
     sb.append("    code: ").append(toIndentedString(code)).append("\n");
     sb.append("    apiName: ").append(toIndentedString(apiName)).append("\n");
     sb.append("    apiFunction: ").append(toIndentedString(apiFunction)).append("\n");
+    sb.append("    identifier: ").append(toIndentedString(identifier)).append("\n");
     sb.append("}");
     return sb.toString();
   }

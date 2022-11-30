@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import org.smartbit4all.api.view.bean.UiAction;
@@ -31,25 +32,31 @@ import javax.validation.constraints.*;
 import javax.validation.Valid;
 
 /**
- * SmartTreeNode
+ * UiTreeNode
  */
 @JsonPropertyOrder({
-  SmartTreeNode.IDENTIFIER,
-  SmartTreeNode.ICON,
-  SmartTreeNode.CAPTION,
-  SmartTreeNode.CLASSES,
-  SmartTreeNode.HAS_CHILDREN,
-  SmartTreeNode.CHILDREN_NODES,
-  SmartTreeNode.EXPANDED,
-  SmartTreeNode.SELECTED,
-  SmartTreeNode.LEVEL,
-  SmartTreeNode.SHORT_DESCRIPTION,
-  SmartTreeNode.NODE_TYPE,
-  SmartTreeNode.ACTIONS
+  UiTreeNode.OBJECT_URI,
+  UiTreeNode.BRANCH_URI,
+  UiTreeNode.IDENTIFIER,
+  UiTreeNode.ICON,
+  UiTreeNode.CAPTION,
+  UiTreeNode.CLASSES,
+  UiTreeNode.HAS_CHILDREN,
+  UiTreeNode.CHILDREN,
+  UiTreeNode.LEVEL,
+  UiTreeNode.SHORT_DESCRIPTION,
+  UiTreeNode.NODE_TYPE,
+  UiTreeNode.ACTIONS
 })
-@JsonTypeName("SmartTreeNode")
+@JsonTypeName("UiTreeNode")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
-public class SmartTreeNode {
+public class UiTreeNode {
+  public static final String OBJECT_URI = "objectUri";
+  private URI objectUri;
+
+  public static final String BRANCH_URI = "branchUri";
+  private URI branchUri;
+
   public static final String IDENTIFIER = "identifier";
   private String identifier;
 
@@ -63,16 +70,10 @@ public class SmartTreeNode {
   private List<String> classes = new ArrayList<>();
 
   public static final String HAS_CHILDREN = "hasChildren";
-  private Boolean hasChildren;
+  private Boolean hasChildren = false;
 
-  public static final String CHILDREN_NODES = "childrenNodes";
-  private List<SmartTreeNode> childrenNodes = new ArrayList<>();
-
-  public static final String EXPANDED = "expanded";
-  private Boolean expanded;
-
-  public static final String SELECTED = "selected";
-  private Boolean selected;
+  public static final String CHILDREN = "children";
+  private List<String> children = new ArrayList<>();
 
   public static final String LEVEL = "level";
   private Integer level;
@@ -86,10 +87,66 @@ public class SmartTreeNode {
   public static final String ACTIONS = "actions";
   private List<UiAction> actions = new ArrayList<>();
 
-  public SmartTreeNode() { 
+  public UiTreeNode() { 
   }
 
-  public SmartTreeNode identifier(String identifier) {
+  public UiTreeNode objectUri(URI objectUri) {
+    
+    this.objectUri = objectUri;
+    return this;
+  }
+
+   /**
+   * Get objectUri
+   * @return objectUri
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(OBJECT_URI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public URI getObjectUri() {
+    return objectUri;
+  }
+
+
+  @JsonProperty(OBJECT_URI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setObjectUri(URI objectUri) {
+    this.objectUri = objectUri;
+  }
+
+
+  public UiTreeNode branchUri(URI branchUri) {
+    
+    this.branchUri = branchUri;
+    return this;
+  }
+
+   /**
+   * Get branchUri
+   * @return branchUri
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(BRANCH_URI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public URI getBranchUri() {
+    return branchUri;
+  }
+
+
+  @JsonProperty(BRANCH_URI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setBranchUri(URI branchUri) {
+    this.branchUri = branchUri;
+  }
+
+
+  public UiTreeNode identifier(String identifier) {
     
     this.identifier = identifier;
     return this;
@@ -116,7 +173,7 @@ public class SmartTreeNode {
   }
 
 
-  public SmartTreeNode icon(String icon) {
+  public UiTreeNode icon(String icon) {
     
     this.icon = icon;
     return this;
@@ -143,7 +200,7 @@ public class SmartTreeNode {
   }
 
 
-  public SmartTreeNode caption(String caption) {
+  public UiTreeNode caption(String caption) {
     
     this.caption = caption;
     return this;
@@ -170,13 +227,13 @@ public class SmartTreeNode {
   }
 
 
-  public SmartTreeNode classes(List<String> classes) {
+  public UiTreeNode classes(List<String> classes) {
     
     this.classes = classes;
     return this;
   }
 
-  public SmartTreeNode addClassesItem(String classesItem) {
+  public UiTreeNode addClassesItem(String classesItem) {
     this.classes.add(classesItem);
     return this;
   }
@@ -203,7 +260,7 @@ public class SmartTreeNode {
   }
 
 
-  public SmartTreeNode hasChildren(Boolean hasChildren) {
+  public UiTreeNode hasChildren(Boolean hasChildren) {
     
     this.hasChildren = hasChildren;
     return this;
@@ -230,95 +287,40 @@ public class SmartTreeNode {
   }
 
 
-  public SmartTreeNode childrenNodes(List<SmartTreeNode> childrenNodes) {
+  public UiTreeNode children(List<String> children) {
     
-    this.childrenNodes = childrenNodes;
+    this.children = children;
     return this;
   }
 
-  public SmartTreeNode addChildrenNodesItem(SmartTreeNode childrenNodesItem) {
-    this.childrenNodes.add(childrenNodesItem);
+  public UiTreeNode addChildrenItem(String childrenItem) {
+    this.children.add(childrenItem);
     return this;
   }
 
    /**
-   * Get childrenNodes
-   * @return childrenNodes
+   * Get children
+   * @return children
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @Valid
   @ApiModelProperty(required = true, value = "")
-  @JsonProperty(CHILDREN_NODES)
+  @JsonProperty(CHILDREN)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<SmartTreeNode> getChildrenNodes() {
-    return childrenNodes;
+  public List<String> getChildren() {
+    return children;
   }
 
 
-  @JsonProperty(CHILDREN_NODES)
+  @JsonProperty(CHILDREN)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setChildrenNodes(List<SmartTreeNode> childrenNodes) {
-    this.childrenNodes = childrenNodes;
+  public void setChildren(List<String> children) {
+    this.children = children;
   }
 
 
-  public SmartTreeNode expanded(Boolean expanded) {
-    
-    this.expanded = expanded;
-    return this;
-  }
-
-   /**
-   * Get expanded
-   * @return expanded
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
-  @JsonProperty(EXPANDED)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Boolean getExpanded() {
-    return expanded;
-  }
-
-
-  @JsonProperty(EXPANDED)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setExpanded(Boolean expanded) {
-    this.expanded = expanded;
-  }
-
-
-  public SmartTreeNode selected(Boolean selected) {
-    
-    this.selected = selected;
-    return this;
-  }
-
-   /**
-   * Get selected
-   * @return selected
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
-  @JsonProperty(SELECTED)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Boolean getSelected() {
-    return selected;
-  }
-
-
-  @JsonProperty(SELECTED)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setSelected(Boolean selected) {
-    this.selected = selected;
-  }
-
-
-  public SmartTreeNode level(Integer level) {
+  public UiTreeNode level(Integer level) {
     
     this.level = level;
     return this;
@@ -345,7 +347,7 @@ public class SmartTreeNode {
   }
 
 
-  public SmartTreeNode shortDescription(String shortDescription) {
+  public UiTreeNode shortDescription(String shortDescription) {
     
     this.shortDescription = shortDescription;
     return this;
@@ -372,7 +374,7 @@ public class SmartTreeNode {
   }
 
 
-  public SmartTreeNode nodeType(String nodeType) {
+  public UiTreeNode nodeType(String nodeType) {
     
     this.nodeType = nodeType;
     return this;
@@ -399,13 +401,13 @@ public class SmartTreeNode {
   }
 
 
-  public SmartTreeNode actions(List<UiAction> actions) {
+  public UiTreeNode actions(List<UiAction> actions) {
     
     this.actions = actions;
     return this;
   }
 
-  public SmartTreeNode addActionsItem(UiAction actionsItem) {
+  public UiTreeNode addActionsItem(UiAction actionsItem) {
     this.actions.add(actionsItem);
     return this;
   }
@@ -441,38 +443,38 @@ public class SmartTreeNode {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    SmartTreeNode smartTreeNode = (SmartTreeNode) o;
-    return Objects.equals(this.identifier, smartTreeNode.identifier) &&
-        Objects.equals(this.icon, smartTreeNode.icon) &&
-        Objects.equals(this.caption, smartTreeNode.caption) &&
-        Objects.equals(this.classes, smartTreeNode.classes) &&
-        Objects.equals(this.hasChildren, smartTreeNode.hasChildren) &&
-        Objects.equals(this.childrenNodes, smartTreeNode.childrenNodes) &&
-        Objects.equals(this.expanded, smartTreeNode.expanded) &&
-        Objects.equals(this.selected, smartTreeNode.selected) &&
-        Objects.equals(this.level, smartTreeNode.level) &&
-        Objects.equals(this.shortDescription, smartTreeNode.shortDescription) &&
-        Objects.equals(this.nodeType, smartTreeNode.nodeType) &&
-        Objects.equals(this.actions, smartTreeNode.actions);
+    UiTreeNode uiTreeNode = (UiTreeNode) o;
+    return Objects.equals(this.objectUri, uiTreeNode.objectUri) &&
+        Objects.equals(this.branchUri, uiTreeNode.branchUri) &&
+        Objects.equals(this.identifier, uiTreeNode.identifier) &&
+        Objects.equals(this.icon, uiTreeNode.icon) &&
+        Objects.equals(this.caption, uiTreeNode.caption) &&
+        Objects.equals(this.classes, uiTreeNode.classes) &&
+        Objects.equals(this.hasChildren, uiTreeNode.hasChildren) &&
+        Objects.equals(this.children, uiTreeNode.children) &&
+        Objects.equals(this.level, uiTreeNode.level) &&
+        Objects.equals(this.shortDescription, uiTreeNode.shortDescription) &&
+        Objects.equals(this.nodeType, uiTreeNode.nodeType) &&
+        Objects.equals(this.actions, uiTreeNode.actions);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(identifier, icon, caption, classes, hasChildren, childrenNodes, expanded, selected, level, shortDescription, nodeType, actions);
+    return Objects.hash(objectUri, branchUri, identifier, icon, caption, classes, hasChildren, children, level, shortDescription, nodeType, actions);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class SmartTreeNode {\n");
+    sb.append("class UiTreeNode {\n");
+    sb.append("    objectUri: ").append(toIndentedString(objectUri)).append("\n");
+    sb.append("    branchUri: ").append(toIndentedString(branchUri)).append("\n");
     sb.append("    identifier: ").append(toIndentedString(identifier)).append("\n");
     sb.append("    icon: ").append(toIndentedString(icon)).append("\n");
     sb.append("    caption: ").append(toIndentedString(caption)).append("\n");
     sb.append("    classes: ").append(toIndentedString(classes)).append("\n");
     sb.append("    hasChildren: ").append(toIndentedString(hasChildren)).append("\n");
-    sb.append("    childrenNodes: ").append(toIndentedString(childrenNodes)).append("\n");
-    sb.append("    expanded: ").append(toIndentedString(expanded)).append("\n");
-    sb.append("    selected: ").append(toIndentedString(selected)).append("\n");
+    sb.append("    children: ").append(toIndentedString(children)).append("\n");
     sb.append("    level: ").append(toIndentedString(level)).append("\n");
     sb.append("    shortDescription: ").append(toIndentedString(shortDescription)).append("\n");
     sb.append("    nodeType: ").append(toIndentedString(nodeType)).append("\n");

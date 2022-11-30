@@ -12,17 +12,9 @@ tags:
 paths: {}
 components:
   schemas:
-    SmartTreeModel:
-      type: object
-      properties:
-        identifier:
-          type: string
-        rootNodes:
-          type: array
-          items:
-            $ref: "#/components/schemas/SmartTreeNode"
     SmartTreeNode:
       type: object
+      required: [classes, childrenNodes, actions]
       properties:
         identifier:
           type: string
@@ -57,11 +49,13 @@ components:
         
     UiTreeState:
       type: object
+      description: This object holds all information about abritrary data in a tree representation.
+      required: [nodes, rootNodes, expandedNodes, selectedNodes]
       properties:
         nodes:
           type: object
           additionalProperties:
-            $ref: "#/components/schemas/UiTreeNodeEntry"
+            $ref: "#/components/schemas/UiTreeNode"
         rootNodes:
           type: array
           items:
@@ -75,19 +69,40 @@ components:
           items:
             type: string
         
-    UiTreeNodeEntry:
+    UiTreeNode:
       type: object
+      required: [classes, children, actions]
       properties:
-        uri:
+        objectUri:
           type: string
           format: uri
-        data:
-          $ref: "#/components/schemas/SmartTreeNode"
+        branchUri:
+          type: string
+          format: uri
+        identifier:
+          type: string
+        icon:
+          type: string
+        caption:
+          type: string
+        classes:
+          type: array
+          items:
+            type: string
+        hasChildren:
+          type: boolean
+          default: false
         children:
           type: array
           items:
             type: string
-      
-      
-      
-      
+        level:
+          type: integer
+        shortDescription:
+          type: string
+        nodeType: 
+          type: string
+        actions:
+          type: array
+          items:
+            type: UiAction
