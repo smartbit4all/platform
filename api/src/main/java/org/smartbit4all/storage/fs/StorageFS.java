@@ -1049,7 +1049,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
             applicationContext != null ? applicationContext.getBean(ApplicationRuntimeApi.class)
                 : null;
       } catch (BeansException e) {
-        log.debug("The application doen't have ApplicationRuntimeApi registered.", e);
+        log.debug("The application doesn't have ApplicationRuntimeApi registered.");
       }
       runtimeWasSet = true;
     }
