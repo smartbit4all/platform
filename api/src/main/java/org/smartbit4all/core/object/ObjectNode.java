@@ -8,9 +8,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.smartbit4all.api.object.bean.ObjectNodeData;
 import org.smartbit4all.api.object.bean.ObjectNodeState;
 import org.smartbit4all.api.object.bean.ReferencePropertyKind;
+import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.core.utility.UriUtils;
 import com.google.common.base.Strings;
 
@@ -263,15 +265,33 @@ public class ObjectNode {
   }
 
   public ObjectNodeReference ref(String... paths) {
-    return getValueAs(ObjectNodeReference.class, paths);
+    ObjectNodeReference result = getValueAs(ObjectNodeReference.class, paths);
+    if (result == null) {
+      throw new IllegalArgumentException("The "
+          + Stream.of(paths).collect(Collectors.joining(StringConstant.SLASH))
+          + " path is not a valid reference in the " + definition.getQualifiedName() + " object.");
+    }
+    return result;
   }
 
   public ObjectNodeList list(String... paths) {
-    return getValueAs(ObjectNodeList.class, paths);
+    ObjectNodeList result = getValueAs(ObjectNodeList.class, paths);
+    if (result == null) {
+      throw new IllegalArgumentException("The "
+          + Stream.of(paths).collect(Collectors.joining(StringConstant.SLASH))
+          + " path is not a valid reference in the " + definition.getQualifiedName() + " object.");
+    }
+    return result;
   }
 
   public ObjectNodeMap map(String... paths) {
-    return getValueAs(ObjectNodeMap.class, paths);
+    ObjectNodeMap result = getValueAs(ObjectNodeMap.class, paths);
+    if (result == null) {
+      throw new IllegalArgumentException("The "
+          + Stream.of(paths).collect(Collectors.joining(StringConstant.SLASH))
+          + " path is not a valid reference in the " + definition.getQualifiedName() + " object.");
+    }
+    return result;
   }
 
   public <T> T getValue(Class<T> clazz, String... paths) {
