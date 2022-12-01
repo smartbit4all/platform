@@ -21,6 +21,7 @@ import org.smartbit4all.api.session.bean.Session;
 import org.smartbit4all.api.session.bean.SessionInfoData;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
+import org.smartbit4all.domain.data.storage.StorageObject.VersionPolicy;
 import org.smartbit4all.sec.authprincipal.SessionAuthPrincipal;
 import org.smartbit4all.sec.token.SessionTokenHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,6 +73,7 @@ public class SessionManagementApiImpl implements SessionManagementApi {
     public Storage get() {
       if (storageInstance == null) {
         storageInstance = storageApi.get(SCHEMA);
+        storageInstance.setVersionPolicy(VersionPolicy.SINGLEVERSION);
       }
       return storageInstance;
     }

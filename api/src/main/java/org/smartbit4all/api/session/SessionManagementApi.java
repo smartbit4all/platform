@@ -9,7 +9,7 @@ import org.smartbit4all.api.session.bean.SessionInfoData;
 
 public interface SessionManagementApi {
 
-  static final String SCHEMA = "usersession";
+  static final String SCHEMA = "session-sv";
 
   /**
    * Starts a session creating a unique sid.
