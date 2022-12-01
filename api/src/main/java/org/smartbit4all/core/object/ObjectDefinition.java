@@ -144,6 +144,10 @@ public final class ObjectDefinition<T> {
   }
 
   public URI getUri(T obj) {
+    if (uriGetter == null) {
+      throw new IllegalStateException(
+          "The " + qualifiedName + " object doesn't have any uri property");
+    }
     return obj != null ? uriGetter.apply(obj) : null;
   }
 

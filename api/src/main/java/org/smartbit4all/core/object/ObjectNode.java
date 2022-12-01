@@ -1,5 +1,6 @@
 package org.smartbit4all.core.object;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -294,6 +295,7 @@ public class ObjectNode {
     return result;
   }
 
+  @SuppressWarnings("unchecked")
   public <T> T getValue(Class<T> clazz, String... paths) {
     Object value = getValue(paths);
     if (value instanceof ObjectNodeReference
@@ -301,7 +303,19 @@ public class ObjectNode {
       ObjectNodeReference ref = (ObjectNodeReference) value;
       return ((ObjectNodeReference) value).get().getObject(clazz);
     }
-    // TODO string, uri, uuid, number, boolean, etc.? Objectmapper?
+    if (clazz.isInstance(value)) {
+      return (T) value;
+    } else if (value instanceof Map) {
+      // Try to retrieve the proper object
+      return objectApi.definition(clazz).fromMap((Map<String, Object>) value);
+    } else if (value instanceof String) {
+      try {
+        return objectApi.getDefaultSerializer().fromString((String) value, clazz);
+      } catch (IOException e) {
+        throw new IllegalArgumentException("Unable to load the " + definition.getQualifiedName()
+            + " " + Arrays.toString(paths) + " field as " + clazz);
+      }
+    }
     return (T) value;
   }
 
