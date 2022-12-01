@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import org.smartbit4all.api.view.bean.ViewConstraint;
 import org.smartbit4all.api.view.bean.ViewState;
 import org.smartbit4all.api.view.bean.ViewType;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -45,6 +46,7 @@ import javax.validation.Valid;
   ViewData.PARAMETERS,
   ViewData.STATE,
   ViewData.TYPE,
+  ViewData.CONSTRAINT,
   ViewData.CONTAINER_UUID
 })
 @JsonTypeName("ViewData")
@@ -70,6 +72,9 @@ public class ViewData {
 
   public static final String TYPE = "type";
   private ViewType type = ViewType.NORMAL;
+
+  public static final String CONSTRAINT = "constraint";
+  private ViewConstraint constraint;
 
   public static final String CONTAINER_UUID = "containerUuid";
   private UUID containerUuid;
@@ -281,6 +286,34 @@ public class ViewData {
   }
 
 
+  public ViewData constraint(ViewConstraint constraint) {
+    
+    this.constraint = constraint;
+    return this;
+  }
+
+   /**
+   * Get constraint
+   * @return constraint
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(CONSTRAINT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public ViewConstraint getConstraint() {
+    return constraint;
+  }
+
+
+  @JsonProperty(CONSTRAINT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setConstraint(ViewConstraint constraint) {
+    this.constraint = constraint;
+  }
+
+
   public ViewData containerUuid(UUID containerUuid) {
     
     this.containerUuid = containerUuid;
@@ -325,12 +358,13 @@ public class ViewData {
         Objects.equals(this.parameters, viewData.parameters) &&
         Objects.equals(this.state, viewData.state) &&
         Objects.equals(this.type, viewData.type) &&
+        Objects.equals(this.constraint, viewData.constraint) &&
         Objects.equals(this.containerUuid, viewData.containerUuid);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uuid, viewName, objectUri, branchUri, parameters, state, type, containerUuid);
+    return Objects.hash(uuid, viewName, objectUri, branchUri, parameters, state, type, constraint, containerUuid);
   }
 
   @Override
@@ -344,6 +378,7 @@ public class ViewData {
     sb.append("    parameters: ").append(toIndentedString(parameters)).append("\n");
     sb.append("    state: ").append(toIndentedString(state)).append("\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
+    sb.append("    constraint: ").append(toIndentedString(constraint)).append("\n");
     sb.append("    containerUuid: ").append(toIndentedString(containerUuid)).append("\n");
     sb.append("}");
     return sb.toString();

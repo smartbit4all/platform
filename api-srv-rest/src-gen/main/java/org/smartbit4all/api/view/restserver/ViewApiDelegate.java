@@ -2,6 +2,7 @@ package org.smartbit4all.api.view.restserver;
 
 import org.smartbit4all.api.view.bean.MessageResult;
 import java.util.UUID;
+import org.smartbit4all.api.view.bean.ViewConstraint;
 import org.smartbit4all.api.view.bean.ViewContext;
 import org.smartbit4all.api.view.bean.ViewContextUpdate;
 import org.springframework.http.HttpStatus;
@@ -36,7 +37,30 @@ public interface ViewApiDelegate {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"uri\" : \"https://openapi-generator.tech\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"views\" : [ { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"branchUri\" : \"https://openapi-generator.tech\", \"objectUri\" : \"https://openapi-generator.tech\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" } }, { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"branchUri\" : \"https://openapi-generator.tech\", \"objectUri\" : \"https://openapi-generator.tech\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" } } ] }";
+                    String exampleString = "{ \"openPendingData\" : { \"viewsToClose\" : [ \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" ], \"viewToOpen\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"results\" : { } }, \"uri\" : \"https://openapi-generator.tech\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"views\" : [ { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"branchUri\" : \"https://openapi-generator.tech\", \"constraint\" : { \"componentConstraints\" : [ { \"visible\" : true, \"dataName\" : \"dataName\", \"mandatory\" : false, \"enabled\" : true }, { \"visible\" : true, \"dataName\" : \"dataName\", \"mandatory\" : false, \"enabled\" : true } ] }, \"objectUri\" : \"https://openapi-generator.tech\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" } }, { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"branchUri\" : \"https://openapi-generator.tech\", \"constraint\" : { \"componentConstraints\" : [ { \"visible\" : true, \"dataName\" : \"dataName\", \"mandatory\" : false, \"enabled\" : true }, { \"visible\" : true, \"dataName\" : \"dataName\", \"mandatory\" : false, \"enabled\" : true } ] }, \"objectUri\" : \"https://openapi-generator.tech\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" } } ] }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+            }
+        });
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+
+    }
+
+    /**
+     * GET /view/{uuid}/constraint : Returns the view constraint object belongs to the given view
+     *
+     * @param uuid View&#39;s unique identifier. (required)
+     * @return Returns ViewConstraint object for the view identified by unique identifier (status code 200)
+     *         or The context does not exists with the given uuid (status code 404)
+     *         or Error occured while fetching the constraints data (status code 500)
+     * @see ViewApi#getViewConstraint
+     */
+    default ResponseEntity<ViewConstraint> getViewConstraint(UUID uuid) throws Exception {
+        getRequest().ifPresent(request -> {
+            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"componentConstraints\" : [ { \"visible\" : true, \"dataName\" : \"dataName\", \"mandatory\" : false, \"enabled\" : true }, { \"visible\" : true, \"dataName\" : \"dataName\", \"mandatory\" : false, \"enabled\" : true } ] }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
@@ -59,7 +83,7 @@ public interface ViewApiDelegate {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"uri\" : \"https://openapi-generator.tech\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"views\" : [ { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"branchUri\" : \"https://openapi-generator.tech\", \"objectUri\" : \"https://openapi-generator.tech\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" } }, { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"branchUri\" : \"https://openapi-generator.tech\", \"objectUri\" : \"https://openapi-generator.tech\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" } } ] }";
+                    String exampleString = "{ \"openPendingData\" : { \"viewsToClose\" : [ \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" ], \"viewToOpen\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"results\" : { } }, \"uri\" : \"https://openapi-generator.tech\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"views\" : [ { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"branchUri\" : \"https://openapi-generator.tech\", \"constraint\" : { \"componentConstraints\" : [ { \"visible\" : true, \"dataName\" : \"dataName\", \"mandatory\" : false, \"enabled\" : true }, { \"visible\" : true, \"dataName\" : \"dataName\", \"mandatory\" : false, \"enabled\" : true } ] }, \"objectUri\" : \"https://openapi-generator.tech\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" } }, { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"branchUri\" : \"https://openapi-generator.tech\", \"constraint\" : { \"componentConstraints\" : [ { \"visible\" : true, \"dataName\" : \"dataName\", \"mandatory\" : false, \"enabled\" : true }, { \"visible\" : true, \"dataName\" : \"dataName\", \"mandatory\" : false, \"enabled\" : true } ] }, \"objectUri\" : \"https://openapi-generator.tech\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" } } ] }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
@@ -98,7 +122,7 @@ public interface ViewApiDelegate {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"uri\" : \"https://openapi-generator.tech\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"views\" : [ { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"branchUri\" : \"https://openapi-generator.tech\", \"objectUri\" : \"https://openapi-generator.tech\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" } }, { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"branchUri\" : \"https://openapi-generator.tech\", \"objectUri\" : \"https://openapi-generator.tech\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" } } ] }";
+                    String exampleString = "{ \"openPendingData\" : { \"viewsToClose\" : [ \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" ], \"viewToOpen\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"results\" : { } }, \"uri\" : \"https://openapi-generator.tech\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"views\" : [ { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"branchUri\" : \"https://openapi-generator.tech\", \"constraint\" : { \"componentConstraints\" : [ { \"visible\" : true, \"dataName\" : \"dataName\", \"mandatory\" : false, \"enabled\" : true }, { \"visible\" : true, \"dataName\" : \"dataName\", \"mandatory\" : false, \"enabled\" : true } ] }, \"objectUri\" : \"https://openapi-generator.tech\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" } }, { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"branchUri\" : \"https://openapi-generator.tech\", \"constraint\" : { \"componentConstraints\" : [ { \"visible\" : true, \"dataName\" : \"dataName\", \"mandatory\" : false, \"enabled\" : true }, { \"visible\" : true, \"dataName\" : \"dataName\", \"mandatory\" : false, \"enabled\" : true } ] }, \"objectUri\" : \"https://openapi-generator.tech\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"parameters\" : { \"key\" : \"{}\" } } ] }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
