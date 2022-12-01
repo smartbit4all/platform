@@ -68,6 +68,8 @@ public class NavigationViewModelImpl extends ViewModelImpl<TreeModel>
 
   private ViewTargetEnhancer navigationTargetEnhancer;
 
+  private boolean selectSameNodeDeselectsIt = true;
+
   public NavigationViewModelImpl(
       ObservablePublisherWrapper publisherWrapper,
       UINavigationApi uiNavigationApi,
@@ -159,7 +161,8 @@ public class NavigationViewModelImpl extends ViewModelImpl<TreeModel>
     if (selectedNode != null) {
       selectedNode.setSelected(false);
     }
-    if (selectedNode == node || node == null) {
+    if ((selectSameNodeDeselectsIt && selectedNode == node)
+        || node == null) {
       selectedNode = null;
       model.setSelectedNodeIdentifier(null);
     } else {
@@ -233,11 +236,15 @@ public class NavigationViewModelImpl extends ViewModelImpl<TreeModel>
                 .findFirst().orElse(null);
             if (nextRef != null) {
               node = nextRef.getEndNode();
+              treeNodeById = getWrappedTreeNode(node.getId());
             }
           }
         } while (iterSegment.hasNext());
         if (treeNodeById != null) {
+          boolean oldSelectSameNodeDeselectsIt = selectSameNodeDeselectsIt;
+          selectSameNodeDeselectsIt = false;
           select(treeNodeById);
+          selectSameNodeDeselectsIt = oldSelectSameNodeDeselectsIt;
         }
       }
       notifyAllListeners();
