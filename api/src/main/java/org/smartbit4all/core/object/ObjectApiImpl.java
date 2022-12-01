@@ -11,6 +11,7 @@ import org.smartbit4all.api.object.RetrievalRequest;
 import org.smartbit4all.api.object.bean.ObjectNodeData;
 import org.smartbit4all.api.object.bean.ObjectNodeState;
 import org.smartbit4all.api.object.bean.RetrievalMode;
+import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class ObjectApiImpl implements ObjectApi {
@@ -105,6 +106,11 @@ public class ObjectApiImpl implements ObjectApi {
   @Override
   public URI save(ObjectNode node, URI branchUri) {
     return applyChangeApi.applyChanges(node, branchUri);
+  }
+
+  @Override
+  public URI getLatestUri(URI uri) {
+    return ObjectStorageImpl.getUriWithoutVersion(uri);
   }
 
 }

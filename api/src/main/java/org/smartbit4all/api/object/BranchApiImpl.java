@@ -14,7 +14,6 @@ import org.smartbit4all.api.storage.bean.ObjectBranchData;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.utility.concurrent.FutureValue;
-import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageObject;
@@ -85,7 +84,7 @@ public class BranchApiImpl extends PrimaryApiImpl<BranchContributionApi>
     if (versionUri == null) {
       return null;
     }
-    URI uri = ObjectStorageImpl.getUriWithoutVersion(versionUri);
+    URI uri = objectApi.getLatestUri(versionUri);
     // TODO We might manage if we don't have the version uri.
     FutureValue<URI> newVersionUri = new FutureValue<>();
     storage.get().update(branchUri, BranchData.class, b -> {

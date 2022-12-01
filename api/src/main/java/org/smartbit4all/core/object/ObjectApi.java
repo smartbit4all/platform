@@ -143,4 +143,6 @@ public interface ObjectApi {
     return save(node, null);
   }
 
+  URI getLatestUri(URI uri);
+
 }
