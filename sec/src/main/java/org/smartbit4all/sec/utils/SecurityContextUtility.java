@@ -3,13 +3,18 @@ package org.smartbit4all.sec.utils;
 import java.net.URI;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.org.OrgApi;
+import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.api.session.UserSessionApi;
+import org.smartbit4all.api.session.bean.AccountInfo;
 import org.smartbit4all.api.session.bean.Session;
 import org.smartbit4all.sec.scheduling.SecurityContextScheduling.TechnicalUserProvider;
 import org.smartbit4all.sec.token.SessionBasedAuthTokenProvider;
@@ -83,5 +88,17 @@ public class SecurityContextUtility {
       return authentication;
     }
     return null;
+  }
+
+  public static BiFunction<User, Authentication, AccountInfo> getDefaultAccountInfoProvider(
+      OrgApi orgApi) {
+    return (user, originalAuthToken) -> new AccountInfo()
+        .userName(user.getUsername())
+        .displayName(user.getName())
+        .roles(orgApi.getGroupsOfUser(user.getUri()).stream()
+            .map(Group::getName)
+            .collect(Collectors.toList()))
+        .parameters(user.getAttributes());
+
   }
 }
