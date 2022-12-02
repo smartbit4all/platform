@@ -1,5 +1,6 @@
 package org.smartbit4all.api.object;
 
+import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -205,6 +206,26 @@ class ApplyChangeTest {
         SampleDataSheet.NAME);
     assertEquals("datasheet 3 modified", item3datasheetName);
     assertEquals(5, rootNodeOnly.list(SampleCategory.CONTAINER_ITEMS).size());
+
+    ObjectNode nodeByReq2 = objectApi.request(SampleCategory.class)
+        .add(SampleCategory.CONTAINER_ITEMS, SampleContainerItem.DATASHEET)
+        .load(rootUriUpdated);
+
+    ObjectNode nodeByReq = objectApi.request(SampleCategory.class)
+        .add(SampleCategory.CONTAINER_ITEMS, SampleContainerItem.DATASHEET)
+        .load(rootUriUpdated);
+
+    assertEquals(nodeByReq2, nodeByReq);
+
+    ObjectNode nodeByNav = objectApi.load(rootUriUpdated);
+    nodeByNav.list(SampleCategory.CONTAINER_ITEMS).stream()
+        .map(ref -> ref.get())
+        .map(node -> node.ref(SampleContainerItem.DATASHEET).get())
+        .collect(toList());
+
+    assertEquals(nodeByReq, nodeByNav);
+
+
 
   }
 

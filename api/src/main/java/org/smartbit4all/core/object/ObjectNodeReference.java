@@ -2,7 +2,9 @@ package org.smartbit4all.core.object;
 
 import java.net.URI;
 import java.util.Objects;
+import org.smartbit4all.api.object.RetrievalRequest;
 import org.smartbit4all.api.object.bean.ObjectNodeState;
+import org.smartbit4all.api.object.bean.RetrievalMode;
 
 public class ObjectNodeReference {
 
@@ -18,18 +20,29 @@ public class ObjectNodeReference {
 
   private boolean isPresent;
 
+  private final ReferenceDefinition referenceDefinition;
+
   /**
    * Referred {@link ObjectNode}. If is null, then either reference is empty (if originalObjectUri
    * == null), or not loaded.
    */
   private ObjectNode node;
 
-  ObjectNodeReference(ObjectNode referrerNode, URI objectUri, ObjectNode node) {
-    if (node != null && !Objects.equals(node.getObjectUri(), objectUri)) {
-      throw new IllegalArgumentException("node.getObjectUri must match to objectUri");
-    }
+  ObjectNodeReference(ObjectNode referrerNode, ReferenceDefinition referenceDefinition,
+      URI objectUri, ObjectNode node) {
     this.referrerNode = referrerNode;
-    this.originalObjectUri = objectUri;
+    this.referenceDefinition = referenceDefinition;
+    if (node != null && !Objects.equals(node.getObjectUri(), objectUri)) {
+      URI versionless1 = referrerNode.objectApi.getLatestUri(node.getObjectUri());
+      URI versionless2 = referrerNode.objectApi.getLatestUri(objectUri);
+      if (!Objects.equals(versionless1, versionless2)) {
+        throw new IllegalArgumentException("node.getObjectUri must match to objectUri");
+      }
+      // node is another version -> RetrievalApi loaded it, we should accept it!
+      this.originalObjectUri = node.getObjectUri();
+    } else {
+      this.originalObjectUri = objectUri;
+    }
     this.originalNode = node;
     this.objectUri = originalObjectUri;
     this.node = originalNode;
@@ -75,7 +88,11 @@ public class ObjectNodeReference {
       return node;
     }
     if (objectUri != null) {
-      node = referrerNode.objectApi.load(objectUri);
+      RetrievalRequest request =
+          referrerNode.objectApi.request(referenceDefinition.getTarget().getClazz());
+      request.setLoadLatest(
+          RetrievalRequest.calcLoadLatest(referenceDefinition, RetrievalMode.NORMAL));
+      node = referrerNode.objectApi.load(request, objectUri);
       isLoaded = true;
       refreshNodeState();
     }
@@ -117,5 +134,58 @@ public class ObjectNodeReference {
       return ObjectNodeState.NOP;
     }
     return ObjectNodeState.MODIFIED;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    ObjectNodeReference ref = (ObjectNodeReference) o;
+    return Objects.equals(this.isLoaded, ref.isLoaded) &&
+        Objects.equals(this.isPresent, ref.isPresent) &&
+        Objects.equals(this.node, ref.node) &&
+        Objects.equals(this.originalObjectUri, ref.originalObjectUri) &&
+        Objects.equals(this.objectUri, ref.objectUri) &&
+        Objects.equals(this.getState(), ref.getState()) &&
+        Objects.equals(this.referrerNode.getObjectUri(), ref.referrerNode.getObjectUri());
+    // originalNode is not examined, it may not exist, if loaded later, but ref should be equal.
+    // adding referredNode will cause stackOverflow
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(isLoaded, isPresent, node, originalObjectUri, objectUri,
+        referrerNode.getObjectUri(), getState());
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    // @formatter:off
+    sb.append("class ObjectNodeReference{\n");
+    sb.append("    originalObjectUri: ").append(toIndentedString(originalObjectUri)).append("\n");
+    sb.append("    objectUri: ").append(toIndentedString(objectUri)).append("\n");
+    sb.append("    referrerNode.objectUri: ").append(toIndentedString(referrerNode.getObjectUri())).append("\n");
+    sb.append("    node: ").append(toIndentedString(node)).append("\n");
+    sb.append("    isLoaded: ").append(toIndentedString(isLoaded)).append("\n");
+    sb.append("    isPresent: ").append(toIndentedString(isPresent)).append("\n");
+    sb.append("    state: ").append(toIndentedString(getState())).append("\n");
+    sb.append("}");
+    // @formatter:on
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
   }
 }

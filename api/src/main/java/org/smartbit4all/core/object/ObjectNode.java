@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -71,8 +72,9 @@ public class ObjectNode {
               if (data.getReferences().containsKey(e.getKey())) {
                 node = new ObjectNode(objectApi, data.getReferences().get(e.getKey()));
               }
-              Object uri = data.getObjectAsMap().get(e.getValue().getSourcePropertyPath());
-              return new ObjectNodeReference(this, UriUtils.asUri(uri), node);
+              ReferenceDefinition ref = e.getValue();
+              Object uri = data.getObjectAsMap().get(ref.getSourcePropertyPath());
+              return new ObjectNodeReference(this, ref, UriUtils.asUri(uri), node);
             }));
   }
 
@@ -86,12 +88,12 @@ public class ObjectNode {
               if (data.getReferenceLists().containsKey(e.getKey())) {
                 list = data.getReferenceLists().get(e.getKey());
               }
-              List<?> uris =
-                  (List<?>) data.getObjectAsMap().get(e.getValue().getSourcePropertyPath());
+              ReferenceDefinition ref = e.getValue();
+              List<?> uris = (List<?>) data.getObjectAsMap().get(ref.getSourcePropertyPath());
               if (uris == null) {
                 uris = new ArrayList<>();
               }
-              return new ObjectNodeList(objectApi, this,
+              return new ObjectNodeList(objectApi, this, ref,
                   UriUtils.asUriList(uris), list);
             }));
   }
@@ -106,17 +108,17 @@ public class ObjectNode {
               if (data.getReferenceMaps().containsKey(e.getKey())) {
                 map = data.getReferenceMaps().get(e.getKey());
               }
-              Map<?, ?> uris =
-                  (Map<?, ?>) data.getObjectAsMap().get(e.getValue().getSourcePropertyPath());
+              ReferenceDefinition ref = e.getValue();
+              Map<?, ?> uris = (Map<?, ?>) data.getObjectAsMap().get(ref.getSourcePropertyPath());
               if (uris == null) {
                 uris = new HashMap<>();
               }
-              return new ObjectNodeMap(objectApi, this,
+              return new ObjectNodeMap(objectApi, this, ref,
                   UriUtils.asUriMap(uris), map);
             }));
   }
 
-  ObjectNodeData getData() {
+  public ObjectNodeData getData() {
     return data;
   }
 
@@ -427,4 +429,53 @@ public class ObjectNode {
     return data.getVersionNr();
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    ObjectNode objectNode = (ObjectNode) o;
+    return Objects.equals(this.data.getObjectUri(), objectNode.data.getObjectUri()) &&
+        Objects.equals(this.data.getObjectAsMap(), objectNode.data.getObjectAsMap()) &&
+        Objects.equals(this.definition.getQualifiedName(), objectNode.definition.getQualifiedName())
+        &&
+        Objects.equals(this.references, objectNode.references) &&
+        Objects.equals(this.referenceLists, objectNode.referenceLists) &&
+        Objects.equals(this.referenceMaps, objectNode.referenceMaps);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(data.getObjectUri(), data.getObjectAsMap(), definition.getQualifiedName(),
+        references, referenceLists, referenceMaps);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    // @formatter:off
+    sb.append("class ObjectNode{\n");
+    sb.append("    data.objectUri: ").append(toIndentedString(data.getObjectUri())).append("\n");
+    sb.append("    data.objectAsMap: ").append(toIndentedString(data.getObjectAsMap())).append("\n");
+    sb.append("    def.qualifiedName: ").append(toIndentedString(definition.getQualifiedName())).append("\n");
+    sb.append("    references: ").append(toIndentedString(references)).append("\n");
+    sb.append("    referenceLists: ").append(toIndentedString(referenceLists)).append("\n");
+    sb.append("    referenceMaps: ").append(toIndentedString(referenceMaps)).append("\n");
+    sb.append("}");
+    // @formatter:on
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
 }

@@ -155,14 +155,20 @@ public final class RetrievalRequest {
     }
     if (next == null) {
       next = new RetrievalRequest(ref.getTarget(), this);
-      boolean nextLoadLatest = retrievalMode == RetrievalMode.LATEST
-          || (retrievalMode == RetrievalMode.NORMAL
-              && ref.getAggregation() == AggregationKind.NONE);
+      boolean nextLoadLatest = calcLoadLatest(ref, retrievalMode);
       next.setLoadLatest(nextLoadLatest);
       references.put(ref, next);
     }
     String[] subPaths = Arrays.copyOfRange(paths, 1, paths.length);
     return next.getOrCreate(create, subPaths);
+  }
+
+  public static boolean calcLoadLatest(ReferenceDefinition ref, RetrievalMode retrievalMode) {
+    return retrievalMode == RetrievalMode.LATEST
+        || (retrievalMode == RetrievalMode.NORMAL
+            && ref.getAggregation() == AggregationKind.NONE)
+        || (retrievalMode == RetrievalMode.NORMAL
+            && ref.getAggregation() == AggregationKind.SHARED);
   }
 
   /**
