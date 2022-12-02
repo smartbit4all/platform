@@ -111,10 +111,9 @@ public class ObjectNodeReference {
       return ObjectNodeState.REMOVED;
     }
     if (Objects.equals(originalObjectUri, objectUri)) {
-      // TODO do we need this??
-      // if (node != null && node.getState() == ObjectNodeState.MODIFIED) {
-      //   return ObjectNodeState.MODIFIED;
-      // }
+      if (node != null && node.getState() == ObjectNodeState.MODIFIED) {
+        return ObjectNodeState.MODIFIED;
+      }
       return ObjectNodeState.NOP;
     }
     return ObjectNodeState.MODIFIED;

@@ -25,8 +25,7 @@ import org.smartbit4all.core.object.ReferenceDefinition;
 public class ReferenceListChange extends ReferenceChangeRequest {
 
   /**
-   * The object changes to apply on the list. Depending on the {@link #getOperation()} it can be the
-   * final list or we might need to compare this list with the currently saved list.
+   * The object changes to apply on the list.
    */
   final List<ObjectChangeRequest> changeList = new ArrayList<>();
 
@@ -35,14 +34,8 @@ public class ReferenceListChange extends ReferenceChangeRequest {
     super(request, objectChangeRequest, definition);
   }
 
-  public final ReferenceListChange operation(ReferenceOperation operation) {
-    this.operation = operation;
-    return this;
-  }
-
   /**
-   * This will set the list as is and doesn't reserve the previous changes! And on the other hand it
-   * will set the {@link #operation(ReferenceOperation)} to SET.
+   * This will set the list as is and doesn't reserve the previous changes.
    * 
    * @param listToSet
    * @return
@@ -50,7 +43,7 @@ public class ReferenceListChange extends ReferenceChangeRequest {
   public final ReferenceListChange setList(List<ObjectChangeRequest> listToSet) {
     changeList.clear();
     changeList.addAll(listToSet);
-    return operation(ReferenceOperation.SET);
+    return this;
   }
 
   /**
@@ -60,7 +53,7 @@ public class ReferenceListChange extends ReferenceChangeRequest {
    */
   public final ReferenceListChange clearList() {
     changeList.clear();
-    return operation(ReferenceOperation.REMOVE);
+    return this;
   }
 
   /**
@@ -71,7 +64,7 @@ public class ReferenceListChange extends ReferenceChangeRequest {
    */
   public final ReferenceListChange add(ObjectChangeRequest item) {
     changeList.add(item);
-    return operation(ReferenceOperation.UPDATE);
+    return this;
   }
 
   @Override

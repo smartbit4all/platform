@@ -177,12 +177,14 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
       for (ObjectNodeReference ref : entry.getValue().references()) {
         ObjectChangeRequest changeRequest = constructRequest(ref, request);
         if (changeRequest.getOperation() == ObjectChangeOperation.DELETE) {
-          // list has changed, should be applied
+          // list has changed, should be applied, without this reference
           containmentChanged = true;
+          result.referenceList(entry.getKey());
         } else {
           if (changeRequest.getOperation() != ObjectChangeOperation.NOP) {
             containmentChanged = true;
           }
+          // even NOP references must be added to list, because whole list will be applied
           result.referenceList(entry.getKey()).add(changeRequest);
         }
       }

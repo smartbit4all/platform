@@ -297,15 +297,12 @@ class ApplyChangeTest {
 
     // remove from ref. list, isLoaded = false
     rootNode = objectApi.load(rootUriAfterUpdate);
-    rootNode.list(SampleCategory.CONTAINER_ITEMS).get(0).get();
-    assertTrue(rootNode.list(SampleCategory.CONTAINER_ITEMS).get(0).isLoaded());
-    // assertFalse(rootNode.list(SampleCategory.CONTAINER_ITEMS).get(0).isLoaded());
+    assertFalse(rootNode.list(SampleCategory.CONTAINER_ITEMS).get(0).isLoaded());
     rootNode.list(SampleCategory.CONTAINER_ITEMS).get(0).clear();
     rootUriAfterUpdate = objectApi.save(rootNode);
 
-    // rootNode = objectApi.load(rootUriAfterUpdate);
-    // assertEquals(0, rootNode.list(SampleCategory.CONTAINER_ITEMS).size());
-
+    rootNode = objectApi.load(rootUriAfterUpdate);
+    assertEquals(0, rootNode.list(SampleCategory.CONTAINER_ITEMS).size());
 
   }
 
