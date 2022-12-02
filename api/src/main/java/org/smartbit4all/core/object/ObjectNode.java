@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.smartbit4all.api.object.bean.ObjectNodeData;
@@ -217,13 +218,29 @@ public class ObjectNode {
   }
 
   /**
+   * A safe way to update the value of the object node without the risk of forgotten
+   * {@link #setObject(Object)}.
+   * 
+   * @param <T>
+   * @param clazz
+   * @param update
+   */
+  public <T> ObjectNode modify(Class<T> clazz, UnaryOperator<T> update) {
+    T object = getObject(clazz);
+    object = update.apply(object);
+    setObject(object);
+    return this;
+  }
+
+  /**
    * Set the values directly into the data.
    * 
    * @param values The map of values.
    */
-  public void setValues(Map<String, Object> values) {
+  public ObjectNode setValues(Map<String, Object> values) {
     data.getObjectAsMap().putAll(values);
     setModified();
+    return this;
   }
 
   /**
@@ -232,9 +249,10 @@ public class ObjectNode {
    * @param key The key of the value, the name of the property.
    * @param value The value object.
    */
-  public void setValue(String key, Object value) {
+  public ObjectNode setValue(String key, Object value) {
     data.getObjectAsMap().put(key, value);
     setModified();
+    return this;
   }
 
   /**
@@ -251,18 +269,20 @@ public class ObjectNode {
    * 
    * @param state
    */
-  final void setState(ObjectNodeState state) {
+  final ObjectNode setState(ObjectNodeState state) {
     this.data.setState(state);
+    return this;
   }
 
   /**
    * Set the state to modified if the state is {@link ObjectNodeState#NOP} else the state remains
    * the same.
    */
-  final void setModified() {
+  final ObjectNode setModified() {
     if (getState() == ObjectNodeState.NOP) {
       data.setState(ObjectNodeState.MODIFIED);
     }
+    return this;
   }
 
   public ObjectNodeReference ref(String... paths) {
@@ -308,7 +328,7 @@ public class ObjectNode {
     } else if (value instanceof Map) {
       // Try to retrieve the proper object
       return objectApi.definition(clazz).fromMap((Map<String, Object>) value);
-    } else if (value instanceof String) {
+    } else if (value instanceof String && !clazz.equals(String.class)) {
       try {
         return objectApi.getDefaultSerializer().fromString((String) value, clazz);
       } catch (IOException e) {

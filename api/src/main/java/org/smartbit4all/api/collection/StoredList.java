@@ -23,4 +23,7 @@ public interface StoredList {
 
   void update(UnaryOperator<List<URI>> update);
 
+  void removeAll(Collection<URI> uris);
+
+  void remove(URI uri);
 }

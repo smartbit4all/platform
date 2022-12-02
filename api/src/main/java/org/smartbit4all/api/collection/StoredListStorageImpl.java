@@ -88,4 +88,20 @@ public class StoredListStorageImpl extends AbstractStoredContainerStorageImpl
     }
   }
 
+  @Override
+  public void removeAll(Collection<URI> uris) {
+    update(l -> {
+      l.removeAll(uris);
+      return l;
+    });
+  }
+
+  @Override
+  public void remove(URI uri) {
+    update(l -> {
+      l.remove(uri);
+      return l;
+    });
+  }
+
 }
