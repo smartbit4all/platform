@@ -39,6 +39,8 @@ public class ObjectChangeRequest {
    */
   private WeakReference<ApplyChangeRequest> requestRef;
 
+  private final URI changedUri;
+
   ObjectChangeRequest(ApplyChangeRequest request, ObjectDefinition<?> definition,
       String storageScheme,
       ObjectChangeOperation operation) {
@@ -46,6 +48,17 @@ public class ObjectChangeRequest {
     this.definition = definition;
     this.storageScheme = storageScheme;
     this.operation = operation;
+    this.changedUri = null;
+    requestRef = new WeakReference<>(request);
+  }
+
+  ObjectChangeRequest(ApplyChangeRequest request, URI changedUri,
+      ObjectChangeOperation operation) {
+    super();
+    this.definition = null;
+    this.storageScheme = null;
+    this.operation = operation;
+    this.changedUri = changedUri;
     requestRef = new WeakReference<>(request);
   }
 
@@ -161,6 +174,10 @@ public class ObjectChangeRequest {
 
   final void setOperation(ObjectChangeOperation operation) {
     this.operation = operation;
+  }
+
+  public URI getChangedUri() {
+    return changedUri;
   }
 
 }

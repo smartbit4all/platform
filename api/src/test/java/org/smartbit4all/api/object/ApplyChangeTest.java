@@ -191,18 +191,20 @@ class ApplyChangeTest {
     assertTrue(rootNodeOnly.list(SampleCategory.CONTAINER_ITEMS).get(0).isLoaded());
     assertFalse(rootNodeOnly.list(SampleCategory.CONTAINER_ITEMS).get(1).isLoaded());
 
-    // TODO this won't work since the ObjectNodeList partial update doesn't work yet.
-    // ObjectNode item3datasheetNode =
-    // rootNodeOnly.list(SampleCategory.CONTAINER_ITEMS).get(3).get()
-    // .ref(SampleContainerItem.DATASHEET).get();
-    // item3datasheetNode.setValue(SampleDataSheet.NAME, "datasheet 3 modified");
-    // URI rootUriUpdated = objectApi.save(rootNodeOnly);
-    //
-    // Object item3datasheetName = objectApi.load(rootUriUpdated).getValue(
-    // SampleCategory.CONTAINER_ITEMS, "3",
-    // SampleContainerItem.DATASHEET,
-    // SampleDataSheet.NAME);
-    // assertEquals("datasheet 3 modified", item3datasheetName);
+    // load and update 3rd item
+    ObjectNode item3datasheetNode =
+        rootNodeOnly.list(SampleCategory.CONTAINER_ITEMS).get(3).get()
+            .ref(SampleContainerItem.DATASHEET).get();
+    item3datasheetNode.setValue(SampleDataSheet.NAME, "datasheet 3 modified");
+    URI rootUriUpdated = objectApi.save(rootNodeOnly);
+
+    rootNodeOnly = objectApi.load(rootUriUpdated);
+    Object item3datasheetName = rootNodeOnly.getValue(
+        SampleCategory.CONTAINER_ITEMS, "3",
+        SampleContainerItem.DATASHEET,
+        SampleDataSheet.NAME);
+    assertEquals("datasheet 3 modified", item3datasheetName);
+    assertEquals(5, rootNodeOnly.list(SampleCategory.CONTAINER_ITEMS).size());
 
   }
 
@@ -226,10 +228,8 @@ class ApplyChangeTest {
     ObjectNodeList items = rootNode.list(SampleCategory.CONTAINER_ITEMS);
     assertNotNull(items);
     assertTrue(!items.isEmpty());
+
     ObjectNodeReference firstItemRef = items.get(0);
-
-    URI containerItemOriginal = firstItemRef.getObjectUri();
-
     assertNotNull(firstItemRef);
     assertTrue(firstItemRef.isLoaded());
     assertTrue(firstItemRef.isPresent());
@@ -266,6 +266,46 @@ class ApplyChangeTest {
     assertNotNull(dataSheetNode, "DataSheet must exist in first version");
     String dataSheetName = ((SampleDataSheet) dataSheetNode.getObject()).getName();
     assertEquals("data sheet testReferenceChangeUri", dataSheetName);
+
+    // add new SampleContainerItem by URI
+    SampleContainerItem itemToAdd = new SampleContainerItem()
+        .name("added container item");
+    ObjectNode itemToAddNode = objectApi.create(MY_SCHEME, itemToAdd);
+    itemToAddNode.ref(SampleContainerItem.DATASHEET).setNewObject(
+        new SampleDataSheet().name("added datasheet"));
+    URI itemToAddUri = objectApi.save(itemToAddNode);
+    rootNode.list(SampleCategory.CONTAINER_ITEMS).add(itemToAddUri);
+    rootUriAfterUpdate = objectApi.save(rootNode);
+
+    rootNode = requestNormal.load(rootUriAfterUpdate);
+    assertEquals(2, rootNode.list(SampleCategory.CONTAINER_ITEMS).size());
+    ObjectNode itemAddedNode = rootNode.list(SampleCategory.CONTAINER_ITEMS).get(1).get();
+    assertEquals("added container item", itemAddedNode.getValue(SampleContainerItem.NAME));
+    ObjectNode datasheetAddedNode = itemAddedNode.ref(SampleContainerItem.DATASHEET).get();
+    assertEquals("added datasheet", datasheetAddedNode.getValue(SampleDataSheet.NAME));
+
+    // remove from ref. list, isLoaded = true
+    assertEquals(2, rootNode.list(SampleCategory.CONTAINER_ITEMS).size());
+    assertTrue(rootNode.list(SampleCategory.CONTAINER_ITEMS).get(0).isLoaded());
+    rootNode.list(SampleCategory.CONTAINER_ITEMS).get(0).clear();
+    rootUriAfterUpdate = objectApi.save(rootNode);
+
+    rootNode = objectApi.load(rootUriAfterUpdate);
+    assertEquals(1, rootNode.list(SampleCategory.CONTAINER_ITEMS).size());
+    itemAddedNode = rootNode.list(SampleCategory.CONTAINER_ITEMS).get(0).get();
+    assertEquals("added container item", itemAddedNode.getValue(SampleContainerItem.NAME));
+
+    // remove from ref. list, isLoaded = false
+    rootNode = objectApi.load(rootUriAfterUpdate);
+    rootNode.list(SampleCategory.CONTAINER_ITEMS).get(0).get();
+    assertTrue(rootNode.list(SampleCategory.CONTAINER_ITEMS).get(0).isLoaded());
+    // assertFalse(rootNode.list(SampleCategory.CONTAINER_ITEMS).get(0).isLoaded());
+    rootNode.list(SampleCategory.CONTAINER_ITEMS).get(0).clear();
+    rootUriAfterUpdate = objectApi.save(rootNode);
+
+    // rootNode = objectApi.load(rootUriAfterUpdate);
+    // assertEquals(0, rootNode.list(SampleCategory.CONTAINER_ITEMS).size());
+
 
   }
 

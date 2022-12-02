@@ -72,7 +72,7 @@ public final class ObjectNodeList {
   }
 
   public boolean add(URI uri) {
-    Objects.requireNonNull(uri, "Node must be not null!");
+    Objects.requireNonNull(uri, "URI must be not null!");
     ObjectNodeReference ref = new ObjectNodeReference(referrerNode, null, null);
     ref.set(uri);
     return list.add(ref);

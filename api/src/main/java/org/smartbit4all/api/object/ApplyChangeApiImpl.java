@@ -13,7 +13,6 @@ import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ObjectNodeList;
 import org.smartbit4all.core.object.ObjectNodeReference;
-import org.smartbit4all.core.object.ReferenceDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class ApplyChangeApiImpl implements ApplyChangeApi {
@@ -30,7 +29,8 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
   @Override
   public ApplyChangeResult save(ApplyChangeRequest request) {
     List<ObjectChangeRequest> finalList =
-        request.getObjectChangeRequests().stream().map(r -> preProcessObjectRequest(r))
+        request.getObjectChangeRequests().stream()
+            .map(this::preProcessObjectRequest)
             .collect(Collectors.toList());
 
     Map<ObjectChangeRequest, URI> processedRequests = new HashMap<>();
@@ -71,36 +71,42 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
           changes);
     }
 
-    // By default we return the original uri.
-    URI result = objectChangeRequest.getUri();
+    URI result;
+    if (objectChangeRequest.getChangedUri() != null) {
+      // if we have the referenced URI set before, then we use it
+      result = objectChangeRequest.getChangedUri();
+    } else {
+      switch (objectChangeRequest.getOperation()) {
+        case NEW:
+          // The new object is created as new so we have to save the branch as the initiating branch
+          // for the object. This object and all of its versions belong to this branch.
+          result = modifyApi.createNewObject(objectChangeRequest.getDefinition(),
+              objectChangeRequest.getStorageScheme(), objectChangeRequest.getOrCreateObjectAsMap(),
+              branchUri);
+          break;
 
-    switch (objectChangeRequest.getOperation()) {
-      case NEW:
-        // The new object is created as new so we have to save the branch as the initiating branch
-        // for the object. This object and all of its versions belong to this branch.
-        result = modifyApi.createNewObject(objectChangeRequest.getDefinition(),
-            objectChangeRequest.getStorageScheme(), objectChangeRequest.getOrCreateObjectAsMap(),
-            branchUri);
-        break;
+        case UPDATE:
+          // First of all we have to compare the new object with the current version. If there is
+          // change then we have to know if we are already on the right branch. If no then we have
+          // to
+          // branch the given object version. At the end we have to update if there was any change.
+          result = modifyApi.updateObject(objectChangeRequest.getDefinition(),
+              objectChangeRequest.getUri(),
+              objectChangeRequest.getOrCreateObjectAsMap(),
+              branchUri);
+          break;
 
-      case UPDATE:
-        // First of all we have to compare the new object with the current version. If there is
-        // change then we have to know if we are already on the right branch. If no then we have to
-        // branch the given object version. At the end we have to update if there was any change.
-        result = modifyApi.updateObject(objectChangeRequest.getDefinition(),
-            objectChangeRequest.getUri(),
-            objectChangeRequest.getOrCreateObjectAsMap(),
-            branchUri);
-        break;
+        case DELETE:
+          // We can skip it because it is just about making unavailable. It is not the deletion of
+          // the given object, but referenced URI should be null.
+          result = null;
+          break;
 
-      case DELETE:
-        // We can skip it because it is just about making unavailable. It is not the deletion of the
-        // given object.
-
-        break;
-
-      default:
-        break;
+        default:
+          // NOP - referenced uri stays the same.
+          result = objectChangeRequest.getUri();
+          break;
+      }
     }
 
     // Add it to the already processed map.
@@ -152,66 +158,65 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
   private ObjectChangeRequest constructRequest(ObjectNode node, ApplyChangeRequest request) {
     boolean containmentChanged = false;
 
-    // Constructs the result with NOP operation code.
     ObjectChangeRequest result = new ObjectChangeRequest(request, node.getDefinition(),
-        node.getStorageScheme(), ObjectChangeOperation.NOP);
+        node.getStorageScheme(), opByState(node.getState()));
     result.setUri(node.getObjectUri());
     result.setObjectAsMap(node.getObjectAsMap());
-    if (node.getState() == ObjectNodeState.NEW) {
-      result.setOperation(ObjectChangeOperation.NEW);
-    } else if (node.getState() == ObjectNodeState.MODIFIED) {
-      result.setOperation(ObjectChangeOperation.UPDATE);
-    }
 
     // Recurse on the values.
     for (Entry<String, ObjectNodeReference> entry : node.getReferences().entrySet()) {
-      ObjectNodeReference ref = entry.getValue();
-      String refName = entry.getKey();
-      if (ref.isLoaded()) {
-        ObjectChangeRequest changeRequest = constructRequest(ref.get(), request);
-        if (changeRequest.getOperation() != ObjectChangeOperation.NOP) {
-          containmentChanged = true;
-          result.referenceValue(refName).value(changeRequest);
-        }
-      } else {
-        if (ref.getState() != ObjectNodeState.NOP) {
-          // ref URI has changed
-          if (result.getOperation() == ObjectChangeOperation.NOP) {
-            result.setOperation(ObjectChangeOperation.UPDATE);
-          }
-          ReferenceDefinition refDefinition = node.getDefinition().getOutgoingReference(refName);
-          String refProperty = refDefinition.getSourcePropertyPath();
-          result.getObjectAsMap().put(refProperty, ref.getObjectUri());
-        }
+      ObjectChangeRequest changeRequest = constructRequest(entry.getValue(), request);
+      if (changeRequest.getOperation() != ObjectChangeOperation.NOP) {
+        containmentChanged = true;
+        result.referenceValue(entry.getKey()).value(changeRequest);
       }
     }
 
     // Recurse on the lists
     for (Entry<String, ObjectNodeList> entry : node.getReferenceLists().entrySet()) {
       for (ObjectNodeReference ref : entry.getValue().references()) {
-        if (ref.isLoaded()) {
-          ObjectNode objectNode = ref.get();
-          if (objectNode.getState() != ObjectNodeState.REMOVED) {
-            ObjectChangeRequest changeRequest = constructRequest(objectNode, request);
-            if (changeRequest.getOperation() != ObjectChangeOperation.NOP) {
-              containmentChanged = true;
-            }
-            result.referenceList(entry.getKey()).add(changeRequest);
-          }
+        ObjectChangeRequest changeRequest = constructRequest(ref, request);
+        if (changeRequest.getOperation() == ObjectChangeOperation.DELETE) {
+          // list has changed, should be applied
+          containmentChanged = true;
         } else {
-          // TODO not loaded may change the URI!
+          if (changeRequest.getOperation() != ObjectChangeOperation.NOP) {
+            containmentChanged = true;
+          }
+          result.referenceList(entry.getKey()).add(changeRequest);
         }
       }
     }
-
     // TODO recurse on Maps!
 
     if (containmentChanged && node.getState() == ObjectNodeState.NOP) {
       result.setOperation(ObjectChangeOperation.UPDATE);
     }
-
     return result;
 
   }
 
+  private ObjectChangeRequest constructRequest(ObjectNodeReference ref,
+      ApplyChangeRequest request) {
+    if (ref.isLoaded()) {
+      return constructRequest(ref.get(), request);
+    } else {
+      return new ObjectChangeRequest(
+          request, ref.getObjectUri(), opByState(ref.getState()));
+    }
+  }
+
+  private ObjectChangeOperation opByState(ObjectNodeState state) {
+    ObjectChangeOperation operation;
+    if (state == ObjectNodeState.NEW) {
+      operation = ObjectChangeOperation.NEW;
+    } else if (state == ObjectNodeState.REMOVED) {
+      operation = ObjectChangeOperation.DELETE;
+    } else if (state == ObjectNodeState.MODIFIED) {
+      operation = ObjectChangeOperation.UPDATE;
+    } else {
+      operation = ObjectChangeOperation.NOP;
+    }
+    return operation;
+  }
 }
