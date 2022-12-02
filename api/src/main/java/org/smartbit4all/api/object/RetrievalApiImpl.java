@@ -37,7 +37,7 @@ public final class RetrievalApiImpl implements RetrievalApi {
     URI readUri = objRequest.isLoadLatest() ? ObjectStorageImpl.getUriWithoutVersion(uri) : uri;
     StorageObject<?> storageObject = storageApi.load(readUri);
     ObjectNodeData data = new ObjectNodeData()
-        .objectUri(uri)
+        .objectUri(storageObject.getVersionUri())
         .qualifiedName(storageObject.definition().getQualifiedName())
         .storageSchema(storageObject.getStorage().getScheme())
         .objectAsMap(storageObject.getObjectAsMap())
