@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import org.smartbit4all.api.object.bean.ObjectNodeData;
 import org.smartbit4all.api.object.bean.ObjectNodeState;
 
@@ -51,6 +53,18 @@ public final class ObjectNodeList {
 
   public Iterable<ObjectNodeReference> references() {
     return list::iterator;
+  }
+
+  public Stream<ObjectNodeReference> stream() {
+    return StreamSupport.stream(list.spliterator(), false);
+  }
+
+  public Stream<ObjectNode> nodeStream() {
+    return stream().map(ObjectNodeReference::get);
+  }
+
+  public <T> Stream<T> stream(Class<T> clazz) {
+    return nodeStream().map(node -> node.getObject(clazz));
   }
 
   public ObjectNodeReference get(int index) {
