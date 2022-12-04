@@ -9,6 +9,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -152,18 +154,31 @@ class ApplyChangeTest {
         new SampleCategory().name("root testObjectNodeOnly"));
     ObjectNodeList items = rootNode.list(SampleCategory.CONTAINER_ITEMS);
     int itemCounter = 5;
+    List<ObjectNode> itemNodes = new ArrayList<>();
     for (int i = 0; i < itemCounter; i++) {
       ObjectNode itemNode = items.addNewObject(new SampleContainerItem().name("item " + i));
       itemNode
           .ref(SampleContainerItem.DATASHEET)
           .setNewObject(new SampleDataSheet().name("datasheet " + i));
+      itemNodes.add(itemNode);
     }
     URI rootCategoryUri = objectApi.save(rootNode);
     assertNotNull(rootCategoryUri);
+    assertEquals(rootCategoryUri, rootNode.getResultUri());
+    assertNotNull(itemNodes.get(0).getResultUri());
 
     ObjectNode rootNodeLoaded = objectApi.request(SampleCategory.class)
         .add(SampleCategory.CONTAINER_ITEMS, SampleContainerItem.DATASHEET)
         .load(rootCategoryUri);
+
+    URI item1nodeUriLoaded =
+        rootNodeLoaded.list(SampleCategory.CONTAINER_ITEMS).get(1).getObjectUri();
+    URI item1nodeUriResult = rootNode.list(SampleCategory.CONTAINER_ITEMS).get(1).getResultUri();
+    URI item1nodeUriSaved = itemNodes.get(1).getResultUri();
+
+    assertEquals(item1nodeUriLoaded, item1nodeUriResult);
+    assertEquals(item1nodeUriLoaded, item1nodeUriSaved);
+
 
     Object item2datasheetName = rootNodeLoaded.getValue(
         SampleCategory.CONTAINER_ITEMS, "2",

@@ -45,7 +45,8 @@ import javax.validation.Valid;
   ObjectNodeData.OBJECT_AS_MAP,
   ObjectNodeData.REFERENCES,
   ObjectNodeData.REFERENCE_LISTS,
-  ObjectNodeData.REFERENCE_MAPS
+  ObjectNodeData.REFERENCE_MAPS,
+  ObjectNodeData.RESULT_URI
 })
 @JsonTypeName("ObjectNodeData")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -76,6 +77,9 @@ public class ObjectNodeData {
 
   public static final String REFERENCE_MAPS = "referenceMaps";
   private Map<String, Map<String, ObjectNodeData>> referenceMaps = new HashMap<>();
+
+  public static final String RESULT_URI = "resultUri";
+  private URI resultUri;
 
   public ObjectNodeData() { 
   }
@@ -355,6 +359,34 @@ public class ObjectNodeData {
   }
 
 
+  public ObjectNodeData resultUri(URI resultUri) {
+    
+    this.resultUri = resultUri;
+    return this;
+  }
+
+   /**
+   * The object URI after an ObjectApi.save. It can be used to read the result Uri after save. 
+   * @return resultUri
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "The object URI after an ObjectApi.save. It can be used to read the result Uri after save. ")
+  @JsonProperty(RESULT_URI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public URI getResultUri() {
+    return resultUri;
+  }
+
+
+  @JsonProperty(RESULT_URI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setResultUri(URI resultUri) {
+    this.resultUri = resultUri;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -372,12 +404,13 @@ public class ObjectNodeData {
         Objects.equals(this.objectAsMap, objectNodeData.objectAsMap) &&
         Objects.equals(this.references, objectNodeData.references) &&
         Objects.equals(this.referenceLists, objectNodeData.referenceLists) &&
-        Objects.equals(this.referenceMaps, objectNodeData.referenceMaps);
+        Objects.equals(this.referenceMaps, objectNodeData.referenceMaps) &&
+        Objects.equals(this.resultUri, objectNodeData.resultUri);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(objectUri, qualifiedName, storageSchema, versionNr, state, objectAsMap, references, referenceLists, referenceMaps);
+    return Objects.hash(objectUri, qualifiedName, storageSchema, versionNr, state, objectAsMap, references, referenceLists, referenceMaps, resultUri);
   }
 
   @Override
@@ -393,6 +426,7 @@ public class ObjectNodeData {
     sb.append("    references: ").append(toIndentedString(references)).append("\n");
     sb.append("    referenceLists: ").append(toIndentedString(referenceLists)).append("\n");
     sb.append("    referenceMaps: ").append(toIndentedString(referenceMaps)).append("\n");
+    sb.append("    resultUri: ").append(toIndentedString(resultUri)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -72,9 +72,9 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
     }
 
     URI result;
-    if (objectChangeRequest.getChangedUri() != null) {
+    if (objectChangeRequest.getUriToSaveUri() != null) {
       // if we have the referenced URI set before, then we use it
-      result = objectChangeRequest.getChangedUri();
+      result = objectChangeRequest.getUriToSaveUri();
     } else {
       switch (objectChangeRequest.getOperation()) {
         case NEW:
@@ -111,6 +111,7 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
 
     // Add it to the already processed map.
     processedRequests.put(objectChangeRequest, result);
+    objectChangeRequest.setResult(result);
     return result;
   }
 
@@ -158,8 +159,9 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
   private ObjectChangeRequest constructRequest(ObjectNode node, ApplyChangeRequest request) {
     boolean containmentChanged = false;
 
-    ObjectChangeRequest result = new ObjectChangeRequest(request, node.getDefinition(),
-        node.getStorageScheme(), opByState(node.getState()));
+    ObjectChangeRequest result = new ObjectChangeRequest(request, node);
+    // ObjectChangeRequest result = new ObjectChangeRequest(request, node.getDefinition(),
+    // node.getStorageScheme(), opByState(node.getState()));
     result.setUri(node.getObjectUri());
     result.setObjectAsMap(node.getObjectAsMap());
 
@@ -203,22 +205,8 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
     if (ref.isLoaded()) {
       return constructRequest(ref.get(), request);
     } else {
-      return new ObjectChangeRequest(
-          request, ref.getObjectUri(), opByState(ref.getState()));
+      return new ObjectChangeRequest(request, ref);
     }
   }
 
-  private ObjectChangeOperation opByState(ObjectNodeState state) {
-    ObjectChangeOperation operation;
-    if (state == ObjectNodeState.NEW) {
-      operation = ObjectChangeOperation.NEW;
-    } else if (state == ObjectNodeState.REMOVED) {
-      operation = ObjectChangeOperation.DELETE;
-    } else if (state == ObjectNodeState.MODIFIED) {
-      operation = ObjectChangeOperation.UPDATE;
-    } else {
-      operation = ObjectChangeOperation.NOP;
-    }
-    return operation;
-  }
 }

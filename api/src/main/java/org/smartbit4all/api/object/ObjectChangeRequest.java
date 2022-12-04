@@ -4,7 +4,10 @@ import java.lang.ref.WeakReference;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+import org.smartbit4all.api.object.bean.ObjectNodeState;
 import org.smartbit4all.core.object.ObjectDefinition;
+import org.smartbit4all.core.object.ObjectNode;
+import org.smartbit4all.core.object.ObjectNodeReference;
 
 /**
  * The change request for one object with a required operation. The object itself can be directly a
@@ -37,9 +40,21 @@ public class ObjectChangeRequest {
   /**
    * For better destruction.
    */
-  private WeakReference<ApplyChangeRequest> requestRef;
+  private final WeakReference<ApplyChangeRequest> requestRef;
 
-  private final URI changedUri;
+  /**
+   * If this change request refers to an ObjectNode, we need a reference to write back result URI.
+   */
+  private WeakReference<ObjectNode> objectNodeRef;
+
+  private WeakReference<ObjectNodeReference> referenceRef;
+
+  private final URI uriToSave;
+
+  ObjectChangeRequest(ApplyChangeRequest request, ObjectNode node) {
+    this(request, node.getDefinition(), node.getStorageScheme(), opByState(node.getState()));
+    objectNodeRef = new WeakReference<>(node);
+  }
 
   ObjectChangeRequest(ApplyChangeRequest request, ObjectDefinition<?> definition,
       String storageScheme,
@@ -48,18 +63,18 @@ public class ObjectChangeRequest {
     this.definition = definition;
     this.storageScheme = storageScheme;
     this.operation = operation;
-    this.changedUri = null;
+    this.uriToSave = null;
     requestRef = new WeakReference<>(request);
   }
 
-  ObjectChangeRequest(ApplyChangeRequest request, URI changedUri,
-      ObjectChangeOperation operation) {
+  ObjectChangeRequest(ApplyChangeRequest request, ObjectNodeReference ref) {
     super();
     this.definition = null;
     this.storageScheme = null;
-    this.operation = operation;
-    this.changedUri = changedUri;
+    this.operation = opByState(ref.getState());
+    this.uriToSave = ref.getObjectUri();
     requestRef = new WeakReference<>(request);
+    referenceRef = new WeakReference<>(ref);
   }
 
   /**
@@ -176,8 +191,42 @@ public class ObjectChangeRequest {
     this.operation = operation;
   }
 
-  public URI getChangedUri() {
-    return changedUri;
+  /**
+   * This Uri has been set from outside as the Uri to save.
+   * 
+   * @return
+   */
+  public URI getUriToSaveUri() {
+    return uriToSave;
+  }
+
+  private static ObjectChangeOperation opByState(ObjectNodeState state) {
+    ObjectChangeOperation op;
+    if (state == ObjectNodeState.NEW) {
+      op = ObjectChangeOperation.NEW;
+    } else if (state == ObjectNodeState.REMOVED) {
+      op = ObjectChangeOperation.DELETE;
+    } else if (state == ObjectNodeState.MODIFIED) {
+      op = ObjectChangeOperation.UPDATE;
+    } else {
+      op = ObjectChangeOperation.NOP;
+    }
+    return op;
+  }
+
+  public void setResult(URI resultUri) {
+    if (objectNodeRef != null) {
+      ObjectNode node = objectNodeRef.get();
+      if (node != null) {
+        node.setResult(resultUri);
+      }
+    }
+    if (referenceRef != null) {
+      ObjectNodeReference ref = referenceRef.get();
+      if (ref != null) {
+        ref.setResult(resultUri);
+      }
+    }
   }
 
 }

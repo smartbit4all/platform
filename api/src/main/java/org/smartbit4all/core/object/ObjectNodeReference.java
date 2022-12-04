@@ -22,6 +22,8 @@ public class ObjectNodeReference {
 
   private final ReferenceDefinition referenceDefinition;
 
+  private URI resultUri;
+
   /**
    * Referred {@link ObjectNode}. If is null, then either reference is empty (if originalObjectUri
    * == null), or not loaded.
@@ -188,4 +190,17 @@ public class ObjectNodeReference {
     }
     return o.toString().replace("\n", "\n    ");
   }
+
+  public void setResult(URI resultUri) {
+    this.resultUri = resultUri;
+  }
+
+  public URI getResultUri() {
+    if (node != null) {
+      return node.getResultUri();
+    }
+    return resultUri;
+  }
+
+
 }

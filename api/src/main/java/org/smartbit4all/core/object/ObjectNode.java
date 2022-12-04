@@ -478,4 +478,14 @@ public class ObjectNode {
     }
     return o.toString().replace("\n", "\n    ");
   }
+
+  // TODO make it package private after moving to API
+  public void setResult(URI resultUri) {
+    data.setResultUri(resultUri);
+  }
+
+  public URI getResultUri() {
+    return data.getResultUri();
+  }
+
 }
