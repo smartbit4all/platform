@@ -145,4 +145,8 @@ public interface ObjectApi {
 
   URI getLatestUri(URI uri);
 
+  default URI saveAsNew(String storageScheme, Object object) {
+    ObjectNode node = create(storageScheme, object);
+    return save(node);
+  }
 }
