@@ -22,44 +22,53 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 
 /**
- * UiAction
+ * null
  */
+@ApiModel(description = "null")
 @JsonPropertyOrder({
-  UiAction.CODE,
-  UiAction.IDENTIFIER
+  UiActionRequest.CODE,
+  UiActionRequest.IDENTIFIER,
+  UiActionRequest.PARAMS
 })
-@JsonTypeName("UiAction")
+@JsonTypeName("UiActionRequest")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
-public class UiAction {
+public class UiActionRequest {
   public static final String CODE = "code";
   private String code;
 
   public static final String IDENTIFIER = "identifier";
   private String identifier;
 
-  public UiAction() { 
+  public static final String PARAMS = "params";
+  private Map<String, Object> params = new HashMap<>();
+
+  public UiActionRequest() { 
   }
 
-  public UiAction code(String code) {
+  public UiActionRequest code(String code) {
     
     this.code = code;
     return this;
   }
 
    /**
-   * Get code
+   * Code of the executed UI action.
    * @return code
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+  @javax.annotation.Nonnull
+  @NotNull
+  @ApiModelProperty(required = true, value = "Code of the executed UI action.")
   @JsonProperty(CODE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public String getCode() {
     return code;
@@ -67,24 +76,24 @@ public class UiAction {
 
 
   @JsonProperty(CODE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setCode(String code) {
     this.code = code;
   }
 
 
-  public UiAction identifier(String identifier) {
+  public UiActionRequest identifier(String identifier) {
     
     this.identifier = identifier;
     return this;
   }
 
    /**
-   * Get identifier
+   * Identifier of UI element, or UI action, where action is performed (for example treeNode&#39;s /  listItem&#39;s identifier, etc.). Optional. 
    * @return identifier
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Identifier of UI element, or UI action, where action is performed (for example treeNode's /  listItem's identifier, etc.). Optional. ")
   @JsonProperty(IDENTIFIER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -100,6 +109,39 @@ public class UiAction {
   }
 
 
+  public UiActionRequest params(Map<String, Object> params) {
+    
+    this.params = params;
+    return this;
+  }
+
+  public UiActionRequest putParamsItem(String key, Object paramsItem) {
+    this.params.put(key, paramsItem);
+    return this;
+  }
+
+   /**
+   * Additional parameters for executing the UI action.  
+   * @return params
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @ApiModelProperty(required = true, value = "Additional parameters for executing the UI action.  ")
+  @JsonProperty(PARAMS)
+  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.ALWAYS)
+
+  public Map<String, Object> getParams() {
+    return params;
+  }
+
+
+  @JsonProperty(PARAMS)
+  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.ALWAYS)
+  public void setParams(Map<String, Object> params) {
+    this.params = params;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -108,22 +150,24 @@ public class UiAction {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    UiAction uiAction = (UiAction) o;
-    return Objects.equals(this.code, uiAction.code) &&
-        Objects.equals(this.identifier, uiAction.identifier);
+    UiActionRequest uiActionRequest = (UiActionRequest) o;
+    return Objects.equals(this.code, uiActionRequest.code) &&
+        Objects.equals(this.identifier, uiActionRequest.identifier) &&
+        Objects.equals(this.params, uiActionRequest.params);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(code, identifier);
+    return Objects.hash(code, identifier, params);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class UiAction {\n");
+    sb.append("class UiActionRequest {\n");
     sb.append("    code: ").append(toIndentedString(code)).append("\n");
     sb.append("    identifier: ").append(toIndentedString(identifier)).append("\n");
+    sb.append("    params: ").append(toIndentedString(params)).append("\n");
     sb.append("}");
     return sb.toString();
   }

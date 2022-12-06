@@ -171,6 +171,8 @@ components:
         containerUuid:
           type: string
           format: uuid
+        model:
+          type: object
     ViewConstraint:
       type: object
       description: |
@@ -304,17 +306,6 @@ components:
           type: object
         viewContext:
           $ref: '#/components/schemas/ViewContext'
-    ViewRegistryEntry:
-      description: Descriptor of a possible view.
-      type: object
-      required: [viewName, path]
-      properties:
-        viewName:
-          type: string
-          description: Name of the view. Must be unique.
-        parentView:
-          type: string
-          description: Name of parentView, may be null.
     ViewApiError:
       type: object
       description: Generic API error object.
@@ -351,28 +342,23 @@ components:
       properties:
         code:
           type: string
-        apiName:
-          type: string
-        apiFunction:
-          type: string
         identifier:
           type: string
-    UiActionSource:
+    UiActionRequest:
       type: object
-      description: apiFunction specified in UiAction will receive this object as parameter.
-      required: [viewUuid]
+      description: 
+      required: [code, params]
       properties:
-        viewUuid:
-          description: Identifier of View where action is performed.
+        code:
+          description: Code of the executed UI action.
           type: string
-          format: uuid
-        component:
+        identifier:
           description: |
-            Identifier of component where action is performed (for example tree's / list's name,
-             etc.). Optional.
-          type: string
-        element:
-          description: |
-            Identifier of UI element, where action is performed (for example treeNode's / 
+            Identifier of UI element, or UI action, where action is performed (for example treeNode's / 
             listItem's identifier, etc.). Optional.
           type: string
+        params:
+          description: |
+            Additional parameters for executing the UI action. 
+          type: object
+          additionalProperties: true

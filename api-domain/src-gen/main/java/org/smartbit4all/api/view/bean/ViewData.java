@@ -47,7 +47,8 @@ import javax.validation.Valid;
   ViewData.STATE,
   ViewData.TYPE,
   ViewData.CONSTRAINT,
-  ViewData.CONTAINER_UUID
+  ViewData.CONTAINER_UUID,
+  ViewData.MODEL
 })
 @JsonTypeName("ViewData")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -78,6 +79,9 @@ public class ViewData {
 
   public static final String CONTAINER_UUID = "containerUuid";
   private UUID containerUuid;
+
+  public static final String MODEL = "model";
+  private Object model;
 
   public ViewData() { 
   }
@@ -342,6 +346,33 @@ public class ViewData {
   }
 
 
+  public ViewData model(Object model) {
+    
+    this.model = model;
+    return this;
+  }
+
+   /**
+   * Get model
+   * @return model
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(MODEL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Object getModel() {
+    return model;
+  }
+
+
+  @JsonProperty(MODEL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setModel(Object model) {
+    this.model = model;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -359,12 +390,13 @@ public class ViewData {
         Objects.equals(this.state, viewData.state) &&
         Objects.equals(this.type, viewData.type) &&
         Objects.equals(this.constraint, viewData.constraint) &&
-        Objects.equals(this.containerUuid, viewData.containerUuid);
+        Objects.equals(this.containerUuid, viewData.containerUuid) &&
+        Objects.equals(this.model, viewData.model);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uuid, viewName, objectUri, branchUri, parameters, state, type, constraint, containerUuid);
+    return Objects.hash(uuid, viewName, objectUri, branchUri, parameters, state, type, constraint, containerUuid, model);
   }
 
   @Override
@@ -380,6 +412,7 @@ public class ViewData {
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("    constraint: ").append(toIndentedString(constraint)).append("\n");
     sb.append("    containerUuid: ").append(toIndentedString(containerUuid)).append("\n");
+    sb.append("    model: ").append(toIndentedString(model)).append("\n");
     sb.append("}");
     return sb.toString();
   }
