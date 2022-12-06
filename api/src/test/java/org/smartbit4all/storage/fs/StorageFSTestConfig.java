@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @Import({StorageTestConfig.class, ApplicationRuntimeStorageConfig.class})
 @EnableTransactionManagement
-@PropertySource("classpath:org/smartbit4all/storage/fs/storagefs-cache.properties")
+@PropertySource("classpath:storagefs-cache.properties")
 public class StorageFSTestConfig {
 
   @Bean
