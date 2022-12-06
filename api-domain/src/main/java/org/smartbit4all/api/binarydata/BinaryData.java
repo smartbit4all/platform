@@ -57,7 +57,10 @@ public class BinaryData {
 
   private static final byte[] EMPTY_BYTES = new byte[0];
 
-  private static final int MEMORY_LIMIT = 8 * 1024;
+  /**
+   * 8 Kb memory limit by default.
+   */
+  private static final int MEMORY_LIMIT = 0x2000;
 
   private static final Logger log = LoggerFactory.getLogger(BinaryData.class);
 
@@ -450,6 +453,26 @@ public class BinaryData {
           "asRandomAccessFile() can be called only on file based BinaryData!");
     }
     return new RandomAccessFile(dataFile, "r");
+  }
+
+  /**
+   * Load the data into memory if the size is under the limit. It works when the data is located in
+   * a {@link #byteSource}.
+   * 
+   * @param limit The limit of the load.
+   * @return true if we succeed and the {@link #byteSource} was reseted.
+   */
+  public boolean loadIntoMemory(long limit) {
+    if (byteSource != null && limit < length) {
+      try {
+        data = byteSource.read();
+        byteSource = null;
+        return true;
+      } catch (IOException e) {
+        data = EMPTY_BYTES;
+      }
+    }
+    return false;
   }
 
 }

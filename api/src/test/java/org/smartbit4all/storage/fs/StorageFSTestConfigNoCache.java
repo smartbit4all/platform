@@ -13,8 +13,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @Import({StorageTestConfig.class, ApplicationRuntimeStorageConfig.class})
 @EnableTransactionManagement
-@PropertySource("classpath:org/smartbit4all/storage/fs/storagefs-cache.properties")
-public class StorageFSTestConfig {
+@PropertySource("classpath:org/smartbit4all/storage/fs/storagefs-nocache.properties")
+public class StorageFSTestConfigNoCache {
 
   @Bean
   public StorageFS defaultStorage(ObjectApi objectApi) {

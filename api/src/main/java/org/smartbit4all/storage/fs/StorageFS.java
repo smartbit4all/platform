@@ -34,6 +34,7 @@ import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.core.utility.UriUtils;
 import org.smartbit4all.domain.application.ApplicationRuntimeApi;
+import org.smartbit4all.domain.data.storage.BlobObjectStorageAccessApi;
 import org.smartbit4all.domain.data.storage.ObjectHistoryIterator;
 import org.smartbit4all.domain.data.storage.ObjectModificationException;
 import org.smartbit4all.domain.data.storage.ObjectNotFoundException;
@@ -124,6 +125,9 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
    */
   @Autowired(required = false)
   private StorageTransactionManagerFS transactionManager;
+
+  @Autowired
+  private BlobObjectStorageAccessApi storageAccessApi;
 
   /**
    * The runtime api is responsible for registering the objects.
@@ -292,7 +296,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
 
   @Override
   public StorageObject<?> save(StorageObject<?> object) {
-
+    long startTime = System.currentTimeMillis();
     StorageObjectLock storageObjectLock = !object.isSkipLock() ? getLock(object.getUri()) : null;
 
     if (storageObjectLock != null) {
@@ -313,6 +317,8 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
         storageObjectLock.unlockAndRelease();
       }
     }
+    long endTime = System.currentTimeMillis();
+    log.info("Save: {}", (endTime - startTime));
     return object;
   }
 
@@ -352,7 +358,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
     StorageObjectData storageObjectData;
     ObjectVersion newVersion;
     ObjectVersion currentVersion = null;
-    if (objectDataFile.exists()) {
+    if (storageAccessApi.exists(objectDataFile, getUriWithoutVersion(object.getUri()))) {
       // This is an existing data file.
       storageObjectData = readObjectData(objectDataFile);
       currentVersion = storageObjectData.getCurrentVersion();
@@ -432,11 +438,16 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
           objectApi.getDefaultSerializer().serialize(newVersion, ObjectVersion.class);
       if (objectVersionFile != null) {
         // Write the data version file
-        FileIO.writeMultipart(objectVersionFile,
+        storageAccessApi.writeVersion(objectVersionFile, object.getUri(),
             binaryDataVersion,
             object.definition()
                 .serialize(object.getMode() == OperationMode.AS_MAP ? object.getObjectAsMap()
                     : object.getObject()));
+        // FileIO.writeMultipart(objectVersionFile,
+        // binaryDataVersion,
+        // object.definition()
+        // .serialize(object.getMode() == OperationMode.AS_MAP ? object.getObjectAsMap()
+        // : object.getObject()));
       }
       if (objectRelationVersionFile != null) {
         // Write the version file first
@@ -482,7 +493,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
           if (oldVersion != null) {
             Object o = object.definition()
                 .fromMap(loadObjectVersion(object.definition(), objectVersionBasePath,
-                    oldVersion.getSerialNoData()).getObjectAsMap());
+                    oldVersion.getSerialNoData(), oldVersionUri).getObjectAsMap());
 
             return o;
           }
@@ -544,9 +555,10 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
     if (uri == null) {
       return false;
     }
+    URI uriWithoutVersion = getUriWithoutVersion(uri);
     File storageObjectDataFile =
-        getDataFileByUri(getUriWithoutVersion(uri), SO_FILEEXTENSION);
-    if (!storageObjectDataFile.exists()) {
+        getDataFileByUri(uriWithoutVersion, SO_FILEEXTENSION);
+    if (!storageAccessApi.exists(storageObjectDataFile, uriWithoutVersion)) {
       return false;
     }
     return true;
@@ -557,9 +569,10 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
     if (uri == null) {
       return null;
     }
+    URI uriWithoutVersion = getUriWithoutVersion(uri);
     File storageObjectDataFile =
-        getDataFileByUri(getUriWithoutVersion(uri), SO_FILEEXTENSION);
-    if (!storageObjectDataFile.exists()) {
+        getDataFileByUri(uriWithoutVersion, SO_FILEEXTENSION);
+    if (!storageAccessApi.exists(storageObjectDataFile, uriWithoutVersion)) {
       return null;
     }
     return storageObjectDataFile.lastModified();
@@ -568,9 +581,11 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
   @Override
   public <T> StorageObject<T> load(Storage storage, URI uri, Class<T> clazz,
       StorageLoadOption... options) {
+    long startTime = System.currentTimeMillis();
     URI uriWithoutVersion = getUriWithoutVersion(uri);
     File storageObjectDataFile = getObjectDataFile(uriWithoutVersion);
-    if (!storageObjectDataFile.exists()) {
+    if (!storageAccessApi.exists(storageObjectDataFile, uriWithoutVersion)) {
+      // if (!storageObjectDataFile.exists()) {
       // System.out.println("Object data file not found:" + storageObjectDataFile.getPath() + " ("
       // + uriWithoutVersion + ")");
       throw new ObjectNotFoundException(uri, clazz, "Object data file not found.");
@@ -598,7 +613,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
 
       StorageObjectHistoryEntry loadObjectVersion =
           loadObjectVersion(definition, storageObjectVersionBasePath,
-              versionDataSerialNo);
+              versionDataSerialNo, getUriWithVersion(uriWithoutVersion, versionDataSerialNo));
 
       // if (loadObjectVersion != null) {
       objectVersion = loadObjectVersion.getVersion();
@@ -623,6 +638,8 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
       setOperation(storageObject, StorageObjectOperation.MODIFY_WITHOUT_DATA);
     }
 
+    long endTime = System.currentTimeMillis();
+    log.info("load: {}", (endTime - startTime));
     return storageObject;
   }
 
@@ -881,12 +898,14 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
 
   private <T> StorageObjectHistoryEntry loadObjectVersion(ObjectDefinition<T> definition,
       File historyBasePath,
-      long version) {
+      long version,
+      URI versionUri) {
     File objectVersionFile = getObjectVersionFile(
         historyBasePath,
         version);
 
-    List<BinaryData> multipart = FileIO.readMultipart(objectVersionFile);
+    List<BinaryData> multipart = storageAccessApi.readVersion(objectVersionFile, versionUri);
+    // FileIO.readMultipart(objectVersionFile);
 
     BinaryData versionObjectBinaryData = multipart.get(0);
     BinaryData versionBinaryData = multipart.get(1);
@@ -948,7 +967,9 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
 
           @Override
           public StorageObjectHistoryEntry next() {
-            return loadObjectVersion(definition, getObjectVersionBasePath(uri), ++i);
+            i++;
+            return loadObjectVersion(definition, getObjectVersionBasePath(uri), i,
+                getUriWithVersion(uri, i));
           }
 
         };
@@ -1002,7 +1023,9 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
 
           @Override
           public StorageObjectHistoryEntry next() {
-            return loadObjectVersion(definition, getObjectVersionBasePath(uri), --i);
+            i--;
+            return loadObjectVersion(definition, getObjectVersionBasePath(uri), i,
+                getUriWithVersion(uri, i));
           }
 
         };

@@ -27,9 +27,9 @@ public class ObjectSerializerByObjectMapper implements ObjectSerializer {
   private static final Logger log = LoggerFactory.getLogger(ObjectSerializerByObjectMapper.class);
 
   /**
-   * 4Kb should be enough forever... :)
+   * 8Kb should be enough forever... :)
    */
-  private static int MEMORYLIMIT = 0xFFF;
+  private static int MEMORYLIMIT = 0x2000;
 
   /**
    * The {@link ObjectMapper} instance that contains the default configuration. The

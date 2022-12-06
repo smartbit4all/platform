@@ -403,6 +403,13 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
     return uri;
   }
 
+  public static final URI getUriWithVersion(URI uri, long versionNumber) {
+    URI uriWithoutVersion = ObjectStorageImpl.getUriWithoutVersion(uri);
+    return URI
+        .create(uriWithoutVersion.toString() + ObjectStorageImpl.versionPostfix + versionNumber);
+
+  }
+
   protected void invokeOnSucceedFunctions(StorageObject<?> object,
       StorageSaveEvent storageSaveEvent) {
     if (onSucceedListeners != null && storageSaveEvent.getNewVersion() != null) {
