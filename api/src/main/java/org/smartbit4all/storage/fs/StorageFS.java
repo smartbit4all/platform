@@ -296,7 +296,6 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
 
   @Override
   public StorageObject<?> save(StorageObject<?> object) {
-    long startTime = System.currentTimeMillis();
     StorageObjectLock storageObjectLock = !object.isSkipLock() ? getLock(object.getUri()) : null;
 
     if (storageObjectLock != null) {
@@ -317,8 +316,6 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
         storageObjectLock.unlockAndRelease();
       }
     }
-    long endTime = System.currentTimeMillis();
-    log.info("Save: {}", (endTime - startTime));
     return object;
   }
 
@@ -581,7 +578,6 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
   @Override
   public <T> StorageObject<T> load(Storage storage, URI uri, Class<T> clazz,
       StorageLoadOption... options) {
-    long startTime = System.currentTimeMillis();
     URI uriWithoutVersion = getUriWithoutVersion(uri);
     File storageObjectDataFile = getObjectDataFile(uriWithoutVersion);
     if (!storageAccessApi.exists(storageObjectDataFile, uriWithoutVersion)) {
@@ -638,8 +634,6 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
       setOperation(storageObject, StorageObjectOperation.MODIFY_WITHOUT_DATA);
     }
 
-    long endTime = System.currentTimeMillis();
-    log.info("load: {}", (endTime - startTime));
     return storageObject;
   }
 
