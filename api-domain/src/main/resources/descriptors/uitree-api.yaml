@@ -81,6 +81,8 @@ components:
           format: uri
         identifier:
           type: string
+        parentIdentifier:
+          type: string
         icon:
           type: string
         caption:

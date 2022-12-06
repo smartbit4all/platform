@@ -38,6 +38,7 @@ import javax.validation.Valid;
   UiTreeNode.OBJECT_URI,
   UiTreeNode.BRANCH_URI,
   UiTreeNode.IDENTIFIER,
+  UiTreeNode.PARENT_IDENTIFIER,
   UiTreeNode.ICON,
   UiTreeNode.CAPTION,
   UiTreeNode.CLASSES,
@@ -59,6 +60,9 @@ public class UiTreeNode {
 
   public static final String IDENTIFIER = "identifier";
   private String identifier;
+
+  public static final String PARENT_IDENTIFIER = "parentIdentifier";
+  private String parentIdentifier;
 
   public static final String ICON = "icon";
   private String icon;
@@ -170,6 +174,33 @@ public class UiTreeNode {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIdentifier(String identifier) {
     this.identifier = identifier;
+  }
+
+
+  public UiTreeNode parentIdentifier(String parentIdentifier) {
+    
+    this.parentIdentifier = parentIdentifier;
+    return this;
+  }
+
+   /**
+   * Get parentIdentifier
+   * @return parentIdentifier
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(PARENT_IDENTIFIER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getParentIdentifier() {
+    return parentIdentifier;
+  }
+
+
+  @JsonProperty(PARENT_IDENTIFIER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setParentIdentifier(String parentIdentifier) {
+    this.parentIdentifier = parentIdentifier;
   }
 
 
@@ -447,6 +478,7 @@ public class UiTreeNode {
     return Objects.equals(this.objectUri, uiTreeNode.objectUri) &&
         Objects.equals(this.branchUri, uiTreeNode.branchUri) &&
         Objects.equals(this.identifier, uiTreeNode.identifier) &&
+        Objects.equals(this.parentIdentifier, uiTreeNode.parentIdentifier) &&
         Objects.equals(this.icon, uiTreeNode.icon) &&
         Objects.equals(this.caption, uiTreeNode.caption) &&
         Objects.equals(this.classes, uiTreeNode.classes) &&
@@ -460,7 +492,7 @@ public class UiTreeNode {
 
   @Override
   public int hashCode() {
-    return Objects.hash(objectUri, branchUri, identifier, icon, caption, classes, hasChildren, children, level, shortDescription, nodeType, actions);
+    return Objects.hash(objectUri, branchUri, identifier, parentIdentifier, icon, caption, classes, hasChildren, children, level, shortDescription, nodeType, actions);
   }
 
   @Override
@@ -470,6 +502,7 @@ public class UiTreeNode {
     sb.append("    objectUri: ").append(toIndentedString(objectUri)).append("\n");
     sb.append("    branchUri: ").append(toIndentedString(branchUri)).append("\n");
     sb.append("    identifier: ").append(toIndentedString(identifier)).append("\n");
+    sb.append("    parentIdentifier: ").append(toIndentedString(parentIdentifier)).append("\n");
     sb.append("    icon: ").append(toIndentedString(icon)).append("\n");
     sb.append("    caption: ").append(toIndentedString(caption)).append("\n");
     sb.append("    classes: ").append(toIndentedString(classes)).append("\n");
