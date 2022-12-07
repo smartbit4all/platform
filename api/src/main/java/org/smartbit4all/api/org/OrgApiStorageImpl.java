@@ -201,6 +201,8 @@ public class OrgApiStorageImpl implements OrgApi {
   @EventListener(ApplicationStartedEvent.class)
   public void initSecurityOptions() throws Exception {
     if (securityOptions != null) {
+      groupByNameCache.invalidateAll();
+      usersOfGroupCache.invalidateAll();
       Map<SecurityGroup, Group> allNewGroups = new HashMap<>();
       for (SecurityOption securityOption : securityOptions) {
         allNewGroups.putAll(analyzeSecurityOptions(securityOption));
