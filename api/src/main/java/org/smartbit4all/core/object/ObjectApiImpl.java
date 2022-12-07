@@ -49,12 +49,22 @@ public class ObjectApiImpl implements ObjectApi {
   }
 
   @Override
+  public ObjectNode loadLatest(URI objectUri, RetrievalMode retrievalMode) {
+    return loadInternal(objectUri, retrievalMode, true);
+  }
+
+  @Override
   public ObjectNode load(URI objectUri, RetrievalMode retrievalMode) {
+    return loadInternal(objectUri, retrievalMode, false);
+  }
+
+  private ObjectNode loadInternal(URI objectUri, RetrievalMode retrievalMode, boolean loadLatest) {
     RetrievalRequest request =
         new RetrievalRequest(
             this,
             objectDefinitionApi.definition(objectUri),
             retrievalMode);
+    request.setLoadLatest(loadLatest);
     return load(request, objectUri);
   }
 

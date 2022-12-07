@@ -70,9 +70,30 @@ public interface ObjectApi {
    * retrieval mode.
    * 
    * @param objectUri
+   * @param retrievalMode
    * @return
    */
   ObjectNode load(URI objectUri, RetrievalMode retrievalMode);
+
+
+  /**
+   * Similar to {@link #load(URI, RetrievalMode)}, but initial request's loadLates will be set to
+   * true, so this method will load the latest version of the object.
+   * 
+   * @param objectUri
+   * @return
+   */
+  ObjectNode loadLatest(URI objectUri, RetrievalMode retrievalMode);
+
+  /**
+   * Default retrieval mode for {@link #load(URI, RetrievalMode)}
+   * 
+   * @param objectUri
+   * @return
+   */
+  default ObjectNode loadLatest(URI objectUri) {
+    return loadLatest(objectUri, RetrievalMode.NORMAL);
+  }
 
   /**
    * Default retrieval mode for {@link #load(URI, RetrievalMode)}
