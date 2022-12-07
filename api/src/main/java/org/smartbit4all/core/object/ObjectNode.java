@@ -335,7 +335,7 @@ public class ObjectNode {
         return objectApi.getDefaultSerializer().fromString((String) value, clazz);
       } catch (IOException e) {
         throw new IllegalArgumentException("Unable to load the " + definition.getQualifiedName()
-            + " " + Arrays.toString(paths) + " field as " + clazz);
+            + " " + Arrays.toString(paths) + " field as " + clazz, e);
       }
     }
     return (T) value;
