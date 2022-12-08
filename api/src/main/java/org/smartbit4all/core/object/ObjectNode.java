@@ -245,16 +245,46 @@ public class ObjectNode {
     return this;
   }
 
+  // /**
+  // * Set the value directly into the data.
+  // *
+  // * @param key The key of the value, the name of the property.
+  // * @param value The value object.
+  // */
+  // public ObjectNode setValue(String key, Object value) {
+  // data.getObjectAsMap().put(key, value);
+  // setModified();
+  // return this;
+  // }
+
   /**
-   * Set the value directly into the data.
+   * Sets the value in the data map, specified by path. Path cannot contain references!
    * 
-   * @param key The key of the value, the name of the property.
-   * @param value The value object.
+   * @param value
+   * @param paths
+   * @return
    */
-  public ObjectNode setValue(String key, Object value) {
-    data.getObjectAsMap().put(key, value);
+  public ObjectNode setValue(Object value, String... paths) {
+    if (paths == null || paths.length == 0) {
+      throw new IllegalArgumentException("Path cannot be null or empty!");
+    }
+    setValueInMap(data.getObjectAsMap(), value, paths);
     setModified();
     return this;
+  }
+
+  private void setValueInMap(Map<String, Object> map, Object value, String... paths) {
+    String path = paths[0];
+    if (Strings.isNullOrEmpty(path)) {
+      throw new IllegalArgumentException("Path part cannot be null or empty");
+    }
+    if (paths.length == 1) {
+      map.put(path, value);
+    } else {
+      Map<String, Object> subMap = (Map<String, Object>) map.get(path);
+      String[] subPaths = Arrays.copyOfRange(paths, 1, paths.length);
+      setValueInMap(subMap, value, subPaths);
+    }
   }
 
   /**

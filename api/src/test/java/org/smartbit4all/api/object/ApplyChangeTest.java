@@ -93,7 +93,7 @@ class ApplyChangeTest {
     ObjectNodeReference subCatNodeRef = subCategoryNodes.get(0);
     assertTrue(subCatNodeRef.isLoaded());
     ObjectNode subCatNode = subCatNodeRef.get();
-    subCatNode.setValue(SampleCategory.NAME, "modified sub category");
+    subCatNode.setValue("modified sub category", SampleCategory.NAME);
     SampleCategory modifiedSubCategory = (SampleCategory) subCatNode.getObject();
     assertEquals("modified sub category", modifiedSubCategory.getName());
 
@@ -108,14 +108,15 @@ class ApplyChangeTest {
     for (ObjectNodeReference containerItemNodeRef : containerItemNodes.references()) {
       assertTrue(containerItemNodeRef.isLoaded());
       ObjectNode containerItemNode = containerItemNodeRef.get();
-      containerItemNode.setValue(SampleContainerItem.NAME,
-          containerItemNode.getObjectAsMap().get(SampleContainerItem.NAME) + "-modified");
+      containerItemNode.setValue(
+          containerItemNode.getObjectAsMap().get(SampleContainerItem.NAME) + "-modified",
+          SampleContainerItem.NAME);
       if (i % 2 == 0) {
         ObjectNodeReference datasheetNodeRef =
             containerItemNode.ref(SampleContainerItem.DATASHEET);
         assertTrue(datasheetNodeRef.isLoaded());
         ObjectNode datasheetNode = datasheetNodeRef.get();
-        datasheetNode.setValue(SampleDataSheet.NAME, "modified");
+        datasheetNode.setValue("modified", SampleDataSheet.NAME);
 
         Object dataSheetValue = containerItemNode.getValue(SampleContainerItem.DATASHEET);
         assertTrue(dataSheetValue instanceof ObjectNodeReference);
@@ -211,7 +212,7 @@ class ApplyChangeTest {
     ObjectNode item3datasheetNode =
         rootNodeOnly.list(SampleCategory.CONTAINER_ITEMS).get(3).get()
             .ref(SampleContainerItem.DATASHEET).get();
-    item3datasheetNode.setValue(SampleDataSheet.NAME, "datasheet 3 modified");
+    item3datasheetNode.setValue("datasheet 3 modified", SampleDataSheet.NAME);
     URI rootUriUpdated = objectApi.save(rootNodeOnly);
 
     rootNodeOnly = objectApi.load(rootUriUpdated);
