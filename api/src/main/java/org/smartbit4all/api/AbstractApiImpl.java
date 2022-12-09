@@ -54,6 +54,12 @@ public abstract class AbstractApiImpl<M> {
     if (clazz.isInstance(object)) {
       return (T) object;
     }
+    if (clazz == URI.class && object instanceof String) {
+      return (T) URI.create((String) object);
+    }
+    if (clazz == UUID.class && object instanceof String) {
+      return (T) UUID.fromString((String) object);
+    }
     if (object instanceof Map) {
       return objectApi.definition(clazz)
           .fromMap((Map<String, Object>) object);
