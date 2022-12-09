@@ -18,6 +18,7 @@ import org.smartbit4all.sec.authprincipal.SessionAuthToken;
 import org.smartbit4all.sec.utils.SecurityContextUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.util.Assert;
@@ -73,7 +74,7 @@ public abstract class SessionHandlerAuthenticationProvider implements Authentica
     } catch (NoCurrentSessionException e) {
       String reason = "There is no session available while trying to login!";
       onLoginFailed.accept(reason);
-      throw new IllegalStateException(reason, e);
+      throw new InsufficientAuthenticationException(reason, e);
     }
 
     AccountInfo foundMatchingAccount = sessionApi.getAuthentication(accountKind);
@@ -81,7 +82,7 @@ public abstract class SessionHandlerAuthenticationProvider implements Authentica
       log.warn("There is already an authenticated account in this session with kind [{}]!",
           accountKind);
       if (isAccountOverrideForbidden) {
-        throw new IllegalStateException(
+        throw new InsufficientAuthenticationException(
             "Can not log in with account if it is already present in the session!");
       }
     }
