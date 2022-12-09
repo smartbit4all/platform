@@ -3,6 +3,7 @@ package org.smartbit4all.api.binarydata;
 import java.net.URI;
 import java.util.Objects;
 import javax.validation.Valid;
+import org.smartbit4all.api.attachment.bean.BinaryContentData;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -20,6 +21,8 @@ import io.swagger.annotations.ApiModelProperty;
 })
 @JsonTypeName("BinaryContent")
 public class BinaryContent {
+
+  public static final String LOCATION_STORAGE = "storage";
 
   public static final String URI = "uri";
   @JsonProperty("uri")
@@ -309,4 +312,11 @@ public class BinaryContent {
     }
     return o.toString().replace("\n", "\n    ");
   }
+
+  public BinaryContentData contentData() {
+    return new BinaryContentData().dataUri(dataUri).extension(extension).fileName(fileName)
+        .mimeType(mimeType).location(LOCATION_STORAGE)
+        .contentHash(data != null ? data.hashIfPresent() : null);
+  }
+
 }

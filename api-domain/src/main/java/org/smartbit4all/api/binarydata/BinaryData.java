@@ -349,6 +349,15 @@ public class BinaryData {
   }
 
   /**
+   * The hash of the content if it was calculated during the construction.
+   * 
+   * @return The hash if available. Else we get null!
+   */
+  public String hashIfPresent() {
+    return hash;
+  }
+
+  /**
    * Set the hash of the binary data. Doesn't check the value! Use it with caution.
    * 
    * @param hash The hash key.

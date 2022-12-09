@@ -13,6 +13,8 @@ smartbit4all {
   	importMappings = [
   		"BinaryData": "org.smartbit4all.api.binarydata.BinaryData",
   		"BinaryContent": "org.smartbit4all.api.binarydata.BinaryContent",
+  		"BinaryContentData": "org.smartbit4all.api.attachment.bean.BinaryContentData",
+  		"UserActivityLog": "org.smartbit4all.api.session.bean.UserActivityLog",
     	"LocalDateTime": "java.time.LocalDateTime",
     	"LocalDate": "java.time.LocalDate",
     	"LocalTime": "java.time.LocalTime",

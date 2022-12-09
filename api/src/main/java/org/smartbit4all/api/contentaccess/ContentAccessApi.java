@@ -1,6 +1,7 @@
 package org.smartbit4all.api.contentaccess;
 
 import java.util.UUID;
+import org.smartbit4all.api.attachment.bean.BinaryContentData;
 import org.smartbit4all.api.binarydata.BinaryContent;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.contentaccess.bean.ContentAccessEventData;
@@ -39,4 +40,6 @@ public interface ContentAccessApi {
    * @throws Exception
    */
   void upload(UUID uuid, BinaryData binaryData) throws Exception;
+
+  UUID share(BinaryContentData binaryContentData) throws Exception;
 }
