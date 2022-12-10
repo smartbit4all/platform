@@ -47,7 +47,9 @@ public interface ObjectApi {
    * Converts value to T, using the following preference:
    * <ul>
    * <li>if value is T -> (T) value</li>
-   * <li>if value ObjectNodeReference -> (T) value</li>
+   * <li>if value ObjectNode -> {@link ObjectNode#getObject(Class)}</li>
+   * <li>if value ObjectNodeReference -> {@link ObjectNodeReference#get()}, and then
+   * {@link ObjectNode#getObject(Class)}</li>
    * <li>if T is UUID and value is String -> {@link UUID#fromString(String)}</li>
    * <li>if T is URI and value is String -> {@link URI#create(String)}</li>
    * <li>if value is Map -> {@link ObjectDefinition#fromMap(Map)}</li>

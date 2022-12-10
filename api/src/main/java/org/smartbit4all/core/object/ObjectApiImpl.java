@@ -138,6 +138,9 @@ public class ObjectApiImpl implements ObjectApi {
     if (clazz.isInstance(value)) {
       return (T) value;
     }
+    if (value instanceof ObjectNode) {
+      return ((ObjectNode) value).getObject(clazz);
+    }
     if (value instanceof ObjectNodeReference) {
       ObjectNode objectNode = ((ObjectNodeReference) value).get();
       if (objectNode != null) {
