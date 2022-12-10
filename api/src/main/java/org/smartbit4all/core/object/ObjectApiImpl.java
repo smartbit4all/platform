@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.object.ApplyChangeApi;
@@ -147,6 +148,12 @@ public class ObjectApiImpl implements ObjectApi {
         return objectNode.getObject(clazz);
       }
       return null;
+    }
+    if (clazz == URI.class && value instanceof String) {
+      return (T) URI.create((String) value);
+    }
+    if (clazz == UUID.class && value instanceof String) {
+      return (T) UUID.fromString((String) value);
     }
     if (value instanceof Map) {
       // Try to retrieve the proper object
