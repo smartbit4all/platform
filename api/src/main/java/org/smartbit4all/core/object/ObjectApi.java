@@ -2,6 +2,8 @@ package org.smartbit4all.core.object;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import org.smartbit4all.api.object.ApplyChangeApi;
 import org.smartbit4all.api.object.RetrievalApi;
 import org.smartbit4all.api.object.RetrievalRequest;
@@ -40,6 +42,52 @@ public interface ObjectApi {
    * See {@link ObjectDefinitionApi#getDefaultSerializer()}
    */
   ObjectSerializer getDefaultSerializer();
+
+  /**
+   * Converts value to T, using the following preference:
+   * <ul>
+   * <li>if value is T -> (T) value</li>
+   * <li>if value ObjectNodeReference -> (T) value</li>
+   * <li>if T is UUID and value is String -> {@link UUID#fromString(String)}</li>
+   * <li>if T is URI and value is String -> {@link URI#create(String)}</li>
+   * <li>if value is Map -> {@link ObjectDefinition#fromMap(Map)}</li>
+   * <ul>
+   * <li>which in turn uses {@link ObjectSerializer#fromMap(Map, Class)}</li>
+   * </ul>
+   * <li>if value is String -> {@link ObjectSerializer#fromString(String, Class)}</li>
+   * </ul>
+   * Class may not be ObjectNode os ObjectNodeReference. If you need that, use
+   * {@link ObjectNode#getValue(String...)}
+   * 
+   * @param <T>
+   * @param clazz
+   * @param value
+   * @return
+   */
+  <T> T asType(Class<T> clazz, Object value);
+
+  /**
+   * Converts List<?> of undefined and possibly heterogen objects to List<E>, using
+   * {@link #asType(Class, Object)} conversion.
+   * 
+   * @param <E>
+   * @param clazz
+   * @param value
+   * @return
+   */
+  <E> List<E> asList(Class<E> clazz, List<?> value);
+
+  /**
+   * Converts Map<String, ?> of undefined and possibly heterogen objects to Map<String, E>, using
+   * {@link #asType(Class, Object)} conversion.
+   * 
+   * 
+   * @param <V>
+   * @param clazz
+   * @param value
+   * @return
+   */
+  <V> Map<String, V> asMap(Class<V> clazz, Map<String, ?> value);
 
   /**
    * Creates a new {@link RetrievalRequest} based on the parameter clazz and with the specified

@@ -1,9 +1,7 @@
 package org.smartbit4all.api;
 
-import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import org.smartbit4all.api.view.ViewApi;
 import org.smartbit4all.api.view.bean.UiActionRequest;
@@ -46,25 +44,7 @@ public abstract class AbstractApiImpl<M> {
     if (param == null) {
       throw new IllegalArgumentException(paramName + " parameter not found in UI request");
     }
-    return convertObjectToType(param, clazz);
-  }
-
-  @SuppressWarnings("unchecked")
-  protected <T> T convertObjectToType(Object object, Class<T> clazz) {
-    if (clazz.isInstance(object)) {
-      return (T) object;
-    }
-    if (clazz == URI.class && object instanceof String) {
-      return (T) URI.create((String) object);
-    }
-    if (clazz == UUID.class && object instanceof String) {
-      return (T) UUID.fromString((String) object);
-    }
-    if (object instanceof Map) {
-      return objectApi.definition(clazz)
-          .fromMap((Map<String, Object>) object);
-    }
-    throw new IllegalArgumentException("Object not convertable!");
+    return objectApi.asType(clazz, param);
   }
 
   protected <T> List<T> extractListParam(Class<T> clazz, String paramName,
@@ -76,10 +56,7 @@ public abstract class AbstractApiImpl<M> {
     if (!(param instanceof List)) {
       throw new IllegalArgumentException(paramName + " parameter is not List<>!");
     }
-    return ((List<?>) param).stream()
-        .map(item -> convertObjectToType(item, clazz))
-        .collect(toList());
-
+    return objectApi.asList(clazz, (List<?>) param);
   }
 
 
