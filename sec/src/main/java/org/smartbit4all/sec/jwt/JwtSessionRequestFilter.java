@@ -121,9 +121,8 @@ public class JwtSessionRequestFilter extends OncePerRequestFilter implements Ini
       }
     }
 
-    handleViewContext(request);
+    handleViewContextAndFilterChain(filterChain, request, response);
 
-    filterChain.doFilter(request, response);
   }
 
   private boolean callWithoutSessionToken(HttpServletRequest request) {
@@ -144,7 +143,8 @@ public class JwtSessionRequestFilter extends OncePerRequestFilter implements Ini
     return isSkippable || !notSkippable;
   }
 
-  private void handleViewContext(HttpServletRequest request) {
+  private void handleViewContextAndFilterChain(FilterChain filterChain, HttpServletRequest request,
+      HttpServletResponse response) throws ServletException, IOException {
     if (viewContextService != null) {
       final String uuid = request.getHeader("viewContextUuid");
       if (uuid != null) {
