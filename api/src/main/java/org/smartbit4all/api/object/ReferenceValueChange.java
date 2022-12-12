@@ -19,11 +19,6 @@ public class ReferenceValueChange extends ReferenceChangeRequest {
    */
   private ObjectChangeRequest value;
 
-  /**
-   * The version uri that is set if we have new object version from
-   */
-  private URI versionUri;
-
   public ReferenceValueChange(ApplyChangeRequest request, ObjectChangeRequest objectChangeRequest,
       ReferenceDefinition definition) {
     super(request, objectChangeRequest, definition);
@@ -35,11 +30,6 @@ public class ReferenceValueChange extends ReferenceChangeRequest {
 
   public final ReferenceValueChange value(ObjectChangeRequest value) {
     this.value = value;
-    return this;
-  }
-
-  public final ReferenceValueChange operation(ReferenceOperation operation) {
-    this.operation = operation;
     return this;
   }
 

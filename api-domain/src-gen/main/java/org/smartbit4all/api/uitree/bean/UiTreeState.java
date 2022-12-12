@@ -26,15 +26,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.smartbit4all.api.uitree.bean.UiTreeNodeEntry;
+import org.smartbit4all.api.uitree.bean.UiTreeNode;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 
 /**
- * UiTreeState
+ * This object holds all information about abritrary data in a tree representation.
  */
+@ApiModel(description = "This object holds all information about abritrary data in a tree representation.")
 @JsonPropertyOrder({
   UiTreeState.NODES,
   UiTreeState.ROOT_NODES,
@@ -45,30 +46,27 @@ import javax.validation.Valid;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class UiTreeState {
   public static final String NODES = "nodes";
-  private Map<String, UiTreeNodeEntry> nodes = null;
+  private Map<String, UiTreeNode> nodes = new HashMap<>();
 
   public static final String ROOT_NODES = "rootNodes";
-  private List<String> rootNodes = null;
+  private List<String> rootNodes = new ArrayList<>();
 
   public static final String EXPANDED_NODES = "expandedNodes";
-  private List<String> expandedNodes = null;
+  private List<String> expandedNodes = new ArrayList<>();
 
   public static final String SELECTED_NODES = "selectedNodes";
-  private List<String> selectedNodes = null;
+  private List<String> selectedNodes = new ArrayList<>();
 
   public UiTreeState() { 
   }
 
-  public UiTreeState nodes(Map<String, UiTreeNodeEntry> nodes) {
+  public UiTreeState nodes(Map<String, UiTreeNode> nodes) {
     
     this.nodes = nodes;
     return this;
   }
 
-  public UiTreeState putNodesItem(String key, UiTreeNodeEntry nodesItem) {
-    if (this.nodes == null) {
-      this.nodes = new HashMap<>();
-    }
+  public UiTreeState putNodesItem(String key, UiTreeNode nodesItem) {
     this.nodes.put(key, nodesItem);
     return this;
   }
@@ -77,20 +75,21 @@ public class UiTreeState {
    * Get nodes
    * @return nodes
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(NODES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public Map<String, UiTreeNodeEntry> getNodes() {
+  public Map<String, UiTreeNode> getNodes() {
     return nodes;
   }
 
 
   @JsonProperty(NODES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setNodes(Map<String, UiTreeNodeEntry> nodes) {
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setNodes(Map<String, UiTreeNode> nodes) {
     this.nodes = nodes;
   }
 
@@ -102,9 +101,6 @@ public class UiTreeState {
   }
 
   public UiTreeState addRootNodesItem(String rootNodesItem) {
-    if (this.rootNodes == null) {
-      this.rootNodes = new ArrayList<>();
-    }
     this.rootNodes.add(rootNodesItem);
     return this;
   }
@@ -113,10 +109,11 @@ public class UiTreeState {
    * Get rootNodes
    * @return rootNodes
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+  @javax.annotation.Nonnull
+  @NotNull
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(ROOT_NODES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public List<String> getRootNodes() {
     return rootNodes;
@@ -124,7 +121,7 @@ public class UiTreeState {
 
 
   @JsonProperty(ROOT_NODES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setRootNodes(List<String> rootNodes) {
     this.rootNodes = rootNodes;
   }
@@ -137,9 +134,6 @@ public class UiTreeState {
   }
 
   public UiTreeState addExpandedNodesItem(String expandedNodesItem) {
-    if (this.expandedNodes == null) {
-      this.expandedNodes = new ArrayList<>();
-    }
     this.expandedNodes.add(expandedNodesItem);
     return this;
   }
@@ -148,10 +142,11 @@ public class UiTreeState {
    * Get expandedNodes
    * @return expandedNodes
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+  @javax.annotation.Nonnull
+  @NotNull
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(EXPANDED_NODES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public List<String> getExpandedNodes() {
     return expandedNodes;
@@ -159,7 +154,7 @@ public class UiTreeState {
 
 
   @JsonProperty(EXPANDED_NODES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setExpandedNodes(List<String> expandedNodes) {
     this.expandedNodes = expandedNodes;
   }
@@ -172,9 +167,6 @@ public class UiTreeState {
   }
 
   public UiTreeState addSelectedNodesItem(String selectedNodesItem) {
-    if (this.selectedNodes == null) {
-      this.selectedNodes = new ArrayList<>();
-    }
     this.selectedNodes.add(selectedNodesItem);
     return this;
   }
@@ -183,10 +175,11 @@ public class UiTreeState {
    * Get selectedNodes
    * @return selectedNodes
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+  @javax.annotation.Nonnull
+  @NotNull
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(SELECTED_NODES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public List<String> getSelectedNodes() {
     return selectedNodes;
@@ -194,7 +187,7 @@ public class UiTreeState {
 
 
   @JsonProperty(SELECTED_NODES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setSelectedNodes(List<String> selectedNodes) {
     this.selectedNodes = selectedNodes;
   }

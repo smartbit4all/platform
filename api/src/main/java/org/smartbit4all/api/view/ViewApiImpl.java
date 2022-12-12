@@ -4,6 +4,7 @@ import static java.util.stream.Collectors.toList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,7 +64,7 @@ public class ViewApiImpl implements ViewApi {
   private ViewContext addViewToViewContext(ViewContext context, ViewData view) {
     if (view.getType() == ViewType.NORMAL) {
       String parentViewName = viewContextService.getParentViewName(view.getViewName());
-      List<ViewData> children = getChildrenOfParentView(context, view, parentViewName);
+      List<ViewData> children = getChildrenOfParentView(context, parentViewName);
       if (children.isEmpty()) {
         view.setState(ViewState.TO_OPEN);
       } else {
@@ -92,12 +93,10 @@ public class ViewApiImpl implements ViewApi {
   /**
    * 
    * @param context
-   * @param viewToOpen This view tries to open, that's why we need to close other views.
    * @param parentViewName
    * @return is there any child views to close
    */
-  private List<ViewData> getChildrenOfParentView(ViewContext context, ViewData viewToOpen,
-      String parentViewName) {
+  private List<ViewData> getChildrenOfParentView(ViewContext context, String parentViewName) {
     List<ViewData> activeViews = context.getViews().stream()
         .filter(this::isActiveView)
         .collect(Collectors.toList());
@@ -136,6 +135,15 @@ public class ViewApiImpl implements ViewApi {
   }
 
   @Override
+  public List<ViewData> getViews(String viewName) {
+    Objects.requireNonNull(viewName, "viewName must be not null");
+    return viewContextService.getCurrentViewContext()
+        .getViews().stream()
+        .filter(v -> viewName.equals(v.getViewName()))
+        .collect(toList());
+  }
+
+  @Override
   public UUID showMessage(MessageData message) {
     Objects.requireNonNull(message, "Message must be not null");
     Objects.requireNonNull(message.getViewUuid(), "Message.viewUuid must be not null");
@@ -154,12 +162,12 @@ public class ViewApiImpl implements ViewApi {
   }
 
   @Override
-  public ViewContext currentViewContext() {
-    return viewContextService.getCurrentViewContext();
+  public UUID currentViewContextUuid() {
+    return viewContextService.getCurrentViewContextUuid();
   }
 
   private void handleOpenPending() {
-    OpenPendingData data = currentViewContext().getOpenPendingData();
+    OpenPendingData data = viewContextService.getCurrentViewContext().getOpenPendingData();
     if (data == null) {
       throw new IllegalArgumentException(
           "View set to OPEN_PENDING but no data associated with it!");
@@ -204,6 +212,12 @@ public class ViewApiImpl implements ViewApi {
           return c;
         });
     handleOpenPending();
+  }
+
+  @Override
+  public void updateView(UUID viewUuid, UnaryOperator<ViewData> update) {
+    viewContextService.updateCurrentViewContext(
+        c -> ViewContexts.updateViewData(c, viewUuid, update));
   }
 
 }

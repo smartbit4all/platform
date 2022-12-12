@@ -40,6 +40,19 @@ public interface ObjectSerializer {
   <T> Optional<T> deserialize(BinaryData data, Class<T> clazz) throws IOException;
 
   /**
+   * Read a domain object from a String into an object.
+   * 
+   * @param <T> The class type template.
+   * @param data The string format of the object.
+   * @param clazz The expected class of the object.
+   * @return The result object.
+   * @throws IOException The {@link IOException} is different as any other exception. This exception
+   *         can occur temporarily so it might be useful to separate from other exceptions. When we
+   *         have {@link IOException} then we can retry the serialization.
+   */
+  <T> T fromString(String data, Class<T> clazz) throws IOException;
+
+  /**
    * Transform the object to a Map.
    * 
    * @param object The object to transform.

@@ -7,10 +7,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.smartbit4all.api.object.bean.ObjectNodeData;
 import org.smartbit4all.api.object.bean.ObjectNodeState;
 import org.smartbit4all.api.object.bean.ReferencePropertyKind;
+import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.core.utility.UriUtils;
 import com.google.common.base.Strings;
 
@@ -67,8 +71,9 @@ public class ObjectNode {
               if (data.getReferences().containsKey(e.getKey())) {
                 node = new ObjectNode(objectApi, data.getReferences().get(e.getKey()));
               }
-              Object uri = data.getObjectAsMap().get(e.getValue().getSourcePropertyPath());
-              return new ObjectNodeReference(this, UriUtils.asUri(uri), node);
+              ReferenceDefinition ref = e.getValue();
+              Object uri = data.getObjectAsMap().get(ref.getSourcePropertyPath());
+              return new ObjectNodeReference(this, ref, UriUtils.asUri(uri), node);
             }));
   }
 
@@ -82,12 +87,12 @@ public class ObjectNode {
               if (data.getReferenceLists().containsKey(e.getKey())) {
                 list = data.getReferenceLists().get(e.getKey());
               }
-              List<?> uris =
-                  (List<?>) data.getObjectAsMap().get(e.getValue().getSourcePropertyPath());
+              ReferenceDefinition ref = e.getValue();
+              List<?> uris = (List<?>) data.getObjectAsMap().get(ref.getSourcePropertyPath());
               if (uris == null) {
                 uris = new ArrayList<>();
               }
-              return new ObjectNodeList(objectApi, this,
+              return new ObjectNodeList(objectApi, this, ref,
                   UriUtils.asUriList(uris), list);
             }));
   }
@@ -102,17 +107,17 @@ public class ObjectNode {
               if (data.getReferenceMaps().containsKey(e.getKey())) {
                 map = data.getReferenceMaps().get(e.getKey());
               }
-              Map<?, ?> uris =
-                  (Map<?, ?>) data.getObjectAsMap().get(e.getValue().getSourcePropertyPath());
+              ReferenceDefinition ref = e.getValue();
+              Map<?, ?> uris = (Map<?, ?>) data.getObjectAsMap().get(ref.getSourcePropertyPath());
               if (uris == null) {
                 uris = new HashMap<>();
               }
-              return new ObjectNodeMap(objectApi, this,
+              return new ObjectNodeMap(objectApi, this, ref,
                   UriUtils.asUriMap(uris), map);
             }));
   }
 
-  ObjectNodeData getData() {
+  public ObjectNodeData getData() {
     return data;
   }
 
@@ -214,24 +219,71 @@ public class ObjectNode {
   }
 
   /**
+   * A safe way to update the value of the object node without the risk of forgotten
+   * {@link #setObject(Object)}.
+   * 
+   * @param <T>
+   * @param clazz
+   * @param update
+   */
+  public <T> ObjectNode modify(Class<T> clazz, UnaryOperator<T> update) {
+    T object = getObject(clazz);
+    object = update.apply(object);
+    setObject(object);
+    return this;
+  }
+
+  /**
    * Set the values directly into the data.
    * 
    * @param values The map of values.
    */
-  public void setValues(Map<String, Object> values) {
+  public ObjectNode setValues(Map<String, Object> values) {
     data.getObjectAsMap().putAll(values);
     setModified();
+    return this;
   }
 
+  // /**
+  // * Set the value directly into the data.
+  // *
+  // * @param key The key of the value, the name of the property.
+  // * @param value The value object.
+  // */
+  // public ObjectNode setValue(String key, Object value) {
+  // data.getObjectAsMap().put(key, value);
+  // setModified();
+  // return this;
+  // }
+
   /**
-   * Set the value directly into the data.
+   * Sets the value in the data map, specified by path. Path cannot contain references!
    * 
-   * @param key The key of the value, the name of the property.
-   * @param value The value object.
+   * @param value
+   * @param paths
+   * @return
    */
-  public void setValue(String key, Object value) {
-    data.getObjectAsMap().put(key, value);
+  public ObjectNode setValue(Object value, String... paths) {
+    if (paths == null || paths.length == 0) {
+      throw new IllegalArgumentException("Path cannot be null or empty!");
+    }
+    setValueInMap(data.getObjectAsMap(), value, paths);
     setModified();
+    return this;
+  }
+
+  private void setValueInMap(Map<String, Object> map, Object value, String... paths) {
+    String path = paths[0];
+    if (Strings.isNullOrEmpty(path)) {
+      throw new IllegalArgumentException("Path part cannot be null or empty");
+    }
+    if (paths.length == 1) {
+      map.put(path, value);
+    } else {
+      Map<String, Object> subMap = (Map<String, Object>) map.get(path);
+      String[] subPaths = Arrays.copyOfRange(paths, 1, paths.length);
+      setValueInMap(subMap, value, subPaths);
+    }
   }
 
   /**
@@ -248,41 +300,60 @@ public class ObjectNode {
    * 
    * @param state
    */
-  final void setState(ObjectNodeState state) {
+  final ObjectNode setState(ObjectNodeState state) {
     this.data.setState(state);
+    return this;
   }
 
   /**
    * Set the state to modified if the state is {@link ObjectNodeState#NOP} else the state remains
    * the same.
    */
-  final void setModified() {
+  final ObjectNode setModified() {
     if (getState() == ObjectNodeState.NOP) {
       data.setState(ObjectNodeState.MODIFIED);
     }
+    return this;
   }
 
   public ObjectNodeReference ref(String... paths) {
-    return getValueAs(ObjectNodeReference.class, paths);
+    ObjectNodeReference result = getValueAs(ObjectNodeReference.class, paths);
+    if (result == null) {
+      throw new IllegalArgumentException("The "
+          + Stream.of(paths).collect(Collectors.joining(StringConstant.SLASH))
+          + " path is not a valid reference in the " + definition.getQualifiedName() + " object.");
+    }
+    return result;
   }
 
   public ObjectNodeList list(String... paths) {
-    return getValueAs(ObjectNodeList.class, paths);
+    ObjectNodeList result = getValueAs(ObjectNodeList.class, paths);
+    if (result == null) {
+      throw new IllegalArgumentException("The "
+          + Stream.of(paths).collect(Collectors.joining(StringConstant.SLASH))
+          + " path is not a valid reference in the " + definition.getQualifiedName() + " object.");
+    }
+    return result;
   }
 
   public ObjectNodeMap map(String... paths) {
-    return getValueAs(ObjectNodeMap.class, paths);
+    ObjectNodeMap result = getValueAs(ObjectNodeMap.class, paths);
+    if (result == null) {
+      throw new IllegalArgumentException("The "
+          + Stream.of(paths).collect(Collectors.joining(StringConstant.SLASH))
+          + " path is not a valid reference in the " + definition.getQualifiedName() + " object.");
+    }
+    return result;
   }
 
   public <T> T getValue(Class<T> clazz, String... paths) {
     Object value = getValue(paths);
-    if (value instanceof ObjectNodeReference
-        && ((ObjectNodeReference) value).get() instanceof ObjectNode) {
-      ObjectNodeReference ref = (ObjectNodeReference) value;
-      return ((ObjectNodeReference) value).get().getObject(clazz);
+    try {
+      return objectApi.asType(clazz, value);
+    } catch (IllegalArgumentException e) {
+      throw new IllegalArgumentException("Unable to load the " + definition.getQualifiedName()
+          + " " + Arrays.toString(paths) + " field as " + clazz, e);
     }
-    // TODO string, uri, uuid, number, boolean, etc.? Objectmapper?
-    return (T) value;
   }
 
   @SuppressWarnings("unchecked")
@@ -358,10 +429,10 @@ public class ObjectNode {
       if (paths.length == 1) {
         return value;
       }
-      if (value != null && value instanceof Map) {
+      if (value instanceof Map) {
         @SuppressWarnings("unchecked")
         Map<String, Object> subMap = (Map<String, Object>) value;
-        String[] subPaths = Arrays.copyOfRange(paths, 2, paths.length);
+        String[] subPaths = Arrays.copyOfRange(paths, 1, paths.length);
         return getValueFromObjectMap(subMap, subPaths);
       }
       return null;
@@ -371,6 +442,65 @@ public class ObjectNode {
 
   public Object getVersionNr() {
     return data.getVersionNr();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    ObjectNode objectNode = (ObjectNode) o;
+    return Objects.equals(this.data.getObjectUri(), objectNode.data.getObjectUri()) &&
+        Objects.equals(this.data.getObjectAsMap(), objectNode.data.getObjectAsMap()) &&
+        Objects.equals(this.definition.getQualifiedName(), objectNode.definition.getQualifiedName())
+        &&
+        Objects.equals(this.references, objectNode.references) &&
+        Objects.equals(this.referenceLists, objectNode.referenceLists) &&
+        Objects.equals(this.referenceMaps, objectNode.referenceMaps);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(data.getObjectUri(), data.getObjectAsMap(), definition.getQualifiedName(),
+        references, referenceLists, referenceMaps);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    // @formatter:off
+    sb.append("class ObjectNode{\n");
+    sb.append("    data.objectUri: ").append(toIndentedString(data.getObjectUri())).append("\n");
+    sb.append("    data.objectAsMap: ").append(toIndentedString(data.getObjectAsMap())).append("\n");
+    sb.append("    def.qualifiedName: ").append(toIndentedString(definition.getQualifiedName())).append("\n");
+    sb.append("    references: ").append(toIndentedString(references)).append("\n");
+    sb.append("    referenceLists: ").append(toIndentedString(referenceLists)).append("\n");
+    sb.append("    referenceMaps: ").append(toIndentedString(referenceMaps)).append("\n");
+    sb.append("}");
+    // @formatter:on
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  // TODO make it package private after moving to API
+  public void setResult(URI resultUri) {
+    data.setResultUri(resultUri);
+  }
+
+  public URI getResultUri() {
+    return data.getResultUri();
   }
 
 }

@@ -130,6 +130,22 @@ class StorageTest {
   }
 
   @Test
+  void writeOnceReadManyTimes() throws Exception {
+    Storage storage = storageApi.get(StorageTestConfig.TESTSCHEME);
+
+    URI uri1 = saveAndCheckLoad(storage, "test string1");
+    URI uri2 = saveAndCheckLoad(storage, "test string2");
+
+    for (int i = 0; i < 10; i++) {
+      FSTestBean read1 = storage.read(uri1, FSTestBean.class);
+      FSTestBean read2 = storage.read(uri2, FSTestBean.class);
+      assertEquals("test string1", read1.getTitle());
+      assertEquals("test string2", read2.getTitle());
+    }
+
+  }
+
+  @Test
   void saveLoadDeleteTest() throws Exception {
     Storage storage = storageApi.get(StorageTestConfig.TESTSCHEME);
 
@@ -582,7 +598,7 @@ class StorageTest {
     return collect;
   }
 
-  private void saveAndCheckLoad(
+  private URI saveAndCheckLoad(
       Storage storage,
       String testText) throws Exception {
 
@@ -594,6 +610,7 @@ class StorageTest {
 
     StorageObject<FSTestBean> optLoaded = storage.load(uri, FSTestBean.class);
     assertEquals(testText, optLoaded.getObject().getTitle());
+    return uri;
   }
 
 }

@@ -15,15 +15,18 @@ public final class ObjectNodeMap {
   private final Map<String, ObjectNodeReference> map;
 
   private final ObjectNode referrerNode;
+  private final ReferenceDefinition referenceDefinition;
 
-  public ObjectNodeMap(ObjectApi objectApi, ObjectNode referrerNode, Map<String, URI> originalUris,
-      Map<String, ObjectNodeData> originalMap) {
+  public ObjectNodeMap(ObjectApi objectApi, ObjectNode referrerNode,
+      ReferenceDefinition referenceDefinition,
+      Map<String, URI> originalUris, Map<String, ObjectNodeData> originalMap) {
     super();
     Objects.requireNonNull(objectApi, "ObjectApi must not be null!");
     Objects.requireNonNull(referrerNode, "ReferrerNode must not be null!");
     Objects.requireNonNull(originalUris, "OriginalUris must not be null!");
 
     this.referrerNode = referrerNode;
+    this.referenceDefinition = referenceDefinition;
     if (originalMap != null) {
       // loaded
       if (originalMap.size() != originalUris.size()) {
@@ -33,7 +36,7 @@ public final class ObjectNodeMap {
           .collect(toMap(
               Entry::getKey,
               e -> new ObjectNodeReference(
-                  referrerNode,
+                  referrerNode, referenceDefinition,
                   originalUris.get(e.getKey()),
                   new ObjectNode(objectApi, e.getValue()))));
     } else {
@@ -42,7 +45,7 @@ public final class ObjectNodeMap {
           .collect(toMap(
               Entry::getKey,
               e -> new ObjectNodeReference(
-                  referrerNode,
+                  referrerNode, referenceDefinition,
                   originalUris.get(e.getKey()),
                   null)));
 
@@ -74,14 +77,14 @@ public final class ObjectNodeMap {
 
   public ObjectNodeReference put(String key, ObjectNode node) {
     ObjectNodeReference ref = map.computeIfAbsent(key,
-        k -> new ObjectNodeReference(referrerNode, null, null));
+        k -> new ObjectNodeReference(referrerNode, referenceDefinition, null, null));
     ref.set(node);
     return ref;
   }
 
   public ObjectNodeReference put(String key, URI uri) {
     ObjectNodeReference ref = map.computeIfAbsent(key,
-        k -> new ObjectNodeReference(referrerNode, null, null));
+        k -> new ObjectNodeReference(referrerNode, referenceDefinition, null, null));
     ref.set(uri);
     return ref;
   }
@@ -98,4 +101,41 @@ public final class ObjectNodeMap {
     return map.entrySet();
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    ObjectNodeMap list = (ObjectNodeMap) o;
+    return Objects.equals(this.map, list.map);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(map);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    // @formatter:off
+    sb.append("class ObjectNodeMap{\n");
+    sb.append("    map: ").append(toIndentedString(map)).append("\n");
+    sb.append("}");
+    // @formatter:on
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
 }

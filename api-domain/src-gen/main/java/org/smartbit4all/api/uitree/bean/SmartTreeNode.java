@@ -24,7 +24,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
-import org.smartbit4all.api.uiaction.bean.UiAction;
+import org.smartbit4all.api.view.bean.UiAction;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -60,13 +60,13 @@ public class SmartTreeNode {
   private String caption;
 
   public static final String CLASSES = "classes";
-  private List<String> classes = null;
+  private List<String> classes = new ArrayList<>();
 
   public static final String HAS_CHILDREN = "hasChildren";
   private Boolean hasChildren;
 
   public static final String CHILDREN_NODES = "childrenNodes";
-  private List<SmartTreeNode> childrenNodes = null;
+  private List<SmartTreeNode> childrenNodes = new ArrayList<>();
 
   public static final String EXPANDED = "expanded";
   private Boolean expanded;
@@ -84,7 +84,7 @@ public class SmartTreeNode {
   private String nodeType;
 
   public static final String ACTIONS = "actions";
-  private List<UiAction> actions = null;
+  private List<UiAction> actions = new ArrayList<>();
 
   public SmartTreeNode() { 
   }
@@ -177,9 +177,6 @@ public class SmartTreeNode {
   }
 
   public SmartTreeNode addClassesItem(String classesItem) {
-    if (this.classes == null) {
-      this.classes = new ArrayList<>();
-    }
     this.classes.add(classesItem);
     return this;
   }
@@ -188,10 +185,11 @@ public class SmartTreeNode {
    * Get classes
    * @return classes
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+  @javax.annotation.Nonnull
+  @NotNull
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(CLASSES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public List<String> getClasses() {
     return classes;
@@ -199,7 +197,7 @@ public class SmartTreeNode {
 
 
   @JsonProperty(CLASSES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setClasses(List<String> classes) {
     this.classes = classes;
   }
@@ -239,9 +237,6 @@ public class SmartTreeNode {
   }
 
   public SmartTreeNode addChildrenNodesItem(SmartTreeNode childrenNodesItem) {
-    if (this.childrenNodes == null) {
-      this.childrenNodes = new ArrayList<>();
-    }
     this.childrenNodes.add(childrenNodesItem);
     return this;
   }
@@ -250,11 +245,12 @@ public class SmartTreeNode {
    * Get childrenNodes
    * @return childrenNodes
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(CHILDREN_NODES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public List<SmartTreeNode> getChildrenNodes() {
     return childrenNodes;
@@ -262,7 +258,7 @@ public class SmartTreeNode {
 
 
   @JsonProperty(CHILDREN_NODES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setChildrenNodes(List<SmartTreeNode> childrenNodes) {
     this.childrenNodes = childrenNodes;
   }
@@ -410,9 +406,6 @@ public class SmartTreeNode {
   }
 
   public SmartTreeNode addActionsItem(UiAction actionsItem) {
-    if (this.actions == null) {
-      this.actions = new ArrayList<>();
-    }
     this.actions.add(actionsItem);
     return this;
   }
@@ -421,11 +414,12 @@ public class SmartTreeNode {
    * Get actions
    * @return actions
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(ACTIONS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public List<UiAction> getActions() {
     return actions;
@@ -433,7 +427,7 @@ public class SmartTreeNode {
 
 
   @JsonProperty(ACTIONS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setActions(List<UiAction> actions) {
     this.actions = actions;
   }

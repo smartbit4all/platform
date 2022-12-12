@@ -25,6 +25,7 @@ import org.smartbit4all.api.view.bean.ViewState;
 import org.smartbit4all.core.utility.ReflectionUtility;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
+import org.smartbit4all.domain.data.storage.StorageObject.VersionPolicy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationContext;
@@ -37,7 +38,7 @@ public class ViewContextServiceImpl implements ViewContextService {
 
   private static final ThreadLocal<UUID> currentViewContextUuid = new ThreadLocal<>();
 
-  private static final String SCHEMA = "viewcontext";
+  private static final String SCHEMA = "viewcontext-sv";
 
   private Map<String, String> parentViewByViewName = new HashMap<>();
 
@@ -64,6 +65,7 @@ public class ViewContextServiceImpl implements ViewContextService {
     public Storage get() {
       if (storageInstance == null) {
         storageInstance = storageApi.get(SCHEMA);
+        storageInstance.setVersionPolicy(VersionPolicy.SINGLEVERSION);
       }
       return storageInstance;
     }
@@ -92,6 +94,11 @@ public class ViewContextServiceImpl implements ViewContextService {
   @Override
   public ViewContext getCurrentViewContext() {
     return readViewContext(getViewContextUri(currentViewContextUuid.get()));
+  }
+
+  @Override
+  public UUID getCurrentViewContextUuid() {
+    return currentViewContextUuid.get();
   }
 
   @Override

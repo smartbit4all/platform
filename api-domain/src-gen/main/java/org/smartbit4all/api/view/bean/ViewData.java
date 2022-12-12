@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import org.smartbit4all.api.view.bean.ViewConstraint;
 import org.smartbit4all.api.view.bean.ViewState;
 import org.smartbit4all.api.view.bean.ViewType;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -45,7 +46,9 @@ import javax.validation.Valid;
   ViewData.PARAMETERS,
   ViewData.STATE,
   ViewData.TYPE,
-  ViewData.CONTAINER_UUID
+  ViewData.CONSTRAINT,
+  ViewData.CONTAINER_UUID,
+  ViewData.MODEL
 })
 @JsonTypeName("ViewData")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -71,8 +74,14 @@ public class ViewData {
   public static final String TYPE = "type";
   private ViewType type = ViewType.NORMAL;
 
+  public static final String CONSTRAINT = "constraint";
+  private ViewConstraint constraint;
+
   public static final String CONTAINER_UUID = "containerUuid";
   private UUID containerUuid;
+
+  public static final String MODEL = "model";
+  private Object model;
 
   public ViewData() { 
   }
@@ -281,6 +290,34 @@ public class ViewData {
   }
 
 
+  public ViewData constraint(ViewConstraint constraint) {
+    
+    this.constraint = constraint;
+    return this;
+  }
+
+   /**
+   * Get constraint
+   * @return constraint
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(CONSTRAINT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public ViewConstraint getConstraint() {
+    return constraint;
+  }
+
+
+  @JsonProperty(CONSTRAINT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setConstraint(ViewConstraint constraint) {
+    this.constraint = constraint;
+  }
+
+
   public ViewData containerUuid(UUID containerUuid) {
     
     this.containerUuid = containerUuid;
@@ -309,6 +346,33 @@ public class ViewData {
   }
 
 
+  public ViewData model(Object model) {
+    
+    this.model = model;
+    return this;
+  }
+
+   /**
+   * Get model
+   * @return model
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(MODEL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Object getModel() {
+    return model;
+  }
+
+
+  @JsonProperty(MODEL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setModel(Object model) {
+    this.model = model;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -325,12 +389,14 @@ public class ViewData {
         Objects.equals(this.parameters, viewData.parameters) &&
         Objects.equals(this.state, viewData.state) &&
         Objects.equals(this.type, viewData.type) &&
-        Objects.equals(this.containerUuid, viewData.containerUuid);
+        Objects.equals(this.constraint, viewData.constraint) &&
+        Objects.equals(this.containerUuid, viewData.containerUuid) &&
+        Objects.equals(this.model, viewData.model);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uuid, viewName, objectUri, branchUri, parameters, state, type, containerUuid);
+    return Objects.hash(uuid, viewName, objectUri, branchUri, parameters, state, type, constraint, containerUuid, model);
   }
 
   @Override
@@ -344,7 +410,9 @@ public class ViewData {
     sb.append("    parameters: ").append(toIndentedString(parameters)).append("\n");
     sb.append("    state: ").append(toIndentedString(state)).append("\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
+    sb.append("    constraint: ").append(toIndentedString(constraint)).append("\n");
     sb.append("    containerUuid: ").append(toIndentedString(containerUuid)).append("\n");
+    sb.append("    model: ").append(toIndentedString(model)).append("\n");
     sb.append("}");
     return sb.toString();
   }

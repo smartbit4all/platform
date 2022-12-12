@@ -53,6 +53,7 @@ components:
             $ref: '#/components/schemas/FilterOperation'
     FilterGroupMeta:
       type: object
+      required: [filterGroupMetas,filterFieldMetas]
       properties:
         id:
           type: string

@@ -3,6 +3,7 @@ package org.smartbit4all.api.contentaccess;
 import java.net.URI;
 import java.util.NoSuchElementException;
 import java.util.UUID;
+import org.smartbit4all.api.attachment.bean.BinaryContentData;
 import org.smartbit4all.api.binarydata.BinaryContent;
 import org.smartbit4all.api.binarydata.BinaryContentApi;
 import org.smartbit4all.api.binarydata.BinaryData;
@@ -56,6 +57,14 @@ public class ContentAccessApiImpl implements ContentAccessApi {
     storageObject.setObject(binaryContent);
     URI savedBinaryContentUri = getStorage().save(storageObject);
     return objectShareApi.registerUri(savedBinaryContentUri);
+  }
+
+  @Override
+  public UUID share(BinaryContentData binaryContentData) throws Exception {
+    return objectShareApi.registerUri(getStorage().saveAsNew(new BinaryContent().dataUri(binaryContentData.getDataUri())
+        .fileName(binaryContentData.getFileName()).extension(binaryContentData.getExtension())
+        .mimeType(binaryContentData.getMimeType())
+        .size(binaryContentData.getSize())));
   }
 
   @Override

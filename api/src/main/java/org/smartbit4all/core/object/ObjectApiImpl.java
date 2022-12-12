@@ -1,8 +1,15 @@
 package org.smartbit4all.core.object;
 
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.object.ApplyChangeApi;
@@ -11,6 +18,7 @@ import org.smartbit4all.api.object.RetrievalRequest;
 import org.smartbit4all.api.object.bean.ObjectNodeData;
 import org.smartbit4all.api.object.bean.ObjectNodeState;
 import org.smartbit4all.api.object.bean.RetrievalMode;
+import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class ObjectApiImpl implements ObjectApi {
@@ -48,12 +56,22 @@ public class ObjectApiImpl implements ObjectApi {
   }
 
   @Override
+  public ObjectNode loadLatest(URI objectUri, RetrievalMode retrievalMode) {
+    return loadInternal(objectUri, retrievalMode, true);
+  }
+
+  @Override
   public ObjectNode load(URI objectUri, RetrievalMode retrievalMode) {
+    return loadInternal(objectUri, retrievalMode, false);
+  }
+
+  private ObjectNode loadInternal(URI objectUri, RetrievalMode retrievalMode, boolean loadLatest) {
     RetrievalRequest request =
         new RetrievalRequest(
             this,
             objectDefinitionApi.definition(objectUri),
             retrievalMode);
+    request.setLoadLatest(loadLatest);
     return load(request, objectUri);
   }
 
@@ -107,4 +125,70 @@ public class ObjectApiImpl implements ObjectApi {
     return applyChangeApi.applyChanges(node, branchUri);
   }
 
+  @Override
+  public URI getLatestUri(URI uri) {
+    return ObjectStorageImpl.getUriWithoutVersion(uri);
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public <T> T asType(Class<T> clazz, Object value) {
+    if (value == null) {
+      return null;
+    }
+    if (clazz.isInstance(value)) {
+      return (T) value;
+    }
+    if (value instanceof ObjectNode) {
+      return ((ObjectNode) value).getObject(clazz);
+    }
+    if (value instanceof ObjectNodeReference) {
+      ObjectNode objectNode = ((ObjectNodeReference) value).get();
+      if (objectNode != null) {
+        return objectNode.getObject(clazz);
+      }
+      return null;
+    }
+    if (clazz == URI.class && value instanceof String) {
+      return (T) URI.create((String) value);
+    }
+    if (clazz == UUID.class && value instanceof String) {
+      return (T) UUID.fromString((String) value);
+    }
+    if (value instanceof Map) {
+      // Try to retrieve the proper object
+      return definition(clazz).fromMap((Map<String, Object>) value);
+    }
+    if (value instanceof String && !clazz.equals(String.class)) {
+      try {
+        return getDefaultSerializer().fromString((String) value, clazz);
+      } catch (IOException e) {
+        throw new IllegalArgumentException(
+            "Unable to convert value (" + value.getClass().getName() + ") to" + clazz.getName());
+      }
+    }
+    throw new IllegalArgumentException(
+        "Unable to convert value (" + value.getClass().getName() + ") to" + clazz.getName());
+  }
+
+  @Override
+  public <E> List<E> asList(Class<E> clazz, List<?> value) {
+    if (value == null) {
+      return new ArrayList<>();
+    }
+    return value.stream()
+        .map(item -> asType(clazz, item))
+        .collect(toList());
+  }
+
+  @Override
+  public <V> Map<String, V> asMap(Class<V> clazz, Map<String, ?> value) {
+    if (value == null) {
+      return new HashMap<>();
+    }
+    return value.entrySet().stream()
+        .collect(toMap(
+            Entry::getKey,
+            e -> asType(clazz, e.getValue())));
+  }
 }

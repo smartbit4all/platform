@@ -7,6 +7,7 @@ package org.smartbit4all.api.view.restserver;
 
 import org.smartbit4all.api.view.bean.MessageResult;
 import java.util.UUID;
+import org.smartbit4all.api.view.bean.ViewConstraint;
 import org.smartbit4all.api.view.bean.ViewContext;
 import org.smartbit4all.api.view.bean.ViewContextUpdate;
 import io.swagger.annotations.*;
@@ -54,6 +55,38 @@ public interface ViewApi {
         
     ) throws Exception {
         return getDelegate().createViewContext();
+    }
+
+
+    /**
+     * GET /view/{uuid}/constraint : Returns the view constraint object belongs to the given view
+     *
+     * @param uuid View&#39;s unique identifier. (required)
+     * @return Returns ViewConstraint object for the view identified by unique identifier (status code 200)
+     *         or The context does not exists with the given uuid (status code 404)
+     *         or Error occured while fetching the constraints data (status code 500)
+     */
+    @ApiOperation(
+        tags = { "View" },
+        value = "Returns the view constraint object belongs to the given view",
+        nickname = "getViewConstraint",
+        notes = "",
+        response = ViewConstraint.class
+    )
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "Returns ViewConstraint object for the view identified by unique identifier", response = ViewConstraint.class),
+        @ApiResponse(code = 404, message = "The context does not exists with the given uuid"),
+        @ApiResponse(code = 500, message = "Error occured while fetching the constraints data")
+    })
+    @RequestMapping(
+        method = RequestMethod.GET,
+        value = "/view/{uuid}/constraint",
+        produces = { "application/json" }
+    )
+    default ResponseEntity<ViewConstraint> getViewConstraint(
+        @ApiParam(value = "View's unique identifier.", required = true) @PathVariable("uuid") UUID uuid
+    ) throws Exception {
+        return getDelegate().getViewConstraint(uuid);
     }
 
 

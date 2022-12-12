@@ -206,3 +206,26 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ApiError'
+    UserActivityLog:
+      type: object
+      description: |
+        When a user executes an activity this entry is created based on the current session. It contains the information we know about the
+        user and the time of the execution. The user is not necessarily user of the system so the user uri is optional and the user is a copied
+        value from the session.
+      properties:
+        userUri:
+          type: string
+          format: uri
+          description: The uri reference of the user.
+        userName:
+          type: string
+          description: The login name of the user.
+        role:
+          type: string
+          description: The role of the user.
+        name:
+          type: string
+          description: The natural name of the user.
+        timestamp:
+          type: string
+          format: date-time

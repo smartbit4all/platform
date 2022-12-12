@@ -14,6 +14,7 @@
  ******************************************************************************/
 package org.smartbit4all.core.config;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
@@ -105,6 +106,11 @@ public class CoreServiceConfig {
         BinaryDataObject obj = new BinaryDataObject((BinaryData) map.get("binaryData"));
         obj.setUri((URI) map.get("uri"));
         return (T) obj;
+      }
+
+      @Override
+      public <T> T fromString(String data, Class<T> clazz) throws IOException {
+        return null;
       }
     };
   }

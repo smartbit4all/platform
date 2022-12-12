@@ -1,6 +1,6 @@
 /*
- * UiAction domain object
- * UiAction domain objects
+ * View API
+ * View API
  *
  * The version of the OpenAPI document: 1.0.0
  * Contact: info@it4all.hu
@@ -11,7 +11,7 @@
  */
 
 
-package org.smartbit4all.api.uiaction.bean;
+package org.smartbit4all.api.view.bean;
 
 import java.util.Objects;
 import java.util.Arrays;
@@ -32,8 +32,7 @@ import javax.validation.Valid;
  */
 @JsonPropertyOrder({
   UiAction.CODE,
-  UiAction.API_NAME,
-  UiAction.API_FUNCTION
+  UiAction.IDENTIFIER
 })
 @JsonTypeName("UiAction")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -41,11 +40,8 @@ public class UiAction {
   public static final String CODE = "code";
   private String code;
 
-  public static final String API_NAME = "apiName";
-  private String apiName;
-
-  public static final String API_FUNCTION = "apiFunction";
-  private String apiFunction;
+  public static final String IDENTIFIER = "identifier";
+  private String identifier;
 
   public UiAction() { 
   }
@@ -77,57 +73,30 @@ public class UiAction {
   }
 
 
-  public UiAction apiName(String apiName) {
+  public UiAction identifier(String identifier) {
     
-    this.apiName = apiName;
+    this.identifier = identifier;
     return this;
   }
 
    /**
-   * Get apiName
-   * @return apiName
+   * Get identifier
+   * @return identifier
   **/
   @javax.annotation.Nullable
   @ApiModelProperty(value = "")
-  @JsonProperty(API_NAME)
+  @JsonProperty(IDENTIFIER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public String getApiName() {
-    return apiName;
+  public String getIdentifier() {
+    return identifier;
   }
 
 
-  @JsonProperty(API_NAME)
+  @JsonProperty(IDENTIFIER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setApiName(String apiName) {
-    this.apiName = apiName;
-  }
-
-
-  public UiAction apiFunction(String apiFunction) {
-    
-    this.apiFunction = apiFunction;
-    return this;
-  }
-
-   /**
-   * Get apiFunction
-   * @return apiFunction
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
-  @JsonProperty(API_FUNCTION)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public String getApiFunction() {
-    return apiFunction;
-  }
-
-
-  @JsonProperty(API_FUNCTION)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setApiFunction(String apiFunction) {
-    this.apiFunction = apiFunction;
+  public void setIdentifier(String identifier) {
+    this.identifier = identifier;
   }
 
 
@@ -141,13 +110,12 @@ public class UiAction {
     }
     UiAction uiAction = (UiAction) o;
     return Objects.equals(this.code, uiAction.code) &&
-        Objects.equals(this.apiName, uiAction.apiName) &&
-        Objects.equals(this.apiFunction, uiAction.apiFunction);
+        Objects.equals(this.identifier, uiAction.identifier);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(code, apiName, apiFunction);
+    return Objects.hash(code, identifier);
   }
 
   @Override
@@ -155,8 +123,7 @@ public class UiAction {
     StringBuilder sb = new StringBuilder();
     sb.append("class UiAction {\n");
     sb.append("    code: ").append(toIndentedString(code)).append("\n");
-    sb.append("    apiName: ").append(toIndentedString(apiName)).append("\n");
-    sb.append("    apiFunction: ").append(toIndentedString(apiFunction)).append("\n");
+    sb.append("    identifier: ").append(toIndentedString(identifier)).append("\n");
     sb.append("}");
     return sb.toString();
   }

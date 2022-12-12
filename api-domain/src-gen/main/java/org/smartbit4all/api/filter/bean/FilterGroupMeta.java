@@ -50,10 +50,10 @@ public class FilterGroupMeta {
   private String id;
 
   public static final String FILTER_GROUP_METAS = "filterGroupMetas";
-  private List<FilterGroupMeta> filterGroupMetas = null;
+  private List<FilterGroupMeta> filterGroupMetas = new ArrayList<>();
 
   public static final String FILTER_FIELD_METAS = "filterFieldMetas";
-  private List<FilterFieldMeta> filterFieldMetas = null;
+  private List<FilterFieldMeta> filterFieldMetas = new ArrayList<>();
 
   public static final String LABEL_CODE = "labelCode";
   private String labelCode;
@@ -104,9 +104,6 @@ public class FilterGroupMeta {
   }
 
   public FilterGroupMeta addFilterGroupMetasItem(FilterGroupMeta filterGroupMetasItem) {
-    if (this.filterGroupMetas == null) {
-      this.filterGroupMetas = new ArrayList<>();
-    }
     this.filterGroupMetas.add(filterGroupMetasItem);
     return this;
   }
@@ -115,11 +112,12 @@ public class FilterGroupMeta {
    * Get filterGroupMetas
    * @return filterGroupMetas
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(FILTER_GROUP_METAS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public List<FilterGroupMeta> getFilterGroupMetas() {
     return filterGroupMetas;
@@ -127,7 +125,7 @@ public class FilterGroupMeta {
 
 
   @JsonProperty(FILTER_GROUP_METAS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setFilterGroupMetas(List<FilterGroupMeta> filterGroupMetas) {
     this.filterGroupMetas = filterGroupMetas;
   }
@@ -140,9 +138,6 @@ public class FilterGroupMeta {
   }
 
   public FilterGroupMeta addFilterFieldMetasItem(FilterFieldMeta filterFieldMetasItem) {
-    if (this.filterFieldMetas == null) {
-      this.filterFieldMetas = new ArrayList<>();
-    }
     this.filterFieldMetas.add(filterFieldMetasItem);
     return this;
   }
@@ -151,11 +146,12 @@ public class FilterGroupMeta {
    * Get filterFieldMetas
    * @return filterFieldMetas
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(FILTER_FIELD_METAS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public List<FilterFieldMeta> getFilterFieldMetas() {
     return filterFieldMetas;
@@ -163,7 +159,7 @@ public class FilterGroupMeta {
 
 
   @JsonProperty(FILTER_FIELD_METAS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setFilterFieldMetas(List<FilterFieldMeta> filterFieldMetas) {
     this.filterFieldMetas = filterFieldMetas;
   }

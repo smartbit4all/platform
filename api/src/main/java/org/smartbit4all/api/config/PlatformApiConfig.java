@@ -1,5 +1,7 @@
 package org.smartbit4all.api.config;
 
+import org.smartbit4all.api.binarydata.BinaryDataSorageApi;
+import org.smartbit4all.api.binarydata.BinaryDataSorageApiImpl;
 import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.CollectionApiStorageImpl;
 import org.smartbit4all.api.collection.bean.StoredListData;
@@ -184,5 +186,10 @@ public class PlatformApiConfig {
         ObjectDefinitionApiImpl.constructDefinitionBase(StoredListData.class);
     result.setExplicitUri(true);
     return result;
+  }
+
+  @Bean
+  public BinaryDataSorageApi binaryDataSorageApi() {
+    return new BinaryDataSorageApiImpl();
   }
 }

@@ -19,7 +19,9 @@ import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.api.session.bean.AccountInfo;
 import org.smartbit4all.api.session.bean.Session;
+import org.smartbit4all.api.session.bean.UserActivityLog;
 import org.smartbit4all.api.session.exception.NoCurrentSessionException;
+import org.smartbit4all.domain.application.TimeManagementService;
 import org.smartbit4all.sec.authprincipal.SessionAuthPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -44,6 +46,9 @@ public class SessionApiImpl implements SessionApi {
 
   @Autowired
   private ObjectMapper objectMapper;
+
+  @Autowired
+  private TimeManagementService timeService;
 
   @Override
   public User getUser() {
@@ -210,6 +215,18 @@ public class SessionApiImpl implements SessionApi {
     }
     throw new NoCurrentSessionException("session.notinitialized",
         "The security context does not contain a Sb4SessionAuthPrincipal - session may not have been initilized!");
+  }
+
+  @Override
+  public UserActivityLog createActivityLog() {
+    User user = getUser();
+    UserActivityLog result = new UserActivityLog().userUri(getUserUri());
+    if (user != null) {
+      result.userName(user.getUsername()).name(user.getName());
+    }
+    // TODO manage the zone from the session...
+    result.timestamp(OffsetDateTime.now());
+    return result;
   }
 
   // TODO serilaize and deserialize paramaters should be moved to SessionManagementApiImpl...

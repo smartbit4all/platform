@@ -99,6 +99,31 @@ paths:
       responses:
         '200':
           description: ''
+  /view/{uuid}/constraint:
+    get:
+      tags:
+      - View
+      summary: Returns the view constraint object belongs to the given view
+      operationId: 'getViewConstraint'
+      parameters: 
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: View's unique identifier.
+      responses:
+        '200':
+          description: 'Returns ViewConstraint object for the view identified by unique identifier'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ViewConstraint'
+        '404':
+          description: 'The context does not exists with the given uuid'
+        '500':
+          description: 'Error occured while fetching the constraints data'
 components:
   schemas:
     ViewContext:
@@ -141,9 +166,42 @@ components:
           $ref: '#/components/schemas/ViewState'
         type:
           $ref: '#/components/schemas/ViewType'
+        constraint:
+          $ref: '#/components/schemas/ViewConstraint'
         containerUuid:
           type: string
           format: uuid
+        model:
+          type: object
+    ViewConstraint:
+      type: object
+      description: |
+        The view constraint object encapsulate the constraints can be applied to any view genericly. It consists of
+        compenet constraints and many more.
+      required: [componentConstraints]
+      properties:
+        componentConstraints:
+          type: array
+          items:
+            $ref: '#/components/schemas/ComponentConstraint'
+    ComponentConstraint:
+      type: object
+      description: |
+        The component constraint is responsible for the constraints belong to a given component (textfield, combobox etc.) on the view. The UI
+        must identify the component by the dataName that is a path of the data name separated by dot like dataSheet.field.
+      properties:
+        dataName:
+          type: string
+          description: The data name to identify the related component or componenets. If it is a path the format is the following - dataSheet.field.  
+        visible:
+          type: boolean
+          default: true
+        mandatory:
+          type: boolean
+          default: false
+        enabled:
+          type: boolean
+          default: true
     ViewState:
       type: string
       enum:
@@ -248,17 +306,6 @@ components:
           type: object
         viewContext:
           $ref: '#/components/schemas/ViewContext'
-    ViewRegistryEntry:
-      description: Descriptor of a possible view.
-      type: object
-      required: [viewName, path]
-      properties:
-        viewName:
-          type: string
-          description: Name of the view. Must be unique.
-        parentView:
-          type: string
-          description: Name of parentView, may be null.
     ViewApiError:
       type: object
       description: Generic API error object.
@@ -290,3 +337,28 @@ components:
         - approved
         - pending
         - rejected
+    UiAction:
+      type: object
+      properties:
+        code:
+          type: string
+        identifier:
+          type: string
+    UiActionRequest:
+      type: object
+      description: 
+      required: [code, params]
+      properties:
+        code:
+          description: Code of the executed UI action.
+          type: string
+        identifier:
+          description: |
+            Identifier of UI element, or UI action, where action is performed (for example treeNode's / 
+            listItem's identifier, etc.). Optional.
+          type: string
+        params:
+          description: |
+            Additional parameters for executing the UI action. 
+          type: object
+          additionalProperties: true

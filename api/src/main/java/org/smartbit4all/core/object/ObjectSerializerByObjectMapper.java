@@ -27,9 +27,9 @@ public class ObjectSerializerByObjectMapper implements ObjectSerializer {
   private static final Logger log = LoggerFactory.getLogger(ObjectSerializerByObjectMapper.class);
 
   /**
-   * 4Kb should be enough forever... :)
+   * 8Kb should be enough forever... :)
    */
-  private static int MEMORYLIMIT = 0xFFF;
+  private static int MEMORYLIMIT = 0x2000;
 
   /**
    * The {@link ObjectMapper} instance that contains the default configuration. The
@@ -108,6 +108,14 @@ public class ObjectSerializerByObjectMapper implements ObjectSerializer {
         // NOP - We've tried at least.
       }
     }
+  }
+
+  @Override
+  public <T> T fromString(String data, Class<T> clazz) throws IOException {
+    if (data == null && clazz == null) {
+      return null;
+    }
+    return objectMapper.readValue(data, clazz);
   }
 
   @SuppressWarnings("unchecked")

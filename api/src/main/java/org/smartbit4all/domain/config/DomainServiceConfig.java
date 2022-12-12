@@ -30,6 +30,8 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.domain.application.TimeManagementService;
 import org.smartbit4all.domain.application.TimeManagementServiceImpl;
+import org.smartbit4all.domain.data.storage.BlobObjectStorageAccessApi;
+import org.smartbit4all.domain.data.storage.BlobObjectStorageAccessFS;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageApiImpl;
 import org.smartbit4all.domain.meta.EntityDefinition;
@@ -208,6 +210,11 @@ public class DomainServiceConfig {
   @Bean
   public StorageApi getStorageApi() {
     return new StorageApiImpl();
+  }
+
+  @Bean
+  public BlobObjectStorageAccessApi blobObjectStorageAccessApi() {
+    return new BlobObjectStorageAccessFS();
   }
 
   @Bean

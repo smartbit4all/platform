@@ -117,6 +117,11 @@ components:
             type: object
             additionalProperties:
               $ref: '#/components/schemas/ObjectNodeData'
+        resultUri:
+          type: string
+          format: uri
+          description: |
+            The object URI after an ObjectApi.save. It can be used to read the result Uri after save.
     ObjectNodeState:
       type: string
       default: NOP

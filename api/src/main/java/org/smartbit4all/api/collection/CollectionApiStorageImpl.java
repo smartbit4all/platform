@@ -36,25 +36,29 @@ public class CollectionApiStorageImpl implements CollectionApi {
 
   @Override
   public StoredMap map(String logicalSchema, String mapName) {
-    return new StoredMapStorageImpl(getStorage(logicalSchema),
-        constructGlobalUri(logicalSchema, mapName, STOREDMAP), mapName);
+    String schema = constructCollectionShemaName(logicalSchema);
+    return new StoredMapStorageImpl(getStorage(schema),
+        constructGlobalUri(schema, mapName, STOREDMAP), mapName);
   }
 
   @Override
   public StoredMap map(URI scopeObjectUri, String logicalSchema, String mapName) {
-    return new StoredMapStorageImpl(getStorage(logicalSchema), constructScopedUri(logicalSchema,
+    String schema = constructCollectionShemaName(logicalSchema);
+    return new StoredMapStorageImpl(getStorage(schema), constructScopedUri(schema,
         mapName, ObjectStorageImpl.getUriWithoutVersion(scopeObjectUri), STOREDMAP), mapName);
   }
 
   @Override
   public StoredList list(String logicalSchema, String name) {
-    return new StoredListStorageImpl(getStorage(logicalSchema),
-        constructGlobalUri(logicalSchema, name, STOREDLIST), name);
+    String schema = constructCollectionShemaName(logicalSchema);
+    return new StoredListStorageImpl(getStorage(schema),
+        constructGlobalUri(schema, name, STOREDLIST), name);
   }
 
   @Override
   public StoredList list(URI scopeObjectUri, String logicalSchema, String name) {
-    return new StoredListStorageImpl(getStorage(logicalSchema), constructScopedUri(logicalSchema,
+    String schema = constructCollectionShemaName(logicalSchema);
+    return new StoredListStorageImpl(getStorage(schema), constructScopedUri(schema,
         name, ObjectStorageImpl.getUriWithoutVersion(scopeObjectUri), STOREDMAP), name);
   }
 
@@ -84,6 +88,10 @@ public class CollectionApiStorageImpl implements CollectionApi {
             + mapName
             + Storage.SINGLE_VERSION_URI_POSTFIX,
         null);
+  }
+
+  private final String constructCollectionShemaName(String logicalShema) {
+    return logicalShema + StringConstant.MINUS_SIGN + "collections";
   }
 
 }

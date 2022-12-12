@@ -22,12 +22,14 @@ import org.smartbit4all.api.session.bean.SessionInfoData;
 import org.smartbit4all.api.session.exception.InvalidRefreshTokenException;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
+import org.smartbit4all.domain.data.storage.StorageObject.VersionPolicy;
 import org.smartbit4all.sec.authprincipal.SessionAuthPrincipal;
+import org.smartbit4all.sec.authprincipal.SessionAuthToken;
 import org.smartbit4all.sec.token.SessionTokenHandler;
+import org.smartbit4all.sec.utils.SecurityContextUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -78,6 +80,7 @@ public class SessionManagementApiImpl implements SessionManagementApi {
     public Storage get() {
       if (storageInstance == null) {
         storageInstance = storageApi.get(SCHEMA);
+        storageInstance.setVersionPolicy(VersionPolicy.SINGLEVERSION);
       }
       return storageInstance;
     }
@@ -320,13 +323,15 @@ public class SessionManagementApiImpl implements SessionManagementApi {
     Session session = new Session();
     session.putParametersItem("sessionKind", "technical");
     session.setUser(technicalUserUri);
-    URI sessionUri = storage.get().saveAsNew(session);
+    AccountInfo accountInfo =
+        SecurityContextUtility.getDefaultAccountInfoProvider(orgApi).apply(technicalUser, null);
+    accountInfo.addRolesItem("ROLE_technical");
+    session.addAuthenticationsItem(accountInfo);
+    storage.get().saveAsNew(session);
     log.debug("Technical session saved!\n{}", session);
 
-    SessionAuthPrincipal principal = SessionAuthPrincipal.of(sessionUri);
-    Authentication authenticationToken = new UsernamePasswordAuthenticationToken(principal, "nope",
-        AuthorityUtils.createAuthorityList("ROLE_technical"));
-    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+    SessionAuthToken authToken = SessionAuthToken.create(session);
+    SecurityContextHolder.getContext().setAuthentication(authToken);
 
   }
 

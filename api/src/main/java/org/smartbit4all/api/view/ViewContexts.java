@@ -1,6 +1,7 @@
 package org.smartbit4all.api.view;
 
 import java.util.UUID;
+import java.util.function.UnaryOperator;
 import org.smartbit4all.api.view.bean.ViewContext;
 import org.smartbit4all.api.view.bean.ViewData;
 import org.smartbit4all.api.view.bean.ViewState;
@@ -26,6 +27,15 @@ public class ViewContexts {
         .filter(v -> viewUuid.equals(v.getUuid()))
         .findFirst()
         .ifPresent(view -> view.setState(state));
+    return context;
+  }
+
+  public static ViewContext updateViewData(ViewContext context, UUID viewUuid,
+      UnaryOperator<ViewData> update) {
+    context.getViews().stream()
+        .filter(v -> viewUuid.equals(v.getUuid()))
+        .findFirst()
+        .ifPresent(update::apply);
     return context;
   }
 

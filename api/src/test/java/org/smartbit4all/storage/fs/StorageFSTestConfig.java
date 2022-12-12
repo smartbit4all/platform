@@ -7,11 +7,13 @@ import org.smartbit4all.domain.data.storage.Storage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
 @Import({StorageTestConfig.class, ApplicationRuntimeStorageConfig.class})
 @EnableTransactionManagement
+@PropertySource("classpath:storagefs-cache.properties")
 public class StorageFSTestConfig {
 
   @Bean
@@ -19,6 +21,8 @@ public class StorageFSTestConfig {
     return new StorageFS(
         TestFileUtil.testFsRootFolder(),
         objectApi);
+
+    // new File("z:/test-fs")
   }
 
   @Bean(Storage.STORAGETX)

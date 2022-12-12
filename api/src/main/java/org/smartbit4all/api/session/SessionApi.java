@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.UUID;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.session.bean.AccountInfo;
-import org.smartbit4all.api.session.exception.NoCurrentSessionException;
+import org.smartbit4all.api.session.bean.UserActivityLog;
 
 /**
  *
@@ -46,5 +46,12 @@ public interface SessionApi {
 
   // this is very preliminary
   void addViewContext(UUID viewContextUuid, URI viewContextUri);
+
+  /**
+   * This creates a new {@link UserActivityLog} for logging purposes.
+   * 
+   * @return
+   */
+  UserActivityLog createActivityLog();
 
 }

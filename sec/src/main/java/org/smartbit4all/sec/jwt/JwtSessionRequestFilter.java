@@ -154,8 +154,6 @@ public class JwtSessionRequestFilter extends OncePerRequestFilter implements Ini
         log.debug("viewContextUUid not received!");
         viewContextService.setCurrentViewContext(null);
       }
-    } else {
-      log.debug("viewContextService is null!");
     }
   }
 

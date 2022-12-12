@@ -6,19 +6,19 @@ import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.org.OrgApi;
-import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.api.session.bean.AccountInfo;
 import org.smartbit4all.api.session.exception.NoCurrentSessionException;
 import org.smartbit4all.sec.authprincipal.SessionAuthToken;
+import org.smartbit4all.sec.utils.SecurityContextUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.util.Assert;
@@ -37,8 +37,7 @@ public abstract class SessionHandlerAuthenticationProvider implements Authentica
   @Autowired
   private OrgApi orgApi;
 
-  private BiFunction<User, Authentication, AccountInfo> accountInfoProvider =
-      defaultAccountInfoProvider();
+  private BiFunction<User, Authentication, AccountInfo> accountInfoProvider;
 
   private final AuthenticationProvider wrappedAuthenticationProvider;
 
@@ -47,7 +46,8 @@ public abstract class SessionHandlerAuthenticationProvider implements Authentica
   private boolean isAccountOverrideForbidden = false;
 
   private AdditionalSessionAuthenticationChecker additionalAuthenticationCheck =
-      (u, ai, oa) -> {};
+      (u, ai, oa) -> {
+      };
 
   private Predicate<Class<?>> additionalSupportCheck = a -> true;
 
@@ -62,6 +62,7 @@ public abstract class SessionHandlerAuthenticationProvider implements Authentica
     Assert.notNull(accountKind, "kind cannot be null");
     this.accountKind = accountKind;
     this.wrappedAuthenticationProvider = wrappedAuthenticationProvider;
+
   }
 
   @Override
@@ -73,7 +74,7 @@ public abstract class SessionHandlerAuthenticationProvider implements Authentica
     } catch (NoCurrentSessionException e) {
       String reason = "There is no session available while trying to login!";
       onLoginFailed.accept(reason);
-      throw new IllegalStateException(reason, e);
+      throw new InsufficientAuthenticationException(reason, e);
     }
 
     AccountInfo foundMatchingAccount = sessionApi.getAuthentication(accountKind);
@@ -81,7 +82,7 @@ public abstract class SessionHandlerAuthenticationProvider implements Authentica
       log.warn("There is already an authenticated account in this session with kind [{}]!",
           accountKind);
       if (isAccountOverrideForbidden) {
-        throw new IllegalStateException(
+        throw new InsufficientAuthenticationException(
             "Can not log in with account if it is already present in the session!");
       }
     }
@@ -101,6 +102,9 @@ public abstract class SessionHandlerAuthenticationProvider implements Authentica
           "User could not obtained from the original authentication token!");
     }
 
+    if (accountInfoProvider == null) {
+      accountInfoProvider = SecurityContextUtility.getDefaultAccountInfoProvider(orgApi);
+    }
     AccountInfo accountInfo = accountInfoProvider.apply(user, originalAuthentication);
     accountInfo.setKind(accountKind);
 
@@ -186,17 +190,6 @@ public abstract class SessionHandlerAuthenticationProvider implements Authentica
 
   protected final SessionManagementApi sessionManagementApi() {
     return sessionManagementApi;
-  }
-
-  private BiFunction<User, Authentication, AccountInfo> defaultAccountInfoProvider() {
-    return (user, originalAuthToken) -> new AccountInfo()
-        .userName(user.getUsername())
-        .displayName(user.getName())
-        .roles(orgApi.getGroupsOfUser(user.getUri()).stream()
-            .map(Group::getName)
-            .collect(Collectors.toList()))
-        .parameters(user.getAttributes());
-
   }
 
   public static interface AdditionalSessionAuthenticationChecker {

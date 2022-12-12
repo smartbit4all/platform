@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.smartbit4all.api.object.bean.ObjectNodeData;
 import org.smartbit4all.api.object.bean.ReferencePropertyKind;
+import org.smartbit4all.api.storage.bean.ObjectVersion;
 import org.smartbit4all.core.object.ReferenceDefinition;
 import org.smartbit4all.core.utility.UriUtils;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
@@ -36,12 +37,13 @@ public final class RetrievalApiImpl implements RetrievalApi {
   private final ObjectNodeData readData(RetrievalRequest objRequest, URI uri) {
     URI readUri = objRequest.isLoadLatest() ? ObjectStorageImpl.getUriWithoutVersion(uri) : uri;
     StorageObject<?> storageObject = storageApi.load(readUri);
+    ObjectVersion version = storageObject.getVersion();
     ObjectNodeData data = new ObjectNodeData()
-        .objectUri(uri)
+        .objectUri(storageObject.getVersionUri())
         .qualifiedName(storageObject.definition().getQualifiedName())
         .storageSchema(storageObject.getStorage().getScheme())
         .objectAsMap(storageObject.getObjectAsMap())
-        .versionNr(storageObject.getVersion().getSerialNoData());
+        .versionNr(version == null ? null : version.getSerialNoData());
 
     // Recursive read of all referred objects.
     for (Entry<ReferenceDefinition, RetrievalRequest> refEntry : objRequest.getReferences()

@@ -28,15 +28,6 @@ public abstract class ReferenceChangeRequest {
    */
   protected ReferenceDefinition definition;
 
-  public enum ReferenceOperation {
-    SET, REMOVE, UPDATE
-  }
-
-  /**
-   * The operation for the reference.
-   */
-  protected ReferenceOperation operation;
-
   protected ReferenceChangeRequest(ApplyChangeRequest request,
       ObjectChangeRequest objectChangeRequest, ReferenceDefinition definition) {
     super();
@@ -56,9 +47,5 @@ public abstract class ReferenceChangeRequest {
   public abstract Iterable<ObjectChangeRequest> changes();
 
   public abstract void apply(ObjectChangeRequest object, Map<ObjectChangeRequest, URI> uris);
-
-  public final ReferenceOperation getOperation() {
-    return operation;
-  }
 
 }

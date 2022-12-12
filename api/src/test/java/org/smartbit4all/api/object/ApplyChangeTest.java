@@ -1,5 +1,6 @@
 package org.smartbit4all.api.object;
 
+import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -8,6 +9,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -90,7 +93,7 @@ class ApplyChangeTest {
     ObjectNodeReference subCatNodeRef = subCategoryNodes.get(0);
     assertTrue(subCatNodeRef.isLoaded());
     ObjectNode subCatNode = subCatNodeRef.get();
-    subCatNode.setValue(SampleCategory.NAME, "modified sub category");
+    subCatNode.setValue("modified sub category", SampleCategory.NAME);
     SampleCategory modifiedSubCategory = (SampleCategory) subCatNode.getObject();
     assertEquals("modified sub category", modifiedSubCategory.getName());
 
@@ -105,14 +108,15 @@ class ApplyChangeTest {
     for (ObjectNodeReference containerItemNodeRef : containerItemNodes.references()) {
       assertTrue(containerItemNodeRef.isLoaded());
       ObjectNode containerItemNode = containerItemNodeRef.get();
-      containerItemNode.setValue(SampleContainerItem.NAME,
-          containerItemNode.getObjectAsMap().get(SampleContainerItem.NAME) + "-modified");
+      containerItemNode.setValue(
+          containerItemNode.getObjectAsMap().get(SampleContainerItem.NAME) + "-modified",
+          SampleContainerItem.NAME);
       if (i % 2 == 0) {
         ObjectNodeReference datasheetNodeRef =
             containerItemNode.ref(SampleContainerItem.DATASHEET);
         assertTrue(datasheetNodeRef.isLoaded());
         ObjectNode datasheetNode = datasheetNodeRef.get();
-        datasheetNode.setValue(SampleDataSheet.NAME, "modified");
+        datasheetNode.setValue("modified", SampleDataSheet.NAME);
 
         Object dataSheetValue = containerItemNode.getValue(SampleContainerItem.DATASHEET);
         assertTrue(dataSheetValue instanceof ObjectNodeReference);
@@ -151,18 +155,31 @@ class ApplyChangeTest {
         new SampleCategory().name("root testObjectNodeOnly"));
     ObjectNodeList items = rootNode.list(SampleCategory.CONTAINER_ITEMS);
     int itemCounter = 5;
+    List<ObjectNode> itemNodes = new ArrayList<>();
     for (int i = 0; i < itemCounter; i++) {
       ObjectNode itemNode = items.addNewObject(new SampleContainerItem().name("item " + i));
       itemNode
           .ref(SampleContainerItem.DATASHEET)
           .setNewObject(new SampleDataSheet().name("datasheet " + i));
+      itemNodes.add(itemNode);
     }
     URI rootCategoryUri = objectApi.save(rootNode);
     assertNotNull(rootCategoryUri);
+    assertEquals(rootCategoryUri, rootNode.getResultUri());
+    assertNotNull(itemNodes.get(0).getResultUri());
 
     ObjectNode rootNodeLoaded = objectApi.request(SampleCategory.class)
         .add(SampleCategory.CONTAINER_ITEMS, SampleContainerItem.DATASHEET)
         .load(rootCategoryUri);
+
+    URI item1nodeUriLoaded =
+        rootNodeLoaded.list(SampleCategory.CONTAINER_ITEMS).get(1).getObjectUri();
+    URI item1nodeUriResult = rootNode.list(SampleCategory.CONTAINER_ITEMS).get(1).getResultUri();
+    URI item1nodeUriSaved = itemNodes.get(1).getResultUri();
+
+    assertEquals(item1nodeUriLoaded, item1nodeUriResult);
+    assertEquals(item1nodeUriLoaded, item1nodeUriSaved);
+
 
     Object item2datasheetName = rootNodeLoaded.getValue(
         SampleCategory.CONTAINER_ITEMS, "2",
@@ -191,18 +208,40 @@ class ApplyChangeTest {
     assertTrue(rootNodeOnly.list(SampleCategory.CONTAINER_ITEMS).get(0).isLoaded());
     assertFalse(rootNodeOnly.list(SampleCategory.CONTAINER_ITEMS).get(1).isLoaded());
 
-    // TODO this won't work since the ObjectNodeList partial update doesn't work yet.
-    // ObjectNode item3datasheetNode =
-    // rootNodeOnly.list(SampleCategory.CONTAINER_ITEMS).get(3).get()
-    // .ref(SampleContainerItem.DATASHEET).get();
-    // item3datasheetNode.setValue(SampleDataSheet.NAME, "datasheet 3 modified");
-    // URI rootUriUpdated = objectApi.save(rootNodeOnly);
-    //
-    // Object item3datasheetName = objectApi.load(rootUriUpdated).getValue(
-    // SampleCategory.CONTAINER_ITEMS, "3",
-    // SampleContainerItem.DATASHEET,
-    // SampleDataSheet.NAME);
-    // assertEquals("datasheet 3 modified", item3datasheetName);
+    // load and update 3rd item
+    ObjectNode item3datasheetNode =
+        rootNodeOnly.list(SampleCategory.CONTAINER_ITEMS).get(3).get()
+            .ref(SampleContainerItem.DATASHEET).get();
+    item3datasheetNode.setValue("datasheet 3 modified", SampleDataSheet.NAME);
+    URI rootUriUpdated = objectApi.save(rootNodeOnly);
+
+    rootNodeOnly = objectApi.load(rootUriUpdated);
+    Object item3datasheetName = rootNodeOnly.getValue(
+        SampleCategory.CONTAINER_ITEMS, "3",
+        SampleContainerItem.DATASHEET,
+        SampleDataSheet.NAME);
+    assertEquals("datasheet 3 modified", item3datasheetName);
+    assertEquals(5, rootNodeOnly.list(SampleCategory.CONTAINER_ITEMS).size());
+
+    ObjectNode nodeByReq2 = objectApi.request(SampleCategory.class)
+        .add(SampleCategory.CONTAINER_ITEMS, SampleContainerItem.DATASHEET)
+        .load(rootUriUpdated);
+
+    ObjectNode nodeByReq = objectApi.request(SampleCategory.class)
+        .add(SampleCategory.CONTAINER_ITEMS, SampleContainerItem.DATASHEET)
+        .load(rootUriUpdated);
+
+    assertEquals(nodeByReq2, nodeByReq);
+
+    ObjectNode nodeByNav = objectApi.load(rootUriUpdated);
+    nodeByNav.list(SampleCategory.CONTAINER_ITEMS).stream()
+        .map(ref -> ref.get())
+        .map(node -> node.ref(SampleContainerItem.DATASHEET).get())
+        .collect(toList());
+
+    assertEquals(nodeByReq, nodeByNav);
+
+
 
   }
 
@@ -226,10 +265,8 @@ class ApplyChangeTest {
     ObjectNodeList items = rootNode.list(SampleCategory.CONTAINER_ITEMS);
     assertNotNull(items);
     assertTrue(!items.isEmpty());
+
     ObjectNodeReference firstItemRef = items.get(0);
-
-    URI containerItemOriginal = firstItemRef.getObjectUri();
-
     assertNotNull(firstItemRef);
     assertTrue(firstItemRef.isLoaded());
     assertTrue(firstItemRef.isPresent());
@@ -266,6 +303,43 @@ class ApplyChangeTest {
     assertNotNull(dataSheetNode, "DataSheet must exist in first version");
     String dataSheetName = ((SampleDataSheet) dataSheetNode.getObject()).getName();
     assertEquals("data sheet testReferenceChangeUri", dataSheetName);
+
+    // add new SampleContainerItem by URI
+    SampleContainerItem itemToAdd = new SampleContainerItem()
+        .name("added container item");
+    ObjectNode itemToAddNode = objectApi.create(MY_SCHEME, itemToAdd);
+    itemToAddNode.ref(SampleContainerItem.DATASHEET).setNewObject(
+        new SampleDataSheet().name("added datasheet"));
+    URI itemToAddUri = objectApi.save(itemToAddNode);
+    rootNode.list(SampleCategory.CONTAINER_ITEMS).add(itemToAddUri);
+    rootUriAfterUpdate = objectApi.save(rootNode);
+
+    rootNode = requestNormal.load(rootUriAfterUpdate);
+    assertEquals(2, rootNode.list(SampleCategory.CONTAINER_ITEMS).size());
+    ObjectNode itemAddedNode = rootNode.list(SampleCategory.CONTAINER_ITEMS).get(1).get();
+    assertEquals("added container item", itemAddedNode.getValue(SampleContainerItem.NAME));
+    ObjectNode datasheetAddedNode = itemAddedNode.ref(SampleContainerItem.DATASHEET).get();
+    assertEquals("added datasheet", datasheetAddedNode.getValue(SampleDataSheet.NAME));
+
+    // remove from ref. list, isLoaded = true
+    assertEquals(2, rootNode.list(SampleCategory.CONTAINER_ITEMS).size());
+    assertTrue(rootNode.list(SampleCategory.CONTAINER_ITEMS).get(0).isLoaded());
+    rootNode.list(SampleCategory.CONTAINER_ITEMS).get(0).clear();
+    rootUriAfterUpdate = objectApi.save(rootNode);
+
+    rootNode = objectApi.load(rootUriAfterUpdate);
+    assertEquals(1, rootNode.list(SampleCategory.CONTAINER_ITEMS).size());
+    itemAddedNode = rootNode.list(SampleCategory.CONTAINER_ITEMS).get(0).get();
+    assertEquals("added container item", itemAddedNode.getValue(SampleContainerItem.NAME));
+
+    // remove from ref. list, isLoaded = false
+    rootNode = objectApi.load(rootUriAfterUpdate);
+    assertFalse(rootNode.list(SampleCategory.CONTAINER_ITEMS).get(0).isLoaded());
+    rootNode.list(SampleCategory.CONTAINER_ITEMS).get(0).clear();
+    rootUriAfterUpdate = objectApi.save(rootNode);
+
+    rootNode = objectApi.load(rootUriAfterUpdate);
+    assertEquals(0, rootNode.list(SampleCategory.CONTAINER_ITEMS).size());
 
   }
 
