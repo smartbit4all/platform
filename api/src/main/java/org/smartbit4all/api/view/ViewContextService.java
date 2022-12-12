@@ -4,10 +4,10 @@ import java.util.UUID;
 import java.util.function.UnaryOperator;
 import org.smartbit4all.api.view.bean.CloseResult;
 import org.smartbit4all.api.view.bean.MessageResult;
+import org.smartbit4all.api.view.bean.OpenPendingData;
 import org.smartbit4all.api.view.bean.ViewContext;
 import org.smartbit4all.api.view.bean.ViewContextUpdate;
 import org.smartbit4all.api.view.bean.ViewData;
-import org.smartbit4all.api.view.bean.OpenPendingData;
 
 public interface ViewContextService {
 
@@ -24,6 +24,13 @@ public interface ViewContextService {
    * @return
    */
   ViewContext getCurrentViewContext();
+
+  /**
+   * Returns current ViewContext's UUID.
+   * 
+   * @return
+   */
+  UUID getCurrentViewContextUuid();
 
   /**
    * Sets current viewContext (by uuid).

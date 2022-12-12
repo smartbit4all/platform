@@ -97,6 +97,11 @@ public class ViewContextServiceImpl implements ViewContextService {
   }
 
   @Override
+  public UUID getCurrentViewContextUuid() {
+    return currentViewContextUuid.get();
+  }
+
+  @Override
   public ViewContext getViewContext(UUID uuid) {
     return readViewContext(getViewContextUri(uuid));
   }

@@ -100,8 +100,6 @@ public class JwtSessionRequestFilter extends OncePerRequestFilter {
         log.debug("viewContextUUid not received!");
         viewContextService.setCurrentViewContext(null);
       }
-    } else {
-      log.debug("viewContextService is null!");
     }
 
     filterChain.doFilter(request, response);

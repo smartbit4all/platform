@@ -1,5 +1,6 @@
 package org.smartbit4all.api.view;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.function.UnaryOperator;
 import org.smartbit4all.api.view.bean.CloseResult;
@@ -42,6 +43,14 @@ public interface ViewApi {
   ViewData getView(UUID viewUuid);
 
   /**
+   * Returns viewDatas from current viewContext with specified viewName.
+   * 
+   * @param viewName
+   * @return
+   */
+  List<ViewData> getViews(String viewName);
+
+  /**
    * Creates and shows a view based on MessageData parameter. MessageData.UUID will be overridden.
    * 
    * @param message
@@ -58,11 +67,11 @@ public interface ViewApi {
   void closeMessage(UUID messageUuid);
 
   /**
-   * Returns current ViewContext.
+   * Returns current ViewContext's UUID.
    * 
    * @return
    */
-  ViewContext currentViewContext();
+  UUID currentViewContextUuid();
 
   /**
    * Set the closing result of a view, which should be closed because another view is opening.
