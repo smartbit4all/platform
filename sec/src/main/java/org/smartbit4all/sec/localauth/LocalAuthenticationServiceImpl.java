@@ -38,16 +38,33 @@ public class LocalAuthenticationServiceImpl implements LocalAuthenticationServic
   @Override
   public void logout() {
     URI sessionUri = sessionApi.getSessionUri();
-    AccountInfo foundInfo = sessionApi.getAuthentication(KIND);
-    if (foundInfo == null) {
-      log.warn("Trying to logout from authentication kind [{}], but never was logged in!", KIND);
-      return;
-    }
 
+    // TODO since we currently use localAuth for all authentications (e.g. kerberos), we logout from
+    // everywhere.
+    // It would be better to only log out from the localAuth, but the frontend implementations must
+    // handle the different endpoints
+
+    // AccountInfo foundInfo = sessionApi.getAuthentication(KIND);
+    // if (foundInfo == null) {
+    // log.warn("Trying to logout from authentication kind [{}], but never was logged in!", KIND);
+    // return;
+    // }
+    // logoutFromAuth(sessionUri, foundInfo);
+
+    logoutFromAllAuth(sessionUri);
+  }
+
+  private void logoutFromAuth(URI sessionUri, AccountInfo foundInfo) {
     sessionManagementApi.removeSessionAuthentication(sessionUri, foundInfo.getKind());
     if (onLogout != null) {
       onLogout.accept(foundInfo);
     }
+  }
+
+  private void logoutFromAllAuth(URI sessionUri) {
+    sessionApi.getAuthentications().forEach(a -> {
+      logoutFromAuth(sessionUri, a);
+    });
   }
 
   public void onLogout(Consumer<AccountInfo> onLogout) {
