@@ -3,6 +3,7 @@ package org.smartbit4all.api;
 import java.net.URI;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.UnaryOperator;
 import org.smartbit4all.api.view.ViewApi;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.core.object.ObjectApi;
@@ -59,5 +60,10 @@ public abstract class AbstractApiImpl<M> {
     return objectApi.asList(clazz, (List<?>) param);
   }
 
+  protected void updateModel(UUID viewUuid, UnaryOperator<M> update) {
+    ObjectNode modelNode = loadModel(viewUuid);
+    modelNode.modify(getClazz(), update);
+    objectApi.save(modelNode);
+  }
 
 }
