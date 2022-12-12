@@ -54,20 +54,14 @@ public class SessionApiDelegateImpl implements SessionApiDelegate {
   public ResponseEntity<SessionInfoData> getSession() throws Exception {
     String token = tokenHandler.getTokenFromRequest(request);
     if (ObjectUtils.isEmpty(token) || "null".equals(token)) {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+      // TODO in angular FE it is not handled... thus we send back an empty 200 response !TEMORARLY!
+      // throw new MissingSessionTokenException();
+      return ResponseEntity.ok().build();
     }
 
-    URI sessionUri = null;
-    try {
-      sessionUri = sessionApi.getSessionUri();
-    } catch (NoCurrentSessionException e) {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-    }
+    URI sessionUri = sessionApi.getSessionUri();
 
     Session currentSession = sessionManagementApi.readSession(sessionUri);
-    if (currentSession == null) {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-    }
 
     String sid = tokenHandler.getTokenFromRequest(request);
 
@@ -120,6 +114,5 @@ public class SessionApiDelegateImpl implements SessionApiDelegate {
 
     return ResponseEntity.ok(sessionInfoData);
   }
-
 
 }
