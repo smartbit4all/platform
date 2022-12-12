@@ -33,11 +33,13 @@ public interface ViewContextService {
   UUID getCurrentViewContextUuid();
 
   /**
-   * Sets current viewContext (by uuid).
+   * Sets the current viewContext specified by uuid, locks it and executes the given process.
    * 
    * @param uuid
+   * @param process
+   * @throws Exception
    */
-  void setCurrentViewContext(UUID uuid);
+  void execute(UUID uuid, ViewContextCommand process) throws Exception;
 
   /**
    * Returns ViewContext by URI.
@@ -53,14 +55,12 @@ public interface ViewContextService {
   String getParentViewName(String viewName);
 
   /**
-   * Returns viewData from specified viewContext. If viewContextUuid is null, current viewContext is
-   * used.
+   * Returns viewData from the current viewContext.
    * 
-   * @param viewContextUuid
    * @param viewUuid
    * @return
    */
-  ViewData getViewFromViewContext(UUID viewContextUuid, UUID viewUuid);
+  ViewData getViewFromCurrentViewContext(UUID viewUuid);
 
   /**
    * Finds ViewData by viewUuid, and calls it's API's message handler method which is registered for

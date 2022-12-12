@@ -26,6 +26,7 @@ import org.smartbit4all.core.utility.ReflectionUtility;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageObject.VersionPolicy;
+import org.smartbit4all.domain.data.storage.StorageObjectLock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationContext;
@@ -36,7 +37,7 @@ public class ViewContextServiceImpl implements ViewContextService {
 
   private static final Logger log = LoggerFactory.getLogger(ViewContextServiceImpl.class);
 
-  private static final ThreadLocal<UUID> currentViewContextUuid = new ThreadLocal<>();
+  private static final ThreadLocal<ViewContext> currentViewContext = new ThreadLocal<>();
 
   private static final String SCHEMA = "viewcontext-sv";
 
@@ -83,26 +84,30 @@ public class ViewContextServiceImpl implements ViewContextService {
   }
 
   @Override
-  public void setCurrentViewContext(UUID uuid) {
-    log.debug("Setting currentViewContextUuid: {}", uuid);
-    if (uuid == null) {
-      currentViewContextUuid.remove();
-    }
-    currentViewContextUuid.set(uuid);
+  public ViewContext getCurrentViewContext() {
+    checkIfViewContextAvailable();
+    return currentViewContext.get();
   }
 
-  @Override
-  public ViewContext getCurrentViewContext() {
-    return readViewContext(getViewContextUri(currentViewContextUuid.get()));
+  private void checkIfViewContextAvailable() {
+    if (currentViewContext.get() == null) {
+      throw new IllegalStateException(
+          "currentViewContext is not set, please use ViewContextService.execute() to use ViewContext");
+    }
   }
 
   @Override
   public UUID getCurrentViewContextUuid() {
-    return currentViewContextUuid.get();
+    checkIfViewContextAvailable();
+    return currentViewContext.get().getUuid();
   }
 
   @Override
   public ViewContext getViewContext(UUID uuid) {
+    ViewContext viewContext = currentViewContext.get();
+    if (viewContext != null && viewContext.getUuid().equals(uuid)) {
+      return viewContext;
+    }
     return readViewContext(getViewContextUri(uuid));
   }
 
@@ -125,13 +130,15 @@ public class ViewContextServiceImpl implements ViewContextService {
 
   @Override
   public void updateCurrentViewContext(UnaryOperator<ViewContext> update) {
-    storage.get().update(getViewContextUri(currentViewContextUuid.get()), ViewContext.class,
-        update);
+    checkIfViewContextAvailable();
+    ViewContext viewContext = currentViewContext.get();
+    currentViewContext.set(update.apply(viewContext));
   }
 
   @Override
   public void updateViewContext(ViewContextUpdate updates) {
-    if (!Objects.equals(updates.getUuid(), currentViewContextUuid.get())) {
+    checkIfViewContextAvailable();
+    if (!Objects.equals(updates.getUuid(), getCurrentViewContextUuid())) {
       throw new IllegalArgumentException("currentViewContext doesn't match paramater");
     }
     if (!updates.getUpdates().stream().allMatch(
@@ -154,14 +161,8 @@ public class ViewContextServiceImpl implements ViewContextService {
   }
 
   @Override
-  public ViewData getViewFromViewContext(UUID viewContextUuid, UUID viewUuid) {
-    ViewContext viewContext;
-    if (viewContextUuid == null) {
-      viewContext = getCurrentViewContext();
-    } else {
-      viewContext = getViewContext(viewContextUuid);
-    }
-    Objects.requireNonNull(viewContext, "ViewContext must be not null!");
+  public ViewData getViewFromCurrentViewContext(UUID viewUuid) {
+    ViewContext viewContext = getCurrentViewContext();
     return ViewContexts.getView(viewContext, viewUuid);
   }
 
@@ -173,9 +174,9 @@ public class ViewContextServiceImpl implements ViewContextService {
     Objects.requireNonNull(messageResult.getSelectedOption().getCode(),
         "MessageResult.selectedOption.code must be specified");
 
-    ViewData message = getViewFromViewContext(null, messageUuid);
+    ViewData message = getViewFromCurrentViewContext(messageUuid);
     Objects.requireNonNull(message, "Message not found!");
-    ViewData view = getViewFromViewContext(null, viewUuid);
+    ViewData view = getViewFromCurrentViewContext(viewUuid);
     Object api = apiByViewName.get(view.getViewName());
     Objects.requireNonNull(api, "API not found for view " + view.getViewName());
     Map<String, Method> messageMethods = messageMethodsByView.get(view.getViewName());
@@ -280,7 +281,7 @@ public class ViewContextServiceImpl implements ViewContextService {
 
   @Override
   public CloseResult callBeforeClose(UUID viewToCloseUuid, OpenPendingData data) {
-    ViewData viewToClose = getViewFromViewContext(null, viewToCloseUuid);
+    ViewData viewToClose = getViewFromCurrentViewContext(viewToCloseUuid);
     Objects.requireNonNull(viewToClose, "View not found!");
     String viewName = viewToClose.getViewName();
     Object api = apiByViewName.get(viewName);
@@ -296,5 +297,31 @@ public class ViewContextServiceImpl implements ViewContextService {
     }
     return result;
   }
+
+  @Override
+  public void execute(UUID uuid, ViewContextCommand command) throws Exception {
+    Objects.requireNonNull(uuid, "currentViewContextUuid is not set");
+    Objects.requireNonNull(command, "command is not set");
+    URI viewContextUri = sessionApi.getViewContexts().get(uuid.toString());
+    if (viewContextUri == null) {
+      throw new IllegalArgumentException("ViewContext not found by UUID");
+    }
+    StorageObjectLock lock = storage.get().getLock(viewContextUri);
+    lock.lock();
+    try {
+      ViewContext viewContext = readViewContext(viewContextUri);
+      currentViewContext.set(viewContext);
+      command.execute();
+      ViewContext processedViewContext = currentViewContext.get();
+      storage.get().update(
+          viewContext.getUri(),
+          ViewContext.class,
+          ctx -> processedViewContext);
+    } finally {
+      lock.unlock();
+      currentViewContext.remove();
+    }
+  }
+
 
 }

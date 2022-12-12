@@ -148,12 +148,19 @@ public class JwtSessionRequestFilter extends OncePerRequestFilter implements Ini
     if (viewContextService != null) {
       final String uuid = request.getHeader("viewContextUuid");
       if (uuid != null) {
-        viewContextService.setCurrentViewContext(UUID.fromString(uuid));
-        log.debug("viewContextUUid set! {}", uuid);
+        try {
+          viewContextService.execute(
+              UUID.fromString(uuid),
+              () -> filterChain.doFilter(request, response));
+        } catch (Exception e) {
+          throw new ServletException("Error when executing viewContext process", e);
+        }
       } else {
         log.debug("viewContextUUid not received!");
-        viewContextService.setCurrentViewContext(null);
+        filterChain.doFilter(request, response);
       }
+    } else {
+      filterChain.doFilter(request, response);
     }
   }
 
