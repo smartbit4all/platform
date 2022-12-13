@@ -22,8 +22,6 @@ import org.smartbit4all.api.view.bean.ViewContext;
 import org.smartbit4all.api.view.bean.ViewContextUpdate;
 import org.smartbit4all.api.view.bean.ViewData;
 import org.smartbit4all.api.view.bean.ViewState;
-import org.smartbit4all.core.object.ObjectApi;
-import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.ReflectionUtility;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
@@ -39,7 +37,8 @@ public class ViewContextServiceImpl implements ViewContextService {
 
   private static final Logger log = LoggerFactory.getLogger(ViewContextServiceImpl.class);
 
-  private static final ThreadLocal<ObjectNode> currentViewContext = new ThreadLocal<>();
+  // private static final ThreadLocal<ObjectNode> currentViewContext = new ThreadLocal<>();
+  private static final ThreadLocal<ViewContext> currentViewContext = new ThreadLocal<>();
 
   private static final String SCHEMA = "viewcontext-sv";
 
@@ -51,8 +50,8 @@ public class ViewContextServiceImpl implements ViewContextService {
 
   private Map<String, Method> beforeCloseMethodsByView = new HashMap<>();
 
-  @Autowired
-  private ObjectApi objectApi;
+  // @Autowired
+  // private ObjectApi objectApi;
 
   @Autowired
   private StorageApi storageApi;
@@ -82,16 +81,19 @@ public class ViewContextServiceImpl implements ViewContextService {
     UUID uuid = UUID.randomUUID();
     ViewContext viewContext = new ViewContext()
         .uuid(uuid);
-    URI uri = objectApi.saveAsNew(SCHEMA, viewContext);
+    // URI uri = objectApi.saveAsNew(SCHEMA, viewContext);
+    URI uri = storage.get().saveAsNew(viewContext);
     log.debug("Viewcontext created: uuid={}, uri={}", uuid, uri);
     sessionApi.addViewContext(uuid, uri);
-    return objectApi.load(uri).getObject(ViewContext.class);
+    // return objectApi.load(uri).getObject(ViewContext.class);
+    return storage.get().read(uri, ViewContext.class);
   }
 
   @Override
   public ViewContext getCurrentViewContext() {
     checkIfViewContextAvailable();
-    return currentViewContext.get().getObject(ViewContext.class);
+    // return currentViewContext.get().getObject(ViewContext.class);
+    return currentViewContext.get();
   }
 
   private void checkIfViewContextAvailable() {
@@ -104,7 +106,8 @@ public class ViewContextServiceImpl implements ViewContextService {
   @Override
   public UUID getCurrentViewContextUuid() {
     checkIfViewContextAvailable();
-    return currentViewContext.get().getValue(UUID.class, ViewContext.UUID);
+    // return currentViewContext.get().getValue(UUID.class, ViewContext.UUID);
+    return currentViewContext.get().getUuid();
   }
 
   @Override
@@ -119,7 +122,8 @@ public class ViewContextServiceImpl implements ViewContextService {
   @Override
   public void updateCurrentViewContext(UnaryOperator<ViewContext> update) {
     checkIfViewContextAvailable();
-    currentViewContext.get().modify(ViewContext.class, update);
+    // currentViewContext.get().modify(ViewContext.class, update);
+    currentViewContext.set(update.apply(currentViewContext.get()));
   }
 
   @Override
@@ -296,9 +300,16 @@ public class ViewContextServiceImpl implements ViewContextService {
     StorageObjectLock lock = storage.get().getLock(viewContextUri);
     lock.lock();
     try {
-      currentViewContext.set(objectApi.load(viewContextUri));
+      // currentViewContext.set(objectApi.load(viewContextUri));
+      ViewContext viewContext = storage.get().read(viewContextUri, ViewContext.class);
+      currentViewContext.set(viewContext);
       command.execute();
-      objectApi.save(currentViewContext.get());
+      ViewContext processedViewContext = currentViewContext.get();
+      storage.get().update(
+          viewContext.getUri(),
+          ViewContext.class,
+          ctx -> processedViewContext);
+      // objectApi.save(currentViewContext.get());
     } finally {
       lock.unlock();
       currentViewContext.remove();
