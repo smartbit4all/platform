@@ -11,6 +11,8 @@ import org.smartbit4all.api.view.bean.ViewData;
 
 public interface ViewContextService {
 
+  public static final String SCHEMA = "viewcontext-sv";
+
   /**
    * Creates a new viewContext and registers it in the Session.
    * 

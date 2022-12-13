@@ -34,12 +34,18 @@ import org.smartbit4all.api.object.ModifyApiImpl;
 import org.smartbit4all.api.object.ModifyContributionApiStorageImpl;
 import org.smartbit4all.api.object.RetrievalApi;
 import org.smartbit4all.api.object.RetrievalApiImpl;
+import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.setting.LocaleUsage;
 import org.smartbit4all.api.setting.LocaleUsageImpl;
+import org.smartbit4all.api.view.ViewContextService;
+import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectDefinitionApiImpl;
 import org.smartbit4all.domain.config.DomainConfig;
+import org.smartbit4all.domain.data.storage.ObjectStorage;
+import org.smartbit4all.domain.data.storage.Storage;
+import org.smartbit4all.domain.data.storage.StorageObject.VersionPolicy;
 import org.smartbit4all.domain.service.entity.EntityManager;
 import org.smartbit4all.domain.service.transfer.TransferService;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -192,4 +198,21 @@ public class PlatformApiConfig {
   public BinaryDataSorageApi binaryDataSorageApi() {
     return new BinaryDataSorageApiImpl();
   }
+
+
+  @Bean
+  public Storage viewContextServiceStorage(ObjectStorage objectStorage, ObjectApi objectApi) {
+    Storage storage = new Storage(ViewContextService.SCHEMA, objectApi, objectStorage);
+    storage.setVersionPolicy(VersionPolicy.SINGLEVERSION);
+    return storage;
+  }
+
+  @Bean
+  public Storage sessionStorage(ObjectStorage objectStorage, ObjectApi objectApi) {
+    Storage storage = new Storage(SessionManagementApi.SCHEMA, objectApi, objectStorage);
+    storage.setVersionPolicy(VersionPolicy.SINGLEVERSION);
+    return storage;
+  }
+
+
 }
