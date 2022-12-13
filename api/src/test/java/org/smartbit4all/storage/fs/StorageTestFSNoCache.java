@@ -4,7 +4,6 @@ import java.io.IOException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
-import org.smartbit4all.core.io.TestFileUtil;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageObject;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,7 +14,6 @@ public class StorageTestFSNoCache extends StorageTest {
 
   @BeforeAll
   void init() throws IOException {
-    TestFileUtil.initTestDirectory();
     Storage storage = storageApi.get(StorageTestConfig.TESTSCHEME);
     StorageObject<FSTestBean> storageObject = storage.instanceOf(FSTestBean.class);
 
