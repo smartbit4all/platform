@@ -348,6 +348,10 @@ public class ObjectNode {
     return result;
   }
 
+  public String getValueAsString(String... paths) {
+    return getValue(String.class, paths);
+  }
+
   public <T> T getValue(Class<T> clazz, String... paths) {
     Object value = getValue(paths);
     try {
