@@ -356,6 +356,23 @@ public class ObjectNode {
     }
   }
 
+  public <E> List<E> getValueAsList(Class<E> clazz, String... paths) {
+    Object value = getValue(paths);
+    if (value instanceof List) {
+      return objectApi.asList(clazz, (List<?>) value);
+    }
+    throw new ClassCastException("Value is not a List on path");
+  }
+
+  @SuppressWarnings("unchecked")
+  public <V> Map<String, V> asMap(Class<V> clazz, String... paths) {
+    Object value = getValue(paths);
+    if (value instanceof Map) {
+      return objectApi.asMap(clazz, (Map<String, ?>) value);
+    }
+    throw new ClassCastException("Value is not a Map on path");
+  }
+
   @SuppressWarnings("unchecked")
   private <T> T getValueAs(Class<T> clazz, String... paths) {
     Object value = getValue(paths);
