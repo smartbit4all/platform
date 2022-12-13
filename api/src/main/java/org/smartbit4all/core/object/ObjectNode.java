@@ -1,5 +1,7 @@
 package org.smartbit4all.core.object;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -361,6 +363,10 @@ public class ObjectNode {
     if (value instanceof List) {
       return objectApi.asList(clazz, (List<?>) value);
     }
+    if (value instanceof ObjectNodeList) {
+      return ((ObjectNodeList) value).stream(clazz)
+          .collect(toList());
+    }
     throw new ClassCastException("Value is not a List on path");
   }
 
@@ -369,6 +375,12 @@ public class ObjectNode {
     Object value = getValue(paths);
     if (value instanceof Map) {
       return objectApi.asMap(clazz, (Map<String, ?>) value);
+    }
+    if (value instanceof ObjectNodeMap) {
+      return ((ObjectNodeMap) value).entrySet().stream()
+          .collect(toMap(
+              Entry::getKey,
+              e -> e.getValue().get().getObject(clazz)));
     }
     throw new ClassCastException("Value is not a Map on path");
   }
