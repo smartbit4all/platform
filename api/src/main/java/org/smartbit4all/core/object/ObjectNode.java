@@ -1,5 +1,7 @@
 package org.smartbit4all.core.object;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -346,6 +348,10 @@ public class ObjectNode {
     return result;
   }
 
+  public String getValueAsString(String... paths) {
+    return getValue(String.class, paths);
+  }
+
   public <T> T getValue(Class<T> clazz, String... paths) {
     Object value = getValue(paths);
     try {
@@ -354,6 +360,33 @@ public class ObjectNode {
       throw new IllegalArgumentException("Unable to load the " + definition.getQualifiedName()
           + " " + Arrays.toString(paths) + " field as " + clazz, e);
     }
+  }
+
+  public <E> List<E> getValueAsList(Class<E> clazz, String... paths) {
+    Object value = getValue(paths);
+    if (value instanceof List) {
+      return objectApi.asList(clazz, (List<?>) value);
+    }
+    if (value instanceof ObjectNodeList) {
+      return ((ObjectNodeList) value).stream(clazz)
+          .collect(toList());
+    }
+    throw new ClassCastException("Value is not a List on path");
+  }
+
+  @SuppressWarnings("unchecked")
+  public <V> Map<String, V> asMap(Class<V> clazz, String... paths) {
+    Object value = getValue(paths);
+    if (value instanceof Map) {
+      return objectApi.asMap(clazz, (Map<String, ?>) value);
+    }
+    if (value instanceof ObjectNodeMap) {
+      return ((ObjectNodeMap) value).entrySet().stream()
+          .collect(toMap(
+              Entry::getKey,
+              e -> e.getValue().get().getObject(clazz)));
+    }
+    throw new ClassCastException("Value is not a Map on path");
   }
 
   @SuppressWarnings("unchecked")
