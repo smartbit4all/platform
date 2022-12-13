@@ -48,6 +48,7 @@ import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageObject.VersionPolicy;
 import org.smartbit4all.domain.service.entity.EntityManager;
 import org.smartbit4all.domain.service.transfer.TransferService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -201,14 +202,16 @@ public class PlatformApiConfig {
 
 
   @Bean
-  public Storage viewContextServiceStorage(ObjectStorage objectStorage, ObjectApi objectApi) {
+  public Storage viewContextServiceStorage(@Autowired(required = false) ObjectStorage objectStorage,
+      ObjectApi objectApi) {
     Storage storage = new Storage(ViewContextService.SCHEMA, objectApi, objectStorage);
     storage.setVersionPolicy(VersionPolicy.SINGLEVERSION);
     return storage;
   }
 
   @Bean
-  public Storage sessionStorage(ObjectStorage objectStorage, ObjectApi objectApi) {
+  public Storage sessionStorage(@Autowired(required = false) ObjectStorage objectStorage,
+      ObjectApi objectApi) {
     Storage storage = new Storage(SessionManagementApi.SCHEMA, objectApi, objectStorage);
     storage.setVersionPolicy(VersionPolicy.SINGLEVERSION);
     return storage;
