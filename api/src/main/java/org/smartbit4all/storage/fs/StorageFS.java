@@ -24,6 +24,7 @@ import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.binarydata.BinaryData;
+import org.smartbit4all.api.binarydata.BinaryDataObject;
 import org.smartbit4all.api.storage.bean.ObjectVersion;
 import org.smartbit4all.api.storage.bean.StorageObjectData;
 import org.smartbit4all.api.storage.bean.StorageObjectRelationData;
@@ -803,6 +804,9 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
         Map<String, Object> obj = null;
         if (dataParts.get(1).length() != 0) {
           obj = definition.deserializeAsMap(dataParts.get(1));
+          if (BinaryDataObject.class.equals(definition.getClazz())) {
+            obj.put("uri", uri);
+          }
         }
         return instanceOf(storage, definition, obj, dataObject, dataObject.getCurrentVersion());
       } catch (IOException e) {
@@ -831,7 +835,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
         // Extract the current version and create the new one based on this.
         storageObjectData = optStorageObject.get();
         return storageObjectData;
-      } catch (Exception e) {
+      } catch (IOException e) {
         // We must try again.
         log.debug("Unable to read {}", objectDataFile);
         waitTime = waitTime * rnd.nextInt(4);
@@ -911,6 +915,9 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
       objectVersion = objectApi.getDefaultSerializer()
           .deserialize(versionObjectBinaryData, ObjectVersion.class).get();
       objectAsMap = definition.deserializeAsMap(versionBinaryData);
+      if (BinaryDataObject.class.equals(definition.getClazz())) {
+        objectAsMap.put("uri", versionUri);
+      }
     } catch (IOException e) {
       log.error("Unable to read version data", e);
       return null;
