@@ -13,6 +13,7 @@ import org.smartbit4all.api.session.bean.GetAuthenticationProvidersResponse;
 import org.smartbit4all.api.session.bean.RefreshSessionRequest;
 import org.smartbit4all.api.session.bean.Session;
 import org.smartbit4all.api.session.bean.SessionInfoData;
+import org.smartbit4all.api.session.exception.MissingSessionTokenException;
 import org.smartbit4all.api.session.exception.NoCurrentSessionException;
 import org.smartbit4all.api.session.restserver.SessionApiDelegate;
 import org.smartbit4all.sec.authentication.AuthenticationDataProvider;
@@ -54,9 +55,7 @@ public class SessionApiDelegateImpl implements SessionApiDelegate {
   public ResponseEntity<SessionInfoData> getSession() throws Exception {
     String token = tokenHandler.getTokenFromRequest(request);
     if (ObjectUtils.isEmpty(token) || "null".equals(token)) {
-      // TODO in angular FE it is not handled... thus we send back an empty 200 response !TEMORARLY!
-      // throw new MissingSessionTokenException();
-      return ResponseEntity.ok().build();
+      throw new MissingSessionTokenException();
     }
 
     URI sessionUri = sessionApi.getSessionUri();
