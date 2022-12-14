@@ -229,6 +229,13 @@ public class SessionManagementApiImpl implements SessionManagementApi {
   }
 
   @Override
+  public void setSession(URI sessionUri) {
+    Session session = initCurrentSession(sessionUri);
+    SessionAuthToken authToken = SessionAuthToken.create(session);
+    SecurityContextHolder.getContext().setAuthentication(authToken);
+  }
+
+  @Override
   public void setSessionParameter(URI sessionUri, String key, String value) {
     Objects.requireNonNull(sessionUri, EXPMSG_MISSING_SESSIONURI);
     Objects.requireNonNull(key, "key can not be null!");

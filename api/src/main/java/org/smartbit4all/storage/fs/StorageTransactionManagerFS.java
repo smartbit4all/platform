@@ -1,12 +1,15 @@
 package org.smartbit4all.storage.fs;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.invocation.AsyncInvocationChannel;
+import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.storage.bean.TransactionData;
 import org.smartbit4all.api.storage.bean.TransactionState;
 import org.smartbit4all.domain.data.storage.Storage;
@@ -66,6 +69,31 @@ public class StorageTransactionManagerFS extends AbstractPlatformTransactionMana
    */
   ThreadLocal<StorageTransaction> storageTransactionObject = new ThreadLocal<>();
 
+  /**
+   * The transaction attached to the current {@link Thread}.
+   */
+  ThreadLocal<List<AsyncInvocation>> invocations = new ThreadLocal<>();
+
+  private static class AsyncInvocation {
+    AsyncInvocationChannel channel;
+    InvocationRequest request;
+
+    public AsyncInvocation(AsyncInvocationChannel channel, InvocationRequest request) {
+      super();
+      this.channel = channel;
+      this.request = request;
+    }
+
+    void invoke() {
+      if (channel != null && request != null) {
+        channel.invoke(request);
+      } else {
+        log.error("Unable to execute async call.");
+      }
+    }
+
+  }
+
   public StorageTransactionManagerFS(StorageFS storageFS) {
     super();
     this.storageFS = storageFS;
@@ -103,6 +131,20 @@ public class StorageTransactionManagerFS extends AbstractPlatformTransactionMana
     storageTransaction.addSaveEventItem(object, event);
   }
 
+  /**
+   * Adds an on succeed invocation to the actual transaction.
+   * 
+   * @param request
+   */
+  public void addOnSucceed(AsyncInvocationChannel channel, InvocationRequest request) {
+    List<AsyncInvocation> invocationList = invocations.get();
+    if (invocationList == null) {
+      invocationList = new ArrayList<>();
+      invocations.set(invocationList);
+    }
+    invocationList.add(new AsyncInvocation(channel, request));
+  }
+
   @Override
   protected Object doGetTransaction() throws TransactionException {
     OffsetDateTime now = OffsetDateTime.now();
@@ -128,6 +170,14 @@ public class StorageTransactionManagerFS extends AbstractPlatformTransactionMana
   protected void doCommit(DefaultTransactionStatus status) throws TransactionException {
     if (status.getTransaction() instanceof StorageTransaction) {
       finishTransaction((StorageTransaction) status.getTransaction(), TransactionState.SUCC);
+      // Call invocations
+      List<AsyncInvocation> list = invocations.get();
+      if (list != null) {
+        for (AsyncInvocation asyncInvocation : list) {
+          asyncInvocation.invoke();
+        }
+      }
+      invocations.remove();
       // Call the events.
       Map<StorageObject<?>, List<StorageSaveEvent>> events =
           ((StorageTransaction) status.getTransaction()).getSaveEvents();

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
 import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,6 +81,11 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi {
    * maintenance.
    */
   private Map<URI, List<UUID>> runtimesByApis = new HashMap<>();
+
+  /**
+   * Prevent from accessing the registry before the first maintain cycle.
+   */
+  private CountDownLatch maintainLatch = new CountDownLatch(1);
 
   /**
    * All {@link ApiData} uri that our application provides.
@@ -160,7 +166,7 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi {
   }
 
   @Override
-  @Scheduled(fixedDelayString = "${invocationregistry.refresh.fixeddelay:5000}")
+  @Scheduled(fixedDelayString = "${invocationregistry.refresh.fixeddelay:3000}")
   public void refreshRegistry() {
     if (storage.get() == null || !storage.get().exists(REGISTER_URI) || !initialized) {
       return;
@@ -201,6 +207,7 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi {
     apis = activeApis;
     addApis(apisToAdd);
     removeApis(apisToRemove);
+    maintainLatch.countDown();
   }
 
   private void fillPrimaryApiMap() {
@@ -294,15 +301,25 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi {
 
   @Override
   public Object getApiInstance(URI apiDataUri) {
+    try {
+      maintainLatch.await();
+    } catch (InterruptedException e) {
+      log.error("Wait for maintain interrupted.", e);
+    }
     return apiInstanceByApiDataUri.get(apiDataUri);
   }
 
   @Override
   public ApiDescriptor getApi(String interfaceClass, String name) {
+    try {
+      maintainLatch.await();
+    } catch (InterruptedException e) {
+      log.error("Wait for maintain interrupted.", e);
+    }
     Map<String, ApiDescriptor> apisByName = apiRegister.get(interfaceClass);
 
     if (apisByName != null) {
-      return apisByName.get(name);
+      return apisByName.size() == 1 ? apisByName.values().iterator().next() : apisByName.get(name);
     }
 
     return null;
@@ -310,6 +327,11 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi {
 
   @Override
   public List<UUID> getRuntimesForApi(URI apiDataUri) {
+    try {
+      maintainLatch.await();
+    } catch (InterruptedException e) {
+      log.error("Wait for maintain interrupted.", e);
+    }
     return runtimesByApis.get(apiDataUri);
   }
 }

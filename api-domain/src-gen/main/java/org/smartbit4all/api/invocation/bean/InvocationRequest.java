@@ -39,7 +39,8 @@ import javax.validation.Valid;
   InvocationRequest.INTERFACE_CLASS,
   InvocationRequest.NAME,
   InvocationRequest.METHOD_NAME,
-  InvocationRequest.PARAMETERS
+  InvocationRequest.PARAMETERS,
+  InvocationRequest.SESSION_URI
 })
 @JsonTypeName("InvocationRequest")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -58,6 +59,9 @@ public class InvocationRequest {
 
   public static final String PARAMETERS = "parameters";
   private List<InvocationParameter> parameters = new ArrayList<>();
+
+  public static final String SESSION_URI = "sessionUri";
+  private URI sessionUri;
 
   public InvocationRequest() { 
   }
@@ -207,6 +211,34 @@ public class InvocationRequest {
   }
 
 
+  public InvocationRequest sessionUri(URI sessionUri) {
+    
+    this.sessionUri = sessionUri;
+    return this;
+  }
+
+   /**
+   * The URI of the session that belongs to the request. Optional and can be used to inherit session for the asynchronous call. 
+   * @return sessionUri
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "The URI of the session that belongs to the request. Optional and can be used to inherit session for the asynchronous call. ")
+  @JsonProperty(SESSION_URI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public URI getSessionUri() {
+    return sessionUri;
+  }
+
+
+  @JsonProperty(SESSION_URI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSessionUri(URI sessionUri) {
+    this.sessionUri = sessionUri;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -220,12 +252,13 @@ public class InvocationRequest {
         Objects.equals(this.interfaceClass, invocationRequest.interfaceClass) &&
         Objects.equals(this.name, invocationRequest.name) &&
         Objects.equals(this.methodName, invocationRequest.methodName) &&
-        Objects.equals(this.parameters, invocationRequest.parameters);
+        Objects.equals(this.parameters, invocationRequest.parameters) &&
+        Objects.equals(this.sessionUri, invocationRequest.sessionUri);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, interfaceClass, name, methodName, parameters);
+    return Objects.hash(uri, interfaceClass, name, methodName, parameters, sessionUri);
   }
 
   @Override
@@ -237,6 +270,7 @@ public class InvocationRequest {
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    methodName: ").append(toIndentedString(methodName)).append("\n");
     sb.append("    parameters: ").append(toIndentedString(parameters)).append("\n");
+    sb.append("    sessionUri: ").append(toIndentedString(sessionUri)).append("\n");
     sb.append("}");
     return sb.toString();
   }

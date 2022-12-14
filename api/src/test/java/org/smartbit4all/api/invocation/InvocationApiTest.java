@@ -18,7 +18,7 @@ class InvocationApiTest {
   private InvocationApi invocationApi;
 
   @Autowired
-  private TestApi testApiInvocationHandler;
+  private TestApi testApi;
 
   @BeforeAll
   public static void setUpBeforeClass(
@@ -57,15 +57,24 @@ class InvocationApiTest {
     Assertions.assertEquals(value, result.getValue());
   }
 
+  @Test
+  void testInvocationByBuilder() throws Exception {
+    String value = "Peter";
+    InvocationRequest request =
+        invocationApi.builder(testApi).build(a -> a.echoMethod(value));
+    InvocationParameter result = invocationApi.invoke(request);
+    Assertions.assertEquals(value, result.getValue());
+  }
+
   public static String callResult;
 
   @Test
   void testInvocationHandler() throws Exception {
     String value = "Peter";
-    testApiInvocationHandler.doMethod(value);
+    testApi.doMethod(value);
     Assertions.assertEquals(value, TestApiImpl.lastDo);
 
-    String result = testApiInvocationHandler.echoMethod(value);
+    String result = testApi.echoMethod(value);
     Assertions.assertEquals(value, result);
   }
 

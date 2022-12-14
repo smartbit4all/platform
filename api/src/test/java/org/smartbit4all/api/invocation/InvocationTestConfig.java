@@ -21,11 +21,6 @@ public class InvocationTestConfig {
   }
 
   @Bean
-  public TestApi testApiInvocationHandler(InvocationApi invocationApi) {
-    return ApiInvocationHandler.createProxy(TestApi.class, TestApiImpl.NAME, invocationApi);
-  }
-
-  @Bean
   public ProviderApiInvocationHandler<TestApi> testApiProvider(TestApi testApi) {
     return ProviderApiInvocationHandler.providerOf(TestApi.class, TestApiImpl.NAME, testApi);
   }

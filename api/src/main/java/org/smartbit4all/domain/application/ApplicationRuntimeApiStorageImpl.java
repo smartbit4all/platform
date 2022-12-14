@@ -7,11 +7,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 import org.apache.logging.log4j.util.Strings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.invocation.bean.ApplicationRuntimeData;
 import org.smartbit4all.core.utility.concurrent.FutureValue;
 import org.smartbit4all.domain.data.storage.Storage;
@@ -35,6 +38,8 @@ import org.springframework.util.CollectionUtils;
  * @author Peter Boros
  */
 public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, InitializingBean {
+
+  private static final Logger log = LoggerFactory.getLogger(ApplicationRuntimeApiStorageImpl.class);
 
   public static final String CLUSTER = "cluster";
 
@@ -91,6 +96,8 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
 
   @Autowired
   private Environment environment;
+
+  private CountDownLatch maintainLatch = new CountDownLatch(1);
 
   @Override
   public ApplicationRuntime self() {
@@ -179,6 +186,7 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
     for (ApplicationRuntimeData invalidRuntime : invalidRuntimes) {
       storageCluster.archive(invalidRuntime.getUri());
     }
+    maintainLatch.countDown();
   }
 
   @Override
@@ -224,11 +232,21 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
 
   @Override
   public List<ApplicationRuntime> getActiveRuntimes() {
+    try {
+      maintainLatch.await();
+    } catch (InterruptedException e) {
+      log.error("Wait for maintain interrupted.", e);
+    }
     return runtimes.values().stream().collect(Collectors.toList());
   }
 
   @Override
   public List<URI> getApis(UUID uuid) {
+    try {
+      maintainLatch.await();
+    } catch (InterruptedException e) {
+      log.error("Wait for maintain interrupted.", e);
+    }
     return runtimes.get(uuid).getData().getApis();
   }
 

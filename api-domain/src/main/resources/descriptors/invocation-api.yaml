@@ -50,6 +50,12 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/InvocationParameter'
+        sessionUri:
+          type: string
+          format: uri
+          description: |
+            The URI of the session that belongs to the request. Optional and can be used to inherit session
+            for the asynchronous call.
     InvocationParameter:
       type: object
       required: [name, typeClass]
