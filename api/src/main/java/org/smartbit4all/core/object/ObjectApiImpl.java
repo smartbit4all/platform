@@ -102,7 +102,7 @@ public class ObjectApiImpl implements ObjectApi {
   }
 
   @SuppressWarnings("unchecked")
-  public <T> ObjectNode nodeInternal(String storageScheme, T object) {
+  <T> ObjectNode nodeInternal(String storageScheme, T object) {
     ObjectDefinition<T> definition = (ObjectDefinition<T>) definition(object.getClass());
     ObjectNodeData data = new ObjectNodeData()
         .objectUri(definition.getUri(object))
@@ -127,6 +127,9 @@ public class ObjectApiImpl implements ObjectApi {
 
   @Override
   public URI getLatestUri(URI uri) {
+    if (uri == null) {
+      return null;
+    }
     return ObjectStorageImpl.getUriWithoutVersion(uri);
   }
 
