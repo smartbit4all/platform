@@ -42,6 +42,8 @@ import org.springframework.util.Assert;
  */
 public class SessionManagementApiImpl implements SessionManagementApi {
 
+  private static final String TECHNICAL = "technical";
+
   private static final String REFRESHTOKEN_PREFIX = "REFRESHTOKEN_";
 
   private static final Logger log = LoggerFactory.getLogger(SessionManagementApiImpl.class);
@@ -153,7 +155,7 @@ public class SessionManagementApiImpl implements SessionManagementApi {
       authenticationToken = authenticationTokenProvider.apply(sessionUri);
       Objects.requireNonNull(authenticationToken, "authenticationTokenProvider has returned null!");
       log.debug(
-          "Atuhentication token has been created by the configured authenticationTokenProvider!");
+          "Authentication token has been created by the configured authenticationTokenProvider!");
     } else {
       authenticationToken = createAnonymousAuthToken(sessionUri);
       log.debug("Anonymous atuhentication token has been created!");
@@ -311,8 +313,9 @@ public class SessionManagementApiImpl implements SessionManagementApi {
     Assert.notNull(technicalUserUri, "technicalUserUri cannot be null");
 
     if (SecurityContextHolder.getContext().getAuthentication() != null) {
-      throw new IllegalStateException(
-          "Cannot start a technical session if an authentication was already present in the security context!");
+      log.warn("Technical session user is overwritten,"
+          + "because an authentication was already present"
+          + "in the security context!");
     }
 
     User technicalUser = orgApi.getUser(technicalUserUri);
@@ -321,11 +324,12 @@ public class SessionManagementApiImpl implements SessionManagementApi {
     }
 
     Session session = new Session();
-    session.putParametersItem("sessionKind", "technical");
+    session.putParametersItem("sessionKind", TECHNICAL);
     session.setUser(technicalUserUri);
     AccountInfo accountInfo =
         SecurityContextUtility.getDefaultAccountInfoProvider(orgApi).apply(technicalUser, null);
     accountInfo.addRolesItem("ROLE_technical");
+    accountInfo.setKind(TECHNICAL);
     session.addAuthenticationsItem(accountInfo);
     storage.get().saveAsNew(session);
     log.debug("Technical session saved!\n{}", session);
