@@ -160,10 +160,6 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
     boolean containmentChanged = false;
 
     ObjectChangeRequest result = new ObjectChangeRequest(request, node);
-    // ObjectChangeRequest result = new ObjectChangeRequest(request, node.getDefinition(),
-    // node.getStorageScheme(), opByState(node.getState()));
-    result.setUri(node.getObjectUri());
-    result.setObjectAsMap(node.getObjectAsMap());
 
     // Recurse on the values.
     for (Entry<String, ObjectNodeReference> entry : node.getReferences().entrySet()) {

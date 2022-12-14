@@ -130,3 +130,62 @@ components:
       type: string
       default: NORMAL
       enum: [NORMAL, LATEST, EXACT_VERSION]
+    Snapshot:
+      type: object
+      description: |
+        A snapshot is similar to an ObjectNodeData. It can be saved, and contains only one inline 
+        object (SnapshotData) - it only contains versioned URIs and references. 
+        Since these versions don't change, a snapshot can always be reloaded exactly as it was before.
+      properties:
+        uri:
+          type: string
+          format: uri
+        data:
+          $ref: '#/components/schemas/SnapshotData'
+    SnapshotData:
+      type: object
+      description: 
+      required: [references, referenceLists, referenceMaps] 
+      properties:
+        objectUri:
+          type: string
+          format: uri
+        qualifiedName:
+          type: string
+        storageSchema:
+          type: string
+        versionNr:
+          type: integer
+          format: int64
+        references:
+          type: string
+          additionalProperties:
+            $ref: '#/components/schemas/SnapshotDataRef'
+        referenceLists:
+          type: string
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/SnapshotDataRef'
+        referenceMaps:
+          type: string
+          additionalProperties:
+            type: string
+            additionalProperties:
+              $ref: '#/components/schemas/SnapshotDataRef'
+        resultUri:
+          type: string
+          format: uri
+          description: |
+            The object URI after an ObjectApi.save. It can be used to read the result Uri after save.
+    SnapshotDataRef:
+      type: object
+      description: 
+      properties:
+        objectUri:
+          type: string
+          format: uri
+        isLoaded:
+          type: boolean
+        data:
+          $ref: '#/components/schemas/SnapshotData'

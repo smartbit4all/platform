@@ -53,6 +53,8 @@ public class ObjectChangeRequest {
 
   ObjectChangeRequest(ApplyChangeRequest request, ObjectNode node) {
     this(request, node.getDefinition(), node.getStorageScheme(), opByState(node.getState()));
+    this.uri = node.getObjectUri();
+    this.objectAsMap = node.getObjectAsMap();
     objectNodeRef = new WeakReference<>(node);
   }
 

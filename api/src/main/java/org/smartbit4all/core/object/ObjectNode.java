@@ -16,6 +16,9 @@ import java.util.stream.Stream;
 import org.smartbit4all.api.object.bean.ObjectNodeData;
 import org.smartbit4all.api.object.bean.ObjectNodeState;
 import org.smartbit4all.api.object.bean.ReferencePropertyKind;
+import org.smartbit4all.api.object.bean.Snapshot;
+import org.smartbit4all.api.object.bean.SnapshotData;
+import org.smartbit4all.api.object.bean.SnapshotDataRef;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.core.utility.UriUtils;
 import com.google.common.base.Strings;
@@ -534,6 +537,75 @@ public class ObjectNode {
 
   public URI getResultUri() {
     return data.getResultUri();
+  }
+
+  /**
+   * Creates a snapshot from the current state of this ObjectNode. Only use it when there isn't any
+   * change, since this cannot be is a snapshot.
+   * 
+   * @return
+   */
+  public Snapshot snapshot() {
+    return new Snapshot()
+        .data(snapshotNode(this));
+  }
+
+  private SnapshotData snapshotNode(ObjectNode node) {
+    // TODO check state!
+    return new SnapshotData()
+        .objectUri(node.getObjectUri())
+        .qualifiedName(node.data.getQualifiedName())
+        .storageSchema(node.data.getStorageSchema())
+        .versionNr(node.data.getVersionNr())
+        .qualifiedName(node.data.getQualifiedName())
+        .references(snapshotRefs(node.getReferences()))
+        .referenceLists(snapshotRefLists(node.getReferenceLists()))
+        .referenceMaps(snapshotRefMaps(node.getReferenceMaps()));
+  }
+
+  private Map<String, SnapshotDataRef> snapshotRefs(Map<String, ObjectNodeReference> refs) {
+    return refs.entrySet().stream()
+        .collect(toMap(
+            Entry::getKey,
+            ref -> snapshotRef(ref.getValue())));
+  }
+
+  private Map<String, List<SnapshotDataRef>> snapshotRefLists(Map<String, ObjectNodeList> lists) {
+    return lists.entrySet().stream()
+        .collect(toMap(
+            Entry::getKey,
+            ref -> snapshotList(ref.getValue())));
+  }
+
+  private Map<String, Map<String, SnapshotDataRef>> snapshotRefMaps(
+      Map<String, ObjectNodeMap> maps) {
+    return maps.entrySet().stream()
+        .collect(toMap(
+            Entry::getKey,
+            map -> snapshotMap(map.getValue())));
+  }
+
+  private SnapshotDataRef snapshotRef(ObjectNodeReference ref) {
+    SnapshotDataRef result = new SnapshotDataRef()
+        .objectUri(ref.getObjectUri())
+        .isLoaded(ref.isLoaded());
+    if (Boolean.TRUE.equals(ref.isLoaded())) {
+      result.setData(snapshotNode(ref.get()));
+    }
+    return result;
+  }
+
+  private List<SnapshotDataRef> snapshotList(ObjectNodeList list) {
+    return list.stream()
+        .map(this::snapshotRef)
+        .collect(toList());
+  }
+
+  private Map<String, SnapshotDataRef> snapshotMap(ObjectNodeMap map) {
+    return map.entrySet().stream()
+        .collect(toMap(
+            Entry::getKey,
+            ref -> snapshotRef(ref.getValue())));
   }
 
 }
