@@ -361,7 +361,7 @@ public class ObjectNode {
       return objectApi.asType(clazz, value);
     } catch (IllegalArgumentException e) {
       throw new IllegalArgumentException("Unable to load the " + definition.getQualifiedName()
-          + " " + Arrays.toString(paths) + " field as " + clazz, e);
+          + " " + Arrays.toString(paths) + " field as " + clazz + "(" + value + ")", e);
     }
   }
 
