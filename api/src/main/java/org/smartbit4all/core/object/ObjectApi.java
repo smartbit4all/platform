@@ -9,7 +9,7 @@ import org.smartbit4all.api.object.RetrievalApi;
 import org.smartbit4all.api.object.RetrievalRequest;
 import org.smartbit4all.api.object.bean.ObjectNodeData;
 import org.smartbit4all.api.object.bean.RetrievalMode;
-import org.smartbit4all.api.object.bean.Snapshot;
+import org.smartbit4all.api.object.bean.SnapshotData;
 import org.smartbit4all.domain.data.storage.StorageApi;
 
 /**
@@ -178,12 +178,12 @@ public interface ObjectApi {
   List<ObjectNode> load(RetrievalRequest request, List<URI> objectUris);
 
   /**
-   * Reads all from snapshot.
+   * Creates an ObjectNode from snapshot data.
    * 
-   * @param snapshot
+   * @param data
    * @return
    */
-  ObjectNode loadSnapshot(Snapshot snapshot);
+  ObjectNode loadSnapshot(SnapshotData data);
 
   /**
    * Read the given object identified by the URI. We can not initiate a transaction with the result

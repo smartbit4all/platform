@@ -5,6 +5,7 @@ import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +17,6 @@ import java.util.stream.Stream;
 import org.smartbit4all.api.object.bean.ObjectNodeData;
 import org.smartbit4all.api.object.bean.ObjectNodeState;
 import org.smartbit4all.api.object.bean.ReferencePropertyKind;
-import org.smartbit4all.api.object.bean.Snapshot;
 import org.smartbit4all.api.object.bean.SnapshotData;
 import org.smartbit4all.api.object.bean.SnapshotDataRef;
 import org.smartbit4all.core.utility.StringConstant;
@@ -54,6 +54,19 @@ public class ObjectNode {
 
   ObjectNode(ObjectApi objectApi, ObjectNodeData data) {
     this(objectApi, objectApi.definition(data.getQualifiedName()), data);
+  }
+
+  ObjectNode(ObjectApi objectApi, SnapshotData snapshot) {
+    super();
+    this.objectApi = objectApi;
+    this.definition = objectApi.definition(snapshot.getQualifiedName());
+    ObjectNodeData nodeData = fromSnapshot(snapshot);
+    this.data = nodeData;
+    references = initReferenceNodes();
+    referenceLists = initReferenceLists();
+    referenceMaps = initReferenceMaps();
+    // TODO postProcess partially loaded ObjectNodeLists/Maps
+    postProcessFromSnapshot(this, snapshot);
   }
 
   ObjectNode(ObjectApi objectApi, ObjectDefinition<?> definition, ObjectNodeData data) {
@@ -545,17 +558,20 @@ public class ObjectNode {
    * 
    * @return
    */
-  public Snapshot snapshot() {
-    return new Snapshot()
-        .data(snapshotNode(this));
+  public SnapshotData snapshot() {
+    return snapshotNode(this);
   }
 
   private SnapshotData snapshotNode(ObjectNode node) {
-    // TODO check state!
+    if (node.getState() != ObjectNodeState.NOP) {
+      throw new IllegalStateException(
+          "Node is not in NOP state, creating snapshot is unavailable!");
+    }
     return new SnapshotData()
-        .objectUri(node.getObjectUri())
+        .objectUri(node.data.getObjectUri())
         .qualifiedName(node.data.getQualifiedName())
         .storageSchema(node.data.getStorageSchema())
+        .objectAsMap(node.data.getObjectAsMap())
         .versionNr(node.data.getVersionNr())
         .qualifiedName(node.data.getQualifiedName())
         .references(snapshotRefs(node.getReferences()))
@@ -606,6 +622,108 @@ public class ObjectNode {
         .collect(toMap(
             Entry::getKey,
             ref -> snapshotRef(ref.getValue())));
+  }
+
+  private ObjectNodeData fromSnapshot(SnapshotData snapshot) {
+    return new ObjectNodeData()
+        .objectUri(snapshot.getObjectUri())
+        .qualifiedName(snapshot.getQualifiedName())
+        .storageSchema(snapshot.getStorageSchema())
+        .objectAsMap(convertObjectMap(snapshot))
+        .versionNr(snapshot.getVersionNr())
+        .qualifiedName(snapshot.getQualifiedName())
+        .references(fromSnapshotRef(snapshot.getReferences()))
+        .referenceLists(fromSnapshotRefList(snapshot.getReferenceLists()))
+        .referenceMaps(fromSnapshotRefMap(snapshot.getReferenceMaps()));
+  }
+
+  private Map<String, Object> convertObjectMap(SnapshotData snapshot) {
+    Map<String, Object> objectAsMap = snapshot.getObjectAsMap();
+    Object objUri = objectAsMap.get("uri");
+    if (objUri instanceof String) {
+      objUri = URI.create((String) objUri);
+      objectAsMap.put("uri", objUri);
+    }
+    return objectAsMap;
+  }
+
+  private Map<String, ObjectNodeData> fromSnapshotRef(Map<String, SnapshotDataRef> refs) {
+    return refs.entrySet().stream()
+        .filter(e -> e.getValue().getIsLoaded())
+        .collect(toMap(
+            Entry::getKey,
+            e -> fromSnapshot(e.getValue().getData())));
+  }
+
+  private Map<String, List<ObjectNodeData>> fromSnapshotRefList(
+      Map<String, List<SnapshotDataRef>> lists) {
+    return lists.entrySet().stream()
+        .filter(e -> isLoaded(e.getValue()))
+        .collect(toMap(
+            Entry::getKey,
+            e -> e.getValue().stream()
+                .map(ref -> fromSnapshot(ref.getData()))
+                .collect(toList())));
+  }
+
+  private Map<String, Map<String, ObjectNodeData>> fromSnapshotRefMap(
+      Map<String, Map<String, SnapshotDataRef>> maps) {
+    return maps.entrySet().stream()
+        .filter(e -> isLoaded(e.getValue().values()))
+        .collect(toMap(
+            Entry::getKey,
+            e -> e.getValue().entrySet().stream()
+                .collect(toMap(
+                    Entry::getKey,
+                    e2 -> fromSnapshot(e2.getValue().getData())))));
+  }
+
+  private boolean isLoaded(Collection<SnapshotDataRef> refs) {
+    return refs.stream()
+        .allMatch(SnapshotDataRef::getIsLoaded);
+  }
+
+  private void postProcessFromSnapshot(ObjectNode node, SnapshotData snapshot) {
+    node.referenceLists.entrySet().stream()
+        .filter(list -> snapshot.getReferenceLists().containsKey(list.getKey()))
+        .forEach(list -> postProcessList(
+            list.getValue(),
+            snapshot.getReferenceLists().get(list.getKey())));
+    node.referenceMaps.entrySet().stream()
+        .filter(list -> snapshot.getReferenceLists().containsKey(list.getKey()))
+        .forEach(list -> postProcessMap(
+            list.getValue(),
+            snapshot.getReferenceMaps().get(list.getKey())));
+
+  }
+
+  private void postProcessList(ObjectNodeList nodeList, List<SnapshotDataRef> snapList) {
+    if (nodeList.size() != snapList.size()) {
+      throw new IllegalArgumentException("nodeList and refList size doesn't match");
+    }
+    for (int i = 0; i < nodeList.size(); i++) {
+      SnapshotDataRef snapRef = snapList.get(i);
+      ObjectNodeReference nodeRef = nodeList.get(i);
+      postProcessReferences(snapRef, nodeRef);
+    }
+  }
+
+  private void postProcessMap(ObjectNodeMap nodeMap, Map<String, SnapshotDataRef> snapMap) {
+    if (nodeMap.size() != snapMap.size()) {
+      throw new IllegalArgumentException("nodeList and refList size doesn't match");
+    }
+    for (Entry<String, ObjectNodeReference> nodeEntry : nodeMap.entrySet()) {
+      SnapshotDataRef snapRef = snapMap.get(nodeEntry.getKey());
+      ObjectNodeReference nodeRef = nodeEntry.getValue();
+      postProcessReferences(snapRef, nodeRef);
+    }
+  }
+
+  private void postProcessReferences(SnapshotDataRef snapRef, ObjectNodeReference nodeRef) {
+    if (Boolean.TRUE.equals(snapRef.getIsLoaded()) && !nodeRef.isLoaded()) {
+      ObjectNode refNode = new ObjectNode(objectApi, snapRef.getData());
+      nodeRef.set(refNode);
+    }
   }
 
 }
