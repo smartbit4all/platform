@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.net.URI;
+import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.api.object.bean.ObjectNodeState;
@@ -167,7 +168,32 @@ public class SnapshotTest {
 
   @Test
   void snapshotComplexObject() {
-    // implement later with refs, lists and maps
+    ObjectNode node = objectApi.create(
+        MY_SCHEME,
+        new SampleCategory().name("root testObjectNodeOnly"));
+    ObjectNodeList itemList = node.list(SampleCategory.CONTAINER_ITEMS);
+    ObjectNodeList subCategoriesList = node.list(SampleCategory.SUB_CATEGORIES);
+    IntStream.range(0, 5).forEach(i -> itemList
+        .addNewObject(new SampleContainerItem().name("item " + i))
+        .ref(SampleContainerItem.DATASHEET)
+        .setNewObject(new SampleDataSheet().name("datasheet " + i)));
+    IntStream.range(0, 3).forEach(i -> subCategoriesList
+        .addNewObject(new SampleCategory().name("subcat " + i))
+        .list(SampleCategory.CONTAINER_ITEMS)
+        .addNewObject(new SampleContainerItem().name("subcat " + i + " item"))
+        .ref(SampleContainerItem.DATASHEET)
+        .setNewObject(new SampleDataSheet().name("subcat " + i + " item datasheet ")));
+
+    URI uri = objectApi.save(node);
+    ObjectNode loaded = objectApi.request(SampleCategory.class)
+        .add(SampleCategory.CONTAINER_ITEMS, SampleContainerItem.DATASHEET)
+        .add(SampleCategory.SUB_CATEGORIES, SampleCategory.CONTAINER_ITEMS,
+            SampleContainerItem.DATASHEET)
+        .load(uri);
+    ObjectNode loadedFromSnapshot = saveAndLoadSnapshot(loaded);
+    assertEquals(loaded, loadedFromSnapshot);
+
+    // add maps later
   }
 
 }
