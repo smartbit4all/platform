@@ -34,22 +34,22 @@ import javax.validation.Valid;
  */
 @ApiModel(description = "A snapshot is similar to an ObjectNodeData. It can be saved, and contains only one inline  object (SnapshotData) - it only contains versioned URIs and references.  Since these versions don't change, a snapshot can always be reloaded exactly as it was before. ")
 @JsonPropertyOrder({
-  Snapshot.URI,
-  Snapshot.DATA
+  SnapshotEntry.URI,
+  SnapshotEntry.DATA
 })
-@JsonTypeName("Snapshot")
+@JsonTypeName("SnapshotEntry")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
-public class Snapshot {
+public class SnapshotEntry {
   public static final String URI = "uri";
   private URI uri;
 
   public static final String DATA = "data";
   private SnapshotData data;
 
-  public Snapshot() { 
+  public SnapshotEntry() { 
   }
 
-  public Snapshot uri(URI uri) {
+  public SnapshotEntry uri(URI uri) {
     
     this.uri = uri;
     return this;
@@ -77,7 +77,7 @@ public class Snapshot {
   }
 
 
-  public Snapshot data(SnapshotData data) {
+  public SnapshotEntry data(SnapshotData data) {
     
     this.data = data;
     return this;
@@ -113,9 +113,9 @@ public class Snapshot {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    Snapshot snapshot = (Snapshot) o;
-    return Objects.equals(this.uri, snapshot.uri) &&
-        Objects.equals(this.data, snapshot.data);
+    SnapshotEntry snapshotEntry = (SnapshotEntry) o;
+    return Objects.equals(this.uri, snapshotEntry.uri) &&
+        Objects.equals(this.data, snapshotEntry.data);
   }
 
   @Override
@@ -126,7 +126,7 @@ public class Snapshot {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class Snapshot {\n");
+    sb.append("class SnapshotEntry {\n");
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    data: ").append(toIndentedString(data)).append("\n");
     sb.append("}");

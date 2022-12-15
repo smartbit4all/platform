@@ -41,6 +41,7 @@ import javax.validation.Valid;
   SnapshotData.QUALIFIED_NAME,
   SnapshotData.STORAGE_SCHEMA,
   SnapshotData.VERSION_NR,
+  SnapshotData.OBJECT_AS_MAP,
   SnapshotData.REFERENCES,
   SnapshotData.REFERENCE_LISTS,
   SnapshotData.REFERENCE_MAPS,
@@ -60,6 +61,9 @@ public class SnapshotData {
 
   public static final String VERSION_NR = "versionNr";
   private Long versionNr;
+
+  public static final String OBJECT_AS_MAP = "objectAsMap";
+  private Map<String, Object> objectAsMap = null;
 
   public static final String REFERENCES = "references";
   private Map<String, SnapshotDataRef> references = new HashMap<>();
@@ -182,6 +186,41 @@ public class SnapshotData {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setVersionNr(Long versionNr) {
     this.versionNr = versionNr;
+  }
+
+
+  public SnapshotData objectAsMap(Map<String, Object> objectAsMap) {
+    
+    this.objectAsMap = objectAsMap;
+    return this;
+  }
+
+  public SnapshotData putObjectAsMapItem(String key, Object objectAsMapItem) {
+    if (this.objectAsMap == null) {
+      this.objectAsMap = new HashMap<>();
+    }
+    this.objectAsMap.put(key, objectAsMapItem);
+    return this;
+  }
+
+   /**
+   * Get objectAsMap
+   * @return objectAsMap
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(OBJECT_AS_MAP)
+  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Map<String, Object> getObjectAsMap() {
+    return objectAsMap;
+  }
+
+
+  @JsonProperty(OBJECT_AS_MAP)
+  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+  public void setObjectAsMap(Map<String, Object> objectAsMap) {
+    this.objectAsMap = objectAsMap;
   }
 
 
@@ -328,6 +367,7 @@ public class SnapshotData {
         Objects.equals(this.qualifiedName, snapshotData.qualifiedName) &&
         Objects.equals(this.storageSchema, snapshotData.storageSchema) &&
         Objects.equals(this.versionNr, snapshotData.versionNr) &&
+        Objects.equals(this.objectAsMap, snapshotData.objectAsMap) &&
         Objects.equals(this.references, snapshotData.references) &&
         Objects.equals(this.referenceLists, snapshotData.referenceLists) &&
         Objects.equals(this.referenceMaps, snapshotData.referenceMaps) &&
@@ -336,7 +376,7 @@ public class SnapshotData {
 
   @Override
   public int hashCode() {
-    return Objects.hash(objectUri, qualifiedName, storageSchema, versionNr, references, referenceLists, referenceMaps, resultUri);
+    return Objects.hash(objectUri, qualifiedName, storageSchema, versionNr, objectAsMap, references, referenceLists, referenceMaps, resultUri);
   }
 
   @Override
@@ -347,6 +387,7 @@ public class SnapshotData {
     sb.append("    qualifiedName: ").append(toIndentedString(qualifiedName)).append("\n");
     sb.append("    storageSchema: ").append(toIndentedString(storageSchema)).append("\n");
     sb.append("    versionNr: ").append(toIndentedString(versionNr)).append("\n");
+    sb.append("    objectAsMap: ").append(toIndentedString(objectAsMap)).append("\n");
     sb.append("    references: ").append(toIndentedString(references)).append("\n");
     sb.append("    referenceLists: ").append(toIndentedString(referenceLists)).append("\n");
     sb.append("    referenceMaps: ").append(toIndentedString(referenceMaps)).append("\n");

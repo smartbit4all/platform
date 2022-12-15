@@ -18,7 +18,7 @@ import org.smartbit4all.api.object.RetrievalRequest;
 import org.smartbit4all.api.object.bean.ObjectNodeData;
 import org.smartbit4all.api.object.bean.ObjectNodeState;
 import org.smartbit4all.api.object.bean.RetrievalMode;
-import org.smartbit4all.api.object.bean.Snapshot;
+import org.smartbit4all.api.object.bean.SnapshotData;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -197,9 +197,8 @@ public class ObjectApiImpl implements ObjectApi {
   }
 
   @Override
-  public ObjectNode loadSnapshot(Snapshot snapshot) {
-    // TODO implement.. :-)
-    throw new UnsupportedOperationException();
+  public ObjectNode loadSnapshot(SnapshotData data) {
+    return new ObjectNode(this, data);
   }
 
 }

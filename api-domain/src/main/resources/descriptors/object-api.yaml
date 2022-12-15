@@ -130,7 +130,7 @@ components:
       type: string
       default: NORMAL
       enum: [NORMAL, LATEST, EXACT_VERSION]
-    Snapshot:
+    SnapshotEntry:
       type: object
       description: |
         A snapshot is similar to an ObjectNodeData. It can be saved, and contains only one inline 
@@ -157,6 +157,9 @@ components:
         versionNr:
           type: integer
           format: int64
+        objectAsMap:
+          type: object
+          additionalProperties: true
         references:
           type: string
           additionalProperties:
