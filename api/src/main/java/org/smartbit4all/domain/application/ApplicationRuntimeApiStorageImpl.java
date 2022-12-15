@@ -97,7 +97,7 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
   @Autowired
   private Environment environment;
 
-  private CountDownLatch maintainLatch = new CountDownLatch(1);
+  private CountDownLatch maintainLatch = new CountDownLatch(2);
 
   @Override
   public ApplicationRuntime self() {

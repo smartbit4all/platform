@@ -29,13 +29,9 @@ public class InvocationBuilder<T> implements InvocationHandler {
   private SessionApi sessionApi;
 
   @SuppressWarnings("unchecked")
-  InvocationBuilder(T api) {
+  InvocationBuilder(Class<T> apiInterface) {
     super();
-    for (int i = 0; i < api.getClass().getInterfaces().length; i++) {
-      Class<?> interf = api.getClass().getInterfaces()[i];
-      clazz = (Class<T>) interf;
-      break;
-    }
+    clazz = apiInterface;
     apiProxy = (T) Proxy.newProxyInstance(clazz.getClassLoader(),
         new Class[] {clazz}, this);
   }

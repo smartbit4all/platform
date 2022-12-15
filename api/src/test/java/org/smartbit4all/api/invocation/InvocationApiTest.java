@@ -61,7 +61,7 @@ class InvocationApiTest {
   void testInvocationByBuilder() throws Exception {
     String value = "Peter";
     InvocationRequest request =
-        invocationApi.builder(testApi).build(a -> a.echoMethod(value));
+        invocationApi.builder(TestApi.class).build(a -> a.echoMethod(value));
     InvocationParameter result = invocationApi.invoke(request);
     Assertions.assertEquals(value, result.getValue());
   }

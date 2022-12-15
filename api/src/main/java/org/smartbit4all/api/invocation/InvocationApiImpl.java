@@ -118,8 +118,8 @@ public final class InvocationApiImpl implements InvocationApi, DisposableBean {
   }
 
   @Override
-  public <T> InvocationBuilder<T> builder(T api) {
-    return new InvocationBuilder<>(api).sessionApi(sessionApi);
+  public <T> InvocationBuilder<T> builder(Class<T> apiInterface) {
+    return new InvocationBuilder<>(apiInterface).sessionApi(sessionApi);
   }
 
   @Override

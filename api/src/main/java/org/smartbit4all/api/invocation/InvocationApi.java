@@ -29,10 +29,10 @@ public interface InvocationApi {
    * </p>
    * 
    * @param <T>
-   * @param api
+   * @param apiInterface
    * @return
    */
-  <T> InvocationBuilder<T> builder(T api);
+  <T> InvocationBuilder<T> builder(Class<T> apiInterface);
 
   /**
    * This call register the invocation for the for execute after the successful commit of the
