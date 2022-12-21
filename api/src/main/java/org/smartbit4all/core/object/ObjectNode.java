@@ -6,6 +6,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +28,7 @@ import com.google.common.base.Strings;
  * The object node contains an object returned by the <code>RetrievalApi</code>. It can manage the
  * state of the object and we can use it to produce <code>ApplyChangeRequest</code> at the end of
  * the modification.
- * 
+ *
  * @author Peter Boros
  *
  */
@@ -152,7 +153,7 @@ public class ObjectNode {
 
   /**
    * Return the object as map.
-   * 
+   *
    * @return
    */
   public final Map<String, Object> getObjectAsMap() {
@@ -173,7 +174,7 @@ public class ObjectNode {
   /**
    * Returns the stored data as an object of class T. It is a copy, deserialized from map by
    * ObjectDefinition<T>.
-   * 
+   *
    * @param clazz The class of the required object.
    * @return A copy from the current data.
    */
@@ -220,7 +221,7 @@ public class ObjectNode {
    * and can return another bean or the same with modified values. We don't have to care about
    * setting the proper URIs for the references because they will be managed by the
    * <code>RetrievalApi</code> and the <code>ApplyChangeApi</code>.
-   * 
+   *
    * @param <T> The type class of the bean. If we already have the object then it will be passed to
    *        the updateFunction. Else the function read the given object from the data.
    * @param object The object that contains the values to set. This object is going to be serialized
@@ -239,7 +240,7 @@ public class ObjectNode {
   /**
    * A safe way to update the value of the object node without the risk of forgotten
    * {@link #setObject(Object)}.
-   * 
+   *
    * @param <T>
    * @param clazz
    * @param update
@@ -253,7 +254,7 @@ public class ObjectNode {
 
   /**
    * Set the values directly into the data.
-   * 
+   *
    * @param values The map of values.
    */
   public ObjectNode setValues(Map<String, Object> values) {
@@ -276,7 +277,7 @@ public class ObjectNode {
 
   /**
    * Sets the value in the data map, specified by path. Path cannot contain references!
-   * 
+   *
    * @param value
    * @param paths
    * @return
@@ -315,7 +316,7 @@ public class ObjectNode {
   /**
    * Modify the state of the node. It's not public so it can be called inside the
    * <code>RetrievalApi</code> and the <code>ApplyChangeApi</code> implementations.
-   * 
+   *
    * @param state
    */
   final ObjectNode setState(ObjectNodeState state) {
@@ -387,6 +388,9 @@ public class ObjectNode {
       return ((ObjectNodeList) value).stream(clazz)
           .collect(toList());
     }
+    if (value == null) {
+      return Collections.emptyList();
+    }
     throw new ClassCastException("Value is not a List on path");
   }
 
@@ -401,6 +405,9 @@ public class ObjectNode {
           .collect(toMap(
               Entry::getKey,
               e -> e.getValue().get().getObject(clazz)));
+    }
+    if (value == null) {
+      return Collections.emptyMap();
     }
     throw new ClassCastException("Value is not a Map on path");
   }
@@ -555,7 +562,7 @@ public class ObjectNode {
   /**
    * Creates a snapshot from the current state of this ObjectNode. Only use it when there isn't any
    * change, since this cannot be is a snapshot.
-   * 
+   *
    * @return
    */
   public SnapshotData snapshot() {
