@@ -344,6 +344,15 @@ components:
           type: string
         identifier:
           type: string
+        inputType:
+          $ref: '#/components/schemas/UiActionInputType'
+    UiActionInputType:
+      type: string
+      default: none
+      enum:
+        - none
+        - textfield
+        - textarea
     UiActionRequest:
       type: object
       description: 

@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.smartbit4all.api.view.bean.UiActionInputType;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -32,7 +33,8 @@ import javax.validation.Valid;
  */
 @JsonPropertyOrder({
   UiAction.CODE,
-  UiAction.IDENTIFIER
+  UiAction.IDENTIFIER,
+  UiAction.INPUT_TYPE
 })
 @JsonTypeName("UiAction")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -42,6 +44,9 @@ public class UiAction {
 
   public static final String IDENTIFIER = "identifier";
   private String identifier;
+
+  public static final String INPUT_TYPE = "inputType";
+  private UiActionInputType inputType = UiActionInputType.NONE;
 
   public UiAction() { 
   }
@@ -100,6 +105,34 @@ public class UiAction {
   }
 
 
+  public UiAction inputType(UiActionInputType inputType) {
+    
+    this.inputType = inputType;
+    return this;
+  }
+
+   /**
+   * Get inputType
+   * @return inputType
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(INPUT_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public UiActionInputType getInputType() {
+    return inputType;
+  }
+
+
+  @JsonProperty(INPUT_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setInputType(UiActionInputType inputType) {
+    this.inputType = inputType;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -110,12 +143,13 @@ public class UiAction {
     }
     UiAction uiAction = (UiAction) o;
     return Objects.equals(this.code, uiAction.code) &&
-        Objects.equals(this.identifier, uiAction.identifier);
+        Objects.equals(this.identifier, uiAction.identifier) &&
+        Objects.equals(this.inputType, uiAction.inputType);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(code, identifier);
+    return Objects.hash(code, identifier, inputType);
   }
 
   @Override
@@ -124,6 +158,7 @@ public class UiAction {
     sb.append("class UiAction {\n");
     sb.append("    code: ").append(toIndentedString(code)).append("\n");
     sb.append("    identifier: ").append(toIndentedString(identifier)).append("\n");
+    sb.append("    inputType: ").append(toIndentedString(inputType)).append("\n");
     sb.append("}");
     return sb.toString();
   }
