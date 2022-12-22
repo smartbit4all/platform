@@ -346,6 +346,8 @@ components:
           type: string
         inputType:
           $ref: '#/components/schemas/UiActionInputType'
+        submit:
+          type: boolean
     UiActionInputType:
       type: string
       default: none

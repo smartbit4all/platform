@@ -34,7 +34,8 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   UiAction.CODE,
   UiAction.IDENTIFIER,
-  UiAction.INPUT_TYPE
+  UiAction.INPUT_TYPE,
+  UiAction.SUBMIT
 })
 @JsonTypeName("UiAction")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -47,6 +48,9 @@ public class UiAction {
 
   public static final String INPUT_TYPE = "inputType";
   private UiActionInputType inputType = UiActionInputType.NONE;
+
+  public static final String SUBMIT = "submit";
+  private Boolean submit;
 
   public UiAction() { 
   }
@@ -133,6 +137,33 @@ public class UiAction {
   }
 
 
+  public UiAction submit(Boolean submit) {
+    
+    this.submit = submit;
+    return this;
+  }
+
+   /**
+   * Get submit
+   * @return submit
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(SUBMIT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getSubmit() {
+    return submit;
+  }
+
+
+  @JsonProperty(SUBMIT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSubmit(Boolean submit) {
+    this.submit = submit;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -144,12 +175,13 @@ public class UiAction {
     UiAction uiAction = (UiAction) o;
     return Objects.equals(this.code, uiAction.code) &&
         Objects.equals(this.identifier, uiAction.identifier) &&
-        Objects.equals(this.inputType, uiAction.inputType);
+        Objects.equals(this.inputType, uiAction.inputType) &&
+        Objects.equals(this.submit, uiAction.submit);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(code, identifier, inputType);
+    return Objects.hash(code, identifier, inputType, submit);
   }
 
   @Override
@@ -159,6 +191,7 @@ public class UiAction {
     sb.append("    code: ").append(toIndentedString(code)).append("\n");
     sb.append("    identifier: ").append(toIndentedString(identifier)).append("\n");
     sb.append("    inputType: ").append(toIndentedString(inputType)).append("\n");
+    sb.append("    submit: ").append(toIndentedString(submit)).append("\n");
     sb.append("}");
     return sb.toString();
   }
