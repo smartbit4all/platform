@@ -70,8 +70,13 @@ public final class StorageObjectLock implements Lock {
   public void unlock() {
     check();
     entry.getMutex().unlock();
+    release();
   }
 
+  /**
+   * Use the normal lock instead.
+   */
+  @Deprecated
   public final void unlockAndRelease() {
     unlock();
     release();

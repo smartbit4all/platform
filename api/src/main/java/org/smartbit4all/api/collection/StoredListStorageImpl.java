@@ -62,7 +62,7 @@ public class StoredListStorageImpl extends AbstractStoredContainerStorageImpl
         storage.saveAsNewObject(data);
       }
     } finally {
-      lock.unlockAndRelease();;
+      lock.unlock();
     }
   }
 
@@ -84,7 +84,7 @@ public class StoredListStorageImpl extends AbstractStoredContainerStorageImpl
         storage.saveAsNewObject(data);
       }
     } finally {
-      lock.unlockAndRelease();;
+      lock.unlock();
     }
   }
 

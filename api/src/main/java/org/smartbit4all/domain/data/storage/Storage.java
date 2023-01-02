@@ -301,7 +301,7 @@ public final class Storage {
         return saveVersion(so);
       }
     } finally {
-      lock.unlockAndRelease();
+      lock.unlock();
     }
     return null;
   }
@@ -665,7 +665,7 @@ public final class Storage {
 
       save(mapObject);
     } finally {
-      lock.unlockAndRelease();
+      lock.unlock();
     }
 
   }
@@ -719,7 +719,7 @@ public final class Storage {
         return load(referenceData.getUri(), clazz);
       }
     } finally {
-      objectLock.unlockAndRelease();
+      objectLock.unlock();
     }
   }
 

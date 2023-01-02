@@ -462,7 +462,7 @@ class StorageTest {
         }
       }
     } finally {
-      lock.unlockAndRelease();
+      lock.unlock();
     }
   }
 
@@ -483,7 +483,7 @@ class StorageTest {
           } catch (InterruptedException e) {
             e.printStackTrace();
           } finally {
-            lock.unlockAndRelease();
+            lock.unlock();
           }
         }
         finalizedThreads.incrementAndGet();

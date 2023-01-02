@@ -314,7 +314,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
       throw new IllegalArgumentException("Unable to finalize the transaction on " + object, e);
     } finally {
       if (storageObjectLock != null) {
-        storageObjectLock.unlockAndRelease();
+        storageObjectLock.unlock();
       }
     }
     return object;

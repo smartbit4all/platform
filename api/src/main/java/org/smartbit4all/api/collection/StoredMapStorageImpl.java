@@ -65,7 +65,7 @@ public class StoredMapStorageImpl extends AbstractStoredContainerStorageImpl imp
         storage.saveAsNewObject(mapData);
       }
     } finally {
-      lock.unlockAndRelease();;
+      lock.unlock();
     }
   }
 
@@ -101,7 +101,7 @@ public class StoredMapStorageImpl extends AbstractStoredContainerStorageImpl imp
         // NOP. Removing from a not existing map...
       }
     } finally {
-      lock.unlockAndRelease();;
+      lock.unlock();
     }
   }
 

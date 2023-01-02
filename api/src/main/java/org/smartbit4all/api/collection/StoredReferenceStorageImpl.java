@@ -39,7 +39,7 @@ public class StoredReferenceStorageImpl<T> extends AbstractStoredContainerStorag
         storage.saveAsNew(new StoredReferenceData().uri(uri).refObject(update.apply(null)));
       }
     } finally {
-      objectLock.unlockAndRelease();
+      objectLock.unlock();
     }
   }
 

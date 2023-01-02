@@ -60,7 +60,7 @@ public class ObjectStorageInMemory extends ObjectStorageImpl {
               storageObject.definition().getClazz()));
       return copy;
     } finally {
-      objectLock.unlockAndRelease();
+      objectLock.unlock();
     }
   }
 
