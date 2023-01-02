@@ -22,10 +22,12 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import org.smartbit4all.api.view.bean.ViewData;
+import org.smartbit4all.api.view.bean.OpenPendingData;
+import org.smartbit4all.api.view.bean.View;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -36,22 +38,59 @@ import javax.validation.Valid;
  */
 @ApiModel(description = "The same session can be valid / used in multiple UIs, this object represents a UI.")
 @JsonPropertyOrder({
-  ViewContext.UUID,
-  ViewContext.VIEWS
+  ViewContextEntry.URI,
+  ViewContextEntry.UUID,
+  ViewContextEntry.VIEWS,
+  ViewContextEntry.OPEN_PENDING_DATA
 })
-@JsonTypeName("ViewContext")
+@JsonTypeName("ViewContextEntry")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
-public class ViewContext {
+public class ViewContextEntry {
+  public static final String URI = "uri";
+  private URI uri;
+
   public static final String UUID = "uuid";
   private UUID uuid;
 
   public static final String VIEWS = "views";
-  private List<ViewData> views = new ArrayList<>();
+  private List<View> views = new ArrayList<>();
 
-  public ViewContext() { 
+  public static final String OPEN_PENDING_DATA = "openPendingData";
+  private OpenPendingData openPendingData;
+
+  public ViewContextEntry() { 
   }
 
-  public ViewContext uuid(UUID uuid) {
+  public ViewContextEntry uri(URI uri) {
+    
+    this.uri = uri;
+    return this;
+  }
+
+   /**
+   * Get uri
+   * @return uri
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @Valid
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(URI)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public URI getUri() {
+    return uri;
+  }
+
+
+  @JsonProperty(URI)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setUri(URI uri) {
+    this.uri = uri;
+  }
+
+
+  public ViewContextEntry uuid(UUID uuid) {
     
     this.uuid = uuid;
     return this;
@@ -79,13 +118,13 @@ public class ViewContext {
   }
 
 
-  public ViewContext views(List<ViewData> views) {
+  public ViewContextEntry views(List<View> views) {
     
     this.views = views;
     return this;
   }
 
-  public ViewContext addViewsItem(ViewData viewsItem) {
+  public ViewContextEntry addViewsItem(View viewsItem) {
     this.views.add(viewsItem);
     return this;
   }
@@ -101,15 +140,43 @@ public class ViewContext {
   @JsonProperty(VIEWS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<ViewData> getViews() {
+  public List<View> getViews() {
     return views;
   }
 
 
   @JsonProperty(VIEWS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setViews(List<ViewData> views) {
+  public void setViews(List<View> views) {
     this.views = views;
+  }
+
+
+  public ViewContextEntry openPendingData(OpenPendingData openPendingData) {
+    
+    this.openPendingData = openPendingData;
+    return this;
+  }
+
+   /**
+   * Get openPendingData
+   * @return openPendingData
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(OPEN_PENDING_DATA)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public OpenPendingData getOpenPendingData() {
+    return openPendingData;
+  }
+
+
+  @JsonProperty(OPEN_PENDING_DATA)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setOpenPendingData(OpenPendingData openPendingData) {
+    this.openPendingData = openPendingData;
   }
 
 
@@ -121,22 +188,26 @@ public class ViewContext {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    ViewContext viewContext = (ViewContext) o;
-    return Objects.equals(this.uuid, viewContext.uuid) &&
-        Objects.equals(this.views, viewContext.views);
+    ViewContextEntry viewContextEntry = (ViewContextEntry) o;
+    return Objects.equals(this.uri, viewContextEntry.uri) &&
+        Objects.equals(this.uuid, viewContextEntry.uuid) &&
+        Objects.equals(this.views, viewContextEntry.views) &&
+        Objects.equals(this.openPendingData, viewContextEntry.openPendingData);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uuid, views);
+    return Objects.hash(uri, uuid, views, openPendingData);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class ViewContext {\n");
+    sb.append("class ViewContextEntry {\n");
+    sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    uuid: ").append(toIndentedString(uuid)).append("\n");
     sb.append("    views: ").append(toIndentedString(views)).append("\n");
+    sb.append("    openPendingData: ").append(toIndentedString(openPendingData)).append("\n");
     sb.append("}");
     return sb.toString();
   }

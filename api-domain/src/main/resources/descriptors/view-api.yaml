@@ -126,10 +126,10 @@ paths:
           description: 'Error occured while fetching the constraints data'
 components:
   schemas:
-    ViewContext:
+    ViewContextEntry:
       type: object
       description: The same session can be valid / used in multiple UIs, this object represents a UI.
-      required: [uri,views,messages]
+      required: [uri,views]
       properties:
         uri:
           type: string
@@ -140,10 +140,22 @@ components:
         views:
           type: array
           items:
-            $ref: '#/components/schemas/ViewData'
+            $ref: '#/components/schemas/View'
         openPendingData:
           $ref: '#/components/schemas/OpenPendingData'
-    ViewData:
+    ViewContext:
+      type: object
+      description: The same session can be valid / used in multiple UIs, this object represents a UI.
+      required: [uri,views]
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        views:
+          type: array
+          items:
+            $ref: '#/components/schemas/ViewData'
+    View:
       type: object
       required: [uuid,viewName,state,type,parameters]
       properties:
@@ -166,13 +178,33 @@ components:
           $ref: '#/components/schemas/ViewState'
         type:
           $ref: '#/components/schemas/ViewType'
-        constraint:
-          $ref: '#/components/schemas/ViewConstraint'
         containerUuid:
           type: string
           format: uuid
         model:
           type: object
+        constraint:
+          $ref: '#/components/schemas/ViewConstraint'
+    ViewData:
+      type: object
+      required: [uuid,viewName,state,type,parameters]
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          description: Unique identifier of the View.
+        viewName:
+          type: string
+        parameters:
+          type: object
+          additionalProperties: true
+        state:
+          $ref: '#/components/schemas/ViewState'
+        type:
+          $ref: '#/components/schemas/ViewType'
+        containerUuid:
+          type: string
+          format: uuid
     ViewConstraint:
       type: object
       description: |

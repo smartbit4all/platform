@@ -22,10 +22,12 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import org.smartbit4all.api.view.bean.ViewConstraint;
 import org.smartbit4all.api.view.bean.ViewState;
 import org.smartbit4all.api.view.bean.ViewType;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -34,24 +36,34 @@ import javax.validation.constraints.*;
 import javax.validation.Valid;
 
 /**
- * ViewData
+ * View
  */
 @JsonPropertyOrder({
-  ViewData.UUID,
-  ViewData.VIEW_NAME,
-  ViewData.PARAMETERS,
-  ViewData.STATE,
-  ViewData.TYPE,
-  ViewData.CONTAINER_UUID
+  View.UUID,
+  View.VIEW_NAME,
+  View.OBJECT_URI,
+  View.BRANCH_URI,
+  View.PARAMETERS,
+  View.STATE,
+  View.TYPE,
+  View.CONTAINER_UUID,
+  View.MODEL,
+  View.CONSTRAINT
 })
-@JsonTypeName("ViewData")
+@JsonTypeName("View")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
-public class ViewData {
+public class View {
   public static final String UUID = "uuid";
   private UUID uuid;
 
   public static final String VIEW_NAME = "viewName";
   private String viewName;
+
+  public static final String OBJECT_URI = "objectUri";
+  private URI objectUri;
+
+  public static final String BRANCH_URI = "branchUri";
+  private URI branchUri;
 
   public static final String PARAMETERS = "parameters";
   private Map<String, Object> parameters = new HashMap<>();
@@ -65,10 +77,16 @@ public class ViewData {
   public static final String CONTAINER_UUID = "containerUuid";
   private UUID containerUuid;
 
-  public ViewData() { 
+  public static final String MODEL = "model";
+  private Object model;
+
+  public static final String CONSTRAINT = "constraint";
+  private ViewConstraint constraint;
+
+  public View() { 
   }
 
-  public ViewData uuid(UUID uuid) {
+  public View uuid(UUID uuid) {
     
     this.uuid = uuid;
     return this;
@@ -97,7 +115,7 @@ public class ViewData {
   }
 
 
-  public ViewData viewName(String viewName) {
+  public View viewName(String viewName) {
     
     this.viewName = viewName;
     return this;
@@ -125,13 +143,69 @@ public class ViewData {
   }
 
 
-  public ViewData parameters(Map<String, Object> parameters) {
+  public View objectUri(URI objectUri) {
+    
+    this.objectUri = objectUri;
+    return this;
+  }
+
+   /**
+   * Get objectUri
+   * @return objectUri
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(OBJECT_URI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public URI getObjectUri() {
+    return objectUri;
+  }
+
+
+  @JsonProperty(OBJECT_URI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setObjectUri(URI objectUri) {
+    this.objectUri = objectUri;
+  }
+
+
+  public View branchUri(URI branchUri) {
+    
+    this.branchUri = branchUri;
+    return this;
+  }
+
+   /**
+   * Get branchUri
+   * @return branchUri
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(BRANCH_URI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public URI getBranchUri() {
+    return branchUri;
+  }
+
+
+  @JsonProperty(BRANCH_URI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setBranchUri(URI branchUri) {
+    this.branchUri = branchUri;
+  }
+
+
+  public View parameters(Map<String, Object> parameters) {
     
     this.parameters = parameters;
     return this;
   }
 
-  public ViewData putParametersItem(String key, Object parametersItem) {
+  public View putParametersItem(String key, Object parametersItem) {
     this.parameters.put(key, parametersItem);
     return this;
   }
@@ -158,7 +232,7 @@ public class ViewData {
   }
 
 
-  public ViewData state(ViewState state) {
+  public View state(ViewState state) {
     
     this.state = state;
     return this;
@@ -187,7 +261,7 @@ public class ViewData {
   }
 
 
-  public ViewData type(ViewType type) {
+  public View type(ViewType type) {
     
     this.type = type;
     return this;
@@ -216,7 +290,7 @@ public class ViewData {
   }
 
 
-  public ViewData containerUuid(UUID containerUuid) {
+  public View containerUuid(UUID containerUuid) {
     
     this.containerUuid = containerUuid;
     return this;
@@ -244,6 +318,61 @@ public class ViewData {
   }
 
 
+  public View model(Object model) {
+    
+    this.model = model;
+    return this;
+  }
+
+   /**
+   * Get model
+   * @return model
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(MODEL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Object getModel() {
+    return model;
+  }
+
+
+  @JsonProperty(MODEL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setModel(Object model) {
+    this.model = model;
+  }
+
+
+  public View constraint(ViewConstraint constraint) {
+    
+    this.constraint = constraint;
+    return this;
+  }
+
+   /**
+   * Get constraint
+   * @return constraint
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(CONSTRAINT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public ViewConstraint getConstraint() {
+    return constraint;
+  }
+
+
+  @JsonProperty(CONSTRAINT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setConstraint(ViewConstraint constraint) {
+    this.constraint = constraint;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -252,30 +381,38 @@ public class ViewData {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    ViewData viewData = (ViewData) o;
-    return Objects.equals(this.uuid, viewData.uuid) &&
-        Objects.equals(this.viewName, viewData.viewName) &&
-        Objects.equals(this.parameters, viewData.parameters) &&
-        Objects.equals(this.state, viewData.state) &&
-        Objects.equals(this.type, viewData.type) &&
-        Objects.equals(this.containerUuid, viewData.containerUuid);
+    View view = (View) o;
+    return Objects.equals(this.uuid, view.uuid) &&
+        Objects.equals(this.viewName, view.viewName) &&
+        Objects.equals(this.objectUri, view.objectUri) &&
+        Objects.equals(this.branchUri, view.branchUri) &&
+        Objects.equals(this.parameters, view.parameters) &&
+        Objects.equals(this.state, view.state) &&
+        Objects.equals(this.type, view.type) &&
+        Objects.equals(this.containerUuid, view.containerUuid) &&
+        Objects.equals(this.model, view.model) &&
+        Objects.equals(this.constraint, view.constraint);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uuid, viewName, parameters, state, type, containerUuid);
+    return Objects.hash(uuid, viewName, objectUri, branchUri, parameters, state, type, containerUuid, model, constraint);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class ViewData {\n");
+    sb.append("class View {\n");
     sb.append("    uuid: ").append(toIndentedString(uuid)).append("\n");
     sb.append("    viewName: ").append(toIndentedString(viewName)).append("\n");
+    sb.append("    objectUri: ").append(toIndentedString(objectUri)).append("\n");
+    sb.append("    branchUri: ").append(toIndentedString(branchUri)).append("\n");
     sb.append("    parameters: ").append(toIndentedString(parameters)).append("\n");
     sb.append("    state: ").append(toIndentedString(state)).append("\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("    containerUuid: ").append(toIndentedString(containerUuid)).append("\n");
+    sb.append("    model: ").append(toIndentedString(model)).append("\n");
+    sb.append("    constraint: ").append(toIndentedString(constraint)).append("\n");
     sb.append("}");
     return sb.toString();
   }

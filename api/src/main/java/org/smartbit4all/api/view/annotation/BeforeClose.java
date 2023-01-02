@@ -1,4 +1,4 @@
-package org.smartbit4all.api.view;
+package org.smartbit4all.api.view.annotation;
 
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;

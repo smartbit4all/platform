@@ -1,4 +1,4 @@
-package org.smartbit4all.api.view;
+package org.smartbit4all.api.view.annotation;
 
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
@@ -8,8 +8,8 @@ import java.lang.annotation.Target;
 
 @Retention(RUNTIME)
 @Target(TYPE)
-@Repeatable(Views.class)
-public @interface View {
+@Repeatable(ViewApis.class)
+public @interface ViewApi {
 
   /**
    * Name of the view.

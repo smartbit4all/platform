@@ -2,12 +2,14 @@ package org.smartbit4all.api.view;
 
 import java.util.UUID;
 import java.util.function.UnaryOperator;
+import org.smartbit4all.api.view.annotation.BeforeClose;
 import org.smartbit4all.api.view.bean.CloseResult;
 import org.smartbit4all.api.view.bean.MessageResult;
 import org.smartbit4all.api.view.bean.OpenPendingData;
+import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.bean.ViewContext;
+import org.smartbit4all.api.view.bean.ViewContextEntry;
 import org.smartbit4all.api.view.bean.ViewContextUpdate;
-import org.smartbit4all.api.view.bean.ViewData;
 
 public interface ViewContextService {
 
@@ -15,28 +17,35 @@ public interface ViewContextService {
 
   /**
    * Creates a new viewContext and registers it in the Session.
-   * 
+   *
    * @return
    */
   ViewContext createViewContext();
 
   /**
    * Returns current ViewContext.
-   * 
+   *
    * @return
    */
   ViewContext getCurrentViewContext();
 
   /**
+   * Returns current ViewContext.
+   *
+   * @return
+   */
+  ViewContextEntry getCurrentViewContextEntry();
+
+  /**
    * Returns current ViewContext's UUID.
-   * 
+   *
    * @return
    */
   UUID getCurrentViewContextUuid();
 
   /**
    * Sets the current viewContext specified by uuid, locks it and executes the given process.
-   * 
+   *
    * @param uuid
    * @param process
    * @throws Exception
@@ -44,13 +53,13 @@ public interface ViewContextService {
   void execute(UUID uuid, ViewContextCommand process) throws Exception;
 
   /**
-   * Returns ViewContext by URI.
-   * 
+   * Returns ViewContext by UUID.
+   *
    * @return
    */
   ViewContext getViewContext(UUID uuid);
 
-  void updateCurrentViewContext(UnaryOperator<ViewContext> update);
+  void updateCurrentViewContext(UnaryOperator<ViewContextEntry> update);
 
   void updateViewContext(ViewContextUpdate viewContextUpdate);
 
@@ -58,16 +67,16 @@ public interface ViewContextService {
 
   /**
    * Returns viewData from the current viewContext.
-   * 
+   *
    * @param viewUuid
    * @return
    */
-  ViewData getViewFromCurrentViewContext(UUID viewUuid);
+  View getViewFromCurrentViewContext(UUID viewUuid);
 
   /**
    * Finds ViewData by viewUuid, and calls it's API's message handler method which is registered for
    * messageResult.selectedOption.code value.
-   * 
+   *
    * @param viewUuid
    * @param messageUuid
    * @param messageResult
@@ -78,9 +87,9 @@ public interface ViewContextService {
    * If the API associated with view identified by viewToCloseUuid has a method with
    * {@link BeforeClose} annotation, it will be called and it's return value will be returned,
    * otherwise it will always return Approved.
-   * 
+   *
    * @return
-   * 
+   *
    */
   CloseResult callBeforeClose(UUID viewToCloseUuid, OpenPendingData data);
 

@@ -5,13 +5,13 @@ import java.util.UUID;
 import java.util.function.UnaryOperator;
 import org.smartbit4all.api.view.bean.CloseResult;
 import org.smartbit4all.api.view.bean.MessageData;
-import org.smartbit4all.api.view.bean.ViewContext;
-import org.smartbit4all.api.view.bean.ViewData;
+import org.smartbit4all.api.view.bean.ViewContextEntry;
+import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.bean.ViewState;
 
 /**
  * This interface is used in stateless BFF APIs, and provides generic UI handling functionality.
- * ViewApi works on current {@link ViewContext}
+ * ViewApi works on current {@link ViewContextEntry}
  * 
  * @author matea
  *
@@ -25,7 +25,7 @@ public interface ViewApi {
    * @param view
    * @return Identifier of View
    */
-  UUID showView(ViewData view);
+  UUID showView(View view);
 
   /**
    * Existing views state will be update to {@link ViewState#TO_CLOSE}.
@@ -40,7 +40,7 @@ public interface ViewApi {
    * @param viewUuid
    * @return
    */
-  ViewData getView(UUID viewUuid);
+  View getView(UUID viewUuid);
 
   /**
    * Returns viewDatas from current viewContext with specified viewName.
@@ -48,7 +48,7 @@ public interface ViewApi {
    * @param viewName
    * @return
    */
-  List<ViewData> getViews(String viewName);
+  List<View> getViews(String viewName);
 
   /**
    * Creates and shows a view based on MessageData parameter. MessageData.UUID will be overridden.
@@ -87,6 +87,6 @@ public interface ViewApi {
    * @param viewUuid
    * @param update
    */
-  void updateView(UUID viewUuid, UnaryOperator<ViewData> update);
+  void updateView(UUID viewUuid, UnaryOperator<View> update);
 
 }

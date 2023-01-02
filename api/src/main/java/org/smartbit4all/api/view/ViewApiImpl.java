@@ -11,8 +11,8 @@ import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.view.bean.CloseResult;
 import org.smartbit4all.api.view.bean.MessageData;
 import org.smartbit4all.api.view.bean.OpenPendingData;
-import org.smartbit4all.api.view.bean.ViewContext;
-import org.smartbit4all.api.view.bean.ViewData;
+import org.smartbit4all.api.view.bean.View;
+import org.smartbit4all.api.view.bean.ViewContextEntry;
 import org.smartbit4all.api.view.bean.ViewState;
 import org.smartbit4all.api.view.bean.ViewType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +32,7 @@ public class ViewApiImpl implements ViewApi {
   private String messageViewName;
 
   @Override
-  public UUID showView(ViewData view) {
+  public UUID showView(View view) {
     Objects.requireNonNull(view, "View must be not null");
     view.setUuid(UUID.randomUUID());
     return showViewInternal(view);
@@ -40,11 +40,11 @@ public class ViewApiImpl implements ViewApi {
 
   /**
    * Same as showView but doesn't modify UUID, expects it to be non null.
-   * 
+   *
    * @param view
    * @return
    */
-  private UUID showViewInternal(ViewData view) {
+  private UUID showViewInternal(View view) {
     Objects.requireNonNull(view.getUuid(), "View.uuid must be not null");
     viewContextService
         .updateCurrentViewContext(context -> this.addViewToViewContext(context, view));
@@ -55,16 +55,16 @@ public class ViewApiImpl implements ViewApi {
     return view.getUuid();
   }
 
-  private boolean isActiveView(ViewData view) {
+  private boolean isActiveView(View view) {
     return view.getType() == ViewType.NORMAL
         && (view.getState() == ViewState.OPENED
             || view.getState() == ViewState.TO_OPEN);
   }
 
-  private ViewContext addViewToViewContext(ViewContext context, ViewData view) {
+  private ViewContextEntry addViewToViewContext(ViewContextEntry context, View view) {
     if (view.getType() == ViewType.NORMAL) {
       String parentViewName = viewContextService.getParentViewName(view.getViewName());
-      List<ViewData> children = getChildrenOfParentView(context, parentViewName);
+      List<View> children = getChildrenOfParentView(context, parentViewName);
       if (children.isEmpty()) {
         view.setState(ViewState.TO_OPEN);
       } else {
@@ -72,7 +72,7 @@ public class ViewApiImpl implements ViewApi {
         if (context.getOpenPendingData() != null) {
           // current pending will be discarded
           UUID viewToDiscardUuid = context.getOpenPendingData().getViewToOpen();
-          ViewData viewToDiscard = ViewContexts.getView(context, viewToDiscardUuid);
+          View viewToDiscard = ViewContexts.getView(context, viewToDiscardUuid);
           log.warn("OPEN_PENDING already in progress, discarding it ({} - {})",
               viewToDiscard.getViewName(), viewToDiscardUuid);
           viewToDiscard.setState(ViewState.CLOSED);
@@ -81,7 +81,7 @@ public class ViewApiImpl implements ViewApi {
             new OpenPendingData()
                 .viewToOpen(view.getUuid())
                 .viewsToClose(children.stream()
-                    .map(ViewData::getUuid)
+                    .map(View::getUuid)
                     .collect(toList())));
       }
     } else {
@@ -91,13 +91,13 @@ public class ViewApiImpl implements ViewApi {
   }
 
   /**
-   * 
+   *
    * @param context
    * @param parentViewName
    * @return is there any child views to close
    */
-  private List<ViewData> getChildrenOfParentView(ViewContext context, String parentViewName) {
-    List<ViewData> activeViews = context.getViews().stream()
+  private List<View> getChildrenOfParentView(ViewContextEntry context, String parentViewName) {
+    List<View> activeViews = context.getViews().stream()
         .filter(this::isActiveView)
         .collect(Collectors.toList());
     int startIdx;
@@ -107,7 +107,7 @@ public class ViewApiImpl implements ViewApi {
     } else {
       // find parent in active views
       List<String> activeViewNames = activeViews.stream()
-          .map(ViewData::getViewName)
+          .map(View::getViewName)
           .collect(Collectors.toList());
       int parentIdx = activeViewNames.indexOf(parentViewName);
       if (parentIdx != -1) {
@@ -130,14 +130,14 @@ public class ViewApiImpl implements ViewApi {
   }
 
   @Override
-  public ViewData getView(UUID viewUuid) {
+  public View getView(UUID viewUuid) {
     return viewContextService.getViewFromCurrentViewContext(viewUuid);
   }
 
   @Override
-  public List<ViewData> getViews(String viewName) {
+  public List<View> getViews(String viewName) {
     Objects.requireNonNull(viewName, "viewName must be not null");
-    return viewContextService.getCurrentViewContext()
+    return viewContextService.getCurrentViewContextEntry()
         .getViews().stream()
         .filter(v -> viewName.equals(v.getViewName()))
         .collect(toList());
@@ -148,7 +148,7 @@ public class ViewApiImpl implements ViewApi {
     Objects.requireNonNull(message, "Message must be not null");
     Objects.requireNonNull(message.getViewUuid(), "Message.viewUuid must be not null");
     message.setUuid(UUID.randomUUID());
-    return showViewInternal(new ViewData()
+    return showViewInternal(new View()
         .uuid(message.getUuid())
         .containerUuid(message.getViewUuid())
         .viewName(messageViewName)
@@ -167,7 +167,7 @@ public class ViewApiImpl implements ViewApi {
   }
 
   private void handleOpenPending() {
-    OpenPendingData data = viewContextService.getCurrentViewContext().getOpenPendingData();
+    OpenPendingData data = viewContextService.getCurrentViewContextEntry().getOpenPendingData();
     if (data == null) {
       throw new IllegalArgumentException(
           "View set to OPEN_PENDING but no data associated with it!");
@@ -194,7 +194,7 @@ public class ViewApiImpl implements ViewApi {
           context -> {
             data.getViewsToClose().forEach(
                 v -> ViewContexts.updateViewState(context, v, viewsToCloseState));
-            ViewData viewToOpen = ViewContexts.getView(context, data.getViewToOpen());
+            View viewToOpen = ViewContexts.getView(context, data.getViewToOpen());
             viewToOpen.setState(viewToOpenState);
             context.setOpenPendingData(null);
             return context;
@@ -215,7 +215,7 @@ public class ViewApiImpl implements ViewApi {
   }
 
   @Override
-  public void updateView(UUID viewUuid, UnaryOperator<ViewData> update) {
+  public void updateView(UUID viewUuid, UnaryOperator<View> update) {
     viewContextService.updateCurrentViewContext(
         c -> ViewContexts.updateViewData(c, viewUuid, update));
   }
