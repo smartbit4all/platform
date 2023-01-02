@@ -330,7 +330,7 @@ public class ViewContextServiceImpl implements ViewContextService {
       contextNode.modify(ViewContextEntry.class, c -> currentViewContext.get());
       objectApi.save(contextNode);
     } finally {
-      lock.unlockAndRelease();
+      lock.unlock();
       currentViewContext.remove();
     }
   }
