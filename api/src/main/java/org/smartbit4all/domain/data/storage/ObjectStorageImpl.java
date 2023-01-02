@@ -94,30 +94,39 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
 
   @Override
   public StorageObjectLock getLock(URI objectUri) {
-    lockMutex.lock();
-    try {
-      StorageObjectLockEntry entry = locks.get(objectUri);
-      if (entry == null) {
-        final StorageObjectLockEntry newEntry =
-            new StorageObjectLockEntry(objectUri, physicalLockSupplier(objectUri),
-                physicalLockReleaser());
-        newEntry.setLockRemover(uri -> {
-          lockMutex.lock();
-          try {
-            if (newEntry.isEmpty()) {
-              locks.remove(uri);
+    boolean tryAgain = true;
+    while (tryAgain) {
+      tryAgain = false;
+      lockMutex.lock();
+      try {
+        StorageObjectLockEntry entry = locks.get(objectUri);
+        if (entry == null) {
+          final StorageObjectLockEntry newEntry =
+              new StorageObjectLockEntry(objectUri, physicalLockSupplier(objectUri),
+                  physicalLockReleaser());
+          newEntry.setLockRemover(uri -> {
+            lockMutex.lock();
+            try {
+              if (newEntry.isEmpty()) {
+                locks.remove(uri);
+              }
+            } finally {
+              lockMutex.unlock();
             }
-          } finally {
-            lockMutex.unlock();
-          }
-        });
-        locks.put(objectUri, newEntry);
-        entry = newEntry;
+          });
+          locks.put(objectUri, newEntry);
+          entry = newEntry;
+        }
+        return entry.getLock();
+      } catch (StorageObjectLockEntryRemovingException e) {
+        tryAgain = true;
+      } catch (InterruptedException e) {
+        throw new IllegalStateException("Unable to get lock, the thread was interrupted.", e);
+      } finally {
+        lockMutex.unlock();
       }
-      return entry.getLock();
-    } finally {
-      lockMutex.unlock();
     }
+    return null;
   }
 
   @Override

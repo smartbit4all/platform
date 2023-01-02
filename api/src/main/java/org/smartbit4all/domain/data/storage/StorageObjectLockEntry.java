@@ -3,6 +3,7 @@ package org.smartbit4all.domain.data.storage;
 import java.lang.ref.WeakReference;
 import java.net.URI;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -81,6 +82,12 @@ final class StorageObjectLockEntry {
   private Consumer<URI> lockRemover;
 
   /**
+   * Implies that the given lock entry is removing currently. So the threads trying to get lock has
+   * to restart the get lock function.
+   */
+  private boolean removing = false;
+
+  /**
    * Constructs an object lock owned by the actual thread first. The current thread won't be
    * blocked.
    * 
@@ -111,9 +118,17 @@ final class StorageObjectLockEntry {
    * with {@link StorageObjectLock#lock()}.
    * 
    * @return The new lock instance.
+   * @throws InterruptedException, InterruptedException
    */
-  StorageObjectLock getLock() {
-    mutexInstanceRegister.lock();
+  StorageObjectLock getLock() throws StorageObjectLockEntryRemovingException, InterruptedException {
+    if (removing) {
+      throw new StorageObjectLockEntryRemovingException();
+    }
+    while (!mutexInstanceRegister.tryLock(10, TimeUnit.MILLISECONDS)) {
+      if (removing) {
+        throw new StorageObjectLockEntryRemovingException();
+      }
+    }
     try {
       Long id = idSequence++;
       StorageObjectLock result = new StorageObjectLock(this, id);
@@ -155,6 +170,7 @@ final class StorageObjectLockEntry {
       // the physical lock also.
       instanceRegister.remove(lock.getId());
       if (instanceRegister.isEmpty()) {
+        removing = true;
         if (releaser != null && physicalLock != null) {
           releaser.accept(physicalLock);
         }

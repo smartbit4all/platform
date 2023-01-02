@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
@@ -23,6 +25,7 @@ import org.smartbit4all.api.binarydata.BinaryDataObject;
 import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
+import org.smartbit4all.api.sample.bean.SampleCategory;
 import org.smartbit4all.api.storage.bean.ObjectMap;
 import org.smartbit4all.api.storage.bean.ObjectMapRequest;
 import org.smartbit4all.api.storage.bean.ObjectReference;
@@ -461,6 +464,36 @@ class StorageTest {
     } finally {
       lock.unlockAndRelease();
     }
+  }
+
+  @Test
+  void lockParalelTest() throws Exception {
+    Storage storage = storageApi.get(StorageTestConfig.TESTSCHEME);
+    StorageObject<SampleCategory> so = storage.saveAsNewObject(new SampleCategory().name(MY_MAP));
+    ExecutorService pool = Executors.newFixedThreadPool(5);
+    List<Future<?>> futures = new ArrayList<>();
+    AtomicInteger finalizedThreads = new AtomicInteger(0);
+    for (int i = 0; i < 5; i++) {
+      Future<?> submit = pool.submit(() -> {
+        for (int j = 0; j < 100; j++) {
+          StorageObjectLock lock = storage.getLock(so.getUri());
+          lock.lock();
+          try {
+            Thread.sleep(2);
+          } catch (InterruptedException e) {
+            e.printStackTrace();
+          } finally {
+            lock.unlockAndRelease();
+          }
+        }
+        finalizedThreads.incrementAndGet();
+      });
+      futures.add(submit);
+    }
+    for (Future<?> future : futures) {
+      future.get(5, TimeUnit.SECONDS);
+    }
+    assertEquals(futures.size(), finalizedThreads.get());
   }
 
   @Test
