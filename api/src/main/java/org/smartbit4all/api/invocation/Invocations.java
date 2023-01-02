@@ -16,7 +16,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class Invocations {
 
+  /**
+   * The logical schema of the invocation requests.
+   */
   public static final String INVOCATION_SCHEME = "invocation";
+
+  /**
+   * The logical schema of the api registry.
+   */
   public static final String APIREGISTRATION_SCHEME = "apis";
 
   private Invocations() {

@@ -20,8 +20,9 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.binarydata.BinaryDataObject;
-import org.smartbit4all.api.invocation.bean.InvocationParameterTemplate;
-import org.smartbit4all.api.invocation.bean.InvocationRequestTemplate;
+import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
+import org.smartbit4all.api.invocation.bean.InvocationParameter;
+import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.storage.bean.ObjectMap;
 import org.smartbit4all.api.storage.bean.ObjectMapRequest;
 import org.smartbit4all.api.storage.bean.ObjectReference;
@@ -239,12 +240,13 @@ class StorageTest {
 
     storage.save(storageObject);
 
-    StorageObject<InvocationRequestTemplate> invocationReqObj =
-        storage.instanceOf(InvocationRequestTemplate.class);
+    StorageObject<AsyncInvocationRequest> invocationReqObj =
+        storage.instanceOf(AsyncInvocationRequest.class);
 
-    invocationReqObj.setObject(new InvocationRequestTemplate().apiClass(StorageApi.class.getName())
-        .executionApi("LOCAL").methodName("save")
-        .addParametersItem(new InvocationParameterTemplate().defaultValueString("param1")));
+    invocationReqObj.setObject(new AsyncInvocationRequest()
+        .request(new InvocationRequest().interfaceClass(StorageApi.class.getName())
+            .name("LOCAL").methodName("save")
+            .addParametersItem(new InvocationParameter().name("param1"))));
 
     URI invocationUri = storage.save(invocationReqObj);
 
@@ -294,12 +296,13 @@ class StorageTest {
 
     StorageObject<FSTestBean> optLoaded = storage.load(uri, FSTestBean.class);
 
-    StorageObject<InvocationRequestTemplate> invocationReqObj =
-        storage.instanceOf(InvocationRequestTemplate.class);
+    StorageObject<AsyncInvocationRequest> invocationReqObj =
+        storage.instanceOf(AsyncInvocationRequest.class);
 
-    invocationReqObj.setObject(new InvocationRequestTemplate().apiClass(StorageApi.class.getName())
-        .executionApi("LOCAL").methodName("save")
-        .addParametersItem(new InvocationParameterTemplate().defaultValueString("param1")));
+    invocationReqObj.setObject(new AsyncInvocationRequest()
+        .request(new InvocationRequest().interfaceClass(StorageApi.class.getName())
+            .name("LOCAL").methodName("save")
+            .addParametersItem(new InvocationParameter().name("param1"))));
 
     URI invocationUri = storage.save(invocationReqObj);
 
@@ -360,13 +363,13 @@ class StorageTest {
 
       Map<String, URI> entriesByRefId = new HashMap<>();
       for (int i = 0; i < count; i++) {
-        StorageObject<InvocationRequestTemplate> invocationReqObj =
-            storage.instanceOf(InvocationRequestTemplate.class);
+        StorageObject<AsyncInvocationRequest> invocationReqObj =
+            storage.instanceOf(AsyncInvocationRequest.class);
 
-        invocationReqObj
-            .setObject(new InvocationRequestTemplate().apiClass(StorageApi.class.getName())
-                .executionApi("LOCAL").methodName("save")
-                .addParametersItem(new InvocationParameterTemplate().defaultValueString("param1")));
+        invocationReqObj.setObject(new AsyncInvocationRequest()
+            .request(new InvocationRequest().interfaceClass(StorageApi.class.getName())
+                .name("LOCAL").methodName("save")
+                .addParametersItem(new InvocationParameter().name("param1"))));
 
         URI invocationUri = storage.save(invocationReqObj);
 
@@ -416,13 +419,13 @@ class StorageTest {
       }
 
       for (int i = 0; i < count; i++) {
-        StorageObject<InvocationRequestTemplate> invocationReqObj =
-            storage.instanceOf(InvocationRequestTemplate.class);
+        StorageObject<AsyncInvocationRequest> invocationReqObj =
+            storage.instanceOf(AsyncInvocationRequest.class);
 
-        invocationReqObj
-            .setObject(new InvocationRequestTemplate().apiClass(StorageApi.class.getName())
-                .executionApi("LOCAL").methodName("save")
-                .addParametersItem(new InvocationParameterTemplate().defaultValueString("param1")));
+        invocationReqObj.setObject(new AsyncInvocationRequest()
+            .request(new InvocationRequest().interfaceClass(StorageApi.class.getName())
+                .name("LOCAL").methodName("save")
+                .addParametersItem(new InvocationParameter().name("param1"))));
 
         URI invocationUri = storage.save(invocationReqObj);
 

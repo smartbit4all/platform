@@ -1,5 +1,6 @@
 package org.smartbit4all.api.invocation;
 
+import java.net.URI;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 
@@ -10,13 +11,6 @@ import org.smartbit4all.api.invocation.bean.InvocationRequest;
  */
 public interface InvocationApi {
 
-  /**
-   * The generic api call.
-   * 
-   * @param request
-   * @throws ApiNotFoundException
-   */
-  InvocationParameter invoke(InvocationRequest request) throws ApiNotFoundException;
 
   /**
    * The builder can be used to produce an {@link InvocationRequest} by calling the method in the
@@ -33,6 +27,14 @@ public interface InvocationApi {
    * @return
    */
   <T> InvocationBuilder<T> builder(Class<T> apiInterface);
+
+  /**
+   * The generic api call executed synchronously.
+   * 
+   * @param request
+   * @throws ApiNotFoundException
+   */
+  InvocationParameter invoke(InvocationRequest request) throws ApiNotFoundException;
 
   /**
    * This call register the invocation for the for execute after the successful commit of the
@@ -52,5 +54,26 @@ public interface InvocationApi {
    *        then it will be created with default parameters.
    */
   void invokeAsync(InvocationRequest request, String channel);
+
+  /**
+   * The subscription is stored invocation request to be called when the given object is changed.
+   * Every change result an invocation in the order of changes. This subscription produces
+   * synchronous calls that are executed in one transaction with the change.
+   * 
+   * @param request The invocation request to be called with the version uri of the changed object.
+   * @param objectUri The object URI.
+   */
+  void subscribe(InvocationRequest request, URI objectUri);
+
+  /**
+   * The subscription is stored invocation request to be called when the given object is changed.
+   * Every change result an invocation in the order of changes. This subscription produces
+   * asynchronous calls that are executed after the successful transaction of the change.
+   * 
+   * @param request The invocation request to be called with the version uri of the changed object.
+   * @param channel The asynchronous channel to be used when executing the invocation.
+   * @param objectUri The object URI.
+   */
+  void subscribeAsync(InvocationRequest request, String channel, URI objectUri);
 
 }

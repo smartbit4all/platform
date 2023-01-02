@@ -38,7 +38,7 @@ components:
       type: object
       description: |
         The contained storage object for the StoredList that contains the data as an ordered sequence of URI.
-      required: [uri, name, objects]
+      required: [uri, name, uris]
       properties:
         uri:
           type: string
@@ -50,3 +50,16 @@ components:
           items:
             type: string
             format: uri
+    StoredReferenceData:
+      type: object
+      description: |
+        The contained storage object for the StoredReference that contains an object as data.
+      required: [uri, name]
+      properties:
+        uri:
+          type: string
+          format: uri
+        name:
+          type: string
+        refObject:
+          type: object

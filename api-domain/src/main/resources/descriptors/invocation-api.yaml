@@ -32,11 +32,12 @@ components:
   schemas:
     InvocationRequest:
       type: object
+      description: |
+        The data object of an api invocation that contains the interface class name in java style, the name of
+        the api if it is provided in multiple instances, the name of the method to call and the parameters as
+        object.
       required: [parameters, interfaceClass, methodName]
       properties:
-        uri:
-          type: string
-          format: uri
         interfaceClass: 
           type: string
           description: 'The fully qualified name of the interface.'
@@ -69,6 +70,43 @@ components:
         typeClass:
           type: string
           description: The fully qualified type class name of the parameter.
+    AsyncInvocationRequest:
+      type: object
+      description: |
+        If the invocation is executed asynchronously we need to save te request itself and the result of the call as one
+        object. The asynchronous call is managed by a runtime that is also saved into this object. If the invocation failed
+        then the exception is also part of this object. This is the whole histoty of the call. If the result of the call is
+        awaited by a logic then it can subscribe for the execution result.
+      properties:
+        uri:
+          type: string
+          format: uri
+        runtimeUri:
+          type: string
+          format: uri
+          description: The URI of the appliocation runtime that is currently responsible for the givan invocation. 
+        channel:
+          type: string
+          description: The name of the channel handles the given invocation.
+        request:
+          $ref: '#/components/schemas/InvocationRequest'        
+    ObjectSubscription:
+      type: object
+      description: |
+        This object is created when an object has any subscription to be called when the object is changed and has new version.
+        The subscription is responsible for storing the invocation requests to be called. If the invocation results an Unsubscribe
+        exception then the subscription is going to be removed.
+      properties:
+        uri:
+          type: string
+          format: uri
+        channel:
+          type: string
+          description: |
+            The name of the channel handles the given invocation asynchronously. If it is empty then the subscription
+            execute the invocations synchronously.
+        subscriptions:
+          $ref: '#/components/schemas/InvocationRequest'        
     ApiRegistryData:
       type: object
       required: [uri,apiList]

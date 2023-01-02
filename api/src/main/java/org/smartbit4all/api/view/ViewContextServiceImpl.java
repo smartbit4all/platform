@@ -298,7 +298,7 @@ public class ViewContextServiceImpl implements ViewContextService {
       command.execute();
       objectApi.save(currentViewContext.get());
     } finally {
-      lock.unlock();
+      lock.unlockAndRelease();
       currentViewContext.remove();
     }
   }

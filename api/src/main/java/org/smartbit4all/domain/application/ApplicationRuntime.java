@@ -1,5 +1,6 @@
 package org.smartbit4all.domain.application;
 
+import java.net.URI;
 import java.util.UUID;
 import org.smartbit4all.api.invocation.bean.ApplicationRuntimeData;
 
@@ -74,6 +75,14 @@ public class ApplicationRuntime {
 
   public final long getLastTouchTime() {
     return data.getLastTouchTime();
+  }
+
+  /**
+   * @return The URI of the runtime. If the runtime is not alive then the object doesn't exist any
+   *         more.
+   */
+  public final URI getUri() {
+    return data.getUri();
   }
 
   final ApplicationRuntimeData getData() {

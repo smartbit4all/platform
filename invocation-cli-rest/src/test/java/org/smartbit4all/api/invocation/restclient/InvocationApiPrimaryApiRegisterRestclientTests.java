@@ -38,7 +38,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @SpringBootTest(classes = {InvocationApiPrimaryApiRestclientTestConfig.class}, properties = {})
 public class InvocationApiPrimaryApiRegisterRestclientTests {
 
-  private static final URI REMPTE_API_URI = ProviderApiInvocationHandler
+  private static final URI REMOTE_API_URI = ProviderApiInvocationHandler
       .uriOf(TestContributionApi.class, TestContributionApiImpl.NAME_REMOTE);
 
   private MockServerClient mockServerClient;
@@ -60,7 +60,7 @@ public class InvocationApiPrimaryApiRegisterRestclientTests {
 
     Storage appRegistryStorage = storageApi.get(Invocations.APIREGISTRATION_SCHEME);
     ApiData apiData = new ApiData().interfaceName(TestContributionApi.class.getName())
-        .name(TestContributionApiImpl.NAME_REMOTE).uri(REMPTE_API_URI);
+        .name(TestContributionApiImpl.NAME_REMOTE).uri(REMOTE_API_URI);
     appRegistryStorage.saveAsNew(apiData);
 
     appRegistryStorage.update(InvocationRegisterApiIml.REGISTER_URI, ApiRegistryData.class, r -> {
@@ -73,7 +73,7 @@ public class InvocationApiPrimaryApiRegisterRestclientTests {
   void testPrimaryApiRegister() throws Exception {
     ApplicationRuntimeData runtimeData = new ApplicationRuntimeData().ipAddress("127.0.0.1")
         .serverPort(mockServerPort).uuid(UUID.randomUUID()).startupTime(System.currentTimeMillis())
-        .timeOffset(0l).apis(Arrays.asList(REMPTE_API_URI));
+        .timeOffset(0l).apis(Arrays.asList(REMOTE_API_URI));
 
     Long maintainDelay = Long.valueOf(schedulePeriodString);
     TestApplicationRuntime appRuntime = TestApplicationRuntime.create(storageApi)

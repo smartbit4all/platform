@@ -6,6 +6,7 @@ import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.CollectionApiStorageImpl;
 import org.smartbit4all.api.collection.bean.StoredListData;
 import org.smartbit4all.api.collection.bean.StoredMapData;
+import org.smartbit4all.api.collection.bean.StoredReferenceData;
 import org.smartbit4all.api.documentation.DocumentationApi;
 import org.smartbit4all.api.documentation.DocumentationApiImpl;
 import org.smartbit4all.api.filter.util.FilterService;
@@ -191,6 +192,14 @@ public class PlatformApiConfig {
   public ObjectDefinition<StoredListData> storedListEntrySingleVersion() {
     ObjectDefinition<StoredListData> result =
         ObjectDefinitionApiImpl.constructDefinitionBase(StoredListData.class);
+    result.setExplicitUri(true);
+    return result;
+  }
+
+  @Bean
+  public ObjectDefinition<StoredReferenceData> storedReferenceEntrySingleVersion() {
+    ObjectDefinition<StoredReferenceData> result =
+        ObjectDefinitionApiImpl.constructDefinitionBase(StoredReferenceData.class);
     result.setExplicitUri(true);
     return result;
   }

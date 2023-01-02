@@ -23,38 +23,36 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 
 /**
- * The contained storage object for the StoredList that contains the data as an ordered sequence of URI. 
+ * The contained storage object for the StoredReference that contains an object as data. 
  */
-@ApiModel(description = "The contained storage object for the StoredList that contains the data as an ordered sequence of URI. ")
+@ApiModel(description = "The contained storage object for the StoredReference that contains an object as data. ")
 @JsonPropertyOrder({
-  StoredListData.URI,
-  StoredListData.NAME,
-  StoredListData.URIS
+  StoredReferenceData.URI,
+  StoredReferenceData.NAME,
+  StoredReferenceData.REF_OBJECT
 })
-@JsonTypeName("StoredListData")
+@JsonTypeName("StoredReferenceData")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
-public class StoredListData {
+public class StoredReferenceData {
   public static final String URI = "uri";
   private URI uri;
 
   public static final String NAME = "name";
   private String name;
 
-  public static final String URIS = "uris";
-  private List<URI> uris = new ArrayList<>();
+  public static final String REF_OBJECT = "refObject";
+  private Object refObject;
 
-  public StoredListData() { 
+  public StoredReferenceData() { 
   }
 
-  public StoredListData uri(URI uri) {
+  public StoredReferenceData uri(URI uri) {
     
     this.uri = uri;
     return this;
@@ -83,7 +81,7 @@ public class StoredListData {
   }
 
 
-  public StoredListData name(String name) {
+  public StoredReferenceData name(String name) {
     
     this.name = name;
     return this;
@@ -111,37 +109,30 @@ public class StoredListData {
   }
 
 
-  public StoredListData uris(List<URI> uris) {
+  public StoredReferenceData refObject(Object refObject) {
     
-    this.uris = uris;
-    return this;
-  }
-
-  public StoredListData addUrisItem(URI urisItem) {
-    this.uris.add(urisItem);
+    this.refObject = refObject;
     return this;
   }
 
    /**
-   * Get uris
-   * @return uris
+   * Get refObject
+   * @return refObject
   **/
-  @javax.annotation.Nonnull
-  @NotNull
-  @Valid
-  @ApiModelProperty(required = true, value = "")
-  @JsonProperty(URIS)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(REF_OBJECT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<URI> getUris() {
-    return uris;
+  public Object getRefObject() {
+    return refObject;
   }
 
 
-  @JsonProperty(URIS)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setUris(List<URI> uris) {
-    this.uris = uris;
+  @JsonProperty(REF_OBJECT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setRefObject(Object refObject) {
+    this.refObject = refObject;
   }
 
 
@@ -153,24 +144,24 @@ public class StoredListData {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    StoredListData storedListData = (StoredListData) o;
-    return Objects.equals(this.uri, storedListData.uri) &&
-        Objects.equals(this.name, storedListData.name) &&
-        Objects.equals(this.uris, storedListData.uris);
+    StoredReferenceData storedReferenceData = (StoredReferenceData) o;
+    return Objects.equals(this.uri, storedReferenceData.uri) &&
+        Objects.equals(this.name, storedReferenceData.name) &&
+        Objects.equals(this.refObject, storedReferenceData.refObject);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, name, uris);
+    return Objects.hash(uri, name, refObject);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class StoredListData {\n");
+    sb.append("class StoredReferenceData {\n");
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
-    sb.append("    uris: ").append(toIndentedString(uris)).append("\n");
+    sb.append("    refObject: ").append(toIndentedString(refObject)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -1,15 +1,12 @@
 package org.smartbit4all.api.collection;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.api.sample.bean.SampleDataSheet;
-import org.smartbit4all.core.io.TestFileUtil;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,17 +21,13 @@ class CollectionApiTest {
   private static final String FIRST = "first";
   private static final String MY_MAP = "myMap";
   private static final String MY_LIST = "myList";
+  private static final String MY_REF = "myRef";
 
   @Autowired
   private CollectionApi collectionApi;
 
   @Autowired
   private ObjectApi objectApi;
-
-  @BeforeAll
-  static void clearDirectory() throws IOException {
-    TestFileUtil.clearTestDirectory();
-  }
 
   @Test
   void testMap() throws Exception {
@@ -131,6 +124,42 @@ class CollectionApiTest {
 
     Assertions.assertEquals(
         resultUris.stream().filter(u -> uris.contains(u)).count(), resultUris.size());
+
+  }
+
+  @Test
+  void testReference() throws Exception {
+
+    SampleDataSheet sampleDataSheet = new SampleDataSheet().name("datasheet " + 1);
+
+    StoredReference<SampleDataSheet> ref =
+        collectionApi.reference(SCHEMA, MY_REF, SampleDataSheet.class);
+
+    ref.set(sampleDataSheet);
+
+    SampleDataSheet readDataSheet = ref.get();
+
+    Assertions.assertEquals(sampleDataSheet.toString(), readDataSheet.toString());
+
+  }
+
+  @Test
+  void testObjectScopedReference() throws Exception {
+
+    ObjectNode datasheet1 =
+        objectApi.create(SCHEMA, new SampleDataSheet().name("datasheet " + 1));
+    URI datasheetUri = objectApi.save(datasheet1);
+
+    SampleDataSheet sampleDataSheet = new SampleDataSheet().name("datasheet " + 1);
+
+    StoredReference<SampleDataSheet> ref =
+        collectionApi.reference(datasheetUri, SCHEMA, MY_REF, SampleDataSheet.class);
+
+    ref.set(sampleDataSheet);
+
+    SampleDataSheet readDataSheet = ref.get();
+
+    Assertions.assertEquals(sampleDataSheet.toString(), readDataSheet.toString());
 
   }
 

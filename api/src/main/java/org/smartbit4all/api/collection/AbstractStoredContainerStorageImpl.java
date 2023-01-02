@@ -4,7 +4,7 @@ import java.lang.ref.WeakReference;
 import java.net.URI;
 import org.smartbit4all.domain.data.storage.Storage;
 
-public abstract class AbstractStoredContainerStorageImpl {
+abstract class AbstractStoredContainerStorageImpl {
 
   protected WeakReference<Storage> storageRef;
 

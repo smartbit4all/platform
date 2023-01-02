@@ -58,4 +58,30 @@ public interface CollectionApi {
    */
   StoredList list(URI scopeObjectUri, String logicalSchema, String name);
 
+  /**
+   * This function will return a {@link StoredReference} that can contains one object.
+   * 
+   * @param logicalSchema The logical schema of the map. Helps the implementation to have a good
+   *        namespace. Be careful don't use the normal storage schema because the schema will be non
+   *        versioned!
+   * @param name The name of the map.
+   * @param clazz The type of the object to be stored in the reference.
+   * @return The {@link StoredReference}.
+   */
+  <T> StoredReference<T> reference(String logicalSchema, String name, Class<T> clazz);
+
+  /**
+   * This function will return a {@link StoredReference} that can contains one object.
+   * 
+   * @param scopeObjectUri The scope object defines the object the container belongs to.
+   * @param logicalSchema The logical schema of the map. Helps the implementation to have a good
+   *        namespace. Be careful don't use the normal storage schema because the schema will be non
+   *        versioned!
+   * @param name The name of the map.
+   * @param clazz The type of the object to be stored in the reference.
+   * @return The {@link StoredReference}.
+   */
+  <T> StoredReference<T> reference(URI scopeObjectUri, String logicalSchema, String name,
+      Class<T> clazz);
+
 }

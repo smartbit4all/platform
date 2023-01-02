@@ -32,10 +32,10 @@ import javax.validation.constraints.*;
 import javax.validation.Valid;
 
 /**
- * InvocationRequest
+ * The data object of an api invocation that contains the interface class name in java style, the name of the api if it is provided in multiple instances, the name of the method to call and the parameters as object. 
  */
+@ApiModel(description = "The data object of an api invocation that contains the interface class name in java style, the name of the api if it is provided in multiple instances, the name of the method to call and the parameters as object. ")
 @JsonPropertyOrder({
-  InvocationRequest.URI,
   InvocationRequest.INTERFACE_CLASS,
   InvocationRequest.NAME,
   InvocationRequest.METHOD_NAME,
@@ -45,9 +45,6 @@ import javax.validation.Valid;
 @JsonTypeName("InvocationRequest")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class InvocationRequest {
-  public static final String URI = "uri";
-  private URI uri;
-
   public static final String INTERFACE_CLASS = "interfaceClass";
   private String interfaceClass;
 
@@ -65,34 +62,6 @@ public class InvocationRequest {
 
   public InvocationRequest() { 
   }
-
-  public InvocationRequest uri(URI uri) {
-    
-    this.uri = uri;
-    return this;
-  }
-
-   /**
-   * Get uri
-   * @return uri
-  **/
-  @javax.annotation.Nullable
-  @Valid
-  @ApiModelProperty(value = "")
-  @JsonProperty(URI)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public URI getUri() {
-    return uri;
-  }
-
-
-  @JsonProperty(URI)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setUri(URI uri) {
-    this.uri = uri;
-  }
-
 
   public InvocationRequest interfaceClass(String interfaceClass) {
     
@@ -248,8 +217,7 @@ public class InvocationRequest {
       return false;
     }
     InvocationRequest invocationRequest = (InvocationRequest) o;
-    return Objects.equals(this.uri, invocationRequest.uri) &&
-        Objects.equals(this.interfaceClass, invocationRequest.interfaceClass) &&
+    return Objects.equals(this.interfaceClass, invocationRequest.interfaceClass) &&
         Objects.equals(this.name, invocationRequest.name) &&
         Objects.equals(this.methodName, invocationRequest.methodName) &&
         Objects.equals(this.parameters, invocationRequest.parameters) &&
@@ -258,14 +226,13 @@ public class InvocationRequest {
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, interfaceClass, name, methodName, parameters, sessionUri);
+    return Objects.hash(interfaceClass, name, methodName, parameters, sessionUri);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class InvocationRequest {\n");
-    sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    interfaceClass: ").append(toIndentedString(interfaceClass)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    methodName: ").append(toIndentedString(methodName)).append("\n");

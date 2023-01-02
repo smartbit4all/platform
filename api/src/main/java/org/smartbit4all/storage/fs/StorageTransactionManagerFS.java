@@ -9,7 +9,7 @@ import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.invocation.AsyncInvocationChannel;
-import org.smartbit4all.api.invocation.bean.InvocationRequest;
+import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
 import org.smartbit4all.api.storage.bean.TransactionData;
 import org.smartbit4all.api.storage.bean.TransactionState;
 import org.smartbit4all.domain.data.storage.Storage;
@@ -76,9 +76,9 @@ public class StorageTransactionManagerFS extends AbstractPlatformTransactionMana
 
   private static class AsyncInvocation {
     AsyncInvocationChannel channel;
-    InvocationRequest request;
+    AsyncInvocationRequest request;
 
-    public AsyncInvocation(AsyncInvocationChannel channel, InvocationRequest request) {
+    public AsyncInvocation(AsyncInvocationChannel channel, AsyncInvocationRequest request) {
       super();
       this.channel = channel;
       this.request = request;
@@ -136,7 +136,7 @@ public class StorageTransactionManagerFS extends AbstractPlatformTransactionMana
    * 
    * @param request
    */
-  public void addOnSucceed(AsyncInvocationChannel channel, InvocationRequest request) {
+  public void addOnSucceed(AsyncInvocationChannel channel, AsyncInvocationRequest request) {
     List<AsyncInvocation> invocationList = invocations.get();
     if (invocationList == null) {
       invocationList = new ArrayList<>();

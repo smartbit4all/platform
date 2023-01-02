@@ -1,7 +1,7 @@
 package org.smartbit4all.api.invocation;
 
+import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
-import org.smartbit4all.api.session.SessionManagementApi;
 
 /**
  * The invocation channel is responsible for executing the {@link InvocationRequest} with a given
@@ -13,22 +13,18 @@ import org.smartbit4all.api.session.SessionManagementApi;
  */
 public interface AsyncInvocationChannel {
 
-  void invoke(InvocationRequest request);
+  /**
+   * This invoke method is called when the execution of the request is ready to start. This function
+   * will use separated thread to run the invocation request.
+   * 
+   * @param request
+   */
+  void invoke(AsyncInvocationRequest request);
 
+  /**
+   * @return The name of the channel to identify when calling the
+   *         {@link InvocationApi#invokeAsync(InvocationRequest, String)}.
+   */
   String getName();
-
-  /**
-   * Start the executor threads and initialize the given channel.
-   */
-  void start();
-
-  /**
-   * Stop the executor threads and release the resources.
-   */
-  void stop();
-
-  AsyncInvocationChannel invocationApi(InvocationApi invocationApi);
-
-  void setSessionManagementApi(SessionManagementApi sessionManagementApi);
 
 }

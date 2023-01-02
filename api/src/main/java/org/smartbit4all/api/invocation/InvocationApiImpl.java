@@ -1,15 +1,20 @@
 package org.smartbit4all.api.invocation;
 
 import java.lang.reflect.Method;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.invocation.bean.ApiData;
+import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.SessionManagementApi;
+import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.domain.application.ApplicationRuntime;
 import org.smartbit4all.domain.application.ApplicationRuntimeApi;
 import org.smartbit4all.storage.fs.StorageTransactionManagerFS;
 import org.springframework.beans.factory.DisposableBean;
@@ -38,6 +43,15 @@ public final class InvocationApiImpl implements InvocationApi, DisposableBean {
 
   @Autowired(required = false)
   private SessionApi sessionApi;
+
+  @Autowired
+  private CollectionApi collectionApi;
+
+  @Autowired
+  private InvocationApi self;
+
+  @Autowired
+  private ObjectApi objectApi;
 
   /**
    * The {@link InvocationExecutionApi} is for handling remote calls.
@@ -104,9 +118,11 @@ public final class InvocationApiImpl implements InvocationApi, DisposableBean {
     channelsByName = new HashMap<>();
     if (channels != null) {
       for (AsyncInvocationChannel channel : channels) {
-        channel.invocationApi(this);
-        channel.setSessionManagementApi(sessionManagementApi);
-        channel.start();
+        AsyncInvocationChannelSetup channelSetup = (AsyncInvocationChannelSetup) channel;
+        channelSetup.invocationApi(self);
+        channelSetup.collectionApi(collectionApi);
+        channelSetup.setSessionManagementApi(sessionManagementApi);
+        channelSetup.start();
         channelsByName.put(channel.getName(), channel);
       }
     }
@@ -125,20 +141,50 @@ public final class InvocationApiImpl implements InvocationApi, DisposableBean {
   @Override
   public void invokeAsync(InvocationRequest request, String channel) {
     AsyncInvocationChannel asyncInvocationChannel = channelsByName.get(channel);
-    if (asyncInvocationChannel != null) {
-      if (transactionManager != null && transactionManager.isInTransaction()) {
-        transactionManager.addOnSucceed(asyncInvocationChannel, request);
-      } else {
-        asyncInvocationChannel.invoke(request);
+    if (asyncInvocationChannel == null) {
+      throw new IllegalArgumentException(
+          "Unable to find the " + channel + " asynchronous execution channel.");
+    }
+    AsyncInvocationRequest asyncInvocationRequest = new AsyncInvocationRequest().request(request);
+
+    if (transactionManager != null && transactionManager.isInTransaction()) {
+      if (applicationRuntimeApi != null) {
+        // Save the request to remember to execute if this runtime fails. We set the runtime
+        // identifier
+        // to see which runtime is responsible for the invocation currently.
+        ApplicationRuntime applicationRuntime = applicationRuntimeApi.self();
+        asyncInvocationRequest.runtimeUri(applicationRuntime.getUri());
+        asyncInvocationRequest
+            .setUri(objectApi.saveAsNew(Invocations.INVOCATION_SCHEME, asyncInvocationRequest));
+        // We save the given invocation into a list related to the application runtime.
+        collectionApi
+            .list(applicationRuntime.getUri(), Invocations.INVOCATION_SCHEME, channel)
+            .add(asyncInvocationRequest.getUri());
       }
+      transactionManager.addOnSucceed(asyncInvocationChannel, asyncInvocationRequest);
+    } else {
+      asyncInvocationChannel.invoke(asyncInvocationRequest);
     }
   }
 
   @Override
   public void destroy() throws Exception {
-    for (AsyncInvocationChannel asyncInvocationChannel : channelsByName.values()) {
-      asyncInvocationChannel.stop();
+    for (AsyncInvocationChannel channel : channelsByName.values()) {
+      AsyncInvocationChannelSetup channelSetup = (AsyncInvocationChannelSetup) channel;
+      channelSetup.stop();
     }
+  }
+
+  @Override
+  public void subscribe(InvocationRequest request, URI objectUri) {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void subscribeAsync(InvocationRequest request, String channel, URI objectUri) {
+    // TODO Auto-generated method stub
+
   }
 
 }

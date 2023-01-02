@@ -3,6 +3,7 @@ package org.smartbit4all.api.collection;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.core.utility.UriUtils;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
@@ -21,9 +22,13 @@ public class CollectionApiStorageImpl implements CollectionApi {
 
   private static final String STOREDMAP = "storedmap";
   private static final String STOREDLIST = "storedlist";
+  private static final String STOREDREF = "storedRef";
 
   @Autowired
   private StorageApi storageApi;
+
+  @Autowired
+  private ObjectApi objectApi;
 
   /**
    * This map contains the already used {@link Storage} instances mapped by the schema name.
@@ -59,7 +64,24 @@ public class CollectionApiStorageImpl implements CollectionApi {
   public StoredList list(URI scopeObjectUri, String logicalSchema, String name) {
     String schema = constructCollectionShemaName(logicalSchema);
     return new StoredListStorageImpl(getStorage(schema), constructScopedUri(schema,
-        name, ObjectStorageImpl.getUriWithoutVersion(scopeObjectUri), STOREDMAP), name);
+        name, ObjectStorageImpl.getUriWithoutVersion(scopeObjectUri), STOREDLIST), name);
+  }
+
+  @Override
+  public <T> StoredReference<T> reference(String logicalSchema, String name, Class<T> clazz) {
+    String schema = constructCollectionShemaName(logicalSchema);
+    return new StoredReferenceStorageImpl<>(getStorage(schema),
+        constructGlobalUri(schema, name, STOREDREF), name, objectApi.definition(clazz));
+  }
+
+  @Override
+  public <T> StoredReference<T> reference(URI scopeObjectUri, String logicalSchema, String name,
+      Class<T> clazz) {
+    String schema = constructCollectionShemaName(logicalSchema);
+    return new StoredReferenceStorageImpl<>(getStorage(schema),
+        constructScopedUri(schema,
+            name, ObjectStorageImpl.getUriWithoutVersion(scopeObjectUri), STOREDREF),
+        name, objectApi.definition(clazz));
   }
 
   /**

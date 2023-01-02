@@ -11,7 +11,6 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import org.smartbit4all.api.binarydata.BinaryData;
-import org.smartbit4all.api.invocation.bean.InvocationRequestTemplate;
 import org.smartbit4all.api.storage.bean.ObjectReference;
 import org.smartbit4all.api.storage.bean.ObjectVersion;
 import org.smartbit4all.api.storage.bean.StorageObjectData;
@@ -470,9 +469,9 @@ public final class StorageObject<T> {
   /**
    * This function can register a function that should be executed safely after the successful save
    * operation. The function is going to be executed when before the commit point of the save. The
-   * {@link InvocationRequestTemplate} list will be produced and saved and all these requests will
-   * be executed by the InvocationApi. If we miss executing any of them then later on another node
-   * can catch these requests check the validity and execute them.
+   * {@link StorageSaveEvent} list will be produced and saved and all these requests will be
+   * executed by the InvocationApi. If we miss executing any of them then later on another node can
+   * catch these requests check the validity and execute them.
    * 
    * @param func The function to call
    * @return
