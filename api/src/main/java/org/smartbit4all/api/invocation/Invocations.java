@@ -22,6 +22,11 @@ public class Invocations {
   public static final String INVOCATION_SCHEME = "invocation";
 
   /**
+   * The logical name fo the async channels registry.
+   */
+  public static final String ASYNC_CHANNEL_REGISTRY = "asyncChannelRegistry";
+
+  /**
    * The logical schema of the api registry.
    */
   public static final String APIREGISTRATION_SCHEME = "apis";

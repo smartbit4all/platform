@@ -84,4 +84,13 @@ public interface CollectionApi {
   <T> StoredReference<T> reference(URI scopeObjectUri, String logicalSchema, String name,
       Class<T> clazz);
 
+  /**
+   * This function will return a {@link StoredReference} that can contains one object.
+   * 
+   * @param refUri The uri of the reference if we have it!
+   * @param clazz The type of the object to be stored in the reference.
+   * @return The {@link StoredReference}.
+   */
+  <T> StoredReference<T> reference(URI refUri, Class<T> clazz);
+
 }

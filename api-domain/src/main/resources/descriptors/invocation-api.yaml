@@ -90,6 +90,35 @@ components:
           description: The name of the channel handles the given invocation.
         request:
           $ref: '#/components/schemas/InvocationRequest'        
+    RuntimeAsyncChannelRegistry:
+      type: object
+      description: |
+        This is the central registry of every runtime that manage asynchronous invocation channels. If a new channel is managed 
+        by a runtime then first of all it is registered into this object. The InvocationApi of the runtimes are periodically examine
+        if the given runtimes are still alive. If not then the channels are going to be pick up by one or more servers.
+      properties:
+        runtimes:
+          type: array
+          description: The list of runtimes managing channels.
+          items:
+            $ref: '#/components/schemas/RuntimeAsyncChannelList'        
+    RuntimeAsyncChannelList:
+      type: object
+      description: |
+        This is the central registry of every runtime that manage asynchronous invocation channels. If a new channel is managed 
+        by a runtime then first of all it is registered into this object. The InvocationApi of the runtimes are periodically examine
+        if the given runtimes are still alive. If not then the channels are going to be pick up by one or more servers.
+      properties:
+        runtimeUri:
+          type: string
+          format: uri
+          description: The URI of the appliocation runtime that is currently responsible for the givan invocation. 
+        channels:
+          type: array
+          description: The list of the channel object uris managed by the given runtime.
+          items:
+            type: string
+            format: uri
     ObjectSubscription:
       type: object
       description: |

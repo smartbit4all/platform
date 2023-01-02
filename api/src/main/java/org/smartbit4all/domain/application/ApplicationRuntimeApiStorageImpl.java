@@ -178,7 +178,6 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
 
         }
       }
-      // System.out.println("Runtime: " + runtimeData.toString());
     }
     // Set the new runtimes. This is an atomic operation there is no need to lock.
     runtimes = activeRuntimesMap;

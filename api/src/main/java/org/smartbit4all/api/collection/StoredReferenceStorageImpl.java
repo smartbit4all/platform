@@ -2,6 +2,7 @@ package org.smartbit4all.api.collection;
 
 import java.net.URI;
 import java.util.Map;
+import java.util.function.UnaryOperator;
 import org.smartbit4all.api.collection.bean.StoredReferenceData;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.domain.data.storage.ObjectNotFoundException;
@@ -21,16 +22,21 @@ public class StoredReferenceStorageImpl<T> extends AbstractStoredContainerStorag
 
   @Override
   public void set(T object) {
+    update(o -> object);
+  }
+
+  @Override
+  public void update(UnaryOperator<T> update) {
     Storage storage = storageRef.get();
     StorageObjectLock objectLock = storage.getLock(uri);
     objectLock.lock();
     try {
       if (storage.exists(uri)) {
         storage.update(uri, StoredReferenceData.class, r -> {
-          return r.refObject(object);
+          return r.refObject(update.apply(getFromData(r)));
         });
       } else {
-        storage.saveAsNew(new StoredReferenceData().uri(uri).refObject(object));
+        storage.saveAsNew(new StoredReferenceData().uri(uri).refObject(update.apply(null)));
       }
     } finally {
       objectLock.unlockAndRelease();
@@ -42,14 +48,17 @@ public class StoredReferenceStorageImpl<T> extends AbstractStoredContainerStorag
   public T get() {
     Storage storage = storageRef.get();
     try {
-      StoredReferenceData referenceData = storage.read(uri, StoredReferenceData.class);
-      if (referenceData.getRefObject() == null) {
-        return null;
-      }
-      return def.fromMap((Map<String, Object>) referenceData.getRefObject());
+      return getFromData(storage.read(uri, StoredReferenceData.class));
     } catch (ObjectNotFoundException e) {
       return null;
     }
+  }
+
+  private T getFromData(StoredReferenceData referenceData) {
+    if (referenceData.getRefObject() == null) {
+      return null;
+    }
+    return def.fromMap((Map<String, Object>) referenceData.getRefObject());
   }
 
   @Override

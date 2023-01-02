@@ -1,5 +1,7 @@
 package org.smartbit4all.api.invocation;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,10 +14,14 @@ import java.util.concurrent.CountDownLatch;
 import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.collection.CollectionApi;
+import org.smartbit4all.api.collection.bean.StoredReferenceData;
 import org.smartbit4all.api.contribution.ContributionApi;
 import org.smartbit4all.api.contribution.PrimaryApi;
 import org.smartbit4all.api.invocation.bean.ApiData;
 import org.smartbit4all.api.invocation.bean.ApiRegistryData;
+import org.smartbit4all.api.invocation.bean.RuntimeAsyncChannelList;
+import org.smartbit4all.api.invocation.bean.RuntimeAsyncChannelRegistry;
 import org.smartbit4all.core.object.ObjectDefinitionApiImpl;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.application.ApplicationRuntime;
@@ -60,6 +66,9 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi {
   private Map<String, List<PrimaryApi<?>>> primaryApisByContributionClass;
 
   private InvocationApi invocationApi;
+
+  @Autowired
+  private CollectionApi collectionApi;
 
   /**
    * The api register is the central repository of all the known apis available all over the tenant.
@@ -161,6 +170,14 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi {
     // update runtime with our provided apis
     if (applicationRuntimeApi != null) {
       applicationRuntimeApi.setApis(new ArrayList<>(apis));
+      collectionApi.reference(Invocations.INVOCATION_SCHEME, Invocations.ASYNC_CHANNEL_REGISTRY,
+          RuntimeAsyncChannelRegistry.class).update(r -> {
+            RuntimeAsyncChannelRegistry updatedRegistry =
+                r == null ? new RuntimeAsyncChannelRegistry() : r;
+            updatedRegistry.addRuntimesItem(
+                new RuntimeAsyncChannelList().runtimeUri(applicationRuntimeApi.self().getUri()));
+            return updatedRegistry;
+          });
     }
     initialized = true;
   }
@@ -207,7 +224,38 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi {
     apis = activeApis;
     addApis(apisToAdd);
     removeApis(apisToRemove);
+    // At last we manage the channels of the
+    manageAsyncChannels(activeRuntimes);
     maintainLatch.countDown();
+  }
+
+  /**
+   * Manage the central registry of the {@link RuntimeAsyncChannelRegistry} that contains the async
+   * channels managed by the runtimes. The current implementation detects the inactive runtimes and
+   * pick up their lost invocations.
+   * 
+   * @param activeRuntimes
+   */
+  private void manageAsyncChannels(List<ApplicationRuntime> activeRuntimes) {
+    collectionApi.reference(Invocations.INVOCATION_SCHEME, Invocations.ASYNC_CHANNEL_REGISTRY,
+        RuntimeAsyncChannelRegistry.class).update(r -> {
+          RuntimeAsyncChannelRegistry updatedRegistry =
+              r == null ? new RuntimeAsyncChannelRegistry() : r;
+          // Identify the runtimes to remove
+          Map<URI, ApplicationRuntime> runtimeMap =
+              activeRuntimes.stream().collect(toMap(ApplicationRuntime::getUri, ar -> ar));
+          List<RuntimeAsyncChannelList> runtimesToRemove = updatedRegistry.getRuntimes().stream()
+              .filter(ar -> !runtimeMap.containsKey(ar.getRuntimeUri())).collect(toList());
+          for (RuntimeAsyncChannelList asyncChannelList : runtimesToRemove) {
+            for (URI channelUri : asyncChannelList.getChannels()) {
+              storage.get().update(channelUri, StoredReferenceData.class, sr -> {
+                return sr;
+              });
+            }
+          }
+          updatedRegistry.getRuntimes().removeIf(runtimesToRemove::contains);
+          return updatedRegistry;
+        });
   }
 
   private void fillPrimaryApiMap() {

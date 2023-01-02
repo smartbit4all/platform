@@ -84,6 +84,14 @@ public class CollectionApiStorageImpl implements CollectionApi {
         name, objectApi.definition(clazz));
   }
 
+  @Override
+  public <T> StoredReference<T> reference(URI refUri, Class<T> clazz) {
+    Storage storage = storageApi.getStorage(refUri);
+    return new StoredReferenceStorageImpl<>(storage,
+        refUri,
+        null, objectApi.definition(clazz));
+  }
+
   /**
    * This function produce the given logical schema. This schema is currently non versioned by
    * default.
