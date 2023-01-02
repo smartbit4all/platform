@@ -45,7 +45,6 @@ public class ViewApiDelegateImpl implements ViewApiDelegate {
     return ResponseEntity.ok().build();
   }
 
-  // TODO
   @Override
   public ResponseEntity<ViewConstraint> getViewConstraint(UUID uuid) throws Exception {
     ViewConstraint constraint = viewApi.getView(uuid).getConstraint();

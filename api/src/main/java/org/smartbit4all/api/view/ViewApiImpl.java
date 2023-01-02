@@ -135,6 +135,11 @@ public class ViewApiImpl implements ViewApi {
   }
 
   @Override
+  public <M> M getModel(UUID viewUuid, Class<M> clazz) {
+    return viewContextService.getModel(viewUuid, clazz);
+  }
+
+  @Override
   public List<View> getViews(String viewName) {
     Objects.requireNonNull(viewName, "viewName must be not null");
     return viewContextService.getCurrentViewContextEntry()

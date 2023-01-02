@@ -5,14 +5,14 @@ import java.util.UUID;
 import java.util.function.UnaryOperator;
 import org.smartbit4all.api.view.bean.CloseResult;
 import org.smartbit4all.api.view.bean.MessageData;
-import org.smartbit4all.api.view.bean.ViewContextEntry;
 import org.smartbit4all.api.view.bean.View;
+import org.smartbit4all.api.view.bean.ViewContextEntry;
 import org.smartbit4all.api.view.bean.ViewState;
 
 /**
  * This interface is used in stateless BFF APIs, and provides generic UI handling functionality.
  * ViewApi works on current {@link ViewContextEntry}
- * 
+ *
  * @author matea
  *
  */
@@ -21,7 +21,7 @@ public interface ViewApi {
   /**
    * Adds view to current session, with state = {@link ViewState#TO_OPEN}. View.uuid will be
    * overridden.
-   * 
+   *
    * @param view
    * @return Identifier of View
    */
@@ -29,22 +29,33 @@ public interface ViewApi {
 
   /**
    * Existing views state will be update to {@link ViewState#TO_CLOSE}.
-   * 
+   *
    * @param viewUuid
    */
   void closeView(UUID viewUuid);
 
   /**
    * Returns viewData from current viewContext.
-   * 
+   *
    * @param viewUuid
    * @return
    */
   View getView(UUID viewUuid);
 
   /**
+   * Return model of the view identified by viewUuid. This object can be used to manipulate the
+   * model, it is saved at the end of server call.
+   *
+   * @param <M>
+   * @param viewUuid
+   * @param clazz
+   * @return
+   */
+  <M> M getModel(UUID viewUuid, Class<M> clazz);
+
+  /**
    * Returns viewDatas from current viewContext with specified viewName.
-   * 
+   *
    * @param viewName
    * @return
    */
@@ -52,7 +63,7 @@ public interface ViewApi {
 
   /**
    * Creates and shows a view based on MessageData parameter. MessageData.UUID will be overridden.
-   * 
+   *
    * @param message
    * @return
    */
@@ -61,21 +72,21 @@ public interface ViewApi {
   /**
    * View created from message specified by parameter will be updated to state
    * {@link ViewState#TO_CLOSE}.
-   * 
+   *
    * @param messageUuid
    */
   void closeMessage(UUID messageUuid);
 
   /**
    * Returns current ViewContext's UUID.
-   * 
+   *
    * @return
    */
   UUID currentViewContextUuid();
 
   /**
    * Set the closing result of a view, which should be closed because another view is opening.
-   * 
+   *
    * @param viewToClose UUID of the view which sets the close result.
    * @param result
    */
@@ -83,7 +94,7 @@ public interface ViewApi {
 
   /**
    * Updates the given viewData.
-   * 
+   *
    * @param viewUuid
    * @param update
    */

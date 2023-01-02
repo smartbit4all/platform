@@ -181,6 +181,23 @@ public class ViewContextServiceImpl implements ViewContextService {
     return ViewContexts.getView(viewContext, viewUuid);
   }
 
+  @SuppressWarnings("unchecked")
+  @Override
+  public <M> M getModel(UUID viewUuid, Class<M> clazz) {
+    View view = getViewFromCurrentViewContext(viewUuid);
+    Object modelObject = view.getModel();
+    if (modelObject == null) {
+      return null;
+    }
+    if (clazz.isInstance(modelObject)) {
+      return (M) modelObject;
+    }
+    M model = objectApi.asType(clazz, view.getModel());
+    // this is to ensure View holds a typed object, not a Map representing the object
+    view.setModel(model);
+    return model;
+  }
+
   @Override
   public void handleMessage(UUID viewUuid, UUID messageUuid, MessageResult messageResult) {
     Objects.requireNonNull(messageResult, "MessageResult must be specified");

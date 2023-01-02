@@ -25,7 +25,7 @@ public abstract class AbstractApiImpl<M> {
   protected ViewApi viewApi;
 
   /**
-   * Simply return M.class.
+   * Simply return M.class (model bean's class).
    *
    * @return
    */
@@ -34,18 +34,12 @@ public abstract class AbstractApiImpl<M> {
   protected abstract M createModel(View view);
 
   protected M getModel(UUID viewUuid) {
-    View view = viewApi.getView(viewUuid);
-    Object modelObject = view.getModel();
-    if (modelObject == null) {
-      M model = createModel(view);
-      view.setModel(model);
+    M model = viewApi.getModel(viewUuid, getClazz());
+    if (model != null) {
       return model;
     }
-    if (getClazz().isInstance(modelObject)) {
-      return (M) modelObject;
-    }
-    M model = objectApi.asType(getClazz(), view.getModel());
-    // this is to ensure View holds a typed object, not a Map representing the object
+    View view = viewApi.getView(viewUuid);
+    model = createModel(view);
     view.setModel(model);
     return model;
   }

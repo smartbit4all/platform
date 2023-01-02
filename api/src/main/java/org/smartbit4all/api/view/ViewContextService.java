@@ -74,6 +74,17 @@ public interface ViewContextService {
   View getViewFromCurrentViewContext(UUID viewUuid);
 
   /**
+   * Return model of the view identified by viewUuid. This object can be used to manipulate the
+   * model, it is saved at the end of server call (see {@link #execute(UUID, ViewContextCommand)}.
+   *
+   * @param <M>
+   * @param viewUuid
+   * @param clazz
+   * @return
+   */
+  <M> M getModel(UUID viewUuid, Class<M> clazz);
+
+  /**
    * Finds ViewData by viewUuid, and calls it's API's message handler method which is registered for
    * messageResult.selectedOption.code value.
    *
