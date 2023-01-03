@@ -1,7 +1,9 @@
 package org.smartbit4all.api.invocation;
 
+import java.net.URI;
 import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
+import org.smartbit4all.api.invocation.bean.RuntimeAsyncChannel;
 
 /**
  * The invocation channel is responsible for executing the {@link InvocationRequest} with a given
@@ -19,12 +21,20 @@ public interface AsyncInvocationChannel {
    * 
    * @param request
    */
-  void invoke(AsyncInvocationRequest request);
+  void invoke(AsyncInvocationRequestEntry request);
 
   /**
    * @return The name of the channel to identify when calling the
    *         {@link InvocationApi#invokeAsync(InvocationRequest, String)}.
    */
   String getName();
+
+  /**
+   * The URI of the {@link RuntimeAsyncChannel} that contains the actively managed
+   * {@link AsyncInvocationRequest}s of the given runtime.
+   * 
+   * @return
+   */
+  URI getUri();
 
 }

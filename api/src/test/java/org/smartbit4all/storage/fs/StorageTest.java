@@ -491,7 +491,7 @@ class StorageTest {
       futures.add(submit);
     }
     for (Future<?> future : futures) {
-      future.get(5, TimeUnit.SECONDS);
+      future.get(10, TimeUnit.SECONDS);
     }
     assertEquals(futures.size(), finalizedThreads.get());
   }

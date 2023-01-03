@@ -102,7 +102,6 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
   @Override
   public ApplicationRuntime self() {
     try {
-      Boolean maintain = maintaining.get();
       return self.isDone() ? self.get() : null;
     } catch (Exception e) {
       throw new IllegalStateException("Unable to get the registered runtime instance.", e);
@@ -144,7 +143,7 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
     }
   }
 
-  @Scheduled(fixedDelayString = "${applicationruntime.maintain.fixeddelay:5000}")
+  @Scheduled(fixedDelayString = "${applicationruntime.maintain.fixeddelay:3000}")
   public void maintain() throws InterruptedException, ExecutionException {
     // TODO sync the times!
     long currentTimeMillis = System.currentTimeMillis();

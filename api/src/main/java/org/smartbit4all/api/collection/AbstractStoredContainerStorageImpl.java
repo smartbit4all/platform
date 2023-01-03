@@ -19,4 +19,8 @@ abstract class AbstractStoredContainerStorageImpl {
     this.name = name;
   }
 
+  public final URI getUri() {
+    return uri;
+  }
+
 }

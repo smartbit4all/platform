@@ -1,5 +1,6 @@
 package org.smartbit4all.api.collection;
 
+import java.net.URI;
 import java.util.function.UnaryOperator;
 
 /**
@@ -18,5 +19,7 @@ public interface StoredReference<T> {
   T get();
 
   void clear();
+
+  URI getUri();
 
 }

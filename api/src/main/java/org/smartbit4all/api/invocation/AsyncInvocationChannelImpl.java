@@ -7,8 +7,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.smartbit4all.api.collection.CollectionApi;
-import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.session.SessionManagementApi;
 
@@ -46,9 +44,14 @@ public final class AsyncInvocationChannelImpl
 
   private InvocationApi invocationApi;
 
-  private CollectionApi collectionApi;
-
   private SessionManagementApi sessionManagementApi;
+
+  private InvocationRegisterApi invocationRegisterApi;
+
+  /**
+   * The URI of the
+   */
+  private URI uri;
 
   public AsyncInvocationChannelImpl(String name) {
     super();
@@ -56,19 +59,17 @@ public final class AsyncInvocationChannelImpl
   }
 
   @Override
-  public void invoke(AsyncInvocationRequest request) {
+  public void invoke(AsyncInvocationRequestEntry request) {
     executorService.submit(() -> {
       // decorate the thread of given call.
       if (technicalUserUri != null && sessionManagementApi != null) {
         sessionManagementApi.startTechnicalSession(technicalUserUri);
-      } else if (request.getRequest().getSessionUri() != null) {
-        sessionManagementApi.setSession(request.getRequest().getSessionUri());
+      } else if (request.request.getRequest().getSessionUri() != null) {
+        sessionManagementApi.setSession(request.request.getRequest().getSessionUri());
       }
       try {
-        InvocationParameter returnValue = invocationApi.invoke(request.getRequest());
-        collectionApi
-            .list(request.getRuntimeUri(), Invocations.INVOCATION_SCHEME, name)
-            .remove(request.getUri());
+        InvocationParameter returnValue = invocationApi.invoke(request.request.getRequest());
+        invocationRegisterApi.removeAsyncInvovationRequest(request);
         // Save the result into the asynchronous request. It will result a call to the listeners.
       } catch (Exception e) {
         log.warn("Exception occured while executing the " + request, e);
@@ -107,9 +108,8 @@ public final class AsyncInvocationChannelImpl
   }
 
   @Override
-  public final AsyncInvocationChannelImpl invocationApi(InvocationApi invocationApi) {
+  public final void setInvocationApi(InvocationApi invocationApi) {
     this.invocationApi = invocationApi;
-    return this;
   }
 
   @Override
@@ -118,9 +118,18 @@ public final class AsyncInvocationChannelImpl
   }
 
   @Override
-  public AsyncInvocationChannel collectionApi(CollectionApi collectionApi) {
-    this.collectionApi = collectionApi;
-    return this;
+  public void setInvocationRegisterApi(InvocationRegisterApi invocationRegisterApi) {
+    this.invocationRegisterApi = invocationRegisterApi;
+  }
+
+  @Override
+  public void setUri(URI uri) {
+    this.uri = uri;
+  }
+
+  @Override
+  public URI getUri() {
+    return uri;
   }
 
 }

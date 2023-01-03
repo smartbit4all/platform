@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.UUID;
 import org.smartbit4all.api.contribution.PrimaryApi;
 import org.smartbit4all.api.invocation.bean.ApiRegistryData;
+import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
+import org.smartbit4all.api.invocation.bean.InvocationRequest;
+import org.smartbit4all.domain.application.ApplicationRuntimeApi;
 
 /**
  * The invocation register api is responsible for storing the api informations provided by the
@@ -29,5 +32,23 @@ public interface InvocationRegisterApi {
 
   List<UUID> getRuntimesForApi(URI apiDataUri);
 
-  void setInvocationApi(InvocationApi invocationApi);
+  /**
+   * Save the invocation request into the asynchronous channel for persisted execution if it is
+   * possible. At the end it enqueue the async invocation.
+   * 
+   * @param request The original request
+   * @param channel The channel to use for saving.
+   * @return If the channel exists and we have an runtime management it will save and return the
+   *         {@link AsyncInvocationRequest}. If we don't have an active
+   *         {@link ApplicationRuntimeApi} then the object will be constructed but not saved.
+   */
+  AsyncInvocationRequestEntry saveAndEnqueueAsyncInvovationRequest(InvocationRequest request,
+      String channel);
+
+  /**
+   * Remove the invocation request from the asynchronous channel belong to the current runtime.
+   * 
+   * @param request The request to remove.
+   */
+  void removeAsyncInvovationRequest(AsyncInvocationRequestEntry request);
 }

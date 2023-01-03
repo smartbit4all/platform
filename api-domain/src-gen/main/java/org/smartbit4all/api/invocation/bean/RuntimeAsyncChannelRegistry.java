@@ -41,7 +41,7 @@ import javax.validation.Valid;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class RuntimeAsyncChannelRegistry {
   public static final String RUNTIMES = "runtimes";
-  private List<RuntimeAsyncChannelList> runtimes = null;
+  private List<RuntimeAsyncChannelList> runtimes = new ArrayList<>();
 
   public RuntimeAsyncChannelRegistry() { 
   }
@@ -53,9 +53,6 @@ public class RuntimeAsyncChannelRegistry {
   }
 
   public RuntimeAsyncChannelRegistry addRuntimesItem(RuntimeAsyncChannelList runtimesItem) {
-    if (this.runtimes == null) {
-      this.runtimes = new ArrayList<>();
-    }
     this.runtimes.add(runtimesItem);
     return this;
   }
@@ -64,11 +61,12 @@ public class RuntimeAsyncChannelRegistry {
    * The list of runtimes managing channels.
    * @return runtimes
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "The list of runtimes managing channels.")
+  @ApiModelProperty(required = true, value = "The list of runtimes managing channels.")
   @JsonProperty(RUNTIMES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public List<RuntimeAsyncChannelList> getRuntimes() {
     return runtimes;
@@ -76,7 +74,7 @@ public class RuntimeAsyncChannelRegistry {
 
 
   @JsonProperty(RUNTIMES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setRuntimes(List<RuntimeAsyncChannelList> runtimes) {
     this.runtimes = runtimes;
   }

@@ -23,17 +23,18 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 
 /**
- * This is the central registry of every runtime that manage asynchronous invocation channels. If a new channel is managed  by a runtime then first of all it is registered into this object. The InvocationApi of the runtimes are periodically examine if the given runtimes are still alive. If not then the channels are going to be pick up by one or more servers. 
+ * For every runtime it is the list of all the channels managed by the given runtime. The channels are managed by runtime refreshment implemented in the InvocationRegisterApi. 
  */
-@ApiModel(description = "This is the central registry of every runtime that manage asynchronous invocation channels. If a new channel is managed  by a runtime then first of all it is registered into this object. The InvocationApi of the runtimes are periodically examine if the given runtimes are still alive. If not then the channels are going to be pick up by one or more servers. ")
+@ApiModel(description = "For every runtime it is the list of all the channels managed by the given runtime. The channels are managed by runtime refreshment implemented in the InvocationRegisterApi. ")
 @JsonPropertyOrder({
   RuntimeAsyncChannelList.RUNTIME_URI,
   RuntimeAsyncChannelList.CHANNELS
@@ -45,7 +46,7 @@ public class RuntimeAsyncChannelList {
   private URI runtimeUri;
 
   public static final String CHANNELS = "channels";
-  private List<URI> channels = null;
+  private Map<String, URI> channels = new HashMap<>();
 
   public RuntimeAsyncChannelList() { 
   }
@@ -78,17 +79,14 @@ public class RuntimeAsyncChannelList {
   }
 
 
-  public RuntimeAsyncChannelList channels(List<URI> channels) {
+  public RuntimeAsyncChannelList channels(Map<String, URI> channels) {
     
     this.channels = channels;
     return this;
   }
 
-  public RuntimeAsyncChannelList addChannelsItem(URI channelsItem) {
-    if (this.channels == null) {
-      this.channels = new ArrayList<>();
-    }
-    this.channels.add(channelsItem);
+  public RuntimeAsyncChannelList putChannelsItem(String key, URI channelsItem) {
+    this.channels.put(key, channelsItem);
     return this;
   }
 
@@ -96,20 +94,21 @@ public class RuntimeAsyncChannelList {
    * The list of the channel object uris managed by the given runtime.
    * @return channels
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "The list of the channel object uris managed by the given runtime.")
+  @ApiModelProperty(required = true, value = "The list of the channel object uris managed by the given runtime.")
   @JsonProperty(CHANNELS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<URI> getChannels() {
+  public Map<String, URI> getChannels() {
     return channels;
   }
 
 
   @JsonProperty(CHANNELS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setChannels(List<URI> channels) {
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setChannels(Map<String, URI> channels) {
     this.channels = channels;
   }
 

@@ -8,8 +8,7 @@ import java.util.Map.Entry;
 import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.smartbit4all.api.invocation.AsyncInvocationChannel;
-import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
+import org.smartbit4all.api.invocation.AsyncInvocationRequestEntry;
 import org.smartbit4all.api.storage.bean.TransactionData;
 import org.smartbit4all.api.storage.bean.TransactionState;
 import org.smartbit4all.domain.data.storage.Storage;
@@ -72,27 +71,7 @@ public class StorageTransactionManagerFS extends AbstractPlatformTransactionMana
   /**
    * The transaction attached to the current {@link Thread}.
    */
-  ThreadLocal<List<AsyncInvocation>> invocations = new ThreadLocal<>();
-
-  private static class AsyncInvocation {
-    AsyncInvocationChannel channel;
-    AsyncInvocationRequest request;
-
-    public AsyncInvocation(AsyncInvocationChannel channel, AsyncInvocationRequest request) {
-      super();
-      this.channel = channel;
-      this.request = request;
-    }
-
-    void invoke() {
-      if (channel != null && request != null) {
-        channel.invoke(request);
-      } else {
-        log.error("Unable to execute async call.");
-      }
-    }
-
-  }
+  ThreadLocal<List<AsyncInvocationRequestEntry>> invocations = new ThreadLocal<>();
 
   public StorageTransactionManagerFS(StorageFS storageFS) {
     super();
@@ -136,13 +115,13 @@ public class StorageTransactionManagerFS extends AbstractPlatformTransactionMana
    * 
    * @param request
    */
-  public void addOnSucceed(AsyncInvocationChannel channel, AsyncInvocationRequest request) {
-    List<AsyncInvocation> invocationList = invocations.get();
+  public void addOnSucceed(AsyncInvocationRequestEntry request) {
+    List<AsyncInvocationRequestEntry> invocationList = invocations.get();
     if (invocationList == null) {
       invocationList = new ArrayList<>();
       invocations.set(invocationList);
     }
-    invocationList.add(new AsyncInvocation(channel, request));
+    invocationList.add(request);
   }
 
   @Override
@@ -171,9 +150,9 @@ public class StorageTransactionManagerFS extends AbstractPlatformTransactionMana
     if (status.getTransaction() instanceof StorageTransaction) {
       finishTransaction((StorageTransaction) status.getTransaction(), TransactionState.SUCC);
       // Call invocations
-      List<AsyncInvocation> list = invocations.get();
+      List<AsyncInvocationRequestEntry> list = invocations.get();
       if (list != null) {
-        for (AsyncInvocation asyncInvocation : list) {
+        for (AsyncInvocationRequestEntry asyncInvocation : list) {
           asyncInvocation.invoke();
         }
       }

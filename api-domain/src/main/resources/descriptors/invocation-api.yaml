@@ -96,6 +96,7 @@ components:
         This is the central registry of every runtime that manage asynchronous invocation channels. If a new channel is managed 
         by a runtime then first of all it is registered into this object. The InvocationApi of the runtimes are periodically examine
         if the given runtimes are still alive. If not then the channels are going to be pick up by one or more servers.
+      required: [runtimes]
       properties:
         runtimes:
           type: array
@@ -105,17 +106,38 @@ components:
     RuntimeAsyncChannelList:
       type: object
       description: |
-        This is the central registry of every runtime that manage asynchronous invocation channels. If a new channel is managed 
-        by a runtime then first of all it is registered into this object. The InvocationApi of the runtimes are periodically examine
-        if the given runtimes are still alive. If not then the channels are going to be pick up by one or more servers.
+        For every runtime it is the list of all the channels managed by the given runtime. The channels are managed by runtime
+        refreshment implemented in the InvocationRegisterApi.
+      required: [channels]
       properties:
         runtimeUri:
           type: string
           format: uri
           description: The URI of the appliocation runtime that is currently responsible for the givan invocation. 
         channels:
-          type: array
+          type: object
           description: The list of the channel object uris managed by the given runtime.
+          additionalProperties:
+            type: string
+            format: uri
+    RuntimeAsyncChannel:
+      type: object
+      description: |
+        If a runtime starts managing a given channel then this object hold all the invocation requests currently managed by the runtime.
+        If the given runtime is stopped then the other runtimes will enqueue these lost invocation requests.
+      required: [invocationRequests]
+      properties:
+        uri:
+          type: string
+          format: uri
+          description: The URI of the channel. 
+        runtimeUri:
+          type: string
+          format: uri
+          description: The URI of the appliocation runtime that is currently responsible for the givan invocation. 
+        invocationRequests:
+          type: array
+          description: The uri list of the AsyncInvocationRequests that are currently managed by the given runtime.
           items:
             type: string
             format: uri
