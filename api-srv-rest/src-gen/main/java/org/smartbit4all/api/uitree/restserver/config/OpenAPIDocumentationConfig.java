@@ -25,7 +25,7 @@ public class OpenAPIDocumentationConfig {
 
     ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-            .title("UiTree domain objects")
+            .title("Uitree Api")
             .description("Tree domain objects")
             .license("")
             .licenseUrl("http://unlicense.org")
@@ -36,7 +36,7 @@ public class OpenAPIDocumentationConfig {
     }
 
     @Bean
-    public Docket customImplementation(ServletContext servletContext, @Value("${openapi.uiTreeDomainObjects.base-path:/}") String basePath) {
+    public Docket customImplementation(ServletContext servletContext, @Value("${openapi.uitree.base-path:/}") String basePath) {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
                     .apis(RequestHandlerSelectors.basePackage("org.smartbit4all.api.uitree.restserver"))

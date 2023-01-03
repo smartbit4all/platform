@@ -15,10 +15,10 @@ import org.smartbit4all.domain.data.storage.StorageApi;
 /**
  * Provides a generic entry point into object handling. Allows creating, loading, retrieving and
  * saving objects.
- * 
+ *
  * Soon to be deprecated functionality: collects the object definitions for the API objects, this
  * has been moved to {@link ObjectDefinitionApi}, use that instead.
- * 
+ *
  * @author Peter Boros
  */
 public interface ObjectApi {
@@ -35,7 +35,7 @@ public interface ObjectApi {
 
   /**
    * See {@link ObjectDefinitionApi#definition(String)}
-   * 
+   *
    */
   ObjectDefinition<?> definition(String className);
 
@@ -61,7 +61,7 @@ public interface ObjectApi {
    * </ul>
    * Class may not be ObjectNode os ObjectNodeReference. If you need that, use
    * {@link ObjectNode#getValue(String...)}
-   * 
+   *
    * @param <T>
    * @param clazz
    * @param value
@@ -72,7 +72,7 @@ public interface ObjectApi {
   /**
    * Converts List<?> of undefined and possibly heterogen objects to List<E>, using
    * {@link #asType(Class, Object)} conversion.
-   * 
+   *
    * @param <E>
    * @param clazz
    * @param value
@@ -83,8 +83,8 @@ public interface ObjectApi {
   /**
    * Converts Map<String, ?> of undefined and possibly heterogen objects to Map<String, E>, using
    * {@link #asType(Class, Object)} conversion.
-   * 
-   * 
+   *
+   *
    * @param <V>
    * @param clazz
    * @param value
@@ -97,7 +97,7 @@ public interface ObjectApi {
    * retrieval mode. This request can be further parameterized with various fluent API methods, and
    * in the end, {@link RetrievalRequest#load(URI)} can be used to load the specified ObjectNode
    * structure. This is the same as to call {@link ObjectApi#load(RetrievalRequest, URI)}
-   * 
+   *
    * @param <T>
    * @param clazz
    * @return
@@ -106,7 +106,7 @@ public interface ObjectApi {
 
   /**
    * Default retrieval mode for {@link #request(Class, RetrievalMode)}
-   * 
+   *
    * @param <T>
    * @param clazz
    * @return
@@ -119,7 +119,7 @@ public interface ObjectApi {
   /**
    * Creates a request based on the objectUri and retrieves it as an ObjectNode with the specified
    * retrieval mode.
-   * 
+   *
    * @param objectUri
    * @param retrievalMode
    * @return
@@ -130,7 +130,7 @@ public interface ObjectApi {
   /**
    * Similar to {@link #load(URI, RetrievalMode)}, but initial request's loadLates will be set to
    * true, so this method will load the latest version of the object.
-   * 
+   *
    * @param objectUri
    * @return
    */
@@ -138,7 +138,7 @@ public interface ObjectApi {
 
   /**
    * Default retrieval mode for {@link #load(URI, RetrievalMode)}
-   * 
+   *
    * @param objectUri
    * @return
    */
@@ -148,7 +148,7 @@ public interface ObjectApi {
 
   /**
    * Default retrieval mode for {@link #load(URI, RetrievalMode)}
-   * 
+   *
    * @param objectUri
    * @return
    */
@@ -160,7 +160,7 @@ public interface ObjectApi {
    * Loads ObjectNode with structure specified in request, starting from objectUri. This method uses
    * {@link RetrievalApi} for retrieving {@link ObjectNodeData} structure, and then converts them to
    * ObjectNode.
-   * 
+   *
    * @param request
    * @param objectUri
    * @return
@@ -170,7 +170,7 @@ public interface ObjectApi {
   /**
    * Similar to {@link ObjectApi#load(RetrievalRequest, URI)}, but starts from multiple objectUris
    * and returns list of ObjectNodes.
-   * 
+   *
    * @param request
    * @param objectUris
    * @return
@@ -179,7 +179,7 @@ public interface ObjectApi {
 
   /**
    * Creates an ObjectNode from snapshot data.
-   * 
+   *
    * @param data
    * @return
    */
@@ -188,7 +188,7 @@ public interface ObjectApi {
   /**
    * Read the given object identified by the URI. We can not initiate a transaction with the result
    * of the read! Use the load instead.
-   * 
+   *
    * @param uri The Unified Resource Identifier of the object we are looking for. It must be
    *        situated in the current physical storage. This routing relies on the registry of the
    *        {@link StorageApi} and based on the scheme of the URI.
@@ -200,7 +200,7 @@ public interface ObjectApi {
   /**
    * Create a new ObjectNode based on a new ObjectNodeData based on the Object parameter. This node
    * will be created as a new object in storage when saved.
-   * 
+   *
    * @param storageScheme logical scheme in which to create this new object
    * @param object the object data
    * @return
@@ -211,13 +211,13 @@ public interface ObjectApi {
    * Save the ObjectNode structure to the specified branch. If brancUri is null, it will be saved on
    * main branch. Saves only changes specified in {@link ObjectNode#getState()}. Uses
    * {@link ApplyChangeApi#applyChanges(ObjectNode, URI)} under the hood.
-   * 
+   *
    */
   URI save(ObjectNode node, URI branchUri);
 
   /**
    * See {@link ApplyChangeApi#applyChanges(ObjectNode)}
-   * 
+   *
    */
   default URI save(ObjectNode node) {
     return save(node, null);
@@ -229,4 +229,11 @@ public interface ObjectApi {
     ObjectNode node = create(storageScheme, object);
     return save(node);
   }
+
+  <T> T getValueFromObject(Class<T> clazz, Object object, String... paths);
+
+  <E> List<E> getListFromObject(Class<E> clazz, Object object, String... paths);
+
+  <V> Map<String, V> getMapFromObject(Class<V> clazz, Object object, String... paths);
+
 }

@@ -54,6 +54,8 @@ public class ViewContextServiceImpl implements ViewContextService {
 
   private Map<String, Object> apiByViewName = new HashMap<>();
 
+  private Map<String, Class<?>> modellClassByViewName = new HashMap<>();
+
   private Map<String, Map<String, Method>> messageMethodsByView = new HashMap<>();
 
   private Map<String, Method> beforeCloseMethodsByView = new HashMap<>();
@@ -191,6 +193,13 @@ public class ViewContextServiceImpl implements ViewContextService {
   public <M> M getModel(UUID viewUuid, Class<M> clazz) {
     View view = getViewFromCurrentViewContext(viewUuid);
     Objects.requireNonNull(view, "View not found!");
+    if (clazz == null) {
+      clazz = (Class<M>) modellClassByViewName.get(view.getViewName());
+      if (clazz == null) {
+        throw new IllegalArgumentException(
+            "View is not PageApi and modell clazz is not specified! " + view.getViewName());
+      }
+    }
     Object modelObject = view.getModel();
     if (modelObject == null) {
       String viewName = view.getViewName();
@@ -274,6 +283,9 @@ public class ViewContextServiceImpl implements ViewContextService {
     }
     apiByViewName.put(viewName, api);
     parentViewByViewName.put(viewName, view.parent());
+    if (api instanceof PageApi) {
+      modellClassByViewName.put(viewName, ((PageApi<?>) api).getClazz());
+    }
     registerViewMethods(viewName, api);
   }
 

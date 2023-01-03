@@ -473,27 +473,9 @@ public class ObjectNode {
         throw new IllegalArgumentException(
             "Map item not found by index: " + path + "(" + key + ")");
       }
-      return getValueFromObjectMap(getObjectAsMap(), paths);
+      return ObjectApiImpl.getValueFromObjectMap(getObjectAsMap(), paths);
     }
     return this;
-  }
-
-  private Object getValueFromObjectMap(Map<String, Object> map, String... paths) {
-    if (paths != null && paths.length > 0) {
-      String path = paths[0];
-      Object value = map.get(path);
-      if (paths.length == 1) {
-        return value;
-      }
-      if (value instanceof Map) {
-        @SuppressWarnings("unchecked")
-        Map<String, Object> subMap = (Map<String, Object>) value;
-        String[] subPaths = Arrays.copyOfRange(paths, 1, paths.length);
-        return getValueFromObjectMap(subMap, subPaths);
-      }
-      return null;
-    }
-    return map;
   }
 
   public Object getVersionNr() {

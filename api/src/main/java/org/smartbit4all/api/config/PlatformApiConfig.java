@@ -39,6 +39,8 @@ import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.setting.LocaleUsage;
 import org.smartbit4all.api.setting.LocaleUsageImpl;
+import org.smartbit4all.api.view.TreeApi;
+import org.smartbit4all.api.view.TreeApiImpl;
 import org.smartbit4all.api.view.ViewContextService;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
@@ -59,7 +61,7 @@ import org.springframework.context.annotation.Scope;
 
 /**
  * The smartbit4all platform api config.
- * 
+ *
  * @author Peter Boros
  */
 @Configuration
@@ -91,6 +93,12 @@ public class PlatformApiConfig {
   @Bean
   public NavigationApi objectNavigationApi() {
     return new ObjectNavigation();
+  }
+
+  @Bean
+  @Primary
+  public TreeApi treeApi() {
+    return new TreeApiImpl();
   }
 
   @Bean
