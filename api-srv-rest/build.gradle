@@ -24,6 +24,7 @@ smartbit4all {
         	"${rootDir}/api-domain/src/main/resources/descriptors/navigation-api.yaml" : "navigation",
         	"${rootDir}/api-domain/src/main/resources/descriptors/session-api.yaml" : "session",
         	"${rootDir}/api-domain/src/main/resources/descriptors/view-api.yaml" : "view",
+        	"${rootDir}/api-domain/src/main/resources/descriptors/uitree-api.yaml" : "uitree",
         	"${rootDir}/api-domain/src/main/resources/descriptors/localauthentication-api.yaml" : "localauthentication",
         	"${rootDir}/api-domain/src/main/resources/descriptors/kerberosauthentication-api.yaml" : "kerberosauthentication",
         ]
@@ -34,5 +35,9 @@ smartbit4all {
         modelPackagePrefix = "org.smartbit4all.api"
         modelPackagePostfix = "bean"
 		genApiRestServer = true
+		importMappings = [
+            "UiActionRequest": "org.smartbit4all.api.view.bean.UiActionRequest",
+            "UiAction": "org.smartbit4all.api.view.bean.UiAction"
+      ]
     }
 }

@@ -37,6 +37,7 @@ import javax.validation.Valid;
  */
 @ApiModel(description = "This object holds all information about abritrary data in a tree representation.")
 @JsonPropertyOrder({
+  UiTreeState.CONFIG,
   UiTreeState.NODES,
   UiTreeState.ROOT_NODES,
   UiTreeState.EXPANDED_NODES,
@@ -45,6 +46,9 @@ import javax.validation.Valid;
 @JsonTypeName("UiTreeState")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class UiTreeState {
+  public static final String CONFIG = "config";
+  private String config;
+
   public static final String NODES = "nodes";
   private Map<String, UiTreeNode> nodes = new HashMap<>();
 
@@ -59,6 +63,33 @@ public class UiTreeState {
 
   public UiTreeState() { 
   }
+
+  public UiTreeState config(String config) {
+    
+    this.config = config;
+    return this;
+  }
+
+   /**
+   * Get config
+   * @return config
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(CONFIG)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getConfig() {
+    return config;
+  }
+
+
+  @JsonProperty(CONFIG)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setConfig(String config) {
+    this.config = config;
+  }
+
 
   public UiTreeState nodes(Map<String, UiTreeNode> nodes) {
     
@@ -202,7 +233,8 @@ public class UiTreeState {
       return false;
     }
     UiTreeState uiTreeState = (UiTreeState) o;
-    return Objects.equals(this.nodes, uiTreeState.nodes) &&
+    return Objects.equals(this.config, uiTreeState.config) &&
+        Objects.equals(this.nodes, uiTreeState.nodes) &&
         Objects.equals(this.rootNodes, uiTreeState.rootNodes) &&
         Objects.equals(this.expandedNodes, uiTreeState.expandedNodes) &&
         Objects.equals(this.selectedNodes, uiTreeState.selectedNodes);
@@ -210,13 +242,14 @@ public class UiTreeState {
 
   @Override
   public int hashCode() {
-    return Objects.hash(nodes, rootNodes, expandedNodes, selectedNodes);
+    return Objects.hash(config, nodes, rootNodes, expandedNodes, selectedNodes);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class UiTreeState {\n");
+    sb.append("    config: ").append(toIndentedString(config)).append("\n");
     sb.append("    nodes: ").append(toIndentedString(nodes)).append("\n");
     sb.append("    rootNodes: ").append(toIndentedString(rootNodes)).append("\n");
     sb.append("    expandedNodes: ").append(toIndentedString(expandedNodes)).append("\n");

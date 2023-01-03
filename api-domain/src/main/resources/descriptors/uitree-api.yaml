@@ -9,7 +9,268 @@ info:
 tags:
   - name: tree
     description: tree
-paths: {}
+paths:
+  /{treeId}/{viewUuid}/{treeId}:
+    get:
+      tags:
+      - tree
+      description: Query all tree nodes.
+      operationId: getRootNodes
+      parameters: 
+        - in: path
+          name: viewUuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+        - in: path
+          name: treeId
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: List of SmartTreeNode objects
+          content:
+            application/json:
+              schema: 
+                type: array
+                items:
+                  $ref: '#/components/schemas/SmartTreeNode'
+  /{treeId}/{viewUuid}/{treeId}/action:
+    get:
+      tags:
+      - tree
+      description: Query all tree nodes.
+      operationId: getMainActions
+      parameters: 
+        - in: path
+          name: viewUuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+        - in: path
+          name: treeId
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: List of UiAction objects
+          content:
+            application/json:
+              schema: 
+                type: array
+                items:
+                  type: UiAction
+    post:
+      tags:
+      - tree
+      description: |
+        Performs an action on the given treenode. The viewcontext will hold the appropriate instruction 
+        for the ui.
+        Returns the SmartTreeNode which the action was performed on.
+      operationId: performMainAction
+      parameters: 
+        - in: path
+          name: viewUuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+        - in: path
+          name: treeId
+          schema:
+            type: string
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: UiActionRequest
+      responses:
+        '200':
+          description: Changed tree state.
+          content: 
+            application/json:
+              schema: 
+                type: array
+                items:
+                  $ref: '#/components/schemas/SmartTreeNode'
+  /{treeId}/{viewUuid}/{treeId}/{nodeId}:
+    get:
+      tags:
+      - tree
+      description: Query the child nodes of the tree's node given in the parameter
+      operationId: getChildrenNodes
+      parameters: 
+        - in: path
+          name: viewUuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+        - in: path
+          name: treeId
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: nodeId
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: List of SmartTreeNode objects
+          content: 
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SmartTreeNode'
+  /{treeId}/{viewUuid}/{treeId}/{nodeId}/expand:
+    post:
+      tags:
+      - tree
+      description: |
+        Expands the given treenode. The viewcontext will hold the appropriate instruction 
+        for the ui, if any.
+        Returns the expanded SmartTreeNode.
+      operationId: expandNode
+      parameters: 
+        - in: path
+          name: viewUuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+        - in: path
+          name: treeId
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: nodeId
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Expanded SmartTreeNode object
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SmartTreeNode'
+  /{treeId}/{viewUuid}/{treeId}/{nodeId}/collapse:
+    post:
+      tags:
+      - tree
+      description: |
+        Collapses the given treenode. The viewcontext will hold the appropriate instruction 
+        for the ui.
+        Returns the collapsed SmartTreeNode.
+      operationId: collapseNode
+      parameters: 
+        - in: path
+          name: viewUuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+        - in: path
+          name: treeId
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: nodeId
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Collapsed SmartTreeNode object
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SmartTreeNode'
+  /{treeId}/{viewUuid}/{treeId}/{nodeId}/select:
+    post:
+      tags:
+      - tree
+      description: |
+        Collapses the given treenode. The viewcontext will hold the appropriate instruction 
+        for the ui.
+        Returns the collapsed SmartTreeNode.
+      operationId: selectNode
+      parameters: 
+        - in: path
+          name: viewUuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+        - in: path
+          name: treeId
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: nodeId
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Collapsed SmartTreeNode object
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SmartTreeNode'
+  /{treeId}/{viewUuid}/{treeId}/{nodeId}/action:
+    post:
+      tags:
+      - tree
+      description: |
+        Performs an action on the given treenode. The viewcontext will hold the appropriate instruction 
+        for the ui.
+        Returns the SmartTreeNode which the action was performed on.
+      operationId: performAction
+      parameters: 
+        - in: path
+          name: viewUuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+        - in: path
+          name: treeId
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: nodeId
+          schema:
+            type: string
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: UiActionRequest
+      responses:
+        '200':
+          description: Changed tree state.
+          content: 
+            application/json:
+              schema: 
+                type: array
+                items:
+                  $ref: '#/components/schemas/SmartTreeNode'
 components:
   schemas:
     SmartTreeNode:
@@ -52,6 +313,8 @@ components:
       description: This object holds all information about abritrary data in a tree representation.
       required: [nodes, rootNodes, expandedNodes, selectedNodes]
       properties:
+        config:
+          type: string
         nodes:
           type: object
           additionalProperties:
