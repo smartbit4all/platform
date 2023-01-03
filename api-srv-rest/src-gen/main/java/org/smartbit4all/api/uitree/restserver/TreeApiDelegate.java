@@ -27,7 +27,7 @@ public interface TreeApiDelegate {
     }
 
     /**
-     * POST /{treeId}/{viewUuid}/{treeId}/{nodeId}/collapse
+     * POST /tree/{viewUuid}/{treeId}/{nodeId}/collapse
      * Collapses the given treenode. The viewcontext will hold the appropriate instruction  for the ui. Returns the collapsed SmartTreeNode. 
      *
      * @param viewUuid  (required)
@@ -53,7 +53,7 @@ public interface TreeApiDelegate {
     }
 
     /**
-     * POST /{treeId}/{viewUuid}/{treeId}/{nodeId}/expand
+     * POST /tree/{viewUuid}/{treeId}/{nodeId}/expand
      * Expands the given treenode. The viewcontext will hold the appropriate instruction  for the ui, if any. Returns the expanded SmartTreeNode. 
      *
      * @param viewUuid  (required)
@@ -79,7 +79,7 @@ public interface TreeApiDelegate {
     }
 
     /**
-     * GET /{treeId}/{viewUuid}/{treeId}/{nodeId}
+     * GET /tree/{viewUuid}/{treeId}/{nodeId}
      * Query the child nodes of the tree&#39;s node given in the parameter
      *
      * @param viewUuid  (required)
@@ -105,7 +105,7 @@ public interface TreeApiDelegate {
     }
 
     /**
-     * GET /{treeId}/{viewUuid}/{treeId}/action
+     * GET /tree/{viewUuid}/{treeId}/action
      * Query all tree nodes.
      *
      * @param viewUuid  (required)
@@ -129,7 +129,7 @@ public interface TreeApiDelegate {
     }
 
     /**
-     * GET /{treeId}/{viewUuid}/{treeId}
+     * GET /tree/{viewUuid}/{treeId}
      * Query all tree nodes.
      *
      * @param viewUuid  (required)
@@ -153,7 +153,7 @@ public interface TreeApiDelegate {
     }
 
     /**
-     * POST /{treeId}/{viewUuid}/{treeId}/{nodeId}/action
+     * POST /tree/{viewUuid}/{treeId}/{nodeId}/action
      * Performs an action on the given treenode. The viewcontext will hold the appropriate instruction  for the ui. Returns the SmartTreeNode which the action was performed on. 
      *
      * @param viewUuid  (required)
@@ -181,7 +181,7 @@ public interface TreeApiDelegate {
     }
 
     /**
-     * POST /{treeId}/{viewUuid}/{treeId}/action
+     * POST /tree/{viewUuid}/{treeId}/action
      * Performs an action on the given treenode. The viewcontext will hold the appropriate instruction  for the ui. Returns the SmartTreeNode which the action was performed on. 
      *
      * @param viewUuid  (required)
@@ -207,7 +207,7 @@ public interface TreeApiDelegate {
     }
 
     /**
-     * POST /{treeId}/{viewUuid}/{treeId}/{nodeId}/select
+     * POST /tree/{viewUuid}/{treeId}/{nodeId}/select
      * Collapses the given treenode. The viewcontext will hold the appropriate instruction  for the ui. Returns the collapsed SmartTreeNode. 
      *
      * @param viewUuid  (required)

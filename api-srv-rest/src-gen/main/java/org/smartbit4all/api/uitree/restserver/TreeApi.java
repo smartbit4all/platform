@@ -31,7 +31,7 @@ public interface TreeApi {
     }
 
     /**
-     * POST /{treeId}/{viewUuid}/{treeId}/{nodeId}/collapse
+     * POST /tree/{viewUuid}/{treeId}/{nodeId}/collapse
      * Collapses the given treenode. The viewcontext will hold the appropriate instruction  for the ui. Returns the collapsed SmartTreeNode. 
      *
      * @param viewUuid  (required)
@@ -51,7 +51,7 @@ public interface TreeApi {
     })
     @RequestMapping(
         method = RequestMethod.POST,
-        value = "/{treeId}/{viewUuid}/{treeId}/{nodeId}/collapse",
+        value = "/tree/{viewUuid}/{treeId}/{nodeId}/collapse",
         produces = { "application/json" }
     )
     default ResponseEntity<SmartTreeNode> collapseNode(
@@ -64,7 +64,7 @@ public interface TreeApi {
 
 
     /**
-     * POST /{treeId}/{viewUuid}/{treeId}/{nodeId}/expand
+     * POST /tree/{viewUuid}/{treeId}/{nodeId}/expand
      * Expands the given treenode. The viewcontext will hold the appropriate instruction  for the ui, if any. Returns the expanded SmartTreeNode. 
      *
      * @param viewUuid  (required)
@@ -84,7 +84,7 @@ public interface TreeApi {
     })
     @RequestMapping(
         method = RequestMethod.POST,
-        value = "/{treeId}/{viewUuid}/{treeId}/{nodeId}/expand",
+        value = "/tree/{viewUuid}/{treeId}/{nodeId}/expand",
         produces = { "application/json" }
     )
     default ResponseEntity<SmartTreeNode> expandNode(
@@ -97,7 +97,7 @@ public interface TreeApi {
 
 
     /**
-     * GET /{treeId}/{viewUuid}/{treeId}/{nodeId}
+     * GET /tree/{viewUuid}/{treeId}/{nodeId}
      * Query the child nodes of the tree&#39;s node given in the parameter
      *
      * @param viewUuid  (required)
@@ -118,7 +118,7 @@ public interface TreeApi {
     })
     @RequestMapping(
         method = RequestMethod.GET,
-        value = "/{treeId}/{viewUuid}/{treeId}/{nodeId}",
+        value = "/tree/{viewUuid}/{treeId}/{nodeId}",
         produces = { "application/json" }
     )
     default ResponseEntity<List<SmartTreeNode>> getChildrenNodes(
@@ -131,7 +131,7 @@ public interface TreeApi {
 
 
     /**
-     * GET /{treeId}/{viewUuid}/{treeId}/action
+     * GET /tree/{viewUuid}/{treeId}/action
      * Query all tree nodes.
      *
      * @param viewUuid  (required)
@@ -151,7 +151,7 @@ public interface TreeApi {
     })
     @RequestMapping(
         method = RequestMethod.GET,
-        value = "/{treeId}/{viewUuid}/{treeId}/action",
+        value = "/tree/{viewUuid}/{treeId}/action",
         produces = { "application/json" }
     )
     default ResponseEntity<List<UiAction>> getMainActions(
@@ -163,7 +163,7 @@ public interface TreeApi {
 
 
     /**
-     * GET /{treeId}/{viewUuid}/{treeId}
+     * GET /tree/{viewUuid}/{treeId}
      * Query all tree nodes.
      *
      * @param viewUuid  (required)
@@ -183,7 +183,7 @@ public interface TreeApi {
     })
     @RequestMapping(
         method = RequestMethod.GET,
-        value = "/{treeId}/{viewUuid}/{treeId}",
+        value = "/tree/{viewUuid}/{treeId}",
         produces = { "application/json" }
     )
     default ResponseEntity<List<SmartTreeNode>> getRootNodes(
@@ -195,7 +195,7 @@ public interface TreeApi {
 
 
     /**
-     * POST /{treeId}/{viewUuid}/{treeId}/{nodeId}/action
+     * POST /tree/{viewUuid}/{treeId}/{nodeId}/action
      * Performs an action on the given treenode. The viewcontext will hold the appropriate instruction  for the ui. Returns the SmartTreeNode which the action was performed on. 
      *
      * @param viewUuid  (required)
@@ -217,7 +217,7 @@ public interface TreeApi {
     })
     @RequestMapping(
         method = RequestMethod.POST,
-        value = "/{treeId}/{viewUuid}/{treeId}/{nodeId}/action",
+        value = "/tree/{viewUuid}/{treeId}/{nodeId}/action",
         produces = { "application/json" },
         consumes = { "application/json" }
     )
@@ -232,7 +232,7 @@ public interface TreeApi {
 
 
     /**
-     * POST /{treeId}/{viewUuid}/{treeId}/action
+     * POST /tree/{viewUuid}/{treeId}/action
      * Performs an action on the given treenode. The viewcontext will hold the appropriate instruction  for the ui. Returns the SmartTreeNode which the action was performed on. 
      *
      * @param viewUuid  (required)
@@ -253,7 +253,7 @@ public interface TreeApi {
     })
     @RequestMapping(
         method = RequestMethod.POST,
-        value = "/{treeId}/{viewUuid}/{treeId}/action",
+        value = "/tree/{viewUuid}/{treeId}/action",
         produces = { "application/json" },
         consumes = { "application/json" }
     )
@@ -267,7 +267,7 @@ public interface TreeApi {
 
 
     /**
-     * POST /{treeId}/{viewUuid}/{treeId}/{nodeId}/select
+     * POST /tree/{viewUuid}/{treeId}/{nodeId}/select
      * Collapses the given treenode. The viewcontext will hold the appropriate instruction  for the ui. Returns the collapsed SmartTreeNode. 
      *
      * @param viewUuid  (required)
@@ -287,7 +287,7 @@ public interface TreeApi {
     })
     @RequestMapping(
         method = RequestMethod.POST,
-        value = "/{treeId}/{viewUuid}/{treeId}/{nodeId}/select",
+        value = "/tree/{viewUuid}/{treeId}/{nodeId}/select",
         produces = { "application/json" }
     )
     default ResponseEntity<SmartTreeNode> selectNode(

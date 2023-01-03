@@ -10,7 +10,7 @@ tags:
   - name: tree
     description: tree
 paths:
-  /{treeId}/{viewUuid}/{treeId}:
+  /tree/{viewUuid}/{treeId}:
     get:
       tags:
       - tree
@@ -37,7 +37,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/SmartTreeNode'
-  /{treeId}/{viewUuid}/{treeId}/action:
+  /tree/{viewUuid}/{treeId}/action:
     get:
       tags:
       - tree
@@ -99,7 +99,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/SmartTreeNode'
-  /{treeId}/{viewUuid}/{treeId}/{nodeId}:
+  /tree/{viewUuid}/{treeId}/{nodeId}:
     get:
       tags:
       - tree
@@ -131,7 +131,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/SmartTreeNode'
-  /{treeId}/{viewUuid}/{treeId}/{nodeId}/expand:
+  /tree/{viewUuid}/{treeId}/{nodeId}/expand:
     post:
       tags:
       - tree
@@ -164,7 +164,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SmartTreeNode'
-  /{treeId}/{viewUuid}/{treeId}/{nodeId}/collapse:
+  /tree/{viewUuid}/{treeId}/{nodeId}/collapse:
     post:
       tags:
       - tree
@@ -197,7 +197,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SmartTreeNode'
-  /{treeId}/{viewUuid}/{treeId}/{nodeId}/select:
+  /tree/{viewUuid}/{treeId}/{nodeId}/select:
     post:
       tags:
       - tree
@@ -230,7 +230,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SmartTreeNode'
-  /{treeId}/{viewUuid}/{treeId}/{nodeId}/action:
+  /tree/{viewUuid}/{treeId}/{nodeId}/action:
     post:
       tags:
       - tree
