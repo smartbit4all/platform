@@ -12,7 +12,7 @@ import org.smartbit4all.api.view.bean.CloseResult;
 import org.smartbit4all.api.view.bean.MessageData;
 import org.smartbit4all.api.view.bean.OpenPendingData;
 import org.smartbit4all.api.view.bean.View;
-import org.smartbit4all.api.view.bean.ViewContextEntry;
+import org.smartbit4all.api.view.bean.ViewContext;
 import org.smartbit4all.api.view.bean.ViewState;
 import org.smartbit4all.api.view.bean.ViewType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ public class ViewApiImpl implements ViewApi {
 
   private static final Logger log = LoggerFactory.getLogger(ViewApiImpl.class);
 
-  private static final String MESSAGE_DATA = "messageData";
+  static final String MESSAGE_DATA = "messageData";
 
   @Autowired
   private ViewContextService viewContextService;
@@ -61,7 +61,7 @@ public class ViewApiImpl implements ViewApi {
             || view.getState() == ViewState.TO_OPEN);
   }
 
-  private ViewContextEntry addViewToViewContext(ViewContextEntry context, View view) {
+  private ViewContext addViewToViewContext(ViewContext context, View view) {
     if (view.getType() == ViewType.NORMAL) {
       String parentViewName = viewContextService.getParentViewName(view.getViewName());
       List<View> children = getChildrenOfParentView(context, parentViewName);
@@ -96,7 +96,7 @@ public class ViewApiImpl implements ViewApi {
    * @param parentViewName
    * @return is there any child views to close
    */
-  private List<View> getChildrenOfParentView(ViewContextEntry context, String parentViewName) {
+  private List<View> getChildrenOfParentView(ViewContext context, String parentViewName) {
     List<View> activeViews = context.getViews().stream()
         .filter(this::isActiveView)
         .collect(Collectors.toList());

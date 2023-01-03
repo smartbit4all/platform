@@ -21,7 +21,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ViewContext'
+                $ref: '#/components/schemas/ViewContextData'
     put:
       tags:
       - View
@@ -39,7 +39,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ViewContext'
+                $ref: '#/components/schemas/ViewContextData'
         '404':
           description: 'The context does not exists with the given uuid'
         '500':
@@ -64,7 +64,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ViewContext'
+                $ref: '#/components/schemas/ViewContextData'
         '404':
           description: 'The context does not exists with the given uuid'
         '500':
@@ -126,7 +126,7 @@ paths:
           description: 'Error occured while fetching the constraints data'
 components:
   schemas:
-    ViewContextEntry:
+    ViewContext:
       type: object
       description: The same session can be valid / used in multiple UIs, this object represents a UI.
       required: [uri,views]
@@ -143,7 +143,7 @@ components:
             $ref: '#/components/schemas/View'
         openPendingData:
           $ref: '#/components/schemas/OpenPendingData'
-    ViewContext:
+    ViewContextData:
       type: object
       description: The same session can be valid / used in multiple UIs, this object represents a UI.
       required: [uri,views]
@@ -195,9 +195,8 @@ components:
           description: Unique identifier of the View.
         viewName:
           type: string
-        parameters:
-          type: object
-          additionalProperties: true
+        message:
+          $ref: '#/components/schemas/MessageData'
         state:
           $ref: '#/components/schemas/ViewState'
         type:
@@ -330,14 +329,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ViewStateUpdate'
-    ViewResponse:
-      description: Wrapper class for a result object and a ViewContext object.
-      type: object
-      properties:
-        result:
-          type: object
-        viewContext:
-          $ref: '#/components/schemas/ViewContext'
     ViewApiError:
       type: object
       description: Generic API error object.

@@ -7,8 +7,8 @@ import org.smartbit4all.api.view.bean.CloseResult;
 import org.smartbit4all.api.view.bean.MessageResult;
 import org.smartbit4all.api.view.bean.OpenPendingData;
 import org.smartbit4all.api.view.bean.View;
+import org.smartbit4all.api.view.bean.ViewContextData;
 import org.smartbit4all.api.view.bean.ViewContext;
-import org.smartbit4all.api.view.bean.ViewContextEntry;
 import org.smartbit4all.api.view.bean.ViewContextUpdate;
 
 public interface ViewContextService {
@@ -20,21 +20,21 @@ public interface ViewContextService {
    *
    * @return
    */
-  ViewContext createViewContext();
+  ViewContextData createViewContext();
 
   /**
    * Returns current ViewContext.
    *
    * @return
    */
-  ViewContext getCurrentViewContext();
+  ViewContextData getCurrentViewContext();
 
   /**
    * Returns current ViewContext.
    *
    * @return
    */
-  ViewContextEntry getCurrentViewContextEntry();
+  ViewContext getCurrentViewContextEntry();
 
   /**
    * Returns current ViewContext's UUID.
@@ -57,9 +57,9 @@ public interface ViewContextService {
    *
    * @return
    */
-  ViewContext getViewContext(UUID uuid);
+  ViewContextData getViewContext(UUID uuid);
 
-  void updateCurrentViewContext(UnaryOperator<ViewContextEntry> update);
+  void updateCurrentViewContext(UnaryOperator<ViewContext> update);
 
   void updateViewContext(ViewContextUpdate viewContextUpdate);
 

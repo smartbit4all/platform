@@ -3,7 +3,7 @@ package org.smartbit4all.api.view.restserver;
 import org.smartbit4all.api.view.bean.MessageResult;
 import java.util.UUID;
 import org.smartbit4all.api.view.bean.ViewConstraint;
-import org.smartbit4all.api.view.bean.ViewContext;
+import org.smartbit4all.api.view.bean.ViewContextData;
 import org.smartbit4all.api.view.bean.ViewContextUpdate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -33,7 +33,7 @@ public interface ViewApiDelegate {
      * @return Context created (status code 200)
      * @see ViewApi#createViewContext
      */
-    default ResponseEntity<ViewContext> createViewContext() throws Exception {
+    default ResponseEntity<ViewContextData> createViewContext() throws Exception {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
@@ -79,7 +79,7 @@ public interface ViewApiDelegate {
      *         or Error occured while fetching the session data (status code 500)
      * @see ViewApi#getViewContext
      */
-    default ResponseEntity<ViewContext> getViewContext(UUID uuid) throws Exception {
+    default ResponseEntity<ViewContextData> getViewContext(UUID uuid) throws Exception {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
@@ -118,7 +118,7 @@ public interface ViewApiDelegate {
      *         or Error during context update (status code 500)
      * @see ViewApi#updateViewContext
      */
-    default ResponseEntity<ViewContext> updateViewContext(ViewContextUpdate viewContextUpdate) throws Exception {
+    default ResponseEntity<ViewContextData> updateViewContext(ViewContextUpdate viewContextUpdate) throws Exception {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {

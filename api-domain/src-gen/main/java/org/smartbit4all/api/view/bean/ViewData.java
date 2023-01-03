@@ -22,10 +22,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.UUID;
+import org.smartbit4all.api.view.bean.MessageData;
 import org.smartbit4all.api.view.bean.ViewState;
 import org.smartbit4all.api.view.bean.ViewType;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -39,7 +37,7 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   ViewData.UUID,
   ViewData.VIEW_NAME,
-  ViewData.PARAMETERS,
+  ViewData.MESSAGE,
   ViewData.STATE,
   ViewData.TYPE,
   ViewData.CONTAINER_UUID
@@ -53,8 +51,8 @@ public class ViewData {
   public static final String VIEW_NAME = "viewName";
   private String viewName;
 
-  public static final String PARAMETERS = "parameters";
-  private Map<String, Object> parameters = new HashMap<>();
+  public static final String MESSAGE = "message";
+  private MessageData message;
 
   public static final String STATE = "state";
   private ViewState state = ViewState.TO_OPEN;
@@ -125,36 +123,31 @@ public class ViewData {
   }
 
 
-  public ViewData parameters(Map<String, Object> parameters) {
+  public ViewData message(MessageData message) {
     
-    this.parameters = parameters;
-    return this;
-  }
-
-  public ViewData putParametersItem(String key, Object parametersItem) {
-    this.parameters.put(key, parametersItem);
+    this.message = message;
     return this;
   }
 
    /**
-   * Get parameters
-   * @return parameters
+   * Get message
+   * @return message
   **/
-  @javax.annotation.Nonnull
-  @NotNull
-  @ApiModelProperty(required = true, value = "")
-  @JsonProperty(PARAMETERS)
-  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.ALWAYS)
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(MESSAGE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public Map<String, Object> getParameters() {
-    return parameters;
+  public MessageData getMessage() {
+    return message;
   }
 
 
-  @JsonProperty(PARAMETERS)
-  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.ALWAYS)
-  public void setParameters(Map<String, Object> parameters) {
-    this.parameters = parameters;
+  @JsonProperty(MESSAGE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setMessage(MessageData message) {
+    this.message = message;
   }
 
 
@@ -255,7 +248,7 @@ public class ViewData {
     ViewData viewData = (ViewData) o;
     return Objects.equals(this.uuid, viewData.uuid) &&
         Objects.equals(this.viewName, viewData.viewName) &&
-        Objects.equals(this.parameters, viewData.parameters) &&
+        Objects.equals(this.message, viewData.message) &&
         Objects.equals(this.state, viewData.state) &&
         Objects.equals(this.type, viewData.type) &&
         Objects.equals(this.containerUuid, viewData.containerUuid);
@@ -263,7 +256,7 @@ public class ViewData {
 
   @Override
   public int hashCode() {
-    return Objects.hash(uuid, viewName, parameters, state, type, containerUuid);
+    return Objects.hash(uuid, viewName, message, state, type, containerUuid);
   }
 
   @Override
@@ -272,7 +265,7 @@ public class ViewData {
     sb.append("class ViewData {\n");
     sb.append("    uuid: ").append(toIndentedString(uuid)).append("\n");
     sb.append("    viewName: ").append(toIndentedString(viewName)).append("\n");
-    sb.append("    parameters: ").append(toIndentedString(parameters)).append("\n");
+    sb.append("    message: ").append(toIndentedString(message)).append("\n");
     sb.append("    state: ").append(toIndentedString(state)).append("\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("    containerUuid: ").append(toIndentedString(containerUuid)).append("\n");

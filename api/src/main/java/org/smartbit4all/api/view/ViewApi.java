@@ -6,12 +6,12 @@ import java.util.function.UnaryOperator;
 import org.smartbit4all.api.view.bean.CloseResult;
 import org.smartbit4all.api.view.bean.MessageData;
 import org.smartbit4all.api.view.bean.View;
-import org.smartbit4all.api.view.bean.ViewContextEntry;
+import org.smartbit4all.api.view.bean.ViewContext;
 import org.smartbit4all.api.view.bean.ViewState;
 
 /**
  * This interface is used in stateless BFF APIs, and provides generic UI handling functionality.
- * ViewApi works on current {@link ViewContextEntry}
+ * ViewApi works on current {@link ViewContext}
  *
  * @author matea
  *

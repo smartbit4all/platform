@@ -22,11 +22,12 @@ import org.smartbit4all.api.view.annotation.InitModel;
 import org.smartbit4all.api.view.annotation.MessageHandler;
 import org.smartbit4all.api.view.annotation.ViewApi;
 import org.smartbit4all.api.view.bean.CloseResult;
+import org.smartbit4all.api.view.bean.MessageData;
 import org.smartbit4all.api.view.bean.MessageResult;
 import org.smartbit4all.api.view.bean.OpenPendingData;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.bean.ViewContext;
-import org.smartbit4all.api.view.bean.ViewContextEntry;
+import org.smartbit4all.api.view.bean.ViewContextData;
 import org.smartbit4all.api.view.bean.ViewContextUpdate;
 import org.smartbit4all.api.view.bean.ViewData;
 import org.smartbit4all.api.view.bean.ViewState;
@@ -47,7 +48,7 @@ public class ViewContextServiceImpl implements ViewContextService {
 
   private static final Logger log = LoggerFactory.getLogger(ViewContextServiceImpl.class);
 
-  private static final ThreadLocal<ViewContextEntry> currentViewContext = new ThreadLocal<>();
+  private static final ThreadLocal<ViewContext> currentViewContext = new ThreadLocal<>();
 
   private Map<String, String> parentViewByViewName = new HashMap<>();
 
@@ -86,19 +87,19 @@ public class ViewContextServiceImpl implements ViewContextService {
   };
 
   @Override
-  public ViewContext createViewContext() {
+  public ViewContextData createViewContext() {
     UUID uuid = UUID.randomUUID();
-    ViewContextEntry viewContext = new ViewContextEntry()
+    ViewContext viewContext = new ViewContext()
         .uuid(uuid);
     URI uri = objectApi.saveAsNew(SCHEMA, viewContext);
     log.debug("Viewcontext created: uuid={}, uri={}", uuid, uri);
     sessionApi.addViewContext(uuid, uri);
     return convertContextToUi(
-        objectApi.load(uri).getObject(ViewContextEntry.class));
+        objectApi.load(uri).getObject(ViewContext.class));
   }
 
-  private ViewContext convertContextToUi(ViewContextEntry context) {
-    return new ViewContext()
+  private ViewContextData convertContextToUi(ViewContext context) {
+    return new ViewContextData()
         .uuid(context.getUuid())
         .views(context.getViews().stream()
             .map(this::convertViewToUi)
@@ -112,16 +113,16 @@ public class ViewContextServiceImpl implements ViewContextService {
         .viewName(view.getViewName())
         .type(view.getType())
         .state(view.getState())
-        .parameters(view.getParameters());
+        .message((MessageData) view.getParameters().get(ViewApiImpl.MESSAGE_DATA));
   }
 
   @Override
-  public ViewContext getCurrentViewContext() {
+  public ViewContextData getCurrentViewContext() {
     return convertContextToUi(getCurrentViewContextEntry());
   }
 
   @Override
-  public ViewContextEntry getCurrentViewContextEntry() {
+  public ViewContext getCurrentViewContextEntry() {
     checkIfViewContextAvailable();
     return currentViewContext.get();
   }
@@ -140,7 +141,7 @@ public class ViewContextServiceImpl implements ViewContextService {
   }
 
   @Override
-  public ViewContext getViewContext(UUID uuid) {
+  public ViewContextData getViewContext(UUID uuid) {
     UUID currentUuid = getCurrentViewContextUuid();
     if (!Objects.equals(uuid, currentUuid)) {
       throw new IllegalArgumentException("currentViewContext doesn't match paramater");
@@ -149,7 +150,7 @@ public class ViewContextServiceImpl implements ViewContextService {
   }
 
   @Override
-  public void updateCurrentViewContext(UnaryOperator<ViewContextEntry> update) {
+  public void updateCurrentViewContext(UnaryOperator<ViewContext> update) {
     checkIfViewContextAvailable();
     currentViewContext.set(update.apply(getCurrentViewContextEntry()));
   }
@@ -181,7 +182,7 @@ public class ViewContextServiceImpl implements ViewContextService {
 
   @Override
   public View getViewFromCurrentViewContext(UUID viewUuid) {
-    ViewContextEntry viewContext = getCurrentViewContextEntry();
+    ViewContext viewContext = getCurrentViewContextEntry();
     return ViewContexts.getView(viewContext, viewUuid);
   }
 
@@ -364,9 +365,9 @@ public class ViewContextServiceImpl implements ViewContextService {
     lock.lock();
     try {
       ObjectNode contextNode = objectApi.load(viewContextUri);
-      currentViewContext.set(contextNode.getObject(ViewContextEntry.class));
+      currentViewContext.set(contextNode.getObject(ViewContext.class));
       command.execute();
-      contextNode.modify(ViewContextEntry.class, c -> currentViewContext.get());
+      contextNode.modify(ViewContext.class, c -> currentViewContext.get());
       objectApi.save(contextNode);
     } finally {
       lock.unlock();

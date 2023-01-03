@@ -8,7 +8,7 @@ package org.smartbit4all.api.view.restserver;
 import org.smartbit4all.api.view.bean.MessageResult;
 import java.util.UUID;
 import org.smartbit4all.api.view.bean.ViewConstraint;
-import org.smartbit4all.api.view.bean.ViewContext;
+import org.smartbit4all.api.view.bean.ViewContextData;
 import org.smartbit4all.api.view.bean.ViewContextUpdate;
 import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
@@ -41,17 +41,17 @@ public interface ViewApi {
         value = "Creates a new ViewContext",
         nickname = "createViewContext",
         notes = "",
-        response = ViewContext.class
+        response = ViewContextData.class
     )
     @ApiResponses({
-        @ApiResponse(code = 200, message = "Context created", response = ViewContext.class)
+        @ApiResponse(code = 200, message = "Context created", response = ViewContextData.class)
     })
     @RequestMapping(
         method = RequestMethod.POST,
         value = "/context",
         produces = { "application/json" }
     )
-    default ResponseEntity<ViewContext> createViewContext(
+    default ResponseEntity<ViewContextData> createViewContext(
         
     ) throws Exception {
         return getDelegate().createViewContext();
@@ -103,10 +103,10 @@ public interface ViewApi {
         value = "Returns the existing session info",
         nickname = "getViewContext",
         notes = "",
-        response = ViewContext.class
+        response = ViewContextData.class
     )
     @ApiResponses({
-        @ApiResponse(code = 200, message = "Returns ViewContext by unique identifier", response = ViewContext.class),
+        @ApiResponse(code = 200, message = "Returns ViewContext by unique identifier", response = ViewContextData.class),
         @ApiResponse(code = 404, message = "The context does not exists with the given uuid"),
         @ApiResponse(code = 500, message = "Error occured while fetching the session data")
     })
@@ -115,7 +115,7 @@ public interface ViewApi {
         value = "/context/{uuid}",
         produces = { "application/json" }
     )
-    default ResponseEntity<ViewContext> getViewContext(
+    default ResponseEntity<ViewContextData> getViewContext(
         @ApiParam(value = "ViewContext's unique identifier.", required = true) @PathVariable("uuid") UUID uuid
     ) throws Exception {
         return getDelegate().getViewContext(uuid);
@@ -166,10 +166,10 @@ public interface ViewApi {
         value = "Updates an existing ViewContext",
         nickname = "updateViewContext",
         notes = "",
-        response = ViewContext.class
+        response = ViewContextData.class
     )
     @ApiResponses({
-        @ApiResponse(code = 200, message = "Context updated", response = ViewContext.class),
+        @ApiResponse(code = 200, message = "Context updated", response = ViewContextData.class),
         @ApiResponse(code = 404, message = "The context does not exists with the given uuid"),
         @ApiResponse(code = 500, message = "Error during context update")
     })
@@ -179,7 +179,7 @@ public interface ViewApi {
         produces = { "application/json" },
         consumes = { "application/json" }
     )
-    default ResponseEntity<ViewContext> updateViewContext(
+    default ResponseEntity<ViewContextData> updateViewContext(
         @ApiParam(value = "", required = true) @Valid @RequestBody ViewContextUpdate viewContextUpdate
     ) throws Exception {
         return getDelegate().updateViewContext(viewContextUpdate);

@@ -5,7 +5,7 @@ import org.smartbit4all.api.view.ViewApi;
 import org.smartbit4all.api.view.ViewContextService;
 import org.smartbit4all.api.view.bean.MessageResult;
 import org.smartbit4all.api.view.bean.ViewConstraint;
-import org.smartbit4all.api.view.bean.ViewContext;
+import org.smartbit4all.api.view.bean.ViewContextData;
 import org.smartbit4all.api.view.bean.ViewContextUpdate;
 import org.smartbit4all.api.view.restserver.ViewApiDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,19 +22,19 @@ public class ViewApiDelegateImpl implements ViewApiDelegate {
   private ViewApi viewApi;
 
   @Override
-  public ResponseEntity<ViewContext> createViewContext() throws Exception {
+  public ResponseEntity<ViewContextData> createViewContext() throws Exception {
     return ResponseEntity.ok(viewContextService.createViewContext());
   }
 
   @Override
-  public ResponseEntity<ViewContext> updateViewContext(ViewContextUpdate viewContextUpdate)
+  public ResponseEntity<ViewContextData> updateViewContext(ViewContextUpdate viewContextUpdate)
       throws Exception {
     viewContextService.updateViewContext(viewContextUpdate);
     return getViewContext(viewContextUpdate.getUuid());
   }
 
   @Override
-  public ResponseEntity<ViewContext> getViewContext(UUID uuid) throws Exception {
+  public ResponseEntity<ViewContextData> getViewContext(UUID uuid) throws Exception {
     return ResponseEntity.ok(viewContextService.getViewContext(uuid));
   }
 
