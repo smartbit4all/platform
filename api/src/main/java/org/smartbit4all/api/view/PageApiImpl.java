@@ -1,11 +1,9 @@
-package org.smartbit4all.api;
+package org.smartbit4all.api.view;
 
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import org.smartbit4all.api.view.ViewApi;
 import org.smartbit4all.api.view.bean.UiActionRequest;
-import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.core.object.ObjectApi;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -16,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  * @param <M> type of the model which this API handles
  */
-public abstract class AbstractApiImpl<M> {
+public abstract class PageApiImpl<M> implements PageApi<M> {
 
   @Autowired
   protected ObjectApi objectApi;
@@ -31,23 +29,15 @@ public abstract class AbstractApiImpl<M> {
    */
   protected abstract Class<M> getClazz();
 
-  protected abstract M createModel(View view);
-
   protected M getModel(UUID viewUuid) {
-    M model = viewApi.getModel(viewUuid, getClazz());
-    if (model != null) {
-      return model;
-    }
-    View view = viewApi.getView(viewUuid);
-    model = createModel(view);
-    view.setModel(model);
-    return model;
+    return viewApi.getModel(viewUuid, getClazz());
   }
 
   protected void setModel(UUID viewUuid, M model) {
     viewApi.getView(viewUuid).setModel(model);
   }
 
+  @Override
   public M load(UUID viewUuid) {
     return getModel(viewUuid);
   }

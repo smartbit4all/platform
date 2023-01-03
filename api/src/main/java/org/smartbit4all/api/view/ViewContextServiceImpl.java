@@ -1,6 +1,7 @@
 package org.smartbit4all.api.view;
 
 import static java.util.stream.Collectors.toList;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URI;
@@ -17,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.view.annotation.BeforeClose;
+import org.smartbit4all.api.view.annotation.InitModel;
 import org.smartbit4all.api.view.annotation.MessageHandler;
 import org.smartbit4all.api.view.annotation.ViewApi;
 import org.smartbit4all.api.view.bean.CloseResult;
@@ -54,6 +56,8 @@ public class ViewContextServiceImpl implements ViewContextService {
   private Map<String, Map<String, Method>> messageMethodsByView = new HashMap<>();
 
   private Map<String, Method> beforeCloseMethodsByView = new HashMap<>();
+
+  private Map<String, Method> initModelMethodsByView = new HashMap<>();
 
   @Autowired
   private ObjectApi objectApi;
@@ -185,9 +189,24 @@ public class ViewContextServiceImpl implements ViewContextService {
   @Override
   public <M> M getModel(UUID viewUuid, Class<M> clazz) {
     View view = getViewFromCurrentViewContext(viewUuid);
+    Objects.requireNonNull(view, "View not found!");
     Object modelObject = view.getModel();
     if (modelObject == null) {
-      return null;
+      String viewName = view.getViewName();
+      Object api = apiByViewName.get(viewName);
+      Objects.requireNonNull(api, "API not found for view " + viewName);
+      Method method = initModelMethodsByView.get(viewName);
+      if (method == null) {
+        log.warn("View getModel called, and @InitModel is not specified: {} ({})",
+            viewName, api.getClass().getName());
+        return null;
+      }
+      try {
+        modelObject = method.invoke(api, view);
+        view.setModel(modelObject);
+      } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+        log.error("Error when calling InitModel method " + method.getName(), e);
+      }
     }
     if (clazz.isInstance(modelObject)) {
       return (M) modelObject;
@@ -265,7 +284,8 @@ public class ViewContextServiceImpl implements ViewContextService {
    */
   private void registerViewMethods(String viewName, Object api) {
     registerMessageMethods(viewName, api);
-    registerBeforeCloseMethods(viewName, api);
+    registerAnnotatedMethods(viewName, api, BeforeClose.class, beforeCloseMethodsByView);
+    registerAnnotatedMethods(viewName, api, InitModel.class, initModelMethodsByView);
   }
 
   private void registerMessageMethods(String viewName, Object api) {
@@ -278,15 +298,17 @@ public class ViewContextServiceImpl implements ViewContextService {
     messageMethodsByView.put(viewName, messageMethods);
   }
 
-  private void registerBeforeCloseMethods(String viewName, Object api) {
+  private void registerAnnotatedMethods(String viewName, Object api,
+      Class<? extends Annotation> annotation, Map<String, Method> methodsByView) {
     Set<Method> methods = ReflectionUtility.allMethods(
         api.getClass(),
-        method -> method.isAnnotationPresent(BeforeClose.class));
+        method -> method.isAnnotationPresent(annotation));
     if (methods.size() > 1) {
-      throw new IllegalArgumentException("More than 1 @BeforeCloseEvent method in " + viewName);
+      throw new IllegalArgumentException(
+          "More than 1 @" + annotation.getName() + " method in " + viewName);
     }
     if (methods.size() == 1) {
-      beforeCloseMethodsByView.put(viewName, methods.iterator().next());
+      methodsByView.put(viewName, methods.iterator().next());
     }
   }
 
