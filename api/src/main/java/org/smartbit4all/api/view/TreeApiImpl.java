@@ -23,7 +23,8 @@ import com.google.common.base.Strings;
 
 public class TreeApiImpl extends PrimaryApiImpl<TreeContributionApi> implements TreeApi {
 
-  @Autowired
+  // FIXME
+  @Autowired(required = false)
   private ViewApi viewApi;
 
   @Autowired
