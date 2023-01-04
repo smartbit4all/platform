@@ -22,12 +22,16 @@ public abstract class PageApiImpl<M> implements PageApi<M> {
   @Autowired
   protected ViewApi viewApi;
 
-  /**
-   * Simply return M.class (model bean's class).
-   *
-   * @return
-   */
-  protected abstract Class<M> getClazz();
+  private Class<M> clazz;
+
+  public PageApiImpl(Class<M> clazz) {
+    this.clazz = clazz;
+  }
+
+  @Override
+  public Class<M> getClazz() {
+    return clazz;
+  }
 
   protected M getModel(UUID viewUuid) {
     return viewApi.getModel(viewUuid, getClazz());

@@ -1,6 +1,6 @@
 openapi: 3.0.1
 info:
-  title: UiTree domain objects
+  title: Uitree Api
   description: Tree domain objects
   termsOfService: ''
   contact:

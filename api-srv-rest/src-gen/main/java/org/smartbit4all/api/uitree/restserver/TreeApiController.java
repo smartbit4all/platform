@@ -8,7 +8,7 @@ import javax.annotation.Generated;
 
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen")
 @Controller
-@RequestMapping("${openapi.uiTreeDomainObjects.base-path:/}")
+@RequestMapping("${openapi.uitree.base-path:/}")
 public class TreeApiController implements TreeApi {
 
     private final TreeApiDelegate delegate;

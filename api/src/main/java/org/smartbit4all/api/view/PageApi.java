@@ -11,4 +11,11 @@ public interface PageApi<M> {
   @InitModel
   M initModel(View view);
 
+  /**
+   * Returns the page's model's class.
+   *
+   * @return
+   */
+  Class<M> getClazz();
+
 }

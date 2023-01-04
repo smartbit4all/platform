@@ -5,6 +5,8 @@ import static java.util.stream.Collectors.toMap;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -200,5 +202,62 @@ public class ObjectApiImpl implements ObjectApi {
   public ObjectNode loadSnapshot(SnapshotData data) {
     return new ObjectNode(this, data);
   }
+
+  @Override
+  public <T> T getValueFromObject(Class<T> clazz, Object object, String... paths) {
+    if (object == null) {
+      return null;
+    }
+    Map<String, Object> objectAsMap = definition(object.getClass()).toMap(object);
+    return asType(clazz, getValueFromObjectMap(objectAsMap, paths));
+  }
+
+  @Override
+  public <E> List<E> getListFromObject(Class<E> clazz, Object object, String... paths) {
+    if (object == null) {
+      return Collections.emptyList();
+    }
+    Map<String, Object> objectAsMap = definition(object.getClass()).toMap(object);
+    Object list = getValueFromObjectMap(objectAsMap, paths);
+    if (!(list instanceof List)) {
+      throw new IllegalArgumentException(
+          "Object on path is not List<>!" + String.join(",", paths));
+    }
+    return asList(clazz, (List<?>) list);
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public <V> Map<String, V> getMapFromObject(Class<V> clazz, Object object, String... paths) {
+    if (object == null) {
+      return Collections.emptyMap();
+    }
+    Map<String, Object> objectAsMap = definition(object.getClass()).toMap(object);
+    Object map = getValueFromObjectMap(objectAsMap, paths);
+    if (!(map instanceof Map)) {
+      throw new IllegalArgumentException(
+          "Object on path is not Map<>!" + String.join(",", paths));
+    }
+    return asMap(clazz, (Map<String, ?>) map);
+  }
+
+  static Object getValueFromObjectMap(Map<String, Object> map, String... paths) {
+    if (paths != null && paths.length > 0) {
+      String path = paths[0];
+      Object value = map.get(path);
+      if (paths.length == 1) {
+        return value;
+      }
+      if (value instanceof Map) {
+        @SuppressWarnings("unchecked")
+        Map<String, Object> subMap = (Map<String, Object>) value;
+        String[] subPaths = Arrays.copyOfRange(paths, 1, paths.length);
+        return getValueFromObjectMap(subMap, subPaths);
+      }
+      return null;
+    }
+    return map;
+  }
+
 
 }
