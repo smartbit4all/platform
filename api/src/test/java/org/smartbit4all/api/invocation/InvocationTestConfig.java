@@ -16,6 +16,8 @@ import org.springframework.context.event.EventListener;
 @Import({PlatformApiConfig.class, ApplicationRuntimeStorageConfig.class})
 public class InvocationTestConfig {
 
+  public static final String GLOBAL_ASYNC_CHANNEL = "global";
+
   @Bean
   public TestApi testApi() {
     return new TestApiImpl();
@@ -44,6 +46,11 @@ public class InvocationTestConfig {
   @Bean
   ObjectStorage objectStorage(ObjectApi objectApi) {
     return new StorageFS(TestFileUtil.testFsRootFolder(), objectApi);
+  }
+
+  @Bean
+  public AsyncInvocationChannel globalChannel() {
+    return new AsyncInvocationChannelImpl(GLOBAL_ASYNC_CHANNEL);
   }
 
   @EventListener(ContextRefreshedEvent.class)

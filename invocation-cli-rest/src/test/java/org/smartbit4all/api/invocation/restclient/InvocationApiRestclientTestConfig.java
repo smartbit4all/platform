@@ -38,5 +38,4 @@ public class InvocationApiRestclientTestConfig {
     return ApiInvocationHandler.createProxy(TestApi.class, TestApiImpl.NAME, invocationApi);
   }
 
-
 }

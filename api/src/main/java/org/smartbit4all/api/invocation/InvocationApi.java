@@ -1,6 +1,6 @@
 package org.smartbit4all.api.invocation;
 
-import java.net.URI;
+import java.time.OffsetDateTime;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 
@@ -56,24 +56,23 @@ public interface InvocationApi {
   void invokeAsync(InvocationRequest request, String channel);
 
   /**
-   * The subscription is stored invocation request to be called when the given object is changed.
-   * Every change result an invocation in the order of changes. This subscription produces
-   * synchronous calls that are executed in one transaction with the change.
+   * This call register the invocation for the for execute after the successful commit of the
+   * current transaction. But on the other hand it will save the given {@link InvocationRequest}
+   * into the channel. If the transaction succeeded but the execution is not finished then the
+   * invocation api will try to execute it later on.
    * 
-   * @param request The invocation request to be called with the version uri of the changed object.
-   * @param objectUri The object URI.
-   */
-  void subscribe(InvocationRequest request, URI objectUri);
-
-  /**
-   * The subscription is stored invocation request to be called when the given object is changed.
-   * Every change result an invocation in the order of changes. This subscription produces
-   * asynchronous calls that are executed after the successful transaction of the change.
+   * In this case the execution will inherit the session of the current user. If the session is
+   * expired before the invocation is started then the invocation will fail.
    * 
-   * @param request The invocation request to be called with the version uri of the changed object.
-   * @param channel The asynchronous channel to be used when executing the invocation.
-   * @param objectUri The object URI.
+   * To ensure that the invocation is going to be executed then we can assign a technical user must
+   * be set in the request to this call. The invocation will create a session and login with the
+   * given user.
+   * 
+   * @param request The invocation request.
+   * @param channel The channel that is configured for the execution. If we don't give any parameter
+   *        then it will be created with default parameters.
+   * @param executeAt The exact time when the invocation should be executed at.
    */
-  void subscribeAsync(InvocationRequest request, String channel, URI objectUri);
+  void invokeAt(InvocationRequest request, String channel, OffsetDateTime executeAt);
 
 }

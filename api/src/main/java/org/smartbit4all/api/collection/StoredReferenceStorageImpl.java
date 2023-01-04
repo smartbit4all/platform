@@ -54,6 +54,12 @@ public class StoredReferenceStorageImpl<T> extends AbstractStoredContainerStorag
     }
   }
 
+  @Override
+  public boolean exists() {
+    Storage storage = storageRef.get();
+    return storage.exists(uri);
+  }
+
   private T getFromData(StoredReferenceData referenceData) {
     if (referenceData.getRefObject() == null) {
       return null;

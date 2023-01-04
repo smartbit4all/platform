@@ -18,6 +18,8 @@ public interface StoredReference<T> {
 
   T get();
 
+  boolean exists();
+
   void clear();
 
   URI getUri();

@@ -90,6 +90,33 @@ components:
           description: The name of the channel handles the given invocation.
         request:
           $ref: '#/components/schemas/InvocationRequest'        
+    AsyncChannelScheduledInvocationList:
+      type: object
+      description: |
+        For every asynchronous channel it is a central registry for the invocations to execute later. These invocations are 
+        not owned by any of the runtimes, they are awaiting for picking up for execution. An active AsynInvocationRequest
+        reside in this resigtry or in the RuntimeAsyncChannel object of the given runtime.
+      required: [invocationRequests]
+      properties:
+        invocationRequests:
+          type: array
+          description: The uri list of the AsyncInvocationRequests that are currently managed by the given runtime.
+          items:
+            $ref: '#/components/schemas/ScheduledInvocationRequest'        
+    ScheduledInvocationRequest:
+      type: object
+      description: |
+        This placeholder object is scheduling an AyncInvocationRequest for a channel. The scheduling is not so precise
+        it is just around the real execution time. It is used by the channel to identify the invocation to be executed in the 
+        near future. These invocation are going to be activated and scheduled into the in memory executor.
+      properties:
+        requestUri:
+          type: string
+          format: uri
+          description: The uri of the AsynInvocationRequest.
+        scheduledAt:
+          type: string
+          format: date-time
     RuntimeAsyncChannelRegistry:
       type: object
       description: |

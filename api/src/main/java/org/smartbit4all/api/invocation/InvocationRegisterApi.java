@@ -1,10 +1,12 @@
 package org.smartbit4all.api.invocation;
 
 import java.net.URI;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 import org.smartbit4all.api.contribution.PrimaryApi;
 import org.smartbit4all.api.invocation.bean.ApiRegistryData;
+import org.smartbit4all.api.invocation.bean.AsyncChannelScheduledInvocationList;
 import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.domain.application.ApplicationRuntimeApi;
@@ -42,8 +44,21 @@ public interface InvocationRegisterApi {
    *         {@link AsyncInvocationRequest}. If we don't have an active
    *         {@link ApplicationRuntimeApi} then the object will be constructed but not saved.
    */
-  AsyncInvocationRequestEntry saveAndEnqueueAsyncInvovationRequest(InvocationRequest request,
+  AsyncInvocationRequestEntry saveAndEnqueueAsyncInvocationRequest(InvocationRequest request,
       String channel);
+
+  /**
+   * Save the invocation request into the asynchronous channel for persisted execution if it is
+   * possible. It will save the request to the {@link AsyncChannelScheduledInvocationList} for
+   * further execution.
+   * 
+   * @param request The original request
+   * @param channel The channel to use for saving.
+   * @param executeAt The exact time when the invocation should be executed at.
+   * @return The request.
+   */
+  AsyncInvocationRequest saveAndScheduleAsyncInvocationRequest(InvocationRequest request,
+      String channel, OffsetDateTime executeAt);
 
   /**
    * Remove the invocation request from the asynchronous channel belong to the current runtime.
@@ -51,4 +66,5 @@ public interface InvocationRegisterApi {
    * @param request The request to remove.
    */
   void removeAsyncInvovationRequest(AsyncInvocationRequestEntry request);
+
 }

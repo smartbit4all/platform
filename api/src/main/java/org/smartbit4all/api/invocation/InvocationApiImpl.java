@@ -1,8 +1,9 @@
 package org.smartbit4all.api.invocation;
 
 import java.lang.reflect.Method;
-import java.net.URI;
+import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import org.smartbit4all.api.invocation.bean.ApiData;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
@@ -83,19 +84,14 @@ public final class InvocationApiImpl implements InvocationApi {
 
   @Override
   public void invokeAsync(InvocationRequest request, String channel) {
-    invocationRegisterApi.saveAndEnqueueAsyncInvovationRequest(request, channel);
+    invocationRegisterApi.saveAndEnqueueAsyncInvocationRequest(request, channel);
   }
 
   @Override
-  public void subscribe(InvocationRequest request, URI objectUri) {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
-  public void subscribeAsync(InvocationRequest request, String channel, URI objectUri) {
-    // TODO Auto-generated method stub
-
+  public void invokeAt(InvocationRequest request, String channel, OffsetDateTime executeAt) {
+    invocationRegisterApi.saveAndScheduleAsyncInvocationRequest(request, channel,
+        Objects.requireNonNull(executeAt,
+            "The execution time must be specified to schedule an invocation."));
   }
 
 }

@@ -3,7 +3,6 @@ package org.smartbit4all.api.invocation;
 import java.net.URI;
 import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
 import org.smartbit4all.api.invocation.bean.RuntimeAsyncChannel;
-import org.smartbit4all.api.session.SessionManagementApi;
 
 /**
  * The setup interface of the {@link AsyncInvocationChannel}.
@@ -26,8 +25,6 @@ interface AsyncInvocationChannelSetup {
   void setInvocationApi(InvocationApi invocationApi);
 
   void setInvocationRegisterApi(InvocationRegisterApi invocationRegisterApi);
-
-  void setSessionManagementApi(SessionManagementApi sessionManagementApi);
 
   /**
    * The URI of the {@link RuntimeAsyncChannel} that contains the actively managed

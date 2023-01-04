@@ -24,4 +24,14 @@ public class TestApiImpl implements TestApi {
     return databean;
   }
 
+  @Override
+  public void setFutureValue(String p1) {
+    TestApi.futureValue.setValue(p1);
+  }
+
+  @Override
+  public void setFutureValueAt(String p1) {
+    TestApi.scheduledLatch.countDown();
+  }
+
 }

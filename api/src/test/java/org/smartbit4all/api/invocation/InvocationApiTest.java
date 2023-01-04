@@ -1,13 +1,15 @@
 package org.smartbit4all.api.invocation;
 
+import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 @SpringBootTest(classes = {
     InvocationTestConfig.class,
@@ -19,13 +21,6 @@ class InvocationApiTest {
 
   @Autowired
   private TestApi testApi;
-
-  @BeforeAll
-  public static void setUpBeforeClass(
-      @Value("${applicationruntime.maintain.fixeddelay:5000}") String schedulePeriodString) {
-    Long maintainDelay = Long.valueOf(schedulePeriodString);
-    waitForRefresh(maintainDelay);
-  }
 
   @Test
   void testPrimary() throws Exception {
@@ -66,8 +61,6 @@ class InvocationApiTest {
     Assertions.assertEquals(value, result.getValue());
   }
 
-  public static String callResult;
-
   @Test
   void testInvocationHandler() throws Exception {
     String value = "Peter";
@@ -78,11 +71,28 @@ class InvocationApiTest {
     Assertions.assertEquals(value, result);
   }
 
-  protected static void waitForRefresh(Long maintainDelay) {
-    try {
-      Thread.sleep(maintainDelay);
-    } catch (InterruptedException e) {
+  @Test
+  void testInvokeAsync() throws Exception {
+    String value = "Peter";
+    InvocationRequest request =
+        invocationApi.builder(TestApi.class).build(a -> a.setFutureValue(value));
+    invocationApi.invokeAsync(request, InvocationTestConfig.GLOBAL_ASYNC_CHANNEL);
+    Assertions.assertEquals(value, TestApi.futureValue.get(10, TimeUnit.SECONDS));
+  }
+
+  @Test
+  void testInvokeAt() throws Exception {
+    String value = "Peter";
+    InvocationRequest request =
+        invocationApi.builder(TestApi.class).build(a -> a.setFutureValueAt(value));
+
+    for (int i = 0; i < TestApi.scheduleCounter; i++) {
+      invocationApi.invokeAt(request, InvocationTestConfig.GLOBAL_ASYNC_CHANNEL,
+          OffsetDateTime.now().plus(i * 2, ChronoUnit.SECONDS));
     }
+    assertDoesNotThrow(
+        () -> TestApi.scheduledLatch.await(TestApi.scheduleCounter * 2 + 5, TimeUnit.SECONDS));
+
   }
 
 }

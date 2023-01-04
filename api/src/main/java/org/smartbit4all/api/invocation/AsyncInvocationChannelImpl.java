@@ -8,7 +8,9 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
+import org.smartbit4all.api.invocation.bean.RuntimeAsyncChannel;
 import org.smartbit4all.api.session.SessionManagementApi;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public final class AsyncInvocationChannelImpl
     implements AsyncInvocationChannel, AsyncInvocationChannelSetup {
@@ -33,23 +35,34 @@ public final class AsyncInvocationChannelImpl
    */
   private int maximumPoolSize = 4;
 
-  private String technicalUserName;
-
   /**
-   * The technical user to be used to create session when
+   * The technical user to be used to create session when executing.
    */
   private URI technicalUserUri;
 
+  /**
+   * The technical user name of the user to be used to create session when executing.
+   */
+  private String technicalUserName;
+
+  /**
+   * The name of the channel that must be unique all over a tenant.
+   */
   private String name;
 
+  /**
+   * The invocation api to execute the invocations.
+   */
   private InvocationApi invocationApi;
 
+  @Autowired(required = false)
   private SessionManagementApi sessionManagementApi;
 
   private InvocationRegisterApi invocationRegisterApi;
 
   /**
-   * The URI of the
+   * The URI of the {@link RuntimeAsyncChannel} object related with this channel in the current
+   * runtime.
    */
   private URI uri;
 
@@ -110,11 +123,6 @@ public final class AsyncInvocationChannelImpl
   @Override
   public final void setInvocationApi(InvocationApi invocationApi) {
     this.invocationApi = invocationApi;
-  }
-
-  @Override
-  public final void setSessionManagementApi(SessionManagementApi sessionManagementApi) {
-    this.sessionManagementApi = sessionManagementApi;
   }
 
   @Override
