@@ -266,12 +266,27 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
       // if there is ApplicationRuntimeApi, then we can't refresh the apis
       return;
     }
-    // Get apis from all active runtimes
-    List<ApplicationRuntime> activeRuntimes = applicationRuntimeApi.getActiveRuntimes();
+    UUID myRuntimeUUID = applicationRuntimeApi.self().getUuid();
+    // Get apis from all active runtime. The current instance is an exception because we know what
+    // we are providing.
+    List<ApplicationRuntime> activeOtherRuntimes = applicationRuntimeApi.getActiveRuntimes()
+        .stream()
+        .filter(r -> r.getUuid().equals(myRuntimeUUID)).collect(toList());
 
     Set<URI> activeApis = new HashSet<>();
     Map<URI, List<UUID>> activeRuntimesByApisMap = new HashMap<>();
-    for (ApplicationRuntime applicationRuntime : activeRuntimes) {
+    // First of all fill our own apis. We don't need the getApis call to know what we are providing.
+    if (!CollectionUtils.isEmpty(apis)) {
+      for (URI api : apis) {
+        List<UUID> runtimes =
+            activeRuntimesByApisMap.computeIfAbsent(api, r -> new ArrayList<>());
+        runtimes.add(myRuntimeUUID);
+      }
+
+      activeApis.addAll(apis);
+    }
+
+    for (ApplicationRuntime applicationRuntime : activeOtherRuntimes) {
       List<URI> runtimeApis = applicationRuntimeApi.getApis(applicationRuntime.getUuid());
 
       if (!CollectionUtils.isEmpty(runtimeApis)) {
@@ -287,7 +302,7 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
 
     runtimesByApis = activeRuntimesByApisMap;
 
-    // apis that becoma active
+    // apis that become active
     Set<URI> apisToAdd = new HashSet<>(activeApis);
     apisToAdd.removeAll(apis);
 
@@ -300,7 +315,7 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
     removeApis(apisToRemove);
     // At last we manage the channels of the
     maintainLatch.countDown();
-    manageAsyncChannels(activeRuntimes);
+    manageAsyncChannels(activeOtherRuntimes);
   }
 
   /**
