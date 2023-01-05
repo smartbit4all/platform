@@ -126,7 +126,7 @@ public class OrgApiStorageImpl implements OrgApi {
   /**
    * This function analyze the given class to discover the {@link LocaleString} fields. We add this
    * API for them to enable locale specific behavior for them.
-   * 
+   *
    * @param option
    */
   private final Map<SecurityGroup, Group> analyzeSecurityOptions(SecurityOption option) {
@@ -181,7 +181,7 @@ public class OrgApiStorageImpl implements OrgApi {
 
   /**
    * If there is no Group for the SecurtyGroup, then create one.
-   * 
+   *
    */
   private Group checkGroupExist(SecurityGroup securityGroup) {
     Group groupByName = getGroupByName(securityGroup.getName());
@@ -389,7 +389,7 @@ public class OrgApiStorageImpl implements OrgApi {
 
   /**
    * Összegyűjti egy csoport összes alcsoportját.
-   * 
+   *
    * @param groupUri
    * @return
    */
@@ -404,6 +404,15 @@ public class OrgApiStorageImpl implements OrgApi {
     return new ArrayList<>(subgroups);
   }
 
+  private List<URI> getAllParentGroups(URI groupUri) {
+    Set<URI> subgroups = new HashSet<>();
+    ObjectMap groupObjectMap = loadObjectMap(GROUP_OBJECTMAP_REFERENCE);
+
+    Collection<URI> groupUris = groupObjectMap.getUris().values();
+
+
+    return new ArrayList<>(subgroups);
+  }
 
   @Override
   public URI saveGroup(Group group) {
@@ -436,7 +445,7 @@ public class OrgApiStorageImpl implements OrgApi {
   /**
    * Creates or update a UsersOfGroup entry in the globally save UsersOfGroupCollection object,
    * indicating that user is part of the group.
-   * 
+   *
    * @param userUri
    * @param groupUri
    * @return any change happened
@@ -475,7 +484,7 @@ public class OrgApiStorageImpl implements OrgApi {
   /**
    * Creates or update a GroupsOfUser entry in the globally save GroupsOfUserCollection object,
    * indicating that user is part of the group.
-   * 
+   *
    * @param userUri
    * @param groupUri
    * @return any change happened
@@ -592,7 +601,7 @@ public class OrgApiStorageImpl implements OrgApi {
 
   /**
    * Loads the StorgaeObject with the given uri and class, and sets it to deleted.
-   * 
+   *
    * @param <T>
    * @param uri
    * @param clazz
@@ -607,7 +616,7 @@ public class OrgApiStorageImpl implements OrgApi {
 
   /**
    * Removes the object with the given uri from the ObjectMap
-   * 
+   *
    * @param mapName Identifier of ObjectMap to remove from.
    * @param value Value to remove from ObjectMap.
    */
@@ -630,7 +639,7 @@ public class OrgApiStorageImpl implements OrgApi {
   /**
    * Removes the group with the given uri from the GROUP_LIST_REFERNCE ObjectMap, which contains the
    * name - groupUri mapping of all existing groups.
-   * 
+   *
    * @param groupUri URI of the group to remove.
    */
   private void removeGroupFromGroupListReference(URI groupUri) {
@@ -844,12 +853,6 @@ public class OrgApiStorageImpl implements OrgApi {
     parentGroup.getChildren().removeIf(c -> c.equals(childGroupUri));
     updateGroup(parentGroup);
 
-  }
-
-  @Override
-  public List<Group> getRootGroups() {
-    // TODO Auto-generated method stub
-    return null;
   }
 
   @Override

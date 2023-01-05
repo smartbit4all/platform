@@ -53,12 +53,6 @@ public class OrgApiGatewayImpl extends OrgApiImpl {
   }
 
   @Override
-  public List<Group> getRootGroups() {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  @Override
   public InputStream getUserImage(URI userUri) {
     // TODO Auto-generated method stub
     return null;

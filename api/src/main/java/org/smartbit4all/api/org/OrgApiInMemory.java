@@ -19,7 +19,7 @@ import org.springframework.util.Assert;
 /**
  * Generic in-memory implementation of OrgApi. Not thread-safe, use it only for demo and test
  * purposes!
- * 
+ *
  * @author Attila Mate
  * @since 2021.04.19.
  */
@@ -176,12 +176,6 @@ public class OrgApiInMemory extends OrgApiImpl {
   @Override
   public Group getGroup(URI groupUri) {
     return groups.get(groupUri);
-  }
-
-  @Override
-  public List<Group> getRootGroups() {
-    return groups.values().stream().filter(group -> group.getParent() == null)
-        .collect(Collectors.toList());
   }
 
   @Override

@@ -171,7 +171,7 @@ components:
             type: string
     Group:
       type: object
-      required: [uri, name, kind, parent, children]
+      required: [uri, name, kind, children]
       properties:
         uri:
           type: string
@@ -193,10 +193,6 @@ components:
           type: boolean
           default: false
           description: 'Built in groups are unmodifiable'
-        parent:
-          type: string
-          format: uri
-          description: 'The uri of the parent group'
         children:
           type: array
           items:

@@ -40,7 +40,6 @@ import javax.validation.Valid;
   Group.DESCRIPTION,
   Group.KIND_CODE,
   Group.BUILT_IN,
-  Group.PARENT,
   Group.CHILDREN
 })
 @JsonTypeName("Group")
@@ -63,9 +62,6 @@ public class Group {
 
   public static final String BUILT_IN = "builtIn";
   private Boolean builtIn = false;
-
-  public static final String PARENT = "parent";
-  private URI parent;
 
   public static final String CHILDREN = "children";
   private List<URI> children = new ArrayList<>();
@@ -238,35 +234,6 @@ public class Group {
   }
 
 
-  public Group parent(URI parent) {
-    
-    this.parent = parent;
-    return this;
-  }
-
-   /**
-   * The uri of the parent group
-   * @return parent
-  **/
-  @javax.annotation.Nonnull
-  @NotNull
-  @Valid
-  @ApiModelProperty(required = true, value = "The uri of the parent group")
-  @JsonProperty(PARENT)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-
-  public URI getParent() {
-    return parent;
-  }
-
-
-  @JsonProperty(PARENT)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setParent(URI parent) {
-    this.parent = parent;
-  }
-
-
   public Group children(List<URI> children) {
     
     this.children = children;
@@ -316,13 +283,12 @@ public class Group {
         Objects.equals(this.description, group.description) &&
         Objects.equals(this.kindCode, group.kindCode) &&
         Objects.equals(this.builtIn, group.builtIn) &&
-        Objects.equals(this.parent, group.parent) &&
         Objects.equals(this.children, group.children);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, title, name, description, kindCode, builtIn, parent, children);
+    return Objects.hash(uri, title, name, description, kindCode, builtIn, children);
   }
 
   @Override
@@ -335,7 +301,6 @@ public class Group {
     sb.append("    description: ").append(toIndentedString(description)).append("\n");
     sb.append("    kindCode: ").append(toIndentedString(kindCode)).append("\n");
     sb.append("    builtIn: ").append(toIndentedString(builtIn)).append("\n");
-    sb.append("    parent: ").append(toIndentedString(parent)).append("\n");
     sb.append("    children: ").append(toIndentedString(children)).append("\n");
     sb.append("}");
     return sb.toString();
