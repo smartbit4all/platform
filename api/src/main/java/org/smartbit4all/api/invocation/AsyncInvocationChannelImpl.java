@@ -1,13 +1,17 @@
 package org.smartbit4all.api.invocation;
 
 import java.net.URI;
+import java.time.OffsetDateTime;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.smartbit4all.api.invocation.bean.InvocationParameter;
+import org.smartbit4all.api.invocation.bean.InvocationError;
+import org.smartbit4all.api.invocation.bean.InvocationResult;
+import org.smartbit4all.api.invocation.bean.InvocationResultDecision;
+import org.smartbit4all.api.invocation.bean.InvocationResultDecision.DecisionEnum;
 import org.smartbit4all.api.invocation.bean.RuntimeAsyncChannel;
 import org.smartbit4all.api.session.SessionManagementApi;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,20 +76,46 @@ public final class AsyncInvocationChannelImpl
   }
 
   @Override
-  public void invoke(AsyncInvocationRequestEntry request) {
+  public void invoke(AsyncInvocationRequestEntry requestEntry) {
     executorService.submit(() -> {
       // decorate the thread of given call.
       if (technicalUserUri != null && sessionManagementApi != null) {
         sessionManagementApi.startTechnicalSession(technicalUserUri);
-      } else if (request.request.getRequest().getSessionUri() != null) {
-        sessionManagementApi.setSession(request.request.getRequest().getSessionUri());
+      } else if (requestEntry.request.getRequest().getSessionUri() != null) {
+        sessionManagementApi.setSession(requestEntry.request.getRequest().getSessionUri());
       }
+      InvocationResult result = new InvocationResult().startTime(OffsetDateTime.now());
       try {
-        InvocationParameter returnValue = invocationApi.invoke(request.request.getRequest());
-        invocationRegisterApi.removeAsyncInvovationRequest(request);
-        // Save the result into the asynchronous request. It will result a call to the listeners.
+        result.returnValue(invocationApi.invoke(requestEntry.request.getRequest()).getValue());
       } catch (Exception e) {
-        log.warn("Exception occured while executing the " + request, e);
+        log.warn("Exception occured while executing the " + requestEntry, e);
+        result.error(
+            new InvocationError().definition(e.getClass().getName()).message(e.getMessage()));
+      } finally {
+        result.endTime(OffsetDateTime.now());
+        // Let's make a decision about the next step
+        InvocationResultDecision decision = null;
+        if (requestEntry.request.getEvaluate() != null) {
+          // We set the parameter for the call.
+          requestEntry.request.getEvaluate().getParameters().get(0).setValue(result);
+          try {
+            // TODO This is an object read it with ObjectDefinition!
+            decision = (InvocationResultDecision) invocationApi
+                .invoke(requestEntry.request.getEvaluate()).getValue();
+          } catch (Exception e) {
+            log.error("Exception occured while trying to evaluate the " + result + " for the "
+                + requestEntry.request, e);
+          }
+        }
+        if (decision == null) {
+          // Make a hard wired decision if there was error then abort, if we have andThen then
+          // continue.
+          decision = new InvocationResultDecision()
+              .decision(result.getError() == null ? DecisionEnum.CONTINUE : DecisionEnum.ABORT);
+        }
+        result.decision(decision);
+        // Save the result into the asynchronous request. It will result a call to the listeners.
+        invocationRegisterApi.saveAsyncInvocationResult(requestEntry, result);
       }
     });
   }

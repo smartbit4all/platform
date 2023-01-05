@@ -14,6 +14,7 @@ import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.InvocationApiImpl;
 import org.smartbit4all.api.invocation.bean.ApiData;
 import org.smartbit4all.api.invocation.bean.ApiRegistryData;
+import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
 import org.smartbit4all.api.navigation.NavigationApi;
 import org.smartbit4all.api.navigation.NavigationFeatureApi;
 import org.smartbit4all.api.navigation.NavigationFeatureApiImpl;
@@ -35,6 +36,8 @@ import org.smartbit4all.api.object.ModifyApiImpl;
 import org.smartbit4all.api.object.ModifyContributionApiStorageImpl;
 import org.smartbit4all.api.object.RetrievalApi;
 import org.smartbit4all.api.object.RetrievalApiImpl;
+import org.smartbit4all.api.object.bean.AggregationKind;
+import org.smartbit4all.api.object.bean.ReferencePropertyKind;
 import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.setting.LocaleUsage;
@@ -45,6 +48,7 @@ import org.smartbit4all.api.view.ViewContextService;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectDefinitionApiImpl;
+import org.smartbit4all.core.object.ObjectReferenceConfigs;
 import org.smartbit4all.domain.config.DomainConfig;
 import org.smartbit4all.domain.data.storage.ObjectStorage;
 import org.smartbit4all.domain.data.storage.Storage;
@@ -235,4 +239,12 @@ public class PlatformApiConfig {
   }
 
 
+  @Bean
+  public ObjectReferenceConfigs invocationReferences() {
+    return new ObjectReferenceConfigs()
+        .ref(AsyncInvocationRequest.class,
+            AsyncInvocationRequest.AND_THEN, AsyncInvocationRequest.class,
+            ReferencePropertyKind.LIST,
+            AggregationKind.SHARED);
+  }
 }

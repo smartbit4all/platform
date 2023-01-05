@@ -5,6 +5,7 @@ import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -30,12 +31,15 @@ import org.smartbit4all.api.invocation.bean.ApiRegistryData;
 import org.smartbit4all.api.invocation.bean.AsyncChannelScheduledInvocationList;
 import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
+import org.smartbit4all.api.invocation.bean.InvocationResult;
+import org.smartbit4all.api.invocation.bean.InvocationResultDecision.DecisionEnum;
 import org.smartbit4all.api.invocation.bean.RuntimeAsyncChannel;
 import org.smartbit4all.api.invocation.bean.RuntimeAsyncChannelList;
 import org.smartbit4all.api.invocation.bean.RuntimeAsyncChannelRegistry;
 import org.smartbit4all.api.invocation.bean.ScheduledInvocationRequest;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinitionApiImpl;
+import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.application.ApplicationRuntime;
 import org.smartbit4all.domain.application.ApplicationRuntimeApi;
@@ -440,7 +444,7 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
         for (int idx = 0; idx < scheduledList.getInvocationRequests().size(); idx++) {
           ScheduledInvocationRequest scheduledInvocationRequest =
               scheduledList.getInvocationRequests().get(idx);
-          if (scheduledInvocationRequest.getScheduledAt().isBefore(limitTime)) {
+          if (scheduledInvocationRequest.getScheduledAt().isAfter(limitTime)) {
             // If we found the first scheduled invocation that before the limit time then we stop
             // because until this item we had all the requests to be enqueued. The idx is now on the
             // first request that shouldn't be enqueued.
@@ -669,6 +673,31 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
   }
 
   @Override
+  public AsyncInvocationRequestEntry saveAndEnqueueAsyncInvocationRequest(ObjectNode asynRequest) {
+    AsyncInvocationChannel asyncInvocationChannel =
+        checkChannel(asynRequest.getValueAsString(AsyncInvocationRequest.CHANNEL));
+    AsyncInvocationRequest asyncInvocationRequest = null;
+    if (applicationRuntimeApi != null) {
+      ApplicationRuntime applicationRuntime = applicationRuntimeApi.self();
+      asynRequest.setValue(applicationRuntime.getUri(), AsyncInvocationRequest.RUNTIME_URI);
+      URI uri = objectApi.save(asynRequest);
+      asyncInvocationRequest = objectApi.read(uri, AsyncInvocationRequest.class);
+      Storage storageAsyncReg = storageApi.get(Invocations.ASYNC_CHANNEL_REGISTRY);
+      storageAsyncReg.update(asyncInvocationChannel.getUri(), RuntimeAsyncChannel.class, rac -> {
+        return rac
+            .addInvocationRequestsItem(objectApi.getLatestUri(uri));
+      });
+    } else {
+      asyncInvocationRequest = asynRequest.getObject(AsyncInvocationRequest.class);
+    }
+
+    AsyncInvocationRequestEntry result =
+        new AsyncInvocationRequestEntry(asyncInvocationChannel, asyncInvocationRequest);
+    enqueueAsyncRequest(result);
+    return result;
+  }
+
+  @Override
   public AsyncInvocationRequest saveAndScheduleAsyncInvocationRequest(
       InvocationRequest request, String channelName, OffsetDateTime executeAt) {
     AsyncInvocationChannel channel = checkChannel(channelName);
@@ -676,6 +705,17 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
         new AsyncInvocationRequest().request(request);
     asyncInvocationRequest
         .uri(objectApi.saveAsNew(Invocations.INVOCATION_SCHEME, asyncInvocationRequest));
+
+    scheduleAsyncInvocationRequest(channel, Arrays.asList(asyncInvocationRequest.getUri()),
+        executeAt);
+    return asyncInvocationRequest;
+  }
+
+  private final void scheduleAsyncInvocationRequest(AsyncInvocationChannel channel,
+      List<URI> requestUris, OffsetDateTime executeAt) {
+    if (requestUris == null || requestUris.isEmpty()) {
+      return;
+    }
     StoredReference<AsyncChannelScheduledInvocationList> refScheduled =
         collectionApi.reference(Invocations.INVOCATION_SCHEME,
             scheduledInvocationReferenceName(channel.getName()),
@@ -692,11 +732,10 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
           break;
         }
       }
-      iterList.add(new ScheduledInvocationRequest().requestUri(asyncInvocationRequest.getUri())
-          .scheduledAt(executeAt));
+      requestUris.forEach(u -> iterList.add(new ScheduledInvocationRequest().requestUri(u)
+          .scheduledAt(executeAt)));
       return updatedList;
     });
-    return asyncInvocationRequest;
   }
 
   private final AsyncInvocationChannel checkChannel(String channel) {
@@ -709,7 +748,8 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
   }
 
   @Override
-  public void removeAsyncInvovationRequest(AsyncInvocationRequestEntry requestEntry) {
+  public void saveAsyncInvocationResult(AsyncInvocationRequestEntry requestEntry,
+      InvocationResult result) {
     if (applicationRuntimeApi != null) {
       // We remove the given request from the list related to the application runtime.
       Storage storageAsyncReg = storageApi.get(Invocations.ASYNC_CHANNEL_REGISTRY);
@@ -721,6 +761,41 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
         rac.getInvocationRequests().remove(objectApi.getLatestUri(requestEntry.request.getUri()));
         return rac;
       });
+    }
+    // Save the result into the request and ensure the decision.
+    ObjectNode requestNode = objectApi.loadLatest(requestEntry.request.getUri());
+    requestNode.modify(AsyncInvocationRequest.class, air -> {
+      return air.addResultsItem(result);
+    });
+    objectApi.save(requestNode);
+    if (result.getDecision().getDecision() == DecisionEnum.CONTINUE
+        && result.getDecision().getScheduledAt() == null
+        && !requestEntry.request.getAndThen().isEmpty()) {
+      // If we can continue and we have and then invocations without scheduling we enqueue
+      // immediately
+      applyAsyncInvocationParameter(requestEntry.request.getAndThen(), result.getReturnValue());
+      saveAndEnqueueInvocationRequest(requestEntry.channel, requestEntry.request.getAndThen());
+    } else if (result.getDecision().getDecision() == DecisionEnum.CONTINUE
+        && result.getDecision().getScheduledAt() != null
+        && requestEntry.request.getAndThen() != null
+        && !requestEntry.request.getAndThen().isEmpty()) {
+      applyAsyncInvocationParameter(requestEntry.request.getAndThen(), result.getReturnValue());
+      scheduleAsyncInvocationRequest(requestEntry.channel, requestEntry.request.getAndThen(),
+          result.getDecision().getScheduledAt());
+    } else if (result.getDecision().getDecision() == DecisionEnum.RESCHEDULE
+        && result.getDecision().getScheduledAt() != null) {
+      scheduleAsyncInvocationRequest(requestEntry.channel,
+          Arrays.asList(objectApi.getLatestUri(requestEntry.request.getUri())),
+          result.getDecision().getScheduledAt());
+    }
+  }
+
+  private final void applyAsyncInvocationParameter(List<URI> requests, Object value) {
+    for (URI uri : requests) {
+      objectApi.save(objectApi.loadLatest(uri).modify(AsyncInvocationRequest.class, air -> {
+        air.getRequest().getParameters().get(0).setValue(value);
+        return air;
+      }));
     }
   }
 

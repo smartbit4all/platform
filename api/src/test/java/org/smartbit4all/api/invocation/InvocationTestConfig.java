@@ -18,6 +18,8 @@ public class InvocationTestConfig {
 
   public static final String GLOBAL_ASYNC_CHANNEL = "global";
 
+  public static final String SECOND_ASYNC_CHANNEL = "second";
+
   @Bean
   public TestApi testApi() {
     return new TestApiImpl();
@@ -51,6 +53,11 @@ public class InvocationTestConfig {
   @Bean
   public AsyncInvocationChannel globalChannel() {
     return new AsyncInvocationChannelImpl(GLOBAL_ASYNC_CHANNEL);
+  }
+
+  @Bean
+  public AsyncInvocationChannel secondChannel() {
+    return new AsyncInvocationChannelImpl(SECOND_ASYNC_CHANNEL);
   }
 
   @EventListener(ContextRefreshedEvent.class)

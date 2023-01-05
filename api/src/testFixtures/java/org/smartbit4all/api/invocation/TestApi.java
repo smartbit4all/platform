@@ -3,6 +3,8 @@ package org.smartbit4all.api.invocation;
 import java.util.concurrent.CountDownLatch;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
+import org.smartbit4all.api.invocation.bean.InvocationResult;
+import org.smartbit4all.api.invocation.bean.InvocationResultDecision;
 import org.smartbit4all.api.invocation.bean.TestDataBean;
 import org.smartbit4all.core.utility.concurrent.FutureValue;
 
@@ -34,4 +36,15 @@ public interface TestApi {
                 .typeClass(String.class.getName())
                 .value(value));
   }
+
+  String firstStep(String p);
+
+  InvocationResultDecision firstStepOnError(InvocationResult p);
+
+  String secondStep(String p, String postfix);
+
+  String thirdStep(String p, String postfix);
+
+  InvocationResultDecision thirdStepOnError(InvocationResult p);
+
 }

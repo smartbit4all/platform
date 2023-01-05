@@ -95,4 +95,22 @@ class InvocationApiTest {
 
   }
 
+  @Test
+  void testInvokeAsyncFlow() throws Exception {
+    String value = "Peter";
+    String second = " Second";
+    String third = " Third";
+    invocationApi
+        .invoke(invocationApi.asyncBuilder()
+            .call(TestApi.class, a -> a.firstStep(value), InvocationTestConfig.GLOBAL_ASYNC_CHANNEL)
+            .evaluate(TestApi.class, a -> a.firstStepOnError(null))
+            .andThen(TestApi.class, a -> a.secondStep(null, second),
+                InvocationTestConfig.SECOND_ASYNC_CHANNEL)
+            .andThenContinue(TestApi.class, a -> a.thirdStep(null, third),
+                InvocationTestConfig.SECOND_ASYNC_CHANNEL)
+            .evaluate(TestApi.class, a -> a.thirdStepOnError(null)).get());
+    Assertions.assertEquals(value + second, TestApiImpl.secondResult.get());
+    Assertions.assertEquals(value + third, TestApiImpl.thirdResult.get());
+  }
+
 }

@@ -9,6 +9,8 @@ import org.smartbit4all.api.invocation.bean.ApiData;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.session.SessionApi;
+import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.domain.application.ApplicationRuntimeApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
@@ -36,6 +38,12 @@ public final class InvocationApiImpl implements InvocationApi {
    */
   @Autowired(required = false)
   private InvocationExecutionApi executionApi;
+
+  @Autowired
+  private ObjectApi objectApi;
+
+  @Autowired
+  private InvocationApi self;;
 
   @Override
   public InvocationParameter invoke(InvocationRequest request) throws ApiNotFoundException {
@@ -72,6 +80,11 @@ public final class InvocationApiImpl implements InvocationApi {
     }
   }
 
+  @Override
+  public void invoke(ObjectNode asyncInvocationNode) {
+    invocationRegisterApi.saveAndEnqueueAsyncInvocationRequest(asyncInvocationNode);
+  }
+
   private UUID getRuntimeToRun(List<UUID> runtimes) {
     // TODO decide which runtime to use
     return runtimes.get(0);
@@ -83,12 +96,18 @@ public final class InvocationApiImpl implements InvocationApi {
   }
 
   @Override
+  public AsyncInvocationBuilder asyncBuilder() {
+    return new AsyncInvocationBuilder(objectApi, self);
+  }
+
+  @Override
   public void invokeAsync(InvocationRequest request, String channel) {
     invocationRegisterApi.saveAndEnqueueAsyncInvocationRequest(request, channel);
   }
 
   @Override
   public void invokeAt(InvocationRequest request, String channel, OffsetDateTime executeAt) {
+
     invocationRegisterApi.saveAndScheduleAsyncInvocationRequest(request, channel,
         Objects.requireNonNull(executeAt,
             "The execution time must be specified to schedule an invocation."));

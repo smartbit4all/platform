@@ -9,6 +9,8 @@ import org.smartbit4all.api.invocation.bean.ApiRegistryData;
 import org.smartbit4all.api.invocation.bean.AsyncChannelScheduledInvocationList;
 import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
+import org.smartbit4all.api.invocation.bean.InvocationResult;
+import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.domain.application.ApplicationRuntimeApi;
 
 /**
@@ -49,6 +51,17 @@ public interface InvocationRegisterApi {
 
   /**
    * Save the invocation request into the asynchronous channel for persisted execution if it is
+   * possible. At the end it enqueue the async invocation.
+   * 
+   * @param asynRequest The original request
+   * @return If the channel exists and we have an runtime management it will save and return the
+   *         {@link AsyncInvocationRequest}. If we don't have an active
+   *         {@link ApplicationRuntimeApi} then the object will be constructed but not saved.
+   */
+  AsyncInvocationRequestEntry saveAndEnqueueAsyncInvocationRequest(ObjectNode asynRequest);
+
+  /**
+   * Save the invocation request into the asynchronous channel for persisted execution if it is
    * possible. It will save the request to the {@link AsyncChannelScheduledInvocationList} for
    * further execution.
    * 
@@ -62,9 +75,11 @@ public interface InvocationRegisterApi {
 
   /**
    * Remove the invocation request from the asynchronous channel belong to the current runtime.
+   * Evaluate the result of the current invocation and make a decision about the next steps.
    * 
-   * @param request The request to remove.
+   * @param request The current request.
+   * @param result
    */
-  void removeAsyncInvovationRequest(AsyncInvocationRequestEntry request);
+  void saveAsyncInvocationResult(AsyncInvocationRequestEntry request, InvocationResult result);
 
 }

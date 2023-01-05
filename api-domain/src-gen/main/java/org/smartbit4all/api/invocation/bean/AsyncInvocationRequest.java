@@ -23,7 +23,10 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
+import org.smartbit4all.api.invocation.bean.InvocationResult;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -37,7 +40,10 @@ import javax.validation.Valid;
   AsyncInvocationRequest.URI,
   AsyncInvocationRequest.RUNTIME_URI,
   AsyncInvocationRequest.CHANNEL,
-  AsyncInvocationRequest.REQUEST
+  AsyncInvocationRequest.REQUEST,
+  AsyncInvocationRequest.EVALUATE,
+  AsyncInvocationRequest.AND_THEN,
+  AsyncInvocationRequest.RESULTS
 })
 @JsonTypeName("AsyncInvocationRequest")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -53,6 +59,15 @@ public class AsyncInvocationRequest {
 
   public static final String REQUEST = "request";
   private InvocationRequest request;
+
+  public static final String EVALUATE = "evaluate";
+  private InvocationRequest evaluate;
+
+  public static final String AND_THEN = "andThen";
+  private List<URI> andThen = null;
+
+  public static final String RESULTS = "results";
+  private List<InvocationResult> results = null;
 
   public AsyncInvocationRequest() { 
   }
@@ -168,6 +183,106 @@ public class AsyncInvocationRequest {
   }
 
 
+  public AsyncInvocationRequest evaluate(InvocationRequest evaluate) {
+    
+    this.evaluate = evaluate;
+    return this;
+  }
+
+   /**
+   * Get evaluate
+   * @return evaluate
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(EVALUATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public InvocationRequest getEvaluate() {
+    return evaluate;
+  }
+
+
+  @JsonProperty(EVALUATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setEvaluate(InvocationRequest evaluate) {
+    this.evaluate = evaluate;
+  }
+
+
+  public AsyncInvocationRequest andThen(List<URI> andThen) {
+    
+    this.andThen = andThen;
+    return this;
+  }
+
+  public AsyncInvocationRequest addAndThenItem(URI andThenItem) {
+    if (this.andThen == null) {
+      this.andThen = new ArrayList<>();
+    }
+    this.andThen.add(andThenItem);
+    return this;
+  }
+
+   /**
+   * The URI of the next asyncronous invocations. This invocation automatically consumes the result of current invocation. 
+   * @return andThen
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "The URI of the next asyncronous invocations. This invocation automatically consumes the result of current invocation. ")
+  @JsonProperty(AND_THEN)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<URI> getAndThen() {
+    return andThen;
+  }
+
+
+  @JsonProperty(AND_THEN)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setAndThen(List<URI> andThen) {
+    this.andThen = andThen;
+  }
+
+
+  public AsyncInvocationRequest results(List<InvocationResult> results) {
+    
+    this.results = results;
+    return this;
+  }
+
+  public AsyncInvocationRequest addResultsItem(InvocationResult resultsItem) {
+    if (this.results == null) {
+      this.results = new ArrayList<>();
+    }
+    this.results.add(resultsItem);
+    return this;
+  }
+
+   /**
+   * Contains the inline list of the results in historic order. If the invocation was executed more then one times  then we have all of them here. 
+   * @return results
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "Contains the inline list of the results in historic order. If the invocation was executed more then one times  then we have all of them here. ")
+  @JsonProperty(RESULTS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<InvocationResult> getResults() {
+    return results;
+  }
+
+
+  @JsonProperty(RESULTS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setResults(List<InvocationResult> results) {
+    this.results = results;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -180,12 +295,15 @@ public class AsyncInvocationRequest {
     return Objects.equals(this.uri, asyncInvocationRequest.uri) &&
         Objects.equals(this.runtimeUri, asyncInvocationRequest.runtimeUri) &&
         Objects.equals(this.channel, asyncInvocationRequest.channel) &&
-        Objects.equals(this.request, asyncInvocationRequest.request);
+        Objects.equals(this.request, asyncInvocationRequest.request) &&
+        Objects.equals(this.evaluate, asyncInvocationRequest.evaluate) &&
+        Objects.equals(this.andThen, asyncInvocationRequest.andThen) &&
+        Objects.equals(this.results, asyncInvocationRequest.results);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, runtimeUri, channel, request);
+    return Objects.hash(uri, runtimeUri, channel, request, evaluate, andThen, results);
   }
 
   @Override
@@ -196,6 +314,9 @@ public class AsyncInvocationRequest {
     sb.append("    runtimeUri: ").append(toIndentedString(runtimeUri)).append("\n");
     sb.append("    channel: ").append(toIndentedString(channel)).append("\n");
     sb.append("    request: ").append(toIndentedString(request)).append("\n");
+    sb.append("    evaluate: ").append(toIndentedString(evaluate)).append("\n");
+    sb.append("    andThen: ").append(toIndentedString(andThen)).append("\n");
+    sb.append("    results: ").append(toIndentedString(results)).append("\n");
     sb.append("}");
     return sb.toString();
   }

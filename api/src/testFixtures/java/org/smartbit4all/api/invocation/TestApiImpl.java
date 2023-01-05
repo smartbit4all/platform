@@ -1,12 +1,26 @@
 package org.smartbit4all.api.invocation;
 
+import java.time.OffsetDateTime;
+import java.util.Random;
+import org.smartbit4all.api.invocation.bean.InvocationResult;
+import org.smartbit4all.api.invocation.bean.InvocationResultDecision;
+import org.smartbit4all.api.invocation.bean.InvocationResultDecision.DecisionEnum;
 import org.smartbit4all.api.invocation.bean.TestDataBean;
+import org.smartbit4all.core.utility.concurrent.FutureValue;
 
 public class TestApiImpl implements TestApi {
 
   public static final String NAME = TestApiImpl.class.getName();
 
   public static String lastDo;
+
+  public Random rnd = new Random();
+
+  public int thirdErrorCounter = 1;
+
+  public static FutureValue<String> secondResult = new FutureValue<>();
+
+  public static FutureValue<String> thirdResult = new FutureValue<>();
 
   @Override
   public void doMethod(String p1) {
@@ -32,6 +46,46 @@ public class TestApiImpl implements TestApi {
   @Override
   public void setFutureValueAt(String p1) {
     TestApi.scheduledLatch.countDown();
+  }
+
+  @Override
+  public String firstStep(String p) {
+    return p;
+  }
+
+  @Override
+  public InvocationResultDecision firstStepOnError(InvocationResult p) {
+    return new InvocationResultDecision().decision(DecisionEnum.CONTINUE)
+        .scheduledAt(OffsetDateTime.now().plusSeconds(5));
+  }
+
+  @Override
+  public String secondStep(String p, String postfix) {
+    String result = p + postfix;
+    TestApiImpl.secondResult.setValue(result);
+    return result;
+  }
+
+  @Override
+  public String thirdStep(String p, String postfix) {
+    try {
+      Thread.sleep(rnd.nextInt(1000));
+    } catch (InterruptedException e) {
+      throw new IllegalStateException(e);
+    }
+    if ((0 < thirdErrorCounter--) || rnd.nextBoolean()) {
+      throw new IllegalArgumentException("IllegalArgumentException");
+    }
+    String result = p + postfix;
+    TestApiImpl.thirdResult.setValue(result);
+    return result;
+  }
+
+  @Override
+  public InvocationResultDecision thirdStepOnError(InvocationResult p) {
+    return p.getError() != null ? new InvocationResultDecision().decision(DecisionEnum.RESCHEDULE)
+        .scheduledAt(OffsetDateTime.now().plusSeconds(3))
+        : new InvocationResultDecision().decision(DecisionEnum.CONTINUE);
   }
 
 }

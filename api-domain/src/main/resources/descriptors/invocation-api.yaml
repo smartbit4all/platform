@@ -70,6 +70,65 @@ components:
         typeClass:
           type: string
           description: The fully qualified type class name of the parameter.
+    InvocationResult:
+      type: object
+      description: |
+        As a result of the invocation we get back this object that contains the result if the invocation was successful.
+        This can be saved into the AsynInvocationRequest as results and can be managed by the InvocationErrorHandler. The
+        decision about the next step is also saved into this object.
+      required: [startTime, endTime]
+      properties:
+        returnValue:
+          type: object
+          description: The return value of the call if it was successful. If the return value is void then this value is null.
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+        decision:
+          $ref: '#/components/schemas/InvocationResultDecision'
+        error:
+          $ref: '#/components/schemas/InvocationError'
+    InvocationResultDecision:
+      type: object
+      description: |
+        The evaluation can make a decision on the result of the invocation. Can ask reschedule, continue can finish the call.
+      properties:
+        handler:
+          type: string
+          description: The fully qualified name of the evaluator api that was the decision maker.
+        decision:
+          enum: [ABORT, RESCHEDULE, CONTINUE]
+        scheduledAt:
+          type: string
+          format: date-time
+          description: |
+            If the error handler decided to reschedule the given invocation or continue with the andThen calls then we can see 
+            the next invocation time in this field.
+    InvocationError:
+      type: object
+      description: |
+        The error or exception can be saved into this object that occurred while executing an invocation.
+      required: [definition, stackTrace]
+      properties:
+        definition:
+          type: string
+          description: |
+            The error or exception typically defined in a programming language like java. The fully qualified name of this class
+            is the definition of the error.
+        message:
+          type: string
+          description: |
+            The programmer defined message of exception that can help to identify the exact problem.
+        stackTrace:
+          type: array
+          description: |
+            To be able to identify the original problem, the invocation can provide a deeper information about the exception.
+            This ordered list contains the line of the stack trace if available.
+          items:
+            type: string
     AsyncInvocationRequest:
       type: object
       description: |
@@ -90,6 +149,23 @@ components:
           description: The name of the channel handles the given invocation.
         request:
           $ref: '#/components/schemas/InvocationRequest'        
+        evaluate:
+          $ref: '#/components/schemas/InvocationRequest'        
+        andThen:
+          type: array
+          description: |
+            The URI of the next asyncronous invocations. This invocation automatically consumes the result of current
+            invocation.
+          items:
+            type: string
+            format: uri
+        results:
+          type: array
+          description: |
+            Contains the inline list of the results in historic order. If the invocation was executed more then one times 
+            then we have all of them here.
+          items:
+            $ref: '#/components/schemas/InvocationResult'        
     AsyncChannelScheduledInvocationList:
       type: object
       description: |

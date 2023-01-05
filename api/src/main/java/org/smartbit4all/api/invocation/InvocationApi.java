@@ -1,8 +1,10 @@
 package org.smartbit4all.api.invocation;
 
 import java.time.OffsetDateTime;
+import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
+import org.smartbit4all.core.object.ObjectNode;
 
 /**
  * The {@link InvocationApi} is a generic api to call other api function.
@@ -10,7 +12,6 @@ import org.smartbit4all.api.invocation.bean.InvocationRequest;
  * @author Peter Boros
  */
 public interface InvocationApi {
-
 
   /**
    * The builder can be used to produce an {@link InvocationRequest} by calling the method in the
@@ -29,12 +30,28 @@ public interface InvocationApi {
   <T> InvocationBuilder<T> builder(Class<T> apiInterface);
 
   /**
+   * The builder can be used to produce an {@link AsyncInvocationRequest} by creating multiple
+   * invocation chain.
+   * <p>
+   * <code>
+   *  InvocationRequest request = invocationApi.builder(testApi).build(a -> a.echoMethod(value));<br>
+   *  InvocationParameter result = invocationApi.invoke(request);
+   * </code>
+   * </p>
+   * 
+   * @return
+   */
+  AsyncInvocationBuilder asyncBuilder();
+
+  /**
    * The generic api call executed synchronously.
    * 
    * @param request
    * @throws ApiNotFoundException
    */
   InvocationParameter invoke(InvocationRequest request) throws ApiNotFoundException;
+
+  void invoke(ObjectNode asyncInvocationNode);
 
   /**
    * This call register the invocation for the for execute after the successful commit of the
