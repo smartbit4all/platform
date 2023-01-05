@@ -4,9 +4,9 @@ import java.util.List;
 import java.util.UUID;
 import org.smartbit4all.api.uitree.bean.SmartTreeNode;
 import org.smartbit4all.api.uitree.restserver.TreeApiDelegate;
-import org.smartbit4all.api.view.TreeApi;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionRequest;
+import org.smartbit4all.api.view.tree.TreeApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 

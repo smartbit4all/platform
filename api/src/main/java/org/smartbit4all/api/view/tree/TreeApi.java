@@ -1,19 +1,21 @@
-package org.smartbit4all.api.view;
+package org.smartbit4all.api.view.tree;
 
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
-import org.smartbit4all.api.contribution.PrimaryApi;
 import org.smartbit4all.api.uitree.bean.SmartTreeNode;
 import org.smartbit4all.api.uitree.bean.UiTreeNode;
 import org.smartbit4all.api.uitree.bean.UiTreeState;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 
-public interface TreeApi extends PrimaryApi<TreeContributionApi> {
-
-  // FIXME ...
-  void addRootNodesToTree(UiTreeState treeState, List<UiTreeNode> roots);
+/**
+ * This interface is used to serve tree implementations.
+ *
+ * @author matea
+ *
+ */
+public interface TreeApi {
 
   List<SmartTreeNode> getRootNodes(UiTreeState treeState);
 
@@ -30,8 +32,7 @@ public interface TreeApi extends PrimaryApi<TreeContributionApi> {
 
   List<UiAction> getMainActions(UiTreeState treeState);
 
-  // FIXME ...
-  void populateChildrenOfTreeNode(UiTreeState treeState, UiTreeNode node);
+  void refreshNode(UiTreeState treeState, UiTreeNode node);
 
   // for calling with viewUuid and treeId
   <T> T executeTreeCall(UUID viewUuid, String treeId, Function<UiTreeState, T> treeCall);

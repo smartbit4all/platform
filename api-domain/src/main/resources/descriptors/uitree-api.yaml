@@ -315,6 +315,9 @@ components:
       properties:
         config:
           type: string
+        viewUuid:
+          type: string
+          format: uuid
         nodes:
           type: object
           additionalProperties:

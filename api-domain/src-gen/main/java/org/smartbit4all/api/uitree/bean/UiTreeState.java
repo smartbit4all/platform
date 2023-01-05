@@ -1,5 +1,5 @@
 /*
- * UiTree domain objects
+ * Uitree Api
  * Tree domain objects
  *
  * The version of the OpenAPI document: 1.0.0
@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import org.smartbit4all.api.uitree.bean.UiTreeNode;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -38,6 +39,7 @@ import javax.validation.Valid;
 @ApiModel(description = "This object holds all information about abritrary data in a tree representation.")
 @JsonPropertyOrder({
   UiTreeState.CONFIG,
+  UiTreeState.VIEW_UUID,
   UiTreeState.NODES,
   UiTreeState.ROOT_NODES,
   UiTreeState.EXPANDED_NODES,
@@ -48,6 +50,9 @@ import javax.validation.Valid;
 public class UiTreeState {
   public static final String CONFIG = "config";
   private String config;
+
+  public static final String VIEW_UUID = "viewUuid";
+  private UUID viewUuid;
 
   public static final String NODES = "nodes";
   private Map<String, UiTreeNode> nodes = new HashMap<>();
@@ -88,6 +93,34 @@ public class UiTreeState {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setConfig(String config) {
     this.config = config;
+  }
+
+
+  public UiTreeState viewUuid(UUID viewUuid) {
+    
+    this.viewUuid = viewUuid;
+    return this;
+  }
+
+   /**
+   * Get viewUuid
+   * @return viewUuid
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(VIEW_UUID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public UUID getViewUuid() {
+    return viewUuid;
+  }
+
+
+  @JsonProperty(VIEW_UUID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setViewUuid(UUID viewUuid) {
+    this.viewUuid = viewUuid;
   }
 
 
@@ -234,6 +267,7 @@ public class UiTreeState {
     }
     UiTreeState uiTreeState = (UiTreeState) o;
     return Objects.equals(this.config, uiTreeState.config) &&
+        Objects.equals(this.viewUuid, uiTreeState.viewUuid) &&
         Objects.equals(this.nodes, uiTreeState.nodes) &&
         Objects.equals(this.rootNodes, uiTreeState.rootNodes) &&
         Objects.equals(this.expandedNodes, uiTreeState.expandedNodes) &&
@@ -242,7 +276,7 @@ public class UiTreeState {
 
   @Override
   public int hashCode() {
-    return Objects.hash(config, nodes, rootNodes, expandedNodes, selectedNodes);
+    return Objects.hash(config, viewUuid, nodes, rootNodes, expandedNodes, selectedNodes);
   }
 
   @Override
@@ -250,6 +284,7 @@ public class UiTreeState {
     StringBuilder sb = new StringBuilder();
     sb.append("class UiTreeState {\n");
     sb.append("    config: ").append(toIndentedString(config)).append("\n");
+    sb.append("    viewUuid: ").append(toIndentedString(viewUuid)).append("\n");
     sb.append("    nodes: ").append(toIndentedString(nodes)).append("\n");
     sb.append("    rootNodes: ").append(toIndentedString(rootNodes)).append("\n");
     sb.append("    expandedNodes: ").append(toIndentedString(expandedNodes)).append("\n");

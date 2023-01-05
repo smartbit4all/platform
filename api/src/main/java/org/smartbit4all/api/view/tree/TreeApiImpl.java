@@ -1,4 +1,4 @@
-package org.smartbit4all.api.view;
+package org.smartbit4all.api.view.tree;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
@@ -10,10 +10,10 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import org.smartbit4all.api.contribution.PrimaryApiImpl;
 import org.smartbit4all.api.uitree.bean.SmartTreeNode;
 import org.smartbit4all.api.uitree.bean.UiTreeNode;
 import org.smartbit4all.api.uitree.bean.UiTreeState;
+import org.smartbit4all.api.view.ViewApi;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
@@ -21,35 +21,29 @@ import org.smartbit4all.core.object.ObjectApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.base.Strings;
 
-public class TreeApiImpl extends PrimaryApiImpl<TreeContributionApi> implements TreeApi {
+public class TreeApiImpl implements TreeApi {
 
-  // FIXME
+  // FIXME (viewApi is not present everywhere)
   @Autowired(required = false)
   private ViewApi viewApi;
 
   @Autowired
   private ObjectApi objectApi;
 
-  public TreeApiImpl() {
-    super(TreeContributionApi.class);
-  }
-
-  @Override
-  public void addRootNodesToTree(UiTreeState tree, List<UiTreeNode> roots) {
-    addNodesToState(tree, roots);
-    tree.getRootNodes().addAll(roots.stream()
-        .map(UiTreeNode::getIdentifier)
-        .collect(toList()));
-  }
+  @Autowired
+  private TreeSetupApi treeSetupApi;
 
   @Override
   public List<SmartTreeNode> getRootNodes(UiTreeState treeState) {
     List<String> rootNodes = treeState.getRootNodes();
     if (rootNodes.isEmpty()) {
-      List<UiTreeNode> roots = apiByName.values().stream()
-          .flatMap(api -> api.readRootNodes(treeState).stream())
-          .collect(toList());
-      addRootNodesToTree(treeState, roots);
+      TreeConfig treeConfig = getTreeConfig(treeState);
+      UiTreeNode configNode = treeConfig.getConfigNode(treeState);
+      List<UiTreeNode> roots = treeConfig.readChildrenNodes(treeState, configNode);
+      addNodesToState(treeState, roots);
+      treeState.getRootNodes().addAll(roots.stream()
+          .map(UiTreeNode::getIdentifier)
+          .collect(toList()));
     }
     return getTreeNodeListFromState(rootNodes, treeState);
   }
@@ -59,7 +53,7 @@ public class TreeApiImpl extends PrimaryApiImpl<TreeContributionApi> implements 
     UiTreeNode node = getTreeNode(treeState, nodeId);
     if (Boolean.TRUE == node.getHasChildren()) {
       if (node.getChildren().isEmpty()) {
-        populateChildrenOfTreeNode(treeState, node);
+        refreshNode(treeState, node);
       }
       return getTreeNodeListFromState(node.getChildren(), treeState);
     }
@@ -71,9 +65,9 @@ public class TreeApiImpl extends PrimaryApiImpl<TreeContributionApi> implements 
     UiTreeNode treeNode = getTreeNode(treeState, nodeId);
     if (!treeState.getExpandedNodes().contains(nodeId)) {
       treeState.getExpandedNodes().add(nodeId);
-      populateChildrenOfTreeNode(treeState, treeNode);
+      refreshNode(treeState, treeNode);
     }
-    return convertUi2SmartTreeNode(treeNode, treeState);
+    return convertUi2SmartTreeNode(treeState, treeNode);
   }
 
   @Override
@@ -83,7 +77,7 @@ public class TreeApiImpl extends PrimaryApiImpl<TreeContributionApi> implements 
       treeState.getExpandedNodes().remove(nodeId);
       clearTreeNodeChildren(treeState, treeNode);
     }
-    return convertUi2SmartTreeNode(treeNode, treeState);
+    return convertUi2SmartTreeNode(treeState, treeNode);
   }
 
   @Override
@@ -93,8 +87,9 @@ public class TreeApiImpl extends PrimaryApiImpl<TreeContributionApi> implements 
       treeState.getSelectedNodes().clear();
       treeState.getSelectedNodes().add(nodeId);
     }
-    handleNodeSelected(treeNode);
-    return convertUi2SmartTreeNode(treeNode, treeState);
+    getTreeConfig(treeState)
+        .handleNodeSelected(treeState, treeNode);
+    return convertUi2SmartTreeNode(treeState, treeNode);
   }
 
   @Override
@@ -125,46 +120,25 @@ public class TreeApiImpl extends PrimaryApiImpl<TreeContributionApi> implements 
 
   @Override
   public List<UiAction> getMainActions(UiTreeState treeState) {
-    return apiByName.values().stream()
-        .flatMap(api -> api.getMainActions(treeState).stream())
-        .collect(toList());
+    TreeConfig treeConfig = getTreeConfig(treeState);
+    return treeConfig.getConfigNode(treeState).getActions();
   }
 
-  private List<UiTreeNode> readChildrenNodes(UiTreeNode treeNode) {
-    TreeContributionApi api = getContributionApi(treeNode);
-    if (api != null) {
-      return api.readChildrenNodes(treeNode);
+  private TreeConfig getTreeConfig(UiTreeState treeState) {
+    TreeConfig config = treeSetupApi.getTreeConfig(treeState.getConfig());
+    if (config == null) {
+      throw new IllegalStateException(
+          "TreeConfig not present for configuration " + treeState.getConfig());
     }
-    return Collections.emptyList();
-  }
-
-  private void handleNodeSelected(UiTreeNode treeNode) {
-    TreeContributionApi api = getContributionApi(treeNode);
-    if (api != null) {
-      api.handleNodeSelected(treeNode);
-    }
-  }
-
-  private TreeContributionApi getContributionApi(UiTreeNode treeNode) {
-    TreeContributionApi contributionApi = null;
-    String nodeType = treeNode == null ? null : treeNode.getNodeType();
-    for (TreeContributionApi api : apiByName.values()) {
-      if (api.isNodeTypeSupported(nodeType)) {
-        contributionApi = api;
-        break;
-      }
-    }
-    return contributionApi;
+    return config;
   }
 
   private void performAction(UiTreeState treeState, UiTreeNode treeNode, UiActionRequest action) {
     String nodeType = treeNode == null ? null : treeNode.getNodeType();
     String actionCode = action.getCode();
-    for (TreeContributionApi api : apiByName.values()) {
-      if (api.isActionSupported(nodeType, actionCode)) {
-        api.performAction(this, treeState, treeNode, action);
-        break;
-      }
+    TreeConfig config = getTreeConfig(treeState);
+    if (config.isActionSupported(nodeType, actionCode)) {
+      config.performAction(this, treeState, treeNode, action);
     }
   }
 
@@ -183,11 +157,11 @@ public class TreeApiImpl extends PrimaryApiImpl<TreeContributionApi> implements 
   private List<SmartTreeNode> getTreeNodeListFromState(List<String> ids, UiTreeState treeState) {
     return ids.stream()
         .map(id -> treeState.getNodes().get(id))
-        .map(n -> convertUi2SmartTreeNode(n, treeState))
+        .map(n -> convertUi2SmartTreeNode(treeState, n))
         .collect(toList());
   }
 
-  private SmartTreeNode convertUi2SmartTreeNode(UiTreeNode treeNode, UiTreeState treeState) {
+  private SmartTreeNode convertUi2SmartTreeNode(UiTreeState treeState, UiTreeNode treeNode) {
     return new SmartTreeNode()
         .identifier(treeNode.getIdentifier())
         .caption(treeNode.getCaption())
@@ -199,13 +173,16 @@ public class TreeApiImpl extends PrimaryApiImpl<TreeContributionApi> implements 
         .actions(treeNode.getActions())
         .hasChildren(treeNode.getHasChildren())
         .childrenNodes(treeNode.getChildren().stream()
-            .map(c -> convertUi2SmartTreeNode(treeState.getNodes().get(c), treeState))
+            .map(c -> convertUi2SmartTreeNode(treeState, treeState.getNodes().get(c)))
             .collect(toList()));
   }
 
   @Override
-  public void populateChildrenOfTreeNode(UiTreeState treeState, UiTreeNode node) {
-    List<UiTreeNode> childrenNodes = readChildrenNodes(node);
+  public void refreshNode(UiTreeState treeState, UiTreeNode node) {
+    List<UiTreeNode> childrenNodes =
+        getTreeConfig(treeState)
+            .readChildrenNodes(treeState, node);
+
     if (!node.getChildren().isEmpty()) {
       // merge with existing nodes
       Map<URI, String> idByUri = node.getChildren().stream()
@@ -226,6 +203,10 @@ public class TreeApiImpl extends PrimaryApiImpl<TreeContributionApi> implements 
         .map(UiTreeNode::getIdentifier)
         .collect(toList()));
     node.setHasChildren(!childrenNodes.isEmpty());
+    if (TreeRelation.CONFIG_NODE_TYPE.equals(node.getNodeType())) {
+      // root nodes should be refreshed
+      treeState.rootNodes(node.getChildren());
+    }
   }
 
   private void addNodesToState(UiTreeState treeState, List<UiTreeNode> nodes) {
@@ -259,6 +240,8 @@ public class TreeApiImpl extends PrimaryApiImpl<TreeContributionApi> implements 
     String location = paths[0];
     String key = paths[1];
     if (View.PARAMETERS.equals(location)) {
+      // to make sure view model/params gets initialized
+      viewApi.getModel(viewUuid, null);
       View view = viewApi.getView(viewUuid);
       Object treeStateObject = view.getParameters().get(key);
       return objectApi.asType(UiTreeState.class, treeStateObject);

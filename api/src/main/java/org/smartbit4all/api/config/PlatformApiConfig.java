@@ -42,9 +42,11 @@ import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.setting.LocaleUsage;
 import org.smartbit4all.api.setting.LocaleUsageImpl;
-import org.smartbit4all.api.view.TreeApi;
-import org.smartbit4all.api.view.TreeApiImpl;
 import org.smartbit4all.api.view.ViewContextService;
+import org.smartbit4all.api.view.tree.TreeApi;
+import org.smartbit4all.api.view.tree.TreeApiImpl;
+import org.smartbit4all.api.view.tree.TreeSetupApi;
+import org.smartbit4all.api.view.tree.TreeSetupApiImpl;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectDefinitionApiImpl;
@@ -103,6 +105,12 @@ public class PlatformApiConfig {
   @Primary
   public TreeApi treeApi() {
     return new TreeApiImpl();
+  }
+
+  @Bean
+  @Primary
+  public TreeSetupApi treeSetupApi() {
+    return new TreeSetupApiImpl();
   }
 
   @Bean
