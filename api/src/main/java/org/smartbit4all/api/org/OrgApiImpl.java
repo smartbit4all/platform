@@ -184,6 +184,12 @@ public abstract class OrgApiImpl implements OrgApi, InitializingBean {
   }
 
   @Override
+  public List<User> getUsersOfGroupAndParentGroups(URI groupUri) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
   public List<Group> getGroupsOfUser(URI userUri) {
     // TODO Auto-generated method stub
     return null;

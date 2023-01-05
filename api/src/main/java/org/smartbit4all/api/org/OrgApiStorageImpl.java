@@ -1,9 +1,11 @@
 package org.smartbit4all.api.org;
 
+import static java.util.stream.Collectors.toList;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -17,6 +19,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.gateway.SecurityGateways;
@@ -101,9 +104,15 @@ public class OrgApiStorageImpl implements OrgApi {
       CacheBuilder.newBuilder().concurrencyLevel(10).build();
 
   /**
-   * The cache for the groups of user.
+   * The cache for users of the groups and subgroups.
    */
   private Cache<URI, List<User>> usersOfGroupCache =
+      CacheBuilder.newBuilder().concurrencyLevel(10).build();
+
+  /**
+   * The cache for users of the groups and parent groups.
+   */
+  private Cache<URI, List<User>> usersOfGroupAndParentGroupsCache =
       CacheBuilder.newBuilder().concurrencyLevel(10).build();
 
   /**
@@ -114,13 +123,17 @@ public class OrgApiStorageImpl implements OrgApi {
 
   public static final Group GROUP_NOT_FOUND = new Group().name("GROUP_NOT_FOUND");
 
+  private List<Group> allGroups;
+
   /**
    * Invalidate the cache after modification.
    */
   private final synchronized void invalidateCache() {
     groupsOfUserCache.invalidateAll();
     usersOfGroupCache.invalidateAll();
+    usersOfGroupAndParentGroupsCache.invalidateAll();
     groupByNameCache.invalidateAll();
+    allGroups = null;
   }
 
   /**
@@ -256,41 +269,29 @@ public class OrgApiStorageImpl implements OrgApi {
   }
 
   @Override
-  public List<Group> getAllGroups() {
-    List<Group> groups = new ArrayList<>();
-
-    ObjectMap groupObjectMap = loadObjectMap(GROUP_OBJECTMAP_REFERENCE);
-
-    Collection<URI> values = groupObjectMap.getUris().values();
-    groups = storage.get().read(new ArrayList<>(values), Group.class);
-
-    return groups;
+  public synchronized List<Group> getAllGroups() {
+    if (allGroups == null) {
+      ObjectMap groupObjectMap = loadObjectMap(GROUP_OBJECTMAP_REFERENCE);
+      Collection<URI> values = groupObjectMap.getUris().values();
+      allGroups = storage.get().read(new ArrayList<>(values), Group.class);
+    }
+    return allGroups;
   }
 
   @Override
   public List<User> getActiveUsers() {
-    List<User> users = new ArrayList<>();
-
-    ObjectMap activeUserObjectMap = loadObjectMap(USER_OBJECTMAP_REFERENCE);
-    Collection<URI> activeUserUris = activeUserObjectMap.getUris().values();
-
-    ArrayList<URI> userUris = new ArrayList<>(activeUserUris);
-
-    users = storage.get().read(userUris, User.class);
-
-    return users;
+    return getUsersFromObjectMap(USER_OBJECTMAP_REFERENCE);
   }
 
   @Override
   public List<User> getInactiveUsers() {
-    List<User> users = new ArrayList<>();
+    return getUsersFromObjectMap(INACTIVE_USER_OBJECTMAP_REFERENCE);
+  }
 
-    ObjectMap userObjectMap = loadObjectMap(INACTIVE_USER_OBJECTMAP_REFERENCE);
-
+  private List<User> getUsersFromObjectMap(String objectMapName) {
+    ObjectMap userObjectMap = loadObjectMap(objectMapName);
     Collection<URI> values = userObjectMap.getUris().values();
-    users = storage.get().read(new ArrayList<>(values), User.class);
-
-    return users;
+    return storage.get().read(new ArrayList<>(values), User.class);
   }
 
   @Override
@@ -305,32 +306,44 @@ public class OrgApiStorageImpl implements OrgApi {
   @Override
   public List<User> getUsersOfGroup(URI groupUri) {
     try {
-      return usersOfGroupCache.get(groupUri, new Callable<List<User>>() {
-
-        @Override
-        public List<User> call() throws Exception {
-          Set<User> users = new HashSet<>();
-          List<URI> allSubgroups = getAllSubgroups(groupUri);
-          allSubgroups.add(groupUri);
-
-          UsersOfGroupCollection collection =
-              readSettingsReference(USERS_OF_GROUP_LIST_REFERENCE, UsersOfGroupCollection.class);
-          List<UsersOfGroup> usersOfGroupCollection = collection.getUsersOfGroupCollection();
-
-          for (UsersOfGroup usersOfGroup : usersOfGroupCollection) {
-
-            if (usersOfGroup.getGroupUri().equals(groupUri)) {
-              users.addAll(storage.get().read(usersOfGroup.getUsers(), User.class));
-            }
-          }
-          return new ArrayList<>(users);
-        }
-
-      });
+      return usersOfGroupCache.get(
+          groupUri,
+          () -> getUsersOfGroups(Arrays.asList(groupUri)));
     } catch (ExecutionException e) {
       log.error("Unable to retrieve the users of group.", e);
       return Collections.emptyList();
     }
+  }
+
+  @Override
+  public List<User> getUsersOfGroupAndParentGroups(URI groupUri) {
+    try {
+      return usersOfGroupAndParentGroupsCache.get(
+          groupUri,
+          () -> {
+            List<URI> groupUris = getAllParentGroups(groupUri);
+            groupUris.add(groupUri);
+            return getUsersOfGroups(groupUris);
+          });
+    } catch (ExecutionException e) {
+      log.error("Unable to retrieve the users of group.", e);
+      return Collections.emptyList();
+    }
+  }
+
+  private List<User> getUsersOfGroups(List<URI> groupUris) {
+    Set<URI> users = new HashSet<>();
+
+    UsersOfGroupCollection collection =
+        readSettingsReference(USERS_OF_GROUP_LIST_REFERENCE, UsersOfGroupCollection.class);
+    List<UsersOfGroup> usersOfGroupCollection = collection.getUsersOfGroupCollection();
+    for (UsersOfGroup usersOfGroup : usersOfGroupCollection) {
+
+      if (groupUris.contains(usersOfGroup.getGroupUri())) {
+        users.addAll(usersOfGroup.getUsers());
+      }
+    }
+    return storage.get().read(new ArrayList<>(users), User.class);
   }
 
   @Override
@@ -405,13 +418,14 @@ public class OrgApiStorageImpl implements OrgApi {
   }
 
   private List<URI> getAllParentGroups(URI groupUri) {
-    Set<URI> subgroups = new HashSet<>();
-    ObjectMap groupObjectMap = loadObjectMap(GROUP_OBJECTMAP_REFERENCE);
+    return getParentUris(getAllGroups(), groupUri).collect(toList());
+  }
 
-    Collection<URI> groupUris = groupObjectMap.getUris().values();
-
-
-    return new ArrayList<>(subgroups);
+  private Stream<URI> getParentUris(List<Group> groups, URI groupUri) {
+    return groups.stream()
+        .filter(group -> group.getChildren().contains(groupUri))
+        .map(Group::getUri)
+        .flatMap(uri -> Stream.concat(Stream.of(uri), getParentUris(groups, uri)));
   }
 
   @Override

@@ -49,9 +49,14 @@ public interface OrgApi {
   List<Group> getAllGroups();
 
   /**
-   * Returns every user who is a member of the specified group.
+   * Returns every user who is a member of the specified group or its subgroups.
    */
   List<User> getUsersOfGroup(URI groupUri);
+
+  /**
+   * Returns every user who is a member of the specified group or its parent groups.
+   */
+  List<User> getUsersOfGroupAndParentGroups(URI groupUri);
 
   /**
    * Return which groups the user is member of.
