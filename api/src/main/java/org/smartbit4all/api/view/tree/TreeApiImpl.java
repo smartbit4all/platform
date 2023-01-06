@@ -230,6 +230,7 @@ public class TreeApiImpl implements TreeApi {
   @Override
   public <T> T executeTreeCall(UUID viewUuid, String treeId, Function<UiTreeState, T> treeCall) {
     UiTreeState treeState = getTreeState(viewUuid, treeId);
+    treeState.setViewUuid(viewUuid);
     T result = treeCall.apply(treeState);
     applyTreeState(viewUuid, treeId, treeState);
     return result;
