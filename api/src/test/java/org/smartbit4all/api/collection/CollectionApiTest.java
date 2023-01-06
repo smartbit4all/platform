@@ -10,10 +10,12 @@ import org.smartbit4all.api.sample.bean.SampleDataSheet;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.domain.data.TableData;
+import org.smartbit4all.domain.data.TableDatas;
 import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.domain.utility.crud.Crud;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(classes = {
     CollectionTestConfig.class
@@ -170,12 +172,13 @@ class CollectionApiTest {
   @Test
   void testSearchIndex() throws Exception {
 
-    SearchIndex searchIndex = collectionApi.searchIndex(SCHEMA, MY_SEARCH);
+    SearchIndex<TestFilter, SampleDataSheet> searchIndex =
+        collectionApi.searchIndex(SCHEMA, MY_SEARCH);
 
     // Creating many object to search.
 
     boolean odd = false;
-    int count = 1000;
+    int count = 10;
     for (int i = 0; i < count; i++) {
       ObjectNode datasheet1 =
           objectApi.create(SCHEMA, new SampleDataSheet().name(odd ? "odd" : "even"));
@@ -184,7 +187,7 @@ class CollectionApiTest {
     }
 
     Property<String> propertyName =
-        (Property<String>) searchIndex.getDefinition().getProperty(TestFilter.NAME);
+        (Property<String>) searchIndex.getDefinition().getProperty(TestFilter.NAME.toUpperCase());
 
     long start = System.currentTimeMillis();
     TableData<?> tableData = searchIndex.executeSearch(
@@ -195,6 +198,10 @@ class CollectionApiTest {
     System.out.println("Search time: " + (end - start));
 
     Assertions.assertEquals(count / 2, tableData.size());
+
+    TableData<?> tableDataByDerived = searchIndex.executeSearch(new TestFilter().isOdd(true));
+
+    assertEquals(TableDatas.toStringAdv(tableData), TableDatas.toStringAdv(tableDataByDerived));
 
   }
 

@@ -41,10 +41,11 @@ public class CollectionTestConfig {
   }
 
   @Bean
-  public SearchIndex sampleDatasheetIndex() {
+  public SearchIndex<TestFilter, SampleDataSheet> sampleDatasheetIndex() {
     return new SearchIndexWithFilterBean<>(CollectionApiTest.SCHEMA, CollectionApiTest.MY_SEARCH,
         TestFilter.class, CollectionApiTest.SCHEMA, SampleDataSheet.class)
-            .map(TestFilter.NAME, SampleDataSheet.NAME).map(TestFilter.URI, SampleDataSheet.URI);
+            .map(TestFilter.NAME, SampleDataSheet.NAME).map(TestFilter.URI, SampleDataSheet.URI)
+            .map(TestFilter.ISODD, n -> Boolean.valueOf("odd".equals(n)), SampleDataSheet.NAME);
   }
 
 }

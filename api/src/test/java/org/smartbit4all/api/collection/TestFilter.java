@@ -12,28 +12,19 @@ package org.smartbit4all.api.collection;
 
 import java.net.URI;
 import java.util.Objects;
-import javax.validation.Valid;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import io.swagger.annotations.ApiModelProperty;
 
 /**
  * TestFilter
  */
-@JsonPropertyOrder({
-    TestFilter.URI,
-    TestFilter.NAME
-})
-@JsonTypeName("TestFilter")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class TestFilter {
   public static final String URI = "uri";
   private URI uri;
 
   public static final String NAME = "name";
   private String name;
+
+  public static final String ISODD = "isOdd";
+  private Boolean isOdd;
 
   public TestFilter() {}
 
@@ -43,24 +34,11 @@ public class TestFilter {
     return this;
   }
 
-  /**
-   * Get uri
-   * 
-   * @return uri
-   **/
-  @javax.annotation.Nullable
-  @Valid
-  @ApiModelProperty(value = "")
-  @JsonProperty(URI)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
   public URI getUri() {
     return uri;
   }
 
 
-  @JsonProperty(URI)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setUri(URI uri) {
     this.uri = uri;
   }
@@ -72,25 +50,27 @@ public class TestFilter {
     return this;
   }
 
-  /**
-   * Get name
-   * 
-   * @return name
-   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
-  @JsonProperty(NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
   public String getName() {
     return name;
   }
 
 
-  @JsonProperty(NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(String name) {
     this.name = name;
+  }
+
+  public TestFilter isOdd(Boolean isOdd) {
+    this.isOdd = isOdd;
+    return this;
+  }
+
+  public Boolean getIsOdd() {
+    return isOdd;
+  }
+
+
+  public void setIsOdd(Boolean isOdd) {
+    this.isOdd = isOdd;
   }
 
 

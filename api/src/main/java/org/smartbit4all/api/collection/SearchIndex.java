@@ -12,7 +12,7 @@ import org.smartbit4all.domain.service.query.QueryInput;
  * 
  * @author Peter Boros
  */
-public interface SearchIndex {
+public interface SearchIndex<F, O> {
 
   /**
    * @return The schema of the search index as a namespace for the search index.
@@ -38,5 +38,7 @@ public interface SearchIndex {
    * @return The table data in memory.
    */
   TableData<?> executeSearch(QueryInput queryInput);
+
+  TableData<?> executeSearch(F filterObject);
 
 }

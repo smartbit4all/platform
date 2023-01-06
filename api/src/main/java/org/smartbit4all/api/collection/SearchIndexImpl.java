@@ -4,7 +4,7 @@ import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.service.entity.EntityManagerImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public abstract class SearchIndexImpl implements SearchIndex {
+public abstract class SearchIndexImpl<F, O> implements SearchIndex<F, O> {
 
   private String logicalSchema;
 
