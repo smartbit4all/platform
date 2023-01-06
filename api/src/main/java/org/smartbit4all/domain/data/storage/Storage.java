@@ -399,6 +399,17 @@ public final class Storage {
   }
 
   /**
+   * Use it carefully it will read all the objects with the given class.
+   * 
+   * @param <T>
+   * @param clazz The data bean we are looking for.
+   * @return All the objects from the storage.
+   */
+  public <T> List<URI> readAllUris(Class<T> clazz) {
+    return objectStorage.readAllUris(this, null, clazz);
+  }
+
+  /**
    * This will read all the references from the storage set.
    * 
    * @param <T>

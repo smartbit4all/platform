@@ -1,6 +1,7 @@
 package org.smartbit4all.api.collection;
 
 import org.smartbit4all.api.config.PlatformApiConfig;
+import org.smartbit4all.api.sample.bean.SampleDataSheet;
 import org.smartbit4all.core.io.TestFileUtil;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.domain.config.ApplicationRuntimeStorageConfig;
@@ -37,6 +38,13 @@ public class CollectionTestConfig {
   public void clearFS(ContextRefreshedEvent event) throws Exception {
     TestFileUtil.clearTestDirectory();
     System.out.println("Test FS cleared...");
+  }
+
+  @Bean
+  public SearchIndex sampleDatasheetIndex() {
+    return new SearchIndexWithFilterBean<>(CollectionApiTest.SCHEMA, CollectionApiTest.MY_SEARCH,
+        TestFilter.class, CollectionApiTest.SCHEMA, SampleDataSheet.class)
+            .map(TestFilter.NAME, SampleDataSheet.NAME).map(TestFilter.URI, SampleDataSheet.URI);
   }
 
 }

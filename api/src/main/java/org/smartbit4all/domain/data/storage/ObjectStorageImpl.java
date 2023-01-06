@@ -211,6 +211,12 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
   }
 
   @Override
+  public <T> List<URI> readAllUris(Storage storage, String setName, Class<T> clazz) {
+    // By default it won't return anything. The management of the set is an extra functionality.
+    return Collections.emptyList();
+  }
+
+  @Override
   public boolean move(URI uri, URI targetUri) {
     // By default it won't return anything. The management of the set is an extra functionality.
     return false;

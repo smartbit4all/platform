@@ -19,6 +19,7 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
@@ -651,9 +652,19 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
   }
 
   @Override
+  public <T> List<URI> readAllUris(Storage storage, String setName, Class<T> clazz) {
+    return readAll(storage, setName, clazz, u -> u, URI.class);
+  }
+
+  @Override
   public <T> List<T> readAll(Storage storage, String setName, Class<T> clazz) {
+    return readAll(storage, setName, clazz, u -> read(storage, u, clazz), clazz);
+  }
+
+  public <O> List<O> readAll(Storage storage, String setName, Class<?> clazz,
+      Function<URI, O> reader, Class<O> readClass) {
     // Check if the given directory exists or not.
-    ObjectDefinition<T> objectDefinition = objectApi.definition(clazz);
+    ObjectDefinition<?> objectDefinition = objectApi.definition(clazz);
 
     String storageScheme = getStorageScheme(storage);
     String setPath = StringConstant.SLASH + objectDefinition.getAlias()
@@ -668,7 +679,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
     if (setFolder.exists()) {
       // The depth of the walk is defined by the depth of the uri path. It's about 6-7 so we use 8
       // as maximum depth.
-      List<T> objects = new ArrayList<>();
+      List<O> objects = new ArrayList<>();
       // TODO Cleanup the empty directories.
       Deque<DirFileCounter> stack = new ArrayDeque<>();
       List<Path> emptyDirOrderedList = new ArrayList<>();
@@ -676,6 +687,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
         Files.walkFileTree(setFolderPath, Collections.emptySet(), 8,
             new StorageSetFSVisitor() {
 
+              @SuppressWarnings("unchecked")
               @Override
               public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
                   throws IOException {
@@ -688,11 +700,10 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
                       + StringConstant.SLASH
                       + fileName.substring(0,
                           fileName.length() - SO_FILEEXTENSION.length());
-                  objects.add(read(storage,
-                      UriUtils.createUri(storageScheme, null,
-                          path,
-                          null),
-                      clazz));
+                  URI uri = UriUtils.createUri(storageScheme, null,
+                      path,
+                      null);
+                  objects.add(reader.apply(uri));
                   stack.peek().fileCount++;
                 }
                 return FileVisitResult.CONTINUE;

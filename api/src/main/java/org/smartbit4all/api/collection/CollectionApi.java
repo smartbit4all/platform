@@ -93,4 +93,12 @@ public interface CollectionApi {
    */
   <T> StoredReference<T> reference(URI refUri, Class<T> clazz);
 
+  /**
+   * This function will return a {@link SearchIndex} if it is parameterized.
+   * 
+   * @param name The name of the search index.
+   * @return The {@link SearchIndex}.
+   */
+  SearchIndex searchIndex(String logicalSchema, String name);
+
 }

@@ -1,8 +1,12 @@
 package org.smartbit4all.api.collection;
 
+import static java.util.stream.Collectors.toMap;
 import java.net.URI;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.core.utility.UriUtils;
@@ -10,6 +14,7 @@ import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageObject.VersionPolicy;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -18,7 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * 
  * @author Peter Boros
  */
-public class CollectionApiStorageImpl implements CollectionApi {
+public class CollectionApiStorageImpl implements CollectionApi, InitializingBean {
 
   private static final String STOREDMAP = "storedmap";
   private static final String STOREDLIST = "storedlist";
@@ -34,6 +39,11 @@ public class CollectionApiStorageImpl implements CollectionApi {
    * This map contains the already used {@link Storage} instances mapped by the schema name.
    */
   private Map<String, Storage> storagesBySchema = new HashMap<>();
+
+  @Autowired(required = false)
+  private List<SearchIndex> searchIndices;
+
+  private Map<String, SearchIndex> searchIndexByName = Collections.emptyMap();
 
   public CollectionApiStorageImpl() {
     super();
@@ -122,6 +132,21 @@ public class CollectionApiStorageImpl implements CollectionApi {
 
   private final String constructCollectionShemaName(String logicalShema) {
     return logicalShema + StringConstant.MINUS_SIGN + "collections";
+  }
+
+  @Override
+  public SearchIndex searchIndex(String logicalSchema, String name) {
+    SearchIndex result = searchIndexByName.get(logicalSchema + StringConstant.DOT + name);
+    Objects.requireNonNull(result, "The " + name + " search index is not available.");
+    return result;
+  }
+
+  @Override
+  public void afterPropertiesSet() throws Exception {
+    if (searchIndices != null) {
+      searchIndexByName = searchIndices.stream()
+          .collect(toMap(i -> i.logicalSchema() + StringConstant.DOT + i.name(), i -> i));
+    }
   }
 
 }

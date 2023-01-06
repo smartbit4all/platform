@@ -137,6 +137,8 @@ public interface ObjectStorage {
    */
   <T> List<T> readAll(Storage storage, String setName, Class<T> clazz);
 
+  <T> List<URI> readAllUris(Storage storage, String setName, Class<T> clazz);
+
   /**
    * Move the given object inside the object storage.
    * 

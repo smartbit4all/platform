@@ -9,6 +9,9 @@ import org.junit.jupiter.api.Test;
 import org.smartbit4all.api.sample.bean.SampleDataSheet;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
+import org.smartbit4all.domain.data.TableData;
+import org.smartbit4all.domain.meta.Property;
+import org.smartbit4all.domain.utility.crud.Crud;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -17,11 +20,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 })
 class CollectionApiTest {
 
-  private static final String SCHEMA = "sample";
-  private static final String FIRST = "first";
-  private static final String MY_MAP = "myMap";
-  private static final String MY_LIST = "myList";
-  private static final String MY_REF = "myRef";
+  public static final String SCHEMA = "sample";
+  public static final String FIRST = "first";
+  public static final String MY_MAP = "myMap";
+  public static final String MY_LIST = "myList";
+  public static final String MY_REF = "myRef";
+  public static final String MY_SEARCH = "mySearch";
 
   @Autowired
   private CollectionApi collectionApi;
@@ -160,6 +164,37 @@ class CollectionApiTest {
     SampleDataSheet readDataSheet = ref.get();
 
     Assertions.assertEquals(sampleDataSheet.toString(), readDataSheet.toString());
+
+  }
+
+  @Test
+  void testSearchIndex() throws Exception {
+
+    SearchIndex searchIndex = collectionApi.searchIndex(SCHEMA, MY_SEARCH);
+
+    // Creating many object to search.
+
+    boolean odd = false;
+    int count = 1000;
+    for (int i = 0; i < count; i++) {
+      ObjectNode datasheet1 =
+          objectApi.create(SCHEMA, new SampleDataSheet().name(odd ? "odd" : "even"));
+      objectApi.save(datasheet1);
+      odd = !odd;
+    }
+
+    Property<String> propertyName =
+        (Property<String>) searchIndex.getDefinition().getProperty(TestFilter.NAME);
+
+    long start = System.currentTimeMillis();
+    TableData<?> tableData = searchIndex.executeSearch(
+        Crud.read(searchIndex.getDefinition()).selectAllProperties().where(propertyName.eq("odd"))
+            .getQuery());
+    long end = System.currentTimeMillis();
+
+    System.out.println("Search time: " + (end - start));
+
+    Assertions.assertEquals(count / 2, tableData.size());
 
   }
 
