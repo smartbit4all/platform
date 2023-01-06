@@ -4,6 +4,7 @@ import org.smartbit4all.api.config.PlatformApiConfig;
 import org.smartbit4all.api.sample.bean.SampleDataSheet;
 import org.smartbit4all.core.io.TestFileUtil;
 import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.config.ApplicationRuntimeStorageConfig;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.storage.fs.StorageFS;
@@ -45,7 +46,13 @@ public class CollectionTestConfig {
     return new SearchIndexWithFilterBean<>(CollectionApiTest.SCHEMA, CollectionApiTest.MY_SEARCH,
         TestFilter.class, CollectionApiTest.SCHEMA, SampleDataSheet.class)
             .map(TestFilter.NAME, SampleDataSheet.NAME).map(TestFilter.URI, SampleDataSheet.URI)
-            .map(TestFilter.ISODD, n -> Boolean.valueOf("odd".equals(n)), SampleDataSheet.NAME);
+            .map(TestFilter.ISODD, n -> Boolean.valueOf("odd".equals(n)), SampleDataSheet.NAME)
+            .mapComplex(TestFilter.CAPTION,
+                on -> {
+                  return on.getValueAsString(SampleDataSheet.NAME)
+                      + StringConstant.DOT
+                      + on.getValueAsString(SampleDataSheet.NAME);
+                });
   }
 
 }

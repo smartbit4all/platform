@@ -33,6 +33,7 @@ public class EntityManagerImpl implements EntityManager {
     entityDefs.forEach(this::registerEntityDef);
   }
 
+  @Override
   public void registerEntityDef(EntityDefinition entityDef) {
     if (entityDef == null) {
       throw new IllegalArgumentException("EntityDefinition can not be null!");

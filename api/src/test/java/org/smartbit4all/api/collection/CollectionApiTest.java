@@ -187,7 +187,7 @@ class CollectionApiTest {
     }
 
     Property<String> propertyName =
-        (Property<String>) searchIndex.getDefinition().getProperty(TestFilter.NAME.toUpperCase());
+        (Property<String>) searchIndex.getDefinition().getProperty(TestFilter.NAME);
 
     long start = System.currentTimeMillis();
     TableData<?> tableData = searchIndex.executeSearch(
@@ -199,9 +199,14 @@ class CollectionApiTest {
 
     Assertions.assertEquals(count / 2, tableData.size());
 
-    TableData<?> tableDataByDerived = searchIndex.executeSearch(new TestFilter().isOdd(true));
+    TableData<?> tableDataByDerived =
+        searchIndex.executeSearch(new TestFilter().isOdd(true));
 
     assertEquals(TableDatas.toStringAdv(tableData), TableDatas.toStringAdv(tableDataByDerived));
+
+    List<TestFilter> resultList = tableDataByDerived.asList(TestFilter.class);
+
+    System.out.println(resultList);
 
   }
 

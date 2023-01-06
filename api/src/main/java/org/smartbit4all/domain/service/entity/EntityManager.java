@@ -50,5 +50,6 @@ public interface EntityManager {
 
   Reference<?, ?> reference(URI referenceUri);
 
+  void registerEntityDef(EntityDefinition entityDef);
 
 }

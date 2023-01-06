@@ -26,6 +26,9 @@ public class TestFilter {
   public static final String ISODD = "isOdd";
   private Boolean isOdd;
 
+  public static final String CAPTION = "caption";
+  private String caption;
+
   public TestFilter() {}
 
   public TestFilter uri(URI uri) {
@@ -57,6 +60,20 @@ public class TestFilter {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public TestFilter caption(String caption) {
+
+    this.caption = caption;
+    return this;
+  }
+
+  public String getCaption() {
+    return caption;
+  }
+
+  public void setCaption(String caption) {
+    this.caption = caption;
   }
 
   public TestFilter isOdd(Boolean isOdd) {

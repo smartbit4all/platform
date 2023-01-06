@@ -23,6 +23,7 @@ import org.smartbit4all.domain.meta.Expression;
 import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.domain.service.CrudApi;
 import org.smartbit4all.domain.service.dataset.TableDataApi;
+import org.smartbit4all.domain.service.entity.EntityManager;
 import org.smartbit4all.domain.service.query.QueryInput;
 import org.smartbit4all.domain.utility.crud.Crud;
 import org.smartbit4all.domain.utility.crud.CrudRead;
@@ -56,6 +57,9 @@ public class SearchIndexWithFilterBean<F, O> extends SearchIndexImpl<F, O> {
 
   @Autowired
   private ApplicationContext ctx;
+
+  @Autowired
+  private EntityManager entityManager;
 
   private Class<F> filterDefinitionClass;
 
@@ -91,7 +95,7 @@ public class SearchIndexWithFilterBean<F, O> extends SearchIndexImpl<F, O> {
   public SearchIndexWithFilterBean<F, O> map(String propertyName, String... pathes) {
     Objects.requireNonNull(pathes);
     if (pathes.length > 0) {
-      pathByPropertyName.put(propertyName.toUpperCase(), new PropertyMapping(pathes, null, null));
+      pathByPropertyName.put(propertyName, new PropertyMapping(pathes, null, null));
     }
     return this;
   }
@@ -100,20 +104,17 @@ public class SearchIndexWithFilterBean<F, O> extends SearchIndexImpl<F, O> {
       String... pathes) {
     Objects.requireNonNull(pathes);
     if (pathes.length > 0) {
-      pathByPropertyName.put(propertyName.toUpperCase(),
+      pathByPropertyName.put(propertyName,
           new PropertyMapping(pathes, processor, null));
     }
     return this;
   }
 
   public SearchIndexWithFilterBean<F, O> mapComplex(String propertyName,
-      Function<ObjectNode, Object> complexProcessor,
-      String... pathes) {
-    Objects.requireNonNull(pathes);
-    if (pathes.length > 0) {
-      pathByPropertyName.put(propertyName.toUpperCase(),
-          new PropertyMapping(pathes, null, complexProcessor));
-    }
+      Function<ObjectNode, Object> complexProcessor) {
+    Objects.requireNonNull(complexProcessor);
+    pathByPropertyName.put(propertyName,
+        new PropertyMapping(null, null, complexProcessor));
     return this;
   }
 
@@ -150,6 +151,15 @@ public class SearchIndexWithFilterBean<F, O> extends SearchIndexImpl<F, O> {
   }
 
   @Override
+  public synchronized EntityDefinition getDefinition() {
+    if (definition == null) {
+      definition = constructDefinition();
+      entityManager.registerEntityDef(definition);
+    }
+    return definition;
+  }
+
+  @Override
   public EntityDefinition constructDefinition() {
     EntityDefinitionBuilder builder = EntityDefinitionBuilder.of(ctx)
         .name(name())
@@ -160,7 +170,7 @@ public class SearchIndexWithFilterBean<F, O> extends SearchIndexImpl<F, O> {
     for (String propertyName : pathByPropertyName.keySet()) {
       PropertyMeta propertyMeta = properties.get(propertyName.toUpperCase());
       if (propertyMeta != null) {
-        builder.ownedProperty(propertyName, propertyMeta.getType());
+        builder.ownedProperty(propertyMeta.getName(), propertyMeta.getType());
       }
     }
 
@@ -194,11 +204,11 @@ public class SearchIndexWithFilterBean<F, O> extends SearchIndexImpl<F, O> {
       if (value != null) {
         if (propertyMeta.getType().equals(String.class)) {
           Property<String> property =
-              (Property<String>) getDefinition().getProperty(entry.getKey());
+              (Property<String>) getDefinition().getProperty(propertyMeta.getName());
           currentExp = property.eq((String) value);
         } else if (propertyMeta.getType().equals(Boolean.class)) {
           Property<Boolean> property =
-              (Property<Boolean>) getDefinition().getProperty(entry.getKey());
+              (Property<Boolean>) getDefinition().getProperty(propertyMeta.getName());
           currentExp = property.eq((Boolean) value);
         }
         if (exp == null) {
