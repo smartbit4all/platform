@@ -32,6 +32,24 @@ public class Values {
         .collect(Collectors.toList());
   }
 
+  /**
+   * Collects all element from values stream, using {@link ObjectNode#getObjectUri()} as
+   * {@link Value#objectUri(URI)} without version tag and
+   * {@link ObjectNode#getValueAsString(String...)} with paths as
+   * {@link Value#displayValue(String)}.
+   * 
+   * @param values
+   * @param paths
+   * @return
+   */
+  public static final List<Value> valuesWithoutVersion(Stream<ObjectNode> values, String... paths) {
+    return values
+        .map(n -> new Value()
+            .objectUri(n.getValue(URI.class, "uri"))
+            .displayValue(n.getValueAsString(paths)))
+        .collect(Collectors.toList());
+  }
+
   public static final List<Value> findSelectedValues(ObjectApi objectApi, List<Value> allValues,
       List<URI> uris, String... displayValuePath) {
     Map<URI, Value> allTemplates = allValues.stream()
