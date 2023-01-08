@@ -321,6 +321,7 @@ public class ObjectNode {
       throw new IllegalArgumentException("Invalid object on path, unable to set: " +
           String.join(".", paths));
     }
+    setModified();
     return this;
   }
 
