@@ -282,11 +282,45 @@ public class ObjectNode {
    * @param paths
    * @return
    */
+  @SuppressWarnings("unchecked")
   public ObjectNode setValue(Object value, String... paths) {
     if (paths == null || paths.length == 0) {
       throw new IllegalArgumentException("Path cannot be null or empty!");
     }
-    setValueInMap(data.getObjectAsMap(), value, paths);
+    if (paths.length == 1) {
+      setValueInMap(data.getObjectAsMap(), value, paths);
+      setModified();
+      return this;
+    }
+    // path minus the last part
+    String[] targetPath = Arrays.copyOfRange(paths, 0, paths.length - 1);
+    Object targetObject = getValue(targetPath);
+    // only the last part
+    String valuePath = paths[paths.length - 1];
+    if (targetObject instanceof ObjectNode) {
+      ((ObjectNode) targetObject).setValue(value, valuePath);
+    } else if (targetObject instanceof Map<?, ?>) {
+      setValueInMap((Map<String, Object>) targetObject, value, valuePath);
+    } else if (targetObject instanceof ObjectNodeReference) {
+      ((ObjectNodeReference) targetObject).get().setValue(value, valuePath);
+    } else if (targetObject instanceof ObjectNodeList ||
+        targetObject instanceof ObjectNodeMap) {
+      // valuePath points to an entry in ObjectNodeList/Map -> ObjectNodeReference
+      ObjectNodeReference reference;
+      if (targetObject instanceof ObjectNodeList) {
+        reference = getItemFromList((ObjectNodeList) targetObject, valuePath);
+      } else {
+        reference = getItemFromMap((ObjectNodeMap) targetObject, valuePath);
+      }
+      if (value instanceof ObjectNode) {
+        reference.set((ObjectNode) value);
+      } else {
+        reference.setNewObject(value);
+      }
+    } else {
+      throw new IllegalArgumentException("Invalid object on path, unable to set: " +
+          String.join(".", paths));
+    }
     setModified();
     return this;
   }
@@ -447,18 +481,9 @@ public class ObjectNode {
         if (paths.length == 1) {
           return refList;
         }
-        String idxString = paths[1];
-        try {
-          Integer idx = Integer.valueOf(idxString);
-          String[] subPaths = Arrays.copyOfRange(paths, 2, paths.length);
-          return refList.get(idx).get().getValue(subPaths);
-        } catch (NumberFormatException ex1) {
-          throw new IllegalArgumentException("List index is not a number: "
-              + path + "(" + idxString + ")");
-        } catch (IndexOutOfBoundsException ex2) {
-          throw new IllegalArgumentException("List item not found by index: "
-              + path + "(" + idxString + ")");
-        }
+        ObjectNodeReference reference = getItemFromList(refList, paths[1]);
+        String[] subPaths = Arrays.copyOfRange(paths, 2, paths.length);
+        return reference.get().getValue(subPaths);
       }
       ObjectNodeMap refMap = referenceMaps.get(path);
       if (refMap != null) {
@@ -466,16 +491,34 @@ public class ObjectNode {
           return refMap;
         }
         String key = paths[1];
-        if (refMap.containsKey(key)) {
-          String[] subPaths = Arrays.copyOfRange(paths, 2, paths.length);
-          return refMap.get(key).get().getValue(subPaths);
-        }
-        throw new IllegalArgumentException(
-            "Map item not found by index: " + path + "(" + key + ")");
+        ObjectNodeReference reference = getItemFromMap(refMap, key);
+        String[] subPaths = Arrays.copyOfRange(paths, 2, paths.length);
+        return reference.get().getValue(subPaths);
       }
       return ObjectApiImpl.getValueFromObjectMap(getObjectAsMap(), paths);
     }
     return this;
+  }
+
+  private ObjectNodeReference getItemFromList(ObjectNodeList refList, String idxString) {
+    try {
+      Integer idx = Integer.valueOf(idxString);
+      return refList.get(idx);
+    } catch (NumberFormatException ex1) {
+      throw new IllegalArgumentException("List index is not a number: "
+          + "(" + idxString + ")");
+    } catch (IndexOutOfBoundsException ex2) {
+      throw new IllegalArgumentException("List item not found by index: "
+          + "(" + idxString + ")");
+    }
+  }
+
+  private ObjectNodeReference getItemFromMap(ObjectNodeMap refMap, String key) {
+    if (refMap.containsKey(key)) {
+      return refMap.get(key);
+    }
+    throw new IllegalArgumentException(
+        "Map item not found by index: " + "(" + key + ")");
   }
 
   public Object getVersionNr() {
