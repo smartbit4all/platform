@@ -7,6 +7,9 @@ import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.config.ApplicationRuntimeStorageConfig;
 import org.smartbit4all.domain.data.storage.Storage;
+import org.smartbit4all.domain.meta.Expression;
+import org.smartbit4all.domain.meta.ExpressionClause;
+import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.storage.fs.StorageFS;
 import org.smartbit4all.storage.fs.StorageTransactionManagerFS;
 import org.springframework.context.annotation.Bean;
@@ -41,6 +44,7 @@ public class CollectionTestConfig {
     System.out.println("Test FS cleared...");
   }
 
+  @SuppressWarnings("unchecked")
   @Bean
   public SearchIndex<TestFilter, SampleDataSheet> sampleDatasheetIndex() {
     return new SearchIndexWithFilterBean<>(CollectionApiTest.SCHEMA, CollectionApiTest.MY_SEARCH,
@@ -52,6 +56,21 @@ public class CollectionTestConfig {
                   return on.getValueAsString(SampleDataSheet.NAME)
                       + StringConstant.DOT
                       + on.getValueAsString(SampleDataSheet.NAME);
+                })
+            .expression(TestFilter.NAME,
+                (name, nameProp) -> ((Property<String>) nameProp)
+                    .like("%" + name.toString() + "%"))
+            .expressionComplex(TestFilter.CAPTION,
+                (caption, entityDef) -> {
+                  ExpressionClause exp = Expression.createAndClause()
+                      .add(((Property<String>) entityDef.getProperty(TestFilter.CAPTION))
+                          .like("%" + caption.toString() + "%"));
+                  String[] captionParts = caption.toString().split("\\" + StringConstant.DOT);
+                  if (captionParts.length != 0) {
+                    exp.add(((Property<String>) entityDef.getProperty(TestFilter.NAME))
+                        .like("%" + captionParts[0] + "%"));
+                  }
+                  return exp;
                 });
   }
 

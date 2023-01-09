@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import org.smartbit4all.core.object.ObjectApi;
@@ -38,6 +39,8 @@ public class SearchIndexWithFilterBean<F, O> extends SearchIndexImpl<F, O> {
    * {@link LinkedHashMap} to preserve the parameterization order in the entity definition.
    */
   private Map<String, PropertyMapping> pathByPropertyName = new LinkedHashMap<>();
+
+  private Map<String, CustomExpressionMapping> expressionByPropertyName = new LinkedHashMap<>();
 
   private String indexedObjectSchema;
 
@@ -83,6 +86,22 @@ public class SearchIndexWithFilterBean<F, O> extends SearchIndexImpl<F, O> {
 
   }
 
+  private final class CustomExpressionMapping {
+
+    BiFunction<Object, Property<?>, Expression> expressionProcessor;
+
+    BiFunction<Object, EntityDefinition, Expression> complexExpressionProcessor;
+
+    public CustomExpressionMapping(
+        BiFunction<Object, Property<?>, Expression> customExpressionProcessor,
+        BiFunction<Object, EntityDefinition, Expression> complexExpressionProcessor) {
+      super();
+      this.expressionProcessor = customExpressionProcessor;
+      this.complexExpressionProcessor = complexExpressionProcessor;
+    }
+
+  }
+
   public SearchIndexWithFilterBean(String logicalSchema, String name,
       Class<F> filterDefinitionClass, String indexedObjectSchema,
       Class<O> indexedObjectDefinitionClass) {
@@ -115,6 +134,22 @@ public class SearchIndexWithFilterBean<F, O> extends SearchIndexImpl<F, O> {
     Objects.requireNonNull(complexProcessor);
     pathByPropertyName.put(propertyName,
         new PropertyMapping(null, null, complexProcessor));
+    return this;
+  }
+
+  public SearchIndexWithFilterBean<F, O> expression(String propertyName,
+      BiFunction<Object, Property<?>, Expression> customExpression) {
+    Objects.requireNonNull(customExpression);
+    expressionByPropertyName.put(propertyName,
+        new CustomExpressionMapping(customExpression, null));
+    return this;
+  }
+
+  public SearchIndexWithFilterBean<F, O> expressionComplex(String propertyName,
+      BiFunction<Object, EntityDefinition, Expression> complexExpression) {
+    Objects.requireNonNull(complexExpression);
+    expressionByPropertyName.put(propertyName,
+        new CustomExpressionMapping(null, complexExpression));
     return this;
   }
 
@@ -202,14 +237,19 @@ public class SearchIndexWithFilterBean<F, O> extends SearchIndexImpl<F, O> {
       Object value = propertyMeta.getValue(filterObject);
       Expression currentExp = null;
       if (value != null) {
-        if (propertyMeta.getType().equals(String.class)) {
-          Property<String> property =
-              (Property<String>) getDefinition().getProperty(propertyMeta.getName());
-          currentExp = property.eq((String) value);
-        } else if (propertyMeta.getType().equals(Boolean.class)) {
-          Property<Boolean> property =
-              (Property<Boolean>) getDefinition().getProperty(propertyMeta.getName());
-          currentExp = property.eq((Boolean) value);
+        Property<?> property = getDefinition().getProperty(propertyMeta.getName());
+        CustomExpressionMapping customExpressionMapping =
+            expressionByPropertyName.get(propertyMeta.getName());
+        if (customExpressionMapping != null) {
+          if (customExpressionMapping.complexExpressionProcessor != null) {
+            currentExp =
+                customExpressionMapping.complexExpressionProcessor.apply(value, getDefinition())
+                    .BRACKET();
+          } else if (customExpressionMapping.expressionProcessor != null) {
+            currentExp = customExpressionMapping.expressionProcessor.apply(value, property);
+          }
+        } else {
+          currentExp = createDynamicExpression(propertyMeta.getType(), property, value);
         }
         if (exp == null) {
           exp = currentExp;
@@ -224,4 +264,15 @@ public class SearchIndexWithFilterBean<F, O> extends SearchIndexImpl<F, O> {
     return executeSearch(read.getQuery());
   }
 
+  @SuppressWarnings("unchecked")
+  private Expression createDynamicExpression(Class<?> propertyType, Property<?> property,
+      Object value) {
+    if (propertyType.equals(String.class)) {
+      return ((Property<String>) property).eq((String) value);
+    } else if (propertyType.equals(Boolean.class)) {
+      return ((Property<Boolean>) property).eq((Boolean) value);
+    } else {
+      return null;
+    }
+  }
 }
