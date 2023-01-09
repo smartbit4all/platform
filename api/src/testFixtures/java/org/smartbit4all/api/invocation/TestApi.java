@@ -28,6 +28,13 @@ public interface TestApi {
 
   TestDataBean modifyData(TestDataBean databean);
 
+  @FunctionalInterface
+  interface MyEvent {
+
+    void publish(String s1, String s2);
+
+  }
+
   static InvocationRequest echoMethodTemplate(String value) {
     return Invocations.invoke(TestApi.class)
         .methodName("echoMethod")

@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
+import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -21,6 +22,9 @@ class InvocationApiTest {
 
   @Autowired
   private TestApi testApi;
+
+  @Autowired
+  private TestEventPublisherApi testEventPublisherApi;
 
   @Test
   void testPrimary() throws Exception {
@@ -111,6 +115,16 @@ class InvocationApiTest {
             .evaluate(TestApi.class, a -> a.thirdStepOnError(null)).get());
     Assertions.assertEquals(value + second, TestApiImpl.secondResult.get());
     Assertions.assertEquals(value + third, TestApiImpl.thirdResult.get());
+  }
+
+  @Test
+  void testSubscription() throws Exception {
+    String value = "Peter";
+
+    String event = testEventPublisherApi.fireSomeEvent(value);
+
+    Assertions.assertEquals(event + StringConstant.COLON_SPACE + value,
+        TestEventSubscriberApiImpl.eventResult.get());
   }
 
 }

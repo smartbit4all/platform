@@ -6,6 +6,7 @@ import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -30,6 +31,7 @@ import org.smartbit4all.api.invocation.bean.ApiData;
 import org.smartbit4all.api.invocation.bean.ApiRegistryData;
 import org.smartbit4all.api.invocation.bean.AsyncChannelScheduledInvocationList;
 import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
+import org.smartbit4all.api.invocation.bean.EventSubscriptionData;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationResult;
 import org.smartbit4all.api.invocation.bean.InvocationResultDecision.DecisionEnum;
@@ -213,8 +215,24 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
     storage.get().update(REGISTER_URI, ApiRegistryData.class, r -> {
       // We save all the provided apis into the invocation store.
       if (providedApis != null) {
+        // TODO A quick win to resolve the subscriptions inside one runtime first. Here we add the
+        // published events also...
+        Map<ProviderApiInvocationHandler<?>, ApiData> apiDataMap = new HashMap<>();
+        Map<String, List<EventSubscriptionData>> subscriptionsByApi = new HashMap<>();
         for (ProviderApiInvocationHandler<?> apiHandler : providedApis) {
           ApiData apiData = apiHandler.getData();
+          apiDataMap.put(apiHandler, apiData);
+          for (EventSubscriptionData s : apiData.getEventSubscriptions()) {
+            subscriptionsByApi.computeIfAbsent(s.getApi(), apiName -> new ArrayList<>()).add(s);
+          }
+        }
+
+        apiDataMap.values()
+            .forEach(a -> a.eventSubscriptions(
+                subscriptionsByApi.getOrDefault(a.getInterfaceName(), Collections.emptyList())));
+
+        for (Entry<ProviderApiInvocationHandler<?>, ApiData> entry : apiDataMap.entrySet()) {
+          ApiData apiData = entry.getValue();
           if (!storage.get().exists(apiData.getUri())) {
             storage.get().saveAsNew(apiData);
             if (!r.getApiList().contains(apiData.getUri())) {
@@ -223,7 +241,7 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
           }
           apis.add(apiData.getUri());
           addToApiRegister(apiData);
-          apiInstanceByApiDataUri.put(apiData.getUri(), apiHandler.getApiInstance());
+          apiInstanceByApiDataUri.put(apiData.getUri(), entry.getKey().getApiInstance());
         }
       }
       return r;

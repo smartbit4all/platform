@@ -113,4 +113,9 @@ public final class InvocationApiImpl implements InvocationApi {
             "The execution time must be specified to schedule an invocation."));
   }
 
+  @Override
+  public <T> EventPublisher<T> publisher(Class<T> apiInterface, String event) {
+    return new EventPublisher<>(self, invocationRegisterApi, apiInterface, event);
+  }
+
 }
