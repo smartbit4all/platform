@@ -1,6 +1,7 @@
 package org.smartbit4all.api.collection;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -209,6 +210,11 @@ class CollectionApiTest {
     List<TestFilter> resultList = tableDataByDerived.asList(TestFilter.class);
 
     System.out.println(resultList);
+
+    TableData<?> tableDataByDerivedNoResult =
+        searchIndex.executeSearch(new TestFilter().isOdd(true).name("od").caption("even.even"));
+
+    assertTrue(tableDataByDerivedNoResult.rows().isEmpty());
 
   }
 

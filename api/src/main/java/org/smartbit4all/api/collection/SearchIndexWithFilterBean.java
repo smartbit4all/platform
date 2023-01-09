@@ -242,18 +242,17 @@ public class SearchIndexWithFilterBean<F, O> extends SearchIndexImpl<F, O> {
             expressionByPropertyName.get(propertyMeta.getName());
         if (customExpressionMapping != null) {
           if (customExpressionMapping.complexExpressionProcessor != null) {
-            currentExp =
-                customExpressionMapping.complexExpressionProcessor.apply(value, getDefinition())
-                    .BRACKET();
-          } else if (customExpressionMapping.expressionProcessor != null) {
+            currentExp = customExpressionMapping.complexExpressionProcessor
+                .apply(value, getDefinition()).BRACKET();
+          } else if (customExpressionMapping.expressionProcessor != null && property != null) {
             currentExp = customExpressionMapping.expressionProcessor.apply(value, property);
           }
-        } else {
+        } else if (property != null) {
           currentExp = createDynamicExpression(propertyMeta.getType(), property, value);
         }
         if (exp == null) {
           exp = currentExp;
-        } else {
+        } else if (currentExp != null) {
           exp = exp.AND(currentExp);
         }
       }
@@ -271,6 +270,10 @@ public class SearchIndexWithFilterBean<F, O> extends SearchIndexImpl<F, O> {
       return ((Property<String>) property).eq((String) value);
     } else if (propertyType.equals(Boolean.class)) {
       return ((Property<Boolean>) property).eq((Boolean) value);
+    } else if (propertyType.equals(URI.class)) {
+      return ((Property<URI>) property).eq((URI) value);
+    } else if (propertyType.isEnum()) {
+      return ((Property<Enum<?>>) property).eq((Enum<?>) value);
     } else {
       return null;
     }
