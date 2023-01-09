@@ -75,4 +75,26 @@ public class InvocationTestConfig {
     return new StorageTransactionManagerFS(storageFS);
   }
 
+  @Bean
+  public TestEventPublisherApi testEventPublisherApi() {
+    return new TestEventPublisherApiImpl();
+  }
+
+  @Bean
+  public ProviderApiInvocationHandler<TestEventPublisherApi> testEventPublisherApiProvider(
+      TestEventPublisherApi api) {
+    return ProviderApiInvocationHandler.providerOf(TestEventPublisherApi.class, api);
+  }
+
+  @Bean
+  public TestEventSubscriberApi testEventSubscriberApi() {
+    return new TestEventSubscriberApiImpl();
+  }
+
+  @Bean
+  public ProviderApiInvocationHandler<TestEventSubscriberApi> testEventSubscriberApiProvider(
+      TestEventSubscriberApi api) {
+    return ProviderApiInvocationHandler.providerOf(TestEventSubscriberApi.class, api);
+  }
+
 }

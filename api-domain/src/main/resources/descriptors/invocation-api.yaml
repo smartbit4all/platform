@@ -278,7 +278,7 @@ components:
             format: uri
     ApiData:
       type: object
-      required: [uri,interfaceName,name,methods]
+      required: [uri,interfaceName,name,methods, publishedEvents, eventSubscriptions]
       description: |
         An api is a programming interface consists of methods to call. An api can be provided by many deployment units at the
         same time. When a deployment unit starts it collects all the apis and methods it has and register it into the storage.
@@ -310,6 +310,80 @@ components:
             limited interface then we need to create this interface and publish it.
           items:
             $ref: '#/components/schemas/MethodData'
+        publishedEvents:
+          type: array
+          description: |
+            The available events of the given api interface. These are only the logical names of the events that must be globaly unique
+            to avoid name clash. The requirements of the consumers are defined by the EventConsumer annotation.
+          items:
+            $ref: '#/components/schemas/PublishedEventData'
+        eventSubscriptions:
+          type: array
+          description: |
+            The  
+          items:
+            $ref: '#/components/schemas/EventSubscriptionData'
+    PublishedEventData:
+      type: object
+      description: |
+        The information about an event of the publisher. It contains the consumers also by the annotation of the provider apis.
+      required: [api, event, subscriptions]
+      properties:
+        api:
+          type: string
+          description: The name of the api publishing the event.
+        event:
+          type: string
+          description: The name of the publised event.
+        subscriptions:
+          type: array
+          description: All the apis subscribed for the given event.
+          items:
+            $ref: '#/components/schemas/EventSubscriptionData'
+    EventSubscriptionData:
+      type: object
+      description: |
+        The information about an event of consumer method and the way how to invoke the given api with the event.
+      required: [api, event, subscribedApi, subscribedMethod, type]
+      properties:
+        api:
+          type: string
+          description: The name of the api publishing the event.
+        event:
+          type: string
+          description: The name of the publised event.
+        subscribedApi:
+          type: string
+          description: The api to call when the event published.
+        subscribedMethod:
+          type: string
+          description: The name of the method to call in the subscribed api.
+        asynchronous:
+          type: boolean
+          description: True if the event is accepted in asynchronous way. This is an instruction for the publisher.
+          default: true
+        channel:
+          type: string
+          description: Defines the asynchronous channel to use for processing the invocation.
+        type:
+          description: | 
+            ONE_RUNTIME - The invocation of the publisher method implies exactly one invocation for the given consumer.
+            ALL_RUNTIMES - The invocation of the publisher method implies one invocation for the every runtime providing
+            the consumer API.
+            SESSIONS - The invocation of the publisher method implies one invocation for the every session consuming
+            the event. The session storage contains the map for the active sessions and also the sessions
+            that are interested in the given event.
+          $ref: '#/components/schemas/EventSubscriptionType'
+    EventSubscriptionType:
+      type: string
+      enum: [ ONE_RUNTIME, ALL_RUNTIMES, SESSIONS ]
+      description: | 
+        ONE_RUNTIME - The invocation of the publisher method implies exactly one invocation for the given consumer.
+        ALL_RUNTIMES - The invocation of the publisher method implies one invocation for the every runtime providing
+        the consumer API.
+        SESSIONS - The invocation of the publisher method implies one invocation for the every session consuming
+        the event. The session storage contains the map for the active sessions and also the sessions
+        that are interested in the given event.
     MethodData:
       type: object
       required: [uri,name,parameters]

@@ -1,7 +1,13 @@
 package org.smartbit4all.api.invocation;
 
+import static java.util.stream.Collectors.toList;
+import java.lang.reflect.Method;
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 import org.smartbit4all.api.invocation.bean.ApiData;
+import org.smartbit4all.api.invocation.bean.EventSubscriptionData;
+import org.smartbit4all.core.utility.ReflectionUtility;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.storage.StorageApi;
 
@@ -27,7 +33,7 @@ public class ProviderApiInvocationHandler<T> {
   /**
    * The interface class of the proxy.
    */
-  private final Class<?> interfaceClass;
+  private final Class<T> interfaceClass;
 
   /**
    * The unique identifier of the given api for the {@link StorageApi}. It is assembled in the
@@ -70,10 +76,15 @@ public class ProviderApiInvocationHandler<T> {
     return new ProviderApiInvocationHandler<>(interfaceClass, name, apiInstance);
   }
 
+  static final <T> ProviderApiInvocationHandler<T> providerOf(Class<T> interfaceClass,
+      T apiInstance) {
+    return new ProviderApiInvocationHandler<>(interfaceClass, interfaceClass.getName(),
+        apiInstance);
+  }
+
   public final String getName() {
     return name;
   }
-
 
   public final Class<?> getInterfaceClass() {
     return interfaceClass;
@@ -84,7 +95,24 @@ public class ProviderApiInvocationHandler<T> {
   }
 
   ApiData getData() {
-    return new ApiData().interfaceName(interfaceClass.getName()).name(name).uri(uri);
+    // Collects the subscriptions from the interface class.
+    Map<EventSubscription, Method> subscriptions = new HashMap<>();
+    ReflectionUtility.allMethods(apiInstance.getClass(), m -> {
+      EventSubscription subscription =
+          ReflectionUtility.getNearestAnnotation(m, EventSubscription.class);
+      if (subscription != null) {
+        subscriptions.put(subscription, m);
+        return true;
+      }
+      return false;
+    });
+    return new ApiData().interfaceName(interfaceClass.getName()).name(name).uri(uri)
+        .eventSubscriptions(subscriptions.entrySet().stream().map(e -> {
+          EventSubscription s = e.getKey();
+          return new EventSubscriptionData().api(s.api()).event(s.event())
+              .asynchronous(s.asynchronous()).channel(s.channel()).type(s.type())
+              .subscribedApi(interfaceClass.getName()).subscribedMethod(e.getValue().getName());
+        }).collect(toList()));
   }
 
 }

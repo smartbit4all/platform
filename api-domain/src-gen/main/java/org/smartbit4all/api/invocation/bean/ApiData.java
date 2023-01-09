@@ -25,7 +25,9 @@ import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import org.smartbit4all.api.invocation.bean.EventSubscriptionData;
 import org.smartbit4all.api.invocation.bean.MethodData;
+import org.smartbit4all.api.invocation.bean.PublishedEventData;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -39,7 +41,9 @@ import javax.validation.Valid;
   ApiData.URI,
   ApiData.INTERFACE_NAME,
   ApiData.NAME,
-  ApiData.METHODS
+  ApiData.METHODS,
+  ApiData.PUBLISHED_EVENTS,
+  ApiData.EVENT_SUBSCRIPTIONS
 })
 @JsonTypeName("ApiData")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -55,6 +59,12 @@ public class ApiData {
 
   public static final String METHODS = "methods";
   private List<MethodData> methods = new ArrayList<>();
+
+  public static final String PUBLISHED_EVENTS = "publishedEvents";
+  private List<PublishedEventData> publishedEvents = new ArrayList<>();
+
+  public static final String EVENT_SUBSCRIPTIONS = "eventSubscriptions";
+  private List<EventSubscriptionData> eventSubscriptions = new ArrayList<>();
 
   public ApiData() { 
   }
@@ -178,6 +188,74 @@ public class ApiData {
   }
 
 
+  public ApiData publishedEvents(List<PublishedEventData> publishedEvents) {
+    
+    this.publishedEvents = publishedEvents;
+    return this;
+  }
+
+  public ApiData addPublishedEventsItem(PublishedEventData publishedEventsItem) {
+    this.publishedEvents.add(publishedEventsItem);
+    return this;
+  }
+
+   /**
+   * The available events of the given api interface. These are only the logical names of the events that must be globaly unique to avoid name clash. The requirements of the consumers are defined by the EventConsumer annotation. 
+   * @return publishedEvents
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @Valid
+  @ApiModelProperty(required = true, value = "The available events of the given api interface. These are only the logical names of the events that must be globaly unique to avoid name clash. The requirements of the consumers are defined by the EventConsumer annotation. ")
+  @JsonProperty(PUBLISHED_EVENTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public List<PublishedEventData> getPublishedEvents() {
+    return publishedEvents;
+  }
+
+
+  @JsonProperty(PUBLISHED_EVENTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setPublishedEvents(List<PublishedEventData> publishedEvents) {
+    this.publishedEvents = publishedEvents;
+  }
+
+
+  public ApiData eventSubscriptions(List<EventSubscriptionData> eventSubscriptions) {
+    
+    this.eventSubscriptions = eventSubscriptions;
+    return this;
+  }
+
+  public ApiData addEventSubscriptionsItem(EventSubscriptionData eventSubscriptionsItem) {
+    this.eventSubscriptions.add(eventSubscriptionsItem);
+    return this;
+  }
+
+   /**
+   * The   
+   * @return eventSubscriptions
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @Valid
+  @ApiModelProperty(required = true, value = "The   ")
+  @JsonProperty(EVENT_SUBSCRIPTIONS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public List<EventSubscriptionData> getEventSubscriptions() {
+    return eventSubscriptions;
+  }
+
+
+  @JsonProperty(EVENT_SUBSCRIPTIONS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setEventSubscriptions(List<EventSubscriptionData> eventSubscriptions) {
+    this.eventSubscriptions = eventSubscriptions;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -190,12 +268,14 @@ public class ApiData {
     return Objects.equals(this.uri, apiData.uri) &&
         Objects.equals(this.interfaceName, apiData.interfaceName) &&
         Objects.equals(this.name, apiData.name) &&
-        Objects.equals(this.methods, apiData.methods);
+        Objects.equals(this.methods, apiData.methods) &&
+        Objects.equals(this.publishedEvents, apiData.publishedEvents) &&
+        Objects.equals(this.eventSubscriptions, apiData.eventSubscriptions);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, interfaceName, name, methods);
+    return Objects.hash(uri, interfaceName, name, methods, publishedEvents, eventSubscriptions);
   }
 
   @Override
@@ -206,6 +286,8 @@ public class ApiData {
     sb.append("    interfaceName: ").append(toIndentedString(interfaceName)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    methods: ").append(toIndentedString(methods)).append("\n");
+    sb.append("    publishedEvents: ").append(toIndentedString(publishedEvents)).append("\n");
+    sb.append("    eventSubscriptions: ").append(toIndentedString(eventSubscriptions)).append("\n");
     sb.append("}");
     return sb.toString();
   }
