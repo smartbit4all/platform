@@ -15,6 +15,7 @@
 package org.smartbit4all.domain.data.filtering;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.data.TableData;
@@ -78,6 +79,11 @@ public class EvaluationLoop extends EvaluationStep {
         loader.fillRows(tableData, rowsToEvaluate);
       }
     }
+
+    if (rowsToEvaluate == null) {
+      return Collections.emptyList();
+    }
+
     // At the very beginning we need to bind the columns of the expressions inside. We need to visit
     // every expression to set the bound value for them.
     List<BoundValueColumn<?>> boundValues = constructBoundValues(tableData);
