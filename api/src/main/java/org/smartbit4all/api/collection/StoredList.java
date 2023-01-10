@@ -21,9 +21,12 @@ public interface StoredList {
 
   void addAll(Stream<URI> uris);
 
-  void update(UnaryOperator<List<URI>> update);
+  List<URI> update(UnaryOperator<List<URI>> update);
 
   void removeAll(Collection<URI> uris);
 
   void remove(URI uri);
+
+  boolean exists();
+
 }

@@ -43,6 +43,8 @@ public class ApiError {
   public static final String MESSAGE = "message";
   private String message;
 
+  public ApiError() { 
+  }
 
   public ApiError code(String code) {
     
@@ -54,10 +56,11 @@ public class ApiError {
    * Get code
    * @return code
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+  @javax.annotation.Nonnull
+  @NotNull
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(CODE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public String getCode() {
     return code;
@@ -65,7 +68,7 @@ public class ApiError {
 
 
   @JsonProperty(CODE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setCode(String code) {
     this.code = code;
   }

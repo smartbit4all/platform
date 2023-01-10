@@ -31,6 +31,11 @@ public class StoredListStorageImpl extends AbstractStoredContainerStorageImpl
   }
 
   @Override
+  public boolean exists() {
+    return storageRef.get().exists(getUri());
+  }
+
+  @Override
   public void add(URI uri) {
     addAll(Stream.of(uri));
   }
@@ -67,15 +72,17 @@ public class StoredListStorageImpl extends AbstractStoredContainerStorageImpl
   }
 
   @Override
-  public void update(UnaryOperator<List<URI>> update) {
+  public List<URI> update(UnaryOperator<List<URI>> update) {
     Storage storage = storageRef.get();
     StorageObjectLock lock = storage.getLock(uri);
+    List<URI> result = Collections.emptyList();
     lock.lock();
     try {
       try {
         StorageObject<StoredListData> so = storage.load(uri, StoredListData.class).asMap();
         StoredListData data = so.getObject();
-        data.setUris(update.apply(data.getUris()));
+        result = update.apply(data.getUris());
+        data.setUris(result);
         so.setObject(data);
         storage.save(so);
       } catch (ObjectNotFoundException e) {
@@ -86,6 +93,7 @@ public class StoredListStorageImpl extends AbstractStoredContainerStorageImpl
     } finally {
       lock.unlock();
     }
+    return result;
   }
 
   @Override

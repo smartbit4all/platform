@@ -97,11 +97,11 @@ public class SessionInfoData {
   }
 
    /**
-   * Get refreshToken
+   * The current refresh token.
    * @return refreshToken
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "The current refresh token.")
   @JsonProperty(REFRESH_TOKEN)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

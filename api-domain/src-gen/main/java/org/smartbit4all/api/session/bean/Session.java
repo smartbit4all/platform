@@ -40,6 +40,7 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   Session.URI,
   Session.EXPIRATION,
+  Session.REFRESH_EXPIRATION,
   Session.LOCALE,
   Session.AUTHENTICATIONS,
   Session.USER,
@@ -54,6 +55,9 @@ public class Session {
 
   public static final String EXPIRATION = "expiration";
   private OffsetDateTime expiration;
+
+  public static final String REFRESH_EXPIRATION = "refreshExpiration";
+  private OffsetDateTime refreshExpiration;
 
   public static final String LOCALE = "locale";
   private String locale;
@@ -126,6 +130,34 @@ public class Session {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setExpiration(OffsetDateTime expiration) {
     this.expiration = expiration;
+  }
+
+
+  public Session refreshExpiration(OffsetDateTime refreshExpiration) {
+    
+    this.refreshExpiration = refreshExpiration;
+    return this;
+  }
+
+   /**
+   * The expiration time of the current refresh token. If this time is over then the session is definetely invalid. 
+   * @return refreshExpiration
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "The expiration time of the current refresh token. If this time is over then the session is definetely invalid. ")
+  @JsonProperty(REFRESH_EXPIRATION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public OffsetDateTime getRefreshExpiration() {
+    return refreshExpiration;
+  }
+
+
+  @JsonProperty(REFRESH_EXPIRATION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setRefreshExpiration(OffsetDateTime refreshExpiration) {
+    this.refreshExpiration = refreshExpiration;
   }
 
 
@@ -296,6 +328,7 @@ public class Session {
     Session session = (Session) o;
     return Objects.equals(this.uri, session.uri) &&
         Objects.equals(this.expiration, session.expiration) &&
+        Objects.equals(this.refreshExpiration, session.refreshExpiration) &&
         Objects.equals(this.locale, session.locale) &&
         Objects.equals(this.authentications, session.authentications) &&
         Objects.equals(this.user, session.user) &&
@@ -305,7 +338,7 @@ public class Session {
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, expiration, locale, authentications, user, parameters, viewContexts);
+    return Objects.hash(uri, expiration, refreshExpiration, locale, authentications, user, parameters, viewContexts);
   }
 
   @Override
@@ -314,6 +347,7 @@ public class Session {
     sb.append("class Session {\n");
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    expiration: ").append(toIndentedString(expiration)).append("\n");
+    sb.append("    refreshExpiration: ").append(toIndentedString(refreshExpiration)).append("\n");
     sb.append("    locale: ").append(toIndentedString(locale)).append("\n");
     sb.append("    authentications: ").append(toIndentedString(authentications)).append("\n");
     sb.append("    user: ").append(toIndentedString(user)).append("\n");

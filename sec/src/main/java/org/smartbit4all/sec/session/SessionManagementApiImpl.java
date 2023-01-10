@@ -3,6 +3,7 @@ package org.smartbit4all.sec.session;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -13,6 +14,8 @@ import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.collection.CollectionApi;
+import org.smartbit4all.api.collection.StoredList;
 import org.smartbit4all.api.org.OrgApi;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.session.SessionManagementApi;
@@ -50,6 +53,8 @@ public class SessionManagementApiImpl implements SessionManagementApi {
 
   private static final String EXPMSG_MISSING_SESSIONURI = "sessionUri can not be null!";
 
+  private static final String ACTIVE_SESSIONS = "activeSessions";
+
   private static final ThreadLocal<Session> currentSession = new ThreadLocal<>();
 
   @Autowired
@@ -60,6 +65,9 @@ public class SessionManagementApiImpl implements SessionManagementApi {
 
   @Autowired
   private OrgApi orgApi;
+
+  @Autowired
+  private CollectionApi collectionApi;
 
   @Value("${session.timeout-min:60}")
   private int timeoutMins;
@@ -93,15 +101,21 @@ public class SessionManagementApiImpl implements SessionManagementApi {
 
     Session session = createSession();
     URI sessionUri = storage.get().saveAsNew(session);
+
+    // Save it into the active sessions list
+    collectionApi.list(SCHEMA, ACTIVE_SESSIONS).add(sessionUri);
+
     log.debug("Session saved!\n{}", session);
 
     registerSpringSecAuthToken(sessionUri);
 
-    String refreshToken = createRefreshToken(sessionUri);
+    OffsetDateTime refreshExpiration = OffsetDateTime.now().plusMinutes(refreshTimeoutMins);
+    String refreshToken = createRefreshToken(sessionUri, refreshExpiration);
     String sid = createSid(sessionUri, session.getExpiration());
     storage.get().update(session.getUri(), Session.class,
         s -> s.putParametersItem(SessionInfoData.SID, sid)
-            .putParametersItem(SessionInfoData.REFRESH_TOKEN, refreshToken));
+            .putParametersItem(SessionInfoData.REFRESH_TOKEN, refreshToken)
+            .refreshExpiration(refreshExpiration));
 
     log.debug("Session sid created: {}", sid);
     return new SessionInfoData()
@@ -127,10 +141,11 @@ public class SessionManagementApiImpl implements SessionManagementApi {
     }
 
     OffsetDateTime expiration = OffsetDateTime.now().plusMinutes(timeoutMins);
-    setSessionExpiration(session.getUri(), expiration);
+    OffsetDateTime refreshExpiration = OffsetDateTime.now().plusMinutes(refreshTimeoutMins);
+    setSessionExpiration(session.getUri(), expiration, refreshExpiration);
 
     String newSid = createSid(session.getUri(), expiration);
-    String newRefreshToken = createRefreshToken(session.getUri());
+    String newRefreshToken = createRefreshToken(session.getUri(), refreshExpiration);
 
     return new SessionInfoData()
         .sid(newSid)
@@ -144,8 +159,7 @@ public class SessionManagementApiImpl implements SessionManagementApi {
     return tokenHandler.createToken(sessionUri.toString(), expiration);
   }
 
-  private String createRefreshToken(URI sessionUri) {
-    OffsetDateTime refreshExpiration = OffsetDateTime.now().plusMinutes(refreshTimeoutMins);
+  private String createRefreshToken(URI sessionUri, OffsetDateTime refreshExpiration) {
     return tokenHandler.createToken(REFRESHTOKEN_PREFIX + sessionUri.toString(), refreshExpiration);
   }
 
@@ -269,10 +283,11 @@ public class SessionManagementApiImpl implements SessionManagementApi {
   }
 
   @Override
-  public void setSessionExpiration(URI sessionUri, OffsetDateTime expiration) {
+  public void setSessionExpiration(URI sessionUri, OffsetDateTime expiration,
+      OffsetDateTime refreshExpiration) {
     Objects.requireNonNull(sessionUri, EXPMSG_MISSING_SESSIONURI);
     Objects.requireNonNull(expiration, "expiration can not be null!");
-    updateSession(sessionUri, s -> s.expiration(expiration));
+    updateSession(sessionUri, s -> s.expiration(expiration).refreshExpiration(refreshExpiration));
   }
 
   @Override
@@ -410,4 +425,44 @@ public class SessionManagementApiImpl implements SessionManagementApi {
         s -> s.putViewContextsItem(viewContextUuid.toString(), viewContextUri));
 
   }
+
+  @Override
+  public List<Session> getActiveSessions() {
+    return getActiveSessions(ACTIVE_SESSIONS);
+  }
+
+  @Override
+  public List<Session> getActiveSessions(String sessionListName) {
+    Storage stg = storage.get();
+    StoredList activeSessions = collectionApi.list(SCHEMA, sessionListName);
+    if (!activeSessions.exists()) {
+      activeSessions = collectionApi.list(SCHEMA, ACTIVE_SESSIONS);
+    }
+
+    List<Session> result = Collections.synchronizedList(new ArrayList<>());
+    OffsetDateTime now = OffsetDateTime.now();
+    activeSessions.update(uriList -> {
+      List<URI> activeUriList = Collections.synchronizedList(new ArrayList<>());
+      uriList.parallelStream().map(u -> stg.read(u, Session.class))
+          .filter(
+              sid -> sid.getRefreshExpiration() != null && sid.getRefreshExpiration().isBefore(now))
+          .forEach(s -> {
+            result.add(s);
+            activeUriList.add(s.getUri());
+          });
+      return uriList;
+    });
+    return result;
+  }
+
+  @Override
+  public void addToList(URI sessionUri, String sessionListName) {
+    collectionApi.list(SCHEMA, sessionListName).add(sessionUri);
+  }
+
+  @Override
+  public void removeFromList(URI sessionUri, String sessionListName) {
+    collectionApi.list(SCHEMA, sessionListName).remove(sessionUri);
+  }
+
 }

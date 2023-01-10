@@ -39,6 +39,8 @@ public class RefreshSessionRequest {
   public static final String REFRESH_TOKEN = "refreshToken";
   private String refreshToken;
 
+  public RefreshSessionRequest() { 
+  }
 
   public RefreshSessionRequest refreshToken(String refreshToken) {
     

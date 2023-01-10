@@ -96,6 +96,11 @@ components:
         expiration:
           type: string
           format: date-time
+        refreshExpiration:
+          type: string
+          description: |
+            The expiration time of the current refresh token. If this time is over then the session is definetely invalid.
+          format: date-time
         locale:
           type: string
         authentications:
@@ -123,6 +128,7 @@ components:
           type: string
         refreshToken:
           type: string
+          description: The current refresh token.
         expiration:
           type: string
           format: date-time
@@ -187,25 +193,6 @@ components:
           type: string
         message:
           type: string
-  responses:
-    JwtTokenError:
-      description: 'Missing or expired JWT token'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ApiError'
-    NotExistingSessionError:
-      description: 'The session does not exists with the given token'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ApiError'
-    SessionError:
-      description: 'Error occurred while fetching the session data'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ApiError'
     UserActivityLog:
       type: object
       description: |
@@ -229,3 +216,22 @@ components:
         timestamp:
           type: string
           format: date-time
+  responses:
+    JwtTokenError:
+      description: 'Missing or expired JWT token'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+    NotExistingSessionError:
+      description: 'The session does not exists with the given token'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+    SessionError:
+      description: 'Error occurred while fetching the session data'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'

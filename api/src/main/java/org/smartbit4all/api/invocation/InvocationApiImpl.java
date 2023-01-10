@@ -9,6 +9,7 @@ import org.smartbit4all.api.invocation.bean.ApiData;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.session.SessionApi;
+import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.domain.application.ApplicationRuntimeApi;
@@ -32,6 +33,9 @@ public final class InvocationApiImpl implements InvocationApi {
 
   @Autowired(required = false)
   private SessionApi sessionApi;
+
+  @Autowired(required = false)
+  private SessionManagementApi sessionManagementApi;
 
   /**
    * The {@link InvocationExecutionApi} is for handling remote calls.
@@ -115,7 +119,8 @@ public final class InvocationApiImpl implements InvocationApi {
 
   @Override
   public <T> EventPublisher<T> publisher(Class<T> apiInterface, String event) {
-    return new EventPublisher<>(self, invocationRegisterApi, apiInterface, event);
+    return new EventPublisher<>(self, invocationRegisterApi, sessionManagementApi, apiInterface,
+        event);
   }
 
 }

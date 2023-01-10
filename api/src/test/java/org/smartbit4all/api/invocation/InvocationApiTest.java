@@ -28,6 +28,10 @@ class InvocationApiTest {
 
   @Test
   void testPrimary() throws Exception {
+    testPrimary(invocationApi);
+  }
+
+  static void testPrimary(InvocationApi invocationApi) throws Exception {
     {
       String value = "Peter";
       InvocationRequest request = Invocations.invoke(TestApi.class).name(TestApiImpl.NAME)
@@ -50,6 +54,10 @@ class InvocationApiTest {
 
   @Test
   void testInvocationByTemplate() throws Exception {
+    testInvocationByTemplate(invocationApi);
+  }
+
+  static void testInvocationByTemplate(InvocationApi invocationApi) throws Exception {
     String value = "Peter";
     InvocationRequest request = TestApi.echoMethodTemplate(value);
     InvocationParameter result = invocationApi.invoke(request);
@@ -58,6 +66,10 @@ class InvocationApiTest {
 
   @Test
   void testInvocationByBuilder() throws Exception {
+    testInvocationByBuilder(invocationApi);
+  }
+
+  static void testInvocationByBuilder(InvocationApi invocationApi) throws Exception {
     String value = "Peter";
     InvocationRequest request =
         invocationApi.builder(TestApi.class).build(a -> a.echoMethod(value));
@@ -67,6 +79,10 @@ class InvocationApiTest {
 
   @Test
   void testInvocationHandler() throws Exception {
+    testInvocationHandler(invocationApi, testApi);
+  }
+
+  static void testInvocationHandler(InvocationApi invocationApi, TestApi testApi) throws Exception {
     String value = "Peter";
     testApi.doMethod(value);
     Assertions.assertEquals(value, TestApiImpl.lastDo);
@@ -77,6 +93,10 @@ class InvocationApiTest {
 
   @Test
   void testInvokeAsync() throws Exception {
+    testInvokeAsync(invocationApi);
+  }
+
+  static void testInvokeAsync(InvocationApi invocationApi) throws Exception {
     String value = "Peter";
     InvocationRequest request =
         invocationApi.builder(TestApi.class).build(a -> a.setFutureValue(value));
@@ -86,6 +106,10 @@ class InvocationApiTest {
 
   @Test
   void testInvokeAt() throws Exception {
+    testInvokeAt(invocationApi);
+  }
+
+  static void testInvokeAt(InvocationApi invocationApi) throws Exception {
     String value = "Peter";
     InvocationRequest request =
         invocationApi.builder(TestApi.class).build(a -> a.setFutureValueAt(value));
@@ -101,6 +125,10 @@ class InvocationApiTest {
 
   @Test
   void testInvokeAsyncFlow() throws Exception {
+    testInvokeAsyncFlow(invocationApi);
+  }
+
+  static void testInvokeAsyncFlow(InvocationApi invocationApi) throws Exception {
     String value = "Peter";
     String second = " Second";
     String third = " Third";
@@ -119,6 +147,11 @@ class InvocationApiTest {
 
   @Test
   void testSubscription() throws Exception {
+    testSubscription(invocationApi, testEventPublisherApi);
+  }
+
+  static void testSubscription(InvocationApi invocationApi,
+      TestEventPublisherApi testEventPublisherApi) throws Exception {
     String value = "Peter";
 
     String event = testEventPublisherApi.fireSomeEvent(value);
