@@ -115,7 +115,9 @@ public class ViewContextServiceImpl implements ViewContextService {
         .viewName(view.getViewName())
         .type(view.getType())
         .state(view.getState())
-        .message((MessageData) view.getParameters().get(ViewApiImpl.MESSAGE_DATA));
+        .message(objectApi.asType(
+            MessageData.class,
+            view.getParameters().get(ViewApiImpl.MESSAGE_DATA)));
   }
 
   @Override
