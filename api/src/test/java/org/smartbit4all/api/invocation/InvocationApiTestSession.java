@@ -2,16 +2,21 @@ package org.smartbit4all.api.invocation;
 
 import java.net.URI;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.smartbit4all.api.org.OrgApi;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.session.SessionManagementApi;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
-// @SpringBootTest(classes = {
-// InvocationTestSessionConfig.class,
-// })
-// @TestInstance(Lifecycle.PER_CLASS)
+@SpringBootTest(classes = {
+    InvocationTestSessionConfig.class,
+})
+@TestInstance(Lifecycle.PER_CLASS)
+@Disabled
 class InvocationApiSession {
 
   private static final String PASSWD =

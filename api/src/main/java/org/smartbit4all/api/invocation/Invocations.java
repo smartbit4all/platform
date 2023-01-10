@@ -236,6 +236,18 @@ public class Invocations {
     return ProviderApiInvocationHandler.providerOf(interfaceClass, name, apiInstance);
   }
 
+  /**
+   * Constructs a new provider api instance for the configuration. Should be used from the Java
+   * based configurations when constructing the instances.
+   * 
+   * @param <T> The type of the interface
+   * @param apiInstance The api instance that will serve the requests at the end.
+   */
+  public static <T> ProviderApiInvocationHandler<T> asProvider(Class<T> interfaceClass,
+      T apiInstance) {
+    return ProviderApiInvocationHandler.providerOf(interfaceClass, apiInstance);
+  }
+
   public static InvocationRequest invoke(Class<?> class1) {
     return new InvocationRequest().interfaceClass(class1.getName());
   }
