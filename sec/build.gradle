@@ -13,4 +13,7 @@ dependencies {
 	api 'org.springframework.security:spring-security-config'
 	api 'org.springframework.security:spring-security-web'
 	api 'javax.servlet:javax.servlet-api:4.0.1'
+	
+ 	testImplementation 'org.smartbit4all.platform:api'
+	testImplementation testFixtures('org.smartbit4all.platform:api')
 }

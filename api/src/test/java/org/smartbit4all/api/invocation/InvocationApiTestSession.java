@@ -3,21 +3,16 @@ package org.smartbit4all.api.invocation;
 import java.net.URI;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.smartbit4all.api.org.OrgApi;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.session.SessionManagementApi;
-import org.smartbit4all.api.session.bean.SessionInfoData;
-import org.smartbit4all.sec.localauth.LocalAuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest(classes = {
-    InvocationTestSessionConfig.class,
-})
-@TestInstance(Lifecycle.PER_CLASS)
-class InvocationApiTestSession {
+// @SpringBootTest(classes = {
+// InvocationTestSessionConfig.class,
+// })
+// @TestInstance(Lifecycle.PER_CLASS)
+class InvocationApiSession {
 
   private static final String PASSWD =
       "$2a$10$2LXntgURMBoixkUhddcnVuBPCfcPyB/ely5HkPXc45LmDpdR3nFcS";
@@ -40,8 +35,8 @@ class InvocationApiTestSession {
   @Autowired
   OrgApi orgApi;
 
-  @Autowired
-  LocalAuthenticationService authService;
+  // @Autowired
+  // LocalAuthenticationService authService;
 
   @Autowired
   private SessionManagementApi sessionManagementApi;
@@ -67,17 +62,17 @@ class InvocationApiTestSession {
   }
 
   private void run(String userName, String passwd, Runnable func) throws Exception {
-    SessionInfoData sessionInfoData = sessionManagementApi.startSession();
-    authService.login(USER1, "asd");
+    // SessionInfoData sessionInfoData = sessionManagementApi.startSession();
+    // authService.login(USER1, "asd");
     func.run();
-    authService.logout();
+    // authService.logout();
   }
 
   @Test
   void testPrimary() throws Exception {
     run(USER1, PASSWD, () -> {
       try {
-        InvocationApiTest.testPrimary(invocationApi);
+        InvocationApiTestStatic.testPrimary(invocationApi);
       } catch (Exception e) {
         // TODO Auto-generated catch block
         e.printStackTrace();
@@ -89,7 +84,7 @@ class InvocationApiTestSession {
   void testInvocationByTemplate() throws Exception {
     run(USER1, PASSWD, () -> {
       try {
-        InvocationApiTest.testInvocationByTemplate(invocationApi);
+        InvocationApiTestStatic.testInvocationByTemplate(invocationApi);
       } catch (Exception e) {
         // TODO Auto-generated catch block
         e.printStackTrace();
@@ -101,7 +96,7 @@ class InvocationApiTestSession {
   void testInvocationByBuilder() throws Exception {
     run(USER1, PASSWD, () -> {
       try {
-        InvocationApiTest.testInvocationByBuilder(invocationApi);
+        InvocationApiTestStatic.testInvocationByBuilder(invocationApi);
       } catch (Exception e) {
         // TODO Auto-generated catch block
         e.printStackTrace();
@@ -113,7 +108,7 @@ class InvocationApiTestSession {
   void testInvocationHandler() throws Exception {
     run(USER1, PASSWD, () -> {
       try {
-        InvocationApiTest.testInvocationHandler(invocationApi, testApi);
+        InvocationApiTestStatic.testInvocationHandler(invocationApi, testApi);
       } catch (Exception e) {
         // TODO Auto-generated catch block
         e.printStackTrace();
@@ -125,7 +120,7 @@ class InvocationApiTestSession {
   void testInvokeAsync() throws Exception {
     run(USER1, PASSWD, () -> {
       try {
-        InvocationApiTest.testInvocationByBuilder(invocationApi);
+        InvocationApiTestStatic.testInvocationByBuilder(invocationApi);
       } catch (Exception e) {
         // TODO Auto-generated catch block
         e.printStackTrace();
@@ -137,7 +132,7 @@ class InvocationApiTestSession {
   void testInvokeAt() throws Exception {
     run(USER1, PASSWD, () -> {
       try {
-        InvocationApiTest.testInvokeAt(invocationApi);
+        InvocationApiTestStatic.testInvokeAt(invocationApi);
       } catch (Exception e) {
         // TODO Auto-generated catch block
         e.printStackTrace();
@@ -149,7 +144,7 @@ class InvocationApiTestSession {
   void testInvokeAsyncFlow() throws Exception {
     run(USER1, PASSWD, () -> {
       try {
-        InvocationApiTest.testInvokeAsyncFlow(invocationApi);
+        InvocationApiTestStatic.testInvokeAsyncFlow(invocationApi);
       } catch (Exception e) {
         // TODO Auto-generated catch block
         e.printStackTrace();
@@ -161,7 +156,7 @@ class InvocationApiTestSession {
   void testSubscription() throws Exception {
     run(USER1, PASSWD, () -> {
       try {
-        InvocationApiTest.testSubscription(invocationApi, testEventPublisherApi);
+        InvocationApiTestStatic.testSubscription(invocationApi, testEventPublisherApi);
       } catch (Exception e) {
         // TODO Auto-generated catch block
         e.printStackTrace();
