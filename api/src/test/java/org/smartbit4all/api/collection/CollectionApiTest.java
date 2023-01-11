@@ -1,7 +1,5 @@
 package org.smartbit4all.api.collection;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,12 +15,15 @@ import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.domain.utility.crud.Crud;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(classes = {
     CollectionTestConfig.class
 })
 class CollectionApiTest {
 
+  private static final String LATE = "late";
   public static final String SCHEMA = "sample";
   public static final String FIRST = "first";
   public static final String MY_MAP = "myMap";
@@ -82,6 +83,16 @@ class CollectionApiTest {
 
     Assertions.assertEquals(
         resultUris.stream().filter(u -> uris.containsKey(u.toString())).count(), resultUris.size());
+
+    Map<String, URI> updatedUris = map.update(uriMap -> {
+      ObjectNode datasheet =
+          objectApi.create(SCHEMA, new SampleDataSheet().name("datasheet lately added"));
+      objectApi.save(datasheet);
+      uriMap.put(LATE, objectApi.save(datasheet));
+      return uriMap;
+    });
+
+    assertTrue(updatedUris.containsKey(LATE));
 
   }
 

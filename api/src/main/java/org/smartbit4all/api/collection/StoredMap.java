@@ -3,6 +3,7 @@ package org.smartbit4all.api.collection;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Map;
+import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
 /**
@@ -25,5 +26,7 @@ public interface StoredMap {
   void remove(Collection<String> keys);
 
   void remove(Stream<String> keys);
+
+  Map<String, URI> update(UnaryOperator<Map<String, URI>> update);
 
 }

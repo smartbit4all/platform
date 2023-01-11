@@ -3,7 +3,9 @@ package org.smartbit4all.api.collection;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 import org.smartbit4all.api.collection.bean.StoredMapData;
 import org.smartbit4all.domain.data.storage.ObjectNotFoundException;
@@ -104,5 +106,32 @@ public class StoredMapStorageImpl extends AbstractStoredContainerStorageImpl imp
       lock.unlock();
     }
   }
+
+  @Override
+  public Map<String, URI> update(UnaryOperator<Map<String, URI>> update) {
+    Storage storage = storageRef.get();
+    StorageObjectLock objectLock = storage.getLock(uri);
+    Map<String, URI> result = new HashMap<>();
+    objectLock.lock();
+    try {
+      if (storage.exists(uri)) {
+        storage.update(uri, StoredMapData.class, r -> {
+          result.putAll(update.apply(getFromData(r)));
+          return r.uris(result);
+        });
+      } else {
+        result.putAll(update.apply(new HashMap<>()));
+        storage.saveAsNew(new StoredMapData().name(name).uris(result));
+      }
+    } finally {
+      objectLock.unlock();
+    }
+    return result;
+  }
+
+  private Map<String, URI> getFromData(StoredMapData data) {
+    return data == null || data.getUris() == null ? new HashMap<>() : data.getUris();
+  }
+
 
 }
