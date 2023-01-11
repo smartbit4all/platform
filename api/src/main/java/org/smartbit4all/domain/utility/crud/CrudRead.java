@@ -109,8 +109,10 @@ public class CrudRead<E extends EntityDefinition> {
     switch (queryOutputMode) {
       case INTO:
         this.queryOutput.copyResult(output);
+        break;
       case APPEND:
         this.queryOutput.appendResult(output);
+        break;
       default:
         break;
     }
