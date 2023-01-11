@@ -121,7 +121,7 @@ public class StoredMapStorageImpl extends AbstractStoredContainerStorageImpl imp
         });
       } else {
         result.putAll(update.apply(new HashMap<>()));
-        storage.saveAsNew(new StoredMapData().name(name).uris(result));
+        storage.saveAsNew(new StoredMapData().uri(uri).name(name).uris(result));
       }
     } finally {
       objectLock.unlock();
