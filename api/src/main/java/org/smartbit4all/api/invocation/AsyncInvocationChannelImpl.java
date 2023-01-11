@@ -97,7 +97,8 @@ public final class AsyncInvocationChannelImpl
         InvocationResultDecision decision = null;
         if (requestEntry.request.getEvaluate() != null) {
           // We set the parameter for the call.
-          requestEntry.request.getEvaluate().getParameters().get(0).setValue(result);
+          requestEntry.request.getEvaluate().getParameters().get(0).setValue(requestEntry.request);
+          requestEntry.request.getEvaluate().getParameters().get(1).setValue(result);
           try {
             // TODO This is an object read it with ObjectDefinition!
             decision = (InvocationResultDecision) invocationApi

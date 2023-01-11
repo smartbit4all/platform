@@ -1,5 +1,6 @@
 package org.smartbit4all.api.invocation;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.TimeUnit;
@@ -7,7 +8,6 @@ import org.junit.jupiter.api.Assertions;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.core.utility.StringConstant;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 public class InvocationApiTestStatic {
 
@@ -85,12 +85,12 @@ public class InvocationApiTestStatic {
     invocationApi
         .invoke(invocationApi.asyncBuilder()
             .call(TestApi.class, a -> a.firstStep(value), InvocationTestConfig.GLOBAL_ASYNC_CHANNEL)
-            .evaluate(TestApi.class, a -> a.firstStepOnError(null))
+            .evaluate(TestApi.class, a -> a.firstStepOnError(null, null))
             .andThen(TestApi.class, a -> a.secondStep(null, second),
                 InvocationTestConfig.SECOND_ASYNC_CHANNEL)
             .andThenContinue(TestApi.class, a -> a.thirdStep(null, third),
                 InvocationTestConfig.SECOND_ASYNC_CHANNEL)
-            .evaluate(TestApi.class, a -> a.thirdStepOnError(null)).get());
+            .evaluate(TestApi.class, a -> a.thirdStepOnError(null, null)).get());
     Assertions.assertEquals(value + second, TestApiImpl.secondResult.get());
     Assertions.assertEquals(value + third, TestApiImpl.thirdResult.get());
   }

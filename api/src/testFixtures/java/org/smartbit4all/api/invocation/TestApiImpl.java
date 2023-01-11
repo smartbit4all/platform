@@ -2,6 +2,7 @@ package org.smartbit4all.api.invocation;
 
 import java.time.OffsetDateTime;
 import java.util.Random;
+import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationResult;
 import org.smartbit4all.api.invocation.bean.InvocationResultDecision;
 import org.smartbit4all.api.invocation.bean.InvocationResultDecision.DecisionEnum;
@@ -54,7 +55,7 @@ public class TestApiImpl implements TestApi {
   }
 
   @Override
-  public InvocationResultDecision firstStepOnError(InvocationResult p) {
+  public InvocationResultDecision firstStepOnError(AsyncInvocationRequest r, InvocationResult p) {
     return new InvocationResultDecision().decision(DecisionEnum.CONTINUE)
         .scheduledAt(OffsetDateTime.now().plusSeconds(5));
   }
@@ -82,7 +83,7 @@ public class TestApiImpl implements TestApi {
   }
 
   @Override
-  public InvocationResultDecision thirdStepOnError(InvocationResult p) {
+  public InvocationResultDecision thirdStepOnError(AsyncInvocationRequest r, InvocationResult p) {
     return p.getError() != null ? new InvocationResultDecision().decision(DecisionEnum.RESCHEDULE)
         .scheduledAt(OffsetDateTime.now().plusSeconds(3))
         : new InvocationResultDecision().decision(DecisionEnum.CONTINUE);

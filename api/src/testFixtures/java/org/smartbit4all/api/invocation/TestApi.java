@@ -1,6 +1,7 @@
 package org.smartbit4all.api.invocation;
 
 import java.util.concurrent.CountDownLatch;
+import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationResult;
@@ -48,12 +49,12 @@ public interface TestApi {
 
   String firstStep(String p);
 
-  InvocationResultDecision firstStepOnError(InvocationResult p);
+  InvocationResultDecision firstStepOnError(AsyncInvocationRequest r, InvocationResult p);
 
   String secondStep(String p, String postfix);
 
   String thirdStep(String p, String postfix);
 
-  InvocationResultDecision thirdStepOnError(InvocationResult p);
+  InvocationResultDecision thirdStepOnError(AsyncInvocationRequest r, InvocationResult p);
 
 }
