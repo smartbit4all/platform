@@ -28,12 +28,16 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
   private static final String STOREDMAP = "storedmap";
   private static final String STOREDLIST = "storedlist";
   private static final String STOREDREF = "storedRef";
+  private static final String STOREDSEQ = "storedSeq";
 
   @Autowired
   private StorageApi storageApi;
 
   @Autowired
   private ObjectApi objectApi;
+
+  @Autowired
+  private StorageSequenceApi sequenceApi;
 
   /**
    * This map contains the already used {@link Storage} instances mapped by the schema name.
@@ -102,6 +106,20 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
         null, objectApi.definition(clazz));
   }
 
+  @Override
+  public SearchIndex searchIndex(String logicalSchema, String name) {
+    SearchIndex result = searchIndexByName.get(logicalSchema + StringConstant.DOT + name);
+    Objects.requireNonNull(result, "The " + name + " search index is not available.");
+    return result;
+  }
+
+  @Override
+  public StoredSequence sequence(String logicalSchema, String name) {
+    String schema = constructCollectionShemaName(logicalSchema);
+    return new StoredSequenceStorageImpl(getStorage(schema),
+        constructGlobalUri(schema, name, STOREDSEQ), name, sequenceApi);
+  }
+
   /**
    * This function produce the given logical schema. This schema is currently non versioned by
    * default.
@@ -132,13 +150,6 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
 
   private final String constructCollectionShemaName(String logicalShema) {
     return logicalShema + StringConstant.MINUS_SIGN + "collections";
-  }
-
-  @Override
-  public SearchIndex searchIndex(String logicalSchema, String name) {
-    SearchIndex result = searchIndexByName.get(logicalSchema + StringConstant.DOT + name);
-    Objects.requireNonNull(result, "The " + name + " search index is not available.");
-    return result;
   }
 
   @Override

@@ -63,3 +63,19 @@ components:
           type: string
         refObject:
           type: object
+    StoredSequenceData:
+      type: object
+      description: |
+        This object contains an atomic sequence that provides globaly unique incrementing value. Can be used as the
+        classic database sequence.
+      required: [uri, name]
+      properties:
+        uri:
+          type: string
+          format: uri
+        name:
+          type: string
+        current:
+          type: integer
+          format: int64
+          description: The current value of the sequence.

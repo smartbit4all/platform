@@ -101,4 +101,14 @@ public interface CollectionApi {
    */
   SearchIndex searchIndex(String logicalSchema, String name);
 
+  /**
+   * This object provides an atomic sequence that provides globally unique incrementing value. Can
+   * be used as the classic database sequence.
+   * 
+   * @param logicalSchema
+   * @param name The unique name of the sequence inside the logical schema.
+   * @return
+   */
+  StoredSequence sequence(String logicalSchema, String name);
+
 }

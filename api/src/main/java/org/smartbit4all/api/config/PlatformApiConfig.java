@@ -4,9 +4,12 @@ import org.smartbit4all.api.binarydata.BinaryDataSorageApi;
 import org.smartbit4all.api.binarydata.BinaryDataSorageApiImpl;
 import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.CollectionApiStorageImpl;
+import org.smartbit4all.api.collection.StorageSequenceApi;
+import org.smartbit4all.api.collection.StorageSequenceApiImpl;
 import org.smartbit4all.api.collection.bean.StoredListData;
 import org.smartbit4all.api.collection.bean.StoredMapData;
 import org.smartbit4all.api.collection.bean.StoredReferenceData;
+import org.smartbit4all.api.collection.bean.StoredSequenceData;
 import org.smartbit4all.api.documentation.DocumentationApi;
 import org.smartbit4all.api.documentation.DocumentationApiImpl;
 import org.smartbit4all.api.filter.util.FilterService;
@@ -225,10 +228,22 @@ public class PlatformApiConfig {
   }
 
   @Bean
+  public ObjectDefinition<StoredSequenceData> storedSequenceDataSingleVersion() {
+    ObjectDefinition<StoredSequenceData> result =
+        ObjectDefinitionApiImpl.constructDefinitionBase(StoredSequenceData.class);
+    result.setExplicitUri(true);
+    return result;
+  }
+
+  @Bean
   public BinaryDataSorageApi binaryDataSorageApi() {
     return new BinaryDataSorageApiImpl();
   }
 
+  @Bean
+  public StorageSequenceApi storageSequenceApi() {
+    return new StorageSequenceApiImpl();
+  }
 
   @Bean
   public Storage viewContextServiceStorage(@Autowired(required = false) ObjectStorage objectStorage,

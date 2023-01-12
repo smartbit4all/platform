@@ -1,9 +1,17 @@
 package org.smartbit4all.api.collection;
 
+import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.api.sample.bean.SampleDataSheet;
@@ -36,6 +44,9 @@ class CollectionApiTest {
 
   @Autowired
   private ObjectApi objectApi;
+
+  private ExecutorService executor =
+      new ThreadPoolExecutor(5, 5, 10, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
 
   @Test
   void testMap() throws Exception {
@@ -226,6 +237,48 @@ class CollectionApiTest {
         searchIndex.executeSearch(new TestFilter().isOdd(true).name("od").caption("even.even"));
 
     assertTrue(tableDataByDerivedNoResult.rows().isEmpty());
+
+  }
+
+  @Test
+  void testSequence() {
+    StoredSequence sequence = collectionApi.sequence(SCHEMA, FIRST);
+
+    List<Future<List<Long>>> results = new ArrayList<>();
+    int count = 5;
+    int nextCount = 15;
+
+    for (int i = 0; i < count; i++) {
+      results.add(executor.submit(() -> {
+        List<Long> result = new ArrayList<>();
+        for (int j = 0; j < nextCount; j++) {
+          result.add(sequence.next());
+        }
+        return result;
+      }));
+    }
+
+    List<Long> result = results.stream().flatMap(f -> {
+      try {
+        return f.get().stream();
+      } catch (InterruptedException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      } catch (ExecutionException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+      return Stream.empty();
+    }).sorted(Long::compare).collect(toList());
+
+    assertEquals(count * nextCount, result.size());
+
+    List<Long> expectedResult = new ArrayList<>();
+    for (int i = 1; i <= count * nextCount; i++) {
+      expectedResult.add(Long.valueOf(i));
+    }
+
+    assertEquals(expectedResult.toString(), result.toString());
 
   }
 
