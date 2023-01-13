@@ -195,8 +195,9 @@ class CollectionApiTest {
   @Test
   void testSearchIndex() throws Exception {
 
-    SearchIndex<TestFilter, SampleDataSheet> searchIndex =
-        collectionApi.searchIndex(SCHEMA, MY_SEARCH);
+    SearchIndexWithFilterBean<SampleDataSheet, TestFilter> searchIndex =
+        collectionApi.searchIndex(SCHEMA,
+            MY_SEARCH, SampleDataSheet.class, TestFilter.class);
 
     // Creating many object to search.
 
@@ -209,8 +210,7 @@ class CollectionApiTest {
       odd = !odd;
     }
 
-
-
+    @SuppressWarnings("unchecked")
     Property<String> propertyName =
         (Property<String>) searchIndex.getDefinition().getProperty(TestFilter.NAME);
 

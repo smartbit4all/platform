@@ -45,9 +45,9 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
   private Map<String, Storage> storagesBySchema = new HashMap<>();
 
   @Autowired(required = false)
-  private List<SearchIndex> searchIndices;
+  private List<SearchIndex<?>> searchIndices;
 
-  private Map<String, SearchIndex> searchIndexByName = Collections.emptyMap();
+  private Map<String, SearchIndex<?>> searchIndexByName = Collections.emptyMap();
 
   public CollectionApiStorageImpl() {
     super();
@@ -107,8 +107,21 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
   }
 
   @Override
-  public SearchIndex searchIndex(String logicalSchema, String name) {
-    SearchIndex result = searchIndexByName.get(logicalSchema + StringConstant.DOT + name);
+  public <O> SearchIndex<O> searchIndex(String logicalSchema, String name, Class<O> indexedObject) {
+    @SuppressWarnings("unchecked")
+    SearchIndex<O> result =
+        (SearchIndex<O>) searchIndexByName.get(logicalSchema + StringConstant.DOT + name);
+    Objects.requireNonNull(result, "The " + name + " search index is not available.");
+    return result;
+  }
+
+  @Override
+  public <O, F> SearchIndexWithFilterBean<O, F> searchIndex(String logicalSchema, String name,
+      Class<O> indexedObject, Class<F> filterObject) {
+    @SuppressWarnings("unchecked")
+    SearchIndexWithFilterBean<O, F> result =
+        (SearchIndexWithFilterBean<O, F>) searchIndexByName
+            .get(logicalSchema + StringConstant.DOT + name);
     Objects.requireNonNull(result, "The " + name + " search index is not available.");
     return result;
   }

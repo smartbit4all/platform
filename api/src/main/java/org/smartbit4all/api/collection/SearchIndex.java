@@ -1,5 +1,6 @@
 package org.smartbit4all.api.collection;
 
+import java.util.List;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.service.query.QueryInput;
@@ -12,7 +13,7 @@ import org.smartbit4all.domain.service.query.QueryInput;
  * 
  * @author Peter Boros
  */
-public interface SearchIndex<F, O> {
+public interface SearchIndex<O> {
 
   /**
    * @return The schema of the search index as a namespace for the search index.
@@ -39,6 +40,12 @@ public interface SearchIndex<F, O> {
    */
   TableData<?> executeSearch(QueryInput queryInput);
 
-  TableData<?> executeSearch(F filterObject);
+  /**
+   * We can execute the search synchronously and we get back the result {@link TableData} in memory.
+   * 
+   * @param queryInput The query input that defines the logical filter conditions.
+   * @return The table data in memory.
+   */
+  List<O> list(QueryInput queryInput);
 
 }

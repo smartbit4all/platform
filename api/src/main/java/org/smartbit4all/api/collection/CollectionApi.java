@@ -99,7 +99,16 @@ public interface CollectionApi {
    * @param name The name of the search index.
    * @return The {@link SearchIndex}.
    */
-  SearchIndex searchIndex(String logicalSchema, String name);
+  <O> SearchIndex<O> searchIndex(String logicalSchema, String name, Class<O> indexedObject);
+
+  /**
+   * This function will return a {@link SearchIndex} if it is parameterized.
+   * 
+   * @param name The name of the search index.
+   * @return The {@link SearchIndex}.
+   */
+  <O, F> SearchIndexWithFilterBean<O, F> searchIndex(String logicalSchema, String name,
+      Class<O> indexedObject, Class<F> filterObject);
 
   /**
    * This object provides an atomic sequence that provides globally unique incrementing value. Can
