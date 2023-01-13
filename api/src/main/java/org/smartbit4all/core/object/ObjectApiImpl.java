@@ -208,8 +208,19 @@ public class ObjectApiImpl implements ObjectApi {
     if (object == null) {
       return null;
     }
-    Map<String, Object> objectAsMap = definition(object.getClass()).toMap(object);
+    Map<String, Object> objectAsMap = getObjectAsMap(object);
     return asType(clazz, getValueFromObjectMap(objectAsMap, paths));
+  }
+
+  @SuppressWarnings("unchecked")
+  private Map<String, Object> getObjectAsMap(Object object) {
+    Map<String, Object> objectAsMap;
+    if (object instanceof Map) {
+      objectAsMap = (Map<String, Object>) object;
+    } else {
+      objectAsMap = definition(object.getClass()).toMap(object);
+    }
+    return objectAsMap;
   }
 
   @Override
@@ -217,7 +228,7 @@ public class ObjectApiImpl implements ObjectApi {
     if (object == null) {
       return Collections.emptyList();
     }
-    Map<String, Object> objectAsMap = definition(object.getClass()).toMap(object);
+    Map<String, Object> objectAsMap = getObjectAsMap(object);
     Object list = getValueFromObjectMap(objectAsMap, paths);
     if (!(list instanceof List)) {
       throw new IllegalArgumentException(
@@ -232,7 +243,7 @@ public class ObjectApiImpl implements ObjectApi {
     if (object == null) {
       return Collections.emptyMap();
     }
-    Map<String, Object> objectAsMap = definition(object.getClass()).toMap(object);
+    Map<String, Object> objectAsMap = getObjectAsMap(object);
     Object map = getValueFromObjectMap(objectAsMap, paths);
     if (!(map instanceof Map)) {
       throw new IllegalArgumentException(
@@ -241,23 +252,57 @@ public class ObjectApiImpl implements ObjectApi {
     return asMap(clazz, (Map<String, ?>) map);
   }
 
-  static Object getValueFromObjectMap(Map<String, Object> map, String... paths) {
+  @Override
+  public Object getValueFromObjectMap(Map<String, Object> map, String... paths) {
     if (paths != null && paths.length > 0) {
       String path = paths[0];
       Object value = map.get(path);
       if (paths.length == 1) {
         return value;
       }
-      if (value instanceof Map) {
-        @SuppressWarnings("unchecked")
-        Map<String, Object> subMap = (Map<String, Object>) value;
-        String[] subPaths = Arrays.copyOfRange(paths, 1, paths.length);
-        return getValueFromObjectMap(subMap, subPaths);
-      }
-      return null;
+      return continueFromFirstValue(value, paths);
     }
     return map;
   }
 
+  // paths[0] is value, and paths.length > 1, continue based on value's class
+  @SuppressWarnings("unchecked")
+  private Object continueFromFirstValue(Object value, String... paths) {
+    String[] subPaths = Arrays.copyOfRange(paths, 1, paths.length);
+    if (value instanceof Map) {
+      Map<String, Object> subMap = (Map<String, Object>) value;
+      return getValueFromObjectMap(subMap, subPaths);
+    }
+    if (value instanceof List) {
+      List<Object> subList = (List<Object>) value;
+      return getValueFromObjectList(subList, subPaths);
+    }
+    // TODO any other object - we may try to convert it to a map with it's classes
+    // objectDefinition?
+    Map<String, Object> objectAsMap = getObjectAsMap(value);
+    return getValueFromObjectMap(objectAsMap, subPaths);
+  }
+
+  private Object getValueFromObjectList(List<Object> list, String... paths) {
+    if (paths != null && paths.length > 0) {
+      String idxString = paths[0];
+      Integer idx;
+      try {
+        idx = Integer.valueOf(idxString);
+      } catch (NumberFormatException ex1) {
+        throw new IllegalArgumentException("List index is not a number: "
+            + "(" + idxString + ")");
+      } catch (IndexOutOfBoundsException ex2) {
+        throw new IllegalArgumentException("List item not found by index: "
+            + "(" + idxString + ")");
+      }
+      Object value = list.get(idx);
+      if (paths.length == 1) {
+        return value;
+      }
+      return continueFromFirstValue(value, paths);
+    }
+    return list;
+  }
 
 }

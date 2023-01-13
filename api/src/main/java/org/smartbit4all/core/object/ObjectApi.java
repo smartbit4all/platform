@@ -236,4 +236,6 @@ public interface ObjectApi {
 
   <V> Map<String, V> getMapFromObject(Class<V> clazz, Object object, String... paths);
 
+  Object getValueFromObjectMap(Map<String, Object> map, String... paths);
+
 }

@@ -495,7 +495,7 @@ public class ObjectNode {
         String[] subPaths = Arrays.copyOfRange(paths, 2, paths.length);
         return reference.get().getValue(subPaths);
       }
-      return ObjectApiImpl.getValueFromObjectMap(getObjectAsMap(), paths);
+      return objectApi.getValueFromObjectMap(getObjectAsMap(), paths);
     }
     return this;
   }

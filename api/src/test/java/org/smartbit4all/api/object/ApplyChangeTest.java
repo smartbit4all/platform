@@ -10,7 +10,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -341,6 +343,34 @@ class ApplyChangeTest {
     rootNode = objectApi.load(rootUriAfterUpdate);
     assertEquals(0, rootNode.list(SampleCategory.CONTAINER_ITEMS).size());
 
+  }
+
+  @Test
+  void testGetValueFromObjectMap() {
+    Map<String, Object> root = new HashMap<>();
+
+    root.put("first", "value");
+    Object firstValue = objectApi.getValueFromObjectMap(root, "first");
+    assertEquals("value", firstValue);
+
+    Map<String, Object> second = new HashMap<>();
+    second.put("value", 22);
+    root.put("second", second);
+    Object secondValue = objectApi.getValueFromObjectMap(root, "second", "value");
+    assertEquals(22, secondValue);
+
+    List<Object> list = new ArrayList<>();
+    Map<String, Object> mapInList = new HashMap<>();
+    mapInList.put("value", "mapInList");
+    mapInList.put("object", new SampleCategory().name("sample"));
+    list.add(mapInList);
+    root.put("third", list);
+
+    Object thirdValue = objectApi.getValueFromObjectMap(root, "third", "0", "value");
+    assertEquals("mapInList", thirdValue);
+
+    Object name = objectApi.getValueFromObjectMap(root, "third", "0", "object", "name");
+    assertEquals(name, "sample");
   }
 
   private URI constructSampleCategory(String referenceToItems) {
