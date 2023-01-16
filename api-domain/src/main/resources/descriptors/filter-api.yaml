@@ -100,6 +100,11 @@ components:
           type: string
           format: uri
           description: 'Value set identifer for selections. Values can be aquired by ValueAPI.'
+        possibleValues:
+          description: The selecteble values.
+          type: array
+          items:
+            type: Value
         operationCode:
           type: string
           description: 'Operation code, specifies the operator of the condition.'

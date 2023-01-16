@@ -41,6 +41,9 @@ components:
           type: string
           format: uri
           description: 'The uri the object of the value can be accessed.'
+        code:
+          type: string
+          description: The logical code of the selectable value.
         displayValue: 
           type: string
           description: 'The string value that can be shown on ui. It might be a label code or the exact label.'
