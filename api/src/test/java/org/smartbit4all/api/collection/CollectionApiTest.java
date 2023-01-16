@@ -212,11 +212,12 @@ class CollectionApiTest {
 
     @SuppressWarnings("unchecked")
     Property<String> propertyName =
-        (Property<String>) searchIndex.getDefinition().getProperty(TestFilter.NAME);
+        (Property<String>) searchIndex.getDefinition().definition.getProperty(TestFilter.NAME);
 
     long start = System.currentTimeMillis();
     TableData<?> tableData = searchIndex.executeSearch(
-        Crud.read(searchIndex.getDefinition()).selectAllProperties().where(propertyName.eq("odd"))
+        Crud.read(searchIndex.getDefinition().definition).selectAllProperties()
+            .where(propertyName.eq("odd"))
             .getQuery());
     long end = System.currentTimeMillis();
 

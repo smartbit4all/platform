@@ -5,12 +5,15 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
+import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.collection.SearchEntityDefinition.DetailDefinition;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
@@ -29,6 +32,16 @@ import org.smartbit4all.domain.service.query.QueryInput;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
+/**
+ * @author Peter Boros
+ *
+ * @param <O>
+ */
+/**
+ * @author Peter Boros
+ *
+ * @param <O>
+ */
 public abstract class SearchIndexImpl<O> implements SearchIndex<O> {
 
   private static final Logger log = LoggerFactory.getLogger(SearchIndexImpl.class);
@@ -39,7 +52,16 @@ public abstract class SearchIndexImpl<O> implements SearchIndex<O> {
 
   private Class<O> indexedObjectDefinitionClass;
 
-  private final class PropertyMapping {
+  private interface Mapping {
+
+  }
+
+  /**
+   * The mapping of the property on a path.
+   * 
+   * @author Peter Boros
+   */
+  private final class PropertyMapping implements Mapping {
 
     String[] path;
 
@@ -54,6 +76,20 @@ public abstract class SearchIndexImpl<O> implements SearchIndex<O> {
       this.processor = processor;
       this.complexProcessor = complexProcessor;
     }
+
+  }
+
+  protected final class DetailMapping implements Mapping {
+
+    /**
+     * The path of the detail property that contains a list / map, referring to another object.
+     */
+    String[] path;
+
+    /**
+     * {@link LinkedHashMap} to preserve the parameterization order in the entity definition.
+     */
+    protected Map<String, PropertyMapping> pathByPropertyName = new LinkedHashMap<>();
 
   }
 
@@ -76,8 +112,12 @@ public abstract class SearchIndexImpl<O> implements SearchIndex<O> {
   /**
    * {@link LinkedHashMap} to preserve the parameterization order in the entity definition.
    */
-  protected Map<String, PropertyMapping> pathByPropertyName = new LinkedHashMap<>();
+  protected Map<String, PropertyMapping> mappingByPropertyName = new LinkedHashMap<>();
 
+  /**
+   * If we need a special mapping between the filter field of a bean the this map contains the
+   * lambda for this.
+   */
   protected Map<String, CustomExpressionMapping> expressionByPropertyName = new LinkedHashMap<>();
 
   protected String indexedObjectSchema;
@@ -102,9 +142,14 @@ public abstract class SearchIndexImpl<O> implements SearchIndex<O> {
   @Autowired
   protected EntityManager entityManager;
 
+  /**
+   * The entity definition the search working on.
+   */
+  protected SearchEntityDefinition definition;
+
   @Override
   public TableData<?> executeSearch(QueryInput queryInput) {
-    queryInput.setTableDataUri(tableDataApi.save(readAllObjects()));
+    queryInput.setTableDataUri(tableDataApi.save(readAllObjects().result));
     return crudApi.executeQuery(queryInput).getTableData();
   }
 
@@ -118,10 +163,16 @@ public abstract class SearchIndexImpl<O> implements SearchIndex<O> {
     }
   }
 
-  private final TableData<?> readAllObjects() {
-    EntityDefinition def = getDefinition();
-    TableData<?> tableData = new TableData<>(def);
-    tableData.addColumns(def.allProperties());
+  private final SearchEntityTableDataResult readAllObjects() {
+    SearchEntityTableDataResult result =
+        new SearchEntityTableDataResult().searchEntityDefinition(getDefinition());
+
+    return readAllObjects(result);
+  }
+
+  private final SearchEntityTableDataResult readAllObjects(SearchEntityTableDataResult result) {
+    TableData<?> tableData = new TableData<>(result.searchEntityDefinition.definition);
+    tableData.addColumns(result.searchEntityDefinition.definition.allProperties());
 
     Storage storage = storageApi.get(indexedObjectSchema);
     List<URI> allObjectUris = storage.readAllUris(indexedObjectDefinition().getClazz());
@@ -129,7 +180,7 @@ public abstract class SearchIndexImpl<O> implements SearchIndex<O> {
         .forEach(n -> {
           DataRow row = tableData.addRow();
           for (DataColumn<?> col : tableData.columns()) {
-            PropertyMapping mapping = pathByPropertyName.get(col.getProperty().getName());
+            PropertyMapping mapping = mappingByPropertyName.get(col.getProperty().getName());
             if (mapping.path != null && mapping.processor == null
                 && mapping.complexProcessor == null) {
               tableData.setObject(col, row, n.getValue(mapping.path));
@@ -141,22 +192,32 @@ public abstract class SearchIndexImpl<O> implements SearchIndex<O> {
           }
         });
 
-    return tableData;
+    // Read all the details also.
+    for (Entry<String, DetailDefinition> entry : result.searchEntityDefinition.detailsByName
+        .entrySet()) {
+      result.detailResults.put(entry.getKey(), readAllObjects(
+          new SearchEntityTableDataResult().searchEntityDefinition(entry.getValue().detail)));
+    }
+
+    result.result = tableData;
+    return result;
   }
 
   @Override
-  public synchronized EntityDefinition getDefinition() {
+  public synchronized SearchEntityDefinition getDefinition() {
     if (definition == null) {
       definition = constructDefinition();
-      entityManager.registerEntityDef(definition);
+      allDefinitions(definition).forEach(e -> entityManager.registerEntityDef(e));
     }
     return definition;
   }
 
-  /**
-   * The entity definition the search working on.
-   */
-  protected EntityDefinition definition;
+  private final Stream<EntityDefinition> allDefinitions(
+      SearchEntityDefinition searchEntityDefinition) {
+    return Stream.concat(Stream.of(searchEntityDefinition.definition),
+        searchEntityDefinition.detailsByName.values().stream()
+            .flatMap(d -> allDefinitions(d.detail)));
+  }
 
   protected SearchIndexImpl(String logicalSchema, String name, String indexedObjectSchema,
       Class<O> indexedObjectDefinitionClass) {
@@ -167,7 +228,7 @@ public abstract class SearchIndexImpl<O> implements SearchIndex<O> {
     this.indexedObjectDefinitionClass = indexedObjectDefinitionClass;
   }
 
-  public abstract EntityDefinition constructDefinition();
+  public abstract SearchEntityDefinition constructDefinition();
 
   @Override
   public String logicalSchema() {
@@ -182,7 +243,7 @@ public abstract class SearchIndexImpl<O> implements SearchIndex<O> {
   public SearchIndexImpl<O> map(String propertyName, String... pathes) {
     Objects.requireNonNull(pathes);
     if (pathes.length > 0) {
-      pathByPropertyName.put(propertyName, new PropertyMapping(pathes, null, null));
+      mappingByPropertyName.put(propertyName, new PropertyMapping(pathes, null, null));
     }
     return this;
   }
@@ -192,7 +253,7 @@ public abstract class SearchIndexImpl<O> implements SearchIndex<O> {
       String... pathes) {
     Objects.requireNonNull(pathes);
     if (pathes.length > 0) {
-      pathByPropertyName.put(propertyName,
+      mappingByPropertyName.put(propertyName,
           new PropertyMapping(pathes, processor, null));
     }
     return this;
@@ -201,7 +262,7 @@ public abstract class SearchIndexImpl<O> implements SearchIndex<O> {
   public SearchIndexImpl<O> mapComplex(String propertyName,
       Function<ObjectNode, Object> complexProcessor) {
     Objects.requireNonNull(complexProcessor);
-    pathByPropertyName.put(propertyName,
+    mappingByPropertyName.put(propertyName,
         new PropertyMapping(null, null, complexProcessor));
     return this;
   }
