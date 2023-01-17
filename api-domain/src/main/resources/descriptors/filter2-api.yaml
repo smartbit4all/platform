@@ -24,7 +24,7 @@ components:
         possibleActions:
           type: array
           items:
-            $ref: "#/components/schemas/UiAction"
+            type: "#/components/schemas/UiAction"
         filterGroups:
           type: array
           items:
@@ -71,17 +71,16 @@ components:
         boolOperator:
           $ref: "#/components/schemas/FilterField2_BoolOperator"
           default: AND
-        
-        type:
+        filterFieldType:
           $ref: "#/components/schemas/FilterField2_Type"
         possibleValues:
           type: array
           items:
-            $ref: "#/components/schemas/Value"
+            type: "#/components/schemas/Value"
         selectedValues:
           type: array
           items:
-            $ref: "#/components/schemas/Value"
+            type: "#/components/schemas/Value"
         widgetType:
           $ref: "#/components/schemas/FilterField2_WidgetType"
         data1:
