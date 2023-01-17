@@ -30,7 +30,7 @@ public interface SearchIndex<O> {
    * 
    * @return
    */
-  EntityDefinition getDefinition();
+  SearchEntityDefinition getDefinition();
 
   /**
    * We can execute the search synchronously and we get back the result {@link TableData} in memory.

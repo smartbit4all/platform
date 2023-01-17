@@ -254,6 +254,9 @@ public class ObjectApiImpl implements ObjectApi {
 
   @Override
   public Object getValueFromObjectMap(Map<String, Object> map, String... paths) {
+    if (map == null) {
+      return null;
+    }
     if (paths != null && paths.length > 0) {
       String path = paths[0];
       Object value = map.get(path);
@@ -268,6 +271,9 @@ public class ObjectApiImpl implements ObjectApi {
   // paths[0] is value, and paths.length > 1, continue based on value's class
   @SuppressWarnings("unchecked")
   private Object continueFromFirstValue(Object value, String... paths) {
+    if (value == null) {
+      return null;
+    }
     String[] subPaths = Arrays.copyOfRange(paths, 1, paths.length);
     if (value instanceof Map) {
       Map<String, Object> subMap = (Map<String, Object>) value;
@@ -284,6 +290,9 @@ public class ObjectApiImpl implements ObjectApi {
   }
 
   private Object getValueFromObjectList(List<Object> list, String... paths) {
+    if (list == null) {
+      return null;
+    }
     if (paths != null && paths.length > 0) {
       String idxString = paths[0];
       Integer idx;

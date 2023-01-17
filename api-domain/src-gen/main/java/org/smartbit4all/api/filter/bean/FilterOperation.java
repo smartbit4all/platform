@@ -23,6 +23,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import org.smartbit4all.api.value.bean.Value;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -39,6 +42,7 @@ import javax.validation.Valid;
   FilterOperation.PROPERTY_URI2,
   FilterOperation.PROPERTY_URI3,
   FilterOperation.POSSIBLE_VALUES_URI,
+  FilterOperation.POSSIBLE_VALUES,
   FilterOperation.OPERATION_CODE,
   FilterOperation.LABEL_CODE,
   FilterOperation.ICON_CODE
@@ -63,6 +67,9 @@ public class FilterOperation {
 
   public static final String POSSIBLE_VALUES_URI = "possibleValuesUri";
   private URI possibleValuesUri;
+
+  public static final String POSSIBLE_VALUES = "possibleValues";
+  private List<Value> possibleValues = null;
 
   public static final String OPERATION_CODE = "operationCode";
   private String operationCode;
@@ -242,6 +249,42 @@ public class FilterOperation {
   }
 
 
+  public FilterOperation possibleValues(List<Value> possibleValues) {
+    
+    this.possibleValues = possibleValues;
+    return this;
+  }
+
+  public FilterOperation addPossibleValuesItem(Value possibleValuesItem) {
+    if (this.possibleValues == null) {
+      this.possibleValues = new ArrayList<>();
+    }
+    this.possibleValues.add(possibleValuesItem);
+    return this;
+  }
+
+   /**
+   * The selecteble values.
+   * @return possibleValues
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "The selecteble values.")
+  @JsonProperty(POSSIBLE_VALUES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<Value> getPossibleValues() {
+    return possibleValues;
+  }
+
+
+  @JsonProperty(POSSIBLE_VALUES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setPossibleValues(List<Value> possibleValues) {
+    this.possibleValues = possibleValues;
+  }
+
+
   public FilterOperation operationCode(String operationCode) {
     
     this.operationCode = operationCode;
@@ -338,6 +381,7 @@ public class FilterOperation {
         Objects.equals(this.propertyUri2, filterOperation.propertyUri2) &&
         Objects.equals(this.propertyUri3, filterOperation.propertyUri3) &&
         Objects.equals(this.possibleValuesUri, filterOperation.possibleValuesUri) &&
+        Objects.equals(this.possibleValues, filterOperation.possibleValues) &&
         Objects.equals(this.operationCode, filterOperation.operationCode) &&
         Objects.equals(this.labelCode, filterOperation.labelCode) &&
         Objects.equals(this.iconCode, filterOperation.iconCode);
@@ -345,7 +389,7 @@ public class FilterOperation {
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, filterView, propertyUri1, propertyUri2, propertyUri3, possibleValuesUri, operationCode, labelCode, iconCode);
+    return Objects.hash(id, filterView, propertyUri1, propertyUri2, propertyUri3, possibleValuesUri, possibleValues, operationCode, labelCode, iconCode);
   }
 
   @Override
@@ -358,6 +402,7 @@ public class FilterOperation {
     sb.append("    propertyUri2: ").append(toIndentedString(propertyUri2)).append("\n");
     sb.append("    propertyUri3: ").append(toIndentedString(propertyUri3)).append("\n");
     sb.append("    possibleValuesUri: ").append(toIndentedString(possibleValuesUri)).append("\n");
+    sb.append("    possibleValues: ").append(toIndentedString(possibleValues)).append("\n");
     sb.append("    operationCode: ").append(toIndentedString(operationCode)).append("\n");
     sb.append("    labelCode: ").append(toIndentedString(labelCode)).append("\n");
     sb.append("    iconCode: ").append(toIndentedString(iconCode)).append("\n");

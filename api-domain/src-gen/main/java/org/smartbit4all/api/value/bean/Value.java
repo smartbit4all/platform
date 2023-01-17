@@ -33,6 +33,7 @@ import javax.validation.Valid;
  */
 @JsonPropertyOrder({
   Value.OBJECT_URI,
+  Value.CODE,
   Value.DISPLAY_VALUE,
   Value.ICON_CODE
 })
@@ -41,6 +42,9 @@ import javax.validation.Valid;
 public class Value {
   public static final String OBJECT_URI = "objectUri";
   private URI objectUri;
+
+  public static final String CODE = "code";
+  private String code;
 
   public static final String DISPLAY_VALUE = "displayValue";
   private String displayValue;
@@ -77,6 +81,33 @@ public class Value {
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setObjectUri(URI objectUri) {
     this.objectUri = objectUri;
+  }
+
+
+  public Value code(String code) {
+    
+    this.code = code;
+    return this;
+  }
+
+   /**
+   * The logical code of the selectable value.
+   * @return code
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The logical code of the selectable value.")
+  @JsonProperty(CODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getCode() {
+    return code;
+  }
+
+
+  @JsonProperty(CODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setCode(String code) {
+    this.code = code;
   }
 
 
@@ -145,13 +176,14 @@ public class Value {
     }
     Value value = (Value) o;
     return Objects.equals(this.objectUri, value.objectUri) &&
+        Objects.equals(this.code, value.code) &&
         Objects.equals(this.displayValue, value.displayValue) &&
         Objects.equals(this.iconCode, value.iconCode);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(objectUri, displayValue, iconCode);
+    return Objects.hash(objectUri, code, displayValue, iconCode);
   }
 
   @Override
@@ -159,6 +191,7 @@ public class Value {
     StringBuilder sb = new StringBuilder();
     sb.append("class Value {\n");
     sb.append("    objectUri: ").append(toIndentedString(objectUri)).append("\n");
+    sb.append("    code: ").append(toIndentedString(code)).append("\n");
     sb.append("    displayValue: ").append(toIndentedString(displayValue)).append("\n");
     sb.append("    iconCode: ").append(toIndentedString(iconCode)).append("\n");
     sb.append("}");

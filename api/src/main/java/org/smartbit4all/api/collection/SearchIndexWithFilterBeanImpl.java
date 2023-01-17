@@ -28,21 +28,21 @@ public class SearchIndexWithFilterBeanImpl<O, F> extends SearchIndexImpl<O>
   }
 
   @Override
-  public EntityDefinition constructDefinition() {
+  public SearchEntityDefinition constructDefinition() {
     EntityDefinitionBuilder builder = EntityDefinitionBuilder.of(ctx)
         .name(name())
         .domain(logicalSchema());
 
     Map<String, PropertyMeta> properties = filterDefinition().meta().getProperties();
 
-    for (String propertyName : pathByPropertyName.keySet()) {
+    for (String propertyName : mappingByPropertyName.keySet()) {
       PropertyMeta propertyMeta = properties.get(propertyName.toUpperCase());
       if (propertyMeta != null) {
         builder.ownedProperty(propertyMeta.getName(), propertyMeta.getType());
       }
     }
 
-    return builder.build();
+    return new SearchEntityDefinition().definition(builder.build());
   }
 
   private ObjectDefinition<F> filterDefinition() {
@@ -55,7 +55,7 @@ public class SearchIndexWithFilterBeanImpl<O, F> extends SearchIndexImpl<O>
   @Override
   public TableData<?> executeSearch(F filterObject) {
     QueryInput input;
-    CrudRead<EntityDefinition> read = Crud.read(getDefinition()).selectAllProperties();
+    CrudRead<EntityDefinition> read = Crud.read(getDefinition().definition).selectAllProperties();
     Expression exp = null;
     for (Entry<String, PropertyMeta> entry : filterDefinition().meta().getProperties().entrySet()) {
       // If the bean property is not null.
@@ -63,13 +63,13 @@ public class SearchIndexWithFilterBeanImpl<O, F> extends SearchIndexImpl<O>
       Object value = propertyMeta.getValue(filterObject);
       Expression currentExp = null;
       if (value != null) {
-        Property<?> property = getDefinition().getProperty(propertyMeta.getName());
+        Property<?> property = getDefinition().definition.getProperty(propertyMeta.getName());
         CustomExpressionMapping customExpressionMapping =
             expressionByPropertyName.get(propertyMeta.getName());
         if (customExpressionMapping != null) {
           if (customExpressionMapping.complexExpressionProcessor != null) {
             currentExp = customExpressionMapping.complexExpressionProcessor
-                .apply(value, getDefinition()).BRACKET();
+                .apply(value, getDefinition().definition).BRACKET();
           } else if (customExpressionMapping.expressionProcessor != null && property != null) {
             currentExp = customExpressionMapping.expressionProcessor.apply(value, property);
           }
