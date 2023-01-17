@@ -24,7 +24,7 @@ components:
         possibleActions:
           type: array
           items:
-            type: "#/components/schemas/UiAction"
+            type: UiAction
         filterGroups:
           type: array
           items:
@@ -76,11 +76,11 @@ components:
         possibleValues:
           type: array
           items:
-            type: "#/components/schemas/Value"
+            type: Value
         selectedValues:
           type: array
           items:
-            type: "#/components/schemas/Value"
+            type: Value
         widgetType:
           $ref: "#/components/schemas/FilterField2_WidgetType"
         data1:
