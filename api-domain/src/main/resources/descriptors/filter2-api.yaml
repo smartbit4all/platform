@@ -1,0 +1,143 @@
+openapi: 3.0.1
+info:
+  title: Filter API 2
+  description: Filter API 2
+  termsOfService: 'Filter API 2'
+  contact:
+    email: info@it4all.hu
+  version: 1.0.0
+tags:
+  - name: filter
+    description: filter
+paths:
+  /nope:
+    post:
+      summary: Placeholder for generation
+      responses:
+        "200":
+          description: nope
+components:
+  schemas:
+    Filter2:
+      type: object
+      properties:
+        possibleActions:
+          type: array
+          items:
+            $ref: "#/components/schemas/UiAction"
+        filterGroups:
+          type: array
+          items:
+            $ref: "#/components/schemas/FilterExpression2"
+        
+    FilterExpression2:
+      type: object
+      properties:
+        id:
+          type: string
+        label:
+          type: string
+        icon:
+          type: string
+        filters:
+          type: array
+          items:
+            $ref: "#/components/schemas/FilterField2"
+
+    FilterField2:
+      type: object
+      required: [label1, value1, data1, operations, boolOperator, type, possibleValues, selectedValues]
+      properties:
+        label1:
+          type: string
+        label2:
+          type: string
+        label3:
+          type: string
+        icon:
+          type: string
+        value1:
+          type: string
+        value2:
+          type: string
+        value3:
+          type: string
+        operations:
+          type: array
+          items:
+            $ref: "#/components/schemas/FilterField2_Operation"
+        currentOperation:
+          $ref: "#/components/schemas/FilterField2_Operation"
+        boolOperator:
+          $ref: "#/components/schemas/FilterField2_BoolOperator"
+          default: AND
+        
+        type:
+          $ref: "#/components/schemas/FilterField2_Type"
+        possibleValues:
+          type: array
+          items:
+            $ref: "#/components/schemas/Value"
+        selectedValues:
+          type: array
+          items:
+            $ref: "#/components/schemas/Value"
+        widgetType:
+          $ref: "#/components/schemas/FilterField2_WidgetType"
+        data1:
+          type: string
+        data2:
+          type: string
+        data3:
+          type: string
+        filterExpression:
+          $ref: "#/components/schemas/FilterExpression2"
+
+    FilterField2_BoolOperator:
+      type: string
+      enum:
+      - AND
+      - OR
+
+    FilterField2_Operation:
+      type: string
+      enum:
+      - EXPRESSION
+      - EQUAL
+      - NOT_EQUAL
+      - LESS
+      - LESS_OR_EQUAL
+      - GREATER
+      - GREATER_OR_EQUAL
+      - LIKE
+      - NOT_LIKE
+      - BETWEEN
+      - NOT_BETWEEN
+      - IS_EMPTY
+      - IS_NOT_EMPTY
+      - EXISTS
+      - NOT_EXISTS
+
+    FilterField2_Type:
+      type: string
+      enum:
+      - STRING
+      - NUMBER
+      - DATE
+      - DATE_TIME
+      - BOOLEAN
+
+    FilterField2_WidgetType:
+      type: string
+      enum:
+      - TEXT_FIELD
+      - TEXT_FIELD_CHIPS
+      - TEXT_BOX
+      - SELECT
+      - SELECT_MULTIPLE
+      - DATE
+      - TIME
+      - DATE_TIME
+      - CHECK_BOX
+      - RADIO_BUTTON
+      - RANGE
