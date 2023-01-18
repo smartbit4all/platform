@@ -18,6 +18,7 @@ import java.net.URI;
 import java.sql.PreparedStatement;
 import java.util.Collection;
 import java.util.Comparator;
+import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.meta.Expression2Operand.Operator;
 import org.smartbit4all.domain.service.entity.EntityUris;
 
@@ -481,6 +482,11 @@ public abstract class Property<T> {
       return EntityUris.createFunctionPropertyUri(propertyUri, functionName);
     }
     return propertyUri;
+  }
+
+  @Override
+  public String toString() {
+    return name + StringConstant.COLON_SPACE + type.getName();
   }
 
 }

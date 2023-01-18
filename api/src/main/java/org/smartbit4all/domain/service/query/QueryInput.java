@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Expression;
 import org.smartbit4all.domain.meta.LockRequest;
@@ -227,6 +228,12 @@ public class QueryInput {
 
   public final EntityDefinition getEntityDef() {
     return entityDef;
+  }
+
+  @Override
+  public String toString() {
+    return name + StringConstant.SPACE + "from " + entityDef.entityDefName()
+        + StringConstant.NEW_LINE + properties + StringConstant.NEW_LINE + where;
   }
 
 }

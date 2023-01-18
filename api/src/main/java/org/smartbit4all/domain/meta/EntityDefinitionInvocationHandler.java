@@ -14,10 +14,12 @@
  ******************************************************************************/
 package org.smartbit4all.domain.meta;
 
+import static java.util.stream.Collectors.toList;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
@@ -327,18 +329,15 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
 
     T sourceEntity = ctx.getBean(sourceEntityClazz);
     TARGET targetEntity = ctx.getBean(targetEntityClazz);
-    Reference<T, TARGET> reference = new Reference<>(sourceEntity, targetEntity, referenceName);
-    for (int i = 0; i < joins.length; i++) {
-      Join join = joins[i];
-      Property<PROP> sourceProperty = (Property<PROP>) sourceEntity.getProperty(join.source());
-      Property<PROP> targetProperty = (Property<PROP>) targetEntity.getProperty(join.target());
-      reference.addJoin(sourceProperty, targetProperty);
-    }
-    if (referenceMandatory != ReferenceMandatory.BYPROPERTY) {
-      reference.setMandatory(
-          referenceMandatory == ReferenceMandatory.TRUE ? Boolean.TRUE : Boolean.FALSE);
-    }
-    referencesByName.put(referenceName, reference);
+
+    Reference<T, TARGET> reference =
+        (Reference<T, TARGET>) createReference(sourceEntity, targetEntity,
+            Arrays.asList(joins).stream()
+                .map(j -> Map.entry((Property<PROP>) sourceEntity.getProperty(j.source()),
+                    (Property<PROP>) targetEntity.getProperty(j.target())))
+                .collect(toList()),
+            referenceName, referenceMandatory);
+
     return reference.createProxy(targetEntityClazz);
   }
 

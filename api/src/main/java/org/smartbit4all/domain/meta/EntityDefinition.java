@@ -143,7 +143,7 @@ public interface EntityDefinition {
    * @param expression The expression must be related to the detail entity as context.
    * @return Returns an exists expression for the given expression.
    */
-  public Expression exists(JoinPath masterJoin, Expression expression);
+  public ExpressionExists exists(JoinPath masterJoin, Expression expression);
 
   /**
    * If we would like to add an expression for a referred entity. Like we can add

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.JoinPath;
+import org.smartbit4all.domain.meta.Reference;
 
 /**
  * The search entity definition contains an {@link EntityDefinition} and its detail entities with
@@ -18,6 +19,8 @@ class SearchEntityDefinition {
    */
   EntityDefinition definition;
 
+  Reference<?, ?> masterRef;
+
   /**
    * The details of the current node by name.
    */
@@ -28,11 +31,17 @@ class SearchEntityDefinition {
    * 
    * @author Peter Boros
    */
-  class DetailDefinition {
+  public static class DetailDefinition {
 
     SearchEntityDefinition detail;
 
     JoinPath masterJoin;
+
+    public DetailDefinition(SearchEntityDefinition detail, JoinPath masterJoin) {
+      super();
+      this.detail = detail;
+      this.masterJoin = masterJoin;
+    }
 
   }
 

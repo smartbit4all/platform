@@ -121,6 +121,9 @@ public class CrudApiImpl implements CrudApi {
               } else if (expression.getMasterReferencePath() != null) {
                 EntityDefinition contextEntity = expression.getContextEntity();
                 CrudRead<EntityDefinition> preQueryRead = Crud.read(contextEntity);
+                if (expression.getStoredTableDataUri() != null) {
+                  preQueryRead.fromTableData(expression.getStoredTableDataUri());
+                }
                 // Add the property to query. We can use the one and only one join property. If we
                 // have more joins then it fails.
                 Reference<?, ?> lastReference = expression.getMasterReferencePath().last();
@@ -270,7 +273,9 @@ public class CrudApiImpl implements CrudApi {
     List<DataRow> result = evaluationPlan.execute();
 
     QueryOutput out = new QueryOutput(queryInput.getName(), queryInput.entityDef());
-    out.setTableData(TableDatas.copyRows(tableData, result));
+    out.setTableData(TableDatas.copyRows(tableData, result, queryInput.properties()));
+
+    System.out.println(out.getTableData());
 
     return out;
 

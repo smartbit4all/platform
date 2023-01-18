@@ -1,5 +1,6 @@
 package org.smartbit4all.sql.exists;
 
+import java.net.URI;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -7,10 +8,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.domain.data.TableData;
+import org.smartbit4all.domain.data.TableDatas;
+import org.smartbit4all.domain.data.TableDatas.BuilderWithFixProperties;
 import org.smartbit4all.domain.meta.ExpressionIn;
 import org.smartbit4all.domain.meta.OperandComposite;
 import org.smartbit4all.domain.meta.OperandProperty;
 import org.smartbit4all.domain.service.CrudApi;
+import org.smartbit4all.domain.service.dataset.TableDataApi;
 import org.smartbit4all.domain.service.query.QueryExecutionPlan;
 import org.smartbit4all.domain.service.query.QueryInput;
 import org.smartbit4all.domain.service.query.QueryOutput;
@@ -53,6 +57,9 @@ public class SQLExistsTests {
 
   @Autowired
   private CrudApi queryApi;
+
+  @Autowired
+  private TableDataApi tableDataApi;
 
   @Test
   public void initDbTest() throws Exception {
@@ -141,6 +148,52 @@ public class SQLExistsTests {
     }
     List<Long> expectedIds =
         Arrays.asList(Long.valueOf(403l));
+    List<Long> resultIds =
+        tickets.rows().stream().map(r -> r.get(ticketDef.id())).collect(Collectors.toList());
+    assertTrue(resultIds.containsAll(expectedIds));
+
+  }
+
+  @Test
+  public void detailExistsTest_04() throws Exception {
+
+    BuilderWithFixProperties<AddressDef> tableData =
+        TableDatas.builder(addressDef, addressDef.id(), addressDef.zip(), addressDef.city(),
+            addressDef.personId());
+
+ // @formatter:off
+    tableData.addRow().set(addressDef.id(), Long.valueOf(10)).set(addressDef.zip(), "6060").set(addressDef.city(), "Tiszakécske").set(addressDef.personId(), Long.valueOf(1));
+    tableData.addRow().set(addressDef.id(), Long.valueOf(11)).set(addressDef.zip(), "6035").set(addressDef.city(), "Ballószög").set(addressDef.personId(), Long.valueOf(1));
+    tableData.addRow().set(addressDef.id(), Long.valueOf(20)).set(addressDef.zip(), "6000").set(addressDef.city(), "Kecskemét").set(addressDef.personId(), Long.valueOf(2));
+    tableData.addRow().set(addressDef.id(), Long.valueOf(21)).set(addressDef.zip(), "5000").set(addressDef.city(), "Szolnok").set(addressDef.personId(), Long.valueOf(2));
+    tableData.addRow().set(addressDef.id(), Long.valueOf(22)).set(addressDef.zip(), "1011").set(addressDef.city(), "Budapest I").set(addressDef.personId(), Long.valueOf(2));
+    tableData.addRow().set(addressDef.id(), Long.valueOf(30)).set(addressDef.zip(), "3000").set(addressDef.city(), "Hatvan").set(addressDef.personId(), Long.valueOf(3));
+    tableData.addRow().set(addressDef.id(), Long.valueOf(40)).set(addressDef.zip(), "7000").set(addressDef.city(), "Sárbogárd").set(addressDef.personId(), Long.valueOf(4));
+    tableData.addRow().set(addressDef.id(), Long.valueOf(41)).set(addressDef.zip(), "1041").set(addressDef.city(), "Budapest IV").set(addressDef.personId(), Long.valueOf(4));
+    tableData.addRow().set(addressDef.id(), Long.valueOf(50)).set(addressDef.zip(), "1065").set(addressDef.city(), "Budapest VI").set(addressDef.personId(), Long.valueOf(5));
+    tableData.addRow().set(addressDef.id(), Long.valueOf(51)).set(addressDef.zip(), "2335").set(addressDef.city(), "Taksony").set(addressDef.personId(), Long.valueOf(5));
+    tableData.addRow().set(addressDef.id(), Long.valueOf(52)).set(addressDef.zip(), "3800").set(addressDef.city(), "Szikszó").set(addressDef.personId(), Long.valueOf(5));
+    tableData.addRow().set(addressDef.id(), Long.valueOf(60)).set(addressDef.zip(), "6000").set(addressDef.city(), "Szikszó").set(addressDef.personId(), null);
+ // @formatter:on
+
+    URI addressTableDataUri = tableDataApi.save(tableData.build());
+    // we are looking for the tickets with primary persons with Budapest addresses (ZIP code 10xx)
+    TableData<TicketDef> tickets = Crud.read(ticketDef)
+        .select(ticketDef.id(), ticketDef.title())
+        .where(ticketDef.primaryPerson().exists(addressDef.person().join(),
+            addressDef.zip().like("10%")).storedTableDataUri(addressTableDataUri))
+        .listData();
+
+    /*
+     * Expected: Matching addresses: 22,41,50 -> matching persons: 2,4,5 matching tickets from 400
+     * series: 402, 404, 405.
+     */
+
+    if (tickets.isEmpty()) {
+      fail("Empty ticket results");
+    }
+    List<Long> expectedIds =
+        Arrays.asList(Long.valueOf(402l), Long.valueOf(404l), Long.valueOf(405l));
     List<Long> resultIds =
         tickets.rows().stream().map(r -> r.get(ticketDef.id())).collect(Collectors.toList());
     assertTrue(resultIds.containsAll(expectedIds));

@@ -46,12 +46,18 @@ public final class QueryAndSaveResultAsDataSet extends SB4FunctionImpl<QueryInpu
   public void execute() throws Exception {
     if (dataSetApi != null) {
       // First we execute the query.
+
+      System.out.println(input());
+
       QueryOutput queryOutput = CrudApis.getCrudApi().executeQuery(input());
       if (queryOutput.isResultSerialized()) {
         throw new IllegalStateException(
             "QueryOutput can not contain serialized result for saving it as a DataSet!");
       }
       TableData<?> data = queryOutput.getTableData();
+
+      System.out.println(originalExists + " --> " + data);
+
       // If the result is empty then we can add a false boolean expression instead of the original
       // exists.
       if (data == null || data.isEmpty()) {

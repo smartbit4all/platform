@@ -40,11 +40,8 @@ public class EntityManagerImpl implements EntityManager {
     }
     String domain = entityDef.getDomain();
     String entityName = entityDef.entityDefName();
-    Map<String, EntityDefinition> entityDefsByName = entityDefsByNameByDomain.get(domain);
-    if (entityDefsByName == null) {
-      entityDefsByName = new HashMap<>();
-      entityDefsByNameByDomain.put(domain, entityDefsByName);
-    }
+    Map<String, EntityDefinition> entityDefsByName =
+        entityDefsByNameByDomain.computeIfAbsent(domain, d -> new HashMap<>());
     entityDefsByName.put(entityName, entityDef);
     entityDefsByUri.put(entityDef.getUri(), entityDef);
   }

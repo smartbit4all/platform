@@ -215,6 +215,10 @@ class CollectionApiTest {
         (Property<String>) searchIndex.getDefinition().definition.getProperty(TestFilter.NAME);
 
     long start = System.currentTimeMillis();
+
+    Crud.read(searchIndex.getDefinition().definition).selectAllProperties()
+        .where(propertyName.eq("odd"));
+
     TableData<?> tableData = searchIndex.executeSearch(
         Crud.read(searchIndex.getDefinition().definition).selectAllProperties()
             .where(propertyName.eq("odd"))

@@ -331,6 +331,23 @@ public final class TableDatas {
   }
 
   /**
+   * Returns a new copy instance of the given {@link TableData} with the given rows.
+   * 
+   * @param rows The rows to copy.
+   */
+  public static <E extends EntityDefinition> TableData<E> copyRows(TableData<E> sourceTableData,
+      List<DataRow> rows, Collection<Property<?>> properties) {
+    TableData<E> copy = of(sourceTableData.entity(), properties);
+    for (DataRow row : rows) {
+      DataRow newRow = copy.addRow();
+      for (Property<?> prop : copy.properties()) {
+        newRow.setObject(prop, row.get(prop));
+      }
+    }
+    return copy;
+  }
+
+  /**
    * Creates a new instance of {@link TableData} with the given {@link EntityDefinition}.
    * 
    * @return A new instance of {@link TableData}

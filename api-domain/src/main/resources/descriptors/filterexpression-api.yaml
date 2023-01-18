@@ -1,0 +1,155 @@
+openapi: 3.0.1
+info:
+  title: Filter API 2
+  description: Filter API 2
+  termsOfService: 'Filter API 2'
+  contact:
+    email: info@it4all.hu
+  version: 1.0.0
+tags:
+  - name: filter
+    description: filter
+paths:
+  /nope:
+    post:
+      summary: Placeholder for generation
+      responses:
+        "200":
+          description: nope
+components:
+  schemas:
+        
+    FilterExpressionOperandData:
+      type: object
+      description: |
+        The value of an expression operand. The type is named and the value itself is string formatted by the definition of the type.
+      properties:
+        isDataName:
+          type: boolean
+          default: true
+          description: True if the given operand refers to property at the moment. The value as string is a property name.
+        valueAsString:
+          type: string
+        type:
+          $ref: "#/components/schemas/FilterExpressionDataType"
+
+    FilterExpressionData:
+      type: object
+      description: |
+        The expression data is the decriptor of an expression stands for an equal, like etc. and also can be a bracket where 
+        we have embedded expressions.
+      properties:
+        operand1:
+          $ref: "#/components/schemas/FilterExpressionOperandData"
+        operand2:
+          $ref: "#/components/schemas/FilterExpressionOperandData"
+        operand3:
+          $ref: "#/components/schemas/FilterExpressionOperandData"
+        currentOperation:
+          $ref: "#/components/schemas/FilterExpressionOperation"
+        boolOperator:
+          $ref: "#/components/schemas/FilterExpressionBoolOperator"
+          default: AND
+        selectedValues:
+          type: array
+          items:
+            type: Value
+        subExpression:
+          $ref: "#/components/schemas/FilterExpressionData"
+      
+
+    FilterExpressionFieldList:
+      type: object
+      properties:
+        id:
+          type: string
+        label:
+          type: string
+        icon:
+          type: string
+        filters:
+          type: array
+          items:
+            $ref: "#/components/schemas/FilterExpressionField"
+            
+    FilterExpressionField:
+      type: object
+      required: [label1, value1, data1, operations, boolOperator, type, possibleValues, selectedValues]
+      properties:
+        label1:
+          type: string
+        label2:
+          type: string
+        label3:
+          type: string
+        icon:
+          type: string
+        expressionData:
+          $ref: "#/components/schemas/FilterExpressionData"
+        possibleOperations:
+          type: array
+          items:
+            $ref: "#/components/schemas/FilterExpressionOperation"
+        filterFieldType:
+          $ref: "#/components/schemas/FilterExpressionDataType"
+        possibleValues:
+          type: array
+          items:
+            type: Value
+        selectedValues:
+          type: array
+          items:
+            type: Value
+        widgetType:
+          $ref: "#/components/schemas/FilterExpressionFieldWidgetType"
+        subFieldList:
+          $ref: "#/components/schemas/FilterExpressionFieldList"
+
+    FilterExpressionBoolOperator:
+      type: string
+      enum:
+      - AND
+      - OR
+
+    FilterExpressionOperation:
+      type: string
+      enum:
+      - EXPRESSION
+      - EQUAL
+      - NOT_EQUAL
+      - LESS
+      - LESS_OR_EQUAL
+      - GREATER
+      - GREATER_OR_EQUAL
+      - LIKE
+      - NOT_LIKE
+      - BETWEEN
+      - NOT_BETWEEN
+      - IS_EMPTY
+      - IS_NOT_EMPTY
+      - EXISTS
+      - NOT_EXISTS
+
+    FilterExpressionDataType:
+      type: string
+      enum:
+      - STRING
+      - NUMBER
+      - DATE
+      - DATE_TIME
+      - BOOLEAN
+
+    FilterExpressionFieldWidgetType:
+      type: string
+      enum:
+      - TEXT_FIELD
+      - TEXT_FIELD_CHIPS
+      - TEXT_BOX
+      - SELECT
+      - SELECT_MULTIPLE
+      - DATE
+      - TIME
+      - DATE_TIME
+      - CHECK_BOX
+      - RADIO_BUTTON
+      - RANGE

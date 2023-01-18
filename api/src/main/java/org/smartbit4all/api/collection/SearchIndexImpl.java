@@ -46,52 +46,7 @@ public abstract class SearchIndexImpl<O> implements SearchIndex<O> {
 
   private static final Logger log = LoggerFactory.getLogger(SearchIndexImpl.class);
 
-  private String logicalSchema;
-
-  private String name;
-
   private Class<O> indexedObjectDefinitionClass;
-
-  private interface Mapping {
-
-  }
-
-  /**
-   * The mapping of the property on a path.
-   * 
-   * @author Peter Boros
-   */
-  private final class PropertyMapping implements Mapping {
-
-    String[] path;
-
-    UnaryOperator<Object> processor;
-
-    Function<ObjectNode, Object> complexProcessor;
-
-    protected PropertyMapping(String[] path, UnaryOperator<Object> processor,
-        Function<ObjectNode, Object> complexProcessor) {
-      super();
-      this.path = path;
-      this.processor = processor;
-      this.complexProcessor = complexProcessor;
-    }
-
-  }
-
-  protected final class DetailMapping implements Mapping {
-
-    /**
-     * The path of the detail property that contains a list / map, referring to another object.
-     */
-    String[] path;
-
-    /**
-     * {@link LinkedHashMap} to preserve the parameterization order in the entity definition.
-     */
-    protected Map<String, PropertyMapping> pathByPropertyName = new LinkedHashMap<>();
-
-  }
 
   protected final class CustomExpressionMapping {
 
@@ -109,10 +64,7 @@ public abstract class SearchIndexImpl<O> implements SearchIndex<O> {
 
   }
 
-  /**
-   * {@link LinkedHashMap} to preserve the parameterization order in the entity definition.
-   */
-  protected Map<String, PropertyMapping> mappingByPropertyName = new LinkedHashMap<>();
+  protected SearchIndexMappingObject objectMapping = new SearchIndexMappingObject();
 
   /**
    * If we need a special mapping between the filter field of a bean the this map contains the
@@ -158,7 +110,7 @@ public abstract class SearchIndexImpl<O> implements SearchIndex<O> {
     try {
       return executeSearch(queryInput).asList(indexedObjectDefinitionClass);
     } catch (Exception e) {
-      log.error("Error while searching on index " + name, e);
+      log.error("Error while searching on index " + objectMapping.name, e);
       return Collections.emptyList();
     }
   }
@@ -180,7 +132,8 @@ public abstract class SearchIndexImpl<O> implements SearchIndex<O> {
         .forEach(n -> {
           DataRow row = tableData.addRow();
           for (DataColumn<?> col : tableData.columns()) {
-            PropertyMapping mapping = mappingByPropertyName.get(col.getProperty().getName());
+            SearchIndexMappingProperty mapping =
+                objectMapping.property(col.getProperty().getName());
             if (mapping.path != null && mapping.processor == null
                 && mapping.complexProcessor == null) {
               tableData.setObject(col, row, n.getValue(mapping.path));
@@ -206,7 +159,7 @@ public abstract class SearchIndexImpl<O> implements SearchIndex<O> {
   @Override
   public synchronized SearchEntityDefinition getDefinition() {
     if (definition == null) {
-      definition = constructDefinition();
+      definition = objectMapping.constructDefinition(ctx, null);
       allDefinitions(definition).forEach(e -> entityManager.registerEntityDef(e));
     }
     return definition;
@@ -222,48 +175,41 @@ public abstract class SearchIndexImpl<O> implements SearchIndex<O> {
   protected SearchIndexImpl(String logicalSchema, String name, String indexedObjectSchema,
       Class<O> indexedObjectDefinitionClass) {
     super();
-    this.name = name;
-    this.logicalSchema = logicalSchema;
+    this.objectMapping.name = name;
+    this.objectMapping.logicalSchema = logicalSchema;
     this.indexedObjectSchema = indexedObjectSchema;
     this.indexedObjectDefinitionClass = indexedObjectDefinitionClass;
   }
 
-  public abstract SearchEntityDefinition constructDefinition();
-
   @Override
   public String logicalSchema() {
-    return logicalSchema;
+    return objectMapping.logicalSchema;
   }
 
   @Override
   public String name() {
-    return name;
+    return objectMapping.name;
+  }
+
+  public SearchIndexMappingObject detail(String propertyName, String uniqueIdName) {
+    return objectMapping.detail(propertyName, uniqueIdName);
   }
 
   public SearchIndexImpl<O> map(String propertyName, String... pathes) {
-    Objects.requireNonNull(pathes);
-    if (pathes.length > 0) {
-      mappingByPropertyName.put(propertyName, new PropertyMapping(pathes, null, null));
-    }
+    objectMapping.map(propertyName, pathes);
     return this;
   }
 
   public SearchIndexImpl<O> map(String propertyName,
       UnaryOperator<Object> processor,
       String... pathes) {
-    Objects.requireNonNull(pathes);
-    if (pathes.length > 0) {
-      mappingByPropertyName.put(propertyName,
-          new PropertyMapping(pathes, processor, null));
-    }
+    objectMapping.map(propertyName, processor, pathes);
     return this;
   }
 
   public SearchIndexImpl<O> mapComplex(String propertyName,
       Function<ObjectNode, Object> complexProcessor) {
-    Objects.requireNonNull(complexProcessor);
-    mappingByPropertyName.put(propertyName,
-        new PropertyMapping(null, null, complexProcessor));
+    objectMapping.mapComplex(propertyName, complexProcessor);
     return this;
   }
 

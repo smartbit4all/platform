@@ -1,5 +1,9 @@
 package org.smartbit4all.domain.meta;
 
+import static java.util.stream.Collectors.toList;
+import java.util.List;
+import java.util.Map;
+import org.smartbit4all.domain.annotation.property.ReferenceMandatory;
 import org.smartbit4all.domain.meta.jdbc.JDBCDataConverterHelper;
 import org.smartbit4all.domain.service.entity.EntityManager;
 import org.springframework.context.ApplicationContext;
@@ -45,12 +49,30 @@ public class EntityDefinitionBuilder {
     return this;
   }
 
+  @SuppressWarnings("unchecked")
   public <T> EntityDefinitionBuilder ownedProperty(String name, Class<T> typeClass) {
     PropertyOwned<T> result =
         PropertyOwned.create(name, typeClass, false, name, instance.dataConverterHelper);
     PropertyOwned<T> resultProxy = instance.createPropertyProxy(result, PropertyOwned.class);
     instance.registerProperty(resultProxy);
     return this;
+  }
+
+  @SuppressWarnings("unchecked")
+  public <T extends Comparable<T>> EntityDefinitionBuilder reference(String refName,
+      EntityDefinitionBuilder target,
+      List<Map.Entry<String, String>> joins) {
+    instance.createReference(instance, target.instance, joins.stream()
+        .map(j -> Map.entry((Property<T>) instance.getProperty(j.getKey()),
+            (Property<T>) target.instance.getProperty(j.getValue())))
+        .collect(toList()), refName,
+        ReferenceMandatory.BYPROPERTY);
+
+    return this;
+  }
+
+  public Reference<?, ?> getReference(String refName) {
+    return instance.getReference(refName);
   }
 
   /**

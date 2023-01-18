@@ -14,6 +14,7 @@
  ******************************************************************************/
 package org.smartbit4all.domain.meta;
 
+import java.net.URI;
 import java.util.Iterator;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.meta.Reference.Join;
@@ -105,6 +106,11 @@ public final class ExpressionExists extends Expression {
   private JoinPath masterReferencePath;
 
   /**
+   * If exists runs on a stored table data the it can be set.
+   */
+  private URI storedTableDataUri;
+
+  /**
    * This constructor constructs an exists expression with a directly referred entity.
    * 
    * @param rootEntity The root entity.
@@ -133,6 +139,11 @@ public final class ExpressionExists extends Expression {
       Expression expression, JoinPath referencePath, JoinPath masterReferencePath) {
     this(rootEntity, contextEntity, expression, referencePath);
     this.masterReferencePath = masterReferencePath;
+  }
+
+  public ExpressionExists storedTableDataUri(URI tableDataUri) {
+    this.storedTableDataUri = tableDataUri;
+    return this;
   }
 
   @Override
@@ -210,7 +221,7 @@ public final class ExpressionExists extends Expression {
     }
     return null;
   }
-  
+
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
@@ -225,6 +236,10 @@ public final class ExpressionExists extends Expression {
     builder.append(ExpressionToString.toString(expression));
     builder.append(StringConstant.RIGHT_CURLY);
     return builder.toString();
+  }
+
+  public final URI getStoredTableDataUri() {
+    return storedTableDataUri;
   }
 
 }
