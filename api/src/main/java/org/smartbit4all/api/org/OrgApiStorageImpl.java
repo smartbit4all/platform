@@ -814,7 +814,7 @@ public class OrgApiStorageImpl implements OrgApi {
     }
 
     boolean anyMatch =
-        getAllUsers().stream().anyMatch(u -> u.getUsername().equals(user.getUsername()));
+        getActiveUsers().stream().anyMatch(u -> u.getUsername().equals(user.getUsername()));
     if (anyMatch) {
       throw new IllegalStateException(
           "User with username [" + user.getUsername() + "] already exists!");
@@ -895,6 +895,15 @@ public class OrgApiStorageImpl implements OrgApi {
 
   @Override
   public void restoreDeletedUser(URI userUri) {
+    final String username = getUser(userUri).getUsername();
+    final boolean usernameIsAlreadyTaken = getActiveUsers().stream()
+        .map(User::getUsername)
+        .anyMatch(username::equals);
+    if (usernameIsAlreadyTaken) {
+      throw new IllegalStateException("Deleted user cannot be restored, because their username ["
+          + username
+          + "] is already taken!");
+    }
 
     // remove from setting INVALID_USER_OBJECTMAP_REFERENCE
     removeItemFromObjectMapByValue(INACTIVE_USER_OBJECTMAP_REFERENCE, userUri);
