@@ -9,13 +9,21 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
+import java.util.stream.Stream;
 import org.smartbit4all.api.collection.SearchEntityDefinition.DetailDefinition;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionBoolOperator;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionData;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
 import org.smartbit4all.core.object.BeanMeta;
 import org.smartbit4all.core.object.BeanMetaUtil;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.PropertyMeta;
+import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.EntityDefinitionBuilder;
+import org.smartbit4all.domain.meta.Expression;
 import org.smartbit4all.domain.meta.JoinPath;
+import org.smartbit4all.domain.meta.PropertyObject;
+import org.smartbit4all.domain.service.entity.EntityManager;
 import org.springframework.context.ApplicationContext;
 
 public class SearchIndexMappingObject extends SearchIndexMapping {
@@ -61,6 +69,10 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
    * runtime if the setup of the search index has been changed.
    */
   SearchEntityDefinition entityDefinition;
+
+  ApplicationContext ctx;
+
+  EntityManager entityManager;
 
   SearchIndexMappingProperty property(String name) {
     return (SearchIndexMappingProperty) mappingsByPropertyName.get(name);
@@ -128,6 +140,21 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
     return detail;
   }
 
+  public synchronized SearchEntityDefinition getDefinition() {
+    if (entityDefinition == null) {
+      entityDefinition = constructDefinition(ctx, null);
+      allDefinitions(entityDefinition).forEach(e -> entityManager.registerEntityDef(e));
+    }
+    return entityDefinition;
+  }
+
+  private final Stream<EntityDefinition> allDefinitions(
+      SearchEntityDefinition searchEntityDefinition) {
+    return Stream.concat(Stream.of(searchEntityDefinition.definition),
+        searchEntityDefinition.detailsByName.values().stream()
+            .flatMap(d -> allDefinitions(d.detail)));
+  }
+
   SearchEntityDefinition constructDefinition(ApplicationContext ctx,
       EntityDefinitionBuilder masterBuilder) {
     EntityDefinitionBuilder builder = EntityDefinitionBuilder.of(ctx)
@@ -182,6 +209,67 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
     this.masterJoin = new ArrayList<>();
     this.masterJoin.add(new String[] {sourcePropertyName, targetPropertyName});
     return this;
+  }
+
+  final Expression constructExpression(FilterExpressionList filterExpressions) {
+    Expression currentExpression = null;
+    FilterExpressionData prevFed = null;
+    for (FilterExpressionData fed : filterExpressions.getExpressions()) {
+      // Construct the Expression from the FilterExpressionData
+      Expression exp = convertFilterExpression(fed);
+      if (currentExpression != null && prevFed != null) {
+        if (prevFed.getBoolOperator() == FilterExpressionBoolOperator.AND) {
+          currentExpression = currentExpression.AND(exp);
+        } else {
+          currentExpression = currentExpression.OR(exp);
+        }
+      } else {
+        currentExpression = exp;
+      }
+      prevFed = fed;
+    }
+    return currentExpression;
+  }
+
+  private final Expression convertFilterExpression(FilterExpressionData fed) {
+    switch (fed.getCurrentOperation()) {
+      case BETWEEN:
+        break;
+      case EQUAL:
+        PropertyObject property =
+            entityDefinition.definition.getPropertyObject(fed.getOperand1().getValueAsString());
+        return property.eq(fed.getOperand2().getValueAsString());
+      case EXISTS:
+        break;
+      case EXPRESSION:
+        break;
+      case GREATER:
+        break;
+      case GREATER_OR_EQUAL:
+        break;
+      case IS_EMPTY:
+        break;
+      case IS_NOT_EMPTY:
+        break;
+      case LESS:
+        break;
+      case LESS_OR_EQUAL:
+        break;
+      case LIKE:
+        break;
+      case NOT_BETWEEN:
+        break;
+      case NOT_EQUAL:
+        break;
+      case NOT_EXISTS:
+        break;
+      case NOT_LIKE:
+        break;
+      default:
+        break;
+
+    }
+    return null;
   }
 
 }

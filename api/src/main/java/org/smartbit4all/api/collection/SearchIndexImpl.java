@@ -10,10 +10,10 @@ import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
-import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.SearchEntityDefinition.DetailDefinition;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
@@ -29,6 +29,7 @@ import org.smartbit4all.domain.service.CrudApi;
 import org.smartbit4all.domain.service.dataset.TableDataApi;
 import org.smartbit4all.domain.service.entity.EntityManager;
 import org.smartbit4all.domain.service.query.QueryInput;
+import org.smartbit4all.domain.utility.crud.Crud;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
@@ -105,6 +106,10 @@ public abstract class SearchIndexImpl<O> implements SearchIndex<O> {
     return crudApi.executeQuery(queryInput).getTableData();
   }
 
+  public TableData<?> getAll() {
+    return readAllObjects().result;
+  }
+
   @Override
   public List<O> list(QueryInput queryInput) {
     try {
@@ -157,19 +162,10 @@ public abstract class SearchIndexImpl<O> implements SearchIndex<O> {
   }
 
   @Override
-  public synchronized SearchEntityDefinition getDefinition() {
-    if (definition == null) {
-      definition = objectMapping.constructDefinition(ctx, null);
-      allDefinitions(definition).forEach(e -> entityManager.registerEntityDef(e));
-    }
-    return definition;
-  }
-
-  private final Stream<EntityDefinition> allDefinitions(
-      SearchEntityDefinition searchEntityDefinition) {
-    return Stream.concat(Stream.of(searchEntityDefinition.definition),
-        searchEntityDefinition.detailsByName.values().stream()
-            .flatMap(d -> allDefinitions(d.detail)));
+  public SearchEntityDefinition getDefinition() {
+    objectMapping.ctx = ctx;
+    objectMapping.entityManager = entityManager;
+    return objectMapping.getDefinition();
   }
 
   protected SearchIndexImpl(String logicalSchema, String name, String indexedObjectSchema,
@@ -219,6 +215,15 @@ public abstract class SearchIndexImpl<O> implements SearchIndex<O> {
     expressionByPropertyName.put(propertyName,
         new CustomExpressionMapping(customExpression, null));
     return this;
+  }
+
+  @Override
+  public TableData<?> executeSearch(FilterExpressionList filterExpressions) {
+    if (filterExpressions == null) {
+      return getAll();
+    }
+    return executeSearch(Crud.read(getDefinition().definition).selectAllProperties()
+        .where(objectMapping.constructExpression(filterExpressions)).getQuery());
   }
 
   public SearchIndexImpl<O> expressionComplex(String propertyName,

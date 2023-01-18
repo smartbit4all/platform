@@ -14,8 +14,14 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionData;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionOperandData;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionOperation;
 import org.smartbit4all.api.sample.bean.SampleDataSheet;
+import org.smartbit4all.api.sample.bean.SampleInlineObject;
 import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.data.TableDatas;
@@ -195,6 +201,11 @@ class CollectionApiTest {
   @Test
   void testSearchIndex() throws Exception {
 
+    ObjectDefinition<SampleInlineObject> definition =
+        objectApi.definition(SampleInlineObject.class);
+
+    System.out.println(definition.getQualifiedName());
+
     SearchIndexWithFilterBean<SampleDataSheet, TestFilter> searchIndex =
         collectionApi.searchIndex(SCHEMA,
             MY_SEARCH, SampleDataSheet.class, TestFilter.class);
@@ -225,9 +236,21 @@ class CollectionApiTest {
             .getQuery());
     long end = System.currentTimeMillis();
 
+
     System.out.println("Search time: " + (end - start));
 
     Assertions.assertEquals(count / 2, tableData.size());
+
+    TableData<?> tableDataByFilterExpression =
+        searchIndex.executeSearch(new FilterExpressionList().addExpressionsItem(
+            new FilterExpressionData().currentOperation(FilterExpressionOperation.EQUAL)
+                .operand1(new FilterExpressionOperandData().isDataName(true)
+                    .valueAsString(TestFilter.NAME))
+                .operand2(
+                    new FilterExpressionOperandData().isDataName(false).valueAsString("odd"))));
+
+    assertEquals(TableDatas.toStringAdv(tableData),
+        TableDatas.toStringAdv(tableDataByFilterExpression));
 
     TableData<?> tableDataByDerived =
         searchIndex.executeSearch(new TestFilter().isOdd(true).name("od").caption("odd.odd"));

@@ -70,6 +70,14 @@ public interface EntityDefinition {
   Property<?> getProperty(String propertyName);
 
   /**
+   * This function return the property meta by name.
+   * 
+   * @param propertyName Property name
+   * @return The meta object.
+   */
+  PropertyObject getPropertyObject(String propertyName);
+
+  /**
    * Returns the referenced entity definition by reference's name.
    * 
    * TODO do we need this?

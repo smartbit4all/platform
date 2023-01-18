@@ -97,6 +97,11 @@ class EntityDefinitionInstance implements EntityDefinition {
   }
 
   @Override
+  public PropertyObject getPropertyObject(String propertyName) {
+    return new PropertyObject(getProperty(propertyName));
+  }
+
+  @Override
   public final Reference<?, ?> getReference(String referenceName) {
     return referencesByName.get(referenceName);
   }

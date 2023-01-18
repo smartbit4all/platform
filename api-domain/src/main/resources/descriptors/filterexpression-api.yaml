@@ -22,8 +22,14 @@ components:
     FilterExpressionList:
       type: object
       description: |
-        The filter expressions can be gathered into a list. In case of a plain fliter expression this is the 
-        
+        The filter expressions can be gathered into a list. In case of a plain filter expression this is the root object of the expression list.
+      required: [expressions]
+      properties:
+        expressions:
+          type: array
+          items:
+            $ref: "#/components/schemas/FilterExpressionData"
+          
     FilterExpressionOperandData:
       type: object
       description: |
