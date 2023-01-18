@@ -82,7 +82,7 @@ public class ObjectNodeReference {
           "Setting objectUri is not allowed when ObjectNode already set!");
     }
     this.objectUri = objectUri;
-    this.isPresent = true;
+    this.isPresent = objectUri != null;
   }
 
   public ObjectNode get() {
@@ -126,6 +126,9 @@ public class ObjectNodeReference {
     if (originalObjectUri == null && isPresent()) {
       return ObjectNodeState.NEW;
     }
+    // if (objectUri == null && isPresent()) {
+    // return ObjectNodeState.NEW;
+    // }
     if (originalObjectUri != null && !isPresent()) {
       return ObjectNodeState.REMOVED;
     }
