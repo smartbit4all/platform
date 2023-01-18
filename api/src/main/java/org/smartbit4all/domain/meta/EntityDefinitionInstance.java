@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import org.smartbit4all.domain.annotation.property.ReferenceMandatory;
 import org.smartbit4all.domain.meta.jdbc.JDBCDataConverterHelper;
 import org.smartbit4all.domain.service.entity.EntityUris;
@@ -157,12 +156,12 @@ class EntityDefinitionInstance implements EntityDefinition {
 
   public final <T extends Comparable<T>> Reference<?, ?> createReference(
       EntityDefinition sourceEntity, EntityDefinition targetEntity,
-      List<Map.Entry<Property<T>, Property<T>>> joins,
+      List<Property<T>[]> joins,
       String referenceName, ReferenceMandatory referenceMandatory) {
 
     Reference<?, ?> reference = new Reference<>(sourceEntity, targetEntity, referenceName);
-    for (Entry<Property<T>, Property<T>> entry : joins) {
-      reference.addJoin(entry.getKey(), entry.getValue());
+    for (Property<T>[] entry : joins) {
+      reference.addJoin(entry[0], entry[1]);
     }
     if (referenceMandatory != ReferenceMandatory.BYPROPERTY) {
       reference.setMandatory(

@@ -48,7 +48,7 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
   /**
    * The joined properties.
    */
-  List<Entry<String, String>> masterJoin = new ArrayList<>();
+  List<String[]> masterJoin = new ArrayList<>();
 
   /**
    * The name of the master reference.
@@ -179,7 +179,8 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
   final SearchIndexMappingObject master(String masterReferenceName,
       String sourcePropertyName, String targetPropertyName) {
     this.masterReferenceName = masterReferenceName;
-    this.masterJoin = Arrays.asList(Map.entry(sourcePropertyName, targetPropertyName));
+    this.masterJoin = new ArrayList<>();
+    this.masterJoin.add(new String[] {sourcePropertyName, targetPropertyName});
     return this;
   }
 

@@ -19,6 +19,11 @@ paths:
 components:
   schemas:
         
+    FilterExpressionList:
+      type: object
+      description: |
+        The filter expressions can be gathered into a list. In case of a plain fliter expression this is the 
+        
     FilterExpressionOperandData:
       type: object
       description: |

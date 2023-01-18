@@ -2,7 +2,6 @@ package org.smartbit4all.domain.meta;
 
 import static java.util.stream.Collectors.toList;
 import java.util.List;
-import java.util.Map;
 import org.smartbit4all.domain.annotation.property.ReferenceMandatory;
 import org.smartbit4all.domain.meta.jdbc.JDBCDataConverterHelper;
 import org.smartbit4all.domain.service.entity.EntityManager;
@@ -61,10 +60,10 @@ public class EntityDefinitionBuilder {
   @SuppressWarnings("unchecked")
   public <T extends Comparable<T>> EntityDefinitionBuilder reference(String refName,
       EntityDefinitionBuilder target,
-      List<Map.Entry<String, String>> joins) {
+      List<String[]> joins) {
     instance.createReference(instance, target.instance, joins.stream()
-        .map(j -> Map.entry((Property<T>) instance.getProperty(j.getKey()),
-            (Property<T>) target.instance.getProperty(j.getValue())))
+        .map(j -> (Property<T>[]) new Property[] {(Property<T>) instance.getProperty(j[0]),
+            (Property<T>) target.instance.getProperty(j[1])})
         .collect(toList()), refName,
         ReferenceMandatory.BYPROPERTY);
 

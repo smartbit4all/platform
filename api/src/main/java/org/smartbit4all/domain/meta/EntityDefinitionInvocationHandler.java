@@ -333,8 +333,9 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
     Reference<T, TARGET> reference =
         (Reference<T, TARGET>) createReference(sourceEntity, targetEntity,
             Arrays.asList(joins).stream()
-                .map(j -> Map.entry((Property<PROP>) sourceEntity.getProperty(j.source()),
-                    (Property<PROP>) targetEntity.getProperty(j.target())))
+                .map(j -> (Property<PROP>[]) new Property[] {
+                    (Property<PROP>) sourceEntity.getProperty(j.source()),
+                    (Property<PROP>) targetEntity.getProperty(j.target())})
                 .collect(toList()),
             referenceName, referenceMandatory);
 
