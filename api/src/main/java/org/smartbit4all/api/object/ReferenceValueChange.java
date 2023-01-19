@@ -1,6 +1,5 @@
 package org.smartbit4all.api.object;
 
-import java.net.URI;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -8,7 +7,7 @@ import org.smartbit4all.core.object.ReferenceDefinition;
 
 /**
  * This object contains the information about the change of a reference to an other object.
- * 
+ *
  * @author Peter Boros
  *
  */
@@ -56,8 +55,8 @@ public class ReferenceValueChange extends ReferenceChangeRequest {
   }
 
   @Override
-  public void apply(ObjectChangeRequest refererObj, Map<ObjectChangeRequest, URI> uris) {
-    URI uri = uris.get(value);
+  public void apply(ObjectChangeRequest refererObj, Map<ObjectChangeRequest, Object> uris) {
+    Object uri = uris.get(value);
     if (uri != null) {
       refererObj.getOrCreateObjectAsMap().put(definition.getSourcePropertyPath(), uri);
     }

@@ -107,8 +107,9 @@ public class ObjectApiImpl implements ObjectApi {
   @SuppressWarnings("unchecked")
   <T> ObjectNode nodeInternal(String storageScheme, T object) {
     ObjectDefinition<T> definition = (ObjectDefinition<T>) definition(object.getClass());
+    boolean hasUri = definition.getUriGetter() != null;
     ObjectNodeData data = new ObjectNodeData()
-        .objectUri(definition.getUri(object))
+        .objectUri(hasUri ? definition.getUri(object) : null)
         .qualifiedName(definition.getQualifiedName())
         .storageSchema(storageScheme)
         .objectAsMap(definition.toMap(object))

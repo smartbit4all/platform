@@ -33,7 +33,7 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
             .map(this::preProcessObjectRequest)
             .collect(Collectors.toList());
 
-    Map<ObjectChangeRequest, URI> processedRequests = new HashMap<>();
+    Map<ObjectChangeRequest, Object> processedRequests = new HashMap<>();
     for (ObjectChangeRequest objectChangeRequest : finalList) {
       execute(objectChangeRequest, request.getBranchUri(), processedRequests);
     }
@@ -47,14 +47,14 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
    * deep compare to avoid creating unnecessary versions! After this the new version is written into
    * and saved into the parents and so on. At the end the root object is updated and we will have
    * another version from this.
-   * 
+   *
    * @param objectChangeRequest
    */
-  private URI execute(ObjectChangeRequest objectChangeRequest, URI branchUri,
-      Map<ObjectChangeRequest, URI> processedRequests) {
+  private Object execute(ObjectChangeRequest objectChangeRequest, URI branchUri,
+      Map<ObjectChangeRequest, Object> processedRequests) {
 
     // If this object request was already processed then return the URI without processing again.
-    URI uri = processedRequests.get(objectChangeRequest);
+    Object uri = processedRequests.get(objectChangeRequest);
     if (uri != null) {
       return uri;
     }
@@ -62,19 +62,31 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
     for (Entry<String, ReferenceChangeRequest> entry : objectChangeRequest
         .getReferenceChanges().entrySet()) {
       // We need a linked hash map to reserve the order in the containers.
-      Map<ObjectChangeRequest, URI> changes = new LinkedHashMap<>();
+      Map<ObjectChangeRequest, Object> changes = new LinkedHashMap<>();
       for (ObjectChangeRequest refObjRequest : entry.getValue().changes()) {
-        URI refUri = execute(refObjRequest, branchUri, processedRequests);
+        Object refUri = execute(refObjRequest, branchUri, processedRequests);
         changes.put(refObjRequest, refUri);
       }
       entry.getValue().apply(objectChangeRequest,
           changes);
     }
 
-    URI result;
+    Object result;
     if (objectChangeRequest.getUriToSaveUri() != null) {
       // if we have the referenced URI set before, then we use it
       result = objectChangeRequest.getUriToSaveUri();
+    } else if (objectChangeRequest.getDefinition().getUriGetter() == null) {
+      switch (objectChangeRequest.getOperation()) {
+        case NEW:
+        case UPDATE:
+          result = objectChangeRequest.getOrCreateObjectAsMap();
+          break;
+        case DELETE:
+          result = null;
+        default:
+          result = objectChangeRequest.getOrCreateObjectAsMap();;
+          break;
+      }
     } else {
       switch (objectChangeRequest.getOperation()) {
         case NEW:
@@ -111,16 +123,21 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
 
     // Add it to the already processed map.
     processedRequests.put(objectChangeRequest, result);
-    objectChangeRequest.setResult(result);
+    if (result instanceof URI) {
+      objectChangeRequest.setResult((URI) result);
+    }
+    if (result == null) {
+      objectChangeRequest.setResult(null);
+    }
     return result;
   }
 
   /**
    * TODO Now it's a naive implementation.
-   * 
+   *
    * This operation must consider the containment relation between the objects and we must find the
    * root objects to start the modification with.
-   * 
+   *
    * @param objectChangeRequest
    * @return
    */
@@ -152,8 +169,12 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
         || objectChangeRequest.getOperation() == ObjectChangeOperation.UPDATE) {
       request.getObjectChangeRequests().add(objectChangeRequest);
     }
-    ApplyChangeResult result = save(request);
-    return result.getProcessedRequests().get(objectChangeRequest);
+    ApplyChangeResult applyChangeResult = save(request);
+    Object result = applyChangeResult.getProcessedRequests().get(objectChangeRequest);
+    if (result instanceof URI) {
+      return (URI) result;
+    }
+    return null;
   }
 
   private ObjectChangeRequest constructRequest(ObjectNode node, ApplyChangeRequest request) {

@@ -33,7 +33,9 @@ public enum AggregationKind {
   
   SHARED("shared"),
   
-  COMPOSITE("composite");
+  COMPOSITE("composite"),
+  
+  INLINE("inline");
 
   private String value;
 

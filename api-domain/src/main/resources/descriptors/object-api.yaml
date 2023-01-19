@@ -65,7 +65,7 @@ components:
         COMPOSITE means that the source contains the target object. The target object is accessible 
         only from the source. NONE means normal reference, no composition. SHARED is not implemented yet.
       default: none
-      enum: [none, shared, composite]
+      enum: [none, shared, composite, inline]
     ReferencePropertyKind:
       type: string
       enum: [reference, list, map]

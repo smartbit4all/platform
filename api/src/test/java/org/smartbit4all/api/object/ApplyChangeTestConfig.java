@@ -9,6 +9,7 @@ import org.smartbit4all.api.sample.bean.SampleAttachement;
 import org.smartbit4all.api.sample.bean.SampleCategory;
 import org.smartbit4all.api.sample.bean.SampleContainerItem;
 import org.smartbit4all.api.sample.bean.SampleDataSheet;
+import org.smartbit4all.api.sample.bean.SampleLinkObject;
 import org.smartbit4all.core.io.TestFileUtil;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectReferenceConfigs;
@@ -54,6 +55,19 @@ public class ApplyChangeTestConfig {
             SHADOW_ITEMS,
             SampleContainerItem.class,
             ReferencePropertyKind.LIST)
+        .ref(SampleCategory.class,
+            SampleCategory.LINKS,
+            SampleLinkObject.class,
+            ReferencePropertyKind.LIST,
+            AggregationKind.INLINE)
+        .ref(SampleLinkObject.class,
+            SampleLinkObject.CATEGORY,
+            SampleCategory.class,
+            ReferencePropertyKind.REFERENCE)
+        .ref(SampleLinkObject.class,
+            SampleLinkObject.ITEM,
+            SampleContainerItem.class,
+            ReferencePropertyKind.REFERENCE)
         .ref(SampleContainerItem.class,
             SampleContainerItem.USER_URI,
             User.class,

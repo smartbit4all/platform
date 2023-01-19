@@ -1,6 +1,5 @@
 package org.smartbit4all.api.object;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +17,7 @@ import org.smartbit4all.core.object.ReferenceDefinition;
  * list. We can us the add, addFirst, addAfter, addBefore, update and remove functions to apply
  * changes about the list of reference.</li>
  * </ul>
- * 
+ *
  * @author Peter Boros
  *
  */
@@ -36,7 +35,7 @@ public class ReferenceListChange extends ReferenceChangeRequest {
 
   /**
    * This will set the list as is and doesn't reserve the previous changes.
-   * 
+   *
    * @param listToSet
    * @return
    */
@@ -48,7 +47,7 @@ public class ReferenceListChange extends ReferenceChangeRequest {
 
   /**
    * Clear the content of the
-   * 
+   *
    * @return
    */
   public final ReferenceListChange clearList() {
@@ -58,7 +57,7 @@ public class ReferenceListChange extends ReferenceChangeRequest {
 
   /**
    * This will add the new object at the end of the list without modifying the existing items.
-   * 
+   *
    * @param item
    * @return
    */
@@ -73,9 +72,9 @@ public class ReferenceListChange extends ReferenceChangeRequest {
   }
 
   @Override
-  public void apply(ObjectChangeRequest refererObj, Map<ObjectChangeRequest, URI> uris) {
+  public void apply(ObjectChangeRequest refererObj, Map<ObjectChangeRequest, Object> uris) {
     // TODO We replace the list...At this time we already have the
-    List<URI> list = uris.values().stream().collect(Collectors.toList());
+    List<Object> list = uris.values().stream().collect(Collectors.toList());
     refererObj.getOrCreateObjectAsMap().put(definition.getSourcePropertyPath(), list);
   }
 

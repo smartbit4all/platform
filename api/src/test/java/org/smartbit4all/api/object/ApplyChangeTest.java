@@ -20,6 +20,7 @@ import org.smartbit4all.api.object.bean.RetrievalMode;
 import org.smartbit4all.api.sample.bean.SampleCategory;
 import org.smartbit4all.api.sample.bean.SampleContainerItem;
 import org.smartbit4all.api.sample.bean.SampleDataSheet;
+import org.smartbit4all.api.sample.bean.SampleLinkObject;
 import org.smartbit4all.core.io.TestFileUtil;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
@@ -373,6 +374,41 @@ class ApplyChangeTest {
     assertEquals(name, "sample");
   }
 
+  @Test
+  void testLinkObject() {
+    SampleCategory root = new SampleCategory().name("root linkObject");
+    ObjectNode rootNode = objectApi.create(MY_SCHEME, root);
+    URI rootUri = objectApi.save(rootNode);
+
+    SampleContainerItem item = new SampleContainerItem().name("container item");
+    // SampleDataSheet dataSheet = new SampleDataSheet().name("data sheet testReferenceChangeUri");
+    URI itemUri = objectApi.saveAsNew(MY_SCHEME, item);
+
+    rootNode = objectApi.load(rootUri);
+    ObjectNodeList linkList = rootNode.list(SampleCategory.LINKS);
+    assertNotNull(linkList);
+    assertTrue(linkList.isEmpty());
+    linkList.addNewObject(new SampleLinkObject()
+        .linkName("link")
+        .category(rootUri)
+        .item(itemUri));
+    rootUri = objectApi.save(rootNode);
+
+    rootNode = objectApi.load(rootUri);
+    linkList = rootNode.list(SampleCategory.LINKS);
+    assertNotNull(linkList);
+    assertFalse(linkList.isEmpty());
+
+    ObjectNode linkNode = linkList.get(0).get();
+    SampleLinkObject linkObject = linkNode.getObject(SampleLinkObject.class);
+    assertEquals("link", linkObject.getLinkName());
+
+    ObjectNode itemNode = linkNode.ref(SampleLinkObject.ITEM).get();
+    assertEquals("container item", itemNode.getValueAsString(SampleContainerItem.NAME));
+
+  }
+
+
   private URI constructSampleCategory(String referenceToItems) {
     URI branchUri = null;
 
@@ -412,7 +448,7 @@ class ApplyChangeTest {
 
     Assertions.assertEquals(itemCounter * 2 + 4, result.getProcessedRequests().size());
 
-    return result.getProcessedRequests().get(ocrContainer);
+    return (URI) result.getProcessedRequests().get(ocrContainer);
   }
 
 }

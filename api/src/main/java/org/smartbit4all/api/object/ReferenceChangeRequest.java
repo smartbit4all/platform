@@ -1,14 +1,13 @@
 package org.smartbit4all.api.object;
 
 import java.lang.ref.WeakReference;
-import java.net.URI;
 import java.util.Map;
 import org.smartbit4all.core.object.ReferenceDefinition;
 
 /**
  * The reference change request is the abstract super class of the different reference change
  * requests
- * 
+ *
  * @author Peter Boros
  */
 public abstract class ReferenceChangeRequest {
@@ -46,6 +45,6 @@ public abstract class ReferenceChangeRequest {
 
   public abstract Iterable<ObjectChangeRequest> changes();
 
-  public abstract void apply(ObjectChangeRequest object, Map<ObjectChangeRequest, URI> uris);
+  public abstract void apply(ObjectChangeRequest object, Map<ObjectChangeRequest, Object> uris);
 
 }

@@ -1,6 +1,5 @@
 package org.smartbit4all.api.object;
 
-import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,14 +9,14 @@ import java.util.Map;
  */
 public class ApplyChangeResult {
 
-  private Map<ObjectChangeRequest, URI> processedRequests = new HashMap<>();
+  private Map<ObjectChangeRequest, Object> processedRequests = new HashMap<>();
 
-  public ApplyChangeResult(Map<ObjectChangeRequest, URI> processedRequests) {
+  public ApplyChangeResult(Map<ObjectChangeRequest, Object> processedRequests) {
     super();
     this.processedRequests = processedRequests;
   }
 
-  public final Map<ObjectChangeRequest, URI> getProcessedRequests() {
+  public final Map<ObjectChangeRequest, Object> getProcessedRequests() {
     return processedRequests;
   }
 

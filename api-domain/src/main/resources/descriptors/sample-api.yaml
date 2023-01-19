@@ -39,6 +39,10 @@ components:
           items:
             type: string
             format: uri
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/SampleLinkObject'
     SampleContainerItem:
       type: object
       description: |
@@ -99,4 +103,15 @@ components:
         content:
           type: string
           description: The content URI that is the uri of a BinaryContent. It is not contained but referred.
+          format: uri
+    SampleLinkObject:
+      type: object
+      properties:
+        linkName:
+          type: string
+        category:
+          type: string
+          format: uri
+        item:
+          type: string
           format: uri

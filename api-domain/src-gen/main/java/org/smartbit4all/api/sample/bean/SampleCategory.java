@@ -25,6 +25,7 @@ import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import org.smartbit4all.api.sample.bean.SampleLinkObject;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -38,7 +39,8 @@ import javax.validation.Valid;
   SampleCategory.URI,
   SampleCategory.NAME,
   SampleCategory.SUB_CATEGORIES,
-  SampleCategory.CONTAINER_ITEMS
+  SampleCategory.CONTAINER_ITEMS,
+  SampleCategory.LINKS
 })
 @JsonTypeName("SampleCategory")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -54,6 +56,9 @@ public class SampleCategory {
 
   public static final String CONTAINER_ITEMS = "containerItems";
   private List<URI> containerItems = new ArrayList<>();
+
+  public static final String LINKS = "links";
+  private List<SampleLinkObject> links = null;
 
   public SampleCategory() { 
   }
@@ -182,6 +187,42 @@ public class SampleCategory {
   }
 
 
+  public SampleCategory links(List<SampleLinkObject> links) {
+    
+    this.links = links;
+    return this;
+  }
+
+  public SampleCategory addLinksItem(SampleLinkObject linksItem) {
+    if (this.links == null) {
+      this.links = new ArrayList<>();
+    }
+    this.links.add(linksItem);
+    return this;
+  }
+
+   /**
+   * Get links
+   * @return links
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(LINKS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<SampleLinkObject> getLinks() {
+    return links;
+  }
+
+
+  @JsonProperty(LINKS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setLinks(List<SampleLinkObject> links) {
+    this.links = links;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -194,12 +235,13 @@ public class SampleCategory {
     return Objects.equals(this.uri, sampleCategory.uri) &&
         Objects.equals(this.name, sampleCategory.name) &&
         Objects.equals(this.subCategories, sampleCategory.subCategories) &&
-        Objects.equals(this.containerItems, sampleCategory.containerItems);
+        Objects.equals(this.containerItems, sampleCategory.containerItems) &&
+        Objects.equals(this.links, sampleCategory.links);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, name, subCategories, containerItems);
+    return Objects.hash(uri, name, subCategories, containerItems, links);
   }
 
   @Override
@@ -210,6 +252,7 @@ public class SampleCategory {
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    subCategories: ").append(toIndentedString(subCategories)).append("\n");
     sb.append("    containerItems: ").append(toIndentedString(containerItems)).append("\n");
+    sb.append("    links: ").append(toIndentedString(links)).append("\n");
     sb.append("}");
     return sb.toString();
   }
