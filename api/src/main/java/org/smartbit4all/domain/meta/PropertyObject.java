@@ -9,4 +9,8 @@ public class PropertyObject extends Property<Object> {
     this.basic = basic;
   }
 
+  public final Property<?> getBasic() {
+    return basic;
+  }
+
 }

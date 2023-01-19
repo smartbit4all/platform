@@ -25,6 +25,7 @@ import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionBoolOperator;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOperandData;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOperation;
 import org.smartbit4all.api.value.bean.Value;
@@ -68,7 +69,7 @@ public class FilterExpressionData {
   private List<Value> selectedValues = null;
 
   public static final String SUB_EXPRESSION = "subExpression";
-  private FilterExpressionData subExpression;
+  private FilterExpressionList subExpression;
 
   public FilterExpressionData() { 
   }
@@ -249,7 +250,7 @@ public class FilterExpressionData {
   }
 
 
-  public FilterExpressionData subExpression(FilterExpressionData subExpression) {
+  public FilterExpressionData subExpression(FilterExpressionList subExpression) {
     
     this.subExpression = subExpression;
     return this;
@@ -265,14 +266,14 @@ public class FilterExpressionData {
   @JsonProperty(SUB_EXPRESSION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public FilterExpressionData getSubExpression() {
+  public FilterExpressionList getSubExpression() {
     return subExpression;
   }
 
 
   @JsonProperty(SUB_EXPRESSION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setSubExpression(FilterExpressionData subExpression) {
+  public void setSubExpression(FilterExpressionList subExpression) {
     this.subExpression = subExpression;
   }
 

@@ -1,5 +1,6 @@
 package org.smartbit4all.api.collection;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -14,13 +15,16 @@ import org.smartbit4all.api.collection.SearchEntityDefinition.DetailDefinition;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionBoolOperator;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionData;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionOperandData;
 import org.smartbit4all.core.object.BeanMeta;
 import org.smartbit4all.core.object.BeanMetaUtil;
+import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.PropertyMeta;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.EntityDefinitionBuilder;
 import org.smartbit4all.domain.meta.Expression;
+import org.smartbit4all.domain.meta.ExpressionBracket;
 import org.smartbit4all.domain.meta.JoinPath;
 import org.smartbit4all.domain.meta.PropertyObject;
 import org.smartbit4all.domain.service.entity.EntityManager;
@@ -70,9 +74,11 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
    */
   SearchEntityDefinition entityDefinition;
 
-  ApplicationContext ctx;
+  private ApplicationContext ctx;
 
-  EntityManager entityManager;
+  private EntityManager entityManager;
+
+  private ObjectApi objectApi;
 
   SearchIndexMappingProperty property(String name) {
     return (SearchIndexMappingProperty) mappingsByPropertyName.get(name);
@@ -217,59 +223,130 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
     for (FilterExpressionData fed : filterExpressions.getExpressions()) {
       // Construct the Expression from the FilterExpressionData
       Expression exp = convertFilterExpression(fed);
-      if (currentExpression != null && prevFed != null) {
-        if (prevFed.getBoolOperator() == FilterExpressionBoolOperator.AND) {
-          currentExpression = currentExpression.AND(exp);
+      if (exp != null) {
+        if (currentExpression != null && prevFed != null) {
+          if (prevFed.getBoolOperator() == FilterExpressionBoolOperator.AND) {
+            currentExpression = currentExpression.AND(exp);
+          } else {
+            currentExpression = currentExpression.OR(exp);
+          }
         } else {
-          currentExpression = currentExpression.OR(exp);
+          currentExpression = exp;
         }
-      } else {
-        currentExpression = exp;
+        prevFed = fed;
       }
-      prevFed = fed;
     }
     return currentExpression;
   }
 
+  private final PropertyObject propertyOf(FilterExpressionOperandData op) {
+    if (op != null && Boolean.TRUE.equals(op.getIsDataName())) {
+      return entityDefinition.definition.getPropertyObject(op.getValueAsString());
+    }
+    return null;
+  }
+
+  private final Object valueOf(FilterExpressionOperandData op, PropertyObject property)
+      throws IOException {
+    if (op != null && Boolean.FALSE.equals(op.getIsDataName())) {
+      return convertValue(op.getValueAsString(), property);
+    }
+    return null;
+  }
+
   private final Expression convertFilterExpression(FilterExpressionData fed) {
+    List<PropertyObject> properties = new ArrayList<>();
+    properties.add(propertyOf(fed.getOperand1()));
+    properties.add(propertyOf(fed.getOperand2()));
+    properties.add(propertyOf(fed.getOperand3()));
+    // The first property would be great for type conversion.
+    PropertyObject property = properties.stream().filter(p -> p != null).findFirst().get();
+    // Type conversion by the type of the filter expression operand
+    List<Object> values = new ArrayList<>();
+    try {
+      values.add(valueOf(fed.getOperand1(), property));
+      values.add(valueOf(fed.getOperand2(), property));
+      values.add(valueOf(fed.getOperand3(), property));
+    } catch (IOException e) {
+      throw new IllegalArgumentException(
+          "Unable to convert the string value of the filter expression to "
+              + property.getBasic().type(),
+          e);
+    }
+
     switch (fed.getCurrentOperation()) {
       case BETWEEN:
-        break;
+        return properties.get(0).between(values.get(1), values.get(2));
       case EQUAL:
-        PropertyObject property =
-            entityDefinition.definition.getPropertyObject(fed.getOperand1().getValueAsString());
-        return property.eq(fed.getOperand2().getValueAsString());
+        return properties.get(0).eq(values.get(1));
       case EXISTS:
-        break;
+        // The expression is simple parenthesis for the same entity definition.
+        return constructExists(fed, property);
       case EXPRESSION:
-        break;
+        // The expression is simple parenthesis for the same entity definition.
+        Expression innerExpression = constructExpression(fed.getSubExpression());
+        return innerExpression != null ? new ExpressionBracket(innerExpression) : null;
       case GREATER:
-        break;
+        return properties.get(0).gt(values.get(1));
       case GREATER_OR_EQUAL:
-        break;
+        return properties.get(0).ge(values.get(1));
       case IS_EMPTY:
-        break;
+        return properties.get(0).isNull();
       case IS_NOT_EMPTY:
-        break;
+        return properties.get(0).isNotNull();
       case LESS:
-        break;
+        return properties.get(0).lt(values.get(1));
       case LESS_OR_EQUAL:
-        break;
+        return properties.get(0).le(values.get(1));
       case LIKE:
-        break;
+        return properties.get(0).like(values.get(1));
       case NOT_BETWEEN:
-        break;
+        return properties.get(0).between(values.get(1), values.get(2)).NOT();
       case NOT_EQUAL:
-        break;
+        return properties.get(0).noteq(values.get(1));
       case NOT_EXISTS:
-        break;
+        return constructExists(fed, property).NOT();
       case NOT_LIKE:
-        break;
+        return properties.get(0).notlike(values.get(1));
       default:
         break;
 
     }
     return null;
+  }
+
+  private final Expression constructExists(FilterExpressionData fed, PropertyObject property) {
+    SearchIndexMappingObject detailMapping =
+        ((SearchIndexMappingObject) mappingsByPropertyName.get(property.getName()));
+    DetailDefinition detailDefinition = entityDefinition.detailsByName.get(property.getName());
+    Expression existsExpression = detailMapping.constructExpression(fed.getSubExpression());
+    // Add the exists to the current entity and return the exists expression as is.
+    return entityDefinition.definition.exists(detailDefinition.masterJoin, existsExpression);
+  }
+
+  private final Object convertValue(String valueAsString, PropertyObject property)
+      throws IOException {
+    if (String.class.equals(property.getBasic().type())) {
+      return valueAsString;
+    }
+    return objectApi.getDefaultSerializer().fromString(valueAsString, property.getBasic().type());
+  }
+
+  public final void setCtx(ApplicationContext ctx) {
+    this.ctx = ctx;
+    for (SearchIndexMapping detailMapping : mappingsByPropertyName.values()) {
+      if (detailMapping instanceof SearchIndexMappingObject) {
+        ((SearchIndexMappingObject) detailMapping).setCtx(ctx);
+      }
+    }
+  }
+
+  public final void setEntityManager(EntityManager entityManager) {
+    this.entityManager = entityManager;
+  }
+
+  public final void setObjectApi(ObjectApi objectApi) {
+    this.objectApi = objectApi;
   }
 
 }

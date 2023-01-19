@@ -163,8 +163,9 @@ public abstract class SearchIndexImpl<O> implements SearchIndex<O> {
 
   @Override
   public SearchEntityDefinition getDefinition() {
-    objectMapping.ctx = ctx;
-    objectMapping.entityManager = entityManager;
+    objectMapping.setCtx(ctx);
+    objectMapping.setEntityManager(entityManager);
+    objectMapping.setObjectApi(objectApi);
     return objectMapping.getDefinition();
   }
 
