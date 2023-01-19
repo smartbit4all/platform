@@ -12,6 +12,7 @@ import org.smartbit4all.api.view.bean.CloseResult;
 import org.smartbit4all.api.view.bean.MessageData;
 import org.smartbit4all.api.view.bean.OpenPendingData;
 import org.smartbit4all.api.view.bean.View;
+import org.smartbit4all.api.view.bean.ViewConstraint;
 import org.smartbit4all.api.view.bean.ViewContext;
 import org.smartbit4all.api.view.bean.ViewState;
 import org.smartbit4all.api.view.bean.ViewType;
@@ -35,6 +36,9 @@ public class ViewApiImpl implements ViewApi {
   public UUID showView(View view) {
     Objects.requireNonNull(view, "View must be not null");
     view.setUuid(UUID.randomUUID());
+    if (view.getConstraint() == null) {
+      view.setConstraint(new ViewConstraint());
+    }
     return showViewInternal(view);
   }
 
