@@ -75,7 +75,8 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
     if (objectChangeRequest.getUriToSaveUri() != null) {
       // if we have the referenced URI set before, then we use it
       result = objectChangeRequest.getUriToSaveUri();
-    } else if (objectChangeRequest.getDefinition().getUriGetter() == null) {
+    } else if (objectChangeRequest.getDefinition() != null
+        && objectChangeRequest.getDefinition().getUriGetter() == null) {
       switch (objectChangeRequest.getOperation()) {
         case NEW:
         case UPDATE:
