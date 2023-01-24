@@ -256,6 +256,8 @@ class CollectionApiTest {
         searchIndex.executeSearch(new TestFilter().isOdd(true).name("od").caption("odd.odd"));
 
     assertEquals(TableDatas.toStringAdv(tableData), TableDatas.toStringAdv(tableDataByDerived));
+    assertEquals(TableDatas.contentOf(tableData).toString(),
+        TableDatas.contentOf(tableDataByDerived).toString());
 
     List<TestFilter> resultList = tableDataByDerived.asList(TestFilter.class);
 

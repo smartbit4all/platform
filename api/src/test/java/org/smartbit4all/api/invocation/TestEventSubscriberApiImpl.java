@@ -7,8 +7,6 @@ public class TestEventSubscriberApiImpl implements TestEventSubscriberApi {
   public static FutureValue<String> eventResult = new FutureValue<>();
 
   @Override
-  @EventSubscription(api = TestEventPublisherApi.API, event = TestEventPublisherApi.EVENT1,
-      channel = InvocationTestConfig.GLOBAL_ASYNC_CHANNEL)
   public void eventConsumer1(String param) {
     eventResult.setValue("event1: " + param);
   }

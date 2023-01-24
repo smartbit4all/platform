@@ -15,7 +15,7 @@ import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.api.session.bean.Session;
 
 /**
- * The event publisher is a kind of builder for publishing events from {@link EventPublisherApi}s.
+ * The event publisher is a kind of builder for publishing events.
  * 
  * @author Peter Boros
  */

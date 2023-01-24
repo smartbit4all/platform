@@ -192,3 +192,37 @@ components:
           type: boolean
         data:
           $ref: '#/components/schemas/SnapshotData'
+    TableDataContent:
+      type: object
+      description: |
+        This object is a table data with column definitions as header and rows. The rows are map of objects with the
+        property names defined in the header.
+      required: [header, totalRowCount, rows]
+      properties:
+        header:
+          $ref: '#/components/schemas/TableDataContentHeader'
+        totalRowCount:
+          type: integer
+          format: int32
+        rows:
+          type: array
+          items:
+            type: object
+    TableDataContentHeader:
+      type: object
+      description: |
+        This object is a table data header that defines the columns of the table data.
+      required: [columns]
+      properties:
+        columns:
+          type: array
+          items:
+            $ref: '#/components/schemas/TableDataContentColumn'
+    TableDataContentColumn:
+      type: object
+      required: [label, propertyName]
+      properties:
+        label:
+          type: string
+        propertyName:
+          type: string

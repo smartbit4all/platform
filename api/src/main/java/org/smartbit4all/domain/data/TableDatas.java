@@ -14,6 +14,7 @@
  ******************************************************************************/
 package org.smartbit4all.domain.data;
 
+import static java.util.stream.Collectors.toMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -29,6 +30,9 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.smartbit4all.api.object.bean.TableDataContent;
+import org.smartbit4all.api.object.bean.TableDataContentColumn;
+import org.smartbit4all.api.object.bean.TableDataContentHeader;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Property;
@@ -753,6 +757,21 @@ public final class TableDatas {
       return new SortProperty(property, false);
     }
 
+  }
+
+  public static TableDataContent contentOf(TableData<?> tableData) {
+    TableDataContent result =
+        new TableDataContent().totalRowCount(tableData.size()).header(new TableDataContentHeader());
+    for (DataColumn<?> column : tableData.columns()) {
+      result.getHeader()
+          .addColumnsItem(
+              new TableDataContentColumn().propertyName(column.getName()));
+    }
+    for (DataRow row : tableData.rows()) {
+      result.addRowsItem(tableData.columns().stream()
+          .collect(toMap(DataColumn::getName, c -> tableData.get(c, row))));
+    }
+    return result;
   }
 
 }
