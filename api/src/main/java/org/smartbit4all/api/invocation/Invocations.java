@@ -3,15 +3,17 @@ package org.smartbit4all.api.invocation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * The developer api for the invocation.
- * 
+ *
  * @author Peter Boros
  */
 public class Invocations {
@@ -37,7 +39,7 @@ public class Invocations {
 
   /**
    * Creates an InvocationRequest from the method and the parameters.
-   * 
+   *
    * @param method
    * @param args
    * @param interfaceClass
@@ -116,7 +118,7 @@ public class Invocations {
 
   /**
    * Identify the method for the invocation.
-   * 
+   *
    * @param api The api.
    * @param request The invocation request that contains all the parameters for the call.
    * @return The {@link Method} of the Api.
@@ -173,7 +175,15 @@ public class Invocations {
     List<Object> parameterObjects = new ArrayList<>();
     // int i = 0;
     for (InvocationParameter parameter : request.getParameters()) {
-      parameterObjects.add(parameter.getValue());
+      Object value = parameter.getValue();
+      if (value instanceof String) {
+        if (URI.class.getName().equals(parameter.getTypeClass())) {
+          value = URI.create((String) value);
+        } else if (UUID.class.getName().equals(parameter.getTypeClass())) {
+          value = UUID.fromString((String) value);
+        }
+      }
+      parameterObjects.add(value);
       // switch (parameter.getKind()) {
       // case BYVALUE:
       // // In case of primitive
@@ -198,8 +208,8 @@ public class Invocations {
   }
 
   /**
-   * 
-   * 
+   *
+   *
    * @param request
    * @param api
    * @param method
@@ -226,7 +236,7 @@ public class Invocations {
   /**
    * Constructs a new provider api instance for the configuration. Should be used from the Java
    * based configurations when constructing the instances.
-   * 
+   *
    * @param <T> The type of the interface
    * @param name The name of the api if it means anything. For singleton apis it influences nothing.
    * @param apiInstance The api instance that will serve the requests at the end.
@@ -239,7 +249,7 @@ public class Invocations {
   /**
    * Constructs a new provider api instance for the configuration. Should be used from the Java
    * based configurations when constructing the instances.
-   * 
+   *
    * @param <T> The type of the interface
    * @param apiInstance The api instance that will serve the requests at the end.
    */
@@ -254,7 +264,7 @@ public class Invocations {
 
   /**
    * Converts the parameter to its original type
-   * 
+   *
    * @param objectMapper
    * @param parameter
    */
