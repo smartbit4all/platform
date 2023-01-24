@@ -473,6 +473,9 @@ public class ObjectNode {
         if (paths.length == 1) {
           return refNode;
         }
+        if (!refNode.isPresent()) {
+          return null;
+        }
         String[] subPaths = Arrays.copyOfRange(paths, 1, paths.length);
         return refNode.get().getValue(subPaths);
       }
