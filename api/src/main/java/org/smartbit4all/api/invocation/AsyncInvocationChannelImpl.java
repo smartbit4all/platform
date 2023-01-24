@@ -39,6 +39,10 @@ public final class AsyncInvocationChannelImpl
    */
   private int maximumPoolSize = 4;
 
+  private long keepAliveTime = 1;
+
+  private TimeUnit timeUnit = TimeUnit.MINUTES;
+
   /**
    * The technical user to be used to create session when executing.
    */
@@ -129,8 +133,17 @@ public final class AsyncInvocationChannelImpl
   @Override
   public void start() {
     executorService =
-        new ThreadPoolExecutor(corePoolSize, maximumPoolSize, 1, TimeUnit.MINUTES,
+        new ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime, timeUnit,
             new LinkedBlockingQueue<>());
+  }
+
+  public AsyncInvocationChannelImpl threadPool(int corePoolSize, int maximumPoolSize,
+      long keepAliveTime, TimeUnit timeUnit) {
+    this.corePoolSize = corePoolSize;
+    this.maximumPoolSize = maximumPoolSize;
+    this.keepAliveTime = keepAliveTime;
+    this.timeUnit = timeUnit;
+    return this;
   }
 
   @Override
