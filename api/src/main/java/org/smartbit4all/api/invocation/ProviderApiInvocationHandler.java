@@ -97,7 +97,7 @@ public class ProviderApiInvocationHandler<T> {
   ApiData getData() {
     // Collects the subscriptions from the interface class.
     Map<EventSubscription, Method> subscriptions = new HashMap<>();
-    ReflectionUtility.allMethods(apiInstance.getClass(), m -> {
+    ReflectionUtility.allMethods(interfaceClass, m -> {
       EventSubscription subscription =
           ReflectionUtility.getNearestAnnotation(m, EventSubscription.class);
       if (subscription != null) {

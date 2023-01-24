@@ -24,4 +24,10 @@ class SearchEntityTableDataResult {
     return this;
   }
 
+  final SearchEntityTableDataResult result(
+      TableData<?> result) {
+    this.result = result;
+    return this;
+  }
+
 }

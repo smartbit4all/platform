@@ -28,6 +28,7 @@ import org.smartbit4all.domain.meta.ExpressionBracket;
 import org.smartbit4all.domain.meta.JoinPath;
 import org.smartbit4all.domain.meta.PropertyObject;
 import org.smartbit4all.domain.service.entity.EntityManager;
+import org.smartbit4all.domain.utility.crud.Crud;
 import org.springframework.context.ApplicationContext;
 
 public class SearchIndexMappingObject extends SearchIndexMapping {
@@ -347,6 +348,10 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
 
   public final void setObjectApi(ObjectApi objectApi) {
     this.objectApi = objectApi;
+  }
+
+  void update(SearchEntityTableDataResult updateResult) {
+    Crud.update(updateResult.result);
   }
 
 }

@@ -39,6 +39,8 @@ import javax.validation.Valid;
   InvocationRequest.INTERFACE_CLASS,
   InvocationRequest.NAME,
   InvocationRequest.METHOD_NAME,
+  InvocationRequest.SCRIPT_KIND,
+  InvocationRequest.SCRIPT_BODY,
   InvocationRequest.PARAMETERS,
   InvocationRequest.SESSION_URI
 })
@@ -53,6 +55,12 @@ public class InvocationRequest {
 
   public static final String METHOD_NAME = "methodName";
   private String methodName;
+
+  public static final String SCRIPT_KIND = "scriptKind";
+  private String scriptKind;
+
+  public static final String SCRIPT_BODY = "scriptBody";
+  private String scriptBody;
 
   public static final String PARAMETERS = "parameters";
   private List<InvocationParameter> parameters = new ArrayList<>();
@@ -146,6 +154,60 @@ public class InvocationRequest {
   }
 
 
+  public InvocationRequest scriptKind(String scriptKind) {
+    
+    this.scriptKind = scriptKind;
+    return this;
+  }
+
+   /**
+   * The script language managed by the ScripEngine
+   * @return scriptKind
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The script language managed by the ScripEngine")
+  @JsonProperty(SCRIPT_KIND)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getScriptKind() {
+    return scriptKind;
+  }
+
+
+  @JsonProperty(SCRIPT_KIND)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setScriptKind(String scriptKind) {
+    this.scriptKind = scriptKind;
+  }
+
+
+  public InvocationRequest scriptBody(String scriptBody) {
+    
+    this.scriptBody = scriptBody;
+    return this;
+  }
+
+   /**
+   * The script language managed by the ScripEngine
+   * @return scriptBody
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The script language managed by the ScripEngine")
+  @JsonProperty(SCRIPT_BODY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getScriptBody() {
+    return scriptBody;
+  }
+
+
+  @JsonProperty(SCRIPT_BODY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setScriptBody(String scriptBody) {
+    this.scriptBody = scriptBody;
+  }
+
+
   public InvocationRequest parameters(List<InvocationParameter> parameters) {
     
     this.parameters = parameters;
@@ -220,13 +282,15 @@ public class InvocationRequest {
     return Objects.equals(this.interfaceClass, invocationRequest.interfaceClass) &&
         Objects.equals(this.name, invocationRequest.name) &&
         Objects.equals(this.methodName, invocationRequest.methodName) &&
+        Objects.equals(this.scriptKind, invocationRequest.scriptKind) &&
+        Objects.equals(this.scriptBody, invocationRequest.scriptBody) &&
         Objects.equals(this.parameters, invocationRequest.parameters) &&
         Objects.equals(this.sessionUri, invocationRequest.sessionUri);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(interfaceClass, name, methodName, parameters, sessionUri);
+    return Objects.hash(interfaceClass, name, methodName, scriptKind, scriptBody, parameters, sessionUri);
   }
 
   @Override
@@ -236,6 +300,8 @@ public class InvocationRequest {
     sb.append("    interfaceClass: ").append(toIndentedString(interfaceClass)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    methodName: ").append(toIndentedString(methodName)).append("\n");
+    sb.append("    scriptKind: ").append(toIndentedString(scriptKind)).append("\n");
+    sb.append("    scriptBody: ").append(toIndentedString(scriptBody)).append("\n");
     sb.append("    parameters: ").append(toIndentedString(parameters)).append("\n");
     sb.append("    sessionUri: ").append(toIndentedString(sessionUri)).append("\n");
     sb.append("}");

@@ -1,13 +1,18 @@
 package org.smartbit4all.api.invocation;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.SimpleBindings;
 import org.junit.jupiter.api.Assertions;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.core.utility.StringConstant;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 public class InvocationApiTestStatic {
 
@@ -103,6 +108,18 @@ public class InvocationApiTestStatic {
 
     Assertions.assertEquals(event + StringConstant.COLON_SPACE + value,
         TestEventSubscriberApiImpl.eventResult.get());
+  }
+
+  static void testScriptCall(InvocationApi invocationApi) throws Exception {
+    ScriptEngine engine = new ScriptEngineManager().getEngineByName("JavaScript");
+    Map<String, Object> vars = new HashMap<String, Object>();
+    vars.put("x", 2);
+    vars.put("y", 1);
+    vars.put("z", 3);
+    System.out.println("result = " + engine.eval("x + y + z", new SimpleBindings(vars)));
+
+    Assertions.assertEquals(6.0,
+        engine.eval("x + y + z", new SimpleBindings(vars)));
   }
 
 }

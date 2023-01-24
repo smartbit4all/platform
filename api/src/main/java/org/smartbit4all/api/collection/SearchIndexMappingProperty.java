@@ -10,6 +10,8 @@ public class SearchIndexMappingProperty extends SearchIndexMapping {
 
   String[] path;
 
+  boolean primaryKey = false;
+
   UnaryOperator<Object> processor;
 
   Function<ObjectNode, Object> complexProcessor;

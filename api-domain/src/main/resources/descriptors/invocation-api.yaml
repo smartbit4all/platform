@@ -47,6 +47,12 @@ components:
         methodName:
           type: string
           description: 'The name of the method to call'
+        scriptKind:
+          type: string
+          description: The script language managed by the ScripEngine
+        scriptBody:
+          type: string
+          description: The script language managed by the ScripEngine
         parameters:
           type: array
           items:

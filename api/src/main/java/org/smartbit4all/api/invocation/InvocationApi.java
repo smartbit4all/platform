@@ -92,6 +92,7 @@ public interface InvocationApi {
    */
   void invokeAt(InvocationRequest request, String channel, OffsetDateTime executeAt);
 
-  <T> EventPublisher<T> publisher(Class<T> apiInterface, String event);
+  <P, S> EventPublisher<P, S> publisher(Class<P> publisherApiInterface,
+      Class<S> subscriberApiInterface, String event);
 
 }

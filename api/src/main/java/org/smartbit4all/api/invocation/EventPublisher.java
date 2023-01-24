@@ -19,11 +19,13 @@ import org.smartbit4all.api.session.bean.Session;
  * 
  * @author Peter Boros
  */
-public class EventPublisher<T> {
+public class EventPublisher<P, S> {
 
   private static final Logger log = LoggerFactory.getLogger(EventPublisher.class);
 
-  private Class<T> apiClass;
+  private Class<P> publisherApiClass;
+
+  private Class<S> subscriberApiClass;
 
   private InvocationApi invocationApi;
 
@@ -35,19 +37,27 @@ public class EventPublisher<T> {
 
   public EventPublisher(InvocationApi invocationApi, InvocationRegisterApi invocationRegisterApi,
       SessionManagementApi sessionManagementApi,
-      Class<T> apiClass, String event) {
+      Class<P> publisherApiClass, Class<S> subscriberApiClass, String event) {
     super();
-    this.apiClass = apiClass;
+    this.publisherApiClass = publisherApiClass;
+    this.subscriberApiClass = subscriberApiClass;
     this.invocationApi = invocationApi;
     this.invocationRegisterApi = invocationRegisterApi;
     this.sessionManagementApi = sessionManagementApi;
     this.event = event;
   }
 
-  public void publish(Consumer<T> apiCall) {
-    ApiDescriptor api = invocationRegisterApi.getApi(apiClass.getName(), null);
+  public void publish(Consumer<S> apiCall) {
+    ApiDescriptor api = invocationRegisterApi.getApi(publisherApiClass.getName(), null);
     if (api == null) {
-      throw new IllegalArgumentException("The publisher api " + apiClass + " was not found.");
+      throw new IllegalArgumentException(
+          "The publisher api " + publisherApiClass + " was not found.");
+    }
+    ApiDescriptor subscriptionApi =
+        invocationRegisterApi.getApi(subscriberApiClass.getName(), null);
+    if (subscriptionApi == null) {
+      throw new IllegalArgumentException(
+          "The subscription api " + subscriptionApi + " was not found.");
     }
     Map<String, List<InvocationRequest>> requestsByChannel = new HashMap<>();
     for (EventSubscriptionData sub : api.getApiData().getEventSubscriptions()) {
@@ -56,16 +66,18 @@ public class EventPublisher<T> {
             requestsByChannel.computeIfAbsent(sub.getChannel(), c -> new ArrayList<>());
         if (sub.getType() == EventSubscriptionType.ONE_RUNTIME) {
           channelRequests
-              .add(invocationApi.builder(apiClass).build(apiCall)
+              .add(invocationApi.builder(subscriberApiClass).build(apiCall)
                   .interfaceClass(sub.getSubscribedApi()).methodName(sub.getSubscribedMethod()));
         } else if (sub.getType() == EventSubscriptionType.ALL_RUNTIMES) {
           // TODO implement broadcast
         } else if (sub.getType() == EventSubscriptionType.SESSIONS) {
           if (sessionManagementApi != null) {
             List<Session> activeSessions = sessionManagementApi.getActiveSessions(sub.getEvent());
-            activeSessions.stream().map(s -> invocationApi.builder(apiClass).build(apiCall)
-                .interfaceClass(sub.getSubscribedApi()).methodName(sub.getSubscribedMethod())
-                .sessionUri(s.getUri())).forEach(r -> channelRequests.add(r));
+            activeSessions.stream()
+                .map(s -> invocationApi.builder(subscriberApiClass).build(apiCall)
+                    .interfaceClass(sub.getSubscribedApi()).methodName(sub.getSubscribedMethod())
+                    .sessionUri(s.getUri()))
+                .forEach(r -> channelRequests.add(r));
           } else {
             log.warn("Unable to publish for session. {}", sub);
           }

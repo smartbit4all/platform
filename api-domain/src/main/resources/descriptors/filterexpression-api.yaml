@@ -164,3 +164,29 @@ components:
       - CHECK_BOX
       - RADIO_BUTTON
       - RANGE
+
+    SearchIndexObjectDefinitionData:
+      type: object
+      description: |
+        This mapping binds the objects of the domain with the entities of the search index. By default all the properties are
+        included in the search index. But we can have positive and negative exceptions to specify the exact attributes to include.
+      required: []
+      properties:
+        objectClassName:
+          type: string
+        propertyDefinitions:
+          type: array
+          items:
+            $ref: "#/components/schemas/SearchIndexPropertyDefinitionData"
+    SearchIndexPropertyDefinitionData:
+      type: object
+      description: |
+        This mapping binds the objects of the domain with the entities of the search index. By default all the properties are
+        included in the search index. But we can have positive and negative exceptions to specify the exact attributes to include.
+      required: []
+      properties:
+        propertyPath:
+          type: string
+        include:
+          type: boolean
+                          

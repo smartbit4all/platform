@@ -16,7 +16,8 @@ public class TestEventPublisherApiImpl implements TestEventPublisherApi {
   @Override
   public String fireSomeEvent(String param) {
     String event = rnd.nextBoolean() ? EVENT1 : EVENT2;
-    invocationApi.publisher(TestEventPublisherApi.class, event).publish(api -> api.event(param));
+    invocationApi.publisher(TestEventPublisherApi.class, TestEventPublisherApi.class, event)
+        .publish(api -> api.event(param));
     return event;
   }
 

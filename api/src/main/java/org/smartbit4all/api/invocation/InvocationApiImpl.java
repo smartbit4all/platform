@@ -118,8 +118,10 @@ public final class InvocationApiImpl implements InvocationApi {
   }
 
   @Override
-  public <T> EventPublisher<T> publisher(Class<T> apiInterface, String event) {
-    return new EventPublisher<>(self, invocationRegisterApi, sessionManagementApi, apiInterface,
+  public <P, S> EventPublisher<P, S> publisher(Class<P> publisherApiInterface,
+      Class<S> subscriberApiInterface, String event) {
+    return new EventPublisher<>(self, invocationRegisterApi, sessionManagementApi,
+        publisherApiInterface, subscriberApiInterface,
         event);
   }
 
