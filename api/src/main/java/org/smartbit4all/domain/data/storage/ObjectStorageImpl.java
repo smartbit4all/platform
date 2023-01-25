@@ -29,7 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * The abstract basic implementation of the {@link ObjectStorage}.
- * 
+ *
  * @author Peter Boros
  */
 public abstract class ObjectStorageImpl implements ObjectStorage {
@@ -56,9 +56,9 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
   /**
    * The extension point for the given {@link ObjectStorage} implementation to add a supplier
    * function for getting lock.
-   * 
+   *
    * @param objectUri
-   * 
+   *
    * @return The supplier
    */
   protected Supplier<StorageObjectPhysicalLock> physicalLockSupplier(URI objectUri) {
@@ -68,7 +68,7 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
   /**
    * The extension point for the given {@link ObjectStorage} implementation to add a release
    * function to free lock.
-   * 
+   *
    * @return The consumer
    */
   protected Consumer<StorageObjectPhysicalLock> physicalLockReleaser() {
@@ -94,6 +94,7 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
 
   @Override
   public StorageObjectLock getLock(URI objectUri) {
+    objectUri = objectApi.getLatestUri(objectUri);
     boolean tryAgain = true;
     while (tryAgain) {
       tryAgain = false;
@@ -147,7 +148,7 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
    * alias or from the {@link StorageObjectData}. Using the {@link #objectApi} identifies the
    * {@link ObjectDefinition} belongs to the given class. This function is called when the
    * {@link Class} is not defined for the {@link StorageObject}.
-   * 
+   *
    * @param uri The uri of an object.
    * @param objectData The {@link StorageObjectData}.
    * @return The {@link ObjectDefinition} or null if not found.
@@ -231,7 +232,7 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
   /**
    * We have this constructor method to avoid having public setters in the {@link StorageObject}.
    * This can be used by the implementations of the {@link ObjectStorage}.
-   * 
+   *
    * @param <T>
    * @param storage
    * @param objectDefinition
@@ -250,7 +251,7 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
   /**
    * We have this constructor method to avoid having public setters in the {@link StorageObject}.
    * This can be used by the implementations of the {@link ObjectStorage}.
-   * 
+   *
    * @param <T>
    * @param storage
    * @param objectDefinition
@@ -283,7 +284,7 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
   /**
    * The {@link StorageObjectData} is prepared by the {@link StorageObject} to have a complete
    * reference and collection list.
-   * 
+   *
    * @param <T>
    * @param storageObject The storage object from the request.
    * @param relationData The {@link StorageObjectRelationData}
@@ -385,7 +386,7 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
    * given version else the {@link StorageObjectData#getCurrentVersion()}. The version identifies
    * the object version {@link ObjectVersion#getSerialNoData()}! It's not related with the versions
    * of the relations!
-   * 
+   *
    * @param uri The uri.
    * @param storageObjData The storageObject data bean.
    * @return The related {@link ObjectVersion} from the storage object.
@@ -441,7 +442,7 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
 
   /**
    * This supplier is responsible for accessing the current user in the actual context.
-   * 
+   *
    * @param versionCreatedBy
    */
   public final ObjectStorage currentUserSupplier(Supplier<String> versionCreatedBy) {
