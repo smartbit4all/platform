@@ -39,7 +39,7 @@ import org.springframework.context.ApplicationContext;
  *
  * @param <O>
  */
-public abstract class SearchIndexImpl<O> implements SearchIndex<O> {
+public class SearchIndexImpl<O> implements SearchIndex<O> {
 
   private static final Logger log = LoggerFactory.getLogger(SearchIndexImpl.class);
 
@@ -191,7 +191,7 @@ public abstract class SearchIndexImpl<O> implements SearchIndex<O> {
     return objectMapping.getDefinition();
   }
 
-  protected SearchIndexImpl(String logicalSchema, String name, String indexedObjectSchema,
+  public SearchIndexImpl(String logicalSchema, String name, String indexedObjectSchema,
       Class<O> indexedObjectDefinitionClass) {
     super();
     this.objectMapping.name = name;
