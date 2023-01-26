@@ -32,7 +32,9 @@ public enum UiActionInputType {
   
   TEXTFIELD("textfield"),
   
-  TEXTAREA("textarea");
+  TEXTAREA("textarea"),
+  
+  USER_SELECT("user_select");
 
   private String value;
 

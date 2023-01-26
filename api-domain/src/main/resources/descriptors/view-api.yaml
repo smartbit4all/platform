@@ -378,6 +378,7 @@ components:
         - none
         - textfield
         - textarea
+        - user_select
     UiActionRequest:
       type: object
       description: 
