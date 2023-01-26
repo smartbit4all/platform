@@ -289,7 +289,7 @@ public final class Storage {
     lock.lock();
     try {
       StorageObject<T> so =
-          load(objectUri, clazz);
+          load(objectUri, clazz).asMap();
       if (version != null &&
           !version.getSerialNoData().equals(so.getVersion().getSerialNoData())) {
         // TODO check whole version, but createdAt is buggy
@@ -305,8 +305,6 @@ public final class Storage {
     }
     return null;
   }
-
-
 
   /**
    * Load all the object identified by the uris from the uri list.
