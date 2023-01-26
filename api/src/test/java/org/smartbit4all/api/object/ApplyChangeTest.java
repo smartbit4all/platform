@@ -347,6 +347,69 @@ class ApplyChangeTest {
   }
 
   @Test
+  void testReferenceHandling() {
+    SampleContainerItem item1 = new SampleContainerItem()
+        .name("item1");
+    URI item1uri = objectApi.saveAsNew(MY_SCHEME, item1);
+    ObjectNode item1Node = objectApi.load(item1uri);
+    assertFalse(item1Node.ref(SampleContainerItem.DATASHEET).isPresent());
+
+    SampleDataSheet datasheet1 = new SampleDataSheet()
+        .name("datasheet1");
+    item1Node.ref(SampleContainerItem.DATASHEET).setNewObject(datasheet1);
+    item1uri = objectApi.save(item1Node);
+    item1Node = objectApi.load(item1uri);
+    assertTrue(item1Node.ref(SampleContainerItem.DATASHEET).isPresent());
+    assertEquals("datasheet1",
+        item1Node.getValueAsString(SampleContainerItem.DATASHEET, SampleDataSheet.NAME));
+
+    item1Node = objectApi.load(item1uri);
+    SampleDataSheet datasheet2 = new SampleDataSheet()
+        .name("datasheet2");
+    URI datasheet2uri = objectApi.saveAsNew(MY_SCHEME, datasheet2);
+    item1Node.ref(SampleContainerItem.DATASHEET).set(datasheet2uri);
+    item1uri = objectApi.save(item1Node);
+    item1Node = objectApi.load(item1uri);
+    assertTrue(item1Node.ref(SampleContainerItem.DATASHEET).isPresent());
+    assertEquals("datasheet2",
+        item1Node.getValueAsString(SampleContainerItem.DATASHEET, SampleDataSheet.NAME));
+
+    item1Node = objectApi.load(item1uri);
+    SampleDataSheet datasheet3 = new SampleDataSheet()
+        .name("datasheet3");
+    item1Node.ref(SampleContainerItem.DATASHEET).setNewObject(datasheet3);
+    item1uri = objectApi.save(item1Node);
+    item1Node = objectApi.load(item1uri);
+    assertTrue(item1Node.ref(SampleContainerItem.DATASHEET).isPresent());
+    assertEquals("datasheet3",
+        item1Node.getValueAsString(SampleContainerItem.DATASHEET, SampleDataSheet.NAME));
+
+    // use clear to clear reference
+    item1Node.ref(SampleContainerItem.DATASHEET).clear();
+    item1uri = objectApi.save(item1Node);
+    item1Node = objectApi.load(item1uri);
+    assertFalse(item1Node.ref(SampleContainerItem.DATASHEET).isPresent());
+
+    SampleDataSheet datasheet4 = new SampleDataSheet()
+        .name("datasheet4");
+    item1Node.ref(SampleContainerItem.DATASHEET).setNewObject(datasheet4);
+    item1uri = objectApi.save(item1Node);
+    item1Node = objectApi.load(item1uri);
+    assertTrue(item1Node.ref(SampleContainerItem.DATASHEET).isPresent());
+    assertEquals("datasheet4",
+        item1Node.getValueAsString(SampleContainerItem.DATASHEET, SampleDataSheet.NAME));
+
+    // use set(null) to clear reference. have to load object, because ref is already loaded, so
+    // setting uri directly is forbidden
+    item1Node = objectApi.load(item1uri);
+    item1Node.ref(SampleContainerItem.DATASHEET).set((URI) null);
+    item1uri = objectApi.save(item1Node);
+    item1Node = objectApi.load(item1uri);
+    assertFalse(item1Node.ref(SampleContainerItem.DATASHEET).isPresent());
+
+  }
+
+  @Test
   void testGetValueFromObjectMap() {
     Map<String, Object> root = new HashMap<>();
 

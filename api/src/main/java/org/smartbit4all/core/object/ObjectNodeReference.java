@@ -126,9 +126,9 @@ public class ObjectNodeReference {
     if (originalObjectUri == null && isPresent()) {
       return ObjectNodeState.NEW;
     }
-    // if (objectUri == null && isPresent()) {
-    // return ObjectNodeState.NEW;
-    // }
+    if (objectUri == null && isPresent()) {
+      return ObjectNodeState.NEW;
+    }
     if (originalObjectUri != null && !isPresent()) {
       return ObjectNodeState.REMOVED;
     }
