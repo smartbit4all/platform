@@ -1,12 +1,14 @@
 package org.smartbit4all.api.invocation;
 
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.net.URI;
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
+import java.util.Map;
+import java.util.Optional;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.core.object.ObjectApi;
@@ -171,42 +173,38 @@ public class Invocations {
     }
   }
 
+  @SuppressWarnings({"unchecked"})
   public static List<Object> getParameterObjects(ObjectApi objectApi, InvocationRequest request,
       Method method) {
     // Transfer the parameters for the call. Convert the primitives and the objects by the
     List<Object> parameterObjects = new ArrayList<>();
-    // int i = 0;
     for (InvocationParameter parameter : request.getParameters()) {
       Object value = parameter.getValue();
-      if (value instanceof String) {
-        if (URI.class.getName().equals(parameter.getTypeClass())) {
-          value = URI.create((String) value);
-        } else if (UUID.class.getName().equals(parameter.getTypeClass())) {
-          value = UUID.fromString((String) value);
+      if (value != null && !value.getClass().getName().equals(parameter.getTypeClass())) {
+        Class<?> typeClass = getTypeClassByName(request, parameter.getTypeClass());
+        if (List.class.isAssignableFrom(typeClass)) {
+          value = objectApi.asList(getTypeClassByName(request, parameter.getInnerTypeClass()),
+              (List<?>) value);
+        } else if (Map.class.isAssignableFrom(typeClass)) {
+          value = objectApi.asMap(getTypeClassByName(request, parameter.getInnerTypeClass()),
+              (Map<String, ?>) value);
+        } else {
+          value = objectApi.asType(typeClass, value);
         }
+
       }
       parameterObjects.add(value);
-      // switch (parameter.getKind()) {
-      // case BYVALUE:
-      // // In case of primitive
-      // parameterObjects.add(parameter.getValue());
-      // break;
-      // case BYREFERENCE:
-      // // In this case we have a direct URI to an object.
-      // Storage storage = storageApi.get(Invocations.INVOCATION_SCHEME);
-      // try {
-      // parameterObjects.add(storage.read(URI.create(parameter.getStringValue())));
-      // } catch (Exception e) {
-      // throw new IllegalArgumentException(
-      // "Invalid URI parameter " + parameter.getValue() + " in the request: " + request, e);
-      // }
-      //
-      // default:
-      // break;
-      // }
-      // i++;
     }
     return parameterObjects;
+  }
+
+  private static final Class<?> getTypeClassByName(InvocationRequest request, String className) {
+    try {
+      return Class.forName(className);
+    } catch (ClassNotFoundException e) {
+      throw new IllegalArgumentException("Invalid " + className + " parameter type in " + request,
+          e);
+    }
   }
 
   /**
@@ -225,10 +223,16 @@ public class Invocations {
       Object result = method.invoke(api, parameterObjects.toArray());
       InvocationParameter invocationResult = new InvocationParameter();
       invocationResult.setValue(result);
-      // invocationResult.setKind(Kind.BYVALUE);
-      if (result != null) {
-        invocationResult.setTypeClass(result.getClass().getName());
-        // invocationResult.setStringValue(result.toString());
+      invocationResult.setTypeClass(method.getReturnType().getName());
+      Optional<Object> firtsNotNull = Optional.empty();
+      if (result instanceof List) {
+        firtsNotNull = ((List) result).stream().filter(o -> o != null).findFirst();
+      } else if (result instanceof Map) {
+        firtsNotNull =
+            ((Map) result).values().stream().filter(o -> o != null).findFirst();
+      }
+      if (firtsNotNull.isPresent()) {
+        invocationResult.setInnerTypeClass(firtsNotNull.get().getClass().getName());
       }
       return invocationResult;
     } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
@@ -283,6 +287,90 @@ public class Invocations {
       throw new IllegalArgumentException("Error while resolving invocation parameter!" + parameter,
           e);
     }
+  }
+
+  public static class ListWrapper implements InvocationHandler {
+
+    private List<?> list;
+
+    private Class<?> innerType;
+
+    public ListWrapper(List<?> list, Class<?> innerType) {
+      super();
+      this.list = list;
+      this.innerType = innerType;
+    }
+
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+      return method.invoke(list, args);
+    }
+
+    public final List<?> getList() {
+      return list;
+    }
+
+    public final void setList(List<?> list) {
+      this.list = list;
+    }
+
+    public final Class<?> getInnerType() {
+      return innerType;
+    }
+
+    public final void setInnerType(Class<?> innerType) {
+      this.innerType = innerType;
+    }
+
+  }
+
+  @SuppressWarnings("unchecked")
+  public static final <T> List<T> listOf(List<T> list, Class<T> clazz) {
+    return (List<T>) Proxy.newProxyInstance(Invocations.class.getClassLoader(),
+        new Class<?>[] {List.class},
+        new ListWrapper(list, clazz));
+  }
+
+  public static class MapWrapper implements InvocationHandler {
+
+    private Map<String, ?> map;
+
+    private Class<?> innerType;
+
+    public MapWrapper(Map<String, ?> map, Class<?> innerType) {
+      super();
+      this.map = map;
+      this.innerType = innerType;
+    }
+
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+      return method.invoke(map, args);
+    }
+
+    public final Class<?> getInnerType() {
+      return innerType;
+    }
+
+    public final void setInnerType(Class<?> innerType) {
+      this.innerType = innerType;
+    }
+
+    public final Map<String, ?> getMap() {
+      return map;
+    }
+
+    public final void setMap(Map<String, ?> map) {
+      this.map = map;
+    }
+
+  }
+
+  @SuppressWarnings("unchecked")
+  public static final <T> Map<String, T> mapOf(Map<String, T> map, Class<T> clazz) {
+    return (Map<String, T>) Proxy.newProxyInstance(Invocations.class.getClassLoader(),
+        new Class<?>[] {List.class},
+        new MapWrapper(map, clazz));
   }
 
 }

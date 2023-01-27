@@ -2,17 +2,23 @@ package org.smartbit4all.api.invocation;
 
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.SimpleBindings;
 import org.junit.jupiter.api.Assertions;
+import org.smartbit4all.api.collection.CollectionApi;
+import org.smartbit4all.api.collection.StoredReference;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
+import org.smartbit4all.api.invocation.bean.TestDataBean;
 import org.smartbit4all.core.utility.StringConstant;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class InvocationApiTestStatic {
 
@@ -120,6 +126,38 @@ public class InvocationApiTestStatic {
 
     Assertions.assertEquals(6.0,
         engine.eval("x + y + z", new SimpleBindings(vars)));
+  }
+
+  static void testInvokeListAndMapParam(InvocationApi invocationApi, CollectionApi collectionApi)
+      throws Exception {
+    String value = "Peter";
+    List<TestDataBean> list = new ArrayList<>();
+
+    for (int i = 0; i < 10; i++) {
+      list.add(new TestDataBean().data("data " + i));
+    }
+
+    assertThrows(IllegalArgumentException.class, () -> {
+      InvocationRequest request =
+          invocationApi.builder(TestApi.class).build(a -> a.modifyData(list));
+    });
+
+    InvocationRequest request =
+        invocationApi.builder(TestApi.class)
+            .build(a -> a.modifyData(Invocations.listOf(list, TestDataBean.class)));
+
+    InvocationParameter result1 = invocationApi.invoke(request);
+
+    // Save the request and reload.
+    StoredReference<InvocationRequest> storedReference = collectionApi
+        .reference(Invocations.INVOCATION_SCHEME, "myRequest", InvocationRequest.class);
+    storedReference
+        .set(request);
+
+    InvocationRequest reloaderRequest = storedReference.get();
+
+    InvocationParameter resultReloaded = invocationApi.invoke(reloaderRequest);
+
   }
 
 }

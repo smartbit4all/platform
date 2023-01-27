@@ -36,6 +36,8 @@ import javax.validation.Valid;
 @ApiModel(description = "As a result of the invocation we get back this object that contains the result if the invocation was successful. This can be saved into the AsynInvocationRequest as results and can be managed by the InvocationErrorHandler. The decision about the next step is also saved into this object. ")
 @JsonPropertyOrder({
   InvocationResult.RETURN_VALUE,
+  InvocationResult.TYPE_CLASS,
+  InvocationResult.INNER_TYPE_CLASS,
   InvocationResult.START_TIME,
   InvocationResult.END_TIME,
   InvocationResult.DECISION,
@@ -46,6 +48,12 @@ import javax.validation.Valid;
 public class InvocationResult {
   public static final String RETURN_VALUE = "returnValue";
   private Object returnValue;
+
+  public static final String TYPE_CLASS = "typeClass";
+  private String typeClass;
+
+  public static final String INNER_TYPE_CLASS = "innerTypeClass";
+  private String innerTypeClass;
 
   public static final String START_TIME = "startTime";
   private OffsetDateTime startTime;
@@ -86,6 +94,60 @@ public class InvocationResult {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setReturnValue(Object returnValue) {
     this.returnValue = returnValue;
+  }
+
+
+  public InvocationResult typeClass(String typeClass) {
+    
+    this.typeClass = typeClass;
+    return this;
+  }
+
+   /**
+   * The fully qualified type class name of the parameter.
+   * @return typeClass
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The fully qualified type class name of the parameter.")
+  @JsonProperty(TYPE_CLASS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getTypeClass() {
+    return typeClass;
+  }
+
+
+  @JsonProperty(TYPE_CLASS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setTypeClass(String typeClass) {
+    this.typeClass = typeClass;
+  }
+
+
+  public InvocationResult innerTypeClass(String innerTypeClass) {
+    
+    this.innerTypeClass = innerTypeClass;
+    return this;
+  }
+
+   /**
+   * If the type of the parameter is List or Map container then the inner type is saved into this property.
+   * @return innerTypeClass
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "If the type of the parameter is List or Map container then the inner type is saved into this property.")
+  @JsonProperty(INNER_TYPE_CLASS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getInnerTypeClass() {
+    return innerTypeClass;
+  }
+
+
+  @JsonProperty(INNER_TYPE_CLASS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setInnerTypeClass(String innerTypeClass) {
+    this.innerTypeClass = innerTypeClass;
   }
 
 
@@ -213,6 +275,8 @@ public class InvocationResult {
     }
     InvocationResult invocationResult = (InvocationResult) o;
     return Objects.equals(this.returnValue, invocationResult.returnValue) &&
+        Objects.equals(this.typeClass, invocationResult.typeClass) &&
+        Objects.equals(this.innerTypeClass, invocationResult.innerTypeClass) &&
         Objects.equals(this.startTime, invocationResult.startTime) &&
         Objects.equals(this.endTime, invocationResult.endTime) &&
         Objects.equals(this.decision, invocationResult.decision) &&
@@ -221,7 +285,7 @@ public class InvocationResult {
 
   @Override
   public int hashCode() {
-    return Objects.hash(returnValue, startTime, endTime, decision, error);
+    return Objects.hash(returnValue, typeClass, innerTypeClass, startTime, endTime, decision, error);
   }
 
   @Override
@@ -229,6 +293,8 @@ public class InvocationResult {
     StringBuilder sb = new StringBuilder();
     sb.append("class InvocationResult {\n");
     sb.append("    returnValue: ").append(toIndentedString(returnValue)).append("\n");
+    sb.append("    typeClass: ").append(toIndentedString(typeClass)).append("\n");
+    sb.append("    innerTypeClass: ").append(toIndentedString(innerTypeClass)).append("\n");
     sb.append("    startTime: ").append(toIndentedString(startTime)).append("\n");
     sb.append("    endTime: ").append(toIndentedString(endTime)).append("\n");
     sb.append("    decision: ").append(toIndentedString(decision)).append("\n");

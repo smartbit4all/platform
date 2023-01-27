@@ -33,7 +33,8 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   InvocationParameter.NAME,
   InvocationParameter.VALUE,
-  InvocationParameter.TYPE_CLASS
+  InvocationParameter.TYPE_CLASS,
+  InvocationParameter.INNER_TYPE_CLASS
 })
 @JsonTypeName("InvocationParameter")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -46,6 +47,9 @@ public class InvocationParameter {
 
   public static final String TYPE_CLASS = "typeClass";
   private String typeClass;
+
+  public static final String INNER_TYPE_CLASS = "innerTypeClass";
+  private String innerTypeClass;
 
   public InvocationParameter() { 
   }
@@ -133,6 +137,33 @@ public class InvocationParameter {
   }
 
 
+  public InvocationParameter innerTypeClass(String innerTypeClass) {
+    
+    this.innerTypeClass = innerTypeClass;
+    return this;
+  }
+
+   /**
+   * If the type of the parameter is List or Map container then the inner type is saved into this property.
+   * @return innerTypeClass
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "If the type of the parameter is List or Map container then the inner type is saved into this property.")
+  @JsonProperty(INNER_TYPE_CLASS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getInnerTypeClass() {
+    return innerTypeClass;
+  }
+
+
+  @JsonProperty(INNER_TYPE_CLASS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setInnerTypeClass(String innerTypeClass) {
+    this.innerTypeClass = innerTypeClass;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -144,12 +175,13 @@ public class InvocationParameter {
     InvocationParameter invocationParameter = (InvocationParameter) o;
     return Objects.equals(this.name, invocationParameter.name) &&
         Objects.equals(this.value, invocationParameter.value) &&
-        Objects.equals(this.typeClass, invocationParameter.typeClass);
+        Objects.equals(this.typeClass, invocationParameter.typeClass) &&
+        Objects.equals(this.innerTypeClass, invocationParameter.innerTypeClass);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, value, typeClass);
+    return Objects.hash(name, value, typeClass, innerTypeClass);
   }
 
   @Override
@@ -159,6 +191,7 @@ public class InvocationParameter {
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    value: ").append(toIndentedString(value)).append("\n");
     sb.append("    typeClass: ").append(toIndentedString(typeClass)).append("\n");
+    sb.append("    innerTypeClass: ").append(toIndentedString(innerTypeClass)).append("\n");
     sb.append("}");
     return sb.toString();
   }

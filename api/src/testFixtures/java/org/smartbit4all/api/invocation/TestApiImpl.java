@@ -1,6 +1,7 @@
 package org.smartbit4all.api.invocation;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.Random;
 import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationResult;
@@ -40,6 +41,11 @@ public class TestApiImpl implements TestApi {
   }
 
   @Override
+  public List<TestDataBean> modifyData(List<TestDataBean> databeans) {
+    return databeans;
+  }
+
+  @Override
   public void setFutureValue(String p1) {
     TestApi.futureValue.setValue(p1);
   }
@@ -57,7 +63,7 @@ public class TestApiImpl implements TestApi {
   @Override
   public InvocationResultDecision firstStepOnError(AsyncInvocationRequest r, InvocationResult p) {
     return new InvocationResultDecision().decision(DecisionEnum.CONTINUE)
-        .scheduledAt(OffsetDateTime.now().plusSeconds(5));
+        .scheduledAt(OffsetDateTime.now().plusSeconds(1));
   }
 
   @Override

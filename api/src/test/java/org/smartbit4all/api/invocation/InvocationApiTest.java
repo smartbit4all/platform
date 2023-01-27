@@ -1,6 +1,7 @@
 package org.smartbit4all.api.invocation;
 
 import org.junit.jupiter.api.Test;
+import org.smartbit4all.api.collection.CollectionApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -17,6 +18,9 @@ class InvocationApiTest {
 
   @Autowired
   private TestEventPublisherApi testEventPublisherApi;
+
+  @Autowired
+  private CollectionApi collectionApi;
 
   @Test
   void testPrimary() throws Exception {
@@ -61,6 +65,11 @@ class InvocationApiTest {
   @Test
   void testScriptCall() throws Exception {
     InvocationApiTestStatic.testScriptCall(invocationApi);
+  }
+
+  @Test
+  void testInvokeListAndMapParam() throws Exception {
+    InvocationApiTestStatic.testInvokeListAndMapParam(invocationApi, collectionApi);
   }
 
 }

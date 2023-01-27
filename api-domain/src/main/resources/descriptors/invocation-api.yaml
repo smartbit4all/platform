@@ -76,6 +76,9 @@ components:
         typeClass:
           type: string
           description: The fully qualified type class name of the parameter.
+        innerTypeClass:
+          type: string
+          description: If the type of the parameter is List or Map container then the inner type is saved into this property.
     InvocationResult:
       type: object
       description: |
@@ -87,6 +90,12 @@ components:
         returnValue:
           type: object
           description: The return value of the call if it was successful. If the return value is void then this value is null.
+        typeClass:
+          type: string
+          description: The fully qualified type class name of the parameter.
+        innerTypeClass:
+          type: string
+          description: If the type of the parameter is List or Map container then the inner type is saved into this property.
         startTime:
           type: string
           format: date-time

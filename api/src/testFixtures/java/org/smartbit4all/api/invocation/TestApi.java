@@ -1,5 +1,6 @@
 package org.smartbit4all.api.invocation;
 
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
@@ -28,6 +29,8 @@ public interface TestApi {
   void setFutureValueAt(String p1);
 
   TestDataBean modifyData(TestDataBean databean);
+
+  List<TestDataBean> modifyData(List<TestDataBean> databean);
 
   @FunctionalInterface
   interface MyEvent {

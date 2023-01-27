@@ -4,7 +4,11 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Proxy;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
+import org.smartbit4all.api.invocation.Invocations.ListWrapper;
+import org.smartbit4all.api.invocation.Invocations.MapWrapper;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.session.SessionApi;
@@ -57,8 +61,28 @@ public class InvocationBuilder<T> implements InvocationHandler {
     if (args != null && args.length != 0) {
       for (int i = 0; i < args.length; i++) {
         Parameter parameter = method.getParameters()[i];
-        request.addParametersItem(new InvocationParameter().name(parameter.getName())
-            .typeClass(parameter.getType().getName()).value(args[i]));
+        InvocationParameter invocationParameter =
+            new InvocationParameter().name(parameter.getName())
+                .typeClass(parameter.getType().getName()).value(args[i]);
+        if (List.class.isAssignableFrom(parameter.getType())) {
+          try {
+            invocationParameter.setInnerTypeClass(
+                ((ListWrapper) Proxy.getInvocationHandler(args[i])).getInnerType().getName());
+          } catch (Exception e) {
+            throw new IllegalArgumentException(
+                "In invocation builder use Invocations.listOf warpper for passing list parameters.");
+          }
+        } else if (Map.class.isAssignableFrom(parameter.getType())) {
+          try {
+            invocationParameter.setInnerTypeClass(
+                ((MapWrapper) Proxy.getInvocationHandler(args[i])).getInnerType().getName());
+          } catch (Exception e) {
+            throw new IllegalArgumentException(
+                "In invocation builder use Invocations.mapOf warpper for passing map parameters.");
+          }
+        }
+        request.addParametersItem(invocationParameter);
+
       }
     }
     return null;
