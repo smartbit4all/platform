@@ -226,3 +226,5 @@ components:
           type: string
         propertyName:
           type: string
+        typeClass:
+          type: string

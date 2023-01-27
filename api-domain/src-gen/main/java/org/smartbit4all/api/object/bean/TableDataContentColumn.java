@@ -32,7 +32,8 @@ import javax.validation.Valid;
  */
 @JsonPropertyOrder({
   TableDataContentColumn.LABEL,
-  TableDataContentColumn.PROPERTY_NAME
+  TableDataContentColumn.PROPERTY_NAME,
+  TableDataContentColumn.TYPE_CLASS
 })
 @JsonTypeName("TableDataContentColumn")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -42,6 +43,9 @@ public class TableDataContentColumn {
 
   public static final String PROPERTY_NAME = "propertyName";
   private String propertyName;
+
+  public static final String TYPE_CLASS = "typeClass";
+  private String typeClass;
 
   public TableDataContentColumn() { 
   }
@@ -102,6 +106,33 @@ public class TableDataContentColumn {
   }
 
 
+  public TableDataContentColumn typeClass(String typeClass) {
+    
+    this.typeClass = typeClass;
+    return this;
+  }
+
+   /**
+   * Get typeClass
+   * @return typeClass
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(TYPE_CLASS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getTypeClass() {
+    return typeClass;
+  }
+
+
+  @JsonProperty(TYPE_CLASS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setTypeClass(String typeClass) {
+    this.typeClass = typeClass;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -112,12 +143,13 @@ public class TableDataContentColumn {
     }
     TableDataContentColumn tableDataContentColumn = (TableDataContentColumn) o;
     return Objects.equals(this.label, tableDataContentColumn.label) &&
-        Objects.equals(this.propertyName, tableDataContentColumn.propertyName);
+        Objects.equals(this.propertyName, tableDataContentColumn.propertyName) &&
+        Objects.equals(this.typeClass, tableDataContentColumn.typeClass);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(label, propertyName);
+    return Objects.hash(label, propertyName, typeClass);
   }
 
   @Override
@@ -126,6 +158,7 @@ public class TableDataContentColumn {
     sb.append("class TableDataContentColumn {\n");
     sb.append("    label: ").append(toIndentedString(label)).append("\n");
     sb.append("    propertyName: ").append(toIndentedString(propertyName)).append("\n");
+    sb.append("    typeClass: ").append(toIndentedString(typeClass)).append("\n");
     sb.append("}");
     return sb.toString();
   }

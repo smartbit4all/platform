@@ -765,7 +765,8 @@ public final class TableDatas {
     for (DataColumn<?> column : tableData.columns()) {
       result.getHeader()
           .addColumnsItem(
-              new TableDataContentColumn().propertyName(column.getName()));
+              new TableDataContentColumn().propertyName(column.getName())
+                  .typeClass(column.getProperty().type().getName()));
     }
     for (DataRow row : tableData.rows()) {
       result.addRowsItem(tableData.columns().stream()
