@@ -769,6 +769,7 @@ public final class TableDatas {
     }
     for (DataRow row : tableData.rows()) {
       result.addRowsItem(tableData.columns().stream()
+          .filter(c -> tableData.get(c, row) != null)
           .collect(toMap(DataColumn::getName, c -> tableData.get(c, row))));
     }
     return result;
