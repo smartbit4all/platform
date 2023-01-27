@@ -233,10 +233,9 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
               property(col.getProperty().getName());
           if (mapping.path != null && mapping.processor == null
               && mapping.complexProcessor == null) {
-            tableData.setObject(col, row, n.getValue(col.getProperty().type(), mapping.path));
+            tableData.setObject(col, row, n.getValue(mapping.path));
           } else if (mapping.path != null && mapping.processor != null) {
-            tableData.setObject(col, row,
-                mapping.processor.apply(n.getValue(col.getProperty().type(), mapping.path)));
+            tableData.setObject(col, row, mapping.processor.apply(n.getValue(mapping.path)));
           } else if (mapping.complexProcessor != null) {
             tableData.setObject(col, row, mapping.complexProcessor.apply(n));
           }
