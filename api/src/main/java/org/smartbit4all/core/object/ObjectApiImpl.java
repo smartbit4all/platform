@@ -4,6 +4,7 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import java.io.IOException;
 import java.net.URI;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -161,6 +162,9 @@ public class ObjectApiImpl implements ObjectApi {
     }
     if (clazz == UUID.class && value instanceof String) {
       return (T) UUID.fromString((String) value);
+    }
+    if (clazz == OffsetDateTime.class && value instanceof String) {
+      return (T) OffsetDateTime.parse((String) value);
     }
     if (value instanceof Map) {
       // Try to retrieve the proper object
