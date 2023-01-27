@@ -17,12 +17,17 @@ package org.smartbit4all.domain.service.query;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Expression;
+import org.smartbit4all.domain.meta.ExpressionExists;
+import org.smartbit4all.domain.meta.ExpressionFinder;
+import org.smartbit4all.domain.meta.ExpressionFinder.FoundExpression;
 import org.smartbit4all.domain.meta.LockRequest;
 import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.domain.meta.PropertyRef;
@@ -222,8 +227,40 @@ public class QueryInput {
     return tableDataUri;
   }
 
-  public final void setTableDataUri(URI tableDataUri) {
-    this.tableDataUri = tableDataUri;
+  public final void setTableDataUri(URI tableDataUri, String... path) {
+    if (tableDataUri == null) {
+      return;
+    }
+    if (path == null || path.length == 0) {
+      this.tableDataUri = tableDataUri;
+    } else {
+      ExpressionExists exists = findExist(where, path);
+      if (exists != null) {
+        exists.storedTableDataUri(tableDataUri);
+      }
+    }
+  }
+
+  public final ExpressionExists findExist(Expression expression, String... path) {
+    Objects.requireNonNull(path);
+    ExpressionExists result = null;
+    String existName = path[0];
+    Iterator<FoundExpression> foundExists = ExpressionFinder.find(expression, e -> {
+      if (e instanceof ExpressionExists) {
+        return existName.equals(((ExpressionExists) e).getName());
+      }
+      return false;
+    }).iterator();
+    // We recurse with the first occurrence
+    if (foundExists.hasNext()) {
+      FoundExpression next = foundExists.next();
+      if (path.length > 1) {
+        result = findExist(next.getExpression(), Arrays.copyOfRange(path, 1, path.length));
+      } else {
+        return (ExpressionExists) next.getExpression();
+      }
+    }
+    return result;
   }
 
   public final EntityDefinition getEntityDef() {

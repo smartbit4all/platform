@@ -18,11 +18,15 @@ import org.smartbit4all.api.filterexpression.bean.FilterExpressionData;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOperandData;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOperation;
+import org.smartbit4all.api.object.bean.TableDataContent;
+import org.smartbit4all.api.sample.bean.SampleCategory;
+import org.smartbit4all.api.sample.bean.SampleContainerItem;
 import org.smartbit4all.api.sample.bean.SampleDataSheet;
 import org.smartbit4all.api.sample.bean.SampleInlineObject;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
+import org.smartbit4all.core.object.ObjectNodeList;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.data.TableDatas;
 import org.smartbit4all.domain.meta.Property;
@@ -44,6 +48,7 @@ class CollectionApiTest {
   public static final String MY_LIST = "myList";
   public static final String MY_REF = "myRef";
   public static final String MY_SEARCH = "mySearch";
+  public static final String SAMPLE_CATEGORY = "sampleCategory";
 
   @Autowired
   private CollectionApi collectionApi;
@@ -267,6 +272,58 @@ class CollectionApiTest {
         searchIndex.executeSearch(new TestFilter().isOdd(true).name("od").caption("even.even"));
 
     assertTrue(tableDataByDerivedNoResult.rows().isEmpty());
+
+  }
+
+  @Test
+  void testSearchIndexExists() throws Exception {
+
+    ObjectDefinition<SampleInlineObject> definition =
+        objectApi.definition(SampleInlineObject.class);
+
+    System.out.println(definition.getQualifiedName());
+
+    int count = 25;
+    for (int i = 0; i < count; i++) {
+      ObjectNode node =
+          objectApi.create(SCHEMA, new SampleCategory().name("category " + i));
+      ObjectNodeList list = node.list(SampleCategory.CONTAINER_ITEMS);
+      for (int j = 0; j < count; j++) {
+        list
+            .addNewObject(new SampleContainerItem().name("sub " + j))
+            .setValue(new SampleInlineObject().name("inline " + j),
+                SampleContainerItem.INLINE_OBJECT)
+            .ref(SampleContainerItem.DATASHEET)
+            .setNewObject(new SampleDataSheet().name("datasheet " + j));
+      }
+      objectApi.save(node);
+    }
+
+    SearchIndex<SampleCategory> searchIndex =
+        collectionApi.searchIndex(SCHEMA, CollectionApiTest.SAMPLE_CATEGORY, SampleCategory.class);
+    TableData<?> tableData = searchIndex.executeSearch(new FilterExpressionList()
+        .addExpressionsItem(
+            new FilterExpressionData().currentOperation(FilterExpressionOperation.LIKE)
+                .operand1(new FilterExpressionOperandData().isDataName(true)
+                    .valueAsString(SampleCategory.NAME))
+                .operand2(
+                    new FilterExpressionOperandData().isDataName(false)
+                        .valueAsString("category %2%")))
+        .addExpressionsItem(
+            new FilterExpressionData().currentOperation(FilterExpressionOperation.EXISTS)
+                .operand1(new FilterExpressionOperandData().isDataName(true)
+                    .valueAsString(SampleCategory.CONTAINER_ITEMS))
+                .subExpression(
+                    new FilterExpressionList().addExpressionsItem(
+                        new FilterExpressionData().currentOperation(FilterExpressionOperation.LIKE)
+                            .operand1(new FilterExpressionOperandData().isDataName(true)
+                                .valueAsString(SampleContainerItem.DATASHEET))
+                            .operand2(new FilterExpressionOperandData().isDataName(false)
+                                .valueAsString("data%20"))))));
+
+    TableDataContent dataContent = TableDatas.contentOf(tableData);
+
+    assertEquals(7, tableData.size());
 
   }
 

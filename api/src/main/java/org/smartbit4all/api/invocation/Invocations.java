@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.UUID;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
+import org.smartbit4all.core.object.ObjectApi;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -170,7 +171,8 @@ public class Invocations {
     }
   }
 
-  public static List<Object> getParameterObjects(InvocationRequest request, Method method) {
+  public static List<Object> getParameterObjects(ObjectApi objectApi, InvocationRequest request,
+      Method method) {
     // Transfer the parameters for the call. Convert the primitives and the objects by the
     List<Object> parameterObjects = new ArrayList<>();
     // int i = 0;
@@ -215,9 +217,10 @@ public class Invocations {
    * @param method
    * @return
    */
-  public static InvocationParameter invokeMethod(InvocationRequest request, Object api,
+  public static InvocationParameter invokeMethod(ObjectApi objectApi, InvocationRequest request,
+      Object api,
       Method method) {
-    List<Object> parameterObjects = getParameterObjects(request, method);
+    List<Object> parameterObjects = getParameterObjects(objectApi, request, method);
     try {
       Object result = method.invoke(api, parameterObjects.toArray());
       InvocationParameter invocationResult = new InvocationParameter();

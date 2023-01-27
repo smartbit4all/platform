@@ -76,7 +76,7 @@ public final class InvocationApiImpl implements InvocationApi {
         || runtimes.contains(applicationRuntimeApi.self().getUuid())) {
       Object apiInstance = invocationRegisterApi.getApiInstance(apiData.getUri());
       Method method = Invocations.getMethodToCall(apiInstance, request);
-      return Invocations.invokeMethod(request, apiInstance, method);
+      return Invocations.invokeMethod(objectApi, request, apiInstance, method);
     } else {
       UUID runtimeToRun = getRuntimeToRun(runtimes);
 

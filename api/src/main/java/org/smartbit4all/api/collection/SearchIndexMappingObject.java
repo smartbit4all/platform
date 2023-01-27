@@ -1,5 +1,6 @@
 package org.smartbit4all.api.collection;
 
+import static java.util.stream.Collectors.toMap;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,11 +17,16 @@ import org.smartbit4all.api.filterexpression.bean.FilterExpressionBoolOperator;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionData;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOperandData;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionOperation;
 import org.smartbit4all.core.object.BeanMeta;
 import org.smartbit4all.core.object.BeanMetaUtil;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.PropertyMeta;
+import org.smartbit4all.core.utility.StringConstant;
+import org.smartbit4all.domain.data.DataColumn;
+import org.smartbit4all.domain.data.DataRow;
+import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.EntityDefinitionBuilder;
 import org.smartbit4all.domain.meta.Expression;
@@ -93,7 +99,7 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
         return propertyMeta.getType();
       }
     }
-    return null;
+    return String.class;
   }
 
   final synchronized BeanMeta getTypeMeta() {
@@ -106,17 +112,18 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
     return null;
   }
 
-  public SearchIndexMappingObject map(String propertyName, String... pathes) {
+  public SearchIndexMappingObject map(String propertyName, Class<?> dataType, String... pathes) {
     Objects.requireNonNull(pathes);
     if (pathes.length > 0) {
 
       mappingsByPropertyName.put(propertyName,
-          new SearchIndexMappingProperty(propertyName, pathes, getType(propertyName), null, null));
+          new SearchIndexMappingProperty(propertyName, pathes,
+              dataType == null ? getType(propertyName) : dataType, null, null));
     }
     return this;
   }
 
-  public SearchIndexMappingObject map(String propertyName,
+  public SearchIndexMappingObject mapProcessed(String propertyName,
       UnaryOperator<Object> processor,
       String... pathes) {
     Objects.requireNonNull(pathes);
@@ -142,6 +149,8 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
     SearchIndexMappingObject detail =
         new SearchIndexMappingObject().master(masterReferenceQualified, masterReferenceQualified,
             uniqueIdName);
+    detail.logicalSchema = logicalSchema;
+    detail.name = name + StringConstant.UNDERLINE + propertyName;
     mappingsByPropertyName.put(propertyName,
         detail);
     return detail;
@@ -185,6 +194,9 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
 
     // We must refer to the master if any
     if (masterBuilder != null) {
+      for (String[] join : masterJoin) {
+        builder.ownedProperty(join[0], masterBuilder.getInstance().getProperty(join[1]).type());
+      }
       builder.reference(masterReferenceName, masterBuilder, masterJoin);
       result.masterRef = builder.getReference(masterReferenceName);
     }
@@ -196,12 +208,59 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
         // master join so we have only one reference in the join list.
         SearchEntityDefinition detailDefinition =
             ((SearchIndexMappingObject) entry.getValue()).constructDefinition(ctx, builder);
+        ((SearchIndexMappingObject) entry.getValue()).entityDefinition = detailDefinition;
         result.detailsByName.put(entry.getKey(), new DetailDefinition(
             detailDefinition, new JoinPath(Arrays.asList(detailDefinition.masterRef))));
       }
     }
 
     return result.definition(builder.build());
+
+  }
+
+  final void readObjects(Stream<ObjectNode> objects,
+      SearchEntityTableDataResult result, Map<String, Object> defaultValues) {
+
+    TableData<?> tableData = result.result;
+    objects.forEach(n -> {
+      DataRow row = tableData.addRow();
+      for (DataColumn<?> col : tableData.columns()) {
+        Object defaultValue = defaultValues.get(col.getProperty().getName());
+        if (defaultValue != null) {
+          tableData.setObject(col, row, defaultValue);
+        } else {
+          SearchIndexMappingProperty mapping =
+              property(col.getProperty().getName());
+          if (mapping.path != null && mapping.processor == null
+              && mapping.complexProcessor == null) {
+            tableData.setObject(col, row, n.getValue(mapping.path));
+          } else if (mapping.path != null && mapping.processor != null) {
+            tableData.setObject(col, row, mapping.processor.apply(n.getValue(mapping.path)));
+          } else if (mapping.complexProcessor != null) {
+            tableData.setObject(col, row, mapping.complexProcessor.apply(n));
+          }
+        }
+      }
+      // Read all the details also.
+      for (Entry<String, DetailDefinition> entry : result.searchEntityDefinition.detailsByName
+          .entrySet()) {
+        SearchEntityTableDataResult detailResult =
+            result.detailResults.computeIfAbsent(entry.getKey(), detailName -> {
+              TableData<?> detailData =
+                  new TableData<>(entry.getValue().detail.definition);
+              detailData.addColumns(entry.getValue().detail.definition.allProperties());
+              return new SearchEntityTableDataResult()
+                  .searchEntityDefinition(entry.getValue().detail)
+                  .result(detailData);
+            });
+        SearchIndexMappingObject detailObjectMapping =
+            ((SearchIndexMappingObject) mappingsByPropertyName.get(entry.getKey()));
+        detailObjectMapping.readObjects(n.list(entry.getKey()).nodeStream(), detailResult,
+            entry.getValue().masterJoin.getReferences().get(0).joins().stream()
+                .collect(toMap(j -> j.getSourceProperty().getName(),
+                    j -> tableData.get(tableData.getColumn(j.getTargetProperty()), row))));
+      }
+    });
 
   }
 
@@ -226,10 +285,10 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
       Expression exp = convertFilterExpression(fed);
       if (exp != null) {
         if (currentExpression != null && prevFed != null) {
-          if (prevFed.getBoolOperator() == FilterExpressionBoolOperator.AND) {
-            currentExpression = currentExpression.AND(exp);
-          } else {
+          if (prevFed.getBoolOperator() == FilterExpressionBoolOperator.OR) {
             currentExpression = currentExpression.OR(exp);
+          } else {
+            currentExpression = currentExpression.AND(exp);
           }
         } else {
           currentExpression = exp;
@@ -256,12 +315,20 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
   }
 
   private final Expression convertFilterExpression(FilterExpressionData fed) {
+    String propertyName;
+    PropertyObject property = null;
     List<PropertyObject> properties = new ArrayList<>();
-    properties.add(propertyOf(fed.getOperand1()));
-    properties.add(propertyOf(fed.getOperand2()));
-    properties.add(propertyOf(fed.getOperand3()));
-    // The first property would be great for type conversion.
-    PropertyObject property = properties.stream().filter(p -> p != null).findFirst().get();
+    if (Arrays.asList(FilterExpressionOperation.EXISTS, FilterExpressionOperation.NOT_EXISTS)
+        .contains(fed.getCurrentOperation())) {
+      propertyName = fed.getOperand1().getValueAsString();
+    } else {
+      properties.add(propertyOf(fed.getOperand1()));
+      properties.add(propertyOf(fed.getOperand2()));
+      properties.add(propertyOf(fed.getOperand3()));
+      // The first property would be great for type conversion.
+      property = properties.stream().filter(p -> p != null).findFirst().get();
+      propertyName = property.getName();
+    }
     // Type conversion by the type of the filter expression operand
     List<Object> values = new ArrayList<>();
     try {
@@ -282,7 +349,7 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
         return properties.get(0).eq(values.get(1));
       case EXISTS:
         // The expression is simple parenthesis for the same entity definition.
-        return constructExists(fed, property);
+        return constructExists(fed, propertyName);
       case EXPRESSION:
         // The expression is simple parenthesis for the same entity definition.
         Expression innerExpression = constructExpression(fed.getSubExpression());
@@ -306,7 +373,7 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
       case NOT_EQUAL:
         return properties.get(0).noteq(values.get(1));
       case NOT_EXISTS:
-        return constructExists(fed, property).NOT();
+        return constructExists(fed, propertyName).NOT();
       case NOT_LIKE:
         return properties.get(0).notlike(values.get(1));
       default:
@@ -316,13 +383,14 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
     return null;
   }
 
-  private final Expression constructExists(FilterExpressionData fed, PropertyObject property) {
+  private final Expression constructExists(FilterExpressionData fed, String propertyName) {
     SearchIndexMappingObject detailMapping =
-        ((SearchIndexMappingObject) mappingsByPropertyName.get(property.getName()));
-    DetailDefinition detailDefinition = entityDefinition.detailsByName.get(property.getName());
+        ((SearchIndexMappingObject) mappingsByPropertyName.get(propertyName));
+    DetailDefinition detailDefinition = entityDefinition.detailsByName.get(propertyName);
     Expression existsExpression = detailMapping.constructExpression(fed.getSubExpression());
     // Add the exists to the current entity and return the exists expression as is.
-    return entityDefinition.definition.exists(detailDefinition.masterJoin, existsExpression);
+    return entityDefinition.definition.exists(detailDefinition.masterJoin, existsExpression)
+        .name(propertyName);
   }
 
   private final Object convertValue(String valueAsString, PropertyObject property)

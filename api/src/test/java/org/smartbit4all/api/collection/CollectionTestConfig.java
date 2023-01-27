@@ -1,9 +1,18 @@
 package org.smartbit4all.api.collection;
 
+import org.smartbit4all.api.binarydata.BinaryContent;
 import org.smartbit4all.api.config.PlatformApiConfig;
+import org.smartbit4all.api.object.bean.AggregationKind;
+import org.smartbit4all.api.object.bean.ReferencePropertyKind;
+import org.smartbit4all.api.org.bean.User;
+import org.smartbit4all.api.sample.bean.SampleAttachement;
+import org.smartbit4all.api.sample.bean.SampleCategory;
+import org.smartbit4all.api.sample.bean.SampleContainerItem;
 import org.smartbit4all.api.sample.bean.SampleDataSheet;
+import org.smartbit4all.api.sample.bean.SampleLinkObject;
 import org.smartbit4all.core.io.TestFileUtil;
 import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.core.object.ObjectReferenceConfigs;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.config.ApplicationRuntimeStorageConfig;
 import org.smartbit4all.domain.data.storage.Storage;
@@ -51,7 +60,8 @@ public class CollectionTestConfig {
         CollectionApiTest.MY_SEARCH,
         TestFilter.class, CollectionApiTest.SCHEMA, SampleDataSheet.class)
             .map(TestFilter.NAME, SampleDataSheet.NAME).map(TestFilter.URI, SampleDataSheet.URI)
-            .map(TestFilter.ISODD, n -> Boolean.valueOf("odd".equals(n)), SampleDataSheet.NAME)
+            .mapProcessed(TestFilter.ISODD, n -> Boolean.valueOf("odd".equals(n)),
+                SampleDataSheet.NAME)
             .mapComplex(TestFilter.CAPTION,
                 on -> {
                   return on.getValueAsString(SampleDataSheet.NAME)
@@ -73,6 +83,80 @@ public class CollectionTestConfig {
                   }
                   return exp;
                 });
+  }
+
+  @Bean
+  public SearchIndex<SampleCategory> sampleMasterDetailIndex() {
+    SearchIndexImpl<SampleCategory> index = new SearchIndexImpl<>(
+        CollectionApiTest.SCHEMA,
+        CollectionApiTest.SAMPLE_CATEGORY, CollectionApiTest.SCHEMA, SampleCategory.class)
+            .map(SampleCategory.NAME, SampleCategory.NAME)
+            .map(SampleCategory.URI, SampleCategory.URI)
+            .mapComplex(TestFilter.CAPTION,
+                on -> {
+                  return on.getValueAsString(SampleCategory.NAME)
+                      + StringConstant.DOT
+                      + on.getValueAsString(SampleCategory.NAME);
+                });
+    index.detail(SampleCategory.CONTAINER_ITEMS, SampleCategory.URI)
+        .map(SampleContainerItem.NAME, String.class,
+            SampleContainerItem.NAME)
+        .map(SampleContainerItem.DATASHEET, String.class, SampleContainerItem.DATASHEET,
+            SampleDataSheet.NAME);
+    return index;
+  }
+
+  @Bean
+  public ObjectReferenceConfigs refDefs() {
+    return new ObjectReferenceConfigs()
+        .ref(SampleCategory.class,
+            SampleCategory.SUB_CATEGORIES,
+            SampleCategory.class,
+            ReferencePropertyKind.LIST)
+        .ref(SampleCategory.class,
+            SampleCategory.CONTAINER_ITEMS,
+            SampleContainerItem.class,
+            ReferencePropertyKind.LIST)
+        .ref(SampleCategory.class,
+            SHADOW_ITEMS,
+            SampleContainerItem.class,
+            ReferencePropertyKind.LIST)
+        .ref(SampleCategory.class,
+            SampleCategory.LINKS,
+            SampleLinkObject.class,
+            ReferencePropertyKind.LIST,
+            AggregationKind.INLINE)
+        .ref(SampleLinkObject.class,
+            SampleLinkObject.CATEGORY,
+            SampleCategory.class,
+            ReferencePropertyKind.REFERENCE)
+        .ref(SampleLinkObject.class,
+            SampleLinkObject.ITEM,
+            SampleContainerItem.class,
+            ReferencePropertyKind.REFERENCE)
+        .ref(SampleContainerItem.class,
+            SampleContainerItem.USER_URI,
+            User.class,
+            ReferencePropertyKind.REFERENCE)
+        .ref(SampleContainerItem.class,
+            SampleContainerItem.ATTACHMENTS,
+            SampleAttachement.class,
+            ReferencePropertyKind.LIST,
+            AggregationKind.COMPOSITE)
+        .ref(SampleContainerItem.class,
+            SampleContainerItem.MAIN_DOCUMENT,
+            SampleAttachement.class,
+            ReferencePropertyKind.REFERENCE,
+            AggregationKind.COMPOSITE)
+        .ref(SampleContainerItem.class,
+            SampleContainerItem.DATASHEET,
+            SampleDataSheet.class,
+            ReferencePropertyKind.REFERENCE,
+            AggregationKind.COMPOSITE)
+        .ref(SampleAttachement.class,
+            SampleAttachement.CONTENT,
+            BinaryContent.class,
+            ReferencePropertyKind.REFERENCE);
   }
 
 }

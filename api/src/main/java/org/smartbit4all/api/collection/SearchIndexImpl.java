@@ -1,6 +1,7 @@
 package org.smartbit4all.api.collection;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -10,16 +11,12 @@ import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
-import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.smartbit4all.api.collection.SearchEntityDefinition.DetailDefinition;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
-import org.smartbit4all.domain.data.DataColumn;
-import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
@@ -98,8 +95,22 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
 
   @Override
   public TableData<?> executeSearch(QueryInput queryInput) {
-    queryInput.setTableDataUri(tableDataApi.save(readAllObjects().result));
+    SearchEntityTableDataResult allObjects = readAllObjects();
+    setupExists(queryInput, allObjects, Collections.emptyList());
+    queryInput.setTableDataUri(tableDataApi.save(allObjects.result));
     return crudApi.executeQuery(queryInput).getTableData();
+  }
+
+  private void setupExists(QueryInput queryInput, SearchEntityTableDataResult objectResult,
+      List<String> path) {
+    for (Entry<String, SearchEntityTableDataResult> entry : objectResult.detailResults
+        .entrySet()) {
+      URI detailTableDataUri = tableDataApi.save(entry.getValue().result);
+      ArrayList<String> subPath = new ArrayList<>(path);
+      subPath.add(entry.getKey());
+      queryInput.setTableDataUri(detailTableDataUri, subPath.toArray(new String[subPath.size()]));
+      setupExists(queryInput, entry.getValue(), subPath);
+    }
   }
 
   public TableData<?> getAll() {
@@ -133,7 +144,8 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
 
   private final void updateIndex(List<URI> changeList) {
     SearchEntityTableDataResult updateResult = constructResult();
-    readObjects(changeList.stream().map(u -> objectApi.load(u)), updateResult);
+    objectMapping.readObjects(changeList.stream().map(u -> objectApi.load(u)), updateResult,
+        Collections.emptyMap());
     // Update the entity definitions by the table data in the result.
     objectMapping.update(updateResult);
   }
@@ -142,45 +154,10 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
 
     Storage storage = storageApi.get(indexedObjectSchema);
     List<URI> allObjectUris = storage.readAllUris(indexedObjectDefinition().getClazz());
-    readObjects(allObjectUris.stream().map(u -> objectApi.load(u)), result);
+    objectMapping.readObjects(allObjectUris.stream().map(u -> objectApi.load(u)), result,
+        Collections.emptyMap());
 
     return result;
-  }
-
-  private final void readObjects(Stream<ObjectNode> objects,
-      SearchEntityTableDataResult result) {
-
-    TableData<?> tableData = result.result;
-    objects.forEach(n -> {
-      DataRow row = tableData.addRow();
-      for (DataColumn<?> col : tableData.columns()) {
-        SearchIndexMappingProperty mapping =
-            objectMapping.property(col.getProperty().getName());
-        if (mapping.path != null && mapping.processor == null
-            && mapping.complexProcessor == null) {
-          tableData.setObject(col, row, n.getValue(mapping.path));
-        } else if (mapping.path != null && mapping.processor != null) {
-          tableData.setObject(col, row, mapping.processor.apply(n.getValue(mapping.path)));
-        } else if (mapping.complexProcessor != null) {
-          tableData.setObject(col, row, mapping.complexProcessor.apply(n));
-        }
-      }
-      // Read all the details also.
-      for (Entry<String, DetailDefinition> entry : result.searchEntityDefinition.detailsByName
-          .entrySet()) {
-        SearchEntityTableDataResult detailResult =
-            result.detailResults.computeIfAbsent(entry.getKey(), detailName -> {
-              TableData<?> detailData =
-                  new TableData<>(result.searchEntityDefinition.definition);
-              detailData.addColumns(result.searchEntityDefinition.definition.allProperties());
-              return new SearchEntityTableDataResult()
-                  .searchEntityDefinition(entry.getValue().detail)
-                  .result(detailData);
-            });
-        readObjects(n.list(entry.getKey()).nodeStream(), result);
-      }
-    });
-
   }
 
   @Override
@@ -196,6 +173,7 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
     super();
     this.objectMapping.name = name;
     this.objectMapping.logicalSchema = logicalSchema;
+    this.objectMapping.filterClass(indexedObjectDefinitionClass);
     this.indexedObjectSchema = indexedObjectSchema;
     this.indexedObjectDefinitionClass = indexedObjectDefinitionClass;
   }
@@ -215,14 +193,19 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
   }
 
   public SearchIndexImpl<O> map(String propertyName, String... pathes) {
-    objectMapping.map(propertyName, pathes);
+    objectMapping.map(propertyName, null, pathes);
     return this;
   }
 
-  public SearchIndexImpl<O> map(String propertyName,
+  public SearchIndexImpl<O> map(String propertyName, Class<?> dataType, String... pathes) {
+    objectMapping.map(propertyName, dataType, pathes);
+    return this;
+  }
+
+  public SearchIndexImpl<O> mapProcessed(String propertyName,
       UnaryOperator<Object> processor,
       String... pathes) {
-    objectMapping.map(propertyName, processor, pathes);
+    objectMapping.mapProcessed(propertyName, processor, pathes);
     return this;
   }
 

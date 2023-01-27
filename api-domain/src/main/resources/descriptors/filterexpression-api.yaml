@@ -58,9 +58,10 @@ components:
           $ref: "#/components/schemas/FilterExpressionOperandData"
         currentOperation:
           $ref: "#/components/schemas/FilterExpressionOperation"
+          default: 'EQUAL'
         boolOperator:
           $ref: "#/components/schemas/FilterExpressionBoolOperator"
-          default: AND
+          default: 'AND'
         selectedValues:
           type: array
           items:

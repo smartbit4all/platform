@@ -1,5 +1,6 @@
 package org.smartbit4all.api.collection;
 
+import java.util.HashMap;
 import java.util.Map;
 import org.smartbit4all.domain.data.TableData;
 
@@ -16,7 +17,7 @@ class SearchEntityTableDataResult {
 
   TableData<?> result;
 
-  Map<String, SearchEntityTableDataResult> detailResults;
+  Map<String, SearchEntityTableDataResult> detailResults = new HashMap<>();
 
   final SearchEntityTableDataResult searchEntityDefinition(
       SearchEntityDefinition searchEntityDefinition) {

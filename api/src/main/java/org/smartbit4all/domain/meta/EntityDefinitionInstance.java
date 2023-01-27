@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.annotation.property.ReferenceMandatory;
 import org.smartbit4all.domain.meta.jdbc.JDBCDataConverterHelper;
 import org.smartbit4all.domain.service.entity.EntityUris;
@@ -337,6 +338,11 @@ class EntityDefinitionInstance implements EntityDefinition {
 
   final void setDataConverterHelper(JDBCDataConverterHelper dataConverterHelper) {
     this.dataConverterHelper = dataConverterHelper;
+  }
+
+  @Override
+  public String toString() {
+    return "entity: " + getDomain() + StringConstant.DOT + entityDefName();
   }
 
 }

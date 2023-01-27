@@ -74,6 +74,12 @@ import org.smartbit4all.domain.meta.Reference.Join;
 public final class ExpressionExists extends Expression {
 
   /**
+   * If we have an exists expression then we might give it a name to be able to identify later on.
+   * It can be used to set saved table data uri or to get the inner expression.
+   */
+  private String name;
+
+  /**
    * This is the expression for the entity filtered by the exists.
    */
   private Expression expression;
@@ -229,6 +235,9 @@ public final class ExpressionExists extends Expression {
     builder.append(isNegate() ? "NOT" : "");
     builder.append(StringConstant.SPACE);
     builder.append("EXIST");
+    if (name != null) {
+      builder.append(StringConstant.LEFT_PARENTHESIS + name + StringConstant.RIGHT_PARENTHESIS);
+    }
     builder.append(StringConstant.LEFT_CURLY);
     builder.append(contextEntity.entityDefName());
     builder.append("->");
@@ -240,6 +249,15 @@ public final class ExpressionExists extends Expression {
 
   public final URI getStoredTableDataUri() {
     return storedTableDataUri;
+  }
+
+  public final String getName() {
+    return name;
+  }
+
+  public final ExpressionExists name(String name) {
+    this.name = name;
+    return this;
   }
 
 }

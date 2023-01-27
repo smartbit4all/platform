@@ -84,4 +84,8 @@ public class EntityDefinitionBuilder {
     return instance;
   }
 
+  public final EntityDefinition getInstance() {
+    return instance;
+  }
+
 }
