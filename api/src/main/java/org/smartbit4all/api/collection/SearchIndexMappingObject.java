@@ -123,13 +123,14 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
     return this;
   }
 
-  public SearchIndexMappingObject mapProcessed(String propertyName,
+  public SearchIndexMappingObject mapProcessed(String propertyName, Class<?> dataType,
       UnaryOperator<Object> processor,
       String... pathes) {
     Objects.requireNonNull(pathes);
     if (pathes.length > 0) {
       mappingsByPropertyName.put(propertyName,
-          new SearchIndexMappingProperty(propertyName, pathes, getType(propertyName), processor,
+          new SearchIndexMappingProperty(propertyName, pathes,
+              dataType == null ? getType(propertyName) : dataType, processor,
               null));
     }
     return this;
