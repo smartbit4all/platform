@@ -205,7 +205,13 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
   public SearchIndexImpl<O> mapProcessed(String propertyName,
       UnaryOperator<Object> processor,
       String... pathes) {
-    objectMapping.mapProcessed(propertyName, processor, pathes);
+    objectMapping.mapProcessed(propertyName, null, processor, pathes);
+    return this;
+  }
+
+  public SearchIndexImpl<O> mapProcessed(String propertyName, Class<?> dataType,
+      UnaryOperator<Object> processor, String... pathes) {
+    objectMapping.mapProcessed(propertyName, dataType, processor, pathes);
     return this;
   }
 
