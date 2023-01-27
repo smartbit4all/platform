@@ -19,7 +19,9 @@ public abstract class FilterExpressions {
             || operandHasValue(data.getOperand3()))
         .collect(Collectors.toList());
 
-    return new FilterExpressionList().expressions(filterExpressions);
+    return filterExpressions.isEmpty()
+        ? null
+        : new FilterExpressionList().expressions(filterExpressions);
   }
 
   private static boolean operandHasValue(FilterExpressionOperandData operandData) {
