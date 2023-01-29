@@ -369,7 +369,7 @@ public class Invocations {
   @SuppressWarnings("unchecked")
   public static final <T> Map<String, T> mapOf(Map<String, T> map, Class<T> clazz) {
     return (Map<String, T>) Proxy.newProxyInstance(Invocations.class.getClassLoader(),
-        new Class<?>[] {List.class},
+        new Class<?>[] {Map.class},
         new MapWrapper(map, clazz));
   }
 
