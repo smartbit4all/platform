@@ -2,6 +2,7 @@ package org.smartbit4all.api.collection;
 
 import static java.util.stream.Collectors.toMap;
 import java.io.IOException;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -398,6 +399,10 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
       throws IOException {
     if (String.class.equals(property.getBasic().type())) {
       return valueAsString;
+    }
+    if (OffsetDateTime.class.equals(property.getBasic().type())) {
+      // TODO maybe not the best handle offsetdatetime here
+      return OffsetDateTime.parse(valueAsString);
     }
     return objectApi.getDefaultSerializer().fromString(valueAsString, property.getBasic().type());
   }
