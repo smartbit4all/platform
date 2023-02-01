@@ -124,6 +124,29 @@ paths:
           description: 'The context does not exists with the given uuid'
         '500':
           description: 'Error occured while fetching the constraints data'
+  /smartlink/{channel}/{uuid}:
+    put:
+      tags:
+      - View
+      summary: 
+      operationId: 'showPublishedView'
+      parameters: 
+        - in: path
+          name: channel
+          schema:
+            type: string
+          required: true
+          description: Smartlink's channel.
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Smartlink's unique identifier
+      responses:
+        '200':
+          description: ''
 components:
   schemas:
     ViewContext:
@@ -397,3 +420,19 @@ components:
             Additional parameters for executing the UI action. 
           type: object
           additionalProperties: true
+    SmartLinkData:
+      description: |
+        Represents a stored smartlink. Contains identifiers and a View, which will be opened, 
+        when this smartlink is clicked.
+      type: object
+      properties:
+        uri:
+          type: string
+          format: uri
+        uuid:
+          type: string
+          format: uuid
+        view:
+          $ref: '#/components/schemas/View'
+        url:
+          type: string
