@@ -1,6 +1,7 @@
 package org.smartbit4all.api.view;
 
 import static java.util.stream.Collectors.toList;
+import java.net.URI;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -11,11 +12,13 @@ import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.view.bean.CloseResult;
 import org.smartbit4all.api.view.bean.MessageData;
 import org.smartbit4all.api.view.bean.OpenPendingData;
+import org.smartbit4all.api.view.bean.SmartLinkData;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.bean.ViewConstraint;
 import org.smartbit4all.api.view.bean.ViewContext;
 import org.smartbit4all.api.view.bean.ViewState;
 import org.smartbit4all.api.view.bean.ViewType;
+import org.smartbit4all.core.object.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import com.google.common.base.Strings;
@@ -227,6 +230,20 @@ public class ViewApiImpl implements ViewApi {
   public void updateView(UUID viewUuid, UnaryOperator<View> update) {
     viewContextService.updateCurrentViewContext(
         c -> ViewContexts.updateViewData(c, viewUuid, update));
+  }
+
+  @Override
+  public URI publishView(String channel, View view) {
+    return viewContextService.publishView(channel, view);
+  }
+
+  @Override
+  public UUID showPublishedView(String channel, UUID smartLinkUuid) {
+    ObjectNode linkNode = viewContextService.getSmartLink(channel, smartLinkUuid);
+    if (linkNode == null) {
+      return null;
+    }
+    return showView(linkNode.getValue(View.class, SmartLinkData.VIEW));
   }
 
 }
