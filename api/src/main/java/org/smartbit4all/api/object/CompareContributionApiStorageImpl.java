@@ -27,10 +27,6 @@ public class CompareContributionApiStorageImpl extends ContributionApiImpl
     return deepEqualsRec(storageApi.load(uri), storageApi.load(prevUri));
   }
 
-  CompareApi compareApi() {
-    return (CompareApi) primaryApi();
-  }
-
   @SuppressWarnings("unchecked")
   public boolean deepEqualsRec(StorageObject<?> storageObject,
       StorageObject<?> prevStorageObject) {
@@ -51,8 +47,7 @@ public class CompareContributionApiStorageImpl extends ContributionApiImpl
         switch (ref.getSourceKind()) {
           case VALUE:
             // This property that must contains the uri of the target object.
-            if (!compareApi()
-                .deepEquals((URI) target, (URI) targetPrev)) {
+            if (!deepEquals((URI) target, (URI) targetPrev)) {
               return false;
             }
             break;
@@ -72,8 +67,7 @@ public class CompareContributionApiStorageImpl extends ContributionApiImpl
 
               for (URI targetUri : targetUris) {
                 URI targetPrevUri = iterTargetPrevUris.next();
-                if (!compareApi()
-                    .deepEquals(targetUri, targetPrevUri)) {
+                if (!deepEquals(targetUri, targetPrevUri)) {
                   return false;
                 }
               }

@@ -19,6 +19,8 @@ import org.smartbit4all.storage.fs.StorageTransactionManagerFS;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
@@ -33,6 +35,12 @@ public class ApplyChangeTestConfig {
     return new StorageFS(
         TestFileUtil.testFsRootFolder(),
         objectApi);
+  }
+
+  @EventListener(ContextRefreshedEvent.class)
+  public void clearFS(ContextRefreshedEvent event) throws Exception {
+    TestFileUtil.clearTestDirectory();
+    System.out.println("Test FS cleared...");
   }
 
   @Bean(Storage.STORAGETX)

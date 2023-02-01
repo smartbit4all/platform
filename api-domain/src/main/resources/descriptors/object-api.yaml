@@ -192,6 +192,49 @@ components:
           type: boolean
         data:
           $ref: '#/components/schemas/SnapshotData'
+    ObjectChangeData:
+      type: object
+      description: |
+        The changes between two object structure. The change is based on the property names and computed by the value map of
+        the object.
+      required: [properties, references]
+      properties:
+        typeClass:
+          type: string
+          description: The name of the type class if exists.
+        properties:
+          type: array
+          items:
+            $ref: '#/components/schemas/PropertyChangeData'
+        references:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReferenceChangeData'
+    PropertyChangeData:
+      type: object
+      description: |
+        The change of a property with the path as an identifier. The old value and the new value is also available as Object but
+        we need to handle it as String after a serialization and deserialization.
+      required: [path]
+      properties:
+        path:
+          type: string
+          description: The path identify the given property inside the object.
+        oldValue:
+          type: object
+        newValue:
+          type: object          
+    ReferenceChangeData:
+      type: object
+      description: |
+        The change of a reference in and object as another object change.
+      required: [path]
+      properties:
+        path:
+          type: string
+          description: The path identify the given property inside the object.
+        objectChange:
+          $ref: '#/components/schemas/ObjectChangeData'
     TableDataContent:
       type: object
       description: |

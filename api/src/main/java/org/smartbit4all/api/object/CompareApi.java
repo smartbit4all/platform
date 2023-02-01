@@ -1,7 +1,7 @@
 package org.smartbit4all.api.object;
 
-import java.net.URI;
-import org.smartbit4all.api.contribution.PrimaryApi;
+import org.smartbit4all.api.object.bean.ObjectChangeData;
+import org.smartbit4all.core.object.ObjectNode;
 
 /**
  * The compare api is responsible for comparing the domain objects with different algorithms. There
@@ -9,8 +9,8 @@ import org.smartbit4all.api.contribution.PrimaryApi;
  * 
  * @author Peter Boros
  */
-public interface CompareApi extends PrimaryApi<CompareContributionApi> {
+public interface CompareApi {
 
-  boolean deepEquals(URI uri, URI prevUri);
+  ObjectChangeData changes(ObjectNode node1, ObjectNode node2);
 
 }

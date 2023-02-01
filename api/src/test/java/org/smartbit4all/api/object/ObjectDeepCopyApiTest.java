@@ -28,7 +28,7 @@ class ObjectDeepCopyApiTest {
   private CopyApi copyApi;
 
   @Autowired
-  private CompareApi compareApi;
+  private CompareContributionApi compareApi;
 
   @Autowired
   private StorageApi storageApi;

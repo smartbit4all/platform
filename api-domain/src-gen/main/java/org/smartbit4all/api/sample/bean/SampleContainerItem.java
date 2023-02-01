@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.smartbit4all.api.sample.bean.SampleInlineObject;
@@ -39,6 +40,9 @@ import javax.validation.Valid;
   SampleContainerItem.URI,
   SampleContainerItem.NAME,
   SampleContainerItem.USER_URI,
+  SampleContainerItem.ITEM_COLOR,
+  SampleContainerItem.COST,
+  SampleContainerItem.CREATED_AT,
   SampleContainerItem.INLINE_OBJECT,
   SampleContainerItem.DATASHEET,
   SampleContainerItem.MAIN_DOCUMENT,
@@ -55,6 +59,54 @@ public class SampleContainerItem {
 
   public static final String USER_URI = "userUri";
   private URI userUri;
+
+  /**
+   * Gets or Sets itemColor
+   */
+  public enum ItemColorEnum {
+    RED("RED"),
+    
+    BLACK("BLACK"),
+    
+    GREEN("GREEN"),
+    
+    WHITE("WHITE");
+
+    private String value;
+
+    ItemColorEnum(String value) {
+      this.value = value;
+    }
+
+    @JsonValue
+    public String getValue() {
+      return value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static ItemColorEnum fromValue(String value) {
+      for (ItemColorEnum b : ItemColorEnum.values()) {
+        if (b.value.equals(value)) {
+          return b;
+        }
+      }
+      throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+  }
+
+  public static final String ITEM_COLOR = "itemColor";
+  private ItemColorEnum itemColor;
+
+  public static final String COST = "cost";
+  private Long cost;
+
+  public static final String CREATED_AT = "createdAt";
+  private OffsetDateTime createdAt;
 
   public static final String INLINE_OBJECT = "inlineObject";
   private SampleInlineObject inlineObject;
@@ -153,6 +205,88 @@ public class SampleContainerItem {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setUserUri(URI userUri) {
     this.userUri = userUri;
+  }
+
+
+  public SampleContainerItem itemColor(ItemColorEnum itemColor) {
+    
+    this.itemColor = itemColor;
+    return this;
+  }
+
+   /**
+   * Get itemColor
+   * @return itemColor
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(ITEM_COLOR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public ItemColorEnum getItemColor() {
+    return itemColor;
+  }
+
+
+  @JsonProperty(ITEM_COLOR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setItemColor(ItemColorEnum itemColor) {
+    this.itemColor = itemColor;
+  }
+
+
+  public SampleContainerItem cost(Long cost) {
+    
+    this.cost = cost;
+    return this;
+  }
+
+   /**
+   * Get cost
+   * @return cost
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(COST)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Long getCost() {
+    return cost;
+  }
+
+
+  @JsonProperty(COST)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setCost(Long cost) {
+    this.cost = cost;
+  }
+
+
+  public SampleContainerItem createdAt(OffsetDateTime createdAt) {
+    
+    this.createdAt = createdAt;
+    return this;
+  }
+
+   /**
+   * Get createdAt
+   * @return createdAt
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(CREATED_AT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public OffsetDateTime getCreatedAt() {
+    return createdAt;
+  }
+
+
+  @JsonProperty(CREATED_AT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setCreatedAt(OffsetDateTime createdAt) {
+    this.createdAt = createdAt;
   }
 
 
@@ -288,6 +422,9 @@ public class SampleContainerItem {
     return Objects.equals(this.uri, sampleContainerItem.uri) &&
         Objects.equals(this.name, sampleContainerItem.name) &&
         Objects.equals(this.userUri, sampleContainerItem.userUri) &&
+        Objects.equals(this.itemColor, sampleContainerItem.itemColor) &&
+        Objects.equals(this.cost, sampleContainerItem.cost) &&
+        Objects.equals(this.createdAt, sampleContainerItem.createdAt) &&
         Objects.equals(this.inlineObject, sampleContainerItem.inlineObject) &&
         Objects.equals(this.datasheet, sampleContainerItem.datasheet) &&
         Objects.equals(this.mainDocument, sampleContainerItem.mainDocument) &&
@@ -296,7 +433,7 @@ public class SampleContainerItem {
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, name, userUri, inlineObject, datasheet, mainDocument, attachments);
+    return Objects.hash(uri, name, userUri, itemColor, cost, createdAt, inlineObject, datasheet, mainDocument, attachments);
   }
 
   @Override
@@ -306,6 +443,9 @@ public class SampleContainerItem {
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    userUri: ").append(toIndentedString(userUri)).append("\n");
+    sb.append("    itemColor: ").append(toIndentedString(itemColor)).append("\n");
+    sb.append("    cost: ").append(toIndentedString(cost)).append("\n");
+    sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");
     sb.append("    inlineObject: ").append(toIndentedString(inlineObject)).append("\n");
     sb.append("    datasheet: ").append(toIndentedString(datasheet)).append("\n");
     sb.append("    mainDocument: ").append(toIndentedString(mainDocument)).append("\n");

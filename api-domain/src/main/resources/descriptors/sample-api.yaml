@@ -29,6 +29,14 @@ components:
           format: uri
         name:
           type: string
+        color:
+          enum: [RED, BLACK, GREEN, WHITE]
+        cost:
+          type: integer
+          format: int64
+        createdAt:
+          type: string
+          format: date-time
         subCategories:
           type: array
           items:
@@ -58,6 +66,14 @@ components:
           type: string
           format: uri
           description: The reference that is not contained pointing to the user.
+        itemColor:
+          enum: [RED, BLACK, GREEN, WHITE]
+        cost:
+          type: integer
+          format: int64
+        createdAt:
+          type: string
+          format: date-time
         inlineObject:
           description: |
             The inline contained object

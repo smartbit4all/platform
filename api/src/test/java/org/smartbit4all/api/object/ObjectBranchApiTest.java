@@ -29,7 +29,7 @@ class ObjectBranchApiTest {
   private BranchApi branchApi;
 
   @Autowired
-  private CompareApi compareApi;
+  private CompareContributionApi compareApi;
 
   @Autowired
   private StorageApi storageApi;
