@@ -1,5 +1,6 @@
 package org.smartbit4all.api.collection;
 
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import java.io.IOException;
 import java.time.OffsetDateTime;
@@ -16,6 +17,8 @@ import java.util.stream.Stream;
 import org.smartbit4all.api.collection.SearchEntityDefinition.DetailDefinition;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionBoolOperator;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionData;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionField;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldList;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOperandData;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOperation;
@@ -426,6 +429,35 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
 
   void update(SearchEntityTableDataResult updateResult) {
     Crud.update(updateResult.result);
+  }
+
+  public FilterExpressionFieldList allFilterFields() {
+    return new FilterExpressionFieldList()
+        .filters(mappingsByPropertyName.entrySet().stream().map(e -> {
+          if (e.getValue() instanceof SearchIndexMappingProperty) {
+            SearchIndexMappingProperty propertyMapping = (SearchIndexMappingProperty) e.getValue();
+            FilterExpressionField field = new FilterExpressionField().label1(e.getKey());
+            field.addPossibleOperationsItem(FilterExpressionOperation.EQUAL);
+            field.addPossibleOperationsItem(FilterExpressionOperation.NOT_EQUAL);
+            field.addPossibleOperationsItem(FilterExpressionOperation.IS_EMPTY);
+            field.addPossibleOperationsItem(FilterExpressionOperation.IS_NOT_EMPTY);
+            if (propertyMapping.type != null) {
+              if (String.class.isAssignableFrom(propertyMapping.type)) {
+                Arrays.asList(FilterExpressionOperation.LIKE, FilterExpressionOperation.NOT_LIKE)
+                    .stream().forEach(op -> field.addPossibleOperationsItem(op));
+              } else if (Long.class.isAssignableFrom(propertyMapping.type)) {
+                Arrays
+                    .asList(FilterExpressionOperation.GREATER,
+                        FilterExpressionOperation.GREATER_OR_EQUAL,
+                        FilterExpressionOperation.BETWEEN, FilterExpressionOperation.NOT_BETWEEN,
+                        FilterExpressionOperation.LESS, FilterExpressionOperation.LESS_OR_EQUAL)
+                    .stream().forEach(op -> field.addPossibleOperationsItem(op));
+              }
+            }
+            return field;
+          }
+          return null;
+        }).filter(f -> f != null).collect(toList()));
   }
 
 }

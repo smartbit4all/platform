@@ -1,6 +1,7 @@
 package org.smartbit4all.api.collection;
 
 import java.util.List;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldList;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.meta.EntityDefinition;
@@ -56,5 +57,12 @@ public interface SearchIndex<O> {
    * @return The table data in memory.
    */
   List<O> list(QueryInput queryInput);
+
+  /**
+   * Returns all the available filter fields for the given search index.
+   * 
+   * @return
+   */
+  FilterExpressionFieldList allFilterFields();
 
 }

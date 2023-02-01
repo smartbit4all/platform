@@ -13,6 +13,7 @@ import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldList;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
@@ -271,6 +272,11 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
     } else {
       return null;
     }
+  }
+
+  @Override
+  public FilterExpressionFieldList allFilterFields() {
+    return objectMapping.allFilterFields();
   }
 
 }

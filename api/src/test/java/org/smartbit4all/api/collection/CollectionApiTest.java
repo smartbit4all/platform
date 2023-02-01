@@ -15,6 +15,7 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionData;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldList;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOperandData;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOperation;
@@ -270,6 +271,10 @@ class CollectionApiTest {
 
     TableData<?> tableDataByDerivedNoResult =
         searchIndex.executeSearch(new TestFilter().isOdd(true).name("od").caption("even.even"));
+
+    FilterExpressionFieldList allFilterFields = searchIndex.allFilterFields();
+
+    System.out.println(allFilterFields);
 
     assertTrue(tableDataByDerivedNoResult.rows().isEmpty());
 
