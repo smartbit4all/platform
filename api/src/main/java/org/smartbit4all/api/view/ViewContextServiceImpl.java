@@ -16,6 +16,8 @@ import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.collection.CollectionApi;
+import org.smartbit4all.api.collection.StoredMap;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.view.annotation.BeforeClose;
 import org.smartbit4all.api.view.annotation.InitModel;
@@ -25,6 +27,7 @@ import org.smartbit4all.api.view.bean.CloseResult;
 import org.smartbit4all.api.view.bean.MessageData;
 import org.smartbit4all.api.view.bean.MessageResult;
 import org.smartbit4all.api.view.bean.OpenPendingData;
+import org.smartbit4all.api.view.bean.SmartLinkData;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.bean.ViewContext;
 import org.smartbit4all.api.view.bean.ViewContextData;
@@ -73,6 +76,9 @@ public class ViewContextServiceImpl implements ViewContextService {
 
   @Autowired
   private ApplicationContext context;
+
+  @Autowired
+  private CollectionApi collectionApi;
 
   private Supplier<Storage> storage = new Supplier<Storage>() {
 
@@ -389,4 +395,30 @@ public class ViewContextServiceImpl implements ViewContextService {
     }
   }
 
+
+  @Override
+  public URI publishView(String channel, View view) {
+    // TODO sanitize channel name
+    // TODO basePaht in url?
+    StoredMap linkMap = collectionApi.map(SCHEMA, channel);
+    UUID uuid = UUID.randomUUID();
+    SmartLinkData smartLinkData = new SmartLinkData()
+        .uuid(uuid)
+        .view(view)
+        .url("/" + channel + "/" + uuid.toString());
+    ObjectNode smartLinkNode = objectApi.create(channel, smartLinkData);
+    URI smartLinkUri = objectApi.save(smartLinkNode);
+    linkMap.put(uuid.toString(), smartLinkUri);
+    return smartLinkUri;
+  }
+
+  @Override
+  public ObjectNode getSmartLink(String channel, UUID smartLinkUuid) {
+    StoredMap linkMap = collectionApi.map(SCHEMA, channel);
+    URI linkUri = linkMap.uris().get(smartLinkUuid.toString());
+    if (linkUri == null) {
+      return null;
+    }
+    return objectApi.loadLatest(linkUri);
+  }
 }

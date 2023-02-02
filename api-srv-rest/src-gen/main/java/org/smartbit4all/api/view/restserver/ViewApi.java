@@ -154,6 +154,34 @@ public interface ViewApi {
 
 
     /**
+     * PUT /smartlink/{channel}/{uuid} : null
+     *
+     * @param channel Smartlink&#39;s channel. (required)
+     * @param uuid Smartlink&#39;s unique identifier (required)
+     * @return  (status code 200)
+     */
+    @ApiOperation(
+        tags = { "View" },
+        value = "null",
+        nickname = "showPublishedView",
+        notes = ""
+    )
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "")
+    })
+    @RequestMapping(
+        method = RequestMethod.PUT,
+        value = "/smartlink/{channel}/{uuid}"
+    )
+    default ResponseEntity<Void> showPublishedView(
+        @ApiParam(value = "Smartlink's channel.", required = true) @PathVariable("channel") String channel,
+        @ApiParam(value = "Smartlink's unique identifier", required = true) @PathVariable("uuid") UUID uuid
+    ) throws Exception {
+        return getDelegate().showPublishedView(channel, uuid);
+    }
+
+
+    /**
      * PUT /context : Updates an existing ViewContext
      *
      * @param viewContextUpdate  (required)

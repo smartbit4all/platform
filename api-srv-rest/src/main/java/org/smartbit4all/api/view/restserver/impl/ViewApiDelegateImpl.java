@@ -50,4 +50,11 @@ public class ViewApiDelegateImpl implements ViewApiDelegate {
     ViewConstraint constraint = viewApi.getView(uuid).getConstraint();
     return ResponseEntity.ok(constraint == null ? EMPTY_CONSTRAINT : constraint);
   }
+
+  @Override
+  public ResponseEntity<Void> showPublishedView(String channel, UUID uuid) {
+    viewApi.showPublishedView(channel, uuid);
+    return ResponseEntity.ok().build();
+  }
+
 }

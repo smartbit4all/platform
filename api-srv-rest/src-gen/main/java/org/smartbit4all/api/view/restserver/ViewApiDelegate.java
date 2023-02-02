@@ -110,6 +110,20 @@ public interface ViewApiDelegate {
     }
 
     /**
+     * PUT /smartlink/{channel}/{uuid} : null
+     *
+     * @param channel Smartlink&#39;s channel. (required)
+     * @param uuid Smartlink&#39;s unique identifier (required)
+     * @return  (status code 200)
+     * @see ViewApi#showPublishedView
+     */
+    default ResponseEntity<Void> showPublishedView(String channel,
+        UUID uuid) throws Exception {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+
+    }
+
+    /**
      * PUT /context : Updates an existing ViewContext
      *
      * @param viewContextUpdate  (required)
