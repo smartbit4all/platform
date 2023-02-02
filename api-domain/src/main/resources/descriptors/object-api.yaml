@@ -250,7 +250,21 @@ components:
         rows:
           type: array
           items:
-            type: object
+            $ref: '#/components/schemas/TableDataContentRow'
+    TableDataContentRow:
+      type: object
+      description: |
+        This object is a table data row containening the identifier and actions releted with the row.
+      required: [columns]
+      properties:
+        id:
+          type: string
+        actions:
+          type: array
+          items:
+            type: UiAction
+        data:
+          type: object
     TableDataContentHeader:
       type: object
       description: |

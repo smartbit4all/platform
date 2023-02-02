@@ -25,6 +25,7 @@ import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
 import org.smartbit4all.api.object.bean.TableDataContentHeader;
+import org.smartbit4all.api.object.bean.TableDataContentRow;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -49,7 +50,7 @@ public class TableDataContent {
   private Integer totalRowCount;
 
   public static final String ROWS = "rows";
-  private List<Object> rows = new ArrayList<>();
+  private List<TableDataContentRow> rows = new ArrayList<>();
 
   public TableDataContent() { 
   }
@@ -111,13 +112,13 @@ public class TableDataContent {
   }
 
 
-  public TableDataContent rows(List<Object> rows) {
+  public TableDataContent rows(List<TableDataContentRow> rows) {
     
     this.rows = rows;
     return this;
   }
 
-  public TableDataContent addRowsItem(Object rowsItem) {
+  public TableDataContent addRowsItem(TableDataContentRow rowsItem) {
     this.rows.add(rowsItem);
     return this;
   }
@@ -128,18 +129,19 @@ public class TableDataContent {
   **/
   @javax.annotation.Nonnull
   @NotNull
+  @Valid
   @ApiModelProperty(required = true, value = "")
   @JsonProperty(ROWS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<Object> getRows() {
+  public List<TableDataContentRow> getRows() {
     return rows;
   }
 
 
   @JsonProperty(ROWS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setRows(List<Object> rows) {
+  public void setRows(List<TableDataContentRow> rows) {
     this.rows = rows;
   }
 
