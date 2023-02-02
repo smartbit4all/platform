@@ -244,18 +244,13 @@ components:
       properties:
         header:
           $ref: '#/components/schemas/TableDataContentHeader'
-        totalRowCount:
-          type: integer
-          format: int32
-        rows:
-          type: array
-          items:
-            $ref: '#/components/schemas/TableDataContentRow'
+        page:
+          $ref: '#/components/schemas/TableDataContentPage'
     TableDataContentRow:
       type: object
       description: |
         This object is a table data row containening the identifier and actions releted with the row.
-      required: [columns]
+      required: [actions]
       properties:
         id:
           type: string
@@ -265,6 +260,30 @@ components:
             type: UiAction
         data:
           type: object
+    TableDataContentPage:
+      type: object
+      description: |
+        This object containt the page information of the content. The currently seen row range, the total row cont and other options.
+      required: [columns]
+      properties:
+        lowerBound:
+          type: integer
+          format: int32
+          description: The index of the first row in the current page. Startes from 1 and inclusive.
+        upperBound:
+          type: integer
+          format: int32
+          description: The index of the last row in the current page inclusive.
+        pageSize:
+          type: integer
+          format: int32
+        totalRowCount:
+          type: integer
+          format: int32
+        rows:
+          type: array
+          items:
+            $ref: '#/components/schemas/TableDataContentRow'
     TableDataContentHeader:
       type: object
       description: |

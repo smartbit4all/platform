@@ -22,10 +22,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.util.ArrayList;
-import java.util.List;
 import org.smartbit4all.api.object.bean.TableDataContentHeader;
-import org.smartbit4all.api.object.bean.TableDataContentRow;
+import org.smartbit4all.api.object.bean.TableDataContentPage;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -37,8 +35,7 @@ import javax.validation.Valid;
 @ApiModel(description = "This object is a table data with column definitions as header and rows. The rows are map of objects with the property names defined in the header. ")
 @JsonPropertyOrder({
   TableDataContent.HEADER,
-  TableDataContent.TOTAL_ROW_COUNT,
-  TableDataContent.ROWS
+  TableDataContent.PAGE
 })
 @JsonTypeName("TableDataContent")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -46,11 +43,8 @@ public class TableDataContent {
   public static final String HEADER = "header";
   private TableDataContentHeader header;
 
-  public static final String TOTAL_ROW_COUNT = "totalRowCount";
-  private Integer totalRowCount;
-
-  public static final String ROWS = "rows";
-  private List<TableDataContentRow> rows = new ArrayList<>();
+  public static final String PAGE = "page";
+  private TableDataContentPage page;
 
   public TableDataContent() { 
   }
@@ -84,65 +78,31 @@ public class TableDataContent {
   }
 
 
-  public TableDataContent totalRowCount(Integer totalRowCount) {
+  public TableDataContent page(TableDataContentPage page) {
     
-    this.totalRowCount = totalRowCount;
+    this.page = page;
     return this;
   }
 
    /**
-   * Get totalRowCount
-   * @return totalRowCount
+   * Get page
+   * @return page
   **/
-  @javax.annotation.Nonnull
-  @NotNull
-  @ApiModelProperty(required = true, value = "")
-  @JsonProperty(TOTAL_ROW_COUNT)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-
-  public Integer getTotalRowCount() {
-    return totalRowCount;
-  }
-
-
-  @JsonProperty(TOTAL_ROW_COUNT)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setTotalRowCount(Integer totalRowCount) {
-    this.totalRowCount = totalRowCount;
-  }
-
-
-  public TableDataContent rows(List<TableDataContentRow> rows) {
-    
-    this.rows = rows;
-    return this;
-  }
-
-  public TableDataContent addRowsItem(TableDataContentRow rowsItem) {
-    this.rows.add(rowsItem);
-    return this;
-  }
-
-   /**
-   * Get rows
-   * @return rows
-  **/
-  @javax.annotation.Nonnull
-  @NotNull
+  @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(required = true, value = "")
-  @JsonProperty(ROWS)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  @ApiModelProperty(value = "")
+  @JsonProperty(PAGE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<TableDataContentRow> getRows() {
-    return rows;
+  public TableDataContentPage getPage() {
+    return page;
   }
 
 
-  @JsonProperty(ROWS)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setRows(List<TableDataContentRow> rows) {
-    this.rows = rows;
+  @JsonProperty(PAGE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setPage(TableDataContentPage page) {
+    this.page = page;
   }
 
 
@@ -156,13 +116,12 @@ public class TableDataContent {
     }
     TableDataContent tableDataContent = (TableDataContent) o;
     return Objects.equals(this.header, tableDataContent.header) &&
-        Objects.equals(this.totalRowCount, tableDataContent.totalRowCount) &&
-        Objects.equals(this.rows, tableDataContent.rows);
+        Objects.equals(this.page, tableDataContent.page);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(header, totalRowCount, rows);
+    return Objects.hash(header, page);
   }
 
   @Override
@@ -170,8 +129,7 @@ public class TableDataContent {
     StringBuilder sb = new StringBuilder();
     sb.append("class TableDataContent {\n");
     sb.append("    header: ").append(toIndentedString(header)).append("\n");
-    sb.append("    totalRowCount: ").append(toIndentedString(totalRowCount)).append("\n");
-    sb.append("    rows: ").append(toIndentedString(rows)).append("\n");
+    sb.append("    page: ").append(toIndentedString(page)).append("\n");
     sb.append("}");
     return sb.toString();
   }

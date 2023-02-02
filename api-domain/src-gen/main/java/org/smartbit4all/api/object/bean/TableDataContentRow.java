@@ -46,7 +46,7 @@ public class TableDataContentRow {
   private String id;
 
   public static final String ACTIONS = "actions";
-  private List<UiAction> actions = null;
+  private List<UiAction> actions = new ArrayList<>();
 
   public static final String DATA = "data";
   private Object data;
@@ -88,9 +88,6 @@ public class TableDataContentRow {
   }
 
   public TableDataContentRow addActionsItem(UiAction actionsItem) {
-    if (this.actions == null) {
-      this.actions = new ArrayList<>();
-    }
     this.actions.add(actionsItem);
     return this;
   }
@@ -99,11 +96,12 @@ public class TableDataContentRow {
    * Get actions
    * @return actions
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(ACTIONS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public List<UiAction> getActions() {
     return actions;
@@ -111,7 +109,7 @@ public class TableDataContentRow {
 
 
   @JsonProperty(ACTIONS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setActions(List<UiAction> actions) {
     this.actions = actions;
   }
