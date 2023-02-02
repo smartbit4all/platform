@@ -19,7 +19,7 @@ public class Values {
    * Collects all element from values stream, using {@link ObjectNode#getObjectUri()} as
    * {@link Value#objectUri(URI)} and {@link ObjectNode#getValueAsString(String...)} with paths as
    * {@link Value#displayValue(String)}
-   * 
+   *
    * @param values
    * @param paths
    * @return
@@ -37,7 +37,7 @@ public class Values {
    * {@link Value#objectUri(URI)} without version tag and
    * {@link ObjectNode#getValueAsString(String...)} with paths as
    * {@link Value#displayValue(String)}.
-   * 
+   *
    * @param values
    * @param paths
    * @return
@@ -66,6 +66,7 @@ public class Values {
       List<URI> uris, String... displayValuePath) {
     List<URI> allUris = allValues.stream()
         .map(Value::getObjectUri)
+        .map(objectApi::getLatestUri)
         .collect(toList());
     uris.forEach(uri -> {
       URI latestUri = objectApi.getLatestUri(uri);
