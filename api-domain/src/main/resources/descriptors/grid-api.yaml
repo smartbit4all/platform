@@ -20,7 +20,9 @@ components:
       required: [header, totalRowCount, rows]
       properties:
         viewOption:
-          $ref: '#/components/schemas/GridViewOption'
+          type: array
+          items:
+            $ref: '#/components/schemas/GridViewOption'
         page:
           $ref: '#/components/schemas/GridContentPage'
     GridContentPage:

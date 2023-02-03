@@ -22,6 +22,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.util.ArrayList;
+import java.util.List;
 import org.smartbit4all.api.grid.bean.GridContentPage;
 import org.smartbit4all.api.grid.bean.GridViewOption;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -41,7 +43,7 @@ import javax.validation.Valid;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class GridModel {
   public static final String VIEW_OPTION = "viewOption";
-  private GridViewOption viewOption;
+  private List<GridViewOption> viewOption = null;
 
   public static final String PAGE = "page";
   private GridContentPage page;
@@ -49,9 +51,17 @@ public class GridModel {
   public GridModel() { 
   }
 
-  public GridModel viewOption(GridViewOption viewOption) {
+  public GridModel viewOption(List<GridViewOption> viewOption) {
     
     this.viewOption = viewOption;
+    return this;
+  }
+
+  public GridModel addViewOptionItem(GridViewOption viewOptionItem) {
+    if (this.viewOption == null) {
+      this.viewOption = new ArrayList<>();
+    }
+    this.viewOption.add(viewOptionItem);
     return this;
   }
 
@@ -65,14 +75,14 @@ public class GridModel {
   @JsonProperty(VIEW_OPTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public GridViewOption getViewOption() {
+  public List<GridViewOption> getViewOption() {
     return viewOption;
   }
 
 
   @JsonProperty(VIEW_OPTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setViewOption(GridViewOption viewOption) {
+  public void setViewOption(List<GridViewOption> viewOption) {
     this.viewOption = viewOption;
   }
 

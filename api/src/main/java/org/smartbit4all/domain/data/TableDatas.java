@@ -33,7 +33,6 @@ import java.util.stream.Collectors;
 import org.smartbit4all.api.object.bean.TableDataContent;
 import org.smartbit4all.api.object.bean.TableDataContentColumn;
 import org.smartbit4all.api.object.bean.TableDataContentHeader;
-import org.smartbit4all.api.object.bean.TableDataContentPage;
 import org.smartbit4all.api.object.bean.TableDataContentRow;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.meta.EntityDefinition;
@@ -763,8 +762,7 @@ public final class TableDatas {
 
   public static TableDataContent contentOf(TableData<?> tableData) {
     TableDataContent result =
-        new TableDataContent().header(new TableDataContentHeader())
-            .page(new TableDataContentPage().totalRowCount(tableData.size()));
+        new TableDataContent().header(new TableDataContentHeader()).totalRowCount(tableData.size());
     for (DataColumn<?> column : tableData.columns()) {
       result.getHeader()
           .addColumnsItem(
@@ -772,7 +770,7 @@ public final class TableDatas {
                   .typeClass(column.getProperty().type().getName()));
     }
     for (DataRow row : tableData.rows()) {
-      result.getPage().addRowsItem(new TableDataContentRow().data(tableData.columns().stream()
+      result.addRowsItem(new TableDataContentRow().data(tableData.columns().stream()
           .filter(c -> tableData.get(c, row) != null)
           .collect(toMap(DataColumn::getName, c -> tableData.get(c, row)))));
     }
