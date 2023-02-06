@@ -36,14 +36,14 @@ import javax.validation.Valid;
  */
 @ApiModel(description = "This object respresent the model of a grid component. ")
 @JsonPropertyOrder({
-  GridModel.VIEW_OPTION,
+  GridModel.VIEW_OPTIONS,
   GridModel.PAGE
 })
 @JsonTypeName("GridModel")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class GridModel {
-  public static final String VIEW_OPTION = "viewOption";
-  private List<GridViewOption> viewOption = null;
+  public static final String VIEW_OPTIONS = "viewOptions";
+  private List<GridViewOption> viewOptions = new ArrayList<>();
 
   public static final String PAGE = "page";
   private GridContentPage page;
@@ -51,39 +51,37 @@ public class GridModel {
   public GridModel() { 
   }
 
-  public GridModel viewOption(List<GridViewOption> viewOption) {
+  public GridModel viewOptions(List<GridViewOption> viewOptions) {
     
-    this.viewOption = viewOption;
+    this.viewOptions = viewOptions;
     return this;
   }
 
-  public GridModel addViewOptionItem(GridViewOption viewOptionItem) {
-    if (this.viewOption == null) {
-      this.viewOption = new ArrayList<>();
-    }
-    this.viewOption.add(viewOptionItem);
+  public GridModel addViewOptionsItem(GridViewOption viewOptionsItem) {
+    this.viewOptions.add(viewOptionsItem);
     return this;
   }
 
    /**
-   * Get viewOption
-   * @return viewOption
+   * Get viewOptions
+   * @return viewOptions
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "")
-  @JsonProperty(VIEW_OPTION)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(VIEW_OPTIONS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<GridViewOption> getViewOption() {
-    return viewOption;
+  public List<GridViewOption> getViewOptions() {
+    return viewOptions;
   }
 
 
-  @JsonProperty(VIEW_OPTION)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setViewOption(List<GridViewOption> viewOption) {
-    this.viewOption = viewOption;
+  @JsonProperty(VIEW_OPTIONS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setViewOptions(List<GridViewOption> viewOptions) {
+    this.viewOptions = viewOptions;
   }
 
 
@@ -97,11 +95,12 @@ public class GridModel {
    * Get page
    * @return page
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(PAGE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public GridContentPage getPage() {
     return page;
@@ -109,7 +108,7 @@ public class GridModel {
 
 
   @JsonProperty(PAGE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setPage(GridContentPage page) {
     this.page = page;
   }
@@ -124,20 +123,20 @@ public class GridModel {
       return false;
     }
     GridModel gridModel = (GridModel) o;
-    return Objects.equals(this.viewOption, gridModel.viewOption) &&
+    return Objects.equals(this.viewOptions, gridModel.viewOptions) &&
         Objects.equals(this.page, gridModel.page);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(viewOption, page);
+    return Objects.hash(viewOptions, page);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class GridModel {\n");
-    sb.append("    viewOption: ").append(toIndentedString(viewOption)).append("\n");
+    sb.append("    viewOptions: ").append(toIndentedString(viewOptions)).append("\n");
     sb.append("    page: ").append(toIndentedString(page)).append("\n");
     sb.append("}");
     return sb.toString();

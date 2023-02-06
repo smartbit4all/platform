@@ -1046,19 +1046,6 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
     };
   }
 
-  // /**
-  // * Reads an object uri based given extension file if exists.
-  // *
-  // * @param rootFolder
-  // * @param uri
-  // * @param extension The specific extension as post fix for the file.
-  // * @return
-  // */
-  // private File lockFile(File rootFolder, URI uri) {
-  // File file = new File(rootFolder, uri.getPath() + storedObjectFileExtension);
-  // return getFileBinaryData(file);
-  // }
-
   public String getStoredObjectFileExtension() {
     return SO_FILEEXTENSION;
   }

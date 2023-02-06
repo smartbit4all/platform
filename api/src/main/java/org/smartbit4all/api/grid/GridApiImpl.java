@@ -28,7 +28,7 @@ public class GridApiImpl implements GridApi {
     GridModel result = new GridModel();
 
     GridViewOption tableHeader = new GridViewOption().kind(KindEnum.TABLE);
-    result.addViewOptionItem(tableHeader);
+    result.addViewOptionsItem(tableHeader);
     columns.entrySet().stream().forEach(e -> tableHeader
         .addColumnsItem(new GridColumnMeta().label(e.getValue()).propertyName(e.getKey())));
 
@@ -51,7 +51,7 @@ public class GridApiImpl implements GridApi {
     GridModel result = new GridModel();
 
     GridViewOption tableHeader = new GridViewOption().kind(KindEnum.TABLE);
-    result.addViewOptionItem(tableHeader);
+    result.addViewOptionsItem(tableHeader);
     for (DataColumn<?> column : tableData.columns()) {
       tableHeader.addColumnsItem(
           new GridColumnMeta().propertyName(column.getName())

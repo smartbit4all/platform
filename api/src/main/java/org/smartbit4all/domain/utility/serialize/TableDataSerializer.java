@@ -6,9 +6,11 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import org.smartbit4all.domain.data.DataColumn;
 import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.data.TableData;
+import org.smartbit4all.domain.data.TableDatas;
 import org.smartbit4all.domain.meta.Property;
 import com.google.common.primitives.Ints;
 import com.google.common.primitives.Longs;
@@ -126,7 +128,6 @@ public final class TableDataSerializer {
     }
     writeRowIndices();
     os.close();
-    return;
   }
 
   /**
@@ -137,27 +138,29 @@ public final class TableDataSerializer {
    * @return
    */
   public static final TableDataSerializer to(OutputStream os) {
-    if (os == null) {
-      throw new IllegalArgumentException(
-          "The output stream is missing to serialize the table data.");
-    }
-    TableDataSerializer result = new TableDataSerializer(os);
-    return result;
+    Objects.requireNonNull(os, "The output stream is missing to serialize the table data.");
+    return new TableDataSerializer(os);
   }
 
-  // /**
-  // * Serializes the given {@link TableData} into a temporary file
-  // */
-  // public static BinaryData serialize(TableData<?> tableData) throws IOException {
-  // return create().of(tableData).finishWithBinaryData();
-  // }
-  //
-  // /**
-  // * Serializes the given {@link TableData} into the given file
-  // */
-  // public static BinaryData serialize(TableData<?> tableData, File file) throws IOException {
-  // return create(file).of(tableData).finishWithBinaryData();
-  // }
+  /**
+   * Save an already existing table data.
+   * 
+   * @param tableData
+   * @param os
+   * @throws IOException
+   */
+  public static final void save(TableData<?> tableData, OutputStream os) throws IOException {
+    if (tableData == null) {
+      return;
+    }
+    TableDataSerializer result = to(os);
+    result.tableData(TableDatas.copyMeta(tableData));
+    for (DataRow row : tableData.rows()) {
+      DataRow addRow = result.addRow();
+      TableDatas.copyRow(tableData.properties(), row, addRow);
+    }
+    result.finish();
+  }
 
   /**
    * Writes the meta as: &ltMETA>&ltentityDef uri>&ltCOLS>&ltnumber of cols>&ltcol1 uri>&ltcol1

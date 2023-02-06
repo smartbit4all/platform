@@ -224,13 +224,13 @@ public class DomainServiceConfig {
   }
 
   @Bean
-  public EntityManager entitManager(List<EntityDefinition> entityDefs) {
+  public EntityManager entityManager(List<EntityDefinition> entityDefs) {
     return new EntityManagerImpl(entityDefs);
   }
 
   @Bean
-  public TableDataApi tableDataApi() {
-    return new TableDataApiImpl();
+  public TableDataApi tableDataApi(StorageApi storageApi) {
+    return new TableDataApiImpl(storageApi);
   }
 
 }

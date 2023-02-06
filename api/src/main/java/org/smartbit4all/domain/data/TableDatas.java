@@ -328,12 +328,42 @@ public final class TableDatas {
     TableData<E> copy = copyMeta(sourceTableData);
     for (DataRow row : rows) {
       DataRow newRow = copy.addRow();
-      for (Property<?> prop : sourceTableData.properties()) {
-        newRow.setObject(prop, row.get(prop));
-      }
+      copyRow(sourceTableData.properties(), row, newRow);
     }
     return copy;
   }
+
+  /**
+   * Returns a new copy instance of the given {@link TableData} with the given rows.
+   * 
+   * @param sourceTableData The source table data to copy range from.
+   * @param lowerBound The first index of the range to copy.
+   * @param upperBound The last index of the range to copy.
+   */
+  public static <E extends EntityDefinition> TableData<E> copyRows(TableData<E> sourceTableData,
+      int lowerBound, int upperBound) {
+    Objects.checkFromToIndex(lowerBound, upperBound, sourceTableData.size());
+    TableData<E> copy = copyMeta(sourceTableData);
+    for (int i = lowerBound; i < upperBound; i++) {
+      DataRow newRow = copy.addRow();
+      copyRow(sourceTableData.properties(), sourceTableData.rows().get(i), newRow);
+    }
+    return copy;
+  }
+
+  /**
+   * Copy the properties from one row to another.
+   * 
+   * @param properties The list of properties to copy.
+   * @param from The row to copy the values from.
+   * @param to The row to copy the values to.
+   */
+  public static void copyRow(List<Property<?>> properties, DataRow from, DataRow to) {
+    for (Property<?> prop : properties) {
+      to.setObject(prop, from.get(prop));
+    }
+  }
+
 
   /**
    * Returns a new copy instance of the given {@link TableData} with the given rows.

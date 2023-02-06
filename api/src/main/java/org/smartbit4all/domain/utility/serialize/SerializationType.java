@@ -140,7 +140,7 @@ public class SerializationType<T> {
   }
 
   private static byte[] serializeBoolean(Boolean value) {
-    return value ? new byte[] {0} : new byte[] {1};
+    return value ? new byte[] {1} : new byte[] {0};
   }
 
   private static Boolean deserializeBoolean(byte[] b) {

@@ -112,7 +112,7 @@ public final class TableDataPager<E extends EntityDefinition> {
     if (entityDef == null) {
       throw new Exception("EntityDefinition uri can not be parsed from file!");
     }
-    if (!entityDefClazz.isAssignableFrom(entityDef.getClass())) {
+    if (entityDefClazz != null && !entityDefClazz.isAssignableFrom(entityDef.getClass())) {
       throw new Exception(
           "EntityDefinition mismatch! The TableDataPager has been inizialized with a"
               + " different EntityDefinitionin subclass!");
@@ -189,6 +189,16 @@ public final class TableDataPager<E extends EntityDefinition> {
   }
 
   /**
+   * Read the whole saved {@link TableData} at once into memory.
+   * 
+   * @return
+   * @throws Exception
+   */
+  public TableData<E> fetchAll() throws Exception {
+    return fetch(0, getTotalRowCount());
+  }
+
+  /**
    * 
    * @param offset The row index to fetch the data from.
    * @param limit The number of rows to fetch.
@@ -238,6 +248,11 @@ public final class TableDataPager<E extends EntityDefinition> {
     }
   }
 
+
+  public static <T extends EntityDefinition> TableDataPager<T> create(File file,
+      EntityManager entityManager) throws Exception {
+    return new TableDataPager<>(null, file, entityManager);
+  }
 
   public static <T extends EntityDefinition> TableDataPager<T> create(Class<T> entityDefClazz,
       File file, EntityManager entityManager) throws Exception {

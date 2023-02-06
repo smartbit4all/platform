@@ -29,6 +29,16 @@ public interface TableDataApi {
    */
   TableData<?> read(URI uri);
 
+  /**
+   * Read the {@link TableData} identified by the URI.
+   * 
+   * @param uri The unique identifier.
+   * @param lowerBound The first row (inclusive) to load as page.
+   * @param upperBound The last row of the page exclusively.
+   * @return The content of the page.
+   */
+  TableData<?> readPage(URI uri, int lowerBound, int upperBound);
+
   void delete(URI uri);
 
 }

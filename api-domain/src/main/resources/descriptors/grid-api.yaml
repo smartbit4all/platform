@@ -13,13 +13,32 @@ tags:
 paths: {}
 components:
   schemas:
+    GridDataAccessConfig:
+      type: object
+      description: |
+        This is the backend object to setup the grid access api. The parameterization contain all the possible
+        parameters requiered to identify the API to call or even the InvocationRequest to use. Register into the
+        parameters of the View parameters as grid.identifier.config
+      required: []
+      properties:
+        dataUri:
+          type: string
+          format: uri
+          description: The uri of the object that contains the data of the list.
+        propertyPath:
+          type: string
+          description: The property path to access the data of the grid in the referred object.
+        apiClass:
+          type: string
+        kind:
+          enum: [TABLEDATA, OBJECTLIST, APIBASED, INVOCATIONS]
     GridModel:
       type: object
       description: |
         This object respresent the model of a grid component.
-      required: [header, totalRowCount, rows]
+      required: [viewOptions, page]
       properties:
-        viewOption:
+        viewOptions:
           type: array
           items:
             $ref: '#/components/schemas/GridViewOption'
