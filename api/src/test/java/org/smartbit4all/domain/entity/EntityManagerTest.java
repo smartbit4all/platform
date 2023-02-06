@@ -45,7 +45,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
 @SpringBootTest(classes = {EntityManagerTestConfig.class})
-public class EntityManagerTest {
+class EntityManagerTest {
 
   private static final String EXPECTED_USERACCDEF_URI =
       "entity://org.smartbit4all.domain.security/userAccountDef";
@@ -181,6 +181,7 @@ public class EntityManagerTest {
     EntityDefinition myDef1 =
         EntityDefinitionBuilder.of(ctx).name("MyDef1").domain("org.smartbit4all.domain.security")
             .ownedProperty("prop1", String.class).build();
+    entityManager.registerEntityDef(myDef1);
     Property<String> property = (Property<String>) myDef1.getProperty("prop1");
 
 
