@@ -373,4 +373,17 @@ public class Invocations {
         new MapWrapper(map, clazz));
   }
 
+  public static final InvocationRequest setParameter(InvocationRequest request, int idx,
+      Object value) {
+    if (request == null
+        || request.getParameters() == null
+        || request.getParameters().size() <= idx) {
+      String method = request == null ? "null" : request.getMethodName();
+      String api = request == null ? "null" : request.getInterfaceClass();
+      throw new IllegalArgumentException(
+          "Parameter " + idx + " of " + api + "." + method + "not found");
+    }
+    request.getParameters().get(idx).setValue(value);
+    return request;
+  }
 }

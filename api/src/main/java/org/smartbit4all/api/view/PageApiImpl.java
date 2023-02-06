@@ -47,7 +47,7 @@ public abstract class PageApiImpl<M> implements PageApi<M> {
   }
 
   protected M extractClientModel(UiActionRequest request) {
-    return extractParam(getClazz(), "model", request.getParams());
+    return extractParam(getClazz(), UiActions.MODEL, request.getParams());
   }
 
   protected <T> T extractParam(Class<T> clazz, String paramName, Map<String, Object> parameters) {
