@@ -2,10 +2,13 @@ package org.smartbit4all.api.grid;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Stream;
+import org.smartbit4all.api.collection.SearchIndex;
 import org.smartbit4all.api.grid.bean.GridColumnMeta;
 import org.smartbit4all.api.grid.bean.GridContentPage;
 import org.smartbit4all.api.grid.bean.GridModel;
@@ -43,13 +46,15 @@ public class GridApiImpl implements GridApi {
         .collect(toList()));
 
     return result;
-
   }
 
   @Override
   public GridModel modelOf(TableData<?> tableData) {
-    GridModel result = new GridModel();
+    return constructModel(tableData);
+  }
 
+  private GridModel constructModel(TableData<?> tableData) {
+    GridModel result = new GridModel();
     GridViewOption tableHeader = new GridViewOption().kind(KindEnum.TABLE);
     result.addViewOptionsItem(tableHeader);
     for (DataColumn<?> column : tableData.columns()) {
@@ -66,6 +71,16 @@ public class GridApiImpl implements GridApi {
           .collect(toMap(DataColumn::getName, c -> tableData.get(c, row)))));
     }
     return result;
+  }
+
+  @Override
+  public GridModel modelOfUris(SearchIndex<?> searchIndex, Stream<URI> uris) {
+    return constructModel(searchIndex.tableDataOfUris(uris));
+  }
+
+  @Override
+  public <T> GridModel modelOfObjects(SearchIndex<T> searchIndex, Stream<T> objects) {
+    return constructModel(searchIndex.tableDataOfObjects(objects));
   }
 
 }

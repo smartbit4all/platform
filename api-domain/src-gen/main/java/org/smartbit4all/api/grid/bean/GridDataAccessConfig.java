@@ -102,12 +102,12 @@ public class GridDataAccessConfig {
   }
 
    /**
-   * The uri of the object that contains the data of the list.
+   * The uri of the table data that contains the data of the list.
    * @return dataUri
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The uri of the object that contains the data of the list.")
+  @ApiModelProperty(value = "The uri of the table data that contains the data of the list.")
   @JsonProperty(DATA_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

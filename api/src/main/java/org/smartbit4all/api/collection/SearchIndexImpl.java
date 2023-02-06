@@ -11,6 +11,7 @@ import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
+import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldList;
@@ -159,6 +160,25 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
         Collections.emptyMap());
 
     return result;
+  }
+
+  @Override
+  public TableData<?> tableDataOfUris(Stream<URI> uris) {
+    SearchEntityTableDataResult entityResult = constructResult();
+    objectMapping.readObjects(uris.map(u -> objectApi.load(u)), entityResult,
+        Collections.emptyMap());
+    return entityResult.result;
+  }
+
+  @Override
+  public TableData<?> tableDataOfObjects(Stream<O> objects) {
+    SearchEntityTableDataResult entityResult = constructResult();
+    objectMapping.readObjects(
+        objects.map(o -> objectApi
+            .create(storageApi.getStorage(indexedObjectDefinition.getUri(o)).getScheme(), o)),
+        entityResult,
+        Collections.emptyMap());
+    return entityResult.result;
   }
 
   @Override

@@ -1,6 +1,8 @@
 package org.smartbit4all.api.collection;
 
+import java.net.URI;
 import java.util.List;
+import java.util.stream.Stream;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldList;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
 import org.smartbit4all.domain.data.TableData;
@@ -57,6 +59,22 @@ public interface SearchIndex<O> {
    * @return The table data in memory.
    */
   List<O> list(QueryInput queryInput);
+
+  /**
+   * Read all the objects specified by the uri stream and load the table data with the values.
+   * 
+   * @param uris The uri stream to load.
+   * @return The result table data.
+   */
+  TableData<?> tableDataOfUris(Stream<URI> uris);
+
+  /**
+   * Read all the objects specified by the object stream and load the table data with the values.
+   * 
+   * @param objects The object stream to start with.
+   * @return The result table data.
+   */
+  TableData<?> tableDataOfObjects(Stream<O> objects);
 
   /**
    * Returns all the available filter fields for the given search index.

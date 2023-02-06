@@ -25,6 +25,7 @@ import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
 import org.smartbit4all.api.grid.bean.GridContentPage;
+import org.smartbit4all.api.grid.bean.GridDataAccessConfig;
 import org.smartbit4all.api.grid.bean.GridViewOption;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -37,6 +38,7 @@ import javax.validation.Valid;
 @ApiModel(description = "This object respresent the model of a grid component. ")
 @JsonPropertyOrder({
   GridModel.VIEW_OPTIONS,
+  GridModel.ACCESS_CONFIG,
   GridModel.PAGE
 })
 @JsonTypeName("GridModel")
@@ -44,6 +46,9 @@ import javax.validation.Valid;
 public class GridModel {
   public static final String VIEW_OPTIONS = "viewOptions";
   private List<GridViewOption> viewOptions = new ArrayList<>();
+
+  public static final String ACCESS_CONFIG = "accessConfig";
+  private GridDataAccessConfig accessConfig;
 
   public static final String PAGE = "page";
   private GridContentPage page;
@@ -82,6 +87,34 @@ public class GridModel {
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setViewOptions(List<GridViewOption> viewOptions) {
     this.viewOptions = viewOptions;
+  }
+
+
+  public GridModel accessConfig(GridDataAccessConfig accessConfig) {
+    
+    this.accessConfig = accessConfig;
+    return this;
+  }
+
+   /**
+   * Get accessConfig
+   * @return accessConfig
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(ACCESS_CONFIG)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public GridDataAccessConfig getAccessConfig() {
+    return accessConfig;
+  }
+
+
+  @JsonProperty(ACCESS_CONFIG)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setAccessConfig(GridDataAccessConfig accessConfig) {
+    this.accessConfig = accessConfig;
   }
 
 
@@ -124,12 +157,13 @@ public class GridModel {
     }
     GridModel gridModel = (GridModel) o;
     return Objects.equals(this.viewOptions, gridModel.viewOptions) &&
+        Objects.equals(this.accessConfig, gridModel.accessConfig) &&
         Objects.equals(this.page, gridModel.page);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(viewOptions, page);
+    return Objects.hash(viewOptions, accessConfig, page);
   }
 
   @Override
@@ -137,6 +171,7 @@ public class GridModel {
     StringBuilder sb = new StringBuilder();
     sb.append("class GridModel {\n");
     sb.append("    viewOptions: ").append(toIndentedString(viewOptions)).append("\n");
+    sb.append("    accessConfig: ").append(toIndentedString(accessConfig)).append("\n");
     sb.append("    page: ").append(toIndentedString(page)).append("\n");
     sb.append("}");
     return sb.toString();

@@ -24,7 +24,7 @@ components:
         dataUri:
           type: string
           format: uri
-          description: The uri of the object that contains the data of the list.
+          description: The uri of the table data that contains the data of the list.
         propertyPath:
           type: string
           description: The property path to access the data of the grid in the referred object.
@@ -42,6 +42,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/GridViewOption'
+        accessConfig:
+          $ref: '#/components/schemas/GridDataAccessConfig'
         page:
           $ref: '#/components/schemas/GridContentPage'
     GridContentPage:
