@@ -35,14 +35,14 @@ import javax.validation.Valid;
  */
 @ApiModel(description = "The configuration of the grid view. It can be a simple table grid but a complex card representation also. A model has one or more view option to render the content. ")
 @JsonPropertyOrder({
-  GridViewOption.LABEL,
-  GridViewOption.ICON,
-  GridViewOption.KIND,
-  GridViewOption.COLUMNS
+  GridViewDescriptor.LABEL,
+  GridViewDescriptor.ICON,
+  GridViewDescriptor.KIND,
+  GridViewDescriptor.COLUMNS
 })
-@JsonTypeName("GridViewOption")
+@JsonTypeName("GridViewDescriptor")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
-public class GridViewOption {
+public class GridViewDescriptor {
   public static final String LABEL = "label";
   private String label;
 
@@ -90,10 +90,10 @@ public class GridViewOption {
   public static final String COLUMNS = "columns";
   private List<GridColumnMeta> columns = new ArrayList<>();
 
-  public GridViewOption() { 
+  public GridViewDescriptor() { 
   }
 
-  public GridViewOption label(String label) {
+  public GridViewDescriptor label(String label) {
     
     this.label = label;
     return this;
@@ -120,7 +120,7 @@ public class GridViewOption {
   }
 
 
-  public GridViewOption icon(String icon) {
+  public GridViewDescriptor icon(String icon) {
     
     this.icon = icon;
     return this;
@@ -147,7 +147,7 @@ public class GridViewOption {
   }
 
 
-  public GridViewOption kind(KindEnum kind) {
+  public GridViewDescriptor kind(KindEnum kind) {
     
     this.kind = kind;
     return this;
@@ -174,13 +174,13 @@ public class GridViewOption {
   }
 
 
-  public GridViewOption columns(List<GridColumnMeta> columns) {
+  public GridViewDescriptor columns(List<GridColumnMeta> columns) {
     
     this.columns = columns;
     return this;
   }
 
-  public GridViewOption addColumnsItem(GridColumnMeta columnsItem) {
+  public GridViewDescriptor addColumnsItem(GridColumnMeta columnsItem) {
     this.columns.add(columnsItem);
     return this;
   }
@@ -216,11 +216,11 @@ public class GridViewOption {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    GridViewOption gridViewOption = (GridViewOption) o;
-    return Objects.equals(this.label, gridViewOption.label) &&
-        Objects.equals(this.icon, gridViewOption.icon) &&
-        Objects.equals(this.kind, gridViewOption.kind) &&
-        Objects.equals(this.columns, gridViewOption.columns);
+    GridViewDescriptor gridViewDescriptor = (GridViewDescriptor) o;
+    return Objects.equals(this.label, gridViewDescriptor.label) &&
+        Objects.equals(this.icon, gridViewDescriptor.icon) &&
+        Objects.equals(this.kind, gridViewDescriptor.kind) &&
+        Objects.equals(this.columns, gridViewDescriptor.columns);
   }
 
   @Override
@@ -231,7 +231,7 @@ public class GridViewOption {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class GridViewOption {\n");
+    sb.append("class GridViewDescriptor {\n");
     sb.append("    label: ").append(toIndentedString(label)).append("\n");
     sb.append("    icon: ").append(toIndentedString(icon)).append("\n");
     sb.append("    kind: ").append(toIndentedString(kind)).append("\n");

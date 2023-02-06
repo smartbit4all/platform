@@ -24,9 +24,9 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
-import org.smartbit4all.api.grid.bean.GridContentPage;
 import org.smartbit4all.api.grid.bean.GridDataAccessConfig;
-import org.smartbit4all.api.grid.bean.GridViewOption;
+import org.smartbit4all.api.grid.bean.GridPage;
+import org.smartbit4all.api.grid.bean.GridView;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -37,56 +37,98 @@ import javax.validation.Valid;
  */
 @ApiModel(description = "This object respresent the model of a grid component. ")
 @JsonPropertyOrder({
-  GridModel.VIEW_OPTIONS,
+  GridModel.AVAILABLE_VIEWS,
+  GridModel.VIEW,
   GridModel.ACCESS_CONFIG,
-  GridModel.PAGE
+  GridModel.PAGE,
+  GridModel.TOTAL_ROW_COUNT,
+  GridModel.PAGE_SIZE
 })
 @JsonTypeName("GridModel")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class GridModel {
-  public static final String VIEW_OPTIONS = "viewOptions";
-  private List<GridViewOption> viewOptions = new ArrayList<>();
+  public static final String AVAILABLE_VIEWS = "availableViews";
+  private List<GridView> availableViews = null;
+
+  public static final String VIEW = "view";
+  private GridView view;
 
   public static final String ACCESS_CONFIG = "accessConfig";
   private GridDataAccessConfig accessConfig;
 
   public static final String PAGE = "page";
-  private GridContentPage page;
+  private GridPage page;
+
+  public static final String TOTAL_ROW_COUNT = "totalRowCount";
+  private Integer totalRowCount;
+
+  public static final String PAGE_SIZE = "pageSize";
+  private Integer pageSize;
 
   public GridModel() { 
   }
 
-  public GridModel viewOptions(List<GridViewOption> viewOptions) {
+  public GridModel availableViews(List<GridView> availableViews) {
     
-    this.viewOptions = viewOptions;
+    this.availableViews = availableViews;
     return this;
   }
 
-  public GridModel addViewOptionsItem(GridViewOption viewOptionsItem) {
-    this.viewOptions.add(viewOptionsItem);
+  public GridModel addAvailableViewsItem(GridView availableViewsItem) {
+    if (this.availableViews == null) {
+      this.availableViews = new ArrayList<>();
+    }
+    this.availableViews.add(availableViewsItem);
     return this;
   }
 
    /**
-   * Get viewOptions
-   * @return viewOptions
+   * Get availableViews
+   * @return availableViews
   **/
-  @javax.annotation.Nonnull
-  @NotNull
+  @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(required = true, value = "")
-  @JsonProperty(VIEW_OPTIONS)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  @ApiModelProperty(value = "")
+  @JsonProperty(AVAILABLE_VIEWS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<GridViewOption> getViewOptions() {
-    return viewOptions;
+  public List<GridView> getAvailableViews() {
+    return availableViews;
   }
 
 
-  @JsonProperty(VIEW_OPTIONS)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setViewOptions(List<GridViewOption> viewOptions) {
-    this.viewOptions = viewOptions;
+  @JsonProperty(AVAILABLE_VIEWS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setAvailableViews(List<GridView> availableViews) {
+    this.availableViews = availableViews;
+  }
+
+
+  public GridModel view(GridView view) {
+    
+    this.view = view;
+    return this;
+  }
+
+   /**
+   * Get view
+   * @return view
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(VIEW)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public GridView getView() {
+    return view;
+  }
+
+
+  @JsonProperty(VIEW)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setView(GridView view) {
+    this.view = view;
   }
 
 
@@ -118,7 +160,7 @@ public class GridModel {
   }
 
 
-  public GridModel page(GridContentPage page) {
+  public GridModel page(GridPage page) {
     
     this.page = page;
     return this;
@@ -135,15 +177,69 @@ public class GridModel {
   @JsonProperty(PAGE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public GridContentPage getPage() {
+  public GridPage getPage() {
     return page;
   }
 
 
   @JsonProperty(PAGE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setPage(GridContentPage page) {
+  public void setPage(GridPage page) {
     this.page = page;
+  }
+
+
+  public GridModel totalRowCount(Integer totalRowCount) {
+    
+    this.totalRowCount = totalRowCount;
+    return this;
+  }
+
+   /**
+   * Get totalRowCount
+   * @return totalRowCount
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(TOTAL_ROW_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getTotalRowCount() {
+    return totalRowCount;
+  }
+
+
+  @JsonProperty(TOTAL_ROW_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setTotalRowCount(Integer totalRowCount) {
+    this.totalRowCount = totalRowCount;
+  }
+
+
+  public GridModel pageSize(Integer pageSize) {
+    
+    this.pageSize = pageSize;
+    return this;
+  }
+
+   /**
+   * Get pageSize
+   * @return pageSize
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(PAGE_SIZE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getPageSize() {
+    return pageSize;
+  }
+
+
+  @JsonProperty(PAGE_SIZE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setPageSize(Integer pageSize) {
+    this.pageSize = pageSize;
   }
 
 
@@ -156,23 +252,29 @@ public class GridModel {
       return false;
     }
     GridModel gridModel = (GridModel) o;
-    return Objects.equals(this.viewOptions, gridModel.viewOptions) &&
+    return Objects.equals(this.availableViews, gridModel.availableViews) &&
+        Objects.equals(this.view, gridModel.view) &&
         Objects.equals(this.accessConfig, gridModel.accessConfig) &&
-        Objects.equals(this.page, gridModel.page);
+        Objects.equals(this.page, gridModel.page) &&
+        Objects.equals(this.totalRowCount, gridModel.totalRowCount) &&
+        Objects.equals(this.pageSize, gridModel.pageSize);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(viewOptions, accessConfig, page);
+    return Objects.hash(availableViews, view, accessConfig, page, totalRowCount, pageSize);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class GridModel {\n");
-    sb.append("    viewOptions: ").append(toIndentedString(viewOptions)).append("\n");
+    sb.append("    availableViews: ").append(toIndentedString(availableViews)).append("\n");
+    sb.append("    view: ").append(toIndentedString(view)).append("\n");
     sb.append("    accessConfig: ").append(toIndentedString(accessConfig)).append("\n");
     sb.append("    page: ").append(toIndentedString(page)).append("\n");
+    sb.append("    totalRowCount: ").append(toIndentedString(totalRowCount)).append("\n");
+    sb.append("    pageSize: ").append(toIndentedString(pageSize)).append("\n");
     sb.append("}");
     return sb.toString();
   }

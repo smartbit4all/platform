@@ -117,6 +117,17 @@ components:
         subFieldList:
           $ref: "#/components/schemas/FilterExpressionFieldList"
 
+    FilterExpressionOrderBy:
+      type: object
+      description: |
+        The order by object..
+      properties:
+        propertyName:
+          type: string
+          description: The property name of the order by column.
+        order:
+          enum: [ASC, DESC]
+
     FilterExpressionBoolOperator:
       type: string
       enum:
