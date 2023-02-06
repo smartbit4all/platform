@@ -342,7 +342,13 @@ public final class TableDatas {
    */
   public static <E extends EntityDefinition> TableData<E> copyRows(TableData<E> sourceTableData,
       int lowerBound, int upperBound) {
-    Objects.checkFromToIndex(lowerBound, upperBound, sourceTableData.size());
+    if (sourceTableData == null) {
+      return null;
+    }
+    if (lowerBound < 0 || lowerBound > upperBound || upperBound >= sourceTableData.size()) {
+      throw new IndexOutOfBoundsException("Unable to copy rows " + lowerBound + " - " + upperBound
+          + " from table data with size of " + sourceTableData.size());
+    }
     TableData<E> copy = copyMeta(sourceTableData);
     for (int i = lowerBound; i < upperBound; i++) {
       DataRow newRow = copy.addRow();
