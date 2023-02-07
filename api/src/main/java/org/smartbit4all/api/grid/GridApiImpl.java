@@ -6,7 +6,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import org.smartbit4all.api.collection.SearchIndex;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy;
@@ -44,15 +44,20 @@ public class GridApiImpl implements GridApi {
     columns.entrySet().stream().forEach(e -> tableHeader
         .addColumnsItem(new GridColumnMeta().label(e.getValue()).propertyName(e.getKey())));
 
-    AtomicInteger i = new AtomicInteger(1);
+    // AtomicInteger i = new AtomicInteger(1);
     GridPage page = new GridPage().lowerBound(1).upperBound(objectList.size());
+    List<GridRow> gridRows = IntStream.rangeClosed(1, page.getUpperBound())
+        .mapToObj(i -> new GridRow()
+            .id(String.valueOf(i))
+            .data(objectApi.create(null, objectList.get(i - 1))
+                .getObjectAsMap()
+                .entrySet().stream()
+                .filter(e -> columns.containsKey(e.getKey()))
+                .collect(toMap(Entry::getKey, Entry::getValue))))
+        .collect(toList());
+    page.setRows(gridRows);
 
-    page.rows(objectList.stream().map(o -> new GridRow().id(Integer.toString(i.getAndIncrement()))
-        .data(objectApi.create(null, o).getObjectAsMap().entrySet().stream()
-            .filter(e -> columns.containsKey(e.getKey()))
-            .collect(toMap(Entry::getKey, Entry::getValue))))
-        .collect(toList()));
-
+    result.setPage(page);
     return result;
   }
 
