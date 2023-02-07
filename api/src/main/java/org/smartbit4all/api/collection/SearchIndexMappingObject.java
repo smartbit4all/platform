@@ -2,7 +2,6 @@ package org.smartbit4all.api.collection;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
-
 import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -15,7 +14,6 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
-
 import org.smartbit4all.api.collection.SearchEntityDefinition.DetailDefinition;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionBoolOperator;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionData;
@@ -189,6 +187,7 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
             EntityDefinitionBuilder masterBuilder) {
         EntityDefinitionBuilder builder = EntityDefinitionBuilder.of(ctx)
                 .name(name)
+                .tableName(name)
                 .domain(logicalSchema);
 
         if (entityDefinition != null) {

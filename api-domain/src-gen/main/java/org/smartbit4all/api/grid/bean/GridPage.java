@@ -35,34 +35,26 @@ import javax.validation.Valid;
  */
 @ApiModel(description = "This object containt the page information of the content. The currently seen row range, the total row cont and other options. ")
 @JsonPropertyOrder({
-  GridContentPage.LOWER_BOUND,
-  GridContentPage.UPPER_BOUND,
-  GridContentPage.PAGE_SIZE,
-  GridContentPage.TOTAL_ROW_COUNT,
-  GridContentPage.ROWS
+  GridPage.LOWER_BOUND,
+  GridPage.UPPER_BOUND,
+  GridPage.ROWS
 })
-@JsonTypeName("GridContentPage")
+@JsonTypeName("GridPage")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
-public class GridContentPage {
+public class GridPage {
   public static final String LOWER_BOUND = "lowerBound";
   private Integer lowerBound;
 
   public static final String UPPER_BOUND = "upperBound";
   private Integer upperBound;
 
-  public static final String PAGE_SIZE = "pageSize";
-  private Integer pageSize;
-
-  public static final String TOTAL_ROW_COUNT = "totalRowCount";
-  private Integer totalRowCount;
-
   public static final String ROWS = "rows";
   private List<GridRow> rows = null;
 
-  public GridContentPage() { 
+  public GridPage() { 
   }
 
-  public GridContentPage lowerBound(Integer lowerBound) {
+  public GridPage lowerBound(Integer lowerBound) {
     
     this.lowerBound = lowerBound;
     return this;
@@ -89,7 +81,7 @@ public class GridContentPage {
   }
 
 
-  public GridContentPage upperBound(Integer upperBound) {
+  public GridPage upperBound(Integer upperBound) {
     
     this.upperBound = upperBound;
     return this;
@@ -116,67 +108,13 @@ public class GridContentPage {
   }
 
 
-  public GridContentPage pageSize(Integer pageSize) {
-    
-    this.pageSize = pageSize;
-    return this;
-  }
-
-   /**
-   * Get pageSize
-   * @return pageSize
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
-  @JsonProperty(PAGE_SIZE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Integer getPageSize() {
-    return pageSize;
-  }
-
-
-  @JsonProperty(PAGE_SIZE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setPageSize(Integer pageSize) {
-    this.pageSize = pageSize;
-  }
-
-
-  public GridContentPage totalRowCount(Integer totalRowCount) {
-    
-    this.totalRowCount = totalRowCount;
-    return this;
-  }
-
-   /**
-   * Get totalRowCount
-   * @return totalRowCount
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
-  @JsonProperty(TOTAL_ROW_COUNT)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Integer getTotalRowCount() {
-    return totalRowCount;
-  }
-
-
-  @JsonProperty(TOTAL_ROW_COUNT)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setTotalRowCount(Integer totalRowCount) {
-    this.totalRowCount = totalRowCount;
-  }
-
-
-  public GridContentPage rows(List<GridRow> rows) {
+  public GridPage rows(List<GridRow> rows) {
     
     this.rows = rows;
     return this;
   }
 
-  public GridContentPage addRowsItem(GridRow rowsItem) {
+  public GridPage addRowsItem(GridRow rowsItem) {
     if (this.rows == null) {
       this.rows = new ArrayList<>();
     }
@@ -214,27 +152,23 @@ public class GridContentPage {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    GridContentPage gridContentPage = (GridContentPage) o;
-    return Objects.equals(this.lowerBound, gridContentPage.lowerBound) &&
-        Objects.equals(this.upperBound, gridContentPage.upperBound) &&
-        Objects.equals(this.pageSize, gridContentPage.pageSize) &&
-        Objects.equals(this.totalRowCount, gridContentPage.totalRowCount) &&
-        Objects.equals(this.rows, gridContentPage.rows);
+    GridPage gridPage = (GridPage) o;
+    return Objects.equals(this.lowerBound, gridPage.lowerBound) &&
+        Objects.equals(this.upperBound, gridPage.upperBound) &&
+        Objects.equals(this.rows, gridPage.rows);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(lowerBound, upperBound, pageSize, totalRowCount, rows);
+    return Objects.hash(lowerBound, upperBound, rows);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class GridContentPage {\n");
+    sb.append("class GridPage {\n");
     sb.append("    lowerBound: ").append(toIndentedString(lowerBound)).append("\n");
     sb.append("    upperBound: ").append(toIndentedString(upperBound)).append("\n");
-    sb.append("    pageSize: ").append(toIndentedString(pageSize)).append("\n");
-    sb.append("    totalRowCount: ").append(toIndentedString(totalRowCount)).append("\n");
     sb.append("    rows: ").append(toIndentedString(rows)).append("\n");
     sb.append("}");
     return sb.toString();

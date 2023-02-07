@@ -38,15 +38,23 @@ components:
         This object respresent the model of a grid component.
       required: [viewOptions, page]
       properties:
-        viewOptions:
+        availableViews:
           type: array
           items:
-            $ref: '#/components/schemas/GridViewOption'
+            $ref: '#/components/schemas/GridView'
+        view:
+          $ref: '#/components/schemas/GridView'
         accessConfig:
           $ref: '#/components/schemas/GridDataAccessConfig'
         page:
-          $ref: '#/components/schemas/GridContentPage'
-    GridContentPage:
+          $ref: '#/components/schemas/GridPage'
+        totalRowCount:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+    GridPage:
       type: object
       description: |
         This object containt the page information of the content. The currently seen row range, the total row cont and other options.
@@ -60,12 +68,6 @@ components:
           type: integer
           format: int32
           description: The index of the last row in the current page inclusive.
-        pageSize:
-          type: integer
-          format: int32
-        totalRowCount:
-          type: integer
-          format: int32
         rows:
           type: array
           items:
@@ -84,7 +86,24 @@ components:
             type: UiAction
         data:
           type: object
-    GridViewOption:
+    GridView:
+      type: object
+      description: |
+        The configuration of the grid view. It can be a simple table grid but a complex card representation also. A model
+        has one or more view option to render the content.
+      required: [orderedColumnNames]
+      properties:
+        descriptor:
+          $ref: '#/components/schemas/GridViewDescriptor'
+        orderedColumnNames:
+          type: array
+          items:
+            type: string
+        orderByList:
+          type: array
+          items:
+            type: FilterExpressionOrderBy
+    GridViewDescriptor:
       type: object
       description: |
         The configuration of the grid view. It can be a simple table grid but a complex card representation also. A model

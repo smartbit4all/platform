@@ -3,6 +3,7 @@ package org.smartbit4all.domain.meta;
 import static java.util.stream.Collectors.toList;
 import java.util.List;
 import org.smartbit4all.domain.annotation.property.ReferenceMandatory;
+import org.smartbit4all.domain.meta.EntityDefinition.TableDefinition;
 import org.smartbit4all.domain.meta.jdbc.JDBCDataConverterHelper;
 import org.smartbit4all.domain.service.entity.EntityManager;
 import org.springframework.context.ApplicationContext;
@@ -40,6 +41,11 @@ public class EntityDefinitionBuilder {
 
   public EntityDefinitionBuilder name(String name) {
     instance.entityDefinitionName = name;
+    return this;
+  }
+
+  public EntityDefinitionBuilder tableName(String name) {
+    instance.tableDefinition = new TableDefinition(name);
     return this;
   }
 

@@ -43,6 +43,8 @@ import org.smartbit4all.api.object.RetrievalApi;
 import org.smartbit4all.api.object.RetrievalApiImpl;
 import org.smartbit4all.api.object.bean.AggregationKind;
 import org.smartbit4all.api.object.bean.ReferencePropertyKind;
+import org.smartbit4all.api.rdbms.DatabaseDefinitionApi;
+import org.smartbit4all.api.rdbms.DatabaseDefinitionApiImpl;
 import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.setting.LocaleUsage;
@@ -208,6 +210,11 @@ public class PlatformApiConfig {
   @Bean
   public CollectionApi collectionApi() {
     return new CollectionApiStorageImpl();
+  }
+
+  @Bean
+  public DatabaseDefinitionApi databaseDefinitionApi() {
+    return new DatabaseDefinitionApiImpl();
   }
 
   @Bean

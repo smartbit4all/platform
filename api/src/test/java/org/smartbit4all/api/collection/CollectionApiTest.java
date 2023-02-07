@@ -14,12 +14,15 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.smartbit4all.api.databasedefinition.bean.DatabaseKind;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionData;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldList;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOperandData;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOperation;
 import org.smartbit4all.api.object.bean.TableDataContent;
+import org.smartbit4all.api.rdbms.DatabaseDefinitionApi;
+import org.smartbit4all.api.rdbms.DatabaseRendition;
 import org.smartbit4all.api.sample.bean.SampleCategory;
 import org.smartbit4all.api.sample.bean.SampleContainerItem;
 import org.smartbit4all.api.sample.bean.SampleDataSheet;
@@ -30,6 +33,7 @@ import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ObjectNodeList;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.data.TableDatas;
+import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.domain.utility.crud.Crud;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +60,9 @@ class CollectionApiTest {
 
   @Autowired
   private ObjectApi objectApi;
+
+  @Autowired
+  private DatabaseDefinitionApi databaseDefinitionApi;
 
   private ExecutorService executor =
       new ThreadPoolExecutor(5, 5, 10, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
@@ -215,6 +222,13 @@ class CollectionApiTest {
     SearchIndexWithFilterBean<SampleDataSheet, TestFilter> searchIndex =
         collectionApi.searchIndex(SCHEMA,
             MY_SEARCH, SampleDataSheet.class, TestFilter.class);
+
+    List<EntityDefinition> asList = new ArrayList<>();
+    asList.add(searchIndex.getDefinition().definition);
+    DatabaseRendition databaseRendition =
+        databaseDefinitionApi
+            .render(databaseDefinitionApi.definitionOf(asList).databaseKind(DatabaseKind.ORACLE));
+    System.out.println(databaseRendition.getScript());
 
     // Creating many object to search.
 

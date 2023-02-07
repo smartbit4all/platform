@@ -4,6 +4,7 @@ import java.net.URI;
 import java.nio.charset.Charset;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -13,7 +14,7 @@ import com.google.common.primitives.Longs;
 /**
  * The enum that is responsible for the serialization and deserialization of the value objects. The
  * format is always looks like a class type that is the ordinal number of the enumeration.
- * 
+ *
  * @author Peter Boros
  */
 public class SerializationType<T> {
@@ -40,7 +41,7 @@ public class SerializationType<T> {
   public static final SerializationType<LocalDate> LOCALDATE = new SerializationType<>(0x18, LocalDate.class, SerializationType::serializeLocalDate, SerializationType::deserializeLocalDate);
   public static final SerializationType<LocalDateTime> LOCALDATETIME = new SerializationType<>(0x19, LocalDateTime.class, SerializationType::serializeLocalDateTime, SerializationType::deserializeLocalDateTime);
 //  OFFSETDATE    (0x1a),
-//  OFFSETDATETIME(0x1b),
+  public static final SerializationType<OffsetDateTime> OFFSETDATETIME = new SerializationType<>(0x1b, OffsetDateTime.class, SerializationType::serializeOffsetDateTime, SerializationType::deserializeOffsetDateTime);
   public static final SerializationType<URI> URITYPE = new SerializationType<>(0x1c, URI.class, SerializationType::serializeUri, SerializationType::deserializeUri);
   public static final SerializationType<Boolean> BOOLEAN = new SerializationType<>(0x1d, Boolean.class, SerializationType::serializeBoolean, SerializationType::deserializeBoolean);
   public static final SerializationType<Void> OTHER = new SerializationType<>(0x40, Void.class, null, b -> null);
@@ -67,7 +68,7 @@ public class SerializationType<T> {
 
   /**
    * The constructor to create a new instance. Private to ensure singletons.
-   * 
+   *
    * @param value
    * @param clazz
    * @param serializer
@@ -137,6 +138,14 @@ public class SerializationType<T> {
 
   private static LocalDateTime deserializeLocalDateTime(byte[] b) {
     return LocalDateTime.parse(new String(b, UTF8_CHARSET));
+  }
+
+  private static byte[] serializeOffsetDateTime(OffsetDateTime offsetDateTime) {
+    return offsetDateTime.toString().getBytes(UTF8_CHARSET);
+  }
+
+  private static OffsetDateTime deserializeOffsetDateTime(byte[] b) {
+    return OffsetDateTime.parse(new String(b, UTF8_CHARSET));
   }
 
   private static byte[] serializeBoolean(Boolean value) {

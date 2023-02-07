@@ -20,6 +20,7 @@ smartbit4all {
     	"LocalTime": "java.time.LocalTime",
     	"UiAction": "org.smartbit4all.api.view.bean.UiAction",
   		"Value": "org.smartbit4all.api.value.bean.Value",
+  		"FilterExpressionOrderBy": "org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy",
   	]
   }
 }

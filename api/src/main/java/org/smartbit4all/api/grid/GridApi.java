@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 import org.smartbit4all.api.collection.SearchIndex;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy;
 import org.smartbit4all.api.grid.bean.GridModel;
 import org.smartbit4all.domain.data.TableData;
 
@@ -50,5 +51,18 @@ public interface GridApi {
    * @return
    */
   <T> GridModel modelOfObjects(SearchIndex<T> searchIndex, Stream<T> objects);
+
+  void loadPage(GridModel model, int lowerBound, int upperBound);
+
+  void setColumnOrder(GridModel model, List<String> columns);
+
+  /**
+   * Sort and overwrite the same... The unsorted is the default and if we have sortOrderList then we
+   * apply after the load.
+   * 
+   * @param model
+   * @param orderByList
+   */
+  void setOrderBy(GridModel model, List<FilterExpressionOrderBy> orderByList);
 
 }
