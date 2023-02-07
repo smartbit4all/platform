@@ -429,7 +429,7 @@ public class ObjectNode {
   }
 
   @SuppressWarnings("unchecked")
-  public <V> Map<String, V> asMap(Class<V> clazz, String... paths) {
+  public <V> Map<String, V> getValueAsMap(Class<V> clazz, String... paths) {
     Object value = getValue(paths);
     if (value instanceof Map) {
       return objectApi.asMap(clazz, (Map<String, ?>) value);
