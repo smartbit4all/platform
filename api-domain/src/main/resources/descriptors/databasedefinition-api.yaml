@@ -1,0 +1,188 @@
+openapi: 3.0.1
+info:
+  title: DatabaseDefinition api
+  description: |
+    The relational database schema definition with tables, columns, indices, primary and foreign keys.
+  termsOfService: ''
+  contact:
+    email: info@it4all.hu
+  version: 1.0.0
+tags:
+  - name: RdbmsDefinition
+    description: RdbmsDefinition
+paths: {}
+components:
+  schemas:
+    DatabaseDefinition:
+      type: object
+      description: |
+        The meta of a whole database. Contains all the tables defined in the database. If it is the result of a comparision
+        then the alter operation codes are set. We can use this model to render DDL scripts or to commit the changes directly into
+        the database.
+      required: [tables, databaseKind]
+      properties:
+        schema:
+          type: string
+        version:
+          type: string
+        tables:
+          type: array
+          items:
+            $ref: '#/components/schemas/TableDefinition'
+        databaseKind:
+          $ref: '#/components/schemas/DatabaseKind'
+          default: 'H2'
+    TableDefinition:
+      type: object
+      description: |
+        The meta of a database table. As a result of the comparision it can have operationCode that defines if it is a tabel to 
+        create, alter or delete.
+      required: [columns, indexes, foreignKeys, primaryKey, operation]
+      properties:
+        schema:
+          type: string
+        name:
+          type: string
+        shortName:
+          type: string
+        comment:
+          type: string
+        columns:
+          type: array
+          items:
+            $ref: '#/components/schemas/ColumnDefinition'
+        indexes:
+          type: array
+          items:
+            $ref: '#/components/schemas/IndexDefinition'
+        foreignKeys:
+          type: array
+          items:
+            $ref: '#/components/schemas/ForeignKeyDefinition'
+        primaryKey:
+          $ref: '#/components/schemas/PrimaryKeyDefinition'
+        operation:
+          $ref: '#/components/schemas/AlterOperation'
+          default: 'CREATE'
+    ColumnDefinition:
+      type: object
+      description: |
+        The meta of a column in a database table.
+      required: []
+      properties:
+        name:
+          type: string
+        typeDefinition:
+          $ref: '#/components/schemas/ColumnTypeDefinition'
+        nullable:
+          type: boolean
+          default: true
+        defaultValue:
+          type: string
+        comment:
+          type: string
+        operation:
+          $ref: '#/components/schemas/AlterOperation'
+          default: 'CREATE'
+    ColumnTypeDefinition:
+      type: object
+      description: |
+        The descriptor of a databse column type.
+      required: []
+      properties:
+        baseType:
+          enum: [VARCHAR, CHAR, NUMBER, DATE, DATETIME, TIME, BLOB, CLOB]
+        length:
+          type: integer
+          format: int32
+        precision:
+          type: integer
+          format: int32
+        scale:
+          type: integer
+          format: int32
+    PrimaryKeyDefinition:
+      type: object
+      description: |
+        The meta of a primary key in a database table.
+      required: [columnNames]
+      properties:
+        name:
+          type: string
+        columnNames:
+          type: array
+          items:
+            type: string
+        operation:
+          $ref: '#/components/schemas/AlterOperation'
+          default: 'CREATE'
+    IndexDefinition:
+      type: object
+      description: |
+        The meta of an index in a database table.
+      required: [columnNames]
+      properties:
+        schema:
+          type: string
+        name:
+          type: string
+        unique:
+          type: boolean
+          default: false
+        columnNames:
+          type: array
+          items:
+            type: string
+        operation:
+          $ref: '#/components/schemas/AlterOperation'
+          default: 'CREATE'
+    ForeignKeyDefinition:
+      type: object
+      description: |
+        The meta of an index in a database table.
+      required: [columnMaps]
+      properties:
+        name:
+          type: string
+        referredTableName:
+          type: string
+        columnMaps:
+          type: array
+          items:
+            $ref: '#/components/schemas/ColumnMapEntry'
+        operation:
+          $ref: '#/components/schemas/AlterOperation'
+          default: 'CREATE'
+    ColumnMapEntry:
+      type: object
+      description: |
+        A tuple to save the referring and the referred column name in one object.
+      properties:
+        source:
+          type: string
+        target:
+          type: string
+    AlterOperation:
+      enum: [CREATE, ALTER, DROP]
+    DatabaseKind:
+      enum: [ORACLE, MSSQLSERVER, POSTGRESQL, DB2, MYSQL, H2, SQLMX]
+    DDLStatementData:
+      type: object
+      description: |
+        A DDL statement that can be a statement on its own and a container statement also. If it is a complex
+        stetament then it has inner statements also. In case of the database level alter script we have create tables as
+        inner statements and in the create table we will have column definitions.
+      required: [innerStatements]
+      properties:
+        prefix:
+          type: string
+        suffix:
+          type: string
+        kind:
+          $ref: '#/components/schemas/DDLStatementKind'
+        innerStatements:
+          type: array
+          items:
+            $ref: '#/components/schemas/DDLStatementData'
+    DDLStatementKind:
+      enum: [ALTERSCRIPT, DEFINECOLUMN, DROPFK, DROPPK, DROPINDEX, DROPCONSTRAINT, DROPTABLE, CREATETABLE, CREATETABLEEND, RENAMECOLUMN, ADDCOLUMN, MODCOLUMN, DROPCOLUMN, ADDPK, ADDINDEX, ADDFK, ADDCONSTRAINT, COMMENT]
