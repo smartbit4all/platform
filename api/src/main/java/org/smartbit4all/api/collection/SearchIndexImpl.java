@@ -19,6 +19,7 @@ import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
+import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
@@ -175,7 +176,7 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
     SearchEntityTableDataResult entityResult = constructResult();
     objectMapping.readObjects(
         objects.map(o -> objectApi
-            .create(storageApi.getStorage(indexedObjectDefinition.getUri(o)).getScheme(), o)),
+            .create(StringConstant.EMPTY, o)),
         entityResult,
         Collections.emptyMap());
     return entityResult.result;
