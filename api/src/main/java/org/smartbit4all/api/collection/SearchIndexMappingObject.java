@@ -454,6 +454,13 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
                                         .stream().forEach(op -> field.addPossibleOperationsItem(op));
                                 field.widgetType(FilterExpressionFieldWidgetType.TEXT_FIELD);
                                 field.filterFieldType(FilterExpressionDataType.STRING);
+                                field.expressionData(
+                                        new FilterExpressionData()
+                                                .currentOperation(FilterExpressionOperation.LIKE)
+                                                .boolOperator(FilterExpressionBoolOperator.AND)
+                                                .operand1(new FilterExpressionOperandData().isDataName(true)
+                                                        .type(FilterExpressionDataType.STRING)
+                                                        .valueAsString(propertyMapping.name)));
                             } else if (Long.class.isAssignableFrom(propertyMapping.type)) {
                                 Arrays
                                         .asList(FilterExpressionOperation.GREATER,
