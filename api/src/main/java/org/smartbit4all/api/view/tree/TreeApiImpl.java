@@ -3,6 +3,7 @@ package org.smartbit4all.api.view.tree;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +13,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.smartbit4all.api.uitree.bean.SmartTreeNode;
 import org.smartbit4all.api.uitree.bean.UiTreeNode;
+import org.smartbit4all.api.uitree.bean.UiTreePath;
+import org.smartbit4all.api.uitree.bean.UiTreePathPart;
 import org.smartbit4all.api.uitree.bean.UiTreeState;
 import org.smartbit4all.api.view.ViewApi;
 import org.smartbit4all.api.view.bean.UiAction;
@@ -37,15 +40,10 @@ public class TreeApiImpl implements TreeApi {
   public List<SmartTreeNode> getRootNodes(UiTreeState treeState) {
     List<String> rootNodes = treeState.getRootNodes();
     if (rootNodes.isEmpty()) {
-      TreeConfig treeConfig = getTreeConfig(treeState);
-      UiTreeNode configNode = treeConfig.getConfigNode(treeState);
-      List<UiTreeNode> roots = treeConfig.readChildrenNodes(treeState, configNode);
-      addNodesToState(treeState, roots);
-      treeState.getRootNodes().addAll(roots.stream()
-          .map(UiTreeNode::getIdentifier)
-          .collect(toList()));
+      refreshNode(treeState, getConfigNode(treeState));
+      rootNodes = treeState.getRootNodes();
     }
-    return getTreeNodeListFromState(rootNodes, treeState);
+    return getTreeNodeListFromState(treeState, rootNodes);
   }
 
   @Override
@@ -55,19 +53,24 @@ public class TreeApiImpl implements TreeApi {
       if (node.getChildren().isEmpty()) {
         refreshNode(treeState, node);
       }
-      return getTreeNodeListFromState(node.getChildren(), treeState);
+      return getTreeNodeListFromState(treeState, node.getChildren());
     }
     return Collections.emptyList();
   }
 
   @Override
   public SmartTreeNode expandNode(UiTreeState treeState, String nodeId) {
+    UiTreeNode treeNode = expandNodeInternal(treeState, nodeId);
+    return convertUi2SmartTreeNode(treeState, treeNode);
+  }
+
+  private UiTreeNode expandNodeInternal(UiTreeState treeState, String nodeId) {
     UiTreeNode treeNode = getTreeNode(treeState, nodeId);
     if (!treeState.getExpandedNodes().contains(nodeId)) {
       treeState.getExpandedNodes().add(nodeId);
       refreshNode(treeState, treeNode);
     }
-    return convertUi2SmartTreeNode(treeState, treeNode);
+    return treeNode;
   }
 
   @Override
@@ -82,14 +85,65 @@ public class TreeApiImpl implements TreeApi {
 
   @Override
   public SmartTreeNode selectNode(UiTreeState treeState, String nodeId) {
+    UiTreeNode treeNode = selectNodeInternal(treeState, nodeId, true);
+    return convertUi2SmartTreeNode(treeState, treeNode);
+  }
+
+  private UiTreeNode selectNodeInternal(UiTreeState treeState, String nodeId,
+      boolean handleSelection) {
     UiTreeNode treeNode = getTreeNode(treeState, nodeId);
     if (!treeState.getSelectedNodes().contains(nodeId)) {
       treeState.getSelectedNodes().clear();
       treeState.getSelectedNodes().add(nodeId);
     }
-    getTreeConfig(treeState)
-        .handleNodeSelected(treeState, treeNode);
-    return convertUi2SmartTreeNode(treeState, treeNode);
+    if (handleSelection) {
+      getTreeConfig(treeState).handleNodeSelected(treeState, treeNode);
+    }
+    return treeNode;
+  }
+
+  @Override
+  public void setSelectedNode(UiTreeState treeState, UiTreePath path,
+      boolean handleSelection) {
+    // get config node, navigate from there
+    UiTreeNode node = getConfigNode(treeState);
+    // copy path so parameter.parts won't change
+    UiTreePath pathCopy = new UiTreePath()
+        .parts(new ArrayList<>(path.getParts()));
+    UiTreeNode lastChild = navigateToChild(treeState, node, pathCopy);
+    if (lastChild != null) {
+      selectNodeInternal(treeState, lastChild.getIdentifier(), handleSelection);
+    }
+  }
+
+  private UiTreeNode navigateToChild(UiTreeState treeState, UiTreeNode node, UiTreePath path) {
+    if (path.getParts().isEmpty()) {
+      return node;
+    }
+    List<UiTreePathPart> parts = path.getParts();
+    UiTreePathPart part = parts.get(0);
+    URI objectUri = objectApi.getLatestUri(part.getObjectUri());
+    String nodeType = part.getNodeType();
+    if (objectUri == null && Strings.isNullOrEmpty(nodeType)) {
+      throw new IllegalArgumentException(
+          "objectUri and/or nodeType must be specified for navigation");
+    }
+    // this node is on the path, expand it
+    expandNodeInternal(treeState, node.getIdentifier());
+    UiTreeNode child = node.getChildren().stream()
+        .map(id -> treeState.getNodes().get(id))
+        .filter(n -> {
+          boolean uri = objectUri == null || objectUri.equals(n.getObjectUri());
+          boolean type = nodeType == null || nodeType.equals(n.getNodeType());
+          return uri && type;
+        })
+        .findFirst()
+        .orElse(null);
+    if (child != null) {
+      path.setParts(parts.subList(0, parts.size()));
+      return navigateToChild(treeState, child, path);
+    }
+    return null;
   }
 
   @Override
@@ -120,8 +174,7 @@ public class TreeApiImpl implements TreeApi {
 
   @Override
   public List<UiAction> getMainActions(UiTreeState treeState) {
-    TreeConfig treeConfig = getTreeConfig(treeState);
-    return treeConfig.getConfigNode(treeState).getActions();
+    return getConfigNode(treeState).getActions();
   }
 
   private TreeConfig getTreeConfig(UiTreeState treeState) {
@@ -131,6 +184,10 @@ public class TreeApiImpl implements TreeApi {
           "TreeConfig not present for configuration " + treeState.getConfig());
     }
     return config;
+  }
+
+  private UiTreeNode getConfigNode(UiTreeState treeState) {
+    return getTreeConfig(treeState).getConfigNode(treeState);
   }
 
   private void performAction(UiTreeState treeState, UiTreeNode treeNode, UiActionRequest action) {
@@ -154,7 +211,7 @@ public class TreeApiImpl implements TreeApi {
     return treeNode;
   }
 
-  private List<SmartTreeNode> getTreeNodeListFromState(List<String> ids, UiTreeState treeState) {
+  private List<SmartTreeNode> getTreeNodeListFromState(UiTreeState treeState, List<String> ids) {
     return ids.stream()
         .map(id -> treeState.getNodes().get(id))
         .map(n -> convertUi2SmartTreeNode(treeState, n))

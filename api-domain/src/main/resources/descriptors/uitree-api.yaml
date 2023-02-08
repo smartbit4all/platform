@@ -374,3 +374,19 @@ components:
           type: array
           items:
             type: UiAction
+    UiTreePath:
+      type: object
+      required: [parts]
+      properties:
+        parts:
+          type: array
+          items:
+            $ref: '#/components/schemas/UiTreePathPart'
+    UiTreePathPart:
+      type: object
+      properties:
+        objectUri:
+          type: string
+          format: uri
+        nodeType:
+          type: string
