@@ -2,6 +2,7 @@ package org.smartbit4all.api.collection;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
+
 import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
+
 import org.smartbit4all.api.collection.SearchEntityDefinition.DetailDefinition;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionBoolOperator;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionData;
@@ -442,7 +444,7 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
                 .filters(mappingsByPropertyName.entrySet().stream().map(e -> {
                     if (e.getValue() instanceof SearchIndexMappingProperty) {
                         SearchIndexMappingProperty propertyMapping = (SearchIndexMappingProperty) e.getValue();
-                        FilterExpressionField field = new FilterExpressionField().label1(e.getKey());
+                        FilterExpressionField field = new FilterExpressionField().label2(e.getKey());
                         field.addPossibleOperationsItem(FilterExpressionOperation.EQUAL);
                         field.addPossibleOperationsItem(FilterExpressionOperation.NOT_EQUAL);
                         field.addPossibleOperationsItem(FilterExpressionOperation.IS_EMPTY);
@@ -459,7 +461,10 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
                                                 .boolOperator(FilterExpressionBoolOperator.AND)
                                                 .operand1(new FilterExpressionOperandData().isDataName(true)
                                                         .type(FilterExpressionDataType.STRING)
-                                                        .valueAsString(propertyMapping.name)));
+                                                        .valueAsString(propertyMapping.name))
+                                                .operand2(new FilterExpressionOperandData().isDataName(false)
+                                                        .type(FilterExpressionDataType.STRING)
+                                                        .valueAsString("")));
                             } else if (Long.class.isAssignableFrom(propertyMapping.type)) {
                                 Arrays
                                         .asList(FilterExpressionOperation.GREATER,
