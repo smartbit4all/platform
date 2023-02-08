@@ -46,6 +46,6 @@ public interface TreeApi {
    * @param handleSelection if true, handleSelect will be called (exactly as in
    *        {@link #selectNode(UiTreeState, String)})
    */
-  void setSelectedNode(UiTreeState treeState, UiTreePath path, boolean handleSelection);
+  UiTreeNode setSelectedNode(UiTreeState treeState, UiTreePath path, boolean handleSelection);
 
 }

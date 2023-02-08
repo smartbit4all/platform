@@ -103,7 +103,7 @@ public class TreeApiImpl implements TreeApi {
   }
 
   @Override
-  public void setSelectedNode(UiTreeState treeState, UiTreePath path,
+  public UiTreeNode setSelectedNode(UiTreeState treeState, UiTreePath path,
       boolean handleSelection) {
     // get config node, navigate from there
     UiTreeNode node = getConfigNode(treeState);
@@ -114,6 +114,7 @@ public class TreeApiImpl implements TreeApi {
     if (lastChild != null) {
       selectNodeInternal(treeState, lastChild.getIdentifier(), handleSelection);
     }
+    return lastChild;
   }
 
   private UiTreeNode navigateToChild(UiTreeState treeState, UiTreeNode node, UiTreePath path) {
@@ -140,7 +141,7 @@ public class TreeApiImpl implements TreeApi {
         .findFirst()
         .orElse(null);
     if (child != null) {
-      path.setParts(parts.subList(0, parts.size()));
+      path.setParts(parts.subList(1, parts.size()));
       return navigateToChild(treeState, child, path);
     }
     return null;
