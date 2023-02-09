@@ -33,7 +33,6 @@ import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ObjectNodeList;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.data.TableDatas;
-import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.domain.utility.crud.Crud;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -223,11 +222,11 @@ class CollectionApiTest {
         collectionApi.searchIndex(SCHEMA,
             MY_SEARCH, SampleDataSheet.class, TestFilter.class);
 
-    List<EntityDefinition> asList = new ArrayList<>();
-    asList.add(searchIndex.getDefinition().definition);
     DatabaseRendition databaseRendition =
         databaseDefinitionApi
-            .render(databaseDefinitionApi.definitionOf(asList).databaseKind(DatabaseKind.ORACLE));
+            .render(databaseDefinitionApi
+                .definitionOf(Stream.of(searchIndex.getDefinition().definition).collect(toList()))
+                .databaseKind(DatabaseKind.ORACLE));
     System.out.println(databaseRendition.getScript());
 
     // Creating many object to search.

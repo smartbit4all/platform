@@ -7,6 +7,7 @@ import java.util.Locale;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.UserSessionApi;
 import org.smartbit4all.core.utility.ListBasedMap;
 import org.smartbit4all.core.utility.ReflectionUtility;
@@ -14,6 +15,9 @@ import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.MessageSource;
+import org.springframework.context.NoSuchMessageException;
 import com.google.common.base.Strings;
 
 /**
@@ -57,10 +61,17 @@ public final class LocaleSettingApi implements InitializingBean {
   @Autowired(required = false)
   private UserSessionApi userSessionApi;
 
+  @Autowired(required = false)
+  private SessionApi sessionApi;
+
   /**
    * The default locale for the locale specific Strings.
    */
   private Locale defaultLocale;
+
+  @Autowired()
+  @Qualifier("smartbit4all.messagesource")
+  private MessageSource messageSource;
 
   public static final String SETTINGS_SCHEME = "setting";
 
@@ -108,14 +119,14 @@ public final class LocaleSettingApi implements InitializingBean {
 
   public void setKeyTranslation(String key, Locale locale, String targetValue) {
     Map<String, String> keyTranslation =
-        localeSpecificKeyBasedTranslations.computeIfAbsent(getLocalCode(locale),
+        localeSpecificKeyBasedTranslations.computeIfAbsent(getLocaleCode(locale),
             (l) -> new HashMap<>());
     keyTranslation.put(key, targetValue);
   }
 
   public void setTranslation(String defaultValue, Locale locale, String targetValue) {
     Map<String, String> translations =
-        localeSpecificTranslations.computeIfAbsent(getLocalCode(locale), l -> new HashMap<>());
+        localeSpecificTranslations.computeIfAbsent(getLocaleCode(locale), l -> new HashMap<>());
     translations.put(defaultValue, targetValue);
   }
 
@@ -128,10 +139,15 @@ public final class LocaleSettingApi implements InitializingBean {
   }
 
   public final String get(String key) {
-    if (userSessionApi != null && userSessionApi.currentSession() != null) {
-      return get(userSessionApi.currentSession().getCurrentLocale(), key);
+    Locale sessionLocale = null;
+    if (sessionApi != null) {
+      sessionLocale = sessionApi.getLocale();
+    } else if (userSessionApi != null && userSessionApi.currentSession() != null) {
+      sessionLocale = userSessionApi.currentSession().getCurrentLocale();
     }
-    return get(defaultLocale, key);
+    Locale defaultLocaleTmp = defaultLocale != null ? defaultLocale : Locales.HUNGARIAN;
+    Locale locale = sessionLocale != null ? sessionLocale : defaultLocaleTmp;
+    return get(locale, key);
   }
 
   public final String get(Locale locale, String key) {
@@ -140,7 +156,7 @@ public final class LocaleSettingApi implements InitializingBean {
       return sourceLiteral != null ? sourceLiteral : key;
     }
     Map<String, String> keyBasedTranslations =
-        localeSpecificKeyBasedTranslations.get(getLocalCode(locale));
+        localeSpecificKeyBasedTranslations.get(getLocaleCode(locale));
     if (keyBasedTranslations != null) {
       String keyBasedValue = keyBasedTranslations.get(key);
       if (keyBasedValue != null) {
@@ -150,7 +166,7 @@ public final class LocaleSettingApi implements InitializingBean {
     // We get the default String and the translations based on this.
     String sourceLiteral = sourceLiterals.get(key);
     if (sourceLiteral != null) {
-      Map<String, String> translations = localeSpecificTranslations.get(getLocalCode(locale));
+      Map<String, String> translations = localeSpecificTranslations.get(getLocaleCode(locale));
       if (translations != null) {
         String translation = translations.get(sourceLiteral);
         if (translation != null) {
@@ -159,7 +175,11 @@ public final class LocaleSettingApi implements InitializingBean {
       }
       return sourceLiteral;
     }
-    return key;
+    try {
+      return messageSource.getMessage(key, null, locale);
+    } catch (NoSuchMessageException e) {
+      return key;
+    }
   }
 
   /**
@@ -207,7 +227,7 @@ public final class LocaleSettingApi implements InitializingBean {
     initLocalOptions();
   }
 
-  private String getLocalCode(Locale locale) {
+  private String getLocaleCode(Locale locale) {
     String result = locale.getLanguage();
     String country = locale.getCountry();
     if (!Strings.isNullOrEmpty(country)) {

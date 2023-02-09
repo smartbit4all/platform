@@ -73,4 +73,13 @@ class LocaleSettingApiOptionTest {
 
   }
 
+  @Test
+  void testMessages() {
+    localeSettings.setDefaultLocale(hu);
+    String key = "smartbit4all.message";
+    assertEquals("Üdv mindenkinek", localeSettings.get(key));
+    localeSettings.setDefaultLocale(Locale.UK);
+    assertEquals("Greetings everyone", localeSettings.get(key));
+  }
+
 }
