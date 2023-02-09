@@ -18,6 +18,9 @@ smartbit4all {
         apiDescriptorMapping = [
         	"${rootDir}/ui-api/src/main/resources/descriptors/navigation-api.yaml" : "navigation"
         ]
+        apiDescriptorMapping = [
+        	"${rootDir}/ui-api/src/main/resources/descriptors/grid-ui-api.yaml" : "grid"
+        ]
         apiPackagePrefix = "org.smartbit4all.ui.api"
         apiPackagePostfix = "restserver"
         invokerPackagePrefix = "org.smartbit4all.ui.api"
@@ -29,7 +32,8 @@ smartbit4all {
 			"ViewModelData" : "org.smartbit4all.ui.api.navigation.model.ViewModelData",
 			"CommandData" : "org.smartbit4all.ui.api.navigation.model.CommandData",
 			"CommandResult" : "org.smartbit4all.ui.api.navigation.model.CommandResult",
-			"MessageResult" : "org.smartbit4all.ui.api.navigation.model.MessageResult"
+			"MessageResult" : "org.smartbit4all.ui.api.navigation.model.MessageResult",
+			"GridModel" : "org.smartbit4all.api.grid.bean.GridModel"
 		]
     }
 }
