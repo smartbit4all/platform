@@ -1,10 +1,10 @@
 package org.smartbit4all.api.setting;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Locale;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class LocaleSettingApiTest {
 
@@ -14,7 +14,7 @@ class LocaleSettingApiTest {
 
   @BeforeAll
   static void setUpBeforeClass() throws Exception {
-    hu = new Locale("hu", "HU");
+    hu = Locale.forLanguageTag("hu");
     fr = Locale.FRANCE;
   }
 

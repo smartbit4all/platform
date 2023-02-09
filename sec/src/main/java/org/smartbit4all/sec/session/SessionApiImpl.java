@@ -9,6 +9,7 @@ import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.Base64;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import org.slf4j.Logger;
@@ -72,8 +73,14 @@ public class SessionApiImpl implements SessionApi {
   }
 
   @Override
-  public String getLocale() {
-    return currentSession().getLocale();
+  public Locale getLocale() {
+    String locale = null;
+    try {
+      locale = currentSession().getLocale();
+    } catch (Exception e) {
+      // NOP
+    }
+    return locale != null ? Locale.forLanguageTag(locale) : null;
   }
 
   @Override

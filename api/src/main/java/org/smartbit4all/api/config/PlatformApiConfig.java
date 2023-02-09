@@ -65,12 +65,15 @@ import org.smartbit4all.domain.data.storage.StorageObject.VersionPolicy;
 import org.smartbit4all.domain.service.entity.EntityManager;
 import org.smartbit4all.domain.service.transfer.TransferService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
+import org.springframework.context.support.ResourceBundleMessageSource;
 
 /**
  * The smartbit4all platform api config.
@@ -215,6 +218,14 @@ public class PlatformApiConfig {
   @Bean
   public DatabaseDefinitionApi databaseDefinitionApi() {
     return new DatabaseDefinitionApiImpl();
+  }
+
+  @Bean(name = "smartbit4all.messagesource")
+  public MessageSource messageResource(
+      @Value("${spring.messages.basename:messages-platform}") String baseName) {
+    ResourceBundleMessageSource messageBundleResrc = new ResourceBundleMessageSource();
+    messageBundleResrc.addBasenames(baseName.split(","));
+    return messageBundleResrc;
   }
 
   @Bean

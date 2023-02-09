@@ -3,6 +3,7 @@ package org.smartbit4all.api.session;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import org.smartbit4all.api.org.bean.User;
@@ -27,7 +28,7 @@ public interface SessionApi {
 
   OffsetDateTime getExpiration();
 
-  String getLocale();
+  Locale getLocale();
 
   List<AccountInfo> getAuthentications();
 
