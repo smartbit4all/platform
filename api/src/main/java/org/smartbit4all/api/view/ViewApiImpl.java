@@ -1,7 +1,6 @@
 package org.smartbit4all.api.view;
 
 import static java.util.stream.Collectors.toList;
-import java.net.URI;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -31,6 +30,9 @@ public class ViewApiImpl implements ViewApi {
 
   @Autowired
   private ViewContextService viewContextService;
+
+  @Autowired
+  private SmartLinkApi smartLinkApi;
 
   @Value("${view.messageViewName:message-dialog}")
   private String messageViewName;
@@ -233,13 +235,8 @@ public class ViewApiImpl implements ViewApi {
   }
 
   @Override
-  public URI publishView(String channel, View view) {
-    return viewContextService.publishView(channel, view);
-  }
-
-  @Override
   public UUID showPublishedView(String channel, UUID smartLinkUuid) {
-    ObjectNode linkNode = viewContextService.getSmartLink(channel, smartLinkUuid);
+    ObjectNode linkNode = smartLinkApi.getSmartLink(channel, smartLinkUuid);
     if (linkNode == null) {
       return null;
     }

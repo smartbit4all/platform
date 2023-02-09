@@ -49,6 +49,8 @@ import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.setting.LocaleUsage;
 import org.smartbit4all.api.setting.LocaleUsageImpl;
+import org.smartbit4all.api.view.SmartLinkApi;
+import org.smartbit4all.api.view.SmartLinkApiImpl;
 import org.smartbit4all.api.view.ViewContextService;
 import org.smartbit4all.api.view.tree.TreeApi;
 import org.smartbit4all.api.view.tree.TreeApiImpl;
@@ -218,6 +220,11 @@ public class PlatformApiConfig {
   @Bean
   public DatabaseDefinitionApi databaseDefinitionApi() {
     return new DatabaseDefinitionApiImpl();
+  }
+
+  @Bean
+  public SmartLinkApi smartLinkApi() {
+    return new SmartLinkApiImpl();
   }
 
   @Bean(name = "smartbit4all.messagesource")

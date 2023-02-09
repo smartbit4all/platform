@@ -1,12 +1,10 @@
 package org.smartbit4all.api.view;
 
-import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.UnaryOperator;
 import org.smartbit4all.api.view.bean.CloseResult;
 import org.smartbit4all.api.view.bean.MessageData;
-import org.smartbit4all.api.view.bean.SmartLinkData;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.bean.ViewContext;
 import org.smartbit4all.api.view.bean.ViewState;
@@ -101,14 +99,6 @@ public interface ViewApi {
    * @param update
    */
   void updateView(UUID viewUuid, UnaryOperator<View> update);
-
-  /**
-   * Publishes the view in a {@link SmartLinkData} and returns it's URI.
-   *
-   * @param channel
-   * @param view
-   */
-  URI publishView(String channel, View view);
 
   UUID showPublishedView(String channel, UUID smartLinkUuid);
 }

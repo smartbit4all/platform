@@ -1,18 +1,15 @@
 package org.smartbit4all.api.view;
 
-import java.net.URI;
 import java.util.UUID;
 import java.util.function.UnaryOperator;
 import org.smartbit4all.api.view.annotation.BeforeClose;
 import org.smartbit4all.api.view.bean.CloseResult;
 import org.smartbit4all.api.view.bean.MessageResult;
 import org.smartbit4all.api.view.bean.OpenPendingData;
-import org.smartbit4all.api.view.bean.SmartLinkData;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.bean.ViewContext;
 import org.smartbit4all.api.view.bean.ViewContextData;
 import org.smartbit4all.api.view.bean.ViewContextUpdate;
-import org.smartbit4all.core.object.ObjectNode;
 
 public interface ViewContextService {
 
@@ -106,23 +103,5 @@ public interface ViewContextService {
    *
    */
   CloseResult callBeforeClose(UUID viewToCloseUuid, OpenPendingData data);
-
-  /**
-   * Publishes the view in a {@link SmartLinkData} and returns it's URI.
-   *
-   * @param channel
-   * @param view
-   */
-  URI publishView(String channel, View view);
-
-  /**
-   * Finds the SmartLinkData in the channel, identified by it's UUID, and returns it as an
-   * {@link ObjectNode}. If link is not found, returns null.
-   *
-   * @param channel
-   * @param smartLinkUuid
-   * @return
-   */
-  ObjectNode getSmartLink(String channel, UUID smartLinkUuid);
 
 }
