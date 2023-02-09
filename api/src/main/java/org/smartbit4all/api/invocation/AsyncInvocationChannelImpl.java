@@ -8,7 +8,10 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationError;
+import org.smartbit4all.api.invocation.bean.InvocationParameter;
+import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationResult;
 import org.smartbit4all.api.invocation.bean.InvocationResultDecision;
 import org.smartbit4all.api.invocation.bean.InvocationResultDecision.DecisionEnum;
@@ -99,14 +102,20 @@ public final class AsyncInvocationChannelImpl
         result.endTime(OffsetDateTime.now());
         // Let's make a decision about the next step
         InvocationResultDecision decision = null;
-        if (requestEntry.request.getEvaluate() != null) {
-          // We set the parameter for the call.
-          requestEntry.request.getEvaluate().getParameters().get(0).setValue(requestEntry.request);
-          requestEntry.request.getEvaluate().getParameters().get(1).setValue(result);
+        InvocationRequest evaluate = requestEntry.request.getEvaluate();
+        if (evaluate != null) {
+          // We set the request and the result parameters for the call when they are present in the
+          // signature.
+          for (InvocationParameter parameter : evaluate.getParameters()) {
+            if (AsyncInvocationRequest.class.getName().equals(parameter.getTypeClass())) {
+              parameter.setValue(requestEntry.request);
+            } else if (InvocationResult.class.getName().equals(parameter.getTypeClass())) {
+              parameter.setValue(result);
+            }
+          }
           try {
             // TODO This is an object read it with ObjectDefinition!
-            decision = (InvocationResultDecision) invocationApi
-                .invoke(requestEntry.request.getEvaluate()).getValue();
+            decision = (InvocationResultDecision) invocationApi.invoke(evaluate).getValue();
           } catch (Exception e) {
             log.error("Exception occured while trying to evaluate the " + result + " for the "
                 + requestEntry.request, e);
