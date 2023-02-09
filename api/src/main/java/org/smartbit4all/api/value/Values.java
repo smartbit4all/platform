@@ -3,6 +3,7 @@ package org.smartbit4all.api.value;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import java.net.URI;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -11,7 +12,13 @@ import org.smartbit4all.api.value.bean.Value;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
 
-public class Values {
+public final class Values {
+
+  public static final Comparator<Value> ALPHABETIC_ORDER =
+      Comparator.comparing(Value::getDisplayValue);
+
+  public static final Comparator<Value> CASE_INSENSITIVE_ORDER =
+      (v1, v2) -> String.CASE_INSENSITIVE_ORDER.compare(v1.getDisplayValue(), v2.getDisplayValue());
 
   private Values() {}
 
@@ -30,6 +37,47 @@ public class Values {
             .objectUri(n.getObjectUri())
             .displayValue(n.getValueAsString(paths)))
         .collect(Collectors.toList());
+  }
+
+  /**
+   * Given a list of selected URIs from a list of possible values, updates the selected URIs to
+   * match the version numbers found among the values.
+   * 
+   * <p>
+   * For example: if the values are:
+   * 
+   * <pre>
+   * {@code
+   *    [ 
+   *        {displayValue: 'a', objectUri: 'schema:/path1.v5'},
+   *        {displayValue: 'b', objectUri: 'schema:/path2.v7'}
+   *    ]
+   * }</pre>
+   * 
+   * <p>
+   * and the selection is
+   * 
+   * <pre>{@code ['schema:/path1.v0']}</pre>
+   * 
+   * , this method will return the list of
+   * 
+   * <pre>{@code ['schema:/path1.v5']}</pre>
+   * 
+   * @param objectApi an instance of {@link ObjectApi}, not null
+   * @param values the values to be searched, not null
+   * @param selections the selected URIs to be matched with the value URIs, not null
+   * @return the list of URIs with version number matching their counterpart among he values
+   */
+  public static List<URI> findSelectedUris(ObjectApi objectApi, List<Value> values,
+      List<URI> selections) {
+    return selections.stream()
+        .map(uri -> values.stream()
+            .map(Value::getObjectUri)
+            .filter(valueUri -> objectApi.getLatestUri(uri)
+                .equals(objectApi.getLatestUri(valueUri)))
+            .findFirst()
+            .orElse(null))
+        .collect(toList());
   }
 
   /**
@@ -58,7 +106,9 @@ public class Values {
             v -> v));
 
     return uris.stream()
-        .map(u -> findOrLoadValue(objectApi, allTemplates, u, displayValuePath))
+        .map(u -> allTemplates.computeIfAbsent(objectApi.getLatestUri(u), uri -> new Value()
+            .objectUri(uri)
+            .displayValue(objectApi.load(uri).getValue(String.class, displayValuePath))))
         .collect(Collectors.toList());
   }
 
@@ -77,14 +127,6 @@ public class Values {
     return allValues;
   }
 
-  private static final Value findOrLoadValue(ObjectApi objectApi, Map<URI, Value> allTemplates,
-      URI u, String... paths) {
-    Value v = allTemplates.get(u);
-    if (v == null) {
-      v = loadValue(objectApi, u, paths);
-    }
-    return v;
-  }
 
   private static Value loadValue(ObjectApi objectApi, URI u, String... paths) {
     Value v;
