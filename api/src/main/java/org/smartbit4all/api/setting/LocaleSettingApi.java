@@ -138,6 +138,20 @@ public final class LocaleSettingApi implements InitializingBean {
     localeSpecificTranslations.clear();
   }
 
+  public final String getFirstDefined(String... keys) {
+    if (keys == null || keys.length == 0) {
+      return null;
+    }
+    for (String key : keys) {
+      String value = get(key);
+      if (value != null && !value.equals(key)) {
+        return value;
+      }
+    }
+    // We don't find the proper value for the keys. So the most relevant key is returned.
+    return keys[0];
+  }
+
   public final String get(String key) {
     Locale sessionLocale = null;
     if (sessionApi != null) {

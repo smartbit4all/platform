@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldList;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
+import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
@@ -90,6 +91,9 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
 
   @Autowired
   protected EntityManager entityManager;
+
+  @Autowired
+  LocaleSettingApi localeSettingApi;
 
   /**
    * The entity definition the search working on.
@@ -297,7 +301,7 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
 
   @Override
   public FilterExpressionFieldList allFilterFields() {
-    return objectMapping.allFilterFields();
+    return objectMapping.allFilterFields(localeSettingApi);
   }
 
 }

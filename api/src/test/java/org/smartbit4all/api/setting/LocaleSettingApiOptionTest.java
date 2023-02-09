@@ -82,4 +82,12 @@ class LocaleSettingApiOptionTest {
     assertEquals("Greetings everyone", localeSettings.get(key));
   }
 
+  @Test
+  void testMessagesInOrder() {
+    localeSettings.setDefaultLocale(hu);
+    assertEquals("Specific message2",
+        localeSettings.getFirstDefined("smartbit4all.myspecificmessage2", "myspecificmessage2"));
+    assertEquals("Specific message1",
+        localeSettings.getFirstDefined("smartbit4all.myspecificmessage1", "myspecificmessage1"));
+  }
 }
