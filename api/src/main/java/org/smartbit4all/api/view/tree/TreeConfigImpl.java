@@ -71,7 +71,6 @@ public abstract class TreeConfigImpl implements TreeConfig {
     return getRelations().values().stream()
         .filter(rel -> nodeType.equals(rel.getParentNodeType()))
         .flatMap(rel -> rel.readChildrenNodes(this, treeState, treeNode).stream())
-        .map(node -> node.actions(getActionsForNode(treeState, node.getNodeType(), null)))
         .collect(toList());
   }
 
