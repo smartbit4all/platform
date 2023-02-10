@@ -21,6 +21,7 @@ import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.core.object.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.base.Strings;
 
@@ -265,6 +266,14 @@ public class TreeApiImpl implements TreeApi {
       // root nodes should be refreshed
       treeState.rootNodes(node.getChildren());
     }
+    // node.actions(getTreeConfig(treeState).)
+    if (node.getObjectUri() != null) {
+      ObjectNode object = objectApi.loadLatest(node.getObjectUri());
+      List<UiAction> actions =
+          getTreeConfig(treeState).getActionsForNode(treeState, node.getNodeType(), object);
+      node.setActions(actions);
+    }
+
   }
 
   private void addNodesToState(UiTreeState treeState, List<UiTreeNode> nodes) {
