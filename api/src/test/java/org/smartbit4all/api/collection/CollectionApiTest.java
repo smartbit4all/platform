@@ -50,6 +50,7 @@ class CollectionApiTest {
   public static final String FIRST = "first";
   public static final String MY_MAP = "myMap";
   public static final String MY_LIST = "myList";
+  public static final String MY_LIST_RECENT = "myListRecent";
   public static final String MY_REF = "myRef";
   public static final String MY_SEARCH = "mySearch";
   public static final String SAMPLE_CATEGORY = "sampleCategory";
@@ -142,6 +143,45 @@ class CollectionApiTest {
 
     Assertions.assertEquals(datasheet1Uri, list.uris().get(0));
 
+  }
+
+  @Test
+  void testListAsRecentItems() throws Exception {
+
+    List<URI> uris = new ArrayList<>();
+    for (int i = 0; i < 10; i++) {
+      ObjectNode datasheet1 =
+          objectApi.create(SCHEMA, new SampleDataSheet().name("datasheet " + 1));
+      uris.add(objectApi.save(datasheet1));
+    }
+
+    StoredList list = collectionApi.list(SCHEMA, MY_LIST_RECENT);
+
+    list.addOrMoveFirst(uris.get(0), 3, false);
+    list.addOrMoveFirst(uris.get(1), 3, false);
+    list.addOrMoveFirst(uris.get(2), 3, false);
+    list.addOrMoveFirst(uris.get(3), 3, false);
+
+    {
+      List<URI> result = list.uris();
+      assertEquals(3, result.size());
+      assertEquals(uris.get(3), result.get(0));
+      assertEquals(uris.get(2), result.get(1));
+      assertEquals(uris.get(1), result.get(2));
+    }
+
+    list.addOrMoveFirst(uris.get(0), 3, true);
+    list.addOrMoveFirst(uris.get(1), 3, true);
+    list.addOrMoveFirst(uris.get(2), 3, true);
+    list.addOrMoveFirst(uris.get(3), 3, true);
+
+    {
+      List<URI> result = list.uris();
+      assertEquals(3, result.size());
+      assertEquals(objectApi.getLatestUri(uris.get(3)), result.get(0));
+      assertEquals(objectApi.getLatestUri(uris.get(2)), result.get(1));
+      assertEquals(objectApi.getLatestUri(uris.get(1)), result.get(2));
+    }
   }
 
   @Test

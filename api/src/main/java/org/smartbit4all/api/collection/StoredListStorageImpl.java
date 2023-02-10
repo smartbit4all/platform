@@ -8,6 +8,7 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 import org.smartbit4all.api.collection.bean.StoredListData;
 import org.smartbit4all.domain.data.storage.ObjectNotFoundException;
+import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageObject;
 import org.smartbit4all.domain.data.storage.StorageObjectLock;
@@ -108,6 +109,21 @@ public class StoredListStorageImpl extends AbstractStoredContainerStorageImpl
   public void remove(URI uri) {
     update(l -> {
       l.remove(uri);
+      return l;
+    });
+  }
+
+  @Override
+  public void addOrMoveFirst(URI uri, int maxSize, boolean assumeLatestUri) {
+    update(l -> {
+      URI uriToAdd = assumeLatestUri ? ObjectStorageImpl.getUriWithoutVersion(uri) : uri;
+      // Remove if exists
+      l.remove(uriToAdd);
+      // Add at first position
+      l.add(0, uriToAdd);
+      if (l.size() > maxSize) {
+        l.remove(l.size() - 1);
+      }
       return l;
     });
   }

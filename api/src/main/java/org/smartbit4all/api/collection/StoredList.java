@@ -29,4 +29,17 @@ public interface StoredList {
 
   boolean exists();
 
+  /**
+   * This function checks if the given uri exists in the list. If not then the uri will be added to
+   * the list as the first uri. If exists then the uri will be moved to the first position. After
+   * the operation the the size of the list is checked and the last uri is removed if the maxSize
+   * exceeded.
+   * 
+   * @param uri The uri to add.
+   * @param maxSize The maximum size of the list after the operation.
+   * @param assumeLatestUri If true then the list will contains the laster uri even if the version
+   *        uri is passed.
+   */
+  void addOrMoveFirst(URI uri, int maxSize, boolean assumeLatestUri);
+
 }
