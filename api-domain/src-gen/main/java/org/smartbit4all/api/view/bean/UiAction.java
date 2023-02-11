@@ -35,7 +35,8 @@ import javax.validation.Valid;
   UiAction.CODE,
   UiAction.IDENTIFIER,
   UiAction.INPUT_TYPE,
-  UiAction.SUBMIT
+  UiAction.SUBMIT,
+  UiAction.CONFIRM
 })
 @JsonTypeName("UiAction")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -51,6 +52,9 @@ public class UiAction {
 
   public static final String SUBMIT = "submit";
   private Boolean submit;
+
+  public static final String CONFIRM = "confirm";
+  private Boolean confirm = false;
 
   public UiAction() { 
   }
@@ -164,6 +168,33 @@ public class UiAction {
   }
 
 
+  public UiAction confirm(Boolean confirm) {
+    
+    this.confirm = confirm;
+    return this;
+  }
+
+   /**
+   * Get confirm
+   * @return confirm
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(CONFIRM)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getConfirm() {
+    return confirm;
+  }
+
+
+  @JsonProperty(CONFIRM)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setConfirm(Boolean confirm) {
+    this.confirm = confirm;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -176,12 +207,13 @@ public class UiAction {
     return Objects.equals(this.code, uiAction.code) &&
         Objects.equals(this.identifier, uiAction.identifier) &&
         Objects.equals(this.inputType, uiAction.inputType) &&
-        Objects.equals(this.submit, uiAction.submit);
+        Objects.equals(this.submit, uiAction.submit) &&
+        Objects.equals(this.confirm, uiAction.confirm);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(code, identifier, inputType, submit);
+    return Objects.hash(code, identifier, inputType, submit, confirm);
   }
 
   @Override
@@ -192,6 +224,7 @@ public class UiAction {
     sb.append("    identifier: ").append(toIndentedString(identifier)).append("\n");
     sb.append("    inputType: ").append(toIndentedString(inputType)).append("\n");
     sb.append("    submit: ").append(toIndentedString(submit)).append("\n");
+    sb.append("    confirm: ").append(toIndentedString(confirm)).append("\n");
     sb.append("}");
     return sb.toString();
   }
