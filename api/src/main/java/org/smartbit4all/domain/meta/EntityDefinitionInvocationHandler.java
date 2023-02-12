@@ -184,7 +184,7 @@ public class EntityDefinitionInvocationHandler<T extends EntityDefinition>
     OwnProperty annot = method.getAnnotation(OwnProperty.class);
     String propertyName = getName(annot.name(), method);
     PropertyOwned<? extends Comparable> propertyOwned =
-        PropertyOwned.create(propertyName, getPropertyType(method), annot.mandatory(),
+        PropertyOwned.create(propertyName, getPropertyType(method), -1, annot.mandatory(),
             annot.columnName(), dataConverterHelper);
     PropertyOwned<?> propertyProxy = createPropertyProxy(propertyOwned, PropertyOwned.class);
     return propertyProxy;

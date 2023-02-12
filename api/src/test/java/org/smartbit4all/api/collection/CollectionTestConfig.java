@@ -1,5 +1,6 @@
 package org.smartbit4all.api.collection;
 
+import java.net.URI;
 import org.smartbit4all.api.binarydata.BinaryContent;
 import org.smartbit4all.api.config.PlatformApiConfig;
 import org.smartbit4all.api.object.bean.AggregationKind;
@@ -59,10 +60,11 @@ public class CollectionTestConfig {
         CollectionApiTest.SCHEMA,
         CollectionApiTest.MY_SEARCH,
         TestFilter.class, CollectionApiTest.SCHEMA, SampleDataSheet.class)
-            .map(TestFilter.NAME, SampleDataSheet.NAME).map(TestFilter.URI, SampleDataSheet.URI)
-            .mapProcessed(TestFilter.ISODD, n -> Boolean.valueOf("odd".equals(n)),
+            .map(TestFilter.NAME, String.class, 150, SampleDataSheet.NAME)
+            .map(TestFilter.URI, URI.class, 500, SampleDataSheet.URI)
+            .mapProcessed(TestFilter.ISODD, Boolean.class, 1, n -> Boolean.valueOf("odd".equals(n)),
                 SampleDataSheet.NAME)
-            .mapComplex(TestFilter.CAPTION,
+            .mapComplex(TestFilter.CAPTION, String.class, 300,
                 on -> {
                   return on.getValueAsString(SampleDataSheet.NAME)
                       + StringConstant.DOT
@@ -99,9 +101,9 @@ public class CollectionTestConfig {
                       + on.getValueAsString(SampleCategory.NAME);
                 });
     index.detail(SampleCategory.CONTAINER_ITEMS, SampleCategory.URI)
-        .map(SampleContainerItem.NAME, String.class,
+        .map(SampleContainerItem.NAME, String.class, 150,
             SampleContainerItem.NAME)
-        .map(SampleContainerItem.DATASHEET, String.class, SampleContainerItem.DATASHEET,
+        .map(SampleContainerItem.DATASHEET, String.class, 150, SampleContainerItem.DATASHEET,
             SampleDataSheet.NAME);
     return index;
   }

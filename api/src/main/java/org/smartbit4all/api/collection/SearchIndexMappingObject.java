@@ -119,35 +119,36 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
     return null;
   }
 
-  public SearchIndexMappingObject map(String propertyName, Class<?> dataType, String... pathes) {
+  public SearchIndexMappingObject map(String propertyName, Class<?> dataType, int length,
+      String... pathes) {
     Objects.requireNonNull(pathes);
     if (pathes.length > 0) {
 
       mappingsByPropertyName.put(propertyName,
           new SearchIndexMappingProperty(propertyName, pathes,
-              dataType == null ? getType(propertyName) : dataType, null, null));
+              dataType == null ? getType(propertyName) : dataType, length, null, null));
     }
     return this;
   }
 
-  public SearchIndexMappingObject mapProcessed(String propertyName, Class<?> dataType,
+  public SearchIndexMappingObject mapProcessed(String propertyName, Class<?> dataType, int length,
       UnaryOperator<Object> processor,
       String... pathes) {
     Objects.requireNonNull(pathes);
     if (pathes.length > 0) {
       mappingsByPropertyName.put(propertyName,
           new SearchIndexMappingProperty(propertyName, pathes,
-              dataType == null ? getType(propertyName) : dataType, processor,
+              dataType == null ? getType(propertyName) : dataType, length, processor,
               null));
     }
     return this;
   }
 
-  public SearchIndexMappingObject mapComplex(String propertyName,
+  public SearchIndexMappingObject mapComplex(String propertyName, Class<?> dataType, int length,
       Function<ObjectNode, Object> complexProcessor) {
     Objects.requireNonNull(complexProcessor);
     mappingsByPropertyName.put(propertyName,
-        new SearchIndexMappingProperty(propertyName, null, getType(propertyName), null,
+        new SearchIndexMappingProperty(propertyName, null, dataType, length, null,
             complexProcessor));
     return this;
   }
@@ -196,7 +197,7 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
     for (Entry<String, SearchIndexMapping> entry : mappingsByPropertyName.entrySet()) {
       if (entry.getValue() instanceof SearchIndexMappingProperty) {
         SearchIndexMappingProperty property = (SearchIndexMappingProperty) entry.getValue();
-        builder.ownedProperty(property.name, property.type);
+        builder.addOwnedProperty(property.name, property.type, property.length);
       }
     }
 

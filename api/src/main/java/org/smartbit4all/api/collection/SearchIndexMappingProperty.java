@@ -4,7 +4,7 @@ import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import org.smartbit4all.core.object.ObjectNode;
 
-public class SearchIndexMappingProperty extends SearchIndexMapping {
+class SearchIndexMappingProperty extends SearchIndexMapping {
 
   String name;
 
@@ -18,13 +18,19 @@ public class SearchIndexMappingProperty extends SearchIndexMapping {
 
   Class<?> type;
 
-  SearchIndexMappingProperty(String name, String[] path, Class<?> type,
+  /**
+   * The length can be defined in case of string.
+   */
+  int length;
+
+  SearchIndexMappingProperty(String name, String[] path, Class<?> type, int length,
       UnaryOperator<Object> processor,
       Function<ObjectNode, Object> complexProcessor) {
     super();
     this.name = name;
     this.path = path;
     this.type = type;
+    this.length = length;
     this.processor = processor;
     this.complexProcessor = complexProcessor;
   }

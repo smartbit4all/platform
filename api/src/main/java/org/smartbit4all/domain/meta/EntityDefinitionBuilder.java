@@ -56,11 +56,17 @@ public class EntityDefinitionBuilder {
 
   @SuppressWarnings("unchecked")
   public <T> EntityDefinitionBuilder ownedProperty(String name, Class<T> typeClass) {
+    addOwnedProperty(name, typeClass, -1);
+    return this;
+  }
+
+  @SuppressWarnings("unchecked")
+  public <T> PropertyOwned<T> addOwnedProperty(String name, Class<T> typeClass, int length) {
     PropertyOwned<T> result =
-        PropertyOwned.create(name, typeClass, false, name, instance.dataConverterHelper);
+        PropertyOwned.create(name, typeClass, length, false, name, instance.dataConverterHelper);
     PropertyOwned<T> resultProxy = instance.createPropertyProxy(result, PropertyOwned.class);
     instance.registerProperty(resultProxy);
-    return this;
+    return resultProxy;
   }
 
   @SuppressWarnings("unchecked")

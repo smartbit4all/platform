@@ -6,10 +6,10 @@ import java.util.function.BiFunction;
 import org.smartbit4all.api.databasedefinition.bean.AlterOperation;
 import org.smartbit4all.api.databasedefinition.bean.ColumnDefinition;
 import org.smartbit4all.api.databasedefinition.bean.ColumnTypeDefinition;
+import org.smartbit4all.api.databasedefinition.bean.ColumnTypeDefinition.BaseTypeEnum;
 import org.smartbit4all.api.databasedefinition.bean.DatabaseDefinition;
 import org.smartbit4all.api.databasedefinition.bean.DatabaseKind;
 import org.smartbit4all.api.databasedefinition.bean.TableDefinition;
-import org.smartbit4all.api.databasedefinition.bean.ColumnTypeDefinition.BaseTypeEnum;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.domain.meta.PropertyOwned;
@@ -41,8 +41,8 @@ public class DatabaseDefinitionApiImpl implements DatabaseDefinitionApi {
         if (property instanceof PropertyOwned) {
           PropertyOwned<?> owned = (PropertyOwned) property;
           tableDefinition
-              .addColumnsItem(new ColumnDefinition().name(owned.getName()).typeDefinition(
-                  new ColumnTypeDefinition().baseType(BaseTypeEnum.VARCHAR).length(100)));
+              .addColumnsItem(new ColumnDefinition().name(owned.getName())
+                  .typeDefinition(owned.getColumnType()));
         }
       }
       result.addTablesItem(tableDefinition);

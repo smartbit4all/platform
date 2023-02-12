@@ -68,7 +68,8 @@ public final class DataColumnOwned<T> extends DataColumn<T> {
   void setValue(DataRow row, Object value) {
     if (value != null && !this.getProperty().type().isInstance(value)) {
       throw new IllegalArgumentException(
-          "The given value can not be set as a " + this.getProperty().type() + ".");
+          "The given value " + value.getClass().getName() + " can not be set as a "
+              + this.getProperty().type() + ".");
     }
     int rowDataIndex = row.getRowDataIndex();
     while (values.size() - 1 < rowDataIndex) {

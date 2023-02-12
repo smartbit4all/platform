@@ -219,31 +219,49 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
   }
 
   public SearchIndexImpl<O> map(String propertyName, String... pathes) {
-    objectMapping.map(propertyName, null, pathes);
+    objectMapping.map(propertyName, null, -1, pathes);
     return this;
   }
 
   public SearchIndexImpl<O> map(String propertyName, Class<?> dataType, String... pathes) {
-    objectMapping.map(propertyName, dataType, pathes);
+    objectMapping.map(propertyName, dataType, -1, pathes);
+    return this;
+  }
+
+  public SearchIndexImpl<O> map(String propertyName, Class<?> dataType, int length,
+      String... pathes) {
+    objectMapping.map(propertyName, dataType, length, pathes);
     return this;
   }
 
   public SearchIndexImpl<O> mapProcessed(String propertyName,
       UnaryOperator<Object> processor,
       String... pathes) {
-    objectMapping.mapProcessed(propertyName, null, processor, pathes);
+    objectMapping.mapProcessed(propertyName, null, -1, processor, pathes);
     return this;
   }
 
   public SearchIndexImpl<O> mapProcessed(String propertyName, Class<?> dataType,
       UnaryOperator<Object> processor, String... pathes) {
-    objectMapping.mapProcessed(propertyName, dataType, processor, pathes);
+    objectMapping.mapProcessed(propertyName, dataType, -1, processor, pathes);
+    return this;
+  }
+
+  public SearchIndexImpl<O> mapProcessed(String propertyName, Class<?> dataType, int length,
+      UnaryOperator<Object> processor, String... pathes) {
+    objectMapping.mapProcessed(propertyName, dataType, length, processor, pathes);
     return this;
   }
 
   public SearchIndexImpl<O> mapComplex(String propertyName,
       Function<ObjectNode, Object> complexProcessor) {
-    objectMapping.mapComplex(propertyName, complexProcessor);
+    objectMapping.mapComplex(propertyName, null, -1, complexProcessor);
+    return this;
+  }
+
+  public SearchIndexImpl<O> mapComplex(String propertyName, Class<?> dataType, int length,
+      Function<ObjectNode, Object> complexProcessor) {
+    objectMapping.mapComplex(propertyName, dataType, length, complexProcessor);
     return this;
   }
 

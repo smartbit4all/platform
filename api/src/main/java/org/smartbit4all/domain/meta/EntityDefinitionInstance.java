@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.smartbit4all.api.databasedefinition.bean.ColumnTypeDefinition;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.annotation.property.ReferenceMandatory;
 import org.smartbit4all.domain.meta.jdbc.JDBCDataConverterHelper;
@@ -212,8 +213,10 @@ class EntityDefinitionInstance implements EntityDefinition {
       // String name, Class<T> type, String defaultDbExpression, JDBCDataConverter<T, ?> typeHandler
       PropertyOwned<?> p = (PropertyOwned<?>) property;
       return (P) e.create(
-          new Class<?>[] {String.class, Class.class, String.class, JDBCDataConverter.class},
-          new Object[] {p.getName(), p.type(), p.getDbExpression().get(null), p.jdbcConverter()});
+          new Class<?>[] {String.class, Class.class, String.class, JDBCDataConverter.class,
+              ColumnTypeDefinition.class, Boolean.class},
+          new Object[] {p.getName(), p.type(), p.getDbExpression().get(null), p.jdbcConverter(),
+              p.getColumnType(), p.isMandatory()});
     } else if (property instanceof PropertyRef) {
       // String name, List<Reference<?, ?>> joinPath, Property<T> referredProperty
       PropertyRef<?> p = (PropertyRef<?>) property;
