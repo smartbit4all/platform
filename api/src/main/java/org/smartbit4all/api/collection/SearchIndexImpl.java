@@ -255,7 +255,7 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
 
   public SearchIndexImpl<O> mapComplex(String propertyName,
       Function<ObjectNode, Object> complexProcessor) {
-    objectMapping.mapComplex(propertyName, null, -1, complexProcessor);
+    objectMapping.mapComplex(propertyName, String.class, -1, complexProcessor);
     return this;
   }
 
