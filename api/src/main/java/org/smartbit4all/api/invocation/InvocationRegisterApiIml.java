@@ -747,6 +747,7 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
         ScheduledInvocationRequest scheduledInvocationRequest =
             iterList.next();
         if (scheduledInvocationRequest.getScheduledAt().isAfter(executeAt)) {
+          iterList.previous(); // have to move one step back
           break;
         }
       }
