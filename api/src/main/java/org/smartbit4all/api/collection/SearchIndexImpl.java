@@ -105,6 +105,9 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
     SearchEntityTableDataResult allObjects = readAllObjects();
     setupExists(queryInput, allObjects, Collections.emptyList());
     queryInput.setTableDataUri(tableDataApi.save(allObjects.result));
+    if (queryInput.where() == null) {
+      queryInput.where(Expression.TRUE());
+    }
     return crudApi.executeQuery(queryInput).getTableData();
   }
 
