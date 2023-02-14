@@ -9,7 +9,7 @@ import org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy;
 import org.smartbit4all.api.grid.bean.GridModel;
 import org.smartbit4all.domain.data.TableData;
 
-public interface GridApi {
+public interface GridModelApi {
 
   /**
    * If we have a well defined list bean and we would like to save it.

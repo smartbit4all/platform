@@ -13,8 +13,8 @@ import org.smartbit4all.api.collection.bean.StoredSequenceData;
 import org.smartbit4all.api.documentation.DocumentationApi;
 import org.smartbit4all.api.documentation.DocumentationApiImpl;
 import org.smartbit4all.api.filter.util.FilterService;
-import org.smartbit4all.api.grid.GridApi;
-import org.smartbit4all.api.grid.GridApiImpl;
+import org.smartbit4all.api.grid.GridModelApi;
+import org.smartbit4all.api.grid.GridModelApiImpl;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.InvocationApiImpl;
 import org.smartbit4all.api.invocation.bean.ApiData;
@@ -120,8 +120,8 @@ public class PlatformApiConfig {
   }
 
   @Bean
-  public GridApi gridApi() {
-    return new GridApiImpl();
+  public GridModelApi gridApi() {
+    return new GridModelApiImpl();
   }
 
   @Bean

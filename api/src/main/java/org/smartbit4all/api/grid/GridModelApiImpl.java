@@ -25,7 +25,7 @@ import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.service.dataset.TableDataApi;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class GridApiImpl implements GridApi {
+public class GridModelApiImpl implements GridModelApi {
 
   @Autowired
   private ObjectApi objectApi;
