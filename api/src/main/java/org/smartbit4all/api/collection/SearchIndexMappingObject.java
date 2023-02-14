@@ -29,6 +29,7 @@ import org.smartbit4all.core.object.BeanMeta;
 import org.smartbit4all.core.object.BeanMetaUtil;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
+import org.smartbit4all.core.object.ObjectNodeReference;
 import org.smartbit4all.core.object.PropertyMeta;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.DataColumn;
@@ -244,7 +245,11 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
           SearchIndexMappingProperty mapping = property(col.getProperty().getName());
           if (mapping.path != null && mapping.processor == null
               && mapping.complexProcessor == null) {
-            tableData.setObject(col, row, n.getValue(mapping.path));
+            Object value = n.getValue(mapping.path);
+            if (value instanceof ObjectNodeReference) {
+              value = ((ObjectNodeReference) value).getObjectUri();
+            }
+            tableData.setObject(col, row, value);
           } else if (mapping.path != null && mapping.processor != null) {
             tableData.setObject(col, row, mapping.processor.apply(n.getValue(mapping.path)));
           } else if (mapping.complexProcessor != null) {
