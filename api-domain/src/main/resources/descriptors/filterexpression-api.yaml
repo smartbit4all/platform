@@ -75,6 +75,8 @@ components:
       properties:
         id:
           type: string
+          description: |
+            If the field list is included into builder model then this identifier is unique inside the model.
         label:
           type: string
         icon:
@@ -88,6 +90,13 @@ components:
       type: object
       required: [label1, value1, data1, operations, boolOperator, type, possibleValues, selectedValues]
       properties:
+        label:
+          type: string
+          description: The display name of the whole field. Tipically the label of the property we are filtering
+        id:
+          type: string
+          description: |
+            This identifier is unique inside the model let it be a builder model or a normal model object.
         label1:
           type: string
         label2:
@@ -117,6 +126,77 @@ components:
         subFieldList:
           $ref: "#/components/schemas/FilterExpressionFieldList"
 
+    FilterExpressionBuilderModel:
+      type: object
+      description: |
+        The filter field model contains a list of groups that form a tree structure for the available filter fields. It contains
+        the groups of available fields and the workplace root list that conatins the already added filters. On the builder side 
+        we refer the unique identifiers of the field lists and fields.
+      properties:
+        label:
+          type: string
+        groups:
+          type: array
+          items:
+            $ref: "#/components/schemas/FilterExpressionBuilderGroup"
+        workplaceList:
+          $ref: "#/components/schemas/FilterExpressionFieldList"
+        
+    FilterExpressionBuilderGroup:
+      type: object
+      description: |
+        The group is just a UI structure to define a tree structure for the available filter fields. In a group there
+        is an ordered list of filter fields. The group can imply a parenthesis in the xpression or an exist node. Theoreticaly
+        the groups are hierarchical but the pratcticaly it is not. The kind of the group defines what operation is available
+        for the filter fields in the group. 
+        DISPLAY: means thet we can choose an available filter field from the group and place it into the field
+        list related with the current group or in any sub list except under an exist.
+        BRACKET: The given groups defines a bracket. If we choose any of the fiels to add to a filter list then this imlicitely
+        create a bracket node. It can not be added under an exist node.
+        EXIST: The same as the BRACKET but with an exist node.
+      properties:
+        label:
+          type: string
+          description: The visual display name fo the group.
+        builderGroupKind:
+          description: |
+            Defines if the given groups is just a visual sugar to group somehow the available filter fields or it is definetely
+            a bracket or exists.
+          enum: [DIPLAY, BRACKET, EXIST]
+        fields:
+          type: array
+          items:
+            $ref: "#/components/schemas/FilterExpressionBuilderField"
+        rootListId:
+          type: string
+          description: The unique identifier of the root list in the workplace.
+        subGroups:
+          type: array
+          items:
+            $ref: "#/components/schemas/FilterExpressionBuilderGroup"
+        
+    FilterExpressionBuilderField:
+      type: object
+      description: |
+        The available filter fields contains the pre setup filter field as a template. It can be easily copied and added to
+        the filter field list.
+      properties:
+        label:
+          type: string
+        fieldTemplate:
+          $ref: "#/components/schemas/FilterExpressionField"
+        limitOfUsage:
+          type: integer
+          format: int32
+          description: |
+            If less or equal zero then there is no limit how many time we can use the given filter. Else it is the limit
+            where the typical value is 1 becase we can use the given filter field only once.
+        instanceIds:
+          type: array
+          description: The unique identifiers of fields initiated from this builder field in the workplace.
+          items:
+            type: string
+        
     FilterExpressionOrderBy:
       type: object
       description: |

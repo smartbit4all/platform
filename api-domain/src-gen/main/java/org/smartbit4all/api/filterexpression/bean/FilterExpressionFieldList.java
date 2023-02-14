@@ -64,11 +64,11 @@ public class FilterExpressionFieldList {
   }
 
    /**
-   * Get id
+   * If the field list is included into builder model then this identifier is unique inside the model. 
    * @return id
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "If the field list is included into builder model then this identifier is unique inside the model. ")
   @JsonProperty(ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

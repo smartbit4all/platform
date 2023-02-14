@@ -39,6 +39,8 @@ import javax.validation.Valid;
  * FilterExpressionField
  */
 @JsonPropertyOrder({
+  FilterExpressionField.LABEL,
+  FilterExpressionField.ID,
   FilterExpressionField.LABEL1,
   FilterExpressionField.LABEL2,
   FilterExpressionField.LABEL3,
@@ -54,6 +56,12 @@ import javax.validation.Valid;
 @JsonTypeName("FilterExpressionField")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class FilterExpressionField {
+  public static final String LABEL = "label";
+  private String label;
+
+  public static final String ID = "id";
+  private String id;
+
   public static final String LABEL1 = "label1";
   private String label1;
 
@@ -89,6 +97,60 @@ public class FilterExpressionField {
 
   public FilterExpressionField() { 
   }
+
+  public FilterExpressionField label(String label) {
+    
+    this.label = label;
+    return this;
+  }
+
+   /**
+   * The display name of the whole field. Tipically the label of the property we are filtering
+   * @return label
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The display name of the whole field. Tipically the label of the property we are filtering")
+  @JsonProperty(LABEL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getLabel() {
+    return label;
+  }
+
+
+  @JsonProperty(LABEL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setLabel(String label) {
+    this.label = label;
+  }
+
+
+  public FilterExpressionField id(String id) {
+    
+    this.id = id;
+    return this;
+  }
+
+   /**
+   * This identifier is unique inside the model let it be a builder model or a normal model object. 
+   * @return id
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "This identifier is unique inside the model let it be a builder model or a normal model object. ")
+  @JsonProperty(ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getId() {
+    return id;
+  }
+
+
+  @JsonProperty(ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setId(String id) {
+    this.id = id;
+  }
+
 
   public FilterExpressionField label1(String label1) {
     
@@ -424,7 +486,9 @@ public class FilterExpressionField {
       return false;
     }
     FilterExpressionField filterExpressionField = (FilterExpressionField) o;
-    return Objects.equals(this.label1, filterExpressionField.label1) &&
+    return Objects.equals(this.label, filterExpressionField.label) &&
+        Objects.equals(this.id, filterExpressionField.id) &&
+        Objects.equals(this.label1, filterExpressionField.label1) &&
         Objects.equals(this.label2, filterExpressionField.label2) &&
         Objects.equals(this.label3, filterExpressionField.label3) &&
         Objects.equals(this.icon, filterExpressionField.icon) &&
@@ -439,13 +503,15 @@ public class FilterExpressionField {
 
   @Override
   public int hashCode() {
-    return Objects.hash(label1, label2, label3, icon, expressionData, possibleOperations, filterFieldType, possibleValues, selectedValues, widgetType, subFieldList);
+    return Objects.hash(label, id, label1, label2, label3, icon, expressionData, possibleOperations, filterFieldType, possibleValues, selectedValues, widgetType, subFieldList);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class FilterExpressionField {\n");
+    sb.append("    label: ").append(toIndentedString(label)).append("\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    label1: ").append(toIndentedString(label1)).append("\n");
     sb.append("    label2: ").append(toIndentedString(label2)).append("\n");
     sb.append("    label3: ").append(toIndentedString(label3)).append("\n");
