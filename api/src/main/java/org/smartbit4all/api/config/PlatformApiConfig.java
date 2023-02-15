@@ -17,6 +17,7 @@ import org.smartbit4all.api.grid.GridModelApi;
 import org.smartbit4all.api.grid.GridModelApiImpl;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.InvocationApiImpl;
+import org.smartbit4all.api.invocation.Invocations;
 import org.smartbit4all.api.invocation.bean.ApiData;
 import org.smartbit4all.api.invocation.bean.ApiRegistryData;
 import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
@@ -293,6 +294,13 @@ public class PlatformApiConfig {
     return storage;
   }
 
+  @Bean
+  public Storage asynInvocationStorage(@Autowired(required = false) ObjectStorage objectStorage,
+      ObjectApi objectApi) {
+    Storage storage = new Storage(Invocations.ASYNCINVOCATION_SCHEME, objectApi, objectStorage);
+    storage.setVersionPolicy(VersionPolicy.SINGLEVERSION);
+    return storage;
+  }
 
   @Bean
   public ObjectReferenceConfigs invocationReferences() {

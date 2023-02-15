@@ -126,6 +126,18 @@ public final class AsyncInvocationChannelImpl
           // continue.
           decision = new InvocationResultDecision()
               .decision(result.getError() == null ? DecisionEnum.CONTINUE : DecisionEnum.ABORT);
+        } else {
+          int size = requestEntry.request.getResults() == null ? 0
+              : requestEntry.request.getResults().size();
+          int gradient = size / 50;
+          gradient = gradient * gradient;
+          OffsetDateTime now = OffsetDateTime.now();
+          OffsetDateTime requiredScheduledAt = now.plusSeconds(gradient * 5);
+          if ((decision.getScheduledAt() != null
+              && requiredScheduledAt.isAfter(decision.getScheduledAt()))
+              || decision.getScheduledAt() == null) {
+            decision.scheduledAt(requiredScheduledAt);
+          }
         }
         result.decision(decision);
         // Save the result into the asynchronous request. It will result a call to the listeners.

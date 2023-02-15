@@ -27,6 +27,11 @@ public class Invocations {
   public static final String INVOCATION_SCHEME = "invocation";
 
   /**
+   * The logical schema of the invocation requests.
+   */
+  public static final String ASYNCINVOCATION_SCHEME = "asyncInvocation";
+
+  /**
    * The logical name fo the async channels registry.
    */
   public static final String ASYNC_CHANNEL_REGISTRY = "asyncChannelRegistry";

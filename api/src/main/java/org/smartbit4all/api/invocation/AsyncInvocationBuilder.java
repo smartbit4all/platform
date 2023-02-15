@@ -37,7 +37,7 @@ public class AsyncInvocationBuilder {
    * @return
    */
   public <T> AsyncInvocationBuilder call(Class<T> apiIf, Consumer<T> apiCall, String channel) {
-    nodeRoot = objectApi.create(Invocations.INVOCATION_SCHEME,
+    nodeRoot = objectApi.create(Invocations.ASYNCINVOCATION_SCHEME,
         new AsyncInvocationRequest().request(invocationApi.builder(apiIf).build(apiCall))
             .channel(channel));
     currentNode = nodeRoot;
@@ -54,7 +54,7 @@ public class AsyncInvocationBuilder {
 
   public <T> AsyncInvocationBuilder andThen(Class<T> apiIf, Consumer<T> apiCall, String channel) {
     Objects.requireNonNull(currentNode, FIRST_WE_HAVE_TO_ADD_A_CALL_TO_CONTINUE);
-    ObjectNode newNode = objectApi.create(Invocations.INVOCATION_SCHEME,
+    ObjectNode newNode = objectApi.create(Invocations.ASYNCINVOCATION_SCHEME,
         new AsyncInvocationRequest().request(invocationApi.builder(apiIf).build(apiCall))
             .channel(channel));
     currentNode.list(AsyncInvocationRequest.AND_THEN).add(newNode);
@@ -64,7 +64,7 @@ public class AsyncInvocationBuilder {
   public <T> AsyncInvocationBuilder andThenContinue(Class<T> apiIf, Consumer<T> apiCall,
       String channel) {
     Objects.requireNonNull(currentNode, FIRST_WE_HAVE_TO_ADD_A_CALL_TO_CONTINUE);
-    ObjectNode newNode = objectApi.create(Invocations.INVOCATION_SCHEME,
+    ObjectNode newNode = objectApi.create(Invocations.ASYNCINVOCATION_SCHEME,
         new AsyncInvocationRequest().request(invocationApi.builder(apiIf).build(apiCall))
             .channel(channel));
     currentNode.list(AsyncInvocationRequest.AND_THEN).add(newNode);
