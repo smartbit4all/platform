@@ -98,15 +98,16 @@ public class CollectionTestConfig {
             TestCategoryFilter.class, CollectionApiTest.SCHEMA, SampleCategory.class)
                 .map(TestCategoryFilter.URI, URI.class, 500, SampleCategory.URI)
                 .map(TestCategoryFilter.NAME, String.class, 150, SampleCategory.NAME)
-                .detailListOfValue(SampleCategory.KEY_WORDS, SampleCategory.URI, String.class, 120);
+                .detailListOfValue(TestCategoryFilter.KEYWORDS, SampleCategory.URI, String.class,
+                    120, SampleCategory.KEY_WORDS);
     index.expression(TestCategoryFilter.NAME, (o, p) -> ((Property<String>) p).like((String) o));
     index.expressionDetail(TestCategoryFilter.KEYWORDS,
         (obj, objectMapping) -> {
           SearchIndexMappingObject detailMapping =
               ((SearchIndexMappingObject) objectMapping.mappingsByPropertyName
-                  .get(SampleCategory.KEY_WORDS));
+                  .get(TestCategoryFilter.KEYWORDS));
           DetailDefinition detailDefinition =
-              objectMapping.entityDefinition.detailsByName.get(SampleCategory.KEY_WORDS);
+              objectMapping.entityDefinition.detailsByName.get(TestCategoryFilter.KEYWORDS);
           Expression existsExpression = detailMapping.getDefinition().definition
               .getPropertyObject(SearchIndexMappingObject.VALUE_COLUMN).in((List<Object>) obj);
           // Add the exists to the current entity and return the exists expression as is.
@@ -130,8 +131,9 @@ public class CollectionTestConfig {
                       + StringConstant.DOT
                       + on.getValueAsString(SampleCategory.NAME);
                 })
-            .detailListOfValue(SampleCategory.KEY_WORDS, SampleCategory.URI, String.class, 120);
-    index.detail(SampleCategory.CONTAINER_ITEMS, SampleCategory.URI)
+            .detailListOfValue(SampleCategory.KEY_WORDS, SampleCategory.URI, String.class, 120,
+                SampleCategory.KEY_WORDS);
+    index.detail(SampleCategory.CONTAINER_ITEMS, SampleCategory.URI, SampleCategory.CONTAINER_ITEMS)
         .map(SampleContainerItem.NAME, String.class, 150,
             SampleContainerItem.NAME)
         .map(SampleContainerItem.DATASHEET, String.class, 150, SampleContainerItem.DATASHEET,

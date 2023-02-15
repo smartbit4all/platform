@@ -300,7 +300,7 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
                           .getProperty(j.getSourceProperty().getName())),
                       j -> tableData.get(tableData.getColumn(j.getTargetProperty()), row)));
           List<?> valueAsList =
-              n.getValueAsList(detailObjectMapping.inlineValueObjectType, entry.getKey());
+              n.getValueAsList(detailObjectMapping.inlineValueObjectType, detailObjectMapping.path);
           if (valueAsList != null) {
             DataColumn<?> valueColumn = tableDataDetail.getColumn(
                 detailObjectMapping.getDefinition().definition.getProperty(VALUE_COLUMN));
@@ -314,7 +314,8 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
             }
           }
         } else {
-          detailObjectMapping.readObjects(n.list(entry.getKey()).nodeStream(), detailResult,
+          detailObjectMapping.readObjects(n.list(detailObjectMapping.path).nodeStream(),
+              detailResult,
               entry.getValue().masterJoin.getReferences().get(0).joins().stream()
                   .collect(toMap(j -> j.getSourceProperty().getName(),
                       j -> tableData.get(tableData.getColumn(j.getTargetProperty()), row))));

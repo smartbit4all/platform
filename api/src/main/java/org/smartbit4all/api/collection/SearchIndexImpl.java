@@ -221,13 +221,17 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
     return objectMapping.name;
   }
 
-  public SearchIndexMappingObject detail(String propertyName, String masterUniqueId) {
-    return objectMapping.detail(propertyName, masterUniqueId);
+  public SearchIndexMappingObject detail(String propertyName, String masterUniqueId,
+      String... path) {
+    SearchIndexMappingObject result = objectMapping.detail(propertyName, masterUniqueId);
+    result.path = path;
+    return result;
   }
 
   public SearchIndexImpl<O> detailListOfValue(String propertyName, String masterUniqueId,
-      Class<?> valueType, int length) {
+      Class<?> valueType, int length, String... path) {
     SearchIndexMappingObject detail = objectMapping.detail(propertyName, masterUniqueId);
+    detail.path = path;
     detail.setInlineValueObjects(valueType, length);
     return this;
   }
