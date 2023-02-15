@@ -550,4 +550,36 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
     this.inlineValueObjectLength = length;
   }
 
+
+  public static Expression existDetailInExpression(String fieldName, Object obj,
+      SearchIndexMappingObject objectMapping) {
+    SearchIndexMappingObject detailMapping =
+        ((SearchIndexMappingObject) objectMapping.mappingsByPropertyName
+            .get(fieldName));
+    DetailDefinition detailDefinition =
+        objectMapping.entityDefinition.detailsByName.get(fieldName);
+    Expression existsExpression = detailMapping.getDefinition().definition
+        .getPropertyObject(SearchIndexMappingObject.VALUE_COLUMN)
+        .in((List<Object>) obj);
+    // Add the exists to the current entity and return the exists expression as is.
+    return objectMapping.entityDefinition.definition
+        .exists(detailDefinition.masterJoin, existsExpression)
+        .name(fieldName);
+  }
+
+  public static Expression existDetailEqExpression(String fieldName, Object obj,
+      SearchIndexMappingObject objectMapping) {
+    SearchIndexMappingObject detailMapping =
+        ((SearchIndexMappingObject) objectMapping.mappingsByPropertyName
+            .get(fieldName));
+    DetailDefinition detailDefinition =
+        objectMapping.entityDefinition.detailsByName.get(fieldName);
+    Expression existsExpression = detailMapping.getDefinition().definition
+        .getPropertyObject(SearchIndexMappingObject.VALUE_COLUMN).eq(obj);
+    // Add the exists to the current entity and return the exists expression as is.
+    return objectMapping.entityDefinition.definition
+        .exists(detailDefinition.masterJoin, existsExpression)
+        .name(fieldName);
+
+  }
 }
