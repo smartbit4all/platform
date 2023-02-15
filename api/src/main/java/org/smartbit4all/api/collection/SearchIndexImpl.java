@@ -52,12 +52,16 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
 
     BiFunction<Object, EntityDefinition, Expression> complexExpressionProcessor;
 
+    BiFunction<Object, SearchIndexMappingObject, Expression> detailExpressionProcessor;
+
     public CustomExpressionMapping(
         BiFunction<Object, Property<?>, Expression> customExpressionProcessor,
-        BiFunction<Object, EntityDefinition, Expression> complexExpressionProcessor) {
+        BiFunction<Object, EntityDefinition, Expression> complexExpressionProcessor,
+        BiFunction<Object, SearchIndexMappingObject, Expression> detailExpressionProcessor) {
       super();
       this.expressionProcessor = customExpressionProcessor;
       this.complexExpressionProcessor = complexExpressionProcessor;
+      this.detailExpressionProcessor = detailExpressionProcessor;
     }
 
   }
@@ -217,8 +221,15 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
     return objectMapping.name;
   }
 
-  public SearchIndexMappingObject detail(String propertyName, String uniqueIdName) {
-    return objectMapping.detail(propertyName, uniqueIdName);
+  public SearchIndexMappingObject detail(String propertyName, String masterUniqueId) {
+    return objectMapping.detail(propertyName, masterUniqueId);
+  }
+
+  public SearchIndexImpl<O> detailListOfValue(String propertyName, String masterUniqueId,
+      Class<?> valueType, int length) {
+    SearchIndexMappingObject detail = objectMapping.detail(propertyName, masterUniqueId);
+    detail.setInlineValueObjects(valueType, length);
+    return this;
   }
 
   public SearchIndexImpl<O> map(String propertyName, String... pathes) {
@@ -272,7 +283,7 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
       BiFunction<Object, Property<?>, Expression> customExpression) {
     Objects.requireNonNull(customExpression);
     expressionByPropertyName.put(propertyName,
-        new CustomExpressionMapping(customExpression, null));
+        new CustomExpressionMapping(customExpression, null, null));
     return this;
   }
 
@@ -293,7 +304,15 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
       BiFunction<Object, EntityDefinition, Expression> complexExpression) {
     Objects.requireNonNull(complexExpression);
     expressionByPropertyName.put(propertyName,
-        new CustomExpressionMapping(null, complexExpression));
+        new CustomExpressionMapping(null, complexExpression, null));
+    return this;
+  }
+
+  public SearchIndexImpl<O> expressionDetail(String propertyName,
+      BiFunction<Object, SearchIndexMappingObject, Expression> detailExpressionProcessor) {
+    Objects.requireNonNull(detailExpressionProcessor);
+    expressionByPropertyName.put(propertyName,
+        new CustomExpressionMapping(null, null, detailExpressionProcessor));
     return this;
   }
 

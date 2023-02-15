@@ -1,7 +1,9 @@
 package org.smartbit4all.api.collection;
 
 import java.net.URI;
+import java.util.List;
 import org.smartbit4all.api.binarydata.BinaryContent;
+import org.smartbit4all.api.collection.SearchEntityDefinition.DetailDefinition;
 import org.smartbit4all.api.config.PlatformApiConfig;
 import org.smartbit4all.api.object.bean.AggregationKind;
 import org.smartbit4all.api.object.bean.ReferencePropertyKind;
@@ -88,6 +90,34 @@ public class CollectionTestConfig {
   }
 
   @Bean
+  public SearchIndex<SampleCategory> sampleCategoryWithValueDetails() {
+    SearchIndexImpl<SampleCategory> index =
+        new SearchIndexWithFilterBeanImpl<>(
+            CollectionApiTest.SCHEMA,
+            CollectionApiTest.MY_SEARCHDETAILVALUES,
+            TestCategoryFilter.class, CollectionApiTest.SCHEMA, SampleCategory.class)
+                .map(TestCategoryFilter.URI, URI.class, 500, SampleCategory.URI)
+                .map(TestCategoryFilter.NAME, String.class, 150, SampleCategory.NAME)
+                .detailListOfValue(SampleCategory.KEY_WORDS, SampleCategory.URI, String.class, 120);
+    index.expression(TestCategoryFilter.NAME, (o, p) -> ((Property<String>) p).like((String) o));
+    index.expressionDetail(TestCategoryFilter.KEYWORDS,
+        (obj, objectMapping) -> {
+          SearchIndexMappingObject detailMapping =
+              ((SearchIndexMappingObject) objectMapping.mappingsByPropertyName
+                  .get(SampleCategory.KEY_WORDS));
+          DetailDefinition detailDefinition =
+              objectMapping.entityDefinition.detailsByName.get(SampleCategory.KEY_WORDS);
+          Expression existsExpression = detailMapping.getDefinition().definition
+              .getPropertyObject(SearchIndexMappingObject.VALUE_COLUMN).in((List<Object>) obj);
+          // Add the exists to the current entity and return the exists expression as is.
+          return objectMapping.entityDefinition.definition
+              .exists(detailDefinition.masterJoin, existsExpression)
+              .name(SampleCategory.KEY_WORDS);
+        });
+    return index;
+  }
+
+  @Bean
   public SearchIndex<SampleCategory> sampleMasterDetailIndex() {
     SearchIndexImpl<SampleCategory> index = new SearchIndexImpl<>(
         CollectionApiTest.SCHEMA,
@@ -99,7 +129,8 @@ public class CollectionTestConfig {
                   return on.getValueAsString(SampleCategory.NAME)
                       + StringConstant.DOT
                       + on.getValueAsString(SampleCategory.NAME);
-                });
+                })
+            .detailListOfValue(SampleCategory.KEY_WORDS, SampleCategory.URI, String.class, 120);
     index.detail(SampleCategory.CONTAINER_ITEMS, SampleCategory.URI)
         .map(SampleContainerItem.NAME, String.class, 150,
             SampleContainerItem.NAME)

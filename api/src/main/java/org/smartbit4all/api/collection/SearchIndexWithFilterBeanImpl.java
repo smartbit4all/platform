@@ -39,6 +39,9 @@ public class SearchIndexWithFilterBeanImpl<O, F> extends SearchIndexImpl<O>
                 .apply(value, getDefinition().definition).BRACKET();
           } else if (customExpressionMapping.expressionProcessor != null && property != null) {
             currentExp = customExpressionMapping.expressionProcessor.apply(value, property);
+          } else if (customExpressionMapping.detailExpressionProcessor != null) {
+            currentExp =
+                customExpressionMapping.detailExpressionProcessor.apply(value, objectMapping);
           }
         } else if (property != null) {
           currentExp = createDynamicExpression(propertyMeta.getType(), property, value);

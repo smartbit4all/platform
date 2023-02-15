@@ -44,7 +44,8 @@ import javax.validation.Valid;
   SampleCategory.CREATED_AT,
   SampleCategory.SUB_CATEGORIES,
   SampleCategory.CONTAINER_ITEMS,
-  SampleCategory.LINKS
+  SampleCategory.LINKS,
+  SampleCategory.KEY_WORDS
 })
 @JsonTypeName("SampleCategory")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -110,7 +111,10 @@ public class SampleCategory {
   private List<URI> containerItems = new ArrayList<>();
 
   public static final String LINKS = "links";
-  private List<SampleLinkObject> links = null;
+  private List<SampleLinkObject> links = new ArrayList<>();
+
+  public static final String KEY_WORDS = "keyWords";
+  private List<String> keyWords = new ArrayList<>();
 
   public SampleCategory() { 
   }
@@ -328,9 +332,6 @@ public class SampleCategory {
   }
 
   public SampleCategory addLinksItem(SampleLinkObject linksItem) {
-    if (this.links == null) {
-      this.links = new ArrayList<>();
-    }
     this.links.add(linksItem);
     return this;
   }
@@ -339,11 +340,12 @@ public class SampleCategory {
    * Get links
    * @return links
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(LINKS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public List<SampleLinkObject> getLinks() {
     return links;
@@ -351,9 +353,42 @@ public class SampleCategory {
 
 
   @JsonProperty(LINKS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setLinks(List<SampleLinkObject> links) {
     this.links = links;
+  }
+
+
+  public SampleCategory keyWords(List<String> keyWords) {
+    
+    this.keyWords = keyWords;
+    return this;
+  }
+
+  public SampleCategory addKeyWordsItem(String keyWordsItem) {
+    this.keyWords.add(keyWordsItem);
+    return this;
+  }
+
+   /**
+   * Get keyWords
+   * @return keyWords
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(KEY_WORDS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public List<String> getKeyWords() {
+    return keyWords;
+  }
+
+
+  @JsonProperty(KEY_WORDS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setKeyWords(List<String> keyWords) {
+    this.keyWords = keyWords;
   }
 
 
@@ -373,12 +408,13 @@ public class SampleCategory {
         Objects.equals(this.createdAt, sampleCategory.createdAt) &&
         Objects.equals(this.subCategories, sampleCategory.subCategories) &&
         Objects.equals(this.containerItems, sampleCategory.containerItems) &&
-        Objects.equals(this.links, sampleCategory.links);
+        Objects.equals(this.links, sampleCategory.links) &&
+        Objects.equals(this.keyWords, sampleCategory.keyWords);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, name, color, cost, createdAt, subCategories, containerItems, links);
+    return Objects.hash(uri, name, color, cost, createdAt, subCategories, containerItems, links, keyWords);
   }
 
   @Override
@@ -393,6 +429,7 @@ public class SampleCategory {
     sb.append("    subCategories: ").append(toIndentedString(subCategories)).append("\n");
     sb.append("    containerItems: ").append(toIndentedString(containerItems)).append("\n");
     sb.append("    links: ").append(toIndentedString(links)).append("\n");
+    sb.append("    keyWords: ").append(toIndentedString(keyWords)).append("\n");
     sb.append("}");
     return sb.toString();
   }

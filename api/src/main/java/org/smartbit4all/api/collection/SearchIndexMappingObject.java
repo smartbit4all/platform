@@ -47,6 +47,8 @@ import org.springframework.context.ApplicationContext;
 
 public class SearchIndexMappingObject extends SearchIndexMapping {
 
+  public static final String VALUE_COLUMN = "valueColumn";
+
   String logicalSchema;
 
   String name;
@@ -55,6 +57,17 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
    * The path of the detail property that contains a list / map, referring to another object.
    */
   String[] path;
+
+  /**
+   * If the object in the list are values like String, Long etc. In this case the
+   */
+  Class<?> inlineValueObjectType = null;
+
+  /**
+   * The length of the inline value object. Typically when it is a string the length of the longest
+   * value to be able to store in a database.
+   */
+  int inlineValueObjectLength = -1;
 
   /**
    * {@link LinkedHashMap} to preserve the parameterization order in the entity definition.
@@ -195,10 +208,16 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
 
     SearchEntityDefinition result = new SearchEntityDefinition();
 
-    for (Entry<String, SearchIndexMapping> entry : mappingsByPropertyName.entrySet()) {
-      if (entry.getValue() instanceof SearchIndexMappingProperty) {
-        SearchIndexMappingProperty property = (SearchIndexMappingProperty) entry.getValue();
-        builder.addOwnedProperty(property.name, property.type, property.length);
+    if (inlineValueObjectType != null) {
+      // In this case the detail object is a simple list of values with a mater id. The only one
+      // property of the entity definition is the value itself.
+      builder.addOwnedProperty(VALUE_COLUMN, inlineValueObjectType, inlineValueObjectLength);
+    } else {
+      for (Entry<String, SearchIndexMapping> entry : mappingsByPropertyName.entrySet()) {
+        if (entry.getValue() instanceof SearchIndexMappingProperty) {
+          SearchIndexMappingProperty property = (SearchIndexMappingProperty) entry.getValue();
+          builder.addOwnedProperty(property.name, property.type, property.length);
+        }
       }
     }
 
@@ -272,10 +291,34 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
         SearchIndexMappingObject detailObjectMapping =
             ((SearchIndexMappingObject) mappingsByPropertyName
                 .get(entry.getKey()));
-        detailObjectMapping.readObjects(n.list(entry.getKey()).nodeStream(), detailResult,
-            entry.getValue().masterJoin.getReferences().get(0).joins().stream()
-                .collect(toMap(j -> j.getSourceProperty().getName(),
-                    j -> tableData.get(tableData.getColumn(j.getTargetProperty()), row))));
+        if (detailObjectMapping.isInlineValueObjects()) {
+          TableData<?> tableDataDetail = detailResult.result;
+          Map<DataColumn<?>, Object> masterIdValues =
+              entry.getValue().masterJoin.getReferences().get(0).joins().stream()
+                  .collect(toMap(
+                      j -> tableDataDetail.getColumn(detailObjectMapping.getDefinition().definition
+                          .getProperty(j.getSourceProperty().getName())),
+                      j -> tableData.get(tableData.getColumn(j.getTargetProperty()), row)));
+          List<?> valueAsList =
+              n.getValueAsList(detailObjectMapping.inlineValueObjectType, entry.getKey());
+          if (valueAsList != null) {
+            DataColumn<?> valueColumn = tableDataDetail.getColumn(
+                detailObjectMapping.getDefinition().definition.getProperty(VALUE_COLUMN));
+            for (Object valueObject : valueAsList) {
+              DataRow detailRow = tableDataDetail.addRow();
+              // Set the master ids
+              masterIdValues.entrySet().stream().forEach(e -> {
+                tableDataDetail.setObject(e.getKey(), detailRow, e.getValue());
+              });
+              tableData.setObject(valueColumn, detailRow, valueObject);
+            }
+          }
+        } else {
+          detailObjectMapping.readObjects(n.list(entry.getKey()).nodeStream(), detailResult,
+              entry.getValue().masterJoin.getReferences().get(0).joins().stream()
+                  .collect(toMap(j -> j.getSourceProperty().getName(),
+                      j -> tableData.get(tableData.getColumn(j.getTargetProperty()), row))));
+        }
       }
     });
 
@@ -495,6 +538,15 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
           }
           return null;
         }).filter(f -> f != null).collect(toList()));
+  }
+
+  final boolean isInlineValueObjects() {
+    return inlineValueObjectType != null;
+  }
+
+  final void setInlineValueObjects(Class<?> valueType, int length) {
+    this.inlineValueObjectType = valueType;
+    this.inlineValueObjectLength = length;
   }
 
 }

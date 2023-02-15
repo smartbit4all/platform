@@ -22,7 +22,7 @@ components:
       type: object
       description: |
         A recursive category holder for other categories and different items.
-      required: [uri, subCategories, containerItems]
+      required: [uri, subCategories, containerItems, links, keyWords]
       properties:
         uri:
           type: string
@@ -51,6 +51,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SampleLinkObject'
+        keyWords:
+          type: array
+          items:
+            type: string
     SampleContainerItem:
       type: object
       description: |
