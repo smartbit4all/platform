@@ -95,6 +95,28 @@ public class TableDataSerializerTest {
   }
 
   @Test
+  public void test02() throws Exception {
+    File tempFile = new File(tempDir, "TableDataSerializerTest-test02.temp");
+
+    TableData<UserAccountDef> tableData =
+        TableDatas.of(userAccountDef, userAccountDef.allProperties());
+
+    TableDataSerializer serializer =
+        TableDataSerializer.to(new FileOutputStream(tempFile)).tableData(tableData);
+
+    serializer.finish();
+
+    TableDataPager<UserAccountDef> pager =
+        TableDataPager.create(UserAccountDef.class, tempFile, entityManager);
+
+    int totalRowCount = pager.getTotalRowCount();
+    assertEquals(0, totalRowCount);
+
+    TableData<UserAccountDef> fetchedData = pager.fetch(0, 50);
+    assertEquals(0, fetchedData.size());
+  }
+
+  @Test
   public void testSerializedSorter() throws Exception {
     File tempFile = new File(tempDir, "TableDataSerializerTest-testSerializedSorter.temp");
 

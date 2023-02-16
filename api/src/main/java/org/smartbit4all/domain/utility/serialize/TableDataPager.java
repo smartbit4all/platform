@@ -219,7 +219,7 @@ public final class TableDataPager<E extends EntityDefinition> {
     activePageLastRowIdx = -1l;
 
 
-    if (rowIndices.size() < offset) {
+    if (rowIndices.size() <= offset) {
       // FIXME return an empty TableData or throw exception?
       return activePage;
     }
