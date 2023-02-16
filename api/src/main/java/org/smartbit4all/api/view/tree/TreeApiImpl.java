@@ -41,7 +41,8 @@ public class TreeApiImpl implements TreeApi {
   public List<SmartTreeNode> getRootNodes(UiTreeState treeState) {
     List<String> rootNodes = treeState.getRootNodes();
     if (rootNodes.isEmpty()) {
-      refreshNode(treeState, getConfigNode(treeState));
+      expandNodeInternal(treeState, getConfigNode(treeState).getIdentifier());
+      // refreshNode(treeState, getConfigNode(treeState));
       rootNodes = treeState.getRootNodes();
     }
     return getTreeNodeListFromState(treeState, rootNodes);
@@ -141,6 +142,7 @@ public class TreeApiImpl implements TreeApi {
         })
         .findFirst()
         .orElse(null);
+    // TODO if child == null -> try to refresh node and search for child again
     if (child != null) {
       path.setParts(parts.subList(1, parts.size()));
       return navigateToChild(treeState, child, path);
@@ -252,7 +254,9 @@ public class TreeApiImpl implements TreeApi {
       for (UiTreeNode child : childrenNodes) {
         String existingId = idByUri.get(child.getObjectUri());
         if (existingId != null) {
-          child.setIdentifier(existingId);
+          child.identifier(existingId)
+              .children(treeState.getNodes().get(existingId).getChildren());
+
           // TODO parentIdentifier???
         }
       }
