@@ -22,6 +22,9 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.smartbit4all.api.view.bean.UiActionInputType;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -36,7 +39,8 @@ import javax.validation.Valid;
   UiAction.IDENTIFIER,
   UiAction.INPUT_TYPE,
   UiAction.SUBMIT,
-  UiAction.CONFIRM
+  UiAction.CONFIRM,
+  UiAction.PARAMS
 })
 @JsonTypeName("UiAction")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -55,6 +59,9 @@ public class UiAction {
 
   public static final String CONFIRM = "confirm";
   private Boolean confirm = false;
+
+  public static final String PARAMS = "params";
+  private Map<String, Object> params = null;
 
   public UiAction() { 
   }
@@ -195,6 +202,41 @@ public class UiAction {
   }
 
 
+  public UiAction params(Map<String, Object> params) {
+    
+    this.params = params;
+    return this;
+  }
+
+  public UiAction putParamsItem(String key, Object paramsItem) {
+    if (this.params == null) {
+      this.params = new HashMap<>();
+    }
+    this.params.put(key, paramsItem);
+    return this;
+  }
+
+   /**
+   * Additional parameters for executing the UI action.  
+   * @return params
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "Additional parameters for executing the UI action.  ")
+  @JsonProperty(PARAMS)
+  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Map<String, Object> getParams() {
+    return params;
+  }
+
+
+  @JsonProperty(PARAMS)
+  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+  public void setParams(Map<String, Object> params) {
+    this.params = params;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -208,12 +250,13 @@ public class UiAction {
         Objects.equals(this.identifier, uiAction.identifier) &&
         Objects.equals(this.inputType, uiAction.inputType) &&
         Objects.equals(this.submit, uiAction.submit) &&
-        Objects.equals(this.confirm, uiAction.confirm);
+        Objects.equals(this.confirm, uiAction.confirm) &&
+        Objects.equals(this.params, uiAction.params);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(code, identifier, inputType, submit, confirm);
+    return Objects.hash(code, identifier, inputType, submit, confirm, params);
   }
 
   @Override
@@ -225,6 +268,7 @@ public class UiAction {
     sb.append("    inputType: ").append(toIndentedString(inputType)).append("\n");
     sb.append("    submit: ").append(toIndentedString(submit)).append("\n");
     sb.append("    confirm: ").append(toIndentedString(confirm)).append("\n");
+    sb.append("    params: ").append(toIndentedString(params)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -397,6 +397,11 @@ components:
         confirm:
           type: boolean
           default: false
+        params:
+          description: |
+            Additional parameters for executing the UI action. 
+          type: object
+          additionalProperties: true
     UiActionInputType:
       type: string
       default: none
