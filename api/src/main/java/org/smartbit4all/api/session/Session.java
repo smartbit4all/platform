@@ -23,9 +23,10 @@ public class Session {
 
   public static final String CURRENT_LOCALE = "Session.currentLocale";
   public static final String AVAILABLE_LOCALES = "Session.availableLocales";
+  public static final String EXTRENAL_USERNAME = "Session.externalUsername";
 
   private boolean isAuthenticated = false;
-  
+
   private final UUID uuid;
 
   private User user;
@@ -44,11 +45,11 @@ public class Session {
   public Disposable subscribeForParameterChange(String key, Consumer<String> observer) {
     return publisher.subscribeForChange(key, observer);
   }
-  
+
   public void setIsAuthenticated(boolean isAuthenticated) {
     this.isAuthenticated = isAuthenticated;
   }
-  
+
   public boolean getIsAuthenticated() {
     return this.isAuthenticated;
   }

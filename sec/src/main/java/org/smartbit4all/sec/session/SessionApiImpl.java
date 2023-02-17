@@ -22,6 +22,7 @@ import org.smartbit4all.api.session.bean.AccountInfo;
 import org.smartbit4all.api.session.bean.Session;
 import org.smartbit4all.api.session.bean.UserActivityLog;
 import org.smartbit4all.api.session.exception.NoCurrentSessionException;
+import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.application.TimeManagementService;
 import org.smartbit4all.sec.authprincipal.SessionAuthPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -229,7 +230,10 @@ public class SessionApiImpl implements SessionApi {
     User user = getUser();
     UserActivityLog result = new UserActivityLog().userUri(getUserUri());
     if (user != null) {
-      result.userName(user.getUsername()).name(user.getName());
+      String externalUsername =
+          getParameter(org.smartbit4all.api.session.Session.EXTRENAL_USERNAME);
+      result.userName(user.getUsername()).name(user.getName()
+          + (externalUsername != null ? " (" + externalUsername + ")" : StringConstant.EMPTY));
     }
     // TODO manage the zone from the session...
     result.timestamp(OffsetDateTime.now());
