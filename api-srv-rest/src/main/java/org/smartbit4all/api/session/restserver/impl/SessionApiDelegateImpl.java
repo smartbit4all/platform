@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import io.jsonwebtoken.lang.Assert;
 
 public class SessionApiDelegateImpl implements SessionApiDelegate {
@@ -112,6 +113,16 @@ public class SessionApiDelegateImpl implements SessionApiDelegate {
         sessionManagementApi.refreshSession(refreshSessionRequest.getRefreshToken());
 
     return ResponseEntity.ok(sessionInfoData);
+  }
+
+  @Override
+  public ResponseEntity<SessionInfoData> setLocale(String locale) throws Exception {
+    if (StringUtils.isEmpty(locale)) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+    URI sessionUri = sessionApi.getSessionUri();
+    sessionManagementApi.setSessionLocale(sessionUri, locale);
+    return getSession();
   }
 
 }
