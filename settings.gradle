@@ -22,6 +22,7 @@ include 'vaadin-sec'
 include 'invocation-cli-rest'
 include 'invocation-srv-rest'
 include 'content-access-srv-rest'
+include 'testing'
 
 def localSettings = file("local.settings.gradle")
 if (localSettings.exists()) {
