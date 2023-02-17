@@ -84,6 +84,33 @@ paths:
           $ref: '#/components/responses/JwtTokenError'
         '500':
           $ref: '#/components/responses/SessionError'
+  /locale/{locale}:
+    post:
+      tags:
+      - Session
+      summary: Sets the locale of the session
+      operationId: setLocale
+      description: Sets the locale of the current session and returns the SessionInfoData
+      parameters:
+        - in: path
+          name: locale
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: 'Returns the existing session info'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionInfoData'
+        '400':
+          $ref: '#/components/responses/JwtTokenError'
+        '404':
+          $ref: '#/components/responses/NotExistingSessionError'
+        '500':
+          $ref: '#/components/responses/SessionError'
+
 components:
   schemas:
     Session:

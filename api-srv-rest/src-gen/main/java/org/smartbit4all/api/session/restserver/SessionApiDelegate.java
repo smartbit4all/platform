@@ -96,6 +96,31 @@ public interface SessionApiDelegate {
     }
 
     /**
+     * POST /locale/{locale} : Sets the locale of the session
+     * Sets the locale of the current session and returns the SessionInfoData
+     *
+     * @param locale  (required)
+     * @return Returns the existing session info (status code 200)
+     *         or Missing or expired JWT token (status code 400)
+     *         or The session does not exists with the given token (status code 404)
+     *         or Error occurred while fetching the session data (status code 500)
+     * @see SessionApi#setLocale
+     */
+    default ResponseEntity<SessionInfoData> setLocale(String locale) throws Exception {
+        getRequest().ifPresent(request -> {
+            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"expiration\" : \"2000-01-23T04:56:07.000+00:00\", \"locale\" : \"locale\", \"sid\" : \"sid\", \"refreshToken\" : \"refreshToken\", \"authentications\" : [ { \"imageContent\" : \"imageContent\", \"imageFormat\" : \"imageFormat\", \"kind\" : \"kind\", \"displayName\" : \"displayName\", \"roles\" : [ \"roles\", \"roles\" ], \"userName\" : \"userName\", \"parameters\" : { \"key\" : \"parameters\" } }, { \"imageContent\" : \"imageContent\", \"imageFormat\" : \"imageFormat\", \"kind\" : \"kind\", \"displayName\" : \"displayName\", \"roles\" : [ \"roles\", \"roles\" ], \"userName\" : \"userName\", \"parameters\" : { \"key\" : \"parameters\" } } ] }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+            }
+        });
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+
+    }
+
+    /**
      * PUT /session : Creates a new session
      *
      * @return The session has started (status code 200)

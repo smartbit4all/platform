@@ -28,7 +28,10 @@ public class FilterChainExceptionHandler extends OncePerRequestFilter {
     try {
       filterChain.doFilter(request, response);
     } catch (Exception e) {
-      log.error("Spring Security Filter Chain Exception:", e);
+      log.info(
+          "Caught Spring Security Filter Chain Exception. Trying to resolve... Error message: {}",
+          e.getMessage());
+      log.debug("Error trace:", e);
       resolver.resolveException(request, response, null, e);
     }
   }
