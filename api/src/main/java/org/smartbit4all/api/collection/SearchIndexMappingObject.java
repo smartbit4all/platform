@@ -253,6 +253,19 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
   final void readObjects(Stream<ObjectNode> objects,
       SearchEntityTableDataResult result, Map<String, Object> defaultValues) {
 
+    // Create detail TableDatas
+    for (Entry<String, DetailDefinition> entry : result.searchEntityDefinition.detailsByName
+        .entrySet()) {
+      TableData<?> detailData = new TableData<>(entry.getValue().detail.definition);
+      detailData.addColumns(entry.getValue().detail.definition.allProperties());
+      SearchEntityTableDataResult detailResult = new SearchEntityTableDataResult()
+          .searchEntityDefinition(entry.getValue().detail)
+          .result(detailData);
+
+      result.detailResults.put(entry.getKey(), detailResult);
+    }
+
+    // Fill the TableDatas
     TableData<?> tableData = result.result;
     objects.forEach(n -> {
       DataRow row = tableData.addRow();
@@ -280,14 +293,7 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
       for (Entry<String, DetailDefinition> entry : result.searchEntityDefinition.detailsByName
           .entrySet()) {
         SearchEntityTableDataResult detailResult =
-            result.detailResults.computeIfAbsent(entry.getKey(),
-                detailName -> {
-                  TableData<?> detailData = new TableData<>(entry.getValue().detail.definition);
-                  detailData.addColumns(entry.getValue().detail.definition.allProperties());
-                  return new SearchEntityTableDataResult()
-                      .searchEntityDefinition(entry.getValue().detail)
-                      .result(detailData);
-                });
+            result.detailResults.get(entry.getKey());
         SearchIndexMappingObject detailObjectMapping =
             ((SearchIndexMappingObject) mappingsByPropertyName
                 .get(entry.getKey()));
