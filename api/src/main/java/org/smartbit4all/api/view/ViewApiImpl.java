@@ -135,7 +135,22 @@ public class ViewApiImpl implements ViewApi {
   public void closeView(UUID viewUuid) {
     Objects.requireNonNull(viewUuid, "UUID must be not null");
     viewContextService.updateCurrentViewContext(
-        context -> ViewContexts.updateViewState(context, viewUuid, ViewState.TO_CLOSE));
+        context -> {
+          ViewContexts.updateViewState(context, viewUuid, ViewState.TO_CLOSE);
+          View viewToClose = ViewContexts.getView(context, viewUuid);
+          if (viewToClose != null && viewToClose.getType() == ViewType.NORMAL) {
+            View parentView = getParentView(viewToClose);
+            while (parentView != null && !parentView.getClosedChildrenViews().isEmpty()) {
+              View viewToShow = parentView.getClosedChildrenViews().remove(0);
+              if (viewToShow != null) {
+                showViewInternal(viewToShow);
+              }
+              parentView = viewToShow;
+            }
+          }
+          return viewContextService.getCurrentViewContextEntry();
+        });
+
   }
 
   @Override
@@ -198,22 +213,57 @@ public class ViewApiImpl implements ViewApi {
         break;
       }
     }
-    if (globalResult == CloseResult.APPROVED || globalResult == CloseResult.REJECTED) {
-      // no pending -> finish view open
-      ViewState viewToOpenState =
-          globalResult == CloseResult.APPROVED ? ViewState.TO_OPEN : ViewState.CLOSED;
-      ViewState viewsToCloseState =
-          globalResult == CloseResult.APPROVED ? ViewState.TO_CLOSE : ViewState.OPENED;
+    if (globalResult == CloseResult.APPROVED) {
+      // no pending, approved -> finish view open
+      viewContextService.updateCurrentViewContext(
+          context -> {
+            data.getViewsToClose().forEach(uuidToClose -> {
+              View parentView = getParentView(uuidToClose);
+              if (parentView != null) {
+                View viewToClose = getView(uuidToClose);
+                if (viewToClose != null) {
+                  viewToClose.setModel(null);
+                  viewToClose.setConstraint(new ViewConstraint());
+                  parentView.getClosedChildrenViews().add(0, viewToClose);
+                }
+              }
+              ViewContexts.updateViewState(context, uuidToClose, ViewState.TO_CLOSE);
+            });
+            View viewToOpen = ViewContexts.getView(context, data.getViewToOpen());
+            viewToOpen.setState(ViewState.TO_OPEN);
+            context.setOpenPendingData(null);
+            return context;
+          });
+    } else if (globalResult == CloseResult.REJECTED) {
+      // no pending, rejected -> restore original state
       viewContextService.updateCurrentViewContext(
           context -> {
             data.getViewsToClose().forEach(
-                v -> ViewContexts.updateViewState(context, v, viewsToCloseState));
+                v -> ViewContexts.updateViewState(context, v, ViewState.OPENED));
             View viewToOpen = ViewContexts.getView(context, data.getViewToOpen());
-            viewToOpen.setState(viewToOpenState);
+            viewToOpen.setState(ViewState.CLOSED);
             context.setOpenPendingData(null);
             return context;
           });
     }
+  }
+
+  private View getParentView(UUID viewUuid) {
+    return getParentView(getView(viewUuid));
+  }
+
+  private View getParentView(View view) {
+    if (view == null) {
+      return null;
+    }
+    String parentViewName =
+        viewContextService.getParentViewName(view.getViewName());
+    List<View> parents = getViews(parentViewName);
+    if (parents.size() == 1) {
+      // exact match
+      return parents.get(0);
+    }
+    return null;
   }
 
   @Override

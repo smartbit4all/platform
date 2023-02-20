@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +49,8 @@ import javax.validation.Valid;
   View.TYPE,
   View.CONTAINER_UUID,
   View.MODEL,
-  View.CONSTRAINT
+  View.CONSTRAINT,
+  View.CLOSED_CHILDREN_VIEWS
 })
 @JsonTypeName("View")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -82,6 +84,9 @@ public class View {
 
   public static final String CONSTRAINT = "constraint";
   private ViewConstraint constraint;
+
+  public static final String CLOSED_CHILDREN_VIEWS = "closedChildrenViews";
+  private List<View> closedChildrenViews = new ArrayList<>();
 
   public View() { 
   }
@@ -373,6 +378,40 @@ public class View {
   }
 
 
+  public View closedChildrenViews(List<View> closedChildrenViews) {
+    
+    this.closedChildrenViews = closedChildrenViews;
+    return this;
+  }
+
+  public View addClosedChildrenViewsItem(View closedChildrenViewsItem) {
+    this.closedChildrenViews.add(closedChildrenViewsItem);
+    return this;
+  }
+
+   /**
+   * Get closedChildrenViews
+   * @return closedChildrenViews
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @Valid
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(CLOSED_CHILDREN_VIEWS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public List<View> getClosedChildrenViews() {
+    return closedChildrenViews;
+  }
+
+
+  @JsonProperty(CLOSED_CHILDREN_VIEWS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setClosedChildrenViews(List<View> closedChildrenViews) {
+    this.closedChildrenViews = closedChildrenViews;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -391,12 +430,13 @@ public class View {
         Objects.equals(this.type, view.type) &&
         Objects.equals(this.containerUuid, view.containerUuid) &&
         Objects.equals(this.model, view.model) &&
-        Objects.equals(this.constraint, view.constraint);
+        Objects.equals(this.constraint, view.constraint) &&
+        Objects.equals(this.closedChildrenViews, view.closedChildrenViews);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uuid, viewName, objectUri, branchUri, parameters, state, type, containerUuid, model, constraint);
+    return Objects.hash(uuid, viewName, objectUri, branchUri, parameters, state, type, containerUuid, model, constraint, closedChildrenViews);
   }
 
   @Override
@@ -413,6 +453,7 @@ public class View {
     sb.append("    containerUuid: ").append(toIndentedString(containerUuid)).append("\n");
     sb.append("    model: ").append(toIndentedString(model)).append("\n");
     sb.append("    constraint: ").append(toIndentedString(constraint)).append("\n");
+    sb.append("    closedChildrenViews: ").append(toIndentedString(closedChildrenViews)).append("\n");
     sb.append("}");
     return sb.toString();
   }

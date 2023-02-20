@@ -180,7 +180,7 @@ components:
             $ref: '#/components/schemas/ViewData'
     View:
       type: object
-      required: [uuid,viewName,state,type,parameters]
+      required: [uuid,viewName,state,type,parameters,closedChildrenViews]
       properties:
         uuid:
           type: string
@@ -208,6 +208,10 @@ components:
           type: object
         constraint:
           $ref: '#/components/schemas/ViewConstraint'
+        closedChildrenViews:
+          type: array
+          items:
+            $ref: '#/components/schemas/View'
     ViewData:
       type: object
       required: [uuid,viewName,state,type,parameters]
