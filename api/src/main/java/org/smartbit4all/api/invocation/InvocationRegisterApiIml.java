@@ -506,7 +506,8 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
         lockRequest.lock();
         try {
           StorageObject<AsyncInvocationRequest> soRequest =
-              storageRequest.load(asyncRequestUri, AsyncInvocationRequest.class);
+              storageRequest.load(objectApi.getLatestUri(asyncRequestUri),
+                  AsyncInvocationRequest.class);
           soRequest.asMap().getObjectAsMap().put(AsyncInvocationRequest.RUNTIME_URI,
               applicationRuntime.getUri());
           enqueueAsyncRequest(
