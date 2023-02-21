@@ -52,7 +52,7 @@ public class FilterExpressionFieldList {
   private String icon;
 
   public static final String FILTERS = "filters";
-  private List<FilterExpressionField> filters = null;
+  private List<FilterExpressionField> filters = new ArrayList<>();
 
   public FilterExpressionFieldList() { 
   }
@@ -145,9 +145,6 @@ public class FilterExpressionFieldList {
   }
 
   public FilterExpressionFieldList addFiltersItem(FilterExpressionField filtersItem) {
-    if (this.filters == null) {
-      this.filters = new ArrayList<>();
-    }
     this.filters.add(filtersItem);
     return this;
   }
@@ -156,11 +153,12 @@ public class FilterExpressionFieldList {
    * Get filters
    * @return filters
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(FILTERS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public List<FilterExpressionField> getFilters() {
     return filters;
@@ -168,7 +166,7 @@ public class FilterExpressionFieldList {
 
 
   @JsonProperty(FILTERS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setFilters(List<FilterExpressionField> filters) {
     this.filters = filters;
   }
