@@ -53,12 +53,7 @@ public class EventPublisher<P, S> {
       throw new IllegalArgumentException(
           "The publisher api " + publisherApiClass + " was not found.");
     }
-    ApiDescriptor subscriptionApi =
-        invocationRegisterApi.getApi(subscriberApiClass.getName(), null);
-    if (subscriptionApi == null) {
-      throw new IllegalArgumentException(
-          "The subscription api " + subscriptionApi + " was not found.");
-    }
+
     Map<String, List<InvocationRequest>> requestsByChannel = new HashMap<>();
     for (EventSubscriptionData sub : api.getApiData().getEventSubscriptions()) {
       if (event.equals(sub.getEvent())) {
