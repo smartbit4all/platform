@@ -4,6 +4,8 @@ import org.smartbit4all.api.binarydata.BinaryDataSorageApi;
 import org.smartbit4all.api.binarydata.BinaryDataSorageApiImpl;
 import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.CollectionApiStorageImpl;
+import org.smartbit4all.api.collection.FilterExpressionApi;
+import org.smartbit4all.api.collection.FilterExpressionApiImpl;
 import org.smartbit4all.api.collection.StorageSequenceApi;
 import org.smartbit4all.api.collection.StorageSequenceApiImpl;
 import org.smartbit4all.api.collection.bean.StoredListData;
@@ -221,6 +223,11 @@ public class PlatformApiConfig {
   @Bean
   public DatabaseDefinitionApi databaseDefinitionApi() {
     return new DatabaseDefinitionApiImpl();
+  }
+
+  @Bean
+  public FilterExpressionApi filterExpressionApi() {
+    return new FilterExpressionApiImpl();
   }
 
   @Bean
