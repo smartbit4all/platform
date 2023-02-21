@@ -2,10 +2,13 @@ package org.smartbit4all.api.collection;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionBoolOperator;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderField;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionData;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionDataType;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionField;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldList;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldWidgetType;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOperandData;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOperation;
@@ -50,7 +53,17 @@ public class FilterExpressionApiImpl implements FilterExpressionApi {
                 .addPossibleOperationsItem(FilterExpressionOperation.EQUAL)
                 .addPossibleOperationsItem(FilterExpressionOperation.NOT_EQUAL)
                 .addPossibleOperationsItem(FilterExpressionOperation.LIKE)
-                .addPossibleOperationsItem(FilterExpressionOperation.NOT_LIKE));
+                .addPossibleOperationsItem(FilterExpressionOperation.NOT_LIKE)
+                .addPossibleOperationsItem(FilterExpressionOperation.IS_EMPTY)
+                .addPossibleOperationsItem(FilterExpressionOperation.IS_NOT_EMPTY)
+                .filterFieldType(FilterExpressionDataType.STRING)
+                .widgetType(FilterExpressionFieldWidgetType.TEXT_FIELD).expressionData(
+                    new FilterExpressionData().currentOperation(FilterExpressionOperation.EQUAL)
+                        .boolOperator(FilterExpressionBoolOperator.AND)
+                        .operand1(new FilterExpressionOperandData().isDataName(Boolean.TRUE)
+                            .type(FilterExpressionDataType.STRING).valueAsString(propertyName))
+                        .operand2(new FilterExpressionOperandData().isDataName(Boolean.FALSE)
+                            .type(FilterExpressionDataType.STRING))));
   }
 
 }
