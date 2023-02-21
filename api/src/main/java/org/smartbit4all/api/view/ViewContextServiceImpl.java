@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.session.SessionApi;
+import org.smartbit4all.api.session.exception.ViewContextMissigException;
 import org.smartbit4all.api.view.annotation.BeforeClose;
 import org.smartbit4all.api.view.annotation.InitModel;
 import org.smartbit4all.api.view.annotation.MessageHandler;
@@ -377,7 +378,7 @@ public class ViewContextServiceImpl implements ViewContextService {
     Objects.requireNonNull(command, "command is not set");
     URI viewContextUri = sessionApi.getViewContexts().get(uuid.toString());
     if (viewContextUri == null) {
-      throw new IllegalArgumentException("ViewContext not found by UUID");
+      throw new ViewContextMissigException();
     }
     StorageObjectLock lock = storage.get().getLock(viewContextUri);
     lock.lock();
