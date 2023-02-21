@@ -66,10 +66,10 @@ public final class DataColumnOwned<T> extends DataColumn<T> {
   @Override
   @SuppressWarnings("unchecked")
   void setValue(DataRow row, Object value) {
-    if (value != null && !this.getProperty().type().isInstance(value)) {
+    if (value != null && !getProperty().type().isInstance(value)) {
       throw new IllegalArgumentException(
           "The given value " + value.getClass().getName() + " can not be set as a "
-              + this.getProperty().type() + ".");
+              + getProperty().type() + " for the " + getProperty().getName() + " property.");
     }
     int rowDataIndex = row.getRowDataIndex();
     while (values.size() - 1 < rowDataIndex) {

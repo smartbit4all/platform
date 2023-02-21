@@ -238,9 +238,6 @@ public final class ObservableObjectImpl implements ObservableObject {
           CollectionObjectChange currentChange = null;
           if (pathRef instanceof ApiObjectRef) {
             currentChange = getApiObjectRefCollectionChange(path, value);
-
-          } else if (pathRef instanceof MapBasedObject) {
-            currentChange = getMapBasedObjectCollectionChange(path, value);
           }
 
           try {
@@ -263,26 +260,6 @@ public final class ObservableObjectImpl implements ObservableObject {
     for (ApiObjectRef object : (ApiObjectCollection) value) {
       currentChange.getChanges()
           .add(new ObjectChangeSimple(object.getPath(), ChangeState.NEW, object.getObject()));
-    }
-    return currentChange;
-  }
-
-  private CollectionObjectChange getMapBasedObjectCollectionChange(ObjectPropertyPath path,
-      Object value) {
-    if (!(value instanceof List<?>)) {
-      throw new IllegalArgumentException("Collection not found at " + path.toString());
-    }
-    CollectionObjectChange currentChange = new CollectionObjectChange(path.path, path.property);
-    List<?> list = (List<?>) value;
-    if (!list.isEmpty()) {
-      if (!(list.get(0) instanceof MapBasedObject)) {
-        throw new IllegalArgumentException(
-            "Invalid collection items found at " + path.toString());
-      }
-      for (MapBasedObject object : (List<MapBasedObject>) value) {
-        currentChange.getChanges()
-            .add(new ObjectChangeSimple(object.getPath(), ChangeState.NEW, object));
-      }
     }
     return currentChange;
   }

@@ -280,6 +280,8 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
             Object value = n.getValue(mapping.path);
             if (value instanceof ObjectNodeReference) {
               value = ((ObjectNodeReference) value).getObjectUri();
+            } else if (value != null && !col.getProperty().type().equals(value.getClass())) {
+              value = objectApi.asType(col.getProperty().type(), value);
             }
             tableData.setObject(col, row, value);
           } else if (mapping.path != null && mapping.processor != null) {

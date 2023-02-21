@@ -20,7 +20,6 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.smartbit4all.core.object.MapBasedObject;
 import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.data.TableDatas;
@@ -171,7 +170,6 @@ class EntityManagerTest {
   }
 
   /**
-   * We know a data structure by having a {@link MapBasedObject} for example.
    * 
    * @throws Exception
    */

@@ -24,7 +24,6 @@ import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import org.smartbit4all.api.mapbasedobject.bean.MapBasedObjectData;
 import org.smartbit4all.core.object.ApiObjectCollection.CollectionChanges;
 import org.smartbit4all.core.object.PropertyMeta.PropertyKind;
 import org.smartbit4all.core.utility.PathUtility;
@@ -332,10 +331,7 @@ public class ApiObjectRef implements DomainObjectRef {
         case REFERENCE:
           DomainObjectRef ref = entry.getReference();
           if (ref == null) {
-            if (value instanceof MapBasedObjectData) {
-              entry.setReference(
-                  MapBasedObject.of((MapBasedObjectData) value));
-            } else if (value != null) {
+            if (value != null) {
               entry.setReference(
                   new ApiObjectRef(entry.getPath(), value, descriptors, qualifier));
             } else {
@@ -346,9 +342,7 @@ public class ApiObjectRef implements DomainObjectRef {
             ref.setObject(value);
           } else {
             // ref != null && value == null
-            if (ref instanceof MapBasedObject) {
-              ref.setObject(new MapBasedObjectData());
-            } else {
+            if (ref != null) {
               ((ApiObjectRef) ref).setCurrentState(ChangeState.DELETED);
             }
           }
