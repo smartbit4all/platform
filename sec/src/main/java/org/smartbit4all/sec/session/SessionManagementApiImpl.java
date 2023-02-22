@@ -16,6 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.StoredList;
+import org.smartbit4all.api.invocation.InvocationApi;
+import org.smartbit4all.api.invocation.InvocationRegisterApi;
 import org.smartbit4all.api.org.OrgApi;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.session.SessionManagementApi;
@@ -69,6 +71,12 @@ public class SessionManagementApiImpl implements SessionManagementApi {
   @Autowired
   private CollectionApi collectionApi;
 
+  @Autowired(required = false)
+  private InvocationApi invocationApi;
+
+  @Autowired(required = false)
+  private InvocationRegisterApi invocationRegisterApi;
+
   @Value("${session.timeout-min:60}")
   private int timeoutMins;
 
@@ -121,6 +129,7 @@ public class SessionManagementApiImpl implements SessionManagementApi {
             .refreshExpiration(refreshExpiration));
 
     log.debug("Session sid created: {}", sid);
+    fireSessionCreated(sessionUri);
     return new SessionInfoData()
         .sid(sid)
         .expiration(session.getExpiration())
@@ -241,8 +250,11 @@ public class SessionManagementApiImpl implements SessionManagementApi {
   }
 
   private URI updateSession(URI sessionUri, UnaryOperator<Session> update) {
+    Session prevSession = storage.get().read(sessionUri, Session.class);
     URI uri = storage.get().update(sessionUri, Session.class, update);
     currentSession.remove();
+    Session nextSession = storage.get().read(uri, Session.class);
+    fireSessionModified(prevSession, nextSession);
     return uri;
   }
 
@@ -480,6 +492,30 @@ public class SessionManagementApiImpl implements SessionManagementApi {
   public void addUserChangeListener(BiConsumer<URI, URI> changeListener) {
     Objects.requireNonNull(changeListener, "changeListener can not be null!");
     userChangeListeners.add(changeListener);
+  }
+
+  private void fireSessionCreated(URI sessionUri) {
+    if (eventPublisherProvided()) {
+      invocationApi
+          .publisher(SessionManagementPublisherApi.class, SessionManagementSubsciberApi.class,
+              SessionManagementPublisherApi.CREATED)
+          .publish(api -> api.sessionCreated(sessionUri));
+    }
+  }
+
+  private void fireSessionModified(Session prevSession, Session nextSession) {
+    if (eventPublisherProvided()) {
+      invocationApi
+          .publisher(SessionManagementPublisherApi.class, SessionManagementSubsciberApi.class,
+              SessionManagementPublisherApi.MODIFIED)
+          .publish(api -> api.sessionModified(prevSession, nextSession));
+    }
+  }
+
+  private boolean eventPublisherProvided() {
+    return invocationRegisterApi != null
+        && invocationRegisterApi.getApi(SessionManagementPublisherApi.class.getName(),
+            null) != null;
   }
 
 }
