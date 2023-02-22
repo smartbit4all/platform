@@ -237,9 +237,11 @@ public class PlatformApiConfig {
 
   @Bean(name = "smartbit4all.messagesource")
   public MessageSource messageResource(
-      @Value("${spring.messages.basename:messages-platform}") String baseName) {
+      @Value("${spring.messages.basename:messages-platform}") String baseName,
+      @Value("${spring.messages.encoding:UTF-8}") String defaultEncoding) {
     ResourceBundleMessageSource messageBundleResrc = new ResourceBundleMessageSource();
     messageBundleResrc.addBasenames(baseName.split(","));
+    messageBundleResrc.setDefaultEncoding(defaultEncoding);
     return messageBundleResrc;
   }
 
