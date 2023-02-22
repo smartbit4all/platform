@@ -426,7 +426,11 @@ public class SessionManagementApiImpl implements SessionManagementApi {
     log.debug("Adding viewContext (uuid={}) to session (uri={})", viewContextUuid, sessionUri);
     storage.get().update(sessionUri, Session.class,
         s -> s.putViewContextsItem(viewContextUuid.toString(), viewContextUri));
-
+    // Update the current session if it is the same
+    Session session = currentSession.get();
+    if (session != null && session.getUri() != null && session.getUri().equals(sessionUri)) {
+      session.putViewContextsItem(viewContextUuid.toString(), viewContextUri);
+    }
   }
 
   @Override
