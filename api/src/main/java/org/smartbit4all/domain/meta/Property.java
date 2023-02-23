@@ -437,22 +437,26 @@ public abstract class Property<T> {
 
   public Comparator<? super T> getComparator() {
     if (comparator == null) {
-      if (Comparable.class.isAssignableFrom(type)) {
-        Class<Comparable<? super T>> clazz = (Class<Comparable<? super T>>) type;
-        comparator = (local, other) -> {
-          if (local == null && other == null) {
-            return 0;
-          } else if (local != null && other == null) {
-            return -1;
-          } else if (local == null && other != null) {
-            return 1;
-          } else {
-            return clazz.cast(local).compareTo(other);
-          }
-        };
-      }
+      createComparator(type);
     }
     return comparator;
+  }
+
+  protected void createComparator(Class<?> type) {
+    if (Comparable.class.isAssignableFrom(type)) {
+      Class<Comparable<? super T>> clazz = (Class<Comparable<? super T>>) type;
+      comparator = (local, other) -> {
+        if (local == null && other == null) {
+          return 0;
+        } else if (local != null && other == null) {
+          return -1;
+        } else if (local == null && other != null) {
+          return 1;
+        } else {
+          return clazz.cast(local).compareTo(other);
+        }
+      };
+    }
   }
 
   /**

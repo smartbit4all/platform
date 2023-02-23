@@ -7,6 +7,7 @@ public class PropertyObject extends Property<Object> {
   public PropertyObject(Property<?> basic) {
     super(basic.getName(), Object.class, null);
     this.basic = basic;
+    createComparator(basic.type());
   }
 
   public final Property<?> getBasic() {
