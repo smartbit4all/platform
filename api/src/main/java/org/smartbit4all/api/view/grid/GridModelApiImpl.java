@@ -33,7 +33,8 @@ public class GridModelApiImpl implements GridModelApi {
   @Autowired
   private ObjectApi objectApi;
 
-  @Autowired
+  // FIXME (viewApi is not present everywhere)
+  @Autowired(required = false)
   private ViewApi viewApi;
 
   @Autowired
