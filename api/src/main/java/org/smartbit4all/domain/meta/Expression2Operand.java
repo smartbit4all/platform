@@ -16,6 +16,7 @@ package org.smartbit4all.domain.meta;
 
 import java.util.Comparator;
 import java.util.Objects;
+import java.util.function.UnaryOperator;
 import java.util.regex.Pattern;
 import org.smartbit4all.core.utility.StringConstant;
 
@@ -82,7 +83,7 @@ public final class Expression2Operand<T> extends Expression {
 
   @Override
   public Expression copy() {
-    return new Expression2Operand<T>(this);
+    return new Expression2Operand<>(this);
   }
 
   /**
@@ -164,6 +165,7 @@ public final class Expression2Operand<T> extends Expression {
     }
   }
 
+
   private final Comparator<T> getComparator() {
     if (comparator == null) {
       comparator = Comparator.nullsFirst(op.property.getComparator());
@@ -211,6 +213,10 @@ public final class Expression2Operand<T> extends Expression {
   private String text() {
     return op.toString() + StringConstant.SPACE + operator.text() + StringConstant.SPACE
         + literal.toString();
+  }
+
+  public void setOperandProcessor(UnaryOperator<T> operandProcessor) {
+    op.setProcessor(operandProcessor);
   }
 
 }

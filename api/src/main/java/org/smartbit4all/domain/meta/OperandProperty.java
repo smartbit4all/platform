@@ -16,6 +16,7 @@ package org.smartbit4all.domain.meta;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.UnaryOperator;
 import org.smartbit4all.core.utility.StringConstant;
 
 /**
@@ -43,12 +44,14 @@ public class OperandProperty<T> extends Operand<T> {
    * SQL) for the given expression. If it's null then we ignore it.
    */
   private String qualifier;
-  
+
   /**
    * One {@link OperandProperty} can depend on other properties. The {@link OperandProperty} form of
    * these properties are held in this list.
    */
   private List<OperandProperty<?>> requiredOperandProperties = new ArrayList<>();
+
+  private UnaryOperator<T> processor;
 
   /**
    * Creates a new operand with the given property.
@@ -64,9 +67,9 @@ public class OperandProperty<T> extends Operand<T> {
   private void initRequiredProperties() {
     // handle required properties from property functions
     PropertyFunction propertyFunction = property.getPropertyFunction();
-    if(propertyFunction != null) {
+    if (propertyFunction != null) {
       List<Property<?>> requiredProperties = propertyFunction.getRequiredProperties();
-      if(requiredProperties != null) {
+      if (requiredProperties != null) {
         requiredProperties.forEach(p -> requiredOperandProperties.add(new OperandProperty<>(p)));
       }
     }
@@ -74,7 +77,15 @@ public class OperandProperty<T> extends Operand<T> {
 
   @Override
   public T value() {
-    return boundValue == null ? null : boundValue.getValue();
+    return boundValue == null ? null : getValue();
+  }
+
+  private T getValue() {
+    if (processor != null) {
+      return processor.apply(boundValue.getValue());
+    }
+
+    return boundValue.getValue();
   }
 
   @Override
@@ -112,7 +123,7 @@ public class OperandProperty<T> extends Operand<T> {
   @Override
   public String toString() {
     return property.getName() + (boundValue == null ? StringConstant.EMPTY
-        : StringConstant.LEFT_SQUARE + boundValue.getValue() + StringConstant.RIGHT_SQUARE);
+        : StringConstant.LEFT_SQUARE + getValue() + StringConstant.RIGHT_SQUARE);
   }
 
   /**
@@ -146,6 +157,10 @@ public class OperandProperty<T> extends Operand<T> {
 
   public List<OperandProperty<?>> getRequiredOperandProperties() {
     return requiredOperandProperties;
+  }
+
+  public void setProcessor(UnaryOperator<T> processor) {
+    this.processor = processor;
   }
 
 }
