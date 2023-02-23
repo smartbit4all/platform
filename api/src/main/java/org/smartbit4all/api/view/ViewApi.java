@@ -101,4 +101,10 @@ public interface ViewApi {
   void updateView(UUID viewUuid, UnaryOperator<View> update);
 
   UUID showPublishedView(String channel, UUID smartLinkUuid);
+
+  <T> T getComponentModelFromView(Class<T> clazz, UUID viewUuid, String componentId);
+
+  <T> void setComponentModelInView(Class<T> clazz, UUID viewUuid, String componentId,
+      T componentModel);
+
 }

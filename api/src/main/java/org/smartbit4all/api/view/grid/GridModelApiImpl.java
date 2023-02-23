@@ -1,4 +1,4 @@
-package org.smartbit4all.api.grid;
+package org.smartbit4all.api.view.grid;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
@@ -6,6 +6,8 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.UUID;
+import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import org.smartbit4all.api.collection.SearchIndex;
@@ -18,6 +20,7 @@ import org.smartbit4all.api.grid.bean.GridView;
 import org.smartbit4all.api.grid.bean.GridViewDescriptor;
 import org.smartbit4all.api.grid.bean.GridViewDescriptor.KindEnum;
 import org.smartbit4all.api.setting.LocaleSettingApi;
+import org.smartbit4all.api.view.ViewApi;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.domain.data.DataColumn;
 import org.smartbit4all.domain.data.DataRow;
@@ -29,6 +32,9 @@ public class GridModelApiImpl implements GridModelApi {
 
   @Autowired
   private ObjectApi objectApi;
+
+  @Autowired
+  private ViewApi viewApi;
 
   @Autowired
   private TableDataApi tableDataApi;
@@ -102,13 +108,14 @@ public class GridModelApiImpl implements GridModelApi {
   }
 
   @Override
-  public void loadPage(GridModel model, int lowerBound, int upperBound) {
+  public GridModel loadPage(GridModel model, int lowerBound, int upperBound) {
     TableData<?> tableData =
         tableDataApi.readPage(model.getAccessConfig().getDataUri(), lowerBound - 1,
             upperBound);
     model.page(constructPage(
         tableData, 0, tableData.size())
             .lowerBound(lowerBound).upperBound(upperBound));
+    return model;
   }
 
   private GridPage constructPage(TableData<?> tableData, int beginIndex, int endIndex) {
@@ -129,5 +136,14 @@ public class GridModelApiImpl implements GridModelApi {
 
   @Override
   public void setOrderBy(GridModel model, List<FilterExpressionOrderBy> orderByList) {}
+
+  @Override
+  public <T> T executeGridCall(UUID viewUuid, String gridId, Function<GridModel, T> gridCall) {
+    GridModel gridModel = viewApi.getComponentModelFromView(GridModel.class, viewUuid, gridId);
+    gridModel.setViewUuid(viewUuid);
+    T result = gridCall.apply(gridModel);
+    viewApi.setComponentModelInView(GridModel.class, viewUuid, gridId, gridModel);
+    return result;
+  }
 
 }

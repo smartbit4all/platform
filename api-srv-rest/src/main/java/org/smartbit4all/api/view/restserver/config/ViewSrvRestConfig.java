@@ -1,6 +1,12 @@
 package org.smartbit4all.api.view.restserver.config;
 
+import org.smartbit4all.api.grid.restserver.GridApiController;
+import org.smartbit4all.api.grid.restserver.GridApiDelegate;
+import org.smartbit4all.api.grid.restserver.impl.GridApiDelegateImpl;
 import org.smartbit4all.api.restserver.PlatformApiCommonSrvRestConfig;
+import org.smartbit4all.api.uitree.restserver.TreeApiController;
+import org.smartbit4all.api.uitree.restserver.TreeApiDelegate;
+import org.smartbit4all.api.uitree.restserver.impl.TreeApiDelegateImpl;
 import org.smartbit4all.api.view.ViewApi;
 import org.smartbit4all.api.view.ViewApiImpl;
 import org.smartbit4all.api.view.ViewContextService;
@@ -37,6 +43,26 @@ public class ViewSrvRestConfig {
   @ConditionalOnMissingBean
   public ViewContextService viewContextService() {
     return new ViewContextServiceImpl();
+  }
+
+  @Bean
+  public TreeApiDelegate treeApiDelegate() {
+    return new TreeApiDelegateImpl();
+  }
+
+  @Bean
+  public TreeApiController treeApiController(TreeApiDelegate delegate) {
+    return new TreeApiController(delegate);
+  }
+
+  @Bean
+  public GridApiDelegate gridApiDelegate() {
+    return new GridApiDelegateImpl();
+  }
+
+  @Bean
+  public GridApiController gridApiController(GridApiDelegate delegate) {
+    return new GridApiController(delegate);
   }
 
 }

@@ -2,6 +2,7 @@ package org.smartbit4all.api.view;
 
 import static java.util.stream.Collectors.toList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.function.UnaryOperator;
@@ -17,6 +18,7 @@ import org.smartbit4all.api.view.bean.ViewConstraint;
 import org.smartbit4all.api.view.bean.ViewContext;
 import org.smartbit4all.api.view.bean.ViewState;
 import org.smartbit4all.api.view.bean.ViewType;
+import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,6 +35,9 @@ public class ViewApiImpl implements ViewApi {
 
   @Autowired
   private SmartLinkApi smartLinkApi;
+
+  @Autowired
+  private ObjectApi objectApi;
 
   @Value("${view.messageViewName:message-dialog}")
   private String messageViewName;
@@ -292,5 +297,56 @@ public class ViewApiImpl implements ViewApi {
     }
     return showView(linkNode.getValue(View.class, SmartLinkData.VIEW));
   }
+
+  @Override
+  public <T> T getComponentModelFromView(Class<T> clazz, UUID viewUuid, String componentId) {
+    String[] paths = getPathParts(componentId);
+    String location = paths[0];
+    String key = paths[1];
+    if (View.PARAMETERS.equals(location)) {
+      // to make sure view model/params gets initialized
+      getModel(viewUuid, null);
+      View view = getView(viewUuid);
+      Object componentModel = view.getParameters().get(key);
+      return objectApi.asType(clazz, componentModel);
+    } else if (View.MODEL.equals(location)) {
+      Object model = getModel(viewUuid, null);
+      return objectApi.getValueFromObject(clazz, model, key);
+    } else {
+      throw new IllegalArgumentException("Invalid path");
+    }
+  }
+
+  @Override
+  public <T> void setComponentModelInView(Class<T> clazz, UUID viewUuid, String componentId,
+      T componentModel) {
+    String[] paths = getPathParts(componentId);
+    String location = paths[0];
+    String key = paths[1];
+    if (View.PARAMETERS.equals(location)) {
+      View view = getView(viewUuid);
+      view.putParametersItem(key, componentModel);
+    } else if (View.MODEL.equals(location)) {
+      Object model = getModel(viewUuid, null);
+      Map<String, Object> modelAsMap = objectApi.definition(model.getClass()).toMap(model);
+      modelAsMap.put(key, objectApi.definition(clazz).toMap(componentModel));
+      Object updatedModel = objectApi.asType(model.getClass(), modelAsMap);
+      getView(viewUuid).setModel(updatedModel);
+    } else {
+      throw new IllegalArgumentException("Invalid path");
+    }
+  }
+
+  private String[] getPathParts(String treeId) {
+    String[] paths = treeId.split("\\.");
+    if (paths == null) {
+      throw new IllegalArgumentException("Empty path not allowed");
+    }
+    if (paths.length != 2) {
+      throw new IllegalArgumentException("Invalid path");
+    }
+    return paths;
+  }
+
 
 }

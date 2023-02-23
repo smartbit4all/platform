@@ -1,8 +1,10 @@
-package org.smartbit4all.api.grid;
+package org.smartbit4all.api.view.grid;
 
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import java.util.function.Function;
 import java.util.stream.Stream;
 import org.smartbit4all.api.collection.SearchIndex;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy;
@@ -13,7 +15,7 @@ public interface GridModelApi {
 
   /**
    * If we have a well defined list bean and we would like to save it.
-   * 
+   *
    * @param <T>
    * @param clazz
    * @param o
@@ -25,7 +27,7 @@ public interface GridModelApi {
   /**
    * If we already have a table data as the result of a query and we would like to save it as
    * content of a grid.
-   * 
+   *
    * @param tableData The table data.
    * @return
    */
@@ -34,7 +36,7 @@ public interface GridModelApi {
   /**
    * If we have a well defined list bean and we would like to save it's grid model by the definition
    * of a {@link SearchIndex}.
-   * 
+   *
    * @param searchIndex The search index to use to construct the table data result.
    * @param uris The list of URI.
    * @return
@@ -44,7 +46,7 @@ public interface GridModelApi {
   /**
    * If we have a well defined list bean and we would like to save it's grid model by the definition
    * of a {@link SearchIndex}.
-   * 
+   *
    * @param <T>
    * @param searchIndex The search index to use to construct the table data result.
    * @param objects The list of objects.
@@ -52,17 +54,19 @@ public interface GridModelApi {
    */
   <T> GridModel modelOfObjects(SearchIndex<T> searchIndex, Stream<T> objects);
 
-  void loadPage(GridModel model, int lowerBound, int upperBound);
+  GridModel loadPage(GridModel model, int lowerBound, int upperBound);
 
   void setColumnOrder(GridModel model, List<String> columns);
 
   /**
    * Sort and overwrite the same... The unsorted is the default and if we have sortOrderList then we
    * apply after the load.
-   * 
+   *
    * @param model
    * @param orderByList
    */
   void setOrderBy(GridModel model, List<FilterExpressionOrderBy> orderByList);
+
+  <T> T executeGridCall(UUID viewUuid, String gridId, Function<GridModel, T> gridCall);
 
 }

@@ -19,7 +19,6 @@ import org.smartbit4all.api.uitree.bean.UiTreeState;
 import org.smartbit4all.api.view.ViewApi;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionRequest;
-import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -300,60 +299,11 @@ public class TreeApiImpl implements TreeApi {
 
   @Override
   public <T> T executeTreeCall(UUID viewUuid, String treeId, Function<UiTreeState, T> treeCall) {
-    UiTreeState treeState = getTreeState(viewUuid, treeId);
+    UiTreeState treeState = viewApi.getComponentModelFromView(UiTreeState.class, viewUuid, treeId);
     treeState.setViewUuid(viewUuid);
     T result = treeCall.apply(treeState);
-    applyTreeState(viewUuid, treeId, treeState);
+    viewApi.setComponentModelInView(UiTreeState.class, viewUuid, treeId, treeState);
     return result;
   }
-
-  private UiTreeState getTreeState(UUID viewUuid, String treeId) {
-    String[] paths = getPathParts(treeId);
-    String location = paths[0];
-    String key = paths[1];
-    if (View.PARAMETERS.equals(location)) {
-      // to make sure view model/params gets initialized
-      viewApi.getModel(viewUuid, null);
-      View view = viewApi.getView(viewUuid);
-      Object treeStateObject = view.getParameters().get(key);
-      return objectApi.asType(UiTreeState.class, treeStateObject);
-    } else if (View.MODEL.equals(location)) {
-      Object model = viewApi.getModel(viewUuid, null);
-      return objectApi.getValueFromObject(UiTreeState.class, model, key);
-    } else {
-      throw new IllegalArgumentException("Invalid path");
-    }
-    // return getModel(viewUuid).getTree();
-  }
-
-  private void applyTreeState(UUID viewUuid, String treeId, UiTreeState treeState) {
-    String[] paths = getPathParts(treeId);
-    String location = paths[0];
-    String key = paths[1];
-    if (View.PARAMETERS.equals(location)) {
-      View view = viewApi.getView(viewUuid);
-      view.putParametersItem(key, treeState);
-    } else if (View.MODEL.equals(location)) {
-      Object model = viewApi.getModel(viewUuid, null);
-      Map<String, Object> modelAsMap = objectApi.definition(model.getClass()).toMap(model);
-      modelAsMap.put(key, objectApi.definition(treeState.getClass()).toMap(treeState));
-      Object updatedModel = objectApi.asType(model.getClass(), modelAsMap);
-      viewApi.getView(viewUuid).setModel(updatedModel);
-    } else {
-      throw new IllegalArgumentException("Invalid path");
-    }
-  }
-
-  private String[] getPathParts(String treeId) {
-    String[] paths = treeId.split("\\.");
-    if (paths == null) {
-      throw new IllegalArgumentException("Empty path not allowed");
-    }
-    if (paths.length != 2) {
-      throw new IllegalArgumentException("Invalid path");
-    }
-    return paths;
-  }
-
 
 }

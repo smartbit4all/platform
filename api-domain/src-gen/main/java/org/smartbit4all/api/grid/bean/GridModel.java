@@ -24,6 +24,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import org.smartbit4all.api.grid.bean.GridDataAccessConfig;
 import org.smartbit4all.api.grid.bean.GridPage;
 import org.smartbit4all.api.grid.bean.GridView;
@@ -37,6 +38,7 @@ import javax.validation.Valid;
  */
 @ApiModel(description = "This object respresent the model of a grid component. ")
 @JsonPropertyOrder({
+  GridModel.VIEW_UUID,
   GridModel.AVAILABLE_VIEWS,
   GridModel.VIEW,
   GridModel.ACCESS_CONFIG,
@@ -47,6 +49,9 @@ import javax.validation.Valid;
 @JsonTypeName("GridModel")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class GridModel {
+  public static final String VIEW_UUID = "viewUuid";
+  private UUID viewUuid;
+
   public static final String AVAILABLE_VIEWS = "availableViews";
   private List<GridView> availableViews = null;
 
@@ -67,6 +72,34 @@ public class GridModel {
 
   public GridModel() { 
   }
+
+  public GridModel viewUuid(UUID viewUuid) {
+    
+    this.viewUuid = viewUuid;
+    return this;
+  }
+
+   /**
+   * Get viewUuid
+   * @return viewUuid
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(VIEW_UUID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public UUID getViewUuid() {
+    return viewUuid;
+  }
+
+
+  @JsonProperty(VIEW_UUID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setViewUuid(UUID viewUuid) {
+    this.viewUuid = viewUuid;
+  }
+
 
   public GridModel availableViews(List<GridView> availableViews) {
     
@@ -252,7 +285,8 @@ public class GridModel {
       return false;
     }
     GridModel gridModel = (GridModel) o;
-    return Objects.equals(this.availableViews, gridModel.availableViews) &&
+    return Objects.equals(this.viewUuid, gridModel.viewUuid) &&
+        Objects.equals(this.availableViews, gridModel.availableViews) &&
         Objects.equals(this.view, gridModel.view) &&
         Objects.equals(this.accessConfig, gridModel.accessConfig) &&
         Objects.equals(this.page, gridModel.page) &&
@@ -262,13 +296,14 @@ public class GridModel {
 
   @Override
   public int hashCode() {
-    return Objects.hash(availableViews, view, accessConfig, page, totalRowCount, pageSize);
+    return Objects.hash(viewUuid, availableViews, view, accessConfig, page, totalRowCount, pageSize);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class GridModel {\n");
+    sb.append("    viewUuid: ").append(toIndentedString(viewUuid)).append("\n");
     sb.append("    availableViews: ").append(toIndentedString(availableViews)).append("\n");
     sb.append("    view: ").append(toIndentedString(view)).append("\n");
     sb.append("    accessConfig: ").append(toIndentedString(accessConfig)).append("\n");
