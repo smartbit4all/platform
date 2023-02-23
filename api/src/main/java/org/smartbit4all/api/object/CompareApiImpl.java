@@ -21,10 +21,8 @@ public class CompareApiImpl implements CompareApi {
 
   @Override
   public ObjectChangeData changes(ObjectNode node1, ObjectNode node2) {
-    Objects.requireNonNull(node1);
-    Objects.requireNonNull(node2);
-    Map<String, Object> map1 = node1.getObjectAsMap();
-    Map<String, Object> map2 = node2.getObjectAsMap();
+    Map<String, Object> map1 = node1 == null ? new HashMap<>() : node1.getObjectAsMap();
+    Map<String, Object> map2 = node2 == null ? new HashMap<>() : node2.getObjectAsMap();
     return changesOfMap(map1, map2);
   }
 
@@ -60,9 +58,12 @@ public class CompareApiImpl implements CompareApi {
       if (value1 instanceof Map) {
         result.addReferencesItem(referenceChangeOf(value1, null, pathOf(key)));
       } else {
-        result.addPropertiesItem(
-            new PropertyChangeData().path(pathOf(key)).oldValue(value1)
-                .newValue(null));
+        if (value1 != null) {
+          result.addPropertiesItem(
+              new PropertyChangeData().path(pathOf(key)).oldValue(value1)
+                  .newValue(null));
+
+        }
       }
     }
     for (Entry<String, Object> entry : map2Tmp.entrySet()) {
@@ -70,9 +71,11 @@ public class CompareApiImpl implements CompareApi {
       if (value2 instanceof Map) {
         result.addReferencesItem(referenceChangeOf(null, value2, pathOf(entry.getKey())));
       } else {
-        result.addPropertiesItem(
-            new PropertyChangeData().path(pathOf(entry.getKey())).oldValue(null)
-                .newValue(value2));
+        if (value2 != null) {
+          result.addPropertiesItem(
+              new PropertyChangeData().path(pathOf(entry.getKey())).oldValue(null)
+                  .newValue(value2));
+        }
       }
     }
     return result;
