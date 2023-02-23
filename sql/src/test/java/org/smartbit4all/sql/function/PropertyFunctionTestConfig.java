@@ -1,6 +1,7 @@
 package org.smartbit4all.sql.function;
 
 import javax.sql.DataSource;
+import org.smartbit4all.core.io.TestFSConfig;
 import org.smartbit4all.domain.meta.jdbc.JDBCDataConverterConfig;
 import org.smartbit4all.sql.config.SQLConfig;
 import org.smartbit4all.sql.config.SQLDBParameter;
@@ -21,7 +22,8 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
     SQLConfig.class,
     SQLIdentifierService.class,
     JDBCDataConverterConfig.class,
-    TestmodelEntityConfig.class
+    TestmodelEntityConfig.class,
+    TestFSConfig.class
 })
 public class PropertyFunctionTestConfig {
 
@@ -47,5 +49,5 @@ public class PropertyFunctionTestConfig {
   public JdbcTemplate applicationDataConnection(DataSource dataSource) {
     return new JdbcTemplate(dataSource);
   }
-  
+
 }

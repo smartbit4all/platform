@@ -11,6 +11,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.smartbit4all.api.config.PlatformApiConfig;
+import org.smartbit4all.core.io.TestFSConfig;
 import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.data.TableDatas;
@@ -26,7 +27,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest(
     classes = {
         PlatformApiConfig.class,
-        SecurityEntityConfiguration.class
+        SecurityEntityConfiguration.class,
+        TestFSConfig.class
     })
 public class TableDataSerializerTest {
 

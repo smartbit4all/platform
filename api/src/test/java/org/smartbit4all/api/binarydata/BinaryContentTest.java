@@ -1,5 +1,11 @@
 package org.smartbit4all.api.binarydata;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,15 +20,10 @@ import org.junit.jupiter.api.Test;
 import org.smartbit4all.core.io.TestFileUtil;
 import org.smartbit4all.core.object.ApiBeanDescriptor;
 import org.smartbit4all.core.object.ApiObjectRef;
+import org.smartbit4all.domain.data.storage.ObjectNotFoundException;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(classes = {
     BinaryContentTestConfig.class
@@ -91,7 +92,8 @@ public class BinaryContentTest {
     // Try to load not existing BinaryData
     assertFalse(binaryContent.isLoaded());
     assertNull(binaryContent.getData());
-    assertThrows(IllegalStateException.class, () -> binaryContentApi.getInputStream(binaryContent));
+    assertThrows(ObjectNotFoundException.class,
+        () -> binaryContentApi.getInputStream(binaryContent));
 
     // Save BinaryData and try to get InputStream
     binaryDataApi.save(testFile, binaryContent.getDataUri());
@@ -112,7 +114,8 @@ public class BinaryContentTest {
     // Try to load not existing BinaryData
     assertFalse(binaryContent.isLoaded());
     assertNull(binaryContent.getData());
-    assertThrows(IllegalStateException.class, () -> binaryContentApi.getInputStream(binaryContent));
+    assertThrows(ObjectNotFoundException.class,
+        () -> binaryContentApi.getInputStream(binaryContent));
 
     // Save and Load BinaryData
     binaryDataApi.save(testFile, binaryContent.getDataUri());

@@ -12,32 +12,17 @@
  * You should have received a copy of the GNU Lesser General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package org.smartbit4all.domain.entity;
+package org.smartbit4all.core.io;
 
-import org.smartbit4all.api.config.PlatformApiConfig;
-import org.smartbit4all.core.io.TestFileUtil;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.domain.data.storage.ObjectStorage;
-import org.smartbit4all.domain.security.SecurityEntityConfiguration;
-import org.smartbit4all.domain.service.entity.ConfigEntitySource;
-import org.smartbit4all.domain.service.entity.EntitySource;
 import org.smartbit4all.storage.fs.StorageFS;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 
 @Configuration
 
-@Import({PlatformApiConfig.class, SecurityEntityConfiguration.class})
-public class EntityManagerTestConfig {
-
-  public static final String ENTITY_SOURCE_SEC = "org.smartbit4all.domain.security";
-
-  @Bean
-  public EntitySource securityEntitySource(ApplicationContext appCtx) {
-    return new ConfigEntitySource(ENTITY_SOURCE_SEC, SecurityEntityConfiguration.class, appCtx);
-  }
+public class TestFSConfig {
 
   @Bean
   public ObjectStorage objectStorage(ObjectApi objectApi) {

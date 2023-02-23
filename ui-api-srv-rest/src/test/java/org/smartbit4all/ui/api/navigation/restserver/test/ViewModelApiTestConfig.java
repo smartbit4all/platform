@@ -1,6 +1,7 @@
 package org.smartbit4all.ui.api.navigation.restserver.test;
 
 import org.smartbit4all.api.config.PlatformApiConfig;
+import org.smartbit4all.core.io.TestFSConfig;
 import org.smartbit4all.core.object.ObservablePublisherWrapper;
 import org.smartbit4all.ui.api.navigation.restserver.config.UIApiSrvRestConfig;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -14,7 +15,8 @@ import org.springframework.web.filter.CommonsRequestLoggingFilter;
 @Configuration
 @Import({
     PlatformApiConfig.class,
-    UIApiSrvRestConfig.class
+    UIApiSrvRestConfig.class,
+    TestFSConfig.class
 })
 public class ViewModelApiTestConfig {
 

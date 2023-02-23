@@ -2,6 +2,7 @@ package org.smartbit4all.sql.query;
 
 import java.net.URI;
 import javax.sql.DataSource;
+import org.smartbit4all.core.io.TestFSConfig;
 import org.smartbit4all.domain.meta.jdbc.JDBCDataConverterConfig;
 import org.smartbit4all.domain.service.CrudApiImpl.QueryExecutorConfig;
 import org.smartbit4all.sql.config.SQLConfig;
@@ -36,7 +37,8 @@ import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
     SQLConfig.class,
     SQLIdentifierService.class,
     JDBCDataConverterConfig.class,
-    TestmodelEntityConfig.class
+    TestmodelEntityConfig.class,
+    TestFSConfig.class
 })
 public class QuerySeparatedSchemaTestConfig {
 
@@ -83,23 +85,23 @@ public class QuerySeparatedSchemaTestConfig {
   @Bean
   public SQLCrudExecutionApi queryExecutionApi1(
       @Qualifier("dataConnection1") JdbcTemplate jdbcTemplate) {
-    
+
     SQLCrudExecutionApi sqlQueryExecutionApi = new SQLCrudExecutionApi(jdbcTemplate);
     sqlQueryExecutionApi.setSchema("test1");
-    
+
     return sqlQueryExecutionApi;
   }
 
   @Bean
   public SQLCrudExecutionApi queryExecutionApi2(
       @Qualifier("dataConnection1") JdbcTemplate jdbcTemplate) {
-    
+
     SQLCrudExecutionApi sqlQueryExecutionApi = new SQLCrudExecutionApi(jdbcTemplate);
     sqlQueryExecutionApi.setSchema("test2");
-    
+
     return sqlQueryExecutionApi;
   }
-  
+
   @Bean
   public QueryExecutorConfig executorConfig() {
     return QueryExecutorConfig.create()

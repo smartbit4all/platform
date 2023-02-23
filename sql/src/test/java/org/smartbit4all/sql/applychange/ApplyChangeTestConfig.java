@@ -7,6 +7,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.sql.DataSource;
+import org.smartbit4all.core.io.TestFSConfig;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.meta.Property;
@@ -52,7 +53,8 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
     SQLConfig.class,
     SQLIdentifierService.class,
     JDBCDataConverterConfig.class,
-    TestmodelEntityConfig.class
+    TestmodelEntityConfig.class,
+    TestFSConfig.class
 })
 public class ApplyChangeTestConfig {
 
@@ -106,7 +108,7 @@ public class ApplyChangeTestConfig {
     return () -> {
       return ApplyChangeObjectConfig.builder(ACT_A_FCC.class, aDef)
           .entityIdProperty(aDef.uid())
-          .entityPrimaryKeyIdProvider(stringId -> 
+          .entityPrimaryKeyIdProvider(stringId ->
             createPrimarayKeyIdProvider((String) stringId, aDef.id(), aDef.uid()))
           .addPropertyMapping("af1", aDef.af1())
           .addPropertyMapping("cf1", aDef.bDef().cDef().cf1())
@@ -123,26 +125,26 @@ public class ApplyChangeTestConfig {
               .config(
                 ApplyChangeObjectConfig.builder(ACT_D.class, dDef)
                   .entityIdProperty(dDef.uid())
-                  .entityPrimaryKeyIdProvider(stringId -> 
+                  .entityPrimaryKeyIdProvider(stringId ->
                     createPrimarayKeyIdProvider((String) stringId, dDef.id(), dDef.uid()))
                   .addPropertyMapping("df1", dDef.df1())
                   .addPropertyMapping("ef1", dDef.eDef().ef1())
-                  .addEntityReferenceDescriptor(cDef.uid(), 
+                  .addEntityReferenceDescriptor(cDef.uid(),
                       uid -> createPrimarayKeyIdProvider((String) uid, cDef.id(), cDef.uid()))
-                  .addEntityReferenceDescriptor(eDef.uid(), 
+                  .addEntityReferenceDescriptor(eDef.uid(),
                       uid -> createPrimarayKeyIdProvider((String) uid, eDef.id(), eDef.uid()))
                   .build())
               .end()
           .addCollectionMapping("buids", gDef.aId(), aDef.id())
-            .collectionProcessor(buidProcessor(bDef, gDef), 
-                CollectionProcessorConfig.of(gDef, gDef.uid(), id -> 
+            .collectionProcessor(buidProcessor(bDef, gDef),
+                CollectionProcessorConfig.of(gDef, gDef.uid(), id ->
                       createPrimarayKeyIdProvider(id.toString(), gDef.id(), gDef.uid())))
             .and()
-          .addEntityReferenceDescriptor(bDef.uid(), 
+          .addEntityReferenceDescriptor(bDef.uid(),
               uid -> createPrimarayKeyIdProvider((String) uid, bDef.id(), bDef.uid()))
-          .addEntityReferenceDescriptor(cDef.uid(), 
+          .addEntityReferenceDescriptor(cDef.uid(),
               uid -> createPrimarayKeyIdProvider((String) uid, cDef.id(), cDef.uid()))
-          .addEntityReferenceDescriptor(fDef.uid(), 
+          .addEntityReferenceDescriptor(fDef.uid(),
               uid -> createPrimarayKeyIdProvider((String) uid, fDef.id(), fDef.uid()))
           .build();
     };
@@ -183,7 +185,7 @@ public class ApplyChangeTestConfig {
     return () -> {
       return ApplyChangeObjectConfig.builder(TicketFCC.class, ticketDef)
           .entityIdProperty(ticketDef.idString())
-          .entityPrimaryKeyIdProvider(stringId -> 
+          .entityPrimaryKeyIdProvider(stringId ->
                 createTickedPrimaryKeyId(ticketDef, idService, stringId))
           .addPropertyMapping(TicketFCC.TITLE, ticketDef.title())
           .addPropertyMapping(TicketFCC.URI, ticketDef.uri())
@@ -192,8 +194,8 @@ public class ApplyChangeTestConfig {
             .addCollectionMapping(Person.ADDRESSES, addressDef.personId(), ticketDef.primaryPerson().id())
               .config(createAddressMapping(addressDef))
               .end()
-            
-            
+
+
           .addReferenceMapping(TicketFCC.SECONDARY_PERSON)
             .addPropertyMapping(Person.NAME, ticketDef.secondaryPerson().name())
             .addCollectionMapping(Person.ADDRESSES, addressDef.personId(), ticketDef.primaryPerson().id())

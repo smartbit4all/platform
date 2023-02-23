@@ -1,6 +1,7 @@
 package org.smartbit4all.sql.storage;
 
 import javax.sql.DataSource;
+import org.smartbit4all.core.io.TestFSConfig;
 import org.smartbit4all.domain.meta.jdbc.JDBCDataConverterConfig;
 import org.smartbit4all.sql.config.SQLConfig;
 import org.smartbit4all.sql.config.SQLDBParameter;
@@ -19,7 +20,8 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 @Import({
     SQLConfig.class,
     SQLIdentifierService.class,
-    JDBCDataConverterConfig.class
+    JDBCDataConverterConfig.class,
+    TestFSConfig.class
 })
 public class StorageSQLTestConfig {
 
