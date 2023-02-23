@@ -48,4 +48,17 @@ public interface TreeApi {
    */
   UiTreeNode setSelectedNode(UiTreeState treeState, UiTreePath path, boolean handleSelection);
 
+  /**
+   * Refreshes the state of the provided node and all its opened child nodes (continues downward
+   * recursively).
+   * 
+   * <p>
+   * Shall be used when an action enacted on a treeNode has some blanket effect(s) on all its
+   * children.
+   * 
+   * @param treeState the {@code UiTreeState} serving as the node's context, not null
+   * @param node a single {@code UiTreeNode} in the above tree, not null
+   */
+  void refreshNodeRecursively(UiTreeState treeState, UiTreeNode node);
+
 }

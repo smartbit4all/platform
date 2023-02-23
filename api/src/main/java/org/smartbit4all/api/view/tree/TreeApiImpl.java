@@ -279,6 +279,17 @@ public class TreeApiImpl implements TreeApi {
 
   }
 
+  @Override
+  public void refreshNodeRecursively(UiTreeState treeState, UiTreeNode node) {
+    this.refreshNode(treeState, node);
+    node.getChildren()
+        .stream()
+        .map(id -> treeState.getNodes().get(id))
+        .filter(child -> Objects.nonNull(child))
+        .forEach(child -> refreshNodeRecursively(treeState, child));
+  }
+
+
   private void addNodesToState(UiTreeState treeState, List<UiTreeNode> nodes) {
     treeState.getNodes().putAll(nodes.stream()
         .collect(Collectors.toMap(
