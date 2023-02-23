@@ -71,7 +71,7 @@ import org.springframework.context.ApplicationContextAware;
  * generated during the transaction and finalize them at the end of the transaction. If the given
  * application instance misses to finalize then the rest of them is going to detect this situation
  * and finalize them.
- * 
+ *
  * @author Peter Boros
  */
 public class StorageFS extends ObjectStorageImpl implements ApplicationContextAware {
@@ -85,7 +85,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
   /**
    * The file extension (*.extension) of the serialized object files. Important, if multiple file
    * extensions stored in the storage.
-   * 
+   *
    * If set, the loadAll method only look for files with the given extension.
    */
   private static final String SO_FILEEXTENSION = ".o";
@@ -159,7 +159,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
   /**
    * The key function that constructs the {@link File} related to an URI based on the
    * {@link #rootFolder} and the structure of the URI.
-   * 
+   *
    * @param objectUri The object URI
    * @param extension The extension of the file
    * @return The {@link File}.
@@ -171,7 +171,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
 
   /**
    * Constructs the object file for the URI.
-   * 
+   *
    * @param objectUri The object URI.
    * @return We get an object file with extension {@link #SO_FILEEXTENSION}.
    */
@@ -181,7 +181,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
 
   /**
    * Constructs the base path of the version folder.
-   * 
+   *
    * @param objectUri The object uri.
    * @return The folder that is the at the path of the URI. The folder itself is the {@link UUID}
    *         that is the last segment of the path.
@@ -192,7 +192,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
 
   /**
    * The transaction file for the object uri.
-   * 
+   *
    * @param objectUri The object URI.
    * @return The transaction file that is the same like the object file itself but with
    *         {@link #SO_TRANSACTIONFILEEXTENSION}.
@@ -203,7 +203,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
 
   /**
    * The lock file for the object uri.
-   * 
+   *
    * @param objectUri The object URI.
    * @return The lock file that is the same like the object file itself but with
    *         {@link #SO_LOCKFILEEXTENSION}.
@@ -214,7 +214,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
 
   /**
    * Constructs the File of the given object version.
-   * 
+   *
    * @param objectHistoryBasePath
    * @param serialNo
    * @return
@@ -226,7 +226,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
 
   /**
    * Constructs the File of the given object version.
-   * 
+   *
    * @param objectHistoryBasePath
    * @param serialNo
    * @return
@@ -260,7 +260,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
 
   /**
    * Validate a lock based on the lock data.
-   * 
+   *
    * @param l
    * @return true if we have a valid (still running) runtime.
    */
@@ -328,7 +328,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
    * descriptor and the object data separately. This structure is useful for administration data
    * like clustering or invocation registry. The transaction management is the same, we use a temp
    * file as write buffer and do an atomic move at the end of the transaction.
-   * 
+   *
    * @param object The object.
    * @throws IOException If Exception occurred then it will be thrown to be able to manage the
    *         locking in the {@link #save(StorageObject)}.
@@ -342,7 +342,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
 
   /**
    * This save the object to have every modification as version of the object.
-   * 
+   *
    * @param object The object.
    * @return The URI of the saved version.
    * @throws IOException If Exception occurred then it will be thrown to be able to manage the
@@ -472,7 +472,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
   /**
    * Invoke the on succeed functions depending on having a transaction or not. If we have an active
    * transaction then the functions is going to be called at the successful transaction end.
-   * 
+   *
    * @param object
    * @param oldVersion
    * @param oldVersionUri
@@ -747,7 +747,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
   /**
    * TODO Should be async by definition! We need to use an FS storage management api for this
    * purpose.
-   * 
+   *
    * @param emptyDirOrderedList
    */
   private final void cleanupEmptyDirs(List<Path> emptyDirOrderedList) {
@@ -789,6 +789,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
 
   private <T> StorageObject<T> readObjectSingleVersion(Storage storage, URI uri, Class<T> clazz,
       File storageObjectDataFile) {
+    log.debug("Reading single version: " + storageObjectDataFile.getAbsolutePath());
     long waitTime = 10;
     while (true) {
       if (storageObjectDataFile == null || !storageObjectDataFile.exists()
@@ -834,6 +835,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
   }
 
   private final StorageObjectData readObjectData(File objectDataFile) {
+    log.debug("Reading version: " + objectDataFile.getAbsolutePath());
     long waitTime = 10;
     while (true) {
       if (objectDataFile == null || !objectDataFile.exists() || !objectDataFile.isFile()) {
@@ -1061,7 +1063,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
 
   /**
    * The runtime api is an optional Api responsible for registering the actual
-   * 
+   *
    * @return
    */
   ApplicationRuntimeApi runtimeApi() {

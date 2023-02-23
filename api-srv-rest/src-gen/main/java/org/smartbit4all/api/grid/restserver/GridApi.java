@@ -3,7 +3,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-package org.smartbit4all.ui.api.grid.restserver;
+package org.smartbit4all.api.grid.restserver;
 
 import org.smartbit4all.api.grid.bean.GridModel;
 import java.util.UUID;

@@ -1,4 +1,4 @@
-package org.smartbit4all.ui.api.grid.restserver;
+package org.smartbit4all.api.grid.restserver;
 
 import org.springframework.web.context.request.NativeWebRequest;
 

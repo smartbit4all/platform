@@ -1,4 +1,4 @@
-package org.smartbit4all.ui.api.grid.restserver;
+package org.smartbit4all.api.grid.restserver;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -8,7 +8,7 @@ import javax.annotation.Generated;
 
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen")
 @Controller
-@RequestMapping("${openapi.gridUI.base-path:/}")
+@RequestMapping("${openapi.grid.base-path:/}")
 public class GridApiController implements GridApi {
 
     private final GridApiDelegate delegate;

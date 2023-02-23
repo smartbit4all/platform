@@ -1,4 +1,4 @@
-package org.smartbit4all.ui.api.grid.restserver;
+package org.smartbit4all.api.grid.restserver;
 
 import org.smartbit4all.api.grid.bean.GridModel;
 import java.util.UUID;
@@ -34,6 +34,15 @@ public interface GridApiDelegate {
      */
     default ResponseEntity<GridModel> load(UUID uuid,
         String gridIdentifier) throws Exception {
+        getRequest().ifPresent(request -> {
+            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"view\" : { \"orderByList\" : [ \"\", \"\" ], \"descriptor\" : { \"kind\" : \"TABLE\", \"columns\" : [ { \"propertyName\" : \"propertyName\", \"typeClass\" : \"typeClass\", \"label\" : \"label\" }, { \"propertyName\" : \"propertyName\", \"typeClass\" : \"typeClass\", \"label\" : \"label\" } ], \"icon\" : \"icon\", \"label\" : \"label\" }, \"orderedColumnNames\" : [ \"orderedColumnNames\", \"orderedColumnNames\" ] }, \"accessConfig\" : { \"apiClass\" : \"apiClass\", \"kind\" : \"TABLEDATA\", \"dataUri\" : \"https://openapi-generator.tech\", \"propertyPath\" : \"propertyPath\" }, \"pageSize\" : 5, \"availableViews\" : [ { \"orderByList\" : [ \"\", \"\" ], \"descriptor\" : { \"kind\" : \"TABLE\", \"columns\" : [ { \"propertyName\" : \"propertyName\", \"typeClass\" : \"typeClass\", \"label\" : \"label\" }, { \"propertyName\" : \"propertyName\", \"typeClass\" : \"typeClass\", \"label\" : \"label\" } ], \"icon\" : \"icon\", \"label\" : \"label\" }, \"orderedColumnNames\" : [ \"orderedColumnNames\", \"orderedColumnNames\" ] }, { \"orderByList\" : [ \"\", \"\" ], \"descriptor\" : { \"kind\" : \"TABLE\", \"columns\" : [ { \"propertyName\" : \"propertyName\", \"typeClass\" : \"typeClass\", \"label\" : \"label\" }, { \"propertyName\" : \"propertyName\", \"typeClass\" : \"typeClass\", \"label\" : \"label\" } ], \"icon\" : \"icon\", \"label\" : \"label\" }, \"orderedColumnNames\" : [ \"orderedColumnNames\", \"orderedColumnNames\" ] } ], \"page\" : { \"upperBound\" : 6, \"lowerBound\" : 0, \"rows\" : [ { \"data\" : \"{}\", \"id\" : \"id\", \"actions\" : [ \"\", \"\" ] }, { \"data\" : \"{}\", \"id\" : \"id\", \"actions\" : [ \"\", \"\" ] } ] }, \"totalRowCount\" : 1 }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+            }
+        });
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 
     }

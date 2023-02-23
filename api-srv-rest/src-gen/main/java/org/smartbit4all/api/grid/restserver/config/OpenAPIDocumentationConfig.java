@@ -1,4 +1,4 @@
-package org.smartbit4all.ui.api.grid.restserver.config;
+package org.smartbit4all.api.grid.restserver.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -25,8 +25,8 @@ public class OpenAPIDocumentationConfig {
 
     ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-            .title("Grid UI API")
-            .description("Grid UI API")
+            .title("Grid api")
+            .description("The grid api is resposible for the grid components that shows a list of item. ")
             .license("")
             .licenseUrl("http://unlicense.org")
             .termsOfServiceUrl("")
@@ -36,10 +36,10 @@ public class OpenAPIDocumentationConfig {
     }
 
     @Bean
-    public Docket customImplementation(ServletContext servletContext, @Value("${openapi.gridUI.base-path:/}") String basePath) {
+    public Docket customImplementation(ServletContext servletContext, @Value("${openapi.grid.base-path:/}") String basePath) {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
-                    .apis(RequestHandlerSelectors.basePackage("org.smartbit4all.ui.api.grid.restserver"))
+                    .apis(RequestHandlerSelectors.basePackage("org.smartbit4all.api.grid.restserver"))
                     .build()
                 .pathProvider(new BasePathAwareRelativePathProvider(servletContext, basePath))
                 .directModelSubstitute(java.time.LocalDate.class, java.sql.Date.class)

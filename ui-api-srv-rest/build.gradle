@@ -18,9 +18,6 @@ smartbit4all {
         apiDescriptorMapping = [
         	"${rootDir}/ui-api/src/main/resources/descriptors/navigation-api.yaml" : "navigation"
         ]
-        apiDescriptorMapping = [
-        	"${rootDir}/ui-api/src/main/resources/descriptors/grid-ui-api.yaml" : "grid"
-        ]
         apiPackagePrefix = "org.smartbit4all.ui.api"
         apiPackagePostfix = "restserver"
         invokerPackagePrefix = "org.smartbit4all.ui.api"
