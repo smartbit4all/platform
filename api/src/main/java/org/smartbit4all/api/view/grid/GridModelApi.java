@@ -54,6 +54,14 @@ public interface GridModelApi {
    */
   <T> GridModel modelOfObjects(SearchIndex<T> searchIndex, Stream<T> objects);
 
+  /**
+   * Do the paging on the model
+   * 
+   * @param model The model object
+   * @param lowerBound The lower bound that starts from 0 inclusively.
+   * @param upperBound The upper bound that exclusive. 0 - 5 means 5 row from 0 to 4.
+   * @return
+   */
   GridModel loadPage(GridModel model, int lowerBound, int upperBound);
 
   void setColumnOrder(GridModel model, List<String> columns);

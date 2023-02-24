@@ -111,7 +111,7 @@ public class GridModelApiImpl implements GridModelApi {
   @Override
   public GridModel loadPage(GridModel model, int lowerBound, int upperBound) {
     TableData<?> tableData =
-        tableDataApi.readPage(model.getAccessConfig().getDataUri(), lowerBound - 1,
+        tableDataApi.readPage(model.getAccessConfig().getDataUri(), lowerBound,
             upperBound);
     model.page(constructPage(
         tableData, 0, tableData.size())
@@ -121,7 +121,7 @@ public class GridModelApiImpl implements GridModelApi {
 
   private GridPage constructPage(TableData<?> tableData, int beginIndex, int endIndex) {
     GridPage page = new GridPage();
-    for (int i = beginIndex; i < tableData.rows().size(); i++) {
+    for (int i = beginIndex; i < endIndex; i++) {
       DataRow row = tableData.rows().get(i);
       page.addRowsItem(new GridRow().id(Integer.toString(i)).data(tableData.columns().stream()
           .filter(c -> tableData.get(c, row) != null)
