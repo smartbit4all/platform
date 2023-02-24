@@ -147,7 +147,7 @@ public class JwtSessionRequestFilter extends OncePerRequestFilter implements Ini
       HttpServletResponse response) throws ServletException, IOException {
     if (viewContextService != null) {
       final String uuid = request.getHeader("viewContextUuid");
-      if (uuid != null) {
+      if (!ObjectUtils.isEmpty(uuid)) {
         try {
           viewContextService.execute(
               UUID.fromString(uuid),
