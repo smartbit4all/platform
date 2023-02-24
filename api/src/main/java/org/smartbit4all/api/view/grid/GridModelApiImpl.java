@@ -98,7 +98,7 @@ public class GridModelApiImpl implements GridModelApi {
     result.totalRowCount(tableData.size());
 
     result.page(
-        constructPage(tableData, 0, tableData.size()).lowerBound(lowerBound)
+        constructPage(tableData, lowerBound, upperBound).lowerBound(lowerBound)
             .upperBound(upperBound));
 
     return result;
