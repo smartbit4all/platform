@@ -327,22 +327,6 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
     return indexedObjectDefinition;
   }
 
-  @SuppressWarnings("unchecked")
-  protected Expression createDynamicExpression(Class<?> propertyType, Property<?> property,
-      Object value) {
-    if (propertyType.equals(String.class)) {
-      return ((Property<String>) property).eq((String) value);
-    } else if (propertyType.equals(Boolean.class)) {
-      return ((Property<Boolean>) property).eq((Boolean) value);
-    } else if (propertyType.equals(URI.class)) {
-      return ((Property<URI>) property).eq((URI) value);
-    } else if (propertyType.isEnum()) {
-      return ((Property<Enum<?>>) property).eq((Enum<?>) value);
-    } else {
-      return null;
-    }
-  }
-
   @Override
   public FilterExpressionFieldList allFilterFields() {
     return objectMapping.allFilterFields(localeSettingApi);
