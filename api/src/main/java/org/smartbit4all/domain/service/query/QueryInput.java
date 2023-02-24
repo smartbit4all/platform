@@ -233,7 +233,7 @@ public class QueryInput {
     }
     if (path == null || path.length == 0) {
       this.tableDataUri = tableDataUri;
-    } else {
+    } else if (where != null) {
       ExpressionExists exists = findExist(where, path);
       if (exists != null) {
         exists.storedTableDataUri(tableDataUri);
