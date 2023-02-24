@@ -34,6 +34,17 @@ public interface GridModelApi {
   GridModel modelOf(TableData<?> tableData);
 
   /**
+   * If we already have a table data as the result of a query and we would like to save it as
+   * content of a grid.
+   *
+   * @param tableData The table data.
+   * @param lowerBound lower bound of the initial page begin with 0 inclusively.
+   * @param upperBound upper bound of the initial page exclusively.
+   * @return
+   */
+  GridModel modelOf(TableData<?> tableData, int lowerBound, int upperBound);
+
+  /**
    * If we have a well defined list bean and we would like to save it's grid model by the definition
    * of a {@link SearchIndex}.
    *

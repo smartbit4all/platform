@@ -75,10 +75,15 @@ public class GridModelApiImpl implements GridModelApi {
 
   @Override
   public GridModel modelOf(TableData<?> tableData) {
-    return constructModel(tableData);
+    return constructModel(tableData, 0, tableData.size());
   }
 
-  private GridModel constructModel(TableData<?> tableData) {
+  @Override
+  public GridModel modelOf(TableData<?> tableData, int lowerBound, int upperBound) {
+    return constructModel(tableData, lowerBound, upperBound);
+  }
+
+  private GridModel constructModel(TableData<?> tableData, int lowerBound, int upperBound) {
     GridModel result = new GridModel();
     GridViewDescriptor tableHeader = new GridViewDescriptor().kind(KindEnum.TABLE);
     GridView tableView = new GridView().descriptor(tableHeader);
@@ -93,19 +98,22 @@ public class GridModelApiImpl implements GridModelApi {
     result.totalRowCount(tableData.size());
 
     result.page(
-        constructPage(tableData, 0, tableData.size()).lowerBound(1).upperBound(tableData.size()));
+        constructPage(tableData, 0, tableData.size()).lowerBound(lowerBound)
+            .upperBound(upperBound));
 
     return result;
   }
 
   @Override
   public GridModel modelOfUris(SearchIndex<?> searchIndex, Stream<URI> uris) {
-    return constructModel(searchIndex.tableDataOfUris(uris));
+    TableData<?> tableData = searchIndex.tableDataOfUris(uris);
+    return constructModel(tableData, 0, tableData.size());
   }
 
   @Override
   public <T> GridModel modelOfObjects(SearchIndex<T> searchIndex, Stream<T> objects) {
-    return constructModel(searchIndex.tableDataOfObjects(objects));
+    TableData<?> tableData = searchIndex.tableDataOfObjects(objects);
+    return constructModel(tableData, 0, tableData.size());
   }
 
   @Override
