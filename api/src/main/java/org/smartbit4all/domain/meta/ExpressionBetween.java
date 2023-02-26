@@ -72,7 +72,7 @@ public final class ExpressionBetween<T> extends Expression {
 
   @Override
   public Expression copy() {
-    return new ExpressionBetween<T>(this);
+    return new ExpressionBetween<>(this);
   }
 
   /**
@@ -149,7 +149,7 @@ public final class ExpressionBetween<T> extends Expression {
   private boolean myBetween(Operand<T> myOp1, Operand<T> myOp2) {
     int withLower = Objects.compare(myOp1.value(), operand.value(), getComparator());
     int withUpper = Objects.compare(operand.value(), myOp2.value(), getComparator());
-    return withLower >= 0 && withUpper >= 0;
+    return withLower <= 0 && withUpper <= 0;
   }
 
   @Override
