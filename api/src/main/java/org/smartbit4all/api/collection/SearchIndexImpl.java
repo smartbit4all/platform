@@ -78,6 +78,8 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
 
   protected ObjectDefinition<O> indexedObjectDefinition;
 
+  protected SearchIndexMappingExtensionStrategy extensionStrategy;
+
   @Autowired
   protected ObjectApi objectApi;
 
@@ -198,6 +200,7 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
     objectMapping.setCtx(ctx);
     objectMapping.setEntityManager(entityManager);
     objectMapping.setObjectApi(objectApi);
+    objectMapping.extensionStrategy = extensionStrategy;
     return objectMapping.getDefinition();
   }
 
@@ -280,6 +283,11 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
   public SearchIndexImpl<O> mapComplex(String propertyName, Class<?> dataType, int length,
       Function<ObjectNode, Object> complexProcessor) {
     objectMapping.mapComplex(propertyName, dataType, length, complexProcessor);
+    return this;
+  }
+
+  public SearchIndexImpl<O> extendMapping(SearchIndexMappingExtensionStrategy extensionStrategy) {
+    this.extensionStrategy = extensionStrategy;
     return this;
   }
 
