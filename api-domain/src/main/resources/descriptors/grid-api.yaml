@@ -147,6 +147,11 @@ components:
         pageSize:
           type: integer
           format: int32
+        pageSizeOptions:
+          type: array
+          items:
+            type: integer
+            format: int32
     GridPage:
       type: object
       description: |

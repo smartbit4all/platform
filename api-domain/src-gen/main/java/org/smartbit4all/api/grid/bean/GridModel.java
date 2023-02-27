@@ -44,7 +44,8 @@ import javax.validation.Valid;
   GridModel.ACCESS_CONFIG,
   GridModel.PAGE,
   GridModel.TOTAL_ROW_COUNT,
-  GridModel.PAGE_SIZE
+  GridModel.PAGE_SIZE,
+  GridModel.PAGE_SIZE_OPTIONS
 })
 @JsonTypeName("GridModel")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -69,6 +70,9 @@ public class GridModel {
 
   public static final String PAGE_SIZE = "pageSize";
   private Integer pageSize;
+
+  public static final String PAGE_SIZE_OPTIONS = "pageSizeOptions";
+  private List<Integer> pageSizeOptions = null;
 
   public GridModel() { 
   }
@@ -276,6 +280,41 @@ public class GridModel {
   }
 
 
+  public GridModel pageSizeOptions(List<Integer> pageSizeOptions) {
+    
+    this.pageSizeOptions = pageSizeOptions;
+    return this;
+  }
+
+  public GridModel addPageSizeOptionsItem(Integer pageSizeOptionsItem) {
+    if (this.pageSizeOptions == null) {
+      this.pageSizeOptions = new ArrayList<>();
+    }
+    this.pageSizeOptions.add(pageSizeOptionsItem);
+    return this;
+  }
+
+   /**
+   * Get pageSizeOptions
+   * @return pageSizeOptions
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(PAGE_SIZE_OPTIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<Integer> getPageSizeOptions() {
+    return pageSizeOptions;
+  }
+
+
+  @JsonProperty(PAGE_SIZE_OPTIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setPageSizeOptions(List<Integer> pageSizeOptions) {
+    this.pageSizeOptions = pageSizeOptions;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -291,12 +330,13 @@ public class GridModel {
         Objects.equals(this.accessConfig, gridModel.accessConfig) &&
         Objects.equals(this.page, gridModel.page) &&
         Objects.equals(this.totalRowCount, gridModel.totalRowCount) &&
-        Objects.equals(this.pageSize, gridModel.pageSize);
+        Objects.equals(this.pageSize, gridModel.pageSize) &&
+        Objects.equals(this.pageSizeOptions, gridModel.pageSizeOptions);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(viewUuid, availableViews, view, accessConfig, page, totalRowCount, pageSize);
+    return Objects.hash(viewUuid, availableViews, view, accessConfig, page, totalRowCount, pageSize, pageSizeOptions);
   }
 
   @Override
@@ -310,6 +350,7 @@ public class GridModel {
     sb.append("    page: ").append(toIndentedString(page)).append("\n");
     sb.append("    totalRowCount: ").append(toIndentedString(totalRowCount)).append("\n");
     sb.append("    pageSize: ").append(toIndentedString(pageSize)).append("\n");
+    sb.append("    pageSizeOptions: ").append(toIndentedString(pageSizeOptions)).append("\n");
     sb.append("}");
     return sb.toString();
   }
