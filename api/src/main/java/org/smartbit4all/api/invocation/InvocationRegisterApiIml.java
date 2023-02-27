@@ -53,7 +53,6 @@ import org.smartbit4all.storage.fs.StorageTransactionManagerFS;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.EventListener;
@@ -149,7 +148,7 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
   private List<ProviderApiInvocationHandler<?>> providedApis;
 
   /**
-   * 
+   *
    */
   private boolean initialized = false;
 
@@ -249,9 +248,10 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
 
     // refresh primary api map
     fillPrimaryApiMap();
+
+    initRuntimeChannels();
   }
 
-  @EventListener(ApplicationReadyEvent.class)
   private void initRuntimeChannels() {
     // Manage the asynchronous invocation channels.
     InvocationApi invocationApi = applicationContext.getBean(InvocationApi.class);
@@ -374,7 +374,7 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
    * Manage the central registry of the {@link RuntimeAsyncChannelRegistry} that contains the async
    * channels managed by the runtimes. The current implementation detects the inactive runtimes and
    * pick up their lost invocations.
-   * 
+   *
    * @param activeRuntimes
    */
   private void manageAsyncChannels(List<ApplicationRuntime> activeRuntimes) {
@@ -525,7 +525,7 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
    * Enqueue the given entry even if we have active {@link #transactionManager} or not. If we are in
    * an active transaction then the execution starts at the successful finish of the transaction
    * (onCommit). Else the execution starts right now.
-   * 
+   *
    * @param asyncInvocationRequestEntry
    */
   private final void enqueueAsyncRequest(AsyncInvocationRequestEntry asyncInvocationRequestEntry) {
@@ -589,7 +589,7 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
 
   /**
    * If the api is a {@link ContributionApi}, then register to his {@link PrimaryApi}
-   * 
+   *
    * @param apiData
    */
   private void registerToPrimaryApi(ApiData apiData) {
