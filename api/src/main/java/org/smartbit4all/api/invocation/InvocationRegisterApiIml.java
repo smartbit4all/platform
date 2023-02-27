@@ -161,7 +161,7 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
   /**
    * The channels by name that is the processed map of the {@link #channels} autowired list.
    */
-  private Map<String, AsyncInvocationChannel> channelsByName;
+  private Map<String, AsyncInvocationChannel> channelsByName = new HashMap<>();
 
   /**
    * This executor is responsible for reading and enqueue of the scheduled requests. We need
@@ -255,7 +255,6 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
   private void initRuntimeChannels() {
     // Manage the asynchronous invocation channels.
     InvocationApi invocationApi = applicationContext.getBean(InvocationApi.class);
-    channelsByName = new HashMap<>();
     if (channels != null) {
       for (AsyncInvocationChannel channel : channels) {
         AsyncInvocationChannelSetup channelSetup = (AsyncInvocationChannelSetup) channel;
