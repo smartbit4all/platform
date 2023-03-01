@@ -9,4 +9,6 @@ public interface SessionManagementSubsciberApi {
 
   void sessionModified(Session prevSession, Session nextSession);
 
+  void sessionExpired(Session expiredSession);
+
 }

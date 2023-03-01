@@ -16,6 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldList;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy.OrderEnum;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
@@ -32,6 +34,7 @@ import org.smartbit4all.domain.service.dataset.TableDataApi;
 import org.smartbit4all.domain.service.entity.EntityManager;
 import org.smartbit4all.domain.service.query.QueryInput;
 import org.smartbit4all.domain.utility.crud.Crud;
+import org.smartbit4all.domain.utility.crud.CrudRead;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
@@ -304,12 +307,21 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
   }
 
   @Override
-  public TableData<?> executeSearch(FilterExpressionList filterExpressions) {
+  public TableData<?> executeSearch(FilterExpressionList filterExpressions,
+      List<FilterExpressionOrderBy> orderByList) {
     if (filterExpressions == null) {
       return getAll();
     }
-    return executeSearch(Crud.read(getDefinition().definition).selectAllProperties()
-        .where(objectMapping.constructExpression(filterExpressions)).getQuery());
+    CrudRead<EntityDefinition> read = Crud.read(getDefinition().definition).selectAllProperties()
+        .where(objectMapping.constructExpression(filterExpressions));
+    if (orderByList != null) {
+      orderByList.stream()
+          .map(orderBy -> orderBy.getOrder() == OrderEnum.DESC
+              ? objectMapping.propertyOf(orderBy).desc()
+              : objectMapping.propertyOf(orderBy).asc())
+          .forEach(read::order);
+    }
+    return executeSearch(read.getQuery());
   }
 
   public SearchIndexImpl<O> expressionComplex(String propertyName,

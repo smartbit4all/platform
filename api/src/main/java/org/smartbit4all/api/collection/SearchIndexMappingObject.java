@@ -1,5 +1,7 @@
 package org.smartbit4all.api.collection;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -23,6 +25,7 @@ import org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldWidgetTyp
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOperandData;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOperation;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.core.object.BeanMeta;
 import org.smartbit4all.core.object.BeanMetaUtil;
@@ -43,8 +46,6 @@ import org.smartbit4all.domain.meta.PropertyObject;
 import org.smartbit4all.domain.service.entity.EntityManager;
 import org.smartbit4all.domain.utility.crud.Crud;
 import org.springframework.context.ApplicationContext;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 public class SearchIndexMappingObject extends SearchIndexMapping {
 
@@ -105,7 +106,7 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
 
   /**
    * The strategy to dynamically extend this instance.
-   * 
+   *
    * <p>
    * By default, the strategy is to not extend in any way, and return with false to avoid reloading
    * the definition.
@@ -613,4 +614,11 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
         .name(fieldName);
 
   }
+
+
+
+  public final PropertyObject propertyOf(FilterExpressionOrderBy orderBy) {
+    return entityDefinition.definition.getPropertyObject(orderBy.getPropertyName());
+  }
+
 }

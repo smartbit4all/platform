@@ -460,17 +460,22 @@ public class SessionManagementApiImpl implements SessionManagementApi {
 
     List<Session> result = Collections.synchronizedList(new ArrayList<>());
     OffsetDateTime now = OffsetDateTime.now();
+    List<URI> sessionsToBeRemoved = new ArrayList<>();
     activeSessions.update(uriList -> {
       List<URI> activeUriList = Collections.synchronizedList(new ArrayList<>());
       uriList.parallelStream().map(u -> stg.read(u, Session.class))
-          .filter(
-              sid -> sid.getRefreshExpiration() != null && sid.getRefreshExpiration().isBefore(now))
-          .forEach(s -> {
-            result.add(s);
-            activeUriList.add(s.getUri());
+          .forEach(sid -> {
+            if (sid.getRefreshExpiration() != null && sid.getRefreshExpiration().isAfter(now)) {
+              result.add(sid);
+              activeUriList.add(sid.getUri());
+            } else {
+              this.fireSessionExpired(sid);
+              sessionsToBeRemoved.add(sid.getUri());
+            }
           });
       return uriList;
     });
+    activeSessions.removeAll(sessionsToBeRemoved);
     return result;
   }
 
@@ -509,6 +514,15 @@ public class SessionManagementApiImpl implements SessionManagementApi {
           .publisher(SessionManagementPublisherApi.class, SessionManagementSubsciberApi.class,
               SessionManagementPublisherApi.MODIFIED)
           .publish(api -> api.sessionModified(prevSession, nextSession));
+    }
+  }
+
+  private void fireSessionExpired(Session expiredSession) {
+    if (eventPublisherProvided()) {
+      invocationApi
+          .publisher(SessionManagementPublisherApi.class, SessionManagementSubsciberApi.class,
+              SessionManagementPublisherApi.EXPIRED)
+          .publish(api -> api.sessionExpired(expiredSession));
     }
   }
 

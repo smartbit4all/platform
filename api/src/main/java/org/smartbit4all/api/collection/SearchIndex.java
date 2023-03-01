@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Stream;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldList;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.service.query.QueryInput;
@@ -14,7 +15,7 @@ import org.smartbit4all.domain.service.query.QueryInput;
  * {@link EntityDefinition}. We always have an available search definition and we can run
  * {@link QueryInput} against the index. The result is a {@link TableData} that contains the
  * required values.
- * 
+ *
  * @author Peter Boros
  */
 public interface SearchIndex<O> {
@@ -31,14 +32,14 @@ public interface SearchIndex<O> {
 
   /**
    * The definition of the search index.
-   * 
+   *
    * @return
    */
   SearchEntityDefinition getDefinition();
 
   /**
    * We can execute the search synchronously and we get back the result {@link TableData} in memory.
-   * 
+   *
    * @param queryInput The query input that defines the logical filter conditions.
    * @return The table data in memory.
    */
@@ -46,15 +47,21 @@ public interface SearchIndex<O> {
 
   /**
    * We can execute the search synchronously and we get back the result {@link TableData} in memory.
-   * 
+   *
    * @param filterExpressions The expression list for the query.
+   * @param orderByList desired order of result
    * @return The result table data of the search.
    */
-  TableData<?> executeSearch(FilterExpressionList filterExpressions);
+  TableData<?> executeSearch(FilterExpressionList filterExpressions,
+      List<FilterExpressionOrderBy> orderByList);
+
+  default TableData<?> executeSearch(FilterExpressionList filterExpressions) {
+    return executeSearch(filterExpressions, null);
+  }
 
   /**
    * We can execute the search synchronously and we get back the result {@link TableData} in memory.
-   * 
+   *
    * @param queryInput The query input that defines the logical filter conditions.
    * @return The table data in memory.
    */
@@ -62,7 +69,7 @@ public interface SearchIndex<O> {
 
   /**
    * Read all the objects specified by the uri stream and load the table data with the values.
-   * 
+   *
    * @param uris The uri stream to load.
    * @return The result table data.
    */
@@ -70,7 +77,7 @@ public interface SearchIndex<O> {
 
   /**
    * Read all the objects specified by the object stream and load the table data with the values.
-   * 
+   *
    * @param objects The object stream to start with.
    * @return The result table data.
    */
@@ -78,7 +85,7 @@ public interface SearchIndex<O> {
 
   /**
    * Returns all the available filter fields for the given search index.
-   * 
+   *
    * @return
    */
   FilterExpressionFieldList allFilterFields();
