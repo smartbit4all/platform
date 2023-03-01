@@ -8,4 +8,6 @@ public interface SessionManagementPublisherApi {
 
   static final String MODIFIED = "session_modified";
 
+  static final String EXPIRED = "session_expired";
+
 }
