@@ -25,6 +25,7 @@ import org.smartbit4all.api.filter.bean.FilterField;
 import org.smartbit4all.api.filter.bean.FilterGroup;
 import org.smartbit4all.api.filter.bean.FilterGroupType;
 import org.smartbit4all.api.filter.bean.FilterOperandValue;
+import org.smartbit4all.api.filter.util.Filters.FilterExpressionHandler;
 import org.smartbit4all.api.value.ValueUris;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Expression;
@@ -175,11 +176,15 @@ public class FilterService {
       Collection<? extends Filters.FilterExpressionHandler> filterExceptionChangeHandlers) {
 
     if (filterExceptionChangeHandlers != null && !filterExceptionChangeHandlers.isEmpty()) {
-      Filters.FilterExpressionHandler changeHandler = filterExceptionChangeHandlers.stream()
-          .filter(h -> h.supports(filterField))
-          .findFirst().orElse(null);
-      if (changeHandler != null) {
-        return changeHandler.createExpression(filterField);
+      List<? extends FilterExpressionHandler> changeHandlers =
+          filterExceptionChangeHandlers.stream()
+              .filter(h -> h.supports(filterField))
+              .collect(Collectors.toList());
+      if (!changeHandlers.isEmpty()) {
+        ExpressionClause exp = Expression.createAndClause();
+        changeHandlers
+            .forEach(changeHandler -> exp.add(changeHandler.createExpression(filterField)));
+        return exp;
       }
     }
 
