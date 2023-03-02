@@ -4,6 +4,8 @@ import static java.time.temporal.ChronoField.DAY_OF_MONTH;
 import static java.time.temporal.ChronoField.DAY_OF_YEAR;
 import static java.time.temporal.ChronoUnit.MONTHS;
 import static java.time.temporal.ChronoUnit.WEEKS;
+import static java.time.temporal.TemporalAdjusters.firstDayOfYear;
+import static java.time.temporal.TemporalAdjusters.lastDayOfYear;
 import java.net.URI;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -34,7 +36,8 @@ import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.domain.meta.PropertyRef;
 import org.smartbit4all.domain.service.entity.EntityManager;
 import org.smartbit4all.domain.service.transfer.TransferService;
-import org.smartbit4all.domain.service.transfer.convert.Converter;
+import org.smartbit4all.domain.service.transfer.convert.Converter;;
+
 
 /**
  * This service is responsible for compile the filter api objects to Expression.
@@ -45,7 +48,7 @@ public class FilterService {
   private static final Logger log = LoggerFactory.getLogger(FilterService.TimeFilterOptions.class);
 
   static enum TimeFilterOptions {
-    LAST_WEEK, THIS_MONTH, LAST_MONTH, YESTERDAY, TODAY, THIS_YEAR, OTHER, LAST_FIVE_YEARS
+    LAST_WEEK, THIS_MONTH, LAST_MONTH, YESTERDAY, TODAY, THIS_YEAR, LAST_YEAR, OTHER, LAST_FIVE_YEARS
   }
 
   private Map<String, Function<FilterField, Expression>> expressionFactoryByOperatationCodes;
@@ -448,6 +451,10 @@ public class FilterService {
         startDate = today.minusYears(5);
         endDate = today;
         endTime = now;
+        break;
+      case LAST_YEAR:
+        startDate = today.minusYears(1).with(firstDayOfYear());
+        endDate = today.minusYears(1).with(lastDayOfYear());
         break;
       case OTHER:
       default:

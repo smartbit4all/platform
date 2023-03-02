@@ -23,6 +23,7 @@ public enum TimeFilterOption {
   YESTERDAY("filter.time.yesterday"),
   TODAY("filter.time.today"),
   THIS_YEAR("filter.time.this_year"),
+  LAST_YEAR("filter.time.last_year"),
   LAST_FIVE_YEARS("filter.time.lastfiveyears"),
   OTHER("filter.time.other");
   // @formatter:on

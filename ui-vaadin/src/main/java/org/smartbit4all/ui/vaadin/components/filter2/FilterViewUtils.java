@@ -4,6 +4,8 @@ import static java.time.temporal.ChronoField.DAY_OF_MONTH;
 import static java.time.temporal.ChronoField.DAY_OF_YEAR;
 import static java.time.temporal.ChronoUnit.MONTHS;
 import static java.time.temporal.ChronoUnit.WEEKS;
+import static java.time.temporal.TemporalAdjusters.firstDayOfYear;
+import static java.time.temporal.TemporalAdjusters.lastDayOfYear;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -162,6 +164,10 @@ public class FilterViewUtils {
           startDate = today.minusYears(5);
           endDate = today;
           endTime = now;
+          break;
+        case LAST_YEAR:
+          startDate = today.minusYears(1).with(firstDayOfYear());
+          endDate = today.minusYears(1).with(lastDayOfYear());
           break;
         case OTHER:
         default:
