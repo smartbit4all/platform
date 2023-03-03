@@ -15,7 +15,6 @@ import org.smartbit4all.core.io.TestFSConfig;
 import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.data.TableDatas;
-import org.smartbit4all.domain.data.TableDatas.SortProperty;
 import org.smartbit4all.domain.security.SecurityEntityConfiguration;
 import org.smartbit4all.domain.security.UserAccountDef;
 import org.smartbit4all.domain.service.entity.EntityManager;
@@ -144,7 +143,7 @@ public class TableDataSerializerTest {
         TableDataPager.create(UserAccountDef.class, tempFile, entityManager);
 
     List<Integer> sortedIndexes = SerializedTableDataSorter.getSortedIndexes(pager,
-        Collections.singletonList(SortProperty.ascending(userAccountDef.id())));
+        Collections.singletonList(userAccountDef.id().asc()));
 
     List<Integer> expectedIndexes = new ArrayList<>(testRowCount);
     for (int i = 1; i <= testRowCount; i++) {
@@ -154,8 +153,8 @@ public class TableDataSerializerTest {
     assertEquals(expectedIndexes, sortedIndexes);
 
     List<Integer> sortedIndexes2 = SerializedTableDataSorter.getSortedIndexes(pager,
-        Arrays.asList(SortProperty.descending(userAccountDef.lastname()),
-            SortProperty.ascending(userAccountDef.firstname())));
+        Arrays.asList(userAccountDef.lastname().desc(),
+            userAccountDef.firstname().asc()));
 
     System.out.println(sortedIndexes2);
   }

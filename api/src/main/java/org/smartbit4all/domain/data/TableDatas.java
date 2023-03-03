@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
@@ -38,6 +38,7 @@ import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.domain.meta.PropertySet;
+import org.smartbit4all.domain.meta.SortOrderProperty;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -58,7 +59,7 @@ public final class TableDatas {
   /**
    * Appends the otherTableDatas to the baseTableData. When a column is missing from the base, it
    * will be added.
-   * 
+   *
    * @param baseTableData the target table data which will be extended
    * @param otherTableDatas the TableDatas which will be added to the base
    * @return The newly created rows of the baseTableData.
@@ -225,25 +226,25 @@ public final class TableDatas {
   }
 
   /**
-   * Sorts the rows of the given {@link TableData} by the given {@link SortProperty}-ies.</br>
-   * 
+   * Sorts the rows of the given {@link TableData} by the given {@link SortOrderProperty}-ies.</br>
+   *
    * @param <E> The {@link EntityDefinition} of the {@link TableData}
    * @param tableData The source {@link TableData}
    * @param sortProperties The properties describing the sort orders
    */
   public static <E extends EntityDefinition> void sort(TableData<E> tableData,
-      List<SortProperty> sortProperties) {
+      List<SortOrderProperty> sortProperties) {
     Objects.requireNonNull(tableData, "tableData can not be null!");
     if (ObjectUtils.isEmpty(sortProperties)) {
       throw new IllegalArgumentException("sortProperties can not be null nor empty!");
     }
 
     // check the sortProperties
-    for (SortProperty sortProp : sortProperties) {
-      if (tableData.getColumn(sortProp.getProperty()) == null) {
+    for (SortOrderProperty sortProp : sortProperties) {
+      if (tableData.getColumn(sortProp.property) == null) {
         throw new IllegalArgumentException(
-            "The given TableData has no property with the descibed SortProperty: ["
-                + sortProp.getProperty().getUri() + "]!");
+            "The given TableData has no property with the descibed SortOrderProperty: ["
+                + sortProp.property.getUri() + "]!");
       }
     }
 
@@ -251,28 +252,28 @@ public final class TableDatas {
   }
 
   /**
-   * Creates a new {@link TableData} that is sorted by the given {@link SortProperty}-ies.</br>
+   * Creates a new {@link TableData} that is sorted by the given {@link SortOrderProperty}-ies.</br>
    * The source and the result TableData both will exist in the memory, so be aware of the double
    * memory consumption.
-   * 
+   *
    * @param <E> The {@link EntityDefinition} of the {@link TableData}
    * @param tableData The source {@link TableData}
    * @param sortProperties The properties describing the sort orders
    * @return The new sorted {@link TableData}
    */
   public static <E extends EntityDefinition> TableData<E> sortToNew(TableData<E> tableData,
-      List<SortProperty> sortProperties) {
+      List<SortOrderProperty> sortProperties) {
     Objects.requireNonNull(tableData, "tableData can not be null!");
     if (ObjectUtils.isEmpty(sortProperties)) {
       throw new IllegalArgumentException("sortProperties can not be null nor empty!");
     }
 
     // check the sortProperties
-    for (SortProperty sortProp : sortProperties) {
-      if (tableData.getColumn(sortProp.getProperty()) == null) {
+    for (SortOrderProperty sortProp : sortProperties) {
+      if (tableData.getColumn(sortProp.property) == null) {
         throw new IllegalArgumentException(
             "The given TableData has no property with the descibed SortProperty: ["
-                + sortProp.getProperty().getUri() + "]!");
+                + sortProp.property.getUri() + "]!");
       }
     }
 
@@ -282,21 +283,29 @@ public final class TableDatas {
     return result;
   }
 
-  private static void sortRows(List<DataRow> rows, List<SortProperty> sortProperties) {
+  private static void sortRows(List<DataRow> rows, List<SortOrderProperty> sortProperties) {
     Collections.sort(rows, getDataRowComparator(sortProperties));
   }
 
-  public static Comparator<DataRow> getDataRowComparator(List<SortProperty> sortProperties) {
+  public static Comparator<DataRow> getDataRowComparator(List<SortOrderProperty> sortProperties) {
     return (row1, row2) -> {
-      for (SortProperty sortProp : sortProperties) {
-        Property<?> prop = sortProp.getProperty();
+      for (SortOrderProperty sortProp : sortProperties) {
+        Property<?> prop = sortProp.property;
         Comparator<Object> comparator = (Comparator<Object>) prop.getComparator();
         if (comparator == null) {
           return 0;
         }
-        int res = comparator.compare(row1.get(prop), row2.get(prop));
+        Object o1 = row1.get(prop);
+        Object o2 = row2.get(prop);
+        int res = comparator.compare(o1, o2);
         if (res != 0) {
-          return sortProp.isAscending() ? res : res * -1;
+          if (o1 == null) {
+            return sortProp.nullsFirst ? -1 : 1;
+          } else if (o2 == null) {
+            return sortProp.nullsFirst ? 1 : -1;
+          }
+          // invert only when neither o1 nor o2 is null, nullsFirst is stronger than asc (??)
+          return sortProp.asc ? res : res * -1;
         }
       }
 
@@ -320,7 +329,7 @@ public final class TableDatas {
 
   /**
    * Returns a new copy instance of the given {@link TableData} with the given rows.
-   * 
+   *
    * @param rows The rows to copy.
    */
   public static <E extends EntityDefinition> TableData<E> copyRows(TableData<E> sourceTableData,
@@ -335,7 +344,7 @@ public final class TableDatas {
 
   /**
    * Returns a new copy instance of the given {@link TableData} with the given rows.
-   * 
+   *
    * @param sourceTableData The source table data to copy range from.
    * @param lowerBound The first index of the range to copy.
    * @param upperBound The last index of the range to copy.
@@ -359,7 +368,7 @@ public final class TableDatas {
 
   /**
    * Copy the properties from one row to another.
-   * 
+   *
    * @param properties The list of properties to copy.
    * @param from The row to copy the values from.
    * @param to The row to copy the values to.
@@ -373,7 +382,7 @@ public final class TableDatas {
 
   /**
    * Returns a new copy instance of the given {@link TableData} with the given rows.
-   * 
+   *
    * @param rows The rows to copy.
    */
   public static <E extends EntityDefinition> TableData<E> copyRows(TableData<E> sourceTableData,
@@ -390,7 +399,7 @@ public final class TableDatas {
 
   /**
    * Creates a new instance of {@link TableData} with the given {@link EntityDefinition}.
-   * 
+   *
    * @return A new instance of {@link TableData}
    */
   public static final <T extends EntityDefinition> TableData<T> of(T entityDef) {
@@ -400,7 +409,7 @@ public final class TableDatas {
   /**
    * Creates a new instance of {@link TableData} with the properties of the given
    * {@link PropertySet}.
-   * 
+   *
    * @param <T> The subtype (subinterface) of {@link EntityDefinition} that is used by the table
    *        data.
    * @param entityDef The object of the entity definition that is used by the table data.
@@ -415,7 +424,7 @@ public final class TableDatas {
   /**
    * Creates a new instance of {@link TableData} with the properties of the given
    * {@link PropertySet}.
-   * 
+   *
    * @param <T> The subtype (subinterface) of {@link EntityDefinition} that is used by the table
    *        data.
    * @param entityDef The object of the entity definition that is used by the table data.
@@ -430,7 +439,7 @@ public final class TableDatas {
   /**
    * Creates a new instance of {@link TableData} with the properties of the given
    * {@link PropertySet}.
-   * 
+   *
    * @param <T> The subtype (subinterface) of {@link EntityDefinition} that is used by the table
    *        data.
    * @param entityDef The object of the entity definition that is used by the table data.
@@ -448,7 +457,7 @@ public final class TableDatas {
    * <p>
    * The built {@link TableData} will contain the properties given in the parameters as columns.
    * This set of properties can not be extended with the building methods!
-   * 
+   *
    * @param <T> The subtype (subinterface) of {@link EntityDefinition} that is used by the table
    *        data.
    * @param entityDef The object of the entity definition that is used by the table data.
@@ -466,7 +475,7 @@ public final class TableDatas {
    * <p>
    * The built {@link TableData} will contain the properties given in the parameters as columns.
    * This set of properties can not be extended with the building methods!
-   * 
+   *
    * @param <T> The subtype (subinterface) of {@link EntityDefinition} that is used by the table
    *        data.
    * @param entityDef The object of the entity definition that is used by the table data.
@@ -484,7 +493,7 @@ public final class TableDatas {
    * <p>
    * The built {@link TableData} will contain the properties given in the parameters as columns.
    * This set of properties can not be extended with the building methods!
-   * 
+   *
    * @param <T> The subtype (subinterface) of {@link EntityDefinition} that is used by the table
    *        data.
    * @param entityDef The object of the entity definition that is used by the table data.
@@ -502,7 +511,7 @@ public final class TableDatas {
    * <p>
    * The set of columns of the built {@link TableData} will be implicitly extended as the values are
    * set to the new rows.
-   * 
+   *
    * @param <T> The subtype (subinterface) of {@link EntityDefinition} that is used by the table
    *        data.
    * @param entityDef The object of the entity definition that is used by the table data.
@@ -522,7 +531,7 @@ public final class TableDatas {
    * <b><i>Important!</i></b> To use the {@link BuilderWithOrderedProperties#setValues(Object...)
    * setValues()} method, the parameter properties must be an ordered implementation of
    * {@link Collection}, like {@link ArrayList} or {@link LinkedHashSet}!
-   * 
+   *
    * @param <T> The subtype (subinterface) of {@link EntityDefinition} that is used by the table
    *        data.
    * @param entityDef The object of the entity definition that is used by the table data.
@@ -552,7 +561,7 @@ public final class TableDatas {
 
     /**
      * Builds a new instance of {@link TableData} with the given options of the builder.
-     * 
+     *
      * @return new instance of {@link TableData}
      */
     public TableData<E> build() {
@@ -571,7 +580,7 @@ public final class TableDatas {
 
     /**
      * The number of rows in the builder.
-     * 
+     *
      * @return
      */
     public int rowSize() {
@@ -580,7 +589,7 @@ public final class TableDatas {
 
     /**
      * Returns true if there is no row in the builder.
-     * 
+     *
      * @return
      */
     public boolean isEmpty() {
@@ -603,11 +612,11 @@ public final class TableDatas {
      * </br>
      * {@link IllegalArgumentException} is thrown if the builder holds a predefined property set and
      * it does not contain the currently set property.
-     * 
+     *
      * @param property The property of the current row that will be set
      * @param value The value to set
      * @param <P> the exact type that the property handles
-     * 
+     *
      * @throws IllegalStateException If there is no previously added row on the builder
      * @throws IllegalArgumentException If the builder holds a predefined property set and it does
      *         not contain the currently set property
@@ -619,13 +628,13 @@ public final class TableDatas {
 
     /**
      * Sets the value of the given property on the last added row, if the value is not null.
-     * 
+     *
      * <br/>
      * <br/>
-     * 
+     *
      * <b>Warning!</b> If the column added to the TableData in other way (eg. in other row), this
      * value is going to be null, despite the value is not set in this call!
-     * 
+     *
      * @param <P> the exact type that the property handles
      * @param property The property of the current row that will be set
      * @param value The value to set
@@ -764,34 +773,6 @@ public final class TableDatas {
     public BuilderWithOrderedProperties<E> addRow() {
       rows.add(new LinkedHashMap<>());
       return self();
-    }
-
-  }
-
-  public static class SortProperty {
-
-    private Property<?> property;
-    private boolean ascending;
-
-    private SortProperty(Property<?> property, boolean ascending) {
-      this.property = property;
-      this.ascending = ascending;
-    }
-
-    public Property<?> getProperty() {
-      return property;
-    }
-
-    public boolean isAscending() {
-      return ascending;
-    }
-
-    public static SortProperty ascending(Property<?> property) {
-      return new SortProperty(property, true);
-    }
-
-    public static SortProperty descending(Property<?> property) {
-      return new SortProperty(property, false);
     }
 
   }

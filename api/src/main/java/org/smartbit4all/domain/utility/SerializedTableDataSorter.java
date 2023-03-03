@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.data.TableDatas;
-import org.smartbit4all.domain.data.TableDatas.SortProperty;
+import org.smartbit4all.domain.meta.SortOrderProperty;
 import org.smartbit4all.domain.utility.serialize.TableDataPager;
 
 public class SerializedTableDataSorter {
@@ -22,18 +22,18 @@ public class SerializedTableDataSorter {
    * Returns the sorted index list of the given serialized {@link TableData}
    */
   public static List<Integer> getSortedIndexes(TableDataPager<?> pager,
-      List<SortProperty> sortProperties)
+      List<SortOrderProperty> sortProperties)
       throws Exception {
     return getSortedIndexes(pager, sortProperties, defaultChunkSize);
   }
 
   /**
    * Returns the sorted index list of the given serialized {@link TableData}
-   * 
+   *
    * @param chunkSize number of rows to fetch for one page from the serialized data
    */
   public static List<Integer> getSortedIndexes(TableDataPager<?> pager,
-      List<SortProperty> sortProperties, final int chunkSize) throws Exception {
+      List<SortOrderProperty> sortProperties, final int chunkSize) throws Exception {
 
     final int totalRowCount = pager.getTotalRowCount();
 

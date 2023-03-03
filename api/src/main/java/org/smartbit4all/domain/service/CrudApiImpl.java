@@ -1,6 +1,5 @@
 package org.smartbit4all.domain.service;
 
-import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.security.InvalidParameterException;
 import java.util.HashMap;
@@ -14,7 +13,6 @@ import org.smartbit4all.core.SB4Function;
 import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.data.TableDatas;
-import org.smartbit4all.domain.data.TableDatas.SortProperty;
 import org.smartbit4all.domain.data.filtering.ExpressionEvaluationPlan;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Expression;
@@ -278,11 +276,7 @@ public class CrudApiImpl implements CrudApi {
     out.setTableData(TableDatas.copyRows(tableData, result, queryInput.properties()));
 
     if (queryInput.orderBys() != null && !queryInput.orderBys().isEmpty()) {
-      List<SortProperty> sortOrders = queryInput.orderBys().stream()
-          .map(order -> order.asc ? TableDatas.SortProperty.ascending(order.property)
-              : TableDatas.SortProperty.descending(order.property))
-          .collect(toList());
-      TableDatas.sort(out.getTableData(), sortOrders);
+      TableDatas.sort(out.getTableData(), queryInput.orderBys());
     }
     return out;
 

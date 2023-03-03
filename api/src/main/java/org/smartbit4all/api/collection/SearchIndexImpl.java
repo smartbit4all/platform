@@ -26,12 +26,12 @@ import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.data.TableDatas;
-import org.smartbit4all.domain.data.TableDatas.SortProperty;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Expression;
 import org.smartbit4all.domain.meta.Property;
+import org.smartbit4all.domain.meta.SortOrderProperty;
 import org.smartbit4all.domain.service.CrudApi;
 import org.smartbit4all.domain.service.dataset.TableDataApi;
 import org.smartbit4all.domain.service.entity.EntityManager;
@@ -312,29 +312,26 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
   @Override
   public TableData<?> executeSearch(FilterExpressionList filterExpressions,
       List<FilterExpressionOrderBy> orderByList) {
+    List<SortOrderProperty> sortOrders;
+    if (orderByList == null) {
+      sortOrders = Collections.emptyList();
+    } else {
+      sortOrders = orderByList.stream()
+          .map(orderBy -> orderBy.getOrder() == OrderEnum.DESC
+              ? objectMapping.propertyOf(orderBy).desc()
+              : objectMapping.propertyOf(orderBy).asc())
+          .collect(toList());
+    }
     if (filterExpressions == null) {
       TableData<?> result = getAll();
-      if (orderByList != null && !orderByList.isEmpty()) {
-        List<SortProperty> sortOrders = orderByList.stream()
-            .map(orderBy -> orderBy.getOrder() == OrderEnum.DESC
-                ? objectMapping.propertyOf(orderBy).desc()
-                : objectMapping.propertyOf(orderBy).asc())
-            .map(order -> order.asc ? TableDatas.SortProperty.ascending(order.property)
-                : TableDatas.SortProperty.descending(order.property))
-            .collect(toList());
+      if (!sortOrders.isEmpty()) {
         TableDatas.sort(result, sortOrders);
       }
       return result;
     }
     CrudRead<EntityDefinition> read = Crud.read(getDefinition().definition).selectAllProperties()
         .where(objectMapping.constructExpression(filterExpressions));
-    if (orderByList != null) {
-      orderByList.stream()
-          .map(orderBy -> orderBy.getOrder() == OrderEnum.DESC
-              ? objectMapping.propertyOf(orderBy).desc()
-              : objectMapping.propertyOf(orderBy).asc())
-          .forEach(read::order);
-    }
+    read.getQuery().orderBys().addAll(sortOrders);
     return executeSearch(read.getQuery());
   }
 
