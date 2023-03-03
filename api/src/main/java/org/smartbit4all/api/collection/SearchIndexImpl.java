@@ -1,5 +1,6 @@
 package org.smartbit4all.api.collection;
 
+import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,6 +25,8 @@ import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.TableData;
+import org.smartbit4all.domain.data.TableDatas;
+import org.smartbit4all.domain.data.TableDatas.SortProperty;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.meta.EntityDefinition;
@@ -310,7 +313,18 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
   public TableData<?> executeSearch(FilterExpressionList filterExpressions,
       List<FilterExpressionOrderBy> orderByList) {
     if (filterExpressions == null) {
-      return getAll();
+      TableData<?> result = getAll();
+      if (orderByList != null && !orderByList.isEmpty()) {
+        List<SortProperty> sortOrders = orderByList.stream()
+            .map(orderBy -> orderBy.getOrder() == OrderEnum.DESC
+                ? objectMapping.propertyOf(orderBy).desc()
+                : objectMapping.propertyOf(orderBy).asc())
+            .map(order -> order.asc ? TableDatas.SortProperty.ascending(order.property)
+                : TableDatas.SortProperty.descending(order.property))
+            .collect(toList());
+        TableDatas.sort(result, sortOrders);
+      }
+      return result;
     }
     CrudRead<EntityDefinition> read = Crud.read(getDefinition().definition).selectAllProperties()
         .where(objectMapping.constructExpression(filterExpressions));

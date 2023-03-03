@@ -1,5 +1,6 @@
 package org.smartbit4all.domain.service;
 
+import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.security.InvalidParameterException;
 import java.util.HashMap;
@@ -13,6 +14,7 @@ import org.smartbit4all.core.SB4Function;
 import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.data.TableDatas;
+import org.smartbit4all.domain.data.TableDatas.SortProperty;
 import org.smartbit4all.domain.data.filtering.ExpressionEvaluationPlan;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Expression;
@@ -55,7 +57,7 @@ import org.springframework.stereotype.Service;
  * The {@link CrudApi} implementation. It analyzes the incoming query requests to produce a
  * {@link QueryExecutionPlan}. This plan can be executed later on by the
  * {@link #executeQueryPlan(QueryExecutionPlan)} function.
- * 
+ *
  */
 @Service
 public class CrudApiImpl implements CrudApi {
@@ -251,7 +253,7 @@ public class CrudApiImpl implements CrudApi {
   /**
    * This is the inner execution point where the {@link CrudApi} decides which
    * {@link CrudExecutionApi} to use for the execution.
-   * 
+   *
    * @param queryInput The query input to execute. If it defines a TableData by URI then it will be
    *        mapped to the named {@link CrudExecutionApi}.
    * @return
@@ -275,8 +277,13 @@ public class CrudApiImpl implements CrudApi {
     QueryOutput out = new QueryOutput(queryInput.getName(), queryInput.entityDef());
     out.setTableData(TableDatas.copyRows(tableData, result, queryInput.properties()));
 
-    System.out.println(out.getTableData());
-
+    if (queryInput.orderBys() != null && !queryInput.orderBys().isEmpty()) {
+      List<SortProperty> sortOrders = queryInput.orderBys().stream()
+          .map(order -> order.asc ? TableDatas.SortProperty.ascending(order.property)
+              : TableDatas.SortProperty.descending(order.property))
+          .collect(toList());
+      TableDatas.sort(out.getTableData(), sortOrders);
+    }
     return out;
 
   }
