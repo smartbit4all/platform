@@ -43,4 +43,11 @@ public interface NavigationViewModel extends ViewModel {
 
   NavigationNode selectedNavigationNode();
 
+  /**
+   * Collapse the node and all its children
+   * 
+   * @param node
+   */
+  void collapseNodeAndChildren(NavigationNode node);
+
 }
