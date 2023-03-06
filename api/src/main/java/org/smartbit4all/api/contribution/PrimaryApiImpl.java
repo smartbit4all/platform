@@ -47,7 +47,7 @@ public class PrimaryApiImpl<A extends ContributionApi> implements PrimaryApi<A>,
 
   @Override
   public void unregisterApi(String apiName) {
-    apiByName.remove(apiName);
+    removeContributionApi(apiName);
   }
 
   @Override
@@ -59,11 +59,26 @@ public class PrimaryApiImpl<A extends ContributionApi> implements PrimaryApi<A>,
     }
   }
 
-  private void addContributionApi(A api, String apiName) {
+  /**
+   * This function can be overridden to add more setup for the contribution.
+   * 
+   * @param api
+   * @param apiName
+   */
+  protected void addContributionApi(A api, String apiName) {
     apiByName.put(apiName, api);
     if (api instanceof ContributionApiImpl) {
       ((ContributionApiImpl) api).setPrimaryApi(this);
     }
+  }
+
+  /**
+   * This function can be overridden to add more setup for the contribution.
+   * 
+   * @param apiName
+   */
+  protected void removeContributionApi(String apiName) {
+    apiByName.remove(apiName);
   }
 
   @Override
