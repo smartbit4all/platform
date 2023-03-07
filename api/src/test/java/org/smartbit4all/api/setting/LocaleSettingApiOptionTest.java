@@ -1,12 +1,12 @@
 package org.smartbit4all.api.setting;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Locale;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(classes = {LocaleSettingApiOptionTestConfig.class})
 class LocaleSettingApiOptionTest {
@@ -83,11 +83,14 @@ class LocaleSettingApiOptionTest {
   }
 
   @Test
-  void testMessagesInOrder() {
+  void testMessagesByPath() {
     localeSettings.setDefaultLocale(hu);
     assertEquals("Specific message2",
-        localeSettings.getFirstDefined("smartbit4all.myspecificmessage2", "myspecificmessage2"));
+        localeSettings.get("smartbit4all", "myspecificmessage2"));
     assertEquals("Specific message1",
-        localeSettings.getFirstDefined("smartbit4all.myspecificmessage1", "myspecificmessage1"));
+        localeSettings.get("myspecificmessage1"));
+    assertEquals("SB4 specific message1",
+        localeSettings.get("smartbit4all", "myspecificmessage1"));
   }
+
 }

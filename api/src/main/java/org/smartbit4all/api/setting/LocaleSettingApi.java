@@ -1,6 +1,7 @@
 package org.smartbit4all.api.setting;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -11,6 +12,7 @@ import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.UserSessionApi;
 import org.smartbit4all.core.utility.ListBasedMap;
 import org.smartbit4all.core.utility.ReflectionUtility;
+import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.springframework.beans.factory.InitializingBean;
@@ -24,7 +26,7 @@ import com.google.common.base.Strings;
  * This is the main holder for the locale settings. All the keys are available at the fully
  * qualified name of the variables. But on the other hand we will be able to add translations that
  * defines the translations between the default language and the target languages.
- * 
+ *
  * @author Peter Boros
  */
 public final class LocaleSettingApi implements InitializingBean {
@@ -82,7 +84,7 @@ public final class LocaleSettingApi implements InitializingBean {
   /**
    * In the after property set function we discover the {@link #localeOptions} list to set up the
    * enclosed {@link LocaleString}s.
-   * 
+   *
    */
   private void initLocalOptions() {
     if (localeOptions != null) {
@@ -109,7 +111,7 @@ public final class LocaleSettingApi implements InitializingBean {
   /**
    * Adds a key to the registry of the Api. This function is dedicated for inner usage, don't call
    * this!
-   * 
+   *
    * @param key
    * @param defaultValue
    */
@@ -138,21 +140,28 @@ public final class LocaleSettingApi implements InitializingBean {
     localeSpecificTranslations.clear();
   }
 
-  public final String getFirstDefined(String... keys) {
+  public final String get(String... keys) {
+    return get(getLocale(), keys);
+  }
+
+  public final String get(Locale locale, String... keys) {
     if (keys == null || keys.length == 0) {
       return null;
     }
-    for (String key : keys) {
-      String value = get(key);
-      if (value != null && !value.equals(key)) {
-        return value;
-      }
+    String key = String.join(StringConstant.DOT, keys);
+    String value = getInternal(locale, key);
+    if (value != null && !value.equals(key)) {
+      // found a match
+      return value;
     }
-    // We don't find the proper value for the keys. So the most relevant key is returned.
-    return keys[0];
+    if (keys.length == 1) {
+      return key;
+    }
+    String[] subKeys = Arrays.copyOfRange(keys, 1, keys.length);
+    return get(locale, subKeys);
   }
 
-  public final String get(String key) {
+  private Locale getLocale() {
     Locale sessionLocale = null;
     if (sessionApi != null) {
       sessionLocale = sessionApi.getLocale();
@@ -160,11 +169,10 @@ public final class LocaleSettingApi implements InitializingBean {
       sessionLocale = userSessionApi.currentSession().getCurrentLocale();
     }
     Locale defaultLocaleTmp = defaultLocale != null ? defaultLocale : Locales.HUNGARIAN;
-    Locale locale = sessionLocale != null ? sessionLocale : defaultLocaleTmp;
-    return get(locale, key);
+    return sessionLocale != null ? sessionLocale : defaultLocaleTmp;
   }
 
-  public final String get(Locale locale, String key) {
+  private final String getInternal(Locale locale, String key) {
     if (locale == null) {
       String sourceLiteral = sourceLiterals.get(key);
       return sourceLiteral != null ? sourceLiteral : key;
@@ -199,7 +207,7 @@ public final class LocaleSettingApi implements InitializingBean {
   /**
    * This function analyze the given class to discover the {@link LocaleString} fields. We add this
    * API for them to enable locale specific behavior for them.
-   * 
+   *
    * @param option
    */
   public void analyzeLocaleStrings(LocaleOption option) {

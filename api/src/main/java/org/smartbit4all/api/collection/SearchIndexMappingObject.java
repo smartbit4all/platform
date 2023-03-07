@@ -519,7 +519,7 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
           if (e.getValue() instanceof SearchIndexMappingProperty) {
             SearchIndexMappingProperty propertyMapping = (SearchIndexMappingProperty) e.getValue();
             FilterExpressionField field = new FilterExpressionField().label2(localeSettingApi
-                .getFirstDefined(name + StringConstant.DOT + e.getKey(), e.getKey()));
+                .get(name, e.getKey()));
             field.addPossibleOperationsItem(FilterExpressionOperation.EQUAL);
             field.addPossibleOperationsItem(FilterExpressionOperation.NOT_EQUAL);
             field.addPossibleOperationsItem(FilterExpressionOperation.IS_EMPTY);
