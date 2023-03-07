@@ -618,7 +618,7 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
 
 
   public final PropertyObject propertyOf(FilterExpressionOrderBy orderBy) {
-    return entityDefinition.definition.getPropertyObject(orderBy.getPropertyName());
+    return getDefinition().definition.getPropertyObject(orderBy.getPropertyName());
   }
 
 }
