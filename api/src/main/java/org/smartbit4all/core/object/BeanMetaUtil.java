@@ -13,7 +13,7 @@ import org.smartbit4all.core.utility.ReflectionUtility;
 
 /**
  * This utility can analyze the java Beans to discover the bean properties.
- * 
+ *
  * @author Peter Boros
  */
 public final class BeanMetaUtil {
@@ -169,8 +169,12 @@ public final class BeanMetaUtil {
       throw new IllegalArgumentException(
           "Unknown getter method " + method.getDeclaringClass().getName() + "." + method.getName());
     }
-    propertyName = propertyName.substring(0, 1).toLowerCase() + propertyName.substring(1);
+    propertyName = lowerFirstChar(propertyName);
     return propertyName;
+  }
+
+  private static String lowerFirstChar(String propertyName) {
+    return propertyName.substring(0, 1).toLowerCase() + propertyName.substring(1);
   }
 
   private static final void processSetterMethod(Method method, BeanMeta meta) {
@@ -195,6 +199,7 @@ public final class BeanMetaUtil {
     String name = method.getName();
     String propertyKey = name
         .substring(ADDITEM_PREFIX.length(), name.length() - ADDITEM_POSTFIX.length());
+    propertyKey = lowerFirstChar(propertyKey);
     PropertyMeta propertyMeta = meta.getPropertiesCaseSensitive().get(propertyKey);
     if (propertyMeta != null) {
       // method without getter won't be processed
@@ -206,6 +211,7 @@ public final class BeanMetaUtil {
     String name = method.getName();
     String propertyKey = name
         .substring(PUTITEM_PREFIX.length(), name.length() - PUTITEM_POSTFIX.length());
+    propertyKey = lowerFirstChar(propertyKey);
     PropertyMeta propertyMeta = meta.getPropertiesCaseSensitive().get(propertyKey);
     if (propertyMeta != null) {
       // method without getter won't be processed
