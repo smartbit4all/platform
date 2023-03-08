@@ -130,7 +130,8 @@ class ObjectApiTest {
   void createBrandNewObjectDefinition() {
     ObjectDefinition<?> definition =
         objectDefinitionApi
-            .definition(SampleCategory.class.getPackageName() + StringConstant.DOT + "Extension");
+            .definition(
+                SampleCategory.class.getPackage().getName() + StringConstant.DOT + "Extension");
     org.assertj.core.api.Assertions.assertThat(definition.getDefinitionData().getProperties())
         .isEmpty();
     definition.builder().addProperty(ADDED_WITHTYPECLASS, String.class)
