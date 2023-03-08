@@ -38,6 +38,7 @@ import org.smartbit4all.domain.service.entity.EntityManager;
 import org.smartbit4all.domain.service.query.QueryInput;
 import org.smartbit4all.domain.utility.crud.Crud;
 import org.smartbit4all.domain.utility.crud.CrudRead;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
@@ -46,7 +47,7 @@ import org.springframework.context.ApplicationContext;
  *
  * @param <O>
  */
-public class SearchIndexImpl<O> implements SearchIndex<O> {
+public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
 
   private static final Logger log = LoggerFactory.getLogger(SearchIndexImpl.class);
 
@@ -201,12 +202,13 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
     return entityResult.result;
   }
 
+  private void initObjectMapping() {
+    objectMapping.init(ctx, entityManager, objectApi, extensionStrategy);
+  }
+
   @Override
   public SearchEntityDefinition getDefinition() {
-    objectMapping.setCtx(ctx);
-    objectMapping.setEntityManager(entityManager);
-    objectMapping.setObjectApi(objectApi);
-    objectMapping.extensionStrategy = extensionStrategy;
+    initObjectMapping();
     return objectMapping.getDefinition();
   }
 
@@ -361,6 +363,11 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
   @Override
   public FilterExpressionFieldList allFilterFields() {
     return objectMapping.allFilterFields(localeSettingApi);
+  }
+
+  @Override
+  public void afterPropertiesSet() throws Exception {
+    initObjectMapping();
   }
 
 }

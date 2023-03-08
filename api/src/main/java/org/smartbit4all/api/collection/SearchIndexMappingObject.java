@@ -111,7 +111,7 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
    * By default, the strategy is to not extend in any way, and return with false to avoid reloading
    * the definition.
    */
-  SearchIndexMappingExtensionStrategy extensionStrategy = self -> false;
+  private SearchIndexMappingExtensionStrategy extensionStrategy = self -> false;
 
   private ApplicationContext ctx;
 
@@ -188,6 +188,7 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
         new SearchIndexMappingObject().master(masterReferenceQualified,
             masterReferenceQualified,
             uniqueIdName);
+    detail.init(ctx, entityManager, objectApi, extensionStrategy);
     detail.logicalSchema = logicalSchema;
     detail.name = name + StringConstant.UNDERLINE + propertyName;
     mappingsByPropertyName.put(propertyName,
@@ -492,21 +493,18 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
     return objectApi.getDefaultSerializer().fromString(valueAsString, property.getBasic().type());
   }
 
-  public final void setCtx(ApplicationContext ctx) {
+  public final void init(ApplicationContext ctx, EntityManager entityManager, ObjectApi objectApi,
+      SearchIndexMappingExtensionStrategy extensionStrategy) {
     this.ctx = ctx;
+    this.entityManager = entityManager;
+    this.objectApi = objectApi;
+    this.extensionStrategy = extensionStrategy;
     for (SearchIndexMapping detailMapping : mappingsByPropertyName.values()) {
       if (detailMapping instanceof SearchIndexMappingObject) {
-        ((SearchIndexMappingObject) detailMapping).setCtx(ctx);
+        ((SearchIndexMappingObject) detailMapping).init(ctx, entityManager, objectApi,
+            extensionStrategy);
       }
     }
-  }
-
-  public final void setEntityManager(EntityManager entityManager) {
-    this.entityManager = entityManager;
-  }
-
-  public final void setObjectApi(ObjectApi objectApi) {
-    this.objectApi = objectApi;
   }
 
   void update(SearchEntityTableDataResult updateResult) {
@@ -519,7 +517,7 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
           if (e.getValue() instanceof SearchIndexMappingProperty) {
             SearchIndexMappingProperty propertyMapping = (SearchIndexMappingProperty) e.getValue();
             FilterExpressionField field = new FilterExpressionField().label2(localeSettingApi
-                .getFirstDefined(name + StringConstant.DOT + e.getKey(), e.getKey()));
+                .get(name, e.getKey()));
             field.addPossibleOperationsItem(FilterExpressionOperation.EQUAL);
             field.addPossibleOperationsItem(FilterExpressionOperation.NOT_EQUAL);
             field.addPossibleOperationsItem(FilterExpressionOperation.IS_EMPTY);
@@ -618,7 +616,7 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
 
 
   public final PropertyObject propertyOf(FilterExpressionOrderBy orderBy) {
-    return entityDefinition.definition.getPropertyObject(orderBy.getPropertyName());
+    return getDefinition().definition.getPropertyObject(orderBy.getPropertyName());
   }
 
 }

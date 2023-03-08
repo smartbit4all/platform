@@ -1,12 +1,12 @@
 package org.smartbit4all.api.setting;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Locale;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(classes = {LocaleSettingApiOptionTestConfig.class})
 class LocaleSettingApiOptionTest {
@@ -83,11 +83,26 @@ class LocaleSettingApiOptionTest {
   }
 
   @Test
-  void testMessagesInOrder() {
+  void testMessagesByPath() {
     localeSettings.setDefaultLocale(hu);
-    assertEquals("Specific message2",
-        localeSettings.getFirstDefined("smartbit4all.myspecificmessage2", "myspecificmessage2"));
+    // global myspecificmessage1 defined
     assertEquals("Specific message1",
-        localeSettings.getFirstDefined("smartbit4all.myspecificmessage1", "myspecificmessage1"));
+        localeSettings.get("myspecificmessage1"));
+    // smartbit4all specific myspecificmessage1 defined
+    assertEquals("SB4 specific message1",
+        localeSettings.get("smartbit4all", "myspecificmessage1"));
+    // smartbit4all specific myspecificmessage2 defined
+    assertEquals("SB4 specific message2",
+        localeSettings.get("smartbit4all", "myspecificmessage2"));
+    // global specific myspecificmessage2 NOT defined - get returns key
+    assertEquals("myspecificmessage2",
+        localeSettings.get("myspecificmessage2"));
+    // only global specific myspecificmessage3 defined
+    assertEquals("Specific message3",
+        localeSettings.get("smartbit4all", "myspecificmessage3"));
+    // myspecificmessage_which_doesnt_exist NOT defined - get returns key
+    assertEquals("myspecificmessage_which_doesnt_exist",
+        localeSettings.get("smartbit4all", "myspecificmessage_which_doesnt_exist"));
   }
+
 }

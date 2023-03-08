@@ -141,6 +141,24 @@ public class NavigationViewModelImpl extends ViewModelImpl<TreeModel>
     node.setExpanded(Boolean.TRUE);
   }
 
+  @Override
+  public void collapseNodeAndChildren(NavigationNode node) {
+    TreeNode nodeToCollapse = getWrappedTreeNode(node.getId());
+    if (nodeToCollapse != null) {
+      nodeToCollapse.setExpanded(Boolean.FALSE);
+      collapseChildren(nodeToCollapse);
+    }
+  }
+
+  private void collapseChildren(TreeNode node) {
+    for (TreeNode child : node.getChildrenNodes()) {
+      if (child.getExpanded()) {
+        child.setExpanded(Boolean.FALSE);
+        collapseChildren(node);
+      }
+    }
+  }
+
   private void collapse(TreeNode node) {
     node.setExpanded(Boolean.FALSE);
     if (node.getChildrenNodes().contains(selectedNode)) {

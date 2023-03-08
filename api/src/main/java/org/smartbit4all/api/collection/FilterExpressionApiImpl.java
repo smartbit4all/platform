@@ -29,9 +29,9 @@ public class FilterExpressionApiImpl implements FilterExpressionApi {
   public FilterExpressionList of(FilterExpressionFieldList filterExpressionFieldList) {
     List<FilterExpressionData> filterExpressions = filterExpressionFieldList.getFilters().stream()
         .map(FilterExpressionField::getExpressionData)
-        .filter(data -> operandHasValue(data.getOperand1())
+        .filter(data -> data != null && (operandHasValue(data.getOperand1())
             || operandHasValue(data.getOperand2())
-            || operandHasValue(data.getOperand3()))
+            || operandHasValue(data.getOperand3())))
         .collect(Collectors.toList());
 
     return filterExpressions.isEmpty()

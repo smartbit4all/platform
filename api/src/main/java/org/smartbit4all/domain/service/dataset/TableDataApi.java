@@ -8,14 +8,14 @@ import org.smartbit4all.domain.service.CrudApi;
  * The {@link TableDataApi} is responsible for storing and retrieving the {@link TableData}s as a
  * set of record. The {@link CrudApi} use this to manage the temporary record sets during the query
  * process and there can be record sets with longer storage period.
- * 
+ *
  * @author Peter Boros
  */
 public interface TableDataApi {
 
   /**
    * This saves a table data.
-   * 
+   *
    * @param tableData The table data itself.
    * @return The URI for reading.
    */
@@ -23,7 +23,7 @@ public interface TableDataApi {
 
   /**
    * Read the {@link TableData} identified by the URI.
-   * 
+   *
    * @param uri The unique identifier.
    * @return
    */
@@ -31,13 +31,13 @@ public interface TableDataApi {
 
   /**
    * Read the {@link TableData} identified by the URI.
-   * 
+   *
    * @param uri The unique identifier.
-   * @param lowerBound The first row (inclusive) to load as page.
-   * @param upperBound The last row of the page exclusively.
+   * @param offset The row index to fetch the data from.
+   * @param limit The number of rows to fetch.
    * @return The content of the page.
    */
-  TableData<?> readPage(URI uri, int lowerBound, int upperBound);
+  TableData<?> readPage(URI uri, int offset, int limit);
 
   void delete(URI uri);
 

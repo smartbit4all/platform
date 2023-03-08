@@ -25,12 +25,12 @@ import org.smartbit4all.storage.fs.StorageFS;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * 
+ *
  * The table data is always temporary data set that is used to save a database table like set of
  * data that can be used in SQL expressions based on the features of the {@link CrudApi}. The table
  * data api is based on file system {@link RandomAccess} to optimize the write and read of the huge
  * tables.
- * 
+ *
  * @author Peter Boros
  *
  */
@@ -90,37 +90,42 @@ public class TableDataApiImpl implements TableDataApi {
     } else {
       tableDatas.put(uri, tableData);
     }
-
+    tableData.setUri(uri);
     return uri;
   }
 
   @Override
   public TableData<?> read(URI uri) {
+    TableData<?> result;
     if (rootFolder != null) {
       try {
         TableDataPager<?> pager = TableDataPager
             .create(FileIO.getFileByUri(rootFolder, uri, TABLEDATAFILEEXTESION), entityManager);
-        return pager.fetchAll();
+        result = pager.fetchAll();
       } catch (Exception e) {
         throw new IllegalArgumentException("Unable to read the " + uri + " table data.", e);
       }
     } else {
-      return tableDatas.get(uri);
+      result = tableDatas.get(uri);
     }
+    if (result != null) {
+      result.setUri(uri);
+    }
+    return result;
   }
 
   @Override
-  public TableData<?> readPage(URI uri, int lowerBound, int upperBound) {
+  public TableData<?> readPage(URI uri, int offset, int limit) {
     if (rootFolder != null) {
       try {
         TableDataPager<?> pager = TableDataPager
             .create(FileIO.getFileByUri(rootFolder, uri, TABLEDATAFILEEXTESION), entityManager);
-        return pager.fetch(lowerBound, upperBound);
+        return pager.fetch(offset, limit);
       } catch (Exception e) {
         throw new IllegalArgumentException("Unable to read the " + uri + " table data.", e);
       }
     } else {
-      return TableDatas.copyRows(tableDatas.get(uri), lowerBound, upperBound);
+      return TableDatas.copyRows(tableDatas.get(uri), offset, offset + limit);
     }
   }
 
