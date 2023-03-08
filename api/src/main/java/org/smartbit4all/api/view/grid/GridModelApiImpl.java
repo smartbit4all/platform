@@ -3,6 +3,7 @@ package org.smartbit4all.api.view.grid;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import java.net.URI;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -59,15 +60,16 @@ public class GridModelApiImpl implements GridModelApi {
 
     // AtomicInteger i = new AtomicInteger(1);
     GridPage page = new GridPage().lowerBound(0).upperBound(objectList.size());
-    List<GridRow> gridRows = IntStream.rangeClosed(0, page.getUpperBound())
-        .mapToObj(i -> new GridRow()
-            .id(String.valueOf(i))
-            .data(objectApi.create(null, objectList.get(i))
-                .getObjectAsMap()
-                .entrySet().stream()
-                .filter(e -> columns.containsKey(e.getKey()))
-                .collect(toMap(Entry::getKey, Entry::getValue))))
-        .collect(toList());
+    List<GridRow> gridRows = objectList.isEmpty() ? Collections.emptyList()
+        : IntStream.rangeClosed(0, page.getUpperBound())
+            .mapToObj(i -> new GridRow()
+                .id(String.valueOf(i))
+                .data(objectApi.create(null, objectList.get(i))
+                    .getObjectAsMap()
+                    .entrySet().stream()
+                    .filter(e -> columns.containsKey(e.getKey()))
+                    .collect(toMap(Entry::getKey, Entry::getValue))))
+            .collect(toList());
     page.setRows(gridRows);
 
     result.setPage(page);
