@@ -44,8 +44,8 @@ public class SerializationType<T> {
 //  OFFSETDATE    (0x1a),
   public static final SerializationType<OffsetDateTime> OFFSETDATETIME = new SerializationType<>(0x1b, OffsetDateTime.class, SerializationType::serializeOffsetDateTime, SerializationType::deserializeOffsetDateTime);
   public static final SerializationType<URI> URITYPE = new SerializationType<>(0x1c, URI.class, SerializationType::serializeUri, SerializationType::deserializeUri);
-  public static final SerializationType<UUID> UUIDTYPE = new SerializationType<>(0x1c, UUID.class, SerializationType::serializeUUID, SerializationType::deserializeUUID);
   public static final SerializationType<Boolean> BOOLEAN = new SerializationType<>(0x1d, Boolean.class, SerializationType::serializeBoolean, SerializationType::deserializeBoolean);
+  public static final SerializationType<UUID> UUIDTYPE = new SerializationType<>(0x1e, UUID.class, SerializationType::serializeUUID, SerializationType::deserializeUUID);
   public static final SerializationType<Void> OTHER = new SerializationType<>(0x40, Void.class, null, b -> null);
   // @formatter:on
 
