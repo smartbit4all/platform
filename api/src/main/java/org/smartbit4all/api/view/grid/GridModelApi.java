@@ -67,13 +67,13 @@ public interface GridModelApi {
 
   /**
    * Do the paging on the model
-   * 
+   *
    * @param model The model object
-   * @param lowerBound The lower bound that starts from 0 inclusively.
-   * @param upperBound The upper bound that exclusive. 0 - 5 means 5 row from 0 to 4.
+   * @param offset The row index to fetch the data from.
+   * @param limit The number of rows to fetch.
    * @return
    */
-  GridModel loadPage(GridModel model, int lowerBound, int upperBound);
+  GridModel loadPage(GridModel model, int offset, int limit);
 
   void setColumnOrder(GridModel model, List<String> columns);
 

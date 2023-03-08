@@ -13,6 +13,7 @@ import java.util.stream.Stream;
 import org.smartbit4all.api.collection.SearchIndex;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy;
 import org.smartbit4all.api.grid.bean.GridColumnMeta;
+import org.smartbit4all.api.grid.bean.GridDataAccessConfig;
 import org.smartbit4all.api.grid.bean.GridModel;
 import org.smartbit4all.api.grid.bean.GridPage;
 import org.smartbit4all.api.grid.bean.GridRow;
@@ -57,11 +58,11 @@ public class GridModelApiImpl implements GridModelApi {
             .propertyName(e.getKey())));
 
     // AtomicInteger i = new AtomicInteger(1);
-    GridPage page = new GridPage().lowerBound(1).upperBound(objectList.size());
-    List<GridRow> gridRows = IntStream.rangeClosed(1, page.getUpperBound())
+    GridPage page = new GridPage().lowerBound(0).upperBound(objectList.size());
+    List<GridRow> gridRows = IntStream.rangeClosed(0, page.getUpperBound())
         .mapToObj(i -> new GridRow()
             .id(String.valueOf(i))
-            .data(objectApi.create(null, objectList.get(i - 1))
+            .data(objectApi.create(null, objectList.get(i))
                 .getObjectAsMap()
                 .entrySet().stream()
                 .filter(e -> columns.containsKey(e.getKey()))
@@ -84,7 +85,11 @@ public class GridModelApiImpl implements GridModelApi {
   }
 
   private GridModel constructModel(TableData<?> tableData, int lowerBound, int upperBound) {
-    GridModel result = new GridModel();
+    if (tableData.getUri() == null) {
+      tableDataApi.save(tableData);
+    }
+    GridModel result = new GridModel()
+        .accessConfig(new GridDataAccessConfig().dataUri(tableData.getUri()));
     GridViewDescriptor tableHeader = new GridViewDescriptor().kind(KindEnum.TABLE);
     GridView tableView = new GridView().descriptor(tableHeader);
     result.addAvailableViewsItem(tableView);
@@ -117,13 +122,12 @@ public class GridModelApiImpl implements GridModelApi {
   }
 
   @Override
-  public GridModel loadPage(GridModel model, int lowerBound, int upperBound) {
+  public GridModel loadPage(GridModel model, int offset, int limit) {
     TableData<?> tableData =
-        tableDataApi.readPage(model.getAccessConfig().getDataUri(), lowerBound,
-            upperBound);
-    model.page(constructPage(
-        tableData, 0, tableData.size())
-            .lowerBound(lowerBound).upperBound(upperBound));
+        tableDataApi.readPage(model.getAccessConfig().getDataUri(), offset, limit);
+    model.page(constructPage(tableData, 0, tableData.size())
+        .lowerBound(offset)
+        .upperBound(offset + limit));
     return model;
   }
 
