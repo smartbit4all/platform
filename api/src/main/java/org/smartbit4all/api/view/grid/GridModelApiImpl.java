@@ -61,7 +61,7 @@ public class GridModelApiImpl implements GridModelApi {
     // AtomicInteger i = new AtomicInteger(1);
     GridPage page = new GridPage().lowerBound(0).upperBound(objectList.size());
     List<GridRow> gridRows = objectList.isEmpty() ? Collections.emptyList()
-        : IntStream.rangeClosed(0, page.getUpperBound())
+        : IntStream.range(0, page.getUpperBound())
             .mapToObj(i -> new GridRow()
                 .id(String.valueOf(i))
                 .data(objectApi.create(null, objectList.get(i))
