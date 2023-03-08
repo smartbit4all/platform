@@ -7,15 +7,21 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.object.bean.ObjectDefinitionData;
 import org.smartbit4all.api.object.bean.ReferenceDefinitionData;
 import org.smartbit4all.core.utility.PathUtility;
+import org.smartbit4all.domain.data.storage.Storage;
+import org.smartbit4all.domain.data.storage.StorageApi;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
@@ -26,6 +32,8 @@ public class ObjectDefinitionApiImpl implements ObjectDefinitionApi, Initializin
   private static final String URI = "URI";
 
   private static final String ID = "ID";
+
+  public static final String SCHEMA = "objectDefinition";
 
   /**
    * We need at least one serializer to be able to start the module.
@@ -44,11 +52,6 @@ public class ObjectDefinitionApiImpl implements ObjectDefinitionApi, Initializin
    */
   @Autowired(required = false)
   private List<ObjectDefinition<?>> definitions;
-
-  /**
-   * The active {@link ObjectDefinition}s keyed by the Class.
-   */
-  private Map<Class<?>, ObjectDefinition<?>> definitionsByClass = new ConcurrentHashMap<>();
 
   /**
    * The active {@link ObjectDefinition}s keyed by the Class.
@@ -88,6 +91,16 @@ public class ObjectDefinitionApiImpl implements ObjectDefinitionApi, Initializin
    */
   @Autowired(required = false)
   List<ObjectReferenceConfigs> referenceConfigsList;
+
+  @Autowired
+  private ApplicationContext context;
+
+  private StorageApi storageApi;
+
+  @Autowired
+  private ObjectDefinitionApi self;
+
+  private ReadWriteLock lock = new ReentrantReadWriteLock();
 
   private static BeanMeta getMeta(Class<?> apiClass) {
     if (apiClass == null) {
@@ -141,7 +154,6 @@ public class ObjectDefinitionApiImpl implements ObjectDefinitionApi, Initializin
     if (definitions != null) {
       for (ObjectDefinition<?> objectDefinition : definitions) {
         initObjectDefinition(objectDefinition);
-        definitionsByClass.put(objectDefinition.getClazz(), objectDefinition);
         definitionsByAlias.put(objectDefinition.getAlias(), objectDefinition);
       }
     }
@@ -200,14 +212,8 @@ public class ObjectDefinitionApiImpl implements ObjectDefinitionApi, Initializin
   @SuppressWarnings("unchecked")
   @Override
   public <T> ObjectDefinition<T> definition(Class<T> clazz) {
-    ObjectDefinition<T> objectDefinition = (ObjectDefinition<T>) definitionsByClass.get(clazz);
-    if (objectDefinition == null) {
-      objectDefinition = constructDefinition(clazz);
-      definitionsByClass.put(clazz, objectDefinition);
-      definitionsByAlias.put(objectDefinition.getAlias(), objectDefinition);
-    }
-
-    return objectDefinition;
+    ObjectDefinition<?> definition = definitionByAlias(getDefaultAlias(clazz));
+    return (ObjectDefinition<T>) definition;
   }
 
   @Override
@@ -216,23 +222,77 @@ public class ObjectDefinitionApiImpl implements ObjectDefinitionApi, Initializin
       return null;
     }
     String rootPath = PathUtility.getRootPath(objectUri.getPath());
-    try {
-      Class<?> clazz = Class.forName(getClassNameFromAlias(rootPath));
-      return definition(clazz);
-    } catch (ClassNotFoundException e) {
-      throw new IllegalArgumentException(
-          "Unable to initiate " + rootPath + " class from " + objectUri + " URI.", e);
-    }
+    return definitionByAlias(rootPath);
   }
 
   @Override
   public ObjectDefinition<?> definition(String className) {
+    return definitionByAlias(getAliasFromClassName(className));
+  }
+
+  private static final Class<?> getClassByName(String className) {
     try {
-      Class<?> clazz = Class.forName(className);
-      return definition(clazz);
+      return Class.forName(className);
     } catch (ClassNotFoundException e) {
-      throw new IllegalArgumentException(
-          "Unable to initiate " + className + " class.", e);
+      return null;
+    }
+  }
+
+  private ObjectDefinition<?> definitionByAlias(String alias) {
+    ObjectDefinition<?> objectDefinition = null;
+    lock.readLock().lock();
+    try {
+      objectDefinition = definitionsByAlias.get(alias);
+    } finally {
+      lock.readLock().unlock();
+    }
+    if (objectDefinition == null) {
+      lock.writeLock().lock();
+      try {
+        objectDefinition = definitionsByAlias.get(alias);
+        if (objectDefinition == null) {
+          String className = getClassNameFromAlias(alias);
+          Class<?> clazz = getClassByName(className);
+          if (clazz == null) {
+            // The class doesn't exist in the current runtime. In this case we use the Object as a
+            // common ancestor of all the classes.
+            clazz = Object.class;
+          }
+          objectDefinition = constructDefinition(clazz);
+          objectDefinition.setAlias(alias);
+          objectDefinition.setQualifiedName(className);
+          objectDefinition.setObjectDefinitionApi(self);
+          objectDefinition.initDefinitionData();
+          definitionsByAlias.put(objectDefinition.getAlias(), objectDefinition);
+        }
+      } finally {
+        lock.writeLock().unlock();
+      }
+    }
+    return objectDefinition;
+  }
+
+  @Override
+  public final void reloadDefinitionData(ObjectDefinition<?> definition) {
+    Storage storage = getStorageApi().get(SCHEMA);
+    if (storage.exists(definition.getDefinitionData().getUri())) {
+      // If we have a definition data saved in the storage then we load this and merge with the
+      // currently existing properties.
+      definition.builder()
+          .addAll(storage.read(definition.getDefinitionData().getUri(), ObjectDefinitionData.class)
+              .getProperties());
+    }
+  }
+
+  @Override
+  public void saveDefinitionData(ObjectDefinition<?> definition) {
+    Storage storage = getStorageApi().get(SCHEMA);
+    ObjectDefinitionData definitionData = definition.getDefinitionData();
+    if (storage.exists(definitionData.getUri())) {
+      storage.update(definitionData.getUri(), ObjectDefinitionData.class,
+          odd -> definition.getDefinitionData());
+    } else {
+      storage.saveAsNew(definitionData);
     }
   }
 
@@ -254,7 +314,11 @@ public class ObjectDefinitionApiImpl implements ObjectDefinitionApi, Initializin
   }
 
   public static String getDefaultAlias(Class<?> clazz) {
-    return clazz.getName().replace('.', '_');
+    return getAliasFromClassName(clazz.getName());
+  }
+
+  public static String getAliasFromClassName(String clazzName) {
+    return clazzName.replace('.', '_');
   }
 
   private static String getClassNameFromAlias(String alias) {
@@ -329,6 +393,13 @@ public class ObjectDefinitionApiImpl implements ObjectDefinitionApi, Initializin
   @Override
   public final ObjectSerializer getDefaultSerializer() {
     return defaultSerializer;
+  }
+
+  private final StorageApi getStorageApi() {
+    if (storageApi == null) {
+      storageApi = context.getBean(StorageApi.class);
+    }
+    return storageApi;
   }
 
 }

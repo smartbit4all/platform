@@ -1,6 +1,7 @@
 package org.smartbit4all.core.object;
 
 import java.net.URI;
+import org.smartbit4all.api.object.bean.ObjectDefinitionData;
 
 /**
  * Collects and handles object definitions for API objects.
@@ -29,10 +30,13 @@ public interface ObjectDefinitionApi {
   ObjectDefinition<?> definition(URI objectUri);
 
   /**
-   * The object name tries to identify the {@link ObjectDefinition}.
+   * The fully qualified name of the object class tries to identify the {@link ObjectDefinition}.
    * 
    * @param className The object class name.
-   * @return The {@link ObjectDefinition} if it was identified or null if it was not found.
+   * @return The {@link ObjectDefinition} if it was identified by the existing source. If it is not
+   *         found then we try to read the {@link ObjectDefinitionData} from the storage or creates
+   *         a new definition it is not found. The newly created definition can be extended by the
+   *         ObjectDefinitionBuilder that will save the definition into the storage.
    */
   ObjectDefinition<?> definition(String className);
 
@@ -40,5 +44,9 @@ public interface ObjectDefinitionApi {
    * @return The default serializer for the objects.
    */
   ObjectSerializer getDefaultSerializer();
+
+  void reloadDefinitionData(ObjectDefinition<?> definition);
+
+  void saveDefinitionData(ObjectDefinition<?> definition);
 
 }

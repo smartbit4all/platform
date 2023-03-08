@@ -9,6 +9,10 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import org.smartbit4all.api.binarydata.BinaryData;
+import org.smartbit4all.api.object.bean.ObjectDefinitionData;
+import org.smartbit4all.api.object.bean.PropertyDefinitionData;
+import org.smartbit4all.core.utility.StringConstant;
+import static java.util.stream.Collectors.toList;
 
 /**
  * This definition must exists for every api objects managed by the given module. It contains the
@@ -96,6 +100,17 @@ public final class ObjectDefinition<T> {
    */
   private final BeanMeta meta;
 
+  /**
+   * If an object has an extension then this definition data exists. The data can be constructed by
+   * a builder and can be assigned by an application logic.
+   */
+  private ObjectDefinitionData definitionData;
+
+  /**
+   * The {@link ObjectDefinitionApi} set itself when we get the definition for the first time.
+   */
+  private ObjectDefinitionApi objectDefinitionApi;
+
   public ObjectDefinition(Class<T> clazz) {
     super();
     this.clazz = clazz;
@@ -107,15 +122,11 @@ public final class ObjectDefinition<T> {
     return clazz;
   }
 
-  public final void setClazz(Class<T> clazz) {
-    this.clazz = clazz;
-  }
-
   public final String getAlias() {
     return alias;
   }
 
-  public final void setAlias(String alias) {
+  final void setAlias(String alias) {
     this.alias = alias;
   }
 
@@ -304,8 +315,59 @@ public final class ObjectDefinition<T> {
     return qualifiedName;
   }
 
+  final void setQualifiedName(String qualifiedName) {
+    this.qualifiedName = qualifiedName;
+  }
+
   public final BeanMeta meta() {
     return meta;
+  }
+
+  /**
+   * Constructs the {@link #definitionData} with {@link #meta} information of the given class. If it
+   * is the Object then skip analyzing the bean properties.
+   */
+  final void initDefinitionData() {
+    definitionData =
+        new ObjectDefinitionData().qualifiedName(qualifiedName).uri(uriOf(qualifiedName));
+    if (!Object.class.equals(clazz)) {
+      definitionData.getProperties()
+          .addAll(
+              meta.getPropertiesCaseSensitive().entrySet().stream()
+                  .map(e -> new PropertyDefinitionData()
+                      .name(e.getKey()).typeClass(e.getValue().getType().getName()))
+                  .collect(toList()));
+    }
+  }
+
+  static <T> URI uriOf(String qualifiedName) {
+    return URI
+        .create(ObjectDefinitionApiImpl.SCHEMA + StringConstant.COLON + StringConstant.SLASH
+            + qualifiedName.replace(StringConstant.DOT, StringConstant.SLASH));
+  }
+
+  public final ObjectDefinitionData getDefinitionData() {
+    return definitionData;
+  }
+
+  final void setObjectDefinitionApi(ObjectDefinitionApi objectDefinitionApi) {
+    this.objectDefinitionApi = objectDefinitionApi;
+  }
+
+  public final void reloadDefinitionData() {
+    if (objectDefinitionApi != null) {
+      objectDefinitionApi.reloadDefinitionData(this);
+    }
+  }
+
+  public final void saveDefinitionData() {
+    if (objectDefinitionApi != null) {
+      objectDefinitionApi.saveDefinitionData(this);
+    }
+  }
+
+  public final ObjectDefinitionBuilder builder() {
+    return new ObjectDefinitionBuilder(this);
   }
 
 }

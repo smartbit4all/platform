@@ -43,6 +43,7 @@ import org.smartbit4all.api.object.ModifyContributionApiStorageImpl;
 import org.smartbit4all.api.object.RetrievalApi;
 import org.smartbit4all.api.object.RetrievalApiImpl;
 import org.smartbit4all.api.object.bean.AggregationKind;
+import org.smartbit4all.api.object.bean.ObjectDefinitionData;
 import org.smartbit4all.api.object.bean.ReferencePropertyKind;
 import org.smartbit4all.api.rdbms.DatabaseDefinitionApi;
 import org.smartbit4all.api.rdbms.DatabaseDefinitionApiImpl;
@@ -161,6 +162,14 @@ public class PlatformApiConfig {
   public ObjectDefinition<ApiRegistryData> apiRegistryDataDefinition() {
     ObjectDefinition<ApiRegistryData> result =
         ObjectDefinitionApiImpl.constructDefinitionBase(ApiRegistryData.class);
+    result.setExplicitUri(true);
+    return result;
+  }
+
+  @Bean
+  public ObjectDefinition<ObjectDefinitionData> objectDefinitionData() {
+    ObjectDefinition<ObjectDefinitionData> result =
+        ObjectDefinitionApiImpl.constructDefinitionBase(ObjectDefinitionData.class);
     result.setExplicitUri(true);
     return result;
   }

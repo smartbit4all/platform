@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import org.smartbit4all.core.utility.StringConstant;
+import static java.util.stream.Collectors.toMap;
 
 /**
  * The meta is the result of discovering the clazz over the reflection API.
@@ -23,6 +24,8 @@ public final class BeanMeta {
    */
   private final Map<String, PropertyMeta> properties = new HashMap<>();
 
+  private Map<String, PropertyMeta> propertiesByUpperCase = new HashMap<>();
+
   BeanMeta(Class<?> clazz) {
     super();
     this.clazz = clazz;
@@ -33,6 +36,14 @@ public final class BeanMeta {
   }
 
   public final Map<String, PropertyMeta> getProperties() {
+    if (propertiesByUpperCase == null || propertiesByUpperCase.size() != properties.size()) {
+      propertiesByUpperCase = properties.entrySet().stream()
+          .collect(toMap(e -> e.getKey().toUpperCase(), Entry::getValue));
+    }
+    return propertiesByUpperCase;
+  }
+
+  public final Map<String, PropertyMeta> getPropertiesCaseSensitive() {
     return properties;
   }
 

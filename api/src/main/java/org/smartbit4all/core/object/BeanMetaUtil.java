@@ -110,25 +110,14 @@ public final class BeanMetaUtil {
   private static final void processGetterMethod(Class<?> apiClass, BeanMeta meta, Method method,
       ApiBeanDescriptor descriptor) {
     // create property
-    String propertyName;
-    if (method.getName().startsWith(GET)) {
-      // e.g. getValid for valid property
-      propertyName = method.getName().substring(3);
-    } else if (method.getName().startsWith(IS)) {
-      // e.g. isValid for valid property
-      propertyName = method.getName().substring(2);
-    } else {
-      throw new IllegalArgumentException(
-          "Unknown getter method " + apiClass.getName() + "." + method.getName());
-    }
-    propertyName = propertyName.substring(0, 1).toLowerCase() + propertyName.substring(1);
-    String propertyKey = propertyName.toUpperCase();
+    String propertyName = getPropertyName(method);
+    String propertyKey = propertyName;
     Class<?> propertyType = method.getReturnType();
-    PropertyMeta propertyMeta = meta.getProperties().get(propertyKey);
+    PropertyMeta propertyMeta = meta.getPropertiesCaseSensitive().get(propertyKey);
     if (propertyMeta == null) {
       propertyMeta = new PropertyMeta(propertyName, propertyType, meta);
       propertyMeta.setReferredType(propertyType);
-      meta.getProperties().put(propertyKey, propertyMeta);
+      meta.getPropertiesCaseSensitive().put(propertyKey, propertyMeta);
     } else {
       // possible for example with getName() and getNAME()
       throw new IllegalArgumentException(
@@ -168,9 +157,25 @@ public final class BeanMetaUtil {
     }
   }
 
+  private static String getPropertyName(Method method) {
+    String propertyName;
+    if (method.getName().startsWith(GET) || method.getName().startsWith(SET)) {
+      // e.g. getValid for valid property
+      propertyName = method.getName().substring(3);
+    } else if (method.getName().startsWith(IS)) {
+      // e.g. isValid for valid property
+      propertyName = method.getName().substring(2);
+    } else {
+      throw new IllegalArgumentException(
+          "Unknown getter method " + method.getDeclaringClass().getName() + "." + method.getName());
+    }
+    propertyName = propertyName.substring(0, 1).toLowerCase() + propertyName.substring(1);
+    return propertyName;
+  }
+
   private static final void processSetterMethod(Method method, BeanMeta meta) {
-    String propertyKey = method.getName().substring(3).toUpperCase();
-    PropertyMeta propertyMeta = meta.getProperties().get(propertyKey);
+    String propertyKey = getPropertyName(method);
+    PropertyMeta propertyMeta = meta.getPropertiesCaseSensitive().get(propertyKey);
     if (propertyMeta != null) {
       // method without getter won't be processed
       propertyMeta.setSetter(method);
@@ -178,8 +183,8 @@ public final class BeanMetaUtil {
   }
 
   private static final void processFluidSetterMethod(Method method, BeanMeta meta) {
-    String propertyKey = method.getName().toUpperCase();
-    PropertyMeta propertyMeta = meta.getProperties().get(propertyKey);
+    String propertyKey = method.getName();
+    PropertyMeta propertyMeta = meta.getPropertiesCaseSensitive().get(propertyKey);
     if (propertyMeta != null) {
       // method without getter won't be processed
       propertyMeta.setFluidSetter(method);
@@ -189,8 +194,8 @@ public final class BeanMetaUtil {
   private static final void processItemAdderMethod(Method method, BeanMeta meta) {
     String name = method.getName();
     String propertyKey = name
-        .substring(ADDITEM_PREFIX.length(), name.length() - ADDITEM_POSTFIX.length()).toUpperCase();
-    PropertyMeta propertyMeta = meta.getProperties().get(propertyKey);
+        .substring(ADDITEM_PREFIX.length(), name.length() - ADDITEM_POSTFIX.length());
+    PropertyMeta propertyMeta = meta.getPropertiesCaseSensitive().get(propertyKey);
     if (propertyMeta != null) {
       // method without getter won't be processed
       propertyMeta.setItemAdder(method);
@@ -200,8 +205,8 @@ public final class BeanMetaUtil {
   private static final void processItemPutMethod(Method method, BeanMeta meta) {
     String name = method.getName();
     String propertyKey = name
-        .substring(PUTITEM_PREFIX.length(), name.length() - PUTITEM_POSTFIX.length()).toUpperCase();
-    PropertyMeta propertyMeta = meta.getProperties().get(propertyKey);
+        .substring(PUTITEM_PREFIX.length(), name.length() - PUTITEM_POSTFIX.length());
+    PropertyMeta propertyMeta = meta.getPropertiesCaseSensitive().get(propertyKey);
     if (propertyMeta != null) {
       // method without getter won't be processed
       propertyMeta.setItemPutter(method);
