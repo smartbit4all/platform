@@ -1,20 +1,21 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 package org.smartbit4all.domain.data;
 
 import java.lang.reflect.Proxy;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -28,6 +29,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import org.checkerframework.checker.units.qual.C;
 import org.smartbit4all.domain.data.index.TableDataIndexSet;
 import org.smartbit4all.domain.meta.DataConverter;
 import org.smartbit4all.domain.meta.EntityDefinition;
@@ -46,10 +48,10 @@ import org.springframework.util.Assert;
  * way. The {@link TableData} is a singleton in a collaboration. But we can have many RecordSet
  * referring the TableData. All these RecordSets are managed and maintained by the TableData event
  * bus.
- * 
+ *
  * @see <a href="https://www.martinfowler.com/eaaCatalog/recordSet.html">RecordSet</a>
- * 
- * 
+ *
+ *
  * @author Peter Boros
  */
 public final class TableData<E extends EntityDefinition> {
@@ -74,7 +76,7 @@ public final class TableData<E extends EntityDefinition> {
    * the referrer side by the {@link DataReference} object. It is the instance of the
    * {@link Reference} from the meta data. For the fast access to the referring rows this side
    * maintain the list of rows for every row in this data table.
-   * 
+   *
    * Let's assume that we have a User, a Role and a UserRole entity in the database. We have two
    * reference UserRole --> User and UserRole --> Role. In the TableData model we will have the two
    * DataReference with the same meta. The DataReference "UserRole --> User will" contain a list of
@@ -112,8 +114,16 @@ public final class TableData<E extends EntityDefinition> {
   private TableDataIndexSet indexSet = null;
 
   /**
+   * If this tableData is saved, then it is saved to this URI. If it is created by reading a file,
+   * this URI will also be set. This functionality is very preliminary at the moment, for example we
+   * won't clear URI / update saved data when modifying table data, so only use if you know you're
+   * using for.
+   */
+  private URI uri;
+
+  /**
    * It constructs a new entity data table for the given entity definition.
-   * 
+   *
    * @param entityDef
    */
   public TableData(E entityDef) {
@@ -125,7 +135,7 @@ public final class TableData<E extends EntityDefinition> {
    * If we have a stored column then the value can be accesses directly by the row index. Otherwise
    * if we have a referred column then we need to use the reference for the given data table to
    * access the row.
-   * 
+   *
    * @param <T>
    * @param column
    * @param row
@@ -146,7 +156,7 @@ public final class TableData<E extends EntityDefinition> {
 
   /**
    * The values from the given property in an ordered list.
-   * 
+   *
    * @param <T>
    * @param property The property.
    * @return The list of values from the given property.
@@ -161,7 +171,7 @@ public final class TableData<E extends EntityDefinition> {
 
   /**
    * The values from the given column in an ordered list.
-   * 
+   *
    * @param <T>
    * @param column The column.
    * @return The list of values from the given column.
@@ -181,7 +191,7 @@ public final class TableData<E extends EntityDefinition> {
    * This get can use a conversion for reading the value. This conversion can be provided by the
    * type but also can be defined outside. The only thing to know that you should use the same
    * conversion in the get and in the set.
-   * 
+   *
    * @param <C> The type of the result.
    * @param <T> The type of the given property that must match with the source type of the
    *        {@link DataConverter} logic.
@@ -198,7 +208,7 @@ public final class TableData<E extends EntityDefinition> {
    * If we have a stored column then the value can be accesses directly by the row index. Otherwise
    * if we have a referred column then we need to use the reference for the given data table to
    * access the row.
-   * 
+   *
    * @param <T>
    * @param column
    * @param row
@@ -211,7 +221,7 @@ public final class TableData<E extends EntityDefinition> {
    * If we have a stored column then the value can be accesses directly by the row index. Otherwise
    * if we have a referred column then we need to use the reference for the given data table to
    * access the row.
-   * 
+   *
    * @param column
    * @param row
    * @param value
@@ -222,7 +232,7 @@ public final class TableData<E extends EntityDefinition> {
 
   /**
    * The size of the data table.
-   * 
+   *
    * @return This is the size of the {@link TableDataRowModel#rows()}. This list contains the public
    *         visible rows of the data table.
    */
@@ -232,7 +242,7 @@ public final class TableData<E extends EntityDefinition> {
 
   /**
    * Return false if there is at least one row.
-   * 
+   *
    * @return true if empty.
    */
   public boolean isEmpty() {
@@ -246,7 +256,7 @@ public final class TableData<E extends EntityDefinition> {
 
   /**
    * Add all the columns of the property set if it's not exist already in the table.
-   * 
+   *
    * @param properties
    * @return
    */
@@ -261,7 +271,7 @@ public final class TableData<E extends EntityDefinition> {
   /**
    * The columns of the data table in insertion order. The subsequent calls of the method always
    * return the columns in the same order.
-   * 
+   *
    * @return
    */
   public Collection<DataColumn<?>> columns() {
@@ -270,7 +280,7 @@ public final class TableData<E extends EntityDefinition> {
 
   /**
    * Return all the properties contained by the TableData.
-   * 
+   *
    * @return
    */
   public List<Property<?>> properties() {
@@ -279,7 +289,7 @@ public final class TableData<E extends EntityDefinition> {
 
   /**
    * Return the properties defined by the kind.
-   * 
+   *
    * @param kind The kind predicate.
    * @return
    */
@@ -291,7 +301,7 @@ public final class TableData<E extends EntityDefinition> {
   /**
    * This add a new stored column so the property must be owned by the {@link #entityDef}. Or else
    * we might need some join information.
-   * 
+   *
    * @param <T>
    * @param property Property of the {@link #entityDef}.
    * @return
@@ -307,7 +317,7 @@ public final class TableData<E extends EntityDefinition> {
   /**
    * The varargs version of add column where you can specify the Properties to add in a convenient
    * way.
-   * 
+   *
    * @param properties
    * @return If the parameter is empty then returns a {@link Collections#emptyList()}.
    */
@@ -376,7 +386,7 @@ public final class TableData<E extends EntityDefinition> {
   /**
    * Adding a new reference to the data table. It's type aware so you can add only the appropriate
    * reference that matches the E - entity definition of the entity of the data table.
-   * 
+   *
    * @param referenceDef
    * @param targetTable
    * @return
@@ -402,9 +412,9 @@ public final class TableData<E extends EntityDefinition> {
   /**
    * Adding a new back reference (points to this entity) to the {@link TableData}. This reference
    * must point to E (this entity) to identify the way how the detail records joined.
-   * 
+   *
    * CAUTION! It hasn't been tested yet!!!
-   * 
+   *
    * @param <D>
    * @param referenceDef
    * @param detailTable
@@ -425,7 +435,7 @@ public final class TableData<E extends EntityDefinition> {
   /**
    * Adding a new reference to the data table. It's type aware so you can add only the appropriate
    * reference that matches the E - entity definition of the entity of the data table.
-   * 
+   *
    * @param reference
    * @param target
    * @return
@@ -446,7 +456,7 @@ public final class TableData<E extends EntityDefinition> {
   /**
    * With this function we expand the data table with a new row. This new row will be added as the
    * last row of the physical list of the rows.
-   * 
+   *
    * @return We get back the newly created row object. It's a direct reference for the newly created
    *         row.
    */
@@ -457,7 +467,7 @@ public final class TableData<E extends EntityDefinition> {
   /**
    * The {@link EntityDefinition} that defines the content of the entity data table. Used to access
    * the meta data easily.
-   * 
+   *
    * @return
    */
   public final E entity() {
@@ -466,7 +476,7 @@ public final class TableData<E extends EntityDefinition> {
 
   /**
    * We can use the list of rows for accessing the records in the data table.
-   * 
+   *
    * @return An unmodifiable list of the rows.
    */
   public List<DataRow> rows() {
@@ -478,7 +488,7 @@ public final class TableData<E extends EntityDefinition> {
    * the interface instance passed in the clazz parameter. The instances for the rows are different
    * instances but all of them refers to the given row. If we set a value on the bean then this
    * value will be set directly into the {@link TableData}. So it's only a reference.
-   * 
+   *
    * @param <T> The class of the parameter interface.
    * @param clazz
    * @return The iterable for the for each.
@@ -530,7 +540,7 @@ public final class TableData<E extends EntityDefinition> {
    * instances and contains the copied values of the given row. If we set a value on the bean then
    * this value will be set only in the bean. So it doesn't modify the values of the
    * {@link TableData}.
-   * 
+   *
    * @param <T> The class of the parameter interface.
    * @param clazz
    * @return The iterable for the for each.
@@ -584,7 +594,7 @@ public final class TableData<E extends EntityDefinition> {
 
   /**
    * The collection of the references to other data tables.
-   * 
+   *
    * @return
    */
   public Collection<DataReference<E, ?>> referenceTo() {
@@ -593,7 +603,7 @@ public final class TableData<E extends EntityDefinition> {
 
   /**
    * The collection of the references to this data table from others.
-   * 
+   *
    * @return
    */
   public Collection<DataReference<?, E>> referredBy() {
@@ -602,7 +612,7 @@ public final class TableData<E extends EntityDefinition> {
 
   /**
    * Can retrieve the reference to another data table by the reference definition from the entity.
-   * 
+   *
    * @param <T> The target entity is defined by the type parameter.
    * @param reference The data reference if any. Its typed by the entity of the current data table
    *        and the entity of the reference target.
@@ -615,7 +625,7 @@ public final class TableData<E extends EntityDefinition> {
 
   /**
    * Can retrieve the reference from another data table by the reference definition of the entity.
-   * 
+   *
    * @param <T> The source entity is defined by the type parameter.
    * @param reference The data reference if any. Its typed by the entity of the reference target and
    *        the entity of the current data table.
@@ -628,7 +638,7 @@ public final class TableData<E extends EntityDefinition> {
 
   /**
    * Retrieve the {@link TableDataBeanBinding} object for the given bean class.
-   * 
+   *
    * @param beanClass The bean class that we would like to map to the table data.
    * @return
    * @throws ExecutionException
@@ -651,7 +661,7 @@ public final class TableData<E extends EntityDefinition> {
   /**
    * Construct the list of beans based on the bean class. The result is the same when we iterate
    * over the table data and get the bean for every row.
-   * 
+   *
    * @param <B> The bean class.
    * @param beanClass The bean class that can be interface also but in this case the instances will
    *        be proxies with {@link DataRowValBeanInvocationHandler}. Inside the invocation handler
@@ -671,7 +681,7 @@ public final class TableData<E extends EntityDefinition> {
   /**
    * With this call we initiate the online {@link TableDataIndexSet} instance for this
    * {@link TableData}. If we create index for some of the
-   * 
+   *
    * @return
    */
   public TableDataIndexSet index() {
@@ -683,9 +693,18 @@ public final class TableData<E extends EntityDefinition> {
 
   /**
    * Clear all rows in tabledata.
-   * 
+   *
    */
   public void clearRows() {
     rowModel.clear();
   }
+
+  public URI getUri() {
+    return uri;
+  }
+
+  public void setUri(URI uri) {
+    this.uri = uri;
+  }
+
 }
