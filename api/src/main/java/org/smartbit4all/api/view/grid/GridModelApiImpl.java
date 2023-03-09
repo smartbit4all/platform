@@ -150,6 +150,7 @@ public class GridModelApiImpl implements GridModelApi {
           .lowerBound(offset)
           .upperBound(offset + limit));
     }
+    model.getView().setOrderByList(update.getOrderByList());
     return model;
   }
 
