@@ -1,5 +1,6 @@
 package org.smartbit4all.api.object;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.smartbit4all.api.object.bean.ObjectChangeData;
 import org.smartbit4all.api.object.bean.PropertyChangeData;
@@ -33,9 +34,9 @@ public class ObjectChangeDataToString {
       List<PropertyChangeData> properties) {
     for (PropertyChangeData propertyChangeData : properties) {
       String path = prefix + propertyChangeData.getPath();
-      String translation = localeSettingApi.get(path.split("\\."));
-      if (!propertyChangeData.getPath().equals(translation)) {
-        path += " (" + translation + ")";
+      List<String> translations = translate(localeSettingApi, path);
+      if (!translations.isEmpty()) {
+        path += " " + translations;
       }
       sb.append("<b>")
           .append(path)
@@ -48,5 +49,32 @@ public class ObjectChangeDataToString {
           .append(propertyChangeData.getNewValue())
           .append("<br>");
     }
+  }
+
+  /**
+   * Returns the translation of the path. <body>
+   * <p>
+   * E.g.
+   * </p>
+   * <p>
+   * document.types.0.name -> [document.types, name] -> [Dokumentum típusok, név]
+   * </p>
+   * </body>
+   * 
+   * @param localeSettingApi
+   * @param path
+   * @return
+   */
+  private static List<String> translate(LocaleSettingApi localeSettingApi, String path) {
+    String[] splitByNumbers = path.split("\\d");
+    List<String> translations = new ArrayList<>();
+    for (int i = 0; i < splitByNumbers.length; ++i) {
+      String[] splitByDots = splitByNumbers[i].split("\\.");
+      String translation = localeSettingApi.get(splitByDots);
+      if (!splitByDots[splitByDots.length - 1].equals(translation)) {
+        translations.add(translation);
+      }
+    }
+    return translations;
   }
 }
