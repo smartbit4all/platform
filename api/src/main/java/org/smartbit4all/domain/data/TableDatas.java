@@ -14,6 +14,7 @@
  ******************************************************************************/
 package org.smartbit4all.domain.data;
 
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,6 +31,8 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy.OrderEnum;
 import org.smartbit4all.api.object.bean.TableDataContent;
 import org.smartbit4all.api.object.bean.TableDataContentColumn;
 import org.smartbit4all.api.object.bean.TableDataContentHeader;
@@ -250,6 +253,16 @@ public final class TableDatas {
     }
 
     sortRows(tableData.rowModel.rows, sortProperties);
+  }
+
+  public static <E extends EntityDefinition> void sortByFilterExpression(TableData<E> tableData,
+      List<FilterExpressionOrderBy> sortProperties) {
+    List<SortOrderProperty> sortOrders = sortProperties.stream()
+        .map(orderBy -> orderBy.getOrder() == OrderEnum.DESC
+            ? tableData.entity().getProperty(orderBy.getPropertyName()).desc()
+            : tableData.entity().getProperty(orderBy.getPropertyName()).asc())
+        .collect(toList());
+    sort(tableData, sortOrders);
   }
 
   /**

@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 import org.smartbit4all.api.collection.SearchIndex;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy;
 import org.smartbit4all.api.grid.bean.GridModel;
+import org.smartbit4all.api.grid.bean.GridUpdateData;
 import org.smartbit4all.domain.data.TableData;
 
 public interface GridModelApi {
@@ -77,6 +78,8 @@ public interface GridModelApi {
    * @return
    */
   GridModel loadPage(GridModel model, int offset, int limit);
+
+  GridModel updateGrid(GridModel model, GridUpdateData update);
 
   void setColumnOrder(GridModel model, List<String> columns);
 

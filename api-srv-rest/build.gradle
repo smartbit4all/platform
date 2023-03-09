@@ -38,7 +38,8 @@ smartbit4all {
 		genApiRestServer = true
 		importMappings = [
             "UiActionRequest": "org.smartbit4all.api.view.bean.UiActionRequest",
-            "UiAction": "org.smartbit4all.api.view.bean.UiAction"
+            "UiAction": "org.smartbit4all.api.view.bean.UiAction",
+            "FilterExpressionOrderBy" : "org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy"
       ]
     }
 }

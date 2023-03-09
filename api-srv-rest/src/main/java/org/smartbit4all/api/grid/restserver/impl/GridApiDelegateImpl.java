@@ -2,6 +2,7 @@ package org.smartbit4all.api.grid.restserver.impl;
 
 import java.util.UUID;
 import org.smartbit4all.api.grid.bean.GridModel;
+import org.smartbit4all.api.grid.bean.GridUpdateData;
 import org.smartbit4all.api.grid.restserver.GridApiDelegate;
 import org.smartbit4all.api.view.grid.GridModelApi;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,14 @@ public class GridApiDelegateImpl implements GridApiDelegate {
       String actionIdentifier) throws Exception {
     // TODO Auto-generated method stub
     return GridApiDelegate.super.performAction(uuid, gridIdentifier, actionIdentifier);
+  }
+
+  @Override
+  public ResponseEntity<GridModel> update(UUID uuid, String gridIdentifier,
+      GridUpdateData gridUpdateData) throws Exception {
+    return ResponseEntity.ok(
+        gridModelApi.executeGridCall(uuid, gridIdentifier,
+            grid -> gridModelApi.updateGrid(grid, gridUpdateData)));
   }
 
 }

@@ -6,6 +6,7 @@
 package org.smartbit4all.api.grid.restserver;
 
 import org.smartbit4all.api.grid.bean.GridModel;
+import org.smartbit4all.api.grid.bean.GridUpdateData;
 import java.util.UUID;
 import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
@@ -119,6 +120,39 @@ public interface GridApi {
         @ApiParam(value = "", required = true) @PathVariable("limit") String limit
     ) throws Exception {
         return getDelegate().setPage(uuid, gridIdentifier, offset, limit);
+    }
+
+
+    /**
+     * POST /grid/{uuid}/{gridIdentifier}/update
+     *
+     * @param uuid  (required)
+     * @param gridIdentifier  (required)
+     * @param gridUpdateData  (required)
+     * @return  (status code 200)
+     */
+    @ApiOperation(
+        tags = { "grid" },
+        value = "",
+        nickname = "update",
+        notes = "",
+        response = GridModel.class
+    )
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "", response = GridModel.class)
+    })
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/grid/{uuid}/{gridIdentifier}/update",
+        produces = { "application/json" },
+        consumes = { "application/json" }
+    )
+    default ResponseEntity<GridModel> update(
+        @ApiParam(value = "", required = true) @PathVariable("uuid") UUID uuid,
+        @ApiParam(value = "", required = true) @PathVariable("gridIdentifier") String gridIdentifier,
+        @ApiParam(value = "", required = true) @Valid @RequestBody GridUpdateData gridUpdateData
+    ) throws Exception {
+        return getDelegate().update(uuid, gridIdentifier, gridUpdateData);
     }
 
 }

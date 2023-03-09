@@ -37,6 +37,38 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GridModel'
+  /grid/{uuid}/{gridIdentifier}/update:
+    post:
+      tags:
+      - grid
+      summary: ''
+      operationId: 'update'
+      parameters: 
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+        - in: path
+          name: gridIdentifier
+          schema:
+            type: string
+          required: true
+          description: ''
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GridUpdateData'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GridModel'
   /grid/{uuid}/{gridIdentifier}/page/{offset}/{limit}:
     post:
       tags:
@@ -189,7 +221,7 @@ components:
       description: |
         The configuration of the grid view. It can be a simple table grid but a complex card representation also. A model
         has one or more view option to render the content.
-      required: [orderedColumnNames]
+      required: [orderedColumnNames,orderByList]
       properties:
         descriptor:
           $ref: '#/components/schemas/GridViewDescriptor'
@@ -228,3 +260,17 @@ components:
           type: string
         typeClass:
           type: string
+    GridUpdateData:
+      type: object
+      description: |
+        Update request for grid's current view's behaviour.
+      required: [orderedColumnNames,orderByList]
+      properties:
+        orderedColumnNames:
+          type: array
+          items:
+            type: string
+        orderByList:
+          type: array
+          items:
+            type: FilterExpressionOrderBy

@@ -25,71 +25,38 @@ import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy;
-import org.smartbit4all.api.grid.bean.GridViewDescriptor;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 
 /**
- * The configuration of the grid view. It can be a simple table grid but a complex card representation also. A model has one or more view option to render the content. 
+ * Update request for grid&#39;s current view&#39;s behaviour. 
  */
-@ApiModel(description = "The configuration of the grid view. It can be a simple table grid but a complex card representation also. A model has one or more view option to render the content. ")
+@ApiModel(description = "Update request for grid's current view's behaviour. ")
 @JsonPropertyOrder({
-  GridView.DESCRIPTOR,
-  GridView.ORDERED_COLUMN_NAMES,
-  GridView.ORDER_BY_LIST
+  GridUpdateData.ORDERED_COLUMN_NAMES,
+  GridUpdateData.ORDER_BY_LIST
 })
-@JsonTypeName("GridView")
+@JsonTypeName("GridUpdateData")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
-public class GridView {
-  public static final String DESCRIPTOR = "descriptor";
-  private GridViewDescriptor descriptor;
-
+public class GridUpdateData {
   public static final String ORDERED_COLUMN_NAMES = "orderedColumnNames";
   private List<String> orderedColumnNames = new ArrayList<>();
 
   public static final String ORDER_BY_LIST = "orderByList";
   private List<FilterExpressionOrderBy> orderByList = new ArrayList<>();
 
-  public GridView() { 
+  public GridUpdateData() { 
   }
 
-  public GridView descriptor(GridViewDescriptor descriptor) {
-    
-    this.descriptor = descriptor;
-    return this;
-  }
-
-   /**
-   * Get descriptor
-   * @return descriptor
-  **/
-  @javax.annotation.Nullable
-  @Valid
-  @ApiModelProperty(value = "")
-  @JsonProperty(DESCRIPTOR)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public GridViewDescriptor getDescriptor() {
-    return descriptor;
-  }
-
-
-  @JsonProperty(DESCRIPTOR)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setDescriptor(GridViewDescriptor descriptor) {
-    this.descriptor = descriptor;
-  }
-
-
-  public GridView orderedColumnNames(List<String> orderedColumnNames) {
+  public GridUpdateData orderedColumnNames(List<String> orderedColumnNames) {
     
     this.orderedColumnNames = orderedColumnNames;
     return this;
   }
 
-  public GridView addOrderedColumnNamesItem(String orderedColumnNamesItem) {
+  public GridUpdateData addOrderedColumnNamesItem(String orderedColumnNamesItem) {
     this.orderedColumnNames.add(orderedColumnNamesItem);
     return this;
   }
@@ -116,13 +83,13 @@ public class GridView {
   }
 
 
-  public GridView orderByList(List<FilterExpressionOrderBy> orderByList) {
+  public GridUpdateData orderByList(List<FilterExpressionOrderBy> orderByList) {
     
     this.orderByList = orderByList;
     return this;
   }
 
-  public GridView addOrderByListItem(FilterExpressionOrderBy orderByListItem) {
+  public GridUpdateData addOrderByListItem(FilterExpressionOrderBy orderByListItem) {
     this.orderByList.add(orderByListItem);
     return this;
   }
@@ -158,22 +125,20 @@ public class GridView {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    GridView gridView = (GridView) o;
-    return Objects.equals(this.descriptor, gridView.descriptor) &&
-        Objects.equals(this.orderedColumnNames, gridView.orderedColumnNames) &&
-        Objects.equals(this.orderByList, gridView.orderByList);
+    GridUpdateData gridUpdateData = (GridUpdateData) o;
+    return Objects.equals(this.orderedColumnNames, gridUpdateData.orderedColumnNames) &&
+        Objects.equals(this.orderByList, gridUpdateData.orderByList);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(descriptor, orderedColumnNames, orderByList);
+    return Objects.hash(orderedColumnNames, orderByList);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class GridView {\n");
-    sb.append("    descriptor: ").append(toIndentedString(descriptor)).append("\n");
+    sb.append("class GridUpdateData {\n");
     sb.append("    orderedColumnNames: ").append(toIndentedString(orderedColumnNames)).append("\n");
     sb.append("    orderByList: ").append(toIndentedString(orderByList)).append("\n");
     sb.append("}");
