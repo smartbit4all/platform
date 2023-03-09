@@ -1,7 +1,11 @@
 package org.smartbit4all.core.object;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import java.io.IOException;
 import java.net.URI;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,8 +27,6 @@ import org.smartbit4all.api.object.bean.RetrievalMode;
 import org.smartbit4all.api.object.bean.SnapshotData;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 public class ObjectApiImpl implements ObjectApi {
 
@@ -173,6 +175,12 @@ public class ObjectApiImpl implements ObjectApi {
     }
     if (clazz == OffsetDateTime.class && value instanceof String) {
       return (T) OffsetDateTime.parse((String) value);
+    }
+    if (clazz == LocalDate.class && value instanceof String) {
+      return (T) LocalDate.parse((String) value);
+    }
+    if (clazz == LocalDateTime.class && value instanceof String) {
+      return (T) LocalDateTime.parse((String) value);
     }
     if (value instanceof Map) {
       // Try to retrieve the proper object

@@ -2,16 +2,20 @@ package org.smartbit4all.domain.utility.serialize;
 
 import static org.smartbit4all.domain.utility.serialize.SerializationType.NULL_VALUE;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import org.smartbit4all.api.binarydata.BinaryData;
+import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.domain.data.DataColumn;
 import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.data.TableDatas;
 import org.smartbit4all.domain.meta.Property;
+import com.google.common.io.ByteStreams;
 import com.google.common.primitives.Ints;
 import com.google.common.primitives.Longs;
 
@@ -23,7 +27,7 @@ import com.google.common.primitives.Longs;
  * process the row index information is written to the end of the stream. The last long in the
  * stream defines the start of the index table. The index table defines the index of the rows. The
  * meta is started at the very beginning of the stream.
- * 
+ *
  * @author Peter Boros
  *
  */
@@ -33,6 +37,11 @@ public final class TableDataSerializer {
    * The output stream for writing.
    */
   private OutputStream os;
+
+  /**
+   * ObjectApi for serializing complex objects.
+   */
+  private ObjectApi objectApi;
 
   /**
    * The staring indices of the rows in the os. When we start a new row then the
@@ -60,17 +69,18 @@ public final class TableDataSerializer {
 
   /**
    * Construct a new serializer with an {@link OutputStream} as output.
-   * 
+   *
    * @param os The already opened output stream.
    */
-  private TableDataSerializer(OutputStream os) {
+  private TableDataSerializer(OutputStream os, ObjectApi objectApi) {
     this.os = os;
+    this.objectApi = objectApi;
   }
 
   /**
    * Set the table data, writes the meta information and after this call we are ready to accept the
    * rows with {@link #addRow()}.
-   * 
+   *
    * @param tableData
    * @return
    * @throws IOException
@@ -85,7 +95,7 @@ public final class TableDataSerializer {
   /**
    * Add a new row to the serialization. It will be the new staging row and we already have one then
    * it will be written to the output stream.
-   * 
+   *
    * @return
    * @throws IOException
    */
@@ -103,7 +113,7 @@ public final class TableDataSerializer {
 
   /**
    * Write out the current staging row.
-   * 
+   *
    * @throws IOException
    */
   private void writeStagingRow() throws IOException {
@@ -119,7 +129,7 @@ public final class TableDataSerializer {
   /**
    * Finish the whole table data serialization process. After this call the instance will be no
    * longer usable. It closes the underlying output stream.
-   * 
+   *
    * @throws IOException
    */
   public void finish() throws IOException {
@@ -133,27 +143,33 @@ public final class TableDataSerializer {
   /**
    * The static method that creates a new instance from the serializer points to the given output
    * stream.
-   * 
+   *
    * @param os
    * @return
    */
   public static final TableDataSerializer to(OutputStream os) {
+    return to(os, null);
+  }
+
+  public static final TableDataSerializer to(OutputStream os, ObjectApi objectApi) {
+
     Objects.requireNonNull(os, "The output stream is missing to serialize the table data.");
-    return new TableDataSerializer(os);
+    return new TableDataSerializer(os, objectApi);
   }
 
   /**
    * Save an already existing table data.
-   * 
+   *
    * @param tableData
    * @param os
    * @throws IOException
    */
-  public static final void save(TableData<?> tableData, OutputStream os) throws IOException {
+  public static final void save(TableData<?> tableData, OutputStream os, ObjectApi objectApi)
+      throws IOException {
     if (tableData == null) {
       return;
     }
-    TableDataSerializer result = to(os);
+    TableDataSerializer result = to(os, objectApi);
     result.tableData(TableDatas.copyMeta(tableData));
     for (DataRow row : tableData.rows()) {
       DataRow addRow = result.addRow();
@@ -196,8 +212,28 @@ public final class TableDataSerializer {
       writeNullValue();
       return;
     }
-    SerializationType<T> type = (SerializationType<T>) SerializationType.getType(value.getClass());
-    byte[] bytes = type.getSerializer().apply(value);
+    Class<? extends Object> typeClass = value.getClass();
+    byte[] bytes;
+    if (typeClass.isEnum()) {
+      SerializationType<String> type =
+          (SerializationType<String>) SerializationType.getType(String.class);
+      bytes = type.getSerializer().apply(value.toString());
+      writeType(type);
+      writeInt(bytes.length);
+      writeBytes(bytes);
+      return;
+    }
+    SerializationType<T> type = (SerializationType<T>) SerializationType.getType(typeClass);
+    if (type == SerializationType.OTHER) {
+      // type will always be set or OTHER
+      BinaryData data = objectApi.definition(typeClass).serialize(value);
+      writeType(type);
+      Long length = data.length();
+      writeInt(length.intValue());
+      writeByteStream(data.inputStream(), length.intValue());
+      return;
+    }
+    bytes = type.getSerializer().apply(value);
     writeType(type);
     writeInt(bytes.length);
     writeBytes(bytes);
@@ -228,6 +264,11 @@ public final class TableDataSerializer {
   private void writeBytes(byte[] b) throws IOException {
     this.currentPosition += b.length;
     this.os.write(b);
+  }
+
+  private void writeByteStream(InputStream is, int length) throws IOException {
+    this.currentPosition += length;
+    ByteStreams.copy(is, this.os);
   }
 
 }

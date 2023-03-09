@@ -1,15 +1,12 @@
 package org.smartbit4all.api.view.grid;
 
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import java.net.URI;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.function.Function;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import org.smartbit4all.api.collection.SearchIndex;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy;
@@ -28,6 +25,7 @@ import org.smartbit4all.domain.data.DataColumn;
 import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.service.dataset.TableDataApi;
+import org.smartbit4all.domain.service.entity.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class GridModelApiImpl implements GridModelApi {
@@ -45,35 +43,21 @@ public class GridModelApiImpl implements GridModelApi {
   @Autowired
   private LocaleSettingApi localeSettingApi;
 
+  @Autowired
+  private EntityManager entityManager;
+
   @Override
   public <T> GridModel modelOf(Class<T> clazz, List<T> objectList, Map<String, String> columns) {
-    GridModel result = new GridModel();
-    result.setTotalRowCount(objectList.size());
+    return modelOf(clazz, objectList, columns, 0, objectList.size());
+  }
 
-    GridViewDescriptor tableHeader = new GridViewDescriptor().kind(KindEnum.TABLE);
-    GridView tableView = new GridView().descriptor(tableHeader);
-    result.addAvailableViewsItem(tableView);
-    result.setView(tableView);
-    columns.entrySet().stream().forEach(e -> tableHeader
-        .addColumnsItem(new GridColumnMeta().label(localeSettingApi.get(e.getValue()))
-            .propertyName(e.getKey())));
-
-    // AtomicInteger i = new AtomicInteger(1);
-    GridPage page = new GridPage().lowerBound(0).upperBound(objectList.size());
-    List<GridRow> gridRows = objectList.isEmpty() ? Collections.emptyList()
-        : IntStream.range(0, page.getUpperBound())
-            .mapToObj(i -> new GridRow()
-                .id(String.valueOf(i))
-                .data(objectApi.create(null, objectList.get(i))
-                    .getObjectAsMap()
-                    .entrySet().stream()
-                    .filter(e -> columns.containsKey(e.getKey()))
-                    .collect(toMap(Entry::getKey, Entry::getValue))))
-            .collect(toList());
-    page.setRows(gridRows);
-
-    result.setPage(page);
-    return result;
+  @Override
+  public <T> org.smartbit4all.api.grid.bean.GridModel modelOf(Class<T> clazz, List<T> objectList,
+      Map<String, String> columns, int lowerBound, int upperBound) {
+    return modelOf(
+        tableDataApi.tableOf(clazz, objectList, new ArrayList<>(columns.keySet())),
+        lowerBound,
+        upperBound);
   }
 
   @Override

@@ -8,6 +8,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import org.smartbit4all.api.binarydata.BinaryData;
+import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.domain.data.DataColumn;
 import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.data.TableData;
@@ -22,7 +23,7 @@ import com.google.common.primitives.Longs;
  * The pager is based on a RandomAccess file that contains the {@link TableData} serialized by the
  * {@link TableDataSerializer}. The pager has a working {@link TableData} for the active frame in
  * the memory.
- * 
+ *
  * @author Peter Boros
  */
 public final class TableDataPager<E extends EntityDefinition> {
@@ -60,31 +61,36 @@ public final class TableDataPager<E extends EntityDefinition> {
 
   private RafGetter rafGetter;
 
+  private ObjectApi objectApi;
+
   /**
    * Constructs a table data pager. Load the structure of the table data and the row indices.
-   * 
+   *
    * @param entityDefClazz
    * @throws IOException
    */
-  private TableDataPager(Class<E> entityDefClazz, RafGetter rafGetter, EntityManager entityManager)
+  private TableDataPager(Class<E> entityDefClazz, RafGetter rafGetter, EntityManager entityManager,
+      ObjectApi objectApi)
       throws Exception {
     this.entityDefClazz = entityDefClazz;
     this.entityManager = entityManager;
     this.rafGetter = rafGetter;
+    this.objectApi = objectApi;
     RandomAccessFile raf = rafGetter.getRaf();
     readRowIndices(raf);
     readEntityDefMeta(raf);
     raf.close();
   }
 
-  private TableDataPager(Class<E> entityDefClazz, File file, EntityManager entityManager)
+  private TableDataPager(Class<E> entityDefClazz, File file, EntityManager entityManager,
+      ObjectApi objectApi)
       throws Exception {
-    this(entityDefClazz, () -> new RandomAccessFile(file, "r"), entityManager);
+    this(entityDefClazz, () -> new RandomAccessFile(file, "r"), entityManager, objectApi);
   }
 
   private TableDataPager(Class<E> entityDefClazz, BinaryData binaryData,
       EntityManager entityManager) throws Exception {
-    this(entityDefClazz, () -> binaryData.asRandomAccessFile(), entityManager);
+    this(entityDefClazz, () -> binaryData.asRandomAccessFile(), entityManager, null);
   }
 
   private void readRowIndices(RandomAccessFile raf) throws IOException {
@@ -131,7 +137,7 @@ public final class TableDataPager<E extends EntityDefinition> {
   /**
    * Deserialize an object from the given position of the {@link RandomAccessFile}. Seek to the
    * position and read the class.
-   * 
+   *
    * @param <T>
    * @param clazz The recommended class that is the return value or null.
    * @return The deserialized value object or null.
@@ -141,15 +147,34 @@ public final class TableDataPager<E extends EntityDefinition> {
   private <T> T readObject(Class<T> clazz, RandomAccessFile raf) throws IOException {
     byte typeValue = raf.readByte();
     SerializationType<T> type = (SerializationType<T>) SerializationType.types[typeValue];
-    SerializationType requestedType = SerializationType.getType(clazz);
+    if (type == SerializationType.NULL_VALUE) {
+      return null;
+    }
+    if (clazz.isEnum()) {
+      // serialized as string -> type = SerializationType<String>
+      String stringValue = (String) readObjectInternal(raf, type);
+      return objectApi.asType(clazz, stringValue);
+
+    }
+    if (type == SerializationType.OTHER) {
+      int length = raf.readInt();
+      byte[] bytes = new byte[length];
+      raf.read(bytes);
+      return objectApi.definition(clazz)
+          .deserialize(new BinaryData(bytes))
+          .orElseThrow(() -> new IllegalStateException("Unable to deserialize value"));
+    }
+    SerializationType<?> requestedType = SerializationType.getType(clazz);
     if (type != requestedType && type != SerializationType.NULL
         && type != SerializationType.NULL_VALUE) {
       throw new IllegalArgumentException("Type mismatch when reading " + clazz
           + " from the underlying file (" + type + " was found instead)");
     }
-    if (type == SerializationType.NULL_VALUE) {
-      return null;
-    }
+    return readObjectInternal(raf, type);
+  }
+
+  private <T> T readObjectInternal(RandomAccessFile raf, SerializationType<T> type)
+      throws IOException {
     int length = raf.readInt();
     byte[] bytes = new byte[length];
     raf.read(bytes);
@@ -159,7 +184,7 @@ public final class TableDataPager<E extends EntityDefinition> {
 
   /**
    * The {@link RandomAccessFile} parameter is already at the position!
-   * 
+   *
    * @return
    * @throws IOException
    */
@@ -171,7 +196,7 @@ public final class TableDataPager<E extends EntityDefinition> {
 
   /**
    * The {@link RandomAccessFile} parameter is already at the position!
-   * 
+   *
    * @return
    * @throws IOException
    */
@@ -190,7 +215,7 @@ public final class TableDataPager<E extends EntityDefinition> {
 
   /**
    * Read the whole saved {@link TableData} at once into memory.
-   * 
+   *
    * @return
    * @throws Exception
    */
@@ -199,7 +224,7 @@ public final class TableDataPager<E extends EntityDefinition> {
   }
 
   /**
-   * 
+   *
    * @param offset The row index to fetch the data from.
    * @param limit The number of rows to fetch.
    * @return Returns the TableData with the fetched rows.
@@ -250,13 +275,13 @@ public final class TableDataPager<E extends EntityDefinition> {
 
 
   public static <T extends EntityDefinition> TableDataPager<T> create(File file,
-      EntityManager entityManager) throws Exception {
-    return new TableDataPager<>(null, file, entityManager);
+      EntityManager entityManager, ObjectApi objectApi) throws Exception {
+    return new TableDataPager<>(null, file, entityManager, objectApi);
   }
 
   public static <T extends EntityDefinition> TableDataPager<T> create(Class<T> entityDefClazz,
-      File file, EntityManager entityManager) throws Exception {
-    return new TableDataPager<>(entityDefClazz, file, entityManager);
+      File file, EntityManager entityManager, ObjectApi objectApi) throws Exception {
+    return new TableDataPager<>(entityDefClazz, file, entityManager, objectApi);
   }
 
   public static <T extends EntityDefinition> TableDataPager<T> create(Class<T> entityDefClazz,

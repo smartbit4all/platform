@@ -47,6 +47,7 @@ public class SerializationType<T> {
   public static final SerializationType<Boolean> BOOLEAN = new SerializationType<>(0x1d, Boolean.class, SerializationType::serializeBoolean, SerializationType::deserializeBoolean);
   public static final SerializationType<UUID> UUIDTYPE = new SerializationType<>(0x1e, UUID.class, SerializationType::serializeUUID, SerializationType::deserializeUUID);
   public static final SerializationType<Void> OTHER = new SerializationType<>(0x40, Void.class, null, b -> null);
+
   // @formatter:on
 
   /**

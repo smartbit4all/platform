@@ -7,16 +7,20 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.RandomAccess;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.core.io.utility.FileIO;
+import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.data.TableDatas;
+import org.smartbit4all.domain.data.TableDatas.BuilderWithFlexibleProperties;
 import org.smartbit4all.domain.data.storage.StorageApi;
+import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.service.CrudApi;
 import org.smartbit4all.domain.service.entity.EntityManager;
 import org.smartbit4all.domain.utility.serialize.TableDataPager;
@@ -46,6 +50,9 @@ public class TableDataApiImpl implements TableDataApi {
 
   @Autowired
   private EntityManager entityManager;
+
+  @Autowired
+  private ObjectApi objectApi;
 
   /**
    * The root folder of the file system storage. If null then the storage of the table data files
@@ -83,7 +90,7 @@ public class TableDataApiImpl implements TableDataApi {
       File fileByUri = FileIO.getFileByUri(rootFolder, uri, TABLEDATAFILEEXTESION);
       fileByUri.getParentFile().mkdirs();
       try (FileOutputStream os = new FileOutputStream(fileByUri)) {
-        TableDataSerializer.save(tableData, os);
+        TableDataSerializer.save(tableData, os, objectApi);
       } catch (IOException e) {
         throw new IllegalStateException("Unable to construct the file for the table data.", e);
       }
@@ -100,7 +107,8 @@ public class TableDataApiImpl implements TableDataApi {
     if (rootFolder != null) {
       try {
         TableDataPager<?> pager = TableDataPager
-            .create(FileIO.getFileByUri(rootFolder, uri, TABLEDATAFILEEXTESION), entityManager);
+            .create(FileIO.getFileByUri(rootFolder, uri, TABLEDATAFILEEXTESION), entityManager,
+                objectApi);
         result = pager.fetchAll();
       } catch (Exception e) {
         throw new IllegalArgumentException("Unable to read the " + uri + " table data.", e);
@@ -119,7 +127,8 @@ public class TableDataApiImpl implements TableDataApi {
     if (rootFolder != null) {
       try {
         TableDataPager<?> pager = TableDataPager
-            .create(FileIO.getFileByUri(rootFolder, uri, TABLEDATAFILEEXTESION), entityManager);
+            .create(FileIO.getFileByUri(rootFolder, uri, TABLEDATAFILEEXTESION), entityManager,
+                objectApi);
         return pager.fetch(offset, limit);
       } catch (Exception e) {
         throw new IllegalArgumentException("Unable to read the " + uri + " table data.", e);
@@ -142,6 +151,27 @@ public class TableDataApiImpl implements TableDataApi {
         + now.getMinute() + StringConstant.SLASH
         + now.getSecond() + StringConstant.SLASH
         + uuid);
+  }
+
+  @Override
+  public <T> TableData<?> tableOf(Class<T> clazz, List<T> objectList, List<String> columns) {
+    EntityDefinition entityDefinition = entityManager.createEntityDef(clazz);
+    entityManager.registerEntityDef(entityDefinition);
+    return tableOf(entityDefinition, objectList, columns);
+  }
+
+  @Override
+  public <T> TableData<?> tableOf(EntityDefinition entityDef, List<T> objectList,
+      List<String> columns) {
+    BuilderWithFlexibleProperties<EntityDefinition> table = TableDatas.builder(entityDef);
+    objectList.stream()
+        .forEachOrdered(object -> {
+          BuilderWithFlexibleProperties<EntityDefinition> row = table.addRow();
+          Map<String, Object> map = objectApi.create(null, object).getObjectAsMap();
+          columns.forEach(
+              col -> row.setObject(entityDef.getProperty(col), map.get(col)));
+        });
+    return table.build(objectApi);
   }
 
 }

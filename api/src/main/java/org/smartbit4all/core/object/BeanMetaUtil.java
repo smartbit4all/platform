@@ -120,8 +120,8 @@ public final class BeanMetaUtil {
       meta.getPropertiesCaseSensitive().put(propertyKey, propertyMeta);
     } else {
       // possible for example with getName() and getNAME()
-      throw new IllegalArgumentException(
-          "Duplicate property name " + apiClass.getName() + "." + propertyName + "!");
+      // throw new IllegalArgumentException(
+      // "Duplicate property name " + apiClass.getName() + "." + propertyName + "!");
     }
     propertyMeta.setGetter(method);
 

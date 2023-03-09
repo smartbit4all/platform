@@ -24,6 +24,9 @@ public interface GridModelApi {
    */
   <T> GridModel modelOf(Class<T> clazz, List<T> o, Map<String, String> columns);
 
+  <T> GridModel modelOf(Class<T> clazz, List<T> o, Map<String, String> columns, int lowerBound,
+      int upperBound);
+
   /**
    * If we already have a table data as the result of a query and we would like to save it as
    * content of a grid.

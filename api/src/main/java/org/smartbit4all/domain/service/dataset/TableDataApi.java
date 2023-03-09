@@ -1,7 +1,9 @@
 package org.smartbit4all.domain.service.dataset;
 
 import java.net.URI;
+import java.util.List;
 import org.smartbit4all.domain.data.TableData;
+import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.service.CrudApi;
 
 /**
@@ -40,5 +42,9 @@ public interface TableDataApi {
   TableData<?> readPage(URI uri, int offset, int limit);
 
   void delete(URI uri);
+
+  <T> TableData<?> tableOf(EntityDefinition entityDef, List<T> objectList, List<String> columns);
+
+  <T> TableData<?> tableOf(Class<T> clazz, List<T> objectList, List<String> columns);
 
 }

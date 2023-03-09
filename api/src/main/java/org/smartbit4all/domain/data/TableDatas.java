@@ -34,6 +34,7 @@ import org.smartbit4all.api.object.bean.TableDataContent;
 import org.smartbit4all.api.object.bean.TableDataContentColumn;
 import org.smartbit4all.api.object.bean.TableDataContentHeader;
 import org.smartbit4all.api.object.bean.TableDataContentRow;
+import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Property;
@@ -565,6 +566,10 @@ public final class TableDatas {
      * @return new instance of {@link TableData}
      */
     public TableData<E> build() {
+      return build(null);
+    }
+
+    public TableData<E> build(ObjectApi objectApi) {
       TableData<E> tableData = of(entityDef);
       for (Property<?> property : properties) {
         tableData.addColumn(property);
@@ -572,7 +577,12 @@ public final class TableDatas {
       for (Map<Property<?>, Object> rowData : rows) {
         DataRow newRow = tableData.addRow();
         for (Entry<Property<?>, Object> entry : rowData.entrySet()) {
-          newRow.setObject(entry.getKey(), entry.getValue());
+          Object value = entry.getValue();
+          Property<?> property = entry.getKey();
+          if (objectApi != null && value != null && !property.type().isInstance(value)) {
+            value = objectApi.asType(property.type(), value);
+          }
+          newRow.setObject(property, value);
         }
       }
       return tableData;
@@ -626,6 +636,11 @@ public final class TableDatas {
       return self();
     }
 
+    public T setObject(Property<?> property, Object value) {
+      lastRow().put(property, value);
+      return self();
+    }
+
     /**
      * Sets the value of the given property on the last added row, if the value is not null.
      *
@@ -674,11 +689,21 @@ public final class TableDatas {
 
     @Override
     public <P> BuilderWithFlexibleProperties<E> set(Property<P> property, P value) {
+      addPropertyIfMissing(property);
+      return super.set(property, value);
+    }
+
+    private <P> void addPropertyIfMissing(Property<P> property) {
       if (!properties.contains(property)) {
         checkProperty(property);
         properties.add(property);
       }
-      return super.set(property, value);
+    }
+
+    @Override
+    public BuilderWithFlexibleProperties<E> setObject(Property<?> property, Object value) {
+      addPropertyIfMissing(property);
+      return super.setObject(property, value);
     }
 
     @Override
@@ -710,11 +735,21 @@ public final class TableDatas {
 
     @Override
     public <P> BuilderWithFixProperties<E> set(Property<P> property, P value) {
+      checkForDeclaredProperty(property);
+      return super.set(property, value);
+    }
+
+    private <P> void checkForDeclaredProperty(Property<P> property) {
       if (!properties.contains(property)) {
         throw new IllegalArgumentException(
             "The given property to set is not declared in the builder!");
       }
-      return super.set(property, value);
+    }
+
+    @Override
+    public BuilderWithFixProperties<E> setObject(Property<?> property, Object value) {
+      checkForDeclaredProperty(property);
+      return super.setObject(property, value);
     }
 
     @Override

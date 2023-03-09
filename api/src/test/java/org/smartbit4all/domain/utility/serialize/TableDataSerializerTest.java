@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.smartbit4all.api.config.PlatformApiConfig;
 import org.smartbit4all.core.io.TestFSConfig;
+import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.data.TableDatas;
@@ -40,6 +41,9 @@ public class TableDataSerializerTest {
   @Autowired
   private EntityManager entityManager;
 
+  @Autowired
+  private ObjectApi objectApi;
+
   @Test
   public void test01() throws Exception {
 
@@ -65,7 +69,7 @@ public class TableDataSerializerTest {
     serializer.finish();
 
     TableDataPager<UserAccountDef> pager =
-        TableDataPager.create(UserAccountDef.class, tempFile, entityManager);
+        TableDataPager.create(UserAccountDef.class, tempFile, entityManager, objectApi);
 
     int totalRowCount = pager.getTotalRowCount();
     assertEquals(testRowCount, totalRowCount);
@@ -108,7 +112,7 @@ public class TableDataSerializerTest {
     serializer.finish();
 
     TableDataPager<UserAccountDef> pager =
-        TableDataPager.create(UserAccountDef.class, tempFile, entityManager);
+        TableDataPager.create(UserAccountDef.class, tempFile, entityManager, objectApi);
 
     int totalRowCount = pager.getTotalRowCount();
     assertEquals(0, totalRowCount);
@@ -140,7 +144,7 @@ public class TableDataSerializerTest {
     serializer.finish();
 
     TableDataPager<UserAccountDef> pager =
-        TableDataPager.create(UserAccountDef.class, tempFile, entityManager);
+        TableDataPager.create(UserAccountDef.class, tempFile, entityManager, objectApi);
 
     List<Integer> sortedIndexes = SerializedTableDataSorter.getSortedIndexes(pager,
         Collections.singletonList(userAccountDef.id().asc()));

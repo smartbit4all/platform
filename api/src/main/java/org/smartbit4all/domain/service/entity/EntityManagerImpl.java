@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
@@ -20,11 +20,24 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.smartbit4all.api.object.bean.ObjectDefinitionData;
+import org.smartbit4all.api.object.bean.PropertyDefinitionData;
+import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.domain.meta.EntityDefinition;
+import org.smartbit4all.domain.meta.EntityDefinitionBuilder;
 import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.domain.meta.Reference;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 
 public class EntityManagerImpl implements EntityManager {
+
+  @Autowired
+  private ObjectApi objectApi;
+
+  @Autowired
+  private ApplicationContext ctx;
 
   Map<String, Map<String, EntityDefinition>> entityDefsByNameByDomain = new HashMap<>();
   Map<URI, EntityDefinition> entityDefsByUri = new HashMap<>();
@@ -141,4 +154,29 @@ public class EntityManagerImpl implements EntityManager {
     }
   }
 
+  @Override
+  public EntityDefinition createEntityDef(Class<?> clazz) {
+    ObjectDefinition<?> definition = objectApi.definition(clazz);
+    ObjectDefinitionData definitionData = definition.getDefinitionData();
+
+    EntityDefinitionBuilder entityBuilder = EntityDefinitionBuilder.of(ctx);
+    String entityName = definitionData.getQualifiedName();
+    entityName = entityName.replaceAll("\\.", "_");
+    entityBuilder
+        .domain(CLASS_BASED_ENTITY)
+        .tableName(entityName)
+        .name(entityName);
+
+    for (PropertyDefinitionData prop : definitionData.getProperties()) {
+      String typeName = prop.getTypeClass();
+      Class<?> typeClass;
+      try {
+        typeClass = Class.forName(typeName);
+      } catch (ClassNotFoundException e1) {
+        typeClass = String.class;
+      }
+      entityBuilder.addOwnedProperty(prop.getName(), typeClass, -1);
+    }
+    return entityBuilder.build();
+  }
 }
