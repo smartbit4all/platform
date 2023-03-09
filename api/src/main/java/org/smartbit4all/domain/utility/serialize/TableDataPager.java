@@ -120,7 +120,7 @@ public final class TableDataPager<E extends EntityDefinition> {
     }
     if (entityDefClazz != null && !entityDefClazz.isAssignableFrom(entityDef.getClass())) {
       throw new Exception(
-          "EntityDefinition mismatch! The TableDataPager has been inizialized with a"
+          "EntityDefinition mismatch! The TableDataPager has been initialized with a"
               + " different EntityDefinitionin subclass!");
     }
     activePage = (TableData<E>) TableDatas.of(entityDef);

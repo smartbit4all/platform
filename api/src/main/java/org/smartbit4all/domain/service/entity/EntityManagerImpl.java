@@ -20,6 +20,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.object.bean.ObjectDefinitionData;
 import org.smartbit4all.api.object.bean.PropertyDefinitionData;
 import org.smartbit4all.core.object.ObjectApi;
@@ -33,6 +35,8 @@ import org.springframework.context.ApplicationContext;
 
 public class EntityManagerImpl implements EntityManager {
 
+  private static final Logger log = LoggerFactory.getLogger(EntityManagerImpl.class);
+
   @Autowired
   private ObjectApi objectApi;
 
@@ -44,6 +48,7 @@ public class EntityManagerImpl implements EntityManager {
 
   public EntityManagerImpl(List<EntityDefinition> entityDefs) {
     entityDefs.forEach(this::registerEntityDef);
+    entityDefsByNameByDomain.computeIfAbsent(CLASS_BASED_ENTITY, d -> new HashMap<>());
   }
 
   @Override
@@ -73,7 +78,20 @@ public class EntityManagerImpl implements EntityManager {
           "To request an EntityDefinition the entityPath can only contain a single entity name.");
     }
     Map<String, EntityDefinition> entityDefsByName = getEntitiesByNameForDomain(uri);
-    return entityDefsByName.get(entityPath);
+    EntityDefinition result = entityDefsByName.get(entityPath);
+    if (result == null && CLASS_BASED_ENTITY.equals(EntityUris.getDomain(uri))) {
+      // try to recreate and register entityDefinition based on class
+      String entityName = EntityUris.getEntityName(uri);
+      String className = entityName.replace("_", ".");
+      try {
+        Class<?> clazz = Class.forName(className);
+        result = createEntityDef(clazz);
+        registerEntityDef(result);
+      } catch (Exception e) {
+        log.warn("Unable to create entityDefinition for class {}", className);
+      }
+    }
+    return result;
   }
 
   @Override
