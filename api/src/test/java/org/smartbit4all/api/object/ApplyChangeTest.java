@@ -1,6 +1,12 @@
 package org.smartbit4all.api.object;
 
 import static java.util.stream.Collectors.toList;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,12 +27,6 @@ import org.smartbit4all.core.object.ObjectNodes;
 import org.smartbit4all.core.object.ObjectProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(classes = {ApplyChangeTestConfig.class})
 class ApplyChangeTest {
@@ -463,6 +463,23 @@ class ApplyChangeTest {
 
   }
 
+  @Test
+  void testUpdateWithExistingLoadedReference() {
+    SampleDataSheet dataSheet = new SampleDataSheet().name("data sheet created before");
+    URI dataSheetUri = objectApi.saveAsNew(MY_SCHEME, dataSheet);
+
+    SampleContainerItem item = new SampleContainerItem().name("container");
+    URI itemUri = objectApi.saveAsNew(MY_SCHEME, item);
+
+    ObjectNode itemNode = objectApi.load(itemUri);
+    itemNode.ref(SampleContainerItem.DATASHEET).set(dataSheetUri);
+    // uncomment this to fail test
+    // itemNode.ref(SampleContainerItem.DATASHEET).get();
+    itemUri = objectApi.save(itemNode);
+
+    itemNode = objectApi.load(itemUri);
+    assertEquals(dataSheetUri, itemNode.ref(SampleContainerItem.DATASHEET).getObjectUri());
+  }
 
   private URI constructSampleCategory(String referenceToItems) {
     URI branchUri = null;
