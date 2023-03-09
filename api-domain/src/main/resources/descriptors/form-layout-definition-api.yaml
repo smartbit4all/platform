@@ -1,0 +1,93 @@
+openapi: 3.0.1
+info:
+  title: Form layout definition
+  description: Contains form layout definition objects.
+  termsOfService: ''
+  contact:
+    email: info@it4all.hu
+  version: 1.0.0
+tags:
+- name: FormLayoutDefinition
+paths:
+  /nope:
+    post:
+      summary: Placeholder for generation
+      responses:
+        '200':
+          description: nope
+components:
+  schemas:
+    SmartFormWidgetType:
+      type: string
+      enum:
+        - CHECK_BOX
+        - CONTAINER
+        - DATE_PICKER
+        - DATE_TIME_PICKER
+        - INDICATOR
+        - ITEM
+        - ITEM_GROUP
+        - LABEL
+        - RADIO_BUTTON
+        - SELECT
+        - SELECT_MULTIPLE
+        - TEXT_BOX
+        - TEXT_FIELD
+        - TEXT_FIELD_CHIPS
+        - TEXT_FIELD_NUMBER
+        - TIME
+        - TOGGLE
+    SmartLayoutDefinition:
+      type: object
+      required: [widgets]
+      properties:
+        widgets:
+          type: array
+          items:
+            $ref: '#/components/schemas/SmartWidgetDefinition'
+    SmartWidgetDefinition:
+      type: object
+      description: The layout definition of the SmartTextField widget.
+      required: [type, key, label]
+      properties:
+        type:
+          $ref: '#/components/schemas/SmartFormWidgetType'
+        key:
+          type: string
+          description: The path of the desired parameter in the object.
+        label:
+          type: string
+          description: The label of the text field
+        placeholder:
+          type: string
+          description: The placeholder of the text field
+        prefix:
+          type: string
+          description: Text that appears as a prefix
+        suffix:
+          type: string
+          description: Text that appears as a suffix
+        mask:
+          type: string
+          description: A descriptor that masks the input
+        icon:
+          type: string
+          description: An icon which appears as a suffix
+        iconColor:
+          type: string
+          description: Material theme class of the icon
+        showLabel:
+          type: boolean
+          description: Defines if the label appears above the widget or not
+          default: true
+        cssClass:
+          type: string
+          description: Optional css class of the widget
+        cssLabelClass:
+          type: string
+          description: Optional css class of the label of the widget
+        isPassword:
+          type: boolean
+          description: Defines if the widget is a password input
+          default: false
+        
