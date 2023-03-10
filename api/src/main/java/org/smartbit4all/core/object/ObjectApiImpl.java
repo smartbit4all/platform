@@ -27,6 +27,7 @@ import org.smartbit4all.api.object.bean.RetrievalMode;
 import org.smartbit4all.api.object.bean.SnapshotData;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import com.google.common.base.Objects;
 
 public class ObjectApiImpl implements ObjectApi {
 
@@ -139,6 +140,13 @@ public class ObjectApiImpl implements ObjectApi {
       return null;
     }
     return ObjectStorageImpl.getUriWithoutVersion(uri);
+  }
+
+  @Override
+  public boolean equalsIgnoreVersion(URI a, URI b) {
+    URI uri1 = getLatestUri(a);
+    URI uri2 = getLatestUri(b);
+    return Objects.equal(uri1, uri2);
   }
 
   @SuppressWarnings("unchecked")

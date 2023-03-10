@@ -27,6 +27,7 @@ import org.smartbit4all.core.object.ObjectNodes;
 import org.smartbit4all.core.object.ObjectProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import com.google.common.base.Objects;
 
 @SpringBootTest(classes = {ApplyChangeTestConfig.class})
 class ApplyChangeTest {
@@ -526,6 +527,29 @@ class ApplyChangeTest {
         SampleContainerItem.DATASHEET, SampleDataSheet.NAME));
     assertEquals(dataSheetNode3.getResultUri(),
         itemNode.ref(SampleContainerItem.DATASHEET).getObjectUri());
+
+  }
+
+  @Test
+  void testObjectApiEqualsIgnoreCase() {
+    SampleCategory category = new SampleCategory().name("category");
+    ObjectNode node = objectApi.create(MY_SCHEME, category);
+    URI uri1_0 = objectApi.save(node);
+
+    node = objectApi.load(uri1_0);
+    node.setValue(SampleCategory.NAME, "category modified");
+    URI uri1_1 = objectApi.save(node);
+
+    SampleCategory category2 = new SampleCategory().name("category");
+    ObjectNode node2 = objectApi.create(MY_SCHEME, category2);
+    URI uri2_0 = objectApi.save(node2);
+
+    assertTrue(objectApi.equalsIgnoreVersion(null, null));
+    assertFalse(objectApi.equalsIgnoreVersion(uri1_0, null));
+    assertFalse(objectApi.equalsIgnoreVersion(null, uri1_0));
+    assertTrue(objectApi.equalsIgnoreVersion(uri1_0, uri1_1));
+    assertFalse(Objects.equal(uri1_0, uri1_1));
+    assertFalse(objectApi.equalsIgnoreVersion(uri1_0, uri2_0));
 
   }
 

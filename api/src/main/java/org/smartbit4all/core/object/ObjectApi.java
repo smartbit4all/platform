@@ -238,4 +238,6 @@ public interface ObjectApi {
 
   Object getValueFromObjectMap(Map<String, Object> map, String... paths);
 
+  boolean equalsIgnoreVersion(URI a, URI b);
+
 }
