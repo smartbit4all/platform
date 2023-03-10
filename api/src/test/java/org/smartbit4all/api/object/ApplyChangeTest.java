@@ -531,7 +531,7 @@ class ApplyChangeTest {
   }
 
   @Test
-  void testObjectApiEqualsIgnoreCase() {
+  void testObjectApiEqualsIgnoreVersion() {
     SampleCategory category = new SampleCategory().name("category");
     ObjectNode node = objectApi.create(MY_SCHEME, category);
     URI uri1_0 = objectApi.save(node);
