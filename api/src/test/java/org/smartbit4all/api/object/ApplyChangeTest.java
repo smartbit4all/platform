@@ -471,14 +471,62 @@ class ApplyChangeTest {
     SampleContainerItem item = new SampleContainerItem().name("container");
     URI itemUri = objectApi.saveAsNew(MY_SCHEME, item);
 
+    // set(URI) and .get()
     ObjectNode itemNode = objectApi.load(itemUri);
     itemNode.ref(SampleContainerItem.DATASHEET).set(dataSheetUri);
-    // uncomment this to fail test
-    // itemNode.ref(SampleContainerItem.DATASHEET).get();
+    itemNode.ref(SampleContainerItem.DATASHEET).get();
     itemUri = objectApi.save(itemNode);
-
     itemNode = objectApi.load(itemUri);
     assertEquals(dataSheetUri, itemNode.ref(SampleContainerItem.DATASHEET).getObjectUri());
+
+    // set(ObjectNode) as NEW
+    ObjectNode dataSheetNode =
+        objectApi.create(MY_SCHEME, new SampleDataSheet().name("other datasheet"));
+    itemNode.ref(SampleContainerItem.DATASHEET).set(dataSheetNode);
+    itemUri = objectApi.save(itemNode);
+    itemNode = objectApi.load(itemUri);
+    assertEquals("other datasheet", itemNode.getValueAsString(
+        SampleContainerItem.DATASHEET, SampleDataSheet.NAME));
+    assertEquals(dataSheetNode.getResultUri(),
+        itemNode.ref(SampleContainerItem.DATASHEET).getObjectUri());
+
+    // set(ObjectNode) as NOP
+    ObjectNode dataSheetNode2 =
+        objectApi.create(MY_SCHEME, new SampleDataSheet().name("other datasheet2"));
+    URI dataSheet2Uri = objectApi.save(dataSheetNode2);
+    dataSheetNode2 = objectApi.load(dataSheet2Uri);
+    itemNode.ref(SampleContainerItem.DATASHEET).set(dataSheetNode2);
+    itemUri = objectApi.save(itemNode);
+    itemNode = objectApi.load(itemUri);
+    assertEquals("other datasheet2", itemNode.getValueAsString(
+        SampleContainerItem.DATASHEET, SampleDataSheet.NAME));
+    assertEquals(dataSheetNode2.getResultUri(),
+        itemNode.ref(SampleContainerItem.DATASHEET).getObjectUri());
+
+    // set(ObjectNode) as NOP and update it
+    ObjectNode dataSheetNode3 =
+        objectApi.create(MY_SCHEME, new SampleDataSheet().name("other datasheet3"));
+    URI dataSheet3Uri = objectApi.save(dataSheetNode3);
+    dataSheetNode3 = objectApi.load(dataSheet3Uri);
+    itemNode.ref(SampleContainerItem.DATASHEET).set(dataSheetNode3);
+    itemNode.ref(SampleContainerItem.DATASHEET).get().setValue("other datasheet3_modified",
+        SampleDataSheet.NAME);
+    itemUri = objectApi.save(itemNode);
+    itemNode = objectApi.load(itemUri);
+    assertEquals("other datasheet3_modified", itemNode.getValueAsString(
+        SampleContainerItem.DATASHEET, SampleDataSheet.NAME));
+    assertEquals(dataSheetNode3.getResultUri(),
+        itemNode.ref(SampleContainerItem.DATASHEET).getObjectUri());
+
+    dataSheetNode3 = itemNode.ref(SampleContainerItem.DATASHEET).get();
+    dataSheetNode3.setValue("other datasheet3_modified_further", SampleDataSheet.NAME);
+    itemUri = objectApi.save(itemNode);
+    itemNode = objectApi.load(itemUri);
+    assertEquals("other datasheet3_modified_further", itemNode.getValueAsString(
+        SampleContainerItem.DATASHEET, SampleDataSheet.NAME));
+    assertEquals(dataSheetNode3.getResultUri(),
+        itemNode.ref(SampleContainerItem.DATASHEET).getObjectUri());
+
   }
 
   private URI constructSampleCategory(String referenceToItems) {

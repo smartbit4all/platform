@@ -50,14 +50,6 @@ public class ObjectNodeReference {
     this.node = originalNode;
     this.isLoaded = this.node != null;
     this.isPresent = objectUri != null;
-    // TODO is it true / necessary?
-    refreshNodeState();
-  }
-
-  private void refreshNodeState() {
-    if (isLoaded) {
-      this.node.setState(getState());
-    }
   }
 
   public ObjectNode setNewObject(Object object) {
@@ -73,7 +65,6 @@ public class ObjectNodeReference {
     this.objectUri = node.getObjectUri();
     this.isLoaded = true;
     this.isPresent = true;
-    refreshNodeState();
   }
 
   public void set(URI objectUri) {
@@ -96,7 +87,6 @@ public class ObjectNodeReference {
           RetrievalRequest.calcLoadLatest(referenceDefinition, RetrievalMode.NORMAL));
       node = referrerNode.objectApi.load(request, objectUri);
       isLoaded = true;
-      refreshNodeState();
     }
     return node;
   }
@@ -127,6 +117,7 @@ public class ObjectNodeReference {
       return ObjectNodeState.NEW;
     }
     if (objectUri == null && isPresent()) {
+      // new ObjectNode is present
       return ObjectNodeState.NEW;
     }
     if (originalObjectUri != null && !isPresent()) {
