@@ -1,7 +1,5 @@
 package org.smartbit4all.core.object;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,6 +21,8 @@ import org.smartbit4all.api.object.bean.SnapshotDataRef;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.core.utility.UriUtils;
 import com.google.common.base.Strings;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 /**
  * The object node contains an object returned by the <code>RetrievalApi</code>. It can manage the
@@ -300,7 +300,13 @@ public class ObjectNode {
     if (targetObject instanceof ObjectNode) {
       ((ObjectNode) targetObject).setValue(value, valuePath);
     } else if (targetObject instanceof Map<?, ?>) {
-      setValueInMap((Map<String, Object>) targetObject, value, valuePath);
+      if (value instanceof Map<?, ?>) {
+        // If we set values to a map then it is a put all not a replacement of the whole map. In
+        // this case we ignore the rest of the value path.
+        ((Map<String, Object>) targetObject).putAll((Map<String, Object>) value);
+      } else {
+        setValueInMap((Map<String, Object>) targetObject, value, valuePath);
+      }
     } else if (targetObject instanceof ObjectNodeReference) {
       ((ObjectNodeReference) targetObject).get().setValue(value, valuePath);
     } else if (targetObject instanceof ObjectNodeList ||
@@ -331,7 +337,17 @@ public class ObjectNode {
       throw new IllegalArgumentException("Path part cannot be null or empty");
     }
     if (paths.length == 1) {
-      map.put(path, value);
+      // If we set a map then try to add the values and not override.
+      if (value instanceof Map) {
+        Object targetMap = map.get(path);
+        if (targetMap instanceof Map) {
+          ((Map<String, Object>) targetMap).putAll((Map<String, Object>) value);
+        } else {
+          map.put(path, value);
+        }
+      } else {
+        map.put(path, value);
+      }
     } else {
       Map<String, Object> subMap = (Map<String, Object>) map.get(path);
       String[] subPaths = Arrays.copyOfRange(paths, 1, paths.length);
