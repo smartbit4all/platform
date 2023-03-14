@@ -1,7 +1,5 @@
 package org.smartbit4all.core.object;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 import java.io.IOException;
 import java.net.URI;
 import java.time.LocalDate;
@@ -28,6 +26,8 @@ import org.smartbit4all.api.object.bean.SnapshotData;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.base.Objects;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 public class ObjectApiImpl implements ObjectApi {
 
@@ -168,12 +168,16 @@ public class ObjectApiImpl implements ObjectApi {
       }
       return null;
     }
-    if (clazz.isEnum() && value instanceof String) {
-      T[] enumConstants = clazz.getEnumConstants();
-      String stringValue = (String) value;
-      return enumConstants == null ? null
-          : Stream.of(enumConstants).filter(t -> stringValue.equals(t.toString())).findFirst()
-              .orElse(null);
+    if (clazz.isEnum()) {
+      if (value instanceof String) {
+        T[] enumConstants = clazz.getEnumConstants();
+        String stringValue = (String) value;
+        return enumConstants == null ? null
+            : Stream.of(enumConstants).filter(t -> stringValue.equals(t.toString())).findFirst()
+                .orElse(null);
+      } else {
+        return null;
+      }
     }
     if (clazz == URI.class && value instanceof String) {
       return (T) URI.create((String) value);
