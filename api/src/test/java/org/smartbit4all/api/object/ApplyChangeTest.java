@@ -1,12 +1,5 @@
 package org.smartbit4all.api.object;
 
-import static java.util.stream.Collectors.toList;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,8 +9,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.api.object.bean.RetrievalMode;
 import org.smartbit4all.api.sample.bean.SampleCategory;
+import org.smartbit4all.api.sample.bean.SampleCategory.ColorEnum;
 import org.smartbit4all.api.sample.bean.SampleContainerItem;
 import org.smartbit4all.api.sample.bean.SampleDataSheet;
+import org.smartbit4all.api.sample.bean.SampleInlineObject;
 import org.smartbit4all.api.sample.bean.SampleLinkObject;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
@@ -28,6 +23,13 @@ import org.smartbit4all.core.object.ObjectProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import com.google.common.base.Objects;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static java.util.stream.Collectors.toList;
 
 @SpringBootTest(classes = {ApplyChangeTestConfig.class})
 class ApplyChangeTest {
@@ -550,6 +552,34 @@ class ApplyChangeTest {
     assertTrue(objectApi.equalsIgnoreVersion(uri1_0, uri1_1));
     assertFalse(Objects.equal(uri1_0, uri1_1));
     assertFalse(objectApi.equalsIgnoreVersion(uri1_0, uri2_0));
+
+  }
+
+  @Test
+  void testSetValueWithMap() {
+    SampleContainerItem item = new SampleContainerItem().cost(Long.valueOf(1))
+        .inlineObject(new SampleInlineObject().name("inline name"));
+    ObjectNode node = objectApi.create(MY_SCHEME, item);
+    URI uri1_0 = objectApi.save(node);
+
+    node = objectApi.load(uri1_0);
+    Map<String, Object> extensionValues = new HashMap<>();
+    extensionValues.put("favoriteColor", ColorEnum.BLACK);
+    extensionValues.put("pet", "cat");
+    extensionValues.put("price", Double.valueOf(1000.0));
+    node.setValue(extensionValues, SampleContainerItem.INLINE_OBJECT);
+    URI uri1_1 = objectApi.save(node);
+
+    ObjectNode objectNode = objectApi.loadLatest(uri1_1);
+
+    assertEquals("inline name",
+        objectNode.getValueAsString(SampleContainerItem.INLINE_OBJECT, SampleInlineObject.NAME));
+    assertEquals(ColorEnum.BLACK,
+        objectNode.getValue(ColorEnum.class, SampleContainerItem.INLINE_OBJECT, "favoriteColor"));
+    assertEquals("cat",
+        objectNode.getValueAsString(SampleContainerItem.INLINE_OBJECT, "pet"));
+    assertEquals(Double.valueOf(1000.0),
+        objectNode.getValue(Double.class, SampleContainerItem.INLINE_OBJECT, "price"));
 
   }
 
