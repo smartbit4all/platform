@@ -65,12 +65,11 @@ public class Value {
    * The uri the object of the value can be accessed.
    * @return objectUri
   **/
-  @javax.annotation.Nonnull
-  @NotNull
+  @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(required = true, value = "The uri the object of the value can be accessed.")
+  @ApiModelProperty(value = "The uri the object of the value can be accessed.")
   @JsonProperty(OBJECT_URI)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
   public URI getObjectUri() {
     return objectUri;
@@ -78,7 +77,7 @@ public class Value {
 
 
   @JsonProperty(OBJECT_URI)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setObjectUri(URI objectUri) {
     this.objectUri = objectUri;
   }
@@ -121,11 +120,10 @@ public class Value {
    * The string value that can be shown on ui. It might be a label code or the exact label.
    * @return displayValue
   **/
-  @javax.annotation.Nonnull
-  @NotNull
-  @ApiModelProperty(required = true, value = "The string value that can be shown on ui. It might be a label code or the exact label.")
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The string value that can be shown on ui. It might be a label code or the exact label.")
   @JsonProperty(DISPLAY_VALUE)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
   public String getDisplayValue() {
     return displayValue;
@@ -133,7 +131,7 @@ public class Value {
 
 
   @JsonProperty(DISPLAY_VALUE)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDisplayValue(String displayValue) {
     this.displayValue = displayValue;
   }

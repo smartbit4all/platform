@@ -35,7 +35,7 @@ components:
   schemas:
     Value:
       type: object
-      required: [objectUri, displayValue]
+      required: []
       properties:
         objectUri:
           type: string
@@ -50,3 +50,107 @@ components:
         iconCode:
           type: string
           description: 'The code of icon that can be associatied with the value. It may be a uri.'
+    ValueSet:
+      type: object
+      required: [qualifiedName, properties, values]
+      description: |
+        The instance of the ValueSetDefintion that conatins every information inline.
+      properties:
+        qualifiedName:
+          type: string
+        properties:
+          type: array
+          items:
+            type: PropertyDefinitionData
+        iconCode:
+          type: string
+          description: Optional icon code for the given value set.
+        undefined:
+          type: boolean
+          default: true
+          description: |
+            If true then the value set is not defined and not accessible.
+        lazy:
+          type: boolean
+          default: false
+          description: |
+            If true then the values doesn't contains the the whole values set or it migth be
+            empty and we have to ask for filtered set of values using the filter fields available.
+        values:
+          type: array
+          items:
+            type: object
+        filterModel:
+          type: FilterExpressionBuilderModel
+          description: The filter expression model for the search from values.
+    ValueSetDefinition:
+      type: object
+      required: [uri, data]
+      properties:
+        uri:
+          type: string
+          format: uri
+        data:
+          $ref: '#/components/schemas/ValueSetDefinitionData'
+    ValueSetDefinitionData:
+      type: object
+      required: [kind, qualifiedName]
+      properties:
+        kind:
+          $ref: '#/components/schemas/ValueSetDefinitionKind'
+        qualifiedName:
+          type: string
+          description: |
+            The logical name of the given value set. In case of an enum it is the fully qualified name of the
+            enum class.
+        objectDefinition:
+          type: string
+          format: uri
+          description: The object definition of the value set. 
+        typeClass:
+          type: string
+          description: The fully qualified name of the type class. 
+        container: 
+          type: string
+          format: uri
+          description: The uri of the list or map that contains the object uri list. 
+        iconCode:
+          type: string
+          description: Optional icon code for the given value set.
+        inlineValues:
+          type: array
+          description: The value list with dynamic  
+          items:
+            type: object
+        expression:
+          $ref: '#/components/schemas/ValueSetExpression'
+    ValueSetDefinitionKind:
+      enum: [ENUM, INLINE, LIST, MAP, ALLOF, SETOF, SEARCHINDEXBASED, COMPOSITE, UNDEFINED]
+    ValueSetExpression:
+      type: object
+      required: [operation, ignoreVersion, operands]
+      properties:
+        operation:
+          $ref: '#/components/schemas/ValueSetOperation'
+        ignoreVersion:
+          type: boolean
+          default: false
+        operands:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValueSetOperand'          
+    ValueSetOperand:
+      type: object
+      required: [kind, qualifiedName]
+      properties:
+        uri:
+          type: string
+          format: uri
+          description: |
+            The uri of the included value set.
+        data:
+          $ref: '#/components/schemas/ValueSetDefinitionData'
+        expression:
+          $ref: '#/components/schemas/ValueSetExpression'
+    ValueSetOperation:
+      enum: [UNION, INTERSECT, DIF, SYMMETRICDIF]

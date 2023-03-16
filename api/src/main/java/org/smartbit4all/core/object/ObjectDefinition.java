@@ -3,6 +3,7 @@ package org.smartbit4all.core.object;
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -327,7 +328,7 @@ public final class ObjectDefinition<T> {
    * Constructs the {@link #definitionData} with {@link #meta} information of the given class. If it
    * is the Object then skip analyzing the bean properties.
    */
-  final void initDefinitionData() {
+  final synchronized void initDefinitionData() {
     definitionData =
         new ObjectDefinitionData().qualifiedName(qualifiedName).uri(uriOf(qualifiedName));
     if (!Object.class.equals(clazz)) {
@@ -368,6 +369,15 @@ public final class ObjectDefinition<T> {
 
   public final ObjectDefinitionBuilder builder() {
     return new ObjectDefinitionBuilder(this);
+  }
+
+  public final List<PropertyDefinitionData> getProperties() {
+    if (definitionData != null) {
+      return definitionData.getProperties();
+    } else {
+      initDefinitionData();
+      return definitionData.getProperties();
+    }
   }
 
 }
