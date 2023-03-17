@@ -110,10 +110,12 @@ components:
         typeClass:
           type: string
           description: The fully qualified name of the type class. 
-        container: 
+        storageSchema: 
           type: string
-          format: uri
-          description: The uri of the list or map that contains the object uri list. 
+          description: The name of the storage schema. Necessary to access the objects or the container (list or map). 
+        containerName: 
+          type: string
+          description: The name of the list or map that contains the object uri list. It must be a unique name inside the storageSchema.
         iconCode:
           type: string
           description: Optional icon code for the given value set.

@@ -22,7 +22,7 @@ public interface ValueSetApi {
    * @param expression
    * @return
    */
-  ValueSetDefinitionData evaluate(ValueSetExpression expression);
+  ValueSet evaluate(ValueSetExpression expression);
 
   /**
    * Retrieve the values of a value set where the set is identified by an {@link Enum}.

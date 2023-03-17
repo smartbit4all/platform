@@ -1,7 +1,5 @@
 package org.smartbit4all.api.collection;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -15,6 +13,8 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.SearchEntityDefinition.DetailDefinition;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionBoolOperator;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionData;
@@ -37,6 +37,7 @@ import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.DataColumn;
 import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.data.TableData;
+import org.smartbit4all.domain.data.TableDatas;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.EntityDefinitionBuilder;
 import org.smartbit4all.domain.meta.Expression;
@@ -46,14 +47,25 @@ import org.smartbit4all.domain.meta.PropertyObject;
 import org.smartbit4all.domain.service.entity.EntityManager;
 import org.smartbit4all.domain.utility.crud.Crud;
 import org.springframework.context.ApplicationContext;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 
 public class SearchIndexMappingObject extends SearchIndexMapping {
+
+  private static final Logger log = LoggerFactory.getLogger(SearchIndexMappingObject.class);
 
   public static final String VALUE_COLUMN = "valueColumn";
 
   String logicalSchema;
 
   String name;
+
+  /**
+   * The name of the primary key property that must be unique in the search index. Not necessarily
+   * exists but if it is set then the {@link SearchIndex} merge the database and not insert always.
+   */
+  String primaryKey;
 
   /**
    * The path of the detail property that contains a list / map, referring to another object.
@@ -75,6 +87,11 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
    * {@link LinkedHashMap} to preserve the parameterization order in the entity definition.
    */
   Map<String, SearchIndexMapping> mappingsByPropertyName = new LinkedHashMap<>();
+
+  /**
+   * The name of the primary key property.
+   */
+  private String primaryKeyName;
 
   /**
    * The filter class is not necessary. If we have this then we can set the type of the given
@@ -179,6 +196,17 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
     mappingsByPropertyName.put(propertyName,
         new SearchIndexMappingProperty(propertyName, null, dataType, length, null,
             complexProcessor));
+    return this;
+  }
+
+  /**
+   * Set the {@link #primaryKey} property.
+   * 
+   * @param primaryKey
+   * @return
+   */
+  public SearchIndexMappingObject primaryKey(String primaryKey) {
+    this.primaryKey = primaryKey;
     return this;
   }
 
@@ -507,8 +535,62 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
     }
   }
 
-  void update(SearchEntityTableDataResult updateResult) {
-    Crud.update(updateResult.result);
+  /**
+   * A recursive function that insert or update the given row in the database depending on if it is
+   * exist or not.
+   * 
+   * @param updateResult
+   */
+  void merge(SearchEntityTableDataResult updateResult) {
+    PropertyObject primaryKeyProperty = null;
+    if (primaryKey != null) {
+      primaryKeyProperty = updateResult.searchEntityDefinition.definition.getPropertyObject(name);
+    }
+    if (primaryKeyProperty != null) {
+      // Execute a merge by selecting the available records first and the insert or update depending
+      // on the result.
+      try {
+        TableData<?> existingRecords =
+            Crud.read(updateResult.searchEntityDefinition.definition).select(primaryKeyProperty)
+                .where(primaryKeyProperty.in(updateResult.result.values(primaryKeyProperty)))
+                .listData();
+        Set<Object> existingRecordSet =
+            existingRecords.values(primaryKeyProperty).stream().collect(toSet());
+        PropertyObject pkProperty = primaryKeyProperty;
+        List<DataRow> exitingRows = updateResult.result.rows().stream()
+            .filter(r -> existingRecordSet.contains(r.get(pkProperty))).collect(toList());
+        List<DataRow> notExitingRows = updateResult.result.rows().stream()
+            .filter(r -> !existingRecordSet.contains(r.get(pkProperty))).collect(toList());
+        if (!exitingRows.isEmpty()) {
+          TableData<?> tdExiting = TableDatas.copyRows(updateResult.result, exitingRows);
+          Crud.update(tdExiting);
+        }
+        if (!notExitingRows.isEmpty()) {
+          TableData<?> tdNotExisting = TableDatas.copyRows(updateResult.result, notExitingRows);
+          Crud.create(tdNotExisting);
+        }
+        mergeDetails(updateResult);
+      } catch (Exception e) {
+        log.error("Unable to check the existing record for the " + logicalSchema
+            + StringConstant.DOT + name + " search index", e);
+      }
+    } else {
+      insertAll(updateResult);
+    }
+  }
+
+  final void insertAll(SearchEntityTableDataResult updateResult) {
+    Crud.create(updateResult.result);
+    mergeDetails(updateResult);
+  }
+
+  private final void mergeDetails(SearchEntityTableDataResult updateResult) {
+    for (SearchIndexMapping detailMapping : mappingsByPropertyName.values()) {
+      if (detailMapping instanceof SearchIndexMappingObject) {
+        SearchIndexMappingObject mappingObject = (SearchIndexMappingObject) detailMapping;
+        mappingObject.merge(updateResult.detailResults.get(mappingObject.name));
+      }
+    }
   }
 
   public FilterExpressionFieldList allFilterFields(LocaleSettingApi localeSettingApi) {
@@ -617,6 +699,14 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
 
   public final PropertyObject propertyOf(FilterExpressionOrderBy orderBy) {
     return getDefinition().definition.getPropertyObject(orderBy.getPropertyName());
+  }
+
+  public final String getPrimaryKeyName() {
+    return primaryKeyName;
+  }
+
+  public final void setPrimaryKey(String primaryKeyName) {
+    this.primaryKeyName = primaryKeyName;
   }
 
 }

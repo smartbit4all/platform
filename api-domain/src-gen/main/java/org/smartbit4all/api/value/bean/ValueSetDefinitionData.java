@@ -40,7 +40,8 @@ import javax.validation.Valid;
   ValueSetDefinitionData.QUALIFIED_NAME,
   ValueSetDefinitionData.OBJECT_DEFINITION,
   ValueSetDefinitionData.TYPE_CLASS,
-  ValueSetDefinitionData.CONTAINER,
+  ValueSetDefinitionData.STORAGE_SCHEMA,
+  ValueSetDefinitionData.CONTAINER_NAME,
   ValueSetDefinitionData.ICON_CODE,
   ValueSetDefinitionData.INLINE_VALUES,
   ValueSetDefinitionData.EXPRESSION
@@ -60,8 +61,11 @@ public class ValueSetDefinitionData {
   public static final String TYPE_CLASS = "typeClass";
   private String typeClass;
 
-  public static final String CONTAINER = "container";
-  private URI container;
+  public static final String STORAGE_SCHEMA = "storageSchema";
+  private String storageSchema;
+
+  public static final String CONTAINER_NAME = "containerName";
+  private String containerName;
 
   public static final String ICON_CODE = "iconCode";
   private String iconCode;
@@ -187,31 +191,57 @@ public class ValueSetDefinitionData {
   }
 
 
-  public ValueSetDefinitionData container(URI container) {
+  public ValueSetDefinitionData storageSchema(String storageSchema) {
     
-    this.container = container;
+    this.storageSchema = storageSchema;
     return this;
   }
 
    /**
-   * The uri of the list or map that contains the object uri list.
-   * @return container
+   * The name of the storage schema. Necessary to access the objects or the container (list or map).
+   * @return storageSchema
   **/
   @javax.annotation.Nullable
-  @Valid
-  @ApiModelProperty(value = "The uri of the list or map that contains the object uri list.")
-  @JsonProperty(CONTAINER)
+  @ApiModelProperty(value = "The name of the storage schema. Necessary to access the objects or the container (list or map).")
+  @JsonProperty(STORAGE_SCHEMA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public URI getContainer() {
-    return container;
+  public String getStorageSchema() {
+    return storageSchema;
   }
 
 
-  @JsonProperty(CONTAINER)
+  @JsonProperty(STORAGE_SCHEMA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setContainer(URI container) {
-    this.container = container;
+  public void setStorageSchema(String storageSchema) {
+    this.storageSchema = storageSchema;
+  }
+
+
+  public ValueSetDefinitionData containerName(String containerName) {
+    
+    this.containerName = containerName;
+    return this;
+  }
+
+   /**
+   * The name of the list or map that contains the object uri list. It must be a unique name inside the storageSchema.
+   * @return containerName
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The name of the list or map that contains the object uri list. It must be a unique name inside the storageSchema.")
+  @JsonProperty(CONTAINER_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getContainerName() {
+    return containerName;
+  }
+
+
+  @JsonProperty(CONTAINER_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setContainerName(String containerName) {
+    this.containerName = containerName;
   }
 
 
@@ -318,7 +348,8 @@ public class ValueSetDefinitionData {
         Objects.equals(this.qualifiedName, valueSetDefinitionData.qualifiedName) &&
         Objects.equals(this.objectDefinition, valueSetDefinitionData.objectDefinition) &&
         Objects.equals(this.typeClass, valueSetDefinitionData.typeClass) &&
-        Objects.equals(this.container, valueSetDefinitionData.container) &&
+        Objects.equals(this.storageSchema, valueSetDefinitionData.storageSchema) &&
+        Objects.equals(this.containerName, valueSetDefinitionData.containerName) &&
         Objects.equals(this.iconCode, valueSetDefinitionData.iconCode) &&
         Objects.equals(this.inlineValues, valueSetDefinitionData.inlineValues) &&
         Objects.equals(this.expression, valueSetDefinitionData.expression);
@@ -326,7 +357,7 @@ public class ValueSetDefinitionData {
 
   @Override
   public int hashCode() {
-    return Objects.hash(kind, qualifiedName, objectDefinition, typeClass, container, iconCode, inlineValues, expression);
+    return Objects.hash(kind, qualifiedName, objectDefinition, typeClass, storageSchema, containerName, iconCode, inlineValues, expression);
   }
 
   @Override
@@ -337,7 +368,8 @@ public class ValueSetDefinitionData {
     sb.append("    qualifiedName: ").append(toIndentedString(qualifiedName)).append("\n");
     sb.append("    objectDefinition: ").append(toIndentedString(objectDefinition)).append("\n");
     sb.append("    typeClass: ").append(toIndentedString(typeClass)).append("\n");
-    sb.append("    container: ").append(toIndentedString(container)).append("\n");
+    sb.append("    storageSchema: ").append(toIndentedString(storageSchema)).append("\n");
+    sb.append("    containerName: ").append(toIndentedString(containerName)).append("\n");
     sb.append("    iconCode: ").append(toIndentedString(iconCode)).append("\n");
     sb.append("    inlineValues: ").append(toIndentedString(inlineValues)).append("\n");
     sb.append("    expression: ").append(toIndentedString(expression)).append("\n");

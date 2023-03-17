@@ -1,11 +1,15 @@
 package org.smartbit4all.api.value;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.CollectionApi;
+import org.smartbit4all.api.collection.StoredList;
 import org.smartbit4all.api.object.bean.ObjectDefinitionData;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.value.bean.Value;
@@ -14,9 +18,13 @@ import org.smartbit4all.api.value.bean.ValueSetDefinition;
 import org.smartbit4all.api.value.bean.ValueSetDefinitionData;
 import org.smartbit4all.api.value.bean.ValueSetDefinitionKind;
 import org.smartbit4all.api.value.bean.ValueSetExpression;
+import org.smartbit4all.api.value.bean.ValueSetOperation;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
+import org.smartbit4all.domain.data.storage.Storage;
+import org.smartbit4all.domain.data.storage.StorageApi;
 import org.springframework.beans.factory.annotation.Autowired;
+import static java.util.stream.Collectors.toList;
 
 public class ValueSetApiImpl implements ValueSetApi {
 
@@ -33,11 +41,13 @@ public class ValueSetApiImpl implements ValueSetApi {
   private ObjectApi objectApi;
 
   @Autowired
+  private StorageApi storageApi;
+
+  @Autowired
   private LocaleSettingApi localeSettingApi;
 
   @Override
-  public ValueSetDefinitionData evaluate(ValueSetExpression expression) {
-    // TODO Auto-generated method stub
+  public ValueSet evaluate(ValueSetExpression expression) {
     return null;
   }
 
@@ -52,62 +62,108 @@ public class ValueSetApiImpl implements ValueSetApi {
       if (definitionData == null) {
         return new ValueSet().qualifiedName(qualifiedName);
       }
-      // It's a value set composed from other sets. There must be an expression that defines the
-      // way. We have to evaluate the expression to have the final definition.
-      if (definitionData.getKind() == ValueSetDefinitionKind.COMPOSITE) {
-        if (definitionData.getExpression() == null) {
-          log.warn("The {} composite value set doen't have any expression.", qualifiedName);
-          return new ValueSet().qualifiedName(qualifiedName);
-        }
-        definitionData = evaluate(definitionData.getExpression());
+      ObjectDefinition<?> objectDefinition = getObjectDefinition(definitionData);
+      if (objectDefinition != null) {
+        ValueSet result = new ValueSet().qualifiedName(definitionData.getQualifiedName())
+            .iconCode(definitionData.getIconCode());
+        result.lazy(Boolean.FALSE).undefined(Boolean.FALSE);
+        result.setProperties(objectDefinition.getProperties());
+        // We can continue with the final value set definition.
+        result.setValues(readValues(definitionData, objectDefinition));
       }
-
-      // We can continue with the final value set definition.
-      return readValues(definitionData);
+      return new ValueSet().qualifiedName(qualifiedName);
 
     } else {
       return new ValueSet().qualifiedName(qualifiedName);
     }
   }
 
-  private ValueSet readValues(ValueSetDefinitionData definitionData) {
-    ValueSet result = new ValueSet().qualifiedName(definitionData.getQualifiedName())
-        .iconCode(definitionData.getIconCode());
+  private List<Object> readValues(ValueSetDefinitionData definitionData,
+      ObjectDefinition<?> objectDefinition) {
+    List<Object> result = Collections.emptyList();
     if (definitionData.getKind() == ValueSetDefinitionKind.ENUM) {
-      if (definitionData.getQualifiedName() != null) {
-        Class<?> enumClass;
-        try {
-          enumClass = Class.forName(definitionData.getQualifiedName());
-        } catch (ClassNotFoundException e) {
-          log.warn("The {} enum class was not found in the current runtime.",
-              result.getQualifiedName());
-          enumClass = null;
-        }
-        if (enumClass != null && Enum.class.isAssignableFrom(enumClass)) {
-          readEnumClass(result, enumClass);
-        }
+      if (objectDefinition.getClazz() != null
+          && Enum.class.isAssignableFrom(objectDefinition.getClazz())) {
+        result = readEnumClass(objectDefinition.getClazz(), definitionData.getQualifiedName());
       }
     } else if (definitionData.getKind() == ValueSetDefinitionKind.INLINE) {
-      readInlineValues(definitionData, result);
+      result = readInlineValues(definitionData, objectDefinition);
     } else if (definitionData.getKind() == ValueSetDefinitionKind.ALLOF) {
-      // Try to load the definition by the URI or initiate it based on the qualified name.
-      readInlineValues(definitionData, result);
+      result = readAllObjectValues(definitionData, objectDefinition);
+    } else if (definitionData.getKind() == ValueSetDefinitionKind.LIST) {
+      result = readListValues(definitionData, objectDefinition);
+    } else if (definitionData.getKind() == ValueSetDefinitionKind.COMPOSITE) {
+      // It's a value set composed from other sets. There must be an expression that defines the
+      // way. We have to evaluate the expression to have the final definition.
+      result = readCompositeValues(definitionData, objectDefinition);
     }
+
     return result;
   }
 
-  private void readInlineValues(ValueSetDefinitionData definitionData, ValueSet result) {
-    // Try to load the definition by the URI or initiate it based on the qualified name.
-    ObjectDefinition<?> objectDefinition = getObjectDefinition(definitionData);
-    if (objectDefinition != null) {
-      result.lazy(Boolean.FALSE).undefined(Boolean.FALSE);
-      result.setProperties(objectDefinition.getProperties());
-      // Copy by reference because the inline values won't be edited in memory!
-      result.setValues(definitionData.getInlineValues());
+  private List<Object> readCompositeValues(ValueSetDefinitionData definitionData,
+      ObjectDefinition<?> objectDefinition) {
+    if (definitionData.getExpression() == null) {
+      log.warn("The {} composite value set doen't have any expression.",
+          definitionData.getQualifiedName());
+      return Collections.emptyList();
     }
+    // TODO Evaluate the expression. All the set must have the same object type or else we can not
+    // merge the values.
+    List<List<Object>> valueLists = definitionData.getExpression().getOperands().stream()
+        .map(vso -> readValues(vso.getData(), objectDefinition)).collect(toList());
+    ValueSetOperation operation = definitionData.getExpression().getOperation();
+    if (operation == ValueSetOperation.UNION) {
+      return valueLists.stream().flatMap(List::stream).distinct().collect(toList());
+    } else if (operation == ValueSetOperation.INTERSECT) {
+
+    } else if (operation == ValueSetOperation.DIF) {
+
+    } else if (operation == ValueSetOperation.SYMMETRICDIF) {
+
+    }
+    return Collections.emptyList();
   }
 
-  private ObjectDefinition<?> getObjectDefinition(ValueSetDefinitionData definitionData) {
+  private List<Object> readListValues(ValueSetDefinitionData definitionData,
+      ObjectDefinition<?> objectDefinition) {
+    StoredList storedList =
+        collectionApi.list(definitionData.getStorageSchema(), definitionData.getContainerName());
+    if (storedList != null) {
+      return storedList.uris().stream().map(u -> objectApi.read(u, objectDefinition.getClazz()))
+          .collect(toList());
+    }
+    return Collections.emptyList();
+  }
+
+  private List<Object> readAllObjectValues(ValueSetDefinitionData definitionData,
+      ObjectDefinition<?> objectDefinition) {
+    Storage storage = storageApi.get(definitionData.getStorageSchema());
+    if (storage != null) {
+      List<URI> allObjectUris = storage.readAllUris(objectDefinition.getClazz());
+      // Quick win that we read all the properties.
+      return allObjectUris.stream().map(u -> objectApi.read(u, objectDefinition.getClazz()))
+          .collect(toList());
+    }
+    return Collections.emptyList();
+  }
+
+  private List<Object> readInlineValues(ValueSetDefinitionData definitionData,
+      ObjectDefinition<?> objectDefinition) {
+    // Try to load the definition by the URI or initiate it based on the qualified name.
+    if (objectDefinition != null) {
+      // Copy by reference because the inline values won't be edited in memory!
+      return definitionData.getInlineValues();
+    }
+    return Collections.emptyList();
+  }
+
+  @Override
+  public <T extends Enum> ValueSet valuesOf(Class<T> clazz) {
+    return valuesOf(clazz.getName());
+  }
+
+  private final ObjectDefinition<?> getObjectDefinition(ValueSetDefinitionData definitionData) {
     if (definitionData == null) {
       return null;
     }
@@ -127,23 +183,18 @@ public class ValueSetApiImpl implements ValueSetApi {
     return result;
   }
 
-  private void readEnumClass(ValueSet result, Class<?> enumClass) {
-    ObjectDefinition<Value> definition = objectApi.definition(Value.class);
-    result.setProperties(definition.getProperties());
-    result.lazy(Boolean.FALSE).undefined(Boolean.FALSE);
+  private List<Object> readEnumClass(Class<?> enumClass, String qualifiedName) {
+    List<Object> result = new ArrayList<>();
     // Fill all the values.
     for (int i = 0; i < enumClass.getEnumConstants().length; i++) {
       Object enumValue = enumClass.getEnumConstants()[i];
       Map<String, Object> valueObject = new HashMap<>();
       valueObject.put(Value.CODE, enumValue);
       valueObject.put(Value.DISPLAY_VALUE,
-          localeSettingApi.get(result.getQualifiedName(), enumValue.toString()));
-      result.addValuesItem(valueObject);
+          localeSettingApi.get(qualifiedName, enumValue.toString()));
+      result.add(valueObject);
     }
+    return result;
   }
 
-  @Override
-  public <T extends Enum> ValueSet valuesOf(Class<T> clazz) {
-    return valuesOf(clazz.getName());
-  }
 }

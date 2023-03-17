@@ -1,6 +1,5 @@
 package org.smartbit4all.api.collection;
 
-import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,6 +40,7 @@ import org.smartbit4all.domain.utility.crud.CrudRead;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import static java.util.stream.Collectors.toList;
 
 /**
  * @author Peter Boros
@@ -170,7 +170,7 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
     objectMapping.readObjects(changeList.stream().map(u -> objectApi.load(u)), updateResult,
         Collections.emptyMap());
     // Update the entity definitions by the table data in the result.
-    objectMapping.update(updateResult);
+    objectMapping.merge(updateResult);
   }
 
   private final SearchEntityTableDataResult readAllObjects(SearchEntityTableDataResult result) {
@@ -368,6 +368,11 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
   @Override
   public void afterPropertiesSet() throws Exception {
     initObjectMapping();
+  }
+
+  public SearchIndexImpl<O> primaryKey(String propertyName) {
+    objectMapping.setPrimaryKey(propertyName);;
+    return this;
   }
 
 }
