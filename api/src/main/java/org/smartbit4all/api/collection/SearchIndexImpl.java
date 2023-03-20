@@ -1,5 +1,6 @@
 package org.smartbit4all.api.collection;
 
+import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,7 +41,6 @@ import org.smartbit4all.domain.utility.crud.CrudRead;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import static java.util.stream.Collectors.toList;
 
 /**
  * @author Peter Boros
@@ -244,6 +244,14 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
     SearchIndexMappingObject detail = objectMapping.detail(propertyName, masterUniqueId);
     detail.path = path;
     detail.setInlineValueObjects(valueType, length);
+    return this;
+  }
+
+  public SearchIndexImpl<O> detailListOfValue(String propertyName, String masterUniqueId,
+      Class<?> valueType, int length, Function<ObjectNode, List<?>> complexProcessor) {
+    SearchIndexMappingObject detail = objectMapping.detail(propertyName, masterUniqueId);
+    detail.setInlineValueObjects(valueType, length);
+    detail.setComplexProcessor(complexProcessor);
     return this;
   }
 

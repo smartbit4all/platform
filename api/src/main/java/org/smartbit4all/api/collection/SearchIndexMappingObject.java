@@ -1,5 +1,8 @@
 package org.smartbit4all.api.collection;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -47,9 +50,6 @@ import org.smartbit4all.domain.meta.PropertyObject;
 import org.smartbit4all.domain.service.entity.EntityManager;
 import org.smartbit4all.domain.utility.crud.Crud;
 import org.springframework.context.ApplicationContext;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-import static java.util.stream.Collectors.toSet;
 
 public class SearchIndexMappingObject extends SearchIndexMapping {
 
@@ -71,6 +71,9 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
    * The path of the detail property that contains a list / map, referring to another object.
    */
   String[] path;
+
+
+  Function<ObjectNode, List<?>> complexProcessor;
 
   /**
    * If the object in the list are values like String, Long etc. In this case the
@@ -142,6 +145,10 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
 
   SearchIndexMappingProperty property(String name) {
     return (SearchIndexMappingProperty) mappingsByPropertyName.get(name);
+  }
+
+  public SearchIndexMapping getProperty(String name) {
+    return mappingsByPropertyName.get(name);
   }
 
   private final Class<?> getType(String propertyName) {
@@ -232,7 +239,13 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
     return entityDefinition;
   }
 
+  public EntityDefinition getEntityDefinition() {
+    return getDefinition().definition;
+  }
 
+  public String getMasterReferenceName() {
+    return masterReferenceName;
+  }
 
   private final Stream<EntityDefinition> allDefinitions(
       SearchEntityDefinition searchEntityDefinition) {
@@ -354,8 +367,14 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
                       j -> tableDataDetail.getColumn(detailObjectMapping.getDefinition().definition
                           .getProperty(j.getSourceProperty().getName())),
                       j -> tableData.get(tableData.getColumn(j.getTargetProperty()), row)));
-          List<?> valueAsList = n.getValueAsList(detailObjectMapping.inlineValueObjectType,
-              detailObjectMapping.path);
+
+          List<?> valueAsList = null;
+          if (detailObjectMapping.path != null && detailObjectMapping.complexProcessor == null) {
+            valueAsList = n.getValueAsList(detailObjectMapping.inlineValueObjectType,
+                detailObjectMapping.path);
+          } else if (detailObjectMapping.complexProcessor != null) {
+            valueAsList = detailObjectMapping.complexProcessor.apply(n);
+          }
           if (valueAsList != null) {
             DataColumn<?> valueColumn = tableDataDetail.getColumn(
                 detailObjectMapping.getDefinition().definition.getProperty(VALUE_COLUMN));
@@ -374,6 +393,7 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
               entry.getValue().masterJoin.getReferences().get(0).joins().stream()
                   .collect(toMap(j -> j.getSourceProperty().getName(),
                       j -> tableData.get(tableData.getColumn(j.getTargetProperty()), row))));
+
         }
       }
     });
@@ -663,6 +683,10 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
   final void setInlineValueObjects(Class<?> valueType, int length) {
     this.inlineValueObjectType = valueType;
     this.inlineValueObjectLength = length;
+  }
+
+  final void setComplexProcessor(Function<ObjectNode, List<?>> complexProcessor) {
+    this.complexProcessor = complexProcessor;
   }
 
   public static Expression existDetailInExpression(String fieldName, Object obj,
