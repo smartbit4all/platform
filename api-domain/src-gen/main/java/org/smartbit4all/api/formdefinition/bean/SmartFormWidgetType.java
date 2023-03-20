@@ -11,7 +11,7 @@
  */
 
 
-package org.smartbit4all.api.form_layout_definition.bean;
+package org.smartbit4all.api.formdefinition.bean;
 
 import java.util.Objects;
 import java.util.Arrays;

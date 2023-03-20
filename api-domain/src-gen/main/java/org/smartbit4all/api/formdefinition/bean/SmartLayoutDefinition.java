@@ -11,7 +11,7 @@
  */
 
 
-package org.smartbit4all.api.form_layout_definition.bean;
+package org.smartbit4all.api.formdefinition.bean;
 
 import java.util.Objects;
 import java.util.Arrays;
@@ -24,7 +24,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
-import org.smartbit4all.api.form_layout_definition.bean.SmartWidgetDefinition;
+import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
