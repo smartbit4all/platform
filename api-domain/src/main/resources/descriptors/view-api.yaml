@@ -448,3 +448,71 @@ components:
           $ref: '#/components/schemas/View'
         url:
           type: string
+          
+    # UiAction descriptors
+    UiActionDescriptor:
+      type: object
+      description: |
+        Describes the appearance (as a button) and the properties of the related dialogs of a UiAction.
+      required: [title, type, color]
+      properties:
+        title:
+          type: string
+        type:
+          $ref: '#/components/schemas/UiActionButtonType'
+        color:
+          type: string
+        icon:
+          type: string
+        iconColor:
+          type: string
+        iconPosition:
+          $ref: '#/components/schemas/UiActionButtonIconPos'
+        dialog:
+          $ref: '#/components/schemas/UiActionDialogDescriptor'
+        confirmDialog:
+          $ref: '#/components/schemas/UiActionDialogDescriptor'
+        inputDialog:
+          $ref: '#/components/schemas/UiActionDialogDescriptor'
+    UiActionDialogDescriptor:
+      type: object
+      description: |
+        Describes the look of a dialog that is related to a specific UiAction.
+      required: [title, actionButton, cancelButton]
+      properties:
+        title:
+          type: string
+        placeholder:
+          type: string
+        text:
+          type: string
+        actionButton:
+          $ref: '#/components/schemas/UiActionButtonDescriptor'
+        cancelButton:
+          $ref: '#/components/schemas/UiActionButtonDescriptor'
+    UiActionButtonDescriptor:
+      type: object
+      description: |
+        Describes a button which is presented on the UiAction dialog.
+      required: [caption, color]
+      properties:
+        caption:
+          type: string
+        color:
+          type: string
+    UiActionButtonType:
+      type: string
+      description: |
+        Defines the type of the button.
+      enum:
+        - NORMAL
+        - FLAT
+        - STROKED
+        - RAISED
+    UiActionButtonIconPos:
+      type: string
+      description: |
+        Defines the position of an icon related to the button's label.
+      enum:
+        - PRE
+        - POST
