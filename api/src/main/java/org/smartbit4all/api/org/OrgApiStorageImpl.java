@@ -44,6 +44,7 @@ import org.smartbit4all.domain.data.storage.StorageObjectReferenceEntry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.event.EventListener;
+import com.google.common.base.Objects;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
@@ -197,16 +198,26 @@ public class OrgApiStorageImpl implements OrgApi {
    *
    */
   private Group checkGroupExist(SecurityGroup securityGroup) {
-    Group groupByName = getGroupByName(securityGroup.getName());
-    if (groupByName == null) {
-      Group group =
+    Group group = getGroupByName(securityGroup.getName());
+    if (group == null) {
+      Group newGroup =
           new Group()
               .name(securityGroup.getName())
               .title(securityGroup.getTitle())
               .description(securityGroup.getDescription())
               .builtIn(securityGroup.isbuiltIn());
-      saveGroup(group);
-      return group;
+      saveGroup(newGroup);
+      return newGroup;
+    } else if (!(Objects.equal(group.getName(), securityGroup.getName())
+        && Objects.equal(group.getTitle(), securityGroup.getTitle())
+        && Objects.equal(group.getDescription(), securityGroup.getDescription())
+        && Objects.equal(group.getBuiltIn(), securityGroup.isbuiltIn()))) {
+      group
+          .name(securityGroup.getName())
+          .title(securityGroup.getTitle())
+          .description(securityGroup.getDescription())
+          .builtIn(securityGroup.isbuiltIn());
+      updateGroup(group);
     }
     return null;
   }
