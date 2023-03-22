@@ -22,7 +22,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.net.URI;
 import org.smartbit4all.api.value.bean.ValueSetDefinitionData;
 import org.smartbit4all.api.value.bean.ValueSetExpression;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -34,15 +33,19 @@ import javax.validation.Valid;
  * ValueSetOperand
  */
 @JsonPropertyOrder({
-  ValueSetOperand.URI,
+  ValueSetOperand.NAMESPACE,
+  ValueSetOperand.NAME,
   ValueSetOperand.DATA,
   ValueSetOperand.EXPRESSION
 })
 @JsonTypeName("ValueSetOperand")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class ValueSetOperand {
-  public static final String URI = "uri";
-  private URI uri;
+  public static final String NAMESPACE = "namespace";
+  private String namespace;
+
+  public static final String NAME = "name";
+  private String name;
 
   public static final String DATA = "data";
   private ValueSetDefinitionData data;
@@ -53,31 +56,59 @@ public class ValueSetOperand {
   public ValueSetOperand() { 
   }
 
-  public ValueSetOperand uri(URI uri) {
+  public ValueSetOperand namespace(String namespace) {
     
-    this.uri = uri;
+    this.namespace = namespace;
     return this;
   }
 
    /**
-   * The uri of the included value set. 
-   * @return uri
+   * The namespace of the referred value set. 
+   * @return namespace
   **/
-  @javax.annotation.Nullable
-  @Valid
-  @ApiModelProperty(value = "The uri of the included value set. ")
-  @JsonProperty(URI)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @javax.annotation.Nonnull
+  @NotNull
+  @ApiModelProperty(required = true, value = "The namespace of the referred value set. ")
+  @JsonProperty(NAMESPACE)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public URI getUri() {
-    return uri;
+  public String getNamespace() {
+    return namespace;
   }
 
 
-  @JsonProperty(URI)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setUri(URI uri) {
-    this.uri = uri;
+  @JsonProperty(NAMESPACE)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setNamespace(String namespace) {
+    this.namespace = namespace;
+  }
+
+
+  public ValueSetOperand name(String name) {
+    
+    this.name = name;
+    return this;
+  }
+
+   /**
+   * The name of the referred value set. 
+   * @return name
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @ApiModelProperty(required = true, value = "The name of the referred value set. ")
+  @JsonProperty(NAME)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public String getName() {
+    return name;
+  }
+
+
+  @JsonProperty(NAME)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setName(String name) {
+    this.name = name;
   }
 
 
@@ -146,21 +177,23 @@ public class ValueSetOperand {
       return false;
     }
     ValueSetOperand valueSetOperand = (ValueSetOperand) o;
-    return Objects.equals(this.uri, valueSetOperand.uri) &&
+    return Objects.equals(this.namespace, valueSetOperand.namespace) &&
+        Objects.equals(this.name, valueSetOperand.name) &&
         Objects.equals(this.data, valueSetOperand.data) &&
         Objects.equals(this.expression, valueSetOperand.expression);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, data, expression);
+    return Objects.hash(namespace, name, data, expression);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class ValueSetOperand {\n");
-    sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
+    sb.append("    namespace: ").append(toIndentedString(namespace)).append("\n");
+    sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    data: ").append(toIndentedString(data)).append("\n");
     sb.append("    expression: ").append(toIndentedString(expression)).append("\n");
     sb.append("}");

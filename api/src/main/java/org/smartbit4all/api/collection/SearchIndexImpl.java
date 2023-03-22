@@ -345,6 +345,13 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
     return executeSearch(read.getQuery());
   }
 
+  @Override
+  public TableData<?> createEmptyTableData() {
+    TableData<EntityDefinition> tableData = new TableData<>(definition.definition);
+    tableData.addColumns(definition.definition.allProperties());
+    return tableData;
+  }
+
   public SearchIndexImpl<O> expressionComplex(String propertyName,
       BiFunction<Object, EntityDefinition, Expression> complexExpression) {
     Objects.requireNonNull(complexExpression);

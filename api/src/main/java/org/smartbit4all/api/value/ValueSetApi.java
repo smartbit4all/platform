@@ -1,5 +1,6 @@
 package org.smartbit4all.api.value;
 
+import java.util.List;
 import org.smartbit4all.api.value.bean.ValueSet;
 import org.smartbit4all.api.value.bean.ValueSetDefinitionData;
 import org.smartbit4all.api.value.bean.ValueSetExpression;
@@ -16,13 +17,21 @@ import org.smartbit4all.api.value.bean.ValueSetExpression;
 public interface ValueSetApi {
 
   /**
-   * Evaluate the value set expression to construct the result definition data. The definition data
-   * will be
+   * The definition data can be retrieved by the namespace and qualified name.
    * 
-   * @param expression
-   * @return
+   * @param namespace
+   * @param qualifiedName
+   * @return The data or null if not found.
    */
-  ValueSet evaluate(ValueSetExpression expression);
+  ValueSetDefinitionData getDefinitionData(String namespace, String qualifiedName);
+
+  /**
+   * The definition data can be retrieved by the qualified name in the "globalValueSets".
+   * 
+   * @param qualifiedName
+   * @return The data or null if not found.
+   */
+  ValueSetDefinitionData getDefinitionData(String qualifiedName);
 
   /**
    * Retrieve the values of a value set where the set is identified by an {@link Enum}.
@@ -41,5 +50,50 @@ public interface ValueSetApi {
    * @return The result {@link ValueSet}.
    */
   ValueSet valuesOf(String name);
+
+  /**
+   * Retrieve the values of a value set where the set is identified by a unique name in a global
+   * value set reference map.
+   * 
+   * @param namespace The namespace of the value set.
+   * @param name The unique name of the value set.
+   * @return The result {@link ValueSet}.
+   */
+  ValueSet valuesOf(String namespace, String name);
+
+  /**
+   * Retrieve the values of a value set where the set is identified by a unique name in a global
+   * value set reference map.
+   * 
+   * @param definitionData That defines the value set retrieval parameters.
+   * @return The result {@link ValueSet}.
+   */
+  ValueSet valuesOf(ValueSetDefinitionData definitionData);
+
+  /**
+   * Saves the given value set.
+   * 
+   * @param logicalSchema
+   * @param valueSetDef
+   */
+  void save(String logicalSchema, ValueSetDefinitionData valueSetDef);
+
+  /**
+   * Saves the given value set into the global name space.
+   * 
+   * @param valueSetDef
+   */
+  void save(ValueSetDefinitionData valueSetDef);
+
+  /**
+   * This function can extract a value from the objects in the {@link ValueSet}.
+   * 
+   * @param <T>
+   * @param typeClass
+   * @param valueSet
+   * @param path
+   * @return
+   */
+  <T> List<T> getValues(Class<T> typeClass, ValueSet valueSet, String... path);
 
 }

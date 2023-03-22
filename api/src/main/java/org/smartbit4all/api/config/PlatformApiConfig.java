@@ -51,6 +51,8 @@ import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.setting.LocaleUsage;
 import org.smartbit4all.api.setting.LocaleUsageImpl;
+import org.smartbit4all.api.value.ValueSetApi;
+import org.smartbit4all.api.value.ValueSetApiImpl;
 import org.smartbit4all.api.view.SmartLinkApi;
 import org.smartbit4all.api.view.SmartLinkApiImpl;
 import org.smartbit4all.api.view.ViewContextService;
@@ -242,6 +244,11 @@ public class PlatformApiConfig {
   @Bean
   public SmartLinkApi smartLinkApi() {
     return new SmartLinkApiImpl();
+  }
+
+  @Bean
+  public ValueSetApi valueSetApi() {
+    return new ValueSetApiImpl();
   }
 
   @Bean(name = "smartbit4all.messagesource")
