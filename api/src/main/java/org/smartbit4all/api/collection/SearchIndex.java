@@ -60,6 +60,13 @@ public interface SearchIndex<O> {
   }
 
   /**
+   * Returns an empty TableData defined by this searchIndex.
+   *
+   * @return
+   */
+  TableData<?> createEmptyTableData();
+
+  /**
    * We can execute the search synchronously and we get back the result {@link TableData} in memory.
    *
    * @param queryInput The query input that defines the logical filter conditions.
