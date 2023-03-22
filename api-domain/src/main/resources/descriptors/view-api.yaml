@@ -474,6 +474,10 @@ components:
           $ref: '#/components/schemas/UiActionDialogDescriptor'
         inputDialog:
           $ref: '#/components/schemas/UiActionDialogDescriptor'
+        feedbackType:
+          $ref: '#/components/schemas/UiActionFeedbackType'
+        feedbackText:
+          type: string
     UiActionDialogDescriptor:
       type: object
       description: |
@@ -516,3 +520,11 @@ components:
       enum:
         - PRE
         - POST
+    UiActionFeedbackType:
+      type: string
+      description: |
+        Defines the possible feedback types which are shown if a UiAction was completed.
+      default: SNACKBAR
+      enum:
+        - NONE
+        - SNACKBAR

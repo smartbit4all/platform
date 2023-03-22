@@ -25,6 +25,7 @@ import io.swagger.annotations.ApiModelProperty;
 import org.smartbit4all.api.view.bean.UiActionButtonIconPos;
 import org.smartbit4all.api.view.bean.UiActionButtonType;
 import org.smartbit4all.api.view.bean.UiActionDialogDescriptor;
+import org.smartbit4all.api.view.bean.UiActionFeedbackType;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -43,7 +44,9 @@ import javax.validation.Valid;
   UiActionDescriptor.ICON_POSITION,
   UiActionDescriptor.DIALOG,
   UiActionDescriptor.CONFIRM_DIALOG,
-  UiActionDescriptor.INPUT_DIALOG
+  UiActionDescriptor.INPUT_DIALOG,
+  UiActionDescriptor.FEEDBACK_TYPE,
+  UiActionDescriptor.FEEDBACK_TEXT
 })
 @JsonTypeName("UiActionDescriptor")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -74,6 +77,12 @@ public class UiActionDescriptor {
 
   public static final String INPUT_DIALOG = "inputDialog";
   private UiActionDialogDescriptor inputDialog;
+
+  public static final String FEEDBACK_TYPE = "feedbackType";
+  private UiActionFeedbackType feedbackType = UiActionFeedbackType.SNACKBAR;
+
+  public static final String FEEDBACK_TEXT = "feedbackText";
+  private String feedbackText;
 
   public UiActionDescriptor() { 
   }
@@ -329,6 +338,61 @@ public class UiActionDescriptor {
   }
 
 
+  public UiActionDescriptor feedbackType(UiActionFeedbackType feedbackType) {
+    
+    this.feedbackType = feedbackType;
+    return this;
+  }
+
+   /**
+   * Get feedbackType
+   * @return feedbackType
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(FEEDBACK_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public UiActionFeedbackType getFeedbackType() {
+    return feedbackType;
+  }
+
+
+  @JsonProperty(FEEDBACK_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setFeedbackType(UiActionFeedbackType feedbackType) {
+    this.feedbackType = feedbackType;
+  }
+
+
+  public UiActionDescriptor feedbackText(String feedbackText) {
+    
+    this.feedbackText = feedbackText;
+    return this;
+  }
+
+   /**
+   * Get feedbackText
+   * @return feedbackText
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(FEEDBACK_TEXT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getFeedbackText() {
+    return feedbackText;
+  }
+
+
+  @JsonProperty(FEEDBACK_TEXT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setFeedbackText(String feedbackText) {
+    this.feedbackText = feedbackText;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -346,12 +410,14 @@ public class UiActionDescriptor {
         Objects.equals(this.iconPosition, uiActionDescriptor.iconPosition) &&
         Objects.equals(this.dialog, uiActionDescriptor.dialog) &&
         Objects.equals(this.confirmDialog, uiActionDescriptor.confirmDialog) &&
-        Objects.equals(this.inputDialog, uiActionDescriptor.inputDialog);
+        Objects.equals(this.inputDialog, uiActionDescriptor.inputDialog) &&
+        Objects.equals(this.feedbackType, uiActionDescriptor.feedbackType) &&
+        Objects.equals(this.feedbackText, uiActionDescriptor.feedbackText);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(title, type, color, icon, iconColor, iconPosition, dialog, confirmDialog, inputDialog);
+    return Objects.hash(title, type, color, icon, iconColor, iconPosition, dialog, confirmDialog, inputDialog, feedbackType, feedbackText);
   }
 
   @Override
@@ -367,6 +433,8 @@ public class UiActionDescriptor {
     sb.append("    dialog: ").append(toIndentedString(dialog)).append("\n");
     sb.append("    confirmDialog: ").append(toIndentedString(confirmDialog)).append("\n");
     sb.append("    inputDialog: ").append(toIndentedString(inputDialog)).append("\n");
+    sb.append("    feedbackType: ").append(toIndentedString(feedbackType)).append("\n");
+    sb.append("    feedbackText: ").append(toIndentedString(feedbackText)).append("\n");
     sb.append("}");
     return sb.toString();
   }
