@@ -50,7 +50,7 @@ components:
         iconCode:
           type: string
           description: 'The code of icon that can be associatied with the value. It may be a uri.'
-    ValueSet:
+    ValueSetData:
       type: object
       required: [qualifiedName, properties, values]
       description: |
@@ -58,6 +58,11 @@ components:
       properties:
         qualifiedName:
           type: string
+        keyProperty:
+          type: string
+          description: |
+            The name of the key property in the value. It will be the value that copied into the reference when a given
+            item is selected from the value set.
         properties:
           type: array
           items:
@@ -110,6 +115,12 @@ components:
         typeClass:
           type: string
           description: The fully qualified name of the type class. 
+        keyProperty:
+          type: string
+          description: |
+            The name of the key property in the value. It will be the value that copied into the reference when a given
+            item is selected from the value set. If it is not set then the default is the URI if it exists in the given object.
+            Or it will be the code or id in this order.
         storageSchema: 
           type: string
           description: The name of the storage schema. Necessary to access the objects or the container (list or map). 
@@ -121,7 +132,12 @@ components:
           description: Optional icon code for the given value set.
         inlineValues:
           type: array
-          description: The value list with dynamic  
+          description: The value list that contains the value objects.
+          items:
+            type: object
+        keys:
+          type: array
+          description: The list of keys. If we have this  
           items:
             type: object
         expression:

@@ -1,7 +1,7 @@
 package org.smartbit4all.api.value;
 
 import java.util.List;
-import org.smartbit4all.api.value.bean.ValueSet;
+import org.smartbit4all.api.value.bean.ValueSetData;
 import org.smartbit4all.api.value.bean.ValueSetDefinitionData;
 import org.smartbit4all.api.value.bean.ValueSetExpression;
 
@@ -40,16 +40,16 @@ public interface ValueSetApi {
    * @return The values in the set.
    */
   @SuppressWarnings("rawtypes")
-  <T extends Enum> ValueSet valuesOf(Class<T> clazz);
+  <T extends Enum> ValueSetData valuesOf(Class<T> clazz);
 
   /**
    * Retrieve the values of a value set where the set is identified by a unique name in a global
    * value set reference map.
    * 
    * @param name The unique name of the value set.
-   * @return The result {@link ValueSet}.
+   * @return The result {@link ValueSetData}.
    */
-  ValueSet valuesOf(String name);
+  ValueSetData valuesOf(String name);
 
   /**
    * Retrieve the values of a value set where the set is identified by a unique name in a global
@@ -57,18 +57,18 @@ public interface ValueSetApi {
    * 
    * @param namespace The namespace of the value set.
    * @param name The unique name of the value set.
-   * @return The result {@link ValueSet}.
+   * @return The result {@link ValueSetData}.
    */
-  ValueSet valuesOf(String namespace, String name);
+  ValueSetData valuesOf(String namespace, String name);
 
   /**
    * Retrieve the values of a value set where the set is identified by a unique name in a global
    * value set reference map.
    * 
    * @param definitionData That defines the value set retrieval parameters.
-   * @return The result {@link ValueSet}.
+   * @return The result {@link ValueSetData}.
    */
-  ValueSet valuesOf(ValueSetDefinitionData definitionData);
+  ValueSetData valuesOf(ValueSetDefinitionData definitionData);
 
   /**
    * Saves the given value set.
@@ -86,7 +86,7 @@ public interface ValueSetApi {
   void save(ValueSetDefinitionData valueSetDef);
 
   /**
-   * This function can extract a value from the objects in the {@link ValueSet}.
+   * This function can extract a value from the objects in the {@link ValueSetData}.
    * 
    * @param <T>
    * @param typeClass
@@ -94,6 +94,6 @@ public interface ValueSetApi {
    * @param path
    * @return
    */
-  <T> List<T> getValues(Class<T> typeClass, ValueSet valueSet, String... path);
+  <T> List<T> getValues(Class<T> typeClass, ValueSetData valueSet, String... path);
 
 }

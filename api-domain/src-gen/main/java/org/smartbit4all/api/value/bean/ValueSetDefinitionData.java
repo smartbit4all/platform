@@ -40,10 +40,12 @@ import javax.validation.Valid;
   ValueSetDefinitionData.QUALIFIED_NAME,
   ValueSetDefinitionData.OBJECT_DEFINITION,
   ValueSetDefinitionData.TYPE_CLASS,
+  ValueSetDefinitionData.KEY_PROPERTY,
   ValueSetDefinitionData.STORAGE_SCHEMA,
   ValueSetDefinitionData.CONTAINER_NAME,
   ValueSetDefinitionData.ICON_CODE,
   ValueSetDefinitionData.INLINE_VALUES,
+  ValueSetDefinitionData.KEYS,
   ValueSetDefinitionData.EXPRESSION
 })
 @JsonTypeName("ValueSetDefinitionData")
@@ -61,6 +63,9 @@ public class ValueSetDefinitionData {
   public static final String TYPE_CLASS = "typeClass";
   private String typeClass;
 
+  public static final String KEY_PROPERTY = "keyProperty";
+  private String keyProperty;
+
   public static final String STORAGE_SCHEMA = "storageSchema";
   private String storageSchema;
 
@@ -72,6 +77,9 @@ public class ValueSetDefinitionData {
 
   public static final String INLINE_VALUES = "inlineValues";
   private List<Object> inlineValues = null;
+
+  public static final String KEYS = "keys";
+  private List<Object> keys = null;
 
   public static final String EXPRESSION = "expression";
   private ValueSetExpression expression;
@@ -191,6 +199,33 @@ public class ValueSetDefinitionData {
   }
 
 
+  public ValueSetDefinitionData keyProperty(String keyProperty) {
+    
+    this.keyProperty = keyProperty;
+    return this;
+  }
+
+   /**
+   * The name of the key property in the value. It will be the value that copied into the reference when a given item is selected from the value set. If it is not set then the default is the URI if it exists in the given object. Or it will be the code or id in this order. 
+   * @return keyProperty
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The name of the key property in the value. It will be the value that copied into the reference when a given item is selected from the value set. If it is not set then the default is the URI if it exists in the given object. Or it will be the code or id in this order. ")
+  @JsonProperty(KEY_PROPERTY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getKeyProperty() {
+    return keyProperty;
+  }
+
+
+  @JsonProperty(KEY_PROPERTY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setKeyProperty(String keyProperty) {
+    this.keyProperty = keyProperty;
+  }
+
+
   public ValueSetDefinitionData storageSchema(String storageSchema) {
     
     this.storageSchema = storageSchema;
@@ -287,11 +322,11 @@ public class ValueSetDefinitionData {
   }
 
    /**
-   * The value list with dynamic
+   * The value list that contains the value objects.
    * @return inlineValues
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The value list with dynamic")
+  @ApiModelProperty(value = "The value list that contains the value objects.")
   @JsonProperty(INLINE_VALUES)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -304,6 +339,41 @@ public class ValueSetDefinitionData {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setInlineValues(List<Object> inlineValues) {
     this.inlineValues = inlineValues;
+  }
+
+
+  public ValueSetDefinitionData keys(List<Object> keys) {
+    
+    this.keys = keys;
+    return this;
+  }
+
+  public ValueSetDefinitionData addKeysItem(Object keysItem) {
+    if (this.keys == null) {
+      this.keys = new ArrayList<>();
+    }
+    this.keys.add(keysItem);
+    return this;
+  }
+
+   /**
+   * The list of keys. If we have this
+   * @return keys
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The list of keys. If we have this")
+  @JsonProperty(KEYS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<Object> getKeys() {
+    return keys;
+  }
+
+
+  @JsonProperty(KEYS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setKeys(List<Object> keys) {
+    this.keys = keys;
   }
 
 
@@ -348,16 +418,18 @@ public class ValueSetDefinitionData {
         Objects.equals(this.qualifiedName, valueSetDefinitionData.qualifiedName) &&
         Objects.equals(this.objectDefinition, valueSetDefinitionData.objectDefinition) &&
         Objects.equals(this.typeClass, valueSetDefinitionData.typeClass) &&
+        Objects.equals(this.keyProperty, valueSetDefinitionData.keyProperty) &&
         Objects.equals(this.storageSchema, valueSetDefinitionData.storageSchema) &&
         Objects.equals(this.containerName, valueSetDefinitionData.containerName) &&
         Objects.equals(this.iconCode, valueSetDefinitionData.iconCode) &&
         Objects.equals(this.inlineValues, valueSetDefinitionData.inlineValues) &&
+        Objects.equals(this.keys, valueSetDefinitionData.keys) &&
         Objects.equals(this.expression, valueSetDefinitionData.expression);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(kind, qualifiedName, objectDefinition, typeClass, storageSchema, containerName, iconCode, inlineValues, expression);
+    return Objects.hash(kind, qualifiedName, objectDefinition, typeClass, keyProperty, storageSchema, containerName, iconCode, inlineValues, keys, expression);
   }
 
   @Override
@@ -368,10 +440,12 @@ public class ValueSetDefinitionData {
     sb.append("    qualifiedName: ").append(toIndentedString(qualifiedName)).append("\n");
     sb.append("    objectDefinition: ").append(toIndentedString(objectDefinition)).append("\n");
     sb.append("    typeClass: ").append(toIndentedString(typeClass)).append("\n");
+    sb.append("    keyProperty: ").append(toIndentedString(keyProperty)).append("\n");
     sb.append("    storageSchema: ").append(toIndentedString(storageSchema)).append("\n");
     sb.append("    containerName: ").append(toIndentedString(containerName)).append("\n");
     sb.append("    iconCode: ").append(toIndentedString(iconCode)).append("\n");
     sb.append("    inlineValues: ").append(toIndentedString(inlineValues)).append("\n");
+    sb.append("    keys: ").append(toIndentedString(keys)).append("\n");
     sb.append("    expression: ").append(toIndentedString(expression)).append("\n");
     sb.append("}");
     return sb.toString();

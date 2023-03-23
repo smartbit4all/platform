@@ -36,19 +36,23 @@ import javax.validation.Valid;
  */
 @ApiModel(description = "The instance of the ValueSetDefintion that conatins every information inline. ")
 @JsonPropertyOrder({
-  ValueSet.QUALIFIED_NAME,
-  ValueSet.PROPERTIES,
-  ValueSet.ICON_CODE,
-  ValueSet.UNDEFINED,
-  ValueSet.LAZY,
-  ValueSet.VALUES,
-  ValueSet.FILTER_MODEL
+  ValueSetData.QUALIFIED_NAME,
+  ValueSetData.KEY_PROPERTY,
+  ValueSetData.PROPERTIES,
+  ValueSetData.ICON_CODE,
+  ValueSetData.UNDEFINED,
+  ValueSetData.LAZY,
+  ValueSetData.VALUES,
+  ValueSetData.FILTER_MODEL
 })
-@JsonTypeName("ValueSet")
+@JsonTypeName("ValueSetData")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
-public class ValueSet {
+public class ValueSetData {
   public static final String QUALIFIED_NAME = "qualifiedName";
   private String qualifiedName;
+
+  public static final String KEY_PROPERTY = "keyProperty";
+  private String keyProperty;
 
   public static final String PROPERTIES = "properties";
   private List<PropertyDefinitionData> properties = new ArrayList<>();
@@ -68,10 +72,10 @@ public class ValueSet {
   public static final String FILTER_MODEL = "filterModel";
   private FilterExpressionBuilderModel filterModel = null;
 
-  public ValueSet() { 
+  public ValueSetData() { 
   }
 
-  public ValueSet qualifiedName(String qualifiedName) {
+  public ValueSetData qualifiedName(String qualifiedName) {
     
     this.qualifiedName = qualifiedName;
     return this;
@@ -99,13 +103,40 @@ public class ValueSet {
   }
 
 
-  public ValueSet properties(List<PropertyDefinitionData> properties) {
+  public ValueSetData keyProperty(String keyProperty) {
+    
+    this.keyProperty = keyProperty;
+    return this;
+  }
+
+   /**
+   * The name of the key property in the value. It will be the value that copied into the reference when a given item is selected from the value set. 
+   * @return keyProperty
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The name of the key property in the value. It will be the value that copied into the reference when a given item is selected from the value set. ")
+  @JsonProperty(KEY_PROPERTY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getKeyProperty() {
+    return keyProperty;
+  }
+
+
+  @JsonProperty(KEY_PROPERTY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setKeyProperty(String keyProperty) {
+    this.keyProperty = keyProperty;
+  }
+
+
+  public ValueSetData properties(List<PropertyDefinitionData> properties) {
     
     this.properties = properties;
     return this;
   }
 
-  public ValueSet addPropertiesItem(PropertyDefinitionData propertiesItem) {
+  public ValueSetData addPropertiesItem(PropertyDefinitionData propertiesItem) {
     this.properties.add(propertiesItem);
     return this;
   }
@@ -133,7 +164,7 @@ public class ValueSet {
   }
 
 
-  public ValueSet iconCode(String iconCode) {
+  public ValueSetData iconCode(String iconCode) {
     
     this.iconCode = iconCode;
     return this;
@@ -160,7 +191,7 @@ public class ValueSet {
   }
 
 
-  public ValueSet undefined(Boolean undefined) {
+  public ValueSetData undefined(Boolean undefined) {
     
     this.undefined = undefined;
     return this;
@@ -187,7 +218,7 @@ public class ValueSet {
   }
 
 
-  public ValueSet lazy(Boolean lazy) {
+  public ValueSetData lazy(Boolean lazy) {
     
     this.lazy = lazy;
     return this;
@@ -214,13 +245,13 @@ public class ValueSet {
   }
 
 
-  public ValueSet values(List<Object> values) {
+  public ValueSetData values(List<Object> values) {
     
     this.values = values;
     return this;
   }
 
-  public ValueSet addValuesItem(Object valuesItem) {
+  public ValueSetData addValuesItem(Object valuesItem) {
     this.values.add(valuesItem);
     return this;
   }
@@ -247,7 +278,7 @@ public class ValueSet {
   }
 
 
-  public ValueSet filterModel(FilterExpressionBuilderModel filterModel) {
+  public ValueSetData filterModel(FilterExpressionBuilderModel filterModel) {
     
     this.filterModel = filterModel;
     return this;
@@ -283,26 +314,28 @@ public class ValueSet {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    ValueSet valueSet = (ValueSet) o;
-    return Objects.equals(this.qualifiedName, valueSet.qualifiedName) &&
-        Objects.equals(this.properties, valueSet.properties) &&
-        Objects.equals(this.iconCode, valueSet.iconCode) &&
-        Objects.equals(this.undefined, valueSet.undefined) &&
-        Objects.equals(this.lazy, valueSet.lazy) &&
-        Objects.equals(this.values, valueSet.values) &&
-        Objects.equals(this.filterModel, valueSet.filterModel);
+    ValueSetData valueSetData = (ValueSetData) o;
+    return Objects.equals(this.qualifiedName, valueSetData.qualifiedName) &&
+        Objects.equals(this.keyProperty, valueSetData.keyProperty) &&
+        Objects.equals(this.properties, valueSetData.properties) &&
+        Objects.equals(this.iconCode, valueSetData.iconCode) &&
+        Objects.equals(this.undefined, valueSetData.undefined) &&
+        Objects.equals(this.lazy, valueSetData.lazy) &&
+        Objects.equals(this.values, valueSetData.values) &&
+        Objects.equals(this.filterModel, valueSetData.filterModel);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(qualifiedName, properties, iconCode, undefined, lazy, values, filterModel);
+    return Objects.hash(qualifiedName, keyProperty, properties, iconCode, undefined, lazy, values, filterModel);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class ValueSet {\n");
+    sb.append("class ValueSetData {\n");
     sb.append("    qualifiedName: ").append(toIndentedString(qualifiedName)).append("\n");
+    sb.append("    keyProperty: ").append(toIndentedString(keyProperty)).append("\n");
     sb.append("    properties: ").append(toIndentedString(properties)).append("\n");
     sb.append("    iconCode: ").append(toIndentedString(iconCode)).append("\n");
     sb.append("    undefined: ").append(toIndentedString(undefined)).append("\n");

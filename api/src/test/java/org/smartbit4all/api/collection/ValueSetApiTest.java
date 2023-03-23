@@ -7,9 +7,11 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.smartbit4all.api.sample.bean.SampleCategory;
+import org.smartbit4all.api.setting.LocaleSettingApi;
+import org.smartbit4all.api.setting.Locales;
 import org.smartbit4all.api.value.ValueSetApi;
 import org.smartbit4all.api.value.bean.Value;
-import org.smartbit4all.api.value.bean.ValueSet;
+import org.smartbit4all.api.value.bean.ValueSetData;
 import org.smartbit4all.api.value.bean.ValueSetDefinitionData;
 import org.smartbit4all.api.value.bean.ValueSetDefinitionKind;
 import org.smartbit4all.api.value.bean.ValueSetExpression;
@@ -26,8 +28,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class ValueSetApiTest {
 
-
-
   @Autowired
   private CollectionApi collectionApi;
 
@@ -36,6 +36,9 @@ class ValueSetApiTest {
 
   @Autowired
   private ValueSetApi valueSetApi;
+
+  @Autowired
+  private LocaleSettingApi localeSettingApi;
 
   @Test
   void testInlineValuesSets() {
@@ -54,12 +57,12 @@ class ValueSetApiTest {
             .addOperandsItem(new ValueSetOperand().name("INLINE-BASE"))
             .addOperandsItem(new ValueSetOperand().name("INLINE-NOTINCLUDED"))));
 
-    ValueSet valueSetDif = valueSetApi.valuesOf("INLINE-DIF");
+    ValueSetData valueSetDif = valueSetApi.valuesOf("INLINE-DIF");
 
     Assertions.assertThat(valueSetApi.getValues(String.class, valueSetDif, Value.CODE))
         .containsExactlyInAnyOrder("B", "C");
 
-    ValueSet valueSetUnion =
+    ValueSetData valueSetUnion =
         valueSetApi.valuesOf(new ValueSetDefinitionData().qualifiedName("INLINE-UNION")
             .kind(ValueSetDefinitionKind.COMPOSITE).typeClass(Value.class.getName())
             .expression(new ValueSetExpression().operation(ValueSetOperation.UNION)
@@ -85,34 +88,24 @@ class ValueSetApiTest {
     // objectApi.saveAsNew(null, objectApi)
 
 
-    valueSetApi.save(new ValueSetDefinitionData().qualifiedName("INLINE-NOTINCLUDED")
-        .kind(ValueSetDefinitionKind.INLINE).typeClass(Value.class.getName())
-        .addInlineValuesItem(new Value().code("A").displayValue("apple")));
+  }
 
-    valueSetApi.save(new ValueSetDefinitionData().qualifiedName("INLINE-DIF")
-        .kind(ValueSetDefinitionKind.COMPOSITE).typeClass(Value.class.getName())
-        .expression(new ValueSetExpression().operation(ValueSetOperation.DIF)
-            .addOperandsItem(new ValueSetOperand().name("INLINE-BASE"))
-            .addOperandsItem(new ValueSetOperand().name("INLINE-NOTINCLUDED"))));
+  @Test
+  void testEnums() {
+    ValueSetData colorValues =
+        valueSetApi.valuesOf(org.smartbit4all.api.sample.bean.SampleCategory.ColorEnum.class);
 
-    ValueSet valueSetDif = valueSetApi.valuesOf("INLINE-DIF");
+    Assertions.assertThat(valueSetApi.getValues(String.class, colorValues, Value.CODE))
+        .containsExactlyInAnyOrder("RED", "BLACK", "GREEN", "WHITE");
 
-    Assertions.assertThat(valueSetApi.getValues(String.class, valueSetDif, Value.CODE))
-        .containsExactlyInAnyOrder("B", "C");
+    localeSettingApi.setDefaultLocale(Locales.HUNGARIAN);
 
-    ValueSet valueSetUnion =
-        valueSetApi.valuesOf(new ValueSetDefinitionData().qualifiedName("INLINE-UNION")
-            .kind(ValueSetDefinitionKind.COMPOSITE).typeClass(Value.class.getName())
-            .expression(new ValueSetExpression().operation(ValueSetOperation.UNION)
-                .addOperandsItem(new ValueSetOperand().name("INLINE-BASE"))
-                .addOperandsItem(new ValueSetOperand().data(new ValueSetDefinitionData()
-                    .kind(ValueSetDefinitionKind.INLINE).qualifiedName("RUNTIME_DEFINED")
-                    .typeClass(Value.class.getName())
-                    .addInlineValuesItem(new Value().code("D").displayValue("Dewberry"))
-                    .addInlineValuesItem(new Value().code("C").displayValue("Carot"))))));
+    Assertions.assertThat(valueSetApi.getValues(String.class, colorValues, Value.DISPLAY_VALUE))
+        .containsExactlyInAnyOrder("Piros", "Fekete", "Zöld", "Fehér");
+    // Create SamplCategory objects to fill the set.
 
-    Assertions.assertThat(valueSetApi.getValues(String.class, valueSetUnion, Value.CODE))
-        .containsExactlyInAnyOrder("A", "B", "C", "D");
+    // objectApi.saveAsNew(null, objectApi)
+
 
   }
 

@@ -16,7 +16,7 @@ import org.smartbit4all.api.collection.StoredList;
 import org.smartbit4all.api.object.bean.ObjectDefinitionData;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.value.bean.Value;
-import org.smartbit4all.api.value.bean.ValueSet;
+import org.smartbit4all.api.value.bean.ValueSetData;
 import org.smartbit4all.api.value.bean.ValueSetDefinition;
 import org.smartbit4all.api.value.bean.ValueSetDefinitionData;
 import org.smartbit4all.api.value.bean.ValueSetDefinitionKind;
@@ -66,27 +66,42 @@ public class ValueSetApiImpl implements ValueSetApi {
   }
 
   @Override
-  public ValueSet valuesOf(String qualifiedName) {
+  public <T extends Enum> ValueSetData valuesOf(Class<T> clazz) {
+    ValueSetDefinitionData definitionData = getDefinitionData(clazz.getName());
+    if (definitionData == null) {
+      // Construct the definition data for the enum.
+      definitionData = constructDefinitionData(clazz);
+    }
+    return valuesOf(definitionData);
+  }
+
+  private <T> ValueSetDefinitionData constructDefinitionData(Class<T> clazz) {
+    return new ValueSetDefinitionData().kind(ValueSetDefinitionKind.ENUM)
+        .typeClass(clazz.getName()).qualifiedName(clazz.getName());
+  }
+
+  @Override
+  public ValueSetData valuesOf(String qualifiedName) {
     return valuesOf(GLOBAL_VALUESETS, qualifiedName);
   }
 
   @Override
-  public ValueSet valuesOf(String logicalSchema, String qualifiedName) {
+  public ValueSetData valuesOf(String logicalSchema, String qualifiedName) {
     // The version URI of the given ValueSetDefinition. The new version of the values set must be
     // promoted before the first usage.
     ValueSetDefinitionData definitionData = getDefinitionData(logicalSchema, qualifiedName);
     if (definitionData != null) {
       return valuesOf(definitionData);
     }
-    return new ValueSet().qualifiedName(qualifiedName);
+    return new ValueSetData().qualifiedName(qualifiedName);
   }
 
   @Override
-  public ValueSet valuesOf(ValueSetDefinitionData definitionData) {
+  public ValueSetData valuesOf(ValueSetDefinitionData definitionData) {
     if (definitionData != null) {
       ObjectDefinition<?> objectDefinition = getObjectDefinition(definitionData);
       if (objectDefinition != null) {
-        ValueSet result = new ValueSet().qualifiedName(definitionData.getQualifiedName())
+        ValueSetData result = new ValueSetData().qualifiedName(definitionData.getQualifiedName())
             .iconCode(definitionData.getIconCode());
         result.lazy(Boolean.FALSE).undefined(Boolean.FALSE);
         result.setProperties(objectDefinition.getProperties());
@@ -94,7 +109,7 @@ public class ValueSetApiImpl implements ValueSetApi {
         result.setValues(readValues(definitionData, objectDefinition));
         return result;
       }
-      return new ValueSet().qualifiedName(definitionData.getQualifiedName());
+      return new ValueSetData().qualifiedName(definitionData.getQualifiedName());
     }
     return null;
   }
@@ -225,11 +240,6 @@ public class ValueSetApiImpl implements ValueSetApi {
     return Collections.emptyList();
   }
 
-  @Override
-  public <T extends Enum> ValueSet valuesOf(Class<T> clazz) {
-    return valuesOf(clazz.getName());
-  }
-
   private final ObjectDefinition<?> getObjectDefinition(ValueSetDefinitionData definitionData) {
     if (definitionData == null) {
       return null;
@@ -286,7 +296,7 @@ public class ValueSetApiImpl implements ValueSetApi {
   }
 
   @Override
-  public <T> List<T> getValues(Class<T> typeClass, ValueSet valueSet, String... path) {
+  public <T> List<T> getValues(Class<T> typeClass, ValueSetData valueSet, String... path) {
     // We won't save this so the schema is not necessary.
     return valueSet.getValues().stream().map(o -> objectApi.create(SCHEMA, o))
         .map(on -> on.getValue(typeClass, path)).collect(toList());
