@@ -16,8 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.StoredList;
-import org.smartbit4all.api.invocation.InvocationApi;
-import org.smartbit4all.api.invocation.InvocationRegisterApi;
 import org.smartbit4all.api.org.OrgApi;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.session.SessionManagementApi;
@@ -72,10 +70,7 @@ public class SessionManagementApiImpl implements SessionManagementApi {
   private CollectionApi collectionApi;
 
   @Autowired(required = false)
-  private InvocationApi invocationApi;
-
-  @Autowired(required = false)
-  private InvocationRegisterApi invocationRegisterApi;
+  private SessionPublisherApi sessionPublisherApi;
 
   @Value("${session.timeout-min:60}")
   private int timeoutMins;
@@ -129,7 +124,9 @@ public class SessionManagementApiImpl implements SessionManagementApi {
             .refreshExpiration(refreshExpiration));
 
     log.debug("Session sid created: {}", sid);
-    fireSessionCreated(sessionUri);
+    if (sessionPublisherApi != null) {
+      sessionPublisherApi.fireSessionCreated(sessionUri);
+    }
     return new SessionInfoData()
         .sid(sid)
         .expiration(session.getExpiration())
@@ -254,7 +251,9 @@ public class SessionManagementApiImpl implements SessionManagementApi {
     URI uri = storage.get().update(sessionUri, Session.class, update);
     currentSession.remove();
     Session nextSession = storage.get().read(uri, Session.class);
-    fireSessionModified(prevSession, nextSession);
+    if (sessionPublisherApi != null) {
+      sessionPublisherApi.fireSessionModified(prevSession, nextSession);
+    }
     return uri;
   }
 
@@ -379,7 +378,7 @@ public class SessionManagementApiImpl implements SessionManagementApi {
   /**
    * Registers a supplier that can provide a {@link User} uri which will be set to every session as
    * default on session start.
-   * 
+   *
    * @param defaultUserProvider The User uri supplier method
    */
   public void setDefaultUserProvider(Supplier<URI> defaultUserProvider) {
@@ -389,7 +388,7 @@ public class SessionManagementApiImpl implements SessionManagementApi {
   /**
    * Registers a supplier that provides a default parameter map that will be set to every session on
    * session start.
-   * 
+   *
    * @param defaultParametersProvider The default parameter supplier method.
    */
   public void setDefaultParametersProvider(
@@ -400,7 +399,7 @@ public class SessionManagementApiImpl implements SessionManagementApi {
   /**
    * Registers a supplier that provides a default Locale string that will be set to every session on
    * session start.
-   * 
+   *
    * @param defaultLocaleProvider The default locale string supplier method.
    */
   public void setDefaultLocaleProvider(Supplier<String> defaultLocaleProvider) {
@@ -410,7 +409,7 @@ public class SessionManagementApiImpl implements SessionManagementApi {
   /**
    * Registers a supplier that provides a default {@link AccountInfo} list that will be set to every
    * session on session start.
-   * 
+   *
    * @param defaultAuthenticationInfoListProvider The default account info list supplier method.
    */
   public void setDefaultAccountInfoListProvider(
@@ -422,9 +421,9 @@ public class SessionManagementApiImpl implements SessionManagementApi {
    * On session start an {@link Authentication} token is registered in the spring security context.
    * By default it is an {@link AnonymousAuthenticationToken}, but with this method it can be
    * configured dynamically.
-   * 
+   *
    * The Principal of the provided Authentication Token must be a {@link SessionAuthPrincipal}!
-   * 
+   *
    * @param authenticationTokenProvider The authentication token provider that can use the session
    *        uri to create the token.
    */
@@ -469,7 +468,9 @@ public class SessionManagementApiImpl implements SessionManagementApi {
               result.add(sid);
               activeUriList.add(sid.getUri());
             } else {
-              this.fireSessionExpired(sid);
+              if (sessionPublisherApi != null) {
+                sessionPublisherApi.fireSessionExpired(sid);
+              }
               sessionsToBeRemoved.add(sid.getUri());
             }
           });
@@ -497,39 +498,6 @@ public class SessionManagementApiImpl implements SessionManagementApi {
   public void addUserChangeListener(BiConsumer<URI, URI> changeListener) {
     Objects.requireNonNull(changeListener, "changeListener can not be null!");
     userChangeListeners.add(changeListener);
-  }
-
-  private void fireSessionCreated(URI sessionUri) {
-    if (eventPublisherProvided()) {
-      invocationApi
-          .publisher(SessionManagementPublisherApi.class, SessionManagementSubsciberApi.class,
-              SessionManagementPublisherApi.CREATED)
-          .publish(api -> api.sessionCreated(sessionUri));
-    }
-  }
-
-  private void fireSessionModified(Session prevSession, Session nextSession) {
-    if (eventPublisherProvided()) {
-      invocationApi
-          .publisher(SessionManagementPublisherApi.class, SessionManagementSubsciberApi.class,
-              SessionManagementPublisherApi.MODIFIED)
-          .publish(api -> api.sessionModified(prevSession, nextSession));
-    }
-  }
-
-  private void fireSessionExpired(Session expiredSession) {
-    if (eventPublisherProvided()) {
-      invocationApi
-          .publisher(SessionManagementPublisherApi.class, SessionManagementSubsciberApi.class,
-              SessionManagementPublisherApi.EXPIRED)
-          .publish(api -> api.sessionExpired(expiredSession));
-    }
-  }
-
-  private boolean eventPublisherProvided() {
-    return invocationRegisterApi != null
-        && invocationRegisterApi.getApi(SessionManagementPublisherApi.class.getName(),
-            null) != null;
   }
 
 }

@@ -5,9 +5,11 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.api.session.bean.AccountInfo;
+import org.smartbit4all.sec.session.SessionPublisherApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,6 +26,9 @@ public class LocalAuthenticationServiceImpl implements LocalAuthenticationServic
 
   @Autowired
   private AuthenticationManager authenticationManager;
+
+  @Autowired(required = false)
+  private SessionPublisherApi sessionPublisherApi;
 
   private Consumer<AccountInfo> onLogout;
 
@@ -55,7 +60,11 @@ public class LocalAuthenticationServiceImpl implements LocalAuthenticationServic
   }
 
   private void logoutFromAuth(URI sessionUri, AccountInfo foundInfo) {
+    User user = sessionApi.getUser();
     sessionManagementApi.removeSessionAuthentication(sessionUri, foundInfo.getKind());
+    if (sessionPublisherApi != null) {
+      sessionPublisherApi.fireOnLogout(sessionUri, foundInfo, user);
+    }
     if (onLogout != null) {
       onLogout.accept(foundInfo);
     }

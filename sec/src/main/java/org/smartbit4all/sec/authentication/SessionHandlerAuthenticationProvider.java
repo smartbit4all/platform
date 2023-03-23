@@ -15,10 +15,12 @@ import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.api.session.bean.AccountInfo;
 import org.smartbit4all.api.session.exception.NoCurrentSessionException;
 import org.smartbit4all.sec.authprincipal.SessionAuthToken;
+import org.smartbit4all.sec.session.SessionPublisherApi;
 import org.smartbit4all.sec.utils.SecurityContextUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.util.Assert;
@@ -33,6 +35,9 @@ public abstract class SessionHandlerAuthenticationProvider implements Authentica
 
   @Autowired
   private SessionManagementApi sessionManagementApi;
+
+  @Autowired(required = false)
+  private SessionPublisherApi sessionPublisherApi;
 
   @Autowired
   private OrgApi orgApi;
@@ -73,7 +78,7 @@ public abstract class SessionHandlerAuthenticationProvider implements Authentica
       sessionUri = sessionApi.getSessionUri();
     } catch (NoCurrentSessionException e) {
       String reason = "There is no session available while trying to login!";
-      onLoginFailed.accept(reason);
+      fireOnLoginFailed(sessionUri, null, reason);
       throw new InsufficientAuthenticationException(reason, e);
     }
 
@@ -92,7 +97,13 @@ public abstract class SessionHandlerAuthenticationProvider implements Authentica
       originalAuthentication = wrappedAuthenticationProvider.authenticate(authentication);
     } catch (AuthenticationException e) {
       log.debug("Login attempt has failed!", e);
-      onLoginFailed.accept(e.getMessage());
+      String username;
+      if (authentication instanceof UsernamePasswordAuthenticationToken) {
+        username = String.valueOf(authentication.getPrincipal());
+      } else {
+        username = "Ismeretlen";
+      }
+      fireOnLoginFailed(sessionUri, username, e.getMessage());
       throw e;
     }
 
@@ -112,7 +123,7 @@ public abstract class SessionHandlerAuthenticationProvider implements Authentica
       additionalAuthenticationCheck.check(user, accountInfo, originalAuthentication);
     } catch (AuthenticationException e) {
       log.debug("Login attempt has failed on additional authentication checks!", e);
-      onLoginFailed.accept(e.getMessage());
+      fireOnLoginFailed(sessionUri, user.getName(), e.getMessage());
       throw e;
     }
 
@@ -127,7 +138,7 @@ public abstract class SessionHandlerAuthenticationProvider implements Authentica
     sessionManagementApi.setSessionUser(sessionUri, user.getUri());
     sessionManagementApi.addSessionAuthentication(sessionUri, accountInfo);
 
-    onLoginSucceeded.accept(user);
+    fireOnLoginSucceeded(null, user);
 
     return createSessionAuthentication(originalAuthentication, user, sessionUri,
         sessionApi.getAuthentications());
@@ -197,4 +208,17 @@ public abstract class SessionHandlerAuthenticationProvider implements Authentica
         throws AuthenticationException;
   }
 
+  private void fireOnLoginSucceeded(URI sessionUri, User user) {
+    if (sessionPublisherApi != null) {
+      sessionPublisherApi.fireOnLoginSucceeded(sessionUri, user);
+    }
+    onLoginSucceeded.accept(user);
+  }
+
+  private void fireOnLoginFailed(URI sessionUri, String user, String reason) {
+    if (sessionPublisherApi != null) {
+      sessionPublisherApi.fireOnLoginFailed(sessionUri, user, reason);
+    }
+    onLoginFailed.accept(reason);
+  }
 }
