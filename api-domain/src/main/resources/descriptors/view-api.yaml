@@ -260,6 +260,8 @@ components:
         enabled:
           type: boolean
           default: true
+        valueSet:
+          type: ValueSetData
     ViewState:
       type: string
       enum:

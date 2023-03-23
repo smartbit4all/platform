@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.smartbit4all.api.value.bean.ValueSetData;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -35,7 +36,8 @@ import javax.validation.Valid;
   ComponentConstraint.DATA_NAME,
   ComponentConstraint.VISIBLE,
   ComponentConstraint.MANDATORY,
-  ComponentConstraint.ENABLED
+  ComponentConstraint.ENABLED,
+  ComponentConstraint.VALUE_SET
 })
 @JsonTypeName("ComponentConstraint")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -51,6 +53,9 @@ public class ComponentConstraint {
 
   public static final String ENABLED = "enabled";
   private Boolean enabled = true;
+
+  public static final String VALUE_SET = "valueSet";
+  private ValueSetData valueSet = null;
 
   public ComponentConstraint() { 
   }
@@ -163,6 +168,34 @@ public class ComponentConstraint {
   }
 
 
+  public ComponentConstraint valueSet(ValueSetData valueSet) {
+    
+    this.valueSet = valueSet;
+    return this;
+  }
+
+   /**
+   * Get valueSet
+   * @return valueSet
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(VALUE_SET)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public ValueSetData getValueSet() {
+    return valueSet;
+  }
+
+
+  @JsonProperty(VALUE_SET)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setValueSet(ValueSetData valueSet) {
+    this.valueSet = valueSet;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -175,12 +208,13 @@ public class ComponentConstraint {
     return Objects.equals(this.dataName, componentConstraint.dataName) &&
         Objects.equals(this.visible, componentConstraint.visible) &&
         Objects.equals(this.mandatory, componentConstraint.mandatory) &&
-        Objects.equals(this.enabled, componentConstraint.enabled);
+        Objects.equals(this.enabled, componentConstraint.enabled) &&
+        Objects.equals(this.valueSet, componentConstraint.valueSet);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(dataName, visible, mandatory, enabled);
+    return Objects.hash(dataName, visible, mandatory, enabled, valueSet);
   }
 
   @Override
@@ -191,6 +225,7 @@ public class ComponentConstraint {
     sb.append("    visible: ").append(toIndentedString(visible)).append("\n");
     sb.append("    mandatory: ").append(toIndentedString(mandatory)).append("\n");
     sb.append("    enabled: ").append(toIndentedString(enabled)).append("\n");
+    sb.append("    valueSet: ").append(toIndentedString(valueSet)).append("\n");
     sb.append("}");
     return sb.toString();
   }

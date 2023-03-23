@@ -1,5 +1,10 @@
 package org.smartbit4all.api.collection;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
+import java.util.stream.Stream;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
@@ -20,6 +25,7 @@ import org.smartbit4all.api.value.bean.ValueSetOperation;
 import org.smartbit4all.core.object.ObjectApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import static java.util.stream.Collectors.toSet;
 
 @SpringBootTest(classes = {
     CollectionTestConfig.class
@@ -102,10 +108,65 @@ class ValueSetApiTest {
 
     Assertions.assertThat(valueSetApi.getValues(String.class, colorValues, Value.DISPLAY_VALUE))
         .containsExactlyInAnyOrder("Piros", "Fekete", "Zöld", "Fehér");
-    // Create SamplCategory objects to fill the set.
 
-    // objectApi.saveAsNew(null, objectApi)
+  }
 
+  @Test
+  void testSearches() {
+    int bound = 100000;
+    int accessNumber = 1000;
+    String[] values = new String[bound];
+    for (int i = 0; i < values.length; i++) {
+      values[i] = "value " + i;
+    }
+
+    Random rnd = new Random();
+    {
+      // Access by reference
+      long start = System.currentTimeMillis();
+      for (int i = 0; i < accessNumber; i++) {
+        int nextInt = rnd.nextInt(bound);
+        String result = values[nextInt];
+      }
+      long end = System.currentTimeMillis();
+      System.out
+          .println("Access by reference " + accessNumber + " from " + bound + ":" + (end - start));
+    }
+
+    {
+      //
+      long startPrep = System.currentTimeMillis();
+      Set<String> valueSet = Stream.of(values).collect(toSet());
+      long endPrep = System.currentTimeMillis();
+      System.out
+          .println("Construct set from list size " + bound + ":" + (endPrep - startPrep));
+
+      // Access by Map
+      long start = System.currentTimeMillis();
+      for (int i = 0; i < accessNumber; i++) {
+        int nextInt = rnd.nextInt(bound);
+        String nextValue = "value " + nextInt;
+        valueSet.contains(nextValue);
+      }
+      long end = System.currentTimeMillis();
+      System.out
+          .println("Access by reference " + accessNumber + " from " + bound + ":" + (end - start));
+    }
+
+    {
+      List<String> valueList = Arrays.asList(values);
+      // Access by sequential search
+      long start = System.currentTimeMillis();
+      for (int i = 0; i < accessNumber; i++) {
+        int nextInt = rnd.nextInt(bound);
+        String nextValue = "value " + nextInt;
+        String result = valueList.stream().filter(s -> s.equals(nextValue)).findFirst().get();
+      }
+      long end = System.currentTimeMillis();
+      System.out
+          .println("Access by sequential search " + accessNumber + " from " + bound + ":"
+              + (end - start));
+    }
 
   }
 
