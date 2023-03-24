@@ -1,14 +1,10 @@
 package org.smartbit4all.api.value;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
-import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.CollectionApi;
@@ -29,6 +25,7 @@ import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 public class ValueSetApiImpl implements ValueSetApi {
 
@@ -106,7 +103,8 @@ public class ValueSetApiImpl implements ValueSetApi {
         result.lazy(Boolean.FALSE).undefined(Boolean.FALSE);
         result.setProperties(objectDefinition.getProperties());
         // We can continue with the final value set definition.
-        result.setValues(readValues(definitionData, objectDefinition));
+        result.setValues(
+            readValues(definitionData, objectDefinition).values().stream().collect(toList()));
         return result;
       }
       return new ValueSetData().qualifiedName(definitionData.getQualifiedName());
@@ -114,9 +112,9 @@ public class ValueSetApiImpl implements ValueSetApi {
     return null;
   }
 
-  private List<Object> readValues(ValueSetDefinitionData definitionData,
+  private Map<Object, Object> readValues(ValueSetDefinitionData definitionData,
       ObjectDefinition<?> objectDefinition) {
-    List<Object> result = Collections.emptyList();
+    Map<Object, Object> result = Collections.emptyMap();
     if (definitionData == null) {
       return result;
     }
@@ -139,59 +137,54 @@ public class ValueSetApiImpl implements ValueSetApi {
     return result;
   }
 
-  private List<Object> readCompositeValues(ValueSetDefinitionData definitionData,
+  private Map<Object, Object> readCompositeValues(ValueSetDefinitionData definitionData,
       ObjectDefinition<?> objectDefinition) {
     if (definitionData.getExpression() == null) {
       log.warn("The {} composite value set doen't have any expression.",
           definitionData.getQualifiedName());
-      return Collections.emptyList();
+      return Collections.emptyMap();
     }
     // TODO Evaluate the expression. All the set must have the same object type or else we can not
     // merge the values.
-    List<List<Object>> valueLists = definitionData.getExpression().getOperands().stream()
+    List<Map<Object, Object>> valueLists = definitionData.getExpression().getOperands().stream()
         .map(vso -> readValues(getDefinitionDataFromOperand(vso), objectDefinition))
         .collect(toList());
     ValueSetOperation operation = definitionData.getExpression().getOperation();
+    Map<Object, Object> result = null;
     if (operation == ValueSetOperation.UNION) {
-      return valueLists.stream().flatMap(List::stream).distinct().collect(toList());
-    } else if (operation == ValueSetOperation.INTERSECT) {
-      List<Set<Object>> valueSets =
-          valueLists.stream().map(l -> new HashSet<>(l)).collect(toList());
-      ListIterator<Set<Object>> iter = valueSets.listIterator();
-      Set<Object> resultSet = null;
-      while (iter.hasNext()) {
-        if (resultSet == null) {
-          resultSet = iter.next();
+      for (Map<Object, Object> map : valueLists) {
+        if (result == null) {
+          result = map;
         } else {
-          Set<Object> current = iter.next();
-          resultSet.removeIf(o -> !current.contains(o));
+          result.putAll(map);
         }
       }
-      if (resultSet != null && !resultSet.isEmpty()) {
-        return new ArrayList<>(resultSet);
-      }
-    } else if (operation == ValueSetOperation.DIF || operation == ValueSetOperation.SYMMETRICDIF) {
-      List<Set<Object>> valueSets =
-          valueLists.stream().map(l -> new HashSet<>(l)).collect(toList());
-      ListIterator<Set<Object>> iter = valueSets.listIterator();
-      Set<Object> resultSet = null;
-      while (iter.hasNext()) {
-        if (resultSet == null) {
-          resultSet = iter.next();
+      return result;
+    } else if (operation == ValueSetOperation.INTERSECT) {
+      for (Map<Object, Object> map : valueLists) {
+        if (result == null) {
+          result = map;
         } else {
-          Set<Object> current = iter.next();
-          resultSet.removeIf(current::contains);
+          result.entrySet().removeIf(o -> !map.containsKey(o));
+        }
+      }
+      return result;
+    } else if (operation == ValueSetOperation.DIF || operation == ValueSetOperation.SYMMETRICDIF) {
+      for (Map<Object, Object> map : valueLists) {
+        if (result == null) {
+          result = map;
+        } else {
+          result.entrySet().removeIf(e -> map.containsKey(e.getKey()));
           if (operation == ValueSetOperation.SYMMETRICDIF) {
-            current.removeIf(resultSet::contains);
-            resultSet.addAll(current);
+            Map<Object, Object> currentResult = result;
+            map.entrySet().removeIf(e -> currentResult.containsKey(e.getKey()));
+            result.putAll(map);
           }
         }
       }
-      if (resultSet != null && !resultSet.isEmpty()) {
-        return new ArrayList<>(resultSet);
-      }
+      return result;
     }
-    return Collections.emptyList();
+    return Collections.emptyMap();
   }
 
   private final ValueSetDefinitionData getDefinitionDataFromOperand(ValueSetOperand operand) {
@@ -203,30 +196,32 @@ public class ValueSetApiImpl implements ValueSetApi {
         operand.getName());
   }
 
-  private List<Object> readListValues(ValueSetDefinitionData definitionData,
+  private Map<Object, Object> readListValues(ValueSetDefinitionData definitionData,
       ObjectDefinition<?> objectDefinition) {
     StoredList storedList =
         collectionApi.list(definitionData.getStorageSchema(), definitionData.getContainerName());
     if (storedList != null) {
-      return storedList.uris().stream().map(u -> objectApi.read(u, objectDefinition.getClazz()))
-          .collect(toList());
+      return storedList.uris().stream()
+          .collect(toMap(u -> objectApi.getLatestUri(u),
+              u -> objectApi.read(u, objectDefinition.getClazz())));
     }
-    return Collections.emptyList();
+    return Collections.emptyMap();
   }
 
-  private List<Object> readAllObjectValues(ValueSetDefinitionData definitionData,
+  private Map<Object, Object> readAllObjectValues(ValueSetDefinitionData definitionData,
       ObjectDefinition<?> objectDefinition) {
     Storage storage = storageApi.get(definitionData.getStorageSchema());
     if (storage != null) {
       List<URI> allObjectUris = storage.readAllUris(objectDefinition.getClazz());
       // Quick win that we read all the properties.
-      return allObjectUris.stream().map(u -> objectApi.read(u, objectDefinition.getClazz()))
-          .collect(toList());
+      return allObjectUris.stream()
+          .collect(toMap(u -> objectApi.getLatestUri(u),
+              u -> objectApi.read(u, objectDefinition.getClazz())));
     }
-    return Collections.emptyList();
+    return Collections.emptyMap();
   }
 
-  private List<Object> readInlineValues(ValueSetDefinitionData definitionData,
+  private Map<Object, Object> readInlineValues(ValueSetDefinitionData definitionData,
       ObjectDefinition<?> objectDefinition) {
     // Try to load the definition by the URI or initiate it based on the qualified name.
     if (objectDefinition != null) {
@@ -235,9 +230,15 @@ public class ValueSetApiImpl implements ValueSetApi {
           .map(o -> (o instanceof Map)
               ? objectApi.create(SCHEMA, o).getObject(objectDefinition.getClazz())
               : o)
-          .collect(toList());
+          .collect(toMap(o -> {
+            ObjectNode objectNode = objectApi.create(null, o);
+            URI uri = objectNode.getObjectUri();
+            return uri == null ? (definitionData.getKeyProperty() != null
+                ? objectNode.getValueAsString(definitionData.getKeyProperty())
+                : objectNode.getValueAsString(Value.CODE)) : uri;
+          }, o -> o));
     }
-    return Collections.emptyList();
+    return Collections.emptyMap();
   }
 
   private final ObjectDefinition<?> getObjectDefinition(ValueSetDefinitionData definitionData) {
@@ -260,8 +261,8 @@ public class ValueSetApiImpl implements ValueSetApi {
     return result;
   }
 
-  private List<Object> readEnumClass(Class<?> enumClass, String qualifiedName) {
-    List<Object> result = new ArrayList<>();
+  private Map<Object, Object> readEnumClass(Class<?> enumClass, String qualifiedName) {
+    Map<Object, Object> result = new HashMap<>();
     // Fill all the values.
     for (int i = 0; i < enumClass.getEnumConstants().length; i++) {
       Object enumValue = enumClass.getEnumConstants()[i];
@@ -269,7 +270,7 @@ public class ValueSetApiImpl implements ValueSetApi {
       valueObject.put(Value.CODE, enumValue);
       valueObject.put(Value.DISPLAY_VALUE,
           localeSettingApi.get(qualifiedName, enumValue.toString()));
-      result.add(valueObject);
+      result.put(enumValue, valueObject);
     }
     return result;
   }
