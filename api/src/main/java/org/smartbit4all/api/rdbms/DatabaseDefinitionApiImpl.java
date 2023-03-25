@@ -66,16 +66,30 @@ public class DatabaseDefinitionApiImpl implements DatabaseDefinitionApi {
       EnumMap<DatabaseKind, BiFunction<ColumnTypeDefinition, DatabaseKind, String>> type =
           typeMap.computeIfAbsent(BaseTypeEnum.NUMBER,
               dt -> new EnumMap<>(DatabaseKind.class));
-      type.put(DatabaseKind.ORACLE, TypeDefinitions::varcharOra);
-      type.put(DatabaseKind.POSTGRESQL, TypeDefinitions::varcharOra);
-      type.put(DatabaseKind.H2, TypeDefinitions::varcharOra);
+      type.put(DatabaseKind.ORACLE, TypeDefinitions::numberOra);
+      type.put(DatabaseKind.POSTGRESQL, TypeDefinitions::numberOra);
+      type.put(DatabaseKind.H2, TypeDefinitions::numberOra);
+    }
+    {
+      EnumMap<DatabaseKind, BiFunction<ColumnTypeDefinition, DatabaseKind, String>> type =
+          typeMap.computeIfAbsent(BaseTypeEnum.DATETIME,
+              dt -> new EnumMap<>(DatabaseKind.class));
+      type.put(DatabaseKind.ORACLE, TypeDefinitions::timestampOra);
+      type.put(DatabaseKind.POSTGRESQL, TypeDefinitions::timestampOra);
+      type.put(DatabaseKind.H2, TypeDefinitions::timestampOra);
     }
   }
 
   @Override
   public String render(ColumnTypeDefinition typeDef, DatabaseKind dbKind) {
+    EnumMap<DatabaseKind, BiFunction<ColumnTypeDefinition, DatabaseKind, String>> enumMap =
+        typeMap.get(typeDef.getBaseType());
+    if (enumMap == null) {
+      System.out.println("MISSINGTYPEDEF" + typeDef.getBaseType());
+      return "MISSINGTYPEDEF";
+    }
     BiFunction<ColumnTypeDefinition, DatabaseKind, String> function =
-        typeMap.get(typeDef.getBaseType()).get(dbKind);
+        enumMap.get(dbKind);
     if (function == null) {
       function = (type, db) -> {
         return "MISSINGTYPEDEF";

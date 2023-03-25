@@ -18,4 +18,8 @@ final class TypeDefinitions {
         + StringConstant.RIGHT_PARENTHESIS;
   }
 
+  static final String timestampOra(ColumnTypeDefinition typeDef, DatabaseKind dbKind) {
+    return "TIMESTAMP";
+  }
+
 }
