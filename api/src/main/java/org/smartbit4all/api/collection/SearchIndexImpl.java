@@ -1,6 +1,5 @@
 package org.smartbit4all.api.collection;
 
-import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,7 +30,6 @@ import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Expression;
 import org.smartbit4all.domain.meta.Property;
-import org.smartbit4all.domain.meta.SortOrderProperty;
 import org.smartbit4all.domain.service.CrudApi;
 import org.smartbit4all.domain.service.dataset.TableDataApi;
 import org.smartbit4all.domain.service.entity.EntityManager;
@@ -85,6 +83,8 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
 
   protected ObjectDefinition<O> indexedObjectDefinition;
 
+  protected boolean useDatabase;
+
   protected SearchIndexMappingExtensionStrategy extensionStrategy;
 
   @Autowired
@@ -115,9 +115,18 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
 
   @Override
   public TableData<?> executeSearch(QueryInput queryInput) {
-    SearchEntityTableDataResult allObjects = readAllObjects();
-    setupExists(queryInput, allObjects, Collections.emptyList());
-    queryInput.setTableDataUri(tableDataApi.save(allObjects.result));
+    if (!useDatabase) {
+      SearchEntityTableDataResult allObjects = readAllObjects();
+      if (queryInput.where() == null) {
+        TableData<?> result = allObjects.result;
+        if (queryInput.orderBys() != null && !queryInput.orderBys().isEmpty()) {
+          TableDatas.sort(result, queryInput.orderBys());
+        }
+        return result;
+      }
+      setupExists(queryInput, allObjects, Collections.emptyList());
+      queryInput.setTableDataUri(tableDataApi.save(allObjects.result));
+    }
     if (queryInput.where() == null) {
       queryInput.where(Expression.TRUE());
     }
@@ -136,9 +145,10 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
     }
   }
 
-  public TableData<?> getAll() {
-    return readAllObjects().result;
-  }
+  // TODO seems unused, remove if it's really not used
+  // public TableData<?> getAll() {
+  // return readAllObjects().result;
+  // }
 
   @Override
   public List<O> list(QueryInput queryInput) {
@@ -165,7 +175,8 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
     return readAllObjects(constructResult());
   }
 
-  private final void updateIndex(List<URI> changeList) {
+  @Override
+  public void updateIndex(List<URI> changeList) {
     SearchEntityTableDataResult updateResult = constructResult();
     objectMapping.readObjects(changeList.stream().map(u -> objectApi.load(u)), updateResult,
         Collections.emptyMap());
@@ -214,12 +225,23 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
 
   public SearchIndexImpl(String logicalSchema, String name, String indexedObjectSchema,
       Class<O> indexedObjectDefinitionClass) {
+    this(
+        logicalSchema,
+        name,
+        indexedObjectSchema,
+        indexedObjectDefinitionClass,
+        false);
+  }
+
+  public SearchIndexImpl(String logicalSchema, String name, String indexedObjectSchema,
+      Class<O> indexedObjectDefinitionClass, boolean useDatabase) {
     super();
     this.objectMapping.name = name;
     this.objectMapping.logicalSchema = logicalSchema;
     this.objectMapping.filterClass(indexedObjectDefinitionClass);
     this.indexedObjectSchema = indexedObjectSchema;
     this.indexedObjectDefinitionClass = indexedObjectDefinitionClass;
+    this.useDatabase = useDatabase;
   }
 
   @Override
@@ -322,26 +344,18 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
   @Override
   public TableData<?> executeSearch(FilterExpressionList filterExpressions,
       List<FilterExpressionOrderBy> orderByList) {
-    List<SortOrderProperty> sortOrders;
-    if (orderByList == null) {
-      sortOrders = Collections.emptyList();
-    } else {
-      sortOrders = orderByList.stream()
-          .map(orderBy -> orderBy.getOrder() == OrderEnum.DESC
-              ? objectMapping.propertyOf(orderBy).desc()
-              : objectMapping.propertyOf(orderBy).asc())
-          .collect(toList());
-    }
-    if (filterExpressions == null) {
-      TableData<?> result = getAll();
-      if (!sortOrders.isEmpty()) {
-        TableDatas.sort(result, sortOrders);
+    Expression queryExpression =
+        filterExpressions == null ? null : objectMapping.constructExpression(filterExpressions);
+    CrudRead<EntityDefinition> read = Crud.read(getDefinition().definition)
+        .selectAllProperties()
+        .where(queryExpression);
+    if (orderByList != null) {
+      for (FilterExpressionOrderBy orderBy : orderByList) {
+        read.order(orderBy.getOrder() == OrderEnum.DESC
+            ? objectMapping.propertyOf(orderBy).desc()
+            : objectMapping.propertyOf(orderBy).asc());
       }
-      return result;
     }
-    CrudRead<EntityDefinition> read = Crud.read(getDefinition().definition).selectAllProperties()
-        .where(objectMapping.constructExpression(filterExpressions));
-    read.getQuery().orderBys().addAll(sortOrders);
     return executeSearch(read.getQuery());
   }
 

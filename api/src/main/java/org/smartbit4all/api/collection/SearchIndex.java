@@ -97,4 +97,6 @@ public interface SearchIndex<O> {
    */
   FilterExpressionFieldList allFilterFields();
 
+  void updateIndex(List<URI> changeList);
+
 }
