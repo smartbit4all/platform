@@ -1,7 +1,6 @@
 package org.smartbit4all.api.view;
 
 import java.util.UUID;
-import org.smartbit4all.api.view.annotation.InitModel;
 import org.smartbit4all.api.view.bean.View;
 
 /**
@@ -15,7 +14,14 @@ public interface PageApi<M> {
 
   M load(UUID viewUuid);
 
-  @InitModel
+  /**
+   * This method will be called when a view's model is needed but not present yet. It receives a
+   * {@link View} containing all information available to initialize model, and must return the
+   * model Object.
+   *
+   * @param view
+   * @return
+   */
   M initModel(View view);
 
   /**
