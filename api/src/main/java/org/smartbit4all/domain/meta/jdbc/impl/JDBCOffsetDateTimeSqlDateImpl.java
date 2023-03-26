@@ -17,6 +17,7 @@ package org.smartbit4all.domain.meta.jdbc.impl;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import org.smartbit4all.domain.meta.jdbc.JDBCOffsetDateTimeSqlDate;
 
 /**
@@ -32,7 +33,8 @@ public class JDBCOffsetDateTimeSqlDateImpl implements JDBCOffsetDateTimeSqlDate 
 
   @Override
   public OffsetDateTime ext2app(Timestamp extValue) {
-    return extValue == null ? null : OffsetDateTime.from(extValue.toLocalDateTime());
+    return extValue == null ? null
+        : OffsetDateTime.from(extValue.toLocalDateTime().atZone(ZoneId.systemDefault()));
   }
 
 }
