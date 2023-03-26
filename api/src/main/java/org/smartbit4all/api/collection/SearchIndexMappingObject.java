@@ -208,7 +208,7 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
 
   /**
    * Set the {@link #primaryKey} property.
-   * 
+   *
    * @param primaryKey
    * @return
    */
@@ -437,7 +437,7 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
 
   private final PropertyObject propertyOf(FilterExpressionOperandData op) {
     if (op != null && Boolean.TRUE.equals(op.getIsDataName())) {
-      return entityDefinition.definition.getPropertyObject(op.getValueAsString());
+      return getEntityDefinition().getPropertyObject(op.getValueAsString());
     }
     return null;
   }
@@ -558,7 +558,7 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
   /**
    * A recursive function that insert or update the given row in the database depending on if it is
    * exist or not.
-   * 
+   *
    * @param updateResult
    */
   void merge(SearchEntityTableDataResult updateResult) {
