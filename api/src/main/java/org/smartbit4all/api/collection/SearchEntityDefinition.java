@@ -1,7 +1,11 @@
 package org.smartbit4all.api.collection;
 
+import static java.util.stream.Collectors.toList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
+import org.smartbit4all.api.collection.SearchEntityDefinition.DetailDefinition;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.JoinPath;
 import org.smartbit4all.domain.meta.Reference;
@@ -9,10 +13,10 @@ import org.smartbit4all.domain.meta.Reference;
 /**
  * The search entity definition contains an {@link EntityDefinition} and its detail entities with
  * the master references. The detail is named so we can construct complex queries using this name.
- * 
+ *
  * @author Peter Boros
  */
-class SearchEntityDefinition {
+public class SearchEntityDefinition {
 
   /**
    * The entity definition of the current node.
@@ -28,7 +32,7 @@ class SearchEntityDefinition {
 
   /**
    * The detail definition that contains a detail search definition and a join to the master.
-   * 
+   *
    * @author Peter Boros
    */
   public static class DetailDefinition {
@@ -50,4 +54,18 @@ class SearchEntityDefinition {
     return this;
   }
 
+  public EntityDefinition getDefinition() {
+    return definition;
+  }
+
+  public List<EntityDefinition> getDefinitions() {
+    return Stream.concat(Stream.of(definition), getDetailDefinitions()).collect(toList());
+  }
+
+  public Stream<EntityDefinition> getDetailDefinitions() {
+    return detailsByName.values().stream()
+        .map(d -> d.detail)
+        .flatMap(d -> Stream.concat(Stream.of(d.getDefinition()),
+            d.getDetailDefinitions()));
+  }
 }
