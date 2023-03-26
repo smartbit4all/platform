@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
@@ -25,7 +25,7 @@ import org.smartbit4all.domain.service.entity.EntityUris;
 /**
  * It describes the property of the entities. The subclasses are responsible for describing the data
  * structure. The known subclasses are:
- * 
+ *
  * <ul>
  * <li>{@link PropertyOwned} - This property is persisted directly into the data table belongs to
  * the given entity. It defines the database column name also. All the properties can be dependent
@@ -35,7 +35,7 @@ import org.smartbit4all.domain.service.entity.EntityUris;
  * contains a list of {@link Reference} and the final property at the end. The list of references
  * means a list of joins till we reach the entity.</li>
  * </ul>
- * 
+ *
  * @author Peter Boros
  *
  * @param <T> The type parameters must be the acceptable types at the JDBC level. The
@@ -61,7 +61,7 @@ public abstract class Property<T> {
    * property. It defines the database column type and convert to and from between the JDBC and the
    * application when binding and fetching the data.
    */
-  private JDBCDataConverter<T, ?> jdbcConverter;
+  protected JDBCDataConverter<T, ?> jdbcConverter;
 
   /**
    * The class of the type parameter.
@@ -116,7 +116,7 @@ public abstract class Property<T> {
 
   /**
    * TODO: Set this in the constructor.
-   * 
+   *
    * @param entityDef
    */
   public void setEntityDef(EntityDefinition entityDef) {
@@ -260,39 +260,39 @@ public abstract class Property<T> {
   }
 
   /**
-   * 
+   *
    * @param values
    * @return Returns an in expression with the given values as values.
-   * 
+   *
    */
   public final ExpressionIn<T> in(Collection<T> values) {
     return new ExpressionIn<>(new OperandProperty<>(this), values);
   }
 
   /**
-   * 
+   *
    * @param values
    * @return Returns a not in expression with the given values as values.
-   * 
+   *
    */
   public final ExpressionIn<T> notin(Collection<T> values) {
     return new ExpressionIn<>(new OperandProperty<>(this), values).NOT();
   }
 
   /**
-   * 
+   *
    * @return Returns a between expression with the given operand values as lowerbound and
    *         upperbound.
-   * 
+   *
    */
   public final ExpressionBetween<T> between(Operand<T> lowerBound, Operand<T> upperBound) {
     return new ExpressionBetween<>(new OperandProperty<>(this), lowerBound, upperBound);
   }
 
   /**
-   * 
+   *
    * @return Returns a between expression with the given values as lowerbound and upperbound.
-   * 
+   *
    */
   public final ExpressionBetween<T> between(T lowerBound, T upperBound) {
     return new ExpressionBetween<>(new OperandProperty<>(this),
@@ -310,7 +310,7 @@ public abstract class Property<T> {
 
   /**
    * Return an input value for the given property.
-   * 
+   *
    * @return
    */
   public final InputValue<T> input() {
@@ -319,7 +319,7 @@ public abstract class Property<T> {
 
   /**
    * Return an output value for the given property.
-   * 
+   *
    * @return
    */
   public final OutputValue<T> output() {
@@ -328,7 +328,7 @@ public abstract class Property<T> {
 
   /**
    * Return an input/output value for the given property.
-   * 
+   *
    * @return
    */
   public final OutputValue<T> inOut() {
@@ -342,7 +342,7 @@ public abstract class Property<T> {
   /**
    * The derived property for the aggregate value. Take this to have the given value but be aware of
    * the group by!
-   * 
+   *
    * @return The property is created on demand and will be singleton for every property.
    */
   public Property<T> min() {
@@ -353,7 +353,7 @@ public abstract class Property<T> {
   /**
    * The derived property for the aggregate value. Take this to have the given value but be aware of
    * the group by!
-   * 
+   *
    * @return The property is created on demand and will be singleton for every property.
    */
   public Property<T> max() {
@@ -364,7 +364,7 @@ public abstract class Property<T> {
   /**
    * The derived property for the aggregate value. Take this to have the given value but be aware of
    * the group by!
-   * 
+   *
    * @return The property is created on demand and will be singleton for every property.
    */
   public Property<T> avg() {
@@ -375,7 +375,7 @@ public abstract class Property<T> {
   /**
    * The derived property for the aggregate value. Take this to have the given value but be aware of
    * the group by!
-   * 
+   *
    * @return The property is created on demand and will be singleton for every property.
    */
   public Property<T> sum() {
@@ -419,7 +419,7 @@ public abstract class Property<T> {
 
   /**
    * Constructs a sort order based on the property.
-   * 
+   *
    * @return Fluid API item.
    */
   public final SortOrderProperty asc() {
@@ -428,7 +428,7 @@ public abstract class Property<T> {
 
   /**
    * Constructs a sort order based on the property.
-   * 
+   *
    * @return Fluid API item.
    */
   public final SortOrderProperty desc() {
