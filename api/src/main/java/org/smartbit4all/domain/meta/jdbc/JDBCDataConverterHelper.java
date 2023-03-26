@@ -82,6 +82,27 @@ public class JDBCDataConverterHelper implements ApplicationContextAware {
     if (fromClass.isAssignableFrom(URI.class)) {
       return (JDBCDataConverter<S, ?>) ctx.getBean(JDBCUri.class);
     }
+    // if (Enum.class.isAssignableFrom(fromClass)) {
+    // return new JDBCEnumString<S>() {
+    //
+    // @Override
+    // public String app2ext(S appValue) {
+    // return appValue != null ? appValue.toString() : null;
+    // }
+    //
+    // @Override
+    // public S ext2app(String extValue) {
+    // Enum<?> enumClass = (Enum<?>) fromClass;
+    // Access via reflection...
+    // return extValue != null ? Enum.valueOf((Enum<T>) fromClass, extValue) : null;
+    // }
+    //
+    // @Override
+    // public Class<S> appType() {
+    // return fromClass;
+    // }
+    // };
+    // }
 
     // In any other cases we believe that this must be String based.
     return (JDBCDataConverter<S, ?>) ctx.getBean(JDBCString.class);

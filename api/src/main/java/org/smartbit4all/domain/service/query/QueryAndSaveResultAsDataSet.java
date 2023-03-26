@@ -86,15 +86,13 @@ public final class QueryAndSaveResultAsDataSet extends SB4FunctionImpl<QueryInpu
       if (dataSetApi != null) {
         entry = dataSetApi
             .activate(column.getProperty(), valueSet);
-      } else {
-
       }
     }
     if (entry != null) {
+      // The dataSetApi is available and could save and activate the data set into the database.
       ExpressionInDataSet expressionInDataSet =
           new ExpressionInDataSet(new OperandProperty(originalExists.getContextProperty()),
               entry);
-
       if (originalExists.isNegate()) {
         expressionInDataSet.NOT();
       }
