@@ -214,7 +214,7 @@ components:
             $ref: '#/components/schemas/View'
     ViewData:
       type: object
-      required: [uuid,viewName,state,type,parameters]
+      required: [uuid,viewName,state,type]
       properties:
         uuid:
           type: string

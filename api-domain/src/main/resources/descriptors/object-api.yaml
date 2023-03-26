@@ -318,3 +318,12 @@ components:
           type: string
         typeClass:
           type: string
+    ObjectContainer:
+      type: object
+      required: [uri]
+      properties:
+        uri:
+          type: string
+          format: uri
+        data:
+          type: object
