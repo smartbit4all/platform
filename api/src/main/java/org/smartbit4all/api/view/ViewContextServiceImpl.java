@@ -205,7 +205,8 @@ public class ViewContextServiceImpl implements ViewContextService {
       }
     }
     Object modelObject = view.getModel();
-    if (modelObject == null) {
+    boolean modelWasEmpty = modelObject == null;
+    if (modelWasEmpty) {
       String viewName = view.getViewName();
       Object api = apiByViewName.get(viewName);
       Objects.requireNonNull(api, "API not found for view " + viewName);
@@ -218,13 +219,17 @@ public class ViewContextServiceImpl implements ViewContextService {
       view.setModel(modelObject);
     }
     if (clazz.isInstance(modelObject)) {
-      view.putParametersItem(ViewContexts.INITIAL_MODEL, modelObject);
+      if (modelWasEmpty) {
+        view.putParametersItem(ViewContexts.INITIAL_MODEL, modelObject);
+      }
       return (M) modelObject;
     }
     M model = objectApi.asType(clazz, view.getModel());
     // this is to ensure View holds a typed object, not a Map representing the object
     view.setModel(model);
-    view.putParametersItem(ViewContexts.INITIAL_MODEL, modelObject);
+    if (modelWasEmpty) {
+      view.putParametersItem(ViewContexts.INITIAL_MODEL, modelObject);
+    }
     return model;
   }
 
