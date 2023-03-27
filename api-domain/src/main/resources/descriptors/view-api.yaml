@@ -180,7 +180,7 @@ components:
             $ref: '#/components/schemas/ViewData'
     View:
       type: object
-      required: [uuid,viewName,state,type,parameters,closedChildrenViews]
+      required: [uuid,viewName,state,type,parameters,closedChildrenViews,downloadableItems]
       properties:
         uuid:
           type: string
@@ -212,6 +212,11 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/View'
+        downloadableItems:
+          type: object
+          additionalProperties: 
+            type: string
+            format: uri
     ViewData:
       type: object
       required: [uuid,viewName,state,type,parameters]

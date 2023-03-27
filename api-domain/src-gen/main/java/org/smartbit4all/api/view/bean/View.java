@@ -50,7 +50,8 @@ import javax.validation.Valid;
   View.CONTAINER_UUID,
   View.MODEL,
   View.CONSTRAINT,
-  View.CLOSED_CHILDREN_VIEWS
+  View.CLOSED_CHILDREN_VIEWS,
+  View.DOWNLOADABLE_ITEMS
 })
 @JsonTypeName("View")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -87,6 +88,9 @@ public class View {
 
   public static final String CLOSED_CHILDREN_VIEWS = "closedChildrenViews";
   private List<View> closedChildrenViews = new ArrayList<>();
+
+  public static final String DOWNLOADABLE_ITEMS = "downloadableItems";
+  private Map<String, URI> downloadableItems = new HashMap<>();
 
   public View() { 
   }
@@ -412,6 +416,40 @@ public class View {
   }
 
 
+  public View downloadableItems(Map<String, URI> downloadableItems) {
+    
+    this.downloadableItems = downloadableItems;
+    return this;
+  }
+
+  public View putDownloadableItemsItem(String key, URI downloadableItemsItem) {
+    this.downloadableItems.put(key, downloadableItemsItem);
+    return this;
+  }
+
+   /**
+   * Get downloadableItems
+   * @return downloadableItems
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @Valid
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(DOWNLOADABLE_ITEMS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Map<String, URI> getDownloadableItems() {
+    return downloadableItems;
+  }
+
+
+  @JsonProperty(DOWNLOADABLE_ITEMS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setDownloadableItems(Map<String, URI> downloadableItems) {
+    this.downloadableItems = downloadableItems;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -431,12 +469,13 @@ public class View {
         Objects.equals(this.containerUuid, view.containerUuid) &&
         Objects.equals(this.model, view.model) &&
         Objects.equals(this.constraint, view.constraint) &&
-        Objects.equals(this.closedChildrenViews, view.closedChildrenViews);
+        Objects.equals(this.closedChildrenViews, view.closedChildrenViews) &&
+        Objects.equals(this.downloadableItems, view.downloadableItems);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uuid, viewName, objectUri, branchUri, parameters, state, type, containerUuid, model, constraint, closedChildrenViews);
+    return Objects.hash(uuid, viewName, objectUri, branchUri, parameters, state, type, containerUuid, model, constraint, closedChildrenViews, downloadableItems);
   }
 
   @Override
@@ -454,6 +493,7 @@ public class View {
     sb.append("    model: ").append(toIndentedString(model)).append("\n");
     sb.append("    constraint: ").append(toIndentedString(constraint)).append("\n");
     sb.append("    closedChildrenViews: ").append(toIndentedString(closedChildrenViews)).append("\n");
+    sb.append("    downloadableItems: ").append(toIndentedString(downloadableItems)).append("\n");
     sb.append("}");
     return sb.toString();
   }
