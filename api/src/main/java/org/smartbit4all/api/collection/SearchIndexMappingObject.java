@@ -1,8 +1,5 @@
 package org.smartbit4all.api.collection;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-import static java.util.stream.Collectors.toSet;
 import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -50,6 +47,9 @@ import org.smartbit4all.domain.meta.PropertyObject;
 import org.smartbit4all.domain.service.entity.EntityManager;
 import org.smartbit4all.domain.utility.crud.Crud;
 import org.springframework.context.ApplicationContext;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 
 public class SearchIndexMappingObject extends SearchIndexMapping {
 
@@ -689,34 +689,31 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
     this.complexProcessor = complexProcessor;
   }
 
-  public static Expression existDetailInExpression(String fieldName, Object obj,
-      SearchIndexMappingObject objectMapping) {
+  public static Expression existDetailExpression(String fieldName, Object obj,
+      SearchIndexMappingObject objectMapping,
+      Function<PropertyObject, Expression> detailExpressionProducer) {
     SearchIndexMappingObject detailMapping =
         ((SearchIndexMappingObject) objectMapping.mappingsByPropertyName
             .get(fieldName));
     DetailDefinition detailDefinition = objectMapping.entityDefinition.detailsByName.get(fieldName);
-    Expression existsExpression = detailMapping.getDefinition().definition
-        .getPropertyObject(SearchIndexMappingObject.VALUE_COLUMN)
-        .in((List<Object>) obj);
+    Expression existsExpression =
+        detailExpressionProducer.apply(detailMapping.getDefinition().definition
+            .getPropertyObject(SearchIndexMappingObject.VALUE_COLUMN));
     // Add the exists to the current entity and return the exists expression as is.
     return objectMapping.entityDefinition.definition
         .exists(detailDefinition.masterJoin, existsExpression)
         .name(fieldName);
   }
 
+  public static Expression existDetailInExpression(String fieldName, Object obj,
+      SearchIndexMappingObject objectMapping) {
+    return existDetailExpression(fieldName, obj, objectMapping,
+        prop -> prop.in((List<Object>) obj));
+  }
+
   public static Expression existDetailEqExpression(String fieldName, Object obj,
       SearchIndexMappingObject objectMapping) {
-    SearchIndexMappingObject detailMapping =
-        ((SearchIndexMappingObject) objectMapping.mappingsByPropertyName
-            .get(fieldName));
-    DetailDefinition detailDefinition = objectMapping.entityDefinition.detailsByName.get(fieldName);
-    Expression existsExpression = detailMapping.getDefinition().definition
-        .getPropertyObject(SearchIndexMappingObject.VALUE_COLUMN).eq(obj);
-    // Add the exists to the current entity and return the exists expression as is.
-    return objectMapping.entityDefinition.definition
-        .exists(detailDefinition.masterJoin, existsExpression)
-        .name(fieldName);
-
+    return existDetailExpression(fieldName, obj, objectMapping, prop -> prop.eq(obj));
   }
 
 
