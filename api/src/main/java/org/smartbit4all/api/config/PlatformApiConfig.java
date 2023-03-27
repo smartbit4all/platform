@@ -18,6 +18,7 @@ import org.smartbit4all.api.filter.util.FilterService;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.InvocationApiImpl;
 import org.smartbit4all.api.invocation.Invocations;
+import org.smartbit4all.api.invocation.ProviderApiInvocationHandler;
 import org.smartbit4all.api.invocation.bean.ApiData;
 import org.smartbit4all.api.invocation.bean.ApiRegistryData;
 import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
@@ -56,6 +57,8 @@ import org.smartbit4all.api.value.ValueSetApiImpl;
 import org.smartbit4all.api.view.SmartLinkApi;
 import org.smartbit4all.api.view.SmartLinkApiImpl;
 import org.smartbit4all.api.view.ViewContextService;
+import org.smartbit4all.api.view.ViewPublisherApi;
+import org.smartbit4all.api.view.ViewPublisherApiImpl;
 import org.smartbit4all.api.view.grid.GridModelApi;
 import org.smartbit4all.api.view.grid.GridModelApiImpl;
 import org.smartbit4all.api.view.tree.TreeApi;
@@ -141,6 +144,19 @@ public class PlatformApiConfig {
       TransferService transferService) {
     return new FilterService(entityManager, transferService);
   }
+
+  @Bean
+  public ViewPublisherApi viewPublisherApi() {
+    return new ViewPublisherApiImpl();
+  }
+
+  @Bean
+  public ProviderApiInvocationHandler<ViewPublisherApi> viewPublisherApiProvider(
+      ViewPublisherApi api) {
+    return Invocations.asProvider(ViewPublisherApi.class,
+        ViewPublisherApi.class.getName(), api);
+  }
+
 
   @Bean
   public NavigationFeatureApi navigationFeatureApi() {
