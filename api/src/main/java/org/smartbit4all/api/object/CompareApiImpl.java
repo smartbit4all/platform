@@ -40,7 +40,8 @@ public class CompareApiImpl implements CompareApi {
     }
   }
 
-  private final ObjectChangeData changesOfMap(Map<String, Object> map1,
+  @Override
+  public final ObjectChangeData changesOfMap(Map<String, Object> map1,
       Map<String, Object> map2) {
     List<String> deletedEntries = new ArrayList<>();
     List<String> changeCandidateEntries = new ArrayList<>();
@@ -103,7 +104,7 @@ public class CompareApiImpl implements CompareApi {
 
   /**
    * Creates ObjectChangeData for two lists. The path will be the object's index in the list.
-   * 
+   *
    * @return
    */
   private ObjectChangeData changesOfList(List<Object> list1,
