@@ -2,12 +2,14 @@ package org.smartbit4all.api.view;
 
 import java.util.UUID;
 import java.util.function.UnaryOperator;
-import org.smartbit4all.api.view.bean.ViewContext;
 import org.smartbit4all.api.view.bean.View;
+import org.smartbit4all.api.view.bean.ViewContext;
 import org.smartbit4all.api.view.bean.ViewState;
 import org.smartbit4all.api.view.bean.ViewStateUpdate;
 
 public class ViewContexts {
+
+  public static final String INITIAL_MODEL = "initialModel";
 
   private ViewContexts() {}
 

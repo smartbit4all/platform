@@ -1,6 +1,5 @@
 package org.smartbit4all.api.collection;
 
-import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,6 +39,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static java.util.stream.Collectors.toList;
 
 @SpringBootTest(classes = {
     CollectionTestConfig.class
@@ -320,10 +320,6 @@ class CollectionApiTest {
     assertEquals(TableDatas.contentOf(tableData).toString(),
         TableDatas.contentOf(tableDataByDerived).toString());
 
-    List<TestFilter> resultList = tableDataByDerived.asList(TestFilter.class);
-
-    System.out.println(resultList);
-
     TableData<?> tableDataByDerivedNoResult =
         searchIndex.executeSearch(new TestFilter().isOdd(true).name("od").caption("even.even"));
 
@@ -402,16 +398,25 @@ class CollectionApiTest {
           new TestCategoryFilter().setName("category %2%")
               .setKeyWords(Arrays.asList("key 1", "key 2", "key 3", "key 13")));
 
-      System.out.println(TableDatas.contentOf(tableData));
-      assertEquals(2, tableData.size());
+      org.assertj.core.api.Assertions
+          .assertThat((List<String>) tableData
+              .values(tableData.getColumn(tableData.entity().getProperty(SampleCategory.NAME))))
+          .containsExactlyInAnyOrderElementsOf(Arrays.asList("category 2", "category 12"));
+    }
 
-      List<String> categoryNammeWithDetail =
-          Arrays.asList("category 2", "category 12");
-      DataColumn<?> colName =
-          tableData.getColumn(tableData.entity().getProperty(SampleCategory.NAME));
-      List<?> nameValues = tableData.values(colName);
-      assertTrue(categoryNammeWithDetail.containsAll(nameValues));
-      assertTrue(nameValues.containsAll(categoryNammeWithDetail));
+    {
+      SearchIndexWithFilterBean<SampleCategory, TestCategoryFilter> detailValueSearch =
+          (SearchIndexWithFilterBean<SampleCategory, TestCategoryFilter>) collectionApi
+              .searchIndex(SCHEMA, CollectionApiTest.MY_SEARCHDETAILVALUES, SampleCategory.class);
+      TableData<?> tableData = detailValueSearch.executeSearch(
+          new TestCategoryFilter()
+              .setKeyWords(Arrays.asList("%3%")));
+
+      org.assertj.core.api.Assertions
+          .assertThat((List<String>) tableData
+              .values(tableData.getColumn(tableData.entity().getProperty(SampleCategory.NAME))))
+          .containsExactlyInAnyOrderElementsOf(Arrays.asList("category 2", "category 3",
+              "category 12", "category 13", "category 22", "category 23"));
     }
 
   }

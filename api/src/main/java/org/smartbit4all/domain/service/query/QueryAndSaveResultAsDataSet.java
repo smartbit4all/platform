@@ -34,12 +34,15 @@ public final class QueryAndSaveResultAsDataSet extends SB4FunctionImpl<QueryInpu
    */
   private ExpressionExists originalExists;
 
+  private boolean inMemoryMaster = false;
+
   public QueryAndSaveResultAsDataSet(DataSetApi dataSetApi, Expression fullExpression,
-      ExpressionExists originalExists) {
+      ExpressionExists originalExists, boolean inMemoryMaster) {
     super();
     this.dataSetApi = dataSetApi;
     this.fullExpression = fullExpression;
     this.originalExists = originalExists;
+    this.inMemoryMaster = inMemoryMaster;
   }
 
   @SuppressWarnings({"rawtypes", "unchecked"})
@@ -55,8 +58,6 @@ public final class QueryAndSaveResultAsDataSet extends SB4FunctionImpl<QueryInpu
           "QueryOutput can not contain serialized result for saving it as a DataSet!");
     }
     TableData<?> data = queryOutput.getTableData();
-
-    System.out.println(originalExists + " --> " + data);
 
     // If the result is empty then we can add a false boolean expression instead of the original
     // exists.
@@ -83,28 +84,25 @@ public final class QueryAndSaveResultAsDataSet extends SB4FunctionImpl<QueryInpu
             Expression.FALSE());
         return;
       }
-      if (dataSetApi != null) {
+      if (dataSetApi != null && !inMemoryMaster) {
         entry = dataSetApi
             .activate(column.getProperty(), valueSet);
-      } else {
+        // The dataSetApi is available and could save and activate the data set into the database.
+        ExpressionInDataSet expressionInDataSet =
+            new ExpressionInDataSet(new OperandProperty(originalExists.getContextProperty()),
+                entry);
+        if (originalExists.isNegate()) {
+          expressionInDataSet.NOT();
+        }
 
+        ExpressionReplacer.replace(fullExpression, originalExists, expressionInDataSet);
+      } else if (!valueSet.isEmpty()) {
+        Property<?> targetProperty = originalExists
+            .getMasterReferencePath().last().joins().get(0).getTargetProperty();
+        ExpressionReplacer.replace(fullExpression, originalExists,
+            originalExists.isNegate() ? targetProperty.notin(valueSet)
+                : targetProperty.in(valueSet));
       }
-    }
-    if (entry != null) {
-      ExpressionInDataSet expressionInDataSet =
-          new ExpressionInDataSet(new OperandProperty(originalExists.getContextProperty()),
-              entry);
-
-      if (originalExists.isNegate()) {
-        expressionInDataSet.NOT();
-      }
-
-      ExpressionReplacer.replace(fullExpression, originalExists, expressionInDataSet);
-    } else if (!valueSet.isEmpty()) {
-      Property<?> targetProperty = originalExists
-          .getMasterReferencePath().last().joins().get(0).getTargetProperty();
-      ExpressionReplacer.replace(fullExpression, originalExists,
-          originalExists.isNegate() ? targetProperty.notin(valueSet) : targetProperty.in(valueSet));
     }
   }
 

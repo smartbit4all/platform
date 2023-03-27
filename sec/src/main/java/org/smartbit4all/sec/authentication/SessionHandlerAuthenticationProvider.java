@@ -14,6 +14,7 @@ import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.api.session.bean.AccountInfo;
 import org.smartbit4all.api.session.exception.NoCurrentSessionException;
+import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.sec.authprincipal.SessionAuthToken;
 import org.smartbit4all.sec.session.SessionPublisherApi;
 import org.smartbit4all.sec.utils.SecurityContextUtility;
@@ -41,6 +42,9 @@ public abstract class SessionHandlerAuthenticationProvider implements Authentica
 
   @Autowired
   private OrgApi orgApi;
+
+  @Autowired
+  private LocaleSettingApi localeSettingApi;
 
   private BiFunction<User, Authentication, AccountInfo> accountInfoProvider;
 
@@ -101,7 +105,7 @@ public abstract class SessionHandlerAuthenticationProvider implements Authentica
       if (authentication instanceof UsernamePasswordAuthenticationToken) {
         username = String.valueOf(authentication.getPrincipal());
       } else {
-        username = "Ismeretlen";
+        username = localeSettingApi.get("session.user.unknown");
       }
       fireOnLoginFailed(sessionUri, username, e.getMessage());
       throw e;

@@ -6,6 +6,7 @@ public class PropertyObject extends Property<Object> {
 
   public PropertyObject(Property<?> basic) {
     super(basic.getName(), Object.class, null);
+    this.jdbcConverter = (JDBCDataConverter<Object, ?>) basic.jdbcConverter();
     this.basic = basic;
     createComparator(basic.type());
   }

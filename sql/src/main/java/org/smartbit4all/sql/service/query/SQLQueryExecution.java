@@ -23,6 +23,7 @@ import org.smartbit4all.domain.meta.OperandProperty;
 import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.domain.meta.PropertyComputed;
 import org.smartbit4all.domain.meta.PropertyFunction;
+import org.smartbit4all.domain.meta.PropertyObject;
 import org.smartbit4all.domain.meta.PropertyOwned;
 import org.smartbit4all.domain.meta.PropertyRef;
 import org.smartbit4all.domain.meta.PropertySqlComputed;
@@ -58,7 +59,7 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 /**
  * Responsible for managing all the information during SQL execution of a query. This will be
  * initiated for every execution and refers to the original {@link QueryInput} object.
- * 
+ *
  * @author Peter Boros
  */
 final class SQLQueryExecution {
@@ -123,7 +124,7 @@ final class SQLQueryExecution {
   /**
    * This execute constructs the {@link SQLSelectStatement} and execute it. It uses the
    * {@link #queryOutput} to fetch into.
-   * 
+   *
    */
   public void execute() {
     // That time the entity is based on a table.
@@ -241,7 +242,7 @@ final class SQLQueryExecution {
    * Examine if the given operand is an {@link OperandProperty} and if it is then
    * {@link #setupProperty(SQLSelectFromNode, Property, SQLStatementBuilderIF)} and set the
    * qualifier for the operand.
-   * 
+   *
    * @param rootTable
    * @param builder
    */
@@ -307,15 +308,19 @@ final class SQLQueryExecution {
   /**
    * This function setup the query for querying the given property. A recursive function to add the
    * given property to the SQL select statement.
-   * 
+   *
    * @param table
    * @param property This accept only the {@link PropertyRef} and {@link PropertyOwned} properties.
    * @return We get back the column for the select. We can decide if we add it to the select or not.
-   * 
+   *
    */
   private final SQLSelectColumn setupProperty(SQLSelectFromNode table, Property<?> property,
       SQLStatementBuilderIF builder) {
     SQLSelectColumn column = null;
+    if (property instanceof PropertyObject) {
+      Property<?> basic = ((PropertyObject) property).getBasic();
+      return setupProperty(table, basic, builder);
+    }
     if (property instanceof PropertyRef<?>) {
       PropertyRef<?> propertyRef = (PropertyRef<?>) property;
       SQLSelectFromNode currentTable = table;
@@ -414,7 +419,7 @@ final class SQLQueryExecution {
 
   /**
    * Constructs the next alias for a column in the select.
-   * 
+   *
    * @return
    */
   private final String nextColumnAlias() {
@@ -423,7 +428,7 @@ final class SQLQueryExecution {
 
   /**
    * Constructs the next table alias.
-   * 
+   *
    * @return
    */
   private final String nextTableAlias() {

@@ -53,6 +53,8 @@ public interface ViewApi {
    */
   <M> M getModel(UUID viewUuid, Class<M> clazz);
 
+  // TODO setModel should be here..
+
   /**
    * Returns viewDatas from current viewContext with specified viewName.
    *

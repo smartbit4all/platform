@@ -161,7 +161,8 @@ public class CrudApiImpl implements CrudApi {
                 preQueryRead.where(contextExpression);
 
                 QueryAndSaveResultAsDataSet preQuery =
-                    new QueryAndSaveResultAsDataSet(dataSetApi, where, expression);
+                    new QueryAndSaveResultAsDataSet(dataSetApi, where, expression,
+                        query.getTableDataUri() != null);
 
                 preQuery.setInput(preQueryRead.getQuery());
 

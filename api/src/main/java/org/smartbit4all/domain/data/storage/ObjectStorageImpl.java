@@ -404,7 +404,7 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
       try {
         return Long.valueOf(version);
       } catch (NumberFormatException e) {
-        throw new IllegalArgumentException("Bad version format in " + uri + " object uri.", e);
+        return null;
       }
     }
     return null;
