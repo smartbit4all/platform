@@ -218,11 +218,13 @@ public class ViewContextServiceImpl implements ViewContextService {
       view.setModel(modelObject);
     }
     if (clazz.isInstance(modelObject)) {
+      view.putParametersItem(ViewContexts.INITIAL_MODEL, modelObject);
       return (M) modelObject;
     }
     M model = objectApi.asType(clazz, view.getModel());
     // this is to ensure View holds a typed object, not a Map representing the object
     view.setModel(model);
+    view.putParametersItem(ViewContexts.INITIAL_MODEL, modelObject);
     return model;
   }
 
