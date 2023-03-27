@@ -1,6 +1,6 @@
 package org.smartbit4all.api.view;
 
-import static java.util.stream.Collectors.toList;
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -9,6 +9,8 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.binarydata.BinaryData;
+import org.smartbit4all.api.binarydata.BinaryDataObject;
 import org.smartbit4all.api.view.bean.CloseResult;
 import org.smartbit4all.api.view.bean.MessageData;
 import org.smartbit4all.api.view.bean.OpenPendingData;
@@ -23,6 +25,7 @@ import org.smartbit4all.core.object.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import com.google.common.base.Strings;
+import static java.util.stream.Collectors.toList;
 
 public class ViewApiImpl implements ViewApi {
 
@@ -348,5 +351,15 @@ public class ViewApiImpl implements ViewApi {
     return paths;
   }
 
+  @Override
+  public BinaryData downloadItem(UUID uuid, String item) {
+    View view = getView(uuid);
+    URI uri = view.getDownloadableItems().get(item);
+    if (uri != null) {
+      BinaryDataObject data = objectApi.read(uri, BinaryDataObject.class);
+      return data.getBinaryData();
+    }
+    return null;
+  }
 
 }

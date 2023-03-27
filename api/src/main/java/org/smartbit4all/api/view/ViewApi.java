@@ -3,6 +3,7 @@ package org.smartbit4all.api.view;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.UnaryOperator;
+import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.view.bean.CloseResult;
 import org.smartbit4all.api.view.bean.MessageData;
 import org.smartbit4all.api.view.bean.View;
@@ -102,11 +103,20 @@ public interface ViewApi {
    */
   void updateView(UUID viewUuid, UnaryOperator<View> update);
 
+  /**
+   * The
+   * 
+   * @param channel
+   * @param smartLinkUuid
+   * @return
+   */
   UUID showPublishedView(String channel, UUID smartLinkUuid);
 
   <T> T getComponentModelFromView(Class<T> clazz, UUID viewUuid, String componentId);
 
   <T> void setComponentModelInView(Class<T> clazz, UUID viewUuid, String componentId,
       T componentModel);
+
+  BinaryData downloadItem(UUID uuid, String item);
 
 }

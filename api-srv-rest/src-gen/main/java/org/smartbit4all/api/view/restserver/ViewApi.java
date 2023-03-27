@@ -59,6 +59,40 @@ public interface ViewApi {
 
 
     /**
+     * GET /view/{uuid}/download/{item}
+     *
+     * @param uuid  (required)
+     * @param item  (required)
+     * @return  (status code 200)
+     *         or The context does not exists with the given uuid (status code 404)
+     *         or Error occured while fetching the downloadable item (status code 500)
+     */
+    @ApiOperation(
+        tags = { "View" },
+        value = "",
+        nickname = "downloadItem",
+        notes = "",
+        response = org.springframework.core.io.Resource.class
+    )
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "", response = org.springframework.core.io.Resource.class),
+        @ApiResponse(code = 404, message = "The context does not exists with the given uuid"),
+        @ApiResponse(code = 500, message = "Error occured while fetching the downloadable item")
+    })
+    @RequestMapping(
+        method = RequestMethod.GET,
+        value = "/view/{uuid}/download/{item}",
+        produces = { "application/octet-stream" }
+    )
+    default ResponseEntity<org.springframework.core.io.Resource> downloadItem(
+        @ApiParam(value = "", required = true) @PathVariable("uuid") UUID uuid,
+        @ApiParam(value = "", required = true) @PathVariable("item") String item
+    ) throws Exception {
+        return getDelegate().downloadItem(uuid, item);
+    }
+
+
+    /**
      * GET /view/{uuid}/constraint : Returns the view constraint object belongs to the given view
      *
      * @param uuid View&#39;s unique identifier. (required)

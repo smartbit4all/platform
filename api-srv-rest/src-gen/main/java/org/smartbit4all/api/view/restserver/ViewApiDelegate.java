@@ -48,6 +48,22 @@ public interface ViewApiDelegate {
     }
 
     /**
+     * GET /view/{uuid}/download/{item}
+     *
+     * @param uuid  (required)
+     * @param item  (required)
+     * @return  (status code 200)
+     *         or The context does not exists with the given uuid (status code 404)
+     *         or Error occured while fetching the downloadable item (status code 500)
+     * @see ViewApi#downloadItem
+     */
+    default ResponseEntity<org.springframework.core.io.Resource> downloadItem(UUID uuid,
+        String item) throws Exception {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+
+    }
+
+    /**
      * GET /view/{uuid}/constraint : Returns the view constraint object belongs to the given view
      *
      * @param uuid View&#39;s unique identifier. (required)
@@ -60,7 +76,7 @@ public interface ViewApiDelegate {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"componentConstraints\" : [ { \"visible\" : true, \"dataName\" : \"dataName\", \"mandatory\" : false, \"enabled\" : true }, { \"visible\" : true, \"dataName\" : \"dataName\", \"mandatory\" : false, \"enabled\" : true } ] }";
+                    String exampleString = "{ \"componentConstraints\" : [ { \"visible\" : true, \"valueSet\" : \"\", \"dataName\" : \"dataName\", \"mandatory\" : false, \"enabled\" : true }, { \"visible\" : true, \"valueSet\" : \"\", \"dataName\" : \"dataName\", \"mandatory\" : false, \"enabled\" : true } ] }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }

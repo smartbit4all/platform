@@ -1,6 +1,7 @@
 package org.smartbit4all.api.view.restserver.impl;
 
 import java.util.UUID;
+import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.view.ViewApi;
 import org.smartbit4all.api.view.ViewContextService;
 import org.smartbit4all.api.view.bean.MessageResult;
@@ -9,6 +10,8 @@ import org.smartbit4all.api.view.bean.ViewContextData;
 import org.smartbit4all.api.view.bean.ViewContextUpdate;
 import org.smartbit4all.api.view.restserver.ViewApiDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 
 public class ViewApiDelegateImpl implements ViewApiDelegate {
@@ -55,6 +58,16 @@ public class ViewApiDelegateImpl implements ViewApiDelegate {
   public ResponseEntity<Void> showPublishedView(String channel, UUID uuid) {
     viewApi.showPublishedView(channel, uuid);
     return ResponseEntity.ok().build();
+  }
+
+  @Override
+  public ResponseEntity<Resource> downloadItem(UUID uuid, String item) throws Exception {
+    BinaryData data = viewApi.downloadItem(uuid, item);
+    if (data == null) {
+      return ResponseEntity.notFound().build();
+    }
+    Resource resource = new InputStreamResource(data.inputStream());
+    return ResponseEntity.ok(resource);
   }
 
 }

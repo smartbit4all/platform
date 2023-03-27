@@ -124,6 +124,35 @@ paths:
           description: 'The context does not exists with the given uuid'
         '500':
           description: 'Error occured while fetching the constraints data'
+  /view/{uuid}/download/{item}:
+    get:
+      tags:
+        - View
+      operationId: 'downloadItem'
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+        - in: path
+          name: item
+          schema:
+              type: string
+          required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: 'The context does not exists with the given uuid'
+        '500':
+          description: 'Error occured while fetching the downloadable item'
   /smartlink/{channel}/{uuid}:
     put:
       tags:
