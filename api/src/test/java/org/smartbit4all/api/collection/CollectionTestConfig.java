@@ -108,8 +108,15 @@ public class CollectionTestConfig {
                   .get(TestCategoryFilter.KEYWORDS));
           DetailDefinition detailDefinition =
               objectMapping.entityDefinition.detailsByName.get(TestCategoryFilter.KEYWORDS);
-          Expression existsExpression = detailMapping.getDefinition().definition
-              .getPropertyObject(SearchIndexMappingObject.VALUE_COLUMN).in((List<Object>) obj);
+          List<Object> list = (List<Object>) obj;
+          Expression existsExpression = null;
+          if (list.size() > 1) {
+            existsExpression = detailMapping.getDefinition().definition
+                .getPropertyObject(SearchIndexMappingObject.VALUE_COLUMN).in(list);
+          } else {
+            existsExpression = detailMapping.getDefinition().definition
+                .getPropertyObject(SearchIndexMappingObject.VALUE_COLUMN).like(list.get(0));
+          }
           // Add the exists to the current entity and return the exists expression as is.
           return objectMapping.entityDefinition.definition
               .exists(detailDefinition.masterJoin, existsExpression)
