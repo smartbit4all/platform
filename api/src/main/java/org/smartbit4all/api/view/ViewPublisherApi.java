@@ -9,6 +9,6 @@ public interface ViewPublisherApi {
 
   static final String ACTION_PERFORMED = "actionPerformed";
 
-  void fireActionPerformed(View view, UiActionRequest request);
+  void fireActionPerformed(View view, UiActionRequest request, String objectName);
 
 }

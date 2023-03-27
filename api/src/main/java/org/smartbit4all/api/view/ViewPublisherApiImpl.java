@@ -27,7 +27,7 @@ public class ViewPublisherApiImpl implements ViewPublisherApi {
   private SessionManagementApi sessionManagementApi;
 
   @Override
-  public void fireActionPerformed(View view, UiActionRequest request) {
+  public void fireActionPerformed(View view, UiActionRequest request, String objectName) {
     Session session = sessionManagementApi.readSession(sessionApi.getSessionUri());
     ObjectSerializer serializer = objectApi.getDefaultSerializer();
     Map<String, Object> viewAsMap = serializer.toMap(view);
@@ -35,7 +35,8 @@ public class ViewPublisherApiImpl implements ViewPublisherApi {
     invocationApi
         .publisher(ViewPublisherApi.class, ViewSubscriberApi.class,
             ViewPublisherApi.ACTION_PERFORMED)
-        .publish(api -> api.actionPerformed(view2, request, session, OffsetDateTime.now()));
+        .publish(api -> api.actionPerformed(view2, request, objectName,
+            session, OffsetDateTime.now()));
   }
 
 }

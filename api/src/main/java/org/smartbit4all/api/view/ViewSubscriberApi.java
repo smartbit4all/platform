@@ -7,7 +7,7 @@ import org.smartbit4all.api.view.bean.View;
 
 public interface ViewSubscriberApi {
 
-  void actionPerformed(View view, UiActionRequest uiActionRequest, Session session,
-      OffsetDateTime timestamp);
+  void actionPerformed(View view, UiActionRequest uiActionRequest, String objectName,
+      Session session, OffsetDateTime timestamp);
 
 }
