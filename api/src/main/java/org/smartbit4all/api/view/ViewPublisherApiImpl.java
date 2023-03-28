@@ -20,14 +20,17 @@ public class ViewPublisherApiImpl implements ViewPublisherApi {
   @Autowired
   private InvocationApi invocationApi;
 
-  @Autowired
+  @Autowired(required = false)
   private SessionApi sessionApi;
 
-  @Autowired
+  @Autowired(required = false)
   private SessionManagementApi sessionManagementApi;
 
   @Override
   public void fireActionPerformed(View view, UiActionRequest request, String objectName) {
+    if (sessionApi == null || sessionManagementApi == null) {
+      return;
+    }
     Session session = sessionManagementApi.readSession(sessionApi.getSessionUri());
     ObjectSerializer serializer = objectApi.getDefaultSerializer();
     Map<String, Object> viewAsMap = serializer.toMap(view);
