@@ -7,8 +7,8 @@ import org.smartbit4all.api.view.bean.View;
 
 public interface ViewSubscriberApi {
 
-  static final String MODEL_PREV = "modelBefore";
-  static final String MODEL_NEXT = "modelBefore";
+  static final String MODEL_PREV = "modelPrev";
+  static final String MODEL_NEXT = "modelNext";
 
   void actionPerformed(View view, UiActionRequest uiActionRequest, String objectName,
       Session session, OffsetDateTime timestamp);
