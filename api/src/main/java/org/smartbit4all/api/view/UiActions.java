@@ -4,6 +4,8 @@ public class UiActions {
 
   public static final String INPUT = "input";
 
+  public static final String INPUT2 = "input2";
+
   public static final String MODEL = "model";
 
   public static final String ITEM = "item";

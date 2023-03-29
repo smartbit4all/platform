@@ -38,6 +38,7 @@ import javax.validation.Valid;
   UiAction.CODE,
   UiAction.IDENTIFIER,
   UiAction.INPUT_TYPE,
+  UiAction.INPUT2_TYPE,
   UiAction.SUBMIT,
   UiAction.CONFIRM,
   UiAction.PARAMS
@@ -53,6 +54,9 @@ public class UiAction {
 
   public static final String INPUT_TYPE = "inputType";
   private UiActionInputType inputType = UiActionInputType.NONE;
+
+  public static final String INPUT2_TYPE = "input2Type";
+  private UiActionInputType input2Type = UiActionInputType.NONE;
 
   public static final String SUBMIT = "submit";
   private Boolean submit;
@@ -145,6 +149,34 @@ public class UiAction {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setInputType(UiActionInputType inputType) {
     this.inputType = inputType;
+  }
+
+
+  public UiAction input2Type(UiActionInputType input2Type) {
+    
+    this.input2Type = input2Type;
+    return this;
+  }
+
+   /**
+   * Get input2Type
+   * @return input2Type
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(INPUT2_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public UiActionInputType getInput2Type() {
+    return input2Type;
+  }
+
+
+  @JsonProperty(INPUT2_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setInput2Type(UiActionInputType input2Type) {
+    this.input2Type = input2Type;
   }
 
 
@@ -249,6 +281,7 @@ public class UiAction {
     return Objects.equals(this.code, uiAction.code) &&
         Objects.equals(this.identifier, uiAction.identifier) &&
         Objects.equals(this.inputType, uiAction.inputType) &&
+        Objects.equals(this.input2Type, uiAction.input2Type) &&
         Objects.equals(this.submit, uiAction.submit) &&
         Objects.equals(this.confirm, uiAction.confirm) &&
         Objects.equals(this.params, uiAction.params);
@@ -256,7 +289,7 @@ public class UiAction {
 
   @Override
   public int hashCode() {
-    return Objects.hash(code, identifier, inputType, submit, confirm, params);
+    return Objects.hash(code, identifier, inputType, input2Type, submit, confirm, params);
   }
 
   @Override
@@ -266,6 +299,7 @@ public class UiAction {
     sb.append("    code: ").append(toIndentedString(code)).append("\n");
     sb.append("    identifier: ").append(toIndentedString(identifier)).append("\n");
     sb.append("    inputType: ").append(toIndentedString(inputType)).append("\n");
+    sb.append("    input2Type: ").append(toIndentedString(input2Type)).append("\n");
     sb.append("    submit: ").append(toIndentedString(submit)).append("\n");
     sb.append("    confirm: ").append(toIndentedString(confirm)).append("\n");
     sb.append("    params: ").append(toIndentedString(params)).append("\n");

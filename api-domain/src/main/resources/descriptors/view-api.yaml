@@ -432,6 +432,8 @@ components:
           type: string
         inputType:
           $ref: '#/components/schemas/UiActionInputType'
+        input2Type:
+          $ref: '#/components/schemas/UiActionInputType'
         submit:
           type: boolean
         confirm:
@@ -509,6 +511,8 @@ components:
         confirmDialog:
           $ref: '#/components/schemas/UiActionDialogDescriptor'
         inputDialog:
+          $ref: '#/components/schemas/UiActionDialogDescriptor'
+        input2Dialog:
           $ref: '#/components/schemas/UiActionDialogDescriptor'
         feedbackType:
           $ref: '#/components/schemas/UiActionFeedbackType'

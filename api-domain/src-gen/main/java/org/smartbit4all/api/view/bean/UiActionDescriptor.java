@@ -45,6 +45,7 @@ import javax.validation.Valid;
   UiActionDescriptor.DIALOG,
   UiActionDescriptor.CONFIRM_DIALOG,
   UiActionDescriptor.INPUT_DIALOG,
+  UiActionDescriptor.INPUT2_DIALOG,
   UiActionDescriptor.FEEDBACK_TYPE,
   UiActionDescriptor.FEEDBACK_TEXT
 })
@@ -77,6 +78,9 @@ public class UiActionDescriptor {
 
   public static final String INPUT_DIALOG = "inputDialog";
   private UiActionDialogDescriptor inputDialog;
+
+  public static final String INPUT2_DIALOG = "input2Dialog";
+  private UiActionDialogDescriptor input2Dialog;
 
   public static final String FEEDBACK_TYPE = "feedbackType";
   private UiActionFeedbackType feedbackType = UiActionFeedbackType.SNACKBAR;
@@ -338,6 +342,34 @@ public class UiActionDescriptor {
   }
 
 
+  public UiActionDescriptor input2Dialog(UiActionDialogDescriptor input2Dialog) {
+    
+    this.input2Dialog = input2Dialog;
+    return this;
+  }
+
+   /**
+   * Get input2Dialog
+   * @return input2Dialog
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(INPUT2_DIALOG)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public UiActionDialogDescriptor getInput2Dialog() {
+    return input2Dialog;
+  }
+
+
+  @JsonProperty(INPUT2_DIALOG)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setInput2Dialog(UiActionDialogDescriptor input2Dialog) {
+    this.input2Dialog = input2Dialog;
+  }
+
+
   public UiActionDescriptor feedbackType(UiActionFeedbackType feedbackType) {
     
     this.feedbackType = feedbackType;
@@ -411,13 +443,14 @@ public class UiActionDescriptor {
         Objects.equals(this.dialog, uiActionDescriptor.dialog) &&
         Objects.equals(this.confirmDialog, uiActionDescriptor.confirmDialog) &&
         Objects.equals(this.inputDialog, uiActionDescriptor.inputDialog) &&
+        Objects.equals(this.input2Dialog, uiActionDescriptor.input2Dialog) &&
         Objects.equals(this.feedbackType, uiActionDescriptor.feedbackType) &&
         Objects.equals(this.feedbackText, uiActionDescriptor.feedbackText);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(title, type, color, icon, iconColor, iconPosition, dialog, confirmDialog, inputDialog, feedbackType, feedbackText);
+    return Objects.hash(title, type, color, icon, iconColor, iconPosition, dialog, confirmDialog, inputDialog, input2Dialog, feedbackType, feedbackText);
   }
 
   @Override
@@ -433,6 +466,7 @@ public class UiActionDescriptor {
     sb.append("    dialog: ").append(toIndentedString(dialog)).append("\n");
     sb.append("    confirmDialog: ").append(toIndentedString(confirmDialog)).append("\n");
     sb.append("    inputDialog: ").append(toIndentedString(inputDialog)).append("\n");
+    sb.append("    input2Dialog: ").append(toIndentedString(input2Dialog)).append("\n");
     sb.append("    feedbackType: ").append(toIndentedString(feedbackType)).append("\n");
     sb.append("    feedbackText: ").append(toIndentedString(feedbackText)).append("\n");
     sb.append("}");
