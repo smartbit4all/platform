@@ -13,6 +13,7 @@ import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOperandData;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOperation;
 import org.smartbit4all.api.setting.LocaleSettingApi;
+import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.base.Strings;
 
@@ -32,6 +33,7 @@ public class FilterExpressionApiImpl implements FilterExpressionApi {
         .filter(data -> data != null && (operandHasValue(data.getOperand1())
             || operandHasValue(data.getOperand2())
             || operandHasValue(data.getOperand3())))
+        .map(this::handleLikeExpressions)
         .collect(Collectors.toList());
 
     return filterExpressions.isEmpty()
@@ -39,9 +41,32 @@ public class FilterExpressionApiImpl implements FilterExpressionApi {
         : new FilterExpressionList().expressions(filterExpressions);
   }
 
+  private FilterExpressionData handleLikeExpressions(FilterExpressionData expression) {
+    if (expression.getCurrentOperation() == FilterExpressionOperation.LIKE) {
+      augmentLikeOperand(expression.getOperand1());
+      augmentLikeOperand(expression.getOperand2());
+      augmentLikeOperand(expression.getOperand3());
+    }
+    return expression;
+  }
+
+  private void augmentLikeOperand(FilterExpressionOperandData operand) {
+    if (operandHasValue(operand)) {
+      String value = operand.getValueAsString();
+      if (!value.startsWith(StringConstant.PERCENT)) {
+        value = StringConstant.PERCENT + value;
+      }
+      if (!value.endsWith(StringConstant.PERCENT)) {
+        value = value + StringConstant.PERCENT;
+      }
+      operand.setValueAsString(value);
+    }
+  }
+
   @Override
   public boolean operandHasValue(FilterExpressionOperandData operandData) {
-    return operandData != null && Boolean.FALSE.equals(operandData.getIsDataName())
+    return operandData != null
+        && !Boolean.TRUE.equals(operandData.getIsDataName())
         && !Strings.isNullOrEmpty(operandData.getValueAsString());
   }
 
