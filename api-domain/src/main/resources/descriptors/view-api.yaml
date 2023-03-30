@@ -553,6 +553,9 @@ components:
         - FLAT
         - STROKED
         - RAISED
+        - ICON
+        - MINI_FAB
+        - FAB
     UiActionButtonIconPos:
       type: string
       description: |

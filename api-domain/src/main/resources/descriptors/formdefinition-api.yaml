@@ -37,6 +37,9 @@ components:
         - TEXT_FIELD_NUMBER
         - TIME
         - TOGGLE
+        - IMAGE
+        - FILE_UPLOADER
+        - MEDIA
     SmartLayoutDefinition:
       type: object
       required: [widgets]
