@@ -51,7 +51,8 @@ import javax.validation.Valid;
   View.MODEL,
   View.CONSTRAINT,
   View.CLOSED_CHILDREN_VIEWS,
-  View.DOWNLOADABLE_ITEMS
+  View.DOWNLOADABLE_ITEMS,
+  View.KEEP_MODEL_ON_IMPLICIT_CLOSE
 })
 @JsonTypeName("View")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -91,6 +92,9 @@ public class View {
 
   public static final String DOWNLOADABLE_ITEMS = "downloadableItems";
   private Map<String, URI> downloadableItems = new HashMap<>();
+
+  public static final String KEEP_MODEL_ON_IMPLICIT_CLOSE = "keepModelOnImplicitClose";
+  private Boolean keepModelOnImplicitClose;
 
   public View() { 
   }
@@ -450,6 +454,33 @@ public class View {
   }
 
 
+  public View keepModelOnImplicitClose(Boolean keepModelOnImplicitClose) {
+    
+    this.keepModelOnImplicitClose = keepModelOnImplicitClose;
+    return this;
+  }
+
+   /**
+   * Get keepModelOnImplicitClose
+   * @return keepModelOnImplicitClose
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(KEEP_MODEL_ON_IMPLICIT_CLOSE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getKeepModelOnImplicitClose() {
+    return keepModelOnImplicitClose;
+  }
+
+
+  @JsonProperty(KEEP_MODEL_ON_IMPLICIT_CLOSE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setKeepModelOnImplicitClose(Boolean keepModelOnImplicitClose) {
+    this.keepModelOnImplicitClose = keepModelOnImplicitClose;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -470,12 +501,13 @@ public class View {
         Objects.equals(this.model, view.model) &&
         Objects.equals(this.constraint, view.constraint) &&
         Objects.equals(this.closedChildrenViews, view.closedChildrenViews) &&
-        Objects.equals(this.downloadableItems, view.downloadableItems);
+        Objects.equals(this.downloadableItems, view.downloadableItems) &&
+        Objects.equals(this.keepModelOnImplicitClose, view.keepModelOnImplicitClose);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uuid, viewName, objectUri, branchUri, parameters, state, type, containerUuid, model, constraint, closedChildrenViews, downloadableItems);
+    return Objects.hash(uuid, viewName, objectUri, branchUri, parameters, state, type, containerUuid, model, constraint, closedChildrenViews, downloadableItems, keepModelOnImplicitClose);
   }
 
   @Override
@@ -494,6 +526,7 @@ public class View {
     sb.append("    constraint: ").append(toIndentedString(constraint)).append("\n");
     sb.append("    closedChildrenViews: ").append(toIndentedString(closedChildrenViews)).append("\n");
     sb.append("    downloadableItems: ").append(toIndentedString(downloadableItems)).append("\n");
+    sb.append("    keepModelOnImplicitClose: ").append(toIndentedString(keepModelOnImplicitClose)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -1,5 +1,6 @@
 package org.smartbit4all.api.view;
 
+import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +26,6 @@ import org.smartbit4all.core.object.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import com.google.common.base.Strings;
-import static java.util.stream.Collectors.toList;
 
 public class ViewApiImpl implements ViewApi {
 
@@ -63,6 +63,10 @@ public class ViewApiImpl implements ViewApi {
    */
   private UUID showViewInternal(View view) {
     Objects.requireNonNull(view.getUuid(), "View.uuid must be not null");
+    if (view.getKeepModelOnImplicitClose() == null) {
+      view.keepModelOnImplicitClose(
+          viewContextService.getKeepModelOnImplicitClose(view.getViewName()));
+    }
     viewContextService
         .updateCurrentViewContext(context -> this.addViewToViewContext(context, view));
     if (view.getState() == ViewState.OPEN_PENDING) {
@@ -230,7 +234,9 @@ public class ViewApiImpl implements ViewApi {
               if (parentView != null) {
                 View viewToClose = getView(uuidToClose);
                 if (viewToClose != null) {
-                  viewToClose.setModel(null);
+                  if (!Boolean.TRUE.equals(viewToClose.getKeepModelOnImplicitClose())) {
+                    viewToClose.setModel(null);
+                  }
                   viewToClose.setConstraint(new ViewConstraint());
                   parentView.getClosedChildrenViews().add(0, viewToClose);
                 }

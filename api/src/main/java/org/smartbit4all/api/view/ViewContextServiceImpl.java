@@ -55,6 +55,8 @@ public class ViewContextServiceImpl implements ViewContextService {
 
   private Map<String, Object> apiByViewName = new HashMap<>();
 
+  private Map<String, Boolean> keepModelImplicitByViewName = new HashMap<>();
+
   private Map<String, Class<?>> modelClassByViewName = new HashMap<>();
 
   private Map<String, Map<String, Method>> messageMethodsByView = new HashMap<>();
@@ -187,6 +189,12 @@ public class ViewContextServiceImpl implements ViewContextService {
   }
 
   @Override
+  public Boolean getKeepModelOnImplicitClose(String viewName) {
+    Boolean result = keepModelImplicitByViewName.get(viewName);
+    return result == null ? Boolean.FALSE : result;
+  }
+
+  @Override
   public View getViewFromCurrentViewContext(UUID viewUuid) {
     ViewContext viewContext = getCurrentViewContextEntry();
     return ViewContexts.getView(viewContext, viewUuid);
@@ -288,6 +296,7 @@ public class ViewContextServiceImpl implements ViewContextService {
       throw new IllegalStateException("View already registered! " + viewName);
     }
     apiByViewName.put(viewName, api);
+    keepModelImplicitByViewName.put(viewName, view.keepModelOnImplicitClose());
     parentViewByViewName.put(viewName, view.parent());
     if (api instanceof PageApi) {
       modelClassByViewName.put(viewName, ((PageApi<?>) api).getClazz());

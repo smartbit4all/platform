@@ -13,16 +13,23 @@ public @interface ViewApi {
 
   /**
    * Name of the view.
-   * 
+   *
    * @return
    */
   String value();
 
   /**
    * Name of the parent view.
-   * 
+   *
    * @return
    */
   String parent() default "";
+
+  /**
+   * Indicates whether this view's model should be kept when closing implicitly.
+   *
+   * @return
+   */
+  boolean keepModelOnImplicitClose() default false;
 
 }
