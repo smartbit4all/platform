@@ -246,6 +246,8 @@ components:
           additionalProperties: 
             type: string
             format: uri
+        keepModelOnImplicitClose:
+          type: boolean
     ViewData:
       type: object
       required: [uuid,viewName,state,type]

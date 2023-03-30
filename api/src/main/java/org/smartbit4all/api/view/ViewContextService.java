@@ -65,6 +65,8 @@ public interface ViewContextService {
 
   String getParentViewName(String viewName);
 
+  Boolean getKeepModelOnImplicitClose(String viewName);
+
   /**
    * Returns viewData from the current viewContext.
    *
