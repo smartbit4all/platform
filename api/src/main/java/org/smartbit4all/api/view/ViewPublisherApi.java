@@ -11,4 +11,7 @@ public interface ViewPublisherApi {
 
   void fireActionPerformed(View view, UiActionRequest request, String objectName);
 
+  void fireActionPerformed(View view, UiActionRequest request, String objectName,
+      Object previousModel, Object nextModel);
+
 }

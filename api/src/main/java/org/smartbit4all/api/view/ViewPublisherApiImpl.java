@@ -28,6 +28,12 @@ public class ViewPublisherApiImpl implements ViewPublisherApi {
 
   @Override
   public void fireActionPerformed(View view, UiActionRequest request, String objectName) {
+    fireActionPerformed(view, request, objectName, null, null);
+  }
+
+  @Override
+  public void fireActionPerformed(View view, UiActionRequest request, String objectName,
+      Object previousModel, Object nextModel) {
     if (sessionApi == null || sessionManagementApi == null) {
       return;
     }
@@ -39,7 +45,7 @@ public class ViewPublisherApiImpl implements ViewPublisherApi {
         .publisher(ViewPublisherApi.class, ViewSubscriberApi.class,
             ViewPublisherApi.ACTION_PERFORMED)
         .publish(api -> api.actionPerformed(view2, request, objectName,
-            session, OffsetDateTime.now()));
+            session, OffsetDateTime.now(), previousModel, nextModel));
   }
 
 }
