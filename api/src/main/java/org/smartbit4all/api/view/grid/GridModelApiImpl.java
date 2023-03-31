@@ -29,7 +29,6 @@ import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.data.TableDatas;
 import org.smartbit4all.domain.service.dataset.TableDataApi;
-import org.smartbit4all.domain.service.entity.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class GridModelApiImpl implements GridModelApi {
@@ -47,34 +46,35 @@ public class GridModelApiImpl implements GridModelApi {
   @Autowired
   private LocaleSettingApi localeSettingApi;
 
-  @Autowired
-  private EntityManager entityManager;
-
   @Override
-  public <T> GridModel modelOf(Class<T> clazz, List<T> objectList, Map<String, String> columns) {
-    return modelOf(clazz, objectList, columns, 0, objectList.size());
+  public <T> GridModel modelOf(Class<T> clazz, List<T> objectList, Map<String, String> columns,
+      String... columnPrefix) {
+    return modelOf(clazz, objectList, columns, 0, objectList.size(), columnPrefix);
   }
 
   @Override
-  public <T> org.smartbit4all.api.grid.bean.GridModel modelOf(Class<T> clazz, List<T> objectList,
-      Map<String, String> columns, int lowerBound, int upperBound) {
+  public <T> GridModel modelOf(Class<T> clazz, List<T> objectList,
+      Map<String, String> columns, int lowerBound, int upperBound, String... columnPrefix) {
     return modelOf(
         tableDataApi.tableOf(clazz, objectList, new ArrayList<>(columns.keySet())),
         lowerBound,
-        upperBound);
+        upperBound,
+        columnPrefix);
   }
 
   @Override
-  public GridModel modelOf(TableData<?> tableData) {
-    return constructModel(tableData, 0, tableData.size());
+  public GridModel modelOf(TableData<?> tableData, String... columnPrefix) {
+    return constructModel(tableData, 0, tableData.size(), columnPrefix);
   }
 
   @Override
-  public GridModel modelOf(TableData<?> tableData, int lowerBound, int upperBound) {
-    return constructModel(tableData, lowerBound, upperBound);
+  public GridModel modelOf(TableData<?> tableData, int lowerBound, int upperBound,
+      String... columnPrefix) {
+    return constructModel(tableData, lowerBound, upperBound, columnPrefix);
   }
 
-  private GridModel constructModel(TableData<?> tableData, int lowerBound, int upperBound) {
+  private GridModel constructModel(TableData<?> tableData, int lowerBound, int upperBound,
+      String... columnPrefix) {
     if (tableData.getUri() == null) {
       tableDataApi.save(tableData);
     }
@@ -84,10 +84,24 @@ public class GridModelApiImpl implements GridModelApi {
     GridView tableView = new GridView().descriptor(tableHeader);
     result.addAvailableViewsItem(tableView);
     result.setView(tableView);
+    String[] keys;
+    int idxLastKey;
+    if (columnPrefix == null) {
+      keys = new String[1];
+      idxLastKey = 0;
+    } else {
+      keys = new String[columnPrefix.length + 1];
+      System.arraycopy(
+          columnPrefix, 0,
+          keys, 0,
+          columnPrefix.length);
+      idxLastKey = columnPrefix.length;
+    }
     for (DataColumn<?> column : tableData.columns()) {
+      keys[idxLastKey] = column.getName();
       tableHeader.addColumnsItem(
           new GridColumnMeta().propertyName(column.getName())
-              .label(localeSettingApi.get(column.getName()))
+              .label(localeSettingApi.get(keys))
               .typeClass(column.getProperty().type().getName()));
     }
     result.totalRowCount(tableData.size());
@@ -100,15 +114,17 @@ public class GridModelApiImpl implements GridModelApi {
   }
 
   @Override
-  public GridModel modelOfUris(SearchIndex<?> searchIndex, Stream<URI> uris) {
+  public GridModel modelOfUris(SearchIndex<?> searchIndex, Stream<URI> uris,
+      String... columnPrefix) {
     TableData<?> tableData = searchIndex.tableDataOfUris(uris);
-    return constructModel(tableData, 0, tableData.size());
+    return constructModel(tableData, 0, tableData.size(), columnPrefix);
   }
 
   @Override
-  public <T> GridModel modelOfObjects(SearchIndex<T> searchIndex, Stream<T> objects) {
+  public <T> GridModel modelOfObjects(SearchIndex<T> searchIndex, Stream<T> objects,
+      String... columnPrefix) {
     TableData<?> tableData = searchIndex.tableDataOfObjects(objects);
-    return constructModel(tableData, 0, tableData.size());
+    return constructModel(tableData, 0, tableData.size(), columnPrefix);
   }
 
   @Override

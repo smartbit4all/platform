@@ -23,10 +23,13 @@ public interface GridModelApi {
    * @param columns
    * @return
    */
-  <T> GridModel modelOf(Class<T> clazz, List<T> o, Map<String, String> columns);
+  // TODO columns should be List<>
+  <T> GridModel modelOf(Class<T> clazz, List<T> o, Map<String, String> columns,
+      String... columnPrefix);
 
+  // TODO columns should be List<>
   <T> GridModel modelOf(Class<T> clazz, List<T> o, Map<String, String> columns, int lowerBound,
-      int upperBound);
+      int upperBound, String... columnPrefix);
 
   /**
    * If we already have a table data as the result of a query and we would like to save it as
@@ -35,7 +38,7 @@ public interface GridModelApi {
    * @param tableData The table data.
    * @return
    */
-  GridModel modelOf(TableData<?> tableData);
+  GridModel modelOf(TableData<?> tableData, String... columnPrefix);
 
   /**
    * If we already have a table data as the result of a query and we would like to save it as
@@ -46,7 +49,7 @@ public interface GridModelApi {
    * @param upperBound upper bound of the initial page exclusively.
    * @return
    */
-  GridModel modelOf(TableData<?> tableData, int lowerBound, int upperBound);
+  GridModel modelOf(TableData<?> tableData, int lowerBound, int upperBound, String... columnPrefix);
 
   /**
    * If we have a well defined list bean and we would like to save it's grid model by the definition
@@ -56,7 +59,7 @@ public interface GridModelApi {
    * @param uris The list of URI.
    * @return
    */
-  GridModel modelOfUris(SearchIndex<?> searchIndex, Stream<URI> uris);
+  GridModel modelOfUris(SearchIndex<?> searchIndex, Stream<URI> uris, String... columnPrefix);
 
   /**
    * If we have a well defined list bean and we would like to save it's grid model by the definition
@@ -67,7 +70,8 @@ public interface GridModelApi {
    * @param objects The list of objects.
    * @return
    */
-  <T> GridModel modelOfObjects(SearchIndex<T> searchIndex, Stream<T> objects);
+  <T> GridModel modelOfObjects(SearchIndex<T> searchIndex, Stream<T> objects,
+      String... columnPrefix);
 
   /**
    * Do the paging on the model
