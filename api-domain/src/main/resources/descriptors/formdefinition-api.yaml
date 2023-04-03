@@ -40,6 +40,8 @@ components:
         - IMAGE
         - FILE_UPLOADER
         - MEDIA
+        - BUTTON
+        - DIVIDER
     SmartLayoutDefinition:
       type: object
       required: [widgets]
