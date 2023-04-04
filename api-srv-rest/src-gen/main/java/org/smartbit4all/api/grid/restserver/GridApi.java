@@ -30,6 +30,38 @@ public interface GridApi {
     }
 
     /**
+     * POST /grid/{uuid}/{gridId}/{rowId}/expand
+     *
+     * @param uuid  (required)
+     * @param gridId  (required)
+     * @param rowId  (required)
+     * @return  (status code 200)
+     */
+    @ApiOperation(
+        tags = { "grid" },
+        value = "",
+        nickname = "expand",
+        notes = "",
+        response = Object.class
+    )
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "", response = Object.class)
+    })
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/grid/{uuid}/{gridId}/{rowId}/expand",
+        produces = { "application/json" }
+    )
+    default ResponseEntity<Object> expand(
+        @ApiParam(value = "", required = true) @PathVariable("uuid") UUID uuid,
+        @ApiParam(value = "", required = true) @PathVariable("gridId") String gridId,
+        @ApiParam(value = "", required = true) @PathVariable("rowId") String rowId
+    ) throws Exception {
+        return getDelegate().expand(uuid, gridId, rowId);
+    }
+
+
+    /**
      * POST /grid/{uuid}/{gridIdentifier}/load
      *
      * @param uuid  (required)

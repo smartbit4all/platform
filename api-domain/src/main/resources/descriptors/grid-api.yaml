@@ -133,6 +133,38 @@ paths:
           description: 'OK'
         '404':
           description: 'NOK'
+  /grid/{uuid}/{gridId}/{rowId}/expand:
+    post:
+      tags:
+      - grid
+      summary: ''
+      operationId: 'expand'
+      parameters: 
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+        - in: path
+          name: gridId
+          schema:
+            type: string
+          required: true
+          description: ''
+        - in: path
+          name: rowId
+          schema:
+            type: string
+          required: true
+          description: ''
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
 components:
   schemas:
     GridDataAccessConfig:

@@ -26,6 +26,22 @@ public interface GridApiDelegate {
     }
 
     /**
+     * POST /grid/{uuid}/{gridId}/{rowId}/expand
+     *
+     * @param uuid  (required)
+     * @param gridId  (required)
+     * @param rowId  (required)
+     * @return  (status code 200)
+     * @see GridApi#expand
+     */
+    default ResponseEntity<Object> expand(UUID uuid,
+        String gridId,
+        String rowId) throws Exception {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+
+    }
+
+    /**
      * POST /grid/{uuid}/{gridIdentifier}/load
      *
      * @param uuid  (required)

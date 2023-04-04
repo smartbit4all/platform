@@ -10,6 +10,7 @@ import org.smartbit4all.api.collection.SearchIndex;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy;
 import org.smartbit4all.api.grid.bean.GridModel;
 import org.smartbit4all.api.grid.bean.GridUpdateData;
+import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.domain.data.TableData;
 
 public interface GridModelApi {
@@ -97,5 +98,9 @@ public interface GridModelApi {
   void setOrderBy(GridModel model, List<FilterExpressionOrderBy> orderByList);
 
   <T> T executeGridCall(UUID viewUuid, String gridId, Function<GridModel, T> gridCall);
+
+  Object expand(GridModel grid, String gridId, String rowId);
+
+  void addExpandCallback(UUID viewUuid, String gridId, InvocationRequest request);
 
 }

@@ -49,4 +49,11 @@ public class GridApiDelegateImpl implements GridApiDelegate {
             grid -> gridModelApi.updateGrid(grid, gridUpdateData)));
   }
 
+  @Override
+  public ResponseEntity<Object> expand(UUID uuid, String gridId, String rowId) throws Exception {
+    // TODO Auto-generated method stub
+    return ResponseEntity.ok(
+        gridModelApi.executeGridCall(uuid, gridId,
+            grid -> gridModelApi.expand(grid, gridId, rowId)));
+  }
 }

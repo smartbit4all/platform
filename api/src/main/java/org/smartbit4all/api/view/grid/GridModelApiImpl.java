@@ -6,10 +6,13 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import javax.validation.constraints.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.SearchIndex;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy;
 import org.smartbit4all.api.grid.bean.GridColumnMeta;
@@ -21,8 +24,12 @@ import org.smartbit4all.api.grid.bean.GridUpdateData;
 import org.smartbit4all.api.grid.bean.GridView;
 import org.smartbit4all.api.grid.bean.GridViewDescriptor;
 import org.smartbit4all.api.grid.bean.GridViewDescriptor.KindEnum;
+import org.smartbit4all.api.invocation.InvocationApi;
+import org.smartbit4all.api.invocation.bean.InvocationParameter;
+import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.view.ViewApi;
+import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.domain.data.DataColumn;
 import org.smartbit4all.domain.data.DataRow;
@@ -32,6 +39,10 @@ import org.smartbit4all.domain.service.dataset.TableDataApi;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class GridModelApiImpl implements GridModelApi {
+
+  private static final Logger log = LoggerFactory.getLogger(GridModelApiImpl.class);
+
+  private static final String EXPAND_POSTFIX = "_expand";
 
   @Autowired
   private ObjectApi objectApi;
@@ -45,6 +56,9 @@ public class GridModelApiImpl implements GridModelApi {
 
   @Autowired
   private LocaleSettingApi localeSettingApi;
+
+  @Autowired
+  private InvocationApi invocationApi;
 
   @Override
   public <T> GridModel modelOf(Class<T> clazz, List<T> objectList, Map<String, String> columns,
@@ -198,4 +212,37 @@ public class GridModelApiImpl implements GridModelApi {
     return result;
   }
 
+  @Override
+  public void addExpandCallback(UUID viewUuid, String gridId, InvocationRequest request) {
+    View view = viewApi.getView(viewUuid);
+    String expandCallbackKey = gridId + EXPAND_POSTFIX;
+    view.putParametersItem(expandCallbackKey, request);
+  }
+
+  @Override
+  public Object expand(GridModel grid, String gridId, String rowId) {
+    Objects.nonNull(rowId);
+    GridRow row = grid.getPage().getRows().stream()
+        .filter(r -> rowId.equals(r.getId()))
+        .findFirst()
+        .orElse(null);
+    if (row == null) {
+      log.error("Row not found by id: {}, {}", gridId, rowId);
+      return null;
+    }
+    View view = viewApi.getView(grid.getViewUuid());
+    String expandCallbackKey = gridId + EXPAND_POSTFIX;
+    Object requestObject = view.getParameters().get(expandCallbackKey);
+    InvocationRequest request = objectApi.asType(InvocationRequest.class, requestObject);
+    try {
+      request.getParameters().get(0).setValue(row);
+      InvocationParameter result = invocationApi.invoke(request);
+      if (result == null || result.getValue() == null) {
+        throw new IllegalArgumentException("Action returned nothing");
+      }
+      return result.getValue();
+    } catch (Exception e) {
+      throw new IllegalArgumentException("Action throw an error", e);
+    }
+  }
 }
