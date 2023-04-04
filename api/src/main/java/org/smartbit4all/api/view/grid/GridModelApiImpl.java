@@ -234,6 +234,10 @@ public class GridModelApiImpl implements GridModelApi {
     String expandCallbackKey = gridId + EXPAND_POSTFIX;
     Object requestObject = view.getParameters().get(expandCallbackKey);
     InvocationRequest request = objectApi.asType(InvocationRequest.class, requestObject);
+    if (request == null) {
+      log.warn("Expand handler not found for grid {}", gridId);
+      return row;
+    }
     try {
       request.getParameters().get(0).setValue(row);
       InvocationParameter result = invocationApi.invoke(request);
