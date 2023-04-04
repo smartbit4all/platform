@@ -1,6 +1,5 @@
 package org.smartbit4all.api.collection;
 
-import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
@@ -16,6 +15,7 @@ import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageObject.VersionPolicy;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import static java.util.stream.Collectors.toMap;
 
 /**
  * The {@link StorageApi} based implementation of the {@link CollectionApi} is currently the only
@@ -25,10 +25,10 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class CollectionApiStorageImpl implements CollectionApi, InitializingBean {
 
-  private static final String STOREDMAP = "storedmap";
-  private static final String STOREDLIST = "storedlist";
-  private static final String STOREDREF = "storedRef";
-  private static final String STOREDSEQ = "storedSeq";
+  public static final String STOREDMAP = "storedmap";
+  public static final String STOREDLIST = "storedlist";
+  public static final String STOREDREF = "storedRef";
+  public static final String STOREDSEQ = "storedSeq";
 
   @Autowired
   private StorageApi storageApi;
@@ -145,14 +145,15 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
         s -> storageApi.get(s).setVersionPolicy(VersionPolicy.SINGLEVERSION));
   }
 
-  private URI constructGlobalUri(String logicalSchema, String mapName, String kind) {
+  public static final URI constructGlobalUri(String logicalSchema, String mapName, String kind) {
     return UriUtils.createUri(logicalSchema, null,
         StringConstant.SLASH + kind + StringConstant.SLASH + mapName
             + Storage.SINGLE_VERSION_URI_POSTFIX,
         null);
   }
 
-  private URI constructScopedUri(String logicalSchema, String mapName, URI uriWithoutVersion,
+  public static final URI constructScopedUri(String logicalSchema, String mapName,
+      URI uriWithoutVersion,
       String kind) {
     return UriUtils.createUri(logicalSchema, null,
         uriWithoutVersion.getPath() + StringConstant.SLASH + kind + StringConstant.SLASH

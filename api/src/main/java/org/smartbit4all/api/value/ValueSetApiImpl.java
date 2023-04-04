@@ -31,9 +31,9 @@ public class ValueSetApiImpl implements ValueSetApi {
 
   private static final Logger log = LoggerFactory.getLogger(ValueSetApiImpl.class);
 
-  private static final String SCHEMA = "valueSet";
+  public static final String SCHEMA = "valueSet";
 
-  private static final String GLOBAL_VALUESETS = "globalValueSets";
+  public static final String GLOBAL_VALUESETS = "globalValueSets";
 
   @Autowired
   private CollectionApi collectionApi;
@@ -281,7 +281,7 @@ public class ValueSetApiImpl implements ValueSetApi {
       URI uri = m.get(valueSetDef.getQualifiedName());
       if (uri == null) {
         uri = objectApi.saveAsNew(SCHEMA, new ValueSetDefinition().data(valueSetDef));
-        m.put(valueSetDef.getQualifiedName(), uri);
+        m.put(valueSetDef.getQualifiedName(), objectApi.getLatestUri(uri));
       } else {
         ObjectNode objectNode = objectApi.loadLatest(uri);
         objectNode.setValue(valueSetDef, ValueSetDefinition.DATA);

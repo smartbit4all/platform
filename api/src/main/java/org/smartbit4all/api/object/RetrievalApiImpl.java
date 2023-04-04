@@ -1,6 +1,5 @@
 package org.smartbit4all.api.object;
 
-import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
@@ -11,13 +10,16 @@ import org.smartbit4all.api.object.bean.AggregationKind;
 import org.smartbit4all.api.object.bean.ObjectNodeData;
 import org.smartbit4all.api.object.bean.ReferencePropertyKind;
 import org.smartbit4all.api.storage.bean.ObjectVersion;
+import org.smartbit4all.api.value.ValueUris;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ReferenceDefinition;
+import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.core.utility.UriUtils;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import static java.util.stream.Collectors.toMap;
 
 /**
  * The abstract implementation of the retrieval. It will use contribution apis to access objects.
@@ -32,13 +34,21 @@ public final class RetrievalApiImpl implements RetrievalApi {
   private final Stream<ObjectNodeData> load(RetrievalRequest request, Stream<URI> uriStream) {
 
     return uriStream.parallel()
-        .map(u -> readData(request, u, null));
+        .map(u -> readData(request, u, null, null));
 
   }
 
   private final ObjectNodeData readData(RetrievalRequest objRequest, Object value,
-      String valueScheme) {
-    URI uri = UriUtils.asUri(value);
+      String valueScheme, URI valueSetUri) {
+    URI uri = null;
+    if (valueSetUri != null && value instanceof String
+        && !((String) value).startsWith(ValueUris.VALUE_SCHEME_PREFIX)) {
+      // In this case we know the value set of the given value but we doesn't have a value value URI
+      // just a code reference.
+      uri = URI.create(valueSetUri.toString() + StringConstant.HASH + (String) value);
+    } else {
+      uri = UriUtils.asUri(value);
+    }
     ObjectNodeData data;
     if (uri != null) {
       data = readDataByUri(objRequest, uri);
@@ -59,12 +69,12 @@ public final class RetrievalApiImpl implements RetrievalApi {
         if (refKind == ReferencePropertyKind.REFERENCE) {
           data.putReferencesItem(
               referenceName,
-              readData(refRequest, sourceValue, scheme));
+              readData(refRequest, sourceValue, scheme, ref.getTargetValueSet()));
         } else if (refKind == ReferencePropertyKind.LIST) {
           data.putReferenceListsItem(
               referenceName,
               ((List<?>) sourceValue).stream()
-                  .map(v -> readData(refRequest, v, scheme))
+                  .map(v -> readData(refRequest, v, scheme, ref.getTargetValueSet()))
                   .collect(Collectors.toList()));
         } else if (refKind == ReferencePropertyKind.MAP) {
           data.putReferenceMapsItem(
@@ -72,7 +82,7 @@ public final class RetrievalApiImpl implements RetrievalApi {
               ((Map<String, ?>) sourceValue).entrySet().stream()
                   .collect(toMap(
                       Entry::getKey,
-                      e -> readData(refRequest, e.getValue(), scheme))));
+                      e -> readData(refRequest, e.getValue(), scheme, ref.getTargetValueSet()))));
         }
       }
     }

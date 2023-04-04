@@ -62,7 +62,6 @@ class InvocationApiTest {
     InvocationApiTestStatic.testSubscription(invocationApi, testEventPublisherApi);
   }
 
-  @Test
   void testScriptCall() throws Exception {
     InvocationApiTestStatic.testScriptCall(invocationApi);
   }

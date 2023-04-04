@@ -6,6 +6,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import org.smartbit4all.api.collection.CollectionApiStorageImpl;
+import org.smartbit4all.api.collection.bean.StoredMapData;
+import org.smartbit4all.api.value.ValueSetApiImpl;
+import org.smartbit4all.api.value.ValueUris;
+import org.smartbit4all.api.value.bean.ValueSetData;
+import org.smartbit4all.api.value.bean.ValueSetDefinition;
 import org.smartbit4all.core.object.ObjectApi;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -129,9 +135,46 @@ public final class StorageApiImpl implements StorageApi, InitializingBean {
 
   @Override
   public StorageObject<?> load(URI uri) {
-    Storage storage = getStorage(uri);
+    StorageObject<?> storageObject = getObjectFromValueSet(uri);
 
-    return storage.load(uri);
+    if (storageObject == null) {
+      Storage storage = getStorage(uri);
+      storageObject = storage.load(uri);
+    }
+
+    return storageObject;
+  }
+
+  private StorageObject<?> getObjectFromValueSet(URI uri) {
+    StorageObject<?> storageObject = null;
+    if (uri != null && ValueUris.VALUE_SCHEME.equals(uri.getScheme())) {
+      // This is the URI of a value set where the underlying map contains the URI of the value set
+      // definition itself.
+      String authority = uri.getAuthority();
+      String path = uri.getPath();
+      String fragment = uri.getFragment();
+      if (path != null && fragment != null) {
+        URI mapUri = CollectionApiStorageImpl.constructGlobalUri(ValueSetApiImpl.SCHEMA,
+            authority == null ? ValueSetApiImpl.GLOBAL_VALUESETS : authority,
+            CollectionApiStorageImpl.STOREDMAP);
+        Storage storage = get(ValueSetApiImpl.SCHEMA);
+        StoredMapData mapData = storage.read(uri, StoredMapData.class);
+        URI definitionEntryUri = mapData.getUris().get(path);
+        Storage entryStorage = getStorage(definitionEntryUri);
+        ValueSetDefinition valueSetDefinition =
+            entryStorage.read(definitionEntryUri, ValueSetDefinition.class);
+        Map<String, Object> result = valueSetDefinition.getData().getInlineValues().stream()
+            .map(iv -> (Map<String, Object>) iv)
+            .filter(o -> fragment.equals(o.get(valueSetDefinition.getData().getKeyProperty())))
+            .findFirst().orElseThrow(() -> new ObjectNotFoundException(uri, ValueSetData.class,
+                "The value was found in the value set."));
+        storageObject =
+            entryStorage.create(valueSetDefinition.getData().getTypeClass());
+        storageObject.setObjectAsMap(result);
+        storageObject.setUri(uri);
+      }
+    }
+    return storageObject;
   }
 
   @Override

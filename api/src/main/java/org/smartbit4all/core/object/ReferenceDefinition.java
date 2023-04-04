@@ -1,6 +1,7 @@
 package org.smartbit4all.core.object;
 
 import java.lang.reflect.InvocationTargetException;
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -137,6 +138,10 @@ public class ReferenceDefinition {
 
   public AggregationKind getAggregation() {
     return data.getAggregation();
+  }
+
+  public URI getTargetValueSet() {
+    return data.getTargetValueSet();
   }
 
 }

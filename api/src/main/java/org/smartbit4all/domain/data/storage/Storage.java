@@ -154,6 +154,22 @@ public final class Storage {
   }
 
   /**
+   * Constructs a new instance of the given {@link Class}.
+   * 
+   * @param className The class name that represents a domain object.
+   * @return A new Instance of the {@link StorageObject} that already has an URI! If we save this
+   *         without {@link StorageObject#setObject(Object)} then it will be an empty object but we
+   *         can subscribe for it's events.
+   */
+  public StorageObject create(String className) {
+    ObjectDefinition objectDefinition = objectApi.definition(className);
+    StorageObject storageObject = new StorageObject<>(objectDefinition, this);
+    // At this point we already know the unique URI that can be used to refer from other objects
+    // also.
+    return storageObject;
+  }
+
+  /**
    * Save the given {@link StorageObject}.
    * 
    * @param <T>

@@ -40,6 +40,7 @@ import javax.validation.Valid;
   ReferenceDefinitionData.SOURCE_OBJECT_NAME,
   ReferenceDefinitionData.PROPERTY_PATH,
   ReferenceDefinitionData.TARGET_OBJECT_NAME,
+  ReferenceDefinitionData.TARGET_VALUE_SET,
   ReferenceDefinitionData.AGGREGATION,
   ReferenceDefinitionData.PROPERTY_KIND
 })
@@ -61,6 +62,9 @@ public class ReferenceDefinitionData {
   public static final String TARGET_OBJECT_NAME = "targetObjectName";
   private String targetObjectName;
 
+  public static final String TARGET_VALUE_SET = "targetValueSet";
+  private URI targetValueSet;
+
   public static final String AGGREGATION = "aggregation";
   private AggregationKind aggregation = AggregationKind.NONE;
 
@@ -77,13 +81,13 @@ public class ReferenceDefinitionData {
   }
 
    /**
-   * The storage identifier of the given definition. It is calculated by the qualified name of the object and the name name of the reference. For example object:/com/smartbit4all/mydomain/model/MyObject/firstReference could be a calculated URI for a given reference. By deafult it could be a good idea to name the reference by the name of the property that contains the reference value. 
+   * The storage identifier of the given definition. It is calculated by the qualified name of the object and the name name of the reference. For example object:/com/smartbit4all/mydomain/model/MyObject/firstReference could be a calculated URI for a given reference. By default it could be a good idea to name the reference by the name of the property that contains the reference value. 
    * @return uri
   **/
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The storage identifier of the given definition. It is calculated by the qualified name of the object and the name name of the reference. For example object:/com/smartbit4all/mydomain/model/MyObject/firstReference could be a calculated URI for a given reference. By deafult it could be a good idea to name the reference by the name of the property that contains the reference value. ")
+  @ApiModelProperty(required = true, value = "The storage identifier of the given definition. It is calculated by the qualified name of the object and the name name of the reference. For example object:/com/smartbit4all/mydomain/model/MyObject/firstReference could be a calculated URI for a given reference. By default it could be a good idea to name the reference by the name of the property that contains the reference value. ")
   @JsonProperty(URI)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -193,11 +197,10 @@ public class ReferenceDefinitionData {
    * The name of the target object.
    * @return targetObjectName
   **/
-  @javax.annotation.Nonnull
-  @NotNull
-  @ApiModelProperty(required = true, value = "The name of the target object.")
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The name of the target object.")
   @JsonProperty(TARGET_OBJECT_NAME)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
   public String getTargetObjectName() {
     return targetObjectName;
@@ -205,9 +208,37 @@ public class ReferenceDefinitionData {
 
 
   @JsonProperty(TARGET_OBJECT_NAME)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTargetObjectName(String targetObjectName) {
     this.targetObjectName = targetObjectName;
+  }
+
+
+  public ReferenceDefinitionData targetValueSet(URI targetValueSet) {
+    
+    this.targetValueSet = targetValueSet;
+    return this;
+  }
+
+   /**
+   * If the given reference points to a value set then this uri contains the reference.
+   * @return targetValueSet
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "If the given reference points to a value set then this uri contains the reference.")
+  @JsonProperty(TARGET_VALUE_SET)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public URI getTargetValueSet() {
+    return targetValueSet;
+  }
+
+
+  @JsonProperty(TARGET_VALUE_SET)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setTargetValueSet(URI targetValueSet) {
+    this.targetValueSet = targetValueSet;
   }
 
 
@@ -282,13 +313,14 @@ public class ReferenceDefinitionData {
         Objects.equals(this.sourceObjectName, referenceDefinitionData.sourceObjectName) &&
         Objects.equals(this.propertyPath, referenceDefinitionData.propertyPath) &&
         Objects.equals(this.targetObjectName, referenceDefinitionData.targetObjectName) &&
+        Objects.equals(this.targetValueSet, referenceDefinitionData.targetValueSet) &&
         Objects.equals(this.aggregation, referenceDefinitionData.aggregation) &&
         Objects.equals(this.propertyKind, referenceDefinitionData.propertyKind);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, backReference, sourceObjectName, propertyPath, targetObjectName, aggregation, propertyKind);
+    return Objects.hash(uri, backReference, sourceObjectName, propertyPath, targetObjectName, targetValueSet, aggregation, propertyKind);
   }
 
   @Override
@@ -300,6 +332,7 @@ public class ReferenceDefinitionData {
     sb.append("    sourceObjectName: ").append(toIndentedString(sourceObjectName)).append("\n");
     sb.append("    propertyPath: ").append(toIndentedString(propertyPath)).append("\n");
     sb.append("    targetObjectName: ").append(toIndentedString(targetObjectName)).append("\n");
+    sb.append("    targetValueSet: ").append(toIndentedString(targetValueSet)).append("\n");
     sb.append("    aggregation: ").append(toIndentedString(aggregation)).append("\n");
     sb.append("    propertyKind: ").append(toIndentedString(propertyKind)).append("\n");
     sb.append("}");
