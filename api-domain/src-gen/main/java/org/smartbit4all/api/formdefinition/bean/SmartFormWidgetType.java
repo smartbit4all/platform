@@ -60,7 +60,17 @@ public enum SmartFormWidgetType {
   
   TIME("TIME"),
   
-  TOGGLE("TOGGLE");
+  TOGGLE("TOGGLE"),
+  
+  IMAGE("IMAGE"),
+  
+  FILE_UPLOADER("FILE_UPLOADER"),
+  
+  MEDIA("MEDIA"),
+  
+  BUTTON("BUTTON"),
+  
+  DIVIDER("DIVIDER");
 
   private String value;
 

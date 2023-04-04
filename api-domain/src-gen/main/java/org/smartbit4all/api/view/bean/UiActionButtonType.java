@@ -35,7 +35,13 @@ public enum UiActionButtonType {
   
   STROKED("STROKED"),
   
-  RAISED("RAISED");
+  RAISED("RAISED"),
+  
+  ICON("ICON"),
+  
+  MINI_FAB("MINI_FAB"),
+  
+  FAB("FAB");
 
   private String value;
 
