@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.CollectionApiStorageImpl;
 import org.smartbit4all.api.collection.bean.StoredMapData;
 import org.smartbit4all.api.value.ValueSetApiImpl;
@@ -23,6 +25,8 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author Peter Boros
  */
 public final class StorageApiImpl implements StorageApi, InitializingBean {
+
+  private static final Logger log = LoggerFactory.getLogger(StorageApiImpl.class);
 
   /**
    * All the storages we have in the configuration. Autowired by spring.
@@ -158,20 +162,23 @@ public final class StorageApiImpl implements StorageApi, InitializingBean {
             authority == null ? ValueSetApiImpl.GLOBAL_VALUESETS : authority,
             CollectionApiStorageImpl.STOREDMAP);
         Storage storage = get(ValueSetApiImpl.SCHEMA);
-        StoredMapData mapData = storage.read(uri, StoredMapData.class);
+        StoredMapData mapData = storage.read(mapUri, StoredMapData.class);
         URI definitionEntryUri = mapData.getUris().get(path);
         Storage entryStorage = getStorage(definitionEntryUri);
         ValueSetDefinition valueSetDefinition =
             entryStorage.read(definitionEntryUri, ValueSetDefinition.class);
+        String keyProperty = valueSetDefinition.getData().getKeyProperty();
         Map<String, Object> result = valueSetDefinition.getData().getInlineValues().stream()
             .map(iv -> (Map<String, Object>) iv)
-            .filter(o -> fragment.equals(o.get(valueSetDefinition.getData().getKeyProperty())))
+            .filter(o -> fragment.equals(o.get(keyProperty)))
             .findFirst().orElseThrow(() -> new ObjectNotFoundException(uri, ValueSetData.class,
                 "The value was found in the value set."));
         storageObject =
             entryStorage.create(valueSetDefinition.getData().getTypeClass());
         storageObject.setObjectAsMap(result);
         storageObject.setUri(uri);
+      } else {
+        log.warn("Unable to load valueSet, path or fragment is null! {}", uri);
       }
     }
     return storageObject;

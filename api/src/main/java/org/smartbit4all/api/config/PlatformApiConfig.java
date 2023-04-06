@@ -344,6 +344,15 @@ public class PlatformApiConfig {
   }
 
   @Bean
+  public Storage asynChannelRegistryStorage(
+      @Autowired(required = false) ObjectStorage objectStorage,
+      ObjectApi objectApi) {
+    Storage storage = new Storage(Invocations.ASYNC_CHANNEL_REGISTRY, objectApi, objectStorage);
+    storage.setVersionPolicy(VersionPolicy.SINGLEVERSION);
+    return storage;
+  }
+
+  @Bean
   public ObjectReferenceConfigs invocationReferences() {
     return new ObjectReferenceConfigs()
         .ref(AsyncInvocationRequest.class,
