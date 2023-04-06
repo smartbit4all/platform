@@ -1,6 +1,5 @@
 package org.smartbit4all.api.view;
 
-import static java.util.stream.Collectors.toList;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -44,6 +43,7 @@ import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.AnnotationUtils;
+import static java.util.stream.Collectors.toList;
 
 public class ViewContextServiceImpl implements ViewContextService {
 
@@ -198,6 +198,15 @@ public class ViewContextServiceImpl implements ViewContextService {
   public View getViewFromCurrentViewContext(UUID viewUuid) {
     ViewContext viewContext = getCurrentViewContextEntry();
     return ViewContexts.getView(viewContext, viewUuid);
+  }
+
+  @Override
+  public View getViewFromCurrentSession(UUID viewUuid) {
+    return sessionApi.getViewContexts().values().stream()
+        .map(u -> objectApi.read(u, ViewContext.class))
+        .flatMap(vc -> vc.getViews().stream()).filter(v -> viewUuid.equals(v.getUuid())).findFirst()
+        .orElseThrow(() -> new IllegalArgumentException(
+            "Unable to identify the (" + viewUuid + ") view in the session"));
   }
 
   @SuppressWarnings("unchecked")

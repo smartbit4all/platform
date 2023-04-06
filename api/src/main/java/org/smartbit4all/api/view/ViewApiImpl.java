@@ -1,6 +1,5 @@
 package org.smartbit4all.api.view;
 
-import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +25,7 @@ import org.smartbit4all.core.object.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import com.google.common.base.Strings;
+import static java.util.stream.Collectors.toList;
 
 public class ViewApiImpl implements ViewApi {
 
@@ -359,7 +359,7 @@ public class ViewApiImpl implements ViewApi {
 
   @Override
   public BinaryData downloadItem(UUID uuid, String item) {
-    View view = getView(uuid);
+    View view = viewContextService.getViewFromCurrentSession(uuid);
     URI uri = view.getDownloadableItems().get(item);
     if (uri != null) {
       BinaryDataObject data = objectApi.read(uri, BinaryDataObject.class);

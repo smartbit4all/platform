@@ -76,6 +76,14 @@ public interface ViewContextService {
   View getViewFromCurrentViewContext(UUID viewUuid);
 
   /**
+   * Returns viewData from the current session.
+   *
+   * @param viewUuid
+   * @return
+   */
+  View getViewFromCurrentSession(UUID viewUuid);
+
+  /**
    * Return model of the view identified by viewUuid. This object can be used to manipulate the
    * model, it is saved at the end of server call (see {@link #execute(UUID, ViewContextCommand)}.
    *
