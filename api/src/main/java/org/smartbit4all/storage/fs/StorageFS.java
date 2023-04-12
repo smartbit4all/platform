@@ -789,7 +789,9 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
 
   private <T> StorageObject<T> readObjectSingleVersion(Storage storage, URI uri, Class<T> clazz,
       File storageObjectDataFile) {
-    log.debug("Reading single version: " + storageObjectDataFile.getAbsolutePath());
+    if (log.isDebugEnabled()) {
+      log.debug("Reading single version: {}", storageObjectDataFile.getAbsolutePath());
+    }
     long waitTime = 10;
     while (true) {
       if (storageObjectDataFile == null || !storageObjectDataFile.exists()
@@ -835,7 +837,9 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
   }
 
   private final StorageObjectData readObjectData(File objectDataFile) {
-    log.debug("Reading version: " + objectDataFile.getAbsolutePath());
+    if (log.isDebugEnabled()) {
+      log.debug("Reading version: {}", objectDataFile.getAbsolutePath());
+    }
     long waitTime = 10;
     while (true) {
       if (objectDataFile == null || !objectDataFile.exists() || !objectDataFile.isFile()) {
