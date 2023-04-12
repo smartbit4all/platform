@@ -6,6 +6,7 @@ import java.net.URI;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.smartbit4all.api.value.bean.Value;
@@ -42,27 +43,27 @@ public final class Values {
   /**
    * Given a list of selected URIs from a list of possible values, updates the selected URIs to
    * match the version numbers found among the values.
-   * 
+   *
    * <p>
    * For example: if the values are:
-   * 
+   *
    * <pre>
    * {@code
-   *    [ 
+   *    [
    *        {displayValue: 'a', objectUri: 'schema:/path1.v5'},
    *        {displayValue: 'b', objectUri: 'schema:/path2.v7'}
    *    ]
    * }</pre>
-   * 
+   *
    * <p>
    * and the selection is
-   * 
+   *
    * <pre>{@code ['schema:/path1.v0']}</pre>
-   * 
+   *
    * , this method will return the list of
-   * 
+   *
    * <pre>{@code ['schema:/path1.v5']}</pre>
-   * 
+   *
    * @param objectApi an instance of {@link ObjectApi}, not null
    * @param values the values to be searched, not null
    * @param selections the selected URIs to be matched with the value URIs, not null
@@ -71,6 +72,7 @@ public final class Values {
   public static List<URI> findSelectedUris(ObjectApi objectApi, List<Value> values,
       List<URI> selections) {
     return selections.stream()
+        .filter(Objects::nonNull)
         .map(uri -> values.stream()
             .map(Value::getObjectUri)
             .filter(valueUri -> objectApi.getLatestUri(uri)
