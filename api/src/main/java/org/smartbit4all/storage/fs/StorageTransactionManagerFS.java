@@ -1,5 +1,6 @@
 package org.smartbit4all.storage.fs;
 
+import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,9 +29,9 @@ import org.springframework.transaction.support.DefaultTransactionStatus;
  * transactions over the file system based schemaless object storage. The atomic operation is the
  * {@link StorageFS#save(org.smartbit4all.domain.data.storage.StorageObject)} where the success of
  * the operation is atomic. The transaction management is based on a lazy mode.
- * 
+ *
  * The operation ...
- * 
+ *
  * @author Peter Boros
  */
 public class StorageTransactionManagerFS extends AbstractPlatformTransactionManager {
@@ -66,12 +67,12 @@ public class StorageTransactionManagerFS extends AbstractPlatformTransactionMana
   /**
    * The transaction attached to the current {@link Thread}.
    */
-  ThreadLocal<StorageTransaction> storageTransactionObject = new ThreadLocal<>();
+  private ThreadLocal<StorageTransaction> storageTransactionObject = new ThreadLocal<>();
 
   /**
    * The transaction attached to the current {@link Thread}.
    */
-  ThreadLocal<List<AsyncInvocationRequestEntry>> invocations = new ThreadLocal<>();
+  private ThreadLocal<List<AsyncInvocationRequestEntry>> invocations = new ThreadLocal<>();
 
   public StorageTransactionManagerFS(StorageFS storageFS) {
     super();
@@ -90,13 +91,19 @@ public class StorageTransactionManagerFS extends AbstractPlatformTransactionMana
    *         on this thread then we get back null.
    */
   public StorageTransaction getCurrentTransaction() {
-    return storageTransactionObject.get();
+    StorageTransaction transaction = storageTransactionObject.get();
+    if (transaction != null && transaction.getData().getUri() == null) {
+      // TODO privileged save for off transaction save.
+      URI transactionUri = storage.get().saveAsNew(transaction.getData());
+      transaction.getData().setUri(transactionUri);
+    }
+    return transaction;
   }
 
   /**
    * Adds an on succeed event to the actual transaction. Or creates a new transaction if it's not
    * exists.
-   * 
+   *
    * @param object
    * @param event
    */
@@ -112,7 +119,7 @@ public class StorageTransactionManagerFS extends AbstractPlatformTransactionMana
 
   /**
    * Adds an on succeed invocation to the actual transaction.
-   * 
+   *
    * @param request
    */
   public void addOnSucceed(AsyncInvocationRequestEntry request) {
@@ -138,8 +145,6 @@ public class StorageTransactionManagerFS extends AbstractPlatformTransactionMana
       throws TransactionException {
     if (transaction instanceof StorageTransaction) {
       StorageTransaction storageTransaction = (StorageTransaction) transaction;
-      // TODO privileged save for off transaction save.
-      storage.get().saveAsNew(storageTransaction.getData());
       storageTransactionObject.set(storageTransaction);
       log.debug("Begin the {1} transaction", storageTransaction);
     }
@@ -185,11 +190,13 @@ public class StorageTransactionManagerFS extends AbstractPlatformTransactionMana
       TransactionState state) {
     try {
       if (storageTransaction.getData().getState() == TransactionState.EXEC) {
-        // If we are the currently executing transaction then we can commit this.
-        OffsetDateTime now = OffsetDateTime.now();
-        // TODO privileged save for off transaction save.
-        storage.get().update(storageTransaction.getData().getUri(), TransactionData.class,
-            t -> t.finishTime(now).state(state));
+        if (storageTransaction.getData().getUri() != null) {
+          // If we are the currently executing transaction then we can commit this.
+          OffsetDateTime now = OffsetDateTime.now();
+          // TODO privileged save for off transaction save.
+          storage.get().update(storageTransaction.getData().getUri(), TransactionData.class,
+              t -> t.finishTime(now).state(state));
+        }
       }
     } finally {
       storageTransactionObject.remove();
