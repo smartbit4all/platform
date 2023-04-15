@@ -169,16 +169,16 @@ public class GridModelApiImpl implements GridModelApi {
           .anyMatch(col -> !validColumns.contains(col))) {
         throw new IllegalArgumentException("Invalid orderByList columnName in update");
       }
-      int offset = model.getPage().getLowerBound();
-      int limit = model.getPage().getUpperBound() - offset;
-      TableData<?> data =
-          tableDataApi.readPage(model.getAccessConfig().getDataUri(), offset, limit);
+      TableData<?> data = tableDataApi.read(model.getAccessConfig().getDataUri());
       TableDatas.sortByFilterExpression(data, update.getOrderByList());
       tableDataApi.save(data);
       model.getAccessConfig().setDataUri(data.getUri());
-      model.page(constructPage(data, 0, data.size())
-          .lowerBound(offset)
-          .upperBound(offset + limit));
+      int lowerBound = model.getPage().getLowerBound();
+      int upperBound = model.getPage().getUpperBound();
+      model.page(constructPage(data, lowerBound,
+          Math.min(data.size(), upperBound))
+              .lowerBound(lowerBound)
+              .upperBound(upperBound));
     }
     model.getView().setOrderByList(update.getOrderByList());
     return model;
