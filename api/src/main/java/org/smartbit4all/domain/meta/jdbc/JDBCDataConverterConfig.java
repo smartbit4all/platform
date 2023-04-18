@@ -19,6 +19,7 @@ import org.smartbit4all.domain.meta.jdbc.impl.JDBCBinaryDataImpl;
 import org.smartbit4all.domain.meta.jdbc.impl.JDBCBooleanStringImpl;
 import org.smartbit4all.domain.meta.jdbc.impl.JDBCByteArray2BinaryDataImpl;
 import org.smartbit4all.domain.meta.jdbc.impl.JDBCDoubleImpl;
+import org.smartbit4all.domain.meta.jdbc.impl.JDBCIntegerImpl;
 import org.smartbit4all.domain.meta.jdbc.impl.JDBCIntegerLongImpl;
 import org.smartbit4all.domain.meta.jdbc.impl.JDBCLocalDateSqlDateImpl;
 import org.smartbit4all.domain.meta.jdbc.impl.JDBCLocalDateTimeSqlDateImpl;
@@ -45,6 +46,7 @@ public class JDBCDataConverterConfig {
   public JDBCBigDecimal jdbcBigDecimal() {
     return new JDBCBigDecimalImpl();
   }
+
 
   @Bean
   public JDBCByteArray2BinaryData jdbcByteArray() {
@@ -74,6 +76,11 @@ public class JDBCDataConverterConfig {
   @Bean
   public JDBCLong jdbcLong() {
     return new JDBCLongImpl();
+  }
+
+  @Bean
+  public JDBCInteger jdbcInteger() {
+    return new JDBCIntegerImpl();
   }
 
   @Bean

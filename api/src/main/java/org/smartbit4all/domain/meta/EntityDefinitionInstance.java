@@ -339,6 +339,10 @@ class EntityDefinitionInstance implements EntityDefinition {
     propertiesByName.put(property.getName(), property);
   }
 
+  void addPrimaryKey(Property<?> property) {
+    primaryKeySet.add(property);
+  }
+
   final void setDataConverterHelper(JDBCDataConverterHelper dataConverterHelper) {
     this.dataConverterHelper = dataConverterHelper;
   }

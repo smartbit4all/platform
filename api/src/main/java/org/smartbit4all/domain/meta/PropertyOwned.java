@@ -79,6 +79,8 @@ public class PropertyOwned<T> extends Property<T> {
         return new ColumnTypeDefinition().baseType(BaseTypeEnum.NUMBER).precision(18).scale(10);
       case LONG:
         return new ColumnTypeDefinition().baseType(BaseTypeEnum.NUMBER).precision(18);
+      case INTEGER:
+        return new ColumnTypeDefinition().baseType(BaseTypeEnum.NUMBER).precision(18);
       case STRING:
         return new ColumnTypeDefinition().baseType(BaseTypeEnum.VARCHAR).length(500);
       case TEXT:
@@ -100,7 +102,7 @@ public class PropertyOwned<T> extends Property<T> {
   }
 
   public void setDbExpression(String defaultDbExpression) {
-    this.dbExpression = new EnumSpecificValue<SupportedDatabase, String>(defaultDbExpression,
+    this.dbExpression = new EnumSpecificValue<>(defaultDbExpression,
         SupportedDatabase.class);
   }
 
@@ -127,7 +129,7 @@ public class PropertyOwned<T> extends Property<T> {
   public static <T> PropertyOwned<T> create(String name, Class<T> type, int length,
       boolean isMandatory,
       String defaultDbExpression, JDBCDataConverterHelper jdbcDataConverterHelper) {
-    PropertyOwned<T> propertyOwned = new PropertyOwned<T>(name, type, defaultDbExpression,
+    PropertyOwned<T> propertyOwned = new PropertyOwned<>(name, type, defaultDbExpression,
         jdbcDataConverterHelper);
     if (length != -1) {
       propertyOwned.length(length);
@@ -138,7 +140,7 @@ public class PropertyOwned<T> extends Property<T> {
 
   public static <T> PropertyOwned<T> createFunctionProperty(PropertyOwned<T> baseProperty,
       PropertyFunction function) {
-    PropertyOwned<T> funcProp = new PropertyOwned<T>(baseProperty.getName(), baseProperty.type(),
+    PropertyOwned<T> funcProp = new PropertyOwned<>(baseProperty.getName(), baseProperty.type(),
         baseProperty.getDbExpression().get(null), baseProperty.jdbcConverter());
     funcProp.setEntityDef(baseProperty.getEntityDef());
     funcProp.setPropertyFunction(function);

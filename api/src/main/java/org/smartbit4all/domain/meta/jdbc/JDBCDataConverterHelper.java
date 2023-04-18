@@ -49,6 +49,9 @@ public class JDBCDataConverterHelper implements ApplicationContextAware {
     if (fromClass.isAssignableFrom(Long.class)) {
       return (JDBCDataConverter<S, ?>) ctx.getBean(JDBCLong.class);
     }
+    if (fromClass.isAssignableFrom(Integer.class)) {
+      return (JDBCDataConverter<S, ?>) ctx.getBean(JDBCInteger.class);
+    }
     if (fromClass.isAssignableFrom(byte[].class)) {
       return (JDBCDataConverter<S, ?>) ctx.getBean(JDBCByteArray2BinaryData.class);
     }

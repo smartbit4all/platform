@@ -410,7 +410,7 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
   }
 
   public SearchIndexImpl<O> primaryKey(String propertyName) {
-    objectMapping.setPrimaryKey(propertyName);;
+    objectMapping.primaryKey(propertyName);
     return this;
   }
 

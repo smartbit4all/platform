@@ -533,6 +533,11 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
               convertFromAppToJdbcType((JDBCDataConverter<T, Long>) converter, value));
           break;
 
+        case INTEGER:
+          stmt.setLong(position,
+              convertFromAppToJdbcType((JDBCDataConverter<T, Integer>) converter, value));
+          break;
+
         case STRING:
           stmt.setString(position,
               convertFromAppToJdbcType((JDBCDataConverter<T, String>) converter, value));
@@ -597,6 +602,15 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
         return convertFromJdbcToAppType((JDBCDataConverter<T, Long>) typeHandler,
             () -> {
               long res = resultSet.getLong(colIdx);
+              if (resultSet.wasNull()) {
+                return null;
+              }
+              return res;
+            });
+      case INTEGER:
+        return convertFromJdbcToAppType((JDBCDataConverter<T, Integer>) typeHandler,
+            () -> {
+              int res = resultSet.getInt(colIdx);
               if (resultSet.wasNull()) {
                 return null;
               }
@@ -1099,7 +1113,7 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
    */
   private final StringBuilder before(String beforeStatementName) {
     if (beforeStatements == null) {
-      beforeStatements = new HashMap<String, StringBuilder>();
+      beforeStatements = new HashMap<>();
     }
     StringBuilder result = beforeStatements.get(beforeStatementName);
     if (result == null) {

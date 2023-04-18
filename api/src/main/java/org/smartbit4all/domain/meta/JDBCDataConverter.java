@@ -45,7 +45,7 @@ package org.smartbit4all.domain.meta;
 public interface JDBCDataConverter<S, T> extends DataConverter<S, T> {
 
   public enum JDBCType {
-    BIGDECIMAL, BINARYDATA, TEXT, DATE, DOUBLE, LONG, STRING, TIME, TIMESTAMP
+    BIGDECIMAL, BINARYDATA, TEXT, DATE, DOUBLE, LONG, INTEGER, STRING, TIME, TIMESTAMP
   }
 
   /**

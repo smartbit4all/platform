@@ -15,7 +15,14 @@ public class SearchIndexWithFilterBeanImpl<O, F> extends SearchIndexImpl<O>
   public SearchIndexWithFilterBeanImpl(String logicalSchema, String name,
       Class<F> filterDefinitionClass, String indexedObjectSchema,
       Class<O> indexedObjectDefinitionClass) {
-    super(logicalSchema, name, indexedObjectSchema, indexedObjectDefinitionClass);
+    this(logicalSchema, name, filterDefinitionClass, indexedObjectSchema,
+        indexedObjectDefinitionClass, false);
+  }
+
+  public SearchIndexWithFilterBeanImpl(String logicalSchema, String name,
+      Class<F> filterDefinitionClass, String indexedObjectSchema,
+      Class<O> indexedObjectDefinitionClass, boolean useDatabase) {
+    super(logicalSchema, name, indexedObjectSchema, indexedObjectDefinitionClass, useDatabase);
     objectMapping.filterClass = filterDefinitionClass;
   }
 
