@@ -186,12 +186,22 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
 
   private final SearchEntityTableDataResult readAllObjects(SearchEntityTableDataResult result) {
 
-    Storage storage = storageApi.get(indexedObjectSchema);
-    List<URI> allObjectUris = storage.readAllUris(indexedObjectDefinition().getClazz());
+    List<URI> allObjectUris = getRelevantObjectUris();
     objectMapping.readObjects(allObjectUris.stream().map(u -> objectApi.load(u)), result,
         Collections.emptyMap());
 
     return result;
+  }
+
+  /**
+   * Produce the relevant object uris by default all the uris in the storage. But can be override
+   * 
+   * @return
+   */
+  protected List<URI> getRelevantObjectUris() {
+    Storage storage = storageApi.get(indexedObjectSchema);
+    List<URI> allObjectUris = storage.readAllUris(indexedObjectDefinition().getClazz());
+    return allObjectUris;
   }
 
   @Override
