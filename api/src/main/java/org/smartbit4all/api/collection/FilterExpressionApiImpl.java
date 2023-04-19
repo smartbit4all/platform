@@ -1,5 +1,6 @@
 package org.smartbit4all.api.collection;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionBoolOperator;
@@ -27,7 +28,7 @@ public class FilterExpressionApiImpl implements FilterExpressionApi {
   private LocaleSettingApi localeApi;
 
   private static List<FilterExpressionOperation> parenthesisOperands =
-      List.of(FilterExpressionOperation.EXPRESSION, FilterExpressionOperation.EXISTS,
+      Arrays.asList(FilterExpressionOperation.EXPRESSION, FilterExpressionOperation.EXISTS,
           FilterExpressionOperation.NOT_EXISTS);
 
   @Override
