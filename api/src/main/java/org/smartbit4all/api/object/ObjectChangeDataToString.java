@@ -10,44 +10,51 @@ import org.smartbit4all.api.setting.LocaleSettingApi;
 public class ObjectChangeDataToString {
 
   public static String toFormattedString(LocaleSettingApi localeSettingApi,
-      ObjectChangeData change) {
+      ObjectChangeData change, boolean htmlFormatted) {
     StringBuilder sb = new StringBuilder();
-    formatProperties(localeSettingApi, sb, "", change.getProperties());
-    formatReferences(localeSettingApi, sb, "", change.getReferences());
+    formatProperties(localeSettingApi, sb, "", change.getProperties(), htmlFormatted);
+    formatReferences(localeSettingApi, sb, "", change.getReferences(), htmlFormatted);
     return sb.toString();
   }
 
   private static void formatReferences(LocaleSettingApi localeSettingApi, StringBuilder sb,
-      String prefix,
-      List<ReferenceChangeData> references) {
+      String prefix, List<ReferenceChangeData> references, boolean htmlFormatted) {
     for (ReferenceChangeData referenceChangeData : references) {
       String newPrefix = prefix + referenceChangeData.getPath() + ".";
       formatProperties(localeSettingApi, sb, newPrefix,
-          referenceChangeData.getObjectChange().getProperties());
+          referenceChangeData.getObjectChange().getProperties(), htmlFormatted);
       formatReferences(localeSettingApi, sb, newPrefix,
-          referenceChangeData.getObjectChange().getReferences());
+          referenceChangeData.getObjectChange().getReferences(), htmlFormatted);
     }
   }
 
   private static void formatProperties(LocaleSettingApi localeSettingApi, StringBuilder sb,
-      String prefix,
-      List<PropertyChangeData> properties) {
+      String prefix, List<PropertyChangeData> properties, boolean htmlFormatted) {
     for (PropertyChangeData propertyChangeData : properties) {
       String path = prefix + propertyChangeData.getPath();
       List<String> translations = translate(localeSettingApi, path);
       if (!translations.isEmpty()) {
         path += " " + translations;
       }
-      sb.append("<b>")
-          .append(path)
-          .append("</b>")
-          .append(": ")
-          .append(propertyChangeData.getOldValue())
-          .append("<b>")
-          .append(" -> ")
-          .append("</b>")
-          .append(propertyChangeData.getNewValue())
-          .append("<br>");
+      if (htmlFormatted) {
+        sb.append("<b>")
+            .append(path)
+            .append("</b>")
+            .append(": ")
+            .append(propertyChangeData.getOldValue())
+            .append("<b>")
+            .append(" -> ")
+            .append("</b>")
+            .append(propertyChangeData.getNewValue())
+            .append("<br>");
+      } else {
+        sb.append(path)
+            .append(": ")
+            .append(propertyChangeData.getOldValue())
+            .append("\n")
+            .append(" -> ")
+            .append(propertyChangeData.getNewValue());
+      }
     }
   }
 
