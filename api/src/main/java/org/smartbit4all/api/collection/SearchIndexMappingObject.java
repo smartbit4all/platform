@@ -1,5 +1,8 @@
 package org.smartbit4all.api.collection;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -47,9 +50,6 @@ import org.smartbit4all.domain.meta.PropertyObject;
 import org.smartbit4all.domain.service.entity.EntityManager;
 import org.smartbit4all.domain.utility.crud.Crud;
 import org.springframework.context.ApplicationContext;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-import static java.util.stream.Collectors.toSet;
 
 public class SearchIndexMappingObject extends SearchIndexMapping {
 
@@ -177,22 +177,22 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
     Objects.requireNonNull(pathes);
     if (pathes.length > 0) {
 
-      mappingsByPropertyName.put(propertyName,
-          new SearchIndexMappingProperty(propertyName, pathes,
-              dataType == null ? getType(propertyName) : dataType, length, null, null));
+      mappingsByPropertyName.put(propertyName, 
+      new SearchIndexMappingProperty(propertyName, pathes,
+          dataType == null ? getType(propertyName) : dataType, length, null, null));
     }
     return this;
   }
 
   public SearchIndexMappingObject mapProcessed(String propertyName, Class<?> dataType, int length,
-      UnaryOperator<Object> processor,
+      UnaryOperator<Object> processor, 
       String... pathes) {
     Objects.requireNonNull(pathes);
     if (pathes.length > 0) {
-      mappingsByPropertyName.put(propertyName,
-          new SearchIndexMappingProperty(propertyName, pathes,
-              dataType == null ? getType(propertyName) : dataType, length, processor,
-              null));
+      mappingsByPropertyName.put(propertyName, 
+      new SearchIndexMappingProperty(propertyName, pathes,
+          dataType == null ? getType(propertyName) : dataType, length, processor, 
+          null));
     }
     return this;
   }
@@ -201,8 +201,8 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
       Function<ObjectNode, Object> complexProcessor) {
     Objects.requireNonNull(complexProcessor);
     mappingsByPropertyName.put(propertyName,
-        new SearchIndexMappingProperty(propertyName, null, dataType, length, null,
-            complexProcessor));
+     new SearchIndexMappingProperty(propertyName, null, dataType, length, null, 
+     complexProcessor));
     return this;
   }
 
@@ -219,15 +219,15 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
 
   public SearchIndexMappingObject detail(String propertyName, String uniqueIdName) {
     String masterReferenceQualified = propertyName + "parent";
-    SearchIndexMappingObject detail =
-        new SearchIndexMappingObject().master(masterReferenceQualified,
-            masterReferenceQualified,
-            uniqueIdName);
+    SearchIndexMappingObject detail = 
+    new SearchIndexMappingObject().master(masterReferenceQualified, 
+    masterReferenceQualified, 
+    uniqueIdName);
     detail.init(ctx, entityManager, objectApi, extensionStrategy);
     detail.logicalSchema = logicalSchema;
     detail.name = name + StringConstant.UNDERLINE + propertyName;
-    mappingsByPropertyName.put(propertyName,
-        detail);
+    mappingsByPropertyName.put(propertyName, 
+    detail);
     return detail;
   }
 
@@ -299,10 +299,10 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
         // indirect
         // master join so we have only one reference in the join list.
         SearchEntityDefinition detailDefinition = ((SearchIndexMappingObject) entry.getValue())
-            .constructDefinition(ctx, builder);
+        .constructDefinition(ctx, builder);
         ((SearchIndexMappingObject) entry.getValue()).entityDefinition = detailDefinition;
         result.detailsByName.put(entry.getKey(), new DetailDefinition(
-            detailDefinition, new JoinPath(Arrays.asList(detailDefinition.masterRef))));
+          detailDefinition, new JoinPath(Arrays.asList(detailDefinition.masterRef))));
       }
     }
 
@@ -311,7 +311,7 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
   }
 
   final void readObjects(Stream<ObjectNode> objects,
-      SearchEntityTableDataResult result, Map<String, Object> defaultValues) {
+  SearchEntityTableDataResult result, Map<String, Object> defaultValues) {
 
     // Create detail TableDatas
     for (Entry<String, DetailDefinition> entry : result.searchEntityDefinition.detailsByName
@@ -357,12 +357,12 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
         SearchEntityTableDataResult detailResult = result.detailResults.get(entry.getKey());
         SearchIndexMappingObject detailObjectMapping =
             ((SearchIndexMappingObject) mappingsByPropertyName
-                .get(entry.getKey()));
+            .get(entry.getKey()));
         if (detailObjectMapping.isInlineValueObjects()) {
           TableData<?> tableDataDetail = detailResult.result;
           Map<DataColumn<?>, Object> masterIdValues =
               entry.getValue().masterJoin.getReferences().get(0)
-                  .joins().stream()
+              .joins().stream()
                   .collect(toMap(
                       j -> tableDataDetail.getColumn(detailObjectMapping.getDefinition().definition
                           .getProperty(j.getSourceProperty().getName())),
@@ -406,7 +406,7 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
   }
 
   final SearchIndexMappingObject master(String masterReferenceName,
-      String sourcePropertyName, String targetPropertyName) {
+        String sourcePropertyName, String targetPropertyName) {
     this.masterReferenceName = masterReferenceName;
     this.masterJoin = new ArrayList<>();
     this.masterJoin.add(new String[] {sourcePropertyName, targetPropertyName});
@@ -454,6 +454,13 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
     String propertyName;
     PropertyObject property = null;
     List<PropertyObject> properties = new ArrayList<>();
+
+    if (fed.getCurrentOperation().equals(FilterExpressionOperation.EXPRESSION)) {
+      Expression innerExpression = constructExpression(fed.getSubExpression());
+      return innerExpression != null ? new ExpressionBracket(innerExpression) : null;
+    }
+
+
     if (Arrays.asList(FilterExpressionOperation.EXISTS, FilterExpressionOperation.NOT_EXISTS)
         .contains(fed.getCurrentOperation())) {
       propertyName = fed.getOperand1().getValueAsString();
@@ -618,8 +625,8 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
         .filters(mappingsByPropertyName.entrySet().stream().map(e -> {
           if (e.getValue() instanceof SearchIndexMappingProperty) {
             SearchIndexMappingProperty propertyMapping = (SearchIndexMappingProperty) e.getValue();
-            FilterExpressionField field = new FilterExpressionField().label2(localeSettingApi
-                .get(name, e.getKey()));
+            FilterExpressionField field =
+                new FilterExpressionField().label2(localeSettingApi.get(name, e.getKey()));
             field.addPossibleOperationsItem(FilterExpressionOperation.EQUAL);
             field.addPossibleOperationsItem(FilterExpressionOperation.NOT_EQUAL);
             field.addPossibleOperationsItem(FilterExpressionOperation.IS_EMPTY);
@@ -631,20 +638,20 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
                 field.widgetType(FilterExpressionFieldWidgetType.TEXT_FIELD);
                 field.filterFieldType(FilterExpressionDataType.STRING);
                 field.expressionData(
-                    new FilterExpressionData()
-                        .currentOperation(FilterExpressionOperation.LIKE)
-                        .boolOperator(FilterExpressionBoolOperator.AND)
-                        .operand1(new FilterExpressionOperandData().isDataName(true)
-                            .type(FilterExpressionDataType.STRING)
-                            .valueAsString(propertyMapping.name))
-                        .operand2(new FilterExpressionOperandData().isDataName(false)
-                            .type(FilterExpressionDataType.STRING)
-                            .valueAsString("")));
+                  new FilterExpressionData()
+                    .currentOperation(FilterExpressionOperation.LIKE)
+                    .boolOperator(FilterExpressionBoolOperator.AND)
+                    .operand1(new FilterExpressionOperandData().isDataName(true)
+                        .type(FilterExpressionDataType.STRING)
+                        .valueAsString(propertyMapping.name))
+                    .operand2(new FilterExpressionOperandData().isDataName(false)
+                        .type(FilterExpressionDataType.STRING)
+                        .valueAsString("")));
               } else if (Long.class.isAssignableFrom(propertyMapping.type)) {
                 Arrays
                     .asList(FilterExpressionOperation.GREATER,
                         FilterExpressionOperation.GREATER_OR_EQUAL,
-                        FilterExpressionOperation.BETWEEN,
+                        FilterExpressionOperation.BETWEEN, 
                         FilterExpressionOperation.NOT_BETWEEN,
                         FilterExpressionOperation.LESS, FilterExpressionOperation.LESS_OR_EQUAL)
                     .stream().forEach(op -> field.addPossibleOperationsItem(op));
@@ -652,7 +659,7 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
                 Arrays
                     .asList(FilterExpressionOperation.GREATER,
                         FilterExpressionOperation.GREATER_OR_EQUAL,
-                        FilterExpressionOperation.BETWEEN,
+                        FilterExpressionOperation.BETWEEN, 
                         FilterExpressionOperation.NOT_BETWEEN,
                         FilterExpressionOperation.LESS, FilterExpressionOperation.LESS_OR_EQUAL)
                     .stream().forEach(op -> field.addPossibleOperationsItem(op));
@@ -660,7 +667,7 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
                 field.filterFieldType(FilterExpressionDataType.DATE_TIME);
                 field.expressionData(
                     new FilterExpressionData()
-                        .currentOperation(FilterExpressionOperation.GREATER)
+                    .currentOperation(FilterExpressionOperation.GREATER)
                         .boolOperator(FilterExpressionBoolOperator.AND)
                         .operand1(new FilterExpressionOperandData().isDataName(true)
                             .type(FilterExpressionDataType.DATE_TIME)
@@ -694,7 +701,7 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
       Function<PropertyObject, Expression> detailExpressionProducer) {
     SearchIndexMappingObject detailMapping =
         ((SearchIndexMappingObject) objectMapping.mappingsByPropertyName
-            .get(fieldName));
+        .get(fieldName));
     DetailDefinition detailDefinition = objectMapping.entityDefinition.detailsByName.get(fieldName);
     Expression existsExpression =
         detailExpressionProducer.apply(detailMapping.getDefinition().definition
