@@ -92,11 +92,6 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
   Map<String, SearchIndexMapping> mappingsByPropertyName = new LinkedHashMap<>();
 
   /**
-   * The name of the primary key property.
-   */
-  private String primaryKeyName;
-
-  /**
    * The filter class is not necessary. If we have this then we can set the type of the given
    * property based on the property of this class.
    */
@@ -271,12 +266,13 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
       // In this case the detail object is a simple list of values with a mater id.
       // The only one
       // property of the entity definition is the value itself.
-      builder.addOwnedProperty(VALUE_COLUMN, inlineValueObjectType, inlineValueObjectLength);
+      builder.addOwnedProperty(VALUE_COLUMN, inlineValueObjectType, inlineValueObjectLength, true);
     } else {
       for (Entry<String, SearchIndexMapping> entry : mappingsByPropertyName.entrySet()) {
         if (entry.getValue() instanceof SearchIndexMappingProperty) {
           SearchIndexMappingProperty property = (SearchIndexMappingProperty) entry.getValue();
-          builder.addOwnedProperty(property.name, property.type, property.length);
+          builder.addOwnedProperty(property.name, property.type, property.length,
+              isPrimaryKey(property.name));
         }
       }
     }
@@ -286,7 +282,10 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
     // We must refer to the master if any
     if (masterBuilder != null) {
       for (String[] join : masterJoin) {
-        builder.ownedProperty(join[0], masterBuilder.getInstance().getProperty(join[1]).type());
+        builder.addOwnedProperty(join[0],
+            masterBuilder.getInstance().getProperty(join[1]).type(),
+            -1,
+            true);
       }
       builder.reference(masterReferenceName, masterBuilder, masterJoin);
       result.masterRef = builder.getReference(masterReferenceName);
@@ -308,6 +307,10 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
 
     return result.definition(builder.build());
 
+  }
+
+  private boolean isPrimaryKey(String propertyName) {
+    return Objects.equals(primaryKey, propertyName);
   }
 
   final void readObjects(Stream<ObjectNode> objects,
@@ -569,40 +572,94 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
    * @param updateResult
    */
   void merge(SearchEntityTableDataResult updateResult) {
-    PropertyObject primaryKeyProperty = null;
-    if (primaryKey != null) {
-      primaryKeyProperty = updateResult.searchEntityDefinition.definition.getPropertyObject(name);
+    PropertyObject masterReferenceProperty = null;
+    if (masterReferenceName != null) {
+      masterReferenceProperty =
+          updateResult.searchEntityDefinition.definition.getPropertyObject(masterReferenceName);
     }
-    if (primaryKeyProperty != null) {
-      // Execute a merge by selecting the available records first and the insert or update depending
-      // on the result.
-      try {
-        TableData<?> existingRecords =
-            Crud.read(updateResult.searchEntityDefinition.definition).select(primaryKeyProperty)
-                .where(primaryKeyProperty.in(updateResult.result.values(primaryKeyProperty)))
-                .listData();
-        Set<Object> existingRecordSet =
-            existingRecords.values(primaryKeyProperty).stream().collect(toSet());
-        PropertyObject pkProperty = primaryKeyProperty;
-        List<DataRow> exitingRows = updateResult.result.rows().stream()
-            .filter(r -> existingRecordSet.contains(r.get(pkProperty))).collect(toList());
-        List<DataRow> notExitingRows = updateResult.result.rows().stream()
-            .filter(r -> !existingRecordSet.contains(r.get(pkProperty))).collect(toList());
-        if (!exitingRows.isEmpty()) {
-          TableData<?> tdExiting = TableDatas.copyRows(updateResult.result, exitingRows);
-          Crud.update(tdExiting);
-        }
-        if (!notExitingRows.isEmpty()) {
-          TableData<?> tdNotExisting = TableDatas.copyRows(updateResult.result, notExitingRows);
-          Crud.create(tdNotExisting);
-        }
-        mergeDetails(updateResult);
-      } catch (Exception e) {
-        log.error("Unable to check the existing record for the " + logicalSchema
-            + StringConstant.DOT + name + " search index", e);
-      }
+    if (masterReferenceProperty != null) {
+      detailMerge(updateResult, masterReferenceProperty);
     } else {
-      insertAll(updateResult);
+      PropertyObject primaryKeyProperty = null;
+      if (primaryKey != null) {
+        primaryKeyProperty =
+            updateResult.searchEntityDefinition.definition.getPropertyObject(primaryKey);
+      }
+      if (primaryKeyProperty != null) {
+        // Execute a merge by selecting the available records first and the insert or update
+        // depending
+        // on the result.
+        try {
+          TableData<?> existingRecords =
+              Crud.read(updateResult.searchEntityDefinition.definition).select(primaryKeyProperty)
+                  .where(primaryKeyProperty.in(updateResult.result.values(primaryKeyProperty)))
+                  .listData();
+          Set<Object> existingRecordSet =
+              existingRecords.values(primaryKeyProperty).stream().collect(toSet());
+          PropertyObject pkProperty = primaryKeyProperty;
+          List<DataRow> exitingRows = updateResult.result.rows().stream()
+              .filter(r -> existingRecordSet.contains(r.get(pkProperty))).collect(toList());
+          List<DataRow> notExitingRows = updateResult.result.rows().stream()
+              .filter(r -> !existingRecordSet.contains(r.get(pkProperty))).collect(toList());
+          if (!exitingRows.isEmpty()) {
+            TableData<?> tdExisting = TableDatas.copyRows(updateResult.result, exitingRows);
+            Crud.update(tdExisting);
+          }
+          if (!notExitingRows.isEmpty()) {
+            TableData<?> tdNotExisting = TableDatas.copyRows(updateResult.result, notExitingRows);
+            Crud.create(tdNotExisting);
+          }
+          mergeDetails(updateResult);
+        } catch (Exception e) {
+          log.error("Unable to check the existing record for the " + logicalSchema
+              + StringConstant.DOT + name + " search index", e);
+        }
+      } else {
+        insertAll(updateResult);
+      }
+    }
+  }
+
+  private void detailMerge(SearchEntityTableDataResult updateResult,
+      PropertyObject masterReferenceProperty) {
+    PropertyObject valueProperty =
+        updateResult.searchEntityDefinition.definition.getPropertyObject(VALUE_COLUMN);
+    try {
+      TableData<?> oldDetailRecords =
+          Crud.read(updateResult.searchEntityDefinition.definition).selectAllProperties()
+              .where(
+                  masterReferenceProperty.in(updateResult.result.values(masterReferenceProperty)))
+              .listData();
+
+      List<DataRow> existingRows = new ArrayList<>();
+      for (DataRow oldRow : oldDetailRecords.rows()) {
+        Object oldMasterRef = oldRow.get(masterReferenceProperty);
+        Object oldValue = oldRow.get(valueProperty);
+        for (DataRow newRow : updateResult.result.rows()) {
+          Object newMasterRef = newRow.get(masterReferenceProperty);
+          Object newValue = newRow.get(valueProperty);
+
+          if (oldMasterRef.equals(newMasterRef) && oldValue.equals(newValue)) {
+            existingRows.add(oldRow);
+          }
+        }
+      }
+
+      List<DataRow> deleteRows = oldDetailRecords.rows().stream()
+          .filter(r -> !existingRows.contains(r)).collect(toList());
+      List<DataRow> insertRows = updateResult.result.rows().stream()
+          .filter(r -> !existingRows.contains(r)).collect(toList());
+      if (!deleteRows.isEmpty()) {
+        TableData<?> tdDelete = TableDatas.copyRows(oldDetailRecords, deleteRows);
+        Crud.delete(tdDelete);
+      }
+      if (!insertRows.isEmpty()) {
+        TableData<?> tdInsert = TableDatas.copyRows(updateResult.result, insertRows);
+        Crud.create(tdInsert);
+      }
+    } catch (Exception e) {
+      log.error("Unable to check the existing record for the " + logicalSchema
+          + StringConstant.DOT + name + " search index", e);
     }
   }
 
@@ -612,10 +669,11 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
   }
 
   private final void mergeDetails(SearchEntityTableDataResult updateResult) {
-    for (SearchIndexMapping detailMapping : mappingsByPropertyName.values()) {
-      if (detailMapping instanceof SearchIndexMappingObject) {
-        SearchIndexMappingObject mappingObject = (SearchIndexMappingObject) detailMapping;
-        mappingObject.merge(updateResult.detailResults.get(mappingObject.name));
+    for (Entry<String, SearchIndexMapping> detailMapping : mappingsByPropertyName.entrySet()) {
+      if (detailMapping.getValue() instanceof SearchIndexMappingObject) {
+        SearchIndexMappingObject mappingObject =
+            (SearchIndexMappingObject) detailMapping.getValue();
+        mappingObject.merge(updateResult.detailResults.get(detailMapping.getKey()));
       }
     }
   }
@@ -728,13 +786,4 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
   public final PropertyObject propertyOf(FilterExpressionOrderBy orderBy) {
     return getDefinition().definition.getPropertyObject(orderBy.getPropertyName());
   }
-
-  public final String getPrimaryKeyName() {
-    return primaryKeyName;
-  }
-
-  public final void setPrimaryKey(String primaryKeyName) {
-    this.primaryKeyName = primaryKeyName;
-  }
-
 }
