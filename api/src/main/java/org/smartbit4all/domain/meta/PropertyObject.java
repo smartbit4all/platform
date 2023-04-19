@@ -15,4 +15,13 @@ public class PropertyObject extends Property<Object> {
     return basic;
   }
 
+  @Override
+  public EntityDefinition getEntityDef() {
+    EntityDefinition entityDef = super.getEntityDef();
+    if (entityDef == null) {
+      entityDef = basic.getEntityDef();
+    }
+    return entityDef;
+  }
+
 }
