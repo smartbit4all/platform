@@ -2,6 +2,7 @@ package org.smartbit4all.sql.util;
 
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -18,6 +19,7 @@ public class SimpleDatabaseConnectionConfig {
   private Environment env;
 
   @Bean
+  @ConditionalOnProperty(name = "smartbit4all.sql.populator.script")
   public DataSourceInitializer dataSourceInitializer(DataSource dataSource) {
     DataSourceInitializer dataSourceInitializer = new DataSourceInitializer();
     dataSourceInitializer.setDataSource(dataSource);
