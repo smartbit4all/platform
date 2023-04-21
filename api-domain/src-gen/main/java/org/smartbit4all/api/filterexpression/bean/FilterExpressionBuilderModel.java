@@ -32,9 +32,9 @@ import javax.validation.constraints.*;
 import javax.validation.Valid;
 
 /**
- * The filter field model contains a list of groups that form a tree structure for the available filter fields. It contains the groups of available fields and the workplace root list that conatins the already added filters. On the builder side  we refer the unique identifiers of the field lists and fields. 
+ * The filter field model data contains a list of groups that form a tree structure for the available filter fields. It contains the groups of available fields and the workplace root list that conatins the already added filters. On the builder side  we refer the unique identifiers of the field lists and fields. 
  */
-@ApiModel(description = "The filter field model contains a list of groups that form a tree structure for the available filter fields. It contains the groups of available fields and the workplace root list that conatins the already added filters. On the builder side  we refer the unique identifiers of the field lists and fields. ")
+@ApiModel(description = "The filter field model data contains a list of groups that form a tree structure for the available filter fields. It contains the groups of available fields and the workplace root list that conatins the already added filters. On the builder side  we refer the unique identifiers of the field lists and fields. ")
 @JsonPropertyOrder({
   FilterExpressionBuilderModel.LABEL,
   FilterExpressionBuilderModel.GROUPS,
