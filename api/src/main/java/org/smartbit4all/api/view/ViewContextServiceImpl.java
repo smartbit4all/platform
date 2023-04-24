@@ -1,5 +1,6 @@
 package org.smartbit4all.api.view;
 
+import static java.util.stream.Collectors.toList;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -43,7 +44,6 @@ import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.AnnotationUtils;
-import static java.util.stream.Collectors.toList;
 
 public class ViewContextServiceImpl implements ViewContextService {
 
@@ -260,7 +260,16 @@ public class ViewContextServiceImpl implements ViewContextService {
 
     View message = getViewFromCurrentViewContext(messageUuid);
     Objects.requireNonNull(message, "Message not found!");
-    View view = getViewFromCurrentViewContext(viewUuid);
+    View view;
+    try {
+      view = getViewFromCurrentViewContext(viewUuid);
+    } catch (Exception e) {
+      // view not found -> log error and remove message to avoid infinite loop
+      log.error("Unexpected error when retreiving message's view", e);
+      updateCurrentViewContext(
+          c -> ViewContexts.updateViewState(c, messageUuid, ViewState.TO_CLOSE));
+      return;
+    }
     Object api = apiByViewName.get(view.getViewName());
     Objects.requireNonNull(api, "API not found for view " + view.getViewName());
     Map<String, Method> messageMethods = messageMethodsByView.get(view.getViewName());

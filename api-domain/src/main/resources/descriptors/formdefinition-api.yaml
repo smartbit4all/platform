@@ -96,4 +96,8 @@ components:
           type: boolean
           description: Defines if the widget is a password input
           default: false
+        values:
+          type: array
+          items:
+            type: Value
         

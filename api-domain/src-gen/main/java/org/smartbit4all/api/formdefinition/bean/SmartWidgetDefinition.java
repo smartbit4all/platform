@@ -22,7 +22,10 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.util.ArrayList;
+import java.util.List;
 import org.smartbit4all.api.formdefinition.bean.SmartFormWidgetType;
+import org.smartbit4all.api.value.bean.Value;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -45,7 +48,8 @@ import javax.validation.Valid;
   SmartWidgetDefinition.SHOW_LABEL,
   SmartWidgetDefinition.CSS_CLASS,
   SmartWidgetDefinition.CSS_LABEL_CLASS,
-  SmartWidgetDefinition.IS_PASSWORD
+  SmartWidgetDefinition.IS_PASSWORD,
+  SmartWidgetDefinition.VALUES
 })
 @JsonTypeName("SmartWidgetDefinition")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -88,6 +92,9 @@ public class SmartWidgetDefinition {
 
   public static final String IS_PASSWORD = "isPassword";
   private Boolean isPassword = false;
+
+  public static final String VALUES = "values";
+  private List<Value> values = null;
 
   public SmartWidgetDefinition() { 
   }
@@ -447,6 +454,42 @@ public class SmartWidgetDefinition {
   }
 
 
+  public SmartWidgetDefinition values(List<Value> values) {
+    
+    this.values = values;
+    return this;
+  }
+
+  public SmartWidgetDefinition addValuesItem(Value valuesItem) {
+    if (this.values == null) {
+      this.values = new ArrayList<>();
+    }
+    this.values.add(valuesItem);
+    return this;
+  }
+
+   /**
+   * Get values
+   * @return values
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(VALUES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<Value> getValues() {
+    return values;
+  }
+
+
+  @JsonProperty(VALUES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setValues(List<Value> values) {
+    this.values = values;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -468,12 +511,13 @@ public class SmartWidgetDefinition {
         Objects.equals(this.showLabel, smartWidgetDefinition.showLabel) &&
         Objects.equals(this.cssClass, smartWidgetDefinition.cssClass) &&
         Objects.equals(this.cssLabelClass, smartWidgetDefinition.cssLabelClass) &&
-        Objects.equals(this.isPassword, smartWidgetDefinition.isPassword);
+        Objects.equals(this.isPassword, smartWidgetDefinition.isPassword) &&
+        Objects.equals(this.values, smartWidgetDefinition.values);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(type, key, label, placeholder, prefix, suffix, mask, icon, iconColor, showLabel, cssClass, cssLabelClass, isPassword);
+    return Objects.hash(type, key, label, placeholder, prefix, suffix, mask, icon, iconColor, showLabel, cssClass, cssLabelClass, isPassword, values);
   }
 
   @Override
@@ -493,6 +537,7 @@ public class SmartWidgetDefinition {
     sb.append("    cssClass: ").append(toIndentedString(cssClass)).append("\n");
     sb.append("    cssLabelClass: ").append(toIndentedString(cssLabelClass)).append("\n");
     sb.append("    isPassword: ").append(toIndentedString(isPassword)).append("\n");
+    sb.append("    values: ").append(toIndentedString(values)).append("\n");
     sb.append("}");
     return sb.toString();
   }
