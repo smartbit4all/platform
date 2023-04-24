@@ -42,6 +42,7 @@ components:
         - MEDIA
         - BUTTON
         - DIVIDER
+        - COMPONENT
     SmartLayoutDefinition:
       type: object
       required: [widgets]
