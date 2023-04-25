@@ -789,8 +789,8 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
 
   private <T> StorageObject<T> readObjectSingleVersion(Storage storage, URI uri, Class<T> clazz,
       File storageObjectDataFile) {
-    if (log.isDebugEnabled()) {
-      log.debug("Reading single version: {}", storageObjectDataFile.getAbsolutePath());
+    if (log.isTraceEnabled()) {
+      log.trace("Reading single version: {}", storageObjectDataFile.getAbsolutePath());
     }
     long waitTime = 10;
     while (true) {
@@ -825,7 +825,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
         return instanceOf(storage, definition, obj, dataObject, dataObject.getCurrentVersion());
       } catch (IOException e) {
         // We must try again.
-        log.debug("Unable to read " + storageObjectDataFile);
+        log.debug("Unable to read {}", storageObjectDataFile);
         waitTime = waitTime * rnd.nextInt(4);
       }
       try {
@@ -837,8 +837,8 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
   }
 
   private final StorageObjectData readObjectData(File objectDataFile) {
-    if (log.isDebugEnabled()) {
-      log.debug("Reading version: {}", objectDataFile.getAbsolutePath());
+    if (log.isTraceEnabled()) {
+      log.trace("Reading version: {}", objectDataFile.getAbsolutePath());
     }
     long waitTime = 10;
     while (true) {
