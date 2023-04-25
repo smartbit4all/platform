@@ -121,12 +121,15 @@ public class QueryOutput {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("name: ").append(name).append("\n");
-    sb.append("isSerialized: ").append(isResultSerialized()).append("\n");
-    if (isResultSerialized()) {
-      sb.append("meta:\n").append(this.tableData.toString()).append("\n");
+    sb.append(this.getClass().getName()).append("\n");
+    sb.append("\tname: ").append(name).append("\n");
+    sb.append("\tisSerialized: ").append(isResultSerialized()).append("\n");
+    sb.append("\tentityDefUri: ").append(entityDef.getUri()).append("\n");
+    sb.append("\tdata:\n");
+    if (this.tableData != null) {
+      sb.append(this.tableData.toString()).append("\n");
     } else {
-      sb.append("data:\n").append(this.tableData.toString()).append("\n");
+      sb.append("No data yet\n");
     }
     return sb.toString();
   }
