@@ -18,6 +18,8 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import org.smartbit4all.domain.meta.jdbc.JDBCOffsetDateTimeSqlDate;
 
 /**
@@ -28,7 +30,12 @@ public class JDBCOffsetDateTimeSqlDateImpl implements JDBCOffsetDateTimeSqlDate 
 
   @Override
   public Timestamp app2ext(OffsetDateTime appValue) {
-    return appValue == null ? null : Timestamp.valueOf(appValue.toLocalDateTime());
+    if (appValue == null) {
+      return null;
+    }
+    // TODO cache this value, don't create on call
+    ZoneOffset systemOffset = ZonedDateTime.now(ZoneId.systemDefault()).getOffset();
+    return Timestamp.valueOf(appValue.withOffsetSameInstant(systemOffset).toLocalDateTime());
   }
 
   @Override
