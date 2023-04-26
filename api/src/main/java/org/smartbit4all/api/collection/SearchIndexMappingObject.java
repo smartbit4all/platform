@@ -50,6 +50,7 @@ import org.smartbit4all.domain.meta.PropertyObject;
 import org.smartbit4all.domain.service.entity.EntityManager;
 import org.smartbit4all.domain.utility.crud.Crud;
 import org.springframework.context.ApplicationContext;
+import com.google.common.base.Strings;
 
 public class SearchIndexMappingObject extends SearchIndexMapping {
 
@@ -559,6 +560,9 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
       return null;
     }
     if (OffsetDateTime.class.equals(property.getBasic().type())) {
+      if (Strings.isNullOrEmpty(valueAsString)) {
+        return null;
+      }
       // TODO maybe not the best handle offsetdatetime here
       return OffsetDateTime.parse(valueAsString);
     }
