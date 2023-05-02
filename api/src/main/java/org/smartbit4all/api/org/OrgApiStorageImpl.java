@@ -806,9 +806,7 @@ public class OrgApiStorageImpl implements OrgApi {
     User userByUsername = getUserByUsername(username);
     if (userByUsername != null) {
       if (storage.get().exists(userByUsername.getUri())) {
-        StorageObject<User> oldUser = storage.get().load(userByUsername.getUri(), User.class);
-        oldUser.setObject(user);
-        URI uri = storage.get().save(oldUser);
+        URI uri = storage.get().update(userByUsername.getUri(), User.class, u -> user);
         invalidateCache();
         return uri;
       }
