@@ -106,12 +106,10 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
   protected EntityManager entityManager;
 
   @Autowired
-  LocaleSettingApi localeSettingApi;
+  protected LocaleSettingApi localeSettingApi;
 
-  /**
-   * The entity definition the search working on.
-   */
-  protected SearchEntityDefinition definition;
+  @Autowired
+  protected FilterExpressionApi filterExpressionApi;
 
   @Override
   public TableData<?> executeSearch(QueryInput queryInput) {
@@ -195,7 +193,7 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
 
   /**
    * Produce the relevant object uris by default all the uris in the storage. But can be override
-   * 
+   *
    * @return
    */
   protected List<URI> getRelevantObjectUris() {
@@ -355,7 +353,9 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
   public TableData<?> executeSearch(FilterExpressionList filterExpressions,
       List<FilterExpressionOrderBy> orderByList) {
     Expression queryExpression =
-        filterExpressions == null ? null : objectMapping.constructExpression(filterExpressions);
+        filterExpressions == null ? null
+            : filterExpressionApi.constructExpression(
+                filterExpressions, objectMapping.getDefinition());
     CrudRead<EntityDefinition> read = Crud.read(getDefinition().definition)
         .selectAllProperties()
         .where(queryExpression);
@@ -371,8 +371,9 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
 
   @Override
   public TableData<?> createEmptyTableData() {
-    TableData<EntityDefinition> tableData = new TableData<>(definition.definition);
-    tableData.addColumns(definition.definition.allProperties());
+    EntityDefinition entityDef = getDefinition().definition;
+    TableData<EntityDefinition> tableData = new TableData<>(entityDef);
+    tableData.addColumns(entityDef.allProperties());
     return tableData;
   }
 

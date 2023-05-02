@@ -3,7 +3,6 @@ package org.smartbit4all.api.collection;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
-import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,7 +24,6 @@ import org.smartbit4all.api.filterexpression.bean.FilterExpressionDataType;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionField;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldList;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldWidgetType;
-import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOperandData;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOperation;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy;
@@ -44,13 +42,11 @@ import org.smartbit4all.domain.data.TableDatas;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.EntityDefinitionBuilder;
 import org.smartbit4all.domain.meta.Expression;
-import org.smartbit4all.domain.meta.ExpressionBracket;
 import org.smartbit4all.domain.meta.JoinPath;
 import org.smartbit4all.domain.meta.PropertyObject;
 import org.smartbit4all.domain.service.entity.EntityManager;
 import org.smartbit4all.domain.utility.crud.Crud;
 import org.springframework.context.ApplicationContext;
-import com.google.common.base.Strings;
 
 public class SearchIndexMappingObject extends SearchIndexMapping {
 
@@ -415,158 +411,6 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
     this.masterJoin = new ArrayList<>();
     this.masterJoin.add(new String[] {sourcePropertyName, targetPropertyName});
     return this;
-  }
-
-  final Expression constructExpression(FilterExpressionList filterExpressions) {
-    Expression currentExpression = null;
-    FilterExpressionData prevFed = null;
-    for (FilterExpressionData fed : filterExpressions.getExpressions()) {
-      // Construct the Expression from the FilterExpressionData
-      Expression exp = convertFilterExpression(fed);
-      if (exp != null) {
-        if (currentExpression != null && prevFed != null) {
-          if (prevFed.getBoolOperator() == FilterExpressionBoolOperator.OR) {
-            currentExpression = currentExpression.OR(exp);
-          } else {
-            currentExpression = currentExpression.AND(exp);
-          }
-        } else {
-          currentExpression = exp;
-        }
-        prevFed = fed;
-      }
-    }
-    return currentExpression;
-  }
-
-  private final PropertyObject propertyOf(FilterExpressionOperandData op) {
-    if (op != null && Boolean.TRUE.equals(op.getIsDataName())) {
-      return getEntityDefinition().getPropertyObject(op.getValueAsString());
-    }
-    return null;
-  }
-
-  private final Object valueOf(FilterExpressionOperandData op, PropertyObject property)
-      throws IOException {
-    if (op != null && Boolean.FALSE.equals(op.getIsDataName())) {
-      return convertValue(op.getValueAsString(), property);
-    }
-    return null;
-  }
-
-  private final Expression convertFilterExpression(FilterExpressionData fed) {
-    String propertyName;
-    PropertyObject property = null;
-    List<PropertyObject> properties = new ArrayList<>();
-
-    if (fed.getCurrentOperation().equals(FilterExpressionOperation.EXPRESSION)) {
-      Expression innerExpression = constructExpression(fed.getSubExpression());
-      return innerExpression != null ? new ExpressionBracket(innerExpression) : null;
-    }
-
-
-    if (Arrays.asList(FilterExpressionOperation.EXISTS, FilterExpressionOperation.NOT_EXISTS)
-        .contains(fed.getCurrentOperation())) {
-      propertyName = fed.getOperand1().getValueAsString();
-    } else {
-      properties.add(propertyOf(fed.getOperand1()));
-      properties.add(propertyOf(fed.getOperand2()));
-      properties.add(propertyOf(fed.getOperand3()));
-      // The first property would be great for type conversion.
-      property = properties.stream().filter(p -> p != null).findFirst().get();
-      propertyName = property.getName();
-    }
-    // Type conversion by the type of the filter expression operand
-    List<Object> values = new ArrayList<>();
-    try {
-      values.add(valueOf(fed.getOperand1(), property));
-      values.add(valueOf(fed.getOperand2(), property));
-      values.add(valueOf(fed.getOperand3(), property));
-    } catch (IOException e) {
-      throw new IllegalArgumentException(
-          "Unable to convert the string value of the filter expression to "
-              + property.getBasic().type(),
-          e);
-    }
-
-    switch (fed.getCurrentOperation()) {
-      case BETWEEN:
-        Object lowerBound = values.get(1);
-        Object upperBound = values.get(2);
-        if (lowerBound != null && upperBound != null) {
-          return properties.get(0).between(lowerBound, upperBound);
-        }
-        if (lowerBound != null) {
-          return properties.get(0).ge(lowerBound);
-        }
-        if (upperBound != null) {
-          return properties.get(0).le(upperBound);
-        }
-        return null;
-      case EQUAL:
-        return properties.get(0).eq(values.get(1));
-      case EXISTS:
-        // The expression is simple parenthesis for the same entity definition.
-        return constructExists(fed, propertyName);
-      case EXPRESSION:
-        // The expression is simple parenthesis for the same entity definition.
-        Expression innerExpression = constructExpression(fed.getSubExpression());
-        return innerExpression != null ? new ExpressionBracket(innerExpression) : null;
-      case GREATER:
-        return properties.get(0).gt(values.get(1));
-      case GREATER_OR_EQUAL:
-        return properties.get(0).ge(values.get(1));
-      case IS_EMPTY:
-        return properties.get(0).isNull();
-      case IS_NOT_EMPTY:
-        return properties.get(0).isNotNull();
-      case LESS:
-        return properties.get(0).lt(values.get(1));
-      case LESS_OR_EQUAL:
-        return properties.get(0).le(values.get(1));
-      case LIKE:
-        return properties.get(0).like(values.get(1));
-      case NOT_BETWEEN:
-        return properties.get(0).between(values.get(1), values.get(2)).NOT();
-      case NOT_EQUAL:
-        return properties.get(0).noteq(values.get(1));
-      case NOT_EXISTS:
-        return constructExists(fed, propertyName).NOT();
-      case NOT_LIKE:
-        return properties.get(0).notlike(values.get(1));
-      default:
-        break;
-
-    }
-    return null;
-  }
-
-  private final Expression constructExists(FilterExpressionData fed, String propertyName) {
-    SearchIndexMappingObject detailMapping =
-        ((SearchIndexMappingObject) mappingsByPropertyName.get(propertyName));
-    DetailDefinition detailDefinition = entityDefinition.detailsByName.get(propertyName);
-    Expression existsExpression = detailMapping.constructExpression(fed.getSubExpression());
-    // Add the exists to the current entity and return the exists expression as is.
-    return entityDefinition.definition.exists(detailDefinition.masterJoin, existsExpression)
-        .name(propertyName);
-  }
-
-  private final Object convertValue(String valueAsString, PropertyObject property)
-      throws IOException {
-    if (String.class.equals(property.getBasic().type())) {
-      return valueAsString;
-    }
-    if (valueAsString == null) {
-      return null;
-    }
-    if (OffsetDateTime.class.equals(property.getBasic().type())) {
-      if (Strings.isNullOrEmpty(valueAsString)) {
-        return null;
-      }
-      // TODO maybe not the best handle offsetdatetime here
-      return OffsetDateTime.parse(valueAsString);
-    }
-    return objectApi.getDefaultSerializer().fromString(valueAsString, property.getBasic().type());
   }
 
   public final void init(ApplicationContext ctx, EntityManager entityManager, ObjectApi objectApi,
