@@ -1,19 +1,23 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 package org.smartbit4all.domain.entity;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.fail;
 import java.net.URI;
 import java.util.List;
 import org.junit.jupiter.api.AfterAll;
@@ -38,10 +42,6 @@ import org.smartbit4all.domain.utility.crud.Crud;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.fail;
 
 @SpringBootTest(classes = {EntityManagerTestConfig.class})
 class EntityManagerTest {
@@ -160,17 +160,24 @@ class EntityManagerTest {
   void testPropertyRefrenceCreationByRef() {
     String propertyName = "primaryAddressRef.dontRefThisByRef";
 
-    assertNull(userAccountDef.getProperty(propertyName),
+    Property<?> namePropertyByName = userAccountDef.getProperty(propertyName);
+    assertNotNull(namePropertyByName,
         propertyName + " should NOT be defined at this point!");
-    String name = userAccountDef.primaryAddress().dontRefThisByRef().getName();
+    Property<String> namePropertyByFluidApi = userAccountDef.primaryAddress().dontRefThisByRef();
+    assertSame(namePropertyByName, namePropertyByFluidApi);
 
+    String name = namePropertyByFluidApi.getName();
     assertEquals(propertyName, name);
-    assertNotNull(userAccountDef.getProperty(propertyName),
+
+    Property<?> namePropertyByNameAfterFLuidApi = userAccountDef.getProperty(propertyName);
+    assertNotNull(namePropertyByNameAfterFLuidApi,
         propertyName + " should be defined at this point!");
+    assertSame(namePropertyByFluidApi, namePropertyByNameAfterFLuidApi);
+
   }
 
   /**
-   * 
+   *
    * @throws Exception
    */
   @SuppressWarnings("unchecked")

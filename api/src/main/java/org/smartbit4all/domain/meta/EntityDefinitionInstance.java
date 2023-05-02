@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import org.smartbit4all.api.databasedefinition.bean.ColumnTypeDefinition;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.annotation.property.ReferenceMandatory;
@@ -17,7 +19,7 @@ import org.springframework.cglib.proxy.MethodProxy;
 
 /**
  * The common meta data of an {@link EntityDefinition} instance.
- * 
+ *
  * @author Peter Boros
  */
 class EntityDefinitionInstance implements EntityDefinition {
@@ -31,6 +33,8 @@ class EntityDefinitionInstance implements EntityDefinition {
    * The {@link Property} instances mapped by their name.
    */
   protected final Map<String, Property<?>> propertiesByName = new HashMap<>();
+
+  protected final Lock referredPropertiesByPathLock = new ReentrantLock();
 
   /**
    * The referred properties mapped by their full concatenated path.
@@ -93,9 +97,44 @@ class EntityDefinitionInstance implements EntityDefinition {
   public final Property<?> getProperty(String propertyName) {
     Property<?> property = propertiesByName.get(propertyName);
     if (property == null) {
-      property = referredPropertiesByPath.get(propertyName);
+      property = getReferredPropertyByPath(propertyName);
+    }
+    if (property == null) {
+      String[] propertyRefs = propertyName.split("\\.");
+      if (propertyRefs.length > 1) {
+        String referredPropertyName = propertyRefs[propertyRefs.length - 1];
+
+        List<Reference<?, ?>> joinPath = new ArrayList<>();
+        EntityDefinition currentEntity = this;
+        for (int i = 0; i < propertyRefs.length - 1; i++) {
+          String referenceName = propertyRefs[i];
+          Reference<?, ?> reference = currentEntity.getReference(referenceName);
+          joinPath.add(reference);
+          currentEntity = reference.getTarget();
+        }
+        Property<?> referredProperty = currentEntity.getProperty(referredPropertyName);
+        property = this.findOrCreateReferredProperty(joinPath, referredProperty);
+      }
     }
     return property;
+  }
+
+  private Property<?> getReferredPropertyByPath(String propertyName) {
+    referredPropertiesByPathLock.lock();
+    try {
+      return referredPropertiesByPath.get(propertyName);
+    } finally {
+      referredPropertiesByPathLock.unlock();
+    }
+  }
+
+  private void putReferredPropertyByPath(String path, Property<?> property) {
+    referredPropertiesByPathLock.lock();
+    try {
+      referredPropertiesByPath.put(path, property);
+    } finally {
+      referredPropertiesByPathLock.unlock();
+    }
   }
 
   @Override
@@ -112,7 +151,7 @@ class EntityDefinitionInstance implements EntityDefinition {
   public Property<?> findOrCreateReferredProperty(List<Reference<?, ?>> joinPath,
       Property<?> referredProperty) {
     String refPath = PropertyRef.constructName(joinPath, referredProperty);
-    Property<?> property = referredPropertiesByPath.get(refPath);
+    Property<?> property = getReferredPropertyByPath(refPath);
     if (property == null) {
       property = createRefProperty(null, joinPath, referredProperty, refPath);
     }
@@ -122,7 +161,7 @@ class EntityDefinitionInstance implements EntityDefinition {
   @Override
   public Property<?> findOrCreateReferredProperty(String[] joinPath, String referredPropertyName) {
     String refPath = PropertyRef.constructName(joinPath, referredPropertyName);
-    Property<?> property = referredPropertiesByPath.get(refPath);
+    Property<?> property = getReferredPropertyByPath(refPath);
     if (property == null) {
       property = createRefPropertyByPath(null, referredPropertyName, joinPath);
     }
@@ -141,7 +180,8 @@ class EntityDefinitionInstance implements EntityDefinition {
     PropertyRef<?> property = new PropertyRef<>(propertyName, joinPath, referredProperty);
 
     PropertyRef<?> propertyProxy = createPropertyProxy(property, PropertyRef.class);
-    referredPropertiesByPath.put(refPath, propertyProxy);
+
+    putReferredPropertyByPath(refPath, propertyProxy);
     propertyProxy.setEntityDef(this);
     return propertyProxy;
   }
