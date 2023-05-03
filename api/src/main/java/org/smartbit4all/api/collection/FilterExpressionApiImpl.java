@@ -1,7 +1,6 @@
 package org.smartbit4all.api.collection;
 
 import java.io.IOException;
-import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -283,15 +282,7 @@ public class FilterExpressionApiImpl implements FilterExpressionApi {
     if (valueAsString == null) {
       return null;
     }
-    if (OffsetDateTime.class.equals(type)) {
-      if (Strings.isNullOrEmpty(valueAsString)) {
-        return null;
-      }
-      // TODO maybe not the best handle offsetdatetime here
-      return OffsetDateTime.parse(valueAsString);
-    }
-    return objectApi.getDefaultSerializer().fromString(valueAsString, type);
+    return objectApi.asType(type, valueAsString);
   }
-
 
 }
