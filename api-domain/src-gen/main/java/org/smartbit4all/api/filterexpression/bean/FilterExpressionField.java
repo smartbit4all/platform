@@ -87,7 +87,7 @@ public class FilterExpressionField {
   private List<Value> possibleValues = new ArrayList<>();
 
   public static final String SELECTED_VALUES = "selectedValues";
-  private List<Value> selectedValues = new ArrayList<>();
+  private List<String> selectedValues = new ArrayList<>();
 
   public static final String WIDGET_TYPE = "widgetType";
   private FilterExpressionFieldWidgetType widgetType;
@@ -387,13 +387,13 @@ public class FilterExpressionField {
   }
 
 
-  public FilterExpressionField selectedValues(List<Value> selectedValues) {
+  public FilterExpressionField selectedValues(List<String> selectedValues) {
     
     this.selectedValues = selectedValues;
     return this;
   }
 
-  public FilterExpressionField addSelectedValuesItem(Value selectedValuesItem) {
+  public FilterExpressionField addSelectedValuesItem(String selectedValuesItem) {
     this.selectedValues.add(selectedValuesItem);
     return this;
   }
@@ -404,19 +404,18 @@ public class FilterExpressionField {
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @Valid
   @ApiModelProperty(required = true, value = "")
   @JsonProperty(SELECTED_VALUES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<Value> getSelectedValues() {
+  public List<String> getSelectedValues() {
     return selectedValues;
   }
 
 
   @JsonProperty(SELECTED_VALUES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setSelectedValues(List<Value> selectedValues) {
+  public void setSelectedValues(List<String> selectedValues) {
     this.selectedValues = selectedValues;
   }
 

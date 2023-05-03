@@ -28,7 +28,6 @@ import org.smartbit4all.api.filterexpression.bean.FilterExpressionBoolOperator;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOperandData;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOperation;
-import org.smartbit4all.api.value.bean.Value;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -66,7 +65,7 @@ public class FilterExpressionData {
   private FilterExpressionBoolOperator boolOperator;
 
   public static final String SELECTED_VALUES = "selectedValues";
-  private List<Value> selectedValues = null;
+  private List<String> selectedValues = new ArrayList<>();
 
   public static final String SUB_EXPRESSION = "subExpression";
   private FilterExpressionList subExpression;
@@ -214,16 +213,13 @@ public class FilterExpressionData {
   }
 
 
-  public FilterExpressionData selectedValues(List<Value> selectedValues) {
+  public FilterExpressionData selectedValues(List<String> selectedValues) {
     
     this.selectedValues = selectedValues;
     return this;
   }
 
-  public FilterExpressionData addSelectedValuesItem(Value selectedValuesItem) {
-    if (this.selectedValues == null) {
-      this.selectedValues = new ArrayList<>();
-    }
+  public FilterExpressionData addSelectedValuesItem(String selectedValuesItem) {
     this.selectedValues.add(selectedValuesItem);
     return this;
   }
@@ -232,20 +228,20 @@ public class FilterExpressionData {
    * Get selectedValues
    * @return selectedValues
   **/
-  @javax.annotation.Nullable
-  @Valid
-  @ApiModelProperty(value = "")
+  @javax.annotation.Nonnull
+  @NotNull
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(SELECTED_VALUES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<Value> getSelectedValues() {
+  public List<String> getSelectedValues() {
     return selectedValues;
   }
 
 
   @JsonProperty(SELECTED_VALUES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setSelectedValues(List<Value> selectedValues) {
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setSelectedValues(List<String> selectedValues) {
     this.selectedValues = selectedValues;
   }
 

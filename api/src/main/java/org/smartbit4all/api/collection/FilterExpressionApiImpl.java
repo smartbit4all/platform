@@ -50,6 +50,7 @@ public class FilterExpressionApiImpl implements FilterExpressionApi {
             && (operandHasValue(field.getExpressionData().getOperand1())
                 || operandHasValue(field.getExpressionData().getOperand2())
                 || operandHasValue(field.getExpressionData().getOperand3())
+                || (field.getSelectedValues() != null && !field.getSelectedValues().isEmpty())
                 || parenthesisOperands.contains(field.getExpressionData().getCurrentOperation())))
         .map(field -> {
           if (parenthesisOperands.contains(field.getExpressionData().getCurrentOperation())) {

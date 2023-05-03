@@ -49,6 +49,7 @@ components:
       description: |
         The expression data is the decriptor of an expression stands for an equal, like etc. and also can be a bracket where 
         we have embedded expressions.
+      required: [selectedValues]
       properties:
         operand1:
           $ref: "#/components/schemas/FilterExpressionOperandData"
@@ -65,7 +66,7 @@ components:
         selectedValues:
           type: array
           items:
-            type: Value
+            type: string
         subExpression:
           $ref: "#/components/schemas/FilterExpressionList"
       
@@ -121,7 +122,7 @@ components:
         selectedValues:
           type: array
           items:
-            type: Value
+            type: string
         widgetType:
           $ref: "#/components/schemas/FilterExpressionFieldWidgetType"
         subFieldList:
@@ -242,6 +243,7 @@ components:
       - IS_NOT_EMPTY
       - EXISTS
       - NOT_EXISTS
+      - IN
 
     FilterExpressionDataType:
       type: string

@@ -56,7 +56,9 @@ public enum FilterExpressionOperation {
   
   EXISTS("EXISTS"),
   
-  NOT_EXISTS("NOT_EXISTS");
+  NOT_EXISTS("NOT_EXISTS"),
+  
+  IN("IN");
 
   private String value;
 
