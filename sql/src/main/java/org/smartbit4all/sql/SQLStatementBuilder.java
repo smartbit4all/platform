@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
@@ -51,6 +51,7 @@ import org.smartbit4all.domain.meta.OperandLiteral;
 import org.smartbit4all.domain.meta.OperandProperty;
 import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.domain.meta.PropertyFunction;
+import org.smartbit4all.domain.meta.PropertyObject;
 import org.smartbit4all.domain.meta.PropertyOwned;
 import org.smartbit4all.domain.meta.PropertyRef;
 import org.smartbit4all.domain.meta.PropertySqlComputed;
@@ -65,7 +66,7 @@ import com.google.common.io.ByteStreams;
  * rendering of the {@link SQLStatementNode}. The builder is supporting the ANSII SQL by default. If
  * we need specific dialects then it must extended by a sub class. The default based class support
  * the main RDBMS brands.
- * 
+ *
  * @author Peter Boros
  *
  */
@@ -126,7 +127,7 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
   /**
    * As a result of the rendering we can access the final textual representation of the SQL
    * statement.
-   * 
+   *
    * @return The SQL statement that can be used in the
    *         {@link java.sql.Connection#prepareStatement(java.lang.String)} function to create
    *         runnable statement.
@@ -141,7 +142,7 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
    * It ensures that the database can optimize the SQL parsing because the same SQL looks the same
    * in every executing. After preparing the SQL statement we can bind the values with this builder
    * also.
-   * 
+   *
    * @param conn The database connection.
    * @return If we succeeded then we get back the {@link PreparedStatement}.
    * @throws SQLException If we cann't create the SQL statement.
@@ -164,7 +165,7 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
 
   /**
    * We can change if the rendering is bound or not.
-   * 
+   *
    * @param bound The true bound means that we will find ? standing for the values. These ? can be
    *        bound later on. The false means that during the rendering the values appears as literals
    *        in the statement string. It is useful for logging purposes.
@@ -176,7 +177,7 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
 
   /**
    * Append a simple string to the SQL statement. Used if we have a never changing constant.
-   * 
+   *
    * @param sqlFragment The fragment of the SQL statement.
    */
   @Override
@@ -187,7 +188,7 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
 
   /**
    * Append the bind sign (?) to the statement.
-   * 
+   *
    * @return return the position of the bind variable.
    */
   @Override
@@ -215,7 +216,7 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
 
   /**
    * Creates a bind value.
-   * 
+   *
    * @param literal The value for the bind.
    * @return
    */
@@ -226,7 +227,7 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
 
   /**
    * Append an operand as a column.
-   * 
+   *
    * @param propertyOperand The property operand.
    */
   @Override
@@ -254,6 +255,9 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
 
   private String getColumnNameOfProperty(OperandProperty<?> propertyOperand) {
     Property<?> property = propertyOperand.property();
+    if (property instanceof PropertyObject) {
+      property = ((PropertyObject) property).getBasic();
+    }
     String columnName = property.getName();
     if (property instanceof PropertyOwned<?>) {
       PropertyOwned<?> owned = (PropertyOwned<?>) property;
@@ -301,7 +305,7 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
   /**
    * Append a bind value as a column for the update statement. Contains column name and the value at
    * the same time.
-   * 
+   *
    * @param value The bind value.
    */
   @Override
@@ -317,7 +321,7 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
 
   /**
    * Append a simple string to the SQL statement. Used if we have a never changing constant.
-   * 
+   *
    */
   @Override
   public final SQLStatementBuilderIF append(BooleanOperator booleanOperator) {
@@ -328,7 +332,7 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
 
   /**
    * Add the group by section to the statement.
-   * 
+   *
    * @return Fluid API.
    */
   @Override
@@ -341,7 +345,7 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
 
   /**
    * Add the order by section to the statement.
-   * 
+   *
    * @return Fluid API.
    */
   @Override
@@ -354,7 +358,7 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
 
   /**
    * Add the update set section.
-   * 
+   *
    * @return Fluid API.
    */
   @Override
@@ -367,7 +371,7 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
 
   /**
    * Add the update set section.
-   * 
+   *
    * @return Fluid API.
    */
   @Override
@@ -380,7 +384,7 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
 
   /**
    * Add the delete from section.
-   * 
+   *
    * @return Fluid API.
    */
   @Override
@@ -393,7 +397,7 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
 
   /**
    * Add the update from section.
-   * 
+   *
    * @return Fluid API.
    */
   @Override
@@ -406,7 +410,7 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
 
   /**
    * Add the select section.
-   * 
+   *
    * @return Fluid API.
    */
   @Override
@@ -432,7 +436,7 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
 
   /**
    * Add the from section.
-   * 
+   *
    * @return Fluid API.
    */
   @Override
@@ -445,7 +449,7 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
 
   /**
    * Generate start values section.
-   * 
+   *
    * @return
    */
   @Override
@@ -480,9 +484,9 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
 
   /**
    * Append a value as a literal to the statement.
-   * 
+   *
    * @param value The value.
-   * 
+   *
    * @return
    */
   @Override
@@ -661,7 +665,7 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
 
   /**
    * Append a 2 operand expression to the statement. Can be equal, less than etc.
-   * 
+   *
    * @param expression
    * @return
    */
@@ -713,7 +717,7 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
 
   /**
    * Append a between to the statement.
-   * 
+   *
    * @param expression Manages the between with symmetric option.
    * @return
    */
@@ -1032,7 +1036,7 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
 
   /**
    * Constructs the qualified name for the column.
-   * 
+   *
    * @param column The name of the column,
    * @return The qualified name.
    */
@@ -1047,7 +1051,7 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
    * In the SQL statement the columns could be qualified if necessary. The join conditions are
    * obviously qualified at both side but the expression not. If wee need to qualify the an
    * expression when appending then call qualify() to set this value.
-   * 
+   *
    * @param qualifier The qualifier doesn't contain the . as the separator.
    * @return Fluid API
    */
@@ -1062,7 +1066,7 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
    * obviously qualified at both side but the expression not. If wee need to qualify the an
    * expression when appending then call qualify() to set this value. With this call we can empty
    * the qualifier.
-   * 
+   *
    * @return Fluid API
    */
   @Override
@@ -1107,7 +1111,7 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
 
   /**
    * Get the before statement section by name
-   * 
+   *
    * @param beforeStatementName
    * @return
    */
