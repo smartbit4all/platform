@@ -203,6 +203,12 @@ public class DomainServiceConfig {
   }
 
   @Bean
+  public Converter<LocalDate, LocalDateTime> localDate2LocalDateTimeConverter() {
+    return new ConverterImpl<>(LocalDateTime.class,
+        LocalDate::atStartOfDay, LocalDate.class, LocalDateTime::toLocalDate);
+  }
+
+  @Bean
   public Converter<URI, String> uri2String() {
     return new ConverterImpl<>(String.class, URI::toString, URI.class, s -> URI.create(s));
   }
