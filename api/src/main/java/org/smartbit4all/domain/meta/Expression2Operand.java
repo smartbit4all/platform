@@ -119,20 +119,28 @@ public final class Expression2Operand<T> extends Expression {
   private boolean myEvaluate() {
     switch (operator) {
       case EQ:
-        return Objects.equals(op.value(), literal.value());
+        return Objects.equals(getOpValue(), getLiteralValue());
       case GE:
-        return Objects.compare(op.value(), literal.value(), getComparator()) >= 0;
+        return Objects.compare(getOpValue(), getLiteralValue(), getComparator()) >= 0;
       case GT:
-        return Objects.compare(op.value(), literal.value(), getComparator()) > 0;
+        return Objects.compare(getOpValue(), getLiteralValue(), getComparator()) > 0;
       case LE:
-        return Objects.compare(op.value(), literal.value(), getComparator()) <= 0;
+        return Objects.compare(getOpValue(), getLiteralValue(), getComparator()) <= 0;
       case LT:
-        return Objects.compare(op.value(), literal.value(), getComparator()) < 0;
+        return Objects.compare(getOpValue(), getLiteralValue(), getComparator()) < 0;
       case LIKE:
         return like();
       default:
         return false;
     }
+  }
+
+  private final T getOpValue() {
+    return op.applyFunction(op.value());
+  }
+
+  private final T getLiteralValue() {
+    return op.applyFunction(literal.value());
   }
 
   private final boolean like() {
@@ -148,8 +156,8 @@ public final class Expression2Operand<T> extends Expression {
       return true;
     }
 
-    String opString = op.value().toString();
-    String literalString = literal.value().toString();
+    String opString = getOpValue().toString();
+    String literalString = getLiteralValue().toString();
     // TODO Collation handling with redundant column in the data table.
     String zeroOrMore = "%";
     String single = "_";

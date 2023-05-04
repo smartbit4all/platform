@@ -75,6 +75,27 @@ public class OperandProperty<T> extends Operand<T> {
     }
   }
 
+  /**
+   * @return The bound value of the given operand if set. The value is modified by the given
+   *         function if the function is well known like upper, lower etc.
+   */
+  public T applyFunction(T value) {
+    T result = value;
+    if (value instanceof String) {
+      PropertyFunction propertyFunction = property.getPropertyFunction();
+      if (propertyFunction != null) {
+        if (PropertyFunction.LOWER.getStatement().equals(propertyFunction.getStatement())) {
+          result = (T) ((String) value).toLowerCase();
+        } else if (PropertyFunction.UPPER.getClass().equals(propertyFunction.getStatement())) {
+          result = (T) ((String) value).toUpperCase();
+        }
+      }
+    }
+    return result;
+  }
+
+
+
   @Override
   public T value() {
     return boundValue == null ? null : getValue();
