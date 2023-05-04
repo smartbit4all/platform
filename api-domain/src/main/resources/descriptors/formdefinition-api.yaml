@@ -43,6 +43,7 @@ components:
         - BUTTON
         - DIVIDER
         - COMPONENT
+        - RICH_TEXT
     SmartLayoutDefinition:
       type: object
       required: [widgets]

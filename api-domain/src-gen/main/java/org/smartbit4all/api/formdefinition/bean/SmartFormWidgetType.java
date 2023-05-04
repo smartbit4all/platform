@@ -70,7 +70,11 @@ public enum SmartFormWidgetType {
   
   BUTTON("BUTTON"),
   
-  DIVIDER("DIVIDER");
+  DIVIDER("DIVIDER"),
+  
+  COMPONENT("COMPONENT"),
+  
+  RICH_TEXT("RICH_TEXT");
 
   private String value;
 
