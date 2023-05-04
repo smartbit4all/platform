@@ -40,6 +40,7 @@ import javax.validation.Valid;
   FilterExpressionData.OPERAND2,
   FilterExpressionData.OPERAND3,
   FilterExpressionData.CURRENT_OPERATION,
+  FilterExpressionData.MODIFIER,
   FilterExpressionData.BOOL_OPERATOR,
   FilterExpressionData.SUB_EXPRESSION
 })
@@ -57,6 +58,9 @@ public class FilterExpressionData {
 
   public static final String CURRENT_OPERATION = "currentOperation";
   private FilterExpressionOperation currentOperation;
+
+  public static final String MODIFIER = "modifier";
+  private String modifier;
 
   public static final String BOOL_OPERATOR = "boolOperator";
   private FilterExpressionBoolOperator boolOperator;
@@ -179,6 +183,33 @@ public class FilterExpressionData {
   }
 
 
+  public FilterExpressionData modifier(String modifier) {
+    
+    this.modifier = modifier;
+    return this;
+  }
+
+   /**
+   * Get modifier
+   * @return modifier
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(MODIFIER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getModifier() {
+    return modifier;
+  }
+
+
+  @JsonProperty(MODIFIER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setModifier(String modifier) {
+    this.modifier = modifier;
+  }
+
+
   public FilterExpressionData boolOperator(FilterExpressionBoolOperator boolOperator) {
     
     this.boolOperator = boolOperator;
@@ -248,13 +279,14 @@ public class FilterExpressionData {
         Objects.equals(this.operand2, filterExpressionData.operand2) &&
         Objects.equals(this.operand3, filterExpressionData.operand3) &&
         Objects.equals(this.currentOperation, filterExpressionData.currentOperation) &&
+        Objects.equals(this.modifier, filterExpressionData.modifier) &&
         Objects.equals(this.boolOperator, filterExpressionData.boolOperator) &&
         Objects.equals(this.subExpression, filterExpressionData.subExpression);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(operand1, operand2, operand3, currentOperation, boolOperator, subExpression);
+    return Objects.hash(operand1, operand2, operand3, currentOperation, modifier, boolOperator, subExpression);
   }
 
   @Override
@@ -265,6 +297,7 @@ public class FilterExpressionData {
     sb.append("    operand2: ").append(toIndentedString(operand2)).append("\n");
     sb.append("    operand3: ").append(toIndentedString(operand3)).append("\n");
     sb.append("    currentOperation: ").append(toIndentedString(currentOperation)).append("\n");
+    sb.append("    modifier: ").append(toIndentedString(modifier)).append("\n");
     sb.append("    boolOperator: ").append(toIndentedString(boolOperator)).append("\n");
     sb.append("    subExpression: ").append(toIndentedString(subExpression)).append("\n");
     sb.append("}");

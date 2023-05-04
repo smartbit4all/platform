@@ -64,6 +64,8 @@ components:
         currentOperation:
           $ref: "#/components/schemas/FilterExpressionOperation"
           default: 'EQUAL'
+        modifier:
+          type: string
         boolOperator:
           $ref: "#/components/schemas/FilterExpressionBoolOperator"
           default: 'AND'
