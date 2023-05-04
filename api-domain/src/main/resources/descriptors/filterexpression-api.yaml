@@ -41,6 +41,10 @@ components:
           description: True if the given operand refers to property at the moment. The value as string is a property name.
         valueAsString:
           type: string
+        selectedValues:
+          type: array
+          items:
+            type: string
         type:
           $ref: "#/components/schemas/FilterExpressionDataType"
 

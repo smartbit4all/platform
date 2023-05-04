@@ -22,6 +22,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.util.ArrayList;
+import java.util.List;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionDataType;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -35,6 +37,7 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   FilterExpressionOperandData.IS_DATA_NAME,
   FilterExpressionOperandData.VALUE_AS_STRING,
+  FilterExpressionOperandData.SELECTED_VALUES,
   FilterExpressionOperandData.TYPE
 })
 @JsonTypeName("FilterExpressionOperandData")
@@ -45,6 +48,9 @@ public class FilterExpressionOperandData {
 
   public static final String VALUE_AS_STRING = "valueAsString";
   private String valueAsString;
+
+  public static final String SELECTED_VALUES = "selectedValues";
+  private List<String> selectedValues = null;
 
   public static final String TYPE = "type";
   private FilterExpressionDataType type;
@@ -106,6 +112,41 @@ public class FilterExpressionOperandData {
   }
 
 
+  public FilterExpressionOperandData selectedValues(List<String> selectedValues) {
+    
+    this.selectedValues = selectedValues;
+    return this;
+  }
+
+  public FilterExpressionOperandData addSelectedValuesItem(String selectedValuesItem) {
+    if (this.selectedValues == null) {
+      this.selectedValues = new ArrayList<>();
+    }
+    this.selectedValues.add(selectedValuesItem);
+    return this;
+  }
+
+   /**
+   * Get selectedValues
+   * @return selectedValues
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(SELECTED_VALUES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<String> getSelectedValues() {
+    return selectedValues;
+  }
+
+
+  @JsonProperty(SELECTED_VALUES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSelectedValues(List<String> selectedValues) {
+    this.selectedValues = selectedValues;
+  }
+
+
   public FilterExpressionOperandData type(FilterExpressionDataType type) {
     
     this.type = type;
@@ -145,12 +186,13 @@ public class FilterExpressionOperandData {
     FilterExpressionOperandData filterExpressionOperandData = (FilterExpressionOperandData) o;
     return Objects.equals(this.isDataName, filterExpressionOperandData.isDataName) &&
         Objects.equals(this.valueAsString, filterExpressionOperandData.valueAsString) &&
+        Objects.equals(this.selectedValues, filterExpressionOperandData.selectedValues) &&
         Objects.equals(this.type, filterExpressionOperandData.type);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(isDataName, valueAsString, type);
+    return Objects.hash(isDataName, valueAsString, selectedValues, type);
   }
 
   @Override
@@ -159,6 +201,7 @@ public class FilterExpressionOperandData {
     sb.append("class FilterExpressionOperandData {\n");
     sb.append("    isDataName: ").append(toIndentedString(isDataName)).append("\n");
     sb.append("    valueAsString: ").append(toIndentedString(valueAsString)).append("\n");
+    sb.append("    selectedValues: ").append(toIndentedString(selectedValues)).append("\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("}");
     return sb.toString();
