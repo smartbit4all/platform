@@ -22,8 +22,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.util.ArrayList;
-import java.util.List;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionBoolOperator;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOperandData;
@@ -43,7 +41,6 @@ import javax.validation.Valid;
   FilterExpressionData.OPERAND3,
   FilterExpressionData.CURRENT_OPERATION,
   FilterExpressionData.BOOL_OPERATOR,
-  FilterExpressionData.SELECTED_VALUES,
   FilterExpressionData.SUB_EXPRESSION
 })
 @JsonTypeName("FilterExpressionData")
@@ -63,9 +60,6 @@ public class FilterExpressionData {
 
   public static final String BOOL_OPERATOR = "boolOperator";
   private FilterExpressionBoolOperator boolOperator;
-
-  public static final String SELECTED_VALUES = "selectedValues";
-  private List<String> selectedValues = new ArrayList<>();
 
   public static final String SUB_EXPRESSION = "subExpression";
   private FilterExpressionList subExpression;
@@ -213,39 +207,6 @@ public class FilterExpressionData {
   }
 
 
-  public FilterExpressionData selectedValues(List<String> selectedValues) {
-    
-    this.selectedValues = selectedValues;
-    return this;
-  }
-
-  public FilterExpressionData addSelectedValuesItem(String selectedValuesItem) {
-    this.selectedValues.add(selectedValuesItem);
-    return this;
-  }
-
-   /**
-   * Get selectedValues
-   * @return selectedValues
-  **/
-  @javax.annotation.Nonnull
-  @NotNull
-  @ApiModelProperty(required = true, value = "")
-  @JsonProperty(SELECTED_VALUES)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-
-  public List<String> getSelectedValues() {
-    return selectedValues;
-  }
-
-
-  @JsonProperty(SELECTED_VALUES)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setSelectedValues(List<String> selectedValues) {
-    this.selectedValues = selectedValues;
-  }
-
-
   public FilterExpressionData subExpression(FilterExpressionList subExpression) {
     
     this.subExpression = subExpression;
@@ -288,13 +249,12 @@ public class FilterExpressionData {
         Objects.equals(this.operand3, filterExpressionData.operand3) &&
         Objects.equals(this.currentOperation, filterExpressionData.currentOperation) &&
         Objects.equals(this.boolOperator, filterExpressionData.boolOperator) &&
-        Objects.equals(this.selectedValues, filterExpressionData.selectedValues) &&
         Objects.equals(this.subExpression, filterExpressionData.subExpression);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(operand1, operand2, operand3, currentOperation, boolOperator, selectedValues, subExpression);
+    return Objects.hash(operand1, operand2, operand3, currentOperation, boolOperator, subExpression);
   }
 
   @Override
@@ -306,7 +266,6 @@ public class FilterExpressionData {
     sb.append("    operand3: ").append(toIndentedString(operand3)).append("\n");
     sb.append("    currentOperation: ").append(toIndentedString(currentOperation)).append("\n");
     sb.append("    boolOperator: ").append(toIndentedString(boolOperator)).append("\n");
-    sb.append("    selectedValues: ").append(toIndentedString(selectedValues)).append("\n");
     sb.append("    subExpression: ").append(toIndentedString(subExpression)).append("\n");
     sb.append("}");
     return sb.toString();

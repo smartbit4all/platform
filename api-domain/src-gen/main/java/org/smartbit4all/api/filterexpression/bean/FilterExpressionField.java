@@ -49,7 +49,6 @@ import javax.validation.Valid;
   FilterExpressionField.POSSIBLE_OPERATIONS,
   FilterExpressionField.FILTER_FIELD_TYPE,
   FilterExpressionField.POSSIBLE_VALUES,
-  FilterExpressionField.SELECTED_VALUES,
   FilterExpressionField.WIDGET_TYPE,
   FilterExpressionField.SUB_FIELD_LIST
 })
@@ -85,9 +84,6 @@ public class FilterExpressionField {
 
   public static final String POSSIBLE_VALUES = "possibleValues";
   private List<Value> possibleValues = new ArrayList<>();
-
-  public static final String SELECTED_VALUES = "selectedValues";
-  private List<String> selectedValues = new ArrayList<>();
 
   public static final String WIDGET_TYPE = "widgetType";
   private FilterExpressionFieldWidgetType widgetType;
@@ -387,39 +383,6 @@ public class FilterExpressionField {
   }
 
 
-  public FilterExpressionField selectedValues(List<String> selectedValues) {
-    
-    this.selectedValues = selectedValues;
-    return this;
-  }
-
-  public FilterExpressionField addSelectedValuesItem(String selectedValuesItem) {
-    this.selectedValues.add(selectedValuesItem);
-    return this;
-  }
-
-   /**
-   * Get selectedValues
-   * @return selectedValues
-  **/
-  @javax.annotation.Nonnull
-  @NotNull
-  @ApiModelProperty(required = true, value = "")
-  @JsonProperty(SELECTED_VALUES)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-
-  public List<String> getSelectedValues() {
-    return selectedValues;
-  }
-
-
-  @JsonProperty(SELECTED_VALUES)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setSelectedValues(List<String> selectedValues) {
-    this.selectedValues = selectedValues;
-  }
-
-
   public FilterExpressionField widgetType(FilterExpressionFieldWidgetType widgetType) {
     
     this.widgetType = widgetType;
@@ -495,14 +458,13 @@ public class FilterExpressionField {
         Objects.equals(this.possibleOperations, filterExpressionField.possibleOperations) &&
         Objects.equals(this.filterFieldType, filterExpressionField.filterFieldType) &&
         Objects.equals(this.possibleValues, filterExpressionField.possibleValues) &&
-        Objects.equals(this.selectedValues, filterExpressionField.selectedValues) &&
         Objects.equals(this.widgetType, filterExpressionField.widgetType) &&
         Objects.equals(this.subFieldList, filterExpressionField.subFieldList);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(label, id, label1, label2, label3, icon, expressionData, possibleOperations, filterFieldType, possibleValues, selectedValues, widgetType, subFieldList);
+    return Objects.hash(label, id, label1, label2, label3, icon, expressionData, possibleOperations, filterFieldType, possibleValues, widgetType, subFieldList);
   }
 
   @Override
@@ -519,7 +481,6 @@ public class FilterExpressionField {
     sb.append("    possibleOperations: ").append(toIndentedString(possibleOperations)).append("\n");
     sb.append("    filterFieldType: ").append(toIndentedString(filterFieldType)).append("\n");
     sb.append("    possibleValues: ").append(toIndentedString(possibleValues)).append("\n");
-    sb.append("    selectedValues: ").append(toIndentedString(selectedValues)).append("\n");
     sb.append("    widgetType: ").append(toIndentedString(widgetType)).append("\n");
     sb.append("    subFieldList: ").append(toIndentedString(subFieldList)).append("\n");
     sb.append("}");

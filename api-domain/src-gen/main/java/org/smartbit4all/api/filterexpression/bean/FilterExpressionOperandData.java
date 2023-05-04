@@ -50,7 +50,7 @@ public class FilterExpressionOperandData {
   private String valueAsString;
 
   public static final String SELECTED_VALUES = "selectedValues";
-  private List<String> selectedValues = null;
+  private List<String> selectedValues = new ArrayList<>();
 
   public static final String TYPE = "type";
   private FilterExpressionDataType type;
@@ -119,9 +119,6 @@ public class FilterExpressionOperandData {
   }
 
   public FilterExpressionOperandData addSelectedValuesItem(String selectedValuesItem) {
-    if (this.selectedValues == null) {
-      this.selectedValues = new ArrayList<>();
-    }
     this.selectedValues.add(selectedValuesItem);
     return this;
   }
@@ -130,10 +127,11 @@ public class FilterExpressionOperandData {
    * Get selectedValues
    * @return selectedValues
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+  @javax.annotation.Nonnull
+  @NotNull
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(SELECTED_VALUES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public List<String> getSelectedValues() {
     return selectedValues;
@@ -141,7 +139,7 @@ public class FilterExpressionOperandData {
 
 
   @JsonProperty(SELECTED_VALUES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setSelectedValues(List<String> selectedValues) {
     this.selectedValues = selectedValues;
   }

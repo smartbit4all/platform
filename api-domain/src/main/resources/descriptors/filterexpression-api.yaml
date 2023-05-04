@@ -34,6 +34,7 @@ components:
       type: object
       description: |
         The value of an expression operand. The type is named and the value itself is string formatted by the definition of the type.
+      required: [selectedValues]
       properties:
         isDataName:
           type: boolean
@@ -53,7 +54,6 @@ components:
       description: |
         The expression data is the decriptor of an expression stands for an equal, like etc. and also can be a bracket where 
         we have embedded expressions.
-      required: [selectedValues]
       properties:
         operand1:
           $ref: "#/components/schemas/FilterExpressionOperandData"
@@ -67,10 +67,6 @@ components:
         boolOperator:
           $ref: "#/components/schemas/FilterExpressionBoolOperator"
           default: 'AND'
-        selectedValues:
-          type: array
-          items:
-            type: string
         subExpression:
           $ref: "#/components/schemas/FilterExpressionList"
       
@@ -94,7 +90,7 @@ components:
             
     FilterExpressionField:
       type: object
-      required: [label1, value1, data1, operations, boolOperator, type, possibleValues, selectedValues]
+      required: [label1, value1, data1, operations, boolOperator, type, possibleValues]
       properties:
         label:
           type: string
@@ -123,10 +119,6 @@ components:
           type: array
           items:
             type: Value
-        selectedValues:
-          type: array
-          items:
-            type: string
         widgetType:
           $ref: "#/components/schemas/FilterExpressionFieldWidgetType"
         subFieldList:
@@ -248,6 +240,7 @@ components:
       - EXISTS
       - NOT_EXISTS
       - IN
+      - NOT_IN
 
     FilterExpressionDataType:
       type: string
