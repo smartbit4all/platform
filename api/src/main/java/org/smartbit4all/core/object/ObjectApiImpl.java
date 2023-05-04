@@ -1,5 +1,7 @@
 package org.smartbit4all.core.object;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import java.io.IOException;
 import java.net.URI;
 import java.time.LocalDate;
@@ -23,11 +25,10 @@ import org.smartbit4all.api.object.bean.ObjectNodeData;
 import org.smartbit4all.api.object.bean.ObjectNodeState;
 import org.smartbit4all.api.object.bean.RetrievalMode;
 import org.smartbit4all.api.object.bean.SnapshotData;
+import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.base.Objects;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 public class ObjectApiImpl implements ObjectApi {
 
@@ -180,18 +181,33 @@ public class ObjectApiImpl implements ObjectApi {
       }
     }
     if (clazz == URI.class && value instanceof String) {
+      if (StringConstant.EMPTY.equals(value)) {
+        return null;
+      }
       return (T) URI.create((String) value);
     }
     if (clazz == UUID.class && value instanceof String) {
+      if (StringConstant.EMPTY.equals(value)) {
+        return null;
+      }
       return (T) UUID.fromString((String) value);
     }
     if (clazz == OffsetDateTime.class && value instanceof String) {
+      if (StringConstant.EMPTY.equals(value)) {
+        return null;
+      }
       return (T) OffsetDateTime.parse((String) value);
     }
     if (clazz == LocalDate.class && value instanceof String) {
+      if (StringConstant.EMPTY.equals(value)) {
+        return null;
+      }
       return (T) LocalDate.parse((String) value);
     }
     if (clazz == LocalDateTime.class && value instanceof String) {
+      if (StringConstant.EMPTY.equals(value)) {
+        return null;
+      }
       return (T) LocalDateTime.parse((String) value);
     }
     if (value instanceof Map) {
