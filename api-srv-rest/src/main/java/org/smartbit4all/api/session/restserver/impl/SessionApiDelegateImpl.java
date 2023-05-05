@@ -67,7 +67,7 @@ public class SessionApiDelegateImpl implements SessionApiDelegate {
 
     return ResponseEntity.ok(new SessionInfoData()
         .sid(sid)
-        .expiration(currentSession.getExpiration())
+        .expiration(currentSession.getRefreshExpiration())
         .locale(currentSession.getLocale())
         .authentications(currentSession.getAuthentications()));
   }

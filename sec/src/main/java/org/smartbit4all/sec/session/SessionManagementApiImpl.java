@@ -129,7 +129,7 @@ public class SessionManagementApiImpl implements SessionManagementApi {
     }
     return new SessionInfoData()
         .sid(sid)
-        .expiration(session.getExpiration())
+        .expiration(session.getRefreshExpiration())
         .locale(session.getLocale())
         .authentications(session.getAuthentications())
         .refreshToken(refreshToken);
@@ -158,7 +158,7 @@ public class SessionManagementApiImpl implements SessionManagementApi {
 
     return new SessionInfoData()
         .sid(newSid)
-        .expiration(session.getExpiration())
+        .expiration(session.getRefreshExpiration())
         .locale(session.getLocale())
         .authentications(session.getAuthentications())
         .refreshToken(newRefreshToken);
@@ -463,15 +463,16 @@ public class SessionManagementApiImpl implements SessionManagementApi {
     activeSessions.update(uriList -> {
       List<URI> activeUriList = Collections.synchronizedList(new ArrayList<>());
       uriList.parallelStream().map(u -> stg.read(u, Session.class))
-          .forEach(sid -> {
-            if (sid.getRefreshExpiration() != null && sid.getRefreshExpiration().isAfter(now)) {
-              result.add(sid);
-              activeUriList.add(sid.getUri());
+          .forEach(session -> {
+            if (session.getRefreshExpiration() != null
+                && session.getRefreshExpiration().isAfter(now)) {
+              result.add(session);
+              activeUriList.add(session.getUri());
             } else {
               if (sessionPublisherApi != null) {
-                sessionPublisherApi.fireSessionExpired(sid);
+                sessionPublisherApi.fireSessionExpired(session);
               }
-              sessionsToBeRemoved.add(sid.getUri());
+              sessionsToBeRemoved.add(session.getUri());
             }
           });
       return uriList;
