@@ -55,17 +55,17 @@ public class SQLCrudExecutionApi implements CrudExecutionApi {
 
   @Override
   public <E extends EntityDefinition> CreateOutput executeCreate(CreateInput<E> input) {
-    return new SQLCreateExecution<>(jdbcTemplate, input).execute();
+    return new SQLCreateExecution<>(jdbcTemplate, input, schema, sqlDBParameter).execute();
   }
 
   @Override
   public <E extends EntityDefinition> UpdateOutput executeUpdate(UpdateInput<E> input) {
-    return new SQLUpdateExecution<>(jdbcTemplate, input).execute();
+    return new SQLUpdateExecution<>(jdbcTemplate, input, schema, sqlDBParameter).execute();
   }
 
   @Override
   public <E extends EntityDefinition> DeleteOutput executeDelete(DeleteInput<E> input) {
-    return new SQLDeleteExecution<>(jdbcTemplate, input).execute();
+    return new SQLDeleteExecution<>(jdbcTemplate, input, schema, sqlDBParameter).execute();
   }
 
 }

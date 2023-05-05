@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
@@ -21,14 +21,17 @@ import org.smartbit4all.api.config.PlatformApiConfig;
 import org.smartbit4all.sql.service.query.SQLCrudExecutionApi;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 @Configuration
 @Import({
     PlatformApiConfig.class,
-    SQLServiceConfig.class,
-    SQLCrudExecutionApi.class})
+    SQLServiceConfig.class})
 public class SQLConfig implements InitializingBean {
 
   /**
@@ -38,7 +41,7 @@ public class SQLConfig implements InitializingBean {
    * have the same configuration with two module then we van pass a single select as a query using
    * entities from both module.
    */
-  Map<String, SQLDBParameter> databaseConfigs = new HashMap<>();
+  private Map<String, SQLDBParameter> databaseConfigs = new HashMap<>();
 
   /**
    * This list is autowired by Spring. All the {@link SQLDBParameter} based beans will be added to
@@ -59,6 +62,16 @@ public class SQLConfig implements InitializingBean {
 
   public SQLDBParameter db(String dbConfigName) {
     return databaseConfigs.get(dbConfigName);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public SQLCrudExecutionApi sqlCrudExecutionApi(JdbcTemplate jdbcTemplate,
+      @Autowired(
+          required = false) @Qualifier(SQLDBParameterBase.DEFAULT) SQLDBParameter sqldbParameter) {
+    SQLCrudExecutionApi api = new SQLCrudExecutionApi(jdbcTemplate);
+    api.setSqlDbParameter(sqldbParameter);
+    return api;
   }
 
 }

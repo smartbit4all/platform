@@ -11,6 +11,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.smartbit4all.api.databasedefinition.bean.ColumnTypeDefinition;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.annotation.property.ReferenceMandatory;
+import org.smartbit4all.domain.meta.EntityDefinitionInstance.PropertyFunctionMapper;
 import org.smartbit4all.domain.meta.jdbc.JDBCDataConverterHelper;
 import org.smartbit4all.domain.service.entity.EntityUris;
 import org.springframework.cglib.proxy.Enhancer;
@@ -75,7 +76,7 @@ class EntityDefinitionInstance implements EntityDefinition {
    */
   private boolean initialized = false;
 
-  private PropertyFunctionMapper propertyFunctionMapper = new PropertyFunctionMapper();
+  PropertyFunctionMapper propertyFunctionMapper = new PropertyFunctionMapper();
 
   /**
    * The domain name of the given entity definition.
@@ -354,14 +355,16 @@ class EntityDefinitionInstance implements EntityDefinition {
         if (baseProp instanceof PropertyOwned) {
           funcProp =
               PropertyOwned.createFunctionProperty(((PropertyOwned<?>) baseProp), propFunction);
-          funcProps.add(funcProp);
         } else if (baseProp instanceof PropertyRef) {
           funcProp =
               PropertyRef.createFunctionProperty(((PropertyRef<?>) baseProp), propFunction);
-          funcProps.add(funcProp);
+        } else if (baseProp instanceof PropertyObject) {
+          funcProp =
+              PropertyObject.createFunctionProperty(((PropertyObject) baseProp), propFunction);
         } else {
-          funcProps.add(baseProp);
+          funcProp = baseProp;
         }
+        funcProps.add(funcProp);
 
       }
       return funcProp;

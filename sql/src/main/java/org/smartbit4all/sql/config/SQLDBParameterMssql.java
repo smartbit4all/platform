@@ -1,5 +1,6 @@
 package org.smartbit4all.sql.config;
 
+import org.smartbit4all.domain.meta.PropertyFunction;
 import org.smartbit4all.domain.utility.SupportedDatabase;
 
 public class SQLDBParameterMssql extends SQLDBParameterBase {
@@ -25,6 +26,27 @@ public class SQLDBParameterMssql extends SQLDBParameterBase {
   @Override
   public String getDatetimeSQL() {
     return "select getdate()";
+  }
+
+  @Override
+  public PropertyFunction convertPropertyFunction(PropertyFunction function) {
+    String functionName = function.getName().toLowerCase();
+    if (functionName.startsWith("truncate_")) {
+      String unitOfTime = functionName.substring("truncate_".length());
+      // @formatter:off
+      // DATEADD(SECOND, DATEDIFF(SECOND, '20000101', dateTimeColumn))
+      return PropertyFunction
+          .build("DATEADD")
+          .param(unitOfTime)
+          .addInnerFunction("DATEDIFF")
+            .param(unitOfTime)
+            .stringParam("20000101")
+            .selfPropertyParam()
+            .closeInnerFunction()
+          .build();
+      // @formatter:on
+    }
+    return super.convertPropertyFunction(function);
   }
 
 }

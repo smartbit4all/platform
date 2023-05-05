@@ -24,4 +24,24 @@ public class PropertyObject extends Property<Object> {
     return entityDef;
   }
 
+  @Override
+  public PropertyObject function(PropertyFunction function) {
+    EntityDefinition entityDef = getEntityDef();
+    if (entityDef instanceof EntityDefinitionInstance) {
+      return (PropertyObject) ((EntityDefinitionInstance) entityDef).propertyFunctionMapper
+          .getFunctionProperty(this,
+              function);
+    }
+    return (PropertyObject) super.function(function);
+  }
+
+  public static PropertyObject createFunctionProperty(PropertyObject baseProperty,
+      PropertyFunction function) {
+    PropertyObject funcProp = new PropertyObject(baseProperty.getBasic());
+    funcProp.setEntityDef(baseProperty.getEntityDef());
+    funcProp.setPropertyFunction(function);
+    return funcProp;
+  }
+
+
 }

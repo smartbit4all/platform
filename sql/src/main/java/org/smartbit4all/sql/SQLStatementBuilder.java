@@ -57,6 +57,7 @@ import org.smartbit4all.domain.meta.PropertyRef;
 import org.smartbit4all.domain.meta.PropertySqlComputed;
 import org.smartbit4all.domain.utility.CompositeValue;
 import org.smartbit4all.domain.utility.SupportedDatabase;
+import org.smartbit4all.sql.config.SQLDBParameter;
 import org.springframework.util.Assert;
 import com.google.common.base.Strings;
 import com.google.common.io.ByteStreams;
@@ -87,7 +88,12 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
   /**
    * The database system that we render for.
    */
-  protected SupportedDatabase target;
+  private SupportedDatabase target;
+
+  /**
+   * The database system parameters that we render for.
+   */
+  private SQLDBParameter sqlDBParameter;
 
   /**
    * The true bound means that we will find ? standing for the values. These ? can be bound later
@@ -120,8 +126,13 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
    * Constructs a new builder instance to support the given database. The database can define the
    * dialect differences for the databases.
    */
-  public SQLStatementBuilder(SupportedDatabase target) {
-    this.target = target;
+  public SQLStatementBuilder(SQLDBParameter sqlDBParameter) {
+    this.sqlDBParameter = sqlDBParameter;
+    if (sqlDBParameter != null) {
+      this.target = sqlDBParameter.getType();
+    } else {
+      this.target = SupportedDatabase.ORACLE;
+    }
   }
 
   /**
@@ -245,6 +256,9 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
 
   private String getFunctionAdjustedColumnName(OperandProperty<?> propertyOperand,
       String columnName, PropertyFunction propertyFunction) {
+    if (sqlDBParameter != null) {
+      propertyFunction = sqlDBParameter.convertPropertyFunction(propertyFunction);
+    }
     List<OperandProperty<?>> requiredOperandProperties =
         propertyOperand.getRequiredOperandProperties();
     List<String> requiredPropertyColumns = requiredOperandProperties.stream()

@@ -34,7 +34,6 @@ import org.smartbit4all.domain.service.query.QueryInput;
 import org.smartbit4all.domain.service.query.QueryOutput;
 import org.smartbit4all.domain.service.query.QueryOutputResultAssembler;
 import org.smartbit4all.domain.service.query.QueryOutputResultAssemblers;
-import org.smartbit4all.domain.utility.SupportedDatabase;
 import org.smartbit4all.sql.SQLComputedColumn;
 import org.smartbit4all.sql.SQLGroupByColumn;
 import org.smartbit4all.sql.SQLGroupByComputedColumn;
@@ -106,7 +105,7 @@ final class SQLQueryExecution {
 
   private String schema;
 
-  protected SQLDBParameter sqlDBParameter;
+  private SQLDBParameter sqlDBParameter;
 
   public SQLQueryExecution(JdbcTemplate jdbcTemplate, QueryInput query, String schema,
       SQLDBParameter sqlDBParameter) {
@@ -133,8 +132,7 @@ final class SQLQueryExecution {
     SQLSelectFromTableNode rootTable = new SQLSelectFromTableNode(tableNode, nextTableAlias());
     // This map must be a list based map to preserve the order.
     Map<String, Property<?>> columnMap = new HashMap<>();
-    SQLStatementBuilderIF builder = new SQLStatementBuilder(
-        sqlDBParameter != null ? sqlDBParameter.getType() : SupportedDatabase.ORACLE);
+    SQLStatementBuilderIF builder = new SQLStatementBuilder(sqlDBParameter);
     select.setQueryLimit(queryInput.limit());
     select.setDistinctQuery(queryInput.isDistinct());
     for (Property<?> property : queryInput.properties()) {
@@ -222,7 +220,6 @@ final class SQLQueryExecution {
       @Override
       public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
         PreparedStatement stmt = con.prepareStatement(builder.getStatement());
-
         select.bind(builder, stmt);
         return stmt;
       }
@@ -393,6 +390,9 @@ final class SQLQueryExecution {
        * SQLSelectColumns then will be added as required columns to the result.
        */
 
+      if (sqlDBParameter != null) {
+        propertyFunction = sqlDBParameter.convertPropertyFunction(propertyFunction);
+      }
       List<Property<?>> requiredProperties = propertyFunction.getRequiredProperties();
       ArrayList<SQLSelectColumn> requiredColumns = new ArrayList<>();
       if (requiredProperties != null && !requiredProperties.isEmpty()) {

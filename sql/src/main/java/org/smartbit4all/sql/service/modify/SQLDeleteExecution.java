@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
@@ -25,44 +25,49 @@ import org.smartbit4all.domain.meta.PropertyOwned;
 import org.smartbit4all.domain.service.CrudApis;
 import org.smartbit4all.domain.service.modify.DeleteInput;
 import org.smartbit4all.domain.service.modify.DeleteOutput;
-import org.smartbit4all.domain.utility.SupportedDatabase;
 import org.smartbit4all.sql.SQLDeleteStatement;
 import org.smartbit4all.sql.SQLStatementBuilder;
 import org.smartbit4all.sql.SQLStatementBuilderIF;
 import org.smartbit4all.sql.SQLTableNode;
 import org.smartbit4all.sql.SQLWhere;
+import org.smartbit4all.sql.config.SQLDBParameter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 
 /**
  * The create execution is an object containing all the data and objects for the execution.
- * 
+ *
  * @author Peter Boros
  *
  * @param <E>
  */
 public class SQLDeleteExecution<E extends EntityDefinition> {
 
-  DeleteInput<E> input;
+  private DeleteInput<E> input;
 
   /**
    * The JDBC connection accessor.
    */
-  JdbcTemplate jdbcTemplate;
+  private JdbcTemplate jdbcTemplate;
 
   /**
    * The delete statement.
    */
-  SQLDeleteStatement delete;
+  private SQLDeleteStatement delete;
 
   /**
    * This is the number of records that are executed at the same time using the
    * {@link PreparedStatement#addBatch()}. By default it's 1 and it means we don't use
    * {@link PreparedStatement#executeBatch()} but rather {@link PreparedStatement#execute()}.
    */
-  int batchExecutionSize = 1;
+  private int batchExecutionSize = 1;
 
-  public SQLDeleteExecution(JdbcTemplate jdbcTemplate, DeleteInput<E> input) {
+  private String schema;
+
+  private SQLDBParameter sqlDBParameter;
+
+  public SQLDeleteExecution(JdbcTemplate jdbcTemplate, DeleteInput<E> input, String schema,
+      SQLDBParameter sqlDBParameter) {
     this.jdbcTemplate = jdbcTemplate;
     this.input = input;
   }
@@ -70,7 +75,7 @@ public class SQLDeleteExecution<E extends EntityDefinition> {
   public DeleteOutput execute() {
     String schema = CrudApis.getCrudApi().getSchema(input.getEntityDefinition());
 
-    SQLStatementBuilderIF builder = new SQLStatementBuilder(SupportedDatabase.ORACLE);
+    SQLStatementBuilderIF builder = new SQLStatementBuilder(sqlDBParameter);
     TableDefinition table = input.getEntityDefinition().tableDefinition();
     SQLTableNode tableNode = new SQLTableNode(schema, table.getName());
     delete = new SQLDeleteStatement(tableNode);
