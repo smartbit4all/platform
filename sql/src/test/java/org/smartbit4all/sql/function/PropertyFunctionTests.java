@@ -108,7 +108,7 @@ public class PropertyFunctionTests extends FunctionTestBase {
   public void selectWithFunction() throws Exception {
     Optional<String> firstRowValue =
         Crud.read(personDef)
-            .select(personDef.name().function(PropertyFunction.withSelfPropertyArgument("UPPER")))
+            .select(personDef.name().function(PropertyFunction.UPPER))
             .order(personDef.id().asc())
             .firstRowValue(personDef.name());
 
@@ -132,7 +132,7 @@ public class PropertyFunctionTests extends FunctionTestBase {
   public void whereEQWithFunction() throws Exception {
     Optional<String> firstRowValue =
         Crud.read(personDef)
-            .select(personDef.name().function(PropertyFunction.withSelfPropertyArgument("UPPER")))
+            .select(personDef.name().function(PropertyFunction.UPPER))
             .where(personDef.name().eq("Almos"))
             .firstRowValue(personDef.name());
 
@@ -144,11 +144,11 @@ public class PropertyFunctionTests extends FunctionTestBase {
   public void whereEQWithFunctionInWhere() throws Exception {
     Optional<String> firstRowValue =
         Crud.read(personDef)
-            .select(personDef.name().function(PropertyFunction.withSelfPropertyArgument("UPPER")))
-            .where(personDef.name().function(PropertyFunction.withSelfPropertyArgument("UPPER"))
+            .select(personDef.name().function(PropertyFunction.UPPER))
+            .where(personDef.name().function(PropertyFunction.UPPER)
                 .eq("Almos"))
             .firstRowValue(
-                personDef.name().function(PropertyFunction.withSelfPropertyArgument("UPPER")));
+                personDef.name().function(PropertyFunction.UPPER));
 
     String almos = firstRowValue.get();
     assertEquals("ALMOS", almos);
@@ -158,11 +158,11 @@ public class PropertyFunctionTests extends FunctionTestBase {
   public void whereEQWithFunctionInWhere2() throws Exception {
     Optional<String> firstRowValue =
         Crud.read(personDef)
-            .select(personDef.name().function(PropertyFunction.withSelfPropertyArgument("UPPER")))
-            .where(personDef.name().function(PropertyFunction.withSelfPropertyArgument("UPPER"))
-                .eq("ALMOS"))
+            .select(personDef.name().function(PropertyFunction.UPPER))
+            .where(personDef.name().function(PropertyFunction.UPPER)
+                .eq("almos"))
             .firstRowValue(
-                personDef.name().function(PropertyFunction.withSelfPropertyArgument("UPPER")));
+                personDef.name().function(PropertyFunction.UPPER));
 
     String almos = firstRowValue.get();
     assertEquals("ALMOS", almos);
@@ -172,7 +172,7 @@ public class PropertyFunctionTests extends FunctionTestBase {
   public void whereLIKEWithFunction() throws Exception {
     Optional<String> firstRowValue =
         Crud.read(personDef)
-            .select(personDef.name().function(PropertyFunction.withSelfPropertyArgument("UPPER")))
+            .select(personDef.name().function(PropertyFunction.UPPER))
             .where(personDef.name().like("%lmo%"))
             .firstRowValue(personDef.name());
 
@@ -185,9 +185,9 @@ public class PropertyFunctionTests extends FunctionTestBase {
     Optional<String> firstRowValue =
         Crud.read(addressDef)
             .select(addressDef.person().name()
-                .function(PropertyFunction.withSelfPropertyArgument("UPPER")))
+                .function(PropertyFunction.UPPER))
             .firstRowValue(addressDef.person().name()
-                .function(PropertyFunction.withSelfPropertyArgument("UPPER")));
+                .function(PropertyFunction.UPPER));
 
     String firstValue = firstRowValue.get();
     assertEquals(firstValue.toUpperCase(), firstValue);
@@ -197,13 +197,13 @@ public class PropertyFunctionTests extends FunctionTestBase {
   public void whereFK_EQWithFunction() throws Exception {
     Optional<String> firstRowValue =
         Crud.read(addressDef)
-            .select(addressDef.city().function(PropertyFunction.withSelfPropertyArgument("UPPER")),
+            .select(addressDef.city().function(PropertyFunction.UPPER),
                 addressDef.person().name()
-                    .function(PropertyFunction.withSelfPropertyArgument("UPPER")))
+                    .function(PropertyFunction.UPPER))
             .where(addressDef.person().name()
-                .function(PropertyFunction.withSelfPropertyArgument("UPPER")).eq("ond"))
+                .function(PropertyFunction.UPPER).eq("ond"))
             .firstRowValue(addressDef.person().name()
-                .function(PropertyFunction.withSelfPropertyArgument("UPPER")));
+                .function(PropertyFunction.UPPER));
 
     String firstValue = firstRowValue.get();
     assertEquals(firstValue.toUpperCase(), firstValue);
@@ -213,13 +213,13 @@ public class PropertyFunctionTests extends FunctionTestBase {
   public void whereFK_LIKEWithFunction() throws Exception {
     Optional<String> firstRowValue =
         Crud.read(addressDef)
-            .select(addressDef.city().function(PropertyFunction.withSelfPropertyArgument("UPPER")),
+            .select(addressDef.city().function(PropertyFunction.UPPER),
                 addressDef.person().name()
-                    .function(PropertyFunction.withSelfPropertyArgument("UPPER")))
+                    .function(PropertyFunction.UPPER))
             .where(addressDef.person().name()
-                .function(PropertyFunction.withSelfPropertyArgument("UPPER")).like("on%"))
+                .function(PropertyFunction.UPPER).like("on%"))
             .firstRowValue(addressDef.person().name()
-                .function(PropertyFunction.withSelfPropertyArgument("UPPER")));
+                .function(PropertyFunction.UPPER));
 
     String firstValue = firstRowValue.get();
     assertEquals(firstValue.toUpperCase(), firstValue);
