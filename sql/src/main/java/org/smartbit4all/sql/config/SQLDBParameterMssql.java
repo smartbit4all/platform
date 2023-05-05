@@ -43,6 +43,7 @@ public class SQLDBParameterMssql extends SQLDBParameterBase {
             .stringParam("20000101")
             .selfPropertyParam()
             .closeInnerFunction()
+          .stringParam("20000101")
           .build();
       // @formatter:on
     }
