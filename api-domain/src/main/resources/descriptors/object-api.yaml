@@ -325,3 +325,23 @@ components:
           format: uri
         data:
           type: object
+    ObjectPropertyResolverContext:
+      type: object
+      description: |
+        The context objects of a property value resolution.
+      required: [objects]
+      properties:
+        objects:
+          type: array
+          items:
+            $ref: '#/components/schemas/ObjectPropertyResolverContextObject'
+    ObjectPropertyResolverContextObject:
+      type: object
+      description: |
+        The context object of a property value resolution with the name of the object in the given context and the uri of this.
+      properties:
+        name:
+          type: string
+        uri:
+          type: string
+          format: uri

@@ -1,7 +1,5 @@
 package org.smartbit4all.core.object;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 import java.io.IOException;
 import java.net.URI;
 import java.time.LocalDate;
@@ -29,6 +27,8 @@ import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.base.Objects;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 public class ObjectApiImpl implements ObjectApi {
 
@@ -39,6 +39,9 @@ public class ObjectApiImpl implements ObjectApi {
 
   @Autowired
   private RetrievalApi retrievalApi;
+
+  @Autowired
+  private ObjectApi self;
 
   @Autowired
   private ApplyChangeApi applyChangeApi;
@@ -361,6 +364,11 @@ public class ObjectApiImpl implements ObjectApi {
       return continueFromFirstValue(value, paths);
     }
     return list;
+  }
+
+  @Override
+  public ObjectPropertyResolver resolver() {
+    return new ObjectPropertyResolver(self);
   }
 
 }

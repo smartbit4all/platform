@@ -240,4 +240,6 @@ public interface ObjectApi {
 
   boolean equalsIgnoreVersion(URI a, URI b);
 
+  ObjectPropertyResolver resolver();
+
 }

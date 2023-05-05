@@ -4,7 +4,10 @@ import java.time.OffsetDateTime;
 import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
+import org.smartbit4all.api.invocation.bean.InvocationRequestDefinition;
+import org.smartbit4all.api.object.bean.ObjectPropertyResolverContext;
 import org.smartbit4all.core.object.ObjectNode;
+import org.smartbit4all.core.object.ObjectPropertyResolver;
 
 /**
  * The {@link InvocationApi} is a generic api to call other api function.
@@ -92,7 +95,35 @@ public interface InvocationApi {
    */
   void invokeAt(InvocationRequest request, String channel, OffsetDateTime executeAt);
 
+  /**
+   * Constructs an event publisher that is responsible for recording an {@link InvocationRequest} by
+   * calling a function on the interface. Later on this {@link InvocationRequest} is going to be
+   * used as an invocation toward the subscribed api calls.
+   * 
+   * @param <P>
+   * @param <S>
+   * @param publisherApiInterface The interface that defines the fire operations typically.
+   * @param subscriberApiInterface The interface of the subscriber api.
+   * @param event The name of the event.
+   * @return The event publisher that can make a new published event as an {@link InvocationRequest}
+   *         via the {@link EventPublisher#publish(java.util.function.Consumer)} function. It
+   *         provides an instance of the publisher api interface and we can call the function in
+   *         right syntax.
+   */
   <P, S> EventPublisher<P, S> publisher(Class<P> publisherApiInterface,
       Class<S> subscriberApiInterface, String event);
+
+  /**
+   * The definition contains an prepared instance from the {@link InvocationRequest} and some
+   * mapping between the context object properties and the parameters. With this call we can
+   * initiate a new {@link InvocationRequest} ready to call by resolving the referred parameters
+   * from the objects provided in the context with the {@link ObjectPropertyResolver}.
+   * 
+   * @param definition The invocation definition.
+   * @param context The object context for the resolution.
+   * @return
+   */
+  InvocationRequest resolve(InvocationRequestDefinition definition,
+      ObjectPropertyResolverContext context);
 
 }

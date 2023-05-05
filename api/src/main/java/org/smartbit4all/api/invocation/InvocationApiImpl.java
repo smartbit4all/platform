@@ -8,6 +8,8 @@ import java.util.UUID;
 import org.smartbit4all.api.invocation.bean.ApiData;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
+import org.smartbit4all.api.invocation.bean.InvocationRequestDefinition;
+import org.smartbit4all.api.object.bean.ObjectPropertyResolverContext;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.core.object.ObjectApi;
@@ -123,6 +125,21 @@ public final class InvocationApiImpl implements InvocationApi {
     return new EventPublisher<>(self, invocationRegisterApi, sessionManagementApi,
         publisherApiInterface, subscriberApiInterface,
         event);
+  }
+
+  @Override
+  public InvocationRequest resolve(InvocationRequestDefinition definition,
+      ObjectPropertyResolverContext context) {
+    Objects.requireNonNull(definition, "The invocation definition is null, unable to resolve");
+    InvocationRequest request = definition.getRequest();
+    Objects.requireNonNull(request,
+        () -> "The request in the " + definition + " must not be null.");
+    // TODO Copy new instance from request!!!!
+    if (context != null && definition.getResolvers() != null) {
+      objectApi.resolver().addContextObjects(context);
+
+    }
+    return null;
   }
 
 }

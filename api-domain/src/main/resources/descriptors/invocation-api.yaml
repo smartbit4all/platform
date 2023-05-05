@@ -30,6 +30,42 @@ paths:
                 $ref: '#/components/schemas/InvocationParameter'
 components:
   schemas:
+    InvocationRequestDefinition:
+      type: object
+      description: |
+        The definition contains a request as a template and the definitions of the input parameters. It can be used to initiate a new
+        InvocationRequest by resolving the necessary input parameters. The result of the invocation can be direct (the return value) and
+        indirect, when the invocation itself modifies the related objects.
+      required: [request]
+      properties:
+        request: 
+          $ref: '#/components/schemas/InvocationRequest'
+          description: |
+            The request as a template for initiating a new request instance. The parameters can be set by default. So if we don't define any
+            input to resolve then the newly ceated invocation request is simply the copy of this template one. Else we initiate the new
+            instance and resolve all the values.
+        resolvers:
+          type: array
+          description: The resolvers are used to setup parameters of the newly created invocation request.
+          items:
+            $ref: '#/components/schemas/InvocationParameterResolver'
+    InvocationParameterResolver:
+      type: object
+      description: The resolver is responsibe for defining the data uri for a given invocation parameter.
+      required: [dataUri]
+      properties:
+        name:
+          type: string
+        position:
+          type: integer
+          format: int32
+        propertyUri:
+          type: string
+          format: uri
+          description: |
+            The uri of the property entry with the scheme as the name of the related object from the context. The path defines the data access path. We can use this
+            URI to resolve the data with the ObjectApi.
+          example: state:/object/otherobject#property
     InvocationRequest:
       type: object
       description: |
