@@ -2,8 +2,10 @@ package org.smartbit4all.sec.session;
 
 import java.net.URI;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -129,7 +131,7 @@ public class SessionManagementApiImpl implements SessionManagementApi {
     }
     return new SessionInfoData()
         .sid(sid)
-        .expiration(session.getRefreshExpiration())
+        .expiration(refreshExpiration)
         .locale(session.getLocale())
         .authentications(session.getAuthentications())
         .refreshToken(refreshToken);
@@ -173,9 +175,11 @@ public class SessionManagementApiImpl implements SessionManagementApi {
   }
 
   private OffsetDateTime getRefreshTokenExpiration() {
-    OffsetDateTime refreshExpiration = OffsetDateTime.MAX;
+    OffsetDateTime refreshExpiration = null;
     if (refreshTimeoutMins > 0) {
       refreshExpiration = OffsetDateTime.now().plusMinutes(refreshTimeoutMins);
+    } else {
+      refreshExpiration = new Date(Long.MAX_VALUE).toInstant().atOffset(ZoneOffset.UTC);
     }
     return refreshExpiration;
   }
