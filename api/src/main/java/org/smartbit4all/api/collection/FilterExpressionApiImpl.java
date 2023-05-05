@@ -24,6 +24,7 @@ import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Expression;
 import org.smartbit4all.domain.meta.ExpressionBracket;
+import org.smartbit4all.domain.meta.PropertyFunction;
 import org.smartbit4all.domain.meta.PropertyObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.base.Strings;
@@ -223,6 +224,10 @@ public class FilterExpressionApiImpl implements FilterExpressionApi {
       return null;
     }
 
+    // handle modifiers, now as simple functions
+    if (!Strings.isNullOrEmpty(fed.getModifier())) {
+      property = property.function(PropertyFunction.withSelfPropertyArgument(fed.getModifier()));
+    }
     // Type conversion by the type of the filter expression operand
     List<Object> values = new ArrayList<>();
     Class<?> type = property.getBasic().type();
