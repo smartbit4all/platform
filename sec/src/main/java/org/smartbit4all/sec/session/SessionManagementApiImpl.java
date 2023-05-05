@@ -158,7 +158,7 @@ public class SessionManagementApiImpl implements SessionManagementApi {
 
     return new SessionInfoData()
         .sid(newSid)
-        .expiration(session.getRefreshExpiration())
+        .expiration(refreshExpiration)
         .locale(session.getLocale())
         .authentications(session.getAuthentications())
         .refreshToken(newRefreshToken);
