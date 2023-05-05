@@ -226,7 +226,9 @@ public final class ObjectPropertyResolver {
           "Unable to resolve the " + propertyUri + " property because the "
               + propertyUri.getScheme() + " object is not defined in the context.");
     }
-    return performResolution(contextObject.objectNode(), PropertyPath.parse(propertyUri.toString()),
+    String propertyUriString = propertyUri.toString();
+    return performResolution(contextObject.objectNode(),
+        PropertyPath.parse(propertyUriString.substring(propertyUriString.indexOf('/'))),
         language);
   }
 

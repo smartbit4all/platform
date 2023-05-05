@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.UUID;
 import org.smartbit4all.api.invocation.bean.ApiData;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
+import org.smartbit4all.api.invocation.bean.InvocationParameterResolver;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationRequestDefinition;
 import org.smartbit4all.api.object.bean.ObjectPropertyResolverContext;
@@ -14,6 +15,7 @@ import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
+import org.smartbit4all.core.object.ObjectPropertyResolver;
 import org.smartbit4all.domain.application.ApplicationRuntimeApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
@@ -136,10 +138,23 @@ public final class InvocationApiImpl implements InvocationApi {
         () -> "The request in the " + definition + " must not be null.");
     // TODO Copy new instance from request!!!!
     if (context != null && definition.getResolvers() != null) {
-      objectApi.resolver().addContextObjects(context);
-
+      ObjectPropertyResolver resolver = objectApi.resolver().addContextObjects(context);
+      for (InvocationParameterResolver paramResolver : definition.getResolvers()) {
+        InvocationParameter parameter = null;
+        if (request.getParameters() != null) {
+          if (paramResolver.getName() != null) {
+            parameter = request.getParameters().stream()
+                .filter(p -> paramResolver.getName().equals(p.getName())).findFirst().orElse(null);
+          } else if (paramResolver.getPosition() != null) {
+            parameter = request.getParameters().get(paramResolver.getPosition());
+          }
+        }
+        if (parameter != null) {
+          parameter.setValue(resolver.resolve(paramResolver.getDataUri()));
+        }
+      }
     }
-    return null;
+    return request;
   }
 
 }

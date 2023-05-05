@@ -1,5 +1,6 @@
 package org.smartbit4all.api.invocation;
 
+import java.net.URI;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -14,13 +15,22 @@ import org.junit.jupiter.api.Assertions;
 import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.StoredReference;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
+import org.smartbit4all.api.invocation.bean.InvocationParameterResolver;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
+import org.smartbit4all.api.invocation.bean.InvocationRequestDefinition;
 import org.smartbit4all.api.invocation.bean.TestDataBean;
+import org.smartbit4all.api.object.bean.ObjectPropertyResolverContext;
+import org.smartbit4all.api.object.bean.ObjectPropertyResolverContextObject;
+import org.smartbit4all.api.sample.bean.SampleCategory;
+import org.smartbit4all.api.sample.bean.SampleCategory.ColorEnum;
+import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.utility.StringConstant;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class InvocationApiTestStatic {
+
+  static final String INVOCATIONTEST = "invocationTest";
 
   static void testPrimary(InvocationApi invocationApi) throws Exception {
     {
@@ -157,6 +167,32 @@ public class InvocationApiTestStatic {
     InvocationRequest reloaderRequest = storedReference.get();
 
     InvocationParameter resultReloaded = invocationApi.invoke(reloaderRequest);
+
+  }
+
+  static void testInvokeByDefinition(InvocationApi invocationApi, CollectionApi collectionApi,
+      ObjectApi objectApi)
+      throws Exception {
+
+    // Save some objects first.
+
+    URI uri = objectApi.saveAsNew(INVOCATIONTEST,
+        new SampleCategory().name("The first category").cost(12l).color(ColorEnum.GREEN));
+
+    InvocationRequestDefinition invocationRequestDefinition =
+        new InvocationRequestDefinition()
+            .request(invocationApi.builder(TestApi.class).build(a -> a.echoMethod("")))
+            .addResolversItem(
+                new InvocationParameterResolver().position(0)
+                    .dataUri(URI.create("category:/#name")));
+
+    InvocationRequest invocationRequest =
+        invocationApi.resolve(invocationRequestDefinition, new ObjectPropertyResolverContext()
+            .addObjectsItem(new ObjectPropertyResolverContextObject().name("category").uri(uri)));
+
+    InvocationParameter result = invocationApi.invoke(invocationRequest);
+
+    Assertions.assertEquals("The first category", result.getValue());
 
   }
 
