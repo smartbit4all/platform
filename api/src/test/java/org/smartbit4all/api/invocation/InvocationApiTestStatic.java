@@ -184,7 +184,7 @@ public class InvocationApiTestStatic {
             .request(invocationApi.builder(TestApi.class).build(a -> a.echoMethod("")))
             .addResolversItem(
                 new InvocationParameterResolver().position(0)
-                    .dataUri(URI.create("category:/#name")));
+                    .propertyUri(URI.create("category:/#name")));
 
     InvocationRequest invocationRequest =
         invocationApi.resolve(invocationRequestDefinition, new ObjectPropertyResolverContext()

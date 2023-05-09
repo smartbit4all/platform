@@ -35,7 +35,7 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   InvocationParameterResolver.NAME,
   InvocationParameterResolver.POSITION,
-  InvocationParameterResolver.DATA_URI
+  InvocationParameterResolver.PROPERTY_URI
 })
 @JsonTypeName("InvocationParameterResolver")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -46,8 +46,8 @@ public class InvocationParameterResolver {
   public static final String POSITION = "position";
   private Integer position;
 
-  public static final String DATA_URI = "dataUri";
-  private URI dataUri;
+  public static final String PROPERTY_URI = "propertyUri";
+  private URI propertyUri;
 
   public InvocationParameterResolver() { 
   }
@@ -106,32 +106,31 @@ public class InvocationParameterResolver {
   }
 
 
-  public InvocationParameterResolver dataUri(URI dataUri) {
+  public InvocationParameterResolver propertyUri(URI propertyUri) {
     
-    this.dataUri = dataUri;
+    this.propertyUri = propertyUri;
     return this;
   }
 
    /**
-   * The uri of the data entry with the scheme as the name of the related object. The path defines the data access path. We can use this URI to resolve the data with the ObjectApi. 
-   * @return dataUri
+   * The uri of the property entry with the scheme as the name of the related object from the context. The path defines the data access path. We can use this URI to resolve the data with the ObjectApi. 
+   * @return propertyUri
   **/
-  @javax.annotation.Nonnull
-  @NotNull
+  @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(required = true, value = "The uri of the data entry with the scheme as the name of the related object. The path defines the data access path. We can use this URI to resolve the data with the ObjectApi. ")
-  @JsonProperty(DATA_URI)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  @ApiModelProperty(example = "state:/object/otherobject#property", value = "The uri of the property entry with the scheme as the name of the related object from the context. The path defines the data access path. We can use this URI to resolve the data with the ObjectApi. ")
+  @JsonProperty(PROPERTY_URI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public URI getDataUri() {
-    return dataUri;
+  public URI getPropertyUri() {
+    return propertyUri;
   }
 
 
-  @JsonProperty(DATA_URI)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setDataUri(URI dataUri) {
-    this.dataUri = dataUri;
+  @JsonProperty(PROPERTY_URI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setPropertyUri(URI propertyUri) {
+    this.propertyUri = propertyUri;
   }
 
 
@@ -146,12 +145,12 @@ public class InvocationParameterResolver {
     InvocationParameterResolver invocationParameterResolver = (InvocationParameterResolver) o;
     return Objects.equals(this.name, invocationParameterResolver.name) &&
         Objects.equals(this.position, invocationParameterResolver.position) &&
-        Objects.equals(this.dataUri, invocationParameterResolver.dataUri);
+        Objects.equals(this.propertyUri, invocationParameterResolver.propertyUri);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, position, dataUri);
+    return Objects.hash(name, position, propertyUri);
   }
 
   @Override
@@ -160,7 +159,7 @@ public class InvocationParameterResolver {
     sb.append("class InvocationParameterResolver {\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    position: ").append(toIndentedString(position)).append("\n");
-    sb.append("    dataUri: ").append(toIndentedString(dataUri)).append("\n");
+    sb.append("    propertyUri: ").append(toIndentedString(propertyUri)).append("\n");
     sb.append("}");
     return sb.toString();
   }

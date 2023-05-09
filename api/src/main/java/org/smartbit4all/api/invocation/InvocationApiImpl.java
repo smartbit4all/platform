@@ -150,7 +150,7 @@ public final class InvocationApiImpl implements InvocationApi {
           }
         }
         if (parameter != null) {
-          parameter.setValue(resolver.resolve(paramResolver.getDataUri()));
+          parameter.setValue(resolver.resolve(paramResolver.getPropertyUri()));
         }
       }
     }
