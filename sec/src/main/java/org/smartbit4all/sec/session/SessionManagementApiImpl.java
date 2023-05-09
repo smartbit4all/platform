@@ -5,7 +5,6 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -179,7 +178,11 @@ public class SessionManagementApiImpl implements SessionManagementApi {
     if (refreshTimeoutMins > 0) {
       refreshExpiration = OffsetDateTime.now().plusMinutes(refreshTimeoutMins);
     } else {
-      refreshExpiration = new Date(Long.MAX_VALUE).toInstant().atOffset(ZoneOffset.UTC);
+      // here we set the expiration to a long distance future time.
+      // note that it's not OffsetDateTime.MAX because this date must be parsable on different
+      // platforms
+      // e.g: some default serializers support only the "yyyy-MM-dd'T'HH:mm:ss-hh:ss" format
+      refreshExpiration = OffsetDateTime.of(9990, 12, 31, 23, 59, 59, 0, ZoneOffset.UTC);
     }
     return refreshExpiration;
   }
