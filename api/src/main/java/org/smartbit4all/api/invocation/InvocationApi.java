@@ -13,7 +13,7 @@ import org.smartbit4all.core.object.ObjectPropertyResolver;
 
 /**
  * The {@link InvocationApi} is a generic api to call other api function.
- * 
+ *
  * @author Peter Boros
  */
 public interface InvocationApi {
@@ -27,7 +27,7 @@ public interface InvocationApi {
    *  InvocationParameter result = invocationApi.invoke(request);
    * </code>
    * </p>
-   * 
+   *
    * @param <T>
    * @param apiInterface
    * @return
@@ -43,14 +43,14 @@ public interface InvocationApi {
    *  InvocationParameter result = invocationApi.invoke(request);
    * </code>
    * </p>
-   * 
+   *
    * @return
    */
   AsyncInvocationBuilder asyncBuilder();
 
   /**
    * The generic api call executed synchronously.
-   * 
+   *
    * @param request
    * @throws ApiNotFoundException
    */
@@ -58,7 +58,7 @@ public interface InvocationApi {
 
   /**
    * The generic api call executed synchronously.
-   * 
+   *
    * @param batch The invocation batch with a list of request to invoke.
    * @throws ApiNotFoundException
    */
@@ -71,14 +71,14 @@ public interface InvocationApi {
    * current transaction. But on the other hand it will save the given {@link InvocationRequest}
    * into the channel. If the transaction succeeded but the execution is not finished then the
    * invocation api will try to execute it later on.
-   * 
+   *
    * In this case the execution will inherit the session of the current user. If the session is
    * expired before the invocation is started then the invocation will fail.
-   * 
+   *
    * To ensure that the invocation is going to be executed then we can assign a technical user must
    * be set in the request to this call. The invocation will create a session and login with the
    * given user.
-   * 
+   *
    * @param request The invocation request.
    * @param channel The channel that is configured for the execution. If we don't give any parameter
    *        then it will be created with default parameters.
@@ -90,15 +90,15 @@ public interface InvocationApi {
    * current transaction. But on the other hand it will save the given {@link InvocationRequest}
    * into the channel. If the transaction succeeded but the execution is not finished then the
    * invocation api will try to execute it later on.
-   * 
+   *
    * In this case the execution will inherit the session of the current user. If the session is
    * expired before the invocation is started then the invocation will fail.
-   * 
+   *
    * To ensure that the invocation is going to be executed then we can assign a technical user must
    * be set in the request to this call. The invocation will create a session and login with the
    * given user.
-   * 
-   * @param request The invocation request batch with a list of invocation call.
+   *
+   * @param batch The invocation request batch with a list of invocation call.
    * @param channel The channel that is configured for the execution. If we don't give any parameter
    *        then it will be created with default parameters.
    */
@@ -109,14 +109,14 @@ public interface InvocationApi {
    * current transaction. But on the other hand it will save the given {@link InvocationRequest}
    * into the channel. If the transaction succeeded but the execution is not finished then the
    * invocation api will try to execute it later on.
-   * 
+   *
    * In this case the execution will inherit the session of the current user. If the session is
    * expired before the invocation is started then the invocation will fail.
-   * 
+   *
    * To ensure that the invocation is going to be executed then we can assign a technical user must
    * be set in the request to this call. The invocation will create a session and login with the
    * given user.
-   * 
+   *
    * @param request The invocation request.
    * @param channel The channel that is configured for the execution. If we don't give any parameter
    *        then it will be created with default parameters.
@@ -128,7 +128,7 @@ public interface InvocationApi {
    * Constructs an event publisher that is responsible for recording an {@link InvocationRequest} by
    * calling a function on the interface. Later on this {@link InvocationRequest} is going to be
    * used as an invocation toward the subscribed api calls.
-   * 
+   *
    * @param <P>
    * @param <S>
    * @param publisherApiInterface The interface that defines the fire operations typically.
@@ -147,7 +147,7 @@ public interface InvocationApi {
    * mapping between the context object properties and the parameters. With this call we can
    * initiate a new {@link InvocationRequest} ready to call by resolving the referred parameters
    * from the objects provided in the context with the {@link ObjectPropertyResolver}.
-   * 
+   *
    * @param definition The invocation definition.
    * @param context The object context for the resolution.
    * @return
