@@ -80,5 +80,9 @@ class InvocationApiTest {
     InvocationApiTestStatic.testInvokeByDefinition(invocationApi, collectionApi, objectApi);
   }
 
+  @Test
+  void testInvokeBatchForObjects() throws Exception {
+    InvocationApiTestStatic.testInvokeBatchForObjects(invocationApi, collectionApi, objectApi);
+  }
 
 }

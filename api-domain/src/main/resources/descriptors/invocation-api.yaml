@@ -66,6 +66,28 @@ components:
             The uri of the property entry with the scheme as the name of the related object from the context. The path defines the data access path. We can use this
             URI to resolve the data with the ObjectApi.
           example: state:/object/otherobject#property
+    InvocationBatchRequest:
+      type: object
+      description: |
+        A list of InvocationRequest that can be used for the InvocationApi functions.
+      required: [requests]
+      properties:
+        requests: 
+          type: array
+          description: The invocation requests included in the batch.
+          items:
+            $ref: '#/components/schemas/InvocationRequest'
+    InvocationBatchResult:
+      type: object
+      description: |
+        The ordered list of InvocationResult that are the result of the InvocationRequests from an InvocationBatchRequest.
+      required: [results]
+      properties:
+        results: 
+          type: array
+          description: The invocation results included in the batch.
+          items:
+            $ref: '#/components/schemas/InvocationResult'
     InvocationRequest:
       type: object
       description: |
@@ -518,67 +540,22 @@ components:
           items:
             type: string
             format: uri
-    EventPublishingConfig:
+    ObjectInvocationConfig:
       type: object
       description: |
-        The subscriptions are summarized in this object for every subscribed object. There can be more object from this to separate the
-        different subscription mechanisms. It can be global or can be attached to given objects. The original events are
-        emited by apis and consumed by the EventSubscriptionApi.
-      required: [uri, name, events]
+        It contains and summarizes the list of objects objects interested in an api call. It can encapsulate the objects and the parameters of the call. This object can be
+        saved into an object or can be initiated globally. This object can be used in many situation to save the objects that are interested in an event or an invocation call.
+        It can be used directly as parameter for the InvocationApi to invoke... functions or event publishing also.
+      required: [uri, objectUris]
       properties:
         uri:
           type: string
           format: uri
-        name:
-          type: string
-          description: The name of the subscrition like some categories or anything else.
-        subscriptions:
+        objectUris:
           type: array
           description: |
             The event codes the subscription is looking for. All these event are going to evaluated by this subsription
             object.
           items:
-            $ref: '#/components/schemas/EventSubscription'
-    EventData:
-      type: object
-      description: |
-        The descriptor for an event. It can be identified by its identifier name. The user to be notified and the 
-        invocation request responsible for the per user notification is also defined in this object.
-      required: [name, applyUserInvocation, users]
-      properties:
-        name:
-          type: string
-          description: The name of the event.
-        targetObject:
-          type: string
-          format: uri
-        relatedObjects:
-          type: string
-          description: All the related objects 
-          format: uri
-    EventSubscription:
-      type: object
-      description: |
-        The descriptor for an event. It can be identified by its identifier name. The user to be notified and the 
-        invocation request responsible for the per user notification is also defined in this object.
-      required: [name, applyUserInvocation, subscribedObjects]
-      properties:
-        name:
-          type: string
-          description: The name of the event.
-        invocationRequest:
-          description: |
-            The invocation that notify the given object about the event. It has a fix parameter the EventData.
-          $ref: '#/components/schemas/InvocationRequest'
-        subscribers:
-          type: array
-          description: |
-            The objects that interested in the given event in this moment. The object can have a profile object with the
-            relevant subscription settings but these setting must be saved into the appropriate EventSubscription object.
-            For example if we have a category that have subscriptions then we can save a subscribed users to the category. It can be used to
-            display if a user is subscribed for the given category or not. But we also need to save this information into this object by adding the
-            user to this list.
-          items:
             type: string
             format: uri
-        

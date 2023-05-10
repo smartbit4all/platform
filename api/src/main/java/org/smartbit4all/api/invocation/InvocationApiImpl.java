@@ -5,11 +5,17 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.invocation.bean.ApiData;
+import org.smartbit4all.api.invocation.bean.InvocationBatchResult;
+import org.smartbit4all.api.invocation.bean.InvocationError;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationParameterResolver;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
+import org.smartbit4all.api.invocation.bean.InvocationRequestBatch;
 import org.smartbit4all.api.invocation.bean.InvocationRequestDefinition;
+import org.smartbit4all.api.invocation.bean.InvocationResult;
 import org.smartbit4all.api.object.bean.ObjectPropertyResolverContext;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.SessionManagementApi;
@@ -28,6 +34,8 @@ import org.springframework.util.CollectionUtils;
  * @author Peter Boros
  */
 public final class InvocationApiImpl implements InvocationApi {
+
+  private static final Logger log = LoggerFactory.getLogger(InvocationApiImpl.class);
 
   @Autowired
   private InvocationRegisterApi invocationRegisterApi;
@@ -155,6 +163,33 @@ public final class InvocationApiImpl implements InvocationApi {
       }
     }
     return request;
+  }
+
+  @Override
+  public InvocationBatchResult invokeBatch(InvocationRequestBatch batch)
+      throws ApiNotFoundException {
+    InvocationBatchResult result = new InvocationBatchResult();
+    batch.getRequests().stream().forEach(r -> {
+      InvocationResult invocationResult = new InvocationResult().startTime(OffsetDateTime.now());
+      try {
+        invocationResult.returnValue(invoke(r).getValue());
+      } catch (Exception e) {
+        log.warn("Exception occured while executing the " + r, e);
+        invocationResult.error(
+            new InvocationError().definition(e.getClass().getName()).message(e.getMessage()));
+      } finally {
+        invocationResult.endTime(OffsetDateTime.now());
+      }
+      result.addResultsItem(invocationResult);
+    });
+    return result;
+  }
+
+  @Override
+  public void invokeAsyncBatch(InvocationRequestBatch batch, String channel) {
+    batch.getRequests().stream().forEach(r -> {
+      invocationRegisterApi.saveAndEnqueueAsyncInvocationRequest(r, channel);
+    });
   }
 
 }

@@ -1,5 +1,6 @@
 package org.smartbit4all.api.invocation;
 
+import java.net.URI;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
@@ -31,6 +32,8 @@ public interface TestApi {
   TestDataBean modifyData(TestDataBean databean);
 
   List<TestDataBean> modifyData(List<TestDataBean> databean);
+
+  String applyParentNamChangeForCategory(URI categoryUri, String parentName);
 
   @FunctionalInterface
   interface MyEvent {

@@ -2,8 +2,10 @@ package org.smartbit4all.api.invocation;
 
 import java.time.OffsetDateTime;
 import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
+import org.smartbit4all.api.invocation.bean.InvocationBatchResult;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
+import org.smartbit4all.api.invocation.bean.InvocationRequestBatch;
 import org.smartbit4all.api.invocation.bean.InvocationRequestDefinition;
 import org.smartbit4all.api.object.bean.ObjectPropertyResolverContext;
 import org.smartbit4all.core.object.ObjectNode;
@@ -54,6 +56,14 @@ public interface InvocationApi {
    */
   InvocationParameter invoke(InvocationRequest request) throws ApiNotFoundException;
 
+  /**
+   * The generic api call executed synchronously.
+   * 
+   * @param batch The invocation batch with a list of request to invoke.
+   * @throws ApiNotFoundException
+   */
+  InvocationBatchResult invokeBatch(InvocationRequestBatch batch) throws ApiNotFoundException;
+
   void invoke(ObjectNode asyncInvocationNode);
 
   /**
@@ -74,6 +84,25 @@ public interface InvocationApi {
    *        then it will be created with default parameters.
    */
   void invokeAsync(InvocationRequest request, String channel);
+
+  /**
+   * This call register the invocation for the for execute after the successful commit of the
+   * current transaction. But on the other hand it will save the given {@link InvocationRequest}
+   * into the channel. If the transaction succeeded but the execution is not finished then the
+   * invocation api will try to execute it later on.
+   * 
+   * In this case the execution will inherit the session of the current user. If the session is
+   * expired before the invocation is started then the invocation will fail.
+   * 
+   * To ensure that the invocation is going to be executed then we can assign a technical user must
+   * be set in the request to this call. The invocation will create a session and login with the
+   * given user.
+   * 
+   * @param request The invocation request batch with a list of invocation call.
+   * @param channel The channel that is configured for the execution. If we don't give any parameter
+   *        then it will be created with default parameters.
+   */
+  void invokeAsyncBatch(InvocationRequestBatch batch, String channel);
 
   /**
    * This call register the invocation for the for execute after the successful commit of the

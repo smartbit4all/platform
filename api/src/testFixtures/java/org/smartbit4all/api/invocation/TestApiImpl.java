@@ -1,5 +1,6 @@
 package org.smartbit4all.api.invocation;
 
+import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Random;
@@ -8,7 +9,11 @@ import org.smartbit4all.api.invocation.bean.InvocationResult;
 import org.smartbit4all.api.invocation.bean.InvocationResultDecision;
 import org.smartbit4all.api.invocation.bean.InvocationResultDecision.DecisionEnum;
 import org.smartbit4all.api.invocation.bean.TestDataBean;
+import org.smartbit4all.api.sample.bean.SampleCategory;
+import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.concurrent.FutureValue;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class TestApiImpl implements TestApi {
 
@@ -23,6 +28,9 @@ public class TestApiImpl implements TestApi {
   public static FutureValue<String> secondResult = new FutureValue<>();
 
   public static FutureValue<String> thirdResult = new FutureValue<>();
+
+  @Autowired
+  private ObjectApi objectApi;
 
   @Override
   public void doMethod(String p1) {
@@ -93,6 +101,15 @@ public class TestApiImpl implements TestApi {
     return p.getError() != null ? new InvocationResultDecision().decision(DecisionEnum.RESCHEDULE)
         .scheduledAt(OffsetDateTime.now().plusSeconds(3))
         : new InvocationResultDecision().decision(DecisionEnum.CONTINUE);
+  }
+
+  @Override
+  public String applyParentNamChangeForCategory(URI categoryUri, String parentName) {
+    ObjectNode categoryNode = objectApi.load(categoryUri);
+    String result = categoryNode.getValueAsString(SampleCategory.NAME);
+    categoryNode.setValue(parentName, SampleCategory.NAME);
+    objectApi.save(categoryNode);
+    return result;
   }
 
 }

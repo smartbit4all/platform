@@ -1,5 +1,6 @@
 package org.smartbit4all.core.object;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -74,18 +75,21 @@ public final class BeanMeta {
   @SuppressWarnings("unchecked")
   public Object deepCopy(Object o) {
     try {
-      Object newInstance = clazz.newInstance();
+      Object newInstance = clazz.getDeclaredConstructor().newInstance();
       for (PropertyMeta propertyMeta : properties.values()) {
         Object value = propertyMeta.getValue(o);
         if (value != null) {
           switch (propertyMeta.getKind()) {
             case VALUE:
-              if (propertyMeta.getType().isAssignableFrom(List.class)) {
+              if (List.class.isAssignableFrom(propertyMeta.getType())) {
                 // We constructs a new list but the values are the same.
                 ArrayList<Object> newList =
-                    new ArrayList<>((List<Object>) value);
+                    new ArrayList<>();
+                for (Object object : ((List) value)) {
+                  newList.add(object);
+                }
                 propertyMeta.setValue(newInstance, newList);
-              } else if (propertyMeta.getType().isAssignableFrom(Map.class)) {
+              } else if (Map.class.isAssignableFrom(propertyMeta.getType())) {
                 // We constructs a new map but the values are the same.
                 Map<Object, Object> newList =
                     new HashMap<>((Map<Object, Object>) value);
@@ -126,7 +130,8 @@ public final class BeanMeta {
         }
       }
       return newInstance;
-    } catch (InstantiationException | IllegalAccessException e) {
+    } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+        | InvocationTargetException | NoSuchMethodException | SecurityException e) {
       throw new IllegalStateException("Unable to copy the " + clazz.getName() + "object", e);
     }
   }

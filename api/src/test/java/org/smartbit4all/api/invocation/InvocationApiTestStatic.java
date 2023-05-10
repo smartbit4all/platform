@@ -14,10 +14,13 @@ import javax.script.SimpleBindings;
 import org.junit.jupiter.api.Assertions;
 import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.StoredReference;
+import org.smartbit4all.api.invocation.bean.InvocationBatchResult;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationParameterResolver;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
+import org.smartbit4all.api.invocation.bean.InvocationRequestBatch;
 import org.smartbit4all.api.invocation.bean.InvocationRequestDefinition;
+import org.smartbit4all.api.invocation.bean.ObjectInvocationConfig;
 import org.smartbit4all.api.invocation.bean.TestDataBean;
 import org.smartbit4all.api.object.bean.ObjectPropertyResolverContext;
 import org.smartbit4all.api.object.bean.ObjectPropertyResolverContextObject;
@@ -27,6 +30,7 @@ import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.utility.StringConstant;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static java.util.stream.Collectors.toList;
 
 public class InvocationApiTestStatic {
 
@@ -193,6 +197,43 @@ public class InvocationApiTestStatic {
     InvocationParameter result = invocationApi.invoke(invocationRequest);
 
     Assertions.assertEquals("The first category", result.getValue());
+
+  }
+
+  static void testInvokeBatchForObjects(InvocationApi invocationApi, CollectionApi collectionApi,
+      ObjectApi objectApi)
+      throws Exception {
+
+    // Save some objects first.
+
+    ObjectInvocationConfig config = new ObjectInvocationConfig();
+
+    config.addObjectUrisItem(objectApi.saveAsNew(INVOCATIONTEST,
+        new SampleCategory().name("Category 1").cost(12l).color(ColorEnum.GREEN)));
+    config.addObjectUrisItem(objectApi.saveAsNew(INVOCATIONTEST,
+        new SampleCategory().name("Category 2").cost(12l).color(ColorEnum.GREEN)));
+    config.addObjectUrisItem(objectApi.saveAsNew(INVOCATIONTEST,
+        new SampleCategory().name("Category 3").cost(12l).color(ColorEnum.GREEN)));
+    config.addObjectUrisItem(objectApi.saveAsNew(INVOCATIONTEST,
+        new SampleCategory().name("Category 4").cost(12l).color(ColorEnum.GREEN)));
+
+
+    InvocationRequestBatch batch = invocationApi.builder(TestApi.class)
+        .build(a -> a.applyParentNamChangeForCategory(null, "common"), config);
+
+    InvocationBatchResult invokeBatch = invocationApi.invokeBatch(batch);
+
+
+    org.assertj.core.api.Assertions
+        .assertThat(invokeBatch.getResults().stream().map(r -> (String) r.getReturnValue())
+            .collect(toList()))
+        .containsSequence("Category 1", "Category 2", "Category 3", "Category 4");
+
+    org.assertj.core.api.Assertions
+        .assertThat(config.getObjectUris().stream()
+            .map(u -> objectApi.loadLatest(u).getObject(SampleCategory.class).getName())
+            .collect(toList()))
+        .allMatch(s -> "common".equals(s));
 
   }
 

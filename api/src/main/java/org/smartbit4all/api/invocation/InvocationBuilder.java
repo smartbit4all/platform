@@ -11,7 +11,11 @@ import org.smartbit4all.api.invocation.Invocations.ListWrapper;
 import org.smartbit4all.api.invocation.Invocations.MapWrapper;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
+import org.smartbit4all.api.invocation.bean.InvocationRequestBatch;
+import org.smartbit4all.api.invocation.bean.ObjectInvocationConfig;
 import org.smartbit4all.api.session.SessionApi;
+import org.smartbit4all.core.object.BeanMeta;
+import org.smartbit4all.core.object.BeanMetaUtil;
 
 /**
  * The invocation api can initiate this builder. This is an {@link InvocationHandler} at the same
@@ -51,6 +55,34 @@ public class InvocationBuilder<T> implements InvocationHandler {
     request = null;
     apiCall.accept(apiProxy);
     return request;
+  }
+
+  /**
+   * By calling the api method inside the consumer the builder can build the invocation request
+   * ready to execute by the {@link InvocationApi}.
+   * 
+   * @param apiCall
+   * @param objects The object configuration for the api calls.
+   * @return The invocation request batch that can be executed by the InvocationApi.
+   */
+  public InvocationRequestBatch build(Consumer<T> apiCall, ObjectInvocationConfig objects) {
+    InvocationRequestBatch result = new InvocationRequestBatch();
+    if (objects == null || objects.getObjectUris() == null
+        || objects.getObjectUris().isEmpty()) {
+      // Return an empty batch with no included request.
+      return result;
+    }
+    request = null;
+    apiCall.accept(apiProxy);
+    // The request must be copied for every object and the first parameter must be set from the
+    // objects configuration
+    BeanMeta meta = BeanMetaUtil.meta(InvocationRequest.class);
+    objects.getObjectUris().stream().forEach(u -> {
+      InvocationRequest requestsItem = (InvocationRequest) meta.deepCopy(request);
+      requestsItem.getParameters().get(0).setValue(u);
+      result.addRequestsItem(requestsItem);
+    });
+    return result;
   }
 
   @Override
