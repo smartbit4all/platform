@@ -617,10 +617,7 @@ public class OrgApiStorageImpl implements OrgApi {
   }
 
   private void setUserToInactive(URI userUri) {
-    StorageObject<User> userSO = storage.get().load(userUri, User.class);
-    userSO.getObject().setInactive(true);
-    storage.get().save(userSO);
-
+    storage.get().update(userUri, User.class, u -> u.inactive(true));
     invalidateCache();
   }
 
