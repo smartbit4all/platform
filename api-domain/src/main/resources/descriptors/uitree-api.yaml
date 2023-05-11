@@ -334,7 +334,8 @@ components:
           type: array
           items:
             type: string
-        
+        defaultSelection:
+          $ref: '#/components/schemas/UiTreeDefaultSelection'
     UiTreeNode:
       type: object
       required: [classes, children, actions]
@@ -390,3 +391,22 @@ components:
           format: uri
         nodeType:
           type: string
+    UiTreeDefaultSelection:
+      type: object
+      description: |
+        Describes the default selected node of the tree after rendering.
+      properties:
+        path:
+          $ref: '#/components/schemas/UiTreePath'
+        handleSelection:
+          type: boolean
+          default: false
+          description: |
+            Signals whether the tree should handle the default selected node after rendering.
+        oneTimeOnly:
+          type: boolean
+          default: true
+          description: |
+            Signals whether the selection should be set only during initialisation, or every time
+            the tree is rendered.
+      required: [path, handleSelection, oneTimeOnly]

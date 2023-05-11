@@ -12,6 +12,7 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.smartbit4all.api.uitree.bean.SmartTreeNode;
+import org.smartbit4all.api.uitree.bean.UiTreeDefaultSelection;
 import org.smartbit4all.api.uitree.bean.UiTreeNode;
 import org.smartbit4all.api.uitree.bean.UiTreePath;
 import org.smartbit4all.api.uitree.bean.UiTreePathPart;
@@ -43,6 +44,16 @@ public class TreeApiImpl implements TreeApi {
       expandNodeInternal(treeState, getConfigNode(treeState).getIdentifier());
       // refreshNode(treeState, getConfigNode(treeState));
       rootNodes = treeState.getRootNodes();
+
+      final UiTreeDefaultSelection defaultSelection = treeState.getDefaultSelection();
+      if (defaultSelection != null) {
+        this.setSelectedNode(treeState,
+            defaultSelection.getPath(),
+            defaultSelection.getHandleSelection());
+        if (Boolean.TRUE.equals(defaultSelection.getOneTimeOnly())) {
+          treeState.setDefaultSelection(null);
+        }
+      }
     }
     return getTreeNodeListFromState(treeState, rootNodes);
   }

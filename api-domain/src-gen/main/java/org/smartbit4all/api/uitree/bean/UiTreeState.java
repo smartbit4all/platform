@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import org.smartbit4all.api.uitree.bean.UiTreeDefaultSelection;
 import org.smartbit4all.api.uitree.bean.UiTreeNode;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -43,7 +44,8 @@ import javax.validation.Valid;
   UiTreeState.NODES,
   UiTreeState.ROOT_NODES,
   UiTreeState.EXPANDED_NODES,
-  UiTreeState.SELECTED_NODES
+  UiTreeState.SELECTED_NODES,
+  UiTreeState.DEFAULT_SELECTION
 })
 @JsonTypeName("UiTreeState")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -65,6 +67,9 @@ public class UiTreeState {
 
   public static final String SELECTED_NODES = "selectedNodes";
   private List<String> selectedNodes = new ArrayList<>();
+
+  public static final String DEFAULT_SELECTION = "defaultSelection";
+  private UiTreeDefaultSelection defaultSelection;
 
   public UiTreeState() { 
   }
@@ -257,6 +262,34 @@ public class UiTreeState {
   }
 
 
+  public UiTreeState defaultSelection(UiTreeDefaultSelection defaultSelection) {
+    
+    this.defaultSelection = defaultSelection;
+    return this;
+  }
+
+   /**
+   * Get defaultSelection
+   * @return defaultSelection
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(DEFAULT_SELECTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public UiTreeDefaultSelection getDefaultSelection() {
+    return defaultSelection;
+  }
+
+
+  @JsonProperty(DEFAULT_SELECTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setDefaultSelection(UiTreeDefaultSelection defaultSelection) {
+    this.defaultSelection = defaultSelection;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -271,12 +304,13 @@ public class UiTreeState {
         Objects.equals(this.nodes, uiTreeState.nodes) &&
         Objects.equals(this.rootNodes, uiTreeState.rootNodes) &&
         Objects.equals(this.expandedNodes, uiTreeState.expandedNodes) &&
-        Objects.equals(this.selectedNodes, uiTreeState.selectedNodes);
+        Objects.equals(this.selectedNodes, uiTreeState.selectedNodes) &&
+        Objects.equals(this.defaultSelection, uiTreeState.defaultSelection);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(config, viewUuid, nodes, rootNodes, expandedNodes, selectedNodes);
+    return Objects.hash(config, viewUuid, nodes, rootNodes, expandedNodes, selectedNodes, defaultSelection);
   }
 
   @Override
@@ -289,6 +323,7 @@ public class UiTreeState {
     sb.append("    rootNodes: ").append(toIndentedString(rootNodes)).append("\n");
     sb.append("    expandedNodes: ").append(toIndentedString(expandedNodes)).append("\n");
     sb.append("    selectedNodes: ").append(toIndentedString(selectedNodes)).append("\n");
+    sb.append("    defaultSelection: ").append(toIndentedString(defaultSelection)).append("\n");
     sb.append("}");
     return sb.toString();
   }
