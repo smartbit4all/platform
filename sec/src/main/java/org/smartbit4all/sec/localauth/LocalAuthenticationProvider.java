@@ -41,8 +41,10 @@ public class LocalAuthenticationProvider implements AuthenticationProvider {
     User user = orgApi.getUserByUsername(username);
 
     if (isUserWithPasswordInvalid(user, password)) {
-      log.debug("Login attempt has failed because of bad credentials with user [{}]", username);
-      throw new BadCredentialsException("Unknown user or invalid password!");
+      log.debug(
+          "Login attempt has failed because of bad credentials with user [{}]. Or user is inactivated or does not exist.",
+          username);
+      throw new BadCredentialsException("Unknown or inactivated user or invalid password!");
     }
 
     return new UsernamePasswordAuthenticationToken(user, "", roleProvider.apply(user));
@@ -50,6 +52,7 @@ public class LocalAuthenticationProvider implements AuthenticationProvider {
 
   protected boolean isUserWithPasswordInvalid(User user, String password) {
     return user == null
+        || Boolean.TRUE.equals(user.getInactive())
         || ObjectUtils.isEmpty(password)
         || !passwordEncoder.matches(password, user.getPassword());
   }
