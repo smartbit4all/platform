@@ -36,6 +36,7 @@ import javax.validation.Valid;
  */
 @JsonPropertyOrder({
   UiAction.CODE,
+  UiAction.PATH,
   UiAction.IDENTIFIER,
   UiAction.INPUT_TYPE,
   UiAction.INPUT2_TYPE,
@@ -48,6 +49,9 @@ import javax.validation.Valid;
 public class UiAction {
   public static final String CODE = "code";
   private String code;
+
+  public static final String PATH = "path";
+  private String path;
 
   public static final String IDENTIFIER = "identifier";
   private String identifier;
@@ -94,6 +98,33 @@ public class UiAction {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCode(String code) {
     this.code = code;
+  }
+
+
+  public UiAction path(String path) {
+    
+    this.path = path;
+    return this;
+  }
+
+   /**
+   * Get path
+   * @return path
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(PATH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getPath() {
+    return path;
+  }
+
+
+  @JsonProperty(PATH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setPath(String path) {
+    this.path = path;
   }
 
 
@@ -279,6 +310,7 @@ public class UiAction {
     }
     UiAction uiAction = (UiAction) o;
     return Objects.equals(this.code, uiAction.code) &&
+        Objects.equals(this.path, uiAction.path) &&
         Objects.equals(this.identifier, uiAction.identifier) &&
         Objects.equals(this.inputType, uiAction.inputType) &&
         Objects.equals(this.input2Type, uiAction.input2Type) &&
@@ -289,7 +321,7 @@ public class UiAction {
 
   @Override
   public int hashCode() {
-    return Objects.hash(code, identifier, inputType, input2Type, submit, confirm, params);
+    return Objects.hash(code, path, identifier, inputType, input2Type, submit, confirm, params);
   }
 
   @Override
@@ -297,6 +329,7 @@ public class UiAction {
     StringBuilder sb = new StringBuilder();
     sb.append("class UiAction {\n");
     sb.append("    code: ").append(toIndentedString(code)).append("\n");
+    sb.append("    path: ").append(toIndentedString(path)).append("\n");
     sb.append("    identifier: ").append(toIndentedString(identifier)).append("\n");
     sb.append("    inputType: ").append(toIndentedString(inputType)).append("\n");
     sb.append("    input2Type: ").append(toIndentedString(input2Type)).append("\n");

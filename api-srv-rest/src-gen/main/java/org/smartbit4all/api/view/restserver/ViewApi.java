@@ -5,9 +5,12 @@
  */
 package org.smartbit4all.api.view.restserver;
 
+import org.smartbit4all.api.view.bean.ComponentModel;
 import org.smartbit4all.api.view.bean.MessageResult;
 import java.util.UUID;
+import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.ViewConstraint;
+import org.smartbit4all.api.view.bean.ViewContextChange;
 import org.smartbit4all.api.view.bean.ViewContextData;
 import org.smartbit4all.api.view.bean.ViewContextUpdate;
 import io.swagger.annotations.*;
@@ -59,6 +62,40 @@ public interface ViewApi {
 
 
     /**
+     * GET /component/{uuid}/download/{item}
+     *
+     * @param uuid  (required)
+     * @param item  (required)
+     * @return  (status code 200)
+     *         or The component does not exists with the given uuid (status code 404)
+     *         or Error occured while fetching the downloadable item (status code 500)
+     */
+    @ApiOperation(
+        tags = { "View" },
+        value = "",
+        nickname = "downloadItem",
+        notes = "",
+        response = org.springframework.core.io.Resource.class
+    )
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "", response = org.springframework.core.io.Resource.class),
+        @ApiResponse(code = 404, message = "The component does not exists with the given uuid"),
+        @ApiResponse(code = 500, message = "Error occured while fetching the downloadable item")
+    })
+    @RequestMapping(
+        method = RequestMethod.GET,
+        value = "/component/{uuid}/download/{item}",
+        produces = { "application/octet-stream" }
+    )
+    default ResponseEntity<org.springframework.core.io.Resource> downloadItem(
+        @ApiParam(value = "", required = true) @PathVariable("uuid") UUID uuid,
+        @ApiParam(value = "", required = true) @PathVariable("item") String item
+    ) throws Exception {
+        return getDelegate().downloadItem(uuid, item);
+    }
+
+
+    /**
      * GET /view/{uuid}/download/{item}
      *
      * @param uuid  (required)
@@ -70,7 +107,7 @@ public interface ViewApi {
     @ApiOperation(
         tags = { "View" },
         value = "",
-        nickname = "downloadItem",
+        nickname = "downloadItemDeprecated",
         notes = "",
         response = org.springframework.core.io.Resource.class
     )
@@ -84,11 +121,43 @@ public interface ViewApi {
         value = "/view/{uuid}/download/{item}",
         produces = { "application/octet-stream" }
     )
-    default ResponseEntity<org.springframework.core.io.Resource> downloadItem(
+    default ResponseEntity<org.springframework.core.io.Resource> downloadItemDeprecated(
         @ApiParam(value = "", required = true) @PathVariable("uuid") UUID uuid,
         @ApiParam(value = "", required = true) @PathVariable("item") String item
     ) throws Exception {
-        return getDelegate().downloadItem(uuid, item);
+        return getDelegate().downloadItemDeprecated(uuid, item);
+    }
+
+
+    /**
+     * GET /component/{uuid} : Returns component&#39;s model.
+     *
+     * @param uuid Component&#39;s unique identifier. (required)
+     * @return Returns ComponentModel by unique identifier (status code 200)
+     *         or The component does not exists with the given uuid (status code 404)
+     *         or Error occured while fetching the component data (status code 500)
+     */
+    @ApiOperation(
+        tags = { "View" },
+        value = "Returns component's model.",
+        nickname = "getComponentModel",
+        notes = "",
+        response = ComponentModel.class
+    )
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "Returns ComponentModel by unique identifier", response = ComponentModel.class),
+        @ApiResponse(code = 404, message = "The component does not exists with the given uuid"),
+        @ApiResponse(code = 500, message = "Error occured while fetching the component data")
+    })
+    @RequestMapping(
+        method = RequestMethod.GET,
+        value = "/component/{uuid}",
+        produces = { "application/json" }
+    )
+    default ResponseEntity<ComponentModel> getComponentModel(
+        @ApiParam(value = "Component's unique identifier.", required = true) @PathVariable("uuid") UUID uuid
+    ) throws Exception {
+        return getDelegate().getComponentModel(uuid);
     }
 
 
@@ -184,6 +253,38 @@ public interface ViewApi {
         @ApiParam(value = "", required = true) @Valid @RequestBody MessageResult messageResult
     ) throws Exception {
         return getDelegate().message(viewUuid, messageUuid, messageResult);
+    }
+
+
+    /**
+     * POST /component/{uuid}/action
+     * Performs a generic UI action. 
+     *
+     * @param uuid  (required)
+     * @param body  (required)
+     * @return  (status code 200)
+     */
+    @ApiOperation(
+        tags = { "View" },
+        value = "",
+        nickname = "performAction",
+        notes = "Performs a generic UI action. ",
+        response = ViewContextChange.class
+    )
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "", response = ViewContextChange.class)
+    })
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/component/{uuid}/action",
+        produces = { "application/json" },
+        consumes = { "application/json" }
+    )
+    default ResponseEntity<ViewContextChange> performAction(
+        @ApiParam(value = "", required = true) @PathVariable("uuid") UUID uuid,
+        @ApiParam(value = "", required = true) @Valid @RequestBody UiActionRequest body
+    ) throws Exception {
+        return getDelegate().performAction(uuid, body);
     }
 
 

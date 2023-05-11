@@ -4,10 +4,13 @@ import java.util.UUID;
 import java.util.function.UnaryOperator;
 import org.smartbit4all.api.view.annotation.BeforeClose;
 import org.smartbit4all.api.view.bean.CloseResult;
+import org.smartbit4all.api.view.bean.ComponentModel;
 import org.smartbit4all.api.view.bean.MessageResult;
 import org.smartbit4all.api.view.bean.OpenPendingData;
+import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.bean.ViewContext;
+import org.smartbit4all.api.view.bean.ViewContextChange;
 import org.smartbit4all.api.view.bean.ViewContextData;
 import org.smartbit4all.api.view.bean.ViewContextUpdate;
 
@@ -114,4 +117,21 @@ public interface ViewContextService {
    */
   CloseResult callBeforeClose(UUID viewToCloseUuid, OpenPendingData data);
 
+  /**
+   * Returns a ComponentModel assembled from the View specified by viewUuid.
+   *
+   * @param viewUuid
+   * @return
+   */
+  ComponentModel getComponentModel(UUID viewUuid);
+
+  /**
+   * Performs an action based on request. Finds View by viewUuid, and calls it's API's action
+   * handler method which is registered for request.code value.
+   *
+   * @param viewUuid
+   * @param request
+   * @return
+   */
+  ViewContextChange performAction(UUID viewUuid, UiActionRequest request);
 }

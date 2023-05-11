@@ -1,8 +1,11 @@
 package org.smartbit4all.api.view.restserver;
 
+import org.smartbit4all.api.view.bean.ComponentModel;
 import org.smartbit4all.api.view.bean.MessageResult;
 import java.util.UUID;
+import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.ViewConstraint;
+import org.smartbit4all.api.view.bean.ViewContextChange;
 import org.smartbit4all.api.view.bean.ViewContextData;
 import org.smartbit4all.api.view.bean.ViewContextUpdate;
 import org.springframework.http.HttpStatus;
@@ -48,6 +51,22 @@ public interface ViewApiDelegate {
     }
 
     /**
+     * GET /component/{uuid}/download/{item}
+     *
+     * @param uuid  (required)
+     * @param item  (required)
+     * @return  (status code 200)
+     *         or The component does not exists with the given uuid (status code 404)
+     *         or Error occured while fetching the downloadable item (status code 500)
+     * @see ViewApi#downloadItem
+     */
+    default ResponseEntity<org.springframework.core.io.Resource> downloadItem(UUID uuid,
+        String item) throws Exception {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+
+    }
+
+    /**
      * GET /view/{uuid}/download/{item}
      *
      * @param uuid  (required)
@@ -55,10 +74,33 @@ public interface ViewApiDelegate {
      * @return  (status code 200)
      *         or The context does not exists with the given uuid (status code 404)
      *         or Error occured while fetching the downloadable item (status code 500)
-     * @see ViewApi#downloadItem
+     * @see ViewApi#downloadItemDeprecated
      */
-    default ResponseEntity<org.springframework.core.io.Resource> downloadItem(UUID uuid,
+    default ResponseEntity<org.springframework.core.io.Resource> downloadItemDeprecated(UUID uuid,
         String item) throws Exception {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+
+    }
+
+    /**
+     * GET /component/{uuid} : Returns component&#39;s model.
+     *
+     * @param uuid Component&#39;s unique identifier. (required)
+     * @return Returns ComponentModel by unique identifier (status code 200)
+     *         or The component does not exists with the given uuid (status code 404)
+     *         or Error occured while fetching the component data (status code 500)
+     * @see ViewApi#getComponentModel
+     */
+    default ResponseEntity<ComponentModel> getComponentModel(UUID uuid) throws Exception {
+        getRequest().ifPresent(request -> {
+            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"data\" : \"{}\", \"name\" : \"name\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"constraints\" : [ { \"visible\" : true, \"valueSet\" : \"\", \"dataName\" : \"dataName\", \"mandatory\" : false, \"enabled\" : true }, { \"visible\" : true, \"valueSet\" : \"\", \"dataName\" : \"dataName\", \"mandatory\" : false, \"enabled\" : true } ], \"layouts\" : { \"key\" : \"\" }, \"actions\" : [ { \"confirm\" : false, \"path\" : \"path\", \"identifier\" : \"identifier\", \"code\" : \"code\", \"submit\" : true, \"params\" : { \"key\" : \"{}\" } }, { \"confirm\" : false, \"path\" : \"path\", \"identifier\" : \"identifier\", \"code\" : \"code\", \"submit\" : true, \"params\" : { \"key\" : \"{}\" } } ], \"widgetModels\" : { \"key\" : \"{}\" } }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+            }
+        });
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 
     }
@@ -121,6 +163,30 @@ public interface ViewApiDelegate {
     default ResponseEntity<Void> message(UUID viewUuid,
         UUID messageUuid,
         MessageResult messageResult) throws Exception {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+
+    }
+
+    /**
+     * POST /component/{uuid}/action
+     * Performs a generic UI action. 
+     *
+     * @param uuid  (required)
+     * @param body  (required)
+     * @return  (status code 200)
+     * @see ViewApi#performAction
+     */
+    default ResponseEntity<ViewContextChange> performAction(UUID uuid,
+        UiActionRequest body) throws Exception {
+        getRequest().ifPresent(request -> {
+            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"changes\" : [ { \"path\" : \"path\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"value\" : \"{}\" }, { \"path\" : \"path\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"value\" : \"{}\" } ], \"viewContext\" : { \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"views\" : [ { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"message\" : { \"viewUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"options\" : [ { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\" }, { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\" } ], \"header\" : \"header\", \"text\" : \"text\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" }, \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" }, { \"containerUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"viewName\" : \"viewName\", \"message\" : { \"viewUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"options\" : [ { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\" }, { \"code\" : \"code\", \"icon\" : \"icon\", \"label\" : \"label\" } ], \"header\" : \"header\", \"text\" : \"text\", \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" }, \"uuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\" } ] } }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+            }
+        });
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 
     }

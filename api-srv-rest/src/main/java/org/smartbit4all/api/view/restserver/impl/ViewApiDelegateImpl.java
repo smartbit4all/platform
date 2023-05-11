@@ -4,8 +4,11 @@ import java.util.UUID;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.view.ViewApi;
 import org.smartbit4all.api.view.ViewContextService;
+import org.smartbit4all.api.view.bean.ComponentModel;
 import org.smartbit4all.api.view.bean.MessageResult;
+import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.ViewConstraint;
+import org.smartbit4all.api.view.bean.ViewContextChange;
 import org.smartbit4all.api.view.bean.ViewContextData;
 import org.smartbit4all.api.view.bean.ViewContextUpdate;
 import org.smartbit4all.api.view.restserver.ViewApiDelegate;
@@ -68,6 +71,22 @@ public class ViewApiDelegateImpl implements ViewApiDelegate {
     }
     Resource resource = new InputStreamResource(data.inputStream());
     return ResponseEntity.ok(resource);
+  }
+
+  @Override
+  public ResponseEntity<Resource> downloadItemDeprecated(UUID uuid, String item) throws Exception {
+    return downloadItem(uuid, item);
+  }
+
+  @Override
+  public ResponseEntity<ComponentModel> getComponentModel(UUID uuid) throws Exception {
+    return ResponseEntity.ok(viewContextService.getComponentModel(uuid));
+  }
+
+  @Override
+  public ResponseEntity<ViewContextChange> performAction(UUID uuid, UiActionRequest request)
+      throws Exception {
+    return ResponseEntity.ok(viewContextService.performAction(uuid, request));
   }
 
 }

@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.ViewConstraint;
 import org.smartbit4all.api.view.bean.ViewState;
 import org.smartbit4all.api.view.bean.ViewType;
@@ -52,6 +53,8 @@ import javax.validation.Valid;
   View.CONSTRAINT,
   View.CLOSED_CHILDREN_VIEWS,
   View.DOWNLOADABLE_ITEMS,
+  View.ACTIONS,
+  View.WIDGET_MODELS,
   View.KEEP_MODEL_ON_IMPLICIT_CLOSE
 })
 @JsonTypeName("View")
@@ -92,6 +95,12 @@ public class View {
 
   public static final String DOWNLOADABLE_ITEMS = "downloadableItems";
   private Map<String, URI> downloadableItems = new HashMap<>();
+
+  public static final String ACTIONS = "actions";
+  private List<UiAction> actions = new ArrayList<>();
+
+  public static final String WIDGET_MODELS = "widgetModels";
+  private Map<String, Object> widgetModels = new HashMap<>();
 
   public static final String KEEP_MODEL_ON_IMPLICIT_CLOSE = "keepModelOnImplicitClose";
   private Boolean keepModelOnImplicitClose;
@@ -454,6 +463,73 @@ public class View {
   }
 
 
+  public View actions(List<UiAction> actions) {
+    
+    this.actions = actions;
+    return this;
+  }
+
+  public View addActionsItem(UiAction actionsItem) {
+    this.actions.add(actionsItem);
+    return this;
+  }
+
+   /**
+   * Get actions
+   * @return actions
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @Valid
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(ACTIONS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public List<UiAction> getActions() {
+    return actions;
+  }
+
+
+  @JsonProperty(ACTIONS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setActions(List<UiAction> actions) {
+    this.actions = actions;
+  }
+
+
+  public View widgetModels(Map<String, Object> widgetModels) {
+    
+    this.widgetModels = widgetModels;
+    return this;
+  }
+
+  public View putWidgetModelsItem(String key, Object widgetModelsItem) {
+    this.widgetModels.put(key, widgetModelsItem);
+    return this;
+  }
+
+   /**
+   * Get widgetModels
+   * @return widgetModels
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(WIDGET_MODELS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Map<String, Object> getWidgetModels() {
+    return widgetModels;
+  }
+
+
+  @JsonProperty(WIDGET_MODELS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setWidgetModels(Map<String, Object> widgetModels) {
+    this.widgetModels = widgetModels;
+  }
+
+
   public View keepModelOnImplicitClose(Boolean keepModelOnImplicitClose) {
     
     this.keepModelOnImplicitClose = keepModelOnImplicitClose;
@@ -502,12 +578,14 @@ public class View {
         Objects.equals(this.constraint, view.constraint) &&
         Objects.equals(this.closedChildrenViews, view.closedChildrenViews) &&
         Objects.equals(this.downloadableItems, view.downloadableItems) &&
+        Objects.equals(this.actions, view.actions) &&
+        Objects.equals(this.widgetModels, view.widgetModels) &&
         Objects.equals(this.keepModelOnImplicitClose, view.keepModelOnImplicitClose);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uuid, viewName, objectUri, branchUri, parameters, state, type, containerUuid, model, constraint, closedChildrenViews, downloadableItems, keepModelOnImplicitClose);
+    return Objects.hash(uuid, viewName, objectUri, branchUri, parameters, state, type, containerUuid, model, constraint, closedChildrenViews, downloadableItems, actions, widgetModels, keepModelOnImplicitClose);
   }
 
   @Override
@@ -526,6 +604,8 @@ public class View {
     sb.append("    constraint: ").append(toIndentedString(constraint)).append("\n");
     sb.append("    closedChildrenViews: ").append(toIndentedString(closedChildrenViews)).append("\n");
     sb.append("    downloadableItems: ").append(toIndentedString(downloadableItems)).append("\n");
+    sb.append("    actions: ").append(toIndentedString(actions)).append("\n");
+    sb.append("    widgetModels: ").append(toIndentedString(widgetModels)).append("\n");
     sb.append("    keepModelOnImplicitClose: ").append(toIndentedString(keepModelOnImplicitClose)).append("\n");
     sb.append("}");
     return sb.toString();

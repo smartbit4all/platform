@@ -69,6 +69,87 @@ paths:
           description: 'The context does not exists with the given uuid'
         '500':
           description: 'Error occured while fetching the session data'
+  /component/{uuid}:
+    get:
+      tags:
+      - View
+      summary: Returns component's model.
+      operationId: 'getComponentModel'
+      parameters: 
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Component's unique identifier.
+      responses:
+        '200':
+          description: 'Returns ComponentModel by unique identifier'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComponentModel'
+        '404':
+          description: 'The component does not exists with the given uuid'
+        '500':
+          description: 'Error occured while fetching the component data'
+  /component/{uuid}/action:
+    post:
+      tags:
+      - View
+      description: |
+        Performs a generic UI action.
+      operationId: 'performAction'
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: UiActionRequest
+      responses:
+        '200':
+          description: ''
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ViewContextChange'
+  /component/{uuid}/download/{item}:
+    get:
+      tags:
+        - View
+      operationId: 'downloadItem'
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+        - in: path
+          name: item
+          schema:
+              type: string
+          required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: 'The component does not exists with the given uuid'
+        '500':
+          description: 'Error occured while fetching the downloadable item'
   /message/{viewUuid}/{messageUuid}:
     post:
       tags:
@@ -128,7 +209,7 @@ paths:
     get:
       tags:
         - View
-      operationId: 'downloadItem'
+      operationId: 'downloadItemDeprecated'
       parameters:
         - in: path
           name: uuid
@@ -207,9 +288,20 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ViewData'
+    ViewContextChange:
+      type: object
+      description: The same session can be valid / used in multiple UIs, this object represents a UI.
+      required: [viewContext,changes]
+      properties:
+        viewContext:
+          $ref: '#/components/schemas/ViewContextData'
+        changes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ComponentModelChange'
     View:
       type: object
-      required: [uuid,viewName,state,type,parameters,closedChildrenViews,downloadableItems]
+      required: [uuid,viewName,state,type,parameters,closedChildrenViews,downloadableItems,actions,widgetModels]
       properties:
         uuid:
           type: string
@@ -246,6 +338,14 @@ components:
           additionalProperties: 
             type: string
             format: uri
+        actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/UiAction'
+        widgetModels:
+          type: string
+          additionalProperties:
+            type: object
         keepModelOnImplicitClose:
           type: boolean
     ViewData:
@@ -278,6 +378,49 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ComponentConstraint'
+    ComponentModel:
+      type: object
+      description: |
+        Model of a UI component. Contains all information in one object, which are needed 
+        to render a fully functionin component.
+      required: [uuid,name,constraints,layouts,actions,widgetModels]
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        name:
+          type: string
+        data:
+          type: object
+        constraints:
+          type: array
+          items:
+            $ref: '#/components/schemas/ComponentConstraint'
+        layouts:
+          additionalProperties: 
+            type: SmartLayoutDefinition
+        actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/UiAction'
+        widgetModels:
+          description: Complex widgets with corresponding initial model. 
+          type: string
+          additionalProperties:
+            type: object
+    ComponentModelChange:
+      type: object
+      description: |
+        Change of a ComponentModel.
+      required: [uuid,path]
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        path:
+          type: string
+        value:
+          type: object
     ComponentConstraint:
       type: object
       description: |
@@ -429,6 +572,8 @@ components:
       type: object
       properties:
         code:
+          type: string
+        path:
           type: string
         identifier:
           type: string

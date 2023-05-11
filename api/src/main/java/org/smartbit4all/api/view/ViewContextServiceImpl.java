@@ -1,11 +1,13 @@
 package org.smartbit4all.api.view;
 
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,15 +21,21 @@ import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.exception.ViewContextMissigException;
+import org.smartbit4all.api.view.annotation.ActionHandler;
 import org.smartbit4all.api.view.annotation.BeforeClose;
 import org.smartbit4all.api.view.annotation.MessageHandler;
 import org.smartbit4all.api.view.annotation.ViewApi;
 import org.smartbit4all.api.view.bean.CloseResult;
+import org.smartbit4all.api.view.bean.ComponentConstraint;
+import org.smartbit4all.api.view.bean.ComponentModel;
+import org.smartbit4all.api.view.bean.ComponentModelChange;
 import org.smartbit4all.api.view.bean.MessageData;
 import org.smartbit4all.api.view.bean.MessageResult;
 import org.smartbit4all.api.view.bean.OpenPendingData;
+import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.bean.ViewContext;
+import org.smartbit4all.api.view.bean.ViewContextChange;
 import org.smartbit4all.api.view.bean.ViewContextData;
 import org.smartbit4all.api.view.bean.ViewContextUpdate;
 import org.smartbit4all.api.view.bean.ViewData;
@@ -60,6 +68,8 @@ public class ViewContextServiceImpl implements ViewContextService {
   private Map<String, Class<?>> modelClassByViewName = new HashMap<>();
 
   private Map<String, Map<String, Method>> messageMethodsByView = new HashMap<>();
+
+  private Map<String, Map<String, Method>> actionMethodsByView = new HashMap<>();
 
   private Map<String, Method> beforeCloseMethodsByView = new HashMap<>();
 
@@ -272,17 +282,8 @@ public class ViewContextServiceImpl implements ViewContextService {
     }
     Object api = apiByViewName.get(view.getViewName());
     Objects.requireNonNull(api, "API not found for view " + view.getViewName());
-    Map<String, Method> messageMethods = messageMethodsByView.get(view.getViewName());
-    if (messageMethods == null) {
-      return;
-    }
-
-    String code = messageResult.getSelectedOption().getCode();
-    Method method = messageMethods.get(code);
-    if (method == null) {
-      // wildcard handler
-      method = messageMethods.get("");
-    }
+    Method method = getMethodForCode(messageMethodsByView, view.getViewName(),
+        messageResult.getSelectedOption().getCode());
     if (method != null) {
       try {
         // TODO examine signature, try to support many variations
@@ -330,6 +331,7 @@ public class ViewContextServiceImpl implements ViewContextService {
    */
   private void registerViewMethods(String viewName, Object api) {
     registerMessageMethods(viewName, api);
+    registerActionMethods(viewName, api);
     registerAnnotatedMethods(viewName, api, BeforeClose.class, beforeCloseMethodsByView);
   }
 
@@ -341,6 +343,17 @@ public class ViewContextServiceImpl implements ViewContextService {
         .forEach(method -> collectMessageMethod(viewName, method, messageMethods));
 
     messageMethodsByView.put(viewName, messageMethods);
+  }
+
+  // TODO consolidate registerMessageMethod and registerActionMethod
+  private void registerActionMethods(String viewName, Object api) {
+    Map<String, Method> actionMethods = new HashMap<>();
+    ReflectionUtility.allMethods(
+        api.getClass(),
+        method -> method.isAnnotationPresent(ActionHandler.class))
+        .forEach(method -> collectActionMethod(viewName, method, actionMethods));
+
+    actionMethodsByView.put(viewName, actionMethods);
   }
 
   private void registerAnnotatedMethods(String viewName, Object api,
@@ -358,7 +371,7 @@ public class ViewContextServiceImpl implements ViewContextService {
   }
 
   /**
-   * Process method's {@link MessageHandler} annotation values: for each value, put an entry to
+   * Process method's annotation values for parameter annotation: for each value, put an entry to
    * messageMethods with value as key and method as value.
    *
    * @param method
@@ -367,6 +380,21 @@ public class ViewContextServiceImpl implements ViewContextService {
   private void collectMessageMethod(String viewName, Method method,
       Map<String, Method> messageMethods) {
     MessageHandler annotation = AnnotationUtils.findAnnotation(method, MessageHandler.class);
+    if (annotation != null) {
+      List<String> messages = Arrays.asList(annotation.value());
+      for (String message : messages) {
+        if (messageMethods.containsKey(message)) {
+          throw new IllegalStateException("MessageHandler duplicated! " + viewName + "." + message);
+        }
+        messageMethods.put(message, method);
+      }
+    }
+  }
+
+  // TODO consolidate collectMessageMethod and collectActionMethod
+  private void collectActionMethod(String viewName, Method method,
+      Map<String, Method> messageMethods) {
+    ActionHandler annotation = AnnotationUtils.findAnnotation(method, ActionHandler.class);
     if (annotation != null) {
       List<String> messages = Arrays.asList(annotation.value());
       for (String message : messages) {
@@ -419,4 +447,90 @@ public class ViewContextServiceImpl implements ViewContextService {
     }
   }
 
+  @Override
+  public ComponentModel getComponentModel(UUID viewUuid) {
+    View view = getViewFromCurrentViewContext(viewUuid);
+    Objects.requireNonNull(view, "View not found!");
+    Object data = getModel(viewUuid, null);
+    List<ComponentConstraint> constraints;
+    if (view.getConstraint() != null) {
+      constraints = view.getConstraint().getComponentConstraints();
+    } else {
+      constraints = Collections.emptyList();
+    }
+    return new ComponentModel()
+        .uuid(view.getUuid())
+        .name(view.getViewName())
+        .data(data)
+        .constraints(constraints)
+        .actions(view.getActions())
+        .widgetModels(view.getWidgetModels());
+  }
+
+  @Override
+  public ViewContextChange performAction(UUID viewUuid, UiActionRequest request) {
+    Objects.requireNonNull(request, "Request must be specified!");
+    Objects.requireNonNull(request.getCode(), "Request.code must be specified!");
+    View view = getViewFromCurrentViewContext(viewUuid);
+    Objects.requireNonNull(view, "View not found!");
+    Object api = apiByViewName.get(view.getViewName());
+    Objects.requireNonNull(api, "API not found for view " + view.getViewName());
+    Method method = getMethodForCode(actionMethodsByView, view.getViewName(), request.getCode());
+    if (method == null) {
+      throw new IllegalStateException("No actionHandler for request! " + request);
+    }
+    try {
+      ObjectNode before = objectApi.create(SCHEMA, getCurrentViewContextEntry());
+      method.invoke(api, viewUuid, request);
+      Map<UUID, View> beforeViews = before.getValueAsList(View.class, ViewContext.VIEWS)
+          .stream()
+          .collect(toMap(View::getUuid, v -> v));
+      ObjectNode after = objectApi.create(SCHEMA, getCurrentViewContextEntry());
+      List<ComponentModelChange> changes = after.getValueAsList(View.class, ViewContext.VIEWS)
+          .stream()
+          .filter(v -> beforeViews.containsKey(v.getUuid()))
+          .map(v -> compareViewNodes(beforeViews.get(v.getUuid()), v))
+          .filter(Objects::nonNull)
+          .collect(toList());
+      return new ViewContextChange()
+          .viewContext(getCurrentViewContext())
+          .changes(changes);
+    } catch (Throwable tr) {
+      throw new RuntimeException("Error when calling MessageHandler method " + method.getName(),
+          tr);
+    }
+
+  }
+
+  private ComponentModelChange compareViewNodes(View before, View after) {
+    if (before != null) {
+      before.getParameters().clear();
+      before.getClosedChildrenViews().clear();
+    }
+    if (after != null) {
+      after.getParameters().clear();
+      after.getClosedChildrenViews().clear();
+    }
+    if (Objects.equals(before, after)) {
+      return null;
+    }
+    return new ComponentModelChange()
+        .uuid(after.getUuid())
+        .path("/")
+        .value(getComponentModel(after.getUuid()));
+  }
+
+  private Method getMethodForCode(Map<String, Map<String, Method>> methodsByView, String viewName,
+      String code) {
+    Map<String, Method> methods = methodsByView.get(viewName);
+    if (methods == null) {
+      return null;
+    }
+    Method method = methods.get(code);
+    if (method == null) {
+      // wildcard handler
+      method = methods.get("");
+    }
+    return method;
+  }
 }
