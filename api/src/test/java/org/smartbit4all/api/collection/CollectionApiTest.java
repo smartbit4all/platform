@@ -3,6 +3,7 @@ package org.smartbit4all.api.collection;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -340,9 +341,11 @@ class CollectionApiTest {
     System.out.println(definition.getQualifiedName());
 
     int count = 25;
+    Map<String, URI> urisByCategoryName = new HashMap<>();
     for (int i = 0; i < count; i++) {
+      String name = "category " + i;
       ObjectNode node =
-          objectApi.create(SCHEMA, new SampleCategory().name("category " + i)
+          objectApi.create(SCHEMA, new SampleCategory().name(name)
               .keyWords(Arrays.asList("key " + i, "key " + (i + 1))));
       ObjectNodeList list = node.list(SampleCategory.CONTAINER_ITEMS);
       for (int j = i; j < i + 3; j++) {
@@ -353,13 +356,13 @@ class CollectionApiTest {
             .ref(SampleContainerItem.DATASHEET)
             .setNewObject(new SampleDataSheet().name("datasheet " + j));
       }
-      objectApi.save(node);
+      urisByCategoryName.put(name, objectApi.save(node));
     }
 
     SearchIndex<SampleCategory> searchIndex =
         collectionApi.searchIndex(SCHEMA, CollectionApiTest.SAMPLE_CATEGORY, SampleCategory.class);
     {
-      TableData<?> tableData = searchIndex.executeSearch(new FilterExpressionList()
+      FilterExpressionList filterExpressions = new FilterExpressionList()
           .addExpressionsItem(
               new FilterExpressionData().currentOperation(FilterExpressionOperation.LIKE)
                   .operand1(new FilterExpressionOperandData().isDataName(true)
@@ -378,16 +381,34 @@ class CollectionApiTest {
                               .operand1(new FilterExpressionOperandData().isDataName(true)
                                   .valueAsString(SampleContainerItem.DATASHEET))
                               .operand2(new FilterExpressionOperandData().isDataName(false)
-                                  .valueAsString("data%3"))))));
-      assertEquals(5, tableData.size());
+                                  .valueAsString("data%3")))));
+      {
+        TableData<?> tableData = searchIndex.executeSearch(filterExpressions);
+        assertEquals(5, tableData.size());
 
-      List<String> categoryNammeWithDetail =
-          Arrays.asList("category 2", "category 12", "category 21", "category 22", "category 23");
-      DataColumn<?> colName =
-          tableData.getColumn(tableData.entity().getProperty(SampleCategory.NAME));
-      List<?> nameValues = tableData.values(colName);
-      assertTrue(categoryNammeWithDetail.containsAll(nameValues));
-      assertTrue(nameValues.containsAll(categoryNammeWithDetail));
+        List<String> categoryNammeWithDetail =
+            Arrays.asList("category 2", "category 12", "category 21", "category 22", "category 23");
+        DataColumn<?> colName =
+            tableData.getColumn(tableData.entity().getProperty(SampleCategory.NAME));
+        List<?> nameValues = tableData.values(colName);
+        assertTrue(categoryNammeWithDetail.containsAll(nameValues));
+        assertTrue(nameValues.containsAll(categoryNammeWithDetail));
+      }
+
+      {
+        List<String> categoryNammeWithDetail =
+            Arrays.asList("category 2", "category 21", "category 22");
+        TableData<?> tableData = searchIndex.executeSearchOn(urisByCategoryName.entrySet().stream()
+            .filter(e -> categoryNammeWithDetail.contains(e.getKey())).map(e -> e.getValue()),
+            filterExpressions);
+        assertEquals(3, tableData.size());
+
+        DataColumn<?> colName =
+            tableData.getColumn(tableData.entity().getProperty(SampleCategory.NAME));
+        List<?> nameValues = tableData.values(colName);
+        assertTrue(categoryNammeWithDetail.containsAll(nameValues));
+        assertTrue(nameValues.containsAll(categoryNammeWithDetail));
+      }
     }
 
     {

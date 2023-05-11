@@ -39,6 +39,7 @@ import org.smartbit4all.domain.utility.crud.CrudRead;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import static java.util.stream.Collectors.toList;
 
 /**
  * @author Peter Boros
@@ -113,8 +114,19 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
 
   @Override
   public TableData<?> executeSearch(QueryInput queryInput) {
-    if (!useDatabase) {
-      SearchEntityTableDataResult allObjects = readAllObjects();
+    return executeSearch(queryInput, false, null);
+  }
+
+  @Override
+  public TableData<?> executeSearchOn(Stream<URI> objects, FilterExpressionList filterExpressions,
+      List<FilterExpressionOrderBy> orderByList) {
+    return executeSearch(filterExpressions, orderByList, true, objects);
+  }
+
+  private TableData<?> executeSearch(QueryInput queryInput, boolean readFromStorage,
+      Stream<URI> objectUris) {
+    if (!useDatabase || readFromStorage) {
+      SearchEntityTableDataResult allObjects = readAllObjects(objectUris);
       if (queryInput.where() == null) {
         TableData<?> result = allObjects.result;
         if (queryInput.orderBys() != null && !queryInput.orderBys().isEmpty()) {
@@ -143,11 +155,6 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
     }
   }
 
-  // TODO seems unused, remove if it's really not used
-  // public TableData<?> getAll() {
-  // return readAllObjects().result;
-  // }
-
   @Override
   public List<O> list(QueryInput queryInput) {
     try {
@@ -169,8 +176,8 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
     return result;
   }
 
-  private final SearchEntityTableDataResult readAllObjects() {
-    return readAllObjects(constructResult());
+  private final SearchEntityTableDataResult readAllObjects(Stream<URI> objectUris) {
+    return readAllObjects(constructResult(), objectUris);
   }
 
   @Override
@@ -182,9 +189,11 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
     objectMapping.merge(updateResult);
   }
 
-  private final SearchEntityTableDataResult readAllObjects(SearchEntityTableDataResult result) {
+  private final SearchEntityTableDataResult readAllObjects(SearchEntityTableDataResult result,
+      Stream<URI> objectUris) {
 
-    List<URI> allObjectUris = getRelevantObjectUris();
+    List<URI> allObjectUris =
+        objectUris == null ? getRelevantObjectUris() : objectUris.collect(toList());
     objectMapping.readObjects(allObjectUris.stream().map(u -> objectApi.load(u)), result,
         Collections.emptyMap());
 
@@ -352,6 +361,12 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
   @Override
   public TableData<?> executeSearch(FilterExpressionList filterExpressions,
       List<FilterExpressionOrderBy> orderByList) {
+    return executeSearch(filterExpressions, orderByList, false, null);
+  }
+
+  private TableData<?> executeSearch(FilterExpressionList filterExpressions,
+      List<FilterExpressionOrderBy> orderByList, boolean readFromStorage,
+      Stream<URI> objectUris) {
     Expression queryExpression =
         filterExpressions == null ? null
             : filterExpressionApi.constructExpression(
@@ -366,7 +381,7 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
             : objectMapping.propertyOf(orderBy).asc());
       }
     }
-    return executeSearch(read.getQuery());
+    return executeSearch(read.getQuery(), readFromStorage, objectUris);
   }
 
   @Override

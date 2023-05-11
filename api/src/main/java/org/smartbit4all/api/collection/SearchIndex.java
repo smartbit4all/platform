@@ -55,8 +55,37 @@ public interface SearchIndex<O> {
   TableData<?> executeSearch(FilterExpressionList filterExpressions,
       List<FilterExpressionOrderBy> orderByList);
 
+  /**
+   * We can execute the search synchronously and we get back the result {@link TableData} in memory.
+   *
+   * @param filterExpressions The expression list for the query.
+   * @return The result table data of the search.
+   */
   default TableData<?> executeSearch(FilterExpressionList filterExpressions) {
     return executeSearch(filterExpressions, null);
+  }
+
+  /**
+   * We can execute the search synchronously and we get back the result {@link TableData} in memory.
+   *
+   * @param tableData The in memory table data the query is running on.
+   * @param filterExpressions The expression list for the query.
+   * @param orderByList desired order of result
+   * @return The result table data of the search.
+   */
+  TableData<?> executeSearchOn(Stream<URI> objects, FilterExpressionList filterExpressions,
+      List<FilterExpressionOrderBy> orderByList);
+
+  /**
+   * We can execute the search synchronously and we get back the result {@link TableData} in memory.
+   *
+   * @param tableData The in memory table data the query is running on.
+   * @param filterExpressions The expression list for the query.
+   * @return The result table data of the search.
+   */
+  default TableData<?> executeSearchOn(Stream<URI> objects,
+      FilterExpressionList filterExpressions) {
+    return executeSearchOn(objects, filterExpressions, null);
   }
 
   /**
