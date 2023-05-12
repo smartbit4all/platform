@@ -28,7 +28,7 @@ import org.smartbit4all.core.utility.UriUtils;
  * name) and the rest of the path is the creation time in year/month/day/hour/min format. The final
  * item is a UUID that should be unique individually also. In a running application this URI always
  * identifies a given object.
- * 
+ *
  * @author Peter Boros
  * @param <T>
  */
@@ -101,14 +101,14 @@ public final class StorageObject<T> {
 
   /**
    * The lock belongs to this {@link StorageObject}.
-   * 
+   *
    */
   private StorageObjectLock lock;
 
   /**
    * These are the version policies that can be used in the storage object to instruct the object
    * storage about the new and new versions of an object.
-   * 
+   *
    * @author Peter Boros
    */
   public enum VersionPolicy {
@@ -138,7 +138,7 @@ public final class StorageObject<T> {
 
   /**
    * The storage object operation gives instructions to object storage about the given object.
-   * 
+   *
    * @author Peter Boros
    */
   public enum StorageObjectOperation {
@@ -165,8 +165,8 @@ public final class StorageObject<T> {
   /**
    * The onSucceedFunctionList list is the ordered collection of the functions that should be
    * executed when the {@link Storage#save(StorageObject)} is successfully finished.
-   * 
-   * 
+   *
+   *
    * TODO Detailed specification.
    */
   private List<Consumer<StorageSaveEvent>> onSucceedFunctionList = null;
@@ -177,7 +177,7 @@ public final class StorageObject<T> {
    * The Storage cann't be created directly! Use the Storage that would manage this object to have a
    * new one by {@link Storage#instanceOf(Class)} or load one by
    * {@link Storage#load(URI, Class, StorageLoadOption...)}
-   * 
+   *
    * @param objectDefinition The {@link ObjectDefinition} of the class that is wrapped by this
    *        {@link StorageObject}.
    * @param storage The storage itself.
@@ -196,7 +196,7 @@ public final class StorageObject<T> {
 
   /**
    * The URI of the object {@link #uri}.
-   * 
+   *
    * @param uri
    */
   final void setUri(URI uri) {
@@ -221,6 +221,12 @@ public final class StorageObject<T> {
     return definition;
   }
 
+  /**
+   * @deprecated We plan to remove this function, because AS_OBJECT mode will be removed to prevent
+   *             accidental overwriting of extra information stored in ObjectMap.
+   * @return
+   */
+  @Deprecated
   public final T getObject() {
     if (object == null) {
       object = definition().fromMap(objectAsMap);
@@ -231,7 +237,7 @@ public final class StorageObject<T> {
   /**
    * Used for the load to use the uri of the object itself. Remove the history (fragment) part of
    * the URI.
-   * 
+   *
    * @param object
    */
   final void setObjectInner(T object) {
@@ -242,7 +248,7 @@ public final class StorageObject<T> {
   /**
    * Set the object. The object uri will be set to the URI of this {@link StorageObject}! From that
    * point we must use this object as a contained part of the {@link StorageObject}.
-   * 
+   *
    * @param object
    */
   public final StorageObject<T> setObject(T object) {
@@ -276,7 +282,7 @@ public final class StorageObject<T> {
   /**
    * Set the object. The object uri will be set to the URI of this {@link StorageObject}! From that
    * point we must use this object as a contained part of the {@link StorageObject}.
-   * 
+   *
    * @param object
    */
   @SuppressWarnings("unchecked")
@@ -331,7 +337,7 @@ public final class StorageObject<T> {
 
   /**
    * The reference will be saved as the reference describes.
-   * 
+   *
    * @param referenceName The name of the reference.
    * @param reference The reference data containing the URI and some other information.
    */
@@ -357,7 +363,7 @@ public final class StorageObject<T> {
 
   /**
    * Clear the given reference.
-   * 
+   *
    * @param referenceName
    */
   public final void clearReference(String referenceName) {
@@ -375,7 +381,7 @@ public final class StorageObject<T> {
   /**
    * The collection map where the entries are identified by the
    * {@link ObjectReference#getReferenceId()}.
-   * 
+   *
    * @param collectionName The name of the collection.
    * @return The map of the collection entries identified by id.
    */
@@ -388,7 +394,7 @@ public final class StorageObject<T> {
   /**
    * The collection map where the entries are identified by the
    * {@link ObjectReference#getReferenceId()}.
-   * 
+   *
    * @param collectionName The name of the collection.
    * @return The map of the collection entries identified by id.
    */
@@ -425,7 +431,7 @@ public final class StorageObject<T> {
 
   /**
    * The Storage (the logical schema) that is responsible for the given object.
-   * 
+   *
    * @return
    */
   public final Storage getStorage() {
@@ -437,7 +443,7 @@ public final class StorageObject<T> {
    * {@link StorageObjectData#getCurrentVersion()} when we loaded the object. This version can be
    * used to manage the optimistic lock for example. During the save we can check if we have the
    * same current version. Else the object has been changed in the meantime.
-   * 
+   *
    * @return
    */
   public final ObjectVersion getVersion() {
@@ -472,7 +478,7 @@ public final class StorageObject<T> {
    * {@link StorageSaveEvent} list will be produced and saved and all these requests will be
    * executed by the InvocationApi. If we miss executing any of them then later on another node can
    * catch these requests check the validity and execute them.
-   * 
+   *
    * @param func The function to call
    * @return
    */
@@ -539,7 +545,7 @@ public final class StorageObject<T> {
   /**
    * Used for the load to use the uri of the object itself. Remove the history (fragment) part of
    * the URI.
-   * 
+   *
    */
   final void setObjectAsMapInner(Map<String, Object> objectAsMap) {
     this.objectAsMap = objectAsMap;
@@ -560,6 +566,8 @@ public final class StorageObject<T> {
   }
 
   /**
+   *
+   *
    * @see #mode
    */
   public final StorageObject<T> asObject() {

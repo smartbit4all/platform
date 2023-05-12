@@ -616,11 +616,6 @@ public class OrgApiStorageImpl implements OrgApi {
     invalidateCache();
   }
 
-  private void setUserToInactive(URI userUri) {
-    storage.get().update(userUri, User.class, u -> u.inactive(true));
-    invalidateCache();
-  }
-
   /**
    * Loads the StorgaeObject with the given uri and class, and sets it to deleted.
    *
@@ -845,9 +840,7 @@ public class OrgApiStorageImpl implements OrgApi {
     }
     Group groupByName = getGroupByName(name);
     if (storage.get().exists(groupByName.getUri())) {
-      StorageObject<Group> oldGroup = storage.get().load(groupByName.getUri(), Group.class);
-      oldGroup.setObject(group);
-      URI uri = storage.get().save(oldGroup);
+      URI uri = storage.get().update(groupByName.getUri(), Group.class, g -> group);
       invalidateCache();
       return uri;
     }
@@ -921,10 +914,13 @@ public class OrgApiStorageImpl implements OrgApi {
     setUserToActive(userUri);
   }
 
+  private void setUserToInactive(URI userUri) {
+    storage.get().update(userUri, User.class, u -> u.inactive(true));
+    invalidateCache();
+  }
+
   private void setUserToActive(URI userUri) {
-    StorageObject<User> userSO = storage.get().load(userUri, User.class);
-    userSO.getObject().setInactive(false);
-    storage.get().save(userSO);
+    storage.get().update(userUri, User.class, u -> u.inactive(false));
     invalidateCache();
   }
 
