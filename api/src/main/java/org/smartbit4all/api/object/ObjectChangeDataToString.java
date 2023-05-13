@@ -32,6 +32,11 @@ public class ObjectChangeDataToString {
       String prefix, List<PropertyChangeData> properties, boolean htmlFormatted) {
     for (PropertyChangeData propertyChangeData : properties) {
       String path = prefix + propertyChangeData.getPath();
+      if (path != null &&
+          (path.toLowerCase().endsWith("uri"))
+          || path.toLowerCase().endsWith("uuid")) {
+        continue;
+      }
       List<String> translations = translate(localeSettingApi, path);
       if (!translations.isEmpty()) {
         path += " " + translations;
@@ -40,11 +45,15 @@ public class ObjectChangeDataToString {
         sb.append("<b>")
             .append(path)
             .append("</b>")
-            .append(": ")
-            .append(propertyChangeData.getOldValue())
-            .append("<b>")
-            .append(" -> ")
-            .append("</b>")
+            .append(": ");
+        if (propertyChangeData.getOldValue() != null) {
+          sb
+              .append(propertyChangeData.getOldValue())
+              .append("<b>")
+              .append(" -> ")
+              .append("</b>");
+        }
+        sb
             .append(propertyChangeData.getNewValue())
             .append("<br>");
       } else {
@@ -67,7 +76,7 @@ public class ObjectChangeDataToString {
    * document.types.0.name -> [document.types, name] -> [Dokumentum típusok, név]
    * </p>
    * </body>
-   * 
+   *
    * @param localeSettingApi
    * @param path
    * @return
