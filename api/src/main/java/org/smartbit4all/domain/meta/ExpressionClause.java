@@ -52,6 +52,7 @@ public final class ExpressionClause extends Expression implements ExpressionCont
     for (Expression expression : exp.expressions) {
       expressions.add(expression != null ? expression.copy() : null);
     }
+    this.setOperator(exp.operator);
     this.setNegate(exp.isNegate());
   }
 
