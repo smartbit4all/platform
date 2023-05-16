@@ -37,6 +37,7 @@ import org.smartbit4all.api.storage.bean.ObjectMapRequest;
 import org.smartbit4all.api.storage.bean.ObjectReference;
 import org.smartbit4all.api.storage.bean.StorageSettings;
 import org.smartbit4all.core.utility.ReflectionUtility;
+import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageObject;
@@ -645,12 +646,15 @@ public class OrgApiStorageImpl implements OrgApi {
   }
 
   private String getKeyByValue(URI value, ObjectMap objectMap) {
-    for (Entry<String, URI> entry : objectMap.getUris().entrySet()) {
-      if (entry.getValue().equals(value)) {
-        return entry.getKey();
-      }
-    }
-    return null;
+    final URI valueWithoutVersion = ObjectStorageImpl.getUriWithoutVersion(value);
+    return objectMap.getUris().entrySet().stream()
+        .filter(e -> {
+          final URI uriWithoutVersion = ObjectStorageImpl.getUriWithoutVersion(e.getValue());
+          return uriWithoutVersion.equals(valueWithoutVersion);
+        })
+        .findFirst()
+        .map(Map.Entry::getKey)
+        .orElse(null);
   }
 
   /**
