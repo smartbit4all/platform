@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.binarydata.BinaryData;
@@ -32,7 +33,7 @@ import com.google.common.primitives.Longs;
 
 /**
  * The basic file IO for the file system related operations based on objects.
- * 
+ *
  * @author Peter Boros
  */
 public class FileIO {
@@ -62,21 +63,60 @@ public class FileIO {
   }
 
   public static void write(File newFile, BinaryData content) {
-    try (InputStream in = content.inputStream()) {
+    writeFile(newFile, content::inputStream);
+  }
 
-      newFile.mkdirs();
-      Files.copy(in, newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-      in.close();
-
+  private static void writeFile(File file, Supplier<InputStream> inputStream) {
+    long waitTime = 2;
+    long fullWaitTime = 0;
+    try {
+      file.mkdirs();
     } catch (Exception e) {
-      throw new IllegalArgumentException("Cannot write file: " + newFile, e);
+      throw new IllegalArgumentException("Cannot create file's dir: " + file, e);
     }
+    while (true) {
+      try (InputStream in = inputStream.get()) {
+        if (in != null) {
+          Files.copy(in, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        } else {
+          log.warn("No stream specified for writing file {}", file);
+        }
+        return;
+      } catch (IOException e) {
+        if (fullWaitTime > 1000) {
+          // we waited enough, and still doesn't work, show last exception
+          throw new IllegalArgumentException("Cannot write file after several trying: " + file, e);
+        }
+        // We must try again.
+        log.debug("Unable to write " + file, e);
+        waitTime = getNextRandomWaitTime(waitTime);
+        fullWaitTime += waitTime;
+      } catch (Exception e) {
+        // Not IOException - we should terminate, something other kind of bad happened
+        throw new IllegalArgumentException("Cannot write file: " + file, e);
+      }
+      try {
+        Thread.sleep(waitTime);
+      } catch (InterruptedException e) {
+        throw new IllegalStateException("Cannot write file: " + file, e);
+      }
+    }
+  }
+
+  /**
+   * Multiplies current waitTime by random 1..4
+   *
+   * @param waitTime
+   * @return
+   */
+  private static long getNextRandomWaitTime(long waitTime) {
+    return waitTime * (rnd.nextInt(3) + 1);
   }
 
   /**
    * Special write that concatenates multiple {@link BinaryData}s into one single file. To be able
    * to read the contents again the length appears in front of every content.
-   * 
+   *
    * @param newFile
    * @param contents
    */
@@ -96,19 +136,20 @@ public class FileIO {
         }
       });
     }
-    try (InputStream in = ByteSource.concat(byteSources).openStream()) {
-
-      newFile.getParentFile().mkdirs();
-      Files.copy(in, newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-
-    } catch (Exception e) {
-      throw new IllegalArgumentException("Cannot write file: " + newFile, e);
-    }
+    ByteSource byteSource = ByteSource.concat(byteSources);
+    writeFile(newFile, () -> {
+      try {
+        return byteSource.openStream();
+      } catch (IOException e) {
+        log.error("Error on ByteSource.concat for file " + newFile, e);
+        return null;
+      }
+    });
   }
 
   /**
    * Read the content of the multipart file into {@link BinaryData} objects.
-   * 
+   *
    * @param file The multipart file.
    * @return All the {@link BinaryData} contains the {@link ByteSource} points to the given
    */
@@ -222,7 +263,7 @@ public class FileIO {
    * Constructs the path of an index in a list. To identify the given index exactly we use an
    * algorithm where index is exactly identifies the version and the storage in a file system can be
    * unlimited.
-   * 
+   *
    * @param index
    * @return
    */
@@ -252,7 +293,7 @@ public class FileIO {
    * the new version of the object file with the owner runtime instance and the transaction. To be
    * faster the lock file will be created while copying the content of the original file. The
    * runtime and the transaction will be appended to the last section.
-   * 
+   *
    * @param newLockData The lock data of the current lock session. Runtime and transaction.
    * @param lockFile The lock file to create.
    * @param waitUntil If the parameter is -1 then the operation will try to lock the file wait again
@@ -312,7 +353,7 @@ public class FileIO {
    * The unlock use a file system lock via {@link RandomAccessFile} for the lock file. If it fails
    * then we retry until we successfully read the content of the lock file. If we could read it then
    * we check the validity. In case of a valid lock we have to wait and try again.
-   * 
+   *
    * @param lockFile The lock file.
    * @param waitUntil Defines the waiting policy. -1 means wait forever, 0 means try only once, an
    *        exact number means the waiting for this millisecond.
@@ -352,7 +393,7 @@ public class FileIO {
 
   /**
    * Utility function to write the {@link FileLockData} object.
-   * 
+   *
    * @param fileChannel The {@link FileChannel} to write into.
    * @param lockData The lock data to write.
    * @throws IOException
@@ -367,7 +408,7 @@ public class FileIO {
 
   /**
    * Read the {@link FileLockData} object from a lock file.
-   * 
+   *
    * @param fileChannel The {@link FileChannel} to read from.
    * @return The data object.
    */
@@ -382,7 +423,7 @@ public class FileIO {
   /**
    * Read a String from the {@link FileChannel}. It reads a four byte integer as a length of the
    * following string. Then read the string assuming utf-8 char set.
-   * 
+   *
    * @param fileChannel The {@link FileChannel} to read from.
    * @return The String read from the FileChannel current position.
    * @throws IOException
@@ -401,7 +442,7 @@ public class FileIO {
   /**
    * Writes a String into the file channel current position. Writes the length into a four byte
    * integer and the String bytes with utf-8 encoding.
-   * 
+   *
    * @param fileChannel The file channel.
    * @param string The string to write out.
    * @throws IOException
@@ -421,33 +462,23 @@ public class FileIO {
   /**
    * The read object file tries to read the object file without any error. It will retry until
    * succeeded with longer wait period to avoid collision with other processes.
-   * 
+   *
    * @param file The object file to read.
    * @throws InterruptedException
    */
   public static final <T> T readFileAtomic(File file, Function<InputStream, T> reader)
       throws InterruptedException {
-    long waitTime = 10;
+    long waitTime = 2;
     while (true) {
       if (file == null || !file.exists() || !file.isFile()) {
         return null;
       }
-      FileInputStream fis = null;
-      try {
-        fis = new FileInputStream(file);
+      try (FileInputStream fis = new FileInputStream(file)) {
         return reader.apply(fis);
       } catch (IOException e) {
         // We must try again.
-        log.debug("Unable to read " + file);
-        waitTime = waitTime * rnd.nextInt(4);
-      } finally {
-        if (fis != null) {
-          try {
-            fis.close();
-          } catch (IOException e) {
-            // NOP Already closed...
-          }
-        }
+        log.debug("Unable to read {}", file);
+        waitTime = getNextRandomWaitTime(waitTime);
       }
       Thread.sleep(waitTime);
     }
@@ -457,7 +488,7 @@ public class FileIO {
    * The finalization means that we execute an atomic move transactionFile -> objectFile. We can use
    * this function if we have a consistent transaction object. The move can fail because of the read
    * from the object file. If it fails then we can try it again until we succeed.
-   * 
+   *
    * @param transactionFile The transaction file that contains the consistent next version. This is
    *        the source of the movement. It must exists to execute this operation.
    * @param objectFile The object file that is the target of the move. This is optional, if this is
@@ -466,7 +497,7 @@ public class FileIO {
    */
   public static final void finalizeWrite(File transactionFile, File objectFile)
       throws InterruptedException {
-    long waitTime = 10;
+    long waitTime = 2;
     while (true) {
       if (transactionFile == null || !transactionFile.exists() || !transactionFile.isFile()) {
         return;
@@ -478,7 +509,7 @@ public class FileIO {
       } catch (IOException e) {
         // We must try again.
         log.debug("Unable to finalize {} -> {}", transactionFile, objectFile);
-        waitTime = waitTime * rnd.nextInt(4);
+        waitTime = getNextRandomWaitTime(waitTime);
         Thread.sleep(waitTime);
       }
     }
@@ -488,7 +519,7 @@ public class FileIO {
       throws InterruptedException {
     if (sourceObjectFile != null && sourceObjectFile.exists() && targetObjectFile != null) {
       targetObjectFile.getParentFile().mkdirs();
-      long waitTime = 10;
+      long waitTime = 2;
       while (true) {
         if (!sourceObjectFile.exists()) {
           return;
@@ -500,7 +531,7 @@ public class FileIO {
         } catch (IOException e) {
           // We must try again.
           log.debug("Unable to move {} -> {}", sourceObjectFile, targetObjectFile);
-          waitTime = waitTime * rnd.nextInt(4);
+          waitTime = getNextRandomWaitTime(waitTime);
           Thread.sleep(waitTime);
         }
       }
@@ -510,7 +541,7 @@ public class FileIO {
   public static void delete(File file)
       throws InterruptedException {
     if (file != null && file.exists()) {
-      long waitTime = 10;
+      long waitTime = 2;
       while (true) {
         if (!file.exists()) {
           return;
@@ -521,7 +552,7 @@ public class FileIO {
         } catch (IOException e) {
           // We must try again.
           log.debug("Unable to delete {}", file);
-          waitTime = waitTime * rnd.nextInt(4);
+          waitTime = getNextRandomWaitTime(waitTime);
           Thread.sleep(waitTime);
         }
       }

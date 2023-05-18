@@ -17,10 +17,10 @@ import com.google.common.io.ByteStreams;
 public class FileIOLockTestRuntime {
 
   private static final byte[] EMPTY_BYTES = new byte[0];
-  public static final File fileo = new File("test.o");
-  public static final File filet = new File("test.t");
-  public static final File fileresult = new File("test.txt");
-  public static final File file = new File("test.l");
+  public static final File fileo = new File("./test.o");
+  public static final File filet = new File("./test.t");
+  public static final File fileresult = new File("./test.txt");
+  public static final File file = new File("./test.l");
 
   private static final String runtimeId = UUID.randomUUID().toString();
 
@@ -32,7 +32,11 @@ public class FileIOLockTestRuntime {
     long waitTime = 0;
     // Preparation to have the result file.
     if (!fileresult.exists()) {
-      Files.createFile(fileresult.toPath());
+      try {
+        Files.createFile(fileresult.toPath());
+      } catch (IOException e) {
+        // NOP
+      }
     }
     byte[] bytes = null;
     boolean standalone = false;
@@ -95,7 +99,8 @@ public class FileIOLockTestRuntime {
       FileIO.unlockObjectFile(file, -1);
     }
     long end = System.currentTimeMillis();
-    System.out.println("Running time: " + (end - start - waitTime));
+    System.out.println("Running time: " + (end - start));
+    System.out.println("Running time-wait: " + (end - start - waitTime));
   }
 
 }
