@@ -607,6 +607,8 @@ components:
         code:
           description: Code of the executed UI action.
           type: string
+        path:
+          type: string
         identifier:
           description: |
             Identifier of UI element, or UI action, where action is performed (for example treeNode's / 

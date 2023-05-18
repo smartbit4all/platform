@@ -36,6 +36,7 @@ import javax.validation.Valid;
 @ApiModel(description = "null")
 @JsonPropertyOrder({
   UiActionRequest.CODE,
+  UiActionRequest.PATH,
   UiActionRequest.IDENTIFIER,
   UiActionRequest.PARAMS
 })
@@ -44,6 +45,9 @@ import javax.validation.Valid;
 public class UiActionRequest {
   public static final String CODE = "code";
   private String code;
+
+  public static final String PATH = "path";
+  private String path;
 
   public static final String IDENTIFIER = "identifier";
   private String identifier;
@@ -79,6 +83,33 @@ public class UiActionRequest {
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setCode(String code) {
     this.code = code;
+  }
+
+
+  public UiActionRequest path(String path) {
+    
+    this.path = path;
+    return this;
+  }
+
+   /**
+   * Get path
+   * @return path
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(PATH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getPath() {
+    return path;
+  }
+
+
+  @JsonProperty(PATH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setPath(String path) {
+    this.path = path;
   }
 
 
@@ -152,13 +183,14 @@ public class UiActionRequest {
     }
     UiActionRequest uiActionRequest = (UiActionRequest) o;
     return Objects.equals(this.code, uiActionRequest.code) &&
+        Objects.equals(this.path, uiActionRequest.path) &&
         Objects.equals(this.identifier, uiActionRequest.identifier) &&
         Objects.equals(this.params, uiActionRequest.params);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(code, identifier, params);
+    return Objects.hash(code, path, identifier, params);
   }
 
   @Override
@@ -166,6 +198,7 @@ public class UiActionRequest {
     StringBuilder sb = new StringBuilder();
     sb.append("class UiActionRequest {\n");
     sb.append("    code: ").append(toIndentedString(code)).append("\n");
+    sb.append("    path: ").append(toIndentedString(path)).append("\n");
     sb.append("    identifier: ").append(toIndentedString(identifier)).append("\n");
     sb.append("    params: ").append(toIndentedString(params)).append("\n");
     sb.append("}");
