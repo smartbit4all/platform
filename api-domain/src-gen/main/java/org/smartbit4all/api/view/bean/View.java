@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.smartbit4all.api.view.bean.UiAction;
+import org.smartbit4all.api.view.bean.ValueSet;
 import org.smartbit4all.api.view.bean.ViewConstraint;
 import org.smartbit4all.api.view.bean.ViewState;
 import org.smartbit4all.api.view.bean.ViewType;
@@ -55,6 +56,7 @@ import javax.validation.Valid;
   View.DOWNLOADABLE_ITEMS,
   View.ACTIONS,
   View.WIDGET_MODELS,
+  View.VALUE_SETS,
   View.KEEP_MODEL_ON_IMPLICIT_CLOSE
 })
 @JsonTypeName("View")
@@ -101,6 +103,9 @@ public class View {
 
   public static final String WIDGET_MODELS = "widgetModels";
   private Map<String, Object> widgetModels = new HashMap<>();
+
+  public static final String VALUE_SETS = "valueSets";
+  private Map<String, ValueSet> valueSets = null;
 
   public static final String KEEP_MODEL_ON_IMPLICIT_CLOSE = "keepModelOnImplicitClose";
   private Boolean keepModelOnImplicitClose;
@@ -530,6 +535,42 @@ public class View {
   }
 
 
+  public View valueSets(Map<String, ValueSet> valueSets) {
+    
+    this.valueSets = valueSets;
+    return this;
+  }
+
+  public View putValueSetsItem(String key, ValueSet valueSetsItem) {
+    if (this.valueSets == null) {
+      this.valueSets = new HashMap<>();
+    }
+    this.valueSets.put(key, valueSetsItem);
+    return this;
+  }
+
+   /**
+   * Get valueSets
+   * @return valueSets
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(VALUE_SETS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Map<String, ValueSet> getValueSets() {
+    return valueSets;
+  }
+
+
+  @JsonProperty(VALUE_SETS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setValueSets(Map<String, ValueSet> valueSets) {
+    this.valueSets = valueSets;
+  }
+
+
   public View keepModelOnImplicitClose(Boolean keepModelOnImplicitClose) {
     
     this.keepModelOnImplicitClose = keepModelOnImplicitClose;
@@ -580,12 +621,13 @@ public class View {
         Objects.equals(this.downloadableItems, view.downloadableItems) &&
         Objects.equals(this.actions, view.actions) &&
         Objects.equals(this.widgetModels, view.widgetModels) &&
+        Objects.equals(this.valueSets, view.valueSets) &&
         Objects.equals(this.keepModelOnImplicitClose, view.keepModelOnImplicitClose);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uuid, viewName, objectUri, branchUri, parameters, state, type, containerUuid, model, constraint, closedChildrenViews, downloadableItems, actions, widgetModels, keepModelOnImplicitClose);
+    return Objects.hash(uuid, viewName, objectUri, branchUri, parameters, state, type, containerUuid, model, constraint, closedChildrenViews, downloadableItems, actions, widgetModels, valueSets, keepModelOnImplicitClose);
   }
 
   @Override
@@ -606,6 +648,7 @@ public class View {
     sb.append("    downloadableItems: ").append(toIndentedString(downloadableItems)).append("\n");
     sb.append("    actions: ").append(toIndentedString(actions)).append("\n");
     sb.append("    widgetModels: ").append(toIndentedString(widgetModels)).append("\n");
+    sb.append("    valueSets: ").append(toIndentedString(valueSets)).append("\n");
     sb.append("    keepModelOnImplicitClose: ").append(toIndentedString(keepModelOnImplicitClose)).append("\n");
     sb.append("}");
     return sb.toString();

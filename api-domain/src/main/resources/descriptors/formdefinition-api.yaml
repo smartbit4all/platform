@@ -101,4 +101,41 @@ components:
           type: array
           items:
             type: Value
-        
+        selection:
+          description: Selection definition used for this widget.
+          $ref: '#/components/schemas/SelectionDefinition'
+    SelectionDefinition:
+      type: object
+      required: [valueSetName,type,mapping]
+      description: The definition of an arbitrary selection.
+      properties:
+        valueSetName:
+          type: string
+          description: Name of the ValueSet used for this selection.
+        type:
+          enum: [PROPERTY, OBJECT]
+          default: PROPERTY
+          description: |
+            Defines how the selection should work: for properties or the whole selected Object.
+        displayProperty:
+          type: string
+          description: | 
+            Specifies which property from ValueSetData.values as Object should be used in 
+            selection widget.
+        mapping:
+          description: |
+            Mapping between data and selection model. It may be possible to omit mapping, in this case
+            the default mapping is: data = widget.key, selection = valueSetData.keyProperty
+          type: array
+          items:
+            $ref: '#/components/schemas/PropertyMapping'
+    PropertyMapping:
+      type: object
+      description: Mapping of two properties.
+      properties:
+        data:
+          type: string
+          description: Property name in the data model. This will be saved.
+        selection:
+          type: string
+          description: Property name in the selection model. This will won't be saved here, we use it for selection.
