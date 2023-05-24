@@ -1,5 +1,6 @@
 package org.smartbit4all.api.view;
 
+import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +26,6 @@ import org.smartbit4all.core.object.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import com.google.common.base.Strings;
-import static java.util.stream.Collectors.toList;
 
 public class ViewApiImpl implements ViewApi {
 
@@ -312,11 +312,17 @@ public class ViewApiImpl implements ViewApi {
     String[] paths = getPathParts(componentId);
     String location = paths[0];
     String key = paths[1];
-    if (View.PARAMETERS.equals(location)) {
+    if (View.PARAMETERS.equals(location)
+        || View.WIDGET_MODELS.equals(location)) {
       // to make sure view model/params gets initialized
       getModel(viewUuid, null);
       View view = getView(viewUuid);
-      Object componentModel = view.getParameters().get(key);
+      Object componentModel;
+      if (View.PARAMETERS.equals(location)) {
+        componentModel = view.getParameters().get(key);
+      } else {
+        componentModel = view.getWidgetModels().get(key);
+      }
       return objectApi.asType(clazz, componentModel);
     } else if (View.MODEL.equals(location)) {
       Object model = getModel(viewUuid, null);
@@ -332,24 +338,31 @@ public class ViewApiImpl implements ViewApi {
     String[] paths = getPathParts(componentId);
     String location = paths[0];
     String key = paths[1];
+    View view = getView(viewUuid);
     if (View.PARAMETERS.equals(location)) {
-      View view = getView(viewUuid);
       view.putParametersItem(key, componentModel);
     } else if (View.MODEL.equals(location)) {
       Object model = getModel(viewUuid, null);
       Map<String, Object> modelAsMap = objectApi.definition(model.getClass()).toMap(model);
       modelAsMap.put(key, objectApi.definition(clazz).toMap(componentModel));
       Object updatedModel = objectApi.asType(model.getClass(), modelAsMap);
-      getView(viewUuid).setModel(updatedModel);
+      view.setModel(updatedModel);
+    } else if (View.WIDGET_MODELS.equals(location)) {
+      view.putWidgetModelsItem(key, componentModel);
     } else {
       throw new IllegalArgumentException("Invalid path");
     }
   }
 
-  private String[] getPathParts(String treeId) {
-    String[] paths = treeId.split("\\.");
+  private String[] getPathParts(String componentId) {
+    String[] paths = componentId.split("\\.");
     if (paths == null) {
       throw new IllegalArgumentException("Empty path not allowed");
+    }
+    if (paths.length == 1) {
+      paths = new String[2];
+      paths[0] = View.WIDGET_MODELS;
+      paths[1] = componentId;
     }
     if (paths.length != 2) {
       throw new IllegalArgumentException("Invalid path");
