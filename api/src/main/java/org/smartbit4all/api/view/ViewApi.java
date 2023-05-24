@@ -112,9 +112,9 @@ public interface ViewApi {
    */
   UUID showPublishedView(String channel, UUID smartLinkUuid);
 
-  <T> T getComponentModelFromView(Class<T> clazz, UUID viewUuid, String componentId);
+  <T> T getWidgetModelFromView(Class<T> clazz, UUID viewUuid, String componentId);
 
-  <T> void setComponentModelInView(Class<T> clazz, UUID viewUuid, String componentId,
+  <T> void setWidgetModelInView(Class<T> clazz, UUID viewUuid, String componentId,
       T componentModel);
 
   BinaryData downloadItem(UUID uuid, String item);

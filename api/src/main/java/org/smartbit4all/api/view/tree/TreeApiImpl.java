@@ -321,10 +321,10 @@ public class TreeApiImpl implements TreeApi {
 
   @Override
   public <T> T executeTreeCall(UUID viewUuid, String treeId, Function<UiTreeState, T> treeCall) {
-    UiTreeState treeState = viewApi.getComponentModelFromView(UiTreeState.class, viewUuid, treeId);
+    UiTreeState treeState = viewApi.getWidgetModelFromView(UiTreeState.class, viewUuid, treeId);
     treeState.setViewUuid(viewUuid);
     T result = treeCall.apply(treeState);
-    viewApi.setComponentModelInView(UiTreeState.class, viewUuid, treeId, treeState);
+    viewApi.setWidgetModelInView(UiTreeState.class, viewUuid, treeId, treeState);
     return result;
   }
 

@@ -308,7 +308,7 @@ public class ViewApiImpl implements ViewApi {
   }
 
   @Override
-  public <T> T getComponentModelFromView(Class<T> clazz, UUID viewUuid, String componentId) {
+  public <T> T getWidgetModelFromView(Class<T> clazz, UUID viewUuid, String componentId) {
     String[] paths = getPathParts(componentId);
     String location = paths[0];
     String key = paths[1];
@@ -333,7 +333,7 @@ public class ViewApiImpl implements ViewApi {
   }
 
   @Override
-  public <T> void setComponentModelInView(Class<T> clazz, UUID viewUuid, String componentId,
+  public <T> void setWidgetModelInView(Class<T> clazz, UUID viewUuid, String componentId,
       T componentModel) {
     String[] paths = getPathParts(componentId);
     String location = paths[0];

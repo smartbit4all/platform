@@ -4,6 +4,7 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -31,18 +32,32 @@ import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.view.ViewApi;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.DataColumn;
 import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.data.TableDatas;
+import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.service.dataset.TableDataApi;
+import org.smartbit4all.domain.service.entity.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 public class GridModelApiImpl implements GridModelApi {
+
+  private static final Integer DEFAULT_PAGE_SIZE = 10;
+
+  private static final List<Integer> DEFAULT_PAGE_SIZE_OPTIONS = Arrays.asList(5, 10, 25, 50);
 
   private static final Logger log = LoggerFactory.getLogger(GridModelApiImpl.class);
 
   private static final String EXPAND_POSTFIX = "_expand";
+
+  @Value("${grid.pageSizeOptions:5,10,25,50}")
+  private List<String> defaultPageSizeOptions;
+
+  @Value("${grid.pageSize:10}")
+  private String defaultPageSize;
 
   @Autowired
   private ObjectApi objectApi;
@@ -55,49 +70,22 @@ public class GridModelApiImpl implements GridModelApi {
   private TableDataApi tableDataApi;
 
   @Autowired
+  private EntityManager entityManager;
+
+  @Autowired
   private LocaleSettingApi localeSettingApi;
 
   @Autowired
   private InvocationApi invocationApi;
 
   @Override
-  public <T> GridModel modelOf(Class<T> clazz, List<T> objectList, Map<String, String> columns,
-      String... columnPrefix) {
-    return modelOf(clazz, objectList, columns, 0, objectList.size(), columnPrefix);
+  public GridView createGridView(Class<?> clazz, List<String> columns, String... columnPrefix) {
+    return createGridView(entityManager.createEntityDef(clazz), columns, columnPrefix);
   }
 
   @Override
-  public <T> GridModel modelOf(Class<T> clazz, List<T> objectList,
-      Map<String, String> columns, int lowerBound, int upperBound, String... columnPrefix) {
-    return modelOf(
-        tableDataApi.tableOf(clazz, objectList, new ArrayList<>(columns.keySet())),
-        lowerBound,
-        upperBound,
-        columnPrefix);
-  }
-
-  @Override
-  public GridModel modelOf(TableData<?> tableData, String... columnPrefix) {
-    return constructModel(tableData, 0, tableData.size(), columnPrefix);
-  }
-
-  @Override
-  public GridModel modelOf(TableData<?> tableData, int lowerBound, int upperBound,
+  public GridView createGridView(EntityDefinition entityDefinition, List<String> columns,
       String... columnPrefix) {
-    return constructModel(tableData, lowerBound, upperBound, columnPrefix);
-  }
-
-  private GridModel constructModel(TableData<?> tableData, int lowerBound, int upperBound,
-      String... columnPrefix) {
-    if (tableData.getUri() == null) {
-      tableDataApi.save(tableData);
-    }
-    GridModel result = new GridModel()
-        .accessConfig(new GridDataAccessConfig().dataUri(tableData.getUri()));
-    GridViewDescriptor tableHeader = new GridViewDescriptor().kind(KindEnum.TABLE);
-    GridView tableView = new GridView().descriptor(tableHeader);
-    result.addAvailableViewsItem(tableView);
-    result.setView(tableView);
     String[] keys;
     int idxLastKey;
     if (columnPrefix == null) {
@@ -111,23 +99,187 @@ public class GridModelApiImpl implements GridModelApi {
           columnPrefix.length);
       idxLastKey = columnPrefix.length;
     }
-    for (DataColumn<?> column : tableData.columns()) {
-      keys[idxLastKey] = column.getName();
-      tableHeader.addColumnsItem(
-          new GridColumnMeta().propertyName(column.getName())
-              .label(localeSettingApi.get(keys))
-              .typeClass(column.getProperty().type().getName()));
+    if (columns == null || columns.isEmpty()) {
+      throw new IllegalArgumentException("Empty columns is not supported yet!");
     }
-    result.totalRowCount(tableData.size());
+    List<GridColumnMeta> headers = new ArrayList<>();
+    for (String column : columns) {
+      keys[idxLastKey] = column;
+      headers.add(new GridColumnMeta().propertyName(column)
+          .label(localeSettingApi.get(keys))
+          .typeClass(entityDefinition.getProperty(column).type().getName()));
+    }
+    return new GridView()
+        .descriptor(new GridViewDescriptor()
+            .kind(KindEnum.TABLE)
+            .columns(headers))
+        .orderedColumnNames(columns);
+  }
 
+  @Override
+  public GridModel createGridModel(Class<?> clazz, List<String> columns, String... columnPrefix) {
+    return createEmptyGridModel(createGridView(clazz, columns, columnPrefix));
+  }
+
+  @Override
+  public GridModel createGridModel(EntityDefinition entityDefinition, List<String> columns,
+      String... columnPrefix) {
+    return createEmptyGridModel(createGridView(entityDefinition, columns, columnPrefix));
+  }
+
+  private GridModel createEmptyGridModel(GridView defaultView) {
+    return new GridModel()
+        .totalRowCount(0)
+        .view(defaultView)
+        .page(new GridPage()
+            .rows(new ArrayList<>())
+            .lowerBound(0)
+            .upperBound(0))
+        .addAvailableViewsItem(defaultView);
+  }
+
+  @Override
+  public void initGridInView(UUID viewUuid, String gridId, GridModel gridModel) {
+    Objects.requireNonNull(gridModel, "GridModel cannot be null");
+    Objects.requireNonNull(gridId, "GridId cannot be null");
+    if (gridId.startsWith(View.MODEL + StringConstant.DOT)) {
+      View view = viewApi.getView(viewUuid);
+      if (view.getModel() == null) {
+        throw new IllegalArgumentException(
+            "Trying to init grid (" + gridId + ") in empty model, probably called from initModel!");
+      }
+    }
+    if (gridModel.getPageSize() == null) {
+      gridModel.setPageSize(getDefaultPageSize());
+    }
+    if (gridModel.getPageSizeOptions() == null || gridModel.getPageSizeOptions().isEmpty()) {
+      gridModel.setPageSizeOptions(getDefaultPageSizeOptions());
+    }
+    gridModel.setViewUuid(viewUuid);
+    viewApi.setWidgetModelInView(GridModel.class, viewUuid, gridId, gridModel);
+  }
+
+  private Integer getDefaultPageSize() {
+    Integer pageSize;
+    try {
+      pageSize = Integer.valueOf(defaultPageSize);
+    } catch (NumberFormatException e) {
+      log.warn("Invalid pageSize setting: {}", defaultPageSize);
+      pageSize = DEFAULT_PAGE_SIZE;
+    }
+    return pageSize;
+  }
+
+  private List<Integer> getDefaultPageSizeOptions() {
+    List<Integer> pageSizeOptions;
+    try {
+      pageSizeOptions = defaultPageSizeOptions.stream()
+          .map(Integer::valueOf)
+          .collect(toList());
+    } catch (NumberFormatException e) {
+      log.warn("Invalid pageSizeOptions setting: {}", defaultPageSizeOptions);
+      pageSizeOptions = DEFAULT_PAGE_SIZE_OPTIONS;
+    }
+    return pageSizeOptions;
+  }
+
+  @Override
+  public <T> void setData(UUID viewUuid, String gridId, Class<T> clazz, List<T> data) {
+    executeGridCall(viewUuid, gridId, gridModel -> {
+      List<String> columns = gridModel.getView().getDescriptor().getColumns().stream()
+          .map(GridColumnMeta::getPropertyName)
+          .collect(toList());
+      setData(viewUuid, gridId, tableDataApi.tableOf(clazz, data, columns));
+      return 0;
+    });
+  }
+
+  @Override
+  public void setData(UUID viewUuid, String gridId, TableData<?> data) {
+    executeGridCall(viewUuid, gridId, gridModel -> {
+      if (data.getUri() == null) {
+        tableDataApi.save(data);
+      }
+      gridModel.accessConfig(new GridDataAccessConfig().dataUri(data.getUri()));
+      gridModel.totalRowCount(data.size());
+      Integer pageSize = gridModel.getPageSize();
+      if (pageSize == null) {
+        pageSize = getDefaultPageSize();
+        gridModel.setPageSize(pageSize);
+      }
+      int firstPageSize = Math.min(pageSize, data.size());
+      gridModel
+          .page(constructPage(data, 0, firstPageSize)
+              .lowerBound(0)
+              .upperBound(firstPageSize));
+      return firstPageSize;
+    });
+  }
+
+  @Override
+  public void setDataFromUris(UUID viewUuid, String gridId, SearchIndex<?> searchIndex,
+      Stream<URI> uris) {
+    TableData<?> data = searchIndex.tableDataOfUris(uris);
+    setData(viewUuid, gridId, data);
+  }
+
+  @Override
+  public <T> void setDataFromObjects(UUID viewUuid, String gridId, SearchIndex<T> searchIndex,
+      Stream<T> objects) {
+    TableData<?> data = searchIndex.tableDataOfObjects(objects);
+    setData(viewUuid, gridId, data);
+  }
+
+  @Override
+  @Deprecated
+  public <T> GridModel modelOf(Class<T> clazz, List<T> objectList, Map<String, String> columns,
+      String... columnPrefix) {
+    return modelOf(clazz, objectList, columns, 0, objectList.size(), columnPrefix);
+  }
+
+  @Override
+  @Deprecated
+  public <T> GridModel modelOf(Class<T> clazz, List<T> objectList,
+      Map<String, String> columns, int lowerBound, int upperBound, String... columnPrefix) {
+    return modelOf(
+        tableDataApi.tableOf(clazz, objectList, new ArrayList<>(columns.keySet())),
+        lowerBound,
+        upperBound,
+        columnPrefix);
+  }
+
+  @Override
+  @Deprecated
+  public GridModel modelOf(TableData<?> tableData, String... columnPrefix) {
+    return constructModel(tableData, 0, tableData.size(), columnPrefix);
+  }
+
+  @Override
+  @Deprecated
+  public GridModel modelOf(TableData<?> tableData, int lowerBound, int upperBound,
+      String... columnPrefix) {
+    return constructModel(tableData, lowerBound, upperBound, columnPrefix);
+  }
+
+  private GridModel constructModel(TableData<?> tableData, int lowerBound, int upperBound,
+      String... columnPrefix) {
+    if (tableData.getUri() == null) {
+      tableDataApi.save(tableData);
+    }
+    List<String> columns = tableData.columns().stream()
+        .map(DataColumn::getName)
+        .collect(toList());
+    GridModel result = createGridModel(tableData.entity(), columns, columnPrefix);
+    result.accessConfig(new GridDataAccessConfig().dataUri(tableData.getUri()));
+    result.totalRowCount(tableData.size());
     result.page(
         constructPage(tableData, lowerBound, upperBound).lowerBound(lowerBound)
             .upperBound(upperBound));
-
     return result;
   }
 
   @Override
+  @Deprecated
   public GridModel modelOfUris(SearchIndex<?> searchIndex, Stream<URI> uris,
       String... columnPrefix) {
     TableData<?> tableData = searchIndex.tableDataOfUris(uris);
@@ -135,6 +287,7 @@ public class GridModelApiImpl implements GridModelApi {
   }
 
   @Override
+  @Deprecated
   public <T> GridModel modelOfObjects(SearchIndex<T> searchIndex, Stream<T> objects,
       String... columnPrefix) {
     TableData<?> tableData = searchIndex.tableDataOfObjects(objects);
@@ -143,6 +296,10 @@ public class GridModelApiImpl implements GridModelApi {
 
   @Override
   public GridModel loadPage(GridModel model, int offset, int limit) {
+    if (model.getAccessConfig() == null) {
+      // TODO update / setPageSize?
+      return model;
+    }
     TableData<?> tableData =
         tableDataApi.readPage(model.getAccessConfig().getDataUri(), offset, limit);
     model.page(constructPage(tableData, 0, tableData.size())
@@ -205,10 +362,10 @@ public class GridModelApiImpl implements GridModelApi {
 
   @Override
   public <T> T executeGridCall(UUID viewUuid, String gridId, Function<GridModel, T> gridCall) {
-    GridModel gridModel = viewApi.getComponentModelFromView(GridModel.class, viewUuid, gridId);
+    GridModel gridModel = viewApi.getWidgetModelFromView(GridModel.class, viewUuid, gridId);
     gridModel.setViewUuid(viewUuid);
     T result = gridCall.apply(gridModel);
-    viewApi.setComponentModelInView(GridModel.class, viewUuid, gridId, gridModel);
+    viewApi.setWidgetModelInView(GridModel.class, viewUuid, gridId, gridModel);
     return result;
   }
 

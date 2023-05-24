@@ -1,5 +1,6 @@
 package org.smartbit4all.api.collection;
 
+import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,7 +40,6 @@ import org.smartbit4all.domain.utility.crud.CrudRead;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import static java.util.stream.Collectors.toList;
 
 /**
  * @author Peter Boros
@@ -166,14 +166,9 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
   }
 
   private final SearchEntityTableDataResult constructResult() {
-    SearchEntityTableDataResult result =
-        new SearchEntityTableDataResult().searchEntityDefinition(getDefinition());
-
-    TableData<?> tableData = new TableData<>(result.searchEntityDefinition.definition);
-    tableData.addColumns(result.searchEntityDefinition.definition.allProperties());
-
-    result.result = tableData;
-    return result;
+    return new SearchEntityTableDataResult()
+        .searchEntityDefinition(getDefinition())
+        .result(createEmptyTableData());
   }
 
   private final SearchEntityTableDataResult readAllObjects(Stream<URI> objectUris) {
@@ -370,7 +365,7 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
     Expression queryExpression =
         filterExpressions == null ? null
             : filterExpressionApi.constructExpression(
-                filterExpressions, objectMapping.getDefinition());
+                filterExpressions, getDefinition());
     CrudRead<EntityDefinition> read = Crud.read(getDefinition().definition)
         .selectAllProperties()
         .where(queryExpression);
