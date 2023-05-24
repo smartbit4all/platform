@@ -33,8 +33,11 @@ public final class SaveInValues extends SB4FunctionImpl<ExpressionIn<?>, DataSet
       DataSetEntry entry = dataSetApi
           .activate(((OperandProperty<?>) input().getOperand()).property(), input.values());
       if (entry != null) {
+        ExpressionInDataSet expressionInDataSet =
+            new ExpressionInDataSet(input().getOperand(), entry);
+        expressionInDataSet.setNegate(input().isNegate());
         ExpressionReplacer.replace(fullExpression, input(),
-            new ExpressionInDataSet(input().getOperand(), entry));
+            expressionInDataSet);
       }
     }
   }
