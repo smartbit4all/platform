@@ -30,6 +30,7 @@ import java.util.UUID;
 import org.smartbit4all.api.formdefinition.bean.SmartLayoutDefinition;
 import org.smartbit4all.api.view.bean.ComponentConstraint;
 import org.smartbit4all.api.view.bean.UiAction;
+import org.smartbit4all.api.view.bean.ValueSet;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -46,6 +47,7 @@ import javax.validation.Valid;
   ComponentModel.CONSTRAINTS,
   ComponentModel.LAYOUTS,
   ComponentModel.ACTIONS,
+  ComponentModel.VALUE_SETS,
   ComponentModel.WIDGET_MODELS
 })
 @JsonTypeName("ComponentModel")
@@ -68,6 +70,9 @@ public class ComponentModel {
 
   public static final String ACTIONS = "actions";
   private List<UiAction> actions = new ArrayList<>();
+
+  public static final String VALUE_SETS = "valueSets";
+  private Map<String, ValueSet> valueSets = null;
 
   public static final String WIDGET_MODELS = "widgetModels";
   private Map<String, Object> widgetModels = new HashMap<>();
@@ -261,6 +266,42 @@ public class ComponentModel {
   }
 
 
+  public ComponentModel valueSets(Map<String, ValueSet> valueSets) {
+    
+    this.valueSets = valueSets;
+    return this;
+  }
+
+  public ComponentModel putValueSetsItem(String key, ValueSet valueSetsItem) {
+    if (this.valueSets == null) {
+      this.valueSets = new HashMap<>();
+    }
+    this.valueSets.put(key, valueSetsItem);
+    return this;
+  }
+
+   /**
+   * Get valueSets
+   * @return valueSets
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(VALUE_SETS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Map<String, ValueSet> getValueSets() {
+    return valueSets;
+  }
+
+
+  @JsonProperty(VALUE_SETS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setValueSets(Map<String, ValueSet> valueSets) {
+    this.valueSets = valueSets;
+  }
+
+
   public ComponentModel widgetModels(Map<String, Object> widgetModels) {
     
     this.widgetModels = widgetModels;
@@ -309,12 +350,13 @@ public class ComponentModel {
         Objects.equals(this.constraints, componentModel.constraints) &&
         Objects.equals(this.layouts, componentModel.layouts) &&
         Objects.equals(this.actions, componentModel.actions) &&
+        Objects.equals(this.valueSets, componentModel.valueSets) &&
         Objects.equals(this.widgetModels, componentModel.widgetModels);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uuid, name, data, constraints, layouts, actions, widgetModels);
+    return Objects.hash(uuid, name, data, constraints, layouts, actions, valueSets, widgetModels);
   }
 
   @Override
@@ -327,6 +369,7 @@ public class ComponentModel {
     sb.append("    constraints: ").append(toIndentedString(constraints)).append("\n");
     sb.append("    layouts: ").append(toIndentedString(layouts)).append("\n");
     sb.append("    actions: ").append(toIndentedString(actions)).append("\n");
+    sb.append("    valueSets: ").append(toIndentedString(valueSets)).append("\n");
     sb.append("    widgetModels: ").append(toIndentedString(widgetModels)).append("\n");
     sb.append("}");
     return sb.toString();

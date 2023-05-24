@@ -464,6 +464,7 @@ public class ViewContextServiceImpl implements ViewContextService {
         .data(data)
         .constraints(constraints)
         .actions(view.getActions())
+        .valueSets(view.getValueSets())
         .widgetModels(view.getWidgetModels());
   }
 

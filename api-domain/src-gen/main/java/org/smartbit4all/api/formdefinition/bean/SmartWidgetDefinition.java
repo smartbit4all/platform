@@ -24,6 +24,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
+import org.smartbit4all.api.formdefinition.bean.SelectionDefinition;
 import org.smartbit4all.api.formdefinition.bean.SmartFormWidgetType;
 import org.smartbit4all.api.value.bean.Value;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -49,7 +50,8 @@ import javax.validation.Valid;
   SmartWidgetDefinition.CSS_CLASS,
   SmartWidgetDefinition.CSS_LABEL_CLASS,
   SmartWidgetDefinition.IS_PASSWORD,
-  SmartWidgetDefinition.VALUES
+  SmartWidgetDefinition.VALUES,
+  SmartWidgetDefinition.SELECTION
 })
 @JsonTypeName("SmartWidgetDefinition")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -95,6 +97,9 @@ public class SmartWidgetDefinition {
 
   public static final String VALUES = "values";
   private List<Value> values = null;
+
+  public static final String SELECTION = "selection";
+  private SelectionDefinition selection;
 
   public SmartWidgetDefinition() { 
   }
@@ -490,6 +495,34 @@ public class SmartWidgetDefinition {
   }
 
 
+  public SmartWidgetDefinition selection(SelectionDefinition selection) {
+    
+    this.selection = selection;
+    return this;
+  }
+
+   /**
+   * Get selection
+   * @return selection
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(SELECTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public SelectionDefinition getSelection() {
+    return selection;
+  }
+
+
+  @JsonProperty(SELECTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSelection(SelectionDefinition selection) {
+    this.selection = selection;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -512,12 +545,13 @@ public class SmartWidgetDefinition {
         Objects.equals(this.cssClass, smartWidgetDefinition.cssClass) &&
         Objects.equals(this.cssLabelClass, smartWidgetDefinition.cssLabelClass) &&
         Objects.equals(this.isPassword, smartWidgetDefinition.isPassword) &&
-        Objects.equals(this.values, smartWidgetDefinition.values);
+        Objects.equals(this.values, smartWidgetDefinition.values) &&
+        Objects.equals(this.selection, smartWidgetDefinition.selection);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(type, key, label, placeholder, prefix, suffix, mask, icon, iconColor, showLabel, cssClass, cssLabelClass, isPassword, values);
+    return Objects.hash(type, key, label, placeholder, prefix, suffix, mask, icon, iconColor, showLabel, cssClass, cssLabelClass, isPassword, values, selection);
   }
 
   @Override
@@ -538,6 +572,7 @@ public class SmartWidgetDefinition {
     sb.append("    cssLabelClass: ").append(toIndentedString(cssLabelClass)).append("\n");
     sb.append("    isPassword: ").append(toIndentedString(isPassword)).append("\n");
     sb.append("    values: ").append(toIndentedString(values)).append("\n");
+    sb.append("    selection: ").append(toIndentedString(selection)).append("\n");
     sb.append("}");
     return sb.toString();
   }

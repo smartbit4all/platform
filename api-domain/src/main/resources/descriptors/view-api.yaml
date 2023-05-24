@@ -346,6 +346,10 @@ components:
           type: string
           additionalProperties:
             type: object
+        valueSets:
+          type: string
+          additionalProperties:
+            type: ValueSet
         keepModelOnImplicitClose:
           type: boolean
     ViewData:
@@ -403,6 +407,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/UiAction'
+        valueSets:
+          type: string
+          additionalProperties:
+            type: ValueSet
         widgetModels:
           description: Complex widgets with corresponding initial model. 
           type: string
@@ -720,3 +728,16 @@ components:
       enum:
         - NONE
         - SNACKBAR
+    ValueSet:
+      type: object
+      description: |
+        An instance of a ValueSetData tied together with a logical timestamp (counter). It can be used 
+        as a request item, without specifying valueSetData,  
+      properties:
+        valueSetName:
+          type: string
+        valueSetData:
+          type: ValueSetData
+        timestamp:
+          type: integer
+          format: int64
