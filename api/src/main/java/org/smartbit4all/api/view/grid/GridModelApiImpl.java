@@ -343,6 +343,7 @@ public class GridModelApiImpl implements GridModelApi {
 
   private GridPage constructPage(TableData<?> tableData, int beginIndex, int endIndex) {
     GridPage page = new GridPage();
+    page.rows(new ArrayList<>());
     for (int i = beginIndex; i < endIndex; i++) {
       DataRow row = tableData.rows().get(i);
       page.addRowsItem(new GridRow().id(Integer.toString(i)).data(tableData.columns().stream()
