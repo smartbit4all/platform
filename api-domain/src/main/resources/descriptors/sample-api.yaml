@@ -135,3 +135,15 @@ components:
         item:
           type: string
           format: uri
+    SampleCategoryType:
+      type: object
+      properties:
+        uri:
+          type: string
+          format: uri
+        code:
+          type: string
+        name:
+          type: string
+        description:
+          type: string

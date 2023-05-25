@@ -1,15 +1,17 @@
 package org.smartbit4all.api.object;
 
 import java.net.URI;
-import org.smartbit4all.api.contribution.PrimaryApi;
-import org.smartbit4all.api.storage.bean.BranchData;
-import org.smartbit4all.api.storage.bean.BranchOperation;
-import org.smartbit4all.api.storage.bean.BranchOperation.OperationTypeEnum;
+import java.util.Collection;
+import java.util.Map;
+import java.util.function.Supplier;
+import org.smartbit4all.api.object.bean.BranchEntry;
+import org.smartbit4all.api.object.bean.BranchOperation;
+import org.smartbit4all.api.object.bean.BranchOperation.OperationTypeEnum;
 import org.smartbit4all.api.storage.bean.ObjectVersion;
 
 /**
  * The branch api is responsible for creating branches for objects. The branch is represented by the
- * {@link BranchData} that collects all the operations - {@link BranchOperation} - made on this
+ * {@link BranchEntry} that collects all the operations - {@link BranchOperation} - made on this
  * branch. The operations can be the followings:
  * <ul>
  * <li>{@link OperationTypeEnum#INIT} - This operation initiate a new object from a version of the
@@ -30,26 +32,41 @@ import org.smartbit4all.api.storage.bean.ObjectVersion;
  * 
  * @author Peter Boros
  */
-public interface BranchApi extends PrimaryApi<BranchContributionApi> {
+public interface BranchApi {
 
   /**
    * This operation constructs a new branch. The result can be used for branching to collect all the
    * operations made.
    * 
    * @param caption The caption of the branch that could be useful to identify
-   * @return
+   * @return The branch entry with the saved URI.
    */
-  URI makeBranch(String caption);
+  BranchEntry makeBranch(String caption);
+
+  /**
+   * This operation constructs a new branch. The result can be used for branching to collect all the
+   * operations made.
+   * 
+   * @param caption The caption of the branch that could be useful to identify
+   * @return The branch entry that is not saved.
+   */
+  BranchEntry constructBranch(String caption);
 
   /**
    * Initiate a version from the URI. The operation checks if we already have a branch from the
    * given object. Until the duration of the check it locks the branch to avoid parallel operations.
    * If the branch already exists then we get back the first version of this.
    * 
-   * @param versionUri The version URI of the source object.
    * @param branchUri The URI of the branch to be used as branch for the operation.
-   * @return The version URI of the newly created or the existing branched object.
+   * @param brachedObjects The version URI map of the branched objects mapped by the source version
+   *        URIs.
+   * @return The constructed or already existing branched object init {@link BranchOperation} mapped
+   *         by the original version uri.
    */
-  URI branchObject(URI versionUri, URI branchUri);
+  Map<URI, BranchOperation> initBranchedObjects(URI branchUri,
+      Map<URI, Supplier<URI>> brachedObjects);
+
+  void addNewBranchedObjects(URI branchUri,
+      Collection<URI> newObjects);
 
 }

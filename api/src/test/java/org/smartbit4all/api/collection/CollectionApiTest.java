@@ -45,7 +45,7 @@ import static java.util.stream.Collectors.toList;
 @SpringBootTest(classes = {
     CollectionTestConfig.class
 })
-class CollectionApiTest {
+public class CollectionApiTest {
 
   private static final String LATE = "late";
   public static final String SCHEMA = "sample";

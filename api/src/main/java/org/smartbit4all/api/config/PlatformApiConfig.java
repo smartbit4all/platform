@@ -22,6 +22,8 @@ import org.smartbit4all.api.invocation.ProviderApiInvocationHandler;
 import org.smartbit4all.api.invocation.bean.ApiData;
 import org.smartbit4all.api.invocation.bean.ApiRegistryData;
 import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
+import org.smartbit4all.api.mdm.MasterDataManagementApi;
+import org.smartbit4all.api.mdm.MasterDataManagementApiImpl;
 import org.smartbit4all.api.navigation.NavigationApi;
 import org.smartbit4all.api.navigation.NavigationFeatureApi;
 import org.smartbit4all.api.navigation.NavigationFeatureApiImpl;
@@ -31,7 +33,6 @@ import org.smartbit4all.api.object.ApplyChangeApi;
 import org.smartbit4all.api.object.ApplyChangeApiImpl;
 import org.smartbit4all.api.object.BranchApi;
 import org.smartbit4all.api.object.BranchApiImpl;
-import org.smartbit4all.api.object.BranchContributionApiStorageImpl;
 import org.smartbit4all.api.object.CompareApi;
 import org.smartbit4all.api.object.CompareApiImpl;
 import org.smartbit4all.api.object.CompareContributionApiStorageImpl;
@@ -218,8 +219,8 @@ public class PlatformApiConfig {
   }
 
   @Bean
-  public BranchContributionApiStorageImpl branchApiStorageImpl() {
-    return new BranchContributionApiStorageImpl();
+  public MasterDataManagementApi masterDataManagementApi() {
+    return new MasterDataManagementApiImpl();
   }
 
   @Bean

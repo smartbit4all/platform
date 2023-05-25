@@ -345,3 +345,111 @@ components:
         uri:
           type: string
           format: uri
+    BranchEntry:
+      type: object
+      description: |
+        The branch entry is used to identify the changes of the objects in on a branch. The object can be constructed and 
+        saved without any operation. If the original object is saved on this branch then the operation is registered into 
+        this object and executed directly.
+      required: [uri, created, branchedObjects, newObjects]
+      properties:
+        uri:
+          type: string
+          format: uri
+          description: The uri of the object.
+        caption:
+          type: string
+          description: |
+            The branch could be used as business domain object. If we collect the versions of an object then useng the
+            caption we can identify the intent of the modification.
+        created:
+          type: UserActivityLog
+        lockedBy:
+          type: UserActivityLog
+        branchedObjects:
+          type: object
+          description: The branched objects are identified by the 
+          additionalProperties:
+            $ref: '#/components/schemas/BranchedObject'
+        newObjects:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/BranchedObject'
+    BranchedObject:
+      type: object
+      description: |
+        The object branch data is used to hold all the operations about an object on a branch. This object is
+        constructed when the first opartion is executed with the given object.
+      required: [objectUri, rebases, merges]
+      properties:
+        branchedObjectLatestUri:
+          type: string
+          description: The latest uri of the branched object source. It is used to find the matching ones.
+          format: uri
+        operations:
+          type: array
+          description: |
+            The init, rebase and merge operations of the branched object. The init is the original construction
+            of the branched object. The rebase is accepting the new version from the source and the merge is the 
+            publishing the branched version as a new source version.
+          items: 
+            $ref: '#/components/schemas/BranchOperation'
+    BranchOperation:
+      type: object
+      description: |
+        The data of the operation in a branch.
+      required: [sourceUri, targetUri, operationType]
+      properties:
+        sourceUri:
+          type: string
+          format: uri
+        targetUri:
+          type: string
+          format: uri
+        operationType:
+          type: string
+          enum: [init, rebase, merge]
+        executedAt:
+          type: UserActivityLog
+        operation:
+          type: string
+          description: The Api and the operation that was created the given version of the object.
+    MasterDataManagementInfo:
+      type: object
+      description: |
+        This info object is the main descriptor of the master data of a given application. Typically this is a single instance in the
+        application instance.
+      required: [uri, created, objects]
+      properties:
+        uri:
+          type: string
+          format: uri
+          description: The uri of the object.
+        globalBranch:
+          type: string
+          format: uri
+          description: The uri of the global branch if any.
+        objects:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/MasterDataManagementEntry'
+    MasterDataManagementEntry:
+      type: object
+      description: |
+        The entry is responsible for a managed list of object instances from the same kind. This contains every information about the current state
+        of the editing.
+      required: [uri, created, objects]
+      properties:
+        caption:
+          type: string
+          description: |
+            The caption is key of the caption that is translated by the LocaleSettingApi. Normally it is filled with the
+            qualified name of the given class. It is easy to identify in the message...properties. 
+        branch:
+          type: string
+          format: uri
+          description: |
+            The uri of the branch currently active for the given object. It could be the globalBranch if
+            the policy is that we are working on the same branch for given object. There can be objects that
+            can be edited in local branch but we can have global modifications where we would like to initiate a global
+            modification package and publish tha whole at once.

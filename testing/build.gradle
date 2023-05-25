@@ -6,6 +6,8 @@ dependencies {
 	
 	api project(':api')
 	api project(':api-srv-rest')
+	implementation 'org.smartbit4all.platform:sec'
 	testImplementation 'org.smartbit4all.platform:api'
-	testImplementation testFixtures(project(':api'))
+	testImplementation testFixtures('org.smartbit4all.platform:api')
+	testImplementation testFixtures('org.smartbit4all.platform:sec')
 }
