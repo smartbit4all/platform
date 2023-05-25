@@ -1,5 +1,6 @@
 package org.smartbit4all.domain.service.dataset;
 
+import static java.util.stream.Collectors.toMap;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -18,9 +19,10 @@ import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.data.TableDatas;
-import org.smartbit4all.domain.data.TableDatas.BuilderWithFlexibleProperties;
+import org.smartbit4all.domain.data.TableDatas.BuilderWithFixProperties;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.meta.EntityDefinition;
+import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.domain.service.CrudApi;
 import org.smartbit4all.domain.service.entity.EntityManager;
 import org.smartbit4all.domain.utility.serialize.TableDataPager;
@@ -163,13 +165,16 @@ public class TableDataApiImpl implements TableDataApi {
   @Override
   public <T> TableData<?> tableOf(EntityDefinition entityDef, List<T> objectList,
       List<String> columns) {
-    BuilderWithFlexibleProperties<EntityDefinition> table = TableDatas.builder(entityDef);
+    Map<String, Property<?>> properties = columns.stream()
+        .collect(toMap(col -> col, entityDef::getProperty));
+    BuilderWithFixProperties<EntityDefinition> table =
+        TableDatas.builder(entityDef, properties.values());
     objectList.stream()
         .forEachOrdered(object -> {
-          BuilderWithFlexibleProperties<EntityDefinition> row = table.addRow();
+          BuilderWithFixProperties<EntityDefinition> row = table.addRow();
           Map<String, Object> map = objectApi.create(null, object).getObjectAsMap();
           columns.forEach(
-              col -> row.setObject(entityDef.getProperty(col), map.get(col)));
+              col -> row.setObject(properties.get(col), map.get(col)));
         });
     return table.build(objectApi);
   }
