@@ -159,14 +159,15 @@ public interface GridModelApi {
   /**
    * Do the paging on the model
    *
-   * @param model The model object
+   * @param viewUuid
+   * @param gridId
    * @param offset The row index to fetch the data from.
    * @param limit The number of rows to fetch.
    * @return
    */
-  GridModel loadPage(GridModel model, int offset, int limit);
+  GridModel loadPage(UUID viewUuid, String gridId, int offset, int limit);
 
-  GridModel updateGrid(GridModel model, GridUpdateData update);
+  GridModel updateGrid(UUID viewUuid, String gridId, GridUpdateData update);
 
   void setColumnOrder(GridModel model, List<String> columns);
 
@@ -183,7 +184,44 @@ public interface GridModelApi {
 
   Object expand(GridModel grid, String gridId, String rowId);
 
-  void addExpandCallback(UUID viewUuid, String gridId, InvocationRequest request);
+  /**
+   * Sets the expand callback for a grid in a given View. 'request' will be called when grid on
+   * client is expanded. Single parameter will be the expanded GridRow. Return value should what the
+   * client expects for the component shown when expanded.
+   *
+   * @param viewUuid
+   * @param gridId
+   * @param request
+   */
+  void setExpandCallback(UUID viewUuid, String gridId, InvocationRequest request);
+
+  /**
+   * Registers a GridRow creation callback for a grid in a given View. 'request' will be called
+   * after a GridRow is created. Single parameter will be the created GridRow, return value should
+   * be the final GridRow.
+   *
+   * You can use this callback when you want to change some or all rows, and you only need the
+   * current row for that.
+   *
+   * @param viewUuid
+   * @param gridId
+   * @param request
+   */
+  void addGridRowCallback(UUID viewUuid, String gridId, InvocationRequest request);
+
+  /**
+   * Registers a GridPage creation callback for a grid in a given View. 'request' will be called
+   * after a GridPage is created. Passed parameters will be the viewUuid, gridId and created
+   * GridPage, return value should be the final GridPage.
+   *
+   * You can use this callback when you want to change some or all rows, and you need all the rows,
+   * or maybe the View which contains this grid.
+   *
+   * @param viewUuid
+   * @param gridId
+   * @param request
+   */
+  void addGridPageCallback(UUID viewUuid, String gridId, InvocationRequest request);
 
 
 }

@@ -20,14 +20,13 @@ public class GridApiDelegateImpl implements GridApiDelegate {
   }
 
   @Override
-  public ResponseEntity<Void> setPage(UUID uuid, String gridIdentifier, String offsetStr,
+  public ResponseEntity<Void> setPage(UUID uuid, String gridId, String offsetStr,
       String limitStr)
       throws Exception {
     try {
       int offset = Integer.valueOf(offsetStr);
       int limit = Integer.valueOf(limitStr);
-      gridModelApi.executeGridCall(uuid, gridIdentifier,
-          grid -> gridModelApi.loadPage(grid, offset, limit));
+      gridModelApi.loadPage(uuid, gridId, offset, limit);
     } catch (NumberFormatException e) {
       throw new IllegalArgumentException("Invalid offset or limit");
     }
@@ -42,11 +41,9 @@ public class GridApiDelegateImpl implements GridApiDelegate {
   }
 
   @Override
-  public ResponseEntity<GridModel> update(UUID uuid, String gridIdentifier,
+  public ResponseEntity<GridModel> update(UUID uuid, String gridId,
       GridUpdateData gridUpdateData) throws Exception {
-    return ResponseEntity.ok(
-        gridModelApi.executeGridCall(uuid, gridIdentifier,
-            grid -> gridModelApi.updateGrid(grid, gridUpdateData)));
+    return ResponseEntity.ok(gridModelApi.updateGrid(uuid, gridId, gridUpdateData));
   }
 
   @Override

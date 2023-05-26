@@ -42,6 +42,7 @@ import org.smartbit4all.domain.service.dataset.TableDataApi;
 import org.smartbit4all.domain.service.entity.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import com.google.common.base.Strings;
 
 public class GridModelApiImpl implements GridModelApi {
 
@@ -51,7 +52,11 @@ public class GridModelApiImpl implements GridModelApi {
 
   private static final Logger log = LoggerFactory.getLogger(GridModelApiImpl.class);
 
-  private static final String EXPAND_POSTFIX = "_expand";
+  private static final String EXPAND_POSTFIX = "_expandCallback";
+
+  private static final String GRIDROW_POSTFIX = "_gridrowCallback";
+
+  private static final String GRIDPAGE_POSTFIX = "_gridpageCallback";
 
   @Value("${grid.pageSizeOptions:5,10,25,50}")
   private List<String> defaultPageSizeOptions;
@@ -209,7 +214,7 @@ public class GridModelApiImpl implements GridModelApi {
       }
       int firstPageSize = Math.min(pageSize, data.size());
       gridModel
-          .page(constructPage(data, 0, firstPageSize)
+          .page(constructPage(viewUuid, gridId, data, 0, firstPageSize)
               .lowerBound(0)
               .upperBound(firstPageSize));
       return firstPageSize;
@@ -273,7 +278,8 @@ public class GridModelApiImpl implements GridModelApi {
     result.accessConfig(new GridDataAccessConfig().dataUri(tableData.getUri()));
     result.totalRowCount(tableData.size());
     result.page(
-        constructPage(tableData, lowerBound, upperBound).lowerBound(lowerBound)
+        constructPage(null, null, tableData, lowerBound, upperBound)
+            .lowerBound(lowerBound)
             .upperBound(upperBound));
     return result;
   }
@@ -295,62 +301,71 @@ public class GridModelApiImpl implements GridModelApi {
   }
 
   @Override
-  public GridModel loadPage(GridModel model, int offset, int limit) {
-    if (model.getAccessConfig() == null) {
-      // TODO update / setPageSize?
+  public GridModel loadPage(UUID viewUuid, String gridId, int offset, int limit) {
+    return executeGridCall(viewUuid, gridId, model -> {
+      if (model.getAccessConfig() == null) {
+        // TODO update / setPageSize?
+        return model;
+      }
+      TableData<?> tableData =
+          tableDataApi.readPage(model.getAccessConfig().getDataUri(), offset, limit);
+      model.page(constructPage(viewUuid, gridId, tableData, 0, tableData.size())
+          .lowerBound(offset)
+          .upperBound(offset + limit));
       return model;
-    }
-    TableData<?> tableData =
-        tableDataApi.readPage(model.getAccessConfig().getDataUri(), offset, limit);
-    model.page(constructPage(tableData, 0, tableData.size())
-        .lowerBound(offset)
-        .upperBound(offset + limit));
-    return model;
+    });
   }
 
   @Override
-  public GridModel updateGrid(GridModel model, GridUpdateData update) {
-    // check update to match existing columns
-    List<@NotNull String> validColumns = model.getView().getDescriptor().getColumns().stream()
-        .map(col -> col.getPropertyName())
-        .collect(toList());
-    if (update.getOrderedColumnNames().stream()
-        .anyMatch(col -> !validColumns.contains(col))) {
-      throw new IllegalArgumentException("Invalid ordered columnName in update");
-    }
-    // any check??
-    model.getView().setOrderedColumnNames(update.getOrderedColumnNames());
-    if (!update.getOrderByList().isEmpty()) {
-      if (update.getOrderByList().stream()
+  public GridModel updateGrid(UUID viewUuid, String gridId, GridUpdateData update) {
+    return executeGridCall(viewUuid, gridId, model -> {
+      // check update to match existing columns
+      List<@NotNull String> validColumns = model.getView().getDescriptor().getColumns().stream()
           .map(col -> col.getPropertyName())
+          .collect(toList());
+      if (update.getOrderedColumnNames().stream()
           .anyMatch(col -> !validColumns.contains(col))) {
-        throw new IllegalArgumentException("Invalid orderByList columnName in update");
+        throw new IllegalArgumentException("Invalid ordered columnName in update");
       }
-      TableData<?> data = tableDataApi.read(model.getAccessConfig().getDataUri());
-      TableDatas.sortByFilterExpression(data, update.getOrderByList());
-      tableDataApi.save(data);
-      model.getAccessConfig().setDataUri(data.getUri());
-      int lowerBound = model.getPage().getLowerBound();
-      int upperBound = model.getPage().getUpperBound();
-      model.page(constructPage(data, lowerBound,
-          Math.min(data.size(), upperBound))
-              .lowerBound(lowerBound)
-              .upperBound(upperBound));
-    }
-    model.getView().setOrderByList(update.getOrderByList());
-    return model;
+      // any check??
+      model.getView().setOrderedColumnNames(update.getOrderedColumnNames());
+      if (!update.getOrderByList().isEmpty()) {
+        if (update.getOrderByList().stream()
+            .map(col -> col.getPropertyName())
+            .anyMatch(col -> !validColumns.contains(col))) {
+          throw new IllegalArgumentException("Invalid orderByList columnName in update");
+        }
+        TableData<?> data = tableDataApi.read(model.getAccessConfig().getDataUri());
+        TableDatas.sortByFilterExpression(data, update.getOrderByList());
+        tableDataApi.save(data);
+        model.getAccessConfig().setDataUri(data.getUri());
+        int lowerBound = model.getPage().getLowerBound();
+        int upperBound = model.getPage().getUpperBound();
+        model.page(constructPage(viewUuid, gridId, data, lowerBound,
+            Math.min(data.size(), upperBound))
+                .lowerBound(lowerBound)
+                .upperBound(upperBound));
+      }
+      model.getView().setOrderByList(update.getOrderByList());
+      return model;
+    });
   }
 
-  private GridPage constructPage(TableData<?> tableData, int beginIndex, int endIndex) {
+  private GridPage constructPage(UUID viewUuid, String gridId, TableData<?> tableData,
+      int beginIndex, int endIndex) {
     GridPage page = new GridPage();
     page.rows(new ArrayList<>());
+    InvocationRequest gridRowCallback = getCallback(viewUuid, gridId, GRIDROW_POSTFIX);
     for (int i = beginIndex; i < endIndex; i++) {
-      DataRow row = tableData.rows().get(i);
-      page.addRowsItem(new GridRow().id(Integer.toString(i)).data(tableData.columns().stream()
-          .filter(c -> tableData.get(c, row) != null)
-          .collect(toMap(DataColumn::getName, c -> tableData.get(c, row)))));
+      DataRow dataRow = tableData.rows().get(i);
+      GridRow gridRow = new GridRow().id(Integer.toString(i)).data(tableData.columns().stream()
+          .filter(c -> tableData.get(c, dataRow) != null)
+          .collect(toMap(DataColumn::getName, c -> tableData.get(c, dataRow))));
+      gridRow = (GridRow) executeCallback(gridRowCallback, gridRow);
+      page.addRowsItem(gridRow);
     }
-    return page;
+    InvocationRequest gridPageCallback = getCallback(viewUuid, gridId, GRIDPAGE_POSTFIX);
+    return (GridPage) executeCallback(gridPageCallback, page);
   }
 
   @Override
@@ -371,10 +386,18 @@ public class GridModelApiImpl implements GridModelApi {
   }
 
   @Override
-  public void addExpandCallback(UUID viewUuid, String gridId, InvocationRequest request) {
-    View view = viewApi.getView(viewUuid);
-    String expandCallbackKey = gridId + EXPAND_POSTFIX;
-    view.putParametersItem(expandCallbackKey, request);
+  public void setExpandCallback(UUID viewUuid, String gridId, InvocationRequest request) {
+    addCallback(viewUuid, gridId, request, EXPAND_POSTFIX);
+  }
+
+  @Override
+  public void addGridRowCallback(UUID viewUuid, String gridId, InvocationRequest request) {
+    addCallback(viewUuid, gridId, request, GRIDROW_POSTFIX);
+  }
+
+  @Override
+  public void addGridPageCallback(UUID viewUuid, String gridId, InvocationRequest request) {
+    addCallback(viewUuid, gridId, request, GRIDPAGE_POSTFIX);
   }
 
   @Override
@@ -388,16 +411,37 @@ public class GridModelApiImpl implements GridModelApi {
       log.error("Row not found by id: {}, {}", gridId, rowId);
       return null;
     }
-    View view = viewApi.getView(grid.getViewUuid());
-    String expandCallbackKey = gridId + EXPAND_POSTFIX;
-    Object requestObject = view.getParameters().get(expandCallbackKey);
-    InvocationRequest request = objectApi.asType(InvocationRequest.class, requestObject);
+    InvocationRequest request = getCallback(grid.getViewUuid(), gridId, EXPAND_POSTFIX);
     if (request == null) {
       log.warn("Expand handler not found for grid {}", gridId);
-      return row;
+    }
+    return executeCallback(request, row);
+  }
+
+  private void addCallback(UUID viewUuid, String gridId, InvocationRequest request,
+      String postfix) {
+    View view = viewApi.getView(viewUuid);
+    String callbackKey = gridId + postfix;
+    view.putParametersItem(callbackKey, request);
+  }
+
+  private InvocationRequest getCallback(UUID viewUuid, String gridId, String postfix) {
+    if (viewUuid == null || Strings.isNullOrEmpty(gridId)) {
+      return null;
+    }
+    View view = viewApi.getView(viewUuid);
+    String expandCallbackKey = gridId + postfix;
+    Object requestObject = view.getParameters().get(expandCallbackKey);
+    InvocationRequest request = objectApi.asType(InvocationRequest.class, requestObject);
+    return request;
+  }
+
+  private Object executeCallback(InvocationRequest request, Object parameter) {
+    if (request == null) {
+      return parameter;
     }
     try {
-      request.getParameters().get(0).setValue(row);
+      request.getParameters().get(0).setValue(parameter);
       InvocationParameter result = invocationApi.invoke(request);
       if (result == null || result.getValue() == null) {
         throw new IllegalArgumentException("Action returned nothing");
@@ -406,5 +450,6 @@ public class GridModelApiImpl implements GridModelApi {
     } catch (Exception e) {
       throw new IllegalArgumentException("Action throw an error", e);
     }
+
   }
 }
