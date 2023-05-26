@@ -3,9 +3,24 @@ package org.smartbit4all.api.mdm;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
+import org.smartbit4all.api.mdm.MDMEntryApiImpl.BranchStrategy;
+import org.smartbit4all.core.object.ObjectApi;
 
 /**
- * This is the super interface of the Master Data Management APIs.
+ * This is the interface of the Master Data Management entry APIs. The base implementation of the
+ * master data management api. The basic feature is that if we configure an api like into the spring
+ * context then it will be managed by the {@link MasterDataManagementApi}.
+ * 
+ * It is based on a domain bean class (assigned to the {@link #getClazz()} as constructor parameter.
+ * It will have a name that is coming from the simple name of the clazz or we can set a different
+ * name. In this way we can have many entries from the same clazz with different names.
+ * 
+ * The key property of the given object must be set also as a String[] path that can be used by the
+ * {@link ObjectApi#getValueFromObjectMap(Map, String...)} or similar methods. It is used to extract
+ * the key property from the object and identify the given instance uniquely. So one entry can have
+ * exactly one object published in a moment with the same identifier.
+ * 
+ * The entries can have
  * 
  * @author Peter Boros
  * @param <O> The class of the object managed by this API.
@@ -14,7 +29,7 @@ public interface MDMEntryApi<O> {
 
   String getName();
 
-  Class<O> clazz();
+  Class<O> getClazz();
 
   String getId(O object);
 
@@ -68,6 +83,14 @@ public interface MDMEntryApi<O> {
   /**
    * @return Return all the published objects loaded.
    */
-  List<MDMObjectEntry<O>> publishedAndDraftObjects();
+  List<MDMObjectEntry<O>> getPublishedAndDraftObjects();
+
+  /**
+   * @return The branching strategy of the given entry that can be {@link BranchStrategy#LOCAL} if
+   *         the draft management of the given entry defines a local private branch for the given
+   *         entry. Or it can be {@link BranchStrategy#GLOBAL} if modification of the given entry
+   *         joins to a global branch.
+   */
+  BranchStrategy getBranchStrategy();
 
 }

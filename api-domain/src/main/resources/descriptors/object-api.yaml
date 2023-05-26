@@ -368,11 +368,12 @@ components:
           type: UserActivityLog
         branchedObjects:
           type: object
-          description: The branched objects are identified by the 
+          description: The branched objects are identified by the latest URI of the source object.
           additionalProperties:
             $ref: '#/components/schemas/BranchedObject'
         newObjects:
           type: object
+          description: The branched objects are identified by the latest URI of the new branch object.
           additionalProperties:
             $ref: '#/components/schemas/BranchedObject'
     BranchedObject:
@@ -382,9 +383,13 @@ components:
         constructed when the first opartion is executed with the given object.
       required: [objectUri, rebases, merges]
       properties:
+        sourceObjectLatestUri:
+          type: string
+          description: The latest uri of the source object.
+          format: uri
         branchedObjectLatestUri:
           type: string
-          description: The latest uri of the branched object source. It is used to find the matching ones.
+          description: The latest uri of the branched object.
           format: uri
         operations:
           type: array

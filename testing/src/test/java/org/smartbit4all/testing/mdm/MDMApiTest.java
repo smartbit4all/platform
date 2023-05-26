@@ -3,6 +3,7 @@ package org.smartbit4all.testing.mdm;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.smartbit4all.api.mdm.MDMEntryApi;
+import org.smartbit4all.api.mdm.MDMObjectEntry;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.org.OrgApi;
 import org.smartbit4all.api.org.SecurityGroup;
@@ -20,6 +22,7 @@ import org.smartbit4all.api.sample.bean.SampleCategoryType;
 import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
+import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.sec.localauth.LocalAuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -80,17 +83,34 @@ class MDMApiTest {
 
     URI draft = typeApi.saveAsDraft(second.name("Type two v1"));
 
+    URI draftNew = typeApi.saveAsDraft(new SampleCategoryType().code("TYPE4").name("Type four")
+        .description("This is the fourth category type."));
+
     ObjectNode objectNode = objectApi.load(draft).setValue("This is the second category type v2.",
         SampleCategoryType.DESCRIPTION);
 
     objectApi.save(objectNode);
+
+    List<MDMObjectEntry<SampleCategoryType>> publishedAndDraftObjects =
+        typeApi.getPublishedAndDraftObjects();
+
+    Assertions
+        .assertThat(publishedAndDraftObjects.stream()
+            .map(oe -> (oe.getPublished() == null ? StringConstant.ARROW + oe.getDraft().getName()
+                : (oe.getDraft() != null
+                    ? oe.getPublished().getName() + StringConstant.ARROW + oe.getDraft().getName()
+                    : oe.getPublished().getName()))))
+        .containsExactlyInAnyOrder("Type one", "Type two->Type two v1", "Type three",
+            "->Type four");
+
 
     typeApi.publishCurrentModifications();
 
     publishedObjects = typeApi.getPublishedObjects();
     Assertions.assertThat(publishedObjects.values().stream().map(sct -> sct.getDescription()))
         .containsExactlyInAnyOrder("This is the first category type.",
-            "This is the second category type v2.", "This is the third category type.");
+            "This is the second category type v2.", "This is the third category type.",
+            "This is the fourth category type.");
 
   }
 

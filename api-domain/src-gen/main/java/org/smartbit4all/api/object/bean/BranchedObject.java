@@ -36,12 +36,16 @@ import javax.validation.Valid;
  */
 @ApiModel(description = "The object branch data is used to hold all the operations about an object on a branch. This object is constructed when the first opartion is executed with the given object. ")
 @JsonPropertyOrder({
+  BranchedObject.SOURCE_OBJECT_LATEST_URI,
   BranchedObject.BRANCHED_OBJECT_LATEST_URI,
   BranchedObject.OPERATIONS
 })
 @JsonTypeName("BranchedObject")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class BranchedObject {
+  public static final String SOURCE_OBJECT_LATEST_URI = "sourceObjectLatestUri";
+  private URI sourceObjectLatestUri;
+
   public static final String BRANCHED_OBJECT_LATEST_URI = "branchedObjectLatestUri";
   private URI branchedObjectLatestUri;
 
@@ -51,6 +55,34 @@ public class BranchedObject {
   public BranchedObject() { 
   }
 
+  public BranchedObject sourceObjectLatestUri(URI sourceObjectLatestUri) {
+    
+    this.sourceObjectLatestUri = sourceObjectLatestUri;
+    return this;
+  }
+
+   /**
+   * The latest uri of the source object.
+   * @return sourceObjectLatestUri
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "The latest uri of the source object.")
+  @JsonProperty(SOURCE_OBJECT_LATEST_URI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public URI getSourceObjectLatestUri() {
+    return sourceObjectLatestUri;
+  }
+
+
+  @JsonProperty(SOURCE_OBJECT_LATEST_URI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSourceObjectLatestUri(URI sourceObjectLatestUri) {
+    this.sourceObjectLatestUri = sourceObjectLatestUri;
+  }
+
+
   public BranchedObject branchedObjectLatestUri(URI branchedObjectLatestUri) {
     
     this.branchedObjectLatestUri = branchedObjectLatestUri;
@@ -58,12 +90,12 @@ public class BranchedObject {
   }
 
    /**
-   * The latest uri of the branched object source. It is used to find the matching ones.
+   * The latest uri of the branched object.
    * @return branchedObjectLatestUri
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The latest uri of the branched object source. It is used to find the matching ones.")
+  @ApiModelProperty(value = "The latest uri of the branched object.")
   @JsonProperty(BRANCHED_OBJECT_LATEST_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -124,19 +156,21 @@ public class BranchedObject {
       return false;
     }
     BranchedObject branchedObject = (BranchedObject) o;
-    return Objects.equals(this.branchedObjectLatestUri, branchedObject.branchedObjectLatestUri) &&
+    return Objects.equals(this.sourceObjectLatestUri, branchedObject.sourceObjectLatestUri) &&
+        Objects.equals(this.branchedObjectLatestUri, branchedObject.branchedObjectLatestUri) &&
         Objects.equals(this.operations, branchedObject.operations);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(branchedObjectLatestUri, operations);
+    return Objects.hash(sourceObjectLatestUri, branchedObjectLatestUri, operations);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class BranchedObject {\n");
+    sb.append("    sourceObjectLatestUri: ").append(toIndentedString(sourceObjectLatestUri)).append("\n");
     sb.append("    branchedObjectLatestUri: ").append(toIndentedString(branchedObjectLatestUri)).append("\n");
     sb.append("    operations: ").append(toIndentedString(operations)).append("\n");
     sb.append("}");

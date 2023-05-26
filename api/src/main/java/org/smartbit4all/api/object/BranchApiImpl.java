@@ -53,11 +53,13 @@ public class BranchApiImpl implements BranchApi {
       Map<URI, BranchOperation> map =
           brachedObjects.entrySet().stream().collect(toMap(Entry::getKey, e -> {
             URI sourceUri = e.getKey();
-            String latestSourceUri = objectApi.getLatestUri(sourceUri).toString();
-            return b.getBranchedObjects().computeIfAbsent(latestSourceUri,
+            URI latestSourceUri = objectApi.getLatestUri(sourceUri);
+            String latestSourceUriString = latestSourceUri.toString();
+            return b.getBranchedObjects().computeIfAbsent(latestSourceUriString,
                 u -> {
                   URI targetUri = e.getValue().get();
                   return new BranchedObject()
+                      .sourceObjectLatestUri(latestSourceUri)
                       .branchedObjectLatestUri(objectApi.getLatestUri(targetUri))
                       .addOperationsItem(
                           new BranchOperation()

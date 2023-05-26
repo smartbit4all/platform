@@ -1,10 +1,12 @@
 package org.smartbit4all.api.mdm;
 
 import java.net.URI;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import org.smartbit4all.api.collection.CollectionApi;
@@ -22,9 +24,11 @@ import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 
 /**
- * The base implementation of the master data management api.
+ * The base implementation of the master data management api. The basic feature is that if we
+ * configure an api like into the spring context than it will be
  * 
  * @author Peter Boros
  *
@@ -61,11 +65,15 @@ public class MDMEntryApiImpl<O extends Object> implements MDMEntryApi<O> {
   @Autowired
   private BranchApi branchApi;
 
+  public enum BranchStrategy {
+    GLOBAL, LOCAL
+  }
+
   /**
    * If it is true that the given api is using a local branch for the modification process. It means
    * that the publish will be local also.
    */
-  private boolean useLocalBranch = true;
+  private BranchStrategy branchStrategy = BranchStrategy.LOCAL;
 
   /**
    * The given master data entry is managed inside an information entry. It is usually global for
@@ -88,7 +96,7 @@ public class MDMEntryApiImpl<O extends Object> implements MDMEntryApi<O> {
   }
 
   @Override
-  public Class<O> clazz() {
+  public Class<O> getClazz() {
     return clazz;
   }
 
@@ -99,6 +107,16 @@ public class MDMEntryApiImpl<O extends Object> implements MDMEntryApi<O> {
     }
     if (uniqueIdPath != null) {
       return objectApi.getValueFromObject(String.class, object, uniqueIdPath);
+    }
+    return null;
+  }
+
+  public String getIdFromNode(ObjectNode objectNode) {
+    if (objectNode == null) {
+      return null;
+    }
+    if (uniqueIdPath != null) {
+      return objectNode.getValueAsString(uniqueIdPath);
     }
     return null;
   }
@@ -123,12 +141,7 @@ public class MDMEntryApiImpl<O extends Object> implements MDMEntryApi<O> {
     URI uri = objectApi.saveAsNew(schema, object);
     StoredMap storedMap = collectionApi.map(schema, getPublishedMapName());
     storedMap.put(getId(object), uri);
-    Map<String, URI> uris = storedMap.uris();
-    if (publishedListName != null) {
-      collectionApi.list(schema, publishedListName).update(l -> {
-        return uris.values().stream().collect(toList());
-      });
-    }
+    updatePublishedList(storedMap.uris());
     return uri;
   }
 
@@ -137,6 +150,7 @@ public class MDMEntryApiImpl<O extends Object> implements MDMEntryApi<O> {
     if (object == null) {
       return null;
     }
+    // TODO Lock the entry to ensure mutual exclusion.
     @SuppressWarnings("unchecked")
     ObjectDefinition<O> objectDefinition =
         (ObjectDefinition<O>) objectApi.definition(object.getClass());
@@ -152,24 +166,37 @@ public class MDMEntryApiImpl<O extends Object> implements MDMEntryApi<O> {
           "Unable to save draft because the branch can not be identify.");
     }
     URI publishedUri = getPublishedMap().get(getId(object));
-    Map<URI, Supplier<URI>> map = Stream.of(publishedUri).collect(toMap(u -> u, u -> {
-      return () -> objectApi.saveAsNew(schema, object);
-    }));
-    Map<URI, BranchOperation> branchedObjects =
-        branchApi.initBranchedObjects(branchEntry.getUri(), map);
-    return branchedObjects.get(publishedUri).getTargetUri();
+    if (publishedUri != null) {
+      Map<URI, Supplier<URI>> map = Stream.of(publishedUri).collect(toMap(u -> u, u -> {
+        return () -> objectApi.saveAsNew(schema, object);
+      }));
+      Map<URI, BranchOperation> branchedObjects =
+          branchApi.initBranchedObjects(branchEntry.getUri(), map);
+      return branchedObjects.get(publishedUri).getTargetUri();
+    } else {
+      // Construct a new object on the branch
+      URI newDraftUri = objectApi.saveAsNew(schema, object);
+      branchApi.addNewBranchedObjects(branchEntry.getUri(),
+          Arrays.asList(newDraftUri));
+      return newDraftUri;
+    }
   }
 
   @Override
   public void cancelDraft(URI draftUri) {
+    if (draftUri == null) {
+      return;
+    }
     // Simply remove the draft from the branch.
     URI branchEntryUri = getCurrentBranchEntryUri();
     if (branchEntryUri != null) {
+      URI latestUri = objectApi.getLatestUri(draftUri);
+      // Remove the draft from the modified or new objects of the branch.
       objectApi.loadLatest(branchEntryUri).modify(BranchEntry.class, b -> {
         b.setBranchedObjects(b.getBranchedObjects().entrySet().stream()
-            .filter(e -> objectApi.equalsIgnoreVersion(draftUri,
-                e.getValue().getBranchedObjectLatestUri()))
+            .filter(e -> e.getValue().getBranchedObjectLatestUri().equals(latestUri))
             .collect(toMap(Entry::getKey, Entry::getValue)));
+        b.getNewObjects().remove(latestUri.toString());
         return b;
       });
     }
@@ -178,7 +205,7 @@ public class MDMEntryApiImpl<O extends Object> implements MDMEntryApi<O> {
   @Override
   public void discardCurrentModifications() {
     // Remove the branch from the entry.
-    if (useLocalBranch) {
+    if (branchStrategy == BranchStrategy.LOCAL) {
       StoredReference<MasterDataManagementInfo> reference = collectionApi
           .reference(MasterDataManagementApiImpl.SCHEMA,
               MasterDataManagementApiImpl.GLOBAL_INFO, MasterDataManagementInfo.class);
@@ -192,36 +219,45 @@ public class MDMEntryApiImpl<O extends Object> implements MDMEntryApi<O> {
 
   @Override
   public void publishCurrentModifications() {
-    if (!useLocalBranch) {
-      return;
+    if (branchStrategy != BranchStrategy.LOCAL) {
+      throw new IllegalStateException("Unable to publish the modifications of " + getName()
+          + " master data if the branch startegy is not local.");
     }
     URI branchEntryUri = getCurrentBranchEntryUri();
     if (branchEntryUri != null) {
-      StoredReference<MasterDataManagementInfo> reference = collectionApi
-          .reference(MasterDataManagementApiImpl.SCHEMA,
-              MasterDataManagementApiImpl.GLOBAL_INFO, MasterDataManagementInfo.class);
+      StoredReference<MasterDataManagementInfo> reference = getMasterInfoReference();
       reference.update(info -> {
         MasterDataManagementEntry entry = info.getObjects().get(getName());
         BranchEntry branchEntry =
             objectApi.read(objectApi.getLatestUri(branchEntryUri), BranchEntry.class);
         if (branchEntry != null) {
+          // Check the uniqueness of the objects.
           Map<URI, ObjectNode> toSaveBySourceUri =
               branchEntry.getBranchedObjects().entrySet().stream().collect(
                   toMap(e -> URI.create(e.getKey()),
                       e -> objectApi.load(e.getValue().getBranchedObjectLatestUri())));
-          Map<URI, URI> toReplace =
+          // Now set the new URIs in the published map and list.
+          replaceInPublished(
               toSaveBySourceUri.entrySet().stream().collect(toMap(Entry::getKey, e -> {
                 ObjectNode objectNode = objectApi.loadLatest(e.getKey());
                 objectNode.setValues(e.getValue().getObjectAsMap());
                 return objectApi.save(objectNode);
-              }));
-          // Now set the new URIs in the published map and list.
-          replaceInPublished(toReplace);
+              })));
+          // The new objects coming from the draft can be registered directly.
+          addNewToPublished(branchEntry.getNewObjects().values().stream()
+              .map(bo -> objectApi.load(bo.getBranchedObjectLatestUri()))
+              .collect(toMap(this::getIdFromNode, ObjectNode::getObjectUri)));
           entry.branch(null);
         }
         return info;
       });
     }
+  }
+
+  private StoredReference<MasterDataManagementInfo> getMasterInfoReference() {
+    return collectionApi
+        .reference(MasterDataManagementApiImpl.SCHEMA,
+            MasterDataManagementApiImpl.GLOBAL_INFO, MasterDataManagementInfo.class);
   }
 
   private final void replaceInPublished(Map<URI, URI> toPublishByLatest) {
@@ -233,6 +269,18 @@ public class MDMEntryApiImpl<O extends Object> implements MDMEntryApi<O> {
           .filter(e -> toPublishByLatest.containsKey(objectApi.getLatestUri(e.getValue())))
           .collect(toMap(Entry::getKey,
               e -> toPublishByLatest.get(objectApi.getLatestUri(e.getValue())))));
+      updatePublishedList(map);
+      return map;
+    });
+  }
+
+  private final void addNewToPublished(Map<String, URI> toPublish) {
+    if (toPublish == null || toPublish.isEmpty()) {
+      return;
+    }
+    collectionApi.map(schema, getPublishedMapName()).update(map -> {
+      map.putAll(toPublish);
+      updatePublishedList(map);
       return map;
     });
   }
@@ -242,9 +290,11 @@ public class MDMEntryApiImpl<O extends Object> implements MDMEntryApi<O> {
     URI branchEntryUri = getCurrentBranchEntryUri();
     if (branchEntryUri != null) {
       BranchEntry branchEntry = objectApi.read(branchEntryUri, BranchEntry.class);
-      return branchEntry.getBranchedObjects().entrySet().stream()
+      return Stream.concat(branchEntry.getBranchedObjects().entrySet().stream()
           .map(e -> new MDMDraftObjectURIEntry(URI.create(e.getKey()),
-              e.getValue().getBranchedObjectLatestUri()))
+              e.getValue().getBranchedObjectLatestUri())),
+          branchEntry.getNewObjects().values().stream().map(bo -> new MDMDraftObjectURIEntry(null,
+              bo.getBranchedObjectLatestUri())))
           .collect(toList());
     }
     return Collections.emptyList();
@@ -253,14 +303,15 @@ public class MDMEntryApiImpl<O extends Object> implements MDMEntryApi<O> {
   @Override
   public List<MDMObjectEntry<O>> getDraftObjects() {
     return getDraftUris().stream()
-        .map(draft -> new MDMObjectEntry<>(objectApi.read(draft.getSourceURI(), clazz),
+        .map(draft -> new MDMObjectEntry<>(
+            draft.getSourceURI() != null ? objectApi.read(draft.getSourceURI(), clazz) : null,
             objectApi.read(draft.getDraftURI(), clazz)))
         .collect(toList());
   }
 
   private BranchEntry getOrCreateBranchEntry() {
     // We check if we have the proper branch already or now we have to create a new one.
-    if (useLocalBranch) {
+    if (branchStrategy == BranchStrategy.LOCAL) {
       MasterDataManagementEntry managementEntry = info.getObjects().get(getName());
       if (managementEntry != null) {
         if (managementEntry.getBranch() == null) {
@@ -284,32 +335,36 @@ public class MDMEntryApiImpl<O extends Object> implements MDMEntryApi<O> {
 
   private URI getCurrentBranchEntryUri() {
     // We check if we have the proper branch already or now we have to create a new one.
-    if (useLocalBranch) {
+    if (branchStrategy == BranchStrategy.LOCAL) {
       MasterDataManagementEntry managementEntry = info.getObjects().get(getName());
       if (managementEntry != null) {
-        return managementEntry.getBranch();
+        return objectApi.getLatestUri(managementEntry.getBranch());
       }
     }
     return null;
   }
 
   @Override
-  public List<MDMObjectEntry<O>> publishedAndDraftObjects() {
-    List<MDMObjectEntry<O>> draftObjects = getDraftObjects();
-    Map<URI, MDMObjectEntry<O>> draftsByPublishedURI = draftObjects.stream().collect(toMap(
-        o -> objectApi.getLatestUri(objectApi.definition(clazz).getUri(o.getPublished())), o -> o));
-    Map<String, URI> publishedMap = getPublishedMap();
-    List<MDMObjectEntry<O>> result = publishedMap.entrySet().stream().map(e -> {
-      MDMObjectEntry<O> draftObjectEntry = draftsByPublishedURI.remove(e.getValue());
-      if (draftObjectEntry != null) {
-        return draftObjectEntry;
-      }
-      // Else we dont have any draft so we create an empty
-      return new MDMObjectEntry<>(objectApi.read(e.getValue(), clazz), null);
-    }).collect(toList());
+  public List<MDMObjectEntry<O>> getPublishedAndDraftObjects() {
+    List<MDMObjectEntry<O>> results = getDraftObjects();
+    // In the draft objects we have all the published objects that have draft version. And also the
+    // brand new object are included.
+    Set<URI> publishedWithDraft = results.stream().filter(oe -> oe.getPublished() != null)
+        .map(oe -> {
+          return objectApi.getLatestUri(objectApi.definition(clazz).getUri(oe.getPublished()));
+        }).collect(toSet());
+    Map<String, URI> publishedMap =
+        getPublishedMap().entrySet().stream()
+            .filter(e -> !publishedWithDraft.contains(objectApi.getLatestUri(e.getValue())))
+            .collect(toMap(Entry::getKey, Entry::getValue));
+
+    List<MDMObjectEntry<O>> publishedList =
+        publishedMap.values().stream().map(u -> objectApi.read(u, clazz))
+            .map(o -> new MDMObjectEntry<>(o, null)).collect(toList());
+
     // Add the remaining draft object. The new objects missing from the published.
-    result.addAll(draftsByPublishedURI.values());
-    return result;
+    results.addAll(publishedList);
+    return results;
   }
 
   @Override
@@ -337,12 +392,21 @@ public class MDMEntryApiImpl<O extends Object> implements MDMEntryApi<O> {
     this.info = info;
   }
 
-  public final boolean isUseLocalBranch() {
-    return useLocalBranch;
+  @Override
+  public final BranchStrategy getBranchStrategy() {
+    return branchStrategy;
   }
 
-  public final void setUseLocalBranch(boolean useLocalBranch) {
-    this.useLocalBranch = useLocalBranch;
+  final void setBranchStrategy(BranchStrategy branchStrategy) {
+    this.branchStrategy = branchStrategy;
+  }
+
+  private final void updatePublishedList(Map<String, URI> uris) {
+    if (publishedListName != null) {
+      collectionApi.list(schema, publishedListName).update(l -> {
+        return uris.values().stream().collect(toList());
+      });
+    }
   }
 
 }

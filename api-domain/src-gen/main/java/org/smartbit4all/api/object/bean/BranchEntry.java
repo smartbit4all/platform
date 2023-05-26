@@ -194,13 +194,13 @@ public class BranchEntry {
   }
 
    /**
-   * The branched objects are identified by the
+   * The branched objects are identified by the latest URI of the source object.
    * @return branchedObjects
   **/
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "The branched objects are identified by the")
+  @ApiModelProperty(required = true, value = "The branched objects are identified by the latest URI of the source object.")
   @JsonProperty(BRANCHED_OBJECTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -228,13 +228,13 @@ public class BranchEntry {
   }
 
    /**
-   * Get newObjects
+   * The branched objects are identified by the latest URI of the new branch object.
    * @return newObjects
   **/
   @javax.annotation.Nonnull
   @NotNull
   @Valid
-  @ApiModelProperty(required = true, value = "")
+  @ApiModelProperty(required = true, value = "The branched objects are identified by the latest URI of the new branch object.")
   @JsonProperty(NEW_OBJECTS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
