@@ -289,6 +289,76 @@ public interface ViewApi {
 
 
     /**
+     * POST /component/{uuid}/{widgetId}/{nodeId}/action
+     * Performs a widget UI action. 
+     *
+     * @param uuid  (required)
+     * @param widgetId  (required)
+     * @param nodeId  (required)
+     * @param body  (required)
+     * @return  (status code 200)
+     */
+    @ApiOperation(
+        tags = { "View" },
+        value = "",
+        nickname = "performWidgetAction",
+        notes = "Performs a widget UI action. ",
+        response = ViewContextChange.class
+    )
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "", response = ViewContextChange.class)
+    })
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/component/{uuid}/{widgetId}/{nodeId}/action",
+        produces = { "application/json" },
+        consumes = { "application/json" }
+    )
+    default ResponseEntity<ViewContextChange> performWidgetAction(
+        @ApiParam(value = "", required = true) @PathVariable("uuid") UUID uuid,
+        @ApiParam(value = "", required = true) @PathVariable("widgetId") String widgetId,
+        @ApiParam(value = "", required = true) @PathVariable("nodeId") String nodeId,
+        @ApiParam(value = "", required = true) @Valid @RequestBody UiActionRequest body
+    ) throws Exception {
+        return getDelegate().performWidgetAction(uuid, widgetId, nodeId, body);
+    }
+
+
+    /**
+     * POST /component/{uuid}/{widgetId}/action
+     * Performs a widget UI action. 
+     *
+     * @param uuid  (required)
+     * @param widgetId  (required)
+     * @param body  (required)
+     * @return  (status code 200)
+     */
+    @ApiOperation(
+        tags = { "View" },
+        value = "",
+        nickname = "performWidgetMainAction",
+        notes = "Performs a widget UI action. ",
+        response = ViewContextChange.class
+    )
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "", response = ViewContextChange.class)
+    })
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/component/{uuid}/{widgetId}/action",
+        produces = { "application/json" },
+        consumes = { "application/json" }
+    )
+    default ResponseEntity<ViewContextChange> performWidgetMainAction(
+        @ApiParam(value = "", required = true) @PathVariable("uuid") UUID uuid,
+        @ApiParam(value = "", required = true) @PathVariable("widgetId") String widgetId,
+        @ApiParam(value = "", required = true) @Valid @RequestBody UiActionRequest body
+    ) throws Exception {
+        return getDelegate().performWidgetMainAction(uuid, widgetId, body);
+    }
+
+
+    /**
      * PUT /smartlink/{channel}/{uuid} : null
      *
      * @param channel Smartlink&#39;s channel. (required)

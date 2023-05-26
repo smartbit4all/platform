@@ -89,4 +89,18 @@ public class ViewApiDelegateImpl implements ViewApiDelegate {
     return ResponseEntity.ok(viewContextService.performAction(uuid, request));
   }
 
+  @Override
+  public ResponseEntity<ViewContextChange> performWidgetMainAction(UUID uuid, String widgetId,
+      UiActionRequest request) throws Exception {
+    return ResponseEntity
+        .ok(viewContextService.performWidgetAction(uuid, widgetId, null, request));
+  }
+
+  @Override
+  public ResponseEntity<ViewContextChange> performWidgetAction(UUID uuid, String widgetId,
+      String nodeId, UiActionRequest request) throws Exception {
+    return ResponseEntity
+        .ok(viewContextService.performWidgetAction(uuid, widgetId, nodeId, request));
+  }
+
 }

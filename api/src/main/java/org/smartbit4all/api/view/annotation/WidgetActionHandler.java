@@ -6,15 +6,16 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * Annotation to indicate that this method should be used to handle a UiAction call. Expected
- * signature: method(UUID viewUuid, UiActionRequest request).
+ * Annotation to indicate that this method should be used to handle a widget specific UiAction call.
+ * Expected signature: method(UUID viewUuid, String widgetId, String nodeId, UiActionRequest
+ * request).
  *
  * @author amate
  *
  */
 @Retention(RUNTIME)
 @Target(METHOD)
-public @interface ActionHandler {
+public @interface WidgetActionHandler {
 
   /**
    * Action codes, which annotated method handles. Empty string means all codes.
@@ -23,4 +24,10 @@ public @interface ActionHandler {
    */
   String[] value() default "";
 
+  /**
+   * Widget ids, which annotated method handles. Empty string means all widgets.
+   *
+   * @return
+   */
+  String[] widget() default "";
 }

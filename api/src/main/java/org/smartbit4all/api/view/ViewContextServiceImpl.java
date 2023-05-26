@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import org.slf4j.Logger;
@@ -25,6 +26,7 @@ import org.smartbit4all.api.view.annotation.ActionHandler;
 import org.smartbit4all.api.view.annotation.BeforeClose;
 import org.smartbit4all.api.view.annotation.MessageHandler;
 import org.smartbit4all.api.view.annotation.ViewApi;
+import org.smartbit4all.api.view.annotation.WidgetActionHandler;
 import org.smartbit4all.api.view.bean.CloseResult;
 import org.smartbit4all.api.view.bean.ComponentConstraint;
 import org.smartbit4all.api.view.bean.ComponentModel;
@@ -67,9 +69,24 @@ public class ViewContextServiceImpl implements ViewContextService {
 
   private Map<String, Class<?>> modelClassByViewName = new HashMap<>();
 
+  /**
+   * <View.name <MessageHandler.value <Method>>>
+   *
+   */
   private Map<String, Map<String, Method>> messageMethodsByView = new HashMap<>();
 
+  /**
+   * <View.name <ActionHandler.value <Method>>>
+   *
+   */
   private Map<String, Map<String, Method>> actionMethodsByView = new HashMap<>();
+
+  /**
+   * <View.name <WidgetActionHandler.widget <WidgetActionHandler.value <Method>>>>
+   *
+   */
+  private Map<String, Map<String, Map<String, Method>>> widgetActionMethodsByViewAndWidget =
+      new HashMap<>();
 
   private Map<String, Method> beforeCloseMethodsByView = new HashMap<>();
 
@@ -330,30 +347,71 @@ public class ViewContextServiceImpl implements ViewContextService {
    * @param api
    */
   private void registerViewMethods(String viewName, Object api) {
-    registerMessageMethods(viewName, api);
-    registerActionMethods(viewName, api);
+    registerAnnotatedMethodsWithCode(viewName, api, MessageHandler.class, messageMethodsByView,
+        annotation -> Arrays.asList(annotation.value()));
+    registerAnnotatedMethodsWithCode(viewName, api, ActionHandler.class, actionMethodsByView,
+        annotation -> Arrays.asList(annotation.value()));
+    registerWidgetActionMethods(viewName, api);
     registerAnnotatedMethods(viewName, api, BeforeClose.class, beforeCloseMethodsByView);
   }
 
-  private void registerMessageMethods(String viewName, Object api) {
-    Map<String, Method> messageMethods = new HashMap<>();
+
+  private void registerWidgetActionMethods(String viewName, Object api) {
+    Map<String, Map<String, Method>> widgetMethods = new HashMap<>();
     ReflectionUtility.allMethods(
         api.getClass(),
-        method -> method.isAnnotationPresent(MessageHandler.class))
-        .forEach(method -> collectMessageMethod(viewName, method, messageMethods));
+        method -> method.isAnnotationPresent(WidgetActionHandler.class))
+        .forEach(method -> collectWidgetActionMethod(viewName, method, widgetMethods));
 
-    messageMethodsByView.put(viewName, messageMethods);
+    widgetActionMethodsByViewAndWidget.put(viewName, widgetMethods);
   }
 
-  // TODO consolidate registerMessageMethod and registerActionMethod
-  private void registerActionMethods(String viewName, Object api) {
-    Map<String, Method> actionMethods = new HashMap<>();
+  private void collectWidgetActionMethod(String viewName, Method method,
+      Map<String, Map<String, Method>> methods) {
+    WidgetActionHandler annotation =
+        AnnotationUtils.findAnnotation(method, WidgetActionHandler.class);
+    if (annotation != null) {
+      List<String> widgets = Arrays.asList(annotation.widget());
+      List<String> actions = Arrays.asList(annotation.value());
+
+      for (String widget : widgets) {
+        Map<String, Method> methodsForWidget =
+            methods.computeIfAbsent(widget, w -> new HashMap<>());
+        for (String action : actions) {
+          if (methods.containsKey(action)) {
+            throw new IllegalStateException("WIdgetActionHandler duplicated! "
+                + viewName + "." + widget + "." + action);
+          }
+          methodsForWidget.put(action, method);
+        }
+      }
+    }
+  }
+
+  private <T extends Annotation> void registerAnnotatedMethodsWithCode(String viewName, Object api,
+      Class<T> annotationClass, Map<String, Map<String, Method>> methodsByView,
+      Function<T, List<String>> valueExtractor) {
+    Map<String, Method> methods = new HashMap<>();
     ReflectionUtility.allMethods(
         api.getClass(),
-        method -> method.isAnnotationPresent(ActionHandler.class))
-        .forEach(method -> collectActionMethod(viewName, method, actionMethods));
+        method -> method.isAnnotationPresent(annotationClass))
+        .forEach(method -> {
+          T annotation = AnnotationUtils.findAnnotation(method, annotationClass);
+          if (annotation != null) {
+            List<String> codes = valueExtractor.apply(annotation);
+            for (String code : codes) {
+              if (methods.containsKey(code)) {
+                throw new IllegalStateException(
+                    annotationClass.getSimpleName() + "Handler duplicated! " + viewName + "."
+                        + code);
+              }
+              methods.put(code, method);
+            }
+          }
+        });
 
-    actionMethodsByView.put(viewName, actionMethods);
+    methodsByView.put(viewName, methods);
+
   }
 
   private void registerAnnotatedMethods(String viewName, Object api,
@@ -367,42 +425,6 @@ public class ViewContextServiceImpl implements ViewContextService {
     }
     if (methods.size() == 1) {
       methodsByView.put(viewName, methods.iterator().next());
-    }
-  }
-
-  /**
-   * Process method's annotation values for parameter annotation: for each value, put an entry to
-   * messageMethods with value as key and method as value.
-   *
-   * @param method
-   * @param messageMethods
-   */
-  private void collectMessageMethod(String viewName, Method method,
-      Map<String, Method> messageMethods) {
-    MessageHandler annotation = AnnotationUtils.findAnnotation(method, MessageHandler.class);
-    if (annotation != null) {
-      List<String> messages = Arrays.asList(annotation.value());
-      for (String message : messages) {
-        if (messageMethods.containsKey(message)) {
-          throw new IllegalStateException("MessageHandler duplicated! " + viewName + "." + message);
-        }
-        messageMethods.put(message, method);
-      }
-    }
-  }
-
-  // TODO consolidate collectMessageMethod and collectActionMethod
-  private void collectActionMethod(String viewName, Method method,
-      Map<String, Method> messageMethods) {
-    ActionHandler annotation = AnnotationUtils.findAnnotation(method, ActionHandler.class);
-    if (annotation != null) {
-      List<String> messages = Arrays.asList(annotation.value());
-      for (String message : messages) {
-        if (messageMethods.containsKey(message)) {
-          throw new IllegalStateException("MessageHandler duplicated! " + viewName + "." + message);
-        }
-        messageMethods.put(message, method);
-      }
     }
   }
 
@@ -480,9 +502,36 @@ public class ViewContextServiceImpl implements ViewContextService {
     if (method == null) {
       throw new IllegalStateException("No actionHandler for request! " + request);
     }
+    return invokeMethodInternal(method, api, viewUuid, request);
+  }
+
+  @Override
+  public ViewContextChange performWidgetAction(UUID viewUuid, String widgetId, String nodeId,
+      UiActionRequest request) {
+    Objects.requireNonNull(request, "Request must be specified!");
+    Objects.requireNonNull(request.getCode(), "Request.code must be specified!");
+    Objects.requireNonNull(widgetId, "WidgetId must be specified!");
+    View view = getViewFromCurrentViewContext(viewUuid);
+    Objects.requireNonNull(view, "View not found!");
+    Object api = apiByViewName.get(view.getViewName());
+    Objects.requireNonNull(api, "API not found for view " + view.getViewName());
+    Method method = getMethodForWidgetAndCode(widgetActionMethodsByViewAndWidget,
+        view.getViewName(), widgetId, request.getCode());
+    if (method == null) {
+      throw new IllegalStateException("No actionHandler for request! " + request);
+    }
+    return invokeMethodInternal(method, api, viewUuid, widgetId, nodeId, request);
+  }
+
+  /**
+   * @param method Runnable is used here as a void -> void functional interface, this is the method
+   *        invocation.
+   * @return
+   */
+  private ViewContextChange invokeMethodInternal(Method method, Object api, Object... args) {
     try {
       ObjectNode before = objectApi.create(SCHEMA, getCurrentViewContextEntry());
-      method.invoke(api, viewUuid, request);
+      method.invoke(api, args);
       Map<UUID, View> beforeViews = before.getValueAsList(View.class, ViewContext.VIEWS)
           .stream()
           .collect(toMap(View::getUuid, v -> v));
@@ -497,10 +546,9 @@ public class ViewContextServiceImpl implements ViewContextService {
           .viewContext(getCurrentViewContext())
           .changes(changes);
     } catch (Throwable tr) {
-      throw new RuntimeException("Error when calling MessageHandler method " + method.getName(),
+      throw new RuntimeException("Error when calling method " + method.getName(),
           tr);
     }
-
   }
 
   private ComponentModelChange compareViewNodes(View before, View after) {
@@ -534,4 +582,28 @@ public class ViewContextServiceImpl implements ViewContextService {
     }
     return method;
   }
+
+  private Method getMethodForWidgetAndCode(
+      Map<String, Map<String, Map<String, Method>>> methodsByView,
+      String viewName, String widget, String code) {
+    Map<String, Map<String, Method>> methods = methodsByView.get(viewName);
+    if (methods == null) {
+      return null;
+    }
+    Map<String, Method> widgetMethods = methods.get(widget);
+    if (widgetMethods == null) {
+      // wildcard handler
+      widgetMethods = methods.get("");
+    }
+    if (widgetMethods == null) {
+      return null;
+    }
+    Method method = widgetMethods.get(code);
+    if (method == null) {
+      // wildcard handler
+      method = widgetMethods.get("");
+    }
+    return method;
+  }
+
 }

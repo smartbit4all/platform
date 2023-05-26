@@ -121,6 +121,75 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ViewContextChange'
+  /component/{uuid}/{widgetId}/action:
+    post:
+      tags:
+      - View
+      description: |
+        Performs a widget UI action.
+      operationId: 'performWidgetMainAction'
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+        - in: path
+          name: widgetId
+          schema:
+            type: string
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: UiActionRequest
+      responses:
+        '200':
+          description: ''
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ViewContextChange'
+  /component/{uuid}/{widgetId}/{nodeId}/action:
+    post:
+      tags:
+      - View
+      description: |
+        Performs a widget UI action.
+      operationId: 'performWidgetAction'
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+        - in: path
+          name: widgetId
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: nodeId
+          schema:
+            type: string
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: UiActionRequest
+      responses:
+        '200':
+          description: ''
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ViewContextChange'
   /component/{uuid}/download/{item}:
     get:
       tags:

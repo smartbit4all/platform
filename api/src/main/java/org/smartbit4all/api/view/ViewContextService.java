@@ -134,4 +134,8 @@ public interface ViewContextService {
    * @return
    */
   ViewContextChange performAction(UUID viewUuid, UiActionRequest request);
+
+  ViewContextChange performWidgetAction(UUID viewUuid, String widgetId, String nodeId,
+      UiActionRequest request);
+
 }
