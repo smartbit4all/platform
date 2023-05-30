@@ -331,7 +331,7 @@ components:
     ViewContext:
       type: object
       description: The same session can be valid / used in multiple UIs, this object represents a UI.
-      required: [uri,views]
+      required: [uri,views,viewWidgetModels]
       properties:
         uri:
           type: string
@@ -343,6 +343,12 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/View'
+        viewWidgetModels:
+          type: string
+          additionalProperties:
+            type: string
+            additionalProperties:
+              type: object
         openPendingData:
           $ref: '#/components/schemas/OpenPendingData'
     ViewContextData:
@@ -370,7 +376,7 @@ components:
             $ref: '#/components/schemas/ComponentModelChange'
     View:
       type: object
-      required: [uuid,viewName,state,type,parameters,closedChildrenViews,downloadableItems,actions,widgetModels]
+      required: [uuid,viewName,state,type,parameters,closedChildrenViews,downloadableItems,actions]
       properties:
         uuid:
           type: string
@@ -411,10 +417,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/UiAction'
-        widgetModels:
-          type: string
-          additionalProperties:
-            type: object
         valueSets:
           type: string
           additionalProperties:

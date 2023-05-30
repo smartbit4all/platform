@@ -138,4 +138,8 @@ public interface ViewContextService {
   ViewContextChange performWidgetAction(UUID viewUuid, String widgetId, String nodeId,
       UiActionRequest request);
 
+  <T> T getWidgetModelForView(Class<T> clazz, UUID viewUuid, String widgetId);
+
+  <T> void setWidgetModelForView(Class<T> clazz, UUID viewUuid, String widgetId, T widgetModel);
+
 }

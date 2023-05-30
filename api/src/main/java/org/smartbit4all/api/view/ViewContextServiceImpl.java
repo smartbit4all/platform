@@ -100,7 +100,7 @@ public class ViewContextServiceImpl implements ViewContextService {
   private SessionApi sessionApi;
 
   @Autowired
-  private ApplicationContext context;
+  private ApplicationContext ctx;
 
   @Autowired
   private CollectionApi collectionApi;
@@ -324,7 +324,7 @@ public class ViewContextServiceImpl implements ViewContextService {
 
   @EventListener(ApplicationStartedEvent.class)
   private void initViews(ApplicationStartedEvent applicationPreparedEvent) {
-    context.getBeansWithAnnotation(ViewApi.class).values()
+    ctx.getBeansWithAnnotation(ViewApi.class).values()
         .forEach(this::setupScreenApi);
   }
 
@@ -496,7 +496,7 @@ public class ViewContextServiceImpl implements ViewContextService {
         .constraints(constraints)
         .actions(view.getActions())
         .valueSets(view.getValueSets())
-        .widgetModels(view.getWidgetModels());
+        .widgetModels(getWidgetModelsForView(viewUuid));
   }
 
   @Override
@@ -613,6 +613,37 @@ public class ViewContextServiceImpl implements ViewContextService {
       method = widgetMethods.get("");
     }
     return method;
+  }
+
+  @Override
+  public <T> void setWidgetModelForView(Class<T> clazz, UUID viewUuid, String widgetId,
+      T widgetModel) {
+    updateCurrentViewContext(context -> {
+      Map<String, Object> viewWidgetModels = context.getViewWidgetModels()
+          .computeIfAbsent(viewUuid.toString(), uuid -> new HashMap<>());
+      viewWidgetModels.put(widgetId, widgetModel);
+      return context;
+    });
+  }
+
+  @Override
+  public <T> T getWidgetModelForView(Class<T> clazz, UUID viewUuid, String widgetId) {
+    Object widgetModel = getWidgetModelsForView(viewUuid).get(widgetId);
+    return objectApi.asType(clazz, widgetModel);
+  }
+
+  private Map<String, Object> getWidgetModelsForView(UUID viewUuid) {
+    Map<String, Object> widgetModels =
+        getCurrentViewContextEntry().getViewWidgetModels().get(viewUuid.toString());
+    if (widgetModels == null) {
+      HashMap<String, Object> newWidgetModels = new HashMap<>();
+      updateCurrentViewContext(context -> {
+        context.getViewWidgetModels().put(viewUuid.toString(), newWidgetModels);
+        return context;
+      });
+      widgetModels = newWidgetModels;
+    }
+    return widgetModels;
   }
 
 }

@@ -326,22 +326,18 @@ public class ViewApiImpl implements ViewApi {
   }
 
   @Override
-  public <T> T getWidgetModelFromView(Class<T> clazz, UUID viewUuid, String componentId) {
-    String[] paths = getPathParts(componentId);
+  public <T> T getWidgetModelFromView(Class<T> clazz, UUID viewUuid, String widgetId) {
+    String[] paths = getPathParts(widgetId);
     String location = paths[0];
     String key = paths[1];
-    if (View.PARAMETERS.equals(location)
-        || View.WIDGET_MODELS.equals(location)) {
+    if (View.PARAMETERS.equals(location)) {
       // to make sure view model/params gets initialized
       getModel(viewUuid, null);
       View view = getView(viewUuid);
-      Object componentModel;
-      if (View.PARAMETERS.equals(location)) {
-        componentModel = view.getParameters().get(key);
-      } else {
-        componentModel = view.getWidgetModels().get(key);
-      }
+      Object componentModel = view.getParameters().get(key);
       return objectApi.asType(clazz, componentModel);
+    } else if (ViewContext.VIEW_WIDGET_MODELS.equals(location)) {
+      return viewContextService.getWidgetModelForView(clazz, viewUuid, key);
     } else if (View.MODEL.equals(location)) {
       Object model = getModel(viewUuid, null);
       return objectApi.getValueFromObject(clazz, model, key);
@@ -351,22 +347,22 @@ public class ViewApiImpl implements ViewApi {
   }
 
   @Override
-  public <T> void setWidgetModelInView(Class<T> clazz, UUID viewUuid, String componentId,
-      T componentModel) {
-    String[] paths = getPathParts(componentId);
+  public <T> void setWidgetModelInView(Class<T> clazz, UUID viewUuid, String widgetId,
+      T widgetModel) {
+    String[] paths = getPathParts(widgetId);
     String location = paths[0];
     String key = paths[1];
     View view = getView(viewUuid);
     if (View.PARAMETERS.equals(location)) {
-      view.putParametersItem(key, componentModel);
+      view.putParametersItem(key, widgetModel);
     } else if (View.MODEL.equals(location)) {
       Object model = getModel(viewUuid, null);
       Map<String, Object> modelAsMap = objectApi.definition(model.getClass()).toMap(model);
-      modelAsMap.put(key, objectApi.definition(clazz).toMap(componentModel));
+      modelAsMap.put(key, objectApi.definition(clazz).toMap(widgetModel));
       Object updatedModel = objectApi.asType(model.getClass(), modelAsMap);
       view.setModel(updatedModel);
-    } else if (View.WIDGET_MODELS.equals(location)) {
-      view.putWidgetModelsItem(key, componentModel);
+    } else if (ViewContext.VIEW_WIDGET_MODELS.equals(location)) {
+      viewContextService.setWidgetModelForView(clazz, viewUuid, key, widgetModel);
     } else {
       throw new IllegalArgumentException("Invalid path");
     }
@@ -379,7 +375,7 @@ public class ViewApiImpl implements ViewApi {
     }
     if (paths.length == 1) {
       paths = new String[2];
-      paths[0] = View.WIDGET_MODELS;
+      paths[0] = ViewContext.VIEW_WIDGET_MODELS;
       paths[1] = componentId;
     }
     if (paths.length != 2) {
