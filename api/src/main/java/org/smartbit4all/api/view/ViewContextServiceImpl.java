@@ -285,8 +285,17 @@ public class ViewContextServiceImpl implements ViewContextService {
     Objects.requireNonNull(messageResult.getSelectedOption().getCode(),
         "MessageResult.selectedOption.code must be specified");
 
-    View message = getViewFromCurrentViewContext(messageUuid);
-    Objects.requireNonNull(message, "Message not found!");
+    View message;
+    try {
+      message = getViewFromCurrentViewContext(messageUuid);
+      Objects.requireNonNull(message, "Message not found!");
+    } catch (Exception e) {
+      // message not found -> log error and remove message to avoid infinite loop
+      log.error("Unexpected error when retreiving message", e);
+      updateCurrentViewContext(
+          c -> ViewContexts.updateViewState(c, messageUuid, ViewState.TO_CLOSE));
+      return;
+    }
     View view;
     try {
       view = getViewFromCurrentViewContext(viewUuid);
