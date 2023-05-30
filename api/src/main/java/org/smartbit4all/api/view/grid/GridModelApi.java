@@ -197,8 +197,8 @@ public interface GridModelApi {
 
   /**
    * Registers a GridRow creation callback for a grid in a given View. 'request' will be called
-   * after a GridRow is created. Single parameter will be the created GridRow, return value should
-   * be the final GridRow.
+   * after a GridRow is created. First parameter will be the created GridRow, return value should be
+   * the final / modified GridRow.
    *
    * You can use this callback when you want to change some or all rows, and you only need the
    * current row for that.
@@ -211,8 +211,8 @@ public interface GridModelApi {
 
   /**
    * Registers a GridPage creation callback for a grid in a given View. 'request' will be called
-   * after a GridPage is created. Passed parameters will be the viewUuid, gridId and created
-   * GridPage, return value should be the final GridPage.
+   * after a GridPage is created. First parameter will be the created GridPage, return value should
+   * be the final / modified GridPage.
    *
    * You can use this callback when you want to change some or all rows, and you need all the rows,
    * or maybe the View which contains this grid.
