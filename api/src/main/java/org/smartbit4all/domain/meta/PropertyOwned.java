@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (C) 2020 - 2020 it4all Hungary Kft.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
@@ -16,6 +16,8 @@ package org.smartbit4all.domain.meta;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.databasedefinition.bean.ColumnTypeDefinition;
 import org.smartbit4all.api.databasedefinition.bean.ColumnTypeDefinition.BaseTypeEnum;
 import org.smartbit4all.api.rdbms.DatabaseDefinitionApi;
@@ -28,12 +30,14 @@ import org.smartbit4all.domain.utility.SupportedDatabase;
  * This property is stored in the table of the entity in a simple column or at least it's computed
  * at SQL level during the SQL select execution. In this case the stored property is read only. It
  * means that you cann't change its value in any entity data table.
- * 
+ *
  * @author Peter Boros
  *
  * @param <T>
  */
 public class PropertyOwned<T> extends Property<T> {
+
+  private static final Logger log = LoggerFactory.getLogger(PropertyOwned.class);
 
   /**
    * The column in the table. It describes the DDL name of the given column at JDBC level. This
@@ -149,14 +153,13 @@ public class PropertyOwned<T> extends Property<T> {
 
   /**
    * Set the length of the database column type. Works on strings only.
-   * 
+   *
    * @param length
    * @return
    */
   public PropertyOwned<T> length(int length) {
     if (columnType == null || columnType.getBaseType() != BaseTypeEnum.VARCHAR) {
-      throw new IllegalArgumentException(
-          "The " + getName() + " property is not a string, unable to set the length.");
+      log.error("The {} property is not a string, setting length may be useless.", getName());
     }
     columnType.length(length);
     return this;
@@ -164,14 +167,13 @@ public class PropertyOwned<T> extends Property<T> {
 
   /**
    * Set the precision of the database column type. Works on numbers only.
-   * 
+   *
    * @param precision
    * @return
    */
   public PropertyOwned<T> precison(int precision) {
     if (columnType == null || columnType.getBaseType() != BaseTypeEnum.NUMBER) {
-      throw new IllegalArgumentException(
-          "The " + getName() + " property is not a number, unable to set the precison.");
+      log.error("The {} property is not a number, setting precison may be useless.", getName());
     }
     columnType.precision(precision);
     return this;
@@ -179,14 +181,13 @@ public class PropertyOwned<T> extends Property<T> {
 
   /**
    * Set the scale of the database column type. Works on numbers only.
-   * 
+   *
    * @param scale
    * @return
    */
   public PropertyOwned<T> scale(int scale) {
     if (columnType == null || columnType.getBaseType() != BaseTypeEnum.NUMBER) {
-      throw new IllegalArgumentException(
-          "The " + getName() + " property is not a number, unable to set the scale.");
+      log.error("The {} property is not a number, setting scale may be useless.", getName());
     }
     columnType.scale(scale);
     return this;
