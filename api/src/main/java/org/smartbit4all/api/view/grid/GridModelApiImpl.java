@@ -335,16 +335,18 @@ public class GridModelApiImpl implements GridModelApi {
             .anyMatch(col -> !validColumns.contains(col))) {
           throw new IllegalArgumentException("Invalid orderByList columnName in update");
         }
-        TableData<?> data = tableDataApi.read(model.getAccessConfig().getDataUri());
-        TableDatas.sortByFilterExpression(data, update.getOrderByList());
-        tableDataApi.save(data);
-        model.getAccessConfig().setDataUri(data.getUri());
-        int lowerBound = model.getPage().getLowerBound();
-        int upperBound = model.getPage().getUpperBound();
-        model.page(constructPage(viewUuid, gridId, data, lowerBound,
-            Math.min(data.size(), upperBound))
-                .lowerBound(lowerBound)
-                .upperBound(upperBound));
+        if (model.getAccessConfig() != null && model.getAccessConfig().getDataUri() != null) {
+          TableData<?> data = tableDataApi.read(model.getAccessConfig().getDataUri());
+          TableDatas.sortByFilterExpression(data, update.getOrderByList());
+          tableDataApi.save(data);
+          model.getAccessConfig().setDataUri(data.getUri());
+          int lowerBound = model.getPage().getLowerBound();
+          int upperBound = model.getPage().getUpperBound();
+          model.page(constructPage(viewUuid, gridId, data, lowerBound,
+              Math.min(data.size(), upperBound))
+                  .lowerBound(lowerBound)
+                  .upperBound(upperBound));
+        }
       }
       model.getView().setOrderByList(update.getOrderByList());
       return model;
