@@ -87,20 +87,31 @@ public class ViewApiImpl implements ViewApi {
       String parentViewName = viewContextService.getParentViewName(view.getViewName());
       List<View> children = getChildrenOfParentView(context, parentViewName);
       if (children.isEmpty()) {
-        view.setState(ViewState.TO_OPEN);
+        View parentView = getParentView(view);
+        if (parentView != null && parentView.getState() == ViewState.OPEN_PENDING) {
+          view.setState(ViewState.OPEN_PENDING);
+          OpenPendingData data = getOpenPendingData();
+          data.addViewsToOpenItem(view.getUuid());
+        } else {
+          view.setState(ViewState.TO_OPEN);
+        }
       } else {
         view.setState(ViewState.OPEN_PENDING);
         if (context.getOpenPendingData() != null) {
           // current pending will be discarded
-          UUID viewToDiscardUuid = context.getOpenPendingData().getViewToOpen();
-          View viewToDiscard = ViewContexts.getView(context, viewToDiscardUuid);
-          log.warn("OPEN_PENDING already in progress, discarding it ({} - {})",
-              viewToDiscard.getViewName(), viewToDiscardUuid);
-          viewToDiscard.setState(ViewState.CLOSED);
+          List<View> viewsToOpen = context.getOpenPendingData().getViewsToOpen().stream()
+              .map(v -> ViewContexts.getView(context, v))
+              .collect(toList());
+          String message = viewsToOpen.stream()
+              .map(v -> v.getViewName() + " - " + v.getUuid())
+              .collect(Collectors.joining(","));
+          log.warn("OPEN_PENDING already in progress, discarding it ({})",
+              message);
+          viewsToOpen.forEach(v -> v.setState(ViewState.CLOSED));
         }
         context.setOpenPendingData(
             new OpenPendingData()
-                .viewToOpen(view.getUuid())
+                .addViewsToOpenItem(view.getUuid())
                 .viewsToClose(children.stream()
                     .map(View::getUuid)
                     .collect(toList())));
@@ -134,7 +145,7 @@ public class ViewApiImpl implements ViewApi {
       if (parentIdx != -1) {
         startIdx = parentIdx + 1;
       } else {
-        log.error("Parent view ('{}')is not present in ActiveViews!", parentViewName);
+        log.error("Parent view ('{}') is not present in ActiveViews!", parentViewName);
         // don't close anything
         startIdx = activeViews.size();
       }
@@ -208,11 +219,7 @@ public class ViewApiImpl implements ViewApi {
   }
 
   private void handleOpenPending() {
-    OpenPendingData data = viewContextService.getCurrentViewContextEntry().getOpenPendingData();
-    if (data == null) {
-      throw new IllegalArgumentException(
-          "View set to OPEN_PENDING but no data associated with it!");
-    }
+    OpenPendingData data = getOpenPendingData();
     CloseResult globalResult = CloseResult.APPROVED;
     for (UUID view : data.getViewsToClose()) {
       CloseResult result = data.getResults()
@@ -243,8 +250,9 @@ public class ViewApiImpl implements ViewApi {
               }
               ViewContexts.updateViewState(context, uuidToClose, ViewState.TO_CLOSE);
             });
-            View viewToOpen = ViewContexts.getView(context, data.getViewToOpen());
-            viewToOpen.setState(ViewState.TO_OPEN);
+            data.getViewsToOpen().stream()
+                .map(v -> ViewContexts.getView(context, v))
+                .forEach(v -> v.setState(ViewState.TO_OPEN));
             context.setOpenPendingData(null);
             return context;
           });
@@ -254,12 +262,22 @@ public class ViewApiImpl implements ViewApi {
           context -> {
             data.getViewsToClose().forEach(
                 v -> ViewContexts.updateViewState(context, v, ViewState.OPENED));
-            View viewToOpen = ViewContexts.getView(context, data.getViewToOpen());
-            viewToOpen.setState(ViewState.CLOSED);
+            data.getViewsToOpen().stream()
+                .map(v -> ViewContexts.getView(context, v))
+                .forEach(v -> v.setState(ViewState.CLOSED));
             context.setOpenPendingData(null);
             return context;
           });
     }
+  }
+
+  private OpenPendingData getOpenPendingData() {
+    OpenPendingData data = viewContextService.getCurrentViewContextEntry().getOpenPendingData();
+    if (data == null) {
+      throw new IllegalArgumentException(
+          "View set to OPEN_PENDING but no data associated with it!");
+    }
+    return data;
   }
 
   private View getParentView(UUID viewUuid) {

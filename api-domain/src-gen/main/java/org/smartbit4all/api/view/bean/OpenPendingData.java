@@ -34,22 +34,22 @@ import javax.validation.constraints.*;
 import javax.validation.Valid;
 
 /**
- * All information regarding opening a view.
+ * All information regarding opening a view (and possible it&#39;s parents).
  */
-@ApiModel(description = "All information regarding opening a view.")
+@ApiModel(description = "All information regarding opening a view (and possible it's parents).")
 @JsonPropertyOrder({
-  OpenPendingData.VIEW_TO_OPEN,
+  OpenPendingData.VIEWS_TO_OPEN,
   OpenPendingData.VIEWS_TO_CLOSE,
   OpenPendingData.RESULTS
 })
 @JsonTypeName("OpenPendingData")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class OpenPendingData {
-  public static final String VIEW_TO_OPEN = "viewToOpen";
-  private UUID viewToOpen;
+  public static final String VIEWS_TO_OPEN = "viewsToOpen";
+  private List<UUID> viewsToOpen = new ArrayList<>();
 
   public static final String VIEWS_TO_CLOSE = "viewsToClose";
-  private List<UUID> viewsToClose = null;
+  private List<UUID> viewsToClose = new ArrayList<>();
 
   public static final String RESULTS = "results";
   private Map<String, CloseResult> results = new HashMap<>();
@@ -57,31 +57,37 @@ public class OpenPendingData {
   public OpenPendingData() { 
   }
 
-  public OpenPendingData viewToOpen(UUID viewToOpen) {
+  public OpenPendingData viewsToOpen(List<UUID> viewsToOpen) {
     
-    this.viewToOpen = viewToOpen;
+    this.viewsToOpen = viewsToOpen;
+    return this;
+  }
+
+  public OpenPendingData addViewsToOpenItem(UUID viewsToOpenItem) {
+    this.viewsToOpen.add(viewsToOpenItem);
     return this;
   }
 
    /**
-   * Get viewToOpen
-   * @return viewToOpen
+   * Get viewsToOpen
+   * @return viewsToOpen
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "")
-  @JsonProperty(VIEW_TO_OPEN)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(VIEWS_TO_OPEN)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public UUID getViewToOpen() {
-    return viewToOpen;
+  public List<UUID> getViewsToOpen() {
+    return viewsToOpen;
   }
 
 
-  @JsonProperty(VIEW_TO_OPEN)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setViewToOpen(UUID viewToOpen) {
-    this.viewToOpen = viewToOpen;
+  @JsonProperty(VIEWS_TO_OPEN)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setViewsToOpen(List<UUID> viewsToOpen) {
+    this.viewsToOpen = viewsToOpen;
   }
 
 
@@ -92,9 +98,6 @@ public class OpenPendingData {
   }
 
   public OpenPendingData addViewsToCloseItem(UUID viewsToCloseItem) {
-    if (this.viewsToClose == null) {
-      this.viewsToClose = new ArrayList<>();
-    }
     this.viewsToClose.add(viewsToCloseItem);
     return this;
   }
@@ -103,11 +106,12 @@ public class OpenPendingData {
    * Get viewsToClose
    * @return viewsToClose
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(VIEWS_TO_CLOSE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public List<UUID> getViewsToClose() {
     return viewsToClose;
@@ -115,7 +119,7 @@ public class OpenPendingData {
 
 
   @JsonProperty(VIEWS_TO_CLOSE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setViewsToClose(List<UUID> viewsToClose) {
     this.viewsToClose = viewsToClose;
   }
@@ -164,21 +168,21 @@ public class OpenPendingData {
       return false;
     }
     OpenPendingData openPendingData = (OpenPendingData) o;
-    return Objects.equals(this.viewToOpen, openPendingData.viewToOpen) &&
+    return Objects.equals(this.viewsToOpen, openPendingData.viewsToOpen) &&
         Objects.equals(this.viewsToClose, openPendingData.viewsToClose) &&
         Objects.equals(this.results, openPendingData.results);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(viewToOpen, viewsToClose, results);
+    return Objects.hash(viewsToOpen, viewsToClose, results);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class OpenPendingData {\n");
-    sb.append("    viewToOpen: ").append(toIndentedString(viewToOpen)).append("\n");
+    sb.append("    viewsToOpen: ").append(toIndentedString(viewsToOpen)).append("\n");
     sb.append("    viewsToClose: ").append(toIndentedString(viewsToClose)).append("\n");
     sb.append("    results: ").append(toIndentedString(results)).append("\n");
     sb.append("}");

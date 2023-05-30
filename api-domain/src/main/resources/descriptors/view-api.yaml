@@ -624,12 +624,14 @@ components:
           type: string
     OpenPendingData:
       type: object
-      description: All information regarding opening a view.
-      required: [results]
+      description: All information regarding opening a view (and possible it's parents).
+      required: [viewsToOpen,viewsToClose,results]
       properties:
-        viewToOpen:
-          type: string
-          format: uuid
+        viewsToOpen:
+          type: array
+          items:
+            type: string
+            format: uuid
         viewsToClose:
           type: array
           items:
