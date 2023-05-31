@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
+import java.util.function.ToIntFunction;
 import java.util.stream.Stream;
 import org.smartbit4all.api.collection.SearchIndex;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy;
@@ -223,5 +224,14 @@ public interface GridModelApi {
    */
   void addGridPageCallback(UUID viewUuid, String gridId, InvocationRequest request);
 
+  /**
+   * Set the page size of the grid model. It set the new value and populate the page starting from
+   * the current lower bound.
+   * 
+   * @param viewUuid The unique identifier of the view.
+   * @param gridId The identifier of the grid.
+   * @param newPageSize The new page size.
+   */
+  void setPageSize(UUID viewUuid, String gridId, ToIntFunction<GridModel> newPageSize);
 
 }

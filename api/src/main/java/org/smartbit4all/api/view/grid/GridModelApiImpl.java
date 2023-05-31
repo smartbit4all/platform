@@ -1,7 +1,5 @@
 package org.smartbit4all.api.view.grid;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,6 +8,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Function;
+import java.util.function.ToIntFunction;
 import java.util.stream.Stream;
 import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
@@ -43,6 +42,8 @@ import org.smartbit4all.domain.service.entity.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import com.google.common.base.Strings;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 public class GridModelApiImpl implements GridModelApi {
 
@@ -312,6 +313,25 @@ public class GridModelApiImpl implements GridModelApi {
       model.page(constructPage(viewUuid, gridId, tableData, 0, tableData.size())
           .lowerBound(offset)
           .upperBound(offset + limit));
+      return model;
+    });
+  }
+
+  @Override
+  public void setPageSize(UUID viewUuid, String gridId,
+      ToIntFunction<GridModel> newPageSize) {
+    executeGridCall(viewUuid, gridId, model -> {
+      if (model.getAccessConfig() == null) {
+        return model;
+      }
+      Integer pageSize = newPageSize.applyAsInt(model);
+      model.setPageSize(pageSize);
+      TableData<?> tableData =
+          tableDataApi.readPage(model.getAccessConfig().getDataUri(),
+              model.getPage().getLowerBound(), pageSize);
+      model.page(constructPage(viewUuid, gridId, tableData, 0, tableData.size())
+          .lowerBound(model.getPage().getLowerBound())
+          .upperBound(model.getPage().getLowerBound() + pageSize));
       return model;
     });
   }
