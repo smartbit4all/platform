@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import org.smartbit4all.api.object.bean.ObjectNodeData;
@@ -145,6 +146,22 @@ public final class ObjectNodeList {
    */
   public void clear() {
     stream().forEach(ref -> ref.clear());
+  }
+
+  /**
+   * Removes the references matching the given filter
+   * 
+   * @param filter a predicate which returns {@code true} for elements to be removed
+   * @return {@code true} if any elements were removed
+   */
+  public boolean removeIf(Predicate<ObjectNodeReference> filter) {
+    return stream()
+        .filter(filter)
+        .map(ref -> {
+          ref.clear();
+          return ref;
+        })
+        .count() > 0;
   }
 
   /**
