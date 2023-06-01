@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.smartbit4all.api.object.bean.ObjectNodeData;
 import org.smartbit4all.api.object.bean.ObjectNodeState;
+import org.smartbit4all.api.object.bean.PropertyDefinitionData;
 import org.smartbit4all.api.object.bean.ReferencePropertyKind;
 import org.smartbit4all.api.object.bean.SnapshotData;
 import org.smartbit4all.api.object.bean.SnapshotDataRef;
@@ -478,6 +479,7 @@ public class ObjectNode {
 
   }
 
+  @SuppressWarnings("unchecked")
   public Object getValue(String... paths) {
     if (paths != null && paths.length > 0) {
       String path = paths[0];
@@ -514,7 +516,34 @@ public class ObjectNode {
         String[] subPaths = Arrays.copyOfRange(paths, 2, paths.length);
         return reference.get().getValue(subPaths);
       }
-      return objectApi.getValueFromObjectMap(getObjectAsMap(), paths);
+      Object value = getObjectAsMap().get(path);
+      if (paths.length == 1) {
+        return value;
+      }
+      ObjectDefinition<?> nextDefinition = null;
+      if (value instanceof Map) {
+        PropertyDefinitionData propertyDefinitionData = null;
+        propertyDefinitionData = getDefinition().getProperties().stream()
+            .filter(pdd -> path.equals(pdd.getName())).findFirst().orElse(null);
+        if (propertyDefinitionData != null) {
+          Class<?> propClass;
+          try {
+            propClass = Class.forName(propertyDefinitionData.getTypeClass());
+            if (!propClass.isAssignableFrom(Map.class)) {
+              nextDefinition = objectApi.definition(propClass);
+            }
+          } catch (ClassNotFoundException e) {
+            nextDefinition = objectApi.definition(propertyDefinitionData.getTypeClass());
+          }
+        }
+      }
+      if (nextDefinition != null) {
+        ObjectNode nextNode = objectApi.create(path, nextDefinition, (Map<String, Object>) value);
+        String[] subPaths = Arrays.copyOfRange(paths, 1, paths.length);
+        return nextNode.getValue(subPaths);
+      } else {
+        return objectApi.getValueFromObjectMap(getObjectAsMap(), paths);
+      }
     }
     return this;
   }

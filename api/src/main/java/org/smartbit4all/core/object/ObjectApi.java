@@ -208,6 +208,18 @@ public interface ObjectApi {
   ObjectNode create(String storageScheme, Object object);
 
   /**
+   * Create a new ObjectNode based on a new ObjectNodeData based on the Object parameter. This node
+   * will be created as a new object in storage when saved.
+   *
+   * @param storageScheme logical scheme in which to create this new object
+   * @param definition The {@link ObjectDefinition} of the given object node.
+   * @param objectMap The data of the node as map.
+   * @return
+   */
+  ObjectNode create(String storageScheme, ObjectDefinition<?> definition,
+      Map<String, Object> objectMap);
+
+  /**
    * Save the ObjectNode structure to the specified branch. If brancUri is null, it will be saved on
    * main branch. Saves only changes specified in {@link ObjectNode#getState()}. Uses
    * {@link ApplyChangeApi#applyChanges(ObjectNode, URI)} under the hood.

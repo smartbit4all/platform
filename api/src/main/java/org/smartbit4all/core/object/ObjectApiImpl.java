@@ -110,18 +110,29 @@ public class ObjectApiImpl implements ObjectApi {
 
   @Override
   public ObjectNode create(String storageScheme, Object object) {
-    return nodeInternal(storageScheme, object);
-  }
-
-  @SuppressWarnings("unchecked")
-  <T> ObjectNode nodeInternal(String storageScheme, T object) {
-    ObjectDefinition<T> definition = (ObjectDefinition<T>) definition(object.getClass());
+    ObjectDefinition<Object> definition = (ObjectDefinition<Object>) definition(object.getClass());
     boolean hasUri = definition.getUriGetter() != null;
     ObjectNodeData data = new ObjectNodeData()
         .objectUri(hasUri ? definition.getUri(object) : null)
         .qualifiedName(definition.getQualifiedName())
         .storageSchema(storageScheme)
         .objectAsMap(definition.toMap(object))
+        .state(ObjectNodeState.NEW)
+        .versionNr(null);
+
+    return new ObjectNode(this, definition, data);
+  }
+
+  @Override
+  public ObjectNode create(String storageScheme, ObjectDefinition<?> definition,
+      Map<String, Object> objectMap) {
+    boolean hasUri = definition.getUriGetter() != null;
+
+    ObjectNodeData data = new ObjectNodeData()
+        .objectUri(hasUri ? (URI) objectMap.get("uri") : null)
+        .qualifiedName(definition.getQualifiedName())
+        .storageSchema(storageScheme)
+        .objectAsMap(objectMap)
         .state(ObjectNodeState.NEW)
         .versionNr(null);
 
