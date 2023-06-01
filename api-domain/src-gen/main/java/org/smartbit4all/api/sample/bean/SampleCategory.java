@@ -45,6 +45,7 @@ import javax.validation.Valid;
   SampleCategory.SUB_CATEGORIES,
   SampleCategory.CONTAINER_ITEMS,
   SampleCategory.LINKS,
+  SampleCategory.SINGLE_LINK,
   SampleCategory.KEY_WORDS
 })
 @JsonTypeName("SampleCategory")
@@ -112,6 +113,9 @@ public class SampleCategory {
 
   public static final String LINKS = "links";
   private List<SampleLinkObject> links = new ArrayList<>();
+
+  public static final String SINGLE_LINK = "singleLink";
+  private SampleLinkObject singleLink;
 
   public static final String KEY_WORDS = "keyWords";
   private List<String> keyWords = new ArrayList<>();
@@ -359,6 +363,34 @@ public class SampleCategory {
   }
 
 
+  public SampleCategory singleLink(SampleLinkObject singleLink) {
+    
+    this.singleLink = singleLink;
+    return this;
+  }
+
+   /**
+   * Get singleLink
+   * @return singleLink
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(SINGLE_LINK)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public SampleLinkObject getSingleLink() {
+    return singleLink;
+  }
+
+
+  @JsonProperty(SINGLE_LINK)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSingleLink(SampleLinkObject singleLink) {
+    this.singleLink = singleLink;
+  }
+
+
   public SampleCategory keyWords(List<String> keyWords) {
     
     this.keyWords = keyWords;
@@ -409,12 +441,13 @@ public class SampleCategory {
         Objects.equals(this.subCategories, sampleCategory.subCategories) &&
         Objects.equals(this.containerItems, sampleCategory.containerItems) &&
         Objects.equals(this.links, sampleCategory.links) &&
+        Objects.equals(this.singleLink, sampleCategory.singleLink) &&
         Objects.equals(this.keyWords, sampleCategory.keyWords);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, name, color, cost, createdAt, subCategories, containerItems, links, keyWords);
+    return Objects.hash(uri, name, color, cost, createdAt, subCategories, containerItems, links, singleLink, keyWords);
   }
 
   @Override
@@ -429,6 +462,7 @@ public class SampleCategory {
     sb.append("    subCategories: ").append(toIndentedString(subCategories)).append("\n");
     sb.append("    containerItems: ").append(toIndentedString(containerItems)).append("\n");
     sb.append("    links: ").append(toIndentedString(links)).append("\n");
+    sb.append("    singleLink: ").append(toIndentedString(singleLink)).append("\n");
     sb.append("    keyWords: ").append(toIndentedString(keyWords)).append("\n");
     sb.append("}");
     return sb.toString();
