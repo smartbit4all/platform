@@ -49,7 +49,7 @@ public class ObjectNodeReference {
     this.objectUri = originalObjectUri;
     this.node = originalNode;
     this.isLoaded = this.node != null;
-    this.isPresent = objectUri != null;
+    this.isPresent = isLoaded || objectUri != null;
   }
 
   public ObjectNode setNewObject(Object object) {

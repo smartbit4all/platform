@@ -1,5 +1,12 @@
 package org.smartbit4all.api.object;
 
+import static java.util.stream.Collectors.toList;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,13 +30,6 @@ import org.smartbit4all.core.object.ObjectProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import com.google.common.base.Objects;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static java.util.stream.Collectors.toList;
 
 @SpringBootTest(classes = {ApplyChangeTestConfig.class})
 class ApplyChangeTest {
@@ -438,9 +438,13 @@ class ApplyChangeTest {
     ObjectNode rootNode = objectApi.create(MY_SCHEME, root);
     URI rootUri = objectApi.save(rootNode);
 
-    SampleContainerItem item = new SampleContainerItem().name("container item");
     // SampleDataSheet dataSheet = new SampleDataSheet().name("data sheet testReferenceChangeUri");
-    URI itemUri = objectApi.saveAsNew(MY_SCHEME, item);
+    URI itemUri = objectApi.saveAsNew(MY_SCHEME,
+        new SampleContainerItem()
+            .name("container item"));
+    URI item2Uri = objectApi.saveAsNew(MY_SCHEME,
+        new SampleContainerItem()
+            .name("container item2"));
 
     rootNode = objectApi.load(rootUri);
     ObjectNodeList linkList = rootNode.list(SampleCategory.LINKS);
@@ -450,6 +454,11 @@ class ApplyChangeTest {
         .linkName("link")
         .category(rootUri)
         .item(itemUri));
+    rootNode.ref(SampleCategory.SINGLE_LINK).setNewObject(
+        new SampleLinkObject()
+            .linkName("link2")
+            .category(rootUri)
+            .item(item2Uri));
     rootUri = objectApi.save(rootNode);
 
     rootNode = objectApi.load(rootUri);
@@ -463,6 +472,18 @@ class ApplyChangeTest {
 
     ObjectNode itemNode = linkNode.ref(SampleLinkObject.ITEM).get();
     assertEquals("container item", itemNode.getValueAsString(SampleContainerItem.NAME));
+
+    String itemName = rootNode.getValueAsString(SampleCategory.LINKS, "0", SampleLinkObject.ITEM,
+        SampleContainerItem.NAME);
+    assertEquals("container item", itemName);
+
+    Object item2NameObject = rootNode.getValue(SampleCategory.SINGLE_LINK, SampleLinkObject.ITEM,
+        SampleContainerItem.NAME);
+    assertEquals("container item2", item2NameObject);
+
+    String item2Name = rootNode.getValueAsString(SampleCategory.SINGLE_LINK, SampleLinkObject.ITEM,
+        SampleContainerItem.NAME);
+    assertEquals("container item2", item2Name);
 
   }
 

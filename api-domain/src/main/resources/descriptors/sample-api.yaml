@@ -51,6 +51,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SampleLinkObject'
+        singleLink:
+          $ref: '#/components/schemas/SampleLinkObject'
         keyWords:
           type: array
           items:

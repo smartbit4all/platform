@@ -68,6 +68,11 @@ public class ApplyChangeTestConfig {
             SampleLinkObject.class,
             ReferencePropertyKind.LIST,
             AggregationKind.INLINE)
+        .ref(SampleCategory.class,
+            SampleCategory.SINGLE_LINK,
+            SampleLinkObject.class,
+            ReferencePropertyKind.REFERENCE,
+            AggregationKind.INLINE)
         .ref(SampleLinkObject.class,
             SampleLinkObject.CATEGORY,
             SampleCategory.class,
