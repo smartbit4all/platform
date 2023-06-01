@@ -49,6 +49,9 @@ public class FilterExpressionApiImpl implements FilterExpressionApi {
 
   @Override
   public FilterExpressionList of(FilterExpressionFieldList filterExpressionFieldList) {
+    if (filterExpressionFieldList == null) {
+      return null;
+    }
     List<FilterExpressionData> filterExpressions = filterExpressionFieldList.getFilters().stream()
         .filter(field -> field.getExpressionData() != null
             && (operandHasValueOrValues(field.getExpressionData().getOperand1())
