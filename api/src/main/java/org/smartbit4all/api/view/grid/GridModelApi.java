@@ -227,11 +227,20 @@ public interface GridModelApi {
   /**
    * Set the page size of the grid model. It set the new value and populate the page starting from
    * the current lower bound.
-   * 
+   *
    * @param viewUuid The unique identifier of the view.
    * @param gridId The identifier of the grid.
    * @param newPageSize The new page size.
    */
   void setPageSize(UUID viewUuid, String gridId, ToIntFunction<GridModel> newPageSize);
+
+  /**
+   * Refreshes the gridModel, more specifically recreates the grid's GridPage according to its
+   * current settings (lower/upper bound).
+   *
+   * @param viewUuid
+   * @param gridId
+   */
+  void refreshGrid(UUID viewUuid, String gridId);
 
 }

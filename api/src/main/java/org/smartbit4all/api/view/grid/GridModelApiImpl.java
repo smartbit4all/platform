@@ -1,5 +1,7 @@
 package org.smartbit4all.api.view.grid;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,8 +44,6 @@ import org.smartbit4all.domain.service.entity.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import com.google.common.base.Strings;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 public class GridModelApiImpl implements GridModelApi {
 
@@ -472,6 +472,16 @@ public class GridModelApiImpl implements GridModelApi {
     } catch (Exception e) {
       throw new IllegalArgumentException("Action throw an error", e);
     }
-
   }
+
+  @Override
+  public void refreshGrid(UUID viewUuid, String gridId) {
+    GridModel model = viewApi.getWidgetModelFromView(GridModel.class, viewUuid, gridId);
+    if (model != null && model.getPage() != null) {
+      int lowerBound = model.getPage().getLowerBound();
+      int upperBound = model.getPage().getUpperBound();
+      loadPage(viewUuid, gridId, lowerBound, upperBound - lowerBound);
+    }
+  }
+
 }
