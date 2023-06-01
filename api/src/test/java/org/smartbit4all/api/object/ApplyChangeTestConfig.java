@@ -7,8 +7,10 @@ import org.smartbit4all.api.object.bean.ReferencePropertyKind;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.sample.bean.SampleAttachement;
 import org.smartbit4all.api.sample.bean.SampleCategory;
+import org.smartbit4all.api.sample.bean.SampleCategoryType;
 import org.smartbit4all.api.sample.bean.SampleContainerItem;
 import org.smartbit4all.api.sample.bean.SampleDataSheet;
+import org.smartbit4all.api.sample.bean.SampleInlineObject;
 import org.smartbit4all.api.sample.bean.SampleLinkObject;
 import org.smartbit4all.core.io.TestFileUtil;
 import org.smartbit4all.core.object.ObjectApi;
@@ -100,6 +102,11 @@ public class ApplyChangeTestConfig {
             SampleDataSheet.class,
             ReferencePropertyKind.REFERENCE,
             AggregationKind.COMPOSITE)
+        .ref(SampleInlineObject.class,
+            SampleInlineObject.CATEGORY_TYPE,
+            SampleCategoryType.class,
+            ReferencePropertyKind.REFERENCE,
+            AggregationKind.NONE)
         .ref(SampleAttachement.class,
             SampleAttachement.CONTENT,
             BinaryContent.class,

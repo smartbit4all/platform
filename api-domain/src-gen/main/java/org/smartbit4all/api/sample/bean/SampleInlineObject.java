@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.net.URI;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -31,13 +32,17 @@ import javax.validation.Valid;
  * SampleInlineObject
  */
 @JsonPropertyOrder({
-  SampleInlineObject.NAME
+  SampleInlineObject.NAME,
+  SampleInlineObject.CATEGORY_TYPE
 })
 @JsonTypeName("SampleInlineObject")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class SampleInlineObject {
   public static final String NAME = "name";
   private String name;
+
+  public static final String CATEGORY_TYPE = "categoryType";
+  private URI categoryType;
 
   public SampleInlineObject() { 
   }
@@ -69,6 +74,34 @@ public class SampleInlineObject {
   }
 
 
+  public SampleInlineObject categoryType(URI categoryType) {
+    
+    this.categoryType = categoryType;
+    return this;
+  }
+
+   /**
+   * Get categoryType
+   * @return categoryType
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(CATEGORY_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public URI getCategoryType() {
+    return categoryType;
+  }
+
+
+  @JsonProperty(CATEGORY_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setCategoryType(URI categoryType) {
+    this.categoryType = categoryType;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -78,12 +111,13 @@ public class SampleInlineObject {
       return false;
     }
     SampleInlineObject sampleInlineObject = (SampleInlineObject) o;
-    return Objects.equals(this.name, sampleInlineObject.name);
+    return Objects.equals(this.name, sampleInlineObject.name) &&
+        Objects.equals(this.categoryType, sampleInlineObject.categoryType);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name);
+    return Objects.hash(name, categoryType);
   }
 
   @Override
@@ -91,6 +125,7 @@ public class SampleInlineObject {
     StringBuilder sb = new StringBuilder();
     sb.append("class SampleInlineObject {\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    categoryType: ").append(toIndentedString(categoryType)).append("\n");
     sb.append("}");
     return sb.toString();
   }

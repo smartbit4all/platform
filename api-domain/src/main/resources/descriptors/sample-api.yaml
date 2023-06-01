@@ -106,6 +106,9 @@ components:
       properties:
         name:
           type: string
+        categoryType:
+          type: string
+          format: uri
     SampleDataSheet:
       type: object
       properties:

@@ -1,12 +1,5 @@
 package org.smartbit4all.api.object;
 
-import static java.util.stream.Collectors.toList;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.smartbit4all.api.object.bean.RetrievalMode;
 import org.smartbit4all.api.sample.bean.SampleCategory;
 import org.smartbit4all.api.sample.bean.SampleCategory.ColorEnum;
+import org.smartbit4all.api.sample.bean.SampleCategoryType;
 import org.smartbit4all.api.sample.bean.SampleContainerItem;
 import org.smartbit4all.api.sample.bean.SampleDataSheet;
 import org.smartbit4all.api.sample.bean.SampleInlineObject;
@@ -30,6 +24,13 @@ import org.smartbit4all.core.object.ObjectProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import com.google.common.base.Objects;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static java.util.stream.Collectors.toList;
 
 @SpringBootTest(classes = {ApplyChangeTestConfig.class})
 class ApplyChangeTest {
@@ -579,7 +580,8 @@ class ApplyChangeTest {
   @Test
   void testSetValueWithMap() {
     SampleContainerItem item = new SampleContainerItem().cost(Long.valueOf(1))
-        .inlineObject(new SampleInlineObject().name("inline name"));
+        .inlineObject(new SampleInlineObject().name("inline name").categoryType(
+            objectApi.saveAsNew(MY_SCHEME, new SampleCategory().name("Inline referred type"))));
     ObjectNode node = objectApi.create(MY_SCHEME, item);
     URI uri1_0 = objectApi.save(node);
 
@@ -601,6 +603,9 @@ class ApplyChangeTest {
         objectNode.getValueAsString(SampleContainerItem.INLINE_OBJECT, "pet"));
     assertEquals(Double.valueOf(1000.0),
         objectNode.getValue(Double.class, SampleContainerItem.INLINE_OBJECT, "price"));
+    assertEquals("Inline referred type",
+        objectNode.getValueAsString(SampleContainerItem.INLINE_OBJECT,
+            SampleInlineObject.CATEGORY_TYPE, SampleCategoryType.NAME));
 
   }
 
