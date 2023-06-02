@@ -548,6 +548,7 @@ public class ViewContextServiceImpl implements ViewContextService {
       List<ComponentModelChange> changes = after.getValueAsList(View.class, ViewContext.VIEWS)
           .stream()
           .filter(v -> beforeViews.containsKey(v.getUuid()))
+          .filter(v -> ViewState.TO_CLOSE != v.getState())
           .map(v -> compareViewNodes(beforeViews.get(v.getUuid()), v))
           .filter(Objects::nonNull)
           .collect(toList());
