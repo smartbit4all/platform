@@ -55,6 +55,7 @@ import javax.validation.Valid;
   View.CLOSED_CHILDREN_VIEWS,
   View.DOWNLOADABLE_ITEMS,
   View.ACTIONS,
+  View.WIDGET_MODELS,
   View.VALUE_SETS,
   View.KEEP_MODEL_ON_IMPLICIT_CLOSE
 })
@@ -99,6 +100,9 @@ public class View {
 
   public static final String ACTIONS = "actions";
   private List<UiAction> actions = new ArrayList<>();
+
+  public static final String WIDGET_MODELS = "widgetModels";
+  private Map<String, Object> widgetModels = new HashMap<>();
 
   public static final String VALUE_SETS = "valueSets";
   private Map<String, ValueSet> valueSets = null;
@@ -498,6 +502,39 @@ public class View {
   }
 
 
+  public View widgetModels(Map<String, Object> widgetModels) {
+    
+    this.widgetModels = widgetModels;
+    return this;
+  }
+
+  public View putWidgetModelsItem(String key, Object widgetModelsItem) {
+    this.widgetModels.put(key, widgetModelsItem);
+    return this;
+  }
+
+   /**
+   * Get widgetModels
+   * @return widgetModels
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(WIDGET_MODELS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Map<String, Object> getWidgetModels() {
+    return widgetModels;
+  }
+
+
+  @JsonProperty(WIDGET_MODELS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setWidgetModels(Map<String, Object> widgetModels) {
+    this.widgetModels = widgetModels;
+  }
+
+
   public View valueSets(Map<String, ValueSet> valueSets) {
     
     this.valueSets = valueSets;
@@ -583,13 +620,14 @@ public class View {
         Objects.equals(this.closedChildrenViews, view.closedChildrenViews) &&
         Objects.equals(this.downloadableItems, view.downloadableItems) &&
         Objects.equals(this.actions, view.actions) &&
+        Objects.equals(this.widgetModels, view.widgetModels) &&
         Objects.equals(this.valueSets, view.valueSets) &&
         Objects.equals(this.keepModelOnImplicitClose, view.keepModelOnImplicitClose);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uuid, viewName, objectUri, branchUri, parameters, state, type, containerUuid, model, constraint, closedChildrenViews, downloadableItems, actions, valueSets, keepModelOnImplicitClose);
+    return Objects.hash(uuid, viewName, objectUri, branchUri, parameters, state, type, containerUuid, model, constraint, closedChildrenViews, downloadableItems, actions, widgetModels, valueSets, keepModelOnImplicitClose);
   }
 
   @Override
@@ -609,6 +647,7 @@ public class View {
     sb.append("    closedChildrenViews: ").append(toIndentedString(closedChildrenViews)).append("\n");
     sb.append("    downloadableItems: ").append(toIndentedString(downloadableItems)).append("\n");
     sb.append("    actions: ").append(toIndentedString(actions)).append("\n");
+    sb.append("    widgetModels: ").append(toIndentedString(widgetModels)).append("\n");
     sb.append("    valueSets: ").append(toIndentedString(valueSets)).append("\n");
     sb.append("    keepModelOnImplicitClose: ").append(toIndentedString(keepModelOnImplicitClose)).append("\n");
     sb.append("}");

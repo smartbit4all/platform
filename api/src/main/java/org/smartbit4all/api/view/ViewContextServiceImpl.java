@@ -496,7 +496,7 @@ public class ViewContextServiceImpl implements ViewContextService {
         .constraints(constraints)
         .actions(view.getActions())
         .valueSets(view.getValueSets())
-        .widgetModels(getWidgetModelsForView(viewUuid));
+        .widgetModels(view.getWidgetModels());
   }
 
   @Override
@@ -614,37 +614,6 @@ public class ViewContextServiceImpl implements ViewContextService {
       method = widgetMethods.get("");
     }
     return method;
-  }
-
-  @Override
-  public <T> void setWidgetModelForView(Class<T> clazz, UUID viewUuid, String widgetId,
-      T widgetModel) {
-    updateCurrentViewContext(context -> {
-      Map<String, Object> viewWidgetModels = context.getViewWidgetModels()
-          .computeIfAbsent(viewUuid.toString(), uuid -> new HashMap<>());
-      viewWidgetModels.put(widgetId, widgetModel);
-      return context;
-    });
-  }
-
-  @Override
-  public <T> T getWidgetModelForView(Class<T> clazz, UUID viewUuid, String widgetId) {
-    Object widgetModel = getWidgetModelsForView(viewUuid).get(widgetId);
-    return objectApi.asType(clazz, widgetModel);
-  }
-
-  private Map<String, Object> getWidgetModelsForView(UUID viewUuid) {
-    Map<String, Object> widgetModels =
-        getCurrentViewContextEntry().getViewWidgetModels().get(viewUuid.toString());
-    if (widgetModels == null) {
-      HashMap<String, Object> newWidgetModels = new HashMap<>();
-      updateCurrentViewContext(context -> {
-        context.getViewWidgetModels().put(viewUuid.toString(), newWidgetModels);
-        return context;
-      });
-      widgetModels = newWidgetModels;
-    }
-    return widgetModels;
   }
 
 }

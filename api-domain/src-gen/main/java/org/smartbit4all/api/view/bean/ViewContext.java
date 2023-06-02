@@ -24,9 +24,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import org.smartbit4all.api.view.bean.OpenPendingData;
 import org.smartbit4all.api.view.bean.View;
@@ -43,7 +41,6 @@ import javax.validation.Valid;
   ViewContext.URI,
   ViewContext.UUID,
   ViewContext.VIEWS,
-  ViewContext.VIEW_WIDGET_MODELS,
   ViewContext.OPEN_PENDING_DATA
 })
 @JsonTypeName("ViewContext")
@@ -57,9 +54,6 @@ public class ViewContext {
 
   public static final String VIEWS = "views";
   private List<View> views = new ArrayList<>();
-
-  public static final String VIEW_WIDGET_MODELS = "viewWidgetModels";
-  private Map<String, Map<String, Object>> viewWidgetModels = new HashMap<>();
 
   public static final String OPEN_PENDING_DATA = "openPendingData";
   private OpenPendingData openPendingData;
@@ -158,40 +152,6 @@ public class ViewContext {
   }
 
 
-  public ViewContext viewWidgetModels(Map<String, Map<String, Object>> viewWidgetModels) {
-    
-    this.viewWidgetModels = viewWidgetModels;
-    return this;
-  }
-
-  public ViewContext putViewWidgetModelsItem(String key, Map<String, Object> viewWidgetModelsItem) {
-    this.viewWidgetModels.put(key, viewWidgetModelsItem);
-    return this;
-  }
-
-   /**
-   * Get viewWidgetModels
-   * @return viewWidgetModels
-  **/
-  @javax.annotation.Nonnull
-  @NotNull
-  @Valid
-  @ApiModelProperty(required = true, value = "")
-  @JsonProperty(VIEW_WIDGET_MODELS)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-
-  public Map<String, Map<String, Object>> getViewWidgetModels() {
-    return viewWidgetModels;
-  }
-
-
-  @JsonProperty(VIEW_WIDGET_MODELS)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setViewWidgetModels(Map<String, Map<String, Object>> viewWidgetModels) {
-    this.viewWidgetModels = viewWidgetModels;
-  }
-
-
   public ViewContext openPendingData(OpenPendingData openPendingData) {
     
     this.openPendingData = openPendingData;
@@ -232,13 +192,12 @@ public class ViewContext {
     return Objects.equals(this.uri, viewContext.uri) &&
         Objects.equals(this.uuid, viewContext.uuid) &&
         Objects.equals(this.views, viewContext.views) &&
-        Objects.equals(this.viewWidgetModels, viewContext.viewWidgetModels) &&
         Objects.equals(this.openPendingData, viewContext.openPendingData);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, uuid, views, viewWidgetModels, openPendingData);
+    return Objects.hash(uri, uuid, views, openPendingData);
   }
 
   @Override
@@ -248,7 +207,6 @@ public class ViewContext {
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    uuid: ").append(toIndentedString(uuid)).append("\n");
     sb.append("    views: ").append(toIndentedString(views)).append("\n");
-    sb.append("    viewWidgetModels: ").append(toIndentedString(viewWidgetModels)).append("\n");
     sb.append("    openPendingData: ").append(toIndentedString(openPendingData)).append("\n");
     sb.append("}");
     return sb.toString();

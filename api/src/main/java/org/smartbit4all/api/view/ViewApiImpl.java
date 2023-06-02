@@ -335,9 +335,14 @@ public class ViewApiImpl implements ViewApi {
       getModel(viewUuid, null);
       View view = getView(viewUuid);
       Object componentModel = view.getParameters().get(key);
-      return objectApi.asType(clazz, componentModel);
-    } else if (ViewContext.VIEW_WIDGET_MODELS.equals(location)) {
-      return viewContextService.getWidgetModelForView(clazz, viewUuid, key);
+      T widgetModel = objectApi.asType(clazz, componentModel);
+      view.getParameters().put(key, widgetModel);
+      return widgetModel;
+    } else if (View.WIDGET_MODELS.equals(location)) {
+      View view = getView(viewUuid);
+      T widgetModel = objectApi.asType(clazz, view.getWidgetModels().get(key));
+      view.getWidgetModels().put(key, widgetModel);
+      return widgetModel;
     } else if (View.MODEL.equals(location)) {
       Object model = getModel(viewUuid, null);
       return objectApi.getValueFromObject(clazz, model, key);
@@ -361,8 +366,8 @@ public class ViewApiImpl implements ViewApi {
       modelAsMap.put(key, objectApi.definition(clazz).toMap(widgetModel));
       Object updatedModel = objectApi.asType(model.getClass(), modelAsMap);
       view.setModel(updatedModel);
-    } else if (ViewContext.VIEW_WIDGET_MODELS.equals(location)) {
-      viewContextService.setWidgetModelForView(clazz, viewUuid, key, widgetModel);
+    } else if (View.WIDGET_MODELS.equals(location)) {
+      view.getWidgetModels().put(key, widgetModel);
     } else {
       throw new IllegalArgumentException("Invalid path");
     }
@@ -375,7 +380,7 @@ public class ViewApiImpl implements ViewApi {
     }
     if (paths.length == 1) {
       paths = new String[2];
-      paths[0] = ViewContext.VIEW_WIDGET_MODELS;
+      paths[0] = View.WIDGET_MODELS;
       paths[1] = componentId;
     }
     if (paths.length != 2) {
