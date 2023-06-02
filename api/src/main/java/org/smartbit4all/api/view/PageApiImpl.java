@@ -55,7 +55,9 @@ public abstract class PageApiImpl<M> implements PageApi<M> {
       throw new IllegalArgumentException(paramName + " parameter not found in UI request");
     }
     Object param = parameters.get(paramName);
-    return objectApi.asType(clazz, param);
+    T typedParam = objectApi.asType(clazz, param);
+    parameters.put(paramName, typedParam);
+    return typedParam;
   }
 
   protected <T> List<T> extractListParam(Class<T> clazz, String paramName,
@@ -67,7 +69,9 @@ public abstract class PageApiImpl<M> implements PageApi<M> {
     if (!(param instanceof List)) {
       throw new IllegalArgumentException(paramName + " parameter is not List<>!");
     }
-    return objectApi.asList(clazz, (List<?>) param);
+    List<T> typedParam = objectApi.asList(clazz, (List<?>) param);
+    parameters.put(paramName, typedParam);
+    return typedParam;
   }
 
 }
