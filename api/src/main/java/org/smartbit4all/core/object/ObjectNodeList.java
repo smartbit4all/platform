@@ -1,8 +1,9 @@
 package org.smartbit4all.core.object;
 
-import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
@@ -11,6 +12,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import org.smartbit4all.api.object.bean.ObjectNodeData;
 import org.smartbit4all.api.object.bean.ObjectNodeState;
+import static java.util.stream.Collectors.toList;
 
 public final class ObjectNodeList {
 
@@ -83,6 +85,17 @@ public final class ObjectNodeList {
     return newNode;
   }
 
+  public List<ObjectNode> addAllNewObjects(Collection<Object> objects) {
+    if (objects == null) {
+      return Collections.emptyList();
+    }
+    List<ObjectNode> result = new ArrayList<>();
+    for (Object node : objects) {
+      result.add(addNewObject(node));
+    }
+    return result;
+  }
+
   public boolean add(ObjectNode node) {
     Objects.requireNonNull(node, "Node must be not null!");
     ObjectNodeReference ref =
@@ -91,12 +104,34 @@ public final class ObjectNodeList {
     return list.add(ref);
   }
 
+  public boolean addAllNodes(Collection<ObjectNode> nodes) {
+    if (nodes == null) {
+      return false;
+    }
+    boolean result = false;
+    for (ObjectNode node : nodes) {
+      result = result || add(node);
+    }
+    return result;
+  }
+
   public boolean add(URI uri) {
     Objects.requireNonNull(uri, "URI must be not null!");
     ObjectNodeReference ref =
         new ObjectNodeReference(referrerNode, referenceDefinition, null, null);
     ref.set(uri);
     return list.add(ref);
+  }
+
+  public boolean addAll(Collection<URI> uris) {
+    if (uris == null) {
+      return false;
+    }
+    boolean result = false;
+    for (URI uri : uris) {
+      result = result || add(uri);
+    }
+    return result;
   }
 
   public ObjectNode set(int idx, ObjectNode node) {
