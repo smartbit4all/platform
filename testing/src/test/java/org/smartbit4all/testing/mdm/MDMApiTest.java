@@ -137,16 +137,26 @@ class MDMApiTest {
         masterDataManagementApi.getApi(PropertyDefinitionData.class);
 
     // Save some property definition drafts
-    URI draft = propertyDefinitionMDMApi.saveAsDraft(
+    URI draftString = propertyDefinitionMDMApi.saveAsDraft(
         new PropertyDefinitionData().name("propertyString").typeClass(String.class.getName())
+            .widget(new SmartWidgetDefinition().type(SmartFormWidgetType.TEXT_FIELD)));
+    URI draftLong = propertyDefinitionMDMApi.saveAsDraft(
+        new PropertyDefinitionData().name("propertyLong").typeClass(Long.class.getName())
+            .widget(new SmartWidgetDefinition().type(SmartFormWidgetType.TEXT_FIELD)));
+    URI draftCategoryUri = propertyDefinitionMDMApi.saveAsDraft(
+        new PropertyDefinitionData().name("category").typeClass(URI.class.getName())
+            .referredType(SampleCategoryType.class.getName())
+            .referredPropertyName(SampleCategoryType.URI)
             .widget(new SmartWidgetDefinition().type(SmartFormWidgetType.TEXT_FIELD)));
 
     propertyDefinitionMDMApi.publishCurrentModifications();
 
+    Map<String, PropertyDefinitionData> publishedProperties =
+        propertyDefinitionMDMApi.getPublishedObjects();
     URI appleDefUri = objectDefinitionMDMApi.saveAsNewPublished(new ObjectDefinitionData()
         .qualifiedName(ORG_SMARTBIT4ALL_MYDOMAIN_APPLE).addPropertiesItem(
-            propertyDefinitionMDMApi.getPublishedObjects()
-                .get(objectApi.getLatestUri(draft).toString())));
+            publishedProperties
+                .get(objectApi.getLatestUri(draftString).toString())));
 
     ObjectDefinitionData definitionData = objectApi
         .loadLatest(objectDefinitionMDMApi.getPublishedMap().get(ORG_SMARTBIT4ALL_MYDOMAIN_APPLE))

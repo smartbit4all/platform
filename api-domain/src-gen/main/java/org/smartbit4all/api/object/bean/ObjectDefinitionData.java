@@ -39,7 +39,7 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   ObjectDefinitionData.URI,
   ObjectDefinitionData.QUALIFIED_NAME,
-  ObjectDefinitionData.URI_PROPERTY,
+  ObjectDefinitionData.KEY_PROPERTY,
   ObjectDefinitionData.PROPERTIES,
   ObjectDefinitionData.OUTGOING_REFERENCES
 })
@@ -52,8 +52,8 @@ public class ObjectDefinitionData {
   public static final String QUALIFIED_NAME = "qualifiedName";
   private String qualifiedName;
 
-  public static final String URI_PROPERTY = "uriProperty";
-  private String uriProperty;
+  public static final String KEY_PROPERTY = "keyProperty";
+  private String keyProperty;
 
   public static final String PROPERTIES = "properties";
   private List<PropertyDefinitionData> properties = new ArrayList<>();
@@ -120,30 +120,30 @@ public class ObjectDefinitionData {
   }
 
 
-  public ObjectDefinitionData uriProperty(String uriProperty) {
+  public ObjectDefinitionData keyProperty(String keyProperty) {
     
-    this.uriProperty = uriProperty;
+    this.keyProperty = keyProperty;
     return this;
   }
 
    /**
-   * The name of the uri property that is the referential resource identifier for the object instances.
-   * @return uriProperty
+   * The name of the uri property that is the referential resource identifier for the object instances. Normally it is the uri but if the object does not have uri (identity in the storage level) then it can be the unique identifier or code also.  
+   * @return keyProperty
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The name of the uri property that is the referential resource identifier for the object instances.")
-  @JsonProperty(URI_PROPERTY)
+  @ApiModelProperty(value = "The name of the uri property that is the referential resource identifier for the object instances. Normally it is the uri but if the object does not have uri (identity in the storage level) then it can be the unique identifier or code also.  ")
+  @JsonProperty(KEY_PROPERTY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public String getUriProperty() {
-    return uriProperty;
+  public String getKeyProperty() {
+    return keyProperty;
   }
 
 
-  @JsonProperty(URI_PROPERTY)
+  @JsonProperty(KEY_PROPERTY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setUriProperty(String uriProperty) {
-    this.uriProperty = uriProperty;
+  public void setKeyProperty(String keyProperty) {
+    this.keyProperty = keyProperty;
   }
 
 
@@ -228,14 +228,14 @@ public class ObjectDefinitionData {
     ObjectDefinitionData objectDefinitionData = (ObjectDefinitionData) o;
     return Objects.equals(this.uri, objectDefinitionData.uri) &&
         Objects.equals(this.qualifiedName, objectDefinitionData.qualifiedName) &&
-        Objects.equals(this.uriProperty, objectDefinitionData.uriProperty) &&
+        Objects.equals(this.keyProperty, objectDefinitionData.keyProperty) &&
         Objects.equals(this.properties, objectDefinitionData.properties) &&
         Objects.equals(this.outgoingReferences, objectDefinitionData.outgoingReferences);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, qualifiedName, uriProperty, properties, outgoingReferences);
+    return Objects.hash(uri, qualifiedName, keyProperty, properties, outgoingReferences);
   }
 
   @Override
@@ -244,7 +244,7 @@ public class ObjectDefinitionData {
     sb.append("class ObjectDefinitionData {\n");
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    qualifiedName: ").append(toIndentedString(qualifiedName)).append("\n");
-    sb.append("    uriProperty: ").append(toIndentedString(uriProperty)).append("\n");
+    sb.append("    keyProperty: ").append(toIndentedString(keyProperty)).append("\n");
     sb.append("    properties: ").append(toIndentedString(properties)).append("\n");
     sb.append("    outgoingReferences: ").append(toIndentedString(outgoingReferences)).append("\n");
     sb.append("}");

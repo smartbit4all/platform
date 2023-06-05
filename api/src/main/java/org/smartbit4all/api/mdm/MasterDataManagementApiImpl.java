@@ -35,14 +35,17 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi, Ini
     if (entryApi instanceof MDMEntryApiImpl) {
       // We always refresh the master info for the given api.
       MasterDataManagementInfo masterDataManagementInfo = getOrCreateInfo();
-      ((MDMEntryApiImpl) entryApi).setInfo(masterDataManagementInfo);
+      MDMEntryApiImpl apiImpl = (MDMEntryApiImpl) entryApi;
+      apiImpl.setInfo(masterDataManagementInfo);
+      // Refresh the value set of the api.
+      apiImpl.refreshValueSetDefinition();
     }
     return entryApi;
   }
 
   @Override
   public <T> MDMEntryApi<T> getApi(Class<T> clazz) {
-    return getApi(clazz, clazz.getSimpleName());
+    return getApi(clazz, MDMEntryApiImpl.getApiName(clazz));
   }
 
   @Override

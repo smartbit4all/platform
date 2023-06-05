@@ -31,9 +31,11 @@ components:
             object:/com/smartbit4all/mydomain/model/MyObject could be a calculated URI for a given reference. The object definition
         qualifiedName:
           type: string
-        uriProperty:
+        keyProperty:
           type: string
-          description: The name of the uri property that is the referential resource identifier for the object instances.
+          description: |
+            The name of the uri property that is the referential resource identifier for the object instances. Normally it is the
+            uri but if the object does not have uri (identity in the storage level) then it can be the unique identifier or code also. 
         properties:
           type: array
           items:
@@ -73,6 +75,8 @@ components:
           type: string
           description: |
             If the given property is mapped to a referred property then this is the name of the referred property inside the referred type.
+            If we do not set the name of the property then it is the unique identifier of the referredType. If it has URI then it is the
+            URI else it is the 
         defaultValue:
           type: object
           description: The default value that must be the same type as the property itself.
@@ -81,6 +85,16 @@ components:
           description: |
             The default widget definition for the given property. It can be empty but in this case we must have another option to setup the
             widget for a layout.
+        valueSetSchema:
+          type: string
+          description: |
+            The name of the default value set schema for the given property. It can overridden at object definition level and can
+            be specified also at objkect instance level. It is not required if empty then the value set is global.
+        valueSetName:
+          type: string
+          description: |
+            The name of the default value set for the given property. It can overridden at object definition level and can
+            be specified also at objkect instance level. It is not required if empty then the value set is global.
     ReferenceDefinitionData:
       type: object
       description: |

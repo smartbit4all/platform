@@ -40,7 +40,9 @@ import javax.validation.Valid;
   PropertyDefinitionData.REFERRED_TYPE,
   PropertyDefinitionData.REFERRED_PROPERTY_NAME,
   PropertyDefinitionData.DEFAULT_VALUE,
-  PropertyDefinitionData.WIDGET
+  PropertyDefinitionData.WIDGET,
+  PropertyDefinitionData.VALUE_SET_SCHEMA,
+  PropertyDefinitionData.VALUE_SET_NAME
 })
 @JsonTypeName("PropertyDefinitionData")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -65,6 +67,12 @@ public class PropertyDefinitionData {
 
   public static final String WIDGET = "widget";
   private SmartWidgetDefinition widget = null;
+
+  public static final String VALUE_SET_SCHEMA = "valueSetSchema";
+  private String valueSetSchema;
+
+  public static final String VALUE_SET_NAME = "valueSetName";
+  private String valueSetName;
 
   public PropertyDefinitionData() { 
   }
@@ -133,12 +141,12 @@ public class PropertyDefinitionData {
   }
 
    /**
-   * The qualified name of the type class in java. Like java.lang.String If we need to convert this type to any other platform then we need a conversion for this. 
+   * The qualified name of the type class in java. Like java.lang.String If we need to convert this type to any other platform then we need a conversion for this. If the type is primitive type (String, Long, Integer, etc.) then it is a value as is but if it has definition on its own then it is a complex type with inner properties as well.  
    * @return typeClass
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The qualified name of the type class in java. Like java.lang.String If we need to convert this type to any other platform then we need a conversion for this. ")
+  @ApiModelProperty(required = true, value = "The qualified name of the type class in java. Like java.lang.String If we need to convert this type to any other platform then we need a conversion for this. If the type is primitive type (String, Long, Integer, etc.) then it is a value as is but if it has definition on its own then it is a complex type with inner properties as well.  ")
   @JsonProperty(TYPE_CLASS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -188,11 +196,11 @@ public class PropertyDefinitionData {
   }
 
    /**
-   * If the given property is mapped to a referred property then this is the name of the referred property inside the referred type. 
+   * If the given property is mapped to a referred property then this is the name of the referred property inside the referred type. If we do not set the name of the property then it is the unique identifier of the referredType. If it has URI then it is the URI else it is the  
    * @return referredPropertyName
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "If the given property is mapped to a referred property then this is the name of the referred property inside the referred type. ")
+  @ApiModelProperty(value = "If the given property is mapped to a referred property then this is the name of the referred property inside the referred type. If we do not set the name of the property then it is the unique identifier of the referredType. If it has URI then it is the URI else it is the  ")
   @JsonProperty(REFERRED_PROPERTY_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -263,6 +271,60 @@ public class PropertyDefinitionData {
   }
 
 
+  public PropertyDefinitionData valueSetSchema(String valueSetSchema) {
+    
+    this.valueSetSchema = valueSetSchema;
+    return this;
+  }
+
+   /**
+   * The name of the default value set schema for the given property. It can overridden at object definition level and can be specified also at objkect instance level. It is not required if empty then the value set is global. 
+   * @return valueSetSchema
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The name of the default value set schema for the given property. It can overridden at object definition level and can be specified also at objkect instance level. It is not required if empty then the value set is global. ")
+  @JsonProperty(VALUE_SET_SCHEMA)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getValueSetSchema() {
+    return valueSetSchema;
+  }
+
+
+  @JsonProperty(VALUE_SET_SCHEMA)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setValueSetSchema(String valueSetSchema) {
+    this.valueSetSchema = valueSetSchema;
+  }
+
+
+  public PropertyDefinitionData valueSetName(String valueSetName) {
+    
+    this.valueSetName = valueSetName;
+    return this;
+  }
+
+   /**
+   * The name of the default value set for the given property. It can overridden at object definition level and can be specified also at objkect instance level. It is not required if empty then the value set is global. 
+   * @return valueSetName
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The name of the default value set for the given property. It can overridden at object definition level and can be specified also at objkect instance level. It is not required if empty then the value set is global. ")
+  @JsonProperty(VALUE_SET_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getValueSetName() {
+    return valueSetName;
+  }
+
+
+  @JsonProperty(VALUE_SET_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setValueSetName(String valueSetName) {
+    this.valueSetName = valueSetName;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -278,12 +340,14 @@ public class PropertyDefinitionData {
         Objects.equals(this.referredType, propertyDefinitionData.referredType) &&
         Objects.equals(this.referredPropertyName, propertyDefinitionData.referredPropertyName) &&
         Objects.equals(this.defaultValue, propertyDefinitionData.defaultValue) &&
-        Objects.equals(this.widget, propertyDefinitionData.widget);
+        Objects.equals(this.widget, propertyDefinitionData.widget) &&
+        Objects.equals(this.valueSetSchema, propertyDefinitionData.valueSetSchema) &&
+        Objects.equals(this.valueSetName, propertyDefinitionData.valueSetName);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, name, typeClass, referredType, referredPropertyName, defaultValue, widget);
+    return Objects.hash(uri, name, typeClass, referredType, referredPropertyName, defaultValue, widget, valueSetSchema, valueSetName);
   }
 
   @Override
@@ -297,6 +361,8 @@ public class PropertyDefinitionData {
     sb.append("    referredPropertyName: ").append(toIndentedString(referredPropertyName)).append("\n");
     sb.append("    defaultValue: ").append(toIndentedString(defaultValue)).append("\n");
     sb.append("    widget: ").append(toIndentedString(widget)).append("\n");
+    sb.append("    valueSetSchema: ").append(toIndentedString(valueSetSchema)).append("\n");
+    sb.append("    valueSetName: ").append(toIndentedString(valueSetName)).append("\n");
     sb.append("}");
     return sb.toString();
   }

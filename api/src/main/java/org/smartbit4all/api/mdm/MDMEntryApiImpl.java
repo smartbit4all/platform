@@ -19,6 +19,9 @@ import org.smartbit4all.api.object.bean.BranchEntry;
 import org.smartbit4all.api.object.bean.BranchOperation;
 import org.smartbit4all.api.object.bean.MasterDataManagementEntry;
 import org.smartbit4all.api.object.bean.MasterDataManagementInfo;
+import org.smartbit4all.api.value.ValueSetApi;
+import org.smartbit4all.api.value.bean.ValueSetDefinitionData;
+import org.smartbit4all.api.value.bean.ValueSetDefinitionKind;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
@@ -71,6 +74,9 @@ public class MDMEntryApiImpl<O extends Object> implements MDMEntryApi<O> {
   @Autowired
   private BranchApi branchApi;
 
+  @Autowired
+  private ValueSetApi valueSetApi;
+
   public enum BranchStrategy {
     GLOBAL, LOCAL
   }
@@ -96,6 +102,14 @@ public class MDMEntryApiImpl<O extends Object> implements MDMEntryApi<O> {
   private String publishedListName;
 
   /**
+   * If the given MDM ap is managing a list of published values then this list forms a value set
+   * definition by default. If it is true then the next access will try to refresh the value set
+   * entry belongs to this api. The schema is the schema for the value set api but the storage
+   * schema will be used to avoid name collisions.
+   */
+  private boolean refreshValueSetDefinition = true;
+
+  /**
    * If the given object has implicit URI then the storage won't generate a new uri for the new
    * object. In this case we can set a {@link Function} to generate the URI from the object.
    */
@@ -104,7 +118,17 @@ public class MDMEntryApiImpl<O extends Object> implements MDMEntryApi<O> {
   public MDMEntryApiImpl(Class<O> clazz) {
     super();
     this.clazz = clazz;
-    this.name = clazz.getSimpleName();
+    this.name = getApiName(clazz);
+  }
+
+  /**
+   * Constructs the name of the api from the Java class.
+   * 
+   * @param clazz
+   * @return
+   */
+  public static final String getApiName(Class<?> clazz) {
+    return clazz.getName().replace(StringConstant.DOT, StringConstant.UNDERLINE);
   }
 
   @Override
@@ -476,6 +500,25 @@ public class MDMEntryApiImpl<O extends Object> implements MDMEntryApi<O> {
       return collectionApi.list(schema, publishedListName);
     }
     return null;
+  }
+
+  public final void refreshValueSetDefinition() {
+    if (refreshValueSetDefinition) {
+      refreshValueSetDefinition = false;
+      if (publishedListName != null) {
+        ObjectDefinition<O> definition = objectApi.definition(clazz);
+        valueSetApi.save(schema, new ValueSetDefinitionData().kind(ValueSetDefinitionKind.LIST)
+            .storageSchema(schema).containerName(publishedListName)
+            .objectDefinition(ObjectDefinition.uriOf(definition.getQualifiedName()))
+            .qualifiedName(publishedListName));
+      } else {
+        ObjectDefinition<O> definition = objectApi.definition(clazz);
+        valueSetApi.save(schema, new ValueSetDefinitionData().kind(ValueSetDefinitionKind.MAP)
+            .storageSchema(schema).containerName(getPublishedMapName())
+            .objectDefinition(ObjectDefinition.uriOf(definition.getQualifiedName()))
+            .qualifiedName(getPublishedMapName()));
+      }
+    }
   }
 
 }

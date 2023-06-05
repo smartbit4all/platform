@@ -284,8 +284,12 @@ public class ValueSetApiImpl implements ValueSetApi {
         m.put(valueSetDef.getQualifiedName(), objectApi.getLatestUri(uri));
       } else {
         ObjectNode objectNode = objectApi.loadLatest(uri);
-        objectNode.setValue(valueSetDef, ValueSetDefinition.DATA);
-        objectApi.save(objectNode);
+        ValueSetDefinitionData value =
+            objectNode.getValue(ValueSetDefinitionData.class, ValueSetDefinition.DATA);
+        if (!value.equals(valueSetDef)) {
+          objectNode.setValue(valueSetDef, ValueSetDefinition.DATA);
+          objectApi.save(objectNode);
+        }
       }
       return m;
     });
