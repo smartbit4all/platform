@@ -35,6 +35,10 @@ public class ObjectDefinitionApiImpl implements ObjectDefinitionApi, Initializin
 
   public static final String SCHEMA = "objectDefinition";
 
+  public static final String PROPERTIES = "propertyDefinitions";
+
+  public static final String objectDefinitions = "objectDefinitions";
+
   /**
    * We need at least one serializer to be able to start the module.
    */
@@ -262,6 +266,8 @@ public class ObjectDefinitionApiImpl implements ObjectDefinitionApi, Initializin
           objectDefinition.setAlias(alias);
           objectDefinition.setQualifiedName(className);
           objectDefinition.setObjectDefinitionApi(self);
+          // If there is a saved object definition data then we override the newly created object
+          // definition.
           objectDefinition.initDefinitionData();
           definitionsByAlias.put(objectDefinition.getAlias(), objectDefinition);
         }
@@ -280,7 +286,8 @@ public class ObjectDefinitionApiImpl implements ObjectDefinitionApi, Initializin
       // currently existing properties.
       definition.builder()
           .addAll(storage.read(definition.getDefinitionData().getUri(), ObjectDefinitionData.class)
-              .getProperties());
+              .getProperties())
+          .commit();
     }
   }
 

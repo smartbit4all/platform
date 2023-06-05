@@ -3,6 +3,7 @@ package org.smartbit4all.api.mdm;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
+import org.smartbit4all.api.collection.StoredList;
 import org.smartbit4all.api.mdm.MDMEntryApiImpl.BranchStrategy;
 import org.smartbit4all.core.object.ObjectApi;
 
@@ -42,6 +43,11 @@ public interface MDMEntryApi<O> {
    * @return Return all the published objects loaded.
    */
   Map<String, O> getPublishedObjects();
+
+  /**
+   * @return Return the published {@link StoredList} if the published list name was set.
+   */
+  StoredList getPublishedList();
 
   /**
    * Save the given object as published.
