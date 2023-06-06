@@ -370,7 +370,7 @@ components:
             $ref: '#/components/schemas/ComponentModelChange'
     View:
       type: object
-      required: [uuid,viewName,state,type,parameters,closedChildrenViews,downloadableItems,actions,widgetModels]
+      required: [uuid,viewName,state,type,parameters,closedChildrenViews,downloadableItems,actions,widgetModels,callbacks]
       properties:
         uuid:
           type: string
@@ -421,6 +421,10 @@ components:
             type: ValueSet
         keepModelOnImplicitClose:
           type: boolean
+        callbacks:
+          type: string
+          additionalProperties:
+            type: object
     ViewData:
       type: object
       required: [uuid,viewName,state,type]
