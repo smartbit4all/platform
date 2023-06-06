@@ -36,6 +36,7 @@ import javax.validation.Valid;
   UiActionDialogDescriptor.TITLE,
   UiActionDialogDescriptor.PLACEHOLDER,
   UiActionDialogDescriptor.TEXT,
+  UiActionDialogDescriptor.MASK,
   UiActionDialogDescriptor.ACTION_BUTTON,
   UiActionDialogDescriptor.CANCEL_BUTTON
 })
@@ -50,6 +51,9 @@ public class UiActionDialogDescriptor {
 
   public static final String TEXT = "text";
   private String text;
+
+  public static final String MASK = "mask";
+  private String mask;
 
   public static final String ACTION_BUTTON = "actionButton";
   private UiActionButtonDescriptor actionButton;
@@ -142,6 +146,33 @@ public class UiActionDialogDescriptor {
   }
 
 
+  public UiActionDialogDescriptor mask(String mask) {
+    
+    this.mask = mask;
+    return this;
+  }
+
+   /**
+   * Get mask
+   * @return mask
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(MASK)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getMask() {
+    return mask;
+  }
+
+
+  @JsonProperty(MASK)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setMask(String mask) {
+    this.mask = mask;
+  }
+
+
   public UiActionDialogDescriptor actionButton(UiActionButtonDescriptor actionButton) {
     
     this.actionButton = actionButton;
@@ -212,13 +243,14 @@ public class UiActionDialogDescriptor {
     return Objects.equals(this.title, uiActionDialogDescriptor.title) &&
         Objects.equals(this.placeholder, uiActionDialogDescriptor.placeholder) &&
         Objects.equals(this.text, uiActionDialogDescriptor.text) &&
+        Objects.equals(this.mask, uiActionDialogDescriptor.mask) &&
         Objects.equals(this.actionButton, uiActionDialogDescriptor.actionButton) &&
         Objects.equals(this.cancelButton, uiActionDialogDescriptor.cancelButton);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(title, placeholder, text, actionButton, cancelButton);
+    return Objects.hash(title, placeholder, text, mask, actionButton, cancelButton);
   }
 
   @Override
@@ -228,6 +260,7 @@ public class UiActionDialogDescriptor {
     sb.append("    title: ").append(toIndentedString(title)).append("\n");
     sb.append("    placeholder: ").append(toIndentedString(placeholder)).append("\n");
     sb.append("    text: ").append(toIndentedString(text)).append("\n");
+    sb.append("    mask: ").append(toIndentedString(mask)).append("\n");
     sb.append("    actionButton: ").append(toIndentedString(actionButton)).append("\n");
     sb.append("    cancelButton: ").append(toIndentedString(cancelButton)).append("\n");
     sb.append("}");

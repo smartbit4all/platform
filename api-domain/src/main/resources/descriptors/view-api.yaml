@@ -758,6 +758,8 @@ components:
           type: string
         text:
           type: string
+        mask:
+          type: string
         actionButton:
           $ref: '#/components/schemas/UiActionButtonDescriptor'
         cancelButton:
