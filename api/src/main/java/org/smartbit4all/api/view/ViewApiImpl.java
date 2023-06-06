@@ -2,6 +2,7 @@ package org.smartbit4all.api.view;
 
 import static java.util.stream.Collectors.toList;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -12,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.binarydata.BinaryDataObject;
+import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.view.bean.CloseResult;
 import org.smartbit4all.api.view.bean.MessageData;
 import org.smartbit4all.api.view.bean.OpenPendingData;
@@ -171,7 +173,7 @@ public class ViewApiImpl implements ViewApi {
               parentView = viewToShow;
             }
           }
-          return viewContextService.getCurrentViewContextEntry();
+          return context;
         });
 
   }
@@ -400,4 +402,42 @@ public class ViewApiImpl implements ViewApi {
     return null;
   }
 
+  @Override
+  public void setCallback(UUID viewUuid, String requestId, InvocationRequest request) {
+    updateView(viewUuid, view -> view.putCallbacksItem(requestId, request));
+  }
+
+  @Override
+  public void addCallback(UUID viewUuid, String requestId, InvocationRequest request) {
+    updateView(viewUuid, view -> {
+      getViewCallbackList(view, requestId).add(request);
+      return view;
+    });
+  }
+
+  private List<InvocationRequest> getViewCallbackList(View view, String requestId) {
+    Object callbacks = view.getCallbacks().computeIfAbsent(requestId, id -> new ArrayList<>());
+    if (!(callbacks instanceof List)) {
+      throw new IllegalStateException("CallbackList is not a List for " + requestId);
+    }
+    List<InvocationRequest> list = objectApi.asList(InvocationRequest.class, (List<?>) callbacks);
+    // put back typed list
+    view.putCallbacksItem(requestId, list);
+    return list;
+  }
+
+  @Override
+  public InvocationRequest getCallback(UUID viewUuid, String requestId) {
+    View view = getView(viewUuid);
+    InvocationRequest request =
+        objectApi.asType(InvocationRequest.class, view.getCallbacks().get(requestId));
+    // put back typed object
+    view.putCallbacksItem(requestId, request);
+    return request;
+  }
+
+  @Override
+  public List<InvocationRequest> getCallbacks(UUID viewUuid, String requestId) {
+    return getViewCallbackList(getView(viewUuid), requestId);
+  }
 }

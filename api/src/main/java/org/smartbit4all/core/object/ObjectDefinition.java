@@ -7,8 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.object.bean.ObjectDefinitionData;
 import org.smartbit4all.api.object.bean.PropertyDefinitionData;
@@ -111,6 +114,22 @@ public final class ObjectDefinition<T> {
    * The {@link ObjectDefinitionApi} set itself when we get the definition for the first time.
    */
   private ObjectDefinitionApi objectDefinitionApi;
+
+  /**
+   * The properties by name is cache to speed up the access to the
+   * {@link ObjectDefinitionData#getProperties()} list.
+   */
+  private final Map<String, PropertyDefinitionData> propertiesByName = new HashMap<>();
+
+  /**
+   * The dirty flag for the {@link #propertiesByName} map.
+   */
+  private boolean propertiesByNameDirty = true;
+
+  /**
+   * The lock for reconstructing the properties map.
+   */
+  private final Lock lockProperties = new ReentrantLock();
 
   public ObjectDefinition(Class<T> clazz) {
     super();
@@ -341,7 +360,7 @@ public final class ObjectDefinition<T> {
     }
   }
 
-  static <T> URI uriOf(String qualifiedName) {
+  public static <T> URI uriOf(String qualifiedName) {
     return URI
         .create(ObjectDefinitionApiImpl.SCHEMA + StringConstant.COLON + StringConstant.SLASH
             + qualifiedName.replace(StringConstant.DOT, StringConstant.SLASH));
@@ -378,6 +397,27 @@ public final class ObjectDefinition<T> {
       initDefinitionData();
       return definitionData.getProperties();
     }
+  }
+
+  public final Map<String, PropertyDefinitionData> getPropertiesByName() {
+    if (definitionData != null && propertiesByNameDirty) {
+      lockProperties.lock();
+      try {
+        propertiesByName.putAll(definitionData.getProperties().stream()
+            .collect(Collectors.toMap(PropertyDefinitionData::getName, pdd -> pdd)));
+      } finally {
+        lockProperties.unlock();
+      }
+    }
+    return propertiesByName;
+  }
+
+  final boolean isPropertiesByNameDirty() {
+    return propertiesByNameDirty;
+  }
+
+  final void setPropertiesByNameDirty(boolean propertiesByNameDirty) {
+    this.propertiesByNameDirty = propertiesByNameDirty;
   }
 
 }

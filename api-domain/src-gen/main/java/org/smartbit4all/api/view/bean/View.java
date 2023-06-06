@@ -57,7 +57,8 @@ import javax.validation.Valid;
   View.ACTIONS,
   View.WIDGET_MODELS,
   View.VALUE_SETS,
-  View.KEEP_MODEL_ON_IMPLICIT_CLOSE
+  View.KEEP_MODEL_ON_IMPLICIT_CLOSE,
+  View.CALLBACKS
 })
 @JsonTypeName("View")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -109,6 +110,9 @@ public class View {
 
   public static final String KEEP_MODEL_ON_IMPLICIT_CLOSE = "keepModelOnImplicitClose";
   private Boolean keepModelOnImplicitClose;
+
+  public static final String CALLBACKS = "callbacks";
+  private Map<String, Object> callbacks = new HashMap<>();
 
   public View() { 
   }
@@ -598,6 +602,39 @@ public class View {
   }
 
 
+  public View callbacks(Map<String, Object> callbacks) {
+    
+    this.callbacks = callbacks;
+    return this;
+  }
+
+  public View putCallbacksItem(String key, Object callbacksItem) {
+    this.callbacks.put(key, callbacksItem);
+    return this;
+  }
+
+   /**
+   * Get callbacks
+   * @return callbacks
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(CALLBACKS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Map<String, Object> getCallbacks() {
+    return callbacks;
+  }
+
+
+  @JsonProperty(CALLBACKS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setCallbacks(Map<String, Object> callbacks) {
+    this.callbacks = callbacks;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -622,12 +659,13 @@ public class View {
         Objects.equals(this.actions, view.actions) &&
         Objects.equals(this.widgetModels, view.widgetModels) &&
         Objects.equals(this.valueSets, view.valueSets) &&
-        Objects.equals(this.keepModelOnImplicitClose, view.keepModelOnImplicitClose);
+        Objects.equals(this.keepModelOnImplicitClose, view.keepModelOnImplicitClose) &&
+        Objects.equals(this.callbacks, view.callbacks);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uuid, viewName, objectUri, branchUri, parameters, state, type, containerUuid, model, constraint, closedChildrenViews, downloadableItems, actions, widgetModels, valueSets, keepModelOnImplicitClose);
+    return Objects.hash(uuid, viewName, objectUri, branchUri, parameters, state, type, containerUuid, model, constraint, closedChildrenViews, downloadableItems, actions, widgetModels, valueSets, keepModelOnImplicitClose, callbacks);
   }
 
   @Override
@@ -650,6 +688,7 @@ public class View {
     sb.append("    widgetModels: ").append(toIndentedString(widgetModels)).append("\n");
     sb.append("    valueSets: ").append(toIndentedString(valueSets)).append("\n");
     sb.append("    keepModelOnImplicitClose: ").append(toIndentedString(keepModelOnImplicitClose)).append("\n");
+    sb.append("    callbacks: ").append(toIndentedString(callbacks)).append("\n");
     sb.append("}");
     return sb.toString();
   }

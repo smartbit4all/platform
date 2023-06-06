@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.UnaryOperator;
 import org.smartbit4all.api.binarydata.BinaryData;
+import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.view.bean.CloseResult;
 import org.smartbit4all.api.view.bean.MessageData;
 import org.smartbit4all.api.view.bean.View;
@@ -117,5 +118,43 @@ public interface ViewApi {
   <T> void setWidgetModelInView(Class<T> clazz, UUID viewUuid, String widgetId, T widgetModel);
 
   BinaryData downloadItem(UUID uuid, String item);
+
+  /**
+   * Add a single callback to View. Subsequent adds will override previous callback. Retrieving this
+   * callback should be done via {@link #getCallback(UUID, String)}.
+   *
+   * @param viewUuid
+   * @param requestId
+   * @param request
+   */
+  void setCallback(UUID viewUuid, String requestId, InvocationRequest request);
+
+  /**
+   * Add a callback to a View with requestId as key. Subsequent calls will add callbacks to a list,
+   * so retrieving them should be done via {@link #getCallbacks(UUID, String)}.
+   *
+   * @param viewUuid
+   * @param requestId
+   * @param request
+   */
+  void addCallback(UUID viewUuid, String requestId, InvocationRequest request);
+
+  /**
+   * Returns a callback registered to this View specified by requestId.
+   *
+   * @param viewUuid
+   * @param requestId
+   * @return
+   */
+  InvocationRequest getCallback(UUID viewUuid, String requestId);
+
+  /**
+   * Returns all callbacks in a List registered to this View specified by requestId.
+   *
+   * @param viewUuid
+   * @param requestId
+   * @return
+   */
+  List<InvocationRequest> getCallbacks(UUID viewUuid, String requestId);
 
 }

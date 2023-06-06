@@ -8,29 +8,39 @@ import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.smartbit4all.api.collection.CollectionApi;
+import org.smartbit4all.api.formdefinition.bean.SmartFormWidgetType;
+import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
 import org.smartbit4all.api.mdm.MDMEntryApi;
 import org.smartbit4all.api.mdm.MDMObjectEntry;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
+import org.smartbit4all.api.object.bean.ObjectDefinitionData;
+import org.smartbit4all.api.object.bean.PropertyDefinitionData;
 import org.smartbit4all.api.org.OrgApi;
 import org.smartbit4all.api.org.SecurityGroup;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.sample.bean.SampleCategoryType;
 import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.sec.localauth.LocalAuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import static java.util.stream.Collectors.toMap;
 
 @SpringBootTest(classes = {MDMApiTestConfig.class})
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(Lifecycle.PER_CLASS)
 class MDMApiTest {
+
+  private static final String ORG_SMARTBIT4ALL_MYDOMAIN_APPLE = "org.smartbit4all.mydomain.Apple";
 
   @Autowired
   private MasterDataManagementApi masterDataManagementApi;
@@ -43,6 +53,9 @@ class MDMApiTest {
 
   @Autowired
   OrgApi orgApi;
+
+  @Autowired
+  CollectionApi collectionApi;
 
   @Autowired
   private LocalAuthenticationService authService;
@@ -64,6 +77,7 @@ class MDMApiTest {
   }
 
   @Test
+  @Order(1)
   void testPublishingAndEditingAsDraft() throws IOException {
 
     MDMEntryApi<SampleCategoryType> typeApi =
@@ -111,6 +125,62 @@ class MDMApiTest {
         .containsExactlyInAnyOrder("This is the first category type.",
             "This is the second category type v2.", "This is the third category type.",
             "This is the fourth category type.");
+
+  }
+
+  @Test
+  @Order(2)
+  void testObjectPropertyDefinition() {
+    MDMEntryApi<ObjectDefinitionData> objectDefinitionMDMApi =
+        masterDataManagementApi.getApi(ObjectDefinitionData.class);
+    MDMEntryApi<PropertyDefinitionData> propertyDefinitionMDMApi =
+        masterDataManagementApi.getApi(PropertyDefinitionData.class);
+
+    // Save some property definition drafts
+    URI draftString = propertyDefinitionMDMApi.saveAsDraft(
+        new PropertyDefinitionData().name("propertyString").typeClass(String.class.getName())
+            .widget(new SmartWidgetDefinition().type(SmartFormWidgetType.TEXT_FIELD)));
+    URI draftLong = propertyDefinitionMDMApi.saveAsDraft(
+        new PropertyDefinitionData().name("propertyLong").typeClass(Long.class.getName())
+            .widget(new SmartWidgetDefinition().type(SmartFormWidgetType.TEXT_FIELD)));
+    URI draftCategoryUri = propertyDefinitionMDMApi.saveAsDraft(
+        new PropertyDefinitionData().name("category").typeClass(URI.class.getName())
+            .referredType(SampleCategoryType.class.getName())
+            .referredPropertyName(SampleCategoryType.URI)
+            .widget(new SmartWidgetDefinition().type(SmartFormWidgetType.TEXT_FIELD)));
+
+    propertyDefinitionMDMApi.publishCurrentModifications();
+
+    Map<String, PropertyDefinitionData> publishedProperties =
+        propertyDefinitionMDMApi.getPublishedObjects();
+    URI appleDefUri = objectDefinitionMDMApi.saveAsNewPublished(new ObjectDefinitionData()
+        .qualifiedName(ORG_SMARTBIT4ALL_MYDOMAIN_APPLE).addPropertiesItem(
+            publishedProperties
+                .get(objectApi.getLatestUri(draftString).toString())));
+
+    ObjectDefinitionData definitionData = objectApi
+        .loadLatest(objectDefinitionMDMApi.getPublishedMap().get(ORG_SMARTBIT4ALL_MYDOMAIN_APPLE))
+        .getObject(ObjectDefinitionData.class);
+
+    ObjectDefinition<?> defApple = objectApi.definition(ORG_SMARTBIT4ALL_MYDOMAIN_APPLE);
+
+    defApple.reloadDefinitionData();
+
+    Assertions.assertThat(objectDefinitionMDMApi.getPublishedMap())
+        .containsKeys(ORG_SMARTBIT4ALL_MYDOMAIN_APPLE);
+
+    Assertions
+        .assertThat(objectDefinitionMDMApi.getPublishedList().uris().stream()
+            .map(u -> objectApi.read(u, ObjectDefinitionData.class))
+            .collect(toMap(ObjectDefinitionData::getQualifiedName, odd -> odd)))
+        .containsKeys(ORG_SMARTBIT4ALL_MYDOMAIN_APPLE);
+
+    Assertions.assertThat(definitionData.getQualifiedName())
+        .isEqualTo(defApple.getQualifiedName());
+
+    Map<String, PropertyDefinitionData> propertiesByName = defApple.getPropertiesByName();
+
+    Assertions.assertThat(propertiesByName).containsKeys("propertyString");
 
   }
 

@@ -31,22 +31,33 @@ components:
             object:/com/smartbit4all/mydomain/model/MyObject could be a calculated URI for a given reference. The object definition
         qualifiedName:
           type: string
+        keyProperty:
+          type: string
+          description: |
+            The name of the uri property that is the referential resource identifier for the object instances. Normally it is the
+            uri but if the object does not have uri (identity in the storage level) then it can be the unique identifier or code also. 
         properties:
           type: array
           items:
             $ref: '#/components/schemas/PropertyDefinitionData'
+        outgoingReferences:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReferenceDefinitionData'
     PropertyDefinitionData:
       type: object
       description: |
         The property definition can be defined by some API definition language like OpenApi or so. On the backend the result is java class that describes all
         the properties and contained object definitions also. This definition is responsible for the properties.
+      required: [uri, name, typeClass]
       properties:
         uri:
           type: string
           format: uri
           description: |
             The storage identifier of the given definition. It is calculated by the qualified name of the object. For example 
-            object:/com/smartbit4all/mydomain/model/MyObject/firstProperty could be a calculated URI for a given reference.
+            object:/org/smartbit4all/mydomain/model/MyObject/firstProperty could be a calculated URI for a given reference. If the property is defined dynamically
+            then the URI is a standard URI.
         name:
           type: string
           description: The property name.
@@ -54,7 +65,36 @@ components:
           type: string
           description: |
             The qualified name of the type class in java. Like java.lang.String If we need to convert this type to any other platform then
-            we need a conversion for this.
+            we need a conversion for this. If the type is primitive type (String, Long, Integer, etc.) then it is a value as is but if it has definition on
+            its own then it is a complex type with inner properties as well. 
+        referredType:
+          type: string
+          description: |
+            If the given property is mapped to a referred property then this is the name of the referred type.
+        referredPropertyName:
+          type: string
+          description: |
+            If the given property is mapped to a referred property then this is the name of the referred property inside the referred type.
+            If we do not set the name of the property then it is the unique identifier of the referredType. If it has URI then it is the
+            URI else it is the 
+        defaultValue:
+          type: object
+          description: The default value that must be the same type as the property itself.
+        widget:
+          type: SmartWidgetDefinition
+          description: |
+            The default widget definition for the given property. It can be empty but in this case we must have another option to setup the
+            widget for a layout.
+        valueSetSchema:
+          type: string
+          description: |
+            The name of the default value set schema for the given property. It can overridden at object definition level and can
+            be specified also at objkect instance level. It is not required if empty then the value set is global.
+        valueSetName:
+          type: string
+          description: |
+            The name of the default value set for the given property. It can overridden at object definition level and can
+            be specified also at objkect instance level. It is not required if empty then the value set is global.
     ReferenceDefinitionData:
       type: object
       description: |
@@ -76,7 +116,7 @@ components:
           description: If an association between two object is navigable into both direction then this uri refers to the opposite reference.
         sourceObjectName:
           type: string
-          description: The name of the target object.
+          description: The qualified name of the source object.
         propertyPath:
           description:  |
             The descriptor of a property in a domain object. If there is a simple property then we have only the path. The path is a navigation path to

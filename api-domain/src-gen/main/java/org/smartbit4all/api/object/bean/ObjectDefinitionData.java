@@ -26,6 +26,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import org.smartbit4all.api.object.bean.PropertyDefinitionData;
+import org.smartbit4all.api.object.bean.ReferenceDefinitionData;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -38,7 +39,9 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   ObjectDefinitionData.URI,
   ObjectDefinitionData.QUALIFIED_NAME,
-  ObjectDefinitionData.PROPERTIES
+  ObjectDefinitionData.KEY_PROPERTY,
+  ObjectDefinitionData.PROPERTIES,
+  ObjectDefinitionData.OUTGOING_REFERENCES
 })
 @JsonTypeName("ObjectDefinitionData")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -49,8 +52,14 @@ public class ObjectDefinitionData {
   public static final String QUALIFIED_NAME = "qualifiedName";
   private String qualifiedName;
 
+  public static final String KEY_PROPERTY = "keyProperty";
+  private String keyProperty;
+
   public static final String PROPERTIES = "properties";
   private List<PropertyDefinitionData> properties = new ArrayList<>();
+
+  public static final String OUTGOING_REFERENCES = "outgoingReferences";
+  private List<ReferenceDefinitionData> outgoingReferences = null;
 
   public ObjectDefinitionData() { 
   }
@@ -111,6 +120,33 @@ public class ObjectDefinitionData {
   }
 
 
+  public ObjectDefinitionData keyProperty(String keyProperty) {
+    
+    this.keyProperty = keyProperty;
+    return this;
+  }
+
+   /**
+   * The name of the uri property that is the referential resource identifier for the object instances. Normally it is the uri but if the object does not have uri (identity in the storage level) then it can be the unique identifier or code also.  
+   * @return keyProperty
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The name of the uri property that is the referential resource identifier for the object instances. Normally it is the uri but if the object does not have uri (identity in the storage level) then it can be the unique identifier or code also.  ")
+  @JsonProperty(KEY_PROPERTY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getKeyProperty() {
+    return keyProperty;
+  }
+
+
+  @JsonProperty(KEY_PROPERTY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setKeyProperty(String keyProperty) {
+    this.keyProperty = keyProperty;
+  }
+
+
   public ObjectDefinitionData properties(List<PropertyDefinitionData> properties) {
     
     this.properties = properties;
@@ -145,6 +181,42 @@ public class ObjectDefinitionData {
   }
 
 
+  public ObjectDefinitionData outgoingReferences(List<ReferenceDefinitionData> outgoingReferences) {
+    
+    this.outgoingReferences = outgoingReferences;
+    return this;
+  }
+
+  public ObjectDefinitionData addOutgoingReferencesItem(ReferenceDefinitionData outgoingReferencesItem) {
+    if (this.outgoingReferences == null) {
+      this.outgoingReferences = new ArrayList<>();
+    }
+    this.outgoingReferences.add(outgoingReferencesItem);
+    return this;
+  }
+
+   /**
+   * Get outgoingReferences
+   * @return outgoingReferences
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(OUTGOING_REFERENCES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<ReferenceDefinitionData> getOutgoingReferences() {
+    return outgoingReferences;
+  }
+
+
+  @JsonProperty(OUTGOING_REFERENCES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setOutgoingReferences(List<ReferenceDefinitionData> outgoingReferences) {
+    this.outgoingReferences = outgoingReferences;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -156,12 +228,14 @@ public class ObjectDefinitionData {
     ObjectDefinitionData objectDefinitionData = (ObjectDefinitionData) o;
     return Objects.equals(this.uri, objectDefinitionData.uri) &&
         Objects.equals(this.qualifiedName, objectDefinitionData.qualifiedName) &&
-        Objects.equals(this.properties, objectDefinitionData.properties);
+        Objects.equals(this.keyProperty, objectDefinitionData.keyProperty) &&
+        Objects.equals(this.properties, objectDefinitionData.properties) &&
+        Objects.equals(this.outgoingReferences, objectDefinitionData.outgoingReferences);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, qualifiedName, properties);
+    return Objects.hash(uri, qualifiedName, keyProperty, properties, outgoingReferences);
   }
 
   @Override
@@ -170,7 +244,9 @@ public class ObjectDefinitionData {
     sb.append("class ObjectDefinitionData {\n");
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    qualifiedName: ").append(toIndentedString(qualifiedName)).append("\n");
+    sb.append("    keyProperty: ").append(toIndentedString(keyProperty)).append("\n");
     sb.append("    properties: ").append(toIndentedString(properties)).append("\n");
+    sb.append("    outgoingReferences: ").append(toIndentedString(outgoingReferences)).append("\n");
     sb.append("}");
     return sb.toString();
   }

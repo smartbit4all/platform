@@ -138,12 +138,12 @@ public class ReferenceDefinitionData {
   }
 
    /**
-   * The name of the target object.
+   * The qualified name of the source object.
    * @return sourceObjectName
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "The name of the target object.")
+  @ApiModelProperty(required = true, value = "The qualified name of the source object.")
   @JsonProperty(SOURCE_OBJECT_NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 

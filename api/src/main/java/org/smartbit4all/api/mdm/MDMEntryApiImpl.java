@@ -7,9 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import org.smartbit4all.api.collection.CollectionApi;
+import org.smartbit4all.api.collection.StoredList;
 import org.smartbit4all.api.collection.StoredMap;
 import org.smartbit4all.api.collection.StoredReference;
 import org.smartbit4all.api.object.BranchApi;
@@ -17,6 +19,9 @@ import org.smartbit4all.api.object.bean.BranchEntry;
 import org.smartbit4all.api.object.bean.BranchOperation;
 import org.smartbit4all.api.object.bean.MasterDataManagementEntry;
 import org.smartbit4all.api.object.bean.MasterDataManagementInfo;
+import org.smartbit4all.api.value.ValueSetApi;
+import org.smartbit4all.api.value.bean.ValueSetDefinitionData;
+import org.smartbit4all.api.value.bean.ValueSetDefinitionKind;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
@@ -28,13 +33,16 @@ import static java.util.stream.Collectors.toSet;
 
 /**
  * The base implementation of the master data management api. The basic feature is that if we
- * configure an api like into the spring context than it will be
+ * configure an api like this into the spring context than it will be domain api for the given
+ * object.
  * 
  * @author Peter Boros
  *
  * @param <O>
  */
 public class MDMEntryApiImpl<O extends Object> implements MDMEntryApi<O> {
+
+  private static final String[] uriPath = {"uri"};
 
   /**
    * The storage schema of the domain object and the collections.
@@ -52,7 +60,8 @@ public class MDMEntryApiImpl<O extends Object> implements MDMEntryApi<O> {
   private Class<O> clazz;
 
   /**
-   * The path of the unique identifier.
+   * The path of the unique identifier. If there is no unique id then the identity is based on the
+   * URI. The latest URI value will be the key in this situation.
    */
   private String[] uniqueIdPath;
 
@@ -64,6 +73,9 @@ public class MDMEntryApiImpl<O extends Object> implements MDMEntryApi<O> {
 
   @Autowired
   private BranchApi branchApi;
+
+  @Autowired
+  private ValueSetApi valueSetApi;
 
   public enum BranchStrategy {
     GLOBAL, LOCAL
@@ -89,10 +101,34 @@ public class MDMEntryApiImpl<O extends Object> implements MDMEntryApi<O> {
    */
   private String publishedListName;
 
+  /**
+   * If the given MDM ap is managing a list of published values then this list forms a value set
+   * definition by default. If it is true then the next access will try to refresh the value set
+   * entry belongs to this api. The schema is the schema for the value set api but the storage
+   * schema will be used to avoid name collisions.
+   */
+  private boolean refreshValueSetDefinition = true;
+
+  /**
+   * If the given object has implicit URI then the storage won't generate a new uri for the new
+   * object. In this case we can set a {@link Function} to generate the URI from the object.
+   */
+  private Function<O, URI> uriConstructor;
+
   public MDMEntryApiImpl(Class<O> clazz) {
     super();
     this.clazz = clazz;
-    this.name = clazz.getSimpleName();
+    this.name = getApiName(clazz);
+  }
+
+  /**
+   * Constructs the name of the api from the Java class.
+   * 
+   * @param clazz
+   * @return
+   */
+  public static final String getApiName(Class<?> clazz) {
+    return clazz.getName().replace(StringConstant.DOT, StringConstant.UNDERLINE);
   }
 
   @Override
@@ -107,6 +143,11 @@ public class MDMEntryApiImpl<O extends Object> implements MDMEntryApi<O> {
     }
     if (uniqueIdPath != null) {
       return objectApi.getValueFromObject(String.class, object, uniqueIdPath);
+    } else {
+      URI uri = objectApi.getLatestUri(objectApi.getValueFromObject(URI.class, object, uriPath));
+      if (uri != null) {
+        return uri.toString();
+      }
     }
     return null;
   }
@@ -117,12 +158,19 @@ public class MDMEntryApiImpl<O extends Object> implements MDMEntryApi<O> {
     }
     if (uniqueIdPath != null) {
       return objectNode.getValueAsString(uniqueIdPath);
+    } else {
+      URI uri = objectApi.getLatestUri(objectNode.getValue(URI.class, uriPath));
+      return uri.toString();
     }
-    return null;
   }
 
   public void setUniqueIdPath(String... path) {
     uniqueIdPath = path;
+  }
+
+  public MDMEntryApiImpl<O> uniqueIdPath(String... path) {
+    uniqueIdPath = path;
+    return this;
   }
 
   @Override
@@ -138,6 +186,12 @@ public class MDMEntryApiImpl<O extends Object> implements MDMEntryApi<O> {
 
   @Override
   public URI saveAsNewPublished(O object) {
+    if (uriConstructor != null) {
+      ObjectDefinition<O> definition = objectApi.definition(clazz);
+      if (definition.isExplicitUri()) {
+        definition.setUri(object, uriConstructor.apply(object));
+      }
+    }
     URI uri = objectApi.saveAsNew(schema, object);
     StoredMap storedMap = collectionApi.map(schema, getPublishedMapName());
     storedMap.put(getId(object), uri);
@@ -384,6 +438,11 @@ public class MDMEntryApiImpl<O extends Object> implements MDMEntryApi<O> {
     this.schema = schema;
   }
 
+  public final MDMEntryApiImpl<O> schema(String schema) {
+    this.schema = schema;
+    return this;
+  }
+
   public final MasterDataManagementInfo getInfo() {
     return info;
   }
@@ -406,6 +465,59 @@ public class MDMEntryApiImpl<O extends Object> implements MDMEntryApi<O> {
       collectionApi.list(schema, publishedListName).update(l -> {
         return uris.values().stream().collect(toList());
       });
+    }
+  }
+
+  public final String getPublishedListName() {
+    return publishedListName;
+  }
+
+  public final void setPublishedListName(String publishedListName) {
+    this.publishedListName = publishedListName;
+  }
+
+  public final MDMEntryApiImpl<O> publishedListName(String publishedListName) {
+    this.publishedListName = publishedListName;
+    return this;
+  }
+
+  public final Function<O, URI> getUriConstructor() {
+    return uriConstructor;
+  }
+
+  public final void setUriConstructor(Function<O, URI> uriConstructor) {
+    this.uriConstructor = uriConstructor;
+  }
+
+  public final MDMEntryApiImpl<O> uriConstructor(Function<O, URI> uriConstructor) {
+    this.uriConstructor = uriConstructor;
+    return this;
+  }
+
+  @Override
+  public StoredList getPublishedList() {
+    if (publishedListName != null) {
+      return collectionApi.list(schema, publishedListName);
+    }
+    return null;
+  }
+
+  public final void refreshValueSetDefinition() {
+    if (refreshValueSetDefinition) {
+      refreshValueSetDefinition = false;
+      if (publishedListName != null) {
+        ObjectDefinition<O> definition = objectApi.definition(clazz);
+        valueSetApi.save(schema, new ValueSetDefinitionData().kind(ValueSetDefinitionKind.LIST)
+            .storageSchema(schema).containerName(publishedListName)
+            .objectDefinition(ObjectDefinition.uriOf(definition.getQualifiedName()))
+            .qualifiedName(publishedListName));
+      } else {
+        ObjectDefinition<O> definition = objectApi.definition(clazz);
+        valueSetApi.save(schema, new ValueSetDefinitionData().kind(ValueSetDefinitionKind.MAP)
+            .storageSchema(schema).containerName(getPublishedMapName())
+            .objectDefinition(ObjectDefinition.uriOf(definition.getQualifiedName()))
+            .qualifiedName(getPublishedMapName()));
+      }
     }
   }
 

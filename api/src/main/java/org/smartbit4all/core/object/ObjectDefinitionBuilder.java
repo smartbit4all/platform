@@ -54,6 +54,7 @@ public class ObjectDefinitionBuilder {
   public void commit() {
     if (changed) {
       definition.saveDefinitionData();
+      definition.setPropertiesByNameDirty(true);
     }
   }
 

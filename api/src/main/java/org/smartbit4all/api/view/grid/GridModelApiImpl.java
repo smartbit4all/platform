@@ -5,6 +5,7 @@ import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -377,17 +378,17 @@ public class GridModelApiImpl implements GridModelApi {
       int beginIndex, int endIndex) {
     GridPage page = new GridPage();
     page.rows(new ArrayList<>());
-    InvocationRequest gridRowCallback = getCallback(viewUuid, gridId, GRIDROW_POSTFIX);
+    List<InvocationRequest> gridRowCallbacks = getCallbacks(viewUuid, gridId, GRIDROW_POSTFIX);
     for (int i = beginIndex; i < endIndex; i++) {
       DataRow dataRow = tableData.rows().get(i);
       GridRow gridRow = new GridRow().id(Integer.toString(i)).data(tableData.columns().stream()
           .filter(c -> tableData.get(c, dataRow) != null)
           .collect(toMap(DataColumn::getName, c -> tableData.get(c, dataRow))));
-      gridRow = (GridRow) executeCallback(gridRowCallback, gridRow);
+      gridRow = (GridRow) executeCallbacks(gridRowCallbacks, gridRow);
       page.addRowsItem(gridRow);
     }
-    InvocationRequest gridPageCallback = getCallback(viewUuid, gridId, GRIDPAGE_POSTFIX);
-    return (GridPage) executeCallback(gridPageCallback, page);
+    List<InvocationRequest> gridPageCallbacks = getCallbacks(viewUuid, gridId, GRIDPAGE_POSTFIX);
+    return (GridPage) executeCallbacks(gridPageCallbacks, page);
   }
 
   @Override
@@ -409,7 +410,7 @@ public class GridModelApiImpl implements GridModelApi {
 
   @Override
   public void setExpandCallback(UUID viewUuid, String gridId, InvocationRequest request) {
-    addCallback(viewUuid, gridId, request, EXPAND_POSTFIX);
+    setCallback(viewUuid, gridId, request, EXPAND_POSTFIX);
   }
 
   @Override
@@ -440,22 +441,32 @@ public class GridModelApiImpl implements GridModelApi {
     return executeCallback(request, row);
   }
 
+  private void setCallback(UUID viewUuid, String gridId, InvocationRequest request,
+      String postfix) {
+    String requestId = gridId + postfix;
+    viewApi.setCallback(viewUuid, requestId, request);
+  }
+
   private void addCallback(UUID viewUuid, String gridId, InvocationRequest request,
       String postfix) {
-    View view = viewApi.getView(viewUuid);
-    String callbackKey = gridId + postfix;
-    view.putParametersItem(callbackKey, request);
+    String requestId = gridId + postfix;
+    viewApi.addCallback(viewUuid, requestId, request);
   }
 
   private InvocationRequest getCallback(UUID viewUuid, String gridId, String postfix) {
     if (viewUuid == null || Strings.isNullOrEmpty(gridId)) {
       return null;
     }
-    View view = viewApi.getView(viewUuid);
-    String expandCallbackKey = gridId + postfix;
-    Object requestObject = view.getParameters().get(expandCallbackKey);
-    InvocationRequest request = objectApi.asType(InvocationRequest.class, requestObject);
-    return request;
+    String requestId = gridId + postfix;
+    return viewApi.getCallback(viewUuid, requestId);
+  }
+
+  private List<InvocationRequest> getCallbacks(UUID viewUuid, String gridId, String postfix) {
+    if (viewUuid == null || Strings.isNullOrEmpty(gridId)) {
+      return Collections.emptyList();
+    }
+    String requestId = gridId + postfix;
+    return viewApi.getCallbacks(viewUuid, requestId);
   }
 
   private Object executeCallback(InvocationRequest request, Object parameter) {
@@ -472,6 +483,13 @@ public class GridModelApiImpl implements GridModelApi {
     } catch (Exception e) {
       throw new IllegalArgumentException("Action throw an error", e);
     }
+  }
+
+  private Object executeCallbacks(List<InvocationRequest> requests, Object parameter) {
+    for (InvocationRequest request : requests) {
+      parameter = executeCallback(request, parameter);
+    }
+    return parameter;
   }
 
   @Override

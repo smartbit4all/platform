@@ -523,8 +523,7 @@ public class ObjectNode {
       ObjectDefinition<?> nextDefinition = null;
       if (value instanceof Map) {
         PropertyDefinitionData propertyDefinitionData = null;
-        propertyDefinitionData = getDefinition().getProperties().stream()
-            .filter(pdd -> path.equals(pdd.getName())).findFirst().orElse(null);
+        propertyDefinitionData = getDefinition().getPropertiesByName().get(path);
         if (propertyDefinitionData != null) {
           Class<?> propClass;
           try {
