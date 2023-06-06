@@ -89,8 +89,6 @@ public class FileIO {
         }
         // We must try again.
         log.debug("Unable to write " + file, e);
-        waitTime = getNextRandomWaitTime(waitTime);
-        fullWaitTime += waitTime;
       } catch (Exception e) {
         // Not IOException - we should terminate, something other kind of bad happened
         throw new IllegalArgumentException("Cannot write file: " + file, e);
@@ -100,6 +98,8 @@ public class FileIO {
       } catch (InterruptedException e) {
         throw new IllegalStateException("Cannot write file: " + file, e);
       }
+      fullWaitTime += waitTime;
+      waitTime = getNextRandomWaitTime(waitTime);
     }
   }
 
