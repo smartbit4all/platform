@@ -1,6 +1,7 @@
 package org.smartbit4all.api.mdm;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.StoredList;
@@ -115,6 +117,13 @@ public class MDMEntryApiImpl<O extends Object> implements MDMEntryApi<O> {
    */
   private Function<O, URI> uriConstructor;
 
+  /**
+   * These are the before save event handlers.
+   * 
+   * TODO create an event handler class to be able to identify them and modify their order.
+   */
+  private final List<UnaryOperator<O>> beforeSaveEventHandlers = new ArrayList<>();
+
   public MDMEntryApiImpl(Class<O> clazz) {
     super();
     this.clazz = clazz;
@@ -192,7 +201,7 @@ public class MDMEntryApiImpl<O extends Object> implements MDMEntryApi<O> {
         definition.setUri(object, uriConstructor.apply(object));
       }
     }
-    URI uri = objectApi.saveAsNew(schema, object);
+    URI uri = objectApi.saveAsNew(schema, fireBeforeSave(object));
     StoredMap storedMap = collectionApi.map(schema, getPublishedMapName());
     storedMap.put(getId(object), uri);
     updatePublishedList(storedMap.uris());
@@ -220,16 +229,17 @@ public class MDMEntryApiImpl<O extends Object> implements MDMEntryApi<O> {
           "Unable to save draft because the branch can not be identify.");
     }
     URI publishedUri = getPublishedMap().get(getId(object));
+    O objectToSave = fireBeforeSave(object);
     if (publishedUri != null) {
       Map<URI, Supplier<URI>> map = Stream.of(publishedUri).collect(toMap(u -> u, u -> {
-        return () -> objectApi.saveAsNew(schema, object);
+        return () -> objectApi.saveAsNew(schema, objectToSave);
       }));
       Map<URI, BranchOperation> branchedObjects =
           branchApi.initBranchedObjects(branchEntry.getUri(), map);
       return branchedObjects.get(publishedUri).getTargetUri();
     } else {
       // Construct a new object on the branch
-      URI newDraftUri = objectApi.saveAsNew(schema, object);
+      URI newDraftUri = objectApi.saveAsNew(schema, objectToSave);
       branchApi.addNewBranchedObjects(branchEntry.getUri(),
           Arrays.asList(newDraftUri));
       return newDraftUri;
@@ -306,6 +316,20 @@ public class MDMEntryApiImpl<O extends Object> implements MDMEntryApi<O> {
         return info;
       });
     }
+  }
+
+  /**
+   * Run all the event handlers on the given object.
+   * 
+   * @param object
+   * @return
+   */
+  private final O fireBeforeSave(O object) {
+    O result = object;
+    for (UnaryOperator<O> handler : beforeSaveEventHandlers) {
+      result = handler.apply(result);
+    }
+    return result;
   }
 
   private StoredReference<MasterDataManagementInfo> getMasterInfoReference() {
@@ -491,6 +515,11 @@ public class MDMEntryApiImpl<O extends Object> implements MDMEntryApi<O> {
 
   public final MDMEntryApiImpl<O> uriConstructor(Function<O, URI> uriConstructor) {
     this.uriConstructor = uriConstructor;
+    return this;
+  }
+
+  public final MDMEntryApiImpl<O> addBeforeSaveHandler(UnaryOperator<O> beforeSave) {
+    this.beforeSaveEventHandlers.add(beforeSave);
     return this;
   }
 

@@ -41,8 +41,7 @@ import javax.validation.Valid;
   PropertyDefinitionData.REFERRED_PROPERTY_NAME,
   PropertyDefinitionData.DEFAULT_VALUE,
   PropertyDefinitionData.WIDGET,
-  PropertyDefinitionData.VALUE_SET_SCHEMA,
-  PropertyDefinitionData.VALUE_SET_NAME
+  PropertyDefinitionData.VALUE_SET
 })
 @JsonTypeName("PropertyDefinitionData")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -68,11 +67,8 @@ public class PropertyDefinitionData {
   public static final String WIDGET = "widget";
   private SmartWidgetDefinition widget = null;
 
-  public static final String VALUE_SET_SCHEMA = "valueSetSchema";
-  private String valueSetSchema;
-
-  public static final String VALUE_SET_NAME = "valueSetName";
-  private String valueSetName;
+  public static final String VALUE_SET = "valueSet";
+  private URI valueSet;
 
   public PropertyDefinitionData() { 
   }
@@ -271,57 +267,31 @@ public class PropertyDefinitionData {
   }
 
 
-  public PropertyDefinitionData valueSetSchema(String valueSetSchema) {
+  public PropertyDefinitionData valueSet(URI valueSet) {
     
-    this.valueSetSchema = valueSetSchema;
+    this.valueSet = valueSet;
     return this;
   }
 
    /**
-   * The name of the default value set schema for the given property. It can overridden at object definition level and can be specified also at objkect instance level. It is not required if empty then the value set is global. 
-   * @return valueSetSchema
+   * The default value set schema for the given property. It can overridden at object definition level and can be specified also at objkect instance level. It is not required if empty then the value set is global. 
+   * @return valueSet
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The name of the default value set schema for the given property. It can overridden at object definition level and can be specified also at objkect instance level. It is not required if empty then the value set is global. ")
-  @JsonProperty(VALUE_SET_SCHEMA)
+  @Valid
+  @ApiModelProperty(value = "The default value set schema for the given property. It can overridden at object definition level and can be specified also at objkect instance level. It is not required if empty then the value set is global. ")
+  @JsonProperty(VALUE_SET)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public String getValueSetSchema() {
-    return valueSetSchema;
+  public URI getValueSet() {
+    return valueSet;
   }
 
 
-  @JsonProperty(VALUE_SET_SCHEMA)
+  @JsonProperty(VALUE_SET)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setValueSetSchema(String valueSetSchema) {
-    this.valueSetSchema = valueSetSchema;
-  }
-
-
-  public PropertyDefinitionData valueSetName(String valueSetName) {
-    
-    this.valueSetName = valueSetName;
-    return this;
-  }
-
-   /**
-   * The name of the default value set for the given property. It can overridden at object definition level and can be specified also at objkect instance level. It is not required if empty then the value set is global. 
-   * @return valueSetName
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "The name of the default value set for the given property. It can overridden at object definition level and can be specified also at objkect instance level. It is not required if empty then the value set is global. ")
-  @JsonProperty(VALUE_SET_NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public String getValueSetName() {
-    return valueSetName;
-  }
-
-
-  @JsonProperty(VALUE_SET_NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setValueSetName(String valueSetName) {
-    this.valueSetName = valueSetName;
+  public void setValueSet(URI valueSet) {
+    this.valueSet = valueSet;
   }
 
 
@@ -341,13 +311,12 @@ public class PropertyDefinitionData {
         Objects.equals(this.referredPropertyName, propertyDefinitionData.referredPropertyName) &&
         Objects.equals(this.defaultValue, propertyDefinitionData.defaultValue) &&
         Objects.equals(this.widget, propertyDefinitionData.widget) &&
-        Objects.equals(this.valueSetSchema, propertyDefinitionData.valueSetSchema) &&
-        Objects.equals(this.valueSetName, propertyDefinitionData.valueSetName);
+        Objects.equals(this.valueSet, propertyDefinitionData.valueSet);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, name, typeClass, referredType, referredPropertyName, defaultValue, widget, valueSetSchema, valueSetName);
+    return Objects.hash(uri, name, typeClass, referredType, referredPropertyName, defaultValue, widget, valueSet);
   }
 
   @Override
@@ -361,8 +330,7 @@ public class PropertyDefinitionData {
     sb.append("    referredPropertyName: ").append(toIndentedString(referredPropertyName)).append("\n");
     sb.append("    defaultValue: ").append(toIndentedString(defaultValue)).append("\n");
     sb.append("    widget: ").append(toIndentedString(widget)).append("\n");
-    sb.append("    valueSetSchema: ").append(toIndentedString(valueSetSchema)).append("\n");
-    sb.append("    valueSetName: ").append(toIndentedString(valueSetName)).append("\n");
+    sb.append("    valueSet: ").append(toIndentedString(valueSet)).append("\n");
     sb.append("}");
     return sb.toString();
   }

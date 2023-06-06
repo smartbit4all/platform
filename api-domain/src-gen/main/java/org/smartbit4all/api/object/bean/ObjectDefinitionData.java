@@ -59,7 +59,7 @@ public class ObjectDefinitionData {
   private List<PropertyDefinitionData> properties = new ArrayList<>();
 
   public static final String OUTGOING_REFERENCES = "outgoingReferences";
-  private List<ReferenceDefinitionData> outgoingReferences = null;
+  private List<ReferenceDefinitionData> outgoingReferences = new ArrayList<>();
 
   public ObjectDefinitionData() { 
   }
@@ -103,10 +103,11 @@ public class ObjectDefinitionData {
    * Get qualifiedName
    * @return qualifiedName
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+  @javax.annotation.Nonnull
+  @NotNull
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(QUALIFIED_NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public String getQualifiedName() {
     return qualifiedName;
@@ -114,7 +115,7 @@ public class ObjectDefinitionData {
 
 
   @JsonProperty(QUALIFIED_NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setQualifiedName(String qualifiedName) {
     this.qualifiedName = qualifiedName;
   }
@@ -188,9 +189,6 @@ public class ObjectDefinitionData {
   }
 
   public ObjectDefinitionData addOutgoingReferencesItem(ReferenceDefinitionData outgoingReferencesItem) {
-    if (this.outgoingReferences == null) {
-      this.outgoingReferences = new ArrayList<>();
-    }
     this.outgoingReferences.add(outgoingReferencesItem);
     return this;
   }
@@ -199,11 +197,12 @@ public class ObjectDefinitionData {
    * Get outgoingReferences
    * @return outgoingReferences
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(OUTGOING_REFERENCES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public List<ReferenceDefinitionData> getOutgoingReferences() {
     return outgoingReferences;
@@ -211,7 +210,7 @@ public class ObjectDefinitionData {
 
 
   @JsonProperty(OUTGOING_REFERENCES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setOutgoingReferences(List<ReferenceDefinitionData> outgoingReferences) {
     this.outgoingReferences = outgoingReferences;
   }

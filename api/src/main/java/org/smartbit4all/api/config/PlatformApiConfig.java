@@ -335,7 +335,8 @@ public class PlatformApiConfig {
     return new MDMEntryApiImpl<>(ObjectDefinitionData.class)
         .schema(ObjectDefinitionApiImpl.SCHEMA).uniqueIdPath(ObjectDefinitionData.QUALIFIED_NAME)
         .uriConstructor(o -> ObjectDefinition.uriOf(o.getQualifiedName()))
-        .publishedListName(ObjectDefinitionApiImpl.objectDefinitions);
+        .publishedListName(ObjectDefinitionApiImpl.OBJECT_DEFINITIONS)
+        .addBeforeSaveHandler(ObjectDefinitionApiImpl::synchronizeOutgoingReferences);
   }
 
   @Bean

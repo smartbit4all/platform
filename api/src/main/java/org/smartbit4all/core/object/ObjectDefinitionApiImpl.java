@@ -11,10 +11,14 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.object.bean.AggregationKind;
 import org.smartbit4all.api.object.bean.ObjectDefinitionData;
+import org.smartbit4all.api.object.bean.PropertyDefinitionData;
 import org.smartbit4all.api.object.bean.ReferenceDefinitionData;
+import org.smartbit4all.api.object.bean.ReferencePropertyKind;
 import org.smartbit4all.core.utility.PathUtility;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
@@ -24,6 +28,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import static java.util.stream.Collectors.toMap;
 
 public class ObjectDefinitionApiImpl implements ObjectDefinitionApi, InitializingBean {
 
@@ -37,7 +42,7 @@ public class ObjectDefinitionApiImpl implements ObjectDefinitionApi, Initializin
 
   public static final String PROPERTIES = "propertyDefinitions";
 
-  public static final String objectDefinitions = "objectDefinitions";
+  public static final String OBJECT_DEFINITIONS = "objectDefinitions";
 
   /**
    * We need at least one serializer to be able to start the module.
@@ -318,6 +323,62 @@ public class ObjectDefinitionApiImpl implements ObjectDefinitionApi, Initializin
     setupId(result);
     result.setAlias(getDefaultAlias(clazz));
     return result;
+  }
+
+  /**
+   * Some properties may define outgoing reference since they define the referred types and referred
+   * properties. And on the other hand the outgoing references should be applied onto the properties
+   * to contain this information.
+   * 
+   * @param definitionData
+   * @return
+   */
+  public static ObjectDefinitionData synchronizeOutgoingReferences(
+      ObjectDefinitionData definitionData) {
+    Map<@NotNull String, ReferenceDefinitionData> existingReferences =
+        definitionData.getOutgoingReferences().stream()
+            .collect(toMap(ReferenceDefinitionData::getPropertyPath, r -> r));
+    // Find the new references defined by the properties. If a property has referred type and the
+    // existing references doesn't contain this property then we found a new outgoing reference.
+    Map<@NotNull String, ReferenceDefinitionData> newOutgoingReferences =
+        definitionData.getProperties().stream()
+            .filter(
+                p -> ((p.getReferredType() != null)
+                    && !existingReferences.containsKey(p.getName())))
+            .collect(toMap(PropertyDefinitionData::getName,
+                pdd -> new ReferenceDefinitionData().propertyKind(getPropertyKind(pdd))
+                    .propertyPath(pdd.getName())
+                    .aggregation(AggregationKind.NONE)
+                    .sourceObjectName(definitionData.getQualifiedName())
+                    .targetObjectName(pdd.getReferredType()).targetValueSet(pdd.getValueSet())));
+    // Now setup the properties of the existing reference
+    Map<@NotNull String, PropertyDefinitionData> propertiesByName = definitionData.getProperties()
+        .stream().collect(toMap(PropertyDefinitionData::getName, pdd -> pdd));
+    for (ReferenceDefinitionData referenceDefinitionData : existingReferences.values()) {
+      PropertyDefinitionData referenceProperty =
+          propertiesByName.get(referenceDefinitionData.getPropertyPath());
+      if (referenceProperty != null) {
+        referenceProperty.referredType(referenceDefinitionData.getTargetObjectName())
+            .valueSet(referenceDefinitionData.getTargetValueSet());
+      }
+    }
+
+
+    // At the end add all the new references to the outgoing references list.
+    definitionData.getOutgoingReferences().addAll(newOutgoingReferences.values());
+
+    return definitionData;
+  }
+
+  private static final ReferencePropertyKind getPropertyKind(
+      PropertyDefinitionData propertyDefinitionData) {
+    if (List.class.getName().equals(propertyDefinitionData.getTypeClass())) {
+      return ReferencePropertyKind.LIST;
+    }
+    if (Map.class.getName().equals(propertyDefinitionData.getTypeClass())) {
+      return ReferencePropertyKind.MAP;
+    }
+    return ReferencePropertyKind.REFERENCE;
   }
 
   public static String getDefaultAlias(Class<?> clazz) {

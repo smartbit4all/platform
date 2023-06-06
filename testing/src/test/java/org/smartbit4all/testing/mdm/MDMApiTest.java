@@ -156,7 +156,10 @@ class MDMApiTest {
     URI appleDefUri = objectDefinitionMDMApi.saveAsNewPublished(new ObjectDefinitionData()
         .qualifiedName(ORG_SMARTBIT4ALL_MYDOMAIN_APPLE).addPropertiesItem(
             publishedProperties
-                .get(objectApi.getLatestUri(draftString).toString())));
+                .get(objectApi.getLatestUri(draftString).toString()))
+        .addPropertiesItem(
+            publishedProperties
+                .get(objectApi.getLatestUri(draftCategoryUri).toString())));
 
     ObjectDefinitionData definitionData = objectApi
         .loadLatest(objectDefinitionMDMApi.getPublishedMap().get(ORG_SMARTBIT4ALL_MYDOMAIN_APPLE))
@@ -188,6 +191,7 @@ class MDMApiTest {
     URI uri = orgApi.saveUser(new User().username(username).password(PASSWD).name(fullname));
     Arrays.asList(group).stream()
         .forEach(g -> orgApi.addUserToGroup(uri, orgApi.getGroupByName(g.getName()).getUri()));
+
     return uri;
   }
 
