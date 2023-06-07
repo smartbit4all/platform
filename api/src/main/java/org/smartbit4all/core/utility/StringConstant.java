@@ -60,6 +60,8 @@ public class StringConstant {
 
   public static final String EMPTY = "";
 
+  public static final String[] EMPTY_ARRAY = new String[0];
+
   public static final String EQUAL = "=";
 
   public static final String EXCLAMATIONMARK = "!";
