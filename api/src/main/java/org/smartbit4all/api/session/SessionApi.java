@@ -56,4 +56,16 @@ public interface SessionApi {
    */
   UserActivityLog createActivityLog();
 
+  static final String FULLURL = "HTTP-FULLURL";
+
+  static final String REFERER = "HTTP-REFERER";
+
+  static final String CLIENTIPADDR = "HTTP-CLIENTIPADDR";
+
+  static final String CLIENTOS = "HTTP-CLIENTOS";
+
+  static final String CLIENTBROWSER = "HTTP-CLIENTBROWSER";
+
+  static final String USERAGENT = "HTTP-USERAGENT";
+
 }
