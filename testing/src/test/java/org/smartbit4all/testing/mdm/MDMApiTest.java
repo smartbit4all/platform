@@ -1,5 +1,6 @@
 package org.smartbit4all.testing.mdm;
 
+import static java.util.stream.Collectors.toMap;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
@@ -16,8 +17,8 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.formdefinition.bean.SmartFormWidgetType;
 import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
+import org.smartbit4all.api.mdm.MDMEntry;
 import org.smartbit4all.api.mdm.MDMEntryApi;
-import org.smartbit4all.api.mdm.MDMObjectEntry;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.object.bean.ObjectDefinitionData;
 import org.smartbit4all.api.object.bean.PropertyDefinitionData;
@@ -33,7 +34,6 @@ import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.sec.localauth.LocalAuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import static java.util.stream.Collectors.toMap;
 
 @SpringBootTest(classes = {MDMApiTestConfig.class})
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -105,18 +105,21 @@ class MDMApiTest {
 
     objectApi.save(objectNode);
 
-    List<MDMObjectEntry<SampleCategoryType>> publishedAndDraftObjects =
-        typeApi.getPublishedAndDraftObjects();
+    List<MDMEntry> publishedAndDraftObjects =
+        typeApi.getAllEntries();
 
     Assertions
         .assertThat(publishedAndDraftObjects.stream()
-            .map(oe -> (oe.getPublished() == null ? StringConstant.ARROW + oe.getDraft().getName()
-                : (oe.getDraft() != null
-                    ? oe.getPublished().getName() + StringConstant.ARROW + oe.getDraft().getName()
-                    : oe.getPublished().getName()))))
+            .map(oe -> {
+              SampleCategoryType p = typeApi.getPublishedObject(oe);
+              SampleCategoryType d = typeApi.getDraftObject(oe);
+              return p == null ? StringConstant.ARROW + d.getName()
+                  : (d != null
+                      ? p.getName() + StringConstant.ARROW + d.getName()
+                      : p.getName());
+            }))
         .containsExactlyInAnyOrder("Type one", "Type two->Type two v1", "Type three",
             "->Type four");
-
 
     typeApi.publishCurrentModifications();
 
@@ -128,9 +131,9 @@ class MDMApiTest {
 
   }
 
-  @Test
-  @Order(2)
-  void testObjectPropertyDefinition() {
+  private
+
+  @Test @Order(2) void testObjectPropertyDefinition() {
     MDMEntryApi<ObjectDefinitionData> objectDefinitionMDMApi =
         masterDataManagementApi.getApi(ObjectDefinitionData.class);
     MDMEntryApi<PropertyDefinitionData> propertyDefinitionMDMApi =

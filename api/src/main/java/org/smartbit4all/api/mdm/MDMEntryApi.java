@@ -11,18 +11,18 @@ import org.smartbit4all.core.object.ObjectApi;
  * This is the interface of the Master Data Management entry APIs. The base implementation of the
  * master data management api. The basic feature is that if we configure an api like into the spring
  * context then it will be managed by the {@link MasterDataManagementApi}.
- * 
+ *
  * It is based on a domain bean class (assigned to the {@link #getClazz()} as constructor parameter.
  * It will have a name that is coming from the simple name of the clazz or we can set a different
  * name. In this way we can have many entries from the same clazz with different names.
- * 
+ *
  * The key property of the given object must be set also as a String[] path that can be used by the
  * {@link ObjectApi#getValueFromObjectMap(Map, String...)} or similar methods. It is used to extract
  * the key property from the object and identify the given instance uniquely. So one entry can have
  * exactly one object published in a moment with the same identifier.
- * 
+ *
  * The entries can have
- * 
+ *
  * @author Peter Boros
  * @param <O> The class of the object managed by this API.
  */
@@ -44,6 +44,10 @@ public interface MDMEntryApi<O> {
    */
   Map<String, O> getPublishedObjects();
 
+  O getPublishedObject(MDMEntry entry);
+
+  O getDraftObject(MDMEntry entry);
+
   /**
    * @return Return the published {@link StoredList} if the published list name was set.
    */
@@ -51,7 +55,7 @@ public interface MDMEntryApi<O> {
 
   /**
    * Save the given object as published.
-   * 
+   *
    * @param object The object to save.
    * @return The URI of the currently saved draft version.
    */
@@ -61,7 +65,7 @@ public interface MDMEntryApi<O> {
    * Save the given object as draft. To be able to identify the published version of the draft
    * object we need to have a unique business identifier for the object that can identify the given
    * object in the published list.
-   * 
+   *
    * @param object The object to save.
    * @return The URI of the currently saved draft version.
    */
@@ -79,17 +83,12 @@ public interface MDMEntryApi<O> {
   /**
    * @return Returns the version URI of the current draft objects.
    */
-  List<MDMDraftObjectURIEntry> getDraftUris();
-
-  /**
-   * @return Return all the draft objects loaded.
-   */
-  List<MDMObjectEntry<O>> getDraftObjects();
+  List<MDMEntry> getDraftEntries();
 
   /**
    * @return Return all the published objects loaded.
    */
-  List<MDMObjectEntry<O>> getPublishedAndDraftObjects();
+  List<MDMEntry> getAllEntries();
 
   /**
    * @return The branching strategy of the given entry that can be {@link BranchStrategy#LOCAL} if

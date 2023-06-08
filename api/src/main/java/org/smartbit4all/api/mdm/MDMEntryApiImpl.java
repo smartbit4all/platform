@@ -1,5 +1,8 @@
 package org.smartbit4all.api.mdm;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -7,6 +10,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -29,15 +33,12 @@ import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.beans.factory.annotation.Autowired;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-import static java.util.stream.Collectors.toSet;
 
 /**
  * The base implementation of the master data management api. The basic feature is that if we
  * configure an api like this into the spring context than it will be domain api for the given
  * object.
- * 
+ *
  * @author Peter Boros
  *
  * @param <O>
@@ -119,7 +120,7 @@ public class MDMEntryApiImpl<O extends Object> implements MDMEntryApi<O> {
 
   /**
    * These are the before save event handlers.
-   * 
+   *
    * TODO create an event handler class to be able to identify them and modify their order.
    */
   private final List<UnaryOperator<O>> beforeSaveEventHandlers = new ArrayList<>();
@@ -132,7 +133,7 @@ public class MDMEntryApiImpl<O extends Object> implements MDMEntryApi<O> {
 
   /**
    * Constructs the name of the api from the Java class.
-   * 
+   *
    * @param clazz
    * @return
    */
@@ -192,6 +193,19 @@ public class MDMEntryApiImpl<O extends Object> implements MDMEntryApi<O> {
     return getPublishedMap().entrySet().stream()
         .collect(toMap(Entry::getKey, e -> objectApi.read(e.getValue(), clazz)));
   }
+
+  @Override
+  public O getPublishedObject(MDMEntry entry) {
+    return entry == null || entry.getPublished() == null ? null
+        : objectApi.read(entry.getPublished(), clazz);
+  }
+
+  @Override
+  public O getDraftObject(MDMEntry entry) {
+    return entry == null || entry.getDraft() == null ? null
+        : objectApi.read(entry.getDraft(), clazz);
+  }
+
 
   @Override
   public URI saveAsNewPublished(O object) {
@@ -320,7 +334,7 @@ public class MDMEntryApiImpl<O extends Object> implements MDMEntryApi<O> {
 
   /**
    * Run all the event handlers on the given object.
-   * 
+   *
    * @param object
    * @return
    */
@@ -364,27 +378,18 @@ public class MDMEntryApiImpl<O extends Object> implements MDMEntryApi<O> {
   }
 
   @Override
-  public List<MDMDraftObjectURIEntry> getDraftUris() {
+  public List<MDMEntry> getDraftEntries() {
     URI branchEntryUri = getCurrentBranchEntryUri();
     if (branchEntryUri != null) {
       BranchEntry branchEntry = objectApi.read(branchEntryUri, BranchEntry.class);
       return Stream.concat(branchEntry.getBranchedObjects().entrySet().stream()
-          .map(e -> new MDMDraftObjectURIEntry(URI.create(e.getKey()),
+          .map(e -> new MDMEntry(URI.create(e.getKey()),
               e.getValue().getBranchedObjectLatestUri())),
-          branchEntry.getNewObjects().values().stream().map(bo -> new MDMDraftObjectURIEntry(null,
+          branchEntry.getNewObjects().values().stream().map(bo -> new MDMEntry(null,
               bo.getBranchedObjectLatestUri())))
           .collect(toList());
     }
     return Collections.emptyList();
-  }
-
-  @Override
-  public List<MDMObjectEntry<O>> getDraftObjects() {
-    return getDraftUris().stream()
-        .map(draft -> new MDMObjectEntry<>(
-            draft.getSourceURI() != null ? objectApi.read(draft.getSourceURI(), clazz) : null,
-            objectApi.read(draft.getDraftURI(), clazz)))
-        .collect(toList());
   }
 
   private BranchEntry getOrCreateBranchEntry() {
@@ -423,22 +428,23 @@ public class MDMEntryApiImpl<O extends Object> implements MDMEntryApi<O> {
   }
 
   @Override
-  public List<MDMObjectEntry<O>> getPublishedAndDraftObjects() {
-    List<MDMObjectEntry<O>> results = getDraftObjects();
+  public List<MDMEntry> getAllEntries() {
+    List<MDMEntry> results = getDraftEntries();
     // In the draft objects we have all the published objects that have draft version. And also the
     // brand new object are included.
-    Set<URI> publishedWithDraft = results.stream().filter(oe -> oe.getPublished() != null)
-        .map(oe -> {
-          return objectApi.getLatestUri(objectApi.definition(clazz).getUri(oe.getPublished()));
-        }).collect(toSet());
+    Set<URI> publishedWithDraft = results.stream()
+        .map(MDMEntry::getPublished)
+        .filter(Objects::nonNull)
+        .collect(toSet());
     Map<String, URI> publishedMap =
         getPublishedMap().entrySet().stream()
             .filter(e -> !publishedWithDraft.contains(objectApi.getLatestUri(e.getValue())))
             .collect(toMap(Entry::getKey, Entry::getValue));
 
-    List<MDMObjectEntry<O>> publishedList =
-        publishedMap.values().stream().map(u -> objectApi.read(u, clazz))
-            .map(o -> new MDMObjectEntry<>(o, null)).collect(toList());
+    List<MDMEntry> publishedList =
+        publishedMap.values().stream()
+            .map(o -> new MDMEntry(o, null))
+            .collect(toList());
 
     // Add the remaining draft object. The new objects missing from the published.
     results.addAll(publishedList);
