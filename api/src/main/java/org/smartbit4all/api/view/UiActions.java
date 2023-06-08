@@ -18,32 +18,32 @@ public class UiActions {
 
   private UiActions() {}
 
-  public static UiActionsBuilder builder() {
-    return new UiActionsBuilder();
+  public static UiActionBuilder builder() {
+    return new UiActionBuilder();
   }
 
-  public static class UiActionsBuilder {
+  public static class UiActionBuilder {
 
     private final List<UiAction> actions;
 
-    private UiActionsBuilder() {
+    private UiActionBuilder() {
       this.actions = new ArrayList<>();
     }
 
-    public UiActionsBuilder add(String action) {
+    public UiActionBuilder add(String action) {
       return add(new UiAction().code(action));
     }
 
-    public UiActionsBuilder add(UiAction action) {
+    public UiActionBuilder add(UiAction action) {
       this.actions.add(action);
       return this;
     }
 
-    public UiActionsBuilder addIf(String action, boolean... conditions) {
+    public UiActionBuilder addIf(String action, boolean... conditions) {
       return addIf(new UiAction().code(action), conditions);
     }
 
-    public UiActionsBuilder addIf(UiAction action, boolean... conditions) {
+    public UiActionBuilder addIf(UiAction action, boolean... conditions) {
       for (boolean c : conditions) {
         if (!c)
           return this;
