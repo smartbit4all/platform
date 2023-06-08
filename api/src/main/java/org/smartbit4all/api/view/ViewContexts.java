@@ -1,7 +1,9 @@
 package org.smartbit4all.api.view;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.function.UnaryOperator;
+import java.util.stream.Stream;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.bean.ViewContext;
 import org.smartbit4all.api.view.bean.ViewState;
@@ -14,10 +16,26 @@ public class ViewContexts {
   private ViewContexts() {}
 
   public static View getView(ViewContext context, UUID viewUuid) {
-    return context.getViews().stream()
+    View view = context.getViews().stream()
         .filter(v -> viewUuid.equals(v.getUuid()))
         .findFirst()
-        .orElseThrow(() -> new IllegalArgumentException("View not found by UUID: " + viewUuid));
+        .orElse(null);
+    if (view == null) {
+      // check closed children views, where model is kept
+      view = getViewsIncludingClosedChildren(context.getViews())
+          .filter(v -> v != null && v.getModel() != null)
+          .filter(v -> viewUuid.equals(v.getUuid()))
+          .findFirst()
+          .orElseThrow(() -> new IllegalArgumentException("View not found by UUID: " + viewUuid));
+    }
+    return view;
+  }
+
+  private static Stream<View> getViewsIncludingClosedChildren(List<View> views) {
+    return Stream.concat(
+        views.stream(),
+        views.stream()
+            .flatMap(v -> getViewsIncludingClosedChildren(v.getClosedChildrenViews())));
   }
 
   public static ViewContext updateViewState(ViewContext context, ViewStateUpdate update) {
