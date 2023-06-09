@@ -7,14 +7,14 @@ import org.smartbit4all.core.object.ObjectDefinition;
 
 /**
  * This api is responsible for manipulating objects and provide algorithms about modification.
- * 
+ *
  * @author Peter Boros
  */
 public interface ModifyContributionApi extends ContributionApi {
 
   URI saveAsNew(ObjectDefinition<?> objectDefinition, String storageScheme,
-      Map<String, Object> objectAsMap);
+      Map<String, Object> objectAsMap, URI branchUri);
 
-  URI update(URI versionUri, Map<String, Object> objectAsMap);
+  URI update(URI versionUri, URI branchUri, Map<String, Object> objectAsMap);
 
 }

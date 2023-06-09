@@ -35,14 +35,14 @@ public class ModifyApiImpl extends PrimaryApiImpl<ModifyContributionApi>
   public URI createNewObject(ObjectDefinition<?> objectDefinition, String storageScheme,
       Map<String, Object> objMap, URI branchUri) {
     ModifyContributionApi contributionApi = getContributionApi(objectDefinition);
-    return contributionApi.saveAsNew(objectDefinition, storageScheme, objMap);
+    return contributionApi.saveAsNew(objectDefinition, storageScheme, objMap, branchUri);
   }
 
   @Override
   public URI updateObject(ObjectDefinition<?> objectDefinition, URI objVersionUri,
       Map<String, Object> objMap, URI branchUri) {
     ModifyContributionApi contributionApi = getContributionApi(objectDefinition);
-    return contributionApi.update(objVersionUri, objMap);
+    return contributionApi.update(objVersionUri, branchUri, objMap);
   }
 
 

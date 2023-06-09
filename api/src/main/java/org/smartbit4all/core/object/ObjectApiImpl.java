@@ -1,5 +1,7 @@
 package org.smartbit4all.core.object;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import java.io.IOException;
 import java.net.URI;
 import java.time.LocalDate;
@@ -27,8 +29,6 @@ import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.base.Objects;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 public class ObjectApiImpl implements ObjectApi {
 
@@ -68,33 +68,34 @@ public class ObjectApiImpl implements ObjectApi {
   }
 
   @Override
-  public ObjectNode loadLatest(URI objectUri, RetrievalMode retrievalMode) {
-    return loadInternal(objectUri, retrievalMode, true);
+  public ObjectNode loadLatest(URI objectUri, URI branchUri) {
+    return loadInternal(objectUri, branchUri, RetrievalMode.NORMAL, true);
   }
 
   @Override
-  public ObjectNode load(URI objectUri, RetrievalMode retrievalMode) {
-    return loadInternal(objectUri, retrievalMode, false);
+  public ObjectNode load(URI objectUri, URI branchUri) {
+    return loadInternal(objectUri, branchUri, RetrievalMode.NORMAL, false);
   }
 
-  private ObjectNode loadInternal(URI objectUri, RetrievalMode retrievalMode, boolean loadLatest) {
+  private ObjectNode loadInternal(URI objectUri, URI branchUri, RetrievalMode retrievalMode,
+      boolean loadLatest) {
     RetrievalRequest request =
         new RetrievalRequest(
             this,
             objectDefinitionApi.definition(objectUri),
             retrievalMode);
     request.setLoadLatest(loadLatest);
-    return load(request, objectUri);
+    return load(request, objectUri, branchUri);
   }
 
   @Override
-  public ObjectNode load(RetrievalRequest request, URI objectUri) {
-    return node(retrievalApi.load(request, objectUri));
+  public ObjectNode load(RetrievalRequest request, URI objectUri, URI branchUri) {
+    return node(retrievalApi.load(request, objectUri, branchUri));
   }
 
   @Override
-  public List<ObjectNode> load(RetrievalRequest request, List<URI> objectUris) {
-    return retrievalApi.load(request, objectUris).stream()
+  public List<ObjectNode> load(RetrievalRequest request, List<URI> objectUris, URI branchUri) {
+    return retrievalApi.load(request, objectUris, branchUri).stream()
         .map(this::node)
         .collect(toList());
   }

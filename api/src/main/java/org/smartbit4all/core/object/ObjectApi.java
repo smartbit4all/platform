@@ -117,43 +117,29 @@ public interface ObjectApi {
 
 
   /**
-   * Creates a request based on the objectUri and retrieves it as an ObjectNode with the specified
-   * retrieval mode.
+   * Similar to {@link #load(URI, URI)} but will retrieve the latest version of the object.
    *
    * @param objectUri
-   * @param retrievalMode
+   * @param branchUri
    * @return
    */
-  ObjectNode load(URI objectUri, RetrievalMode retrievalMode);
+  ObjectNode loadLatest(URI objectUri, URI branchUri);
 
-
-  /**
-   * Similar to {@link #load(URI, RetrievalMode)}, but initial request's loadLates will be set to
-   * true, so this method will load the latest version of the object.
-   *
-   * @param objectUri
-   * @return
-   */
-  ObjectNode loadLatest(URI objectUri, RetrievalMode retrievalMode);
-
-  /**
-   * Default retrieval mode for {@link #load(URI, RetrievalMode)}
-   *
-   * @param objectUri
-   * @return
-   */
   default ObjectNode loadLatest(URI objectUri) {
-    return loadLatest(objectUri, RetrievalMode.NORMAL);
+    return loadLatest(objectUri, null);
   }
 
   /**
-   * Default retrieval mode for {@link #load(URI, RetrievalMode)}
+   * Creates a request based on the objectUri and retrieves it as an ObjectNode.
    *
    * @param objectUri
+   * @param branchUri
    * @return
    */
+  ObjectNode load(URI objectUri, URI branchUri);
+
   default ObjectNode load(URI objectUri) {
-    return load(objectUri, RetrievalMode.NORMAL);
+    return load(objectUri, null);
   }
 
   /**
@@ -163,9 +149,14 @@ public interface ObjectApi {
    *
    * @param request
    * @param objectUri
+   * @param branchUri
    * @return
    */
-  ObjectNode load(RetrievalRequest request, URI objectUri);
+  ObjectNode load(RetrievalRequest request, URI objectUri, URI branchUri);
+
+  default ObjectNode load(RetrievalRequest request, URI objectUri) {
+    return load(request, objectUri, null);
+  }
 
   /**
    * Similar to {@link ObjectApi#load(RetrievalRequest, URI)}, but starts from multiple objectUris
@@ -173,9 +164,14 @@ public interface ObjectApi {
    *
    * @param request
    * @param objectUris
+   * @param branchUri
    * @return
    */
-  List<ObjectNode> load(RetrievalRequest request, List<URI> objectUris);
+  List<ObjectNode> load(RetrievalRequest request, List<URI> objectUris, URI branchUri);
+
+  default List<ObjectNode> load(RetrievalRequest request, List<URI> objectUris) {
+    return load(request, objectUris, null);
+  }
 
   /**
    * Creates an ObjectNode from snapshot data.
@@ -237,9 +233,13 @@ public interface ObjectApi {
 
   URI getLatestUri(URI uri);
 
-  default URI saveAsNew(String storageScheme, Object object) {
+  default URI saveAsNew(String storageScheme, Object object, URI branchUri) {
     ObjectNode node = create(storageScheme, object);
-    return save(node);
+    return save(node, branchUri);
+  }
+
+  default URI saveAsNew(String storageScheme, Object object) {
+    return saveAsNew(storageScheme, object, null);
   }
 
   <T> T getValueFromObject(Class<T> clazz, Object object, String... paths);

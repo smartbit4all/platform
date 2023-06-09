@@ -8,7 +8,7 @@ import org.smartbit4all.core.object.ReferenceDefinition;
 /**
  * This api can be used to make modification on the object graph defined by the
  * {@link ObjectDefinition}s and {@link ReferenceDefinition}s.
- * 
+ *
  * @author Peter Boros
  */
 public interface ApplyChangeApi {
@@ -16,7 +16,7 @@ public interface ApplyChangeApi {
   /**
    * The save changes analyzes the object request as a graph and calculates the necessary operation
    * to execute the save.
-   * 
+   *
    * @param request
    * @return
    */
@@ -24,15 +24,17 @@ public interface ApplyChangeApi {
 
   /**
    * Construct a new request for the apply change API.
-   * 
+   *
    * @return The new request instance.
    */
-  ApplyChangeRequest request();
+  default ApplyChangeRequest request() {
+    return request(null);
+  }
 
   /**
    * Construct a new request for the apply change API that is going to be executed in the given
    * branch.
-   * 
+   *
    * @param branchUri The URI of the branch for the apply change operation.
    * @return The new request instance.
    */
@@ -40,7 +42,7 @@ public interface ApplyChangeApi {
 
   /**
    * Constructs the {@link ApplyChangeRequest} based on the modification of the {@link ObjectNode}.
-   * 
+   *
    * @param rootNode The root node of the modified {@link ObjectNode}.
    * @param branchUri The branch URI to save into. If null then no branch is used.
    * @return The {@link ApplyChangeResult} that is result.
@@ -50,7 +52,7 @@ public interface ApplyChangeApi {
   /**
    * Constructs the {@link ApplyChangeRequest} based on the modification of the {@link ObjectNode}.
    * With no branch it will save the result in the current object state.
-   * 
+   *
    * @param rootNode The root node of the modified {@link ObjectNode}.
    * @return The {@link ApplyChangeResult} that is result.
    */

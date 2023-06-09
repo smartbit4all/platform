@@ -10,36 +10,35 @@ import org.smartbit4all.core.object.ReferenceDefinition;
  * The retrieval API is responsible for reading the objects across the {@link ReferenceDefinition}s.
  * We can define a request to load a portion of the object graph and later on we can append the rest
  * if necessary.
- * 
+ *
  * @author Peter Boros
  */
 public interface RetrievalApi {
 
   /**
    * Executes the request and retrieve the object.
-   * 
+   *
    * @param request The request object that defines the root objects and the references to load.
    * @param uri The uri of the object to load.
    * @return The result of the object retrieve as an {@link ObjectNode}.
    */
-  ObjectNodeData load(RetrievalRequest request, URI uri);
+  ObjectNodeData load(RetrievalRequest request, URI uri, URI branchUri);
+
+  default ObjectNodeData load(RetrievalRequest request, URI uri) {
+    return load(request, uri, null);
+  }
 
   /**
    * Executes the request and retrieve the object.
-   * 
-   * @param request The request object that defines the root objects and the references to load.
-   * @param uris The uris of the objects to load.
-   * @return The result of the object retrieve as an {@link ObjectNode}.
-   */
-  List<ObjectNodeData> load(RetrievalRequest request, URI... uris);
-
-  /**
-   * Executes the request and retrieve the object.
-   * 
+   *
    * @param request The request object that defines the root objects and the references to load.
    * @param uris The uri list of the objects to load.
    * @return The result of the object retrieve as an {@link ObjectNodeData}.
    */
-  List<ObjectNodeData> load(RetrievalRequest request, List<URI> uris);
+  List<ObjectNodeData> load(RetrievalRequest request, List<URI> uris, URI branchUri);
+
+  default List<ObjectNodeData> load(RetrievalRequest request, List<URI> uris) {
+    return load(request, uris, null);
+  }
 
 }

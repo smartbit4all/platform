@@ -112,6 +112,7 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
         case DELETE:
           // We can skip it because it is just about making unavailable. It is not the deletion of
           // the given object, but referenced URI should be null.
+          // TODO modifyApi.deleteObject()
           result = null;
           break;
 
@@ -144,11 +145,6 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
    */
   private ObjectChangeRequest preProcessObjectRequest(ObjectChangeRequest objectChangeRequest) {
     return objectChangeRequest;
-  }
-
-  @Override
-  public ApplyChangeRequest request() {
-    return request(null);
   }
 
   @Override
