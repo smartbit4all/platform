@@ -23,6 +23,8 @@ import org.smartbit4all.api.grid.bean.GridDataAccessConfig;
 import org.smartbit4all.api.grid.bean.GridModel;
 import org.smartbit4all.api.grid.bean.GridPage;
 import org.smartbit4all.api.grid.bean.GridRow;
+import org.smartbit4all.api.grid.bean.GridSelectionMode;
+import org.smartbit4all.api.grid.bean.GridServerModel;
 import org.smartbit4all.api.grid.bean.GridUpdateData;
 import org.smartbit4all.api.grid.bean.GridView;
 import org.smartbit4all.api.grid.bean.GridViewDescriptor;
@@ -54,11 +56,15 @@ public class GridModelApiImpl implements GridModelApi {
 
   private static final Logger log = LoggerFactory.getLogger(GridModelApiImpl.class);
 
+  private static final String SERVER_MODEL_POSTFIX = "_serverModel";
+
   private static final String EXPAND_POSTFIX = "_expandCallback";
 
   private static final String GRIDROW_POSTFIX = "_gridrowCallback";
 
   private static final String GRIDPAGE_POSTFIX = "_gridpageCallback";
+
+  private static final String SELECTION_CHANGE_POSTFIX = "_selectionChangeCallback";
 
   @Value("${grid.pageSizeOptions:5,10,25,50}")
   private List<String> defaultPageSizeOptions;
@@ -164,6 +170,8 @@ public class GridModelApiImpl implements GridModelApi {
     }
     gridModel.setViewUuid(viewUuid);
     viewApi.setWidgetModelInView(GridModel.class, viewUuid, gridId, gridModel);
+    viewApi.setWidgetModelInView(GridServerModel.class, viewUuid, gridId + SERVER_MODEL_POSTFIX,
+        new GridServerModel());
   }
 
   private Integer getDefaultPageSize() {
@@ -216,7 +224,7 @@ public class GridModelApiImpl implements GridModelApi {
       }
       int firstPageSize = Math.min(pageSize, data.size());
       gridModel
-          .page(constructPage(viewUuid, gridId, data, 0, firstPageSize)
+          .page(constructPage(viewUuid, gridId, data, 0, firstPageSize, false)
               .lowerBound(0)
               .upperBound(firstPageSize));
       return firstPageSize;
@@ -280,7 +288,7 @@ public class GridModelApiImpl implements GridModelApi {
     result.accessConfig(new GridDataAccessConfig().dataUri(tableData.getUri()));
     result.totalRowCount(tableData.size());
     result.page(
-        constructPage(null, null, tableData, lowerBound, upperBound)
+        constructPage(null, null, tableData, lowerBound, upperBound, false)
             .lowerBound(lowerBound)
             .upperBound(upperBound));
     return result;
@@ -311,7 +319,15 @@ public class GridModelApiImpl implements GridModelApi {
       }
       TableData<?> tableData =
           tableDataApi.readPage(model.getAccessConfig().getDataUri(), offset, limit);
-      model.page(constructPage(viewUuid, gridId, tableData, 0, tableData.size())
+      GridViewDescriptor descriptor = model.getView().getDescriptor();
+      boolean preserveSelection;
+      if (descriptor.getPreserveSelectionOnPageChange() != null) {
+        preserveSelection = descriptor.getPreserveSelectionOnPageChange();
+      } else {
+        // default: NONE, SINGLE -> don't preserve, MULTIPLE -> do preserve
+        preserveSelection = descriptor.getSelectionMode() == GridSelectionMode.MULTIPLE;
+      }
+      model.page(constructPage(viewUuid, gridId, tableData, 0, tableData.size(), preserveSelection)
           .lowerBound(offset)
           .upperBound(offset + limit));
       return model;
@@ -330,7 +346,7 @@ public class GridModelApiImpl implements GridModelApi {
       TableData<?> tableData =
           tableDataApi.readPage(model.getAccessConfig().getDataUri(),
               model.getPage().getLowerBound(), pageSize);
-      model.page(constructPage(viewUuid, gridId, tableData, 0, tableData.size())
+      model.page(constructPage(viewUuid, gridId, tableData, 0, tableData.size(), true)
           .lowerBound(model.getPage().getLowerBound())
           .upperBound(model.getPage().getLowerBound() + pageSize));
       return model;
@@ -364,7 +380,7 @@ public class GridModelApiImpl implements GridModelApi {
           int lowerBound = model.getPage().getLowerBound();
           int upperBound = model.getPage().getUpperBound();
           model.page(constructPage(viewUuid, gridId, data, lowerBound,
-              Math.min(data.size(), upperBound))
+              Math.min(data.size(), upperBound), true)
                   .lowerBound(lowerBound)
                   .upperBound(upperBound));
         }
@@ -375,7 +391,7 @@ public class GridModelApiImpl implements GridModelApi {
   }
 
   private GridPage constructPage(UUID viewUuid, String gridId, TableData<?> tableData,
-      int beginIndex, int endIndex) {
+      int beginIndex, int endIndex, boolean preserveSelection) {
     GridPage page = new GridPage();
     page.rows(new ArrayList<>());
     List<InvocationRequest> gridRowCallbacks = getCallbacks(viewUuid, gridId, GRIDROW_POSTFIX);
@@ -384,11 +400,19 @@ public class GridModelApiImpl implements GridModelApi {
       GridRow gridRow = new GridRow().id(Integer.toString(i)).data(tableData.columns().stream()
           .filter(c -> tableData.get(c, dataRow) != null)
           .collect(toMap(DataColumn::getName, c -> tableData.get(c, dataRow))));
-      gridRow = (GridRow) executeCallbacks(gridRowCallbacks, gridRow);
+      gridRow = (GridRow) executeObjectCallbacks(gridRowCallbacks, gridRow);
       page.addRowsItem(gridRow);
     }
     List<InvocationRequest> gridPageCallbacks = getCallbacks(viewUuid, gridId, GRIDPAGE_POSTFIX);
-    return (GridPage) executeCallbacks(gridPageCallbacks, page);
+    page = (GridPage) executeObjectCallbacks(gridPageCallbacks, page);
+    GridServerModel serverModel = getGridServerModel(viewUuid, gridId);
+    if (serverModel != null && !preserveSelection) {
+      serverModel.getSelectedRows().clear();
+    }
+    Map<String, GridRow> selectedRows = serverModel == null ? Collections.emptyMap()
+        : serverModel.getSelectedRows();
+    refreshSelectedRows(viewUuid, gridId, page, selectedRows);
+    return page;
   }
 
   @Override
@@ -438,38 +462,34 @@ public class GridModelApiImpl implements GridModelApi {
     if (request == null) {
       log.warn("Expand handler not found for grid {}", gridId);
     }
-    return executeCallback(request, row);
+    return executeObjectCallback(request, row);
   }
 
   private void setCallback(UUID viewUuid, String gridId, InvocationRequest request,
       String postfix) {
-    String requestId = gridId + postfix;
-    viewApi.setCallback(viewUuid, requestId, request);
+    viewApi.setCallback(viewUuid, gridId + postfix, request);
   }
 
   private void addCallback(UUID viewUuid, String gridId, InvocationRequest request,
       String postfix) {
-    String requestId = gridId + postfix;
-    viewApi.addCallback(viewUuid, requestId, request);
+    viewApi.addCallback(viewUuid, gridId + postfix, request);
   }
 
   private InvocationRequest getCallback(UUID viewUuid, String gridId, String postfix) {
     if (viewUuid == null || Strings.isNullOrEmpty(gridId)) {
       return null;
     }
-    String requestId = gridId + postfix;
-    return viewApi.getCallback(viewUuid, requestId);
+    return viewApi.getCallback(viewUuid, gridId + postfix);
   }
 
   private List<InvocationRequest> getCallbacks(UUID viewUuid, String gridId, String postfix) {
     if (viewUuid == null || Strings.isNullOrEmpty(gridId)) {
       return Collections.emptyList();
     }
-    String requestId = gridId + postfix;
-    return viewApi.getCallbacks(viewUuid, requestId);
+    return viewApi.getCallbacks(viewUuid, gridId + postfix);
   }
 
-  private Object executeCallback(InvocationRequest request, Object parameter) {
+  private Object executeObjectCallback(InvocationRequest request, Object parameter) {
     if (request == null) {
       return parameter;
     }
@@ -485,21 +505,141 @@ public class GridModelApiImpl implements GridModelApi {
     }
   }
 
-  private Object executeCallbacks(List<InvocationRequest> requests, Object parameter) {
+  private Object executeObjectCallbacks(List<InvocationRequest> requests, Object parameter) {
     for (InvocationRequest request : requests) {
-      parameter = executeCallback(request, parameter);
+      parameter = executeObjectCallback(request, parameter);
     }
     return parameter;
   }
 
+  private void executeVoidCallback(InvocationRequest request, Object... parameters) {
+    if (request == null) {
+      return;
+    }
+    try {
+      if (parameters != null && parameters.length > 0) {
+        for (int i = 0; i < parameters.length; i++) {
+          request.getParameters().get(i).setValue(parameters[i]);
+        }
+      }
+      InvocationParameter result = invocationApi.invoke(request);
+      if (result == null || result.getValue() == null) {
+        throw new IllegalArgumentException("Action returned nothing");
+      }
+    } catch (Exception e) {
+      throw new IllegalArgumentException("Action throw an error", e);
+    }
+  }
+
+  private void executeVoidCallbacks(List<InvocationRequest> requests, Object... parameters) {
+    for (InvocationRequest request : requests) {
+      executeVoidCallback(request, parameters);
+    }
+  }
+
   @Override
   public void refreshGrid(UUID viewUuid, String gridId) {
-    GridModel model = viewApi.getWidgetModelFromView(GridModel.class, viewUuid, gridId);
+    Objects.nonNull(viewUuid);
+    Objects.nonNull(gridId);
+    GridModel model = getGridModel(viewUuid, gridId);
     if (model != null && model.getPage() != null) {
       int lowerBound = model.getPage().getLowerBound();
       int upperBound = model.getPage().getUpperBound();
       loadPage(viewUuid, gridId, lowerBound, upperBound - lowerBound);
     }
   }
+
+  @Override
+  public void selectRow(UUID viewUuid, String gridId, String rowId, boolean selected) {
+    Objects.nonNull(viewUuid);
+    Objects.nonNull(gridId);
+    GridModel model = getGridModel(viewUuid, gridId);
+    GridSelectionMode selectionMode = model.getView().getDescriptor().getSelectionMode();
+    if (selectionMode == null || selectionMode == GridSelectionMode.NONE) {
+      return;
+    }
+    GridServerModel serverModel = getGridServerModel(viewUuid, gridId);
+    if (selected) {
+      if (selectionMode == GridSelectionMode.SINGLE) {
+        serverModel.getSelectedRows().clear();
+      }
+      GridRow row = GridModels.findGridRowById(model, rowId)
+          .orElseThrow(() -> new IllegalArgumentException("row not found"));
+      serverModel.putSelectedRowsItem(rowId, row);
+    } else {
+      serverModel.getSelectedRows().remove(rowId);
+    }
+    model.allRowsSelected(Objects.equals(model.getSelectedRowCount(), model.getTotalRowCount()));
+    refreshSelectedRows(viewUuid, gridId, model.getPage(), serverModel.getSelectedRows());
+  }
+
+  private void refreshSelectedRows(UUID viewUuid, String gridId, GridPage page,
+      Map<String, GridRow> selectedRows) {
+    selectedRows.values().forEach(row -> row.selected(true));
+    for (GridRow row : page.getRows()) {
+      row.selected(row.getSelectable() != Boolean.FALSE && selectedRows.containsKey(row.getId()));
+    }
+    executeVoidCallbacks(getCallbacks(viewUuid, gridId, SELECTION_CHANGE_POSTFIX),
+        viewUuid, gridId);
+  }
+
+  @Override
+  public void selectAllRow(UUID viewUuid, String gridId, boolean selected) {
+    Objects.nonNull(viewUuid);
+    Objects.nonNull(gridId);
+    GridModel model = getGridModel(viewUuid, gridId);
+    GridServerModel serverModel = getGridServerModel(viewUuid, gridId);
+    model.allRowsSelected(selected);
+    if (selected) {
+      model.selectedRowCount(model.getTotalRowCount());
+      // check if all rows are in page
+      if (model.getPage().getRows().size() == model.getTotalRowCount()) {
+        // all row is in one page
+        serverModel.selectedRows(
+            model.getPage().getRows().stream()
+                .collect(toMap(GridRow::getId, row -> row)));
+      } else if (model.getAccessConfig().getDataUri() != null) {
+        // read all rows from tableData, createRows, add to selectedRows
+        // TODO
+      } else {
+        // TODO
+      }
+    } else {
+      model.selectedRowCount(0);
+      serverModel.getSelectedRows().clear();
+    }
+    refreshSelectedRows(viewUuid, gridId, model.getPage(), serverModel.getSelectedRows());
+  }
+
+  @Override
+  public void addSelectionChangeListener(UUID viewUuid, String gridId, InvocationRequest request) {
+    addCallback(viewUuid, gridId, request, SELECTION_CHANGE_POSTFIX);
+  }
+
+  @Override
+  public List<GridRow> getSelectedRows(UUID viewUuid, String gridId) {
+    Objects.nonNull(viewUuid);
+    Objects.nonNull(gridId);
+    return getGridServerModel(viewUuid, gridId)
+        .getSelectedRows()
+        .values().stream()
+        .collect(toList());
+  }
+
+  private GridModel getGridModel(UUID viewUuid, String gridId) {
+    if (viewUuid == null) {
+      return null;
+    }
+    return viewApi.getWidgetModelFromView(GridModel.class, viewUuid, gridId);
+  }
+
+  private GridServerModel getGridServerModel(UUID viewUuid, String gridId) {
+    if (viewUuid == null) {
+      return null;
+    }
+    return viewApi.getWidgetModelFromView(GridServerModel.class, viewUuid,
+        gridId + SERVER_MODEL_POSTFIX);
+  }
+
 
 }

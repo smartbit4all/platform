@@ -3,6 +3,7 @@ package org.smartbit4all.api.grid.restserver;
 import org.smartbit4all.api.grid.bean.GridModel;
 import org.smartbit4all.api.grid.bean.GridUpdateData;
 import java.util.UUID;
+import org.smartbit4all.api.view.bean.ViewContextChange;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -54,7 +55,7 @@ public interface GridApiDelegate {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"view\" : { \"orderByList\" : [ \"\", \"\" ], \"descriptor\" : { \"kind\" : \"TABLE\", \"columns\" : [ { \"propertyName\" : \"propertyName\", \"typeClass\" : \"typeClass\", \"label\" : \"label\" }, { \"propertyName\" : \"propertyName\", \"typeClass\" : \"typeClass\", \"label\" : \"label\" } ], \"icon\" : \"icon\", \"label\" : \"label\" }, \"orderedColumnNames\" : [ \"orderedColumnNames\", \"orderedColumnNames\" ] }, \"pageSizeOptions\" : [ 5, 5 ], \"viewUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"accessConfig\" : { \"apiClass\" : \"apiClass\", \"kind\" : \"TABLEDATA\", \"dataUri\" : \"https://openapi-generator.tech\", \"propertyPath\" : \"propertyPath\" }, \"pageSize\" : 5, \"availableViews\" : [ { \"orderByList\" : [ \"\", \"\" ], \"descriptor\" : { \"kind\" : \"TABLE\", \"columns\" : [ { \"propertyName\" : \"propertyName\", \"typeClass\" : \"typeClass\", \"label\" : \"label\" }, { \"propertyName\" : \"propertyName\", \"typeClass\" : \"typeClass\", \"label\" : \"label\" } ], \"icon\" : \"icon\", \"label\" : \"label\" }, \"orderedColumnNames\" : [ \"orderedColumnNames\", \"orderedColumnNames\" ] }, { \"orderByList\" : [ \"\", \"\" ], \"descriptor\" : { \"kind\" : \"TABLE\", \"columns\" : [ { \"propertyName\" : \"propertyName\", \"typeClass\" : \"typeClass\", \"label\" : \"label\" }, { \"propertyName\" : \"propertyName\", \"typeClass\" : \"typeClass\", \"label\" : \"label\" } ], \"icon\" : \"icon\", \"label\" : \"label\" }, \"orderedColumnNames\" : [ \"orderedColumnNames\", \"orderedColumnNames\" ] } ], \"page\" : { \"upperBound\" : 6, \"lowerBound\" : 0, \"rows\" : [ { \"data\" : \"{}\", \"id\" : \"id\", \"actions\" : [ \"\", \"\" ] }, { \"data\" : \"{}\", \"id\" : \"id\", \"actions\" : [ \"\", \"\" ] } ] }, \"totalRowCount\" : 1 }";
+                    String exampleString = "{ \"view\" : { \"orderByList\" : [ \"\", \"\" ], \"descriptor\" : { \"kind\" : \"TABLE\", \"columns\" : [ { \"propertyName\" : \"propertyName\", \"typeClass\" : \"typeClass\", \"label\" : \"label\" }, { \"propertyName\" : \"propertyName\", \"typeClass\" : \"typeClass\", \"label\" : \"label\" } ], \"icon\" : \"icon\", \"preserveSelectionOnPageChange\" : true, \"label\" : \"label\" }, \"orderedColumnNames\" : [ \"orderedColumnNames\", \"orderedColumnNames\" ] }, \"pageSizeOptions\" : [ 2, 2 ], \"viewUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"allRowsSelected\" : true, \"accessConfig\" : { \"apiClass\" : \"apiClass\", \"kind\" : \"TABLEDATA\", \"dataUri\" : \"https://openapi-generator.tech\", \"propertyPath\" : \"propertyPath\" }, \"pageSize\" : 5, \"availableViews\" : [ { \"orderByList\" : [ \"\", \"\" ], \"descriptor\" : { \"kind\" : \"TABLE\", \"columns\" : [ { \"propertyName\" : \"propertyName\", \"typeClass\" : \"typeClass\", \"label\" : \"label\" }, { \"propertyName\" : \"propertyName\", \"typeClass\" : \"typeClass\", \"label\" : \"label\" } ], \"icon\" : \"icon\", \"preserveSelectionOnPageChange\" : true, \"label\" : \"label\" }, \"orderedColumnNames\" : [ \"orderedColumnNames\", \"orderedColumnNames\" ] }, { \"orderByList\" : [ \"\", \"\" ], \"descriptor\" : { \"kind\" : \"TABLE\", \"columns\" : [ { \"propertyName\" : \"propertyName\", \"typeClass\" : \"typeClass\", \"label\" : \"label\" }, { \"propertyName\" : \"propertyName\", \"typeClass\" : \"typeClass\", \"label\" : \"label\" } ], \"icon\" : \"icon\", \"preserveSelectionOnPageChange\" : true, \"label\" : \"label\" }, \"orderedColumnNames\" : [ \"orderedColumnNames\", \"orderedColumnNames\" ] } ], \"page\" : { \"upperBound\" : 6, \"lowerBound\" : 0, \"rows\" : [ { \"data\" : \"{}\", \"selectable\" : true, \"id\" : \"id\", \"actions\" : [ \"\", \"\" ], \"selected\" : true }, { \"data\" : \"{}\", \"selectable\" : true, \"id\" : \"id\", \"actions\" : [ \"\", \"\" ], \"selected\" : true } ] }, \"totalRowCount\" : 1, \"selectedRowCount\" : 5 }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
@@ -65,18 +66,35 @@ public interface GridApiDelegate {
     }
 
     /**
-     * POST /grid/{uuid}/{gridIdentifier}/performAction/{actionIdentifier}
+     * POST /grid/{uuid}/{gridId}/{rowId}/select
      *
      * @param uuid  (required)
-     * @param gridIdentifier  (required)
-     * @param actionIdentifier  (required)
-     * @return OK (status code 200)
-     *         or NOK (status code 404)
-     * @see GridApi#performAction
+     * @param gridId  (required)
+     * @param rowId  (required)
+     * @param selected  (optional)
+     * @return  (status code 200)
+     * @see GridApi#select
      */
-    default ResponseEntity<Void> performAction(UUID uuid,
-        String gridIdentifier,
-        String actionIdentifier) throws Exception {
+    default ResponseEntity<ViewContextChange> select(UUID uuid,
+        String gridId,
+        String rowId,
+        Boolean selected) throws Exception {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+
+    }
+
+    /**
+     * POST /grid/{uuid}/{gridId}/select
+     *
+     * @param uuid  (required)
+     * @param gridId  (required)
+     * @param selected  (optional)
+     * @return  (status code 200)
+     * @see GridApi#selectAll
+     */
+    default ResponseEntity<ViewContextChange> selectAll(UUID uuid,
+        String gridId,
+        Boolean selected) throws Exception {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 
     }
@@ -114,7 +132,7 @@ public interface GridApiDelegate {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"view\" : { \"orderByList\" : [ \"\", \"\" ], \"descriptor\" : { \"kind\" : \"TABLE\", \"columns\" : [ { \"propertyName\" : \"propertyName\", \"typeClass\" : \"typeClass\", \"label\" : \"label\" }, { \"propertyName\" : \"propertyName\", \"typeClass\" : \"typeClass\", \"label\" : \"label\" } ], \"icon\" : \"icon\", \"label\" : \"label\" }, \"orderedColumnNames\" : [ \"orderedColumnNames\", \"orderedColumnNames\" ] }, \"pageSizeOptions\" : [ 5, 5 ], \"viewUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"accessConfig\" : { \"apiClass\" : \"apiClass\", \"kind\" : \"TABLEDATA\", \"dataUri\" : \"https://openapi-generator.tech\", \"propertyPath\" : \"propertyPath\" }, \"pageSize\" : 5, \"availableViews\" : [ { \"orderByList\" : [ \"\", \"\" ], \"descriptor\" : { \"kind\" : \"TABLE\", \"columns\" : [ { \"propertyName\" : \"propertyName\", \"typeClass\" : \"typeClass\", \"label\" : \"label\" }, { \"propertyName\" : \"propertyName\", \"typeClass\" : \"typeClass\", \"label\" : \"label\" } ], \"icon\" : \"icon\", \"label\" : \"label\" }, \"orderedColumnNames\" : [ \"orderedColumnNames\", \"orderedColumnNames\" ] }, { \"orderByList\" : [ \"\", \"\" ], \"descriptor\" : { \"kind\" : \"TABLE\", \"columns\" : [ { \"propertyName\" : \"propertyName\", \"typeClass\" : \"typeClass\", \"label\" : \"label\" }, { \"propertyName\" : \"propertyName\", \"typeClass\" : \"typeClass\", \"label\" : \"label\" } ], \"icon\" : \"icon\", \"label\" : \"label\" }, \"orderedColumnNames\" : [ \"orderedColumnNames\", \"orderedColumnNames\" ] } ], \"page\" : { \"upperBound\" : 6, \"lowerBound\" : 0, \"rows\" : [ { \"data\" : \"{}\", \"id\" : \"id\", \"actions\" : [ \"\", \"\" ] }, { \"data\" : \"{}\", \"id\" : \"id\", \"actions\" : [ \"\", \"\" ] } ] }, \"totalRowCount\" : 1 }";
+                    String exampleString = "{ \"view\" : { \"orderByList\" : [ \"\", \"\" ], \"descriptor\" : { \"kind\" : \"TABLE\", \"columns\" : [ { \"propertyName\" : \"propertyName\", \"typeClass\" : \"typeClass\", \"label\" : \"label\" }, { \"propertyName\" : \"propertyName\", \"typeClass\" : \"typeClass\", \"label\" : \"label\" } ], \"icon\" : \"icon\", \"preserveSelectionOnPageChange\" : true, \"label\" : \"label\" }, \"orderedColumnNames\" : [ \"orderedColumnNames\", \"orderedColumnNames\" ] }, \"pageSizeOptions\" : [ 2, 2 ], \"viewUuid\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"allRowsSelected\" : true, \"accessConfig\" : { \"apiClass\" : \"apiClass\", \"kind\" : \"TABLEDATA\", \"dataUri\" : \"https://openapi-generator.tech\", \"propertyPath\" : \"propertyPath\" }, \"pageSize\" : 5, \"availableViews\" : [ { \"orderByList\" : [ \"\", \"\" ], \"descriptor\" : { \"kind\" : \"TABLE\", \"columns\" : [ { \"propertyName\" : \"propertyName\", \"typeClass\" : \"typeClass\", \"label\" : \"label\" }, { \"propertyName\" : \"propertyName\", \"typeClass\" : \"typeClass\", \"label\" : \"label\" } ], \"icon\" : \"icon\", \"preserveSelectionOnPageChange\" : true, \"label\" : \"label\" }, \"orderedColumnNames\" : [ \"orderedColumnNames\", \"orderedColumnNames\" ] }, { \"orderByList\" : [ \"\", \"\" ], \"descriptor\" : { \"kind\" : \"TABLE\", \"columns\" : [ { \"propertyName\" : \"propertyName\", \"typeClass\" : \"typeClass\", \"label\" : \"label\" }, { \"propertyName\" : \"propertyName\", \"typeClass\" : \"typeClass\", \"label\" : \"label\" } ], \"icon\" : \"icon\", \"preserveSelectionOnPageChange\" : true, \"label\" : \"label\" }, \"orderedColumnNames\" : [ \"orderedColumnNames\", \"orderedColumnNames\" ] } ], \"page\" : { \"upperBound\" : 6, \"lowerBound\" : 0, \"rows\" : [ { \"data\" : \"{}\", \"selectable\" : true, \"id\" : \"id\", \"actions\" : [ \"\", \"\" ], \"selected\" : true }, { \"data\" : \"{}\", \"selectable\" : true, \"id\" : \"id\", \"actions\" : [ \"\", \"\" ], \"selected\" : true } ] }, \"totalRowCount\" : 1, \"selectedRowCount\" : 5 }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }

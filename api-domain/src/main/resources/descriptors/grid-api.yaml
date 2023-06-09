@@ -103,36 +103,6 @@ paths:
       responses:
         '200':
           description: ''
-  /grid/{uuid}/{gridIdentifier}/performAction/{actionIdentifier}:
-    post:
-      tags:
-      - grid
-      summary: ''
-      operationId: 'performAction'
-      parameters: 
-        - in: path
-          name: uuid
-          schema:
-            type: string
-            format: uuid
-          required: true
-        - in: path
-          name: gridIdentifier
-          schema:
-            type: string
-          required: true
-          description: ''
-        - in: path
-          name: actionIdentifier
-          schema:
-            type: string
-          required: true
-          description: ''
-      responses:
-        '200':
-          description: 'OK'
-        '404':
-          description: 'NOK'
   /grid/{uuid}/{gridId}/{rowId}/expand:
     post:
       tags:
@@ -165,6 +135,72 @@ paths:
             application/json:
               schema:
                 type: object
+  /grid/{uuid}/{gridId}/{rowId}/select:
+    post:
+      tags:
+      - grid
+      summary: ''
+      operationId: 'select'
+      parameters: 
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+        - in: path
+          name: gridId
+          schema:
+            type: string
+          required: true
+          description: ''
+        - in: path
+          name: rowId
+          schema:
+            type: string
+          required: true
+          description: ''
+        - in: header
+          name: selected
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: ViewContextChange
+  /grid/{uuid}/{gridId}/select:
+    post:
+      tags:
+      - grid
+      summary: ''
+      operationId: 'selectAll'
+      parameters: 
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+        - in: path
+          name: gridId
+          schema:
+            type: string
+          required: true
+          description: ''
+        - in: header
+          name: selected
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: ViewContextChange
 components:
   schemas:
     GridDataAccessConfig:
@@ -189,7 +225,7 @@ components:
     GridModel:
       type: object
       description: |
-        This object respresent the model of a grid component.
+        This object represents the client model of a grid component.
       required: [viewOptions, page]
       properties:
         viewUuid:
@@ -208,6 +244,11 @@ components:
         totalRowCount:
           type: integer
           format: int32
+        selectedRowCount:
+          type: integer
+          format: int32
+        allRowsSelected:
+          type: boolean
         pageSize:
           type: integer
           format: int32
@@ -216,6 +257,16 @@ components:
           items:
             type: integer
             format: int32
+    GridServerModel:
+      type: object
+      description: |
+        This object represents the server model of a grid component.
+      required: [selectedRows]
+      properties:
+        selectedRows:
+          type: string
+          additionalProperties:
+            $ref: '#/components/schemas/GridRow'
     GridPage:
       type: object
       description: |
@@ -248,6 +299,10 @@ components:
             type: UiAction
         data:
           type: object
+        selectable:
+          type: boolean
+        selected:
+          type: boolean
     GridView:
       type: object
       description: |
@@ -282,6 +337,23 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/GridColumnMeta'
+        selectionMode:
+            $ref: '#/components/schemas/GridSelectionMode'
+        selectionType:
+            $ref: '#/components/schemas/GridSelectionType'
+        preserveSelectionOnPageChange:
+          type: boolean
+    GridSelectionMode:
+      type: string
+      enum:
+        - none
+        - single
+        - multiple
+    GridSelectionType:
+      type: string
+      enum:
+        - row
+        - checkbox
     GridColumnMeta:
       type: object
       required: [label, propertyName]

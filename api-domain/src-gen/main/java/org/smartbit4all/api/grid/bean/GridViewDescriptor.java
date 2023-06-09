@@ -25,6 +25,8 @@ import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
 import org.smartbit4all.api.grid.bean.GridColumnMeta;
+import org.smartbit4all.api.grid.bean.GridSelectionMode;
+import org.smartbit4all.api.grid.bean.GridSelectionType;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -38,7 +40,10 @@ import javax.validation.Valid;
   GridViewDescriptor.LABEL,
   GridViewDescriptor.ICON,
   GridViewDescriptor.KIND,
-  GridViewDescriptor.COLUMNS
+  GridViewDescriptor.COLUMNS,
+  GridViewDescriptor.SELECTION_MODE,
+  GridViewDescriptor.SELECTION_TYPE,
+  GridViewDescriptor.PRESERVE_SELECTION_ON_PAGE_CHANGE
 })
 @JsonTypeName("GridViewDescriptor")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -89,6 +94,15 @@ public class GridViewDescriptor {
 
   public static final String COLUMNS = "columns";
   private List<GridColumnMeta> columns = new ArrayList<>();
+
+  public static final String SELECTION_MODE = "selectionMode";
+  private GridSelectionMode selectionMode;
+
+  public static final String SELECTION_TYPE = "selectionType";
+  private GridSelectionType selectionType;
+
+  public static final String PRESERVE_SELECTION_ON_PAGE_CHANGE = "preserveSelectionOnPageChange";
+  private Boolean preserveSelectionOnPageChange;
 
   public GridViewDescriptor() { 
   }
@@ -208,6 +222,89 @@ public class GridViewDescriptor {
   }
 
 
+  public GridViewDescriptor selectionMode(GridSelectionMode selectionMode) {
+    
+    this.selectionMode = selectionMode;
+    return this;
+  }
+
+   /**
+   * Get selectionMode
+   * @return selectionMode
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(SELECTION_MODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public GridSelectionMode getSelectionMode() {
+    return selectionMode;
+  }
+
+
+  @JsonProperty(SELECTION_MODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSelectionMode(GridSelectionMode selectionMode) {
+    this.selectionMode = selectionMode;
+  }
+
+
+  public GridViewDescriptor selectionType(GridSelectionType selectionType) {
+    
+    this.selectionType = selectionType;
+    return this;
+  }
+
+   /**
+   * Get selectionType
+   * @return selectionType
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(SELECTION_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public GridSelectionType getSelectionType() {
+    return selectionType;
+  }
+
+
+  @JsonProperty(SELECTION_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSelectionType(GridSelectionType selectionType) {
+    this.selectionType = selectionType;
+  }
+
+
+  public GridViewDescriptor preserveSelectionOnPageChange(Boolean preserveSelectionOnPageChange) {
+    
+    this.preserveSelectionOnPageChange = preserveSelectionOnPageChange;
+    return this;
+  }
+
+   /**
+   * Get preserveSelectionOnPageChange
+   * @return preserveSelectionOnPageChange
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(PRESERVE_SELECTION_ON_PAGE_CHANGE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getPreserveSelectionOnPageChange() {
+    return preserveSelectionOnPageChange;
+  }
+
+
+  @JsonProperty(PRESERVE_SELECTION_ON_PAGE_CHANGE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setPreserveSelectionOnPageChange(Boolean preserveSelectionOnPageChange) {
+    this.preserveSelectionOnPageChange = preserveSelectionOnPageChange;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -220,12 +317,15 @@ public class GridViewDescriptor {
     return Objects.equals(this.label, gridViewDescriptor.label) &&
         Objects.equals(this.icon, gridViewDescriptor.icon) &&
         Objects.equals(this.kind, gridViewDescriptor.kind) &&
-        Objects.equals(this.columns, gridViewDescriptor.columns);
+        Objects.equals(this.columns, gridViewDescriptor.columns) &&
+        Objects.equals(this.selectionMode, gridViewDescriptor.selectionMode) &&
+        Objects.equals(this.selectionType, gridViewDescriptor.selectionType) &&
+        Objects.equals(this.preserveSelectionOnPageChange, gridViewDescriptor.preserveSelectionOnPageChange);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(label, icon, kind, columns);
+    return Objects.hash(label, icon, kind, columns, selectionMode, selectionType, preserveSelectionOnPageChange);
   }
 
   @Override
@@ -236,6 +336,9 @@ public class GridViewDescriptor {
     sb.append("    icon: ").append(toIndentedString(icon)).append("\n");
     sb.append("    kind: ").append(toIndentedString(kind)).append("\n");
     sb.append("    columns: ").append(toIndentedString(columns)).append("\n");
+    sb.append("    selectionMode: ").append(toIndentedString(selectionMode)).append("\n");
+    sb.append("    selectionType: ").append(toIndentedString(selectionType)).append("\n");
+    sb.append("    preserveSelectionOnPageChange: ").append(toIndentedString(preserveSelectionOnPageChange)).append("\n");
     sb.append("}");
     return sb.toString();
   }

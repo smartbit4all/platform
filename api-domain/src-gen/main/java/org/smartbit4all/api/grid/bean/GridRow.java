@@ -37,7 +37,9 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   GridRow.ID,
   GridRow.ACTIONS,
-  GridRow.DATA
+  GridRow.DATA,
+  GridRow.SELECTABLE,
+  GridRow.SELECTED
 })
 @JsonTypeName("GridRow")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -50,6 +52,12 @@ public class GridRow {
 
   public static final String DATA = "data";
   private Object data;
+
+  public static final String SELECTABLE = "selectable";
+  private Boolean selectable;
+
+  public static final String SELECTED = "selected";
+  private Boolean selected;
 
   public GridRow() { 
   }
@@ -142,6 +150,60 @@ public class GridRow {
   }
 
 
+  public GridRow selectable(Boolean selectable) {
+    
+    this.selectable = selectable;
+    return this;
+  }
+
+   /**
+   * Get selectable
+   * @return selectable
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(SELECTABLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getSelectable() {
+    return selectable;
+  }
+
+
+  @JsonProperty(SELECTABLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSelectable(Boolean selectable) {
+    this.selectable = selectable;
+  }
+
+
+  public GridRow selected(Boolean selected) {
+    
+    this.selected = selected;
+    return this;
+  }
+
+   /**
+   * Get selected
+   * @return selected
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(SELECTED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getSelected() {
+    return selected;
+  }
+
+
+  @JsonProperty(SELECTED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSelected(Boolean selected) {
+    this.selected = selected;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -153,12 +215,14 @@ public class GridRow {
     GridRow gridRow = (GridRow) o;
     return Objects.equals(this.id, gridRow.id) &&
         Objects.equals(this.actions, gridRow.actions) &&
-        Objects.equals(this.data, gridRow.data);
+        Objects.equals(this.data, gridRow.data) &&
+        Objects.equals(this.selectable, gridRow.selectable) &&
+        Objects.equals(this.selected, gridRow.selected);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, actions, data);
+    return Objects.hash(id, actions, data, selectable, selected);
   }
 
   @Override
@@ -168,6 +232,8 @@ public class GridRow {
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    actions: ").append(toIndentedString(actions)).append("\n");
     sb.append("    data: ").append(toIndentedString(data)).append("\n");
+    sb.append("    selectable: ").append(toIndentedString(selectable)).append("\n");
+    sb.append("    selected: ").append(toIndentedString(selected)).append("\n");
     sb.append("}");
     return sb.toString();
   }

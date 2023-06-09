@@ -39,7 +39,8 @@ smartbit4all {
 		importMappings = [
             "UiActionRequest": "org.smartbit4all.api.view.bean.UiActionRequest",
             "UiAction": "org.smartbit4all.api.view.bean.UiAction",
-            "FilterExpressionOrderBy" : "org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy"
+            "FilterExpressionOrderBy" : "org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy",
+            "ViewContextChange" : "org.smartbit4all.api.view.bean.ViewContextChange"
       ]
     }
 }

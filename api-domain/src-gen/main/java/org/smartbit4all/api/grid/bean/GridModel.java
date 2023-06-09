@@ -34,9 +34,9 @@ import javax.validation.constraints.*;
 import javax.validation.Valid;
 
 /**
- * This object respresent the model of a grid component. 
+ * This object represents the client model of a grid component. 
  */
-@ApiModel(description = "This object respresent the model of a grid component. ")
+@ApiModel(description = "This object represents the client model of a grid component. ")
 @JsonPropertyOrder({
   GridModel.VIEW_UUID,
   GridModel.AVAILABLE_VIEWS,
@@ -44,6 +44,8 @@ import javax.validation.Valid;
   GridModel.ACCESS_CONFIG,
   GridModel.PAGE,
   GridModel.TOTAL_ROW_COUNT,
+  GridModel.SELECTED_ROW_COUNT,
+  GridModel.ALL_ROWS_SELECTED,
   GridModel.PAGE_SIZE,
   GridModel.PAGE_SIZE_OPTIONS
 })
@@ -67,6 +69,12 @@ public class GridModel {
 
   public static final String TOTAL_ROW_COUNT = "totalRowCount";
   private Integer totalRowCount;
+
+  public static final String SELECTED_ROW_COUNT = "selectedRowCount";
+  private Integer selectedRowCount;
+
+  public static final String ALL_ROWS_SELECTED = "allRowsSelected";
+  private Boolean allRowsSelected;
 
   public static final String PAGE_SIZE = "pageSize";
   private Integer pageSize;
@@ -253,6 +261,60 @@ public class GridModel {
   }
 
 
+  public GridModel selectedRowCount(Integer selectedRowCount) {
+    
+    this.selectedRowCount = selectedRowCount;
+    return this;
+  }
+
+   /**
+   * Get selectedRowCount
+   * @return selectedRowCount
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(SELECTED_ROW_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getSelectedRowCount() {
+    return selectedRowCount;
+  }
+
+
+  @JsonProperty(SELECTED_ROW_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSelectedRowCount(Integer selectedRowCount) {
+    this.selectedRowCount = selectedRowCount;
+  }
+
+
+  public GridModel allRowsSelected(Boolean allRowsSelected) {
+    
+    this.allRowsSelected = allRowsSelected;
+    return this;
+  }
+
+   /**
+   * Get allRowsSelected
+   * @return allRowsSelected
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(ALL_ROWS_SELECTED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getAllRowsSelected() {
+    return allRowsSelected;
+  }
+
+
+  @JsonProperty(ALL_ROWS_SELECTED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setAllRowsSelected(Boolean allRowsSelected) {
+    this.allRowsSelected = allRowsSelected;
+  }
+
+
   public GridModel pageSize(Integer pageSize) {
     
     this.pageSize = pageSize;
@@ -330,13 +392,15 @@ public class GridModel {
         Objects.equals(this.accessConfig, gridModel.accessConfig) &&
         Objects.equals(this.page, gridModel.page) &&
         Objects.equals(this.totalRowCount, gridModel.totalRowCount) &&
+        Objects.equals(this.selectedRowCount, gridModel.selectedRowCount) &&
+        Objects.equals(this.allRowsSelected, gridModel.allRowsSelected) &&
         Objects.equals(this.pageSize, gridModel.pageSize) &&
         Objects.equals(this.pageSizeOptions, gridModel.pageSizeOptions);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(viewUuid, availableViews, view, accessConfig, page, totalRowCount, pageSize, pageSizeOptions);
+    return Objects.hash(viewUuid, availableViews, view, accessConfig, page, totalRowCount, selectedRowCount, allRowsSelected, pageSize, pageSizeOptions);
   }
 
   @Override
@@ -349,6 +413,8 @@ public class GridModel {
     sb.append("    accessConfig: ").append(toIndentedString(accessConfig)).append("\n");
     sb.append("    page: ").append(toIndentedString(page)).append("\n");
     sb.append("    totalRowCount: ").append(toIndentedString(totalRowCount)).append("\n");
+    sb.append("    selectedRowCount: ").append(toIndentedString(selectedRowCount)).append("\n");
+    sb.append("    allRowsSelected: ").append(toIndentedString(allRowsSelected)).append("\n");
     sb.append("    pageSize: ").append(toIndentedString(pageSize)).append("\n");
     sb.append("    pageSizeOptions: ").append(toIndentedString(pageSizeOptions)).append("\n");
     sb.append("}");

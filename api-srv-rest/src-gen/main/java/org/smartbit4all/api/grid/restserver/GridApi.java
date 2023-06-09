@@ -8,6 +8,7 @@ package org.smartbit4all.api.grid.restserver;
 import org.smartbit4all.api.grid.bean.GridModel;
 import org.smartbit4all.api.grid.bean.GridUpdateData;
 import java.util.UUID;
+import org.smartbit4all.api.view.bean.ViewContextChange;
 import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -92,34 +93,68 @@ public interface GridApi {
 
 
     /**
-     * POST /grid/{uuid}/{gridIdentifier}/performAction/{actionIdentifier}
+     * POST /grid/{uuid}/{gridId}/{rowId}/select
      *
      * @param uuid  (required)
-     * @param gridIdentifier  (required)
-     * @param actionIdentifier  (required)
-     * @return OK (status code 200)
-     *         or NOK (status code 404)
+     * @param gridId  (required)
+     * @param rowId  (required)
+     * @param selected  (optional)
+     * @return  (status code 200)
      */
     @ApiOperation(
         tags = { "grid" },
         value = "",
-        nickname = "performAction",
-        notes = ""
+        nickname = "select",
+        notes = "",
+        response = ViewContextChange.class
     )
     @ApiResponses({
-        @ApiResponse(code = 200, message = "OK"),
-        @ApiResponse(code = 404, message = "NOK")
+        @ApiResponse(code = 200, message = "", response = ViewContextChange.class)
     })
     @RequestMapping(
         method = RequestMethod.POST,
-        value = "/grid/{uuid}/{gridIdentifier}/performAction/{actionIdentifier}"
+        value = "/grid/{uuid}/{gridId}/{rowId}/select",
+        produces = { "application/json" }
     )
-    default ResponseEntity<Void> performAction(
+    default ResponseEntity<ViewContextChange> select(
         @ApiParam(value = "", required = true) @PathVariable("uuid") UUID uuid,
-        @ApiParam(value = "", required = true) @PathVariable("gridIdentifier") String gridIdentifier,
-        @ApiParam(value = "", required = true) @PathVariable("actionIdentifier") String actionIdentifier
+        @ApiParam(value = "", required = true) @PathVariable("gridId") String gridId,
+        @ApiParam(value = "", required = true) @PathVariable("rowId") String rowId,
+        @ApiParam(value = "") @RequestHeader(value = "selected", required = false) Boolean selected
     ) throws Exception {
-        return getDelegate().performAction(uuid, gridIdentifier, actionIdentifier);
+        return getDelegate().select(uuid, gridId, rowId, selected);
+    }
+
+
+    /**
+     * POST /grid/{uuid}/{gridId}/select
+     *
+     * @param uuid  (required)
+     * @param gridId  (required)
+     * @param selected  (optional)
+     * @return  (status code 200)
+     */
+    @ApiOperation(
+        tags = { "grid" },
+        value = "",
+        nickname = "selectAll",
+        notes = "",
+        response = ViewContextChange.class
+    )
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "", response = ViewContextChange.class)
+    })
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/grid/{uuid}/{gridId}/select",
+        produces = { "application/json" }
+    )
+    default ResponseEntity<ViewContextChange> selectAll(
+        @ApiParam(value = "", required = true) @PathVariable("uuid") UUID uuid,
+        @ApiParam(value = "", required = true) @PathVariable("gridId") String gridId,
+        @ApiParam(value = "") @RequestHeader(value = "selected", required = false) Boolean selected
+    ) throws Exception {
+        return getDelegate().selectAll(uuid, gridId, selected);
     }
 
 

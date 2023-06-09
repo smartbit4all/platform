@@ -11,6 +11,7 @@ import org.smartbit4all.api.collection.SearchIndex;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy;
 import org.smartbit4all.api.grid.bean.GridColumnMeta;
 import org.smartbit4all.api.grid.bean.GridModel;
+import org.smartbit4all.api.grid.bean.GridRow;
 import org.smartbit4all.api.grid.bean.GridUpdateData;
 import org.smartbit4all.api.grid.bean.GridView;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
@@ -242,5 +243,23 @@ public interface GridModelApi {
    * @param gridId
    */
   void refreshGrid(UUID viewUuid, String gridId);
+
+
+  /**
+   * Registers a selectionChange listener for a grid in a given View. 'request' will be called after
+   * grid's selection has changed. First two parameters will be viewUuid and gridId, return value is
+   * discarded.
+   *
+   * @param viewUuid
+   * @param gridId
+   * @param request
+   */
+  void addSelectionChangeListener(UUID viewUuid, String gridId, InvocationRequest request);
+
+  void selectRow(UUID viewUuid, String gridId, String rowId, boolean selected);
+
+  void selectAllRow(UUID viewUuid, String gridId, boolean selected);
+
+  List<GridRow> getSelectedRows(UUID viewUuid, String gridId);
 
 }
