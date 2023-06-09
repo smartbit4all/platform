@@ -336,6 +336,11 @@ components:
             type: string
         defaultSelection:
           $ref: '#/components/schemas/UiTreeDefaultSelection'
+        params:
+          description: |
+            Additional parameters for tree. 
+          type: object
+          additionalProperties: true
     UiTreeNode:
       type: object
       required: [classes, children, actions]

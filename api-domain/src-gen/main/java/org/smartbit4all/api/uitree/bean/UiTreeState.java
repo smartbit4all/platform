@@ -45,7 +45,8 @@ import javax.validation.Valid;
   UiTreeState.ROOT_NODES,
   UiTreeState.EXPANDED_NODES,
   UiTreeState.SELECTED_NODES,
-  UiTreeState.DEFAULT_SELECTION
+  UiTreeState.DEFAULT_SELECTION,
+  UiTreeState.PARAMS
 })
 @JsonTypeName("UiTreeState")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -70,6 +71,9 @@ public class UiTreeState {
 
   public static final String DEFAULT_SELECTION = "defaultSelection";
   private UiTreeDefaultSelection defaultSelection;
+
+  public static final String PARAMS = "params";
+  private Map<String, Object> params = null;
 
   public UiTreeState() { 
   }
@@ -290,6 +294,41 @@ public class UiTreeState {
   }
 
 
+  public UiTreeState params(Map<String, Object> params) {
+    
+    this.params = params;
+    return this;
+  }
+
+  public UiTreeState putParamsItem(String key, Object paramsItem) {
+    if (this.params == null) {
+      this.params = new HashMap<>();
+    }
+    this.params.put(key, paramsItem);
+    return this;
+  }
+
+   /**
+   * Additional parameters for tree.  
+   * @return params
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "Additional parameters for tree.  ")
+  @JsonProperty(PARAMS)
+  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Map<String, Object> getParams() {
+    return params;
+  }
+
+
+  @JsonProperty(PARAMS)
+  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+  public void setParams(Map<String, Object> params) {
+    this.params = params;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -305,12 +344,13 @@ public class UiTreeState {
         Objects.equals(this.rootNodes, uiTreeState.rootNodes) &&
         Objects.equals(this.expandedNodes, uiTreeState.expandedNodes) &&
         Objects.equals(this.selectedNodes, uiTreeState.selectedNodes) &&
-        Objects.equals(this.defaultSelection, uiTreeState.defaultSelection);
+        Objects.equals(this.defaultSelection, uiTreeState.defaultSelection) &&
+        Objects.equals(this.params, uiTreeState.params);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(config, viewUuid, nodes, rootNodes, expandedNodes, selectedNodes, defaultSelection);
+    return Objects.hash(config, viewUuid, nodes, rootNodes, expandedNodes, selectedNodes, defaultSelection, params);
   }
 
   @Override
@@ -324,6 +364,7 @@ public class UiTreeState {
     sb.append("    expandedNodes: ").append(toIndentedString(expandedNodes)).append("\n");
     sb.append("    selectedNodes: ").append(toIndentedString(selectedNodes)).append("\n");
     sb.append("    defaultSelection: ").append(toIndentedString(defaultSelection)).append("\n");
+    sb.append("    params: ").append(toIndentedString(params)).append("\n");
     sb.append("}");
     return sb.toString();
   }
