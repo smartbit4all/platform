@@ -57,6 +57,10 @@ import org.springframework.core.annotation.AnnotationUtils;
 
 public class ViewContextServiceImpl implements ViewContextService {
 
+  public interface ViewCall {
+    void run() throws RuntimeException;
+  }
+
   private static final Logger log = LoggerFactory.getLogger(ViewContextServiceImpl.class);
 
   private static final ThreadLocal<ViewContext> currentViewContext = new ThreadLocal<>();
@@ -538,9 +542,27 @@ public class ViewContextServiceImpl implements ViewContextService {
    * @return
    */
   private ViewContextChange invokeMethodInternal(Method method, Object api, Object... args) {
+    ObjectNode before = beforeInvoke(method.getName());
     try {
-      ObjectNode before = objectApi.create(SCHEMA, getCurrentViewContextEntry());
       method.invoke(api, args);
+    } catch (Throwable tr) {
+      throw new RuntimeException("Error when calling method " + method.getName(),
+          tr);
+    }
+    return afterInvoke(before, method.getName());
+  }
+
+  private ObjectNode beforeInvoke(String methodName) {
+    try {
+      return objectApi.create(SCHEMA, getCurrentViewContextEntry());
+    } catch (Throwable tr) {
+      throw new RuntimeException("Error after calling method " + methodName,
+          tr);
+    }
+  }
+
+  private ViewContextChange afterInvoke(ObjectNode before, String methodName) {
+    try {
       Map<UUID, View> beforeViews = before.getValueAsList(View.class, ViewContext.VIEWS)
           .stream()
           .collect(toMap(View::getUuid, v -> v));
@@ -556,10 +578,11 @@ public class ViewContextServiceImpl implements ViewContextService {
           .viewContext(getCurrentViewContext())
           .changes(changes);
     } catch (Throwable tr) {
-      throw new RuntimeException("Error when calling method " + method.getName(),
+      throw new RuntimeException("Error after calling method " + methodName,
           tr);
     }
   }
+
 
   private ComponentModelChange compareViewNodes(View before, View after) {
     if (before != null) {
@@ -614,6 +637,18 @@ public class ViewContextServiceImpl implements ViewContextService {
       method = widgetMethods.get("");
     }
     return method;
+  }
+
+  @Override
+  public ViewContextChange performViewCall(ViewCall viewCall, String methodName) {
+    ObjectNode before = beforeInvoke(methodName);
+    try {
+      viewCall.run();
+    } catch (Throwable tr) {
+      throw new RuntimeException("Error when calling method " + methodName,
+          tr);
+    }
+    return afterInvoke(before, methodName);
   }
 
 }

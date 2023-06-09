@@ -2,6 +2,7 @@ package org.smartbit4all.api.view;
 
 import java.util.UUID;
 import java.util.function.UnaryOperator;
+import org.smartbit4all.api.view.ViewContextServiceImpl.ViewCall;
 import org.smartbit4all.api.view.annotation.BeforeClose;
 import org.smartbit4all.api.view.bean.CloseResult;
 import org.smartbit4all.api.view.bean.ComponentModel;
@@ -137,5 +138,7 @@ public interface ViewContextService {
 
   ViewContextChange performWidgetAction(UUID viewUuid, String widgetId, String nodeId,
       UiActionRequest request);
+
+  ViewContextChange performViewCall(ViewCall viewCall, String methodName);
 
 }
