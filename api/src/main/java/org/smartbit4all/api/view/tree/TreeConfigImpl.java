@@ -68,21 +68,21 @@ public abstract class TreeConfigImpl implements TreeConfig {
   @Override
   public List<UiTreeNode> readChildrenNodes(UiTreeState treeState, UiTreeNode treeNode) {
     String nodeType = treeNode.getNodeType();
-    return getRelations().values().stream()
+    return getRelations(treeState).values().stream()
         .filter(rel -> nodeType.equals(rel.getParentNodeType()))
         .flatMap(rel -> rel.readChildrenNodes(this, treeState, treeNode).stream())
         .collect(toList());
   }
 
-  private Map<String, TreeRelation> getRelations() {
+  private Map<String, TreeRelation> getRelations(UiTreeState treeState) {
     if (relations == null) {
-      initRelations();
+      initRelations(treeState);
     }
     return relations;
   }
 
   // lazy initializations by name
-  private synchronized void initRelations() {
+  protected synchronized void initRelations(UiTreeState treeState) {
     relations = relationNames.stream()
         .collect(toMap(
             relationName -> relationName,
