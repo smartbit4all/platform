@@ -42,19 +42,20 @@ public abstract class TreeRelationImpl implements TreeRelation {
   @Override
   public List<UiTreeNode> readChildrenNodes(TreeConfig treeConfig, UiTreeState treeState,
       UiTreeNode parentTreeNode) {
-    ObjectNode parentNode = readParentObjectNode(parentTreeNode);
-    return readRelatedObjectNodes(parentNode)
+    ObjectNode parentNode = readParentObjectNode(treeState, parentTreeNode);
+    return readRelatedObjectNodes(treeState, parentNode)
         .map(object -> renderNode(treeConfig, treeState, childNodeType, object,
             parentTreeNode.getIdentifier(), parentTreeNode.getLevel() + 1))
         .collect(toList());
   }
 
-  protected ObjectNode readParentObjectNode(UiTreeNode parentTreeNode) {
+  protected ObjectNode readParentObjectNode(UiTreeState treeState, UiTreeNode parentTreeNode) {
     return objectApi.load(parentTreeNode.getObjectUri());
   }
 
   // for ex. return parent.list(objectRelation).nodeStream();
-  protected abstract Stream<ObjectNode> readRelatedObjectNodes(ObjectNode parent);
+  protected abstract Stream<ObjectNode> readRelatedObjectNodes(UiTreeState treeState,
+      ObjectNode parent);
 
   protected UiTreeNode renderNode(TreeConfig treeConfig, UiTreeState treeState, String nodeType,
       ObjectNode object,
