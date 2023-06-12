@@ -9,9 +9,8 @@ public interface TreeNodeActionHandler {
 
   List<String> getSupportedNodeTypes();
 
-  boolean isActionSupported(String nodeType, String actionCode);
+  boolean isActionSupported(UiTreeState treeState, String nodeType, String actionCode);
 
-  void performAction(TreeApi treeApi, UiTreeState treeState, UiTreeNode node,
-      UiActionRequest action);
+  void performAction(UiTreeState treeState, UiTreeNode node, UiActionRequest action);
 
 }

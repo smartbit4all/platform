@@ -208,7 +208,7 @@ public class TreeApiImpl implements TreeApi {
     String nodeType = treeNode == null ? null : treeNode.getNodeType();
     String actionCode = action.getCode();
     TreeConfig config = getTreeConfig(treeState);
-    if (config.isActionSupported(nodeType, actionCode)) {
+    if (config.isActionSupported(treeState, nodeType, actionCode)) {
       config.performAction(this, treeState, treeNode, action);
     }
   }

@@ -90,11 +90,11 @@ public abstract class TreeConfigImpl implements TreeConfig {
   }
 
   @Override
-  public boolean isActionSupported(String nodeType, String actionCode) {
+  public boolean isActionSupported(UiTreeState treeState, String nodeType, String actionCode) {
     String type = nodeType == null ? configName : nodeType;
     return treeSetupApi.getTreeNodeActionHandlers(type)
         .stream()
-        .anyMatch(handler -> handler.isActionSupported(type, actionCode));
+        .anyMatch(handler -> handler.isActionSupported(treeState, type, actionCode));
   }
 
   @Override
@@ -104,9 +104,9 @@ public abstract class TreeConfigImpl implements TreeConfig {
     String type = treeNode == null ? configName : node.getNodeType();
     treeSetupApi.getTreeNodeActionHandlers(type)
         .stream()
-        .filter(handler -> handler.isActionSupported(type, action.getCode()))
+        .filter(handler -> handler.isActionSupported(treeState, type, action.getCode()))
         .findAny()
-        .ifPresent(handler -> handler.performAction(treeApi, treeState, node, action));
+        .ifPresent(handler -> handler.performAction(treeState, node, action));
   }
 
 }

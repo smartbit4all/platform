@@ -30,7 +30,7 @@ public interface TreeConfig {
 
   void handleNodeSelected(UiTreeState treeState, UiTreeNode treeNode);
 
-  boolean isActionSupported(String nodeType, String actionCode);
+  boolean isActionSupported(UiTreeState treeState, String nodeType, String actionCode);
 
   List<UiAction> getActionsForNode(UiTreeState treeState, String nodeType,
       ObjectNode object);
