@@ -1,7 +1,5 @@
 package org.smartbit4all.core.object;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 import java.io.IOException;
 import java.net.URI;
 import java.time.LocalDate;
@@ -15,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
+import java.util.concurrent.locks.Lock;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +28,8 @@ import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.base.Objects;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 public class ObjectApiImpl implements ObjectApi {
 
@@ -381,6 +382,16 @@ public class ObjectApiImpl implements ObjectApi {
   @Override
   public ObjectPropertyResolver resolver() {
     return new ObjectPropertyResolver(self);
+  }
+
+  @Override
+  public Lock getLock(URI uri) {
+    return retrievalApi.getLock(uri);
+  }
+
+  @Override
+  public Long getLastModified(URI uri) {
+    return retrievalApi.getLastModified(uri);
   }
 
 }

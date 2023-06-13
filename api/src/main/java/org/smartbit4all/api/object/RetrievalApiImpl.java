@@ -1,10 +1,10 @@
 package org.smartbit4all.api.object;
 
-import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.smartbit4all.api.object.bean.AggregationKind;
@@ -17,9 +17,11 @@ import org.smartbit4all.core.object.ReferenceDefinition;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.core.utility.UriUtils;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
+import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import static java.util.stream.Collectors.toMap;
 
 /**
  * The abstract implementation of the retrieval. It will use contribution apis to access objects.
@@ -163,4 +165,14 @@ public final class RetrievalApiImpl implements RetrievalApi {
     return load(request, uris.stream(), branchUri).collect(Collectors.toList());
   }
 
+  @Override
+  public Lock getLock(URI uri) {
+    Storage storage = storageApi.getStorage(uri);
+    return storage == null ? null : storage.getLock(uri);
+  }
+
+  @Override
+  public Long getLastModified(URI uri) {
+    return storageApi.getDefaultObjectStorage().lastModified(uri);
+  }
 }
