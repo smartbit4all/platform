@@ -30,7 +30,7 @@ public class BranchApiImpl implements BranchApi {
   @Autowired
   private ObjectApi objectApi;
 
-  @Autowired
+  @Autowired(required = false)
   private SessionApi sessionApi;
 
   @Override
@@ -43,7 +43,8 @@ public class BranchApiImpl implements BranchApi {
 
   @Override
   public BranchEntry constructBranch(String caption) {
-    return new BranchEntry().caption(caption).created(sessionApi.createActivityLog());
+    return new BranchEntry().caption(caption)
+        .created(sessionApi != null ? sessionApi.createActivityLog() : null);
   }
 
   @Override
