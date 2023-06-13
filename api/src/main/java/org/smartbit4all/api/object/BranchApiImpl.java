@@ -1,5 +1,6 @@
 package org.smartbit4all.api.object;
 
+import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
@@ -11,11 +12,11 @@ import org.smartbit4all.api.object.bean.BranchEntry;
 import org.smartbit4all.api.object.bean.BranchOperation;
 import org.smartbit4all.api.object.bean.BranchOperation.OperationTypeEnum;
 import org.smartbit4all.api.object.bean.BranchedObject;
+import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import static java.util.stream.Collectors.toMap;
 
 /**
  * The implementation of the {@link BranchApi} that stores the branch info in {@link BranchEntry}.
@@ -27,7 +28,10 @@ public class BranchApiImpl implements BranchApi {
   protected static final String SCHEME = "branch";
 
   @Autowired
-  ObjectApi objectApi;
+  private ObjectApi objectApi;
+
+  @Autowired
+  private SessionApi sessionApi;
 
   @Override
   public BranchEntry makeBranch(String caption) {
@@ -39,7 +43,7 @@ public class BranchApiImpl implements BranchApi {
 
   @Override
   public BranchEntry constructBranch(String caption) {
-    return new BranchEntry().caption(caption);
+    return new BranchEntry().caption(caption).created(sessionApi.createActivityLog());
   }
 
   @Override
