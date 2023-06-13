@@ -1,7 +1,7 @@
 package org.smartbit4all.storage.fs;
 
 import org.smartbit4all.core.io.TestFileUtil;
-import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.domain.config.ApplicationRuntimeStorageConfig;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.springframework.context.annotation.Bean;
@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 public class StorageFSTestConfig {
 
   @Bean
-  public StorageFS defaultStorage(ObjectApi objectApi) {
+  public StorageFS defaultStorage(ObjectDefinitionApi objectApi) {
     return new StorageFS(
         TestFileUtil.testFsRootFolder(),
         objectApi);

@@ -7,7 +7,7 @@ import org.smartbit4all.api.invocation.TestPrimaryApi;
 import org.smartbit4all.api.invocation.TestPrimaryApiImpl;
 import org.smartbit4all.core.io.TestFSCleaner;
 import org.smartbit4all.core.io.TestFileUtil;
-import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.domain.config.ApplicationRuntimeStorageConfig;
 import org.smartbit4all.domain.data.storage.ObjectStorage;
 import org.smartbit4all.storage.fs.StorageFS;
@@ -24,7 +24,7 @@ import org.springframework.context.annotation.Import;
 public class InvocationApiPrimaryApiRegisterRestclientTestConfig {
 
   @Bean
-  ObjectStorage objectStorage(ObjectApi objectApi) {
+  ObjectStorage objectStorage(ObjectDefinitionApi objectApi) {
     return new StorageFS(TestFileUtil.testFsRootFolder(), objectApi);
   }
 

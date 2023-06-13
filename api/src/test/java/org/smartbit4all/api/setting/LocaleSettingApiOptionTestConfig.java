@@ -1,7 +1,7 @@
 package org.smartbit4all.api.setting;
 
 import org.smartbit4all.api.config.PlatformApiConfig;
-import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.domain.data.storage.ObjectStorageInMemory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,7 +17,7 @@ public class LocaleSettingApiOptionTestConfig {
   }
 
   @Bean
-  ObjectStorageInMemory createInMemoryStorage(ObjectApi objectApi) {
+  ObjectStorageInMemory createInMemoryStorage(ObjectDefinitionApi objectApi) {
     return new ObjectStorageInMemory(objectApi);
   }
 

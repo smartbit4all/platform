@@ -14,7 +14,7 @@
  ******************************************************************************/
 package org.smartbit4all.core.io;
 
-import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.domain.data.storage.ObjectStorage;
 import org.smartbit4all.storage.fs.StorageFS;
 import org.springframework.context.annotation.Bean;
@@ -25,7 +25,7 @@ import org.springframework.context.annotation.Configuration;
 public class TestFSConfig {
 
   @Bean
-  public ObjectStorage objectStorage(ObjectApi objectApi) {
+  public ObjectStorage objectStorage(ObjectDefinitionApi objectApi) {
     return new StorageFS(TestFileUtil.testFsRootFolder(), objectApi);
   }
 

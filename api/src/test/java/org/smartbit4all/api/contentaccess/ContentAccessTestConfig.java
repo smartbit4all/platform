@@ -13,7 +13,7 @@ import org.smartbit4all.api.binarydata.fs.BinaryDataApiFS;
 import org.smartbit4all.api.config.PlatformApiConfig;
 import org.smartbit4all.api.objectshare.ObjectShareApi;
 import org.smartbit4all.api.objectshare.ObjectShareApiInMemoryImpl;
-import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.domain.data.storage.ObjectStorageInMemory;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.springframework.context.annotation.Bean;
@@ -57,7 +57,7 @@ public class ContentAccessTestConfig {
   }
 
   @Bean
-  ObjectStorageInMemory createInMemoryStorage(ObjectApi objectApi) {
+  ObjectStorageInMemory createInMemoryStorage(ObjectDefinitionApi objectApi) {
     return new ObjectStorageInMemory(objectApi);
   }
 

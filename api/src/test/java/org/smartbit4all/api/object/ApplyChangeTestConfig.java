@@ -13,7 +13,7 @@ import org.smartbit4all.api.sample.bean.SampleDataSheet;
 import org.smartbit4all.api.sample.bean.SampleInlineObject;
 import org.smartbit4all.api.sample.bean.SampleLinkObject;
 import org.smartbit4all.core.io.TestFileUtil;
-import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.core.object.ObjectReferenceConfigs;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.storage.fs.StorageFS;
@@ -33,7 +33,7 @@ public class ApplyChangeTestConfig {
   public static final String SHADOW_ITEMS = "shadowItems";
 
   @Bean
-  public StorageFS defaultStorage(ObjectApi objectApi) {
+  public StorageFS defaultStorage(ObjectDefinitionApi objectApi) {
     return new StorageFS(
         TestFileUtil.testFsRootFolder(),
         objectApi);

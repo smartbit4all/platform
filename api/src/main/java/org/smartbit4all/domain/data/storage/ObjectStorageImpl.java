@@ -19,8 +19,8 @@ import org.smartbit4all.api.storage.bean.ObjectReferenceList;
 import org.smartbit4all.api.storage.bean.ObjectVersion;
 import org.smartbit4all.api.storage.bean.StorageObjectData;
 import org.smartbit4all.api.storage.bean.StorageObjectRelationData;
-import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
+import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.core.utility.PathUtility;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.core.utility.UriUtils;
@@ -78,7 +78,7 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
   /**
    * The object API gives access to the meta data of the objects.
    */
-  protected final ObjectApi objectApi;
+  protected final ObjectDefinitionApi objectDefinitionApi;
 
   protected Supplier<String> versionCreatedBy = () -> StringConstant.UNKNOWN;
 
@@ -87,14 +87,14 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
   @Autowired(required = false)
   private List<ObjectStorageSaveSucceedListener> onSucceedListeners;
 
-  protected ObjectStorageImpl(ObjectApi objectApi) {
+  protected ObjectStorageImpl(ObjectDefinitionApi objectDefinitionApi) {
     super();
-    this.objectApi = objectApi;
+    this.objectDefinitionApi = objectDefinitionApi;
   }
 
   @Override
   public StorageObjectLock getLock(URI objectUri) {
-    objectUri = objectApi.getLatestUri(objectUri);
+    objectUri = getUriWithoutVersion(objectUri);
     boolean tryAgain = true;
     while (tryAgain) {
       tryAgain = false;
@@ -145,8 +145,8 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
 
   /**
    * Analyze the uri and the {@link StorageObjectData} to extract the object definition from the
-   * alias or from the {@link StorageObjectData}. Using the {@link #objectApi} identifies the
-   * {@link ObjectDefinition} belongs to the given class. This function is called when the
+   * alias or from the {@link StorageObjectData}. Using the {@link #objectDefinitionApi} identifies
+   * the {@link ObjectDefinition} belongs to the given class. This function is called when the
    * {@link Class} is not defined for the {@link StorageObject}.
    *
    * @param uri The uri of an object.
@@ -156,12 +156,12 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
   protected ObjectDefinition<?> getObjectDefinition(URI uri, StorageObjectData objectData,
       Class<?> clazz) {
     if (clazz != null) {
-      return objectApi.definition(clazz);
+      return objectDefinitionApi.definition(clazz);
     }
     if (objectData != null && objectData.getClassName() != null) {
       try {
         Class<?> clazzByData = Class.forName(objectData.getClassName());
-        return objectApi.definition(clazzByData);
+        return objectDefinitionApi.definition(clazzByData);
       } catch (ClassNotFoundException e) {
         throw new IllegalArgumentException(
             "Unable to initiate " + objectData.getClassName() + " class from " + uri + " URI.", e);
@@ -177,7 +177,7 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
     }
 
     // Try to identify the ObjectDefintion by the URI
-    ObjectDefinition<?> objectDefinition = objectApi.definition(uri);
+    ObjectDefinition<?> objectDefinition = objectDefinitionApi.definition(uri);
     if (objectDefinition == null) {
       throw new ObjectNotFoundException(uri, clazz, "Unable to retrieve object definition.");
     }

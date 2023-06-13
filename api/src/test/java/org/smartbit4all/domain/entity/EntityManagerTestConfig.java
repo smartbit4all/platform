@@ -16,7 +16,7 @@ package org.smartbit4all.domain.entity;
 
 import org.smartbit4all.api.config.PlatformApiConfig;
 import org.smartbit4all.core.io.TestFileUtil;
-import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.domain.data.storage.ObjectStorage;
 import org.smartbit4all.domain.security.SecurityEntityConfiguration;
 import org.smartbit4all.domain.service.entity.ConfigEntitySource;
@@ -40,7 +40,7 @@ public class EntityManagerTestConfig {
   }
 
   @Bean
-  public ObjectStorage objectStorage(ObjectApi objectApi) {
+  public ObjectStorage objectStorage(ObjectDefinitionApi objectApi) {
     return new StorageFS(TestFileUtil.testFsRootFolder(), objectApi);
   }
 

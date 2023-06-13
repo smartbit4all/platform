@@ -19,6 +19,9 @@ public class ModifyContributionApiStorageImpl extends ContributionApiImpl
   @Autowired
   private StorageApi storageApi;
 
+  @Autowired
+  private BranchApi branchApi;
+
   @Override
   public URI saveAsNew(ObjectDefinition<?> objectDefinition, String storageScheme,
       Map<String, Object> objectAsMap, URI branchUri) {

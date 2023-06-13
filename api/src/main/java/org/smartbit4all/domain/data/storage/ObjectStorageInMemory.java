@@ -4,12 +4,12 @@ import java.net.URI;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.smartbit4all.core.object.ApiObjectRef;
-import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.core.object.ObjectDefinitionApi;
 
 /**
  * Simple Map based implementation of object storage. It can be used for testing with storage. There
  * is no real transactions because it's not persisted.
- * 
+ *
  * @author Zoltan Szegedi
  *
  */
@@ -29,8 +29,8 @@ public class ObjectStorageInMemory extends ObjectStorageImpl {
   private Map<URI, Map<String, Map<String, StorageObjectReferenceEntry>>> collectionsByURI =
       new ConcurrentHashMap<>();
 
-  public ObjectStorageInMemory(ObjectApi objectApi) {
-    super(objectApi);
+  public ObjectStorageInMemory(ObjectDefinitionApi objectDefinitionApi) {
+    super(objectDefinitionApi);
   }
 
   @Override

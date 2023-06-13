@@ -31,8 +31,8 @@ import org.smartbit4all.api.storage.bean.StorageObjectData;
 import org.smartbit4all.api.storage.bean.StorageObjectRelationData;
 import org.smartbit4all.core.io.utility.FileIO;
 import org.smartbit4all.core.io.utility.FileLockData;
-import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
+import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.core.utility.UriUtils;
 import org.smartbit4all.domain.application.ApplicationRuntimeApi;
@@ -149,11 +149,12 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
   /**
    * @param rootFolder The root folder, in which the storage place the files.
    */
-  public StorageFS(File rootFolder, ObjectApi objectApi) {
-    super(objectApi);
+  public StorageFS(File rootFolder, ObjectDefinitionApi objectDefinitionApi) {
+    super(objectDefinitionApi);
     this.rootFolder = rootFolder;
-    this.storageObjectDataDef = objectApi.definition(StorageObjectData.class);
-    this.storageObjectRelationDataDef = objectApi.definition(StorageObjectRelationData.class);
+    this.storageObjectDataDef = objectDefinitionApi.definition(StorageObjectData.class);
+    this.storageObjectRelationDataDef =
+        objectDefinitionApi.definition(StorageObjectRelationData.class);
   }
 
   /**
@@ -434,7 +435,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
     // Write the version files
     if (objectVersionFile != null || objectRelationVersionFile != null) {
       BinaryData binaryDataVersion =
-          objectApi.getDefaultSerializer().serialize(newVersion, ObjectVersion.class);
+          objectDefinitionApi.getDefaultSerializer().serialize(newVersion, ObjectVersion.class);
       if (objectVersionFile != null) {
         // Write the data version file
         storageAccessApi.writeVersion(objectVersionFile, object.getUri(),
@@ -664,7 +665,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
   public <O> List<O> readAll(Storage storage, String setName, Class<?> clazz,
       Function<URI, O> reader, Class<O> readClass) {
     // Check if the given directory exists or not.
-    ObjectDefinition<?> objectDefinition = objectApi.definition(clazz);
+    ObjectDefinition<?> objectDefinition = objectDefinitionApi.definition(clazz);
 
     String storageScheme = getStorageScheme(storage);
     String setPath = StringConstant.SLASH + objectDefinition.getAlias()
@@ -929,7 +930,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
     T object;
     Map<String, Object> objectAsMap;
     try {
-      objectVersion = objectApi.getDefaultSerializer()
+      objectVersion = objectDefinitionApi.getDefaultSerializer()
           .deserialize(versionObjectBinaryData, ObjectVersion.class).get();
       objectAsMap = definition.deserializeAsMap(versionBinaryData);
       if (BinaryDataObject.class.equals(definition.getClazz())) {

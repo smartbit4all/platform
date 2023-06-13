@@ -1,6 +1,6 @@
 package org.smartbit4all.storage.fs;
 
-import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.domain.data.storage.ObjectStorage;
 import org.smartbit4all.domain.data.storage.ObjectStorageInMemory;
 import org.springframework.context.annotation.Bean;
@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 public class StorageInMemoryTestConfig {
 
   @Bean
-  public ObjectStorage defaultStorage(ObjectApi objectApi) {
+  public ObjectStorage defaultStorage(ObjectDefinitionApi objectApi) {
     return new ObjectStorageInMemory(objectApi);
   }
 

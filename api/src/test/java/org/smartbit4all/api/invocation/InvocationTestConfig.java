@@ -2,7 +2,7 @@ package org.smartbit4all.api.invocation;
 
 import org.smartbit4all.api.config.PlatformApiConfig;
 import org.smartbit4all.core.io.TestFileUtil;
-import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.domain.config.ApplicationRuntimeStorageConfig;
 import org.smartbit4all.domain.data.storage.ObjectStorage;
 import org.smartbit4all.domain.data.storage.Storage;
@@ -50,7 +50,7 @@ public class InvocationTestConfig {
   }
 
   @Bean
-  ObjectStorage objectStorage(ObjectApi objectApi) {
+  ObjectStorage objectStorage(ObjectDefinitionApi objectApi) {
     return new StorageFS(TestFileUtil.testFsRootFolder(), objectApi);
   }
 

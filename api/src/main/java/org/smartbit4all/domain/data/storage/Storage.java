@@ -19,24 +19,24 @@ import org.smartbit4all.api.storage.bean.ObjectReference;
 import org.smartbit4all.api.storage.bean.ObjectVersion;
 import org.smartbit4all.api.storage.bean.StorageObjectReference;
 import org.smartbit4all.api.storage.bean.StorageSettings;
-import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
+import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.core.utility.UriUtils;
 import org.smartbit4all.domain.data.storage.StorageObject.VersionPolicy;
 
 /**
- * 
+ *
  * The Storage is a logical unit managing a scheme of data. Every Api can use one or more scheme as
  * object storage. The Storage logical name is the scheme that is used to access the Storage by the
  * {@link StorageApi}. In the API implementations we must use this name.
- * 
+ *
  * The Storage is always rely on an ObjectStorage implementations responsible for the atomic
  * transaction about the {@link StorageObject}. The uri (Unified Resource Identifier) of the object
  * must be situated in the current physical storage attached to this Storage. This routing relies on
  * the registry of the {@link StorageApi} and based on the scheme of the URI. The physical
  * {@link ObjectStorage} is hidden behind the Storage.
- * 
+ *
  * @author Zoltan Szegedi
  *
  */
@@ -63,7 +63,7 @@ public final class Storage {
    * The object api is responsible for accessing the {@link ObjectDefinition}s of the current
    * application context.
    */
-  private ObjectApi objectApi;
+  private ObjectDefinitionApi objectDefinitionApi;
 
   /**
    * The "global" setting uri for the storage schema. Used to save global reference objects, lists
@@ -88,34 +88,36 @@ public final class Storage {
 
   /**
    * Construct a new storage that is a logical schema for the storage system.
-   * 
+   *
    * @param scheme
-   * @param objectApi
+   * @param objectDefinitionApi
    * @param objectStorage
    */
-  public Storage(String scheme, ObjectApi objectApi, ObjectStorage objectStorage) {
-    this(scheme, objectApi, objectStorage, VersionPolicy.ALLVERSION);
+  public Storage(String scheme, ObjectDefinitionApi objectDefinitionApi,
+      ObjectStorage objectStorage) {
+    this(scheme, objectDefinitionApi, objectStorage, VersionPolicy.ALLVERSION);
   }
 
   /**
    * Construct a new storage that is a logical schema for the storage system.
-   * 
+   *
    * @param scheme
-   * @param objectApi
+   * @param objectDefinitionApi
    * @param objectStorage
    * @param versionPolicy
    */
-  public Storage(String scheme, ObjectApi objectApi, ObjectStorage objectStorage,
+  public Storage(String scheme, ObjectDefinitionApi objectDefinitionApi,
+      ObjectStorage objectStorage,
       VersionPolicy versionPolicy) {
     this.objectStorage = objectStorage;
-    this.objectApi = objectApi;
+    this.objectDefinitionApi = objectDefinitionApi;
     this.scheme = scheme;
     this.versionPolicy = versionPolicy;
   }
 
   /**
    * Constructs a new instance of the given {@link Class}.
-   * 
+   *
    * @param <T>
    * @param clazz The class that represents a domain object.
    * @return A new Instance of the {@link StorageObject} that already has an URI! If we save this
@@ -128,7 +130,7 @@ public final class Storage {
 
   /**
    * Constructs a new instance of the given {@link Class}.
-   * 
+   *
    * @param <T>
    * @param clazz The class that represents a domain object.
    * @return A new Instance of the {@link StorageObject} that already has an URI! If we save this
@@ -136,7 +138,7 @@ public final class Storage {
    *         can subscribe for it's events.
    */
   public <T> StorageObject<T> instanceOf(Class<T> clazz, String setName) {
-    ObjectDefinition<T> objectDefinition = objectApi.definition(clazz);
+    ObjectDefinition<T> objectDefinition = objectDefinitionApi.definition(clazz);
     if (!objectDefinition.hasUri()) {
       throw new IllegalArgumentException(
           "Unable to use the " + clazz
@@ -155,14 +157,14 @@ public final class Storage {
 
   /**
    * Constructs a new instance of the given {@link Class}.
-   * 
+   *
    * @param className The class name that represents a domain object.
    * @return A new Instance of the {@link StorageObject} that already has an URI! If we save this
    *         without {@link StorageObject#setObject(Object)} then it will be an empty object but we
    *         can subscribe for it's events.
    */
   public StorageObject create(String className) {
-    ObjectDefinition objectDefinition = objectApi.definition(className);
+    ObjectDefinition objectDefinition = objectDefinitionApi.definition(className);
     StorageObject storageObject = new StorageObject<>(objectDefinition, this);
     // At this point we already know the unique URI that can be used to refer from other objects
     // also.
@@ -171,7 +173,7 @@ public final class Storage {
 
   /**
    * Save the given {@link StorageObject}.
-   * 
+   *
    * @param <T>
    * @param object The storage object that must not be null otherwise a {@link NullPointerException}
    *        runtime exception is going to be thrown..
@@ -184,7 +186,7 @@ public final class Storage {
 
   /**
    * Save the given {@link StorageObject}.
-   * 
+   *
    * @param <T>
    * @param object The storage object that must not be null otherwise a {@link NullPointerException}
    *        runtime exception is going to be thrown..
@@ -198,7 +200,7 @@ public final class Storage {
   /**
    * Save the given object as new into the storage. If we save a new instance then there is no need
    * to use the {@link StorageObject} because there will no concurrent issue or any other problem.
-   * 
+   *
    * @param <T>
    * @param object The object to save. The URI will be generated so there is no need and no
    *        influence of the previously set URI! Don't set any URI or be aware of skipping this.
@@ -215,7 +217,7 @@ public final class Storage {
   /**
    * Save the given object as new into the storage. If we save a new instance then there is no need
    * to use the {@link StorageObject} because there will no concurrent issue or any other problem.
-   * 
+   *
    * @param <T>
    * @param object The object to save. The URI will be generated so there is no need and no
    *        influence of the previously set URI! Don't set any URI or be aware of skipping this.
@@ -232,7 +234,7 @@ public final class Storage {
   /**
    * Save the given object as new into the storage. If we save a new instance then there is no need
    * to use the {@link StorageObject} because there will no concurrent issue or any other problem.
-   * 
+   *
    * @param <T>
    * @param object The object to save. The URI will be generated so there is no need and no
    *        influence of the previously set URI! Don't set any URI or be aware of skipping this.
@@ -246,7 +248,7 @@ public final class Storage {
   /**
    * Save the given object as new into the storage. If we save a new instance then there is no need
    * to use the {@link StorageObject} because there will no concurrent issue or any other problem.
-   * 
+   *
    * @param <T>
    * @param object The object to save. The URI will be generated so there is no need and no
    *        influence of the previously set URI! Don't set any URI or be aware of skipping this.
@@ -266,7 +268,7 @@ public final class Storage {
   /**
    * The add to set constructs a new {@link StorageObjectReference} and set its objectUri to the
    * given object URI. This new object is saved into the set we give.
-   * 
+   *
    * @param setName The name of the set.
    * @param objectUri The object URI to save as reference.
    * @return The URI of the newly created reference.
@@ -288,7 +290,7 @@ public final class Storage {
    * This function is locking and loading the object identified by the object uri. If the update
    * function produce null as the result of the {@link Function#apply(Object)} function then it will
    * skip the update.
-   * 
+   *
    * @param <T>
    * @param objectUri
    * @param clazz
@@ -324,7 +326,7 @@ public final class Storage {
 
   /**
    * Load all the object identified by the uris from the uri list.
-   * 
+   *
    * @param <T> The class is a typed parameter.
    * @param uris
    * @param clazz The class to define the required object.
@@ -341,14 +343,14 @@ public final class Storage {
 
   /**
    * Load the object with the given URI.
-   * 
+   *
    * @param uri The Unified Resource Identifier of the object we are looking for. It must be
    *        situated in the current physical storage. This routing relies on the registry of the
    *        {@link StorageApi} and based on the scheme of the URI.
    * @param clazz The class of the object to load. Based on this class we can easily identify the
    *        {@link ObjectDefinition} responsible for this type of objects.
    * @param options When loading we can instruct the loading to retrieve the necessary data only.
-   * 
+   *
    */
   public <T> StorageObject<T> load(URI uri, Class<T> clazz,
       StorageLoadOption... options) {
@@ -357,7 +359,7 @@ public final class Storage {
 
   /**
    * Load the object with the given URI.
-   * 
+   *
    * @param uri The Unified Resource Identifier of the object we are looking for. It must be
    *        situated in the current physical storage. This routing relies on the registry of the
    *        {@link StorageApi} and based on the scheme of the URI.
@@ -370,7 +372,7 @@ public final class Storage {
 
   /**
    * Load the objects with the given URI.
-   * 
+   *
    * @param uris The Unified Resource Identifier of the object we are looking for. It must be
    *        situated in the current physical storage. This routing relies on the registry of the
    *        {@link StorageApi} and based on the scheme of the URI.
@@ -386,7 +388,7 @@ public final class Storage {
   /**
    * Read the given object identified by the URI. We can not initiate a transaction with the result
    * of the read! Use the load instead.
-   * 
+   *
    * @param uri The Unified Resource Identifier of the object we are looking for. It must be
    *        situated in the current physical storage. This routing relies on the registry of the
    *        {@link StorageApi} and based on the scheme of the URI.
@@ -403,7 +405,7 @@ public final class Storage {
 
   /**
    * Use it carefully it will read all the objects with the given class.
-   * 
+   *
    * @param <T>
    * @param clazz The data bean we are looking for.
    * @return All the objects from the storage.
@@ -414,7 +416,7 @@ public final class Storage {
 
   /**
    * Use it carefully it will read all the objects with the given class.
-   * 
+   *
    * @param <T>
    * @param clazz The data bean we are looking for.
    * @return All the objects from the storage.
@@ -425,7 +427,7 @@ public final class Storage {
 
   /**
    * This will read all the references from the storage set.
-   * 
+   *
    * @param <T>
    * @param setName
    * @param clazz
@@ -456,7 +458,7 @@ public final class Storage {
   /**
    * Read the given object identified by the URI. We can not initiate a transaction with the result
    * of the read! Use the load instead.
-   * 
+   *
    * @param uri The Unified Resource Identifier of the object we are looking for. It must be
    *        situated in the current physical storage. This routing relies on the registry of the
    *        {@link StorageApi} and based on the scheme of the URI.
@@ -469,7 +471,7 @@ public final class Storage {
   /**
    * Read the given objects identified by the URI. We can not initiate a transaction with the result
    * of the read! Use the load instead.
-   * 
+   *
    * @param uris The Unified Resource Identifier of the object we are looking for. It must be
    *        situated in the current physical storage. This routing relies on the registry of the
    *        {@link StorageApi} and based on the scheme of the URI.
@@ -485,7 +487,7 @@ public final class Storage {
    * archive set of this storage. Normally it is the storagescheme:/archive... URI. With this
    * operation the object won't exist any more so we have to save the archived URI if it is
    * necessary.
-   * 
+   *
    * @param uri
    * @return The URI of the archived object. If it's null then the move was not successful.
    */
@@ -502,12 +504,12 @@ public final class Storage {
    * Creates an {@link ObjectHistoryIterator} that can iterate through the
    * {@link StorageObjectHistoryEntry}s of the object found with the given uri, making available to
    * investigate the full history of that object. In order from the oldest to the most recent.
-   * 
+   *
    * @param uri
    * @return
    */
   public ObjectHistoryIterator objectHistory(URI uri) {
-    ObjectDefinition<?> definition = objectApi.definition(uri);
+    ObjectDefinition<?> definition = objectDefinitionApi.definition(uri);
     return objectStorage.objectHistory(uri, definition);
   }
 
@@ -515,12 +517,12 @@ public final class Storage {
    * Creates an {@link ObjectHistoryIterator} that can iterate through the
    * {@link StorageObjectHistoryEntry}s of the object found with the given uri, making available to
    * investigate the full history of that object. In order from the most recent to the oldest.
-   * 
+   *
    * @param uri
    * @return
    */
   public ObjectHistoryIterator objectHistoryReverse(URI uri) {
-    ObjectDefinition<?> definition = objectApi.definition(uri);
+    ObjectDefinition<?> definition = objectDefinitionApi.definition(uri);
     return objectStorage.objectHistoryReverse(uri, definition);
   }
 
@@ -530,7 +532,7 @@ public final class Storage {
 
   /**
    * Constructs the {@link StorageSettings} object if it doesn't exist.
-   * 
+   *
    * @return Return the URI of the existing {@link StorageSettings} object URI.
    */
   public final URI settingsUri() {
@@ -594,13 +596,13 @@ public final class Storage {
 
   /**
    * Retrieve and generate if missing the setting object uri.
-   * 
+   *
    * @return Teh settings object uri of the storage.
    */
   private final URI getSettingsUri() {
     if (settingsuri == null) {
       ObjectDefinition<StorageSettings> objectDefinition =
-          objectApi.definition(StorageSettings.class);
+          objectDefinitionApi.definition(StorageSettings.class);
       settingsuri = URI.create(scheme + StringConstant.COLON + StringConstant.SLASH
           + objectDefinition.getAlias() + StringConstant.SLASH
           + SETTINGS);
@@ -610,12 +612,12 @@ public final class Storage {
 
   /**
    * Get or create the attached map with the given name.
-   * 
+   *
    * @param objectUri The object to attach.
    * @param mapName The name of the map. An application level content that is well-known by the
    *        parties.
    * @return The current version of the object map.
-   * 
+   *
    *         TODO Later on add some subscription.
    */
   public ObjectMap getAttachedMap(URI objectUri, String mapName) {
@@ -628,7 +630,7 @@ public final class Storage {
 
   /**
    * Reads the valid objects from the attached map.
-   * 
+   *
    * @param <T> The type of the objects in the map.
    * @param objectUri The uri of the object the amp is attached to.
    * @param mapName The name of the map.
@@ -662,7 +664,7 @@ public final class Storage {
   /**
    * We can add and remove items to the named object map. If the map doesn't exist then it will
    * create it first.
-   * 
+   *
    * @param objectUri The object to attach.
    * @param request The request that contains the name or the uri.
    */
@@ -698,7 +700,7 @@ public final class Storage {
   /**
    * This function can find or create the attached reference object of an object identified by the
    * uri.
-   * 
+   *
    * @param <T>
    * @param objectUri The master object uri
    * @param parameterSetters The initialization of the newly created referred object.
@@ -751,7 +753,7 @@ public final class Storage {
   /**
    * Retrieve the {@link StorageObjectLock} attached to the given object URI. This is just the Lock
    * object that should be used as a normal {@link Lock} implementation.
-   * 
+   *
    * @param objectUri The object URI the lock is attached to.
    * @return The {@link StorageObjectLock}
    */
@@ -762,7 +764,7 @@ public final class Storage {
   /**
    * These are the version policies that can be used in the storage object to instruct the object
    * storage about the new and new versions of an object.
-   * 
+   *
    * @return The {@link #versionPolicy}
    */
   public final VersionPolicy getVersionPolicy() {
@@ -772,7 +774,7 @@ public final class Storage {
   /**
    * These are the version policies that can be used in the storage object to instruct the object
    * storage about the new and new versions of an object.
-   * 
+   *
    * @param versionPolicy The {@link #versionPolicy}
    */
   public final Storage setVersionPolicy(VersionPolicy versionPolicy) {

@@ -2,7 +2,7 @@ package org.smartbit4all.sql.storage;
 
 import java.net.URI;
 import org.smartbit4all.api.binarydata.BinaryData;
-import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageLoadOption;
@@ -26,9 +26,9 @@ public class StorageSQL extends ObjectStorageImpl {
   public StorageSQL(
       EntityDefinition entityDef,
       Property<URI> key,
-      Property<BinaryData> contentField, ObjectApi objectApi) {
+      Property<BinaryData> contentField, ObjectDefinitionApi objectDefinitionApi) {
 
-    this(entityDef, objectApi);
+    this(entityDef, objectDefinitionApi);
 
     this.key = key;
     this.contentField = contentField;
@@ -37,16 +37,16 @@ public class StorageSQL extends ObjectStorageImpl {
   public StorageSQL(
       EntityDefinition entityDef,
       String keyName,
-      String contentName, ObjectApi objectApi) {
+      String contentName, ObjectDefinitionApi objectDefinitionApi) {
 
-    this(entityDef, objectApi);
+    this(entityDef, objectDefinitionApi);
 
     this.keyName = keyName;
     this.contentFieldName = contentName;
   }
 
-  private StorageSQL(EntityDefinition entityDef, ObjectApi objectApi) {
-    super(objectApi);
+  private StorageSQL(EntityDefinition entityDef, ObjectDefinitionApi objectDefinitionApi) {
+    super(objectDefinitionApi);
     this.entityDef = entityDef;
   }
 

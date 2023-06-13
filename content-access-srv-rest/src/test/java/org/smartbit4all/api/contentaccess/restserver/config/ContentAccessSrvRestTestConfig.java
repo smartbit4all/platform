@@ -15,7 +15,7 @@ import org.smartbit4all.api.contentaccess.ContentAccessApi;
 import org.smartbit4all.api.contentaccess.ContentAccessApiImpl;
 import org.smartbit4all.api.objectshare.ObjectShareApi;
 import org.smartbit4all.api.objectshare.ObjectShareApiInMemoryImpl;
-import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.domain.data.storage.ObjectStorageInMemory;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -61,7 +61,7 @@ public class ContentAccessSrvRestTestConfig {
   }
 
   @Bean
-  ObjectStorageInMemory createInMemoryStorage(ObjectApi objectApi) {
+  ObjectStorageInMemory createInMemoryStorage(ObjectDefinitionApi objectApi) {
     return new ObjectStorageInMemory(objectApi);
   }
 

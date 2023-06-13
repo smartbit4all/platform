@@ -7,7 +7,7 @@ import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.org.bean.GroupsOfUser;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.core.io.TestFileUtil;
-import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.core.object.ObjectReferenceConfigs;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.storage.fs.StorageFS;
@@ -23,7 +23,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 public class ObjectOperationTestConfig {
 
   @Bean
-  public StorageFS defaultStorage(ObjectApi objectApi) {
+  public StorageFS defaultStorage(ObjectDefinitionApi objectApi) {
     return new StorageFS(
         TestFileUtil.testFsRootFolder(),
         objectApi);

@@ -69,8 +69,8 @@ import org.smartbit4all.api.view.tree.TreeApi;
 import org.smartbit4all.api.view.tree.TreeApiImpl;
 import org.smartbit4all.api.view.tree.TreeSetupApi;
 import org.smartbit4all.api.view.tree.TreeSetupApiImpl;
-import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
+import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.core.object.ObjectDefinitionApiImpl;
 import org.smartbit4all.core.object.ObjectReferenceConfigs;
 import org.smartbit4all.domain.config.DomainConfig;
@@ -341,24 +341,25 @@ public class PlatformApiConfig {
 
   @Bean
   public Storage viewContextServiceStorage(@Autowired(required = false) ObjectStorage objectStorage,
-      ObjectApi objectApi) {
-    Storage storage = new Storage(ViewContextService.SCHEMA, objectApi, objectStorage);
+      ObjectDefinitionApi objectDefinitionApi) {
+    Storage storage = new Storage(ViewContextService.SCHEMA, objectDefinitionApi, objectStorage);
     storage.setVersionPolicy(VersionPolicy.SINGLEVERSION);
     return storage;
   }
 
   @Bean
   public Storage sessionStorage(@Autowired(required = false) ObjectStorage objectStorage,
-      ObjectApi objectApi) {
-    Storage storage = new Storage(SessionManagementApi.SCHEMA, objectApi, objectStorage);
+      ObjectDefinitionApi objectDefinitionApi) {
+    Storage storage = new Storage(SessionManagementApi.SCHEMA, objectDefinitionApi, objectStorage);
     storage.setVersionPolicy(VersionPolicy.SINGLEVERSION);
     return storage;
   }
 
   @Bean
   public Storage asynInvocationStorage(@Autowired(required = false) ObjectStorage objectStorage,
-      ObjectApi objectApi) {
-    Storage storage = new Storage(Invocations.ASYNCINVOCATION_SCHEME, objectApi, objectStorage);
+      ObjectDefinitionApi objectDefinitionApi) {
+    Storage storage =
+        new Storage(Invocations.ASYNCINVOCATION_SCHEME, objectDefinitionApi, objectStorage);
     storage.setVersionPolicy(VersionPolicy.SINGLEVERSION);
     return storage;
   }
@@ -366,8 +367,9 @@ public class PlatformApiConfig {
   @Bean
   public Storage asynChannelRegistryStorage(
       @Autowired(required = false) ObjectStorage objectStorage,
-      ObjectApi objectApi) {
-    Storage storage = new Storage(Invocations.ASYNC_CHANNEL_REGISTRY, objectApi, objectStorage);
+      ObjectDefinitionApi objectDefinitionApi) {
+    Storage storage =
+        new Storage(Invocations.ASYNC_CHANNEL_REGISTRY, objectDefinitionApi, objectStorage);
     storage.setVersionPolicy(VersionPolicy.SINGLEVERSION);
     return storage;
   }

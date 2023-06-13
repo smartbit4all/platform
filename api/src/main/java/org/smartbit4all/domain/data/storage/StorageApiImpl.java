@@ -14,14 +14,14 @@ import org.smartbit4all.api.value.ValueSetApiImpl;
 import org.smartbit4all.api.value.ValueUris;
 import org.smartbit4all.api.value.bean.ValueSetData;
 import org.smartbit4all.api.value.bean.ValueSetDefinition;
-import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * The storage api is the access for the {@link Storage} instances defined in the configurations of
  * the system.
- * 
+ *
  * @author Peter Boros
  */
 public final class StorageApiImpl implements StorageApi, InitializingBean {
@@ -56,7 +56,7 @@ public final class StorageApiImpl implements StorageApi, InitializingBean {
   private ObjectStorage defaultObjectStorage;
 
   @Autowired
-  private ObjectApi objectApi;
+  private ObjectDefinitionApi objectDefinitionApi;
 
   @Override
   public void afterPropertiesSet() throws Exception {
@@ -102,7 +102,7 @@ public final class StorageApiImpl implements StorageApi, InitializingBean {
       try {
         storage = storagesByScheme.get(scheme);
         if (storage == null) {
-          storage = new Storage(scheme, objectApi, defaultObjectStorage);
+          storage = new Storage(scheme, objectDefinitionApi, defaultObjectStorage);
           storagesByScheme.put(scheme, storage);
         }
       } finally {
@@ -215,7 +215,7 @@ public final class StorageApiImpl implements StorageApi, InitializingBean {
    * {@link StorageObjectHistoryEntry}s of the object found with the given uri, making available to
    * investigate the full history of that object. In order from the oldest version to the most
    * recent.
-   * 
+   *
    * @param uri
    * @return
    */
@@ -231,7 +231,7 @@ public final class StorageApiImpl implements StorageApi, InitializingBean {
    * {@link StorageObjectHistoryEntry}s of the object found with the given uri, making available to
    * investigate the full history of that object. In order from the most recent version to the
    * oldest.
-   * 
+   *
    * @param uri
    * @return
    */
