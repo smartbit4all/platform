@@ -18,9 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class ApplyChangeApiImpl implements ApplyChangeApi {
 
   @Autowired
-  private BranchApi branchApi;
-
-  @Autowired
   private ModifyApi modifyApi;
 
   @Autowired

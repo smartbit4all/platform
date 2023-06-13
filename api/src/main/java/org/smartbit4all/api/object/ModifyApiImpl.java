@@ -16,9 +16,6 @@ public class ModifyApiImpl extends PrimaryApiImpl<ModifyContributionApi>
   @Autowired
   ObjectApi objectApi;
 
-  @Autowired
-  private BranchApi branchApi;
-
   public ModifyApiImpl() {
     super(ModifyContributionApi.class);
   }
