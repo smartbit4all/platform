@@ -21,7 +21,7 @@ public class TreeSetupApiImpl implements TreeSetupApi, InitializingBean {
   private List<TreeNodeRenderer> treeNodeRenderers;
 
   @Autowired(required = false)
-  private List<TreeNodeActionHandler> treeNodeActionHandler;
+  private List<TreeNodeActionHandler> treeNodeActionHandlers;
 
   @Autowired(required = false)
   private List<TreeRelation> treeRelations;
@@ -55,8 +55,8 @@ public class TreeSetupApiImpl implements TreeSetupApi, InitializingBean {
       }
       rendererByType.putIfAbsent(TreeRelation.CONFIG_NODE_TYPE, getConfigNodeRenderer());
     }
-    if (treeNodeActionHandler != null) {
-      for (TreeNodeActionHandler actionHandler : treeNodeActionHandler) {
+    if (treeNodeActionHandlers != null) {
+      for (TreeNodeActionHandler actionHandler : treeNodeActionHandlers) {
         for (String nodeType : actionHandler.getSupportedNodeTypes()) {
           actionHandlersByType
               .computeIfAbsent(nodeType, key -> new ArrayList<>())
