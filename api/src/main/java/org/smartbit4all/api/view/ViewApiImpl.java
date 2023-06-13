@@ -87,9 +87,23 @@ public class ViewApiImpl implements ViewApi {
   private ViewContext addViewToViewContext(ViewContext context, View view) {
     if (view.getType() == ViewType.NORMAL) {
       String parentViewName = viewContextService.getParentViewName(view.getViewName());
-      List<View> children = getChildrenOfParentView(context, parentViewName);
+      // check if parent should exist, open if yes but doesn't
+      View parentView = null;
+      if (!Strings.isNullOrEmpty(parentViewName)) {
+        parentView = context.getViews().stream()
+            .filter(this::isActiveView)
+            .filter(v -> parentViewName.equals(v.getViewName()))
+            .findFirst()
+            .orElse(null);
+        if (parentView == null) {
+          parentView = new View()
+              .viewName(parentViewName);
+          showView(parentView);
+        }
+        view.containerUuid(parentView.getUuid());
+      }
+      List<View> children = getChildrenOfParentView(context, parentView);
       if (children.isEmpty()) {
-        View parentView = getParentView(view);
         if (parentView != null && parentView.getState() == ViewState.OPEN_PENDING) {
           view.setState(ViewState.OPEN_PENDING);
           OpenPendingData data = getOpenPendingData();
@@ -127,28 +141,27 @@ public class ViewApiImpl implements ViewApi {
   /**
    *
    * @param context
-   * @param parentViewName
+   * @param parentView
    * @return is there any child views to close
    */
-  private List<View> getChildrenOfParentView(ViewContext context, String parentViewName) {
+  private List<View> getChildrenOfParentView(ViewContext context, View parentView) {
     List<View> activeViews = context.getViews().stream()
         .filter(this::isActiveView)
         .collect(Collectors.toList());
     int startIdx;
-    if (Strings.isNullOrEmpty(parentViewName)) {
+    if (parentView == null) {
       // close all active view -> start from first
       startIdx = 0;
     } else {
       // find parent in active views
-      List<String> activeViewNames = activeViews.stream()
-          .map(View::getViewName)
+      List<UUID> activeViewUuids = activeViews.stream()
+          .map(View::getUuid)
           .collect(Collectors.toList());
-      int parentIdx = activeViewNames.indexOf(parentViewName);
+      int parentIdx = activeViewUuids.indexOf(parentView.getUuid());
       if (parentIdx != -1) {
         startIdx = parentIdx + 1;
       } else {
-        log.error("Parent view ('{}') is not present in ActiveViews!", parentViewName);
-        // don't close anything
+        // not an active parent, don't close anything
         startIdx = activeViews.size();
       }
     }
@@ -295,9 +308,17 @@ public class ViewApiImpl implements ViewApi {
     List<View> parents = getViews(parentViewName);
     if (parents.size() == 1) {
       // exact match
-      return parents.get(0);
+      View parentView = parents.get(0);
+      if (!Objects.equals(view.getContainerUuid(), parentView.getUuid())) {
+        log.warn("parentView.getUuid({}) != view.getContainerUuid({})",
+            parentView.getUuid(), view.getContainerUuid());
+      }
+      return parentView;
     }
-    return null;
+    return parents.stream()
+        .filter(v -> Objects.equals(view.getContainerUuid(), v.getUuid()))
+        .findFirst()
+        .orElse(null);
   }
 
   @Override
