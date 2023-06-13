@@ -65,6 +65,8 @@ import org.smartbit4all.api.view.ViewPublisherApi;
 import org.smartbit4all.api.view.ViewPublisherApiImpl;
 import org.smartbit4all.api.view.grid.GridModelApi;
 import org.smartbit4all.api.view.grid.GridModelApiImpl;
+import org.smartbit4all.api.view.layout.SmartLayoutApi;
+import org.smartbit4all.api.view.layout.SmartLayoutApiImpl;
 import org.smartbit4all.api.view.tree.TreeApi;
 import org.smartbit4all.api.view.tree.TreeApiImpl;
 import org.smartbit4all.api.view.tree.TreeSetupApi;
@@ -269,6 +271,11 @@ public class PlatformApiConfig {
   @Bean
   public ValueSetApi valueSetApi() {
     return new ValueSetApiImpl();
+  }
+
+  @Bean
+  public SmartLayoutApi smartLayoutApi() {
+    return new SmartLayoutApiImpl();
   }
 
   @Bean(name = "smartbit4all.messagesource")

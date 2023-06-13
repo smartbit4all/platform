@@ -29,4 +29,9 @@ public class TestFSConfig {
     return new StorageFS(TestFileUtil.testFsRootFolder(), objectApi);
   }
 
+  @Bean
+  TestFSCleaner testFSCleaner() {
+    return new TestFSCleaner();
+  }
+
 }

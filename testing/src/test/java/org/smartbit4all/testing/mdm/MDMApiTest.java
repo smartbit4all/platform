@@ -1,6 +1,5 @@
 package org.smartbit4all.testing.mdm;
 
-import static java.util.stream.Collectors.toMap;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
@@ -16,6 +15,7 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.formdefinition.bean.SmartFormWidgetType;
+import org.smartbit4all.api.formdefinition.bean.SmartLayoutDefinition;
 import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
 import org.smartbit4all.api.mdm.MDMEntry;
 import org.smartbit4all.api.mdm.MDMEntryApi;
@@ -27,6 +27,7 @@ import org.smartbit4all.api.org.SecurityGroup;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.sample.bean.SampleCategoryType;
 import org.smartbit4all.api.session.SessionManagementApi;
+import org.smartbit4all.api.view.layout.SmartLayoutApi;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
@@ -34,11 +35,18 @@ import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.sec.localauth.LocalAuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import static java.util.stream.Collectors.toMap;
 
 @SpringBootTest(classes = {MDMApiTestConfig.class})
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(Lifecycle.PER_CLASS)
 class MDMApiTest {
+
+  private static final String CATEGORY = "category";
+
+  private static final String PROPERTY_LONG = "propertyLong";
+
+  private static final String PROPERTY_STRING = "propertyString";
 
   private static final String ORG_SMARTBIT4ALL_MYDOMAIN_APPLE = "org.smartbit4all.mydomain.Apple";
 
@@ -59,6 +67,9 @@ class MDMApiTest {
 
   @Autowired
   private LocalAuthenticationService authService;
+
+  @Autowired
+  private SmartLayoutApi smartLayoutApi;
 
   private URI adminUri;
 
@@ -141,13 +152,13 @@ class MDMApiTest {
 
     // Save some property definition drafts
     URI draftString = propertyDefinitionMDMApi.saveAsDraft(
-        new PropertyDefinitionData().name("propertyString").typeClass(String.class.getName())
+        new PropertyDefinitionData().name(PROPERTY_STRING).typeClass(String.class.getName())
             .widget(new SmartWidgetDefinition().type(SmartFormWidgetType.TEXT_FIELD)));
     URI draftLong = propertyDefinitionMDMApi.saveAsDraft(
-        new PropertyDefinitionData().name("propertyLong").typeClass(Long.class.getName())
+        new PropertyDefinitionData().name(PROPERTY_LONG).typeClass(Long.class.getName())
             .widget(new SmartWidgetDefinition().type(SmartFormWidgetType.TEXT_FIELD)));
     URI draftCategoryUri = propertyDefinitionMDMApi.saveAsDraft(
-        new PropertyDefinitionData().name("category").typeClass(URI.class.getName())
+        new PropertyDefinitionData().name(CATEGORY).typeClass(URI.class.getName())
             .referredType(SampleCategoryType.class.getName())
             .referredPropertyName(SampleCategoryType.URI)
             .widget(new SmartWidgetDefinition().type(SmartFormWidgetType.TEXT_FIELD)));
@@ -187,6 +198,12 @@ class MDMApiTest {
     Map<String, PropertyDefinitionData> propertiesByName = defApple.getPropertiesByName();
 
     Assertions.assertThat(propertiesByName).containsKeys("propertyString");
+
+    SmartLayoutDefinition layout = smartLayoutApi.createLayout(defApple.getDefinitionData(),
+        List.of(PROPERTY_STRING, PROPERTY_LONG));
+
+    Assertions.assertThat(layout.getWidgets().stream().map(sw -> sw.getKey()))
+        .containsExactly(PROPERTY_STRING, PROPERTY_LONG);
 
   }
 
