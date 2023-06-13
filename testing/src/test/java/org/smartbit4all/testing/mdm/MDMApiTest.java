@@ -200,7 +200,7 @@ class MDMApiTest {
     Assertions.assertThat(propertiesByName).containsKeys("propertyString");
 
     SmartLayoutDefinition layout = smartLayoutApi.createLayout(defApple.getDefinitionData(),
-        List.of(PROPERTY_STRING, PROPERTY_LONG));
+        Arrays.asList(PROPERTY_STRING, PROPERTY_LONG));
 
     Assertions.assertThat(layout.getWidgets().stream().map(sw -> sw.getKey()))
         .containsExactly(PROPERTY_STRING, PROPERTY_LONG);
