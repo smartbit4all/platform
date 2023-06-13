@@ -96,6 +96,12 @@ public class QueryInput {
    */
   private URI tableDataUri;
 
+  /**
+   * Normally it is null. If it is set then in the query execution substitutes the table name with
+   * this string.
+   */
+  private String forcedTableName;
+
   public QueryInput() {
     this(UUID.randomUUID().toString());
   }
@@ -271,6 +277,14 @@ public class QueryInput {
   public String toString() {
     return name + StringConstant.SPACE + "from " + entityDef.entityDefName()
         + StringConstant.NEW_LINE + properties + StringConstant.NEW_LINE + where;
+  }
+
+  public final String getForcedTableName() {
+    return forcedTableName;
+  }
+
+  public final void setForcedTableName(String forcedTableName) {
+    this.forcedTableName = forcedTableName;
   }
 
 }

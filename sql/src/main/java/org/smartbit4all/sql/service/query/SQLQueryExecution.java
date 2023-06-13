@@ -127,7 +127,9 @@ final class SQLQueryExecution {
    */
   public void execute() {
     // That time the entity is based on a table.
-    TableDefinition table = queryInput.entityDef().tableDefinition();
+    TableDefinition table = queryInput.getForcedTableName() != null
+        ? new TableDefinition(queryInput.getForcedTableName())
+        : queryInput.entityDef().tableDefinition();
     SQLTableNode tableNode = new SQLTableNode(schema, table.getName());
     SQLSelectFromTableNode rootTable = new SQLSelectFromTableNode(tableNode, nextTableAlias());
     // This map must be a list based map to preserve the order.
