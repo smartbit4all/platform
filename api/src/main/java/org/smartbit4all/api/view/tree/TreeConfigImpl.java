@@ -98,8 +98,7 @@ public abstract class TreeConfigImpl implements TreeConfig {
   }
 
   @Override
-  public void performAction(TreeApi treeApi, UiTreeState treeState, UiTreeNode treeNode,
-      UiActionRequest action) {
+  public void performAction(UiTreeState treeState, UiTreeNode treeNode, UiActionRequest action) {
     UiTreeNode node = treeNode == null ? getConfigNode(treeState) : treeNode;
     String type = treeNode == null ? configName : node.getNodeType();
     treeSetupApi.getTreeNodeActionHandlers(type)

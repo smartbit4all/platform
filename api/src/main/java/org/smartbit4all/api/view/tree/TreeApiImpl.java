@@ -209,7 +209,7 @@ public class TreeApiImpl implements TreeApi {
     String actionCode = action.getCode();
     TreeConfig config = getTreeConfig(treeState);
     if (config.isActionSupported(treeState, nodeType, actionCode)) {
-      config.performAction(this, treeState, treeNode, action);
+      config.performAction(treeState, treeNode, action);
     }
   }
 

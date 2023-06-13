@@ -32,11 +32,9 @@ public interface TreeConfig {
 
   boolean isActionSupported(UiTreeState treeState, String nodeType, String actionCode);
 
-  List<UiAction> getActionsForNode(UiTreeState treeState, String nodeType,
-      ObjectNode object);
+  List<UiAction> getActionsForNode(UiTreeState treeState, String nodeType, ObjectNode object);
 
-  void performAction(TreeApi treeApi, UiTreeState treeState, UiTreeNode treeNode,
-      UiActionRequest action);
+  void performAction(UiTreeState treeState, UiTreeNode treeNode, UiActionRequest action);
 
   UiTreeNode getConfigNode(UiTreeState treeState);
 
