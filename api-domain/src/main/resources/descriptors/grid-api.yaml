@@ -257,6 +257,10 @@ components:
           items:
             type: integer
             format: int32
+        defaultRowActions:
+          type: array
+          items:
+            type: string
     GridServerModel:
       type: object
       description: |

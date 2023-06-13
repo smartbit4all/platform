@@ -47,7 +47,8 @@ import javax.validation.Valid;
   GridModel.SELECTED_ROW_COUNT,
   GridModel.ALL_ROWS_SELECTED,
   GridModel.PAGE_SIZE,
-  GridModel.PAGE_SIZE_OPTIONS
+  GridModel.PAGE_SIZE_OPTIONS,
+  GridModel.DEFAULT_ROW_ACTIONS
 })
 @JsonTypeName("GridModel")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -81,6 +82,9 @@ public class GridModel {
 
   public static final String PAGE_SIZE_OPTIONS = "pageSizeOptions";
   private List<Integer> pageSizeOptions = null;
+
+  public static final String DEFAULT_ROW_ACTIONS = "defaultRowActions";
+  private List<String> defaultRowActions = null;
 
   public GridModel() { 
   }
@@ -377,6 +381,41 @@ public class GridModel {
   }
 
 
+  public GridModel defaultRowActions(List<String> defaultRowActions) {
+    
+    this.defaultRowActions = defaultRowActions;
+    return this;
+  }
+
+  public GridModel addDefaultRowActionsItem(String defaultRowActionsItem) {
+    if (this.defaultRowActions == null) {
+      this.defaultRowActions = new ArrayList<>();
+    }
+    this.defaultRowActions.add(defaultRowActionsItem);
+    return this;
+  }
+
+   /**
+   * Get defaultRowActions
+   * @return defaultRowActions
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(DEFAULT_ROW_ACTIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<String> getDefaultRowActions() {
+    return defaultRowActions;
+  }
+
+
+  @JsonProperty(DEFAULT_ROW_ACTIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setDefaultRowActions(List<String> defaultRowActions) {
+    this.defaultRowActions = defaultRowActions;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -395,12 +434,13 @@ public class GridModel {
         Objects.equals(this.selectedRowCount, gridModel.selectedRowCount) &&
         Objects.equals(this.allRowsSelected, gridModel.allRowsSelected) &&
         Objects.equals(this.pageSize, gridModel.pageSize) &&
-        Objects.equals(this.pageSizeOptions, gridModel.pageSizeOptions);
+        Objects.equals(this.pageSizeOptions, gridModel.pageSizeOptions) &&
+        Objects.equals(this.defaultRowActions, gridModel.defaultRowActions);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(viewUuid, availableViews, view, accessConfig, page, totalRowCount, selectedRowCount, allRowsSelected, pageSize, pageSizeOptions);
+    return Objects.hash(viewUuid, availableViews, view, accessConfig, page, totalRowCount, selectedRowCount, allRowsSelected, pageSize, pageSizeOptions, defaultRowActions);
   }
 
   @Override
@@ -417,6 +457,7 @@ public class GridModel {
     sb.append("    allRowsSelected: ").append(toIndentedString(allRowsSelected)).append("\n");
     sb.append("    pageSize: ").append(toIndentedString(pageSize)).append("\n");
     sb.append("    pageSizeOptions: ").append(toIndentedString(pageSizeOptions)).append("\n");
+    sb.append("    defaultRowActions: ").append(toIndentedString(defaultRowActions)).append("\n");
     sb.append("}");
     return sb.toString();
   }
