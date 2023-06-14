@@ -47,7 +47,6 @@ import org.smartbit4all.api.object.ModifyContributionApiStorageImpl;
 import org.smartbit4all.api.object.RetrievalApi;
 import org.smartbit4all.api.object.RetrievalApiImpl;
 import org.smartbit4all.api.object.bean.AggregationKind;
-import org.smartbit4all.api.object.bean.BranchEntry;
 import org.smartbit4all.api.object.bean.ObjectDefinitionData;
 import org.smartbit4all.api.object.bean.PropertyDefinitionData;
 import org.smartbit4all.api.object.bean.ReferencePropertyKind;
@@ -72,8 +71,6 @@ import org.smartbit4all.api.view.tree.TreeApi;
 import org.smartbit4all.api.view.tree.TreeApiImpl;
 import org.smartbit4all.api.view.tree.TreeSetupApi;
 import org.smartbit4all.api.view.tree.TreeSetupApiImpl;
-import org.smartbit4all.core.object.ObjectCacheEntry;
-import org.smartbit4all.core.object.ObjectCacheEntryImpl;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.core.object.ObjectDefinitionApiImpl;
@@ -279,11 +276,6 @@ public class PlatformApiConfig {
   @Bean
   public SmartLayoutApi smartLayoutApi() {
     return new SmartLayoutApiImpl();
-  }
-
-  @Bean
-  public ObjectCacheEntry<BranchEntry> branchEntryCache() {
-    return new ObjectCacheEntryImpl<>(BranchEntry.class);
   }
 
   @Bean(name = "smartbit4all.messagesource")

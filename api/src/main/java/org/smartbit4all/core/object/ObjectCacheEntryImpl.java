@@ -6,7 +6,6 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.object.bean.BranchEntry;
-import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
@@ -21,14 +20,13 @@ public class ObjectCacheEntryImpl<T> implements ObjectCacheEntry<T> {
 
   private static final Logger log = LoggerFactory.getLogger(ObjectCacheEntryImpl.class);
 
-  @Autowired
   private ObjectApi objectApi;
 
   private final Cache<URI, CachedObject> cache;
 
   private Class<T> clazz;
 
-  public ObjectCacheEntryImpl(Class<T> clazz) {
+  ObjectCacheEntryImpl(Class<T> clazz) {
     super();
     this.clazz = clazz;
     cache = CacheBuilder.newBuilder().expireAfterAccess(10, TimeUnit.MINUTES).build();
@@ -57,6 +55,11 @@ public class ObjectCacheEntryImpl<T> implements ObjectCacheEntry<T> {
       log.error("Unable to retrieve the branch entry " + uri, e);
     }
     return cachedObject != null ? (T) cachedObject.object : null;
+  }
+
+  ObjectCacheEntry<T> objectApi(ObjectApi objectApi) {
+    this.objectApi = objectApi;
+    return this;
   }
 
 }

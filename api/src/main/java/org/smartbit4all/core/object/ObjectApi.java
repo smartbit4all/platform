@@ -286,4 +286,13 @@ public interface ObjectApi {
    */
   Long getLastModified(URI uri);
 
+  /**
+   * Get a cache entry for the given object type. If the entry doesn't exist then it will create a
+   * new one.
+   * 
+   * @param clazz The class to manage by the cache.
+   * @return The cache entry.
+   */
+  <T> ObjectCacheEntry<T> getCacheEntry(Class<T> clazz);
+
 }

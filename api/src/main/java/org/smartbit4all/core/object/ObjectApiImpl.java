@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
@@ -20,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.object.ApplyChangeApi;
 import org.smartbit4all.api.object.RetrievalApi;
 import org.smartbit4all.api.object.RetrievalRequest;
+import org.smartbit4all.api.object.bean.BranchEntry;
 import org.smartbit4all.api.object.bean.ObjectNodeData;
 import org.smartbit4all.api.object.bean.ObjectNodeState;
 import org.smartbit4all.api.object.bean.RetrievalMode;
@@ -28,6 +31,8 @@ import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.base.Objects;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
@@ -46,6 +51,12 @@ public class ObjectApiImpl implements ObjectApi {
 
   @Autowired
   private ApplyChangeApi applyChangeApi;
+
+  /**
+   * The already initialized {@link ObjectCacheEntry}s in the application.
+   */
+  private Cache<Class, ObjectCacheEntry<?>> cacheByClass =
+      CacheBuilder.newBuilder().expireAfterAccess(1, TimeUnit.HOURS).build();
 
   @SuppressWarnings("unchecked")
   @Override
@@ -91,14 +102,23 @@ public class ObjectApiImpl implements ObjectApi {
 
   @Override
   public ObjectNode load(RetrievalRequest request, URI objectUri, URI branchUri) {
-    return node(retrievalApi.load(request, objectUri, branchUri));
+    return node(retrievalApi.load(request, objectUri, getBranchEntry(branchUri)));
   }
 
   @Override
   public List<ObjectNode> load(RetrievalRequest request, List<URI> objectUris, URI branchUri) {
-    return retrievalApi.load(request, objectUris, branchUri).stream()
+    return retrievalApi.load(request, objectUris, getBranchEntry(branchUri)).stream()
         .map(this::node)
         .collect(toList());
+  }
+
+  private final BranchEntry getBranchEntry(URI branchUri) {
+    BranchEntry branchEntry = null;
+    if (branchUri != null) {
+      ObjectCacheEntry<BranchEntry> cacheEntry = getCacheEntry(BranchEntry.class);
+      branchEntry = cacheEntry.get(branchUri);
+    }
+    return branchEntry;
   }
 
   @Override
@@ -392,6 +412,17 @@ public class ObjectApiImpl implements ObjectApi {
   @Override
   public Long getLastModified(URI uri) {
     return retrievalApi.getLastModified(uri);
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public <T> ObjectCacheEntry<T> getCacheEntry(Class<T> clazz) {
+    try {
+      return (ObjectCacheEntry<T>) cacheByClass.get(clazz,
+          () -> new ObjectCacheEntryImpl<>(clazz).objectApi(self));
+    } catch (ExecutionException e) {
+      throw new IllegalArgumentException("Unable to initiate cache for the " + clazz);
+    }
   }
 
 }

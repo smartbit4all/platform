@@ -3,6 +3,7 @@ package org.smartbit4all.api.object;
 import java.net.URI;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
+import org.smartbit4all.api.object.bean.BranchEntry;
 import org.smartbit4all.api.object.bean.ObjectNodeData;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ReferenceDefinition;
@@ -21,9 +22,10 @@ public interface RetrievalApi {
    *
    * @param request The request object that defines the root objects and the references to load.
    * @param uri The uri of the object to load.
+   * @param branchEntry The branch entry if the retrieve is performed on the branch.
    * @return The result of the object retrieve as an {@link ObjectNode}.
    */
-  ObjectNodeData load(RetrievalRequest request, URI uri, URI branchUri);
+  ObjectNodeData load(RetrievalRequest request, URI uri, BranchEntry branchEntry);
 
   default ObjectNodeData load(RetrievalRequest request, URI uri) {
     return load(request, uri, null);
@@ -34,9 +36,10 @@ public interface RetrievalApi {
    *
    * @param request The request object that defines the root objects and the references to load.
    * @param uris The uri list of the objects to load.
+   * @param branchEntry The branch entry if the retrieve is performed on the branch.
    * @return The result of the object retrieve as an {@link ObjectNodeData}.
    */
-  List<ObjectNodeData> load(RetrievalRequest request, List<URI> uris, URI branchUri);
+  List<ObjectNodeData> load(RetrievalRequest request, List<URI> uris, BranchEntry branchEntry);
 
   default List<ObjectNodeData> load(RetrievalRequest request, List<URI> uris) {
     return load(request, uris, null);

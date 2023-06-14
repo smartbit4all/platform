@@ -75,9 +75,6 @@ class MDMApiTest {
   @Autowired
   private SmartLayoutApi smartLayoutApi;
 
-  @Autowired
-  private ObjectCacheEntry<BranchEntry> branchCacheEntry;
-
   private URI adminUri;
 
   private static final String PASSWD =
@@ -220,6 +217,10 @@ class MDMApiTest {
   @Test
   @Order(3)
   void testBranchCache() {
+
+    ObjectCacheEntry<BranchEntry> branchCacheEntry =
+        objectApi.getCacheEntry(BranchEntry.class);
+
     URI branch1 = objectApi.saveAsNew("branch", new BranchEntry().caption("Branch"));
 
     for (int i = 0; i < 100; i++) {

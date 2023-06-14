@@ -8,6 +8,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.smartbit4all.api.object.bean.AggregationKind;
+import org.smartbit4all.api.object.bean.BranchEntry;
 import org.smartbit4all.api.object.bean.ObjectNodeData;
 import org.smartbit4all.api.object.bean.ReferencePropertyKind;
 import org.smartbit4all.api.storage.bean.ObjectVersion;
@@ -34,15 +35,15 @@ public final class RetrievalApiImpl implements RetrievalApi {
   private StorageApi storageApi;
 
   private final Stream<ObjectNodeData> load(RetrievalRequest request, Stream<URI> uriStream,
-      URI branchUri) {
+      BranchEntry branchEntry) {
 
     return uriStream.parallel()
-        .map(u -> readData(request, u, null, null, branchUri));
+        .map(u -> readData(request, u, null, null, branchEntry));
 
   }
 
   private final ObjectNodeData readData(RetrievalRequest objRequest, Object value,
-      String valueScheme, URI valueSetUri, URI branchUri) {
+      String valueScheme, URI valueSetUri, BranchEntry branchEntry) {
     URI uri = null;
     if (valueSetUri != null && value instanceof String
         && !((String) value).startsWith(ValueUris.VALUE_SCHEME_PREFIX)) {
@@ -72,12 +73,12 @@ public final class RetrievalApiImpl implements RetrievalApi {
         if (refKind == ReferencePropertyKind.REFERENCE) {
           data.putReferencesItem(
               referenceName,
-              readData(refRequest, sourceValue, scheme, ref.getTargetValueSet(), branchUri));
+              readData(refRequest, sourceValue, scheme, ref.getTargetValueSet(), branchEntry));
         } else if (refKind == ReferencePropertyKind.LIST) {
           data.putReferenceListsItem(
               referenceName,
               ((List<?>) sourceValue).stream()
-                  .map(v -> readData(refRequest, v, scheme, ref.getTargetValueSet(), branchUri))
+                  .map(v -> readData(refRequest, v, scheme, ref.getTargetValueSet(), branchEntry))
                   .collect(Collectors.toList()));
         } else if (refKind == ReferencePropertyKind.MAP) {
           data.putReferenceMapsItem(
@@ -86,7 +87,7 @@ public final class RetrievalApiImpl implements RetrievalApi {
                   .collect(toMap(
                       Entry::getKey,
                       e -> readData(refRequest, e.getValue(), scheme, ref.getTargetValueSet(),
-                          branchUri))));
+                          branchEntry))));
         }
       }
     }
@@ -157,13 +158,14 @@ public final class RetrievalApiImpl implements RetrievalApi {
   }
 
   @Override
-  public ObjectNodeData load(RetrievalRequest request, URI uri, URI branchUri) {
-    return load(request, Stream.of(uri), branchUri).findFirst().orElse(null);
+  public ObjectNodeData load(RetrievalRequest request, URI uri, BranchEntry branchEntry) {
+    return load(request, Stream.of(uri), branchEntry).findFirst().orElse(null);
   }
 
   @Override
-  public List<ObjectNodeData> load(RetrievalRequest request, List<URI> uris, URI branchUri) {
-    return load(request, uris.stream(), branchUri).collect(Collectors.toList());
+  public List<ObjectNodeData> load(RetrievalRequest request, List<URI> uris,
+      BranchEntry branchEntry) {
+    return load(request, uris.stream(), branchEntry).collect(Collectors.toList());
   }
 
   @Override
