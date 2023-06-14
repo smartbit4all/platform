@@ -1,6 +1,5 @@
 package org.smartbit4all.api.object;
 
-import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
@@ -8,6 +7,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Supplier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.object.bean.BranchEntry;
 import org.smartbit4all.api.object.bean.BranchOperation;
 import org.smartbit4all.api.object.bean.BranchOperation.OperationTypeEnum;
@@ -17,15 +18,20 @@ import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import static java.util.stream.Collectors.toMap;
 
 /**
  * The implementation of the {@link BranchApi} that stores the branch info in {@link BranchEntry}.
+ * The branch api manages a cache to effectively access the informations of a branch. The cache will
+ * check the freshness of the loaded branch entry by the last modification time.
  * 
  * @author Peter Boros
  */
 public class BranchApiImpl implements BranchApi {
 
   protected static final String SCHEME = "branch";
+
+  private static final Logger log = LoggerFactory.getLogger(BranchApiImpl.class);
 
   @Autowired
   private ObjectApi objectApi;
@@ -94,6 +100,5 @@ public class BranchApiImpl implements BranchApi {
     });
     objectApi.save(objectNode);
   }
-
 
 }

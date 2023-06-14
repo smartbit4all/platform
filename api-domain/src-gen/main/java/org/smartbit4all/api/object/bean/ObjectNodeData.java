@@ -41,6 +41,7 @@ import javax.validation.Valid;
   ObjectNodeData.QUALIFIED_NAME,
   ObjectNodeData.STORAGE_SCHEMA,
   ObjectNodeData.VERSION_NR,
+  ObjectNodeData.LAST_MODIFIED,
   ObjectNodeData.STATE,
   ObjectNodeData.OBJECT_AS_MAP,
   ObjectNodeData.REFERENCES,
@@ -62,6 +63,9 @@ public class ObjectNodeData {
 
   public static final String VERSION_NR = "versionNr";
   private Long versionNr = 0l;
+
+  public static final String LAST_MODIFIED = "lastModified";
+  private Long lastModified = -1l;
 
   public static final String STATE = "state";
   private ObjectNodeState state = ObjectNodeState.NOP;
@@ -192,6 +196,33 @@ public class ObjectNodeData {
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setVersionNr(Long versionNr) {
     this.versionNr = versionNr;
+  }
+
+
+  public ObjectNodeData lastModified(Long lastModified) {
+    
+    this.lastModified = lastModified;
+    return this;
+  }
+
+   /**
+   * The last modification time in long. It is filled by the retrieve so if we create a new node then it is  -1 by default. 
+   * @return lastModified
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The last modification time in long. It is filled by the retrieve so if we create a new node then it is  -1 by default. ")
+  @JsonProperty(LAST_MODIFIED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Long getLastModified() {
+    return lastModified;
+  }
+
+
+  @JsonProperty(LAST_MODIFIED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setLastModified(Long lastModified) {
+    this.lastModified = lastModified;
   }
 
 
@@ -400,6 +431,7 @@ public class ObjectNodeData {
         Objects.equals(this.qualifiedName, objectNodeData.qualifiedName) &&
         Objects.equals(this.storageSchema, objectNodeData.storageSchema) &&
         Objects.equals(this.versionNr, objectNodeData.versionNr) &&
+        Objects.equals(this.lastModified, objectNodeData.lastModified) &&
         Objects.equals(this.state, objectNodeData.state) &&
         Objects.equals(this.objectAsMap, objectNodeData.objectAsMap) &&
         Objects.equals(this.references, objectNodeData.references) &&
@@ -410,7 +442,7 @@ public class ObjectNodeData {
 
   @Override
   public int hashCode() {
-    return Objects.hash(objectUri, qualifiedName, storageSchema, versionNr, state, objectAsMap, references, referenceLists, referenceMaps, resultUri);
+    return Objects.hash(objectUri, qualifiedName, storageSchema, versionNr, lastModified, state, objectAsMap, references, referenceLists, referenceMaps, resultUri);
   }
 
   @Override
@@ -421,6 +453,7 @@ public class ObjectNodeData {
     sb.append("    qualifiedName: ").append(toIndentedString(qualifiedName)).append("\n");
     sb.append("    storageSchema: ").append(toIndentedString(storageSchema)).append("\n");
     sb.append("    versionNr: ").append(toIndentedString(versionNr)).append("\n");
+    sb.append("    lastModified: ").append(toIndentedString(lastModified)).append("\n");
     sb.append("    state: ").append(toIndentedString(state)).append("\n");
     sb.append("    objectAsMap: ").append(toIndentedString(objectAsMap)).append("\n");
     sb.append("    references: ").append(toIndentedString(references)).append("\n");

@@ -572,6 +572,10 @@ public class ObjectNode {
     return data.getVersionNr();
   }
 
+  public Long getLastModified() {
+    return data.getLastModified();
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {

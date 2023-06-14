@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import org.assertj.core.api.Assertions;
+import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -20,6 +21,7 @@ import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
 import org.smartbit4all.api.mdm.MDMEntry;
 import org.smartbit4all.api.mdm.MDMEntryApi;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
+import org.smartbit4all.api.object.bean.BranchEntry;
 import org.smartbit4all.api.object.bean.ObjectDefinitionData;
 import org.smartbit4all.api.object.bean.PropertyDefinitionData;
 import org.smartbit4all.api.org.OrgApi;
@@ -29,12 +31,14 @@ import org.smartbit4all.api.sample.bean.SampleCategoryType;
 import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.api.view.layout.SmartLayoutApi;
 import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.core.object.ObjectCacheEntry;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.sec.localauth.LocalAuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static java.util.stream.Collectors.toMap;
 
 @SpringBootTest(classes = {MDMApiTestConfig.class})
@@ -70,6 +74,9 @@ class MDMApiTest {
 
   @Autowired
   private SmartLayoutApi smartLayoutApi;
+
+  @Autowired
+  private ObjectCacheEntry<BranchEntry> branchCacheEntry;
 
   private URI adminUri;
 
@@ -142,9 +149,9 @@ class MDMApiTest {
 
   }
 
-  private
-
-  @Test @Order(2) void testObjectPropertyDefinition() {
+  @Test
+  @Order(2)
+  void testObjectPropertyDefinition() {
     MDMEntryApi<ObjectDefinitionData> objectDefinitionMDMApi =
         masterDataManagementApi.getApi(ObjectDefinitionData.class);
     MDMEntryApi<PropertyDefinitionData> propertyDefinitionMDMApi =
@@ -171,6 +178,9 @@ class MDMApiTest {
         .qualifiedName(ORG_SMARTBIT4ALL_MYDOMAIN_APPLE).addPropertiesItem(
             publishedProperties
                 .get(objectApi.getLatestUri(draftString).toString()))
+        .addPropertiesItem(
+            publishedProperties
+                .get(objectApi.getLatestUri(draftLong).toString()))
         .addPropertiesItem(
             publishedProperties
                 .get(objectApi.getLatestUri(draftCategoryUri).toString())));
@@ -204,6 +214,29 @@ class MDMApiTest {
 
     Assertions.assertThat(layout.getWidgets().stream().map(sw -> sw.getKey()))
         .containsExactly(PROPERTY_STRING, PROPERTY_LONG);
+
+  }
+
+  @Test
+  @Order(3)
+  void testBranchCache() {
+    URI branch1 = objectApi.saveAsNew("branch", new BranchEntry().caption("Branch"));
+
+    for (int i = 0; i < 100; i++) {
+      String caption = "Branch " + i;
+      objectApi.save(
+          objectApi.loadLatest(branch1).modify(BranchEntry.class, be -> be.caption(caption)));
+
+      BranchEntry branchEntry = branchCacheEntry.get(branch1);
+
+      Assertions.assertThat(branchEntry).satisfies(new Condition<>(
+          entry -> caption.equals(branchEntry.getCaption()), "The caption is different"));
+
+      BranchEntry branchEntry2 = branchCacheEntry.get(branch1);
+
+      assertEquals(branchEntry, branchEntry2);
+
+    }
 
   }
 

@@ -589,6 +589,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
       // + uriWithoutVersion + ")");
       throw new ObjectNotFoundException(uri, clazz, "Object data file not found.");
     }
+    long lastModified = storageObjectDataFile.lastModified();
     if (uriWithoutVersion.getPath().endsWith(Storage.SINGLE_VERSION_URI_POSTFIX)
         && storage.getVersionPolicy() != VersionPolicy.SINGLEVERSION) {
       throw new IllegalArgumentException("Unable to load single version object with .");
@@ -596,7 +597,8 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
 
     if (uriWithoutVersion.getPath().endsWith(Storage.SINGLE_VERSION_URI_POSTFIX)) {
       // Load the single version from file.
-      return readObjectSingleVersion(storage, uriWithoutVersion, clazz, storageObjectDataFile);
+      return readObjectSingleVersion(storage, uriWithoutVersion, clazz, storageObjectDataFile)
+          .lastModified(lastModified);
     }
 
     StorageObjectData storageObjectData = readObjectData(storageObjectDataFile);
@@ -637,7 +639,7 @@ public class StorageFS extends ObjectStorageImpl implements ApplicationContextAw
       setOperation(storageObject, StorageObjectOperation.MODIFY_WITHOUT_DATA);
     }
 
-    return storageObject;
+    return storageObject.lastModified(lastModified);
   }
 
   private static class DirFileCounter {

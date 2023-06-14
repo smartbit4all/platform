@@ -137,6 +137,12 @@ public final class StorageObject<T> {
   private boolean strictVersionCheck = false;
 
   /**
+   * The last modification time of the storage object. It is set only if we load this now from the
+   * storage.
+   */
+  private long lastModified = -1;
+
+  /**
    * The storage object operation gives instructions to object storage about the given object.
    *
    * @author Peter Boros
@@ -310,6 +316,7 @@ public final class StorageObject<T> {
     result.setUri(uri);
     result.setUuid(uuid);
     result.setVersion(version);
+    result.setLastModified(lastModified);
     // Deep copy of the relations
     result.collections =
         collections != null
@@ -580,6 +587,19 @@ public final class StorageObject<T> {
    */
   public final StorageObject<T> asMap() {
     this.mode = OperationMode.AS_MAP;
+    return this;
+  }
+
+  public final long getLastModified() {
+    return lastModified;
+  }
+
+  public final void setLastModified(long lastModified) {
+    this.lastModified = lastModified;
+  }
+
+  public final StorageObject<T> lastModified(long lastModified) {
+    this.lastModified = lastModified;
     return this;
   }
 
