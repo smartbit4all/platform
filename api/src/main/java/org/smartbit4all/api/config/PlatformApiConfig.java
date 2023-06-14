@@ -12,8 +12,6 @@ import org.smartbit4all.api.collection.bean.StoredListData;
 import org.smartbit4all.api.collection.bean.StoredMapData;
 import org.smartbit4all.api.collection.bean.StoredReferenceData;
 import org.smartbit4all.api.collection.bean.StoredSequenceData;
-import org.smartbit4all.api.documentation.DocumentationApi;
-import org.smartbit4all.api.documentation.DocumentationApiImpl;
 import org.smartbit4all.api.filter.util.FilterService;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.InvocationApiImpl;
@@ -159,19 +157,12 @@ public class PlatformApiConfig {
   @Bean
   public ProviderApiInvocationHandler<ViewPublisherApi> viewPublisherApiProvider(
       ViewPublisherApi api) {
-    return Invocations.asProvider(ViewPublisherApi.class,
-        ViewPublisherApi.class.getName(), api);
+    return Invocations.asProvider(ViewPublisherApi.class, ViewPublisherApi.class.getName(), api);
   }
-
 
   @Bean
   public NavigationFeatureApi navigationFeatureApi() {
     return new NavigationFeatureApiImpl();
-  }
-
-  @Bean
-  public DocumentationApi documentationApi() {
-    return new DocumentationApiImpl();
   }
 
   @Bean
@@ -339,8 +330,8 @@ public class PlatformApiConfig {
 
   @Bean
   public MDMEntryApi<ObjectDefinitionData> objectDefinitionDataMdmEntryApi() {
-    return new MDMEntryApiImpl<>(ObjectDefinitionData.class)
-        .schema(ObjectDefinitionApiImpl.SCHEMA).uniqueIdPath(ObjectDefinitionData.QUALIFIED_NAME)
+    return new MDMEntryApiImpl<>(ObjectDefinitionData.class).schema(ObjectDefinitionApiImpl.SCHEMA)
+        .uniqueIdPath(ObjectDefinitionData.QUALIFIED_NAME)
         .uriConstructor(o -> ObjectDefinition.uriOf(o.getQualifiedName()))
         .publishedListName(ObjectDefinitionApiImpl.OBJECT_DEFINITIONS)
         .addBeforeSaveHandler(ObjectDefinitionApiImpl::synchronizeOutgoingReferences);
@@ -383,10 +374,8 @@ public class PlatformApiConfig {
 
   @Bean
   public ObjectReferenceConfigs invocationReferences() {
-    return new ObjectReferenceConfigs()
-        .ref(AsyncInvocationRequest.class,
-            AsyncInvocationRequest.AND_THEN, AsyncInvocationRequest.class,
-            ReferencePropertyKind.LIST,
-            AggregationKind.SHARED);
+    return new ObjectReferenceConfigs().ref(AsyncInvocationRequest.class,
+        AsyncInvocationRequest.AND_THEN, AsyncInvocationRequest.class, ReferencePropertyKind.LIST,
+        AggregationKind.SHARED);
   }
 }
