@@ -102,13 +102,14 @@ public class ObjectApiImpl implements ObjectApi {
 
   @Override
   public ObjectNode load(RetrievalRequest request, URI objectUri, URI branchUri) {
-    return node(retrievalApi.load(request, objectUri, getBranchEntry(branchUri)));
+    return node(retrievalApi.load(request, objectUri, getBranchEntry(branchUri)))
+        .branchUri(branchUri);
   }
 
   @Override
   public List<ObjectNode> load(RetrievalRequest request, List<URI> objectUris, URI branchUri) {
     return retrievalApi.load(request, objectUris, getBranchEntry(branchUri)).stream()
-        .map(this::node)
+        .map(this::node).map(node -> node.branchUri(branchUri))
         .collect(toList());
   }
 
@@ -168,7 +169,15 @@ public class ObjectApiImpl implements ObjectApi {
 
   @Override
   public URI save(ObjectNode node, URI branchUri) {
-    return applyChangeApi.applyChanges(node, branchUri);
+    // TODO lock the branch if exists
+    BranchEntry branchEntry = getBranchEntry(branchUri);
+    URI result = applyChangeApi.applyChanges(node, branchEntry);
+    if (branchEntry != null) {
+      ObjectNode objectNode = loadLatest(branchUri);
+      objectNode.modify(BranchEntry.class, be -> branchEntry);
+      save(objectNode);
+    }
+    return result;
   }
 
   @Override

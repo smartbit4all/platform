@@ -24,8 +24,7 @@ public class ModifyContributionApiStorageImpl extends ContributionApiImpl
 
   @Override
   public URI saveAsNew(ObjectDefinition<?> objectDefinition, String storageScheme,
-      Map<String, Object> objectAsMap, URI branchUri) {
-    // TODO use branchUri?
+      Map<String, Object> objectAsMap) {
     Storage storage = storageApi.get(storageScheme);
     StorageObject<?> storageObject = storage.instanceOf(objectDefinition.getClazz());
     storageObject.asMap().setObjectAsMap(objectAsMap);
@@ -34,9 +33,8 @@ public class ModifyContributionApiStorageImpl extends ContributionApiImpl
   }
 
   @Override
-  public URI update(URI versionUri, URI branchUri, Map<String, Object> objectAsMap) {
+  public URI update(URI versionUri, Map<String, Object> objectAsMap) {
     // We always update the latest version.
-    // TODO use branchUri?
     StorageObject<?> storageObject = storageApi.load(versionUri);
     storageObject.asMap().setObjectAsMap(objectAsMap);
     return storageObject.getStorage().saveVersion(storageObject);

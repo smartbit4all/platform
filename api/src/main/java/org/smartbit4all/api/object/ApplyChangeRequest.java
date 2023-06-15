@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.smartbit4all.api.object.ObjectChangeRequest.ObjectChangeOperation;
+import org.smartbit4all.api.object.bean.BranchEntry;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectDefinitionApi;
 import com.google.common.base.Strings;
@@ -19,16 +20,16 @@ public final class ApplyChangeRequest {
   /**
    * The branch of the modification. It it is null than we use the main branch of the given object.
    */
-  private final URI branchUri;
+  private final BranchEntry branchEntry;
 
   /**
    * The object api to access the {@link ObjectDefinition}s for the objects.
    */
   private final ObjectDefinitionApi objectDefinitionApi;
 
-  ApplyChangeRequest(URI branchUri, ObjectDefinitionApi objectDefinitionApi) {
+  ApplyChangeRequest(ObjectDefinitionApi objectDefinitionApi, BranchEntry branchEntry) {
     super();
-    this.branchUri = branchUri;
+    this.branchEntry = branchEntry;
     this.objectDefinitionApi = objectDefinitionApi;
   }
 
@@ -37,8 +38,8 @@ public final class ApplyChangeRequest {
    */
   private final List<ObjectChangeRequest> objectChangeRequests = new ArrayList<>();
 
-  public final URI getBranchUri() {
-    return branchUri;
+  public final BranchEntry getBranchEntry() {
+    return branchEntry;
   }
 
   public final List<ObjectChangeRequest> getObjectChangeRequests() {

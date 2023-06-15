@@ -8,11 +8,16 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import org.smartbit4all.api.object.ObjectChangeRequest.ObjectChangeOperation;
+import org.smartbit4all.api.object.bean.BranchEntry;
+import org.smartbit4all.api.object.bean.BranchOperation;
+import org.smartbit4all.api.object.bean.BranchOperation.OperationTypeEnum;
+import org.smartbit4all.api.object.bean.BranchedObject;
 import org.smartbit4all.api.object.bean.ObjectNodeState;
 import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ObjectNodeList;
 import org.smartbit4all.core.object.ObjectNodeReference;
+import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class ApplyChangeApiImpl implements ApplyChangeApi {
@@ -32,10 +37,10 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
 
     Map<ObjectChangeRequest, Object> processedRequests = new HashMap<>();
     for (ObjectChangeRequest objectChangeRequest : finalList) {
-      execute(objectChangeRequest, request.getBranchUri(), processedRequests);
+      execute(objectChangeRequest, request.getBranchEntry(), processedRequests);
     }
 
-    return new ApplyChangeResult(processedRequests);
+    return new ApplyChangeResult(processedRequests).branchEntry(request.getBranchEntry());
   }
 
   /**
@@ -47,7 +52,7 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
    *
    * @param objectChangeRequest
    */
-  private Object execute(ObjectChangeRequest objectChangeRequest, URI branchUri,
+  private Object execute(ObjectChangeRequest objectChangeRequest, BranchEntry branchEntry,
       Map<ObjectChangeRequest, Object> processedRequests) {
 
     // If this object request was already processed then return the URI without processing again.
@@ -61,7 +66,7 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
       // We need a linked hash map to reserve the order in the containers.
       Map<ObjectChangeRequest, Object> changes = new LinkedHashMap<>();
       for (ObjectChangeRequest refObjRequest : entry.getValue().changes()) {
-        Object refUri = execute(refObjRequest, branchUri, processedRequests);
+        Object refUri = execute(refObjRequest, branchEntry, processedRequests);
         changes.put(refObjRequest, refUri);
       }
       entry.getValue().apply(objectChangeRequest,
@@ -82,7 +87,7 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
         case DELETE:
           result = null;
         default:
-          result = objectChangeRequest.getOrCreateObjectAsMap();;
+          result = objectChangeRequest.getOrCreateObjectAsMap();
           break;
       }
     } else {
@@ -91,8 +96,8 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
           // The new object is created as new so we have to save the branch as the initiating branch
           // for the object. This object and all of its versions belong to this branch.
           result = modifyApi.createNewObject(objectChangeRequest.getDefinition(),
-              objectChangeRequest.getStorageScheme(), objectChangeRequest.getOrCreateObjectAsMap(),
-              branchUri);
+              objectChangeRequest.getStorageScheme(), objectChangeRequest.getOrCreateObjectAsMap());
+          registerNewObjectToBranch(branchEntry, (URI) result);
           break;
 
         case UPDATE:
@@ -100,10 +105,36 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
           // change then we have to know if we are already on the right branch. If no then we have
           // to
           // branch the given object version. At the end we have to update if there was any change.
-          result = modifyApi.updateObject(objectChangeRequest.getDefinition(),
-              objectChangeRequest.getUri(),
-              objectChangeRequest.getOrCreateObjectAsMap(),
-              branchUri);
+          // If we have a branch then we must figure out if it is an update on the branch or a new
+          // branched object from the source.
+          if (branchEntry != null) {
+            URI uriWithoutVersion =
+                ObjectStorageImpl.getUriWithoutVersion(objectChangeRequest.getUri());
+            BranchedObject alreadyExistingBranchedObject =
+                branchEntry.getBranchedObjects().get(uriWithoutVersion.toString());
+            if (alreadyExistingBranchedObject == null) {
+              // try to find the already existing by the target uri.
+              alreadyExistingBranchedObject = branchEntry.getBranchedObjects().values().stream()
+                  .filter(bo -> bo.getBranchedObjectLatestUri().equals(uriWithoutVersion))
+                  .findFirst().orElse(null);
+            }
+            if (alreadyExistingBranchedObject == null) {
+              result = modifyApi.createNewObject(objectChangeRequest.getDefinition(),
+                  objectChangeRequest.getStorageScheme(),
+                  objectChangeRequest.getOrCreateObjectAsMap());
+              registerBranchedObjectToBranch(branchEntry, uriWithoutVersion, (URI) result);
+            } else {
+              // We modify the existing branched object whatever URI we have in the original
+              // request.
+              result = modifyApi.updateObject(objectChangeRequest.getDefinition(),
+                  alreadyExistingBranchedObject.getBranchedObjectLatestUri(),
+                  objectChangeRequest.getOrCreateObjectAsMap());
+            }
+          } else {
+            result = modifyApi.updateObject(objectChangeRequest.getDefinition(),
+                objectChangeRequest.getUri(),
+                objectChangeRequest.getOrCreateObjectAsMap());
+          }
           break;
 
         case DELETE:
@@ -131,6 +162,26 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
     return result;
   }
 
+  private void registerNewObjectToBranch(BranchEntry branchEntry, URI result) {
+    if (branchEntry != null) {
+      // We should add this new object to new object of the branch entry.
+      URI uriWithoutVersion = ObjectStorageImpl.getUriWithoutVersion(result);
+      branchEntry.putNewObjectsItem(uriWithoutVersion.toString(),
+          new BranchedObject().branchedObjectLatestUri(uriWithoutVersion));
+    }
+  }
+
+  private void registerBranchedObjectToBranch(BranchEntry branchEntry, URI sourceUri, URI result) {
+    if (branchEntry != null) {
+      // We should add this new object to new object of the branch entry.
+      URI uriWithoutVersion = ObjectStorageImpl.getUriWithoutVersion(result);
+      branchEntry.putBranchedObjectsItem(
+          ObjectStorageImpl.getUriWithoutVersion(sourceUri).toString(),
+          new BranchedObject().branchedObjectLatestUri(uriWithoutVersion).addOperationsItem(
+              new BranchOperation().operationType(OperationTypeEnum.INIT).sourceUri(sourceUri)));
+    }
+  }
+
   /**
    * TODO Now it's a naive implementation.
    *
@@ -145,17 +196,17 @@ public class ApplyChangeApiImpl implements ApplyChangeApi {
   }
 
   @Override
-  public ApplyChangeRequest request(URI branchUri) {
-    return new ApplyChangeRequest(branchUri, objectDefinitionApi);
+  public ApplyChangeRequest request(BranchEntry branchEntry) {
+    return new ApplyChangeRequest(objectDefinitionApi, branchEntry);
   }
 
   @Override
-  public URI applyChanges(ObjectNode rootNode, URI branchUri) {
-    return constructRequestAndSave(rootNode, branchUri);
+  public URI applyChanges(ObjectNode rootNode, BranchEntry branchEntry) {
+    return constructRequestAndSave(rootNode, branchEntry);
   }
 
-  private URI constructRequestAndSave(ObjectNode rootNode, URI branchUri) {
-    ApplyChangeRequest request = request(branchUri);
+  private URI constructRequestAndSave(ObjectNode rootNode, BranchEntry branchEntry) {
+    ApplyChangeRequest request = request(branchEntry);
     // Now we assume that the root container is the object that is set here. So we add modification
     // to this object if it is necessary.
     ObjectChangeRequest objectChangeRequest = constructRequest(rootNode, request);

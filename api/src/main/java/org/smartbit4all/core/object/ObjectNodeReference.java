@@ -85,7 +85,7 @@ public class ObjectNodeReference {
           referrerNode.objectApi.request(referenceDefinition.getTarget().getClazz());
       request.setLoadLatest(
           RetrievalRequest.calcLoadLatest(referenceDefinition, RetrievalMode.NORMAL));
-      node = referrerNode.objectApi.load(request, objectUri);
+      node = referrerNode.objectApi.load(request, objectUri, referrerNode.branchUri);
       isLoaded = true;
     }
     return node;

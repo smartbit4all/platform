@@ -1,7 +1,5 @@
 package org.smartbit4all.core.object;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,6 +22,8 @@ import org.smartbit4all.api.object.bean.SnapshotDataRef;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.core.utility.UriUtils;
 import com.google.common.base.Strings;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 /**
  * The object node contains an object returned by the <code>RetrievalApi</code>. It can manage the
@@ -49,6 +49,11 @@ public class ObjectNode {
    * ObjectApi is used for creating other ObjectNodes
    */
   final ObjectApi objectApi;
+
+  /**
+   * If the given {@link ObjectNode} was loaded on a branch then this information is included.
+   */
+  URI branchUri;
 
   private final Map<String, ObjectNodeReference> references;
   private final Map<String, ObjectNodeList> referenceLists;
@@ -810,6 +815,15 @@ public class ObjectNode {
       ObjectNode refNode = new ObjectNode(objectApi, snapRef.getData());
       nodeRef.set(refNode);
     }
+  }
+
+  public final URI getBranchUri() {
+    return branchUri;
+  }
+
+  public final ObjectNode branchUri(URI branchUri) {
+    this.branchUri = branchUri;
+    return this;
   }
 
 }

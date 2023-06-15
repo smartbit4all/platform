@@ -9,6 +9,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.smartbit4all.api.object.bean.AggregationKind;
 import org.smartbit4all.api.object.bean.BranchEntry;
+import org.smartbit4all.api.object.bean.BranchOperation;
+import org.smartbit4all.api.object.bean.BranchOperation.OperationTypeEnum;
+import org.smartbit4all.api.object.bean.BranchedObject;
 import org.smartbit4all.api.object.bean.ObjectNodeData;
 import org.smartbit4all.api.object.bean.ReferencePropertyKind;
 import org.smartbit4all.api.storage.bean.ObjectVersion;
@@ -55,7 +58,7 @@ public final class RetrievalApiImpl implements RetrievalApi {
     }
     ObjectNodeData data;
     if (uri != null) {
-      data = readDataByUri(objRequest, uri);
+      data = readDataByUri(objRequest, uri, branchEntry);
     } else {
       data = readDataByValue(objRequest.getDefinition(), value, valueScheme);
     }
@@ -144,8 +147,64 @@ public final class RetrievalApiImpl implements RetrievalApi {
     return data;
   }
 
-  private ObjectNodeData readDataByUri(RetrievalRequest objRequest, URI uri) {
-    URI readUri = objRequest.isLoadLatest() ? ObjectStorageImpl.getUriWithoutVersion(uri) : uri;
+  private ObjectNodeData readDataByUri(RetrievalRequest objRequest, URI uri,
+      BranchEntry branchEntry) {
+
+    URI readUri;
+
+    if (branchEntry != null) {
+      // We identify the uri to read if we are reading on the branch.
+      Long uriVersion = ObjectStorageImpl.getUriVersion(uri);
+      if (objRequest.isLoadLatest() || uriVersion == null) {
+        readUri = ObjectStorageImpl.getUriWithoutVersion(uri);
+        BranchedObject branchedObject = branchEntry.getBranchedObjects().get(readUri.toString());
+        // We have a branched object for the given object on the branch so we use that instead of
+        // the main.
+        if (branchedObject != null) {
+          readUri = branchedObject.getBranchedObjectLatestUri();
+        }
+      } else {
+        // In this case we must check the version also.
+        URI latestUri = ObjectStorageImpl.getUriWithoutVersion(uri);
+        BranchedObject branchedObject = branchEntry.getBranchedObjects().get(latestUri.toString());
+        // We have a branched object for the given object on the branch so we use that instead of
+        // the main.
+        if (branchedObject != null) {
+          BranchOperation lastRebase = null;
+          for (int i = branchedObject.getOperations().size() - 1; i >= 0; i--) {
+            BranchOperation bo = branchedObject.getOperations().get(i);
+            if (OperationTypeEnum.INIT.equals(bo.getOperationType())
+                || OperationTypeEnum.REBASE.equals(bo.getOperationType())) {
+              lastRebase = bo;
+              break;
+            }
+          }
+          if (lastRebase != null
+              && ObjectStorageImpl.getUriVersion(lastRebase.getSourceUri()) != null) {
+            Long lastRebaseSourceVersion =
+                ObjectStorageImpl.getUriVersion(lastRebase.getSourceUri());
+            if (uriVersion < lastRebaseSourceVersion) {
+              // We ask for an earlier version from the source. We can read it and return.
+              readUri = uri;
+            } else if (uriVersion.equals(lastRebaseSourceVersion)) {
+              // We exactly ask for the rebased version. On this branch we pass the first version
+              // from the branch
+              readUri = lastRebase.getTargetUri();
+            } else {
+              throw new IllegalStateException("Unabe to retrieve a version from the source " + uri
+                  + " that is later then the last branching " + lastRebaseSourceVersion);
+            }
+          } else {
+            throw new IllegalStateException("Missing rebase operation for " + branchedObject);
+          }
+        } else {
+          readUri = uri;
+        }
+      }
+    } else {
+      readUri = objRequest.isLoadLatest() ? ObjectStorageImpl.getUriWithoutVersion(uri) : uri;
+    }
+
     StorageObject<?> storageObject = storageApi.load(readUri);
     ObjectVersion version = storageObject.getVersion();
     return new ObjectNodeData()

@@ -13,10 +13,9 @@ import org.smartbit4all.core.object.ObjectDefinition;
 public interface ModifyApi extends PrimaryApi<ModifyContributionApi> {
 
   URI createNewObject(ObjectDefinition<?> objectDefinition, String storageScheme,
-      Map<String, Object> objMap,
-      URI branchUri);
+      Map<String, Object> objMap);
 
   URI updateObject(ObjectDefinition<?> objectDefinition, URI objVersionUri,
-      Map<String, Object> objMap, URI branchUri);
+      Map<String, Object> objMap);
 
 }

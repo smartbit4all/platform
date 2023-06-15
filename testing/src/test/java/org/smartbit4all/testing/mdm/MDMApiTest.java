@@ -2,6 +2,7 @@ package org.smartbit4all.testing.mdm;
 
 import java.io.IOException;
 import java.net.URI;
+import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,7 @@ import org.smartbit4all.api.object.bean.PropertyDefinitionData;
 import org.smartbit4all.api.org.OrgApi;
 import org.smartbit4all.api.org.SecurityGroup;
 import org.smartbit4all.api.org.bean.User;
+import org.smartbit4all.api.sample.bean.SampleCategory;
 import org.smartbit4all.api.sample.bean.SampleCategoryType;
 import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.api.view.layout.SmartLayoutApi;
@@ -34,6 +36,7 @@ import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectCacheEntry;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
+import org.smartbit4all.core.object.ObjectNodeList;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.sec.localauth.LocalAuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +48,8 @@ import static java.util.stream.Collectors.toMap;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(Lifecycle.PER_CLASS)
 class MDMApiTest {
+
+  private static final String SCHEMA = "test";
 
   private static final String CATEGORY = "category";
 
@@ -237,6 +242,70 @@ class MDMApiTest {
 
       assertEquals(branchEntry, branchEntry2);
 
+    }
+
+  }
+
+  @Test
+  @Order(4)
+  void testBranchingOperations() {
+
+    ObjectCacheEntry<BranchEntry> branchCacheEntry =
+        objectApi.getCacheEntry(BranchEntry.class);
+
+    String caption = "First branch";
+    URI branch1 = objectApi.saveAsNew("branch", new BranchEntry().caption(caption));
+
+    // Construct the baseline for a hierarchical object structure in one object node.
+    String rootCategoryCaption = "root category";
+    ObjectNode rootNode = objectApi.create(SCHEMA,
+        new SampleCategory().name(rootCategoryCaption).cost(Long.valueOf(1500))
+            .createdAt(OffsetDateTime.now()));
+
+    String firstSubCategoryCaption = "first sub category";
+    String secondSubCategoryCaption = "second sub category";
+    {
+      ObjectNodeList subCategories = rootNode.list(SampleCategory.SUB_CATEGORIES);
+      {
+        ObjectNode subCategoryNode = subCategories
+            .addNewObject(
+                new SampleCategory().name(firstSubCategoryCaption).cost(Long.valueOf(2500))
+                    .createdAt(OffsetDateTime.now()));
+      }
+      {
+        ObjectNode subCategoryNode = subCategories
+            .addNewObject(
+                new SampleCategory().name(secondSubCategoryCaption).cost(Long.valueOf(2500))
+                    .createdAt(OffsetDateTime.now()));
+      }
+    }
+
+    URI rootUri = objectApi.save(rootNode);
+
+    rootNode = objectApi.loadLatest(rootUri);
+
+    rootNode.list(SampleCategory.SUB_CATEGORIES).nodeStream().forEach(node -> node
+        .modify(SampleCategory.class, c -> c.name(c.getName() + StringConstant.HYPHEN + caption)));
+
+    objectApi.save(rootNode, branch1);
+
+    // Load on the "main" branch
+    {
+      ObjectNode objectNode = objectApi.loadLatest(rootUri);
+      Assertions.assertThat(objectNode).extracting(o -> o.getValueAsString(SampleCategory.NAME),
+          o -> o.getValueAsString(SampleCategory.SUB_CATEGORIES, "0", SampleCategory.NAME),
+          o -> o.getValueAsString(SampleCategory.SUB_CATEGORIES, "1", SampleCategory.NAME))
+          .containsExactly(rootCategoryCaption, firstSubCategoryCaption, secondSubCategoryCaption);
+    }
+
+    {
+      ObjectNode objectNode = objectApi.loadLatest(rootUri, branch1);
+      Assertions.assertThat(objectNode).extracting(o -> o.getValueAsString(SampleCategory.NAME),
+          o -> o.getValueAsString(SampleCategory.SUB_CATEGORIES, "0", SampleCategory.NAME),
+          o -> o.getValueAsString(SampleCategory.SUB_CATEGORIES, "1", SampleCategory.NAME))
+          .containsExactly(rootCategoryCaption,
+              firstSubCategoryCaption + StringConstant.HYPHEN + caption,
+              secondSubCategoryCaption + StringConstant.HYPHEN + caption);
     }
 
   }

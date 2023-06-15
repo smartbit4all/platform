@@ -614,7 +614,7 @@ class ApplyChangeTest {
 
     SampleCategory rootContainer = new SampleCategory().name("root");
 
-    ApplyChangeRequest applyChangeRequest = applyChangeApi.request(branchUri);
+    ApplyChangeRequest applyChangeRequest = applyChangeApi.request(null);
     ObjectChangeRequest ocrContainer = applyChangeRequest.createAsNew(MY_SCHEME, rootContainer);
     ReferenceListChange rlcItems = ocrContainer.referenceList(referenceToItems);
 
