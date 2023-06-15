@@ -8,6 +8,7 @@ import java.util.concurrent.locks.Lock;
 import org.smartbit4all.api.object.ApplyChangeApi;
 import org.smartbit4all.api.object.RetrievalApi;
 import org.smartbit4all.api.object.RetrievalRequest;
+import org.smartbit4all.api.object.bean.BranchEntry;
 import org.smartbit4all.api.object.bean.ObjectNodeData;
 import org.smartbit4all.api.object.bean.RetrievalMode;
 import org.smartbit4all.api.object.bean.SnapshotData;
@@ -219,7 +220,7 @@ public interface ObjectApi {
   /**
    * Save the ObjectNode structure to the specified branch. If brancUri is null, it will be saved on
    * main branch. Saves only changes specified in {@link ObjectNode#getState()}. Uses
-   * {@link ApplyChangeApi#applyChanges(ObjectNode, URI)} under the hood.
+   * {@link ApplyChangeApi#applyChanges(ObjectNode, BranchEntry)} under the hood.
    *
    */
   URI save(ObjectNode node, URI branchUri);
