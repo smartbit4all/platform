@@ -1,9 +1,12 @@
 package org.smartbit4all.testing.mdm;
 
+import java.util.Arrays;
 import org.smartbit4all.api.binarydata.BinaryContent;
 import org.smartbit4all.api.config.PlatformApiConfig;
-import org.smartbit4all.api.mdm.MDMEntryApi;
-import org.smartbit4all.api.mdm.MDMEntryApiImpl;
+import org.smartbit4all.api.mdm.MDMDefinitionOption;
+import org.smartbit4all.api.mdm.bean.MDMDefinition;
+import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
+import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor.BranchStrategyEnum;
 import org.smartbit4all.api.object.bean.AggregationKind;
 import org.smartbit4all.api.object.bean.ReferencePropertyKind;
 import org.smartbit4all.api.org.bean.User;
@@ -31,22 +34,22 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 public class MDMApiTestConfig extends TestFSCleaner {
 
-  @Bean
-  public MDMEntryApi<SampleCategoryType> mdmSampleCategoryType() {
-    MDMEntryApiImpl<SampleCategoryType> impl =
-        new MDMEntryApiImpl<>(SampleCategoryType.class);
-    impl.setSchema("sample");
-    impl.setUniqueIdPath(SampleCategoryType.CODE);
-    return impl;
-  }
+
+  static final String TEST = "Test";
+  static final String SAMPLE = "sample";
 
   @Bean
-  public MDMEntryApi<SampleCategory> mdmSampleCategory() {
-    MDMEntryApiImpl<SampleCategory> impl =
-        new MDMEntryApiImpl<>(SampleCategory.class);
-    impl.setSchema("sample");
-    impl.setUniqueIdPath(SampleCategory.NAME);
-    return impl;
+  MDMDefinitionOption testMDMOption() {
+    return new MDMDefinitionOption(new MDMDefinition().name(TEST).putDescriptorsItem(
+        SampleCategoryType.class.getSimpleName(),
+        new MDMEntryDescriptor().schema(SAMPLE).name(SampleCategoryType.class.getSimpleName())
+            .branchStrategy(BranchStrategyEnum.ENTRYLEVEL).publishInList(Boolean.TRUE)
+            .uniqueIdentifierPath(Arrays.asList(SampleCategoryType.CODE)))
+        .putDescriptorsItem(
+            SampleCategory.class.getSimpleName(),
+            new MDMEntryDescriptor().schema(SAMPLE).name(SampleCategory.class.getSimpleName())
+                .branchStrategy(BranchStrategyEnum.ENTRYLEVEL).publishInList(Boolean.TRUE)
+                .uniqueIdentifierPath(Arrays.asList(SampleCategory.NAME))));
   }
 
   public static final String SHADOW_ITEMS = "shadowItems";

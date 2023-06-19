@@ -5,7 +5,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.smartbit4all.api.object.bean.BranchEntry;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
@@ -48,7 +47,7 @@ public class ObjectCacheEntryImpl<T> implements ObjectCacheEntry<T> {
         cachedObject = cache.get(latestUri, () -> {
           ObjectNode objectNode = objectApi.load(latestUri);
           return new CachedObject(objectNode.getLastModified(),
-              objectNode.getObject(BranchEntry.class));
+              objectNode.getObject(clazz));
         });
       }
     } catch (ExecutionException e) {

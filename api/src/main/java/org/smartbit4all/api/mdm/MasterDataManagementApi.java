@@ -1,9 +1,13 @@
 package org.smartbit4all.api.mdm;
 
+import org.smartbit4all.api.mdm.bean.MDMDefinition;
+
 /**
  * The global master data management api that is responsible for the master data of the application.
- * It help to find the proper api implementation for a given object. By name we can find the given
- * {@link MDMEntryApi} and we can use it.
+ * It is working with the {@link MDMDefinition} object that describes the master data management
+ * schemas of the application. We can define the MDMDefinition and its details in spring context. In
+ * this case the {@link MasterDataManagementApi} will apply the setting into the storage at the
+ * first call. It is a fast operation and the operation state is stored also in the storage.
  * 
  * @author Peter Boros
  */
@@ -11,8 +15,6 @@ public interface MasterDataManagementApi {
 
   static final String SCHEMA = "mdm";
 
-  <T> MDMEntryApi<T> getApi(Class<T> clazz, String name);
-
-  <T> MDMEntryApi<T> getApi(Class<T> clazz);
+  MDMEntryApi getApi(String definition, String name);
 
 }

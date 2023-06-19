@@ -2,7 +2,9 @@ package org.smartbit4all.api.invocation;
 
 import java.lang.reflect.Method;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import org.slf4j.Logger;
@@ -190,6 +192,57 @@ public final class InvocationApiImpl implements InvocationApi {
     batch.getRequests().stream().forEach(r -> {
       invocationRegisterApi.saveAndEnqueueAsyncInvocationRequest(r, channel);
     });
+  }
+
+  @Override
+  public InvocationRequest prepareByPosition(InvocationRequest request, Object... parameters) {
+    InvocationRequest result = copyInvovationRequestHead(request);
+    int i = 0;
+    List<InvocationParameter> resultParams = new ArrayList<>();
+    for (InvocationParameter param : request.getParameters()) {
+      Object paramValue = param.getValue();
+      if (parameters != null && i < parameters.length && parameters[i] != LEAVE) {
+        paramValue = parameters[i];
+      }
+      resultParams.add(new InvocationParameter().innerTypeClass(param.getInnerTypeClass())
+          .name(param.getName()).typeClass(param.getTypeClass()).value(paramValue));
+      i++;
+    }
+    result.setParameters(resultParams);
+    if (sessionApi != null) {
+      result.setSessionUri(sessionApi.getSessionUri());
+    }
+    return result;
+  }
+
+  private final InvocationRequest copyInvovationRequestHead(InvocationRequest request) {
+    return new InvocationRequest().interfaceClass(request.getInterfaceClass())
+        .methodName(request.getMethodName()).name(request.getName())
+        .scriptBody(request.getScriptBody()).scriptKind(request.getScriptKind());
+  }
+
+  @Override
+  public InvocationRequest prepareByName(InvocationRequest request,
+      Map<String, Object> parameters) {
+    InvocationRequest result = copyInvovationRequestHead(request);
+    int i = 0;
+    List<InvocationParameter> resultParams = new ArrayList<>();
+    for (InvocationParameter param : request.getParameters()) {
+      Object paramValue = param.getValue();
+      if (parameters != null) {
+        Object paramValueByMap = parameters.get(param.getName());
+        if (paramValueByMap != null) {
+          paramValue = paramValueByMap;
+        }
+      }
+      resultParams.add(new InvocationParameter().innerTypeClass(param.getInnerTypeClass())
+          .name(param.getName()).typeClass(param.getTypeClass()).value(paramValue));
+    }
+    result.setParameters(resultParams);
+    if (sessionApi != null) {
+      result.setSessionUri(sessionApi.getSessionUri());
+    }
+    return result;
   }
 
 }

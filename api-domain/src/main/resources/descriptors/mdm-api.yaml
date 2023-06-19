@@ -1,0 +1,158 @@
+openapi: 3.0.3
+info:
+  title: MasterDataManagement api
+  description:
+  termsOfService: ''
+  contact:
+    email: info@it4all.hu
+  version: 1.0.0
+tags:
+  - name: MasterDataManagement
+    description: 
+paths: {}
+components:
+  schemas:
+    MDMDefinition:
+      type: object
+      description: |
+        This definition object is a descriptor about the master data management in an application. Typically this is a single instance in the
+        application but there can be more then one if we would like to manage separated set of data like in a multi tenant application. It is used as
+        CollectionApi.reference to be able to identify by name.
+      required: [uri, descriptors]
+      properties:
+        uri:
+          type: string
+          format: uri
+          description: The uri of the object.
+        name:
+          type: string
+          description: The logical name of the given mdm definition. This is also the default name of the schema.
+        state:
+          type: string
+          format: uri
+          description: The reference to the current state of the definition. It contains the necessary runtime informations.
+        descriptors:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/MDMEntryDescriptor'
+    MDMEntryDescriptor:
+      type: object
+      description: |
+        The entry is responsible for a managed list of object instances from the same kind. This contains every information about the behavior of
+        the given list of object.
+      required: [uri, tableColumns, state]
+      properties:
+        name:
+          type: string
+          description: |
+            The name is the key of the given entry. The caption that is translated by the LocaleSettingApi. Normally it is filled with the
+            qualified name of the given class. It is easy to identify in the message...properties.
+        typeQualifiedName:
+          type: string
+          default: "org.smartbit4all.api.value.bean.Value"
+          description: |
+            The type qualified name that is normally the name of the java class. It is used to identify the ObjectDefinition by name. By default the
+            Value object is used that can be inline or reference also because it has uri and code also.
+        inlineValueSet:
+          type: boolean
+          default: true
+          description: |
+            If it is true then the values are stored directly in the ValueSetDefinition object list. In this case the Value object doesn't have any
+            URI till it is not an individually stored object. If it is false then the editor will save all the objects as individual stored object with
+            URI.
+        publishInList:
+          type: boolean
+          default: true
+          description: |
+            The published objects can be seen in this list that can be accessed by the CollectionApi.list(). The name of the list will be
+            the nameList.
+        uniqueIdentifierPath:
+          type: array
+          description: |
+            The path of the identifier property that is uniquely identifies the given instance of the object. Normally it contains one String
+            element that is the name of the identifier property. But it can be inside a contained object so it can be DATA, CODE or similar.
+          items:
+            type: string
+        publishInMap:
+          type: boolean
+          default: true
+          description: |
+            The published objects can be seen in this map that can be accessed by the CollectionApi.map(). The name of the map will be
+            the nameMap. It works if and only if we have uniqueIdentifierPath set. 
+        tableColumns:
+          type: array
+          description: |
+            The given object can be listed and can be searched. This mapping defines the table columns for the object. The columns can be
+            hidden and the order is the default column order on the screen.
+          items:
+            $ref: '#/components/schemas/MDMTableColumnDescriptor'
+        schema:
+          type: string
+          description: |
+            The schema for the objects to store them in. If it is null then the default schema from the MDMDefinition will be used.
+        branchStrategy:
+          enum: [global, entryLevel]
+        uriConstructor:
+          type: InvocationRequest
+          description: |
+            It can be a function that produces the URI for the given object by the other property values.
+        eventHandlersBeforeSave:
+          type: array
+          description: |
+            These functions are event handlers to manage the save before event about the given object.
+          items:
+            type: InvocationRequest
+        state:
+          type: string
+          format: uri
+          description: The reference to the current state of the given entry. It contains the necessary runtime informations.
+    MDMTableColumnDescriptor:
+      type: object
+      description: |
+        This definition object is a descriptor about the master data management in an application. Typically this is a single instance in the
+        application but there can be more then one if we would like to manage separated set of data like in a multi tenant application. It is used as
+        CollectionApi.reference to be able to identify by name.
+      required: [name]
+      properties:
+        name:
+          type: string
+          description: The name of the given column.
+        path:
+          type: array
+          description: The path to access the object property of the column.
+          items:
+            type: string
+    MDMDefinitionState:
+      type: object
+      description: |
+        This definition object is a descriptor about the master data management in an application. Typically this is a single instance in the
+        application but there can be more then one if we would like to manage separated set of data like in a multi tenant application. It is used as
+        CollectionApi.reference to be able to identify by name.
+      required: [uri, created, objects]
+      properties:
+        uri:
+          type: string
+          format: uri
+          description: The uri of the object.
+        globalBranch:
+          type: string
+          format: uri
+          description: The uri of the global branch if any.
+    MDMEntryDescriptorState:
+      type: object
+      description: |
+        The entry state is responsible for storing the current editing state of the given entry.
+      required: [uri, created, objects]
+      properties:
+        uri:
+          type: string
+          format: uri
+          description: The uri of the object.
+        branch:
+          type: string
+          format: uri
+          description: |
+            The uri of the branch currently active for the given object. It could be the globalBranch if
+            the policy is that we are working on the same branch for given object. There can be objects that
+            can be edited in local branch but we can have global modifications where we would like to initiate a global
+            modification package and publish tha whole at once.

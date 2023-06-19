@@ -237,4 +237,94 @@ public class InvocationApiTestStatic {
 
   }
 
+  static void testInvokeWithPrepare(InvocationApi invocationApi, CollectionApi collectionApi,
+      ObjectApi objectApi)
+      throws Exception {
+
+    // Save some objects first.
+
+    ObjectInvocationConfig config = new ObjectInvocationConfig();
+
+    config.addObjectUrisItem(objectApi.saveAsNew(INVOCATIONTEST,
+        new SampleCategory().name("Category 1").cost(12l).color(ColorEnum.GREEN)));
+    config.addObjectUrisItem(objectApi.saveAsNew(INVOCATIONTEST,
+        new SampleCategory().name("Category 2").cost(12l).color(ColorEnum.GREEN)));
+    config.addObjectUrisItem(objectApi.saveAsNew(INVOCATIONTEST,
+        new SampleCategory().name("Category 3").cost(12l).color(ColorEnum.GREEN)));
+    config.addObjectUrisItem(objectApi.saveAsNew(INVOCATIONTEST,
+        new SampleCategory().name("Category 4").cost(12l).color(ColorEnum.GREEN)));
+
+
+    InvocationRequest originalRequest = invocationApi.builder(TestApi.class)
+        .build(a -> a.applyParentNamChangeForCategory(null, "common"));
+
+    List<String> results = new ArrayList<>();
+    for (URI uri : config.getObjectUris()) {
+      results.add((String) invocationApi
+          .invoke(invocationApi.prepareByPosition(originalRequest, uri, InvocationApi.LEAVE))
+          .getValue());
+      // The original request is untouched.
+      org.assertj.core.api.Assertions
+          .assertThat(originalRequest.getParameters().stream().map(p -> p.getValue()))
+          .containsExactly(null, "common");
+    }
+
+    org.assertj.core.api.Assertions
+        .assertThat(results)
+        .containsSequence("Category 1", "Category 2", "Category 3", "Category 4");
+
+    org.assertj.core.api.Assertions
+        .assertThat(config.getObjectUris().stream()
+            .map(u -> objectApi.loadLatest(u).getObject(SampleCategory.class).getName())
+            .collect(toList()))
+        .allMatch(s -> "common".equals(s));
+
+  }
+
+  static void testInvokeWithPrepareByName(InvocationApi invocationApi, CollectionApi collectionApi,
+      ObjectApi objectApi)
+      throws Exception {
+
+    // Save some objects first.
+
+    ObjectInvocationConfig config = new ObjectInvocationConfig();
+
+    config.addObjectUrisItem(objectApi.saveAsNew(INVOCATIONTEST,
+        new SampleCategory().name("Category 1").cost(12l).color(ColorEnum.GREEN)));
+    config.addObjectUrisItem(objectApi.saveAsNew(INVOCATIONTEST,
+        new SampleCategory().name("Category 2").cost(12l).color(ColorEnum.GREEN)));
+    config.addObjectUrisItem(objectApi.saveAsNew(INVOCATIONTEST,
+        new SampleCategory().name("Category 3").cost(12l).color(ColorEnum.GREEN)));
+    config.addObjectUrisItem(objectApi.saveAsNew(INVOCATIONTEST,
+        new SampleCategory().name("Category 4").cost(12l).color(ColorEnum.GREEN)));
+
+
+    InvocationRequest originalRequest = invocationApi.builder(TestApi.class)
+        .build(a -> a.applyParentNamChangeForCategory(null, "common"));
+
+    List<String> results = new ArrayList<>();
+    for (URI uri : config.getObjectUris()) {
+      Map<String, Object> map = new HashMap<>();
+      map.put("categoryUri", uri);
+      results.add((String) invocationApi
+          .invoke(invocationApi.prepareByName(originalRequest, map))
+          .getValue());
+      // The original request is untouched.
+      org.assertj.core.api.Assertions
+          .assertThat(originalRequest.getParameters().stream().map(p -> p.getValue()))
+          .containsExactly(null, "common");
+    }
+
+    org.assertj.core.api.Assertions
+        .assertThat(results)
+        .containsSequence("Category 1", "Category 2", "Category 3", "Category 4");
+
+    org.assertj.core.api.Assertions
+        .assertThat(config.getObjectUris().stream()
+            .map(u -> objectApi.loadLatest(u).getObject(SampleCategory.class).getName())
+            .collect(toList()))
+        .allMatch(s -> "common".equals(s));
+
+  }
+
 }

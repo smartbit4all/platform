@@ -1,6 +1,7 @@
 package org.smartbit4all.api.invocation;
 
 import java.time.OffsetDateTime;
+import java.util.Map;
 import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationBatchResult;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
@@ -17,6 +18,12 @@ import org.smartbit4all.core.object.ObjectPropertyResolver;
  * @author Peter Boros
  */
 public interface InvocationApi {
+
+  /**
+   * This is the constant object to use when we don't want to override the parameter of an
+   * INvocationRequest.
+   */
+  public static final Object LEAVE = new Object();
 
   /**
    * The builder can be used to produce an {@link InvocationRequest} by calling the method in the
@@ -154,5 +161,27 @@ public interface InvocationApi {
    */
   InvocationRequest resolve(InvocationRequestDefinition definition,
       ObjectPropertyResolverContext context);
+
+  /**
+   * Constructs a new invocation request copy and set the parameters by position.
+   * 
+   * @param request The original request
+   * @param parameters At a given position we can use the {@link #LEAVE} constant. This is the
+   *        constant object to use when we don't want to override the parameter of an
+   *        INvocationRequest.
+   * @return The result request that can be used for the {@link #invoke(InvocationRequest)} for
+   *         example.
+   */
+  InvocationRequest prepareByPosition(InvocationRequest request, Object... parameters);
+
+  /**
+   * Constructs a new invocation request copy and set the parameters by position.
+   * 
+   * @param request The original request
+   * @param parameters The parameters in a map. The key is the name of the parameter.
+   * @return The result request that can be used for the {@link #invoke(InvocationRequest)} for
+   *         example.
+   */
+  InvocationRequest prepareByName(InvocationRequest request, Map<String, Object> parameters);
 
 }

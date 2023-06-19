@@ -27,6 +27,7 @@ smartbit4all {
   		"PropertyDefinitionData": "org.smartbit4all.api.object.bean.PropertyDefinitionData",
   		"SmartLayoutDefinition": "org.smartbit4all.api.formdefinition.bean.SmartLayoutDefinition",
   		"SmartWidgetDefinition": "org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition",
+  		"InvocationRequest": "org.smartbit4all.api.invocation.bean.InvocationRequest",
   	]
   }
 }

@@ -4,8 +4,10 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import org.smartbit4all.api.collection.StoredList;
-import org.smartbit4all.api.mdm.MDMEntryApiImpl.BranchStrategy;
+import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
+import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor.BranchStrategyEnum;
 import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.core.object.ObjectNode;
 
 /**
  * This is the interface of the Master Data Management entry APIs. The base implementation of the
@@ -24,15 +26,17 @@ import org.smartbit4all.core.object.ObjectApi;
  * The entries can have
  *
  * @author Peter Boros
- * @param <O> The class of the object managed by this API.
  */
-public interface MDMEntryApi<O> {
+public interface MDMEntryApi {
 
+  /**
+   * @return The name of the given entry
+   */
   String getName();
 
-  Class<O> getClazz();
+  MDMEntryDescriptor getDescriptor();
 
-  String getId(O object);
+  String getId(Object object);
 
   /**
    * @return Returns the version URI of the currently published objects.
@@ -42,11 +46,7 @@ public interface MDMEntryApi<O> {
   /**
    * @return Return all the published objects loaded.
    */
-  Map<String, O> getPublishedObjects();
-
-  O getPublishedObject(MDMEntry entry);
-
-  O getDraftObject(MDMEntry entry);
+  Map<String, ObjectNode> getPublishedObjects();
 
   /**
    * @return Return the published {@link StoredList} if the published list name was set.
@@ -59,7 +59,7 @@ public interface MDMEntryApi<O> {
    * @param object The object to save.
    * @return The URI of the currently saved draft version.
    */
-  URI saveAsNewPublished(O object);
+  URI saveAsNewPublished(Object object);
 
   /**
    * Save the given object as draft. To be able to identify the published version of the draft
@@ -69,7 +69,7 @@ public interface MDMEntryApi<O> {
    * @param object The object to save.
    * @return The URI of the currently saved draft version.
    */
-  URI saveAsDraft(O object);
+  URI saveAsDraft(Object object);
 
   void cancelDraft(URI draftUri);
 
@@ -96,6 +96,6 @@ public interface MDMEntryApi<O> {
    *         entry. Or it can be {@link BranchStrategy#GLOBAL} if modification of the given entry
    *         joins to a global branch.
    */
-  BranchStrategy getBranchStrategy();
+  BranchStrategyEnum getBranchStrategy();
 
 }

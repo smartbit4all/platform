@@ -1,6 +1,6 @@
 /*
- * Object api
- * The object api responsible for the domain object meta information including the object definitions and the relations among them. These objects are stored because the modules can contribute. The modules have their own ObjectApi that manages the storage and ensure the up-to-date view of the current data. The algorithms are running on the ObjectApi cache refreshed periodically. 
+ * MasterDataManagement api
+ * null
  *
  * The version of the OpenAPI document: 1.0.0
  * Contact: info@it4all.hu
@@ -11,7 +11,7 @@
  */
 
 
-package org.smartbit4all.api.object.bean;
+package org.smartbit4all.api.mdm.bean;
 
 import java.util.Objects;
 import java.util.Arrays;
@@ -23,40 +23,32 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import org.smartbit4all.api.object.bean.MasterDataManagementEntry;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 
 /**
- * This info object is the main descriptor of the master data of a given application. Typically this is a single instance in the application instance. 
+ * This definition object is a descriptor about the master data management in an application. Typically this is a single instance in the application but there can be more then one if we would like to manage separated set of data like in a multi tenant application. It is used as CollectionApi.reference to be able to identify by name. 
  */
-@ApiModel(description = "This info object is the main descriptor of the master data of a given application. Typically this is a single instance in the application instance. ")
+@ApiModel(description = "This definition object is a descriptor about the master data management in an application. Typically this is a single instance in the application but there can be more then one if we would like to manage separated set of data like in a multi tenant application. It is used as CollectionApi.reference to be able to identify by name. ")
 @JsonPropertyOrder({
-  MasterDataManagementInfo.URI,
-  MasterDataManagementInfo.GLOBAL_BRANCH,
-  MasterDataManagementInfo.OBJECTS
+  MDMDefinitionState.URI,
+  MDMDefinitionState.GLOBAL_BRANCH
 })
-@JsonTypeName("MasterDataManagementInfo")
+@JsonTypeName("MDMDefinitionState")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
-public class MasterDataManagementInfo {
+public class MDMDefinitionState {
   public static final String URI = "uri";
   private URI uri;
 
   public static final String GLOBAL_BRANCH = "globalBranch";
   private URI globalBranch;
 
-  public static final String OBJECTS = "objects";
-  private Map<String, MasterDataManagementEntry> objects = new HashMap<>();
-
-  public MasterDataManagementInfo() { 
+  public MDMDefinitionState() { 
   }
 
-  public MasterDataManagementInfo uri(URI uri) {
+  public MDMDefinitionState uri(URI uri) {
     
     this.uri = uri;
     return this;
@@ -85,7 +77,7 @@ public class MasterDataManagementInfo {
   }
 
 
-  public MasterDataManagementInfo globalBranch(URI globalBranch) {
+  public MDMDefinitionState globalBranch(URI globalBranch) {
     
     this.globalBranch = globalBranch;
     return this;
@@ -113,40 +105,6 @@ public class MasterDataManagementInfo {
   }
 
 
-  public MasterDataManagementInfo objects(Map<String, MasterDataManagementEntry> objects) {
-    
-    this.objects = objects;
-    return this;
-  }
-
-  public MasterDataManagementInfo putObjectsItem(String key, MasterDataManagementEntry objectsItem) {
-    this.objects.put(key, objectsItem);
-    return this;
-  }
-
-   /**
-   * Get objects
-   * @return objects
-  **/
-  @javax.annotation.Nonnull
-  @NotNull
-  @Valid
-  @ApiModelProperty(required = true, value = "")
-  @JsonProperty(OBJECTS)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-
-  public Map<String, MasterDataManagementEntry> getObjects() {
-    return objects;
-  }
-
-
-  @JsonProperty(OBJECTS)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setObjects(Map<String, MasterDataManagementEntry> objects) {
-    this.objects = objects;
-  }
-
-
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -155,24 +113,22 @@ public class MasterDataManagementInfo {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    MasterDataManagementInfo masterDataManagementInfo = (MasterDataManagementInfo) o;
-    return Objects.equals(this.uri, masterDataManagementInfo.uri) &&
-        Objects.equals(this.globalBranch, masterDataManagementInfo.globalBranch) &&
-        Objects.equals(this.objects, masterDataManagementInfo.objects);
+    MDMDefinitionState mdMDefinitionState = (MDMDefinitionState) o;
+    return Objects.equals(this.uri, mdMDefinitionState.uri) &&
+        Objects.equals(this.globalBranch, mdMDefinitionState.globalBranch);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, globalBranch, objects);
+    return Objects.hash(uri, globalBranch);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class MasterDataManagementInfo {\n");
+    sb.append("class MDMDefinitionState {\n");
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    globalBranch: ").append(toIndentedString(globalBranch)).append("\n");
-    sb.append("    objects: ").append(toIndentedString(objects)).append("\n");
     sb.append("}");
     return sb.toString();
   }

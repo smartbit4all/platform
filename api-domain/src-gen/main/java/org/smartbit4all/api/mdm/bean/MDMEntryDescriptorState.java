@@ -1,6 +1,6 @@
 /*
- * Object api
- * The object api responsible for the domain object meta information including the object definitions and the relations among them. These objects are stored because the modules can contribute. The modules have their own ObjectApi that manages the storage and ensure the up-to-date view of the current data. The algorithms are running on the ObjectApi cache refreshed periodically. 
+ * MasterDataManagement api
+ * null
  *
  * The version of the OpenAPI document: 1.0.0
  * Contact: info@it4all.hu
@@ -11,7 +11,7 @@
  */
 
 
-package org.smartbit4all.api.object.bean;
+package org.smartbit4all.api.mdm.bean;
 
 import java.util.Objects;
 import java.util.Arrays;
@@ -29,53 +29,55 @@ import javax.validation.constraints.*;
 import javax.validation.Valid;
 
 /**
- * The entry is responsible for a managed list of object instances from the same kind. This contains every information about the current state of the editing. 
+ * The entry state is responsible for storing the current editing state of the given entry. 
  */
-@ApiModel(description = "The entry is responsible for a managed list of object instances from the same kind. This contains every information about the current state of the editing. ")
+@ApiModel(description = "The entry state is responsible for storing the current editing state of the given entry. ")
 @JsonPropertyOrder({
-  MasterDataManagementEntry.CAPTION,
-  MasterDataManagementEntry.BRANCH
+  MDMEntryDescriptorState.URI,
+  MDMEntryDescriptorState.BRANCH
 })
-@JsonTypeName("MasterDataManagementEntry")
+@JsonTypeName("MDMEntryDescriptorState")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
-public class MasterDataManagementEntry {
-  public static final String CAPTION = "caption";
-  private String caption;
+public class MDMEntryDescriptorState {
+  public static final String URI = "uri";
+  private URI uri;
 
   public static final String BRANCH = "branch";
   private URI branch;
 
-  public MasterDataManagementEntry() { 
+  public MDMEntryDescriptorState() { 
   }
 
-  public MasterDataManagementEntry caption(String caption) {
+  public MDMEntryDescriptorState uri(URI uri) {
     
-    this.caption = caption;
+    this.uri = uri;
     return this;
   }
 
    /**
-   * The caption is key of the caption that is translated by the LocaleSettingApi. Normally it is filled with the qualified name of the given class. It is easy to identify in the message...properties.  
-   * @return caption
+   * The uri of the object.
+   * @return uri
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "The caption is key of the caption that is translated by the LocaleSettingApi. Normally it is filled with the qualified name of the given class. It is easy to identify in the message...properties.  ")
-  @JsonProperty(CAPTION)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @javax.annotation.Nonnull
+  @NotNull
+  @Valid
+  @ApiModelProperty(required = true, value = "The uri of the object.")
+  @JsonProperty(URI)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public String getCaption() {
-    return caption;
+  public URI getUri() {
+    return uri;
   }
 
 
-  @JsonProperty(CAPTION)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setCaption(String caption) {
-    this.caption = caption;
+  @JsonProperty(URI)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setUri(URI uri) {
+    this.uri = uri;
   }
 
 
-  public MasterDataManagementEntry branch(URI branch) {
+  public MDMEntryDescriptorState branch(URI branch) {
     
     this.branch = branch;
     return this;
@@ -111,21 +113,21 @@ public class MasterDataManagementEntry {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    MasterDataManagementEntry masterDataManagementEntry = (MasterDataManagementEntry) o;
-    return Objects.equals(this.caption, masterDataManagementEntry.caption) &&
-        Objects.equals(this.branch, masterDataManagementEntry.branch);
+    MDMEntryDescriptorState mdMEntryDescriptorState = (MDMEntryDescriptorState) o;
+    return Objects.equals(this.uri, mdMEntryDescriptorState.uri) &&
+        Objects.equals(this.branch, mdMEntryDescriptorState.branch);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(caption, branch);
+    return Objects.hash(uri, branch);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class MasterDataManagementEntry {\n");
-    sb.append("    caption: ").append(toIndentedString(caption)).append("\n");
+    sb.append("class MDMEntryDescriptorState {\n");
+    sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    branch: ").append(toIndentedString(branch)).append("\n");
     sb.append("}");
     return sb.toString();

@@ -20,8 +20,6 @@ import org.smartbit4all.api.invocation.ProviderApiInvocationHandler;
 import org.smartbit4all.api.invocation.bean.ApiData;
 import org.smartbit4all.api.invocation.bean.ApiRegistryData;
 import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
-import org.smartbit4all.api.mdm.MDMEntryApi;
-import org.smartbit4all.api.mdm.MDMEntryApiImpl;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.mdm.MasterDataManagementApiImpl;
 import org.smartbit4all.api.navigation.NavigationApi;
@@ -46,7 +44,6 @@ import org.smartbit4all.api.object.RetrievalApi;
 import org.smartbit4all.api.object.RetrievalApiImpl;
 import org.smartbit4all.api.object.bean.AggregationKind;
 import org.smartbit4all.api.object.bean.ObjectDefinitionData;
-import org.smartbit4all.api.object.bean.PropertyDefinitionData;
 import org.smartbit4all.api.object.bean.ReferencePropertyKind;
 import org.smartbit4all.api.rdbms.DatabaseDefinitionApi;
 import org.smartbit4all.api.rdbms.DatabaseDefinitionApiImpl;
@@ -319,22 +316,6 @@ public class PlatformApiConfig {
   @Bean
   public StorageSequenceApi storageSequenceApi() {
     return new StorageSequenceApiImpl();
-  }
-
-  @Bean
-  public MDMEntryApi<PropertyDefinitionData> propertyDefinitionDataMdmEntryApi() {
-    return new MDMEntryApiImpl<>(PropertyDefinitionData.class)
-        .schema(ObjectDefinitionApiImpl.SCHEMA)
-        .publishedListName(ObjectDefinitionApiImpl.PROPERTIES);
-  }
-
-  @Bean
-  public MDMEntryApi<ObjectDefinitionData> objectDefinitionDataMdmEntryApi() {
-    return new MDMEntryApiImpl<>(ObjectDefinitionData.class).schema(ObjectDefinitionApiImpl.SCHEMA)
-        .uniqueIdPath(ObjectDefinitionData.QUALIFIED_NAME)
-        .uriConstructor(o -> ObjectDefinition.uriOf(o.getQualifiedName()))
-        .publishedListName(ObjectDefinitionApiImpl.OBJECT_DEFINITIONS)
-        .addBeforeSaveHandler(ObjectDefinitionApiImpl::synchronizeOutgoingReferences);
   }
 
   @Bean
