@@ -14,10 +14,13 @@ import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptorState;
 import org.smartbit4all.api.object.BranchApi;
 import org.smartbit4all.api.value.ValueSetApi;
+import org.smartbit4all.api.value.bean.ValueSetDefinitionData;
+import org.smartbit4all.api.value.bean.ValueSetDefinitionKind;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectCacheEntry;
 import org.smartbit4all.core.object.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
 public class MasterDataManagementApiImpl implements MasterDataManagementApi {
@@ -136,8 +139,35 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
         })));
         return m;
       });
+      synchronizeValueSets();
     }
     optionsSaved = true;
   }
 
+  private final void synchronizeValueSets() {
+    StoredMap map = collectionApi.map(SCHEMA, MAP_DEFINITIONS);
+    List<MDMDefinition> definitions =
+        map.uris().values().stream()
+            .map(u -> objectApi.loadLatest(u).getObject(MDMDefinition.class))
+            .collect(toList());
+
+    for (MDMDefinition definition : definitions) {
+      definition.getDescriptors().values().stream().forEach(descriptor -> {
+        ValueSetDefinitionData definitionData =
+            valueSetApi.getDefinitionData(definition.getName(), descriptor.getName());
+        if (definitionData == null) {
+          valueSetApi.save(definition.getName(),
+              new ValueSetDefinitionData().qualifiedName(descriptor.getName())
+                  .kind(ValueSetDefinitionKind.LIST).storageSchema(definition.getName())
+                  .containerName(getPublishedListName(descriptor))
+                  .typeClass(descriptor.getTypeQualifiedName()));
+        }
+      });
+    }
+
+  }
+
+  public static final String getPublishedListName(MDMEntryDescriptor descriptor) {
+    return descriptor.getName() + "List";
+  }
 }

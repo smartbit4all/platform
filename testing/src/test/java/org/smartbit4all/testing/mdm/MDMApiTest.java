@@ -10,7 +10,6 @@ import java.util.Map.Entry;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -33,6 +32,9 @@ import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.sample.bean.SampleCategory;
 import org.smartbit4all.api.sample.bean.SampleCategoryType;
 import org.smartbit4all.api.session.SessionManagementApi;
+import org.smartbit4all.api.value.ValueSetApi;
+import org.smartbit4all.api.value.bean.ValueSetData;
+import org.smartbit4all.api.value.bean.ValueSetDefinitionData;
 import org.smartbit4all.api.view.layout.SmartLayoutApi;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectCacheEntry;
@@ -44,6 +46,7 @@ import org.smartbit4all.sec.localauth.LocalAuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
 @SpringBootTest(classes = {MDMApiTestConfig.class})
@@ -75,6 +78,9 @@ class MDMApiTest {
 
   @Autowired
   CollectionApi collectionApi;
+
+  @Autowired
+  ValueSetApi valueSetApi;
 
   @Autowired
   private LocalAuthenticationService authService;
@@ -146,6 +152,26 @@ class MDMApiTest {
 
     typeApi.publishCurrentModifications();
 
+    List<String> listOfDescription = collectionApi.list(MDMApiTestConfig.TEST,
+        SampleCategoryType.class.getSimpleName() + "List").uris().stream()
+        .map(u -> objectApi.read(u, SampleCategoryType.class).getDescription()).collect(toList());
+    Assertions.assertThat(listOfDescription)
+        .containsExactlyInAnyOrder("This is the first category type.",
+            "This is the second category type v2.", "This is the third category type.",
+            "This is the fourth category type.");
+
+    ValueSetDefinitionData definitionData = valueSetApi.getDefinitionData(MDMApiTestConfig.TEST,
+        SampleCategoryType.class.getSimpleName());
+    ValueSetData valueSetData = valueSetApi.valuesOf(definitionData);
+
+    List<String> listOfDescriptionFromValueSet =
+        valueSetData.getValues().stream().map(o -> objectApi.asType(SampleCategoryType.class, o))
+            .map(ct -> ct.getDescription()).collect(toList());
+    Assertions.assertThat(listOfDescriptionFromValueSet)
+        .containsExactlyInAnyOrder("This is the first category type.",
+            "This is the second category type v2.", "This is the third category type.",
+            "This is the fourth category type.");
+
     publishedObjects = getPublishedObjects(typeApi, SampleCategoryType.class);
     Assertions.assertThat(publishedObjects.values().stream().map(sct -> sct.getDescription()))
         .containsExactlyInAnyOrder("This is the first category type.",
@@ -175,7 +201,6 @@ class MDMApiTest {
 
   @Test
   @Order(2)
-  @Disabled
   void testObjectPropertyDefinition() {
     MDMEntryApi objectDefinitionMDMApi = masterDataManagementApi.getApi(MDMApiTestConfig.TEST,
         ObjectDefinitionData.class.getSimpleName());
