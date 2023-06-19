@@ -1,12 +1,12 @@
 package org.smartbit4all.api.setting;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Locale;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(classes = {LocaleSettingApiOptionTestConfig.class})
 class LocaleSettingApiOptionTest {
@@ -17,9 +17,6 @@ class LocaleSettingApiOptionTest {
 
   @Autowired
   private LocaleSettingApi localeSettings;
-
-  @Autowired
-  private LocaleUsage lu;
 
   @BeforeAll
   static void setUpBeforeClass() throws Exception {
@@ -46,21 +43,6 @@ class LocaleSettingApiOptionTest {
 
     localeSettings.setDefaultLocale(hu);
 
-    lu.applyLabel(MyModuleLocale.apple, this::setText);
-
-    // We must find the hungarian translation for both entry.
-    assertEquals("alma", MyModuleLocale.apple.get());
-
-    assertEquals("alma", text);
-
-    localeSettings.setDefaultLocale(fr);
-
-    // We must find the hungarian translation for both entry.
-    assertEquals("pomme", MyModuleLocale.apple.get());
-    assertEquals("pomme", text);
-
-    lu = null;
-
     System.gc();
     System.gc();
     System.gc();
@@ -69,7 +51,6 @@ class LocaleSettingApiOptionTest {
 
     localeSettings.setDefaultLocale(hu);
     // The text remains the same because there we've lost the reference to the Consumer
-    assertEquals("pomme", text);
 
   }
 

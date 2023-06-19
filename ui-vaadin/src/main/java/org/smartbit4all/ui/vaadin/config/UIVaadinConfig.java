@@ -15,6 +15,8 @@
 package org.smartbit4all.ui.vaadin.config;
 
 import org.smartbit4all.api.session.UserSessionApi;
+import org.smartbit4all.api.setting.LocaleUsage;
+import org.smartbit4all.api.setting.LocaleUsageImpl;
 import org.smartbit4all.core.object.ObservablePublisherWrapper;
 import org.smartbit4all.ui.api.navigation.UINavigationApi;
 import org.smartbit4all.ui.common.components.user.UserComponentBaseController;
@@ -28,6 +30,7 @@ import org.smartbit4all.ui.vaadin.service.DefaultUserComponentFactory;
 import org.smartbit4all.ui.vaadin.service.UserComponentFactory;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -73,6 +76,12 @@ public class UIVaadinConfig {
   @UIScope
   public ObservablePublisherWrapper publisherWrapper(UI ui) {
     return new VaadinPublisherWrapper(ui);
+  }
+
+  @Bean
+  @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+  public LocaleUsage localeUsage() {
+    return new LocaleUsageImpl();
   }
 
 }
