@@ -49,8 +49,6 @@ import org.smartbit4all.api.rdbms.DatabaseDefinitionApi;
 import org.smartbit4all.api.rdbms.DatabaseDefinitionApiImpl;
 import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.api.setting.LocaleSettingApi;
-import org.smartbit4all.api.setting.LocaleUsage;
-import org.smartbit4all.api.setting.LocaleUsageImpl;
 import org.smartbit4all.api.value.ValueSetApi;
 import org.smartbit4all.api.value.ValueSetApiImpl;
 import org.smartbit4all.api.view.SmartLinkApi;
@@ -69,6 +67,8 @@ import org.smartbit4all.api.view.tree.TreeSetupApiImpl;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.core.object.ObjectDefinitionApiImpl;
+import org.smartbit4all.core.object.ObjectDefinitionProvidedApi;
+import org.smartbit4all.core.object.ObjectDefinitionProvidedApiImpl;
 import org.smartbit4all.core.object.ObjectReferenceConfigs;
 import org.smartbit4all.domain.config.DomainConfig;
 import org.smartbit4all.domain.data.storage.ObjectStorage;
@@ -78,13 +78,11 @@ import org.smartbit4all.domain.service.entity.EntityManager;
 import org.smartbit4all.domain.service.transfer.TransferService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.ResourceBundleMessageSource;
 
 /**
@@ -104,12 +102,6 @@ public class PlatformApiConfig {
   @Bean
   public LocaleSettingApi localSettingApi() {
     return new LocaleSettingApi();
-  }
-
-  @Bean
-  @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-  public LocaleUsage localeUsage() {
-    return new LocaleUsageImpl();
   }
 
   @Bean
@@ -264,6 +256,18 @@ public class PlatformApiConfig {
   @Bean
   public SmartLayoutApi smartLayoutApi() {
     return new SmartLayoutApiImpl();
+  }
+
+  @Bean
+  public ObjectDefinitionProvidedApi objectDefinitionProvidedApi() {
+    return new ObjectDefinitionProvidedApiImpl();
+  }
+
+  @Bean
+  public ProviderApiInvocationHandler<ObjectDefinitionProvidedApi> objectDefinitionProvidedApiProvider(
+      ObjectDefinitionProvidedApi api) {
+    return Invocations.asProvider(ObjectDefinitionProvidedApi.class,
+        ObjectDefinitionProvidedApi.class.getName(), api);
   }
 
   @Bean(name = "smartbit4all.messagesource")
