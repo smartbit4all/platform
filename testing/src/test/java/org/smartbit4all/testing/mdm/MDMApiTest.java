@@ -17,6 +17,13 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.smartbit4all.api.collection.CollectionApi;
+import org.smartbit4all.api.collection.FilterExpressionApi;
+import org.smartbit4all.api.collection.SearchIndex;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionData;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionDataType;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionOperandData;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionOperation;
 import org.smartbit4all.api.formdefinition.bean.SmartFormWidgetType;
 import org.smartbit4all.api.formdefinition.bean.SmartLayoutDefinition;
 import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
@@ -42,6 +49,8 @@ import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ObjectNodeList;
 import org.smartbit4all.core.utility.StringConstant;
+import org.smartbit4all.domain.data.DataRow;
+import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.sec.localauth.LocalAuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -69,6 +78,9 @@ class MDMApiTest {
 
   @Autowired
   private ObjectApi objectApi;
+
+  @Autowired
+  private FilterExpressionApi filterExpressionApi;
 
   @Autowired
   private SessionManagementApi sessionManagementApi;
@@ -177,6 +189,26 @@ class MDMApiTest {
         .containsExactlyInAnyOrder("This is the first category type.",
             "This is the second category type v2.", "This is the third category type.",
             "This is the fourth category type.");
+
+    SearchIndex<SampleCategoryType> searchIndex =
+        collectionApi.searchIndex(MDMApiTestConfig.TEST, SampleCategoryType.class.getSimpleName(),
+            SampleCategoryType.class);
+
+    FilterExpressionList filters = new FilterExpressionList().addExpressionsItem(
+        new FilterExpressionData().currentOperation(FilterExpressionOperation.EQUAL)
+            .operand1(new FilterExpressionOperandData().isDataName(true)
+                .valueAsString(SampleCategoryType.NAME))
+            .operand2(new FilterExpressionOperandData().isDataName(false)
+                .type(FilterExpressionDataType.STRING).valueAsString("Type two v1")));
+
+    TableData<?> tableData =
+        searchIndex.executeSearchOn(typeApi.getPublishedMap().values().stream(), filters);
+
+    DataRow row = tableData.rows().get(0);
+
+    List<Object> rowValues =
+        tableData.columns().stream().filter(c -> SampleCategoryType.URI.equals(c.getName()))
+            .map(c -> tableData.get(c, row)).collect(toList());
 
   }
 

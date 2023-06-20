@@ -1,6 +1,7 @@
 package org.smartbit4all.api.collection;
 
 import java.net.URI;
+import java.util.function.Supplier;
 import org.smartbit4all.core.object.ObjectNodeReference;
 
 /**
@@ -100,6 +101,18 @@ public interface CollectionApi {
    * @return The {@link SearchIndex}.
    */
   <O> SearchIndex<O> searchIndex(String logicalSchema, String name, Class<O> indexedObject);
+
+  /**
+   * This function will return a {@link SearchIndex} if it is already parameterized but register it
+   * 
+   * @param logicalSchema The logical schema of the search index.
+   * @param name The name of the search index.
+   * @param indexedObject The class of the indexed object.
+   * @param searchIndexSupplier The supplier of the search index.
+   * @return The {@link SearchIndex}.
+   */
+  SearchIndex<Object> searchIndexComputeIfAbsent(String logicalSchema, String name,
+      Supplier<SearchIndex<Object>> searchIndexSupplier);
 
   /**
    * This function will return a {@link SearchIndex} if it is parameterized.

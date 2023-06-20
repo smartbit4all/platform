@@ -1,6 +1,5 @@
 package org.smartbit4all.api.collection;
 
-import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,6 +39,7 @@ import org.smartbit4all.domain.utility.crud.CrudRead;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import static java.util.stream.Collectors.toList;
 
 /**
  * @author Peter Boros
@@ -111,6 +111,19 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
 
   @Autowired
   protected FilterExpressionApi filterExpressionApi;
+
+  public void setup(ObjectApi objectApi, StorageApi storageApi, CrudApi crudApi,
+      TableDataApi tableDataApi, ApplicationContext ctx, EntityManager entityManager,
+      LocaleSettingApi localeSettingApi, FilterExpressionApi filterExpressionApi) {
+    this.objectApi = objectApi;
+    this.storageApi = storageApi;
+    this.crudApi = crudApi;
+    this.tableDataApi = tableDataApi;
+    this.ctx = ctx;
+    this.entityManager = entityManager;
+    this.localeSettingApi = localeSettingApi;
+    this.filterExpressionApi = filterExpressionApi;
+  }
 
   @Override
   public TableData<?> executeSearch(QueryInput queryInput) {

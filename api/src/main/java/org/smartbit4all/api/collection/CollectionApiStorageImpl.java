@@ -1,11 +1,11 @@
 package org.smartbit4all.api.collection;
 
 import java.net.URI;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Supplier;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.core.utility.UriUtils;
@@ -47,7 +47,7 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
   @Autowired(required = false)
   private List<SearchIndex<?>> searchIndices;
 
-  private Map<String, SearchIndex<?>> searchIndexByName = Collections.emptyMap();
+  private Map<String, SearchIndex<?>> searchIndexByName = new HashMap<>();
 
   public CollectionApiStorageImpl() {
     super();
@@ -110,7 +110,7 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
   public <O> SearchIndex<O> searchIndex(String logicalSchema, String name, Class<O> indexedObject) {
     @SuppressWarnings("unchecked")
     SearchIndex<O> result =
-        (SearchIndex<O>) searchIndexByName.get(logicalSchema + StringConstant.DOT + name);
+        (SearchIndex<O>) searchIndexByName.get(getQualifiedNameOfSearchIndex(logicalSchema, name));
     Objects.requireNonNull(result, "The " + name + " search index is not available.");
     return result;
   }
@@ -170,8 +170,21 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
   public void afterPropertiesSet() throws Exception {
     if (searchIndices != null) {
       searchIndexByName = searchIndices.stream()
-          .collect(toMap(i -> i.logicalSchema() + StringConstant.DOT + i.name(), i -> i));
+          .collect(toMap(i -> getQualifiedNameOfSearchIndex(i.logicalSchema(), i.name()), i -> i));
     }
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public SearchIndex<Object> searchIndexComputeIfAbsent(String logicalSchema, String name,
+      Supplier<SearchIndex<Object>> searchIndexSupplier) {
+    return (SearchIndex<Object>) searchIndexByName.computeIfAbsent(
+        getQualifiedNameOfSearchIndex(logicalSchema, name),
+        s -> (SearchIndex<Object>) searchIndexSupplier.get());
+  }
+
+  private final String getQualifiedNameOfSearchIndex(String logicalSchema, String name) {
+    return logicalSchema + StringConstant.DOT + name;
   }
 
 }

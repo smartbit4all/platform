@@ -5,7 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.CollectionApi;
+import org.smartbit4all.api.collection.FilterExpressionApi;
+import org.smartbit4all.api.collection.SearchIndex;
+import org.smartbit4all.api.collection.SearchIndexImpl;
 import org.smartbit4all.api.collection.StoredMap;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
@@ -13,19 +18,30 @@ import org.smartbit4all.api.mdm.bean.MDMDefinitionState;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptorState;
 import org.smartbit4all.api.object.BranchApi;
+import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.value.ValueSetApi;
 import org.smartbit4all.api.value.bean.ValueSetDefinitionData;
 import org.smartbit4all.api.value.bean.ValueSetDefinitionKind;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectCacheEntry;
+import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
+import org.smartbit4all.core.object.ReferenceDefinition;
+import org.smartbit4all.core.utility.StringConstant;
+import org.smartbit4all.domain.data.storage.StorageApi;
+import org.smartbit4all.domain.service.CrudApi;
+import org.smartbit4all.domain.service.dataset.TableDataApi;
+import org.smartbit4all.domain.service.entity.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
 public class MasterDataManagementApiImpl implements MasterDataManagementApi {
 
   public static final String MAP_DEFINITIONS = "definitions";
+
+  private static final Logger log = LoggerFactory.getLogger(MasterDataManagementApiImpl.class);
 
   @Autowired(required = false)
   private List<MDMDefinitionOption> options;
@@ -37,6 +53,27 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
 
   @Autowired
   private ObjectApi objectApi;
+
+  @Autowired
+  private StorageApi storageApi;
+
+  @Autowired
+  private CrudApi crudApi;
+
+  @Autowired
+  private TableDataApi tableDataApi;
+
+  @Autowired
+  private ApplicationContext ctx;
+
+  @Autowired
+  private EntityManager entityManager;
+
+  @Autowired
+  private LocaleSettingApi localeSettingApi;
+
+  @Autowired
+  private FilterExpressionApi filterExpressionApi;
 
   @Autowired
   private InvocationApi invocationApi;
@@ -80,18 +117,13 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
     return new MDMEntryApiImpl(self, descriptor, objectApi, collectionApi, invocationApi, branchApi,
         valueSetApi);
 
-    // MDMEntryApi<T> entryApi = (MDMEntryApi<T>) apiEntries.get(name);
-    // if (entryApi instanceof MDMEntryApiImpl) {
-    // // We always refresh the master info for the given api.
-    // MasterDataManagementInfo masterDataManagementInfo = getOrCreateInfo();
-    // MDMEntryApiImpl apiImpl = (MDMEntryApiImpl) entryApi;
-    // apiImpl.setInfo(masterDataManagementInfo);
-    // // Refresh the value set of the api.
-    // apiImpl.refreshValueSetDefinition();
-    // }
-    // return entryApi;
   }
 
+  /**
+   * This function is updating currently the code level registered {@link MDMDefinition}s and their
+   * option in the storage. All the definition are registered by name in the
+   * {@link #MAP_DEFINITIONS} map.
+   */
   private final void synchronizeOptions() {
     if (optionsSaved) {
       return;
@@ -140,10 +172,16 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
         return m;
       });
       synchronizeValueSets();
+      synchronizeSearchIndices();
     }
     optionsSaved = true;
   }
 
+  /**
+   * Synchronize the value sets for the {@link MDMEntryDescriptor}s of the {@link MDMDefinition}s.
+   * {@link ValueSetDefinitionData} will be saved for every entry. The schema will be the name of
+   * the definition and the name will be the name of the entry.
+   */
   private final void synchronizeValueSets() {
     StoredMap map = collectionApi.map(SCHEMA, MAP_DEFINITIONS);
     List<MDMDefinition> definitions =
@@ -165,6 +203,70 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
       });
     }
 
+  }
+
+  /**
+   * Synchronize the {@link SearchIndex}es for the {@link MDMEntryDescriptor}s of the
+   * {@link MDMDefinition}s. {@link SearchIndex} is created from every entry. The column mapping can
+   * be automatic. In this case all the properties from the object will be mapped as column. In case
+   * of a little bit more complex object the {@link MDMEntryDescriptor#getTableColumns()} can
+   * describe the columns.
+   */
+  private final void synchronizeSearchIndices() {
+    StoredMap map = collectionApi.map(SCHEMA, MAP_DEFINITIONS);
+    List<MDMDefinition> definitions =
+        map.uris().values().stream()
+            .map(u -> objectApi.loadLatest(u).getObject(MDMDefinition.class))
+            .collect(toList());
+
+    for (MDMDefinition definition : definitions) {
+      definition.getDescriptors().values().stream().forEach(descriptor -> {
+        SearchIndex<Object> searchIndex =
+            collectionApi.searchIndexComputeIfAbsent(definition.getName(), descriptor.getName(),
+                () -> createSearchIndexForEntry(definition, descriptor));
+      });
+    }
+
+  }
+
+  private final SearchIndex<Object> createSearchIndexForEntry(MDMDefinition def,
+      MDMEntryDescriptor entryDescriptor) {
+    SearchIndexImpl<Object> result =
+        new SearchIndexImpl<>(def.getName(), entryDescriptor.getName(), entryDescriptor.getSchema(),
+            Object.class);
+    if (entryDescriptor.getTableColumns() != null && !entryDescriptor.getTableColumns().isEmpty()) {
+      entryDescriptor.getTableColumns().stream().forEach(
+          tcd -> result.map(tcd.getName(), tcd.getPath().toArray(StringConstant.EMPTY_ARRAY)));
+    } else {
+      ObjectDefinition<?> objectDefinition =
+          objectApi.definition(entryDescriptor.getTypeQualifiedName());
+      // Navigate to the nearest referred object.
+      Map<String, ReferenceDefinition> outgoingReferences =
+          objectDefinition.getOutgoingReferences();
+      objectDefinition.getPropertiesByName().entrySet()
+          .forEach(e -> {
+            if (!outgoingReferences.containsKey(e.getKey())) {
+              Class<?> typeClass;
+              try {
+                typeClass = Class.forName(e.getValue().getTypeClass());
+              } catch (ClassNotFoundException e1) {
+                typeClass = String.class;
+              }
+              result.map(e.getKey(), typeClass,
+                  e.getValue().getName());
+            }
+          });
+    }
+    // Setup the result index and call the init to initialize all the inner constructions.
+    result.setup(objectApi, storageApi, crudApi, tableDataApi, ctx, entityManager, localeSettingApi,
+        filterExpressionApi);
+    try {
+      result.afterPropertiesSet();
+    } catch (Exception e) {
+      log.error("Unable to initialize the search index for the {} - {}", def.getName(),
+          entryDescriptor);
+    }
+    return result;
   }
 
   public static final String getPublishedListName(MDMEntryDescriptor descriptor) {
