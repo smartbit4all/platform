@@ -1,0 +1,27 @@
+plugins {
+	id 'org.smartbit4all.platform.gradle.java'
+    id 'org.smartbit4all.platform.gradle.openapi'
+}
+
+dependencies {
+    api project(':api')
+}
+
+
+smartbit4all {
+  openApi {
+      modelPackagePrefix = "org.smartbit4all.bff.api"
+      modelPackagePostfix = "model"
+      importMappings = [
+        "Value": "org.smartbit4all.api.value.bean.Value",
+        "FilterConfigMode" : "org.smartbit4all.api.filter.bean.FilterConfigMode",
+        "FilterGroupType" : "org.smartbit4all.api.filter.bean.FilterGroupType",
+        "FilterOperation" : "org.smartbit4all.api.filter.bean.FilterOperation",
+        "BinaryData": "org.smartbit4all.api.binarydata.BinaryData",
+        "BinaryContent": "org.smartbit4all.api.binarydata.BinaryContent",
+        "Double": "java.lang.Double",
+        "NavigationTargetRef": "org.smartbit4all.ui.api.navigation.model.NavigationTarget",
+        "CommandKind": "org.smartbit4all.api.sb4starter.bean.CommandKind"
+      ]
+  }
+}

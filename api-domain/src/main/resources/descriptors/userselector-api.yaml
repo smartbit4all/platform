@@ -46,4 +46,17 @@ components:
           format: uri
         displayName:
           type: string
-        
+    UserEditingModel:
+      type: object
+      properties:
+        user:
+          type: User
+          description: The copy of the user object to edit
+        groups:
+          type: array
+          description: |
+            The list of groups directly attached to the given user. At the end of the editing the save will ensure that
+            these groups will be associated with the user.
+          items:
+            type: string
+            format: uri
