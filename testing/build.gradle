@@ -4,7 +4,7 @@ plugins {
 
 dependencies {
 	
-	api project(':api')
+	api project(':bff-api')
 	api project(':api-srv-rest')
 	implementation 'org.smartbit4all.platform:sec'
 	testImplementation 'org.smartbit4all.platform:api'

@@ -17,6 +17,7 @@ import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMDefinitionState;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptorState;
+import org.smartbit4all.api.mdm.bean.MDMEntryInstance;
 import org.smartbit4all.api.object.BranchApi;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.value.ValueSetApi;
@@ -90,23 +91,8 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
   @SuppressWarnings("unchecked")
   @Override
   public MDMEntryApi getApi(String definition, String name) {
-    synchronizeOptions();
-    ObjectCacheEntry<MDMDefinition> cacheEntry = objectApi.getCacheEntry(MDMDefinition.class);
 
-    StoredMap map = collectionApi.map(SCHEMA, MAP_DEFINITIONS);
-
-    MDMDefinition mdmDefinition = null;
-    URI definitionUri = map.uris().get(definition);
-    if (definitionUri != null) {
-      mdmDefinition = cacheEntry.get(definitionUri);
-    }
-    if (mdmDefinition == null) {
-      throw new IllegalArgumentException(
-          "Unable to find the " + definition + " master data definition.");
-    }
-
-    // Get the descriptor from the definition;
-    MDMEntryDescriptor descriptor = mdmDefinition.getDescriptors().get(name);
+    MDMEntryDescriptor descriptor = getEntryDescriptor(getDefinition(definition), name);
 
     if (descriptor == null) {
       throw new IllegalArgumentException(
@@ -117,6 +103,38 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
     return new MDMEntryApiImpl(self, descriptor, objectApi, collectionApi, invocationApi, branchApi,
         valueSetApi);
 
+  }
+
+  @Override
+  public MDMEntryDescriptor getEntryDescriptor(MDMDefinition definition, String entryName) {
+
+    MDMEntryDescriptor descriptor = definition.getDescriptors().get(entryName);
+
+    if (descriptor == null) {
+      throw new IllegalArgumentException(
+          "Unable to find the " + entryName + " entry in the " + definition
+              + " master data definition.");
+    }
+    return descriptor;
+  }
+
+  @Override
+  public MDMDefinition getDefinition(String definition) {
+    synchronizeOptions();
+    ObjectCacheEntry<MDMDefinition> cacheEntry = objectApi.getCacheEntry(MDMDefinition.class);
+
+    StoredMap map = collectionApi.map(SCHEMA, MAP_DEFINITIONS);
+
+    MDMDefinition result = null;
+    URI definitionUri = map.uris().get(definition);
+    if (definitionUri != null) {
+      result = cacheEntry.get(definitionUri);
+    }
+    if (result == null) {
+      throw new IllegalArgumentException(
+          "Unable to find the " + definition + " master data definition.");
+    }
+    return result;
   }
 
   /**
@@ -223,10 +241,54 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
       definition.getDescriptors().values().stream().forEach(descriptor -> {
         SearchIndex<Object> searchIndex =
             collectionApi.searchIndexComputeIfAbsent(definition.getName(), descriptor.getName(),
-                () -> createSearchIndexForEntry(definition, descriptor));
+                () -> createSearchIndexForEntry(definition, descriptor), Object.class);
+        SearchIndex<MDMEntryInstance> searchIndexEntries =
+            collectionApi.searchIndexComputeIfAbsent(definition.getName(), descriptor.getName(),
+                () -> createSearchIndexForEntryInstance(definition, descriptor),
+                MDMEntryInstance.class);
       });
     }
 
+  }
+
+  private final SearchIndex<MDMEntryInstance> createSearchIndexForEntryInstance(MDMDefinition def,
+      MDMEntryDescriptor entryDescriptor) {
+    SearchIndexImpl<MDMEntryInstance> result =
+        new SearchIndexImpl<>(def.getName(), entryDescriptor.getName(), entryDescriptor.getSchema(),
+            MDMEntryInstance.class);
+    if (!entryDescriptor.getTableColumns().isEmpty()) {
+      entryDescriptor.getTableColumns().stream().forEach(
+          tcd -> result.map(tcd.getName(), tcd.getPath().toArray(StringConstant.EMPTY_ARRAY)));
+    } else {
+      ObjectDefinition<?> objectDefinition =
+          objectApi.definition(entryDescriptor.getTypeQualifiedName());
+      // Navigate to the nearest referred object.
+      Map<String, ReferenceDefinition> outgoingReferences =
+          objectDefinition.getOutgoingReferences();
+      objectDefinition.getPropertiesByName().entrySet()
+          .forEach(e -> {
+            if (!outgoingReferences.containsKey(e.getKey())) {
+              Class<?> typeClass;
+              try {
+                typeClass = Class.forName(e.getValue().getTypeClass());
+              } catch (ClassNotFoundException e1) {
+                typeClass = String.class;
+              }
+              result.map(e.getKey(), typeClass,
+                  e.getValue().getName());
+            }
+          });
+    }
+    // Setup the result index and call the init to initialize all the inner constructions.
+    result.setup(objectApi, storageApi, crudApi, tableDataApi, ctx, entityManager, localeSettingApi,
+        filterExpressionApi);
+    try {
+      result.afterPropertiesSet();
+    } catch (Exception e) {
+      log.error("Unable to initialize the search index for the {} - {}", def.getName(),
+          entryDescriptor);
+    }
+    return result;
   }
 
   private final SearchIndex<Object> createSearchIndexForEntry(MDMDefinition def,
@@ -234,7 +296,7 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
     SearchIndexImpl<Object> result =
         new SearchIndexImpl<>(def.getName(), entryDescriptor.getName(), entryDescriptor.getSchema(),
             Object.class);
-    if (entryDescriptor.getTableColumns() != null && !entryDescriptor.getTableColumns().isEmpty()) {
+    if (!entryDescriptor.getTableColumns().isEmpty()) {
       entryDescriptor.getTableColumns().stream().forEach(
           tcd -> result.map(tcd.getName(), tcd.getPath().toArray(StringConstant.EMPTY_ARRAY)));
     } else {
@@ -272,4 +334,5 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
   public static final String getPublishedListName(MDMEntryDescriptor descriptor) {
     return descriptor.getName() + "List";
   }
+
 }

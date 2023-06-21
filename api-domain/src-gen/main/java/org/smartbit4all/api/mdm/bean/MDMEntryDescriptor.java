@@ -44,6 +44,7 @@ import javax.validation.Valid;
   MDMEntryDescriptor.UNIQUE_IDENTIFIER_PATH,
   MDMEntryDescriptor.PUBLISH_IN_MAP,
   MDMEntryDescriptor.TABLE_COLUMNS,
+  MDMEntryDescriptor.EDITOR_VIEW_NAME,
   MDMEntryDescriptor.SCHEMA,
   MDMEntryDescriptor.BRANCH_STRATEGY,
   MDMEntryDescriptor.URI_CONSTRUCTOR,
@@ -73,6 +74,9 @@ public class MDMEntryDescriptor {
 
   public static final String TABLE_COLUMNS = "tableColumns";
   private List<MDMTableColumnDescriptor> tableColumns = new ArrayList<>();
+
+  public static final String EDITOR_VIEW_NAME = "editorViewName";
+  private String editorViewName;
 
   public static final String SCHEMA = "schema";
   private String schema;
@@ -331,6 +335,33 @@ public class MDMEntryDescriptor {
   }
 
 
+  public MDMEntryDescriptor editorViewName(String editorViewName) {
+    
+    this.editorViewName = editorViewName;
+    return this;
+  }
+
+   /**
+   * The name of the view editor view to open. If empty then we use the default in the application.
+   * @return editorViewName
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The name of the view editor view to open. If empty then we use the default in the application.")
+  @JsonProperty(EDITOR_VIEW_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getEditorViewName() {
+    return editorViewName;
+  }
+
+
+  @JsonProperty(EDITOR_VIEW_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setEditorViewName(String editorViewName) {
+    this.editorViewName = editorViewName;
+  }
+
+
   public MDMEntryDescriptor schema(String schema) {
     
     this.schema = schema;
@@ -494,6 +525,7 @@ public class MDMEntryDescriptor {
         Objects.equals(this.uniqueIdentifierPath, mdMEntryDescriptor.uniqueIdentifierPath) &&
         Objects.equals(this.publishInMap, mdMEntryDescriptor.publishInMap) &&
         Objects.equals(this.tableColumns, mdMEntryDescriptor.tableColumns) &&
+        Objects.equals(this.editorViewName, mdMEntryDescriptor.editorViewName) &&
         Objects.equals(this.schema, mdMEntryDescriptor.schema) &&
         Objects.equals(this.branchStrategy, mdMEntryDescriptor.branchStrategy) &&
         Objects.equals(this.uriConstructor, mdMEntryDescriptor.uriConstructor) &&
@@ -503,7 +535,7 @@ public class MDMEntryDescriptor {
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, typeQualifiedName, inlineValueSet, publishInList, uniqueIdentifierPath, publishInMap, tableColumns, schema, branchStrategy, uriConstructor, eventHandlersBeforeSave, state);
+    return Objects.hash(name, typeQualifiedName, inlineValueSet, publishInList, uniqueIdentifierPath, publishInMap, tableColumns, editorViewName, schema, branchStrategy, uriConstructor, eventHandlersBeforeSave, state);
   }
 
   @Override
@@ -517,6 +549,7 @@ public class MDMEntryDescriptor {
     sb.append("    uniqueIdentifierPath: ").append(toIndentedString(uniqueIdentifierPath)).append("\n");
     sb.append("    publishInMap: ").append(toIndentedString(publishInMap)).append("\n");
     sb.append("    tableColumns: ").append(toIndentedString(tableColumns)).append("\n");
+    sb.append("    editorViewName: ").append(toIndentedString(editorViewName)).append("\n");
     sb.append("    schema: ").append(toIndentedString(schema)).append("\n");
     sb.append("    branchStrategy: ").append(toIndentedString(branchStrategy)).append("\n");
     sb.append("    uriConstructor: ").append(toIndentedString(uriConstructor)).append("\n");

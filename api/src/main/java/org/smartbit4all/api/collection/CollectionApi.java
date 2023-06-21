@@ -110,8 +110,8 @@ public interface CollectionApi {
    * @param searchIndexSupplier The supplier of the search index.
    * @return The {@link SearchIndex}.
    */
-  SearchIndex<Object> searchIndexComputeIfAbsent(String logicalSchema, String name,
-      Supplier<SearchIndex<Object>> searchIndexSupplier);
+  <T> SearchIndex<T> searchIndexComputeIfAbsent(String logicalSchema, String name,
+      Supplier<SearchIndex<T>> searchIndexSupplier, Class<T> clazz);
 
   /**
    * This function will return a {@link SearchIndex} if it is parameterized.

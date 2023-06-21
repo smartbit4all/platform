@@ -15,6 +15,10 @@ import org.smartbit4all.api.sample.bean.SampleCategoryType;
 import org.smartbit4all.api.sample.bean.SampleContainerItem;
 import org.smartbit4all.api.sample.bean.SampleDataSheet;
 import org.smartbit4all.api.sample.bean.SampleLinkObject;
+import org.smartbit4all.api.view.ViewApi;
+import org.smartbit4all.api.view.ViewApiImpl;
+import org.smartbit4all.api.view.ViewContextService;
+import org.smartbit4all.api.view.ViewContextServiceImpl;
 import org.smartbit4all.core.io.TestFSCleaner;
 import org.smartbit4all.core.io.TestFSConfig;
 import org.smartbit4all.core.object.ObjectReferenceConfigs;
@@ -22,6 +26,10 @@ import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.sec.config.SecurityLocalTestConfig;
 import org.smartbit4all.storage.fs.StorageFS;
 import org.smartbit4all.storage.fs.StorageTransactionManagerFS;
+import org.smartbit4all.testing.UITestApi;
+import org.smartbit4all.testing.UITestApiImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -36,6 +44,9 @@ public class MDMApiTestConfig extends TestFSCleaner {
 
   static final String TEST = "Test";
   static final String SAMPLE = "sample";
+
+  public static final String MDM_LIST_PAGE = "MDMListPage";
+  public static final String MDM_MAIN_PAGE = "MDMMainPage";
 
   @Bean
   MDMDefinitionOption testMDMOption() {
@@ -54,6 +65,28 @@ public class MDMApiTestConfig extends TestFSCleaner {
   @Bean(Storage.STORAGETX)
   public StorageTransactionManagerFS transactionManager(StorageFS storageFS) {
     return new StorageTransactionManagerFS(storageFS);
+  }
+
+  @Bean
+  public UITestApi uiTestApi() {
+    return new UITestApiImpl();
+  }
+
+  @Autowired
+  MDMEntryListPageApiImplTest mdmEntryListPageApiImplTest() {
+    return new MDMEntryListPageApiImplTest();
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public ViewApi viewApi() {
+    return new ViewApiImpl();
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public ViewContextService viewContextService() {
+    return new ViewContextServiceImpl();
   }
 
   @Bean

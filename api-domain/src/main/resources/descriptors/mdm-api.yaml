@@ -86,6 +86,9 @@ components:
             hidden and the order is the default column order on the screen.
           items:
             $ref: '#/components/schemas/MDMTableColumnDescriptor'
+        editorViewName:
+          type: string
+          description: The name of the view editor view to open. If empty then we use the default in the application.
         schema:
           type: string
           description: |
@@ -156,3 +159,16 @@ components:
             the policy is that we are working on the same branch for given object. There can be objects that
             can be edited in local branch but we can have global modifications where we would like to initiate a global
             modification package and publish tha whole at once.
+    MDMEntryInstance:
+      type: object
+      description: |
+        The entry instance is an api object for the MDMEntryApi it is used to retrieve a list of object with state.
+      properties:
+        instanceState:
+          enum: [NOP, NEW, MODIFIED, DELETED]
+        originalUri:
+          type: string
+          format: uri
+        branchUri:
+          type: string
+          format: uri

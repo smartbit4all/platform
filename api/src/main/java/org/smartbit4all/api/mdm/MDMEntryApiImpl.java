@@ -20,6 +20,7 @@ import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor.BranchStrategyEnum;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptorState;
+import org.smartbit4all.api.mdm.bean.MDMEntryInstance;
 import org.smartbit4all.api.object.BranchApi;
 import org.smartbit4all.api.object.bean.BranchEntry;
 import org.smartbit4all.api.object.bean.BranchOperation;
@@ -204,7 +205,7 @@ public class MDMEntryApiImpl implements MDMEntryApi {
   }
 
   @Override
-  public void discardCurrentModifications() {
+  public void cancelCurrentModifications() {
     // Remove the branch from the entry.
     if (descriptor.getBranchStrategy() == BranchStrategyEnum.ENTRYLEVEL) {
       Lock lockState = objectApi.getLock(descriptor.getState());
@@ -308,16 +309,17 @@ public class MDMEntryApiImpl implements MDMEntryApi {
   }
 
   @Override
-  public List<MDMEntry> getDraftEntries() {
+  public List<MDMEntryInstance> getDraftEntries() {
     URI branchEntryUri = getCurrentBranchEntryUri();
     if (branchEntryUri != null) {
       BranchEntry branchEntry = objectApi.read(branchEntryUri, BranchEntry.class);
-      return Stream.concat(branchEntry.getBranchedObjects().entrySet().stream()
-          .map(e -> new MDMEntry(URI.create(e.getKey()),
-              e.getValue().getBranchedObjectLatestUri())),
-          branchEntry.getNewObjects().values().stream().map(bo -> new MDMEntry(null,
-              bo.getBranchedObjectLatestUri())))
-          .collect(toList());
+      Stream<MDMEntryInstance> newStream = branchEntry.getBranchedObjects().entrySet().stream()
+          .map(e -> new MDMEntryInstance()
+              .originalUri(URI.create(e.getKey()))
+              .branchUri(e.getValue().getBranchedObjectLatestUri()));
+      Stream<MDMEntryInstance> changedStream = branchEntry.getNewObjects().values().stream()
+          .map(bo -> new MDMEntryInstance().branchUri(bo.getBranchedObjectLatestUri()));
+      return Stream.concat(newStream, changedStream).collect(toList());
     }
     return Collections.emptyList();
   }
@@ -356,12 +358,12 @@ public class MDMEntryApiImpl implements MDMEntryApi {
   }
 
   @Override
-  public List<MDMEntry> getAllEntries() {
-    List<MDMEntry> results = getDraftEntries();
+  public List<MDMEntryInstance> getAllEntries() {
+    List<MDMEntryInstance> results = getDraftEntries();
     // In the draft objects we have all the published objects that have draft version. And also the
     // brand new object are included.
     Set<URI> publishedWithDraft = results.stream()
-        .map(MDMEntry::getPublished)
+        .map(MDMEntryInstance::getOriginalUri)
         .filter(Objects::nonNull)
         .collect(toSet());
     Map<String, URI> publishedMap =
@@ -369,9 +371,9 @@ public class MDMEntryApiImpl implements MDMEntryApi {
             .filter(e -> !publishedWithDraft.contains(objectApi.getLatestUri(e.getValue())))
             .collect(toMap(Entry::getKey, Entry::getValue));
 
-    List<MDMEntry> publishedList =
+    List<MDMEntryInstance> publishedList =
         publishedMap.values().stream()
-            .map(o -> new MDMEntry(o, null))
+            .map(o -> new MDMEntryInstance().originalUri(o))
             .collect(toList());
 
     // Add the remaining draft object. The new objects missing from the published.

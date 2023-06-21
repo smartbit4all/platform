@@ -176,11 +176,11 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
 
   @SuppressWarnings("unchecked")
   @Override
-  public SearchIndex<Object> searchIndexComputeIfAbsent(String logicalSchema, String name,
-      Supplier<SearchIndex<Object>> searchIndexSupplier) {
-    return (SearchIndex<Object>) searchIndexByName.computeIfAbsent(
+  public <T> SearchIndex<T> searchIndexComputeIfAbsent(String logicalSchema, String name,
+      Supplier<SearchIndex<T>> searchIndexSupplier, Class<T> clazz) {
+    return (SearchIndex<T>) searchIndexByName.computeIfAbsent(
         getQualifiedNameOfSearchIndex(logicalSchema, name),
-        s -> (SearchIndex<Object>) searchIndexSupplier.get());
+        s -> (SearchIndex<T>) searchIndexSupplier.get());
   }
 
   private final String getQualifiedNameOfSearchIndex(String logicalSchema, String name) {

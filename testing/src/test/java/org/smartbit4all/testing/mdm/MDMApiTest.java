@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.UUID;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.BeforeAll;
@@ -27,9 +28,10 @@ import org.smartbit4all.api.filterexpression.bean.FilterExpressionOperation;
 import org.smartbit4all.api.formdefinition.bean.SmartFormWidgetType;
 import org.smartbit4all.api.formdefinition.bean.SmartLayoutDefinition;
 import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
-import org.smartbit4all.api.mdm.MDMEntry;
 import org.smartbit4all.api.mdm.MDMEntryApi;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
+import org.smartbit4all.api.mdm.bean.MDMDefinition;
+import org.smartbit4all.api.mdm.bean.MDMEntryInstance;
 import org.smartbit4all.api.object.bean.BranchEntry;
 import org.smartbit4all.api.object.bean.ObjectDefinitionData;
 import org.smartbit4all.api.object.bean.PropertyDefinitionData;
@@ -42,7 +44,11 @@ import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.api.value.ValueSetApi;
 import org.smartbit4all.api.value.bean.ValueSetData;
 import org.smartbit4all.api.value.bean.ValueSetDefinitionData;
+import org.smartbit4all.api.view.ViewApi;
+import org.smartbit4all.api.view.ViewContextService;
+import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.layout.SmartLayoutApi;
+import org.smartbit4all.bff.api.mdm.MDMEntryListPageApi;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectCacheEntry;
 import org.smartbit4all.core.object.ObjectDefinition;
@@ -52,6 +58,7 @@ import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.sec.localauth.LocalAuthenticationService;
+import org.smartbit4all.testing.UITestApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -100,7 +107,18 @@ class MDMApiTest {
   @Autowired
   private SmartLayoutApi smartLayoutApi;
 
+  @Autowired
+  private ViewContextService viewContextService;
+
+  @Autowired
+  private ViewApi viewApi;
+
+  @Autowired
+  private UITestApi uiTestApi;
+
   private URI adminUri;
+
+  private UUID viewContextUUID;
 
   private static final String PASSWD =
       "$2a$10$2LXntgURMBoixkUhddcnVuBPCfcPyB/ely5HkPXc45LmDpdR3nFcS";
@@ -146,7 +164,7 @@ class MDMApiTest {
 
     objectApi.save(objectNode);
 
-    List<MDMEntry> publishedAndDraftObjects =
+    List<MDMEntryInstance> publishedAndDraftObjects =
         typeApi.getAllEntries();
 
     Assertions
@@ -212,14 +230,39 @@ class MDMApiTest {
 
   }
 
-  public <O> O getPublishedObject(MDMEntry entry, Class<O> clazz) {
-    return entry == null || entry.getPublished() == null ? null
-        : objectApi.read(entry.getPublished(), clazz);
+  @Test
+  @Order(2)
+  void testMDMPageApis() throws Exception {
+    viewContextUUID = viewContextService.createViewContext().getUuid();
+
+    uiTestApi.runInViewContext(viewContextUUID, () -> {
+      // homePageApi.startSubstanceQueryPage();
+
+      MDMDefinition definition = masterDataManagementApi.getDefinition(MDMApiTestConfig.TEST);
+
+      View querySetView = new View().viewName(MDMApiTestConfig.MDM_LIST_PAGE)
+          .putParametersItem(MDMEntryListPageApi.MDM_DEFINITION, definition)
+          .putParametersItem(MDMEntryListPageApi.ENTRY_DESCRIPTOR, masterDataManagementApi
+              .getEntryDescriptor(definition, SampleCategoryType.class.getSimpleName()));
+
+      UUID uuid = viewApi.showView(querySetView);
+
+      View view = uiTestApi.getView(MDMApiTestConfig.MDM_LIST_PAGE);
+
+      Assertions.assertThat(view.getUuid()).isEqualTo(uuid);
+
+    });
+
   }
 
-  public <O> O getDraftObject(MDMEntry entry, Class<O> clazz) {
-    return entry == null || entry.getDraft() == null ? null
-        : objectApi.read(entry.getDraft(), clazz);
+  public <O> O getPublishedObject(MDMEntryInstance entry, Class<O> clazz) {
+    return entry == null || entry.getOriginalUri() == null ? null
+        : objectApi.read(entry.getOriginalUri(), clazz);
+  }
+
+  public <O> O getDraftObject(MDMEntryInstance entry, Class<O> clazz) {
+    return entry == null || entry.getBranchUri() == null ? null
+        : objectApi.read(entry.getBranchUri(), clazz);
   }
 
 
@@ -232,7 +275,7 @@ class MDMApiTest {
   }
 
   @Test
-  @Order(2)
+  @Order(3)
   void testObjectPropertyDefinition() {
     MDMEntryApi objectDefinitionMDMApi = masterDataManagementApi.getApi(MDMApiTestConfig.TEST,
         ObjectDefinitionData.class.getSimpleName());
@@ -300,7 +343,7 @@ class MDMApiTest {
   }
 
   @Test
-  @Order(3)
+  @Order(4)
   void testBranchCache() {
 
     ObjectCacheEntry<BranchEntry> branchCacheEntry =
@@ -327,7 +370,7 @@ class MDMApiTest {
   }
 
   @Test
-  @Order(4)
+  @Order(5)
   void testBranchingOperations() {
 
     ObjectCacheEntry<BranchEntry> branchCacheEntry =
