@@ -107,7 +107,6 @@ public interface CollectionApi {
    * 
    * @param logicalSchema The logical schema of the search index.
    * @param name The name of the search index.
-   * @param indexedObject The class of the indexed object.
    * @param searchIndexSupplier The supplier of the search index.
    * @return The {@link SearchIndex}.
    */
