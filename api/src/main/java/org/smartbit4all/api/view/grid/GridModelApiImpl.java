@@ -563,10 +563,7 @@ public class GridModelApiImpl implements GridModelApi {
           request.getParameters().get(i).setValue(parameters[i]);
         }
       }
-      InvocationParameter result = invocationApi.invoke(request);
-      if (result == null || result.getValue() == null) {
-        throw new IllegalArgumentException("Action returned nothing");
-      }
+      invocationApi.invoke(request);
     } catch (Exception e) {
       throw new IllegalArgumentException("Action throw an error", e);
     }
