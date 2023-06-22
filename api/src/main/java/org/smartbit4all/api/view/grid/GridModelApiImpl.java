@@ -199,6 +199,11 @@ public class GridModelApiImpl implements GridModelApi {
   }
 
   @Override
+  public void setData(UUID viewUuid, String gridId, TableData<?> data) {
+    setData(viewUuid, gridId, data, false);
+  }
+
+  @Override
   public <T> void setData(UUID viewUuid, String gridId, Class<T> clazz, List<T> data) {
     executeGridCall(viewUuid, gridId, gridModel -> {
       List<String> columns = gridModel.getView().getDescriptor().getColumns().stream()
@@ -210,24 +215,60 @@ public class GridModelApiImpl implements GridModelApi {
   }
 
   @Override
-  public void setData(UUID viewUuid, String gridId, TableData<?> data) {
+  public void setData(UUID viewUuid, String gridId, TableData<?> data, boolean ignoreOrderByList) {
     executeGridCall(viewUuid, gridId, gridModel -> {
-      if (data.getUri() == null) {
-        tableDataApi.save(data);
-      }
-      gridModel.accessConfig(new GridDataAccessConfig().dataUri(data.getUri()));
-      gridModel.totalRowCount(data.size());
       Integer pageSize = gridModel.getPageSize();
       if (pageSize == null) {
         pageSize = getDefaultPageSize();
-        gridModel.setPageSize(pageSize);
       }
-      int firstPageSize = Math.min(pageSize, data.size());
-      gridModel
-          .page(constructPage(viewUuid, gridId, data, 0, firstPageSize, false)
-              .lowerBound(0)
-              .upperBound(firstPageSize));
-      return firstPageSize;
+      if (!ignoreOrderByList) {
+        List<FilterExpressionOrderBy> orderByList = gridModel.getView().getOrderByList();
+        if (orderByList != null && !orderByList.isEmpty()) {
+          TableDatas.sortByFilterExpression(data, orderByList);
+          tableDataApi.save(data);
+        }
+      }
+      if (data.getUri() == null) {
+        tableDataApi.save(data);
+      }
+      if (gridModel.getAccessConfig() != null
+          && gridModel.getAccessConfig().getDataUri() != null
+          && gridModel.getPage() != null) {
+        gridModel.getAccessConfig().dataUri(data.getUri());
+        int lowerBound = gridModel.getPage().getLowerBound();
+        int upperBound = gridModel.getPage().getUpperBound();
+        if (lowerBound == 0 && upperBound == 0) {
+          upperBound = pageSize;
+        } else {
+          pageSize = upperBound - lowerBound;
+        }
+        if (data.size() == 0) {
+          lowerBound = 0;
+          upperBound = 0;
+        } else {
+          // lowerBound inclusive, upperBound exclusive
+          if (lowerBound >= data.size()) {
+            lowerBound = data.size() - 1 - ((data.size() - 1) % pageSize);
+            upperBound = data.size();
+          }
+          if (upperBound > data.size()) {
+            upperBound = data.size();
+          }
+        }
+        gridModel.page(constructPage(viewUuid, gridId, data, lowerBound, upperBound, true)
+            .lowerBound(lowerBound)
+            .upperBound(lowerBound + pageSize));
+      } else {
+        gridModel.accessConfig(new GridDataAccessConfig().dataUri(data.getUri()));
+        int firstPageSize = Math.min(pageSize, data.size());
+        gridModel
+            .page(constructPage(viewUuid, gridId, data, 0, firstPageSize, false)
+                .lowerBound(0)
+                .upperBound(pageSize));
+      }
+      gridModel.setPageSize(pageSize);
+      gridModel.totalRowCount(data.size());
+      return gridModel;
     });
   }
 
