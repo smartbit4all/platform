@@ -390,6 +390,12 @@ class MDMApiTest {
       objectApi.save(
           objectApi.loadLatest(branch1).modify(BranchEntry.class, be -> be.caption(caption)));
 
+      try {
+        Thread.sleep(20);
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+
       BranchEntry branchEntry = branchCacheEntry.get(branch1);
 
       Assertions.assertThat(branchEntry).satisfies(new Condition<>(
