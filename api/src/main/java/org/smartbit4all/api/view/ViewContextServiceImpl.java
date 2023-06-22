@@ -391,7 +391,7 @@ public class ViewContextServiceImpl implements ViewContextService {
         Map<String, Method> methodsForWidget =
             methods.computeIfAbsent(widget, w -> new HashMap<>());
         for (String action : actions) {
-          if (methods.containsKey(action)) {
+          if (methodsForWidget.containsKey(action)) {
             throw new IllegalStateException("WIdgetActionHandler duplicated! "
                 + viewName + "." + widget + "." + action);
           }
