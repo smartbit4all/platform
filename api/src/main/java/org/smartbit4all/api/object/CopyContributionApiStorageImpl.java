@@ -48,14 +48,14 @@ public class CopyContributionApiStorageImpl extends ContributionApiImpl
       if (ref.getAggregation() == AggregationKind.COMPOSITE) {
         Object target = ref.getSourceValue(storageObject.getObjectAsMap());
         switch (ref.getSourceKind()) {
-          case VALUE:
+          case REFERENCE:
             // This property that must contains the uri of the target object.
             if (target != null) {
               ref.setSourceValue(storageObject.getObjectAsMap(),
                   copyApi().deepCopyByContainment(UriUtils.asUri(target)));
             }
             break;
-          case COLLECTION:
+          case LIST:
             // This property that must contains the list of uris point to target objects.
             List<Object> targetUris = (List<Object>) target;
             List<URI> copiedTargetList =

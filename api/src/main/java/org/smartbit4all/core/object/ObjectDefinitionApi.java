@@ -2,6 +2,7 @@ package org.smartbit4all.core.object;
 
 import java.net.URI;
 import org.smartbit4all.api.object.bean.ObjectDefinitionData;
+import org.smartbit4all.api.object.bean.ReferenceDefinitionData;
 
 /**
  * Collects and handles object definitions for API objects.
@@ -48,5 +49,13 @@ public interface ObjectDefinitionApi {
   void reloadDefinitionData(ObjectDefinition<?> definition);
 
   void saveDefinitionData(ObjectDefinition<?> definition);
+
+  /**
+   * Add a new reference to the object definitions. It can be used when the application is already
+   * started, do not use till the end of the initialization.
+   * 
+   * @param referenceDefinitionData
+   */
+  void addReference(ReferenceDefinitionData referenceDefinitionData);
 
 }

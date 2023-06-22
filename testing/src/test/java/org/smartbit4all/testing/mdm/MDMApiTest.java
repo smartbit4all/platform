@@ -31,8 +31,10 @@ import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
 import org.smartbit4all.api.mdm.MDMEntryApi;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
-import org.smartbit4all.api.mdm.bean.MDMEntryInstance;
+import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.object.bean.BranchEntry;
+import org.smartbit4all.api.object.bean.BranchedObjectEntry;
+import org.smartbit4all.api.object.bean.BranchedObjectEntry.BranchingStateEnum;
 import org.smartbit4all.api.object.bean.ObjectDefinitionData;
 import org.smartbit4all.api.object.bean.PropertyDefinitionData;
 import org.smartbit4all.api.org.OrgApi;
@@ -57,6 +59,7 @@ import org.smartbit4all.core.object.ObjectNodeList;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.DataRow;
 import org.smartbit4all.domain.data.TableData;
+import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.sec.localauth.LocalAuthenticationService;
 import org.smartbit4all.testing.UITestApi;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -164,7 +167,7 @@ class MDMApiTest {
 
     objectApi.save(objectNode);
 
-    List<MDMEntryInstance> publishedAndDraftObjects =
+    List<BranchedObjectEntry> publishedAndDraftObjects =
         typeApi.getAllEntries();
 
     Assertions
@@ -179,6 +182,37 @@ class MDMApiTest {
             }))
         .containsExactlyInAnyOrder("Type one", "Type two->Type two v1", "Type three",
             "->Type four");
+
+    MDMEntryDescriptor descriptor = typeApi.getDescriptor();
+
+    SearchIndex<SampleCategoryType> searchIndexEntries =
+        collectionApi.searchIndex(MDMApiTestConfig.TEST,
+            typeApi.getDescriptor().getSearchIndexForEntries(),
+            SampleCategoryType.class);
+
+    String descrTypeName = BranchedObjectEntry.class.getName() + StringConstant.DOT
+        + MDMApiTestConfig.TEST + StringConstant.DOT + descriptor.getName();
+
+    TableData<?> tdAllEntries =
+        searchIndexEntries.executeSearchOnNodes(typeApi.getAllEntries().stream()
+            .map(i -> {
+              ObjectDefinition<?> definition = objectApi.definition(descrTypeName);
+              return objectApi.create(SCHEMA, definition, definition.toMap(i));
+            }), null);
+
+    List<Property<?>> properties = tdAllEntries.properties();
+
+    Property<String> propertyName = (Property<String>) properties.stream()
+        .filter(p -> SampleCategoryType.NAME.equals(p.getName())).findFirst().get();
+    Property<BranchingStateEnum> propertyState = (Property<BranchingStateEnum>) properties.stream()
+        .filter(p -> BranchedObjectEntry.BRANCHING_STATE.equals(p.getName())).findFirst().get();
+
+    Assertions.assertThat(tdAllEntries.values(propertyName)).containsExactlyInAnyOrder(
+        "Type one", "Type two v1", "Type three",
+        "Type four");
+    Assertions.assertThat(tdAllEntries.values(propertyState)).containsExactlyInAnyOrder(
+        BranchingStateEnum.MODIFIED, BranchingStateEnum.NEW, BranchingStateEnum.NOP,
+        BranchingStateEnum.NOP);
 
     typeApi.publishCurrentModifications();
 
@@ -255,12 +289,12 @@ class MDMApiTest {
 
   }
 
-  public <O> O getPublishedObject(MDMEntryInstance entry, Class<O> clazz) {
+  public <O> O getPublishedObject(BranchedObjectEntry entry, Class<O> clazz) {
     return entry == null || entry.getOriginalUri() == null ? null
         : objectApi.read(entry.getOriginalUri(), clazz);
   }
 
-  public <O> O getDraftObject(MDMEntryInstance entry, Class<O> clazz) {
+  public <O> O getDraftObject(BranchedObjectEntry entry, Class<O> clazz) {
     return entry == null || entry.getBranchUri() == null ? null
         : objectApi.read(entry.getBranchUri(), clazz);
   }

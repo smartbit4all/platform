@@ -10,7 +10,7 @@ import org.smartbit4all.api.mdm.MDMEntryApi;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
-import org.smartbit4all.api.mdm.bean.MDMEntryInstance;
+import org.smartbit4all.api.object.bean.BranchedObjectEntry;
 import org.smartbit4all.api.view.PageApiImpl;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
@@ -50,7 +50,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
     MDMEntryDescriptor entryDescriptor;
     MDMDefinition definition;
     MDMEntryApi entryApi;
-    SearchIndex<MDMEntryInstance> searchIndex;
+    SearchIndex<BranchedObjectEntry> searchIndex;
 
     PageContext loadByView() {
       entryDescriptor = getEntryDescriptor(view);
@@ -60,7 +60,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
 
       searchIndex =
           collectionApi.searchIndex(definition.getName(), entryDescriptor.getName(),
-              MDMEntryInstance.class);
+              BranchedObjectEntry.class);
 
       return this;
     }

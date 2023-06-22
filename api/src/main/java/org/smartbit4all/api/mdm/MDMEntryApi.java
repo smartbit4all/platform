@@ -6,7 +6,7 @@ import java.util.Map;
 import org.smartbit4all.api.collection.StoredList;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor.BranchStrategyEnum;
-import org.smartbit4all.api.mdm.bean.MDMEntryInstance;
+import org.smartbit4all.api.object.bean.BranchedObjectEntry;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
 
@@ -84,12 +84,12 @@ public interface MDMEntryApi {
   /**
    * @return Returns the version URI of the current draft objects.
    */
-  List<MDMEntryInstance> getDraftEntries();
+  List<BranchedObjectEntry> getDraftEntries();
 
   /**
    * @return Return all the published objects loaded.
    */
-  List<MDMEntryInstance> getAllEntries();
+  List<BranchedObjectEntry> getAllEntries();
 
   /**
    * @return The branching strategy of the given entry that can be

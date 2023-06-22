@@ -45,13 +45,13 @@ public class CompareContributionApiStorageImpl extends ContributionApiImpl
         Object target = ref.getSourceValue(storageObject.getObject());
         Object targetPrev = ref.getSourceValue(prevStorageObject.getObject());
         switch (ref.getSourceKind()) {
-          case VALUE:
+          case REFERENCE:
             // This property that must contains the uri of the target object.
             if (!deepEquals((URI) target, (URI) targetPrev)) {
               return false;
             }
             break;
-          case COLLECTION:
+          case LIST:
             // This property that must contains the list of uris point to target objects.
             List<URI> targetUris = (List<URI>) target;
             List<URI> targetPrevUris = (List<URI>) targetPrev;

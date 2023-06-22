@@ -20,10 +20,11 @@ import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor.BranchStrategyEnum;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptorState;
-import org.smartbit4all.api.mdm.bean.MDMEntryInstance;
 import org.smartbit4all.api.object.BranchApi;
 import org.smartbit4all.api.object.bean.BranchEntry;
 import org.smartbit4all.api.object.bean.BranchOperation;
+import org.smartbit4all.api.object.bean.BranchedObjectEntry;
+import org.smartbit4all.api.object.bean.BranchedObjectEntry.BranchingStateEnum;
 import org.smartbit4all.api.value.ValueSetApi;
 import org.smartbit4all.api.value.bean.ValueSetDefinitionData;
 import org.smartbit4all.api.value.bean.ValueSetDefinitionKind;
@@ -309,17 +310,20 @@ public class MDMEntryApiImpl implements MDMEntryApi {
   }
 
   @Override
-  public List<MDMEntryInstance> getDraftEntries() {
+  public List<BranchedObjectEntry> getDraftEntries() {
     URI branchEntryUri = getCurrentBranchEntryUri();
     if (branchEntryUri != null) {
       BranchEntry branchEntry = objectApi.read(branchEntryUri, BranchEntry.class);
-      Stream<MDMEntryInstance> newStream = branchEntry.getBranchedObjects().entrySet().stream()
-          .map(e -> new MDMEntryInstance()
-              .originalUri(URI.create(e.getKey()))
-              .branchUri(e.getValue().getBranchedObjectLatestUri()));
-      Stream<MDMEntryInstance> changedStream = branchEntry.getNewObjects().values().stream()
-          .map(bo -> new MDMEntryInstance().branchUri(bo.getBranchedObjectLatestUri()));
-      return Stream.concat(newStream, changedStream).collect(toList());
+      Stream<BranchedObjectEntry> changedStream =
+          branchEntry.getBranchedObjects().entrySet().stream()
+              .map(e -> new BranchedObjectEntry()
+                  .originalUri(URI.create(e.getKey()))
+                  .branchUri(e.getValue().getBranchedObjectLatestUri())
+                  .branchingState(BranchingStateEnum.MODIFIED));
+      Stream<BranchedObjectEntry> newStream = branchEntry.getNewObjects().values().stream()
+          .map(bo -> new BranchedObjectEntry().branchUri(bo.getBranchedObjectLatestUri())
+              .branchingState(BranchingStateEnum.NEW));
+      return Stream.concat(changedStream, newStream).collect(toList());
     }
     return Collections.emptyList();
   }
@@ -358,12 +362,12 @@ public class MDMEntryApiImpl implements MDMEntryApi {
   }
 
   @Override
-  public List<MDMEntryInstance> getAllEntries() {
-    List<MDMEntryInstance> results = getDraftEntries();
+  public List<BranchedObjectEntry> getAllEntries() {
+    List<BranchedObjectEntry> results = getDraftEntries();
     // In the draft objects we have all the published objects that have draft version. And also the
     // brand new object are included.
     Set<URI> publishedWithDraft = results.stream()
-        .map(MDMEntryInstance::getOriginalUri)
+        .map(BranchedObjectEntry::getOriginalUri)
         .filter(Objects::nonNull)
         .collect(toSet());
     Map<String, URI> publishedMap =
@@ -371,9 +375,10 @@ public class MDMEntryApiImpl implements MDMEntryApi {
             .filter(e -> !publishedWithDraft.contains(objectApi.getLatestUri(e.getValue())))
             .collect(toMap(Entry::getKey, Entry::getValue));
 
-    List<MDMEntryInstance> publishedList =
+    List<BranchedObjectEntry> publishedList =
         publishedMap.values().stream()
-            .map(o -> new MDMEntryInstance().originalUri(o))
+            .map(o -> new BranchedObjectEntry().originalUri(o)
+                .branchingState(BranchingStateEnum.NOP))
             .collect(toList());
 
     // Add the remaining draft object. The new objects missing from the published.

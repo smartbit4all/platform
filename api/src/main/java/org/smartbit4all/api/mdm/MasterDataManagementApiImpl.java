@@ -17,8 +17,13 @@ import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMDefinitionState;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptorState;
-import org.smartbit4all.api.mdm.bean.MDMEntryInstance;
 import org.smartbit4all.api.object.BranchApi;
+import org.smartbit4all.api.object.bean.AggregationKind;
+import org.smartbit4all.api.object.bean.BranchedObjectEntry;
+import org.smartbit4all.api.object.bean.BranchedObjectEntry.BranchingStateEnum;
+import org.smartbit4all.api.object.bean.PropertyDefinitionData;
+import org.smartbit4all.api.object.bean.ReferenceDefinitionData;
+import org.smartbit4all.api.object.bean.ReferencePropertyKind;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.value.ValueSetApi;
 import org.smartbit4all.api.value.bean.ValueSetDefinitionData;
@@ -26,6 +31,7 @@ import org.smartbit4all.api.value.bean.ValueSetDefinitionKind;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectCacheEntry;
 import org.smartbit4all.core.object.ObjectDefinition;
+import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ReferenceDefinition;
 import org.smartbit4all.core.utility.StringConstant;
@@ -54,6 +60,9 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
 
   @Autowired
   private ObjectApi objectApi;
+
+  @Autowired
+  private ObjectDefinitionApi objectDefinitionApi;
 
   @Autowired
   private StorageApi storageApi;
@@ -155,6 +164,9 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
         Map<String, URI> currentMap = m;
         m.putAll(options.stream().collect(toMap(o -> o.getDefinition().getName(), o -> {
           URI uri = currentMap.get(o.getDefinition().getName());
+          // Set the name of the searchIndex
+          o.getDefinition().getDescriptors().values().forEach(d -> d.setSearchIndexForEntries(
+              BranchedObjectEntry.class.getSimpleName() + StringConstant.DOT + d.getName()));
           if (uri == null) {
             // We create a new definition and its state and add to the map.
             o.getDefinition()
@@ -189,6 +201,7 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
         })));
         return m;
       });
+      synchronizeObjectDefinitions();
       synchronizeValueSets();
       synchronizeSearchIndices();
     }
@@ -224,6 +237,46 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
   }
 
   /**
+   */
+  private final void synchronizeObjectDefinitions() {
+    StoredMap map = collectionApi.map(SCHEMA, MAP_DEFINITIONS);
+    List<MDMDefinition> definitions =
+        map.uris().values().stream()
+            .map(u -> objectApi.loadLatest(u).getObject(MDMDefinition.class))
+            .collect(toList());
+
+    for (MDMDefinition definition : definitions) {
+      definition.getDescriptors().values().stream().forEach(descriptor -> {
+        String objectDefitionName = BranchedObjectEntry.class.getName() + StringConstant.DOT
+            + definition.getName() + StringConstant.DOT + descriptor.getName();
+        ObjectDefinition<?> entryObjectDefinition =
+            objectDefinitionApi
+                .definition(
+                    objectDefitionName);
+
+        entryObjectDefinition.reloadDefinitionData();
+
+        objectDefinitionApi.addReference(new ReferenceDefinitionData()
+            .propertyPath(BranchedObjectEntry.ORIGINAL_URI).aggregation(AggregationKind.COMPOSITE)
+            .propertyKind(ReferencePropertyKind.REFERENCE).sourceObjectName(objectDefitionName)
+            .targetObjectName(descriptor.getTypeQualifiedName()));
+        objectDefinitionApi.addReference(new ReferenceDefinitionData()
+            .propertyPath(BranchedObjectEntry.BRANCH_URI).aggregation(AggregationKind.COMPOSITE)
+            .propertyKind(ReferencePropertyKind.REFERENCE).sourceObjectName(objectDefitionName)
+            .targetObjectName(descriptor.getTypeQualifiedName()));
+
+        entryObjectDefinition.builder()
+            .addProperty(BranchedObjectEntry.BRANCHING_STATE, BranchingStateEnum.class)
+            .addProperty(BranchedObjectEntry.ORIGINAL_URI, URI.class)
+            .addProperty(BranchedObjectEntry.BRANCH_URI, URI.class)
+            .commit();
+
+      });
+    }
+
+  }
+
+  /**
    * Synchronize the {@link SearchIndex}es for the {@link MDMEntryDescriptor}s of the
    * {@link MDMDefinition}s. {@link SearchIndex} is created from every entry. The column mapping can
    * be automatic. In this case all the properties from the object will be mapped as column. In case
@@ -242,39 +295,60 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
         SearchIndex<Object> searchIndex =
             collectionApi.searchIndexComputeIfAbsent(definition.getName(), descriptor.getName(),
                 () -> createSearchIndexForEntry(definition, descriptor), Object.class);
-        SearchIndex<MDMEntryInstance> searchIndexEntries =
-            collectionApi.searchIndexComputeIfAbsent(definition.getName(), descriptor.getName(),
+        SearchIndex<BranchedObjectEntry> searchIndexEntries =
+            collectionApi.searchIndexComputeIfAbsent(definition.getName(),
+                descriptor.getSearchIndexForEntries(),
                 () -> createSearchIndexForEntryInstance(definition, descriptor),
-                MDMEntryInstance.class);
+                BranchedObjectEntry.class);
       });
     }
 
   }
 
-  private final SearchIndex<MDMEntryInstance> createSearchIndexForEntryInstance(MDMDefinition def,
+  private final void addEntryPropertyToSearchIndex(SearchIndexImpl<?> searchIndex,
+      String propertyName, Class<?> typeClass, int length, String... path) {
+    // The object node is an BranchedObjectEntry.definition.entry node and can be used by the
+    // ObjectApi
+    // to navigate to every property let it be original or branched.
+    searchIndex.mapComplex(propertyName, typeClass, length, node -> {
+      BranchingStateEnum stateEnum =
+          node.getValue(BranchingStateEnum.class, BranchedObjectEntry.BRANCHING_STATE);
+      if (stateEnum == BranchingStateEnum.NOP || stateEnum == BranchingStateEnum.NOP) {
+        return node.ref(BranchedObjectEntry.ORIGINAL_URI).get().getValue(path);
+      } else {
+        return node.ref(BranchedObjectEntry.BRANCH_URI).get().getValue(path);
+      }
+    });
+  }
+
+  private final SearchIndex<BranchedObjectEntry> createSearchIndexForEntryInstance(
+      MDMDefinition def,
       MDMEntryDescriptor entryDescriptor) {
-    SearchIndexImpl<MDMEntryInstance> result =
-        new SearchIndexImpl<>(def.getName(), entryDescriptor.getName(), entryDescriptor.getSchema(),
-            MDMEntryInstance.class);
+    SearchIndexImpl<BranchedObjectEntry> result =
+        new SearchIndexImpl<>(def.getName(),
+            entryDescriptor.getSearchIndexForEntries(),
+            entryDescriptor.getSchema(),
+            BranchedObjectEntry.class);
+    result.map(BranchedObjectEntry.BRANCHING_STATE, BranchedObjectEntry.BRANCHING_STATE);
+    result.map(BranchedObjectEntry.ORIGINAL_URI, BranchedObjectEntry.ORIGINAL_URI);
+    result.map(BranchedObjectEntry.BRANCH_URI, BranchedObjectEntry.BRANCH_URI);
+
+    ObjectDefinition<?> objectDefinition =
+        objectApi.definition(entryDescriptor.getTypeQualifiedName());
     if (!entryDescriptor.getTableColumns().isEmpty()) {
       entryDescriptor.getTableColumns().stream().forEach(
-          tcd -> result.map(tcd.getName(), tcd.getPath().toArray(StringConstant.EMPTY_ARRAY)));
+          tcd -> addEntryPropertyToSearchIndex(result, tcd.getName(),
+              getTypeClass(objectDefinition.getPropertiesByName().get(tcd.getName())), -1,
+              tcd.getPath().toArray(StringConstant.EMPTY_ARRAY)));
     } else {
-      ObjectDefinition<?> objectDefinition =
-          objectApi.definition(entryDescriptor.getTypeQualifiedName());
       // Navigate to the nearest referred object.
       Map<String, ReferenceDefinition> outgoingReferences =
           objectDefinition.getOutgoingReferences();
       objectDefinition.getPropertiesByName().entrySet()
           .forEach(e -> {
             if (!outgoingReferences.containsKey(e.getKey())) {
-              Class<?> typeClass;
-              try {
-                typeClass = Class.forName(e.getValue().getTypeClass());
-              } catch (ClassNotFoundException e1) {
-                typeClass = String.class;
-              }
-              result.map(e.getKey(), typeClass,
+              Class<?> typeClass = getTypeClass(e.getValue());
+              addEntryPropertyToSearchIndex(result, e.getValue().getName(), typeClass, -1,
                   e.getValue().getName());
             }
           });
@@ -289,6 +363,16 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
           entryDescriptor);
     }
     return result;
+  }
+
+  private Class<?> getTypeClass(PropertyDefinitionData pdd) {
+    Class<?> typeClass;
+    try {
+      typeClass = Class.forName(pdd.getTypeClass());
+    } catch (ClassNotFoundException e1) {
+      typeClass = String.class;
+    }
+    return typeClass;
   }
 
   private final SearchIndex<Object> createSearchIndexForEntry(MDMDefinition def,

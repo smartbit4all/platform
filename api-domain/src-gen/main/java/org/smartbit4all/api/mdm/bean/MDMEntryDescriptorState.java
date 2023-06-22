@@ -23,6 +23,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -34,6 +36,7 @@ import javax.validation.Valid;
 @ApiModel(description = "The entry state is responsible for storing the current editing state of the given entry. ")
 @JsonPropertyOrder({
   MDMEntryDescriptorState.URI,
+  MDMEntryDescriptorState.DELETED_OBJECTS,
   MDMEntryDescriptorState.BRANCH
 })
 @JsonTypeName("MDMEntryDescriptorState")
@@ -41,6 +44,9 @@ import javax.validation.Valid;
 public class MDMEntryDescriptorState {
   public static final String URI = "uri";
   private URI uri;
+
+  public static final String DELETED_OBJECTS = "deletedObjects";
+  private List<URI> deletedObjects = null;
 
   public static final String BRANCH = "branch";
   private URI branch;
@@ -74,6 +80,42 @@ public class MDMEntryDescriptorState {
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setUri(URI uri) {
     this.uri = uri;
+  }
+
+
+  public MDMEntryDescriptorState deletedObjects(List<URI> deletedObjects) {
+    
+    this.deletedObjects = deletedObjects;
+    return this;
+  }
+
+  public MDMEntryDescriptorState addDeletedObjectsItem(URI deletedObjectsItem) {
+    if (this.deletedObjects == null) {
+      this.deletedObjects = new ArrayList<>();
+    }
+    this.deletedObjects.add(deletedObjectsItem);
+    return this;
+  }
+
+   /**
+   * If we start an editing on an entry then we can delete objects from the collection of published object. The issue is to have a specific list for entry that conttains the object to delete from the list. 
+   * @return deletedObjects
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "If we start an editing on an entry then we can delete objects from the collection of published object. The issue is to have a specific list for entry that conttains the object to delete from the list. ")
+  @JsonProperty(DELETED_OBJECTS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<URI> getDeletedObjects() {
+    return deletedObjects;
+  }
+
+
+  @JsonProperty(DELETED_OBJECTS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setDeletedObjects(List<URI> deletedObjects) {
+    this.deletedObjects = deletedObjects;
   }
 
 
@@ -115,12 +157,13 @@ public class MDMEntryDescriptorState {
     }
     MDMEntryDescriptorState mdMEntryDescriptorState = (MDMEntryDescriptorState) o;
     return Objects.equals(this.uri, mdMEntryDescriptorState.uri) &&
+        Objects.equals(this.deletedObjects, mdMEntryDescriptorState.deletedObjects) &&
         Objects.equals(this.branch, mdMEntryDescriptorState.branch);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, branch);
+    return Objects.hash(uri, deletedObjects, branch);
   }
 
   @Override
@@ -128,6 +171,7 @@ public class MDMEntryDescriptorState {
     StringBuilder sb = new StringBuilder();
     sb.append("class MDMEntryDescriptorState {\n");
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
+    sb.append("    deletedObjects: ").append(toIndentedString(deletedObjects)).append("\n");
     sb.append("    branch: ").append(toIndentedString(branch)).append("\n");
     sb.append("}");
     return sb.toString();

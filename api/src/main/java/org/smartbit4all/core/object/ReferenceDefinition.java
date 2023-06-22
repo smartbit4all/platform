@@ -2,14 +2,12 @@ package org.smartbit4all.core.object;
 
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
-import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.object.bean.AggregationKind;
 import org.smartbit4all.api.object.bean.ReferenceDefinitionData;
 import org.smartbit4all.api.object.bean.ReferencePropertyKind;
-import org.smartbit4all.core.object.PropertyMeta.PropertyKind;
 
 /**
  * The {@link ObjectApi} construct this meta object for every {@link ReferenceDefinitionData}. This
@@ -107,17 +105,8 @@ public class ReferenceDefinition {
     object.put(getSourcePropertyPath(), value);
   }
 
-  public PropertyKind getSourceKind() {
-    if (sourcePropertyMeta == null) {
-      return PropertyKind.VALUE;
-    }
-    if (sourcePropertyMeta.getType().isAssignableFrom(List.class)) {
-      return PropertyKind.COLLECTION;
-    }
-    if (sourcePropertyMeta.getType().isAssignableFrom(Map.class)) {
-      return PropertyKind.COLLECTION;
-    }
-    return PropertyKind.VALUE;
+  public ReferencePropertyKind getSourceKind() {
+    return data.getPropertyKind();
   }
 
   public final ReferencePropertyKind getReferencePropertyKind() {

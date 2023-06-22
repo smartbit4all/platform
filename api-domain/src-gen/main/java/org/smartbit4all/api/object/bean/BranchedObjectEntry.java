@@ -1,6 +1,6 @@
 /*
- * MasterDataManagement api
- * null
+ * Object api
+ * The object api responsible for the domain object meta information including the object definitions and the relations among them. These objects are stored because the modules can contribute. The modules have their own ObjectApi that manages the storage and ensure the up-to-date view of the current data. The algorithms are running on the ObjectApi cache refreshed periodically. 
  *
  * The version of the OpenAPI document: 1.0.0
  * Contact: info@it4all.hu
@@ -11,7 +11,7 @@
  */
 
 
-package org.smartbit4all.api.mdm.bean;
+package org.smartbit4all.api.object.bean;
 
 import java.util.Objects;
 import java.util.Arrays;
@@ -29,21 +29,21 @@ import javax.validation.constraints.*;
 import javax.validation.Valid;
 
 /**
- * The entry instance is an api object for the MDMEntryApi it is used to retrieve a list of object with state. 
+ * The entry stands for an object in a collection that is branched. The entry can be a new one, modified, deleted or nop - unmodified. It has reference for the original and the branched uri sor we can follow tha two uri to access both. 
  */
-@ApiModel(description = "The entry instance is an api object for the MDMEntryApi it is used to retrieve a list of object with state. ")
+@ApiModel(description = "The entry stands for an object in a collection that is branched. The entry can be a new one, modified, deleted or nop - unmodified. It has reference for the original and the branched uri sor we can follow tha two uri to access both. ")
 @JsonPropertyOrder({
-  MDMEntryInstance.INSTANCE_STATE,
-  MDMEntryInstance.ORIGINAL_URI,
-  MDMEntryInstance.BRANCH_URI
+  BranchedObjectEntry.BRANCHING_STATE,
+  BranchedObjectEntry.ORIGINAL_URI,
+  BranchedObjectEntry.BRANCH_URI
 })
-@JsonTypeName("MDMEntryInstance")
+@JsonTypeName("BranchedObjectEntry")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
-public class MDMEntryInstance {
+public class BranchedObjectEntry {
   /**
-   * Gets or Sets instanceState
+   * Gets or Sets branchingState
    */
-  public enum InstanceStateEnum {
+  public enum BranchingStateEnum {
     NOP("NOP"),
     
     NEW("NEW"),
@@ -54,7 +54,7 @@ public class MDMEntryInstance {
 
     private String value;
 
-    InstanceStateEnum(String value) {
+    BranchingStateEnum(String value) {
       this.value = value;
     }
 
@@ -69,8 +69,8 @@ public class MDMEntryInstance {
     }
 
     @JsonCreator
-    public static InstanceStateEnum fromValue(String value) {
-      for (InstanceStateEnum b : InstanceStateEnum.values()) {
+    public static BranchingStateEnum fromValue(String value) {
+      for (BranchingStateEnum b : BranchingStateEnum.values()) {
         if (b.value.equals(value)) {
           return b;
         }
@@ -79,8 +79,8 @@ public class MDMEntryInstance {
     }
   }
 
-  public static final String INSTANCE_STATE = "instanceState";
-  private InstanceStateEnum instanceState;
+  public static final String BRANCHING_STATE = "branchingState";
+  private BranchingStateEnum branchingState;
 
   public static final String ORIGINAL_URI = "originalUri";
   private URI originalUri;
@@ -88,37 +88,37 @@ public class MDMEntryInstance {
   public static final String BRANCH_URI = "branchUri";
   private URI branchUri;
 
-  public MDMEntryInstance() { 
+  public BranchedObjectEntry() { 
   }
 
-  public MDMEntryInstance instanceState(InstanceStateEnum instanceState) {
+  public BranchedObjectEntry branchingState(BranchingStateEnum branchingState) {
     
-    this.instanceState = instanceState;
+    this.branchingState = branchingState;
     return this;
   }
 
    /**
-   * Get instanceState
-   * @return instanceState
+   * Get branchingState
+   * @return branchingState
   **/
   @javax.annotation.Nullable
   @ApiModelProperty(value = "")
-  @JsonProperty(INSTANCE_STATE)
+  @JsonProperty(BRANCHING_STATE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public InstanceStateEnum getInstanceState() {
-    return instanceState;
+  public BranchingStateEnum getBranchingState() {
+    return branchingState;
   }
 
 
-  @JsonProperty(INSTANCE_STATE)
+  @JsonProperty(BRANCHING_STATE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setInstanceState(InstanceStateEnum instanceState) {
-    this.instanceState = instanceState;
+  public void setBranchingState(BranchingStateEnum branchingState) {
+    this.branchingState = branchingState;
   }
 
 
-  public MDMEntryInstance originalUri(URI originalUri) {
+  public BranchedObjectEntry originalUri(URI originalUri) {
     
     this.originalUri = originalUri;
     return this;
@@ -146,7 +146,7 @@ public class MDMEntryInstance {
   }
 
 
-  public MDMEntryInstance branchUri(URI branchUri) {
+  public BranchedObjectEntry branchUri(URI branchUri) {
     
     this.branchUri = branchUri;
     return this;
@@ -182,22 +182,22 @@ public class MDMEntryInstance {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    MDMEntryInstance mdMEntryInstance = (MDMEntryInstance) o;
-    return Objects.equals(this.instanceState, mdMEntryInstance.instanceState) &&
-        Objects.equals(this.originalUri, mdMEntryInstance.originalUri) &&
-        Objects.equals(this.branchUri, mdMEntryInstance.branchUri);
+    BranchedObjectEntry branchedObjectEntry = (BranchedObjectEntry) o;
+    return Objects.equals(this.branchingState, branchedObjectEntry.branchingState) &&
+        Objects.equals(this.originalUri, branchedObjectEntry.originalUri) &&
+        Objects.equals(this.branchUri, branchedObjectEntry.branchUri);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(instanceState, originalUri, branchUri);
+    return Objects.hash(branchingState, originalUri, branchUri);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class MDMEntryInstance {\n");
-    sb.append("    instanceState: ").append(toIndentedString(instanceState)).append("\n");
+    sb.append("class BranchedObjectEntry {\n");
+    sb.append("    branchingState: ").append(toIndentedString(branchingState)).append("\n");
     sb.append("    originalUri: ").append(toIndentedString(originalUri)).append("\n");
     sb.append("    branchUri: ").append(toIndentedString(branchUri)).append("\n");
     sb.append("}");

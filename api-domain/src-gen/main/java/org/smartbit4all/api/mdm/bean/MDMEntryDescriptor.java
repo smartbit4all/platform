@@ -45,6 +45,7 @@ import javax.validation.Valid;
   MDMEntryDescriptor.PUBLISH_IN_MAP,
   MDMEntryDescriptor.TABLE_COLUMNS,
   MDMEntryDescriptor.EDITOR_VIEW_NAME,
+  MDMEntryDescriptor.SEARCH_INDEX_FOR_ENTRIES,
   MDMEntryDescriptor.SCHEMA,
   MDMEntryDescriptor.BRANCH_STRATEGY,
   MDMEntryDescriptor.URI_CONSTRUCTOR,
@@ -77,6 +78,9 @@ public class MDMEntryDescriptor {
 
   public static final String EDITOR_VIEW_NAME = "editorViewName";
   private String editorViewName;
+
+  public static final String SEARCH_INDEX_FOR_ENTRIES = "searchIndexForEntries";
+  private String searchIndexForEntries;
 
   public static final String SCHEMA = "schema";
   private String schema;
@@ -362,6 +366,33 @@ public class MDMEntryDescriptor {
   }
 
 
+  public MDMEntryDescriptor searchIndexForEntries(String searchIndexForEntries) {
+    
+    this.searchIndexForEntries = searchIndexForEntries;
+    return this;
+  }
+
+   /**
+   * The name of search index that provides the entries.
+   * @return searchIndexForEntries
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The name of search index that provides the entries.")
+  @JsonProperty(SEARCH_INDEX_FOR_ENTRIES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getSearchIndexForEntries() {
+    return searchIndexForEntries;
+  }
+
+
+  @JsonProperty(SEARCH_INDEX_FOR_ENTRIES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSearchIndexForEntries(String searchIndexForEntries) {
+    this.searchIndexForEntries = searchIndexForEntries;
+  }
+
+
   public MDMEntryDescriptor schema(String schema) {
     
     this.schema = schema;
@@ -526,6 +557,7 @@ public class MDMEntryDescriptor {
         Objects.equals(this.publishInMap, mdMEntryDescriptor.publishInMap) &&
         Objects.equals(this.tableColumns, mdMEntryDescriptor.tableColumns) &&
         Objects.equals(this.editorViewName, mdMEntryDescriptor.editorViewName) &&
+        Objects.equals(this.searchIndexForEntries, mdMEntryDescriptor.searchIndexForEntries) &&
         Objects.equals(this.schema, mdMEntryDescriptor.schema) &&
         Objects.equals(this.branchStrategy, mdMEntryDescriptor.branchStrategy) &&
         Objects.equals(this.uriConstructor, mdMEntryDescriptor.uriConstructor) &&
@@ -535,7 +567,7 @@ public class MDMEntryDescriptor {
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, typeQualifiedName, inlineValueSet, publishInList, uniqueIdentifierPath, publishInMap, tableColumns, editorViewName, schema, branchStrategy, uriConstructor, eventHandlersBeforeSave, state);
+    return Objects.hash(name, typeQualifiedName, inlineValueSet, publishInList, uniqueIdentifierPath, publishInMap, tableColumns, editorViewName, searchIndexForEntries, schema, branchStrategy, uriConstructor, eventHandlersBeforeSave, state);
   }
 
   @Override
@@ -550,6 +582,7 @@ public class MDMEntryDescriptor {
     sb.append("    publishInMap: ").append(toIndentedString(publishInMap)).append("\n");
     sb.append("    tableColumns: ").append(toIndentedString(tableColumns)).append("\n");
     sb.append("    editorViewName: ").append(toIndentedString(editorViewName)).append("\n");
+    sb.append("    searchIndexForEntries: ").append(toIndentedString(searchIndexForEntries)).append("\n");
     sb.append("    schema: ").append(toIndentedString(schema)).append("\n");
     sb.append("    branchStrategy: ").append(toIndentedString(branchStrategy)).append("\n");
     sb.append("    uriConstructor: ").append(toIndentedString(uriConstructor)).append("\n");

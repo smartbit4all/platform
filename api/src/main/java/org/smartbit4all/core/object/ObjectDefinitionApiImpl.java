@@ -289,11 +289,25 @@ public class ObjectDefinitionApiImpl implements ObjectDefinitionApi, Initializin
     if (storage.exists(definition.getDefinitionData().getUri())) {
       // If we have a definition data saved in the storage then we load this and merge with the
       // currently existing properties.
+      ObjectDefinitionData definitionData =
+          storage.read(definition.getDefinitionData().getUri(), ObjectDefinitionData.class);
+      definitionData.getOutgoingReferences().stream().forEach(this::addReference);
       definition.builder()
-          .addAll(storage.read(definition.getDefinitionData().getUri(), ObjectDefinitionData.class)
-              .getProperties())
+          .addAll(definitionData.getProperties())
           .commit();
     }
+  }
+
+  @Override
+  public void addReference(ReferenceDefinitionData rdd) {
+    ObjectDefinition<?> source = definition(rdd.getSourceObjectName());
+    ObjectDefinition<?> target = definition(rdd.getTargetObjectName());
+    ReferenceDefinition referenceDefinition = new ReferenceDefinition(rdd);
+    referenceDefinition.setSource(source);
+    referenceDefinition.setTarget(target);
+    source.getDefinitionData().addOutgoingReferencesItem(rdd);
+    source.getOutgoingReferences().put(rdd.getPropertyPath(),
+        referenceDefinition);
   }
 
   @Override

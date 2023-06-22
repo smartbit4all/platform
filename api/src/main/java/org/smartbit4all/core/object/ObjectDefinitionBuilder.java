@@ -32,6 +32,16 @@ public class ObjectDefinitionBuilder {
     return this;
   }
 
+  public ObjectDefinitionBuilder addAllOutgoingReference(
+      Collection<ReferenceDefinition> references) {
+    if (references != null) {
+      for (ReferenceDefinition refDef : references) {
+        definition.getOutgoingReferences().putIfAbsent(refDef.getSourcePropertyPath(), refDef);
+      }
+    }
+    return this;
+  }
+
   public ObjectDefinitionBuilder addProperty(String propertyName, String typeClassName) {
     propertiesByName.computeIfAbsent(propertyName, name -> {
       PropertyDefinitionData newProperty =

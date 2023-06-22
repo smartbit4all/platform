@@ -89,6 +89,9 @@ components:
         editorViewName:
           type: string
           description: The name of the view editor view to open. If empty then we use the default in the application.
+        searchIndexForEntries:
+          type: string
+          description: The name of search index that provides the entries.
         schema:
           type: string
           description: |
@@ -151,6 +154,14 @@ components:
           type: string
           format: uri
           description: The uri of the object.
+        deletedObjects:
+          type: array
+          description: |
+            If we start an editing on an entry then we can delete objects from the collection of published object. The issue is to
+            have a specific list for entry that conttains the object to delete from the list.
+          items:
+            type: string
+            format: uri
         branch:
           type: string
           format: uri
@@ -159,16 +170,3 @@ components:
             the policy is that we are working on the same branch for given object. There can be objects that
             can be edited in local branch but we can have global modifications where we would like to initiate a global
             modification package and publish tha whole at once.
-    MDMEntryInstance:
-      type: object
-      description: |
-        The entry instance is an api object for the MDMEntryApi it is used to retrieve a list of object with state.
-      properties:
-        instanceState:
-          enum: [NOP, NEW, MODIFIED, DELETED]
-        originalUri:
-          type: string
-          format: uri
-        branchUri:
-          type: string
-          format: uri

@@ -6,6 +6,7 @@ import java.util.stream.Stream;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldList;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy;
+import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.service.query.QueryInput;
@@ -86,6 +87,30 @@ public interface SearchIndex<O> {
   default TableData<?> executeSearchOn(Stream<URI> objects,
       FilterExpressionList filterExpressions) {
     return executeSearchOn(objects, filterExpressions, null);
+  }
+
+  /**
+   * We can execute the search synchronously and we get back the result {@link TableData} in memory.
+   *
+   * @param objects The URIs of objects which the query is running on.
+   * @param filterExpressions The expression list for the query.
+   * @param orderByList desired order of result
+   * @return The result table data of the search.
+   */
+  TableData<?> executeSearchOnNodes(Stream<ObjectNode> objects,
+      FilterExpressionList filterExpressions,
+      List<FilterExpressionOrderBy> orderByList);
+
+  /**
+   * We can execute the search synchronously and we get back the result {@link TableData} in memory.
+   *
+   * @param objects The URIs of objects which the query is running on.
+   * @param filterExpressions The expression list for the query.
+   * @return The result table data of the search.
+   */
+  default TableData<?> executeSearchOnNodes(Stream<ObjectNode> objects,
+      FilterExpressionList filterExpressions) {
+    return executeSearchOnNodes(objects, filterExpressions, null);
   }
 
   /**

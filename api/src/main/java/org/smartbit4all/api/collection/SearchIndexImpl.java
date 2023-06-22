@@ -127,19 +127,25 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
 
   @Override
   public TableData<?> executeSearch(QueryInput queryInput) {
-    return executeSearch(queryInput, false, null);
+    return executeSearch(queryInput, false, null, null);
   }
 
   @Override
   public TableData<?> executeSearchOn(Stream<URI> objects, FilterExpressionList filterExpressions,
       List<FilterExpressionOrderBy> orderByList) {
-    return executeSearch(filterExpressions, orderByList, true, objects);
+    return executeSearch(filterExpressions, orderByList, true, objects, null);
+  }
+
+  @Override
+  public TableData<?> executeSearchOnNodes(Stream<ObjectNode> objects,
+      FilterExpressionList filterExpressions, List<FilterExpressionOrderBy> orderByList) {
+    return executeSearch(filterExpressions, orderByList, true, null, objects);
   }
 
   private TableData<?> executeSearch(QueryInput queryInput, boolean readFromStorage,
-      Stream<URI> objectUris) {
+      Stream<URI> objectUris, Stream<ObjectNode> objectNodes) {
     if (!useDatabase || readFromStorage) {
-      SearchEntityTableDataResult allObjects = readAllObjects(objectUris);
+      SearchEntityTableDataResult allObjects = readAllObjects(objectUris, objectNodes);
       if (queryInput.where() == null) {
         TableData<?> result = allObjects.result;
         if (queryInput.orderBys() != null && !queryInput.orderBys().isEmpty()) {
@@ -184,8 +190,9 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
         .result(createEmptyTableData());
   }
 
-  private final SearchEntityTableDataResult readAllObjects(Stream<URI> objectUris) {
-    return readAllObjects(constructResult(), objectUris);
+  private final SearchEntityTableDataResult readAllObjects(Stream<URI> objectUris,
+      Stream<ObjectNode> objectNodes) {
+    return readAllObjects(constructResult(), objectUris, objectNodes);
   }
 
   @Override
@@ -198,12 +205,18 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
   }
 
   private final SearchEntityTableDataResult readAllObjects(SearchEntityTableDataResult result,
-      Stream<URI> objectUris) {
+      Stream<URI> objectUris,
+      Stream<ObjectNode> objectNodes) {
 
-    List<URI> allObjectUris =
-        objectUris == null ? getRelevantObjectUris() : objectUris.collect(toList());
-    objectMapping.readObjects(allObjectUris.stream().map(u -> objectApi.load(u)), result,
-        Collections.emptyMap());
+    if (objectNodes == null) {
+      List<URI> allObjectUris =
+          objectUris == null ? getRelevantObjectUris() : objectUris.collect(toList());
+      objectMapping.readObjects(allObjectUris.stream().map(u -> objectApi.load(u)), result,
+          Collections.emptyMap());
+    } else {
+      objectMapping.readObjects(objectNodes, result,
+          Collections.emptyMap());
+    }
 
     return result;
   }
@@ -369,12 +382,12 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
   @Override
   public TableData<?> executeSearch(FilterExpressionList filterExpressions,
       List<FilterExpressionOrderBy> orderByList) {
-    return executeSearch(filterExpressions, orderByList, false, null);
+    return executeSearch(filterExpressions, orderByList, false, null, null);
   }
 
   private TableData<?> executeSearch(FilterExpressionList filterExpressions,
       List<FilterExpressionOrderBy> orderByList, boolean readFromStorage,
-      Stream<URI> objectUris) {
+      Stream<URI> objectUris, Stream<ObjectNode> objectNodes) {
     Expression queryExpression =
         filterExpressions == null ? null
             : filterExpressionApi.constructExpression(
@@ -389,7 +402,7 @@ public class SearchIndexImpl<O> implements SearchIndex<O>, InitializingBean {
             : objectMapping.propertyOf(orderBy).asc());
       }
     }
-    return executeSearch(read.getQuery(), readFromStorage, objectUris);
+    return executeSearch(read.getQuery(), readFromStorage, objectUris, objectNodes);
   }
 
   @Override

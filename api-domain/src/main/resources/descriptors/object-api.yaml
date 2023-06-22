@@ -462,3 +462,17 @@ components:
         operation:
           type: string
           description: The Api and the operation that was created the given version of the object.
+    BranchedObjectEntry:
+      type: object
+      description: |
+        The entry stands for an object in a collection that is branched. The entry can be a new one, modified, deleted or nop - unmodified.
+        It has reference for the original and the branched uri sor we can follow tha two uri to access both.
+      properties:
+        branchingState:
+          enum: [NOP, NEW, MODIFIED, DELETED]
+        originalUri:
+          type: string
+          format: uri
+        branchUri:
+          type: string
+          format: uri
