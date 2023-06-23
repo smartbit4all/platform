@@ -598,11 +598,13 @@ public class ViewContextServiceImpl implements ViewContextService {
       before.getParameters().clear();
       before.getClosedChildrenViews().clear();
       before.getWidgetModels().clear();
+      before.getCallbacks().clear();
     }
     if (after != null) {
       after.getParameters().clear();
       after.getClosedChildrenViews().clear();
       after.getWidgetModels().clear();
+      after.getCallbacks().clear();
     }
     if (Objects.equals(before, after)) {
       return null;
