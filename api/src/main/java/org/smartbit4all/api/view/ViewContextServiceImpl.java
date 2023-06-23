@@ -545,9 +545,18 @@ public class ViewContextServiceImpl implements ViewContextService {
     ObjectNode before = beforeInvoke(method.getName());
     try {
       method.invoke(api, args);
-    } catch (Throwable tr) {
-      throw new RuntimeException("Error when calling method " + method.getName(),
-          tr);
+    } catch (IllegalAccessException e) {
+      throw new RuntimeException("IllegalAccessException when calling method " + method.getName(),
+          e);
+    } catch (IllegalArgumentException e) {
+      throw new RuntimeException("IllegalArgumentException when calling method " + method.getName(),
+          e);
+    } catch (InvocationTargetException e) {
+      if (e.getCause() instanceof RuntimeException) {
+        throw (RuntimeException) e.getCause();
+      }
+      throw new RuntimeException(
+          "InvocationTargetException without cause calling method " + method.getName(), e);
     }
     return afterInvoke(before, method.getName());
   }
