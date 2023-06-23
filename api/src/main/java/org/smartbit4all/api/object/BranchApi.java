@@ -7,6 +7,8 @@ import java.util.function.Supplier;
 import org.smartbit4all.api.object.bean.BranchEntry;
 import org.smartbit4all.api.object.bean.BranchOperation;
 import org.smartbit4all.api.object.bean.BranchOperation.OperationTypeEnum;
+import org.smartbit4all.api.object.bean.BranchedObjectEntry;
+import org.smartbit4all.api.object.bean.BranchedObjectEntry.BranchingStateEnum;
 import org.smartbit4all.api.storage.bean.ObjectVersion;
 
 /**
@@ -68,5 +70,32 @@ public interface BranchApi {
 
   void addNewBranchedObjects(URI branchUri,
       Collection<URI> newObjects);
+
+  /**
+   * Remove the branched object from the branch. It won't modify anything if the given object is
+   * deleted!
+   * 
+   * @param branchUri The branch uri.
+   * @param branchedUri The uri of the branched object.
+   * @return If it is not found then we get back null. If it was found as new or modified then we
+   *         get back a branched object entry with state {@link BranchingStateEnum#NEW} or
+   *         {@link BranchingStateEnum#MODIFIED}.
+   */
+  BranchedObjectEntry removeBranchedObject(URI branchUri, URI branchedUri);
+
+  /**
+   * Register the given object to delete if it is not already involved in the branch. If it is a
+   * branched object with {@link BranchingStateEnum#NEW} then it is equivalent to canceling the
+   * branch object. If the state is {@link BranchingStateEnum#MODIFIED} then the branched object is
+   * canceled first and then the original uri will be registered to delete. Remove the branched
+   * object from the branch. It won't modify anything if the given object is deleted!
+   * 
+   * @param branchUri The branch uri.
+   * @param objectUri The uri of the object to register as deleted.
+   * @return If it is not found then we get back false. If it was found as new or modified then we
+   *         get back a branched object entry with state {@link BranchingStateEnum#NEW} or
+   *         {@link BranchingStateEnum#MODIFIED}.
+   */
+  boolean deleteObject(URI branchUri, URI objectUri);
 
 }

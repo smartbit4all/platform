@@ -394,7 +394,7 @@ components:
         The branch entry is used to identify the changes of the objects in on a branch. The object can be constructed and 
         saved without any operation. If the original object is saved on this branch then the operation is registered into 
         this object and executed directly.
-      required: [uri, created, branchedObjects, newObjects]
+      required: [uri, created, branchedObjects, newObjects, deletedObjects]
       properties:
         uri:
           type: string
@@ -419,12 +419,23 @@ components:
           description: The branched objects are identified by the latest URI of the new branch object.
           additionalProperties:
             $ref: '#/components/schemas/BranchedObject'
+        deletedObjects:
+          type: object
+          description: |
+            The version uri of the deleted object identified by the latest URI. The version uri is important to
+            be able check if we still have the same version when merging. The deletion on a branch is a global option. 
+            So if we have multiple references to the deleted object then the ObjectApi will hide the deleted object from a 
+            referring list. But we have to make the modification before the merge or during the merge to commit the deletionm of the
+            the given object!
+          additionalProperties:
+            type: string
+            format: uri
     BranchedObject:
       type: object
       description: |
         The object branch data is used to hold all the operations about an object on a branch. This object is
         constructed when the first opartion is executed with the given object.
-      required: [objectUri, rebases, merges]
+      required: [objectUri, operations]
       properties:
         sourceObjectLatestUri:
           type: string

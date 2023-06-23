@@ -31,6 +31,7 @@ import org.smartbit4all.api.value.bean.ValueSetDefinitionKind;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
+import org.smartbit4all.core.utility.FinalReference;
 import org.smartbit4all.core.utility.StringConstant;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
@@ -186,23 +187,38 @@ public class MDMEntryApiImpl implements MDMEntryApi {
   }
 
   @Override
-  public void cancelDraft(URI draftUri) {
-    if (draftUri == null) {
-      return;
+  public boolean cancelDraft(URI draftUri) {
+    if (draftUri != null) {
+      // Simply remove the draft from the branch.
+      URI branchEntryUri = getCurrentBranchEntryUri();
+      if (branchEntryUri != null) {
+        URI latestUri = objectApi.getLatestUri(draftUri);
+        BranchedObjectEntry removeBranchedObject =
+            branchApi.removeBranchedObject(branchEntryUri, latestUri);
+        if (removeBranchedObject != null
+            && removeBranchedObject.getBranchingState() != BranchingStateEnum.NOP) {
+          return true;
+        }
+      }
     }
-    // Simply remove the draft from the branch.
-    URI branchEntryUri = getCurrentBranchEntryUri();
-    if (branchEntryUri != null) {
-      URI latestUri = objectApi.getLatestUri(draftUri);
-      // Remove the draft from the modified or new objects of the branch.
-      objectApi.loadLatest(branchEntryUri).modify(BranchEntry.class, b -> {
-        b.setBranchedObjects(b.getBranchedObjects().entrySet().stream()
-            .filter(e -> e.getValue().getBranchedObjectLatestUri().equals(latestUri))
-            .collect(toMap(Entry::getKey, Entry::getValue)));
-        b.getNewObjects().remove(latestUri.toString());
-        return b;
-      });
+    return false;
+  }
+
+  /**
+   * The delete will initiate a editing branch of it doesn't exist. Register the given object to
+   * delete if it is a published object. If it is a branched object with
+   * {@link BranchingStateEnum#NEW} then it is equivalent to canceling the draft object. If the
+   * state is {@link BranchingStateEnum#MODIFIED} then the branched object is canceled first and
+   * then the original uri will be registered to delete.
+   */
+  @Override
+  public boolean deleteObject(URI objectUri) {
+    // If we already have an editing branch
+    BranchEntry currentBranchEntry = getOrCreateBranchEntry();
+    if (currentBranchEntry != null) {
+      return branchApi.deleteObject(currentBranchEntry.getUri(), objectUri);
     }
+    return false;
   }
 
   @Override
@@ -222,11 +238,12 @@ public class MDMEntryApiImpl implements MDMEntryApi {
   }
 
   @Override
-  public void publishCurrentModifications() {
+  public BranchEntry publishCurrentModifications() {
     if (descriptor.getBranchStrategy() != BranchStrategyEnum.ENTRYLEVEL) {
       throw new IllegalStateException("Unable to publish the modifications of " + getName()
           + " master data if the branch strategy is not local.");
     }
+    FinalReference<BranchEntry> result = new FinalReference<>(null);
     Lock lockState = objectApi.getLock(descriptor.getState());
     lockState.lock();
     try {
@@ -252,14 +269,20 @@ public class MDMEntryApiImpl implements MDMEntryApi {
           addNewToPublished(branchEntry.getNewObjects().values().stream()
               .map(bo -> objectApi.load(bo.getBranchedObjectLatestUri()))
               .collect(toMap(this::getIdFromNode, ObjectNode::getObjectUri)));
+          // Delete the object that are signed to be deleted.
+          deleteToPublished(branchEntry.getDeletedObjects().values().stream()
+              .collect(toSet()));
+
           stateNode.modify(MDMEntryDescriptorState.class, s -> s.branch(null));
           objectApi.save(stateNode);
+          result.set(branchEntry);
         }
 
       }
     } finally {
       lockState.unlock();
     }
+    return result.get();
   }
 
   /**
@@ -309,11 +332,22 @@ public class MDMEntryApiImpl implements MDMEntryApi {
     });
   }
 
+  private final void deleteToPublished(Set<URI> toDelete) {
+    if (toDelete == null || toDelete.isEmpty()) {
+      return;
+    }
+    collectionApi.map(descriptor.getSchema(), getPublishedMapName()).update(map -> {
+      map.entrySet().removeIf(e -> toDelete.contains(objectApi.getLatestUri(e.getValue())));
+      updatePublishedList(map);
+      return map;
+    });
+  }
+
   @Override
   public List<BranchedObjectEntry> getDraftEntries() {
     URI branchEntryUri = getCurrentBranchEntryUri();
     if (branchEntryUri != null) {
-      BranchEntry branchEntry = objectApi.read(branchEntryUri, BranchEntry.class);
+      BranchEntry branchEntry = objectApi.loadLatest(branchEntryUri).getObject(BranchEntry.class);
       Stream<BranchedObjectEntry> changedStream =
           branchEntry.getBranchedObjects().entrySet().stream()
               .map(e -> new BranchedObjectEntry()
@@ -323,12 +357,16 @@ public class MDMEntryApiImpl implements MDMEntryApi {
       Stream<BranchedObjectEntry> newStream = branchEntry.getNewObjects().values().stream()
           .map(bo -> new BranchedObjectEntry().branchUri(bo.getBranchedObjectLatestUri())
               .branchingState(BranchingStateEnum.NEW));
-      return Stream.concat(changedStream, newStream).collect(toList());
+      Stream<BranchedObjectEntry> deletedStream = branchEntry.getDeletedObjects().values().stream()
+          .map(u -> new BranchedObjectEntry().originalUri(u)
+              .branchingState(BranchingStateEnum.DELETED));
+      return Stream.concat(Stream.concat(changedStream, newStream), deletedStream)
+          .collect(toList());
     }
     return Collections.emptyList();
   }
 
-  private BranchEntry getOrCreateBranchEntry() {
+  private final BranchEntry getOrCreateBranchEntry() {
     // We check if we have the proper branch already or now we have to create a new one.
     if (descriptor.getBranchStrategy() == BranchStrategyEnum.ENTRYLEVEL) {
 

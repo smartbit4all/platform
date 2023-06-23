@@ -6,16 +6,18 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.function.Supplier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.object.bean.BranchEntry;
 import org.smartbit4all.api.object.bean.BranchOperation;
 import org.smartbit4all.api.object.bean.BranchOperation.OperationTypeEnum;
 import org.smartbit4all.api.object.bean.BranchedObject;
+import org.smartbit4all.api.object.bean.BranchedObjectEntry;
+import org.smartbit4all.api.object.bean.BranchedObjectEntry.BranchingStateEnum;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
+import org.smartbit4all.core.utility.FinalReference;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import static java.util.stream.Collectors.toMap;
@@ -30,8 +32,6 @@ import static java.util.stream.Collectors.toMap;
 public class BranchApiImpl implements BranchApi {
 
   protected static final String SCHEME = "branch";
-
-  private static final Logger log = LoggerFactory.getLogger(BranchApiImpl.class);
 
   @Autowired
   private ObjectApi objectApi;
@@ -99,6 +99,67 @@ public class BranchApiImpl implements BranchApi {
       return b;
     });
     objectApi.save(objectNode);
+  }
+
+  @Override
+  public BranchedObjectEntry removeBranchedObject(URI branchUri, URI branchedObjectUri) {
+    return removeBranchedObject(branchUri, branchedObjectUri, false);
+  }
+
+  private final BranchedObjectEntry removeBranchedObject(URI branchUri, URI branchedObjectUri,
+      boolean deleteAlso) {
+    if (branchedObjectUri == null || branchUri == null) {
+      return null;
+    }
+    FinalReference<BranchedObjectEntry> result = new FinalReference<>(null);
+    ObjectNode objectNode = objectApi.loadLatest(branchUri).modify(BranchEntry.class, b -> {
+      URI latestUri = objectApi.getLatestUri(branchedObjectUri);
+      String latestUriString = latestUri.toString();
+      BranchedObject newOne =
+          b.getNewObjects().remove(latestUriString);
+      if (newOne != null) {
+        result.set(new BranchedObjectEntry().branchingState(BranchingStateEnum.NEW)
+            .branchUri(newOne.getBranchedObjectLatestUri()));
+      } else {
+        Optional<BranchedObject> firstBranched = b.getBranchedObjects().values().stream()
+            .filter(bo -> bo.getBranchedObjectLatestUri().equals(latestUri)).findFirst();
+        firstBranched.ifPresent(bo -> {
+          b.getBranchedObjects().remove(bo.getSourceObjectLatestUri().toString());
+          if (deleteAlso) {
+            b.putDeletedObjectsItem(bo.getSourceObjectLatestUri().toString(),
+                bo.getSourceObjectLatestUri());
+          }
+          result.set(new BranchedObjectEntry().branchingState(BranchingStateEnum.MODIFIED)
+              .branchUri(bo.getBranchedObjectLatestUri())
+              .originalUri(bo.getSourceObjectLatestUri()));
+        });
+      }
+      return b;
+    });
+    objectApi.save(objectNode);
+    return result.get();
+  }
+
+
+  @Override
+  public boolean deleteObject(URI branchUri, URI objectUri) {
+    if (branchUri == null || objectUri == null) {
+      return false;
+    }
+    URI latestUri = objectApi.getLatestUri(objectUri);
+    BranchedObjectEntry removeBranchedObject =
+        removeBranchedObject(branchUri, latestUri, true);
+    if (removeBranchedObject == null) {
+      // The given uri was not found on the branch so we must add it to the deleted objects.
+      ObjectNode branchNode = objectApi.loadLatest(branchUri);
+      branchNode.modify(BranchEntry.class, b -> {
+        b.putDeletedObjectsItem(latestUri.toString(), latestUri);
+        return b;
+      });
+      objectApi.save(branchNode);
+      return true;
+    }
+    return false;
   }
 
 }

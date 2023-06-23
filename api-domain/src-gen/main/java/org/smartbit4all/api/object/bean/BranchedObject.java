@@ -50,7 +50,7 @@ public class BranchedObject {
   private URI branchedObjectLatestUri;
 
   public static final String OPERATIONS = "operations";
-  private List<BranchOperation> operations = null;
+  private List<BranchOperation> operations = new ArrayList<>();
 
   public BranchedObject() { 
   }
@@ -118,9 +118,6 @@ public class BranchedObject {
   }
 
   public BranchedObject addOperationsItem(BranchOperation operationsItem) {
-    if (this.operations == null) {
-      this.operations = new ArrayList<>();
-    }
     this.operations.add(operationsItem);
     return this;
   }
@@ -129,11 +126,12 @@ public class BranchedObject {
    * The init, rebase and merge operations of the branched object. The init is the original construction of the branched object. The rebase is accepting the new version from the source and the merge is the  publishing the branched version as a new source version. 
    * @return operations
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "The init, rebase and merge operations of the branched object. The init is the original construction of the branched object. The rebase is accepting the new version from the source and the merge is the  publishing the branched version as a new source version. ")
+  @ApiModelProperty(required = true, value = "The init, rebase and merge operations of the branched object. The init is the original construction of the branched object. The rebase is accepting the new version from the source and the merge is the  publishing the branched version as a new source version. ")
   @JsonProperty(OPERATIONS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public List<BranchOperation> getOperations() {
     return operations;
@@ -141,7 +139,7 @@ public class BranchedObject {
 
 
   @JsonProperty(OPERATIONS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setOperations(List<BranchOperation> operations) {
     this.operations = operations;
   }

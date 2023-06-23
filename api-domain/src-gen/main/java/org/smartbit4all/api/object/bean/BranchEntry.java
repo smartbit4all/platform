@@ -43,7 +43,8 @@ import javax.validation.Valid;
   BranchEntry.CREATED,
   BranchEntry.LOCKED_BY,
   BranchEntry.BRANCHED_OBJECTS,
-  BranchEntry.NEW_OBJECTS
+  BranchEntry.NEW_OBJECTS,
+  BranchEntry.DELETED_OBJECTS
 })
 @JsonTypeName("BranchEntry")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -65,6 +66,9 @@ public class BranchEntry {
 
   public static final String NEW_OBJECTS = "newObjects";
   private Map<String, BranchedObject> newObjects = new HashMap<>();
+
+  public static final String DELETED_OBJECTS = "deletedObjects";
+  private Map<String, URI> deletedObjects = new HashMap<>();
 
   public BranchEntry() { 
   }
@@ -250,6 +254,40 @@ public class BranchEntry {
   }
 
 
+  public BranchEntry deletedObjects(Map<String, URI> deletedObjects) {
+    
+    this.deletedObjects = deletedObjects;
+    return this;
+  }
+
+  public BranchEntry putDeletedObjectsItem(String key, URI deletedObjectsItem) {
+    this.deletedObjects.put(key, deletedObjectsItem);
+    return this;
+  }
+
+   /**
+   * The version uri of the deleted object identified by the latest URI. The version uri is important to be able check if we still have the same version when merging. The deletion on a branch is a global option.  So if we have multiple references to the deleted object then the ObjectApi will hide the deleted object from a  referring list. But we have to make the modification before the merge or during the merge to commit the deletionm of the the given object! 
+   * @return deletedObjects
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @Valid
+  @ApiModelProperty(required = true, value = "The version uri of the deleted object identified by the latest URI. The version uri is important to be able check if we still have the same version when merging. The deletion on a branch is a global option.  So if we have multiple references to the deleted object then the ObjectApi will hide the deleted object from a  referring list. But we have to make the modification before the merge or during the merge to commit the deletionm of the the given object! ")
+  @JsonProperty(DELETED_OBJECTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Map<String, URI> getDeletedObjects() {
+    return deletedObjects;
+  }
+
+
+  @JsonProperty(DELETED_OBJECTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setDeletedObjects(Map<String, URI> deletedObjects) {
+    this.deletedObjects = deletedObjects;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -264,12 +302,13 @@ public class BranchEntry {
         Objects.equals(this.created, branchEntry.created) &&
         Objects.equals(this.lockedBy, branchEntry.lockedBy) &&
         Objects.equals(this.branchedObjects, branchEntry.branchedObjects) &&
-        Objects.equals(this.newObjects, branchEntry.newObjects);
+        Objects.equals(this.newObjects, branchEntry.newObjects) &&
+        Objects.equals(this.deletedObjects, branchEntry.deletedObjects);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, caption, created, lockedBy, branchedObjects, newObjects);
+    return Objects.hash(uri, caption, created, lockedBy, branchedObjects, newObjects, deletedObjects);
   }
 
   @Override
@@ -282,6 +321,7 @@ public class BranchEntry {
     sb.append("    lockedBy: ").append(toIndentedString(lockedBy)).append("\n");
     sb.append("    branchedObjects: ").append(toIndentedString(branchedObjects)).append("\n");
     sb.append("    newObjects: ").append(toIndentedString(newObjects)).append("\n");
+    sb.append("    deletedObjects: ").append(toIndentedString(deletedObjects)).append("\n");
     sb.append("}");
     return sb.toString();
   }

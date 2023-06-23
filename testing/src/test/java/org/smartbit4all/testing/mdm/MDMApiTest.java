@@ -151,19 +151,29 @@ class MDMApiTest {
     URI publishedSecond = typeApi.saveAsNewPublished(second);
     typeApi.saveAsNewPublished(new SampleCategoryType().code("TYPE3").name("Type three")
         .description("This is the third category type."));
+    URI publishedToDelete = typeApi
+        .saveAsNewPublished(new SampleCategoryType().code("TYPE_TO_DELETE").name("Type to delete")
+            .description("This is the category type to delete."));
 
     Map<String, SampleCategoryType> publishedObjects =
         getPublishedObjects(typeApi, SampleCategoryType.class);
     Assertions.assertThat(publishedObjects.values().stream().map(sct -> sct.getName()))
-        .containsExactlyInAnyOrder("Type one", "Type two", "Type three");
+        .containsExactlyInAnyOrder("Type one", "Type two", "Type three", "Type to delete");
 
     URI draft = typeApi.saveAsDraft(second.name("Type two v1"));
 
     URI draftNew = typeApi.saveAsDraft(new SampleCategoryType().code("TYPE4").name("Type four")
         .description("This is the fourth category type."));
 
+    URI draftNewToDelete =
+        typeApi.saveAsDraft(new SampleCategoryType().code("TYPE5").name("Type five")
+            .description("This is the fifth category type."));
+
     ObjectNode objectNode = objectApi.load(draft).setValue("This is the second category type v2.",
         SampleCategoryType.DESCRIPTION);
+
+    typeApi.deleteObject(draftNewToDelete);
+    typeApi.deleteObject(publishedToDelete);
 
     objectApi.save(objectNode);
 
@@ -175,13 +185,18 @@ class MDMApiTest {
             .map(oe -> {
               SampleCategoryType p = getPublishedObject(oe, SampleCategoryType.class);
               SampleCategoryType d = getDraftObject(oe, SampleCategoryType.class);
-              return p == null ? StringConstant.ARROW + d.getName()
-                  : (d != null
-                      ? p.getName() + StringConstant.ARROW + d.getName()
-                      : p.getName());
+              return oe.getBranchingState() == BranchingStateEnum.DELETED
+                  ? StringConstant.MINUS_SIGN + p.getName()
+                  : p == null
+                      ? StringConstant.ARROW + d.getName()
+                      : (d != null
+                          ? p.getName()
+                              + StringConstant.ARROW
+                              + d.getName()
+                          : p.getName());
             }))
         .containsExactlyInAnyOrder("Type one", "Type two->Type two v1", "Type three",
-            "->Type four");
+            "->Type four", "-Type to delete");
 
     MDMEntryDescriptor descriptor = typeApi.getDescriptor();
 
@@ -209,11 +224,12 @@ class MDMApiTest {
 
     Assertions.assertThat(tdAllEntries.values(propertyName)).containsExactlyInAnyOrder(
         "Type one", "Type two v1", "Type three",
-        "Type four");
+        "Type four", "Type to delete");
     Assertions.assertThat(tdAllEntries.values(propertyState)).containsExactlyInAnyOrder(
-        BranchingStateEnum.MODIFIED, BranchingStateEnum.NEW, BranchingStateEnum.NOP,
-        BranchingStateEnum.NOP);
+        BranchingStateEnum.MODIFIED, BranchingStateEnum.NEW, BranchingStateEnum.DELETED,
+        BranchingStateEnum.NOP, BranchingStateEnum.NOP);
 
+    // Now we can see the modifications as published
     typeApi.publishCurrentModifications();
 
     List<String> listOfDescription = collectionApi.list(MDMApiTestConfig.TEST,

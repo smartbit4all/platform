@@ -313,7 +313,7 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
     searchIndex.mapComplex(propertyName, typeClass, length, node -> {
       BranchingStateEnum stateEnum =
           node.getValue(BranchingStateEnum.class, BranchedObjectEntry.BRANCHING_STATE);
-      if (stateEnum == BranchingStateEnum.NOP || stateEnum == BranchingStateEnum.NOP) {
+      if (stateEnum == BranchingStateEnum.NOP || stateEnum == BranchingStateEnum.DELETED) {
         return node.ref(BranchedObjectEntry.ORIGINAL_URI).get().getValue(path);
       } else {
         return node.ref(BranchedObjectEntry.BRANCH_URI).get().getValue(path);
