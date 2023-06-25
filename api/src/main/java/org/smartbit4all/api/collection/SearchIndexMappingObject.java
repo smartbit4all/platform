@@ -501,7 +501,8 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
           Object newMasterRef = newRow.get(masterReferenceProperty);
           Object newValue = newRow.get(valueProperty);
 
-          if (oldMasterRef.equals(newMasterRef) && oldValue.equals(newValue)) {
+          if (Objects.equals(oldMasterRef, newMasterRef) &&
+              Objects.equals(oldValue, newValue)) {
             existingRows.add(oldRow);
           }
         }
