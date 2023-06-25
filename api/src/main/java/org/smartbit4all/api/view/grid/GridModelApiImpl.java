@@ -255,16 +255,23 @@ public class GridModelApiImpl implements GridModelApi {
             upperBound = data.size();
           }
         }
-        gridModel.page(constructPage(viewUuid, gridId, data, lowerBound, upperBound, true)
-            .lowerBound(lowerBound)
-            .upperBound(lowerBound + pageSize));
+        gridModel.page(constructPage(
+            viewUuid, gridId,
+            data,
+            lowerBound, upperBound, 0,
+            true, true)
+                .lowerBound(lowerBound)
+                .upperBound(lowerBound + pageSize));
       } else {
         gridModel.accessConfig(new GridDataAccessConfig().dataUri(data.getUri()));
         int firstPageSize = Math.min(pageSize, data.size());
         gridModel
-            .page(constructPage(viewUuid, gridId, data, 0, firstPageSize, false)
-                .lowerBound(0)
-                .upperBound(pageSize));
+            .page(constructPage(viewUuid, gridId,
+                data,
+                0, firstPageSize, 0,
+                false, true)
+                    .lowerBound(0)
+                    .upperBound(pageSize));
       }
       gridModel.setPageSize(pageSize);
       gridModel.totalRowCount(data.size());
@@ -329,9 +336,11 @@ public class GridModelApiImpl implements GridModelApi {
     result.accessConfig(new GridDataAccessConfig().dataUri(tableData.getUri()));
     result.totalRowCount(tableData.size());
     result.page(
-        constructPage(null, null, tableData, lowerBound, upperBound, false)
-            .lowerBound(lowerBound)
-            .upperBound(upperBound));
+        constructPage(null, null, tableData,
+            lowerBound, upperBound, 0,
+            false, true)
+                .lowerBound(lowerBound)
+                .upperBound(upperBound));
     return result;
   }
 
@@ -368,9 +377,12 @@ public class GridModelApiImpl implements GridModelApi {
         // default: NONE, SINGLE -> don't preserve, MULTIPLE -> do preserve
         preserveSelection = descriptor.getSelectionMode() == GridSelectionMode.MULTIPLE;
       }
-      model.page(constructPage(viewUuid, gridId, tableData, 0, tableData.size(), preserveSelection)
-          .lowerBound(offset)
-          .upperBound(offset + limit));
+      model.page(
+          constructPage(viewUuid, gridId, tableData,
+              0, tableData.size(), offset,
+              preserveSelection, true)
+                  .lowerBound(offset)
+                  .upperBound(offset + limit));
       return model;
     });
   }
@@ -387,9 +399,11 @@ public class GridModelApiImpl implements GridModelApi {
       TableData<?> tableData =
           tableDataApi.readPage(model.getAccessConfig().getDataUri(),
               model.getPage().getLowerBound(), pageSize);
-      model.page(constructPage(viewUuid, gridId, tableData, 0, tableData.size(), true)
-          .lowerBound(model.getPage().getLowerBound())
-          .upperBound(model.getPage().getLowerBound() + pageSize));
+      model.page(constructPage(viewUuid, gridId, tableData,
+          0, tableData.size(), model.getPage().getLowerBound(),
+          true, true)
+              .lowerBound(model.getPage().getLowerBound())
+              .upperBound(model.getPage().getLowerBound() + pageSize));
       return model;
     });
   }
@@ -420,8 +434,9 @@ public class GridModelApiImpl implements GridModelApi {
           model.getAccessConfig().setDataUri(data.getUri());
           int lowerBound = model.getPage().getLowerBound();
           int upperBound = model.getPage().getUpperBound();
-          model.page(constructPage(viewUuid, gridId, data, lowerBound,
-              Math.min(data.size(), upperBound), true)
+          model.page(constructPage(viewUuid, gridId, data,
+              lowerBound, Math.min(data.size(), upperBound), 0,
+              true, true)
                   .lowerBound(lowerBound)
                   .upperBound(upperBound));
         }
@@ -432,15 +447,17 @@ public class GridModelApiImpl implements GridModelApi {
   }
 
   private GridPage constructPage(UUID viewUuid, String gridId, TableData<?> tableData,
-      int beginIndex, int endIndex, boolean preserveSelection) {
+      int beginIndex, int endIndex, int offset,
+      boolean preserveSelection, boolean refreshSelectedRows) {
     GridPage page = new GridPage();
     page.rows(new ArrayList<>());
     List<InvocationRequest> gridRowCallbacks = getCallbacks(viewUuid, gridId, GRIDROW_POSTFIX);
     for (int i = beginIndex; i < endIndex; i++) {
       DataRow dataRow = tableData.rows().get(i);
-      GridRow gridRow = new GridRow().id(Integer.toString(i)).data(tableData.columns().stream()
-          .filter(c -> tableData.get(c, dataRow) != null)
-          .collect(toMap(DataColumn::getName, c -> tableData.get(c, dataRow))));
+      GridRow gridRow = new GridRow().id(Integer.toString(i + offset))
+          .data(tableData.columns().stream()
+              .filter(c -> tableData.get(c, dataRow) != null)
+              .collect(toMap(DataColumn::getName, c -> tableData.get(c, dataRow))));
       gridRow = (GridRow) executeObjectCallbacks(gridRowCallbacks, gridRow);
       page.addRowsItem(gridRow);
     }
@@ -452,7 +469,9 @@ public class GridModelApiImpl implements GridModelApi {
     }
     Map<String, GridRow> selectedRows = serverModel == null ? Collections.emptyMap()
         : serverModel.getSelectedRows();
-    refreshSelectedRows(viewUuid, gridId, page, selectedRows);
+    if (refreshSelectedRows) {
+      refreshSelectedRows(viewUuid, gridId, page, selectedRows);
+    }
     return page;
   }
 
@@ -630,18 +649,23 @@ public class GridModelApiImpl implements GridModelApi {
     model.allRowsSelected(selected);
     if (selected) {
       model.selectedRowCount(model.getTotalRowCount());
-      // check if all rows are in page
+      GridPage pageAllRows;
       if (model.getPage().getRows().size() == model.getTotalRowCount()) {
-        // all row is in one page
-        serverModel.selectedRows(
-            model.getPage().getRows().stream()
-                .collect(toMap(GridRow::getId, row -> row)));
-      } else if (model.getAccessConfig().getDataUri() != null) {
-        // read all rows from tableData, createRows, add to selectedRows
-        // TODO
+        // all rows are in one (current) page, we can reuse this
+        pageAllRows = model.getPage();
+      } else if (model.getAccessConfig() != null && model.getAccessConfig().getDataUri() != null) {
+        // read all rows from tableData
+        TableData<?> data = tableDataApi.read(model.getAccessConfig().getDataUri());
+        pageAllRows = constructPage(viewUuid, gridId,
+            data,
+            0, data.size(), 0,
+            true, false);
       } else {
-        // TODO
+        throw new RuntimeException("No datasource for grid" + gridId + " in selectAllRow");
       }
+      serverModel.selectedRows(
+          pageAllRows.getRows().stream()
+              .collect(toMap(GridRow::getId, row -> row)));
     } else {
       model.selectedRowCount(0);
       serverModel.getSelectedRows().clear();
