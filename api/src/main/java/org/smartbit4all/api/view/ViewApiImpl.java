@@ -16,6 +16,7 @@ import org.smartbit4all.api.binarydata.BinaryDataObject;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.view.bean.CloseResult;
 import org.smartbit4all.api.view.bean.MessageData;
+import org.smartbit4all.api.view.bean.MessageOption;
 import org.smartbit4all.api.view.bean.OpenPendingData;
 import org.smartbit4all.api.view.bean.SmartLinkData;
 import org.smartbit4all.api.view.bean.View;
@@ -215,6 +216,12 @@ public class ViewApiImpl implements ViewApi {
     Objects.requireNonNull(message, "Message must be not null");
     Objects.requireNonNull(message.getViewUuid(), "Message.viewUuid must be not null");
     message.setUuid(UUID.randomUUID());
+    if (message.getOptions() == null || message.getOptions().isEmpty()) {
+      // an OK button is must have, otherwise client won't be able to close it
+      message.addOptionsItem(new MessageOption()
+          .code("OK")
+          .label("Ok"));
+    }
     return showViewInternal(new View()
         .uuid(message.getUuid())
         .containerUuid(message.getViewUuid())
