@@ -23,6 +23,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -34,7 +36,7 @@ import javax.validation.Valid;
 @ApiModel(description = "This is the backend object to setup the grid access api. The parameterization contain all the possible parameters requiered to identify the API to call or even the InvocationRequest to use. Register into the parameters of the View parameters as grid.identifier.config ")
 @JsonPropertyOrder({
   GridDataAccessConfig.DATA_URI,
-  GridDataAccessConfig.PROPERTY_PATH,
+  GridDataAccessConfig.IDENTIFIER_PATH,
   GridDataAccessConfig.API_CLASS,
   GridDataAccessConfig.KIND
 })
@@ -44,8 +46,8 @@ public class GridDataAccessConfig {
   public static final String DATA_URI = "dataUri";
   private URI dataUri;
 
-  public static final String PROPERTY_PATH = "propertyPath";
-  private String propertyPath;
+  public static final String IDENTIFIER_PATH = "identifierPath";
+  private List<String> identifierPath = null;
 
   public static final String API_CLASS = "apiClass";
   private String apiClass;
@@ -123,30 +125,38 @@ public class GridDataAccessConfig {
   }
 
 
-  public GridDataAccessConfig propertyPath(String propertyPath) {
+  public GridDataAccessConfig identifierPath(List<String> identifierPath) {
     
-    this.propertyPath = propertyPath;
+    this.identifierPath = identifierPath;
+    return this;
+  }
+
+  public GridDataAccessConfig addIdentifierPathItem(String identifierPathItem) {
+    if (this.identifierPath == null) {
+      this.identifierPath = new ArrayList<>();
+    }
+    this.identifierPath.add(identifierPathItem);
     return this;
   }
 
    /**
-   * The property path to access the data of the grid in the referred object.
-   * @return propertyPath
+   * The path to access the identifier GridRow.data
+   * @return identifierPath
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The property path to access the data of the grid in the referred object.")
-  @JsonProperty(PROPERTY_PATH)
+  @ApiModelProperty(value = "The path to access the identifier GridRow.data")
+  @JsonProperty(IDENTIFIER_PATH)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public String getPropertyPath() {
-    return propertyPath;
+  public List<String> getIdentifierPath() {
+    return identifierPath;
   }
 
 
-  @JsonProperty(PROPERTY_PATH)
+  @JsonProperty(IDENTIFIER_PATH)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setPropertyPath(String propertyPath) {
-    this.propertyPath = propertyPath;
+  public void setIdentifierPath(List<String> identifierPath) {
+    this.identifierPath = identifierPath;
   }
 
 
@@ -214,14 +224,14 @@ public class GridDataAccessConfig {
     }
     GridDataAccessConfig gridDataAccessConfig = (GridDataAccessConfig) o;
     return Objects.equals(this.dataUri, gridDataAccessConfig.dataUri) &&
-        Objects.equals(this.propertyPath, gridDataAccessConfig.propertyPath) &&
+        Objects.equals(this.identifierPath, gridDataAccessConfig.identifierPath) &&
         Objects.equals(this.apiClass, gridDataAccessConfig.apiClass) &&
         Objects.equals(this.kind, gridDataAccessConfig.kind);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(dataUri, propertyPath, apiClass, kind);
+    return Objects.hash(dataUri, identifierPath, apiClass, kind);
   }
 
   @Override
@@ -229,7 +239,7 @@ public class GridDataAccessConfig {
     StringBuilder sb = new StringBuilder();
     sb.append("class GridDataAccessConfig {\n");
     sb.append("    dataUri: ").append(toIndentedString(dataUri)).append("\n");
-    sb.append("    propertyPath: ").append(toIndentedString(propertyPath)).append("\n");
+    sb.append("    identifierPath: ").append(toIndentedString(identifierPath)).append("\n");
     sb.append("    apiClass: ").append(toIndentedString(apiClass)).append("\n");
     sb.append("    kind: ").append(toIndentedString(kind)).append("\n");
     sb.append("}");

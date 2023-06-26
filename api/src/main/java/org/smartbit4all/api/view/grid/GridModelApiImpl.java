@@ -5,9 +5,11 @@ import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Function;
@@ -199,6 +201,28 @@ public class GridModelApiImpl implements GridModelApi {
   }
 
   @Override
+  public void setDataIdentifier(UUID viewUuid, String gridId, String... identifierPath) {
+    if (identifierPath == null || identifierPath.length == 0) {
+      throw new IllegalArgumentException("Identifier path cannot be empty or null");
+    }
+    if (identifierPath.length > 1) {
+      throw new IllegalArgumentException("Deep identifierPath is not supported yet");
+    }
+    if (Strings.isNullOrEmpty(identifierPath[0])) {
+      throw new IllegalArgumentException("identifierPart path cannot be empty or null");
+    }
+    Objects.nonNull(identifierPath);
+
+    executeGridCall(viewUuid, gridId, gridModel -> {
+      if (gridModel.getAccessConfig() == null) {
+        gridModel.accessConfig(new GridDataAccessConfig());
+      }
+      gridModel.getAccessConfig().identifierPath(List.of(identifierPath));
+      return gridModel;
+    });
+  }
+
+  @Override
   public void setData(UUID viewUuid, String gridId, TableData<?> data) {
     setData(viewUuid, gridId, data, false);
   }
@@ -231,39 +255,15 @@ public class GridModelApiImpl implements GridModelApi {
       if (data.getUri() == null) {
         tableDataApi.save(data);
       }
-      if (gridModel.getAccessConfig() != null
-          && gridModel.getAccessConfig().getDataUri() != null
+      if (gridModel.getAccessConfig() == null) {
+        gridModel.accessConfig(new GridDataAccessConfig());
+      }
+      if (gridModel.getAccessConfig().getDataUri() != null
           && gridModel.getPage() != null) {
-        gridModel.getAccessConfig().dataUri(data.getUri());
-        int lowerBound = gridModel.getPage().getLowerBound();
-        int upperBound = gridModel.getPage().getUpperBound();
-        if (lowerBound == 0 && upperBound == 0) {
-          upperBound = pageSize;
-        } else {
-          pageSize = upperBound - lowerBound;
-        }
-        if (data.size() == 0) {
-          lowerBound = 0;
-          upperBound = 0;
-        } else {
-          // lowerBound inclusive, upperBound exclusive
-          if (lowerBound >= data.size()) {
-            lowerBound = data.size() - 1 - ((data.size() - 1) % pageSize);
-            upperBound = data.size();
-          }
-          if (upperBound > data.size()) {
-            upperBound = data.size();
-          }
-        }
-        gridModel.page(constructPage(
-            viewUuid, gridId,
-            data,
-            lowerBound, upperBound, 0,
-            true, true)
-                .lowerBound(lowerBound)
-                .upperBound(lowerBound + pageSize));
+        updateGridModelWithData(viewUuid, gridId, data, gridModel, pageSize);
       } else {
-        gridModel.accessConfig(new GridDataAccessConfig().dataUri(data.getUri()));
+
+        gridModel.getAccessConfig().dataUri(data.getUri());
         int firstPageSize = Math.min(pageSize, data.size());
         gridModel
             .page(constructPage(viewUuid, gridId,
@@ -277,6 +277,56 @@ public class GridModelApiImpl implements GridModelApi {
       gridModel.totalRowCount(data.size());
       return gridModel;
     });
+  }
+
+  private void updateGridModelWithData(UUID viewUuid, String gridId, TableData<?> data,
+      GridModel gridModel,
+      Integer pageSize) {
+    gridModel.getAccessConfig().dataUri(data.getUri());
+    int lowerBound = gridModel.getPage().getLowerBound();
+    int upperBound = gridModel.getPage().getUpperBound();
+    if (lowerBound == 0 && upperBound == 0) {
+      upperBound = pageSize;
+    } else {
+      pageSize = upperBound - lowerBound;
+    }
+    if (data.size() == 0) {
+      lowerBound = 0;
+      upperBound = 0;
+    } else {
+      // lowerBound inclusive, upperBound exclusive
+      if (lowerBound >= data.size()) {
+        lowerBound = data.size() - 1 - ((data.size() - 1) % pageSize);
+        upperBound = data.size();
+      }
+      if (upperBound > data.size()) {
+        upperBound = data.size();
+      }
+    }
+    gridModel.page(constructPage(
+        viewUuid, gridId,
+        data,
+        lowerBound, upperBound, 0,
+        true, false)
+            .lowerBound(lowerBound)
+            .upperBound(lowerBound + pageSize));
+    GridServerModel serverModel = getGridServerModel(viewUuid, gridId);
+    if (serverModel != null) {
+      Map<String, GridRow> selectedOldRows = serverModel.getSelectedRows();
+      Map<String, GridRow> currentPageRows =
+          gridModel.getPage().getRows().stream()
+              .collect(toMap(row -> row.getId(), row -> row));
+      Map<String, GridRow> selectedRows = selectedOldRows.entrySet().stream()
+          .filter(e -> currentPageRows.containsKey(e.getKey()))
+          .collect(toMap(Entry::getKey, Entry::getValue));
+      if (selectedRows.size() < selectedOldRows.size()) {
+        // TODO find selected rows not on this page...
+      } else {
+        // TODO this should be outside of if, when implemented properly
+        serverModel.selectedRows(selectedRows);
+      }
+      refreshSelectedRows(viewUuid, gridId, gridModel.getPage(), selectedRows);
+    }
   }
 
   @Override
@@ -333,7 +383,10 @@ public class GridModelApiImpl implements GridModelApi {
         .map(DataColumn::getName)
         .collect(toList());
     GridModel result = createGridModel(tableData.entity(), columns, columnPrefix);
-    result.accessConfig(new GridDataAccessConfig().dataUri(tableData.getUri()));
+    if (result.getAccessConfig() == null) {
+      result.accessConfig(new GridDataAccessConfig());
+    }
+    result.getAccessConfig().dataUri(tableData.getUri());
     result.totalRowCount(tableData.size());
     result.page(
         constructPage(null, null, tableData,
@@ -431,7 +484,7 @@ public class GridModelApiImpl implements GridModelApi {
           TableData<?> data = tableDataApi.read(model.getAccessConfig().getDataUri());
           TableDatas.sortByFilterExpression(data, update.getOrderByList());
           tableDataApi.save(data);
-          model.getAccessConfig().setDataUri(data.getUri());
+          model.getAccessConfig().dataUri(data.getUri());
           int lowerBound = model.getPage().getLowerBound();
           int upperBound = model.getPage().getUpperBound();
           model.page(constructPage(viewUuid, gridId, data,
@@ -449,12 +502,20 @@ public class GridModelApiImpl implements GridModelApi {
   private GridPage constructPage(UUID viewUuid, String gridId, TableData<?> tableData,
       int beginIndex, int endIndex, int offset,
       boolean preserveSelection, boolean refreshSelectedRows) {
-    GridPage page = new GridPage();
-    page.rows(new ArrayList<>());
+    GridPage page =
+        new GridPage()
+            .rows(new ArrayList<>());
+    DataColumn<?> idColumn = getIdColumnFromTableData(viewUuid, gridId, tableData);
     List<InvocationRequest> gridRowCallbacks = getCallbacks(viewUuid, gridId, GRIDROW_POSTFIX);
     for (int i = beginIndex; i < endIndex; i++) {
       DataRow dataRow = tableData.rows().get(i);
-      GridRow gridRow = new GridRow().id(Integer.toString(i + offset))
+      String rowId;
+      if (idColumn == null) {
+        rowId = Integer.toString(i + offset);
+      } else {
+        rowId = getRowIdFromTableData(tableData, idColumn, dataRow);
+      }
+      GridRow gridRow = new GridRow().id(rowId)
           .data(tableData.columns().stream()
               .filter(c -> tableData.get(c, dataRow) != null)
               .collect(toMap(DataColumn::getName, c -> tableData.get(c, dataRow))));
@@ -473,6 +534,56 @@ public class GridModelApiImpl implements GridModelApi {
       refreshSelectedRows(viewUuid, gridId, page, selectedRows);
     }
     return page;
+  }
+
+  private DataColumn<?> getIdColumnFromTableData(UUID viewUuid, String gridId,
+      TableData<?> tableData) {
+    GridModel gridModel = getGridModel(viewUuid, gridId);
+    DataColumn<?> idColumn = null;
+    if (gridModel != null && gridModel.getAccessConfig() != null) {
+      List<String> idPath = gridModel.getAccessConfig().getIdentifierPath();
+      if (idPath != null) {
+        if (idPath.isEmpty()) {
+          idColumn = null;
+        } else if (idPath.size() == 1) {
+          String idColumnName = idPath.get(0);
+          idColumn = tableData.columns().stream()
+              .filter(c -> idColumnName.equals(c.getName()))
+              .findFirst()
+              .orElse(null);
+        } else {
+          throw new IllegalStateException("Deep identifierPath is not supported yet!");
+        }
+      }
+    }
+    return idColumn;
+  }
+
+  private String getRowIdFromTableData(TableData<?> tableData, DataColumn<?> idColumn,
+      DataRow dataRow) {
+    String rowId;
+    Object rowIdObject = tableData.get(idColumn, dataRow);
+    if (rowIdObject == null) {
+      throw new IllegalStateException(
+          "null value found in " + idColumn.getName() + " property");
+    }
+    if (rowIdObject instanceof String) {
+      try {
+        rowId = getEncodedLatestUri(URI.create((String) rowIdObject));
+      } catch (Exception e) {
+        rowId = (String) rowIdObject;
+      }
+    } else if (rowIdObject instanceof URI) {
+      rowId = getEncodedLatestUri((URI) rowIdObject);
+    } else {
+      rowId = String.valueOf(rowIdObject);
+    }
+    return rowId;
+  }
+
+  private String getEncodedLatestUri(URI uri) {
+    String string = objectApi.getLatestUri(uri).toString();
+    return Base64.getUrlEncoder().encodeToString(string.getBytes());
   }
 
   @Override

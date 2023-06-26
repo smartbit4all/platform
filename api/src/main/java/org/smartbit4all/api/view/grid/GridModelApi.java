@@ -83,6 +83,16 @@ public interface GridModelApi {
    */
   void initGridInView(UUID viewUuid, String gridId, GridModel gridModel);
 
+  /**
+   * Identifier path will be interpreted in {@link GridRow#DATA} object, and will be used to
+   * identify grid rows. IMPORTANT: identifier will be used as a String.
+   *
+   * @param viewUuid
+   * @param gridId
+   * @param identifierPath
+   */
+  void setDataIdentifier(UUID viewUuid, String gridId, String... identifierPath);
+
   <T> void setData(UUID viewUuid, String gridId, Class<T> clazz, List<T> data);
 
   void setData(UUID viewUuid, String gridId, TableData<?> data, boolean ignoreOrderByList);

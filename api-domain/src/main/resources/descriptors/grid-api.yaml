@@ -215,9 +215,11 @@ components:
           type: string
           format: uri
           description: The uri of the table data that contains the data of the list.
-        propertyPath:
-          type: string
-          description: The property path to access the data of the grid in the referred object.
+        identifierPath:
+          type: array
+          items:
+            type: string
+          description: The path to access the identifier GridRow.data
         apiClass:
           type: string
         kind:
