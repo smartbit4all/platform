@@ -42,4 +42,6 @@ public interface MasterDataManagementApi {
    */
   MDMEntryDescriptor getEntryDescriptor(MDMDefinition definition, String entryName);
 
+  String constructObjectDefinitionName(MDMDefinition definition, MDMEntryDescriptor descriptor);
+
 }

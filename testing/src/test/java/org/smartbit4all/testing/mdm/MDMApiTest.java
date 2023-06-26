@@ -1,6 +1,5 @@
 package org.smartbit4all.testing.mdm;
 
-import java.io.IOException;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
@@ -28,6 +27,8 @@ import org.smartbit4all.api.filterexpression.bean.FilterExpressionOperation;
 import org.smartbit4all.api.formdefinition.bean.SmartFormWidgetType;
 import org.smartbit4all.api.formdefinition.bean.SmartLayoutDefinition;
 import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
+import org.smartbit4all.api.grid.bean.GridModel;
+import org.smartbit4all.api.grid.bean.GridPage;
 import org.smartbit4all.api.mdm.MDMEntryApi;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
@@ -48,6 +49,8 @@ import org.smartbit4all.api.value.bean.ValueSetData;
 import org.smartbit4all.api.value.bean.ValueSetDefinitionData;
 import org.smartbit4all.api.view.ViewApi;
 import org.smartbit4all.api.view.ViewContextService;
+import org.smartbit4all.api.view.bean.ComponentModel;
+import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.layout.SmartLayoutApi;
 import org.smartbit4all.bff.api.mdm.MDMEntryListPageApi;
@@ -119,6 +122,9 @@ class MDMApiTest {
   @Autowired
   private UITestApi uiTestApi;
 
+  @Autowired
+  private MDMEntryListPageApi listPageApi;
+
   private URI adminUri;
 
   private UUID viewContextUUID;
@@ -127,22 +133,28 @@ class MDMApiTest {
       "$2a$10$2LXntgURMBoixkUhddcnVuBPCfcPyB/ely5HkPXc45LmDpdR3nFcS";
   private static final String admin = "user_admin";
 
+  private static final String normal_user = "user_normal";
+
   @BeforeAll
   void setUpBeforeClass() throws Exception {
     sessionManagementApi.startSession();
 
-    adminUri = createUser(admin, "Adminisztrátor Aladár");
+    adminUri = createUser(admin, "Adminisztrátor Aladár", MDMSecurityOptions.admin);
 
-    authService.login(admin, "asd");
+    adminUri = createUser(normal_user, "Publikus József");
 
   }
 
   @Test
   @Order(1)
-  void testPublishingAndEditingAsDraft() throws IOException {
+  void testPublishingAndEditingAsDraft() throws Exception {
+
+    authService.login(admin, "asd");
 
     MDMEntryApi typeApi = masterDataManagementApi.getApi(MDMApiTestConfig.TEST,
         SampleCategoryType.class.getSimpleName());
+
+    MDMDefinition mdmDefinition = masterDataManagementApi.getDefinition(MDMApiTestConfig.TEST);
 
     typeApi.saveAsNewPublished(new SampleCategoryType().code("TYPE1").name("Type one")
         .description("This is the first category type."));
@@ -205,13 +217,13 @@ class MDMApiTest {
             typeApi.getDescriptor().getSearchIndexForEntries(),
             SampleCategoryType.class);
 
-    String descrTypeName = BranchedObjectEntry.class.getName() + StringConstant.DOT
-        + MDMApiTestConfig.TEST + StringConstant.DOT + descriptor.getName();
-
     TableData<?> tdAllEntries =
         searchIndexEntries.executeSearchOnNodes(typeApi.getAllEntries().stream()
             .map(i -> {
-              ObjectDefinition<?> definition = objectApi.definition(descrTypeName);
+              ObjectDefinition<?> definition =
+                  objectApi.definition(
+                      masterDataManagementApi.constructObjectDefinitionName(mdmDefinition,
+                          descriptor));
               return objectApi.create(SCHEMA, definition, definition.toMap(i));
             }), null);
 
@@ -282,24 +294,79 @@ class MDMApiTest {
 
   @Test
   @Order(2)
-  void testMDMPageApis() throws Exception {
+  void testMDMPageApisAsAdmin() throws Exception {
     viewContextUUID = viewContextService.createViewContext().getUuid();
 
     uiTestApi.runInViewContext(viewContextUUID, () -> {
-      // homePageApi.startSubstanceQueryPage();
 
       MDMDefinition definition = masterDataManagementApi.getDefinition(MDMApiTestConfig.TEST);
 
       View querySetView = new View().viewName(MDMApiTestConfig.MDM_LIST_PAGE)
-          .putParametersItem(MDMEntryListPageApi.MDM_DEFINITION, definition)
-          .putParametersItem(MDMEntryListPageApi.ENTRY_DESCRIPTOR, masterDataManagementApi
+          .putParametersItem(MDMEntryListPageApi.PARAM_MDM_DEFINITION, definition)
+          .putParametersItem(MDMEntryListPageApi.PARAM_ENTRY_DESCRIPTOR, masterDataManagementApi
               .getEntryDescriptor(definition, SampleCategoryType.class.getSimpleName()));
 
       UUID uuid = viewApi.showView(querySetView);
 
+      // TODO This should be called implicitly when doing test
+      ComponentModel componentModel = viewContextService.getComponentModel(uuid);
+
       View view = uiTestApi.getView(MDMApiTestConfig.MDM_LIST_PAGE);
 
       Assertions.assertThat(view.getUuid()).isEqualTo(uuid);
+
+
+      String rowIdTypeThree;
+      {
+        GridModel gridModel = viewApi.getWidgetModelFromView(GridModel.class, view.getUuid(),
+            MDMEntryListPageApi.WIDGET_ENTRY_GRID);
+
+        GridPage page = gridModel.getPage();
+
+        List<String> typeNames = page.getRows().stream()
+            .map(r -> (String) ((Map<String, Object>) r.getData()).get(SampleCategoryType.NAME))
+            .collect(toList());
+
+        Assertions.assertThat(typeNames).containsExactlyInAnyOrder(
+            "Type one", "Type two v1", "Type three",
+            "Type four");
+
+        rowIdTypeThree = page.getRows().stream()
+            .filter(r -> "Type three"
+                .equals(((Map<String, Object>) r.getData()).get(SampleCategoryType.NAME)))
+            .map(r -> r.getId())
+            .findFirst().get();
+      }
+
+      // The admin delete an entry. It will be seen as deleted in the grid
+      listPageApi.performDeleteEntry(uuid, MDMEntryListPageApi.WIDGET_ENTRY_GRID, rowIdTypeThree,
+          new UiActionRequest().code(MDMEntryListPageApi.ACTION_DELETE_ENTRY));
+
+      {
+        GridModel gridModel = viewApi.getWidgetModelFromView(GridModel.class, view.getUuid(),
+            MDMEntryListPageApi.WIDGET_ENTRY_GRID);
+
+        GridPage page = gridModel.getPage();
+
+        List<String> typeNames = page.getRows().stream()
+            .map(r -> (String) ((Map<String, Object>) r.getData()).get(SampleCategoryType.NAME))
+            .collect(toList());
+
+        Assertions.assertThat(typeNames).containsExactlyInAnyOrder(
+            "Type one", "Type two v1", "Type three",
+            "Type four");
+
+        BranchingStateEnum stateEnum = page.getRows().stream()
+            .filter(r -> "Type three"
+                .equals(((Map<String, Object>) r.getData()).get(SampleCategoryType.NAME)))
+            .map(r -> objectApi.asType(BranchingStateEnum.class,
+                objectApi.getValueFromObjectMap((Map<String, Object>) r.getData(),
+                    BranchedObjectEntry.BRANCHING_STATE)))
+            .findFirst().get();
+
+        Assertions.assertThat(stateEnum).isEqualTo(BranchingStateEnum.DELETED);
+
+      }
 
     });
 

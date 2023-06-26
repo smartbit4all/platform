@@ -28,7 +28,6 @@ import org.smartbit4all.storage.fs.StorageFS;
 import org.smartbit4all.storage.fs.StorageTransactionManagerFS;
 import org.smartbit4all.testing.UITestApi;
 import org.smartbit4all.testing.UITestApiImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -50,7 +49,9 @@ public class MDMApiTestConfig extends TestFSCleaner {
 
   @Bean
   MDMDefinitionOption testMDMOption() {
-    MDMDefinitionOption result = new MDMDefinitionOption(new MDMDefinition().name(TEST));
+    MDMDefinitionOption result =
+        new MDMDefinitionOption(new MDMDefinition().name(TEST)
+            .adminGroupName("org.smartbit4all.testing.mdm.MDMSecurityOptions.admin"));
     result.addDefaultDescriptor(SampleCategoryType.class)
         .uniqueIdentifierPath(Arrays.asList(SampleCategoryType.CODE));
     result.addDefaultDescriptor(SampleCategory.class)
@@ -58,6 +59,11 @@ public class MDMApiTestConfig extends TestFSCleaner {
     result.addDefaultDescriptor(PropertyDefinitionData.class);
     result.addObjectDefinitionData();
     return result;
+  }
+
+  @Bean
+  MDMSecurityOptions mdmSecurityOptions() {
+    return new MDMSecurityOptions();
   }
 
   public static final String SHADOW_ITEMS = "shadowItems";
@@ -72,7 +78,7 @@ public class MDMApiTestConfig extends TestFSCleaner {
     return new UITestApiImpl();
   }
 
-  @Autowired
+  @Bean
   MDMEntryListPageApiImplTest mdmEntryListPageApiImplTest() {
     return new MDMEntryListPageApiImplTest();
   }

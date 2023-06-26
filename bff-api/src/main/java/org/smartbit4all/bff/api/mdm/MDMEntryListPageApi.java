@@ -19,41 +19,41 @@ public interface MDMEntryListPageApi extends PageApi<MDMEntryDescriptor> {
   /**
    * The identifier of of the {@link MDMEntryDescriptor} object parameter.
    */
-  static final String ENTRY_DESCRIPTOR = "ENTRY_DESCRIPTOR";
+  static final String PARAM_ENTRY_DESCRIPTOR = "ENTRY_DESCRIPTOR";
 
   /**
    * The identifier of of the {@link MDMDefinition} object parameter.
    */
-  static final String MDM_DEFINITION = "MDM_DEFINITION";
+  static final String PARAM_MDM_DEFINITION = "MDM_DEFINITION";
 
   /**
    * The identifier of the grid that contains the entries.
    */
-  static final String ENTRY_GRID = "ENTRY_GRID";
+  static final String WIDGET_ENTRY_GRID = "ENTRY_GRID";
 
   /**
    * Run the query and update the content of the grid.
    */
-  static final String DO_QUERY = "DO_QUERY";
+  static final String ACTION_DO_QUERY = "DO_QUERY";
 
   /**
    * If the current user is administrator of the given entry then this action can be performed. The
    * action cancels all the draft editing object and we will have the published object list.
    */
-  static final String CANCEL_CHANGES = "CANCEL_CHANGES";
+  static final String ACTION_CANCEL_CHANGES = "CANCEL_CHANGES";
 
   /**
    * If the current user is administrator of the given entry then this action can be performed. The
    * action publishes all the draft editing object and the changes will be available for every user.
    */
-  static final String FINALIZE_CHANGES = "FINALIZE_CHANGES";
+  static final String ACTION_FINALIZE_CHANGES = "FINALIZE_CHANGES";
 
   /**
    * If the current user is administrator of the given entry then this action can be performed. The
    * action construct a new entry. Initiate the currently editing branch if it doesn't exist. The
    * new object is going to be registered into the branch as new object.
    */
-  static final String NEW_ENTRY = "NEW_ENTRY";
+  static final String ACTION_NEW_ENTRY = "NEW_ENTRY";
 
   /**
    * If the current user is administrator of the given entry then this action can be performed. The
@@ -61,14 +61,14 @@ public interface MDMEntryListPageApi extends PageApi<MDMEntryDescriptor> {
    * branch if it doesn't exist. The edited object is going to be registered into the branch as it
    * is saved.
    */
-  static final String EDIT_ENTRY = "EDIT_ENTRY";
+  static final String ACTION_EDIT_ENTRY = "EDIT_ENTRY";
 
   /**
    * If the current user is administrator of the given entry then this action can be performed. The
    * action starts the editing of the currently selected entry. The edited object is going to be
    * deleted from the list that contains the currently edited versions of the objects.
    */
-  static final String DELETE_ENTRY = "DELETE_ENTRY";
+  static final String ACTION_DELETE_ENTRY = "DELETE_ENTRY";
 
   /**
    * If the current user is administrator of the given entry then this action can be performed. The
@@ -76,7 +76,7 @@ public interface MDMEntryListPageApi extends PageApi<MDMEntryDescriptor> {
    * to be canceled from the list that contains the currently edited versions of the objects. It
    * will be restored to the original object.
    */
-  static final String CANCEL_DRAFT_ENTRY = "CANCEL_DRAFT_ENTRY";
+  static final String ACTION_CANCEL_DRAFT_ENTRY = "CANCEL_DRAFT_ENTRY";
 
   /**
    * Populates the list of the MDMEntry with the entries visible for the given user. If
@@ -85,7 +85,7 @@ public interface MDMEntryListPageApi extends PageApi<MDMEntryDescriptor> {
    * @param viewUuid The unique identifier of the view in the current context.
    * @param request The action request that contains every information about the triggering action.
    */
-  @ActionHandler(DO_QUERY)
+  @ActionHandler(ACTION_DO_QUERY)
   void performDoQuery(UUID viewUuid, UiActionRequest request);
 
   /**
@@ -95,7 +95,7 @@ public interface MDMEntryListPageApi extends PageApi<MDMEntryDescriptor> {
    * @param viewUuid The unique identifier of the view in the current context.
    * @param request The action request that contains every information about the triggering action.
    */
-  @ActionHandler(CANCEL_CHANGES)
+  @ActionHandler(ACTION_CANCEL_CHANGES)
   void cancelChanges(UUID viewUuid, UiActionRequest request);
 
   /**
@@ -106,7 +106,7 @@ public interface MDMEntryListPageApi extends PageApi<MDMEntryDescriptor> {
    * @param viewUuid The unique identifier of the view in the current context.
    * @param request The action request that contains every information about the triggering action.
    */
-  @ActionHandler(NEW_ENTRY)
+  @ActionHandler(ACTION_NEW_ENTRY)
   void newEntry(UUID viewUuid, UiActionRequest request);
 
   /**
@@ -116,7 +116,7 @@ public interface MDMEntryListPageApi extends PageApi<MDMEntryDescriptor> {
    * @param viewUuid The unique identifier of the view in the current context.
    * @param request The action request that contains every information about the triggering action.
    */
-  @ActionHandler(FINALIZE_CHANGES)
+  @ActionHandler(ACTION_FINALIZE_CHANGES)
   void finalizeChanges(UUID viewUuid, UiActionRequest request);
 
   /**
@@ -129,7 +129,7 @@ public interface MDMEntryListPageApi extends PageApi<MDMEntryDescriptor> {
    * @param rowId The identifier of the row.
    * @param request The action request that contains every information about the triggering action.
    */
-  @WidgetActionHandler(value = EDIT_ENTRY, widget = ENTRY_GRID)
+  @WidgetActionHandler(value = ACTION_EDIT_ENTRY, widget = WIDGET_ENTRY_GRID)
   void performEditEntry(UUID viewUuid, String gridId, String rowId, UiActionRequest request);
 
   /**
@@ -142,7 +142,7 @@ public interface MDMEntryListPageApi extends PageApi<MDMEntryDescriptor> {
    * @param rowId The identifier of the row.
    * @param request The action request that contains every information about the triggering action.
    */
-  @WidgetActionHandler(value = DELETE_ENTRY, widget = ENTRY_GRID)
+  @WidgetActionHandler(value = ACTION_DELETE_ENTRY, widget = WIDGET_ENTRY_GRID)
   void performDeleteEntry(UUID viewUuid, String gridId, String rowId, UiActionRequest request);
 
   /**
@@ -154,7 +154,7 @@ public interface MDMEntryListPageApi extends PageApi<MDMEntryDescriptor> {
    * @param rowId The identifier of the row.
    * @param request The action request that contains every information about the triggering action.
    */
-  @WidgetActionHandler(value = CANCEL_DRAFT_ENTRY, widget = ENTRY_GRID)
+  @WidgetActionHandler(value = ACTION_CANCEL_DRAFT_ENTRY, widget = WIDGET_ENTRY_GRID)
   void performCancelDraftEntry(UUID viewUuid, String gridId, String rowId, UiActionRequest request);
 
 }

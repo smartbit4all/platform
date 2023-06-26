@@ -64,10 +64,17 @@ public class OrgUtils {
   }
 
   public static Boolean securityPredicate(SessionApi sessionApi, SecurityGroup securityGroup) {
+    return securityPredicate(sessionApi, securityGroup.getName());
+  }
+
+  public static Boolean securityPredicate(SessionApi sessionApi, String securityGroupName) {
+    if (securityGroupName == null) {
+      return Boolean.FALSE;
+    }
     return sessionApi.getAuthentications().stream()
         .map(AccountInfo::getRoles)
         .flatMap(List::stream)
         .anyMatch(
-            g -> securityGroup.getName().equals(g));
+            g -> securityGroupName.equals(g));
   }
 }

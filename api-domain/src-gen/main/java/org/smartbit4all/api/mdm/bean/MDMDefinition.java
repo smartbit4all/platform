@@ -39,6 +39,7 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   MDMDefinition.URI,
   MDMDefinition.NAME,
+  MDMDefinition.ADMIN_GROUP_NAME,
   MDMDefinition.STATE,
   MDMDefinition.DESCRIPTORS
 })
@@ -50,6 +51,9 @@ public class MDMDefinition {
 
   public static final String NAME = "name";
   private String name;
+
+  public static final String ADMIN_GROUP_NAME = "adminGroupName";
+  private String adminGroupName;
 
   public static final String STATE = "state";
   private URI state;
@@ -113,6 +117,33 @@ public class MDMDefinition {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(String name) {
     this.name = name;
+  }
+
+
+  public MDMDefinition adminGroupName(String adminGroupName) {
+    
+    this.adminGroupName = adminGroupName;
+    return this;
+  }
+
+   /**
+   * The name of the administration group. If a user is involved in the group then can adminiter all the entries inside the definition. The entries will have their own security group that will be included into this group. So be can manage all the entries one by one. It is mandatory to set this group name or else the master data management won&#39;t be able to setup the rights. 
+   * @return adminGroupName
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The name of the administration group. If a user is involved in the group then can adminiter all the entries inside the definition. The entries will have their own security group that will be included into this group. So be can manage all the entries one by one. It is mandatory to set this group name or else the master data management won't be able to setup the rights. ")
+  @JsonProperty(ADMIN_GROUP_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getAdminGroupName() {
+    return adminGroupName;
+  }
+
+
+  @JsonProperty(ADMIN_GROUP_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setAdminGroupName(String adminGroupName) {
+    this.adminGroupName = adminGroupName;
   }
 
 
@@ -189,13 +220,14 @@ public class MDMDefinition {
     MDMDefinition mdMDefinition = (MDMDefinition) o;
     return Objects.equals(this.uri, mdMDefinition.uri) &&
         Objects.equals(this.name, mdMDefinition.name) &&
+        Objects.equals(this.adminGroupName, mdMDefinition.adminGroupName) &&
         Objects.equals(this.state, mdMDefinition.state) &&
         Objects.equals(this.descriptors, mdMDefinition.descriptors);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, name, state, descriptors);
+    return Objects.hash(uri, name, adminGroupName, state, descriptors);
   }
 
   @Override
@@ -204,6 +236,7 @@ public class MDMDefinition {
     sb.append("class MDMDefinition {\n");
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    adminGroupName: ").append(toIndentedString(adminGroupName)).append("\n");
     sb.append("    state: ").append(toIndentedString(state)).append("\n");
     sb.append("    descriptors: ").append(toIndentedString(descriptors)).append("\n");
     sb.append("}");

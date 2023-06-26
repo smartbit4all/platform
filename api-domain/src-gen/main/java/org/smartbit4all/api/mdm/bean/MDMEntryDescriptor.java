@@ -38,6 +38,7 @@ import javax.validation.Valid;
 @ApiModel(description = "The entry is responsible for a managed list of object instances from the same kind. This contains every information about the behavior of the given list of object. ")
 @JsonPropertyOrder({
   MDMEntryDescriptor.NAME,
+  MDMEntryDescriptor.ADMIN_GROUP_NAME,
   MDMEntryDescriptor.TYPE_QUALIFIED_NAME,
   MDMEntryDescriptor.INLINE_VALUE_SET,
   MDMEntryDescriptor.PUBLISH_IN_LIST,
@@ -57,6 +58,9 @@ import javax.validation.Valid;
 public class MDMEntryDescriptor {
   public static final String NAME = "name";
   private String name;
+
+  public static final String ADMIN_GROUP_NAME = "adminGroupName";
+  private String adminGroupName;
 
   public static final String TYPE_QUALIFIED_NAME = "typeQualifiedName";
   private String typeQualifiedName = "org.smartbit4all.api.value.bean.Value";
@@ -159,6 +163,33 @@ public class MDMEntryDescriptor {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(String name) {
     this.name = name;
+  }
+
+
+  public MDMEntryDescriptor adminGroupName(String adminGroupName) {
+    
+    this.adminGroupName = adminGroupName;
+    return this;
+  }
+
+   /**
+   * The name of the administration group. Optional, if we don&#39;t set it then the group defined in the definition will be the master group for this entry. The security group of the entry is named like mdm.definition.entry. 
+   * @return adminGroupName
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The name of the administration group. Optional, if we don't set it then the group defined in the definition will be the master group for this entry. The security group of the entry is named like mdm.definition.entry. ")
+  @JsonProperty(ADMIN_GROUP_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getAdminGroupName() {
+    return adminGroupName;
+  }
+
+
+  @JsonProperty(ADMIN_GROUP_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setAdminGroupName(String adminGroupName) {
+    this.adminGroupName = adminGroupName;
   }
 
 
@@ -550,6 +581,7 @@ public class MDMEntryDescriptor {
     }
     MDMEntryDescriptor mdMEntryDescriptor = (MDMEntryDescriptor) o;
     return Objects.equals(this.name, mdMEntryDescriptor.name) &&
+        Objects.equals(this.adminGroupName, mdMEntryDescriptor.adminGroupName) &&
         Objects.equals(this.typeQualifiedName, mdMEntryDescriptor.typeQualifiedName) &&
         Objects.equals(this.inlineValueSet, mdMEntryDescriptor.inlineValueSet) &&
         Objects.equals(this.publishInList, mdMEntryDescriptor.publishInList) &&
@@ -567,7 +599,7 @@ public class MDMEntryDescriptor {
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, typeQualifiedName, inlineValueSet, publishInList, uniqueIdentifierPath, publishInMap, tableColumns, editorViewName, searchIndexForEntries, schema, branchStrategy, uriConstructor, eventHandlersBeforeSave, state);
+    return Objects.hash(name, adminGroupName, typeQualifiedName, inlineValueSet, publishInList, uniqueIdentifierPath, publishInMap, tableColumns, editorViewName, searchIndexForEntries, schema, branchStrategy, uriConstructor, eventHandlersBeforeSave, state);
   }
 
   @Override
@@ -575,6 +607,7 @@ public class MDMEntryDescriptor {
     StringBuilder sb = new StringBuilder();
     sb.append("class MDMEntryDescriptor {\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    adminGroupName: ").append(toIndentedString(adminGroupName)).append("\n");
     sb.append("    typeQualifiedName: ").append(toIndentedString(typeQualifiedName)).append("\n");
     sb.append("    inlineValueSet: ").append(toIndentedString(inlineValueSet)).append("\n");
     sb.append("    publishInList: ").append(toIndentedString(publishInList)).append("\n");

@@ -1,8 +1,8 @@
 package org.smartbit4all.api.mdm;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -363,7 +363,7 @@ public class MDMEntryApiImpl implements MDMEntryApi {
       return Stream.concat(Stream.concat(changedStream, newStream), deletedStream)
           .collect(toList());
     }
-    return Collections.emptyList();
+    return new ArrayList<>();
   }
 
   private final BranchEntry getOrCreateBranchEntry() {

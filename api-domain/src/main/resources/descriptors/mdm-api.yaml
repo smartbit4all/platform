@@ -27,6 +27,12 @@ components:
         name:
           type: string
           description: The logical name of the given mdm definition. This is also the default name of the schema.
+        adminGroupName:
+          type: string
+          description: |
+            The name of the administration group. If a user is involved in the group then can adminiter all the entries inside the
+            definition. The entries will have their own security group that will be included into this group. So be can manage all the entries one by one.
+            It is mandatory to set this group name or else the master data management won't be able to setup the rights.
         state:
           type: string
           format: uri
@@ -47,6 +53,11 @@ components:
           description: |
             The name is the key of the given entry. The caption that is translated by the LocaleSettingApi. Normally it is filled with the
             qualified name of the given class. It is easy to identify in the message...properties.
+        adminGroupName:
+          type: string
+          description: |
+            The name of the administration group. Optional, if we don't set it then the group defined in the definition will be the master group for this
+            entry. The security group of the entry is named like mdm.definition.entry.
         typeQualifiedName:
           type: string
           default: "org.smartbit4all.api.value.bean.Value"
