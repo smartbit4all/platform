@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.smartbit4all.core.utility.StringConstant;
 
 /**
@@ -81,7 +82,26 @@ public final class ExpressionIn<T> extends Expression {
   }
 
   private boolean myEvaluate() {
-    return operand == null ? false : values.contains(operand.value());
+    return operand == null ? false : getValues().contains(getOpValue());
+  }
+
+  private final T getOpValue() {
+    if (operand == null) {
+      return null;
+    }
+    if (operand instanceof OperandProperty) {
+      return ((OperandProperty<T>) operand).applyFunction(operand.value());
+    }
+    return operand.value();
+  }
+
+  private final Set<T> getValues() {
+    if (operand instanceof OperandProperty) {
+      return values.stream()
+          .map(v -> ((OperandProperty<T>) operand).applyFunction(v))
+          .collect(Collectors.toSet());
+    }
+    return values;
   }
 
   @Override
