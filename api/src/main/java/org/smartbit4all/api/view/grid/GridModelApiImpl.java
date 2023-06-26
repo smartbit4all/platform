@@ -217,7 +217,7 @@ public class GridModelApiImpl implements GridModelApi {
       if (gridModel.getAccessConfig() == null) {
         gridModel.accessConfig(new GridDataAccessConfig());
       }
-      gridModel.getAccessConfig().identifierPath(List.of(identifierPath));
+      gridModel.getAccessConfig().identifierPath(Arrays.asList(identifierPath));
       return gridModel;
     });
   }
