@@ -311,21 +311,29 @@ public class GridModelApiImpl implements GridModelApi {
             .lowerBound(lowerBound)
             .upperBound(lowerBound + pageSize));
     GridServerModel serverModel = getGridServerModel(viewUuid, gridId);
-    if (serverModel != null) {
+    if (serverModel != null && !serverModel.getSelectedRows().isEmpty()) {
       Map<String, GridRow> selectedOldRows = serverModel.getSelectedRows();
       Map<String, GridRow> currentPageRows =
           gridModel.getPage().getRows().stream()
-              .collect(toMap(row -> row.getId(), row -> row));
-      Map<String, GridRow> selectedRows = selectedOldRows.entrySet().stream()
+              .collect(toMap(GridRow::getId, row -> row));
+      Map<String, GridRow> selectedNewRows = selectedOldRows.entrySet().stream()
           .filter(e -> currentPageRows.containsKey(e.getKey()))
           .collect(toMap(Entry::getKey, Entry::getValue));
-      if (selectedRows.size() < selectedOldRows.size()) {
-        // TODO find selected rows not on this page...
-      } else {
-        // TODO this should be outside of if, when implemented properly
-        serverModel.selectedRows(selectedRows);
+      if (selectedNewRows.size() < selectedOldRows.size()) {
+        // create a "page" with missing rows so all callback can be run on it
+        List<String> missingRowIds = selectedOldRows.keySet().stream()
+            .filter(id -> !currentPageRows.containsKey(id))
+            .collect(toList());
+        GridPage page =
+            constructPage(viewUuid, gridId, data,
+                0, data.size(), 0,
+                true, false,
+                missingRowIds);
+        selectedNewRows.putAll(page.getRows().stream()
+            .collect(toMap(GridRow::getId, row -> row)));
       }
-      refreshSelectedRows(viewUuid, gridId, gridModel.getPage(), selectedRows);
+      serverModel.selectedRows(selectedNewRows);
+      refreshSelectedRows(viewUuid, gridId, gridModel.getPage(), selectedNewRows);
     }
   }
 
@@ -502,6 +510,14 @@ public class GridModelApiImpl implements GridModelApi {
   private GridPage constructPage(UUID viewUuid, String gridId, TableData<?> tableData,
       int beginIndex, int endIndex, int offset,
       boolean preserveSelection, boolean refreshSelectedRows) {
+    return constructPage(viewUuid, gridId, tableData, beginIndex, endIndex, offset,
+        preserveSelection, refreshSelectedRows, null);
+  }
+
+  private GridPage constructPage(UUID viewUuid, String gridId, TableData<?> tableData,
+      int beginIndex, int endIndex, int offset,
+      boolean preserveSelection, boolean refreshSelectedRows,
+      List<String> rowIdFilter) {
     GridPage page =
         new GridPage()
             .rows(new ArrayList<>());
@@ -515,12 +531,14 @@ public class GridModelApiImpl implements GridModelApi {
       } else {
         rowId = getRowIdFromTableData(tableData, idColumn, dataRow);
       }
-      GridRow gridRow = new GridRow().id(rowId)
-          .data(tableData.columns().stream()
-              .filter(c -> tableData.get(c, dataRow) != null)
-              .collect(toMap(DataColumn::getName, c -> tableData.get(c, dataRow))));
-      gridRow = (GridRow) executeObjectCallbacks(gridRowCallbacks, gridRow);
-      page.addRowsItem(gridRow);
+      if (rowIdFilter == null || rowIdFilter.contains(rowId)) {
+        GridRow gridRow = new GridRow().id(rowId)
+            .data(tableData.columns().stream()
+                .filter(c -> tableData.get(c, dataRow) != null)
+                .collect(toMap(DataColumn::getName, c -> tableData.get(c, dataRow))));
+        gridRow = (GridRow) executeObjectCallbacks(gridRowCallbacks, gridRow);
+        page.addRowsItem(gridRow);
+      }
     }
     List<InvocationRequest> gridPageCallbacks = getCallbacks(viewUuid, gridId, GRIDPAGE_POSTFIX);
     page = (GridPage) executeObjectCallbacks(gridPageCallbacks, page);
@@ -747,6 +765,7 @@ public class GridModelApiImpl implements GridModelApi {
     for (GridRow row : page.getRows()) {
       row.selected(row.getSelectable() != Boolean.FALSE && selectedRows.containsKey(row.getId()));
     }
+    // TODO copy actual rows to serverModel.selection would be nice
     executeVoidCallbacks(getCallbacks(viewUuid, gridId, SELECTION_CHANGE_POSTFIX),
         viewUuid, gridId);
   }
