@@ -3,6 +3,7 @@ package org.smartbit4all.api.view;
 import java.util.ArrayList;
 import java.util.List;
 import org.smartbit4all.api.view.bean.UiAction;
+import org.smartbit4all.api.view.bean.UiActionDescriptor;
 
 public class UiActions {
 
@@ -15,6 +16,8 @@ public class UiActions {
   public static final String ITEM = "item";
 
   public static final String URI = "uri";
+
+  public static final String TITLE = UiActionDescriptor.TITLE;
 
   private UiActions() {}
 
