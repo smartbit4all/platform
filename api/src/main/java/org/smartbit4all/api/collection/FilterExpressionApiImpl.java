@@ -52,7 +52,9 @@ public class FilterExpressionApiImpl implements FilterExpressionApi {
     if (filterExpressionFieldList == null) {
       return null;
     }
-    List<FilterExpressionData> filterExpressions = filterExpressionFieldList.getFilters().stream()
+    FilterExpressionFieldList fieldList =
+        objectApi.definition(FilterExpressionFieldList.class).deepCopy(filterExpressionFieldList);
+    List<FilterExpressionData> filterExpressions = fieldList.getFilters().stream()
         .filter(field -> field.getExpressionData() != null
             && (operandHasValueOrValues(field.getExpressionData().getOperand1())
                 || operandHasValueOrValues(field.getExpressionData().getOperand2())

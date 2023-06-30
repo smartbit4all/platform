@@ -251,6 +251,10 @@ public final class ObjectDefinition<T> {
     return defaultSerializer.toMap(o);
   }
 
+  public final T deepCopy(T o) {
+    return defaultSerializer.fromMap(defaultSerializer.toMap(o), clazz);
+  }
+
   public final T fromMap(Map<String, Object> map) {
     return defaultSerializer.fromMap(map, clazz);
   }
