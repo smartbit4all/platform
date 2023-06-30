@@ -49,6 +49,7 @@ import org.smartbit4all.api.object.RetrievalApiImpl;
 import org.smartbit4all.api.object.bean.AggregationKind;
 import org.smartbit4all.api.object.bean.ObjectDefinitionData;
 import org.smartbit4all.api.object.bean.ReferencePropertyKind;
+import org.smartbit4all.api.org.PasswordEncoderApi;
 import org.smartbit4all.api.rdbms.DatabaseDefinitionApi;
 import org.smartbit4all.api.rdbms.DatabaseDefinitionApiImpl;
 import org.smartbit4all.api.session.SessionManagementApi;
@@ -82,6 +83,7 @@ import org.smartbit4all.domain.service.entity.EntityManager;
 import org.smartbit4all.domain.service.transfer.TransferService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -324,6 +326,12 @@ public class PlatformApiConfig {
   @Bean
   public StorageSequenceApi storageSequenceApi() {
     return new StorageSequenceApiImpl();
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public PasswordEncoderApi passwordEncoderApi() {
+    return new PasswordEncoderApi() {};
   }
 
   @Bean
