@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderGroup;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldList;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
@@ -38,7 +39,8 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   FilterExpressionBuilderModel.LABEL,
   FilterExpressionBuilderModel.GROUPS,
-  FilterExpressionBuilderModel.WORKPLACE_LIST
+  FilterExpressionBuilderModel.WORKPLACE_LIST,
+  FilterExpressionBuilderModel.DEFAULT_FILTERS
 })
 @JsonTypeName("FilterExpressionBuilderModel")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -51,6 +53,9 @@ public class FilterExpressionBuilderModel {
 
   public static final String WORKPLACE_LIST = "workplaceList";
   private FilterExpressionFieldList workplaceList;
+
+  public static final String DEFAULT_FILTERS = "defaultFilters";
+  private FilterExpressionList defaultFilters;
 
   public FilterExpressionBuilderModel() { 
   }
@@ -97,12 +102,12 @@ public class FilterExpressionBuilderModel {
   }
 
    /**
-   * Get groups
+   * This is the group of filter expressions that can be involved to the workplace. This is a tree structure.
    * @return groups
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "This is the group of filter expressions that can be involved to the workplace. This is a tree structure.")
   @JsonProperty(GROUPS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -146,6 +151,34 @@ public class FilterExpressionBuilderModel {
   }
 
 
+  public FilterExpressionBuilderModel defaultFilters(FilterExpressionList defaultFilters) {
+    
+    this.defaultFilters = defaultFilters;
+    return this;
+  }
+
+   /**
+   * Get defaultFilters
+   * @return defaultFilters
+  **/
+  @javax.annotation.Nullable
+  @Valid
+  @ApiModelProperty(value = "")
+  @JsonProperty(DEFAULT_FILTERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public FilterExpressionList getDefaultFilters() {
+    return defaultFilters;
+  }
+
+
+  @JsonProperty(DEFAULT_FILTERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setDefaultFilters(FilterExpressionList defaultFilters) {
+    this.defaultFilters = defaultFilters;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -157,12 +190,13 @@ public class FilterExpressionBuilderModel {
     FilterExpressionBuilderModel filterExpressionBuilderModel = (FilterExpressionBuilderModel) o;
     return Objects.equals(this.label, filterExpressionBuilderModel.label) &&
         Objects.equals(this.groups, filterExpressionBuilderModel.groups) &&
-        Objects.equals(this.workplaceList, filterExpressionBuilderModel.workplaceList);
+        Objects.equals(this.workplaceList, filterExpressionBuilderModel.workplaceList) &&
+        Objects.equals(this.defaultFilters, filterExpressionBuilderModel.defaultFilters);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(label, groups, workplaceList);
+    return Objects.hash(label, groups, workplaceList, defaultFilters);
   }
 
   @Override
@@ -172,6 +206,7 @@ public class FilterExpressionBuilderModel {
     sb.append("    label: ").append(toIndentedString(label)).append("\n");
     sb.append("    groups: ").append(toIndentedString(groups)).append("\n");
     sb.append("    workplaceList: ").append(toIndentedString(workplaceList)).append("\n");
+    sb.append("    defaultFilters: ").append(toIndentedString(defaultFilters)).append("\n");
     sb.append("}");
     return sb.toString();
   }

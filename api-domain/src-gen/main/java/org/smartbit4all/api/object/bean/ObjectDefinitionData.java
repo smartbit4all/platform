@@ -39,6 +39,7 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   ObjectDefinitionData.URI,
   ObjectDefinitionData.QUALIFIED_NAME,
+  ObjectDefinitionData.URI_PROPERTY,
   ObjectDefinitionData.KEY_PROPERTY,
   ObjectDefinitionData.PROPERTIES,
   ObjectDefinitionData.OUTGOING_REFERENCES
@@ -51,6 +52,9 @@ public class ObjectDefinitionData {
 
   public static final String QUALIFIED_NAME = "qualifiedName";
   private String qualifiedName;
+
+  public static final String URI_PROPERTY = "uriProperty";
+  private String uriProperty;
 
   public static final String KEY_PROPERTY = "keyProperty";
   private String keyProperty;
@@ -121,6 +125,33 @@ public class ObjectDefinitionData {
   }
 
 
+  public ObjectDefinitionData uriProperty(String uriProperty) {
+    
+    this.uriProperty = uriProperty;
+    return this;
+  }
+
+   /**
+   * The name of the uri property that is the referential resource identifier for the object instances. Normally it is the uri but if the object does not have uri (identity in the storage level) then it can be the unique identifier or code also.  
+   * @return uriProperty
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The name of the uri property that is the referential resource identifier for the object instances. Normally it is the uri but if the object does not have uri (identity in the storage level) then it can be the unique identifier or code also.  ")
+  @JsonProperty(URI_PROPERTY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getUriProperty() {
+    return uriProperty;
+  }
+
+
+  @JsonProperty(URI_PROPERTY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setUriProperty(String uriProperty) {
+    this.uriProperty = uriProperty;
+  }
+
+
   public ObjectDefinitionData keyProperty(String keyProperty) {
     
     this.keyProperty = keyProperty;
@@ -128,11 +159,11 @@ public class ObjectDefinitionData {
   }
 
    /**
-   * The name of the uri property that is the referential resource identifier for the object instances. Normally it is the uri but if the object does not have uri (identity in the storage level) then it can be the unique identifier or code also.  
+   * The name of the business identifier property that identifies the object instances. Normally it is the uri but if the object does not have uri (identity in the storage level) then it can be the unique identifier or code also.  
    * @return keyProperty
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "The name of the uri property that is the referential resource identifier for the object instances. Normally it is the uri but if the object does not have uri (identity in the storage level) then it can be the unique identifier or code also.  ")
+  @ApiModelProperty(value = "The name of the business identifier property that identifies the object instances. Normally it is the uri but if the object does not have uri (identity in the storage level) then it can be the unique identifier or code also.  ")
   @JsonProperty(KEY_PROPERTY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -227,6 +258,7 @@ public class ObjectDefinitionData {
     ObjectDefinitionData objectDefinitionData = (ObjectDefinitionData) o;
     return Objects.equals(this.uri, objectDefinitionData.uri) &&
         Objects.equals(this.qualifiedName, objectDefinitionData.qualifiedName) &&
+        Objects.equals(this.uriProperty, objectDefinitionData.uriProperty) &&
         Objects.equals(this.keyProperty, objectDefinitionData.keyProperty) &&
         Objects.equals(this.properties, objectDefinitionData.properties) &&
         Objects.equals(this.outgoingReferences, objectDefinitionData.outgoingReferences);
@@ -234,7 +266,7 @@ public class ObjectDefinitionData {
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, qualifiedName, keyProperty, properties, outgoingReferences);
+    return Objects.hash(uri, qualifiedName, uriProperty, keyProperty, properties, outgoingReferences);
   }
 
   @Override
@@ -243,6 +275,7 @@ public class ObjectDefinitionData {
     sb.append("class ObjectDefinitionData {\n");
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    qualifiedName: ").append(toIndentedString(qualifiedName)).append("\n");
+    sb.append("    uriProperty: ").append(toIndentedString(uriProperty)).append("\n");
     sb.append("    keyProperty: ").append(toIndentedString(keyProperty)).append("\n");
     sb.append("    properties: ").append(toIndentedString(properties)).append("\n");
     sb.append("    outgoingReferences: ").append(toIndentedString(outgoingReferences)).append("\n");

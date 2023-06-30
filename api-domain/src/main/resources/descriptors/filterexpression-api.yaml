@@ -146,10 +146,15 @@ components:
           type: string
         groups:
           type: array
+          description: This is the group of filter expressions that can be involved to the workplace. This is a tree structure.
           items:
             $ref: "#/components/schemas/FilterExpressionBuilderGroup"
         workplaceList:
+          description: These are currently included filter fields.
           $ref: "#/components/schemas/FilterExpressionFieldList"
+        defaultFilters:
+          description: These are the filters that can not be edited or modified by the user.
+          $ref: "#/components/schemas/FilterExpressionList"
         
     FilterExpressionBuilderGroup:
       type: object
@@ -268,28 +273,31 @@ components:
       - RADIO_BUTTON
       - RANGE
 
-    SearchIndexObjectDefinitionData:
+    SearchIndexResultPageConfig:
       type: object
       description: |
-        This mapping binds the objects of the domain with the entities of the search index. By default all the properties are
-        included in the search index. But we can have positive and negative exceptions to specify the exact attributes to include.
+        This object has every configuration data that is necessary to open a SearchIndexResult page. It contains the possible filter
+        expressions in a FilterExpresisonBuilderModel and also the parameterization of the result grid in a GridViewDescriptor object.
       required: []
       properties:
-        objectClassName:
+        uri:
           type: string
-        propertyDefinitions:
+          format: uri
+        filterModel:
+          description: |
+            This object describes the possible filter fields and also the included filters fields. It can be used in the FilterExpressionApi
+            to transform a FilterExpressionList for the search execution. 
+          $ref: "#/components/schemas/FilterExpressionBuilderModel"
+        searchIndexSchema:
+          description: The schema name of the search index.
+          type: string
+        searchIndexName:
+          description: The name of the search index.
+          type: string
+        gridViewOptions:
+          description: |
+            The appearence of the result grid can be parameterized with this object. If we pass no option then the default grid will appear.
+            If we pass more than one then the user can select with an option selector.
           type: array
           items:
-            $ref: "#/components/schemas/SearchIndexPropertyDefinitionData"
-    SearchIndexPropertyDefinitionData:
-      type: object
-      description: |
-        This mapping binds the objects of the domain with the entities of the search index. By default all the properties are
-        included in the search index. But we can have positive and negative exceptions to specify the exact attributes to include.
-      required: []
-      properties:
-        propertyPath:
-          type: string
-        include:
-          type: boolean
-                          
+            type: GridView

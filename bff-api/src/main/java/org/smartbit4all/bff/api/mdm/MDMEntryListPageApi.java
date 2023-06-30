@@ -3,6 +3,7 @@ package org.smartbit4all.bff.api.mdm;
 import java.util.UUID;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
+import org.smartbit4all.api.object.bean.BranchedObjectEntry;
 import org.smartbit4all.api.view.PageApi;
 import org.smartbit4all.api.view.annotation.ActionHandler;
 import org.smartbit4all.api.view.annotation.WidgetActionHandler;
@@ -25,6 +26,16 @@ public interface MDMEntryListPageApi extends PageApi<MDMEntryDescriptor> {
    * The identifier of of the {@link MDMDefinition} object parameter.
    */
   static final String PARAM_MDM_DEFINITION = "MDM_DEFINITION";
+
+  /**
+   * The UUID identifier of the list view for the editing view.
+   */
+  static final String PARAM_MDM_LIST_VIEW = "MDM_LIST_VIEW";
+
+  /**
+   * The branched object entry the editing for is working on..
+   */
+  static final String PARAM_BRANCHED_OBJECT_ENTRY = "BRANCHED_OBJECT_ENTRY";
 
   /**
    * The identifier of the grid that contains the entries.
@@ -156,5 +167,25 @@ public interface MDMEntryListPageApi extends PageApi<MDMEntryDescriptor> {
    */
   @WidgetActionHandler(value = ACTION_CANCEL_DRAFT_ENTRY, widget = WIDGET_ENTRY_GRID)
   void performCancelDraftEntry(UUID viewUuid, String gridId, String rowId, UiActionRequest request);
+
+  /**
+   * This callback function is responsible for saving a new object into the MDM entry list we are
+   * working on currently.
+   * 
+   * @param viewUuid The list view instance
+   * @param editingObject The object or map value of the newly create object.
+   */
+  void saveNewObject(UUID viewUuid, Object editingObject);
+
+  /**
+   * This callback function is responsible for saving a new object into the MDM entry list we are
+   * working on currently.
+   * 
+   * @param viewUuid The list view instance
+   * @param editingObject The object or map value of the newly create object.
+   * @param branchedObjectEntry The branching information about the given entry.
+   */
+  void saveModificationObject(UUID viewUuid, Object editingObject,
+      BranchedObjectEntry branchedObjectEntry);
 
 }

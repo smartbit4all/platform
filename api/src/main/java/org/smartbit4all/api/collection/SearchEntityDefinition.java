@@ -1,14 +1,13 @@
 package org.smartbit4all.api.collection;
 
-import static java.util.stream.Collectors.toList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
-import org.smartbit4all.api.collection.SearchEntityDefinition.DetailDefinition;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.JoinPath;
 import org.smartbit4all.domain.meta.Reference;
+import static java.util.stream.Collectors.toList;
 
 /**
  * The search entity definition contains an {@link EntityDefinition} and its detail entities with
@@ -67,5 +66,21 @@ public class SearchEntityDefinition {
         .map(d -> d.detail)
         .flatMap(d -> Stream.concat(Stream.of(d.getDefinition()),
             d.getDetailDefinitions()));
+  }
+
+  public JoinPath getMasterJoin(String detailName) {
+    if (detailName == null) {
+      return null;
+    }
+    return detailsByName.entrySet().stream().filter(e -> e.getKey().equals(detailName))
+        .map(e -> e.getValue().masterJoin).findFirst().orElse(null);
+  }
+
+  public EntityDefinition getEntityDef(String detailName) {
+    if (detailName == null) {
+      return null;
+    }
+    return detailsByName.entrySet().stream().filter(e -> e.getKey().equals(detailName))
+        .map(e -> e.getValue().detail.definition).findFirst().orElse(null);
   }
 }

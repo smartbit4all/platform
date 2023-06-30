@@ -236,6 +236,29 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
     return new SQLBindValueLiteral(appendBind(), literal);
   }
 
+  public final void appendLiteral(OperandLiteral<?> literal, PropertyFunction propertyFunction,
+      List<SQLBindValueLiteral> bindList) {
+    if (propertyFunction != null && propertyFunction.getRequiredProperties().isEmpty()) {
+      /*
+       * We need to add the questionmark literal with the append(bindList, operand) method so the
+       * bind numbers will be correct. The getFunctionAdjustedColumnName method can create the whole
+       * sql string of the function. To reuse these methods we simply create the sql string, then
+       * cut it to two parts on the place of the literal, then append to the statement in the right
+       * order, using the literal appending method in between.
+       */
+      String mark = "?";
+      String fullLiteral = getFunctionAdjustedColumnName(null, mark, propertyFunction);
+      int markIdx = fullLiteral.indexOf(mark);
+      String firstPart = fullLiteral.substring(0, markIdx);
+      String lastPart = fullLiteral.substring(markIdx + 1);
+      append(firstPart);
+      append(bindList, literal);
+      append(lastPart);
+    } else {
+      append(bindList, literal);
+    }
+  }
+
   /**
    * Append an operand as a column.
    *
@@ -260,7 +283,8 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
       propertyFunction = sqlDBParameter.convertPropertyFunction(propertyFunction);
     }
     List<OperandProperty<?>> requiredOperandProperties =
-        propertyOperand.getRequiredOperandProperties();
+        propertyOperand == null ? Collections.emptyList()
+            : propertyOperand.getRequiredOperandProperties();
     List<String> requiredPropertyColumns = requiredOperandProperties.stream()
         .map(op -> getColumnNameOfProperty(op)).collect(Collectors.toList());
     columnName = getFunctionSqlString(propertyFunction, columnName, requiredPropertyColumns);
@@ -277,9 +301,9 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
       PropertyOwned<?> owned = (PropertyOwned<?>) property;
       columnName = getColumn(owned.getDbExpression());
     } else if (property instanceof PropertyRef<?>) {
-      // TODO null check: getPropertyOwned will return NULL for computed referred properties
-      PropertyOwned<?> owned =
-          ((PropertyRef<?>) property).getReferredOwnedProperty();
+      // TODO null check: getPropertyOwned will return NULL for computed referred
+      // properties
+      PropertyOwned<?> owned = ((PropertyRef<?>) property).getReferredOwnedProperty();
       columnName = getColumn(owned.getDbExpression());
     }
     if (propertyOperand.getQualifier() != null) {
@@ -532,7 +556,8 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
 
         case BINARYDATA:
           BinaryData binaryData =
-              convertFromAppToJdbcType((JDBCDataConverter<T, BinaryData>) converter, value);
+              convertFromAppToJdbcType((JDBCDataConverter<T, BinaryData>) converter,
+                  value);
           stmt.setBinaryStream(position, binaryData.inputStream(), binaryData.length());
           break;
 
@@ -702,26 +727,7 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
     separate();
 
     PropertyFunction propertyFunction = expression.getOp().property().getPropertyFunction();
-    if (propertyFunction != null && propertyFunction.getRequiredProperties().isEmpty()) {
-      /*
-       * We need to add the questionmark literal with the append(bindList, operand) method so the
-       * bind numbers will be correct. The getFunctionAdjustedColumnName method can create the whole
-       * sql string of the function. To reuse these methods we simply create the sql string, then
-       * cut it to two parts on the place of the literal, then append to the statement in the right
-       * order, using the literal appending method in between.
-       */
-      String mark = "?";
-      String fullLiteral =
-          getFunctionAdjustedColumnName(expression.getOp(), mark, propertyFunction);
-      int markIdx = fullLiteral.indexOf(mark);
-      String firstPart = fullLiteral.substring(0, markIdx);
-      String lastPart = fullLiteral.substring(markIdx + 1);
-      append(firstPart);
-      append(result, expression.getLiteral());
-      append(lastPart);
-    } else {
-      append(result, expression.getLiteral());
-    }
+    appendLiteral(expression.getLiteral(), propertyFunction, result);
 
     if (expression.isNegate()) {
       b.append(StringConstant.RIGHT_PARENTHESIS);
@@ -761,15 +767,21 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
     return result;
   }
 
+  private PropertyFunction getPropertyFunction(Operand<?> operand) {
+    return operand instanceof OperandProperty
+        ? ((OperandProperty) operand).property().getPropertyFunction()
+        : null;
+  }
+
   @Override
   @SuppressWarnings({"unchecked", "rawtypes"})
   public List<SQLBindValueLiteral> append(ExpressionIn<?> expression) {
     List<SQLBindValueLiteral> result = new ArrayList<>();
     separate();
-
     if (!expression.values().isEmpty()) {
       if (expression.getOperand() instanceof OperandComposite) {
-        // If we have a composite value then it's better to separate the code because the difference
+        // If we have a composite value then it's better to separate the code because
+        // the difference
         // is significant.
         OperandComposite compositeOp = (OperandComposite) expression.getOperand();
         List<JDBCDataConverter<?, ?>> converterList =
@@ -792,8 +804,8 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
           if (!result.isEmpty()) {
             b.append(StringConstant.COMMA);
           }
-          // Here we must have a CompositeValue with values in the same order then it was in the
-          // OperandComposite.
+          // Here we must have a CompositeValue with values in the same order then it was
+          // in the OperandComposite.
           Assert.isInstanceOf(CompositeValue.class, value,
               "The values of the in must be composite values like " + compositeOp);
           b.append(StringConstant.LEFT_PARENTHESIS);
@@ -814,9 +826,8 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
       } else {
         // In this case we have a list of properties
 
-        // If we have a property then the values must match it's type. Else if have a value here
-        // then
-        // the rest of the values must match with it.
+        // If we have a property then the values must match it's type. Else if have a
+        // value here then the rest of the values must match with it.
         JDBCDataConverter<?, ?> converter = expression.getOperand().getConverter();
 
         append(result, expression.getOperand());
@@ -824,12 +835,13 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
         appendInExpression(expression);
 
         b.append(StringConstant.LEFT_PARENTHESIS);
+        PropertyFunction propertyFunction = getPropertyFunction(expression.getOperand());
         for (Object value : expression.values()) {
           if (!result.isEmpty()) {
             b.append(StringConstant.COMMA);
           }
           // Here we creates the literal operands. We need them to bind the values.
-          result.add(appendLiteral(new OperandLiteral(value, converter)));
+          appendLiteral(new OperandLiteral(value, converter), propertyFunction, result);
         }
         b.append(StringConstant.RIGHT_PARENTHESIS);
       }
@@ -1019,7 +1031,8 @@ public class SQLStatementBuilder implements SQLStatementBuilderIF {
         break;
 
       case MSSQL:
-        // At the SQLServer the lock request is assigned to the table at the from section as hint.
+        // At the SQLServer the lock request is assigned to the table at the from
+        // section as hint.
         if (timeoutInMillis > 0) {
           StringBuilder before = before(SQLConstant.WAIT);
           before.append(SQLConstant.LOCK_TIMEOUT_SQLSERVER);

@@ -10,6 +10,7 @@ import org.smartbit4all.api.object.bean.BranchEntry;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry.BranchingStateEnum;
 import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
 
 /**
@@ -65,6 +66,15 @@ public interface MDMEntryApi {
   URI saveAsNewPublished(Object object);
 
   /**
+   * Save the given object as published.
+   * 
+   * @param objectDefinition The object definition of the entry.
+   * @param objectAsMap The object as map.
+   * @return
+   */
+  URI saveAsNewPublished(ObjectDefinition<?> objectDefinition, Map<String, Object> objectAsMap);
+
+  /**
    * Save the given object as draft. To be able to identify the published version of the draft
    * object we need to have a unique business identifier for the object that can identify the given
    * object in the published list.
@@ -73,6 +83,18 @@ public interface MDMEntryApi {
    * @return The URI of the currently saved draft version.
    */
   URI saveAsDraft(Object object);
+
+  /**
+   * Save the given object as draft. To be able to identify the published version of the draft
+   * object we need to have a unique business identifier for the object that can identify the given
+   * object in the published list.
+   *
+   * @param objectDefinition The object definition of the entry.
+   * @param objectAsMap The map value of the given object. It is important to use map to avoid
+   *        loosing property values by converting to typed object.
+   * @return The URI of the currently saved draft version.
+   */
+  URI saveAsDraft(ObjectDefinition<?> objectDefinition, Map<String, Object> objectAsMap);
 
   /**
    * The draft object is removed from the current editing branch. It won't be seen any more in the

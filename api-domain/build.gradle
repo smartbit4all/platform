@@ -29,6 +29,9 @@ smartbit4all {
   		"SmartLayoutDefinition": "org.smartbit4all.api.formdefinition.bean.SmartLayoutDefinition",
   		"SmartWidgetDefinition": "org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition",
   		"InvocationRequest": "org.smartbit4all.api.invocation.bean.InvocationRequest",
+  		"InvocationRequestDefinition": "org.smartbit4all.api.invocation.bean.InvocationRequestDefinition",
+  		"BranchedObjectEntry": "org.smartbit4all.api.object.bean.BranchedObjectEntry",
+  		"GridView": "org.smartbit4all.api.grid.bean.GridView",
   	]
   }
 }

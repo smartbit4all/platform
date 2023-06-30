@@ -338,7 +338,7 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
             .addProperty(BranchedObjectEntry.ORIGINAL_URI, URI.class)
             .addProperty(BranchedObjectEntry.BRANCH_URI, URI.class)
             .commit();
-
+        entryObjectDefinition.getDefinitionData().setUriProperty(ObjectDefinition.URI_PROPERTY);
       });
     }
 
@@ -397,11 +397,15 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
     searchIndex.mapComplex(propertyName, typeClass, length, node -> {
       BranchingStateEnum stateEnum =
           node.getValue(BranchingStateEnum.class, BranchedObjectEntry.BRANCHING_STATE);
+      ObjectNode nodeObject;
       if (stateEnum == BranchingStateEnum.NOP || stateEnum == BranchingStateEnum.DELETED) {
-        return node.ref(BranchedObjectEntry.ORIGINAL_URI).get().getValue(path);
+        URI originalUri = node.ref(BranchedObjectEntry.ORIGINAL_URI).getObjectUri();
+        nodeObject = objectApi.load(originalUri);
       } else {
-        return node.ref(BranchedObjectEntry.BRANCH_URI).get().getValue(path);
+        URI branchedUri = node.ref(BranchedObjectEntry.BRANCH_URI).getObjectUri();
+        nodeObject = objectApi.load(branchedUri);
       }
+      return nodeObject.getValue(path);
     });
   }
 

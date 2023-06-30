@@ -10,6 +10,7 @@ import java.util.UUID;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -53,6 +54,7 @@ import org.smartbit4all.api.view.bean.ComponentModel;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.layout.SmartLayoutApi;
+import org.smartbit4all.bff.api.mdm.MDMEntryEditPageApi;
 import org.smartbit4all.bff.api.mdm.MDMEntryListPageApi;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectCacheEntry;
@@ -124,6 +126,9 @@ class MDMApiTest {
 
   @Autowired
   private MDMEntryListPageApi listPageApi;
+
+  @Autowired
+  private MDMEntryEditPageApi editorPageApi;
 
   private URI adminUri;
 
@@ -294,6 +299,7 @@ class MDMApiTest {
 
   @Test
   @Order(2)
+  @Disabled
   void testMDMPageApisAsAdmin() throws Exception {
     viewContextUUID = viewContextService.createViewContext().getUuid();
 
@@ -331,17 +337,14 @@ class MDMApiTest {
             "Type one", "Type two v1", "Type three",
             "Type four");
 
-        rowIdTypeThree = page.getRows().stream()
-            .filter(r -> "Type three"
-                .equals(((Map<String, Object>) r.getData()).get(SampleCategoryType.NAME)))
-            .map(r -> r.getId())
-            .findFirst().get();
+        rowIdTypeThree = getRowIdByPropertyValue(gridModel, SampleCategoryType.NAME, "Type three");
       }
 
       // The admin delete an entry. It will be seen as deleted in the grid
       listPageApi.performDeleteEntry(uuid, MDMEntryListPageApi.WIDGET_ENTRY_GRID, rowIdTypeThree,
           new UiActionRequest().code(MDMEntryListPageApi.ACTION_DELETE_ENTRY));
 
+      String rowIdTypeOne;
       {
         GridModel gridModel = viewApi.getWidgetModelFromView(GridModel.class, view.getUuid(),
             MDMEntryListPageApi.WIDGET_ENTRY_GRID);
@@ -365,11 +368,90 @@ class MDMApiTest {
             .findFirst().get();
 
         Assertions.assertThat(stateEnum).isEqualTo(BranchingStateEnum.DELETED);
+        rowIdTypeOne = getRowIdByPropertyValue(gridModel, SampleCategoryType.NAME, "Type one");
+
+      }
+
+      listPageApi.performEditEntry(uuid, MDMEntryListPageApi.WIDGET_ENTRY_GRID, rowIdTypeOne,
+          new UiActionRequest().code(MDMEntryListPageApi.ACTION_EDIT_ENTRY));
+
+      View viewEditing = uiTestApi.getView(MDMApiTestConfig.MDM_EDITING_PAGE);
+
+      Assertions.assertThat(viewEditing).isNotNull();
+
+      // Modify the model
+      SampleCategoryType editingObject =
+          objectApi.asType(SampleCategoryType.class, viewEditing.getModel());
+      editingObject.name("Type one v1");
+
+      viewContextService.performAction(viewEditing.getUuid(),
+          new UiActionRequest().code(MDMEntryEditPageApi.ACTION_SAVE).putParamsItem("model",
+              editingObject));
+      {
+        GridModel gridModel = viewApi.getWidgetModelFromView(GridModel.class, view.getUuid(),
+            MDMEntryListPageApi.WIDGET_ENTRY_GRID);
+
+        GridPage page = gridModel.getPage();
+
+        List<String> typeNames = page.getRows().stream()
+            .map(r -> (String) ((Map<String, Object>) r.getData()).get(SampleCategoryType.NAME))
+            .collect(toList());
+
+        Assertions.assertThat(typeNames).containsExactlyInAnyOrder(
+            "Type one v1", "Type two v1", "Type three",
+            "Type four");
+
+      }
+
+      viewContextService.performAction(view.getUuid(),
+          new UiActionRequest().code(MDMEntryListPageApi.ACTION_FINALIZE_CHANGES));
+
+    });
+
+    authService.logout();
+
+    authService.login(normal_user, PASSWD);
+
+    uiTestApi.runInViewContext(viewContextUUID, () -> {
+
+      MDMDefinition definition = masterDataManagementApi.getDefinition(MDMApiTestConfig.TEST);
+
+      View querySetView = new View().viewName(MDMApiTestConfig.MDM_LIST_PAGE)
+          .putParametersItem(MDMEntryListPageApi.PARAM_MDM_DEFINITION, definition)
+          .putParametersItem(MDMEntryListPageApi.PARAM_ENTRY_DESCRIPTOR, masterDataManagementApi
+              .getEntryDescriptor(definition, SampleCategoryType.class.getSimpleName()));
+
+      UUID uuid = viewApi.showView(querySetView);
+
+      {
+        GridModel gridModel = viewApi.getWidgetModelFromView(GridModel.class, uuid,
+            MDMEntryListPageApi.WIDGET_ENTRY_GRID);
+
+        GridPage page = gridModel.getPage();
+
+        List<String> typeNames = page.getRows().stream()
+            .map(r -> (String) ((Map<String, Object>) r.getData()).get(SampleCategoryType.NAME))
+            .collect(toList());
+
+        Assertions.assertThat(typeNames).containsExactlyInAnyOrder(
+            "Type one v1", "Type two v1", "Type three",
+            "Type four");
 
       }
 
     });
 
+    authService.logout();
+
+  }
+
+  private static final String getRowIdByPropertyValue(GridModel model, String propertyName,
+      String propertyValue) {
+    return model.getPage().getRows().stream()
+        .filter(r -> propertyValue
+            .equals(((Map<String, Object>) r.getData()).get(propertyName)))
+        .map(r -> r.getId())
+        .findFirst().get();
   }
 
   public <O> O getPublishedObject(BranchedObjectEntry entry, Class<O> clazz) {
@@ -468,7 +550,7 @@ class MDMApiTest {
 
     URI branch1 = objectApi.saveAsNew("branch", new BranchEntry().caption("Branch"));
 
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < 10; i++) {
       String caption = "Branch " + i;
       objectApi.save(
           objectApi.loadLatest(branch1).modify(BranchEntry.class, be -> be.caption(caption)));

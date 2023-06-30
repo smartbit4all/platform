@@ -3,6 +3,8 @@ package org.smartbit4all.testing.mdm;
 import java.util.Arrays;
 import org.smartbit4all.api.binarydata.BinaryContent;
 import org.smartbit4all.api.config.PlatformApiConfig;
+import org.smartbit4all.api.invocation.Invocations;
+import org.smartbit4all.api.invocation.ProviderApiInvocationHandler;
 import org.smartbit4all.api.mdm.MDMDefinitionOption;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.object.bean.AggregationKind;
@@ -19,6 +21,8 @@ import org.smartbit4all.api.view.ViewApi;
 import org.smartbit4all.api.view.ViewApiImpl;
 import org.smartbit4all.api.view.ViewContextService;
 import org.smartbit4all.api.view.ViewContextServiceImpl;
+import org.smartbit4all.bff.api.mdm.MDMEntryEditPageApi;
+import org.smartbit4all.bff.api.mdm.MDMEntryListPageApi;
 import org.smartbit4all.core.io.TestFSCleaner;
 import org.smartbit4all.core.io.TestFSConfig;
 import org.smartbit4all.core.object.ObjectReferenceConfigs;
@@ -44,6 +48,7 @@ public class MDMApiTestConfig extends TestFSCleaner {
   static final String TEST = "Test";
   static final String SAMPLE = "sample";
 
+  public static final String MDM_EDITING_PAGE = "MDMEditingPage";
   public static final String MDM_LIST_PAGE = "MDMListPage";
   public static final String MDM_MAIN_PAGE = "MDMMainPage";
 
@@ -53,9 +58,10 @@ public class MDMApiTestConfig extends TestFSCleaner {
         new MDMDefinitionOption(new MDMDefinition().name(TEST)
             .adminGroupName("org.smartbit4all.testing.mdm.MDMSecurityOptions.admin"));
     result.addDefaultDescriptor(SampleCategoryType.class)
-        .uniqueIdentifierPath(Arrays.asList(SampleCategoryType.CODE));
+        .uniqueIdentifierPath(Arrays.asList(SampleCategoryType.CODE))
+        .editorViewName(MDM_EDITING_PAGE);
     result.addDefaultDescriptor(SampleCategory.class)
-        .uniqueIdentifierPath(Arrays.asList(SampleCategory.NAME));
+        .uniqueIdentifierPath(Arrays.asList(SampleCategory.NAME)).editorViewName(MDM_EDITING_PAGE);
     result.addDefaultDescriptor(PropertyDefinitionData.class);
     result.addObjectDefinitionData();
     return result;
@@ -79,8 +85,19 @@ public class MDMApiTestConfig extends TestFSCleaner {
   }
 
   @Bean
-  MDMEntryListPageApiImplTest mdmEntryListPageApiImplTest() {
+  MDMEntryListPageApi mdmEntryListPageApiImplTest() {
     return new MDMEntryListPageApiImplTest();
+  }
+
+  @Bean
+  ProviderApiInvocationHandler<MDMEntryListPageApi> mdmEntryListPageApiImplTestProvider(
+      MDMEntryListPageApi api) {
+    return Invocations.asProvider(MDMEntryListPageApi.class, api);
+  }
+
+  @Bean
+  MDMEntryEditPageApi mdmEntryEditPageApi() {
+    return new MEMEntryEditingPageApiImplTest();
   }
 
   @Bean

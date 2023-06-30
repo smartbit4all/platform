@@ -370,7 +370,7 @@ components:
             $ref: '#/components/schemas/ComponentModelChange'
     View:
       type: object
-      required: [uuid,viewName,state,type,parameters,closedChildrenViews,downloadableItems,actions,widgetModels,callbacks]
+      required: [uuid,viewName,state,type,parameters,closedChildrenViews,downloadableItems,actions,widgetModels,callbacks, eventHandlers]
       properties:
         uuid:
           type: string
@@ -411,6 +411,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/UiAction'
+        eventHandlers:
+          type: array
+          items:
+            $ref: '#/components/schemas/ViewEventHandler'
         widgetModels:
           type: string
           additionalProperties:
@@ -425,6 +429,25 @@ components:
           type: string
           additionalProperties:
             type: object
+    ViewEventHandler:
+      type: object
+      description: |
+        An event handler is a special callback function to call when the given event is occurred. So the event handler
+        can be an action as is or can be fired on a before or after event
+      required: []
+      properties:
+        path:
+          type: array
+          description: |
+            The event handler path defines the location of the event. We can use regular expressions to fine tune the
+            event definition. In this way we can add before event handler for all the actions we have. The actions will have
+            a predefined path. The path of the normal actions is the action code itself. 
+          items:
+            type: string
+        viewEventType:
+          enum: [before, instead, after]
+        invocationRequestDefinition:
+          type: InvocationRequestDefinition
     ViewData:
       type: object
       required: [uuid,viewName,state,type]

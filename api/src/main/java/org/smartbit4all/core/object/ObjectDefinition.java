@@ -26,6 +26,8 @@ import static java.util.stream.Collectors.toList;
  */
 public final class ObjectDefinition<T> {
 
+  public static final String URI_PROPERTY = "uri";
+
   /**
    * The qualified name is the globally unique name of the given object. The namespace and the name
    * looks like a Java class name. If we need to change the format to use as a path or similar then
@@ -42,9 +44,9 @@ public final class ObjectDefinition<T> {
    * The URI property of the object. The URI is the unique identifier and storage locator of the
    * given object. It's mandatory if we would like to use it as storage root object.
    */
-  private BiConsumer<T, URI> uriSetter;
+  private BiConsumer<Object, URI> uriSetter;
 
-  private Function<T, URI> uriGetter;
+  private Function<Object, URI> uriGetter;
 
   /**
    * The ID property of the object. The ID is a unique identifier that technically unique but
@@ -158,19 +160,19 @@ public final class ObjectDefinition<T> {
     this.defaultSerializer = defaultSerializer;
   }
 
-  public final BiConsumer<T, URI> getUriSetter() {
+  public final BiConsumer<Object, URI> getUriSetter() {
     return uriSetter;
   }
 
-  public final void setUriSetter(BiConsumer<T, URI> uriSetter) {
+  public final void setUriSetter(BiConsumer<Object, URI> uriSetter) {
     this.uriSetter = uriSetter;
   }
 
-  public final Function<T, URI> getUriGetter() {
+  public final Function<Object, URI> getUriGetter() {
     return uriGetter;
   }
 
-  public final void setUriGetter(Function<T, URI> uriGetter) {
+  public final void setUriGetter(Function<Object, URI> uriGetter) {
     this.uriGetter = uriGetter;
   }
 
@@ -182,16 +184,35 @@ public final class ObjectDefinition<T> {
     return obj != null ? uriGetter.apply(obj) : null;
   }
 
-  public void setUri(T obj, URI uri) {
-    if (obj != null) {
-      uriSetter.accept(obj, uri);
+  public URI getUriFromMap(Map<String, Object> obj) {
+    if (obj == null) {
+      return null;
     }
+    String uriPropertyName = getUriPropertyName();
+    Object uriValue = obj.get(uriPropertyName);
+    URI result = null;
+    if (uriValue instanceof String) {
+      result = URI.create((String) uriValue);
+    } else if (uriValue instanceof URI) {
+      result = (URI) uriValue;
+    }
+    return result;
   }
 
-  @SuppressWarnings("unchecked")
-  public void setUriToObj(Object obj, URI uri) {
-    if (obj != null) {
-      uriSetter.accept((T) obj, uri);
+  public String getUriPropertyName() {
+    String uriPropertyName = URI_PROPERTY;
+    if (definitionData != null && definitionData.getUriProperty() != null) {
+      uriPropertyName = definitionData.getUriProperty();
+    }
+    return uriPropertyName;
+  }
+
+  public void setUri(Object obj, URI uri) {
+    if (obj instanceof Map) {
+      Map<String, Object> objAsMap = ((Map<String, Object>) obj);
+      objAsMap.put(getUriPropertyName(), uri);
+    } else if (obj != null) {
+      uriSetter.accept(obj, uri);
     }
   }
 
@@ -253,7 +274,8 @@ public final class ObjectDefinition<T> {
   }
 
   public final boolean hasUri() {
-    return uriGetter != null && uriSetter != null;
+    return (uriGetter != null && uriSetter != null)
+        || (definitionData != null && definitionData.getUriProperty() != null);
   }
 
   public final boolean hasId() {

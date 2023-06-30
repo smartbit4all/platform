@@ -79,3 +79,13 @@ components:
           type: integer
           format: int64
           description: The current value of the sequence.
+    StoredCollectionDescriptor:
+      type: object
+      description: |
+        This object can be used as parameter object to name a stored object managed by the CollectionApi.
+      required: [uri, name]
+      properties:
+        name:
+          type: string
+        schema:
+          type: string

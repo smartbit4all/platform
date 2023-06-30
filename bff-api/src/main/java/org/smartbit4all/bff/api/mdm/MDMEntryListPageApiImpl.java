@@ -1,11 +1,16 @@
 package org.smartbit4all.bff.api.mdm;
 
 import java.net.URI;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BiConsumer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.SearchIndex;
 import org.smartbit4all.api.grid.bean.GridModel;
+import org.smartbit4all.api.grid.bean.GridRow;
+import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.mdm.MDMEntryApi;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
@@ -16,6 +21,7 @@ import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.view.PageApiImpl;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
+import org.smartbit4all.api.view.bean.ViewType;
 import org.smartbit4all.api.view.grid.GridModelApi;
 import org.smartbit4all.api.view.grid.GridModels;
 import org.smartbit4all.core.object.ObjectDefinition;
@@ -25,6 +31,8 @@ import static java.util.stream.Collectors.toList;
 
 public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
     implements MDMEntryListPageApi {
+
+  private static final Logger log = LoggerFactory.getLogger(MDMEntryListPageApiImpl.class);
 
   private static final String PROPERTY_URI = "uri";
 
@@ -43,6 +51,9 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
 
   @Autowired
   private SessionApi sessionApi;
+
+  @Autowired
+  private InvocationApi invocationApi;
 
   /**
    * The name of the default editor in the application. It is opened as editor if the editor view is
@@ -165,8 +176,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
     // We need to pass the override of the save action.
     viewApi.showView(
         new View()
-            .viewName(context.entryDescriptor.getEditorViewName() == null ? defaultEditorViewName
-                : context.entryDescriptor.getEditorViewName())
+            .viewName(getEditorViewName(context))
             .putParametersItem(PARAM_MDM_DEFINITION, context.definition)
             .putParametersItem(PARAM_ENTRY_DESCRIPTOR, context.entryDescriptor));
   }
@@ -182,21 +192,33 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
   public void performEditEntry(UUID viewUuid, String gridId, String rowId,
       UiActionRequest request) {
     // We need to pass the override of the save action.
-    performActionOnEntry(getContextByViewUUID(viewUuid), gridId, rowId, request, (u, ctx) -> {
+    performActionOnGridRow(getContextByViewUUID(viewUuid), gridId, rowId, (r, ctx) -> {
+      BranchedObjectEntry branchedObjectEntry =
+          objectApi.asType(BranchedObjectEntry.class, r.getData());
       viewApi.showView(
           new View()
-              .viewName(ctx.entryDescriptor.getEditorViewName() == null ? defaultEditorViewName
-                  : ctx.entryDescriptor.getEditorViewName())
+              .viewName(getEditorViewName(ctx))
+              .type(ViewType.DIALOG)
               .putParametersItem(PARAM_MDM_DEFINITION, ctx.definition)
-              .putParametersItem(PARAM_ENTRY_DESCRIPTOR, ctx.entryDescriptor).objectUri(u));
+              .putParametersItem(PARAM_ENTRY_DESCRIPTOR, ctx.entryDescriptor)
+              .putParametersItem(PARAM_BRANCHED_OBJECT_ENTRY, branchedObjectEntry)
+              .putParametersItem(PARAM_MDM_LIST_VIEW, viewUuid)
+              .model(constructEditingObject(branchedObjectEntry)));
     });
+  }
+
+  private final Object constructEditingObject(
+      BranchedObjectEntry branchedObjectEntry) {
+    URI uri = branchedObjectEntry.getBranchUri() != null ? branchedObjectEntry.getBranchUri()
+        : branchedObjectEntry.getOriginalUri();
+    return objectApi.load(uri).getObjectAsMap();
   }
 
   @Override
   public void performDeleteEntry(UUID viewUuid, String gridId, String rowId,
       UiActionRequest request) {
     PageContext context = getContextByViewUUID(viewUuid);
-    performActionOnEntry(context, gridId, rowId, request,
+    performActionOnEntry(context, gridId, rowId,
         (u, ctx) -> {
           ctx.entryApi.deleteObject(u);
         });
@@ -207,15 +229,50 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
   public void performCancelDraftEntry(UUID viewUuid, String gridId, String rowId,
       UiActionRequest request) {
     PageContext context = getContextByViewUUID(viewUuid);
-    performActionOnEntry(context, gridId, rowId, request, (u, ctx) -> ctx.entryApi.cancelDraft(u));
+    performActionOnEntry(context, gridId, rowId, (u, ctx) -> ctx.entryApi.cancelDraft(u));
     refreshGrid(context);
   }
 
-  private final void performActionOnEntry(PageContext context, String gridId, String rowId,
-      UiActionRequest request,
-      BiConsumer<URI, PageContext> action) {
+  @Override
+  public void saveNewObject(UUID viewUuid, Object editingObject) {
+    PageContext context = getContextByViewUUID(viewUuid);
+    ObjectDefinition<?> objectDefinition = context.getBranchedObjectDefinition();
+    context.entryApi.saveAsDraft(objectDefinition, objectDefinition.toMap(editingObject));
+    refreshGrid(context);
+  }
+
+  @Override
+  public void saveModificationObject(UUID viewUuid, Object editingObject,
+      BranchedObjectEntry branchedObjectEntry) {
+    PageContext context = getContextByViewUUID(viewUuid);
+    ObjectDefinition<?> objectDefinition = context.getBranchedObjectDefinition();
+    context.entryApi.saveAsDraft(objectDefinition, objectDefinition.toMap(editingObject));
+    refreshGrid(context);
+  }
+
+  private final void performActionOnGridRow(PageContext context, String gridId, String rowId,
+      BiConsumer<GridRow, PageContext> action) {
     GridModel gridModel =
-        viewApi.getWidgetModelFromView(GridModel.class, context.view.getUuid(), WIDGET_ENTRY_GRID);
+        viewApi.getWidgetModelFromView(GridModel.class, context.view.getUuid(), gridId);
+    Optional<GridRow> gridRow = GridModels.findGridRowById(gridModel, rowId);
+    gridRow.ifPresent(r -> action.accept(r, context));
+  }
+
+  private final void performActionOnEntry(PageContext context, String gridId, String rowId,
+      BiConsumer<URI, PageContext> action) {
+    performActionOnGridRow(context, gridId, rowId, (r, ctx) -> {
+      Object valueFromGridRow =
+          GridModels.getValueFromGridRow(r, PROPERTY_URI);
+      URI objectUri = valueFromGridRow instanceof URI ? (URI) valueFromGridRow
+          : (valueFromGridRow instanceof String ? URI.create((String) valueFromGridRow) : null);
+
+      if (objectUri != null) {
+        action.accept(objectUri, context);
+      }
+    });
+
+    GridModel gridModel =
+        viewApi.getWidgetModelFromView(GridModel.class, context.view.getUuid(), gridId);
     Object valueFromGridRow =
         GridModels.getValueFromGridRow(gridModel, rowId, PROPERTY_URI);
     URI objectUri = valueFromGridRow instanceof URI ? (URI) valueFromGridRow
@@ -224,12 +281,16 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
     if (objectUri != null) {
       action.accept(objectUri, context);
     }
-
   }
 
   public final MDMEntryListPageApi defaultEditorViewName(String defaultEditorViewName) {
     this.defaultEditorViewName = defaultEditorViewName;
     return this;
+  }
+
+  private final String getEditorViewName(PageContext context) {
+    return context.entryDescriptor.getEditorViewName() == null ? defaultEditorViewName
+        : context.entryDescriptor.getEditorViewName();
   }
 
 }

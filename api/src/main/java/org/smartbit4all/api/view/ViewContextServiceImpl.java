@@ -1,7 +1,5 @@
 package org.smartbit4all.api.view;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -20,6 +18,11 @@ import java.util.function.UnaryOperator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.CollectionApi;
+import org.smartbit4all.api.invocation.ApiNotFoundException;
+import org.smartbit4all.api.invocation.InvocationApi;
+import org.smartbit4all.api.invocation.bean.InvocationRequest;
+import org.smartbit4all.api.object.bean.ObjectPropertyResolverContext;
+import org.smartbit4all.api.object.bean.ObjectPropertyResolverContextObject;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.exception.ViewContextMissigException;
 import org.smartbit4all.api.view.annotation.ActionHandler;
@@ -41,6 +44,7 @@ import org.smartbit4all.api.view.bean.ViewContextChange;
 import org.smartbit4all.api.view.bean.ViewContextData;
 import org.smartbit4all.api.view.bean.ViewContextUpdate;
 import org.smartbit4all.api.view.bean.ViewData;
+import org.smartbit4all.api.view.bean.ViewEventHandler;
 import org.smartbit4all.api.view.bean.ViewState;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
@@ -54,6 +58,8 @@ import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.AnnotationUtils;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 public class ViewContextServiceImpl implements ViewContextService {
 
@@ -108,6 +114,9 @@ public class ViewContextServiceImpl implements ViewContextService {
 
   @Autowired
   private CollectionApi collectionApi;
+
+  @Autowired
+  private InvocationApi invocationApi;
 
   private Supplier<Storage> storage = new Supplier<Storage>() {
 
@@ -512,10 +521,16 @@ public class ViewContextServiceImpl implements ViewContextService {
     Object api = apiByViewName.get(view.getViewName());
     Objects.requireNonNull(api, "API not found for view " + view.getViewName());
     Method method = getMethodForCode(actionMethodsByView, view.getViewName(), request.getCode());
-    if (method == null) {
+    ViewEventApi eventApiImpl = new ViewEventApiImpl(view);
+    ViewEventDescriptor eventDescriptor =
+        eventApiImpl.get(ViewEventApi.ACTION, request.getCode());
+    if (method == null && eventDescriptor.getInsteadOf() == null) {
       throw new IllegalStateException("No actionHandler for request! " + request);
     }
-    return invokeMethodInternal(method, api, viewUuid, request);
+    ObjectPropertyResolverContext resolverContext =
+        new ObjectPropertyResolverContext().addObjectsItem(
+            new ObjectPropertyResolverContextObject().name("model").uri(view.getObjectUri()));
+    return invokeMethodInternal(eventDescriptor, resolverContext, method, api, viewUuid, request);
   }
 
   @Override
@@ -530,10 +545,20 @@ public class ViewContextServiceImpl implements ViewContextService {
     Objects.requireNonNull(api, "API not found for view " + view.getViewName());
     Method method = getMethodForWidgetAndCode(widgetActionMethodsByViewAndWidget,
         view.getViewName(), widgetId, request.getCode());
-    if (method == null) {
+    ViewEventApi eventApiImpl = new ViewEventApiImpl(view);
+    ViewEventDescriptor eventDescriptor =
+        eventApiImpl.get(ViewEventApi.WIDGET, widgetId, request.getCode());
+    if (method == null && eventDescriptor.getInsteadOf() == null) {
       throw new IllegalStateException("No actionHandler for request! " + request);
     }
-    return invokeMethodInternal(method, api, viewUuid, widgetId, nodeId, request);
+    ObjectPropertyResolverContext resolverContext =
+        new ObjectPropertyResolverContext();
+    // TODO Resolve to use a ObjectNode instead of an URI. In this case we use view.getModel() or
+    // other part of the view directly.
+    // .addObjectsItem(
+    // new ObjectPropertyResolverContextObject().name("model").uri(view.getObjectUri()));
+    return invokeMethodInternal(eventDescriptor, resolverContext, method, api, viewUuid, widgetId,
+        nodeId, request);
   }
 
   /**
@@ -541,24 +566,79 @@ public class ViewContextServiceImpl implements ViewContextService {
    *        invocation.
    * @return
    */
-  private ViewContextChange invokeMethodInternal(Method method, Object api, Object... args) {
-    ObjectNode before = beforeInvoke(method.getName());
+  private ViewContextChange invokeMethodInternal(ViewEventDescriptor eventDescriptor,
+      ObjectPropertyResolverContext resolverContext, Method method,
+      Object api, Object... args) {
+    InvocationRequest insteadOfRequest = null;
+    if (eventDescriptor.getInsteadOf() != null) {
+      // TODO resolve with the args.
+      insteadOfRequest = invocationApi.resolve(
+          eventDescriptor.getInsteadOf().getInvocationRequestDefinition(), resolverContext);
+    }
+
+    ObjectNode before = beforeInvoke(getMethodName(insteadOfRequest, method));
+    InvocationRequest invocationRequest = null;
     try {
-      method.invoke(api, args);
+      // The before events can block the execution of the whole action. If an invocation throws
+      // exception then the execution is interrupted. If we would like to continue the execution of
+      // TODO the before events then we have to throw some special exception or so.
+      for (ViewEventHandler eventHandler : eventDescriptor.getBeforeEvents()) {
+        invocationRequest = invocationApi.resolve(
+            eventHandler.getInvocationRequestDefinition(), resolverContext);
+        try {
+          invocationApi.invoke(invocationRequest);
+        } catch (ApiNotFoundException e) {
+          log.error("Unable to call " + invocationRequest, e);
+          throw new IllegalAccessException(e.getMessage());
+        }
+      }
+
+      if (insteadOfRequest == null) {
+        method.invoke(api, args);
+      } else {
+        try {
+          invocationRequest = insteadOfRequest;
+          invocationApi.invoke(invocationRequest);
+        } catch (ApiNotFoundException e) {
+          log.error("Unable to call " + invocationRequest, e);
+          throw new IllegalAccessException(e.getMessage());
+        }
+      }
+
+      // These event won't block the execution. Their exceptions and error are logged but the
+      // execution continues.
+      for (ViewEventHandler eventHandler : eventDescriptor.getAfterEvents()) {
+        invocationRequest = invocationApi.resolve(
+            eventHandler.getInvocationRequestDefinition(), resolverContext);
+        try {
+          invocationApi.invoke(invocationRequest);
+        } catch (Exception e) {
+          log.error("Unable to call " + invocationRequest, e);
+        }
+      }
     } catch (IllegalAccessException e) {
-      throw new RuntimeException("IllegalAccessException when calling method " + method.getName(),
+      throw new RuntimeException(
+          "IllegalAccessException when calling method " + getMethodName(invocationRequest, method),
           e);
     } catch (IllegalArgumentException e) {
-      throw new RuntimeException("IllegalArgumentException when calling method " + method.getName(),
+      throw new RuntimeException(
+          "IllegalArgumentException when calling method "
+              + getMethodName(invocationRequest, method),
           e);
     } catch (InvocationTargetException e) {
       if (e.getCause() instanceof RuntimeException) {
         throw (RuntimeException) e.getCause();
       }
       throw new RuntimeException(
-          "InvocationTargetException without cause calling method " + method.getName(), e);
+          "InvocationTargetException without cause calling method "
+              + getMethodName(invocationRequest, method),
+          e);
     }
-    return afterInvoke(before, method.getName());
+    return afterInvoke(before, getMethodName(invocationRequest, method));
+  }
+
+  private final String getMethodName(InvocationRequest request, Method method) {
+    return request != null ? request.toString() : (method != null ? method.getName() : "unknown");
   }
 
   private ObjectNode beforeInvoke(String methodName) {
