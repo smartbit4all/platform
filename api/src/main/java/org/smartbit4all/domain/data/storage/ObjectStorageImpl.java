@@ -421,6 +421,9 @@ public abstract class ObjectStorageImpl implements ObjectStorage {
   }
 
   public static final URI getUriWithoutVersion(URI uri) {
+    if (uri == null) {
+      return null;
+    }
     String path = uri.getPath();
     String fragment = uri.getFragment();
     int idxVersionPostfix = path.lastIndexOf(versionPostfix);

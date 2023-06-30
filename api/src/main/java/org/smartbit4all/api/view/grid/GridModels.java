@@ -32,11 +32,14 @@ public class GridModels {
         .orElseThrow(() -> new IllegalArgumentException(
             "Unable to find the " + rowId + " row."));
 
-    return row.getData() instanceof Map
-        ? ((Map<String, Object>) row.getData()).get(property)
-        : null;
+    return getValueFromGridRow(row, property);
   }
 
-
+  public static final Object getValueFromGridRow(GridRow gridRow, String property) {
+    Objects.requireNonNull(gridRow);
+    return gridRow.getData() instanceof Map
+        ? ((Map<String, Object>) gridRow.getData()).get(property)
+        : null;
+  }
 
 }

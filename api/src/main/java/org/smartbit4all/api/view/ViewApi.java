@@ -157,4 +157,24 @@ public interface ViewApi {
    */
   List<InvocationRequest> getCallbacks(UUID viewUuid, String requestId);
 
+  /**
+   * Retrieve a {@link ViewEventApi} instance for the given view. It can be used for one action
+   * execution cycle. Typically one server call because it refers to the actual loaded View
+   * instance.
+   * 
+   * @param viewUuid The uuid of the view.
+   * @return Always return a new instance from the api. Use cautiously!
+   */
+  ViewEventApi events(UUID viewUuid);
+
+  /**
+   * Retrieve a {@link ViewEventApi} instance for the given view. It can be used for one action
+   * execution cycle. Typically one server call because it refers to the actual loaded View
+   * instance.
+   * 
+   * @param view The view instance to manage.
+   * @return Always return a new instance from the api. Use cautiously!
+   */
+  ViewEventApi events(View view);
+
 }

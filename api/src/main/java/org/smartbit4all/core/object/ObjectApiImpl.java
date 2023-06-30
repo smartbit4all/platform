@@ -152,7 +152,7 @@ public class ObjectApiImpl implements ObjectApi {
     boolean hasUri = definition.getUriGetter() != null;
 
     ObjectNodeData data = new ObjectNodeData()
-        .objectUri(hasUri ? (URI) objectMap.get("uri") : null)
+        .objectUri(hasUri ? asType(URI.class, objectMap.get(ObjectDefinition.URI_PROPERTY)) : null)
         .qualifiedName(definition.getQualifiedName())
         .storageSchema(storageScheme)
         .objectAsMap(objectMap)

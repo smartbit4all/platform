@@ -181,3 +181,19 @@ components:
             the policy is that we are working on the same branch for given object. There can be objects that
             can be edited in local branch but we can have global modifications where we would like to initiate a global
             modification package and publish tha whole at once.
+    MDMEntryEditingObject:
+      type: object
+      description: |
+        A generic object to use as the editing object for the master data management page apis. The list page constructs
+        this object and pass to the editor page. When saving the editing the list can decide what to do. 
+      required: [uri, created, objects]
+      properties:
+        branchObjectEntry:
+          type: BranchedObjectEntry
+          description: The BranchedObjectEntry that is the original data we have.
+        originalObject:
+          type: object
+          description: The original object loaded if any.
+        branchedObject:
+          type: object
+          description: The branched object loaded if any.

@@ -11,6 +11,8 @@ import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.StoredList;
 import org.smartbit4all.api.collection.StoredMap;
@@ -46,6 +48,8 @@ import static java.util.stream.Collectors.toSet;
  *
  */
 public class MDMEntryApiImpl implements MDMEntryApi {
+
+  private static final Logger log = LoggerFactory.getLogger(MDMEntryApiImpl.class);
 
   private static final String[] uriPath = {"uri"};
 
@@ -125,23 +129,33 @@ public class MDMEntryApiImpl implements MDMEntryApi {
     if (object == null) {
       return null;
     }
+    ObjectDefinition<?> definition = objectApi.definition(object.getClass());
+    return saveAsNewPublished(definition, definition.toMap(object));
+  }
+
+  @Override
+  public URI saveAsNewPublished(ObjectDefinition<?> objectDefinition,
+      Map<String, Object> objectAsMap) {
+    Objects.requireNonNull(objectDefinition);
+    Objects.requireNonNull(objectAsMap);
     if (descriptor.getUriConstructor() != null) {
-      ObjectDefinition<?> definition = objectApi.definition(object.getClass());
-      if (definition.isExplicitUri()) {
+      if (objectDefinition.isExplicitUri()) {
         // uriConstructor.apply(object)
         try {
-          definition.setUriToObj(object,
-              (URI) invocationApi
-                  .invoke(invocationApi.prepareByPosition(descriptor.getUriConstructor(), object))
+          objectAsMap.put(ObjectDefinition.URI_PROPERTY,
+              invocationApi
+                  .invoke(
+                      invocationApi.prepareByPosition(descriptor.getUriConstructor(), objectAsMap))
                   .getValue());
         } catch (ApiNotFoundException e) {
           throw new IllegalArgumentException(
-              "Unable to set the explicit uri for the " + object, e);
+              "Unable to set the explicit uri for the " + objectAsMap, e);
         }
       }
     }
-    Object objectToSave = fireBeforeSave(object);
-    URI uri = objectApi.saveAsNew(descriptor.getSchema(), objectToSave);
+    Map<String, Object> objectToSave = fireBeforeSaveNew(objectDefinition, objectAsMap, descriptor);
+    URI uri =
+        objectApi.save(objectApi.create(descriptor.getSchema(), objectDefinition, objectToSave));
     StoredMap storedMap = collectionApi.map(descriptor.getSchema(), getPublishedMapName());
     storedMap.put(getId(objectToSave), uri);
     updatePublishedList(storedMap.uris());
@@ -157,9 +171,17 @@ public class MDMEntryApiImpl implements MDMEntryApi {
     @SuppressWarnings("unchecked")
     ObjectDefinition<?> objectDefinition =
         objectApi.definition(object.getClass());
+    return saveAsDraft(objectDefinition, objectDefinition.toMap(object));
+  }
+
+  @Override
+  public URI saveAsDraft(ObjectDefinition<?> objectDefinition, Map<String, Object> objectAsMap) {
+    Objects.requireNonNull(objectDefinition,
+        "Missing object definition for the master data management.");
     if (!objectDefinition.hasUri()) {
       throw new IllegalArgumentException(
-          "Unable to use master data management api based on stored map if the " + object.getClass()
+          "Unable to use master data management api based on stored map if the "
+              + objectDefinition.getQualifiedName()
               + " doesn't have URI property.");
     }
     // We check if we have the proper branch already or now we have to create a new one.
@@ -168,18 +190,23 @@ public class MDMEntryApiImpl implements MDMEntryApi {
       throw new IllegalStateException(
           "Unable to save draft because the branch can not be identify.");
     }
-    URI publishedUri = getPublishedMap().get(getId(object));
-    Object objectToSave = fireBeforeSave(object);
+    URI publishedUri = getPublishedMap().get(getId(objectAsMap));
     if (publishedUri != null) {
       Map<URI, Supplier<URI>> map = Stream.of(publishedUri).collect(toMap(u -> u, u -> {
-        return () -> objectApi.saveAsNew(descriptor.getSchema(), objectToSave);
+        return () -> {
+          Map<String, Object> objectToSave =
+              fireBeforeSaveNew(objectDefinition, objectAsMap, descriptor);
+          return objectApi
+              .save(objectApi.create(descriptor.getSchema(), objectDefinition, objectToSave));
+        };
       }));
       Map<URI, BranchOperation> branchedObjects =
           branchApi.initBranchedObjects(branchEntry.getUri(), map);
       return branchedObjects.get(publishedUri).getTargetUri();
     } else {
       // Construct a new object on the branch
-      URI newDraftUri = objectApi.saveAsNew(descriptor.getSchema(), objectToSave);
+      URI newDraftUri = objectApi
+          .save(objectApi.create(descriptor.getSchema(), objectDefinition, objectAsMap));
       branchApi.addNewBranchedObjects(branchEntry.getUri(),
           Arrays.asList(newDraftUri));
       return newDraftUri;
@@ -291,17 +318,32 @@ public class MDMEntryApiImpl implements MDMEntryApi {
    * @param object
    * @return
    */
-  private final Object fireBeforeSave(Object object) {
+  private final Map<String, Object> fireBeforeSaveNew(ObjectDefinition<?> objectDefinition,
+      Map<String, Object> object, MDMEntryDescriptor descrtiptor) {
     if (descriptor.getEventHandlersBeforeSave() == null) {
       return object;
     }
-    Object result = object;
+    Map<String, Object> result = object;
     for (InvocationRequest handler : descriptor.getEventHandlersBeforeSave()) {
-      try {
-        result = invocationApi.invoke(invocationApi.prepareByPosition(handler, result)).getValue();
-      } catch (ApiNotFoundException e) {
-        throw new IllegalArgumentException("Unable to run the " + handler
-            + " before save event handler on the " + descriptor + " master data entry.", e);
+      if (handler != null && handler.getParameters() != null
+          && handler.getParameters().size() == 1) {
+        try {
+          Object invocationResult =
+              invocationApi
+                  .invoke(invocationApi.prepareByPosition(handler,
+                      object))
+                  .getValue();
+          if (invocationResult != null) {
+            Map<String, Object> invocationResultMap = objectDefinition.toMap(invocationResult);
+            result.putAll(invocationResultMap);
+          }
+        } catch (ApiNotFoundException e) {
+          throw new IllegalArgumentException("Unable to run the " + handler
+              + " before save event handler on the " + descriptor + " master data entry.", e);
+        }
+      } else {
+        log.error("Unable to call the {} event handler for {} entry.", handler,
+            descrtiptor);
       }
     }
     return result;
