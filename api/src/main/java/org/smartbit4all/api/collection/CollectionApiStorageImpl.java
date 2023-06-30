@@ -116,6 +116,14 @@ public class CollectionApiStorageImpl implements CollectionApi, InitializingBean
   }
 
   @Override
+  public SearchIndex<?> searchIndex(String logicalSchema, String name) {
+    SearchIndex<?> result =
+        searchIndexByName.get(getQualifiedNameOfSearchIndex(logicalSchema, name));
+    Objects.requireNonNull(result, "The " + name + " search index is not available.");
+    return result;
+  }
+
+  @Override
   public <O, F> SearchIndexWithFilterBean<O, F> searchIndex(String logicalSchema, String name,
       Class<O> indexedObject, Class<F> filterObject) {
     @SuppressWarnings("unchecked")
