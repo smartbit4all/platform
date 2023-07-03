@@ -51,11 +51,10 @@ public abstract class PageApiImpl<M> implements PageApi<M> {
   }
 
   protected <T> T extractParam(Class<T> clazz, String paramName, Map<String, Object> parameters) {
-    T result = extractParamUnChecked(clazz, paramName, parameters);
-    if (result == null) {
+    if (!parameters.containsKey(paramName)) {
       throw new IllegalArgumentException(paramName + " parameter not found in UI request");
     }
-    return result;
+    return extractParamUnChecked(clazz, paramName, parameters);
   }
 
   protected <T> T extractParamUnChecked(Class<T> clazz, String paramName,
