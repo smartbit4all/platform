@@ -371,12 +371,16 @@ public class BinaryData {
    *
    * @return The hash if available. Else we get null!
    */
-  public synchronized String hash() throws IOException {
+  public synchronized String hash() {
     // temporary solution
     if (hash == null) {
-      Hasher hasher = Hashing.sha256().newHasher();
-      ByteStreams.copy(inputStream(), Funnels.asOutputStream(hasher));
-      hash = hasher.hash().toString();
+      try {
+        Hasher hasher = Hashing.sha256().newHasher();
+        ByteStreams.copy(inputStream(), Funnels.asOutputStream(hasher));
+        hash = hasher.hash().toString();
+      } catch (IOException e) {
+        log.warn("Error when calculating hash", e);
+      }
     }
     return hash;
   }
