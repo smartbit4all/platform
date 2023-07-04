@@ -1,5 +1,6 @@
 package org.smartbit4all.core.object;
 
+import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,7 +13,6 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import org.smartbit4all.api.object.bean.ObjectNodeData;
 import org.smartbit4all.api.object.bean.ObjectNodeState;
-import static java.util.stream.Collectors.toList;
 
 public final class ObjectNodeList {
 
@@ -124,14 +124,13 @@ public final class ObjectNodeList {
   }
 
   public boolean addAll(Collection<URI> uris) {
-    if (uris == null) {
+    if (uris == null || uris.isEmpty()) {
       return false;
     }
-    boolean result = false;
     for (URI uri : uris) {
-      result = result || add(uri);
+      add(uri);
     }
-    return result;
+    return true;
   }
 
   public ObjectNode set(int idx, ObjectNode node) {
