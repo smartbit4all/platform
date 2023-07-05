@@ -24,11 +24,15 @@ import org.smartbit4all.api.filterexpression.bean.FilterExpressionDataType;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOperandData;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOperation;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy.OrderEnum;
+import org.smartbit4all.api.filterexpression.bean.SearchIndexResultPageConfig;
 import org.smartbit4all.api.formdefinition.bean.SmartFormWidgetType;
 import org.smartbit4all.api.formdefinition.bean.SmartLayoutDefinition;
 import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
 import org.smartbit4all.api.grid.bean.GridModel;
 import org.smartbit4all.api.grid.bean.GridPage;
+import org.smartbit4all.api.grid.bean.GridView;
 import org.smartbit4all.api.mdm.MDMEntryApi;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
@@ -42,6 +46,7 @@ import org.smartbit4all.api.org.OrgApi;
 import org.smartbit4all.api.org.SecurityGroup;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.sample.bean.SampleCategory;
+import org.smartbit4all.api.sample.bean.SampleCategory.ColorEnum;
 import org.smartbit4all.api.sample.bean.SampleCategoryType;
 import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.api.value.ValueSetApi;
@@ -55,6 +60,7 @@ import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.layout.SmartLayoutApi;
 import org.smartbit4all.bff.api.mdm.MDMEntryEditPageApi;
 import org.smartbit4all.bff.api.mdm.MDMEntryListPageApi;
+import org.smartbit4all.bff.api.search.SearchIndexResultPageApi;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectCacheEntry;
 import org.smartbit4all.core.object.ObjectDefinition;
@@ -522,6 +528,65 @@ class MDMApiTest {
 
   }
 
+  @Test
+  @Order(3)
+  void testSearchIndexResultPageApis() throws Exception {
+
+
+    authService.login(normal_user, "asd");
+
+    objectApi.saveAsNew(MDMApiTestConfig.TEST,
+        new SampleCategory().name("Category 1").color(ColorEnum.RED));
+    objectApi.saveAsNew(MDMApiTestConfig.TEST,
+        new SampleCategory().name("Category 2").color(ColorEnum.BLACK));
+    objectApi.saveAsNew(MDMApiTestConfig.TEST,
+        new SampleCategory().name("Category 3").color(ColorEnum.GREEN));
+    objectApi.saveAsNew(MDMApiTestConfig.TEST,
+        new SampleCategory().name("Category 4").color(ColorEnum.WHITE));
+
+    uiTestApi.runInViewContext(viewContextUUID, () -> {
+
+      SearchIndexResultPageConfig config =
+          new SearchIndexResultPageConfig().searchIndexSchema(MDMApiTestConfig.TEST)
+              .searchIndexName(MDMApiTestConfig.SI_SAMPLECATEGORY)
+              .addGridViewOptionsItem(new GridView()
+                  .orderedColumnNames(
+                      Arrays.asList(SampleCategory.NAME, SampleCategory.COLOR, SampleCategory.URI))
+                  .addOrderByListItem(new FilterExpressionOrderBy()
+                      .propertyName(SampleCategory.NAME).order(OrderEnum.DESC)));
+
+      View querySetView = new View().viewName(MDMApiTestConfig.SEARCHINDEX_LIST_PAGE)
+          .objectUri(objectApi.getLatestUri(objectApi.saveAsNew(MDMApiTestConfig.TEST, config)));
+
+      UUID uuid = viewApi.showView(querySetView);
+
+      // TODO This should be called implicitly when doing test
+      ComponentModel componentModel = viewContextService.getComponentModel(uuid);
+
+      View view = viewApi.getView(uuid);
+
+      {
+        GridModel gridModel = viewApi.getWidgetModelFromView(GridModel.class, uuid,
+            SearchIndexResultPageApi.WIDGET_RESULT_GRID);
+
+        GridPage page = gridModel.getPage();
+
+        List<String> typeNames = page.getRows().stream()
+            .map(r -> (String) ((Map<String, Object>) r.getData()).get(SampleCategoryType.NAME))
+            .collect(toList());
+
+        // The changed list is visible for the normal user also.
+        Assertions.assertThat(typeNames).containsExactly(
+            "Category 4", "Category 3", "Category 2", "Category 1");
+
+      }
+
+    });
+
+    authService.logout();
+  }
+
+
   private static final String getRowIdByPropertyValue(GridModel model, String propertyName,
       String propertyValue) {
     return model.getPage().getRows().stream()
@@ -551,7 +616,7 @@ class MDMApiTest {
   }
 
   @Test
-  @Order(3)
+  @Order(4)
   void testObjectPropertyDefinition() {
     MDMEntryApi objectDefinitionMDMApi = masterDataManagementApi.getApi(MDMApiTestConfig.TEST,
         ObjectDefinitionData.class.getSimpleName());
@@ -619,7 +684,7 @@ class MDMApiTest {
   }
 
   @Test
-  @Order(4)
+  @Order(5)
   void testBranchCache() {
 
     ObjectCacheEntry<BranchEntry> branchCacheEntry =
@@ -652,7 +717,7 @@ class MDMApiTest {
   }
 
   @Test
-  @Order(5)
+  @Order(6)
   void testBranchingOperations() {
 
     ObjectCacheEntry<BranchEntry> branchCacheEntry =

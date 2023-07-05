@@ -2,6 +2,8 @@ package org.smartbit4all.testing.mdm;
 
 import java.util.Arrays;
 import org.smartbit4all.api.binarydata.BinaryContent;
+import org.smartbit4all.api.collection.SearchIndex;
+import org.smartbit4all.api.collection.SearchIndexImpl;
 import org.smartbit4all.api.config.PlatformApiConfig;
 import org.smartbit4all.api.invocation.Invocations;
 import org.smartbit4all.api.invocation.ProviderApiInvocationHandler;
@@ -23,6 +25,8 @@ import org.smartbit4all.api.view.ViewContextService;
 import org.smartbit4all.api.view.ViewContextServiceImpl;
 import org.smartbit4all.bff.api.mdm.MDMEntryEditPageApi;
 import org.smartbit4all.bff.api.mdm.MDMEntryListPageApi;
+import org.smartbit4all.bff.api.search.SearchIndexResultPageApi;
+import org.smartbit4all.bff.api.search.SearchIndexResultPageApiImplTest;
 import org.smartbit4all.core.io.TestFSCleaner;
 import org.smartbit4all.core.io.TestFSConfig;
 import org.smartbit4all.core.object.ObjectReferenceConfigs;
@@ -51,6 +55,8 @@ public class MDMApiTestConfig extends TestFSCleaner {
   public static final String MDM_EDITING_PAGE = "MDMEditingPage";
   public static final String MDM_LIST_PAGE = "MDMListPage";
   public static final String MDM_MAIN_PAGE = "MDMMainPage";
+  public static final String SEARCHINDEX_LIST_PAGE = "SearchIndexListPage";
+  public static final String SI_SAMPLECATEGORY = "SampleCategorySearch";
 
   @Bean
   MDMDefinitionOption testMDMOption() {
@@ -98,6 +104,19 @@ public class MDMApiTestConfig extends TestFSCleaner {
   @Bean
   MDMEntryEditPageApi mdmEntryEditPageApi() {
     return new MEMEntryEditingPageApiImplTest();
+  }
+
+  @Bean
+  SearchIndexResultPageApi searchIndexResultPageApiImplTest() {
+    return new SearchIndexResultPageApiImplTest();
+  }
+
+  @Bean
+  SearchIndex<SampleCategory> searchIndexSampleCategory() {
+    return new SearchIndexImpl<>(TEST, SI_SAMPLECATEGORY, TEST, SampleCategory.class)
+        .map(SampleCategory.NAME, SampleCategory.NAME)
+        .map(SampleCategory.COLOR, SampleCategory.COLOR)
+        .map(SampleCategory.URI, SampleCategory.URI);
   }
 
   @Bean
