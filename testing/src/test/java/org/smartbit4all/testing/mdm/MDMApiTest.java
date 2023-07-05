@@ -10,7 +10,6 @@ import java.util.UUID;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -132,6 +131,8 @@ class MDMApiTest {
 
   private URI adminUri;
 
+  private URI normalUri;
+
   private UUID viewContextUUID;
 
   private static final String PASSWD =
@@ -146,7 +147,7 @@ class MDMApiTest {
 
     adminUri = createUser(admin, "Adminisztrátor Aladár", MDMSecurityOptions.admin);
 
-    adminUri = createUser(normal_user, "Publikus József");
+    normalUri = createUser(normal_user, "Publikus József");
 
   }
 
@@ -299,7 +300,6 @@ class MDMApiTest {
 
   @Test
   @Order(2)
-  @Disabled
   void testMDMPageApisAsAdmin() throws Exception {
     viewContextUUID = viewContextService.createViewContext().getUuid();
 
@@ -403,14 +403,11 @@ class MDMApiTest {
 
       }
 
-      viewContextService.performAction(view.getUuid(),
-          new UiActionRequest().code(MDMEntryListPageApi.ACTION_FINALIZE_CHANGES));
-
     });
 
     authService.logout();
 
-    authService.login(normal_user, PASSWD);
+    authService.login(normal_user, "asd");
 
     uiTestApi.runInViewContext(viewContextUUID, () -> {
 
@@ -423,6 +420,9 @@ class MDMApiTest {
 
       UUID uuid = viewApi.showView(querySetView);
 
+      // TODO This should be called implicitly when doing test
+      ComponentModel componentModel = viewContextService.getComponentModel(uuid);
+
       {
         GridModel gridModel = viewApi.getWidgetModelFromView(GridModel.class, uuid,
             MDMEntryListPageApi.WIDGET_ENTRY_GRID);
@@ -433,9 +433,86 @@ class MDMApiTest {
             .map(r -> (String) ((Map<String, Object>) r.getData()).get(SampleCategoryType.NAME))
             .collect(toList());
 
+        // Noting happened up till now for the public user.
         Assertions.assertThat(typeNames).containsExactlyInAnyOrder(
-            "Type one v1", "Type two v1", "Type three",
+            "Type one", "Type two v1", "Type three",
             "Type four");
+
+      }
+
+    });
+
+    authService.logout();
+
+    authService.login(admin, "asd");
+
+    uiTestApi.runInViewContext(viewContextUUID, () -> {
+
+      MDMDefinition definition = masterDataManagementApi.getDefinition(MDMApiTestConfig.TEST);
+
+      View querySetView = new View().viewName(MDMApiTestConfig.MDM_LIST_PAGE)
+          .putParametersItem(MDMEntryListPageApi.PARAM_MDM_DEFINITION, definition)
+          .putParametersItem(MDMEntryListPageApi.PARAM_ENTRY_DESCRIPTOR, masterDataManagementApi
+              .getEntryDescriptor(definition, SampleCategoryType.class.getSimpleName()));
+
+      UUID uuid = viewApi.showView(querySetView);
+
+      // TODO This should be called implicitly when doing test
+      ComponentModel componentModel = viewContextService.getComponentModel(uuid);
+
+      // Call the finalize action.
+      viewContextService.performAction(uuid,
+          new UiActionRequest().code(MDMEntryListPageApi.ACTION_FINALIZE_CHANGES));
+
+      {
+        GridModel gridModel = viewApi.getWidgetModelFromView(GridModel.class, uuid,
+            MDMEntryListPageApi.WIDGET_ENTRY_GRID);
+
+        GridPage page = gridModel.getPage();
+
+        List<String> typeNames = page.getRows().stream()
+            .map(r -> (String) ((Map<String, Object>) r.getData()).get(SampleCategoryType.NAME))
+            .collect(toList());
+
+        // The changed list is visible for the admin user also.
+        Assertions.assertThat(typeNames).containsExactlyInAnyOrder(
+            "Type one v1", "Type two v1", "Type four");
+
+      }
+
+    });
+
+    authService.logout();
+
+    authService.login(normal_user, "asd");
+
+    uiTestApi.runInViewContext(viewContextUUID, () -> {
+
+      MDMDefinition definition = masterDataManagementApi.getDefinition(MDMApiTestConfig.TEST);
+
+      View querySetView = new View().viewName(MDMApiTestConfig.MDM_LIST_PAGE)
+          .putParametersItem(MDMEntryListPageApi.PARAM_MDM_DEFINITION, definition)
+          .putParametersItem(MDMEntryListPageApi.PARAM_ENTRY_DESCRIPTOR, masterDataManagementApi
+              .getEntryDescriptor(definition, SampleCategoryType.class.getSimpleName()));
+
+      UUID uuid = viewApi.showView(querySetView);
+
+      // TODO This should be called implicitly when doing test
+      ComponentModel componentModel = viewContextService.getComponentModel(uuid);
+
+      {
+        GridModel gridModel = viewApi.getWidgetModelFromView(GridModel.class, uuid,
+            MDMEntryListPageApi.WIDGET_ENTRY_GRID);
+
+        GridPage page = gridModel.getPage();
+
+        List<String> typeNames = page.getRows().stream()
+            .map(r -> (String) ((Map<String, Object>) r.getData()).get(SampleCategoryType.NAME))
+            .collect(toList());
+
+        // The changed list is visible for the normal user also.
+        Assertions.assertThat(typeNames).containsExactlyInAnyOrder(
+            "Type one v1", "Type two v1", "Type four");
 
       }
 

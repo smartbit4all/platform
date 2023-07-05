@@ -1,6 +1,5 @@
 package org.smartbit4all.bff.api.mdm;
 
-import java.util.Map;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,11 +40,12 @@ public class MDMEntryEditPageApiImpl extends PageApiImpl<Object>
         extractParam(UUID.class, MDMEntryListPageApi.PARAM_MDM_LIST_VIEW, view.getParameters());
     BranchedObjectEntry branchedObjectEntry = extractParam(BranchedObjectEntry.class,
         MDMEntryListPageApi.PARAM_BRANCHED_OBJECT_ENTRY, view.getParameters());
+    view.setModel(request.getParams().get("model"));
     if (branchedObjectEntry == null) {
       // It is was a new object editing. So we call the create new object of the list page.
-      listPageApi.saveNewObject(parentUUID, (Map<String, Object>) view.getModel());
+      listPageApi.saveNewObject(parentUUID, view.getModel());
     } else {
-      listPageApi.saveModificationObject(viewUuid, (Map<String, Object>) view.getModel(),
+      listPageApi.saveModificationObject(parentUUID, view.getModel(),
           branchedObjectEntry);
       // We have the branched object entry so it will be a modification rather.
     }

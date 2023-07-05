@@ -212,6 +212,10 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
     optionsSaved = true;
   }
 
+  private String constructEntrySecurityGroupName(MDMDefinition definition, MDMEntryDescriptor d) {
+    return d.getAdminGroupName() != null ? d.getAdminGroupName() : definition.getAdminGroupName();
+  }
+
   private void synchronizeSecurityOptions() {
     if (orgApi == null) {
       log.error(
@@ -231,7 +235,9 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
         definitionGroupUri = getOrCreateDefinitionGroup(definition);
         definition.getDescriptors().values().stream().forEach(descriptor -> {
           Group descriptionGroup = getOrCreateEntryGroup(definition, descriptor);
-          orgApi.addChildGroup(orgApi.getGroup(definitionGroupUri), descriptionGroup);
+          if (descriptionGroup != null) {
+            orgApi.addChildGroup(orgApi.getGroup(definitionGroupUri), descriptionGroup);
+          }
         });
       } else {
         log.error(
@@ -243,24 +249,22 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
 
   private final Group getOrCreateEntryGroup(MDMDefinition definition,
       MDMEntryDescriptor descriptor) {
-    String entryGroupName = constructEntrySecurityGroupName(definition, descriptor);
-    Group descriptionGroup = orgApi.getGroupByName(entryGroupName);
-    if (descriptionGroup == null) {
-      URI saveGroup = orgApi.saveGroup(new Group().name(entryGroupName)
-          .builtIn(Boolean.TRUE)
-          .title(entryGroupName)
-          .description("The administration group for the "
-              + definition.getName() + StringConstant.DOT + descriptor.getName()
-              + " master data management entry."));
-      descriptionGroup = orgApi.getGroup(saveGroup);
+    Group descriptionGroup = null;
+    String entryGroupName = descriptor.getAdminGroupName();
+    // If we set an admin group that is different from definition admin group then we create it.
+    if (entryGroupName != null && !entryGroupName.equals(definition.getAdminGroupName())) {
+      descriptionGroup = orgApi.getGroupByName(entryGroupName);
+      if (descriptionGroup == null) {
+        URI saveGroup = orgApi.saveGroup(new Group().name(entryGroupName)
+            .builtIn(Boolean.TRUE)
+            .title(entryGroupName)
+            .description("The administration group for the "
+                + definition.getName() + StringConstant.DOT + descriptor.getName()
+                + " master data management entry."));
+        descriptionGroup = orgApi.getGroup(saveGroup);
+      }
     }
     return descriptionGroup;
-  }
-
-  private String constructEntrySecurityGroupName(MDMDefinition definition,
-      MDMEntryDescriptor descriptor) {
-    return descriptor.getAdminGroupName() == null ? definition.getAdminGroupName()
-        : descriptor.getAdminGroupName();
   }
 
   private final URI getOrCreateDefinitionGroup(MDMDefinition definition) {

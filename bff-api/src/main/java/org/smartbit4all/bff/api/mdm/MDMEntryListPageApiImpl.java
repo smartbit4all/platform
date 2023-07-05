@@ -109,6 +109,10 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
       return objectApi.definition(constructObjectDefinitionName);
     }
 
+    ObjectDefinition<?> getObjectDefinition() {
+      return objectApi.definition(entryDescriptor.getTypeQualifiedName());
+    }
+
   }
 
   private PageContext getContextByViewUUID(UUID viewUuid) {
@@ -236,7 +240,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
   @Override
   public void saveNewObject(UUID viewUuid, Object editingObject) {
     PageContext context = getContextByViewUUID(viewUuid);
-    ObjectDefinition<?> objectDefinition = context.getBranchedObjectDefinition();
+    ObjectDefinition<?> objectDefinition = context.getObjectDefinition();
     context.entryApi.saveAsDraft(objectDefinition, objectDefinition.toMap(editingObject));
     refreshGrid(context);
   }
@@ -245,7 +249,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
   public void saveModificationObject(UUID viewUuid, Object editingObject,
       BranchedObjectEntry branchedObjectEntry) {
     PageContext context = getContextByViewUUID(viewUuid);
-    ObjectDefinition<?> objectDefinition = context.getBranchedObjectDefinition();
+    ObjectDefinition<?> objectDefinition = context.getObjectDefinition();
     context.entryApi.saveAsDraft(objectDefinition, objectDefinition.toMap(editingObject));
     refreshGrid(context);
   }
