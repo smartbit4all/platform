@@ -370,7 +370,7 @@ components:
             $ref: '#/components/schemas/ComponentModelChange'
     View:
       type: object
-      required: [uuid,viewName,state,type,parameters,closedChildrenViews,downloadableItems,actions,widgetModels,callbacks, eventHandlers]
+      required: [uuid,viewName,state,type,parameters,closedChildrenViews,downloadableItems,actions,widgetModels,callbacks,eventHandlers,layouts]
       properties:
         uuid:
           type: string
@@ -386,6 +386,11 @@ components:
           format: uri
         parameters:
           type: object
+          description: The incoming parameters of the view. If we restart the given view with the same model then this parameters remain.
+          additionalProperties: true
+        variables:
+          type: object
+          description: The variable to store while the page is opened. It will be cleared if we open it again.
           additionalProperties: true
         state:
           $ref: '#/components/schemas/ViewState'
@@ -429,6 +434,10 @@ components:
           type: string
           additionalProperties:
             type: object
+        layouts:
+          description: The layouts defined in the view. This named layouts can be used by the UI to render 
+          additionalProperties: 
+            type: SmartLayoutDefinition
     ViewEventHandler:
       type: object
       description: |

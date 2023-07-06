@@ -509,7 +509,8 @@ public class ViewContextServiceImpl implements ViewContextService {
         .constraints(constraints)
         .actions(view.getActions())
         .valueSets(view.getValueSets())
-        .widgetModels(view.getWidgetModels());
+        .widgetModels(view.getWidgetModels())
+        .layouts(view.getLayouts());
   }
 
   @Override

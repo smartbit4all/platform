@@ -4,7 +4,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.smartbit4all.api.view.bean.UiActionRequest;
+import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.core.object.ObjectMapHelper;
+import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -46,10 +49,76 @@ public abstract class PageApiImpl<M> implements PageApi<M> {
     return getModel(viewUuid);
   }
 
+  /**
+   * Retrieve an instance of the view parameter helper that encapsulate the
+   * {@link View#getParameters()} as value. So if we get values the parameter map will be updated
+   * with the typed object to enhance the subsequent retrieves.
+   * 
+   * @param viewUuid The uuid of the view.
+   * @return
+   */
+  protected ObjectMapHelper parameters(UUID viewUuid) {
+    return parameters(viewApi.getView(viewUuid));
+  }
+
+  /**
+   * Retrieve an instance of the view parameter helper that encapsulate the
+   * {@link View#getParameters()} as value. So if we get values the parameter map will be updated
+   * with the typed object to enhance the subsequent retrieves.
+   * 
+   * @param view The view itself.
+   * @return
+   */
+  protected ObjectMapHelper parameters(View view) {
+    return new ObjectMapHelper(view.getParameters(), objectApi, view.getViewName()
+        + StringConstant.SPACE_HYPHEN_SPACE + view.getUuid() + " view parameters");
+  }
+
+  /**
+   * Retrieve an instance of the view variable helper that encapsulate the
+   * {@link View#getParameters()} as value. So if we get values the parameter map will be updated
+   * with the typed object to enhance the subsequent retrieves.
+   * 
+   * @param viewUuid The uuid of the view.
+   * @return
+   */
+  protected ObjectMapHelper variables(UUID viewUuid) {
+    return parameters(viewApi.getView(viewUuid));
+  }
+
+  /**
+   * Retrieve an instance of the view variables helper that encapsulate the
+   * {@link View#getParameters()} as value. So if we get values the parameter map will be updated
+   * with the typed object to enhance the subsequent retrieves.
+   * 
+   * @param view The view itself.
+   * @return
+   */
+  protected ObjectMapHelper variables(View view) {
+    return new ObjectMapHelper(view.getVariables(), objectApi, view.getViewName()
+        + StringConstant.SPACE_HYPHEN_SPACE + view.getUuid() + " view variables");
+  }
+
+  protected ObjectMapHelper actionRequestHelper(UiActionRequest request) {
+    return new ObjectMapHelper(request.getParams(), objectApi, request.getCode()
+        + StringConstant.SPACE_HYPHEN_SPACE + request.getIdentifier()
+        + StringConstant.SPACE_HYPHEN_SPACE + request.getPath() + " action parameters");
+  }
+
   protected M extractClientModel(UiActionRequest request) {
     return extractParam(getClazz(), UiActions.MODEL, request.getParams());
   }
 
+
+  /**
+   * @param <T>
+   * @param clazz
+   * @param paramName
+   * @param parameters
+   * @return
+   * @deprecated Use the parameter() ObjectMapHelper rather!
+   */
+  @Deprecated(forRemoval = true)
   protected <T> T extractParam(Class<T> clazz, String paramName, Map<String, Object> parameters) {
     if (!parameters.containsKey(paramName)) {
       throw new IllegalArgumentException(paramName + " parameter not found in UI request");
@@ -57,6 +126,15 @@ public abstract class PageApiImpl<M> implements PageApi<M> {
     return extractParamUnChecked(clazz, paramName, parameters);
   }
 
+  /**
+   * @param <T>
+   * @param clazz
+   * @param paramName
+   * @param parameters
+   * @return
+   * @deprecated Use the parameter() ObjectMapHelper rather!
+   */
+  @Deprecated(forRemoval = true)
   protected <T> T extractParamUnChecked(Class<T> clazz, String paramName,
       Map<String, Object> parameters) {
     Object param = parameters.get(paramName);
@@ -68,6 +146,15 @@ public abstract class PageApiImpl<M> implements PageApi<M> {
     return typedParam;
   }
 
+  /**
+   * @param <T>
+   * @param clazz
+   * @param paramName
+   * @param parameters
+   * @return
+   * @deprecated Use the parameter() ObjectMapHelper rather!
+   */
+  @Deprecated(forRemoval = true)
   protected <T> List<T> extractListParam(Class<T> clazz, String paramName,
       Map<String, Object> parameters) {
     Object param = parameters.get(paramName);

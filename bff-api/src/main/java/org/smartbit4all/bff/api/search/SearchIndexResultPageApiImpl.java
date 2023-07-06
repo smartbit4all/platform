@@ -19,6 +19,7 @@ import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.grid.GridModelApi;
+import org.smartbit4all.core.object.ObjectMapHelper;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.meta.Property;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,27 +43,22 @@ public class SearchIndexResultPageApiImpl extends PageApiImpl<SearchIndexResultP
       super();
       this.viewUUID = viewUUID;
       view = viewApi.getView(viewUUID);
+      ObjectMapHelper parameters = parameters(view);
       if (pageConfig == null) {
         pageConfig =
             objectApi.loadLatest(view.getObjectUri()).getObject(SearchIndexResultPageConfig.class);
       }
       searchIndex = collectionsApi.searchIndex(pageConfig.getSearchIndexSchema(),
           pageConfig.getSearchIndexName());
-      try {
-        uris = extractListParam(URI.class, PARAM_URI_LIST, view.getParameters());
-      } catch (Exception e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
+      uris =
+          parameters.getAsList(PARAM_URI_LIST, URI.class);
       StoredCollectionDescriptor listDescriptor =
-          extractParamUnChecked(StoredCollectionDescriptor.class, PARAM_STORED_LIST,
-              view.getParameters());
+          parameters.get(PARAM_STORED_LIST, StoredCollectionDescriptor.class);
       if (listDescriptor != null) {
         list = collectionsApi.list(listDescriptor.getSchema(), listDescriptor.getName());
       }
       selectionCallback =
-          extractParamUnChecked(InvocationRequest.class, PARAM_SELECTION_CALLBACK,
-              view.getParameters());
+          parameters.get(PARAM_SELECTION_CALLBACK, InvocationRequest.class);
     }
 
     protected UUID viewUUID;

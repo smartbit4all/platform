@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import org.smartbit4all.api.formdefinition.bean.SmartLayoutDefinition;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.ValueSet;
 import org.smartbit4all.api.view.bean.ViewConstraint;
@@ -48,6 +49,7 @@ import javax.validation.Valid;
   View.OBJECT_URI,
   View.BRANCH_URI,
   View.PARAMETERS,
+  View.VARIABLES,
   View.STATE,
   View.TYPE,
   View.CONTAINER_UUID,
@@ -60,7 +62,8 @@ import javax.validation.Valid;
   View.WIDGET_MODELS,
   View.VALUE_SETS,
   View.KEEP_MODEL_ON_IMPLICIT_CLOSE,
-  View.CALLBACKS
+  View.CALLBACKS,
+  View.LAYOUTS
 })
 @JsonTypeName("View")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -79,6 +82,9 @@ public class View {
 
   public static final String PARAMETERS = "parameters";
   private Map<String, Object> parameters = new HashMap<>();
+
+  public static final String VARIABLES = "variables";
+  private Map<String, Object> variables = null;
 
   public static final String STATE = "state";
   private ViewState state = ViewState.TO_OPEN;
@@ -118,6 +124,9 @@ public class View {
 
   public static final String CALLBACKS = "callbacks";
   private Map<String, Object> callbacks = new HashMap<>();
+
+  public static final String LAYOUTS = "layouts";
+  private Map<String, SmartLayoutDefinition> layouts = new HashMap<>();
 
   public View() { 
   }
@@ -247,12 +256,12 @@ public class View {
   }
 
    /**
-   * Get parameters
+   * The incoming parameters of the view. If we restart the given view with the same model then this parameters remain.
    * @return parameters
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "")
+  @ApiModelProperty(required = true, value = "The incoming parameters of the view. If we restart the given view with the same model then this parameters remain.")
   @JsonProperty(PARAMETERS)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.ALWAYS)
 
@@ -265,6 +274,41 @@ public class View {
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.ALWAYS)
   public void setParameters(Map<String, Object> parameters) {
     this.parameters = parameters;
+  }
+
+
+  public View variables(Map<String, Object> variables) {
+    
+    this.variables = variables;
+    return this;
+  }
+
+  public View putVariablesItem(String key, Object variablesItem) {
+    if (this.variables == null) {
+      this.variables = new HashMap<>();
+    }
+    this.variables.put(key, variablesItem);
+    return this;
+  }
+
+   /**
+   * The variable to store while the page is opened. It will be cleared if we open it again.
+   * @return variables
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The variable to store while the page is opened. It will be cleared if we open it again.")
+  @JsonProperty(VARIABLES)
+  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Map<String, Object> getVariables() {
+    return variables;
+  }
+
+
+  @JsonProperty(VARIABLES)
+  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+  public void setVariables(Map<String, Object> variables) {
+    this.variables = variables;
   }
 
 
@@ -674,6 +718,40 @@ public class View {
   }
 
 
+  public View layouts(Map<String, SmartLayoutDefinition> layouts) {
+    
+    this.layouts = layouts;
+    return this;
+  }
+
+  public View putLayoutsItem(String key, SmartLayoutDefinition layoutsItem) {
+    this.layouts.put(key, layoutsItem);
+    return this;
+  }
+
+   /**
+   * The layouts defined in the view. This named layouts can be used by the UI to render
+   * @return layouts
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @Valid
+  @ApiModelProperty(required = true, value = "The layouts defined in the view. This named layouts can be used by the UI to render")
+  @JsonProperty(LAYOUTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Map<String, SmartLayoutDefinition> getLayouts() {
+    return layouts;
+  }
+
+
+  @JsonProperty(LAYOUTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setLayouts(Map<String, SmartLayoutDefinition> layouts) {
+    this.layouts = layouts;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -688,6 +766,7 @@ public class View {
         Objects.equals(this.objectUri, view.objectUri) &&
         Objects.equals(this.branchUri, view.branchUri) &&
         Objects.equals(this.parameters, view.parameters) &&
+        Objects.equals(this.variables, view.variables) &&
         Objects.equals(this.state, view.state) &&
         Objects.equals(this.type, view.type) &&
         Objects.equals(this.containerUuid, view.containerUuid) &&
@@ -700,12 +779,13 @@ public class View {
         Objects.equals(this.widgetModels, view.widgetModels) &&
         Objects.equals(this.valueSets, view.valueSets) &&
         Objects.equals(this.keepModelOnImplicitClose, view.keepModelOnImplicitClose) &&
-        Objects.equals(this.callbacks, view.callbacks);
+        Objects.equals(this.callbacks, view.callbacks) &&
+        Objects.equals(this.layouts, view.layouts);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uuid, viewName, objectUri, branchUri, parameters, state, type, containerUuid, model, constraint, closedChildrenViews, downloadableItems, actions, eventHandlers, widgetModels, valueSets, keepModelOnImplicitClose, callbacks);
+    return Objects.hash(uuid, viewName, objectUri, branchUri, parameters, variables, state, type, containerUuid, model, constraint, closedChildrenViews, downloadableItems, actions, eventHandlers, widgetModels, valueSets, keepModelOnImplicitClose, callbacks, layouts);
   }
 
   @Override
@@ -717,6 +797,7 @@ public class View {
     sb.append("    objectUri: ").append(toIndentedString(objectUri)).append("\n");
     sb.append("    branchUri: ").append(toIndentedString(branchUri)).append("\n");
     sb.append("    parameters: ").append(toIndentedString(parameters)).append("\n");
+    sb.append("    variables: ").append(toIndentedString(variables)).append("\n");
     sb.append("    state: ").append(toIndentedString(state)).append("\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("    containerUuid: ").append(toIndentedString(containerUuid)).append("\n");
@@ -730,6 +811,7 @@ public class View {
     sb.append("    valueSets: ").append(toIndentedString(valueSets)).append("\n");
     sb.append("    keepModelOnImplicitClose: ").append(toIndentedString(keepModelOnImplicitClose)).append("\n");
     sb.append("    callbacks: ").append(toIndentedString(callbacks)).append("\n");
+    sb.append("    layouts: ").append(toIndentedString(layouts)).append("\n");
     sb.append("}");
     return sb.toString();
   }

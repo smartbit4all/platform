@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -13,9 +15,11 @@ import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.object.bean.ObjectDefinitionData;
 import org.smartbit4all.api.object.bean.PropertyDefinitionData;
 import org.smartbit4all.api.sample.bean.SampleCategory;
+import org.smartbit4all.api.sample.bean.SampleCategoryType;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectDefinitionApi;
+import org.smartbit4all.core.object.ObjectMapHelper;
 import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -152,6 +156,105 @@ class ObjectApiTest {
     org.assertj.core.api.Assertions.assertThat(savedDefinition.getProperties()
         .stream().map(PropertyDefinitionData::getName))
         .containsAll(propertyList);
+
+  }
+
+  @Test
+  void objectMapHelper() {
+
+    Map<String, Object> baseMap = new HashMap<>();
+    baseMap.put("nullvalue", null);
+    baseMap.put(String.class.getSimpleName(), "My string");
+    baseMap.put(SampleCategoryType.class.getSimpleName(),
+        new SampleCategoryType().code("CODE 1").name("Name 1"));
+    baseMap.put(Double.class.getSimpleName(), "1.0");
+
+    {
+      Map<String, Object> categoryTypeAsMap = new HashMap<>();
+      categoryTypeAsMap.put(SampleCategoryType.CODE, "CODE 2");
+      categoryTypeAsMap.put(SampleCategoryType.NAME, "Name 2");
+      baseMap.put(Map.class.getSimpleName(),
+          categoryTypeAsMap);
+    }
+    baseMap.put(List.class.getSimpleName(),
+        Arrays.asList(new SampleCategoryType().code("LIST CODE 1").name("List Name 1"),
+            new SampleCategoryType().code("LIST CODE 2").name("List Name 2")));
+
+    {
+      List<Map<String, Object>> list = new ArrayList<>();
+      {
+        Map<String, Object> categoryTypeAsMap = new HashMap<>();
+        categoryTypeAsMap.put(SampleCategoryType.CODE, "LIST CODE 1");
+        categoryTypeAsMap.put(SampleCategoryType.NAME, "List Name 1");
+        list.add(categoryTypeAsMap);
+      }
+      {
+        Map<String, Object> categoryTypeAsMap = new HashMap<>();
+        categoryTypeAsMap.put(SampleCategoryType.CODE, "LIST CODE 2");
+        categoryTypeAsMap.put(SampleCategoryType.NAME, "List Name 2");
+        list.add(categoryTypeAsMap);
+      }
+      baseMap.put("listWithMap",
+          list);
+    }
+
+    ObjectMapHelper mapHelper = new ObjectMapHelper(baseMap, objectApi, "test map");
+
+    {
+      String require = mapHelper.require("nullvalue", String.class);
+      Assertions.assertNull(require);
+    }
+    {
+      String require = mapHelper.requireNonNullElse("nullvalue", String.class, "apple");
+      Assertions.assertEquals("apple", require);
+    }
+
+    Assertions.assertThrows(IllegalArgumentException.class,
+        () -> mapHelper.requireNonNull("nullvalue", String.class));
+
+    {
+      String require = mapHelper.require(String.class.getSimpleName(), String.class);
+      Assertions.assertEquals("My string", require);
+    }
+
+    {
+      SampleCategoryType require =
+          mapHelper.require(SampleCategoryType.class.getSimpleName(), SampleCategoryType.class);
+      Assertions.assertEquals("CODE 1", require.getCode());
+      Assertions.assertEquals("Name 1", require.getName());
+    }
+
+    {
+      SampleCategoryType require =
+          mapHelper.require(Map.class.getSimpleName(), SampleCategoryType.class);
+      Object object = mapHelper.getMap().get(Map.class.getSimpleName());
+
+      Assertions.assertEquals(object, require);
+    }
+
+    {
+      List<String> require = mapHelper.requireNonNullElseAsList("not existing key", String.class,
+          Arrays.asList("s1", "s2", "s3"));
+      org.assertj.core.api.Assertions.assertThat(require).containsExactly("s1", "s2", "s3");
+    }
+
+    Assertions.assertThrows(IllegalArgumentException.class,
+        () -> mapHelper.requireNonNullAsList("not existing key", String.class));
+
+    {
+      List<SampleCategoryType> require =
+          mapHelper.requireNonNullAsList(List.class.getSimpleName(), SampleCategoryType.class);
+      org.assertj.core.api.Assertions.assertThat(require.stream().map(ct -> ct.getCode()))
+          .containsExactly("LIST CODE 1", "LIST CODE 2");
+    }
+
+    {
+      List<SampleCategoryType> require =
+          mapHelper.requireNonNullAsList("listWithMap", SampleCategoryType.class);
+      List<SampleCategoryType> listFromMap =
+          (List<SampleCategoryType>) mapHelper.getMap().get("listWithMap");
+      org.assertj.core.api.Assertions.assertThat(require).containsSequence(listFromMap);
+    }
 
   }
 

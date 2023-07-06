@@ -278,6 +278,9 @@ public class ViewApiImpl implements ViewApi {
                     if (viewToClose.getWidgetModels() != null) {
                       viewToClose.getWidgetModels().clear();
                     }
+                    if (viewToClose.getVariables() != null) {
+                      viewToClose.getVariables().clear();
+                    }
                   }
                   viewToClose.setConstraint(new ViewConstraint());
                   parentView.getClosedChildrenViews().add(0, viewToClose);
