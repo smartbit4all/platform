@@ -118,7 +118,7 @@ public abstract class PageApiImpl<M> implements PageApi<M> {
    * @return
    * @deprecated Use the parameter() ObjectMapHelper rather!
    */
-  @Deprecated(forRemoval = true)
+  @Deprecated
   protected <T> T extractParam(Class<T> clazz, String paramName, Map<String, Object> parameters) {
     if (!parameters.containsKey(paramName)) {
       throw new IllegalArgumentException(paramName + " parameter not found in UI request");
@@ -134,7 +134,7 @@ public abstract class PageApiImpl<M> implements PageApi<M> {
    * @return
    * @deprecated Use the parameter() ObjectMapHelper rather!
    */
-  @Deprecated(forRemoval = true)
+  @Deprecated
   protected <T> T extractParamUnChecked(Class<T> clazz, String paramName,
       Map<String, Object> parameters) {
     Object param = parameters.get(paramName);
@@ -154,7 +154,7 @@ public abstract class PageApiImpl<M> implements PageApi<M> {
    * @return
    * @deprecated Use the parameter() ObjectMapHelper rather!
    */
-  @Deprecated(forRemoval = true)
+  @Deprecated
   protected <T> List<T> extractListParam(Class<T> clazz, String paramName,
       Map<String, Object> parameters) {
     Object param = parameters.get(paramName);
