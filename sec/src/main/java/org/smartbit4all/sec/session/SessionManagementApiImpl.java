@@ -13,6 +13,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.CollectionApi;
@@ -344,6 +345,12 @@ public class SessionManagementApiImpl implements SessionManagementApi {
   }
 
   @Override
+  public void removeSessionAuthentications(URI sessionUri) {
+    Objects.requireNonNull(sessionUri, EXPMSG_MISSING_SESSIONURI);
+    updateSession(sessionUri, s -> s.user(null).authentications(Collections.emptyList()));
+  }
+
+  @Override
   public void setSessionUser(URI sessionUri, URI userUri) {
     Objects.requireNonNull(sessionUri, EXPMSG_MISSING_SESSIONURI);
     updateSession(sessionUri, s -> s.user(userUri));
@@ -506,6 +513,14 @@ public class SessionManagementApiImpl implements SessionManagementApi {
   public void addUserChangeListener(BiConsumer<URI, URI> changeListener) {
     Objects.requireNonNull(changeListener, "changeListener can not be null!");
     userChangeListeners.add(changeListener);
+  }
+
+  @Override
+  public List<Session> getActiveSessionsOfUser(URI orgUserUri) {
+    Objects.requireNonNull(orgUserUri, "orgUserUri can not be null!");
+    return getActiveSessions(ACTIVE_SESSIONS).stream()
+        .filter(s -> orgUserUri.equals(s.getUser()))
+        .collect(Collectors.toList());
   }
 
 }
