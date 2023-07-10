@@ -22,6 +22,9 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -35,7 +38,8 @@ import javax.validation.Valid;
 @JsonPropertyOrder({
   ComponentModelChange.UUID,
   ComponentModelChange.PATH,
-  ComponentModelChange.VALUE
+  ComponentModelChange.VALUE,
+  ComponentModelChange.CHANGES
 })
 @JsonTypeName("ComponentModelChange")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -48,6 +52,9 @@ public class ComponentModelChange {
 
   public static final String VALUE = "value";
   private Object value;
+
+  public static final String CHANGES = "changes";
+  private Map<String, Object> changes = new HashMap<>();
 
   public ComponentModelChange() { 
   }
@@ -136,6 +143,39 @@ public class ComponentModelChange {
   }
 
 
+  public ComponentModelChange changes(Map<String, Object> changes) {
+    
+    this.changes = changes;
+    return this;
+  }
+
+  public ComponentModelChange putChangesItem(String key, Object changesItem) {
+    this.changes.put(key, changesItem);
+    return this;
+  }
+
+   /**
+   * Changed values, in a key-value map.
+   * @return changes
+  **/
+  @javax.annotation.Nonnull
+  @NotNull
+  @ApiModelProperty(required = true, value = "Changed values, in a key-value map.")
+  @JsonProperty(CHANGES)
+  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.ALWAYS)
+
+  public Map<String, Object> getChanges() {
+    return changes;
+  }
+
+
+  @JsonProperty(CHANGES)
+  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.ALWAYS)
+  public void setChanges(Map<String, Object> changes) {
+    this.changes = changes;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -147,12 +187,13 @@ public class ComponentModelChange {
     ComponentModelChange componentModelChange = (ComponentModelChange) o;
     return Objects.equals(this.uuid, componentModelChange.uuid) &&
         Objects.equals(this.path, componentModelChange.path) &&
-        Objects.equals(this.value, componentModelChange.value);
+        Objects.equals(this.value, componentModelChange.value) &&
+        Objects.equals(this.changes, componentModelChange.changes);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uuid, path, value);
+    return Objects.hash(uuid, path, value, changes);
   }
 
   @Override
@@ -162,6 +203,7 @@ public class ComponentModelChange {
     sb.append("    uuid: ").append(toIndentedString(uuid)).append("\n");
     sb.append("    path: ").append(toIndentedString(path)).append("\n");
     sb.append("    value: ").append(toIndentedString(value)).append("\n");
+    sb.append("    changes: ").append(toIndentedString(changes)).append("\n");
     sb.append("}");
     return sb.toString();
   }
