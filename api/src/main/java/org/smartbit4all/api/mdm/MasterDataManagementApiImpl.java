@@ -182,11 +182,13 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
             // We simply update the current entry but reserve the states.
             ObjectNode definitionNode = objectApi.loadLatest(uri);
 
-            URI stateUri = definitionNode.getValue(URI.class, MDMDefinition.STATE);
+            URI stateUri = definitionNode.ref(MDMDefinition.STATE).getObjectUri();
 
-            Map<String, URI> statesByName = definitionNode.list(MDMDefinition.DESCRIPTORS)
-                .nodeStream().collect(toMap(on -> on.getValueAsString(MDMEntryDescriptor.NAME),
-                    on -> on.getValue(URI.class, MDMEntryDescriptor.STATE)));
+            Map<String, URI> statesByName =
+                definitionNode.getValueAsMap(MDMEntryDescriptor.class, MDMDefinition.DESCRIPTORS)
+                    .values().stream()
+                    .collect(toMap(desc -> desc.getName(),
+                        desc -> desc.getState()));
             definitionNode.modify(MDMDefinition.class, def -> {
               o.getDefinition()
                   .setDescriptors(o.getDefinition().getDescriptors().entrySet().stream()
@@ -388,7 +390,7 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
    * Add a property to the search index with complex processing mechanism. Depending on the state of
    * the given object it will show the original object or the branched one. So we will have a
    * heterogeneous list of objects in the table data.
-   * 
+   *
    * @param searchIndex
    * @param propertyName
    * @param typeClass
