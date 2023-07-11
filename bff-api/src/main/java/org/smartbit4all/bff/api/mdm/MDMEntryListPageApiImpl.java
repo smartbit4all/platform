@@ -2,6 +2,7 @@ package org.smartbit4all.bff.api.mdm;
 
 import static java.util.stream.Collectors.toList;
 import java.net.URI;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BiConsumer;
@@ -179,32 +180,32 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
   @Override
   public void newEntry(UUID viewUuid, UiActionRequest request) {
     PageContext context = getContextByViewUUID(viewUuid);
-    Class<?> clazz = getClazz(context.entryDescriptor.getTypeQualifiedName(), Object.class);
-    Object modelObject;
-    try {
-      modelObject = clazz.newInstance();
-    } catch (IllegalAccessException | InstantiationException e) {
-      modelObject = new Object();
-    }
-    ObjectNode model = objectApi.create(context.entryDescriptor.getSchema(), modelObject);
-    context.getBranchedObjectDefinition();
     // We need to pass the override of the save action.
     viewApi.showView(
         new View()
             .viewName(getEditorViewName(context))
             .putParametersItem(PARAM_MDM_DEFINITION, context.definition)
             .putParametersItem(PARAM_ENTRY_DESCRIPTOR, context.entryDescriptor)
-            .model(model.getObjectAsMap()));
+            .model(createNewObject(context.entryDescriptor))
+
+    );
   }
 
-  private final Class<?> getClazz(String className, Class<?> defaultClass) {
-    Class<?> typeClass;
+  private final Map<String, Object> createNewObject(MDMEntryDescriptor entryDescriptor) {
+    Class<?> clazz;
     try {
-      typeClass = Class.forName(className);
+      clazz = Class.forName(entryDescriptor.getTypeQualifiedName());
     } catch (ClassNotFoundException e1) {
-      typeClass = defaultClass;
+      clazz = Object.class;
     }
-    return typeClass;
+    Object modelObject;
+    try {
+      modelObject = clazz.newInstance();
+    } catch (IllegalAccessException | InstantiationException e) {
+      modelObject = new Object();
+    }
+    ObjectNode model = objectApi.create(entryDescriptor.getSchema(), modelObject);
+    return model.getObjectAsMap();
   }
 
 
