@@ -38,16 +38,20 @@ public class MDMEntryEditPageApiImpl extends PageApiImpl<Object>
     View view = viewApi.getView(viewUuid);
     UUID parentUUID =
         extractParam(UUID.class, MDMEntryListPageApi.PARAM_MDM_LIST_VIEW, view.getParameters());
-    BranchedObjectEntry branchedObjectEntry = extractParam(BranchedObjectEntry.class,
+    BranchedObjectEntry branchedObjectEntry = extractParamUnChecked(BranchedObjectEntry.class,
         MDMEntryListPageApi.PARAM_BRANCHED_OBJECT_ENTRY, view.getParameters());
     view.setModel(request.getParams().get("model"));
     if (branchedObjectEntry == null) {
       // It is was a new object editing. So we call the create new object of the list page.
       listPageApi.saveNewObject(parentUUID, view.getModel());
+
+      viewApi.closeView(viewUuid);
     } else {
       listPageApi.saveModificationObject(parentUUID, view.getModel(),
           branchedObjectEntry);
       // We have the branched object entry so it will be a modification rather.
+
+      viewApi.closeView(viewUuid);
     }
     log.error("The master data management page api need an event handler to execute save.");
   }

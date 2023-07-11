@@ -2,6 +2,7 @@ package org.smartbit4all.bff.api.mdm;
 
 import static java.util.stream.Collectors.toList;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -21,7 +22,7 @@ import org.smartbit4all.api.object.bean.BranchedObjectEntry;
 import org.smartbit4all.api.org.OrgUtils;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.view.PageApiImpl;
-import org.smartbit4all.api.view.UiActions;
+import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.bean.ViewType;
@@ -184,9 +185,14 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
     viewApi.showView(
         new View()
             .viewName(getEditorViewName(context))
+            .actions(
+                Arrays.asList(new UiAction().code(MDMEntryEditPageApi.ACTION_SAVE).submit(true),
+                    new UiAction().code(MDMEntryEditPageApi.ACTION_CANCEL)))
             .putParametersItem(PARAM_MDM_DEFINITION, context.definition)
             .putParametersItem(PARAM_ENTRY_DESCRIPTOR, context.entryDescriptor)
+            .putParametersItem(PARAM_MDM_LIST_VIEW, viewUuid)
             .model(createNewObject(context.entryDescriptor))
+            .type(ViewType.DIALOG)
 
     );
   }
@@ -232,8 +238,9 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
               .putParametersItem(PARAM_ENTRY_DESCRIPTOR, ctx.entryDescriptor)
               .putParametersItem(PARAM_BRANCHED_OBJECT_ENTRY, branchedObjectEntry)
               .putParametersItem(PARAM_MDM_LIST_VIEW, viewUuid)
-              .actions(UiActions.builder().add(MDMEntryEditPageApi.ACTION_SAVE)
-                  .add(MDMEntryEditPageApi.ACTION_CANCEL).build())
+              .actions(Arrays.asList(
+                  new UiAction().code(MDMEntryEditPageApi.ACTION_SAVE).submit(true),
+                  new UiAction().code(MDMEntryEditPageApi.ACTION_CANCEL)))
               .model(constructEditingObject(branchedObjectEntry)));
     });
   }
