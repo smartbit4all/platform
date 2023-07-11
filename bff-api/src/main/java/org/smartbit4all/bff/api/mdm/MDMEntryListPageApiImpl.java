@@ -27,6 +27,7 @@ import org.smartbit4all.api.view.bean.ViewType;
 import org.smartbit4all.api.view.grid.GridModelApi;
 import org.smartbit4all.api.view.grid.GridModels;
 import org.smartbit4all.core.object.ObjectDefinition;
+import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.domain.meta.Property;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -178,13 +179,35 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
   @Override
   public void newEntry(UUID viewUuid, UiActionRequest request) {
     PageContext context = getContextByViewUUID(viewUuid);
+    Class<?> clazz = getClazz(context.entryDescriptor.getTypeQualifiedName(), Object.class);
+    Object modelObject;
+    try {
+      modelObject = clazz.newInstance();
+    } catch (IllegalAccessException | InstantiationException e) {
+      modelObject = new Object();
+    }
+    ObjectNode model = objectApi.create(context.entryDescriptor.getSchema(), modelObject);
+    context.getBranchedObjectDefinition();
     // We need to pass the override of the save action.
     viewApi.showView(
         new View()
             .viewName(getEditorViewName(context))
             .putParametersItem(PARAM_MDM_DEFINITION, context.definition)
-            .putParametersItem(PARAM_ENTRY_DESCRIPTOR, context.entryDescriptor));
+            .putParametersItem(PARAM_ENTRY_DESCRIPTOR, context.entryDescriptor)
+            .model(model.getObjectAsMap()));
   }
+
+  private final Class<?> getClazz(String className, Class<?> defaultClass) {
+    Class<?> typeClass;
+    try {
+      typeClass = Class.forName(className);
+    } catch (ClassNotFoundException e1) {
+      typeClass = defaultClass;
+    }
+    return typeClass;
+  }
+
+
 
   @Override
   public void finalizeChanges(UUID viewUuid, UiActionRequest request) {
