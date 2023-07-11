@@ -284,7 +284,13 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
       BranchedObjectEntry branchedObjectEntry) {
     PageContext context = getContextByViewUUID(viewUuid);
     ObjectDefinition<?> objectDefinition = context.getObjectDefinition();
-    context.entryApi.saveAsDraft(objectDefinition, objectDefinition.toMap(editingObject));
+    if (branchedObjectEntry.getBranchUri() != null) {
+      ObjectNode branchedNode = objectApi.loadLatest(branchedObjectEntry.getBranchUri());
+      branchedNode.setValues(objectDefinition.toMap(editingObject));
+      objectApi.save(branchedNode);
+    } else {
+      context.entryApi.saveAsDraft(objectDefinition, objectDefinition.toMap(editingObject));
+    }
     refreshGrid(context);
   }
 

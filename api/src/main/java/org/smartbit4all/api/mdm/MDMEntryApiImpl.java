@@ -1,5 +1,8 @@
 package org.smartbit4all.api.mdm;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,9 +38,6 @@ import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.FinalReference;
 import org.smartbit4all.core.utility.StringConstant;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-import static java.util.stream.Collectors.toSet;
 
 /**
  * The base implementation of the master data management api. The basic feature is that if we
@@ -94,7 +94,8 @@ public class MDMEntryApiImpl implements MDMEntryApi {
     if (object == null) {
       return null;
     }
-    if (descriptor.getUniqueIdentifierPath() != null) {
+    if (descriptor.getUniqueIdentifierPath() != null
+        && !descriptor.getUniqueIdentifierPath().isEmpty()) {
       return objectApi.getValueFromObject(String.class, object,
           descriptor.getUniqueIdentifierPath().toArray(StringConstant.EMPTY_ARRAY));
     } else {
@@ -110,7 +111,8 @@ public class MDMEntryApiImpl implements MDMEntryApi {
     if (objectNode == null) {
       return null;
     }
-    if (descriptor.getUniqueIdentifierPath() != null) {
+    if (descriptor.getUniqueIdentifierPath() != null
+        && !descriptor.getUniqueIdentifierPath().isEmpty()) {
       return objectNode.getValueAsString(
           descriptor.getUniqueIdentifierPath().toArray(StringConstant.EMPTY_ARRAY));
     } else {

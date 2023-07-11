@@ -1,5 +1,6 @@
 package org.smartbit4all.api.object;
 
+import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
@@ -20,13 +21,12 @@ import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.FinalReference;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import static java.util.stream.Collectors.toMap;
 
 /**
  * The implementation of the {@link BranchApi} that stores the branch info in {@link BranchEntry}.
  * The branch api manages a cache to effectively access the informations of a branch. The cache will
  * check the freshness of the loaded branch entry by the last modification time.
- * 
+ *
  * @author Peter Boros
  */
 public class BranchApiImpl implements BranchApi {
@@ -94,8 +94,10 @@ public class BranchApiImpl implements BranchApi {
     ObjectNode objectNode = objectApi.loadLatest(branchUri).modify(BranchEntry.class, b -> {
       b.getNewObjects().putAll(newObjectUris.stream()
           .collect(toMap(u -> ObjectStorageImpl.getUriWithoutVersion(u).toString(),
-              u -> new BranchedObject().branchedObjectLatestUri(u).addOperationsItem(
-                  new BranchOperation().operationType(OperationTypeEnum.INIT)))));
+              u -> new BranchedObject()
+                  .branchedObjectLatestUri(ObjectStorageImpl.getUriWithoutVersion(u))
+                  .addOperationsItem(
+                      new BranchOperation().operationType(OperationTypeEnum.INIT)))));
       return b;
     });
     objectApi.save(objectNode);
