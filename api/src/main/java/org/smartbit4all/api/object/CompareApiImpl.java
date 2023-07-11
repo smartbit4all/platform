@@ -13,6 +13,7 @@ import org.smartbit4all.api.object.bean.ReferenceChangeData;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ObjectNodeReference;
+import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class CompareApiImpl implements CompareApi {
@@ -166,6 +167,24 @@ public class CompareApiImpl implements CompareApi {
 
   private static final String pathOf(String path) {
     return path;
+  }
+
+  @Override
+  public Map<String, Object> toMap(ObjectChangeData objectChange, String path) {
+    Map<String, Object> changes = new HashMap<>();
+    addChanges(objectChange, path, changes);
+    return changes;
+  }
+
+  private void addChanges(ObjectChangeData objectChange, String path, Map<String, Object> changes) {
+    for (PropertyChangeData prop : objectChange.getProperties()) {
+      String key = path + StringConstant.DOT + prop.getPath();
+      changes.put(key, prop.getNewValue());
+    }
+    for (ReferenceChangeData ref : objectChange.getReferences()) {
+      String key = path + StringConstant.DOT + ref.getPath();
+      addChanges(ref.getObjectChange(), key, changes);
+    }
   }
 
 }

@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.smartbit4all.api.collection.bean.StoredListData;
 import org.smartbit4all.domain.data.storage.ObjectNotFoundException;
@@ -121,6 +122,7 @@ public class StoredListStorageImpl extends AbstractStoredContainerStorageImpl
       l.remove(uriToAdd);
       // Add at first position
       l.add(0, uriToAdd);
+      l = l.stream().distinct().collect(Collectors.toList());
       if (l.size() > maxSize) {
         l.remove(l.size() - 1);
       }

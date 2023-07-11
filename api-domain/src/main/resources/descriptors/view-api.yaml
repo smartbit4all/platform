@@ -94,6 +94,33 @@ paths:
           description: 'The component does not exists with the given uuid'
         '500':
           description: 'Error occured while fetching the component data'
+  /component/{uuid}/data:
+    post:
+      tags:
+      - View
+      description: |
+        Notification of a data change event..
+      operationId: 'dataChanged'
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DataChangeEvent'
+      responses:
+        '200':
+          description: ''
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ViewContextChange'
   /component/{uuid}/action:
     post:
       tags:
@@ -525,7 +552,7 @@ components:
       type: object
       description: |
         Change of a ComponentModel.
-      required: [uuid,path]
+      required: [uuid,path,changes]
       properties:
         uuid:
           type: string
@@ -534,6 +561,10 @@ components:
           type: string
         value:
           type: object
+        changes:
+          description: Changed values, in a key-value map.
+          type: object
+          additionalProperties: true
     ComponentConstraint:
       type: object
       description: |
@@ -850,3 +881,24 @@ components:
         timestamp:
           type: integer
           format: int64
+    DataChangeEvent:
+      type: object
+      description:
+      properties:
+        kind:
+          $ref: '#/components/schemas/DataChangeEventKind'
+        source:
+          description: Source of the event, typically the key of the widget.
+          type: string
+        values:
+          description: Changed values, in a key-value map.
+          type: object
+          additionalProperties: true
+    DataChangeEventKind:
+      type: string
+      description: |
+        Defines the kind of the source of this event..
+      enum:
+      - WIDGET
+      - SELECTION
+      - LOOKUP

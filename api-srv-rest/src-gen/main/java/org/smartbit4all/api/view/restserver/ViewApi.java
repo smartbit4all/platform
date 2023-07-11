@@ -6,6 +6,7 @@
 package org.smartbit4all.api.view.restserver;
 
 import org.smartbit4all.api.view.bean.ComponentModel;
+import org.smartbit4all.api.view.bean.DataChangeEvent;
 import org.smartbit4all.api.view.bean.MessageResult;
 import java.util.UUID;
 import org.smartbit4all.api.view.bean.UiActionRequest;
@@ -58,6 +59,38 @@ public interface ViewApi {
         
     ) throws Exception {
         return getDelegate().createViewContext();
+    }
+
+
+    /**
+     * POST /component/{uuid}/data
+     * Notification of a data change event.. 
+     *
+     * @param uuid  (required)
+     * @param dataChangeEvent  (required)
+     * @return  (status code 200)
+     */
+    @ApiOperation(
+        tags = { "View" },
+        value = "",
+        nickname = "dataChanged",
+        notes = "Notification of a data change event.. ",
+        response = ViewContextChange.class
+    )
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "", response = ViewContextChange.class)
+    })
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/component/{uuid}/data",
+        produces = { "application/json" },
+        consumes = { "application/json" }
+    )
+    default ResponseEntity<ViewContextChange> dataChanged(
+        @ApiParam(value = "", required = true) @PathVariable("uuid") UUID uuid,
+        @ApiParam(value = "", required = true) @Valid @RequestBody DataChangeEvent dataChangeEvent
+    ) throws Exception {
+        return getDelegate().dataChanged(uuid, dataChangeEvent);
     }
 
 

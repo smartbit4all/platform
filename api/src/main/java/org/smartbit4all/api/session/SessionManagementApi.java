@@ -39,6 +39,8 @@ public interface SessionManagementApi {
 
   void removeSessionAuthentication(URI sessionUri, String kind);
 
+  void removeSessionAuthentications(URI sessionUri);
+
   void setSessionUser(URI sessionUri, URI userUri);
 
   void addViewContext(URI sessionUri, UUID viewContextUuid, URI viewContextUri);
@@ -68,5 +70,7 @@ public interface SessionManagementApi {
   void addToList(URI sessionUri, String sessionListName);
 
   void removeFromList(URI sessionUri, String sessionListName);
+
+  List<Session> getActiveSessionsOfUser(URI orgUserUri);
 
 }
