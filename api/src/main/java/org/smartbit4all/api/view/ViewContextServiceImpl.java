@@ -1,5 +1,7 @@
 package org.smartbit4all.api.view;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -9,6 +11,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -17,10 +20,11 @@ import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.invocation.ApiNotFoundException;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
+import org.smartbit4all.api.object.CompareApi;
+import org.smartbit4all.api.object.bean.ObjectChangeData;
 import org.smartbit4all.api.object.bean.ObjectPropertyResolverContext;
 import org.smartbit4all.api.object.bean.ObjectPropertyResolverContextObject;
 import org.smartbit4all.api.session.SessionApi;
@@ -34,6 +38,7 @@ import org.smartbit4all.api.view.bean.CloseResult;
 import org.smartbit4all.api.view.bean.ComponentConstraint;
 import org.smartbit4all.api.view.bean.ComponentModel;
 import org.smartbit4all.api.view.bean.ComponentModelChange;
+import org.smartbit4all.api.view.bean.DataChangeEvent;
 import org.smartbit4all.api.view.bean.MessageData;
 import org.smartbit4all.api.view.bean.MessageResult;
 import org.smartbit4all.api.view.bean.OpenPendingData;
@@ -47,8 +52,10 @@ import org.smartbit4all.api.view.bean.ViewData;
 import org.smartbit4all.api.view.bean.ViewEventHandler;
 import org.smartbit4all.api.view.bean.ViewState;
 import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.ReflectionUtility;
+import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageObject.VersionPolicy;
@@ -58,8 +65,6 @@ import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.AnnotationUtils;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 public class ViewContextServiceImpl implements ViewContextService {
 
@@ -113,7 +118,7 @@ public class ViewContextServiceImpl implements ViewContextService {
   private ApplicationContext ctx;
 
   @Autowired
-  private CollectionApi collectionApi;
+  private CompareApi compareApi;
 
   @Autowired
   private InvocationApi invocationApi;
@@ -673,27 +678,52 @@ public class ViewContextServiceImpl implements ViewContextService {
     }
   }
 
-
   private ComponentModelChange compareViewNodes(View before, View after) {
+    Objects.requireNonNull(after, "After view must not be null");
     if (before != null) {
       before.getParameters().clear();
       before.getClosedChildrenViews().clear();
       before.getWidgetModels().clear();
       before.getCallbacks().clear();
     }
-    if (after != null) {
-      after.getParameters().clear();
-      after.getClosedChildrenViews().clear();
-      after.getWidgetModels().clear();
-      after.getCallbacks().clear();
-    }
+    after.getParameters().clear();
+    after.getClosedChildrenViews().clear();
+    after.getWidgetModels().clear();
+    after.getCallbacks().clear();
     if (Objects.equals(before, after)) {
       return null;
     }
-    return new ComponentModelChange()
+    ComponentModelChange change = new ComponentModelChange()
         .uuid(after.getUuid())
-        .path("/")
+        .path(StringConstant.EMPTY)
         .value(getComponentModel(after.getUuid()));
+    try {
+      if (before != null) {
+        Class<?> clazz = modelClassByViewName.get(after.getViewName());
+        if (clazz == null) {
+          throw new IllegalArgumentException(
+              "View is not PageApi and model clazz is not specified! " + after.getViewName());
+        }
+        ObjectDefinition<?> definition = objectApi.definition(clazz);
+        Map<String, Object> beforeModel = getModelAsMap(before, definition);
+        Map<String, Object> afterModel = getModelAsMap(after, definition);
+        ObjectChangeData changes = compareApi.changesOfMap(beforeModel, afterModel);
+        change.changes(compareApi.toMap(changes, ComponentModel.DATA));
+      }
+    } catch (Exception e) {
+      log.error("Unexpected error when calculating changes", e);
+    }
+    return change;
+  }
+
+  private Map<String, Object> getModelAsMap(View view, ObjectDefinition<?> definition) {
+    Object modelObj = view.getModel();
+    if (modelObj instanceof Map) {
+      // from map to object --> all contained maps will be objects..
+      modelObj = definition.fromMap((Map<String, Object>) modelObj);
+    }
+    // from object to map --> all contained objects will be maps..
+    return definition.toMap(modelObj);
   }
 
   private Method getMethodForCode(Map<String, Map<String, Method>> methodsByView, String viewName,
@@ -743,6 +773,49 @@ public class ViewContextServiceImpl implements ViewContextService {
           tr);
     }
     return afterInvoke(before, methodName);
+  }
+
+  @Override
+  public ViewContextChange performDataChanged(UUID viewUuid, DataChangeEvent event) {
+    // get current model as map
+    View view = getViewFromCurrentViewContext(viewUuid);
+    Objects.requireNonNull(view, "View not found when performing data change!");
+    Class<?> clazz = modelClassByViewName.get(view.getViewName());
+    if (clazz == null) {
+      throw new IllegalArgumentException(
+          "View is not PageApi and model clazz is not specified! " + view.getViewName());
+    }
+    Object modelBeforeChange = view.getModel();
+    Objects.requireNonNull(modelBeforeChange, "Model is not set when performing data change!");
+    ObjectDefinition<?> definition = objectApi.definition(clazz);
+    if (clazz.isInstance(modelBeforeChange)) {
+      log.warn("Possible model reference override when performing data change in view {}",
+          view.getViewName());
+    } else if (!(modelBeforeChange instanceof Map)) {
+      log.warn("Suspicous object in model (type={})when performing data change in view {}",
+          modelBeforeChange.getClass().getName(), view.getViewName());
+    }
+    if (!(modelBeforeChange instanceof Map)) {
+      modelBeforeChange = definition.toMap(modelBeforeChange);
+    }
+
+    // perform data change on map, set as view's model
+    ObjectNode modelNode =
+        objectApi.create(SCHEMA, definition, (Map<String, Object>) modelBeforeChange);
+
+    Map<String, Object> oldValues = new HashMap<>();
+    for (Entry<String, Object> change : event.getValues().entrySet()) {
+      String key = change.getKey();
+      String[] path = key.split("\\.");
+      Object oldValue = modelNode.getValue(path);
+      oldValues.put(key, oldValue);
+      modelNode.setValue(change.getValue(), path);
+    }
+    view.setModel(modelNode.getObjectAsMap());
+
+    // notify data listeners, calculate changes during data change processing and return
+    return performViewCall(() -> {
+    }, "performDataChanged");
   }
 
 }

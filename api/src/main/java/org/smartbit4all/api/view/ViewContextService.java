@@ -6,6 +6,7 @@ import org.smartbit4all.api.view.ViewContextServiceImpl.ViewCall;
 import org.smartbit4all.api.view.annotation.BeforeClose;
 import org.smartbit4all.api.view.bean.CloseResult;
 import org.smartbit4all.api.view.bean.ComponentModel;
+import org.smartbit4all.api.view.bean.DataChangeEvent;
 import org.smartbit4all.api.view.bean.MessageResult;
 import org.smartbit4all.api.view.bean.OpenPendingData;
 import org.smartbit4all.api.view.bean.UiActionRequest;
@@ -138,6 +139,16 @@ public interface ViewContextService {
 
   ViewContextChange performWidgetAction(UUID viewUuid, String widgetId, String nodeId,
       UiActionRequest request);
+
+  /**
+   * Performs a data change event on specified component/page. Event's change will be written into
+   * ComponentModel.data/View.model, and all registered DataChangeListeners will be called. Result
+   * will be calculated the same way as with other BFF calls.
+   *
+   * @param viewUuid
+   * @return
+   */
+  ViewContextChange performDataChanged(UUID viewUuid, DataChangeEvent event);
 
   ViewContextChange performViewCall(ViewCall viewCall, String methodName);
 

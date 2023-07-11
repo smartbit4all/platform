@@ -16,4 +16,13 @@ public interface CompareApi {
 
   ObjectChangeData changesOfMap(Map<String, Object> map1, Map<String, Object> map2);
 
+  /**
+   * Creates a Map from an objectChange. Keys will be property paths prefixed with path parameter,
+   * values will be the new values.
+   *
+   * @param objectChange
+   * @param path
+   * @return
+   */
+  Map<String, Object> toMap(ObjectChangeData objectChange, String path);
 }

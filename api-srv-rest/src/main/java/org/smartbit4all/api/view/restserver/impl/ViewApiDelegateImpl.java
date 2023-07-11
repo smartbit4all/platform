@@ -5,6 +5,7 @@ import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.view.ViewApi;
 import org.smartbit4all.api.view.ViewContextService;
 import org.smartbit4all.api.view.bean.ComponentModel;
+import org.smartbit4all.api.view.bean.DataChangeEvent;
 import org.smartbit4all.api.view.bean.MessageResult;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.ViewConstraint;
@@ -103,4 +104,10 @@ public class ViewApiDelegateImpl implements ViewApiDelegate {
         .ok(viewContextService.performWidgetAction(uuid, widgetId, nodeId, request));
   }
 
+  @Override
+  public ResponseEntity<ViewContextChange> dataChanged(UUID uuid, DataChangeEvent dataChangeEvent)
+      throws Exception {
+    return ResponseEntity
+        .ok(viewContextService.performDataChanged(uuid, dataChangeEvent));
+  }
 }
