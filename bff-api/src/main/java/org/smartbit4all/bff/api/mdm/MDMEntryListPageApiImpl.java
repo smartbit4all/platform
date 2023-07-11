@@ -1,5 +1,6 @@
 package org.smartbit4all.bff.api.mdm;
 
+import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.Optional;
 import java.util.UUID;
@@ -19,6 +20,7 @@ import org.smartbit4all.api.object.bean.BranchedObjectEntry;
 import org.smartbit4all.api.org.OrgUtils;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.view.PageApiImpl;
+import org.smartbit4all.api.view.UiActions;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.bean.ViewType;
@@ -27,7 +29,6 @@ import org.smartbit4all.api.view.grid.GridModels;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.domain.meta.Property;
 import org.springframework.beans.factory.annotation.Autowired;
-import static java.util.stream.Collectors.toList;
 
 public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
     implements MDMEntryListPageApi {
@@ -44,7 +45,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
   private CollectionApi collectionApi;
 
   @Autowired
-  private GridModelApi gridModelApi;
+  protected GridModelApi gridModelApi;
 
   @Autowired
   private MasterDataManagementApi masterDataManagementApi;
@@ -53,7 +54,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
   private SessionApi sessionApi;
 
   @Autowired
-  private InvocationApi invocationApi;
+  protected InvocationApi invocationApi;
 
   /**
    * The name of the default editor in the application. It is opened as editor if the editor view is
@@ -207,6 +208,8 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
               .putParametersItem(PARAM_ENTRY_DESCRIPTOR, ctx.entryDescriptor)
               .putParametersItem(PARAM_BRANCHED_OBJECT_ENTRY, branchedObjectEntry)
               .putParametersItem(PARAM_MDM_LIST_VIEW, viewUuid)
+              .actions(UiActions.builder().add(MDMEntryEditPageApi.ACTION_SAVE)
+                  .add(MDMEntryEditPageApi.ACTION_CANCEL).build())
               .model(constructEditingObject(branchedObjectEntry)));
     });
   }
