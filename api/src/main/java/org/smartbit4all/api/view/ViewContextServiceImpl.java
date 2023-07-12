@@ -6,6 +6,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -31,6 +32,7 @@ import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.exception.ViewContextMissigException;
 import org.smartbit4all.api.view.annotation.ActionHandler;
 import org.smartbit4all.api.view.annotation.BeforeClose;
+import org.smartbit4all.api.view.annotation.DataChangeListener;
 import org.smartbit4all.api.view.annotation.MessageHandler;
 import org.smartbit4all.api.view.annotation.ViewApi;
 import org.smartbit4all.api.view.annotation.WidgetActionHandler;
@@ -38,6 +40,7 @@ import org.smartbit4all.api.view.bean.CloseResult;
 import org.smartbit4all.api.view.bean.ComponentConstraint;
 import org.smartbit4all.api.view.bean.ComponentModel;
 import org.smartbit4all.api.view.bean.ComponentModelChange;
+import org.smartbit4all.api.view.bean.DataChange;
 import org.smartbit4all.api.view.bean.DataChangeEvent;
 import org.smartbit4all.api.view.bean.MessageData;
 import org.smartbit4all.api.view.bean.MessageResult;
@@ -65,11 +68,18 @@ import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.AnnotationUtils;
+import com.google.common.base.Strings;
 
 public class ViewContextServiceImpl implements ViewContextService {
 
   public interface ViewCall {
     void run() throws RuntimeException;
+  }
+
+  private static class ViewComparisonResult {
+    ComponentModelChange change;
+    Map<String, Object> oldValues;
+    Map<String, Object> newValues;
   }
 
   private static final Logger log = LoggerFactory.getLogger(ViewContextServiceImpl.class);
@@ -95,6 +105,12 @@ public class ViewContextServiceImpl implements ViewContextService {
    *
    */
   private Map<String, Map<String, Method>> actionMethodsByView = new HashMap<>();
+
+  /**
+   * <View.name <DataChangeListener.value <Method>>>
+   *
+   */
+  private Map<String, Map<String, Method>> dataChangeListenerMethodsByView = new HashMap<>();
 
   /**
    * <View.name <WidgetActionHandler.widget <WidgetActionHandler.value <Method>>>>
@@ -374,14 +390,18 @@ public class ViewContextServiceImpl implements ViewContextService {
    * @param api
    */
   private void registerViewMethods(String viewName, Object api) {
-    registerAnnotatedMethodsWithCode(viewName, api, MessageHandler.class, messageMethodsByView,
+    registerAnnotatedMethodsWithCode(viewName, api,
+        MessageHandler.class, messageMethodsByView,
         annotation -> Arrays.asList(annotation.value()));
-    registerAnnotatedMethodsWithCode(viewName, api, ActionHandler.class, actionMethodsByView,
+    registerAnnotatedMethodsWithCode(viewName, api,
+        ActionHandler.class, actionMethodsByView,
+        annotation -> Arrays.asList(annotation.value()));
+    registerAnnotatedMethodsWithCode(viewName, api,
+        DataChangeListener.class, dataChangeListenerMethodsByView,
         annotation -> Arrays.asList(annotation.value()));
     registerWidgetActionMethods(viewName, api);
     registerAnnotatedMethods(viewName, api, BeforeClose.class, beforeCloseMethodsByView);
   }
-
 
   private void registerWidgetActionMethods(String viewName, Object api) {
     Map<String, Map<String, Method>> widgetMethods = new HashMap<>();
@@ -536,7 +556,9 @@ public class ViewContextServiceImpl implements ViewContextService {
     ObjectPropertyResolverContext resolverContext =
         new ObjectPropertyResolverContext().addObjectsItem(
             new ObjectPropertyResolverContextObject().name("model").uri(view.getObjectUri()));
-    return invokeMethodInternal(eventDescriptor, resolverContext, method, api, viewUuid, request);
+    List<ViewComparisonResult> comparisons =
+        invokeMethodInternal(eventDescriptor, resolverContext, method, api, viewUuid, request);
+    return createViewContextChange(comparisons);
   }
 
   @Override
@@ -563,8 +585,10 @@ public class ViewContextServiceImpl implements ViewContextService {
     // other part of the view directly.
     // .addObjectsItem(
     // new ObjectPropertyResolverContextObject().name("model").uri(view.getObjectUri()));
-    return invokeMethodInternal(eventDescriptor, resolverContext, method, api, viewUuid, widgetId,
-        nodeId, request);
+    List<ViewComparisonResult> comparisons =
+        invokeMethodInternal(eventDescriptor, resolverContext, method, api, viewUuid, widgetId,
+            nodeId, request);
+    return createViewContextChange(comparisons);
   }
 
   /**
@@ -572,7 +596,7 @@ public class ViewContextServiceImpl implements ViewContextService {
    *        invocation.
    * @return
    */
-  private ViewContextChange invokeMethodInternal(ViewEventDescriptor eventDescriptor,
+  private List<ViewComparisonResult> invokeMethodInternal(ViewEventDescriptor eventDescriptor,
       ObjectPropertyResolverContext resolverContext, Method method,
       Object api, Object... args) {
     InvocationRequest insteadOfRequest = null;
@@ -656,74 +680,151 @@ public class ViewContextServiceImpl implements ViewContextService {
     }
   }
 
-  private ViewContextChange afterInvoke(ObjectNode before, String methodName) {
+  private List<ViewComparisonResult> afterInvoke(ObjectNode before, String methodName) {
     try {
       Map<UUID, View> beforeViews = before.getValueAsList(View.class, ViewContext.VIEWS)
           .stream()
           .collect(toMap(View::getUuid, v -> v));
       ObjectNode after = objectApi.create(SCHEMA, getCurrentViewContextEntry());
-      List<ComponentModelChange> changes = after.getValueAsList(View.class, ViewContext.VIEWS)
+      return after.getValueAsList(View.class, ViewContext.VIEWS)
           .stream()
           .filter(v -> beforeViews.containsKey(v.getUuid()))
           .filter(v -> ViewState.TO_CLOSE != v.getState())
           .map(v -> compareViewNodes(beforeViews.get(v.getUuid()), v))
           .filter(Objects::nonNull)
           .collect(toList());
-      return new ViewContextChange()
-          .viewContext(getCurrentViewContext())
-          .changes(changes);
     } catch (Throwable tr) {
       throw new RuntimeException("Error after calling method " + methodName,
           tr);
     }
   }
 
-  private ComponentModelChange compareViewNodes(View before, View after) {
+  private ViewContextChange createViewContextChange(List<ViewComparisonResult> comparisons) {
+    return new ViewContextChange()
+        .viewContext(getCurrentViewContext())
+        .changes(comparisons.stream()
+            .map(comp -> comp.change)
+            .collect(toList()));
+  }
+
+  private ViewComparisonResult compareViewNodes(View before, View after) {
     Objects.requireNonNull(after, "After view must not be null");
     if (before != null) {
       before.getParameters().clear();
+      before.getVariables().clear();
       before.getClosedChildrenViews().clear();
-      before.getWidgetModels().clear();
       before.getCallbacks().clear();
+      before.getDownloadableItems().clear();
+      before.getEventHandlers().clear();
     }
     after.getParameters().clear();
+    after.getVariables().clear();
     after.getClosedChildrenViews().clear();
-    after.getWidgetModels().clear();
     after.getCallbacks().clear();
+    after.getDownloadableItems().clear();
+    after.getEventHandlers().clear();
     if (Objects.equals(before, after)) {
       return null;
     }
-    ComponentModelChange change = new ComponentModelChange()
+    ViewComparisonResult result = new ViewComparisonResult();
+    result.change = new ComponentModelChange()
         .uuid(after.getUuid())
         .path(StringConstant.EMPTY)
         .value(getComponentModel(after.getUuid()));
     try {
+      // handle model (data)
       if (before != null) {
-        Class<?> clazz = modelClassByViewName.get(after.getViewName());
-        if (clazz == null) {
-          throw new IllegalArgumentException(
-              "View is not PageApi and model clazz is not specified! " + after.getViewName());
-        }
-        ObjectDefinition<?> definition = objectApi.definition(clazz);
-        Map<String, Object> beforeModel = getModelAsMap(before, definition);
-        Map<String, Object> afterModel = getModelAsMap(after, definition);
+        // check for individual changes
+        // before is from an objectNode, model is Map
+        Map<String, Object> beforeModel = (Map<String, Object>) before.getModel();
+        Map<String, Object> afterModel = (Map<String, Object>) after.getModel();
         ObjectChangeData changes = compareApi.changesOfMap(beforeModel, afterModel);
-        change.changes(compareApi.toMap(changes, ComponentModel.DATA));
+        result.oldValues = compareApi.toMap(changes, ComponentModel.DATA, false);
+        result.newValues = compareApi.toMap(changes, ComponentModel.DATA, true);
+        result.change.changes(result.newValues);
+        // valuesets
+        result.change.getChanges().putAll(
+            findDifferences(ComponentModel.VALUE_SETS,
+                before.getValueSets(),
+                after.getValueSets()));
+        // layouts
+        result.change.getChanges().putAll(
+            findDifferences(ComponentModel.LAYOUTS,
+                before.getLayouts(),
+                after.getLayouts()));
+        // widgets
+        result.change.changedWidgets(new ArrayList<>(
+            findDifferences(null,
+                before.getWidgetModels(),
+                after.getWidgetModels())
+                    .keySet()));
+        // actions
+        if (!Objects.deepEquals(after.getActions(), before.getActions())) {
+          result.change.getChanges().put(ComponentModel.ACTIONS, after.getActions());
+        }
+        // constraints
+        if (!Objects.deepEquals(after.getConstraint(), before.getConstraint())) {
+          result.change.getChanges().put(ComponentModel.CONSTRAINTS, after.getConstraint());
+        }
+      } else {
+        // whole model is new, we can use ComponentModelChange.path/value for now to avoid double
+        // ComponentModel creation
+        result.change.changes(new HashMap<>());
+        result.change.getChanges().put(result.change.getPath(), result.change.getValue());
+        // we should still fill oldValues/newValues so any DataChange aware method can use it
+        result.oldValues = new HashMap<>();
+        result.oldValues.put(ComponentModel.DATA, null);
+        result.newValues = new HashMap<>();
+        result.newValues.put(ComponentModel.DATA, after.getModel());
       }
     } catch (Exception e) {
       log.error("Unexpected error when calculating changes", e);
     }
-    return change;
+    return result;
   }
 
-  private Map<String, Object> getModelAsMap(View view, ObjectDefinition<?> definition) {
-    Object modelObj = view.getModel();
-    if (modelObj instanceof Map) {
-      // from map to object --> all contained maps will be objects..
-      modelObj = definition.fromMap((Map<String, Object>) modelObj);
+  private Map<String, Object> findDifferences(String path, Map<String, ?> before,
+      Map<String, ?> after) {
+    // add deleted entries to after
+    before.entrySet().stream()
+        .filter(e -> !after.containsKey(e.getKey()))
+        .forEach(e -> after.put(e.getKey(), null));
+    // compare existing entries
+    String pathPrefix = Strings.isNullOrEmpty(path) ? "" : path + StringConstant.DOT;
+    return after.entrySet().stream()
+        .filter(e -> !Objects.equals(e.getValue(), before.get(e.getKey())))
+        .collect(toMap(
+            e -> pathPrefix + e.getKey(),
+            Entry::getValue));
+  }
+
+  // TODO use it.. missing: source of DataChangeEvent
+  private ComponentModelChange notifyDataChangeListeners(ViewComparisonResult viewComparison) {
+    try {
+      UUID viewUuid = viewComparison.change.getUuid();
+      View view = getViewFromCurrentViewContext(viewUuid);
+      Object api = apiByViewName.get(view.getViewName());
+      Objects.requireNonNull(api, "API not found for view " + view.getViewName());
+      for (Entry<String, Object> change : viewComparison.change.getChanges().entrySet()) {
+        Method method =
+            getMethodForCode(dataChangeListenerMethodsByView, view.getViewName(), change.getKey());
+        if (method != null) {
+          try {
+            method.invoke(api, viewUuid,
+                new DataChangeEvent()
+                    .newValues(viewComparison.newValues)
+                    .oldValues(viewComparison.oldValues));
+          } catch (IllegalAccessException | IllegalArgumentException
+              | InvocationTargetException e) {
+            log.error("Error when calling MessageHandler method " + method.getName(), e);
+          }
+        }
+
+      }
+    } catch (Throwable tr) {
+      log.error("Unexpected error when handling modelChange " + viewComparison.change, tr);
     }
-    // from object to map --> all contained objects will be maps..
-    return definition.toMap(modelObj);
+    return viewComparison.change;
   }
 
   private Method getMethodForCode(Map<String, Map<String, Method>> methodsByView, String viewName,
@@ -772,11 +873,12 @@ public class ViewContextServiceImpl implements ViewContextService {
       throw new RuntimeException("Error when calling method " + methodName,
           tr);
     }
-    return afterInvoke(before, methodName);
+    List<ViewComparisonResult> comparisons = afterInvoke(before, methodName);
+    return createViewContextChange(comparisons);
   }
 
   @Override
-  public ViewContextChange performDataChanged(UUID viewUuid, DataChangeEvent event) {
+  public ViewContextChange performDataChanged(UUID viewUuid, DataChange event) {
     // get current model as map
     View view = getViewFromCurrentViewContext(viewUuid);
     Objects.requireNonNull(view, "View not found when performing data change!");
@@ -803,18 +905,27 @@ public class ViewContextServiceImpl implements ViewContextService {
     ObjectNode modelNode =
         objectApi.create(SCHEMA, definition, (Map<String, Object>) modelBeforeChange);
 
-    Map<String, Object> oldValues = new HashMap<>();
-    for (Entry<String, Object> change : event.getValues().entrySet()) {
-      String key = change.getKey();
-      String[] path = key.split("\\.");
-      Object oldValue = modelNode.getValue(path);
-      oldValues.put(key, oldValue);
-      modelNode.setValue(change.getValue(), path);
-    }
-    view.setModel(modelNode.getObjectAsMap());
+    // Map<String, Object> oldValues = new HashMap<>();
+    // for (Entry<String, Object> change : event.getValues().entrySet()) {
+    // String key = change.getKey();
+    // String[] path = key.split("\\.");
+    // Object oldValue = modelNode.getValue(path);
+    // oldValues.put(key, oldValue);
+    // modelNode.setValue(change.getValue(), path);
+    // }
+    // view.setModel(modelNode.getObjectAsMap());
 
     // notify data listeners, calculate changes during data change processing and return
     return performViewCall(() -> {
+      // Map<String, Object> oldValues = new HashMap<>();
+      for (Entry<String, Object> change : event.getValues().entrySet()) {
+        String key = change.getKey();
+        String[] path = key.split("\\.");
+        // Object oldValue = modelNode.getValue(path);
+        // oldValues.put(key, oldValue);
+        modelNode.setValue(change.getValue(), path);
+      }
+      view.setModel(modelNode.getObjectAsMap());
     }, "performDataChanged");
   }
 

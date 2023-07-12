@@ -113,7 +113,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DataChangeEvent'
+              $ref: '#/components/schemas/DataChange'
       responses:
         '200':
           description: ''
@@ -397,7 +397,7 @@ components:
             $ref: '#/components/schemas/ComponentModelChange'
     View:
       type: object
-      required: [uuid,viewName,state,type,parameters,closedChildrenViews,downloadableItems,actions,widgetModels,callbacks,eventHandlers,layouts]
+      required: [uuid,viewName,state,type,parameters,variables,closedChildrenViews,downloadableItems,actions,widgetModels,valueSets,callbacks,eventHandlers,layouts]
       properties:
         uuid:
           type: string
@@ -562,9 +562,16 @@ components:
         value:
           type: object
         changes:
-          description: Changed values, in a key-value map.
+          description: |
+            Changed values, in a key-value map. Refers to different parts of ComponentModel, for example 
+            data changes are prefixed with 'data.', layout changes with 'layouts.', etc.
           type: object
           additionalProperties: true
+        changedWidgets:
+          description: List of changed widgets (widgetIds).
+          type: array
+          items:
+            type: string
     ComponentConstraint:
       type: object
       description: |
@@ -881,12 +888,12 @@ components:
         timestamp:
           type: integer
           format: int64
-    DataChangeEvent:
+    DataChange:
       type: object
       description:
       properties:
         kind:
-          $ref: '#/components/schemas/DataChangeEventKind'
+          $ref: '#/components/schemas/DataChangeKind'
         source:
           description: Source of the event, typically the key of the widget.
           type: string
@@ -894,7 +901,24 @@ components:
           description: Changed values, in a key-value map.
           type: object
           additionalProperties: true
-    DataChangeEventKind:
+    DataChangeEvent:
+      type: object
+      description:
+      properties:
+        kind:
+          $ref: '#/components/schemas/DataChangeKind'
+        source:
+          description: Source of the event, typically the key of the widget.
+          type: string
+        oldValues:
+          description: Values before changed, in a key-value map.
+          type: object
+          additionalProperties: true
+        newValues:
+          description: Values before changed, in a key-value map.
+          type: object
+          additionalProperties: true
+    DataChangeKind:
       type: string
       description: |
         Defines the kind of the source of this event..

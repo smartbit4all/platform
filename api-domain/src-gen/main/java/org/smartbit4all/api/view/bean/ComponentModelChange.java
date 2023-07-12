@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +40,8 @@ import javax.validation.Valid;
   ComponentModelChange.UUID,
   ComponentModelChange.PATH,
   ComponentModelChange.VALUE,
-  ComponentModelChange.CHANGES
+  ComponentModelChange.CHANGES,
+  ComponentModelChange.CHANGED_WIDGETS
 })
 @JsonTypeName("ComponentModelChange")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -55,6 +57,9 @@ public class ComponentModelChange {
 
   public static final String CHANGES = "changes";
   private Map<String, Object> changes = new HashMap<>();
+
+  public static final String CHANGED_WIDGETS = "changedWidgets";
+  private List<String> changedWidgets = null;
 
   public ComponentModelChange() { 
   }
@@ -155,12 +160,12 @@ public class ComponentModelChange {
   }
 
    /**
-   * Changed values, in a key-value map.
+   * Changed values, in a key-value map. Refers to different parts of ComponentModel, for example  data changes are prefixed with &#39;data.&#39;, layout changes with &#39;layouts.&#39;, etc. 
    * @return changes
   **/
   @javax.annotation.Nonnull
   @NotNull
-  @ApiModelProperty(required = true, value = "Changed values, in a key-value map.")
+  @ApiModelProperty(required = true, value = "Changed values, in a key-value map. Refers to different parts of ComponentModel, for example  data changes are prefixed with 'data.', layout changes with 'layouts.', etc. ")
   @JsonProperty(CHANGES)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.ALWAYS)
 
@@ -176,6 +181,41 @@ public class ComponentModelChange {
   }
 
 
+  public ComponentModelChange changedWidgets(List<String> changedWidgets) {
+    
+    this.changedWidgets = changedWidgets;
+    return this;
+  }
+
+  public ComponentModelChange addChangedWidgetsItem(String changedWidgetsItem) {
+    if (this.changedWidgets == null) {
+      this.changedWidgets = new ArrayList<>();
+    }
+    this.changedWidgets.add(changedWidgetsItem);
+    return this;
+  }
+
+   /**
+   * List of changed widgets (widgetIds).
+   * @return changedWidgets
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "List of changed widgets (widgetIds).")
+  @JsonProperty(CHANGED_WIDGETS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<String> getChangedWidgets() {
+    return changedWidgets;
+  }
+
+
+  @JsonProperty(CHANGED_WIDGETS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setChangedWidgets(List<String> changedWidgets) {
+    this.changedWidgets = changedWidgets;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -188,12 +228,13 @@ public class ComponentModelChange {
     return Objects.equals(this.uuid, componentModelChange.uuid) &&
         Objects.equals(this.path, componentModelChange.path) &&
         Objects.equals(this.value, componentModelChange.value) &&
-        Objects.equals(this.changes, componentModelChange.changes);
+        Objects.equals(this.changes, componentModelChange.changes) &&
+        Objects.equals(this.changedWidgets, componentModelChange.changedWidgets);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uuid, path, value, changes);
+    return Objects.hash(uuid, path, value, changes, changedWidgets);
   }
 
   @Override
@@ -204,6 +245,7 @@ public class ComponentModelChange {
     sb.append("    path: ").append(toIndentedString(path)).append("\n");
     sb.append("    value: ").append(toIndentedString(value)).append("\n");
     sb.append("    changes: ").append(toIndentedString(changes)).append("\n");
+    sb.append("    changedWidgets: ").append(toIndentedString(changedWidgets)).append("\n");
     sb.append("}");
     return sb.toString();
   }

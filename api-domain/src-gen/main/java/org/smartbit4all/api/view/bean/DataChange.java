@@ -36,30 +36,26 @@ import javax.validation.Valid;
  */
 @ApiModel(description = "null")
 @JsonPropertyOrder({
-  DataChangeEvent.KIND,
-  DataChangeEvent.SOURCE,
-  DataChangeEvent.OLD_VALUES,
-  DataChangeEvent.NEW_VALUES
+  DataChange.KIND,
+  DataChange.SOURCE,
+  DataChange.VALUES
 })
-@JsonTypeName("DataChangeEvent")
+@JsonTypeName("DataChange")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
-public class DataChangeEvent {
+public class DataChange {
   public static final String KIND = "kind";
   private DataChangeKind kind;
 
   public static final String SOURCE = "source";
   private String source;
 
-  public static final String OLD_VALUES = "oldValues";
-  private Map<String, Object> oldValues = null;
+  public static final String VALUES = "values";
+  private Map<String, Object> values = null;
 
-  public static final String NEW_VALUES = "newValues";
-  private Map<String, Object> newValues = null;
-
-  public DataChangeEvent() { 
+  public DataChange() { 
   }
 
-  public DataChangeEvent kind(DataChangeKind kind) {
+  public DataChange kind(DataChangeKind kind) {
     
     this.kind = kind;
     return this;
@@ -87,7 +83,7 @@ public class DataChangeEvent {
   }
 
 
-  public DataChangeEvent source(String source) {
+  public DataChange source(String source) {
     
     this.source = source;
     return this;
@@ -114,73 +110,38 @@ public class DataChangeEvent {
   }
 
 
-  public DataChangeEvent oldValues(Map<String, Object> oldValues) {
+  public DataChange values(Map<String, Object> values) {
     
-    this.oldValues = oldValues;
+    this.values = values;
     return this;
   }
 
-  public DataChangeEvent putOldValuesItem(String key, Object oldValuesItem) {
-    if (this.oldValues == null) {
-      this.oldValues = new HashMap<>();
+  public DataChange putValuesItem(String key, Object valuesItem) {
+    if (this.values == null) {
+      this.values = new HashMap<>();
     }
-    this.oldValues.put(key, oldValuesItem);
+    this.values.put(key, valuesItem);
     return this;
   }
 
    /**
-   * Values before changed, in a key-value map.
-   * @return oldValues
+   * Changed values, in a key-value map.
+   * @return values
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Values before changed, in a key-value map.")
-  @JsonProperty(OLD_VALUES)
+  @ApiModelProperty(value = "Changed values, in a key-value map.")
+  @JsonProperty(VALUES)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
 
-  public Map<String, Object> getOldValues() {
-    return oldValues;
+  public Map<String, Object> getValues() {
+    return values;
   }
 
 
-  @JsonProperty(OLD_VALUES)
+  @JsonProperty(VALUES)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
-  public void setOldValues(Map<String, Object> oldValues) {
-    this.oldValues = oldValues;
-  }
-
-
-  public DataChangeEvent newValues(Map<String, Object> newValues) {
-    
-    this.newValues = newValues;
-    return this;
-  }
-
-  public DataChangeEvent putNewValuesItem(String key, Object newValuesItem) {
-    if (this.newValues == null) {
-      this.newValues = new HashMap<>();
-    }
-    this.newValues.put(key, newValuesItem);
-    return this;
-  }
-
-   /**
-   * Values before changed, in a key-value map.
-   * @return newValues
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "Values before changed, in a key-value map.")
-  @JsonProperty(NEW_VALUES)
-  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Map<String, Object> getNewValues() {
-    return newValues;
-  }
-
-
-  @JsonProperty(NEW_VALUES)
-  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
-  public void setNewValues(Map<String, Object> newValues) {
-    this.newValues = newValues;
+  public void setValues(Map<String, Object> values) {
+    this.values = values;
   }
 
 
@@ -192,26 +153,24 @@ public class DataChangeEvent {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    DataChangeEvent dataChangeEvent = (DataChangeEvent) o;
-    return Objects.equals(this.kind, dataChangeEvent.kind) &&
-        Objects.equals(this.source, dataChangeEvent.source) &&
-        Objects.equals(this.oldValues, dataChangeEvent.oldValues) &&
-        Objects.equals(this.newValues, dataChangeEvent.newValues);
+    DataChange dataChange = (DataChange) o;
+    return Objects.equals(this.kind, dataChange.kind) &&
+        Objects.equals(this.source, dataChange.source) &&
+        Objects.equals(this.values, dataChange.values);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(kind, source, oldValues, newValues);
+    return Objects.hash(kind, source, values);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class DataChangeEvent {\n");
+    sb.append("class DataChange {\n");
     sb.append("    kind: ").append(toIndentedString(kind)).append("\n");
     sb.append("    source: ").append(toIndentedString(source)).append("\n");
-    sb.append("    oldValues: ").append(toIndentedString(oldValues)).append("\n");
-    sb.append("    newValues: ").append(toIndentedString(newValues)).append("\n");
+    sb.append("    values: ").append(toIndentedString(values)).append("\n");
     sb.append("}");
     return sb.toString();
   }

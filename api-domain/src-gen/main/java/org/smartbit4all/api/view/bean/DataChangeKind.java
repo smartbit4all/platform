@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 /**
  * Defines the kind of the source of this event.. 
  */
-public enum DataChangeEventKind {
+public enum DataChangeKind {
   
   WIDGET("WIDGET"),
   
@@ -37,7 +37,7 @@ public enum DataChangeEventKind {
 
   private String value;
 
-  DataChangeEventKind(String value) {
+  DataChangeKind(String value) {
     this.value = value;
   }
 
@@ -52,8 +52,8 @@ public enum DataChangeEventKind {
   }
 
   @JsonCreator
-  public static DataChangeEventKind fromValue(String value) {
-    for (DataChangeEventKind b : DataChangeEventKind.values()) {
+  public static DataChangeKind fromValue(String value) {
+    for (DataChangeKind b : DataChangeKind.values()) {
       if (b.value.equals(value)) {
         return b;
       }

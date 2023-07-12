@@ -6,7 +6,7 @@ import org.smartbit4all.api.view.ViewContextServiceImpl.ViewCall;
 import org.smartbit4all.api.view.annotation.BeforeClose;
 import org.smartbit4all.api.view.bean.CloseResult;
 import org.smartbit4all.api.view.bean.ComponentModel;
-import org.smartbit4all.api.view.bean.DataChangeEvent;
+import org.smartbit4all.api.view.bean.DataChange;
 import org.smartbit4all.api.view.bean.MessageResult;
 import org.smartbit4all.api.view.bean.OpenPendingData;
 import org.smartbit4all.api.view.bean.UiActionRequest;
@@ -148,7 +148,7 @@ public interface ViewContextService {
    * @param viewUuid
    * @return
    */
-  ViewContextChange performDataChanged(UUID viewUuid, DataChangeEvent event);
+  ViewContextChange performDataChanged(UUID viewUuid, DataChange event);
 
   ViewContextChange performViewCall(ViewCall viewCall, String methodName);
 

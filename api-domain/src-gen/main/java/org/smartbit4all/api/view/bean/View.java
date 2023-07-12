@@ -84,7 +84,7 @@ public class View {
   private Map<String, Object> parameters = new HashMap<>();
 
   public static final String VARIABLES = "variables";
-  private Map<String, Object> variables = null;
+  private Map<String, Object> variables = new HashMap<>();
 
   public static final String STATE = "state";
   private ViewState state = ViewState.TO_OPEN;
@@ -117,7 +117,7 @@ public class View {
   private Map<String, Object> widgetModels = new HashMap<>();
 
   public static final String VALUE_SETS = "valueSets";
-  private Map<String, ValueSet> valueSets = null;
+  private Map<String, ValueSet> valueSets = new HashMap<>();
 
   public static final String KEEP_MODEL_ON_IMPLICIT_CLOSE = "keepModelOnImplicitClose";
   private Boolean keepModelOnImplicitClose;
@@ -284,9 +284,6 @@ public class View {
   }
 
   public View putVariablesItem(String key, Object variablesItem) {
-    if (this.variables == null) {
-      this.variables = new HashMap<>();
-    }
     this.variables.put(key, variablesItem);
     return this;
   }
@@ -295,10 +292,11 @@ public class View {
    * The variable to store while the page is opened. It will be cleared if we open it again.
    * @return variables
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "The variable to store while the page is opened. It will be cleared if we open it again.")
+  @javax.annotation.Nonnull
+  @NotNull
+  @ApiModelProperty(required = true, value = "The variable to store while the page is opened. It will be cleared if we open it again.")
   @JsonProperty(VARIABLES)
-  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.ALWAYS)
 
   public Map<String, Object> getVariables() {
     return variables;
@@ -306,7 +304,7 @@ public class View {
 
 
   @JsonProperty(VARIABLES)
-  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.ALWAYS)
   public void setVariables(Map<String, Object> variables) {
     this.variables = variables;
   }
@@ -629,9 +627,6 @@ public class View {
   }
 
   public View putValueSetsItem(String key, ValueSet valueSetsItem) {
-    if (this.valueSets == null) {
-      this.valueSets = new HashMap<>();
-    }
     this.valueSets.put(key, valueSetsItem);
     return this;
   }
@@ -640,11 +635,12 @@ public class View {
    * Get valueSets
    * @return valueSets
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  @NotNull
   @Valid
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty(VALUE_SETS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public Map<String, ValueSet> getValueSets() {
     return valueSets;
@@ -652,7 +648,7 @@ public class View {
 
 
   @JsonProperty(VALUE_SETS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setValueSets(Map<String, ValueSet> valueSets) {
     this.valueSets = valueSets;
   }
