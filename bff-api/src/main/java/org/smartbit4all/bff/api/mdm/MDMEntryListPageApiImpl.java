@@ -69,7 +69,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
    * The page context is a useful object to encapsulate all the parameters necessary to execute the
    * actions of the page.
    */
-  private class PageContext {
+  protected class PageContext {
 
     View view;
     MDMEntryDescriptor entryDescriptor;
@@ -103,7 +103,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
       return extractParam(MDMEntryDescriptor.class, PARAM_ENTRY_DESCRIPTOR, view.getParameters());
     }
 
-    boolean checkAdmin() {
+    public boolean checkAdmin() {
       return OrgUtils.securityPredicate(sessionApi, entryDescriptor.getAdminGroupName());
     }
 
@@ -119,13 +119,13 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<MDMEntryDescriptor>
 
   }
 
-  private PageContext getContextByViewUUID(UUID viewUuid) {
+  protected PageContext getContextByViewUUID(UUID viewUuid) {
     PageContext result = new PageContext();
     result.view = viewApi.getView(viewUuid);
     return result.loadByView();
   }
 
-  private PageContext getContextByView(View view) {
+  protected PageContext getContextByView(View view) {
     PageContext result = new PageContext();
     result.view = view;
     return result.loadByView();
