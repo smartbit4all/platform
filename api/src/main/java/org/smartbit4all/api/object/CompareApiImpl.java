@@ -15,6 +15,7 @@ import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ObjectNodeReference;
 import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.beans.factory.annotation.Autowired;
+import com.google.common.base.Strings;
 
 public class CompareApiImpl implements CompareApi {
 
@@ -170,20 +171,26 @@ public class CompareApiImpl implements CompareApi {
   }
 
   @Override
-  public Map<String, Object> toMap(ObjectChangeData objectChange, String path) {
+  public Map<String, Object> toMap(ObjectChangeData objectChange, String path, boolean newValues) {
     Map<String, Object> changes = new HashMap<>();
-    addChanges(objectChange, path, changes);
+    addChanges(objectChange, path, changes, newValues);
     return changes;
   }
 
-  private void addChanges(ObjectChangeData objectChange, String path, Map<String, Object> changes) {
+  private void addChanges(ObjectChangeData objectChange, String path, Map<String, Object> changes,
+      boolean newValues) {
+    String pathPrefix = Strings.isNullOrEmpty(path) ? "" : path + StringConstant.DOT;
     for (PropertyChangeData prop : objectChange.getProperties()) {
-      String key = path + StringConstant.DOT + prop.getPath();
-      changes.put(key, prop.getNewValue());
+      String key = pathPrefix + prop.getPath();
+      if (newValues) {
+        changes.put(key, prop.getNewValue());
+      } else {
+        changes.put(key, prop.getOldValue());
+      }
     }
     for (ReferenceChangeData ref : objectChange.getReferences()) {
-      String key = path + StringConstant.DOT + ref.getPath();
-      addChanges(ref.getObjectChange(), key, changes);
+      String key = pathPrefix + ref.getPath();
+      addChanges(ref.getObjectChange(), key, changes, newValues);
     }
   }
 
