@@ -47,8 +47,7 @@ import javax.validation.Valid;
   ComponentModel.CONSTRAINTS,
   ComponentModel.LAYOUTS,
   ComponentModel.ACTIONS,
-  ComponentModel.VALUE_SETS,
-  ComponentModel.WIDGET_MODELS
+  ComponentModel.VALUE_SETS
 })
 @JsonTypeName("ComponentModel")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -73,9 +72,6 @@ public class ComponentModel {
 
   public static final String VALUE_SETS = "valueSets";
   private Map<String, ValueSet> valueSets = null;
-
-  public static final String WIDGET_MODELS = "widgetModels";
-  private Map<String, Object> widgetModels = new HashMap<>();
 
   public ComponentModel() { 
   }
@@ -302,39 +298,6 @@ public class ComponentModel {
   }
 
 
-  public ComponentModel widgetModels(Map<String, Object> widgetModels) {
-    
-    this.widgetModels = widgetModels;
-    return this;
-  }
-
-  public ComponentModel putWidgetModelsItem(String key, Object widgetModelsItem) {
-    this.widgetModels.put(key, widgetModelsItem);
-    return this;
-  }
-
-   /**
-   * Complex widgets with corresponding initial model.
-   * @return widgetModels
-  **/
-  @javax.annotation.Nonnull
-  @NotNull
-  @ApiModelProperty(required = true, value = "Complex widgets with corresponding initial model.")
-  @JsonProperty(WIDGET_MODELS)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-
-  public Map<String, Object> getWidgetModels() {
-    return widgetModels;
-  }
-
-
-  @JsonProperty(WIDGET_MODELS)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setWidgetModels(Map<String, Object> widgetModels) {
-    this.widgetModels = widgetModels;
-  }
-
-
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -350,13 +313,12 @@ public class ComponentModel {
         Objects.equals(this.constraints, componentModel.constraints) &&
         Objects.equals(this.layouts, componentModel.layouts) &&
         Objects.equals(this.actions, componentModel.actions) &&
-        Objects.equals(this.valueSets, componentModel.valueSets) &&
-        Objects.equals(this.widgetModels, componentModel.widgetModels);
+        Objects.equals(this.valueSets, componentModel.valueSets);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uuid, name, data, constraints, layouts, actions, valueSets, widgetModels);
+    return Objects.hash(uuid, name, data, constraints, layouts, actions, valueSets);
   }
 
   @Override
@@ -370,7 +332,6 @@ public class ComponentModel {
     sb.append("    layouts: ").append(toIndentedString(layouts)).append("\n");
     sb.append("    actions: ").append(toIndentedString(actions)).append("\n");
     sb.append("    valueSets: ").append(toIndentedString(valueSets)).append("\n");
-    sb.append("    widgetModels: ").append(toIndentedString(widgetModels)).append("\n");
     sb.append("}");
     return sb.toString();
   }

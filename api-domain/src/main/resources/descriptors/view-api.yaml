@@ -519,7 +519,7 @@ components:
       description: |
         Model of a UI component. Contains all information in one object, which are needed 
         to render a fully functionin component.
-      required: [uuid,name,constraints,layouts,actions,widgetModels]
+      required: [uuid,name,constraints,layouts,actions]
       properties:
         uuid:
           type: string
@@ -543,11 +543,6 @@ components:
           type: string
           additionalProperties:
             type: ValueSet
-        widgetModels:
-          description: Complex widgets with corresponding initial model. 
-          type: string
-          additionalProperties:
-            type: object
     ComponentModelChange:
       type: object
       description: |
