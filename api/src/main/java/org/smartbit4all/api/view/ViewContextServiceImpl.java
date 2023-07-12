@@ -763,8 +763,14 @@ public class ViewContextServiceImpl implements ViewContextService {
           result.change.getChanges().put(ComponentModel.ACTIONS, after.getActions());
         }
         // constraints
-        if (!Objects.deepEquals(after.getConstraint(), before.getConstraint())) {
-          result.change.getChanges().put(ComponentModel.CONSTRAINTS, after.getConstraint());
+        List<ComponentConstraint> beforeConstraints =
+            before.getConstraint() == null ? Collections.emptyList()
+                : before.getConstraint().getComponentConstraints();
+        List<ComponentConstraint> afterConstraints =
+            after.getConstraint() == null ? Collections.emptyList()
+                : after.getConstraint().getComponentConstraints();
+        if (!Objects.deepEquals(beforeConstraints, afterConstraints)) {
+          result.change.getChanges().put(ComponentModel.CONSTRAINTS, afterConstraints);
         }
       } else {
         // whole model is new, we can use ComponentModelChange.path/value for now to avoid double
