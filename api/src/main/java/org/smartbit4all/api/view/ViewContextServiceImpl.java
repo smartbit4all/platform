@@ -909,28 +909,11 @@ public class ViewContextServiceImpl implements ViewContextService {
     // perform data change on map, set as view's model
     ObjectNode modelNode =
         objectApi.create(SCHEMA, definition, (Map<String, Object>) modelBeforeChange);
-
-    // Map<String, Object> oldValues = new HashMap<>();
-    // for (Entry<String, Object> change : event.getValues().entrySet()) {
-    // String key = change.getKey();
-    // String[] path = key.split("\\.");
-    // Object oldValue = modelNode.getValue(path);
-    // oldValues.put(key, oldValue);
-    // modelNode.setValue(change.getValue(), path);
-    // }
-    // view.setModel(modelNode.getObjectAsMap());
+    event.getValues().forEach((key, value) -> modelNode.setValue(value, key.split("\\.")));
+    view.setModel(modelNode.getObjectAsMap());
 
     // notify data listeners, calculate changes during data change processing and return
     return performViewCall(() -> {
-      // Map<String, Object> oldValues = new HashMap<>();
-      for (Entry<String, Object> change : event.getValues().entrySet()) {
-        String key = change.getKey();
-        String[] path = key.split("\\.");
-        // Object oldValue = modelNode.getValue(path);
-        // oldValues.put(key, oldValue);
-        modelNode.setValue(change.getValue(), path);
-      }
-      view.setModel(modelNode.getObjectAsMap());
     }, "performDataChanged");
   }
 
