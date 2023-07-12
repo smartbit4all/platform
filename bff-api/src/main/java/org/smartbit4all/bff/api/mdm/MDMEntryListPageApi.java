@@ -1,6 +1,7 @@
 package org.smartbit4all.bff.api.mdm;
 
 import java.util.UUID;
+import org.smartbit4all.api.grid.bean.GridPage;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry;
@@ -92,7 +93,7 @@ public interface MDMEntryListPageApi extends PageApi<MDMEntryDescriptor> {
   /**
    * Populates the list of the MDMEntry with the entries visible for the given user. If
    * administrator then we can see the draft objects also.
-   * 
+   *
    * @param viewUuid The unique identifier of the view in the current context.
    * @param request The action request that contains every information about the triggering action.
    */
@@ -102,7 +103,7 @@ public interface MDMEntryListPageApi extends PageApi<MDMEntryDescriptor> {
   /**
    * If the current user is administrator of the given entry then this action can be performed. The
    * action cancels all the draft editing object and we will have the published object list.
-   * 
+   *
    * @param viewUuid The unique identifier of the view in the current context.
    * @param request The action request that contains every information about the triggering action.
    */
@@ -113,7 +114,7 @@ public interface MDMEntryListPageApi extends PageApi<MDMEntryDescriptor> {
    * If the current user is administrator of the given entry then this action can be performed. The
    * action construct a new entry. Initiate the currently editing branch if it doesn't exist. The
    * new object is going to be registered into the branch as new object.
-   * 
+   *
    * @param viewUuid The unique identifier of the view in the current context.
    * @param request The action request that contains every information about the triggering action.
    */
@@ -123,7 +124,7 @@ public interface MDMEntryListPageApi extends PageApi<MDMEntryDescriptor> {
   /**
    * If the current user is administrator of the given entry then this action can be performed. The
    * action publishes all the draft editing object and the changes will be available for every user.
-   * 
+   *
    * @param viewUuid The unique identifier of the view in the current context.
    * @param request The action request that contains every information about the triggering action.
    */
@@ -134,7 +135,7 @@ public interface MDMEntryListPageApi extends PageApi<MDMEntryDescriptor> {
    * If the current user is administrator of the given entry then this action can be performed. The
    * action starts the editing of the currently selected entry. The edited object is going to be
    * deleted from the list that contains the currently edited versions of the objects.
-   * 
+   *
    * @param viewUuid The unique identifier of the view in the current context.
    * @param gridId The identifier of the grid widget in the given page.
    * @param rowId The identifier of the row.
@@ -147,7 +148,7 @@ public interface MDMEntryListPageApi extends PageApi<MDMEntryDescriptor> {
    * If the current user is administrator of the given entry then this action can be performed. The
    * action starts the editing of the currently selected entry. The edited object is going to be
    * deleted from the list that contains the currently edited versions of the objects.
-   * 
+   *
    * @param viewUuid The unique identifier of the view in the current context.
    * @param gridId The identifier of the grid widget in the given page.
    * @param rowId The identifier of the row.
@@ -159,7 +160,7 @@ public interface MDMEntryListPageApi extends PageApi<MDMEntryDescriptor> {
   /**
    * If the current user is administrator of the given entry then this action can be performed. The
    * action cancels all the draft editing object and we will have the published object list.
-   * 
+   *
    * @param viewUuid The unique identifier of the view in the current context.
    * @param gridId The identifier of the grid widget in the given page.
    * @param rowId The identifier of the row.
@@ -171,7 +172,7 @@ public interface MDMEntryListPageApi extends PageApi<MDMEntryDescriptor> {
   /**
    * This callback function is responsible for saving a new object into the MDM entry list we are
    * working on currently.
-   * 
+   *
    * @param viewUuid The list view instance
    * @param editingObject The object or map value of the newly create object.
    */
@@ -180,12 +181,14 @@ public interface MDMEntryListPageApi extends PageApi<MDMEntryDescriptor> {
   /**
    * This callback function is responsible for saving a new object into the MDM entry list we are
    * working on currently.
-   * 
+   *
    * @param viewUuid The list view instance
    * @param editingObject The object or map value of the newly create object.
    * @param branchedObjectEntry The branching information about the given entry.
    */
   void saveModificationObject(UUID viewUuid, Object editingObject,
       BranchedObjectEntry branchedObjectEntry);
+
+  GridPage addWidgetEntryGridActions(GridPage page, UUID viewUuid);
 
 }
