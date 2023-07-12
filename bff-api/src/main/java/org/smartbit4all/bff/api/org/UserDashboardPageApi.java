@@ -12,7 +12,7 @@ import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
 
-public interface UserListPageApi extends PageApi<Object> {
+public interface UserDashboardPageApi extends PageApi<Object> {
 
   public static final List<String> orderedColumns =
       Arrays.asList(User.NAME, User.USERNAME, User.EMAIL);
@@ -22,10 +22,6 @@ public interface UserListPageApi extends PageApi<Object> {
   public static final String OPEN_USER_EDITOR = "OPEN_USER_EDITOR";
 
   public static final String OPEN_USER_EDITOR_DIALOG = "OPEN_ADD_USER_DIALOG";
-
-  public static final String USER_EDITOR_PAGE = "USER_EDITOR_PAGE";
-
-  public static final String USER_EDITOR_DIALOG = "ADD_USER_DIALOG";
 
 
   List<UiAction> GRID_ACTIONS = Arrays.asList(

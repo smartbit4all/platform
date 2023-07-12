@@ -65,13 +65,13 @@ public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
       orgApi.saveUser(user);
     }
 
-    viewApi.showView(new View().viewName(USER_LIST_PAGE));
+    viewApi.showView(new View().viewName(OrgViewNames.USER_DASHBOARD_PAGE));
 
   }
 
   @Override
   public void cancelUserEdit(UUID viewUuid, UiActionRequest request) {
-    viewApi.showView(new View().viewName(USER_LIST_PAGE));
+    viewApi.showView(new View().viewName(OrgViewNames.USER_DASHBOARD_PAGE));
   }
 
 }

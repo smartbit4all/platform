@@ -18,7 +18,7 @@ import org.smartbit4all.api.view.grid.GridModelApi;
 import org.smartbit4all.api.view.grid.GridModels;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class UserListPageApiImpl extends PageApiImpl<Object> implements UserListPageApi {
+public class UserDashboardPageApiImpl extends PageApiImpl<Object> implements UserDashboardPageApi {
 
   @Autowired
   GridModelApi gridModelApi;
@@ -33,7 +33,7 @@ public class UserListPageApiImpl extends PageApiImpl<Object> implements UserList
   OrgApi orgApi;
 
 
-  public UserListPageApiImpl() {
+  public UserDashboardPageApiImpl() {
     super(Object.class);
   }
 
@@ -62,7 +62,7 @@ public class UserListPageApiImpl extends PageApiImpl<Object> implements UserList
 
 
     gridModelApi.addGridPageCallback(view.getUuid(), USER_GRID,
-        invocationApi.builder(UserListPageApiImpl.class)
+        invocationApi.builder(UserDashboardPageApi.class)
             .build(a -> a.extendPageData(null)));
     return pageModel;
   }
@@ -95,7 +95,7 @@ public class UserListPageApiImpl extends PageApiImpl<Object> implements UserList
 
 
     viewApi
-        .showView(new View().viewName(USER_EDITOR_PAGE).objectUri(userUri));
+        .showView(new View().viewName(OrgViewNames.USER_EDITOR_PAGE).objectUri(userUri));
 
 
   }
@@ -104,7 +104,7 @@ public class UserListPageApiImpl extends PageApiImpl<Object> implements UserList
   @Override
   public void openAddUserDialog(UUID viewUuid, UiActionRequest request) {
     viewApi
-        .showView(new View().viewName(USER_EDITOR_DIALOG).type(ViewType.DIALOG)
+        .showView(new View().viewName(OrgViewNames.USER_EDITOR_PAGE).type(ViewType.DIALOG)
             .objectUri(orgApi.saveUser(new User())));
   }
 
