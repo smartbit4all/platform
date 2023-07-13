@@ -1,5 +1,6 @@
 package org.smartbit4all.api.view.tree;
 
+import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
@@ -28,6 +29,18 @@ public interface TreeApi {
 
   SmartTreeNode selectNode(UiTreeState treeState, String nodeId);
 
+  /**
+   * Finds parent node, (re)expands it (so children nodes are reloaded), and selects child node.
+   * Typically used for selecting newly created child node. Call selectNode with handleSelecting =
+   * true.
+   *
+   * @param treeState
+   * @param parentNodeId
+   * @param childUri
+   * @return
+   */
+  SmartTreeNode selectNodeByUri(UiTreeState treeState, String parentNodeId, URI childUri);
+
   List<SmartTreeNode> performAction(UiTreeState treeState, String nodeId,
       UiActionRequest action);
 
@@ -51,11 +64,11 @@ public interface TreeApi {
   /**
    * Refreshes the state of the provided node and all its opened child nodes (continues downward
    * recursively).
-   * 
+   *
    * <p>
    * Shall be used when an action enacted on a treeNode has some blanket effect(s) on all its
    * children.
-   * 
+   *
    * @param treeState the {@code UiTreeState} serving as the node's context, not null
    * @param node a single {@code UiTreeNode} in the above tree, not null
    */

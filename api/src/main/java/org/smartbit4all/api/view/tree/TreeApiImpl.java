@@ -101,6 +101,24 @@ public class TreeApiImpl implements TreeApi {
     return convertUi2SmartTreeNode(treeState, treeNode);
   }
 
+  @Override
+  public SmartTreeNode selectNodeByUri(UiTreeState treeState, String parentNodeId, URI childUri) {
+    if (treeState.getExpandedNodes().contains(parentNodeId)) {
+      treeState.getExpandedNodes().remove(parentNodeId);
+    }
+    expandNodeInternal(treeState, parentNodeId);
+    URI latestUri = objectApi.getLatestUri(childUri);
+    UiTreeNode childNode = treeState.getNodes().values().stream()
+        .filter(n -> latestUri.equals(objectApi.getLatestUri(n.getObjectUri())))
+        .findAny()
+        .orElse(null);
+    if (childNode != null) {
+      selectNodeInternal(treeState, childNode.getIdentifier(), true);
+      return convertUi2SmartTreeNode(treeState, childNode);
+    }
+    return null;
+  }
+
   private UiTreeNode selectNodeInternal(UiTreeState treeState, String nodeId,
       boolean handleSelection) {
     UiTreeNode treeNode = getTreeNode(treeState, nodeId);
