@@ -11,6 +11,7 @@ import org.smartbit4all.api.view.bean.ViewStateUpdate;
 
 public class ViewContexts {
 
+  public static final String VIEW_NOT_FOUND_BY_UUID = "View not found by UUID: ";
   public static final String INITIAL_MODEL = "initialModel";
 
   private ViewContexts() {}
@@ -26,7 +27,7 @@ public class ViewContexts {
           .filter(v -> v != null && v.getModel() != null)
           .filter(v -> viewUuid.equals(v.getUuid()))
           .findFirst()
-          .orElseThrow(() -> new IllegalArgumentException("View not found by UUID: " + viewUuid));
+          .orElseThrow(() -> new IllegalArgumentException(VIEW_NOT_FOUND_BY_UUID + viewUuid));
     }
     return view;
   }
