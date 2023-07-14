@@ -20,7 +20,7 @@ public interface GroupDashboardPageApi extends PageApi<Object> {
 
   public static final String OPEN_GROUP_EDITOR = "OPEN_USER_EDITOR";
 
-  public static final String OPEN_GROUP_EDITOR_DIALOG = "OPEN_ADD_USER_DIALOG";
+  public static final String OPEN_GROUP_EDITOR_DIALOG = "OPEN_GROUP_EDITOR_DIALOG";
 
 
   List<UiAction> GRID_ACTIONS = Arrays.asList(
@@ -34,11 +34,11 @@ public interface GroupDashboardPageApi extends PageApi<Object> {
   GridPage extendPageData(GridPage page);
 
   @WidgetActionHandler(value = OPEN_GROUP_EDITOR, widget = GROUP_GRID)
-  void openUserEditor(UUID viewUuid, String gridId, String rowId,
+  void openGroupEditor(UUID viewUuid, String gridId, String rowId,
       UiActionRequest request);
 
   @ActionHandler(OPEN_GROUP_EDITOR_DIALOG)
-  void openAddUserDialog(UUID viewUuid,
+  void openAddGroupDialog(UUID viewUuid,
       UiActionRequest request);
 
 

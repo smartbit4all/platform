@@ -13,7 +13,6 @@ import org.smartbit4all.api.userselector.bean.UserEditingModel;
 import org.smartbit4all.api.view.PageApiImpl;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
-import org.smartbit4all.api.view.bean.ViewType;
 import org.smartbit4all.api.view.grid.GridModelApi;
 import org.smartbit4all.api.view.grid.GridModels;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -104,8 +103,7 @@ public class UserDashboardPageApiImpl extends PageApiImpl<Object> implements Use
   @Override
   public void openAddUserDialog(UUID viewUuid, UiActionRequest request) {
     viewApi
-        .showView(new View().viewName(OrgViewNames.USER_EDITOR_DIALOG).type(ViewType.DIALOG)
-            .objectUri(orgApi.saveUser(new User())));
+        .showView(new View().viewName(OrgViewNames.USER_EDITOR_PAGE));
   }
 
 }

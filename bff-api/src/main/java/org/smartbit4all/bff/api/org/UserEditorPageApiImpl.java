@@ -1,11 +1,11 @@
 package org.smartbit4all.bff.api.org;
 
-import java.util.List;
+import java.net.URI;
+import java.util.ArrayList;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.smartbit4all.api.org.OrgApi;
 import org.smartbit4all.api.org.PasswordEncoderApi;
-import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.userselector.bean.UserEditingModel;
 import org.smartbit4all.api.view.PageApiImpl;
@@ -33,15 +33,23 @@ public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
 
     UserEditingModel pageModel = new UserEditingModel();
 
-    User user = orgApi.getUser(view.getObjectUri());
 
-    user.password("");
+    URI userUri = view.getObjectUri();
 
-    List<Group> groups = orgApi.getGroupsOfUser(view.getObjectUri());
+    User user;
+    if (view.getObjectUri() != null) {
+      pageModel.user(orgApi.getUser(userUri));
+      pageModel.actualGroups(orgApi.getGroupsOfUser(userUri));
+    } else {
+      pageModel.user(new User().name("").email("").username(""));
+      pageModel.actualGroups(new ArrayList<>());
 
-    pageModel.user(user)
-        .possibleGroups(orgApi.getAllGroups())
-        .actualGroups(orgApi.getGroupsOfUser(user.getUri()));
+    }
+
+    pageModel.getUser().password("");
+
+    pageModel.possibleGroups(orgApi.getAllGroups());
+
 
     return pageModel;
   }

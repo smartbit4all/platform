@@ -21,7 +21,7 @@ public interface UserDashboardPageApi extends PageApi<Object> {
 
   public static final String OPEN_USER_EDITOR = "OPEN_USER_EDITOR";
 
-  public static final String OPEN_USER_EDITOR_DIALOG = "OPEN_ADD_USER_DIALOG";
+  public static final String OPEN_USER_EDITOR_DIALOG = "OPEN_USER_EDITOR_DIALOG";
 
 
   List<UiAction> GRID_ACTIONS = Arrays.asList(

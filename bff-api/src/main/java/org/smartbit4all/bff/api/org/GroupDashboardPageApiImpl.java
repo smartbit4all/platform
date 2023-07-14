@@ -11,11 +11,9 @@ import org.smartbit4all.api.grid.bean.GridRow;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.org.OrgApi;
 import org.smartbit4all.api.org.bean.Group;
-import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.view.PageApiImpl;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
-import org.smartbit4all.api.view.bean.ViewType;
 import org.smartbit4all.api.view.grid.GridModelApi;
 import org.smartbit4all.api.view.grid.GridModels;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,8 +56,14 @@ public class GroupDashboardPageApiImpl extends PageApiImpl<Object>
       }
     });
 
-    gridModelApi.setDataFromUris(view.getUuid(), GROUP_GRID, groupSearch,
-        notBuiltInGroups.stream().map(Group::getUri));
+    if (!notBuiltInGroups.isEmpty()) {
+
+      gridModelApi.setDataFromUris(view.getUuid(), GROUP_GRID, groupSearch,
+          notBuiltInGroups.stream().map(Group::getUri));
+    } else {
+      gridModelApi.setData(view.getUuid(), GROUP_GRID,
+          groupSearch.createEmptyTableData());
+    }
 
     return pageModel;
 
@@ -100,7 +104,7 @@ public class GroupDashboardPageApiImpl extends PageApiImpl<Object>
 
 
   @Override
-  public void openUserEditor(UUID viewUuid, String gridId, String rowId, UiActionRequest request) {
+  public void openGroupEditor(UUID viewUuid, String gridId, String rowId, UiActionRequest request) {
 
     GridModel gridModel = viewApi.getWidgetModelFromView(GridModel.class, viewUuid, GROUP_GRID);
 
@@ -117,10 +121,9 @@ public class GroupDashboardPageApiImpl extends PageApiImpl<Object>
 
 
   @Override
-  public void openAddUserDialog(UUID viewUuid, UiActionRequest request) {
+  public void openAddGroupDialog(UUID viewUuid, UiActionRequest request) {
     viewApi
-        .showView(new View().viewName(OrgViewNames.GROUP_EDITOR_DIALOG).type(ViewType.DIALOG)
-            .objectUri(orgApi.saveUser(new User())));
+        .showView(new View().viewName(OrgViewNames.GROUP_EDITOR_PAGE));
   }
 
 }

@@ -1,5 +1,6 @@
 package org.smartbit4all.bff.api.org;
 
+import java.util.ArrayList;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.smartbit4all.api.groupselector.bean.GroupEditingModel;
@@ -25,8 +26,13 @@ public class GroupEditorPageApiImpl extends PageApiImpl<GroupEditingModel>
     view.actions(ADMIN_ACTIONS);
 
     GroupEditingModel pageModel = new GroupEditingModel();
-
-    Group groupToEdit = orgApi.getGroup(view.getObjectUri());
+    Group groupToEdit;
+    if (view.getObjectUri() != null) {
+      groupToEdit = orgApi.getGroup(view.getObjectUri());
+    } else {
+      groupToEdit = new Group().name("").title("").kindCode("").description("")
+          .children(new ArrayList<>());
+    }
 
     pageModel.group(groupToEdit).possibleGroups(orgApi.getAllGroups()).childGroups(groupToEdit
         .getChildren().stream().map(u -> orgApi.getGroup(u)).collect(Collectors.toList()));
@@ -58,7 +64,6 @@ public class GroupEditorPageApiImpl extends PageApiImpl<GroupEditingModel>
   @Override
   public void cancelGroupEdit(UUID viewUuid, UiActionRequest request) {
     viewApi.showView(new View().viewName(OrgViewNames.GROUP_DASHBOARD_PAGE));
-
   }
 
 }
