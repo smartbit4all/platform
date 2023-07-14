@@ -16,6 +16,7 @@ smartbit4all {
   		"BinaryContentData": "org.smartbit4all.api.attachment.bean.BinaryContentData",
   		"UserActivityLog": "org.smartbit4all.api.session.bean.UserActivityLog",
   		"User": "org.smartbit4all.api.org.bean.User",
+  		"Group": "org.smartbit4all.api.org.bean.Group",
     	"LocalDateTime": "java.time.LocalDateTime",
     	"LocalDate": "java.time.LocalDate",
     	"LocalTime": "java.time.LocalTime",

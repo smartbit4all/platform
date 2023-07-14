@@ -29,7 +29,7 @@ public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
   @Override
   public UserEditingModel initModel(View view) {
 
-    view.actions(USER_ACTIONS);
+    view.actions(ADMIN_ACTIONS);
 
     UserEditingModel pageModel = new UserEditingModel();
 
@@ -40,7 +40,8 @@ public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
     List<Group> groups = orgApi.getGroupsOfUser(view.getObjectUri());
 
     pageModel.user(user)
-        .groups(groups.stream().map(Group::getUri).collect(Collectors.toList()));
+        .possibleGroups(orgApi.getAllGroups())
+        .actualGroups(orgApi.getGroupsOfUser(user.getUri()));
 
     return pageModel;
   }
@@ -48,13 +49,14 @@ public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
   @Override
   public void saveUser(UUID viewUuid, UiActionRequest request) {
 
-    setModel(viewUuid, super.extractClientModel(request));
+    UserEditingModel pageModel =
+        objectApi.asType(UserEditingModel.class, request.getParams().get("formModel"));
 
-    User user = getModel(viewUuid).getUser();
-    user.password(
-        passwordEncoderApi.encode(getModel(viewUuid).getUser().getPassword()));
+    User user = pageModel.getUser();
 
-    if (orgApi.getActiveUsers().stream().map(u -> u.getUri()).collect(Collectors.toList())
+    user.password(passwordEncoderApi.encode(user.getPassword()));
+
+    if (orgApi.getActiveUsers().stream().map(User::getUri).collect(Collectors.toList())
         .contains(user.getUri())) {
 
       orgApi.updateUser(user);
@@ -64,6 +66,15 @@ public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
     else {
       orgApi.saveUser(user);
     }
+
+    pageModel.getPossibleGroups().stream()
+        .forEach(g -> orgApi.removeUserFromGroup(user.getUri(), g.getUri()));
+
+
+    pageModel.getActualGroups().stream()
+        .forEach(g -> orgApi.addUserToGroup(user.getUri(), g.getUri()));
+
+
 
     viewApi.showView(new View().viewName(OrgViewNames.USER_DASHBOARD_PAGE));
 

@@ -1,0 +1,31 @@
+openapi: 3.0.1
+info:
+  title: Group selector api
+  description: Group selector ui api.
+  termsOfService: ''
+  contact:
+    email: info@it4all.hu
+  version: 1.0.0
+tags:
+  - name: GroupSelector
+paths: {}
+components:
+  schemas:
+    GroupEditingModel:
+      type: object
+      properties:
+        group:
+          type: Group
+          description: The copy of the group object to edit
+        possibleGroups:
+          type: array
+          description: |
+            The list of groups that exist within the current app.
+          items:
+            type: Group
+        childGroups:
+          type: array
+          description: |
+            The list of groups that are considered child groups of the group.
+          items:
+            type: Group

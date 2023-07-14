@@ -15,8 +15,8 @@ public interface UserEditorPageApi extends PageApi<UserEditingModel> {
   public static final String SAVE_USER = "SAVE_USER";
   public static final String CANCEL_USER_EDIT = "CANCEL_USER_EDIT";
 
-  List<UiAction> USER_ACTIONS =
-      Arrays.asList(new UiAction().code(SAVE_USER).submit(true),
+  List<UiAction> ADMIN_ACTIONS =
+      Arrays.asList(new UiAction().code(SAVE_USER),
           new UiAction().code(CANCEL_USER_EDIT));
 
   @ActionHandler(SAVE_USER)

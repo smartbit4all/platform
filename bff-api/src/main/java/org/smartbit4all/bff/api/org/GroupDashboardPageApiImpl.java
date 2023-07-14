@@ -1,6 +1,8 @@
 package org.smartbit4all.bff.api.org;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import org.smartbit4all.api.collection.SearchIndex;
 import org.smartbit4all.api.grid.bean.GridModel;
@@ -8,8 +10,8 @@ import org.smartbit4all.api.grid.bean.GridPage;
 import org.smartbit4all.api.grid.bean.GridRow;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.org.OrgApi;
+import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.org.bean.User;
-import org.smartbit4all.api.userselector.bean.UserEditingModel;
 import org.smartbit4all.api.view.PageApiImpl;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
@@ -18,7 +20,8 @@ import org.smartbit4all.api.view.grid.GridModelApi;
 import org.smartbit4all.api.view.grid.GridModels;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class UserDashboardPageApiImpl extends PageApiImpl<Object> implements UserDashboardPageApi {
+public class GroupDashboardPageApiImpl extends PageApiImpl<Object>
+    implements GroupDashboardPageApi {
 
   @Autowired
   GridModelApi gridModelApi;
@@ -27,13 +30,13 @@ public class UserDashboardPageApiImpl extends PageApiImpl<Object> implements Use
   InvocationApi invocationApi;
 
   @Autowired
-  SearchIndex<User> userSearch;
+  SearchIndex<Group> groupSearch;
 
   @Autowired
   OrgApi orgApi;
 
 
-  public UserDashboardPageApiImpl() {
+  public GroupDashboardPageApiImpl() {
     super(Object.class);
   }
 
@@ -44,25 +47,37 @@ public class UserDashboardPageApiImpl extends PageApiImpl<Object> implements Use
 
     view.actions(ADMIN_ACTIONS);
 
-    gridModelApi.setDataFromUris(view.getUuid(), USER_GRID, userSearch,
-        orgApi.getAllUsers().stream().map(User::getUri));
+    List<Group> notBuiltInGroups = new ArrayList<>();
+
+
+    orgApi.getAllGroups().stream().forEach(g -> {
+      if (Boolean.FALSE.equals(g.getBuiltIn())) {
+        notBuiltInGroups.add(g);
+      } else {
+        return;
+      }
+    });
+
+    gridModelApi.setDataFromUris(view.getUuid(), GROUP_GRID, groupSearch,
+        notBuiltInGroups.stream().map(Group::getUri));
 
     return pageModel;
+
   }
 
   @Override
   public Object createPageModel(View view) {
 
-    UserEditingModel pageModel = new UserEditingModel();
+    Object pageModel = new Object();
 
-    GridModel userGridModel = gridModelApi.createGridModel(
-        userSearch.getDefinition().getDefinition(), orderedColumns, User.class.getSimpleName());
+    GridModel groupGridModel = gridModelApi.createGridModel(
+        groupSearch.getDefinition().getDefinition(), orderedColumns, Group.class.getSimpleName());
 
-    gridModelApi.initGridInView(view.getUuid(), USER_GRID, userGridModel);
+    gridModelApi.initGridInView(view.getUuid(), GROUP_GRID, groupGridModel);
 
 
-    gridModelApi.addGridPageCallback(view.getUuid(), USER_GRID,
-        invocationApi.builder(UserDashboardPageApi.class)
+    gridModelApi.addGridPageCallback(view.getUuid(), GROUP_GRID,
+        invocationApi.builder(GroupDashboardPageApi.class)
             .build(a -> a.extendPageData(null)));
     return pageModel;
   }
@@ -87,15 +102,15 @@ public class UserDashboardPageApiImpl extends PageApiImpl<Object> implements Use
   @Override
   public void openUserEditor(UUID viewUuid, String gridId, String rowId, UiActionRequest request) {
 
-    GridModel gridModel = viewApi.getWidgetModelFromView(GridModel.class, viewUuid, USER_GRID);
+    GridModel gridModel = viewApi.getWidgetModelFromView(GridModel.class, viewUuid, GROUP_GRID);
 
 
-    URI userUri = objectApi.asType(URI.class,
-        GridModels.getValueFromGridRow(gridModel, rowId, User.URI));
+    URI groupUri = objectApi.asType(URI.class,
+        GridModels.getValueFromGridRow(gridModel, rowId, Group.URI));
 
 
     viewApi
-        .showView(new View().viewName(OrgViewNames.USER_EDITOR_PAGE).objectUri(userUri));
+        .showView(new View().viewName(OrgViewNames.GROUP_EDITOR_PAGE).objectUri(groupUri));
 
 
   }
@@ -104,7 +119,7 @@ public class UserDashboardPageApiImpl extends PageApiImpl<Object> implements Use
   @Override
   public void openAddUserDialog(UUID viewUuid, UiActionRequest request) {
     viewApi
-        .showView(new View().viewName(OrgViewNames.USER_EDITOR_DIALOG).type(ViewType.DIALOG)
+        .showView(new View().viewName(OrgViewNames.GROUP_EDITOR_DIALOG).type(ViewType.DIALOG)
             .objectUri(orgApi.saveUser(new User())));
   }
 

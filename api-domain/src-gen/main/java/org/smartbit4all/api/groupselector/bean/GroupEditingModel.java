@@ -1,6 +1,6 @@
 /*
- * User selector api
- * User selector ui api.
+ * Group selector api
+ * Group selector ui api.
  *
  * The version of the OpenAPI document: 1.0.0
  * Contact: info@it4all.hu
@@ -11,7 +11,7 @@
  */
 
 
-package org.smartbit4all.api.userselector.bean;
+package org.smartbit4all.api.groupselector.bean;
 
 import java.util.Objects;
 import java.util.Arrays;
@@ -25,70 +25,69 @@ import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
 import org.smartbit4all.api.org.bean.Group;
-import org.smartbit4all.api.org.bean.User;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 
 /**
- * UserEditingModel
+ * GroupEditingModel
  */
 @JsonPropertyOrder({
-  UserEditingModel.USER,
-  UserEditingModel.POSSIBLE_GROUPS,
-  UserEditingModel.ACTUAL_GROUPS
+  GroupEditingModel.GROUP,
+  GroupEditingModel.POSSIBLE_GROUPS,
+  GroupEditingModel.CHILD_GROUPS
 })
-@JsonTypeName("UserEditingModel")
+@JsonTypeName("GroupEditingModel")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
-public class UserEditingModel {
-  public static final String USER = "user";
-  private User user = null;
+public class GroupEditingModel {
+  public static final String GROUP = "group";
+  private Group group = null;
 
   public static final String POSSIBLE_GROUPS = "possibleGroups";
   private List<Group> possibleGroups = null;
 
-  public static final String ACTUAL_GROUPS = "actualGroups";
-  private List<Group> actualGroups = null;
+  public static final String CHILD_GROUPS = "childGroups";
+  private List<Group> childGroups = null;
 
-  public UserEditingModel() { 
+  public GroupEditingModel() { 
   }
 
-  public UserEditingModel user(User user) {
+  public GroupEditingModel group(Group group) {
     
-    this.user = user;
+    this.group = group;
     return this;
   }
 
    /**
-   * The copy of the user object to edit
-   * @return user
+   * The copy of the group object to edit
+   * @return group
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The copy of the user object to edit")
-  @JsonProperty(USER)
+  @ApiModelProperty(value = "The copy of the group object to edit")
+  @JsonProperty(GROUP)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public User getUser() {
-    return user;
+  public Group getGroup() {
+    return group;
   }
 
 
-  @JsonProperty(USER)
+  @JsonProperty(GROUP)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setUser(User user) {
-    this.user = user;
+  public void setGroup(Group group) {
+    this.group = group;
   }
 
 
-  public UserEditingModel possibleGroups(List<Group> possibleGroups) {
+  public GroupEditingModel possibleGroups(List<Group> possibleGroups) {
     
     this.possibleGroups = possibleGroups;
     return this;
   }
 
-  public UserEditingModel addPossibleGroupsItem(Group possibleGroupsItem) {
+  public GroupEditingModel addPossibleGroupsItem(Group possibleGroupsItem) {
     if (this.possibleGroups == null) {
       this.possibleGroups = new ArrayList<>();
     }
@@ -118,39 +117,39 @@ public class UserEditingModel {
   }
 
 
-  public UserEditingModel actualGroups(List<Group> actualGroups) {
+  public GroupEditingModel childGroups(List<Group> childGroups) {
     
-    this.actualGroups = actualGroups;
+    this.childGroups = childGroups;
     return this;
   }
 
-  public UserEditingModel addActualGroupsItem(Group actualGroupsItem) {
-    if (this.actualGroups == null) {
-      this.actualGroups = new ArrayList<>();
+  public GroupEditingModel addChildGroupsItem(Group childGroupsItem) {
+    if (this.childGroups == null) {
+      this.childGroups = new ArrayList<>();
     }
-    this.actualGroups.add(actualGroupsItem);
+    this.childGroups.add(childGroupsItem);
     return this;
   }
 
    /**
-   * The list of groups directly attached to the given user. At the end of the editing the save will ensure that these groups will be associated with the user. 
-   * @return actualGroups
+   * The list of groups that are considered child groups of the group. 
+   * @return childGroups
   **/
   @javax.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "The list of groups directly attached to the given user. At the end of the editing the save will ensure that these groups will be associated with the user. ")
-  @JsonProperty(ACTUAL_GROUPS)
+  @ApiModelProperty(value = "The list of groups that are considered child groups of the group. ")
+  @JsonProperty(CHILD_GROUPS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<Group> getActualGroups() {
-    return actualGroups;
+  public List<Group> getChildGroups() {
+    return childGroups;
   }
 
 
-  @JsonProperty(ACTUAL_GROUPS)
+  @JsonProperty(CHILD_GROUPS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setActualGroups(List<Group> actualGroups) {
-    this.actualGroups = actualGroups;
+  public void setChildGroups(List<Group> childGroups) {
+    this.childGroups = childGroups;
   }
 
 
@@ -162,24 +161,24 @@ public class UserEditingModel {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    UserEditingModel userEditingModel = (UserEditingModel) o;
-    return Objects.equals(this.user, userEditingModel.user) &&
-        Objects.equals(this.possibleGroups, userEditingModel.possibleGroups) &&
-        Objects.equals(this.actualGroups, userEditingModel.actualGroups);
+    GroupEditingModel groupEditingModel = (GroupEditingModel) o;
+    return Objects.equals(this.group, groupEditingModel.group) &&
+        Objects.equals(this.possibleGroups, groupEditingModel.possibleGroups) &&
+        Objects.equals(this.childGroups, groupEditingModel.childGroups);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(user, possibleGroups, actualGroups);
+    return Objects.hash(group, possibleGroups, childGroups);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class UserEditingModel {\n");
-    sb.append("    user: ").append(toIndentedString(user)).append("\n");
+    sb.append("class GroupEditingModel {\n");
+    sb.append("    group: ").append(toIndentedString(group)).append("\n");
     sb.append("    possibleGroups: ").append(toIndentedString(possibleGroups)).append("\n");
-    sb.append("    actualGroups: ").append(toIndentedString(actualGroups)).append("\n");
+    sb.append("    childGroups: ").append(toIndentedString(childGroups)).append("\n");
     sb.append("}");
     return sb.toString();
   }
