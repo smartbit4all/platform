@@ -39,7 +39,8 @@ public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
     User user;
     if (view.getObjectUri() != null) {
       pageModel.user(orgApi.getUser(userUri));
-      pageModel.actualGroups(orgApi.getGroupsOfUser(userUri));
+      pageModel.actualGroups(orgApi.getGroupsOfUser(userUri).stream().map(g -> g.getUri())
+          .collect(Collectors.toList()));
     } else {
       pageModel.user(new User().name("").email("").username(""));
       pageModel.actualGroups(new ArrayList<>());
@@ -80,7 +81,7 @@ public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
 
 
     pageModel.getActualGroups().stream()
-        .forEach(g -> orgApi.addUserToGroup(user.getUri(), g.getUri()));
+        .forEach(g -> orgApi.addUserToGroup(user.getUri(), g));
 
 
 

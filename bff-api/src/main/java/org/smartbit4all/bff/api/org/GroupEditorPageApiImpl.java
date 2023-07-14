@@ -35,7 +35,7 @@ public class GroupEditorPageApiImpl extends PageApiImpl<GroupEditingModel>
     }
 
     pageModel.group(groupToEdit).possibleGroups(orgApi.getAllGroups()).childGroups(groupToEdit
-        .getChildren().stream().map(u -> orgApi.getGroup(u)).collect(Collectors.toList()));
+        .getChildren());
 
     return pageModel;
   }
@@ -57,7 +57,8 @@ public class GroupEditorPageApiImpl extends PageApiImpl<GroupEditingModel>
     pageModel.getPossibleGroups()
         .forEach(g -> orgApi.removeSubGroup(pageModel.getGroup().getUri(), g.getUri()));
 
-    pageModel.getChildGroups().stream().forEach(g -> orgApi.addChildGroup(pageModel.getGroup(), g));
+    pageModel.getChildGroups().stream()
+        .forEach(g -> orgApi.addChildGroup(pageModel.getGroup(), orgApi.getGroup(g)));
 
   }
 

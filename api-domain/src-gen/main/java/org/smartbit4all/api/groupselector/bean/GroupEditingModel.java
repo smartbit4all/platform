@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import org.smartbit4all.api.org.bean.Group;
@@ -48,7 +49,7 @@ public class GroupEditingModel {
   private List<Group> possibleGroups = null;
 
   public static final String CHILD_GROUPS = "childGroups";
-  private List<Group> childGroups = null;
+  private List<URI> childGroups = null;
 
   public GroupEditingModel() { 
   }
@@ -117,13 +118,13 @@ public class GroupEditingModel {
   }
 
 
-  public GroupEditingModel childGroups(List<Group> childGroups) {
+  public GroupEditingModel childGroups(List<URI> childGroups) {
     
     this.childGroups = childGroups;
     return this;
   }
 
-  public GroupEditingModel addChildGroupsItem(Group childGroupsItem) {
+  public GroupEditingModel addChildGroupsItem(URI childGroupsItem) {
     if (this.childGroups == null) {
       this.childGroups = new ArrayList<>();
     }
@@ -141,14 +142,14 @@ public class GroupEditingModel {
   @JsonProperty(CHILD_GROUPS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<Group> getChildGroups() {
+  public List<URI> getChildGroups() {
     return childGroups;
   }
 
 
   @JsonProperty(CHILD_GROUPS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setChildGroups(List<Group> childGroups) {
+  public void setChildGroups(List<URI> childGroups) {
     this.childGroups = childGroups;
   }
 

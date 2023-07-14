@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import org.smartbit4all.api.org.bean.Group;
@@ -49,7 +50,7 @@ public class UserEditingModel {
   private List<Group> possibleGroups = null;
 
   public static final String ACTUAL_GROUPS = "actualGroups";
-  private List<Group> actualGroups = null;
+  private List<URI> actualGroups = null;
 
   public UserEditingModel() { 
   }
@@ -118,13 +119,13 @@ public class UserEditingModel {
   }
 
 
-  public UserEditingModel actualGroups(List<Group> actualGroups) {
+  public UserEditingModel actualGroups(List<URI> actualGroups) {
     
     this.actualGroups = actualGroups;
     return this;
   }
 
-  public UserEditingModel addActualGroupsItem(Group actualGroupsItem) {
+  public UserEditingModel addActualGroupsItem(URI actualGroupsItem) {
     if (this.actualGroups == null) {
       this.actualGroups = new ArrayList<>();
     }
@@ -142,14 +143,14 @@ public class UserEditingModel {
   @JsonProperty(ACTUAL_GROUPS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<Group> getActualGroups() {
+  public List<URI> getActualGroups() {
     return actualGroups;
   }
 
 
   @JsonProperty(ACTUAL_GROUPS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setActualGroups(List<Group> actualGroups) {
+  public void setActualGroups(List<URI> actualGroups) {
     this.actualGroups = actualGroups;
   }
 

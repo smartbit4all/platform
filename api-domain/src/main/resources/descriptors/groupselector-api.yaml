@@ -28,4 +28,5 @@ components:
           description: |
             The list of groups that are considered child groups of the group.
           items:
-            type: Group
+            type: string
+            format: uri
