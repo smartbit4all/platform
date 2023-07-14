@@ -16,9 +16,13 @@ public class ViewApiExceptionHandler extends ResponseEntityExceptionHandler {
   @ExceptionHandler(RuntimeException.class)
   protected ResponseEntity<Object> handleViewApiException(RuntimeException ex) {
     log.warn("Handling runtime error", ex);
+    return handleViewApiException(ex.getMessage());
+  }
+
+  protected ResponseEntity<Object> handleViewApiException(String message) {
     return ResponseEntity.status(HttpStatus.CONFLICT)
         .body(new ViewApiError()
-            .message(ex.getMessage()));
+            .message(message));
   }
 
 }

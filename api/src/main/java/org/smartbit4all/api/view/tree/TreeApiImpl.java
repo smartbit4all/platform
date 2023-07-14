@@ -11,6 +11,8 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.uitree.bean.SmartTreeNode;
 import org.smartbit4all.api.uitree.bean.UiTreeDefaultSelection;
 import org.smartbit4all.api.uitree.bean.UiTreeNode;
@@ -26,6 +28,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.base.Strings;
 
 public class TreeApiImpl implements TreeApi {
+
+  private static final Logger log = LoggerFactory.getLogger(TreeApiImpl.class);
 
   // FIXME (viewApi is not present everywhere)
   @Autowired(required = false)
@@ -99,6 +103,24 @@ public class TreeApiImpl implements TreeApi {
   public SmartTreeNode selectNode(UiTreeState treeState, String nodeId) {
     UiTreeNode treeNode = selectNodeInternal(treeState, nodeId, true);
     return convertUi2SmartTreeNode(treeState, treeNode);
+  }
+
+  @Override
+  public SmartTreeNode selectNodeByUri(UiTreeState treeState, String parentNodeId, URI childUri) {
+    if (treeState.getExpandedNodes().contains(parentNodeId)) {
+      treeState.getExpandedNodes().remove(parentNodeId);
+    }
+    expandNodeInternal(treeState, parentNodeId);
+    URI latestUri = objectApi.getLatestUri(childUri);
+    UiTreeNode childNode = treeState.getNodes().values().stream()
+        .filter(n -> latestUri.equals(objectApi.getLatestUri(n.getObjectUri())))
+        .findAny()
+        .orElse(null);
+    if (childNode != null) {
+      selectNodeInternal(treeState, childNode.getIdentifier(), true);
+      return convertUi2SmartTreeNode(treeState, childNode);
+    }
+    return null;
   }
 
   private UiTreeNode selectNodeInternal(UiTreeState treeState, String nodeId,
@@ -300,6 +322,26 @@ public class TreeApiImpl implements TreeApi {
         .forEach(child -> refreshNodeRecursively(treeState, child));
   }
 
+  @Override
+  public void refreshTreeRecursively(UiTreeState treeState) {
+    UiTreeNode configNode = getConfigNode(treeState);
+    refreshNode(treeState, configNode);
+    refreshNodeRecursivelyShallow(treeState, configNode);
+  }
+
+  private void refreshNodeRecursivelyShallow(UiTreeState treeState, UiTreeNode node) {
+    log.debug("refreshing {}", node.getCaption());
+    boolean isExpanded = treeState.getExpandedNodes().contains(node.getIdentifier());
+    if (isExpanded) {
+      this.refreshNode(treeState, node);
+      node.getChildren()
+          .stream()
+          .filter(id -> treeState.getExpandedNodes().contains(id))
+          .map(id -> treeState.getNodes().get(id))
+          .filter(child -> Objects.nonNull(child))
+          .forEach(child -> refreshNodeRecursivelyShallow(treeState, child));
+    }
+  }
 
   private void addNodesToState(UiTreeState treeState, List<UiTreeNode> nodes) {
     treeState.getNodes().putAll(nodes.stream()
