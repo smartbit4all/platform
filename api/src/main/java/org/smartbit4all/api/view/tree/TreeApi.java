@@ -74,4 +74,11 @@ public interface TreeApi {
    */
   void refreshNodeRecursively(UiTreeState treeState, UiTreeNode node);
 
+  /**
+   * Refreshes the state of whole tree.
+   *
+   * @param treeState the {@code UiTreeState} serving as the node's context, not null
+   */
+  void refreshTreeRecursively(UiTreeState treeState);
+
 }
