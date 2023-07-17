@@ -76,19 +76,19 @@ public abstract class PageApiImpl<M> implements PageApi<M> {
 
   /**
    * Retrieve an instance of the view variable helper that encapsulate the
-   * {@link View#getParameters()} as value. So if we get values the parameter map will be updated
+   * {@link View#getVariables()} as value. So if we get values the parameter map will be updated
    * with the typed object to enhance the subsequent retrieves.
    * 
    * @param viewUuid The uuid of the view.
    * @return
    */
   protected ObjectMapHelper variables(UUID viewUuid) {
-    return parameters(viewApi.getView(viewUuid));
+    return variables(viewApi.getView(viewUuid));
   }
 
   /**
    * Retrieve an instance of the view variables helper that encapsulate the
-   * {@link View#getParameters()} as value. So if we get values the parameter map will be updated
+   * {@link View#getVariables()} as value. So if we get values the parameter map will be updated
    * with the typed object to enhance the subsequent retrieves.
    * 
    * @param view The view itself.
