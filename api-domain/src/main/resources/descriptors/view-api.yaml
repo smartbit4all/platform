@@ -543,6 +543,11 @@ components:
           type: string
           additionalProperties:
             type: ValueSet
+        widgets:
+          description: List of widgets (widgetIds).
+          type: array
+          items:
+            type: string
     ComponentModelChange:
       type: object
       description: |

@@ -47,7 +47,8 @@ import javax.validation.Valid;
   ComponentModel.CONSTRAINTS,
   ComponentModel.LAYOUTS,
   ComponentModel.ACTIONS,
-  ComponentModel.VALUE_SETS
+  ComponentModel.VALUE_SETS,
+  ComponentModel.WIDGETS
 })
 @JsonTypeName("ComponentModel")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
@@ -72,6 +73,9 @@ public class ComponentModel {
 
   public static final String VALUE_SETS = "valueSets";
   private Map<String, ValueSet> valueSets = null;
+
+  public static final String WIDGETS = "widgets";
+  private List<String> widgets = null;
 
   public ComponentModel() { 
   }
@@ -298,6 +302,41 @@ public class ComponentModel {
   }
 
 
+  public ComponentModel widgets(List<String> widgets) {
+    
+    this.widgets = widgets;
+    return this;
+  }
+
+  public ComponentModel addWidgetsItem(String widgetsItem) {
+    if (this.widgets == null) {
+      this.widgets = new ArrayList<>();
+    }
+    this.widgets.add(widgetsItem);
+    return this;
+  }
+
+   /**
+   * List of widgets (widgetIds).
+   * @return widgets
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "List of widgets (widgetIds).")
+  @JsonProperty(WIDGETS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<String> getWidgets() {
+    return widgets;
+  }
+
+
+  @JsonProperty(WIDGETS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setWidgets(List<String> widgets) {
+    this.widgets = widgets;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -313,12 +352,13 @@ public class ComponentModel {
         Objects.equals(this.constraints, componentModel.constraints) &&
         Objects.equals(this.layouts, componentModel.layouts) &&
         Objects.equals(this.actions, componentModel.actions) &&
-        Objects.equals(this.valueSets, componentModel.valueSets);
+        Objects.equals(this.valueSets, componentModel.valueSets) &&
+        Objects.equals(this.widgets, componentModel.widgets);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uuid, name, data, constraints, layouts, actions, valueSets);
+    return Objects.hash(uuid, name, data, constraints, layouts, actions, valueSets, widgets);
   }
 
   @Override
@@ -332,6 +372,7 @@ public class ComponentModel {
     sb.append("    layouts: ").append(toIndentedString(layouts)).append("\n");
     sb.append("    actions: ").append(toIndentedString(actions)).append("\n");
     sb.append("    valueSets: ").append(toIndentedString(valueSets)).append("\n");
+    sb.append("    widgets: ").append(toIndentedString(widgets)).append("\n");
     sb.append("}");
     return sb.toString();
   }
