@@ -53,7 +53,7 @@ public abstract class PageApiImpl<M> implements PageApi<M> {
    * Retrieve an instance of the view parameter helper that encapsulate the
    * {@link View#getParameters()} as value. So if we get values the parameter map will be updated
    * with the typed object to enhance the subsequent retrieves.
-   * 
+   *
    * @param viewUuid The uuid of the view.
    * @return
    */
@@ -65,7 +65,7 @@ public abstract class PageApiImpl<M> implements PageApi<M> {
    * Retrieve an instance of the view parameter helper that encapsulate the
    * {@link View#getParameters()} as value. So if we get values the parameter map will be updated
    * with the typed object to enhance the subsequent retrieves.
-   * 
+   *
    * @param view The view itself.
    * @return
    */
@@ -78,7 +78,7 @@ public abstract class PageApiImpl<M> implements PageApi<M> {
    * Retrieve an instance of the view variable helper that encapsulate the
    * {@link View#getVariables()} as value. So if we get values the parameter map will be updated
    * with the typed object to enhance the subsequent retrieves.
-   * 
+   *
    * @param viewUuid The uuid of the view.
    * @return
    */
@@ -90,7 +90,7 @@ public abstract class PageApiImpl<M> implements PageApi<M> {
    * Retrieve an instance of the view variables helper that encapsulate the
    * {@link View#getVariables()} as value. So if we get values the parameter map will be updated
    * with the typed object to enhance the subsequent retrieves.
-   * 
+   *
    * @param view The view itself.
    * @return
    */
@@ -167,6 +167,11 @@ public abstract class PageApiImpl<M> implements PageApi<M> {
     List<T> typedParam = objectApi.asList(clazz, (List<?>) param);
     parameters.put(paramName, typedParam);
     return typedParam;
+  }
+
+  protected void resetInitialModel(UUID viewUuid) {
+    View view = viewApi.getView(viewUuid);
+    view.getParameters().put(ViewContexts.INITIAL_MODEL, getModel(viewUuid));
   }
 
 }
