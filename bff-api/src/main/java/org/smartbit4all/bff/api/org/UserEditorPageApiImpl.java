@@ -5,13 +5,13 @@ import java.util.ArrayList;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.smartbit4all.api.org.OrgApi;
-import org.smartbit4all.api.org.PasswordEncoderApi;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.userselector.bean.UserEditingModel;
 import org.smartbit4all.api.view.PageApiImpl;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
     implements UserEditorPageApi {
@@ -19,8 +19,8 @@ public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
   @Autowired
   OrgApi orgApi;
 
-  @Autowired
-  private PasswordEncoderApi passwordEncoderApi;
+  @Autowired(required = false)
+  private PasswordEncoder passwordEncoder;
 
   public UserEditorPageApiImpl() {
     super(UserEditingModel.class);
@@ -63,7 +63,7 @@ public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
 
     User user = pageModel.getUser();
 
-    user.password(passwordEncoderApi.encode(user.getPassword()));
+    user.password(passwordEncoder.encode(user.getPassword()));
 
     if (orgApi.getActiveUsers().stream().map(User::getUri).collect(Collectors.toList())
         .contains(user.getUri())) {

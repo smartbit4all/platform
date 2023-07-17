@@ -1,8 +1,6 @@
 package org.smartbit4all.sec.config;
 
-import org.smartbit4all.api.org.PasswordEncoderApi;
 import org.smartbit4all.core.reactive.ObjectChangePublisher;
-import org.smartbit4all.sec.localauth.PasswordEncoderApiImpl;
 import org.smartbit4all.sec.session.ObjectChangePublisherSpringSecAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,12 +15,6 @@ public class PlatformSecurityConfig {
   @Scope("prototype")
   public ObjectChangePublisher<?> objectChangePublisher() {
     return new ObjectChangePublisherSpringSecAware<>();
-  }
-
-  @Bean
-  public PasswordEncoderApi passwordEncoderApi() {
-    return new PasswordEncoderApiImpl();
-
   }
 
 }
