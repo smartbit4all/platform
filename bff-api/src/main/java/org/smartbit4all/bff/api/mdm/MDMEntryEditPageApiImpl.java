@@ -7,6 +7,7 @@ import org.smartbit4all.api.mdm.bean.MDMEntryEditingObject;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry;
 import org.smartbit4all.api.view.PageApiImpl;
 import org.smartbit4all.api.view.ViewApi;
+import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,10 @@ public class MDMEntryEditPageApiImpl extends PageApiImpl<Object>
   public MDMEntryEditingObject initModel(View view) {
     // The page always get an initiated model. So if the init model is called it is a mistake.
     log.error("The master data management page api should be used with prepared model.");
+    UiAction saveAction = new UiAction().code(ACTION_SAVE).submit(true);
+    UiAction cancelAction = new UiAction().code(ACTION_CANCEL);
+    view.addActionsItem(saveAction);
+    view.addActionsItem(cancelAction);
     return new MDMEntryEditingObject();
   }
 

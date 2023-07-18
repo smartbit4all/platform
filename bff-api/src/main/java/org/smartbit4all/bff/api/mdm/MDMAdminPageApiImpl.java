@@ -1,5 +1,6 @@
 package org.smartbit4all.bff.api.mdm;
 
+import static java.util.stream.Collectors.toList;
 import java.util.UUID;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
@@ -7,9 +8,10 @@ import org.smartbit4all.api.org.OrgUtils;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.view.PageApiImpl;
 import org.smartbit4all.api.view.bean.UiAction;
+import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
 import org.springframework.beans.factory.annotation.Autowired;
-import static java.util.stream.Collectors.toList;
+import com.google.common.base.Strings;
 
 public class MDMAdminPageApiImpl extends PageApiImpl<MDMDefinition> implements MDMAdminPageApi {
 
@@ -19,7 +21,7 @@ public class MDMAdminPageApiImpl extends PageApiImpl<MDMDefinition> implements M
   @Autowired
   private SessionApi sessionApi;
 
-  public MDMAdminPageApiImpl(Class<MDMDefinition> clazz) {
+  public MDMAdminPageApiImpl() {
     super(MDMDefinition.class);
   }
 
@@ -33,12 +35,12 @@ public class MDMAdminPageApiImpl extends PageApiImpl<MDMDefinition> implements M
     MDMDefinition definition;
 
     PageContext loadByView() {
-      definition = getDefinition(view);
+      definition = masterDataManagementApi.getDefinition(getDefinition(view));
       return this;
     }
 
-    private final MDMDefinition getDefinition(View view) {
-      return extractParam(MDMDefinition.class, PARAM_MDM_DEFINITION, view.getParameters());
+    private final String getDefinition(View view) {
+      return extractParam(String.class, PARAM_MDM_DEFINITION, view.getParameters());
     }
 
     public boolean checkAdmin() {
@@ -62,10 +64,34 @@ public class MDMAdminPageApiImpl extends PageApiImpl<MDMDefinition> implements M
   @Override
   public MDMDefinition initModel(View view) {
     PageContext context = getContextByView(view);
-    view.setActions(context.definition.getDescriptors().entrySet().stream().map(e -> new UiAction()
-        .code(ACTION_OPEN_LIST).putParamsItem(ACTION_PARAM_MDM_ENTRY, e.getValue().getName()))
+    view.actions(context.definition.getDescriptors().values().stream()
+        .map(e -> new UiAction()
+            .code(ACTION_OPEN_LIST + "-" + e.getName()))
         .collect(toList()));
     return context.definition;
   }
 
+  @Override
+  public void openList(UUID viewUuid, UiActionRequest request) {
+    String code = request.getCode();
+    if (Strings.isNullOrEmpty(code)) {
+      throw new IllegalArgumentException("Missing code");
+    }
+    if (!code.startsWith(ACTION_OPEN_LIST + "-")) {
+      throw new IllegalArgumentException("Invalid code");
+    }
+
+    String descriptorName = code.substring((ACTION_OPEN_LIST + "-").length());
+
+    PageContext ctx = getContextByViewUUID(viewUuid);
+    MDMDefinition definition = ctx.definition;
+
+    View querySetView = new View().viewName(MDM_LIST)
+        .putParametersItem(MDMEntryListPageApi.PARAM_MDM_DEFINITION, definition)
+        .putParametersItem(MDMEntryListPageApi.PARAM_ENTRY_DESCRIPTOR, masterDataManagementApi
+            .getEntryDescriptor(definition, descriptorName));
+
+    viewApi.showView(querySetView);
+
+  }
 }
