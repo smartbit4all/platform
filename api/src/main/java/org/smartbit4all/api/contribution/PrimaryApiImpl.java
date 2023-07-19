@@ -1,5 +1,6 @@
 package org.smartbit4all.api.contribution;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -85,4 +86,10 @@ public class PrimaryApiImpl<A extends ContributionApi> implements PrimaryApi<A>,
   public Class<A> getContributionApiClass() {
     return innerApiClass;
   }
+
+  @Override
+  public Map<String, A> getContributionApis() {
+    return Collections.unmodifiableMap(apiByName);
+  }
+
 }

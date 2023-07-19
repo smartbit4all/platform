@@ -1,5 +1,6 @@
 package org.smartbit4all.api.contribution;
 
+import java.util.Map;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 
@@ -26,5 +27,7 @@ public interface PrimaryApi<A extends ContributionApi> {
   void registerApi(A api, String name);
 
   void unregisterApi(String apiName);
+
+  Map<String, A> getContributionApis();
 
 }
